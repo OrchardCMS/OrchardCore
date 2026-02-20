@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="{{ Culture.Name }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>{{ "PageTitle" | shape_new | shape_stringify }}</title>
+    {% resources type: "Meta" %}
+    {% link type:"image/x-icon", rel:"shortcut icon", href:"~/TheCommunityTheme/assets/img/logo.svg" %}
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    {% style name:"font-awesome", version:"7", at:"Head" %}
+
+    <!-- Theme styles -->
+    {% style name:"TheCommunityTheme" %}
+    {% style name:"TheCommunityTheme-bootstrap-oc", version:"1" %}
+    {% script name:"TheCommunityTheme", at:"Foot" %}
+
+    {% resources type: "HeadScript" %}
+    {% resources type: "HeadLink" %}
+    {% resources type: "Stylesheet" %}
+    {% render_section "HeadMeta", required: false %}
+</head>
+<body dir="{{ Culture.Dir }}">
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
+        <div class="container">
+            <a class="navbar-brand" href="{{ '~/' | href }}">{{ Site.SiteName }}</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                {{ "Menu" | t }} <i class="fas fa-bars ms-1" aria-hidden="true"></i>
+            </button>
+            {% shape "menu", alias: "alias:main-menu", cache_id: "main-menu", cache_fixed_duration: "00:05:00", cache_tag: "alias:main-menu", cache_context: "user.roles" %}
+        </div>
+    </nav>
+
+    {% render_section "Header", required: false %}
+
+    <main>
+        {% render_section "Messages", required: false %}
+        {% render_body %}
+    </main>
+
+    {% render_section "Footer", required: false %}
+
+    {% resources type: "FootScript" %}
+</body>
+</html>

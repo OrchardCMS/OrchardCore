@@ -1,0 +1,19 @@
+{% zone "Header" %}
+<header class="masthead" style="background-image: url('{{ "~/TheCommunityTheme/assets/img/hero/community-center.svg" | href }}')">
+    <div class="container">
+        <div class="masthead-heading">{{ Model.ContentItem | display_text }}</div>
+    </div>
+</header>
+{% endzone %}
+
+<section class="py-5">
+    <div class="container">
+        {% if Model.Content.HtmlBodyPart %}
+        <div class="text-center mb-5">
+            {{ Model.Content.HtmlBodyPart | shape_render }}
+        </div>
+        {% endif %}
+
+        {{ Model.Content.ListPart | shape_render }}
+    </div>
+</section>

@@ -1,0 +1,52 @@
+// Masthead
+header.masthead {
+    padding-top: 10rem;
+    padding-bottom: 6rem;
+    text-align: center;
+    color: $white;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    position: relative;
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(rgba($garden-dark, 0.65), rgba($dark, 0.75));
+    }
+
+    .container {
+        position: relative;
+        z-index: 1;
+    }
+
+    .masthead-heading {
+        font-size: 3.25rem;
+        font-weight: 700;
+        line-height: 1.2;
+        margin-bottom: 1.5rem;
+    }
+
+    .masthead-subheading {
+        font-size: 1.25rem;
+        font-style: italic;
+        font-family: $font-family-sans-serif;
+        margin-bottom: 2rem;
+        opacity: 0.9;
+    }
+}
+
+@include media-breakpoint-up(lg) {
+    header.masthead {
+        padding-top: 14rem;
+        padding-bottom: 10rem;
+
+        .masthead-heading {
+            font-size: 4.5rem;
+        }
+    }
+}

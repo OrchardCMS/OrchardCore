@@ -1,0 +1,12 @@
+{% assign url = Model.ContentItem.Content.HtmlMenuItemPart.Url %}
+{% assign target = "" %}
+{% if Model.ContentItem.Content.HtmlMenuItemPart.Target %}
+{% assign target = Model.ContentItem.Content.HtmlMenuItemPart.Target %}
+{% endif %}
+{% if Model.HasItems %}
+<a class="nav-link dropdown-toggle" href="{{ url | href }}" id="navbarDropdown{{ Model.ContentItem.ContentItemId }}" role="button" data-bs-toggle="dropdown" aria-expanded="false" {% if target != "" %}target="{{ target }}"{% endif %}>
+    {{ Model.ContentItem.Content.HtmlMenuItemPart.Html | raw }}
+</a>
+{% else %}
+<a class="nav-link" href="{{ url | href }}" {% if target != "" %}target="{{ target }}"{% endif %}>{{ Model.ContentItem.Content.HtmlMenuItemPart.Html | raw }}</a>
+{% endif %}

@@ -1,0 +1,10 @@
+{% assign imagePath = Model.ContentItem.Content.Image.Media.Paths.first %}
+{% assign caption = Model.ContentItem.Content.Image.Caption.Text %}
+{% if imagePath %}
+<figure>
+    <img src="{{ imagePath | asset_url }}" alt="{{ caption }}" class="img-fluid">
+    {% if caption and caption != "" %}
+    <figcaption>{{ caption }}</figcaption>
+    {% endif %}
+</figure>
+{% endif %}

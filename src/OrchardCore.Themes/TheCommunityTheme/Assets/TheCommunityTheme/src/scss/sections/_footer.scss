@@ -1,0 +1,17 @@
+// Footer
+footer {
+    .btn-social {
+        height: 2.5rem;
+        width: 2.5rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 100%;
+    }
+
+    a {
+        &:hover {
+            text-decoration: none;
+        }
+    }
+}

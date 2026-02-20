@@ -1,0 +1,2304 @@
+{
+  "name": "Community",
+  "displayName": "Community",
+  "description": "A community recreation center and botanical garden website showcasing CMS features.",
+  "author": "The Orchard Core Team",
+  "website": "https://orchardcore.net",
+  "version": "1.0.0",
+  "issetuprecipe": true,
+  "categories": [ "default" ],
+  "tags": [ "community" ],
+
+  "variables": {
+    "adminUrlPrefix": "[js: configuration('OrchardCore_Admin:AdminUrlPrefix', 'Admin')]",
+    "landingContentItemId": "[js:uuid()]",
+    "menuContentItemId": "[js:uuid()]",
+    "programCategoriesId": "[js:uuid()]",
+    "eventTypesId": "[js:uuid()]",
+    "plantFamiliesId": "[js:uuid()]",
+    "gardenZonesId": "[js:uuid()]",
+    "ageGroupsId": "[js:uuid()]",
+    "newsTagsId": "[js:uuid()]",
+    "catAquaticsId": "[js:uuid()]",
+    "catFitnessId": "[js:uuid()]",
+    "catYouthId": "[js:uuid()]",
+    "catArtsId": "[js:uuid()]",
+    "catOutdoorId": "[js:uuid()]",
+    "evtClassId": "[js:uuid()]",
+    "evtWorkshopId": "[js:uuid()]",
+    "evtCampId": "[js:uuid()]",
+    "evtCommunityId": "[js:uuid()]",
+    "evtGardenTourId": "[js:uuid()]",
+    "evtFundraiserId": "[js:uuid()]",
+    "pfFernsId": "[js:uuid()]",
+    "pfSucculentsId": "[js:uuid()]",
+    "pfFloweringId": "[js:uuid()]",
+    "pfTreesId": "[js:uuid()]",
+    "pfHerbsId": "[js:uuid()]",
+    "gzRoseId": "[js:uuid()]",
+    "gzTropicalId": "[js:uuid()]",
+    "gzWoodlandId": "[js:uuid()]",
+    "gzHerbId": "[js:uuid()]",
+    "gzChildrenId": "[js:uuid()]",
+    "agToddlerId": "[js:uuid()]",
+    "agYouthId": "[js:uuid()]",
+    "agTeenId": "[js:uuid()]",
+    "agAdultId": "[js:uuid()]",
+    "agSeniorId": "[js:uuid()]",
+    "agAllAgesId": "[js:uuid()]",
+    "ntAnnouncementsId": "[js:uuid()]",
+    "ntProgramsId": "[js:uuid()]",
+    "ntGardenId": "[js:uuid()]",
+    "ntEventsId": "[js:uuid()]",
+    "ntCommunityId": "[js:uuid()]",
+    "facilityPoolId": "[js:uuid()]",
+    "facilityGymId": "[js:uuid()]",
+    "facilityStudioId": "[js:uuid()]",
+    "facilityFieldsId": "[js:uuid()]",
+    "facilityConservatoryId": "[js:uuid()]",
+    "staffDirectorId": "[js:uuid()]",
+    "staffFitnessId": "[js:uuid()]",
+    "staffSwimId": "[js:uuid()]",
+    "staffGardenId": "[js:uuid()]",
+    "staffYouthId": "[js:uuid()]",
+    "staffEventsId": "[js:uuid()]",
+    "programListId": "[js:uuid()]",
+    "eventListId": "[js:uuid()]",
+    "facilityListId": "[js:uuid()]",
+    "staffListId": "[js:uuid()]",
+    "plantListId": "[js:uuid()]",
+    "newsListId": "[js:uuid()]"
+  },
+
+  "steps": [
+    {
+      "name": "feature",
+      "enable": [
+        "OrchardCore.HomeRoute",
+        "OrchardCore.Admin",
+        "OrchardCore.Diagnostics",
+        "OrchardCore.DynamicCache",
+        "OrchardCore.Features",
+        "OrchardCore.Navigation",
+        "OrchardCore.Recipes",
+        "OrchardCore.Resources",
+        "OrchardCore.Roles",
+        "OrchardCore.Security",
+        "OrchardCore.Settings",
+        "OrchardCore.Themes",
+        "OrchardCore.Users",
+
+        "OrchardCore.Alias",
+        "OrchardCore.AdminMenu",
+        "OrchardCore.Autoroute",
+        "OrchardCore.Html",
+        "OrchardCore.ContentFields",
+        "OrchardCore.ContentPreview",
+        "OrchardCore.Contents",
+        "OrchardCore.ContentTypes",
+        "OrchardCore.CustomSettings",
+        "OrchardCore.Deployment",
+        "OrchardCore.Deployment.Remote",
+        "OrchardCore.Feeds",
+        "OrchardCore.Flows",
+        "OrchardCore.Forms",
+        "OrchardCore.Indexing",
+        "OrchardCore.Layers",
+        "OrchardCore.Lists",
+        "OrchardCore.Markdown",
+        "OrchardCore.Media",
+        "OrchardCore.Menu",
+        "OrchardCore.Placements",
+        "OrchardCore.PublishLater",
+        "OrchardCore.Queries",
+        "OrchardCore.Queries.Sql",
+        "OrchardCore.Shortcodes.Templates",
+        "OrchardCore.Rules",
+        "OrchardCore.Seo",
+        "OrchardCore.Sitemaps",
+        "OrchardCore.Taxonomies",
+        "OrchardCore.Title",
+        "OrchardCore.Templates",
+        "OrchardCore.Widgets",
+
+        "TheCommunityTheme",
+        "TheAdmin",
+        "SafeMode"
+      ]
+    },
+    {
+      "name": "themes",
+      "admin": "TheAdmin",
+      "site": "TheCommunityTheme"
+    },
+    {
+      "name": "Roles",
+      "Roles": [
+        {
+          "Name": "Moderator",
+          "Description": "Grants users the ability to moderate content.",
+          "Permissions": []
+        },
+        {
+          "Name": "Editor",
+          "Description": "Grants users the ability to edit existing content.",
+          "Permissions": []
+        },
+        {
+          "Name": "Author",
+          "Description": "Grants users the ability to create content.",
+          "Permissions": []
+        },
+        {
+          "Name": "Contributor",
+          "Description": "Grants users the ability to contribute content.",
+          "Permissions": []
+        }
+      ]
+    },
+    {
+      "name": "settings",
+      "HomeRoute": {
+        "Action": "Display",
+        "Controller": "Item",
+        "Area": "OrchardCore.Contents",
+        "ContentItemId": "[js: variables('landingContentItemId')]"
+      },
+      "LayerSettings": {
+        "Zones": [ "Content", "Footer" ]
+      }
+    },
+    {
+      "name": "ContentDefinition",
+      "ContentTypes": [
+        {
+          "Name": "Page",
+          "DisplayName": "Page",
+          "Settings": {
+            "ContentTypeSettings": {
+              "Creatable": true,
+              "Draftable": true,
+              "Versionable": true,
+              "Listable": true,
+              "Securable": true
+            }
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "TitlePart",
+              "Name": "TitlePart",
+              "Settings": { "ContentTypePartSettings": { "Position": "0" } }
+            },
+            {
+              "PartName": "AutoroutePart",
+              "Name": "AutoroutePart",
+              "Settings": {
+                "ContentTypePartSettings": { "Position": "1" },
+                "AutoroutePartSettings": {
+                  "AllowCustomPath": true,
+                  "Pattern": "{{ Model.ContentItem | display_text | slugify }}",
+                  "ShowHomepageOption": true
+                }
+              }
+            },
+            {
+              "PartName": "FlowPart",
+              "Name": "FlowPart",
+              "Settings": { "ContentTypePartSettings": { "Position": "2" } }
+            },
+            {
+              "PartName": "Page",
+              "Name": "Page",
+              "Settings": { "ContentTypePartSettings": { "Position": "3" } }
+            }
+          ]
+        },
+        {
+          "Name": "LandingPage",
+          "DisplayName": "Landing Page",
+          "Settings": {
+            "ContentTypeSettings": {
+              "Creatable": true,
+              "Draftable": true,
+              "Versionable": true,
+              "Listable": true,
+              "Securable": true
+            }
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "TitlePart",
+              "Name": "TitlePart",
+              "Settings": { "ContentTypePartSettings": { "Position": "0" } }
+            },
+            {
+              "PartName": "AutoroutePart",
+              "Name": "AutoroutePart",
+              "Settings": {
+                "ContentTypePartSettings": { "Position": "1" },
+                "AutoroutePartSettings": {
+                  "AllowCustomPath": true,
+                  "Pattern": "{{ Model.ContentItem | display_text | slugify }}",
+                  "ShowHomepageOption": true
+                }
+              }
+            },
+            {
+              "PartName": "LandingPage",
+              "Name": "LandingPage",
+              "Settings": { "ContentTypePartSettings": { "Position": "2" } }
+            },
+            {
+              "PartName": "BagPart",
+              "Name": "FeaturedPrograms",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "DisplayName": "Featured Programs",
+                  "Description": "Programs displayed on the landing page.",
+                  "Position": "3"
+                },
+                "BagPartSettings": { "ContainedContentTypes": [ "Program" ] }
+              }
+            },
+            {
+              "PartName": "BagPart",
+              "Name": "UpcomingEvents",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "DisplayName": "Upcoming Events",
+                  "Description": "Events displayed on the landing page.",
+                  "Position": "4"
+                },
+                "BagPartSettings": { "ContainedContentTypes": [ "Event" ] }
+              }
+            },
+            {
+              "PartName": "BagPart",
+              "Name": "MembershipTiers",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "DisplayName": "Membership Tiers",
+                  "Description": "Membership plans displayed on the landing page.",
+                  "Position": "5"
+                },
+                "BagPartSettings": { "ContainedContentTypes": [ "Membership" ] }
+              }
+            },
+            {
+              "PartName": "BagPart",
+              "Name": "Partners",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "DisplayName": "Partners",
+                  "Description": "Partner logos displayed on the landing page.",
+                  "Position": "6"
+                },
+                "BagPartSettings": { "ContainedContentTypes": [ "Partner" ] }
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Program",
+          "DisplayName": "Program",
+          "Settings": {
+            "ContentTypeSettings": {
+              "Creatable": true,
+              "Draftable": true,
+              "Versionable": true,
+              "Listable": true
+            }
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "TitlePart",
+              "Name": "TitlePart",
+              "Settings": { "ContentTypePartSettings": { "Position": "0" } }
+            },
+            {
+              "PartName": "AutoroutePart",
+              "Name": "AutoroutePart",
+              "Settings": {
+                "ContentTypePartSettings": { "Position": "1" },
+                "AutoroutePartSettings": {
+                  "AllowCustomPath": true,
+                  "Pattern": "programs/{{ Model.ContentItem | display_text | slugify }}"
+                }
+              }
+            },
+            {
+              "PartName": "HtmlBodyPart",
+              "Name": "HtmlBodyPart",
+              "Settings": {
+                "ContentTypePartSettings": { "Editor": "Wysiwyg", "Position": "2" }
+              }
+            },
+            {
+              "PartName": "Program",
+              "Name": "Program",
+              "Settings": { "ContentTypePartSettings": { "Position": "3" } }
+            }
+          ]
+        },
+        {
+          "Name": "Event",
+          "DisplayName": "Event",
+          "Settings": {
+            "ContentTypeSettings": {
+              "Creatable": true,
+              "Draftable": true,
+              "Versionable": true,
+              "Listable": true
+            }
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "TitlePart",
+              "Name": "TitlePart",
+              "Settings": { "ContentTypePartSettings": { "Position": "0" } }
+            },
+            {
+              "PartName": "AutoroutePart",
+              "Name": "AutoroutePart",
+              "Settings": {
+                "ContentTypePartSettings": { "Position": "1" },
+                "AutoroutePartSettings": {
+                  "AllowCustomPath": true,
+                  "Pattern": "events/{{ Model.ContentItem | display_text | slugify }}"
+                }
+              }
+            },
+            {
+              "PartName": "HtmlBodyPart",
+              "Name": "HtmlBodyPart",
+              "Settings": {
+                "ContentTypePartSettings": { "Editor": "Wysiwyg", "Position": "2" }
+              }
+            },
+            {
+              "PartName": "Event",
+              "Name": "Event",
+              "Settings": { "ContentTypePartSettings": { "Position": "3" } }
+            }
+          ]
+        },
+        {
+          "Name": "StaffMember",
+          "DisplayName": "Staff Member",
+          "Settings": {
+            "ContentTypeSettings": {
+              "Creatable": true,
+              "Draftable": true,
+              "Versionable": true,
+              "Listable": true
+            }
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "TitlePart",
+              "Name": "TitlePart",
+              "Settings": { "ContentTypePartSettings": { "Position": "0" } }
+            },
+            {
+              "PartName": "AutoroutePart",
+              "Name": "AutoroutePart",
+              "Settings": {
+                "ContentTypePartSettings": { "Position": "1" },
+                "AutoroutePartSettings": {
+                  "AllowCustomPath": true,
+                  "Pattern": "staff/{{ Model.ContentItem | display_text | slugify }}"
+                }
+              }
+            },
+            {
+              "PartName": "HtmlBodyPart",
+              "Name": "HtmlBodyPart",
+              "Settings": {
+                "ContentTypePartSettings": { "Editor": "Wysiwyg", "Position": "2" }
+              }
+            },
+            {
+              "PartName": "StaffMember",
+              "Name": "StaffMember",
+              "Settings": { "ContentTypePartSettings": { "Position": "3" } }
+            }
+          ]
+        },
+        {
+          "Name": "Facility",
+          "DisplayName": "Facility",
+          "Settings": {
+            "ContentTypeSettings": {
+              "Creatable": true,
+              "Draftable": true,
+              "Versionable": true,
+              "Listable": true
+            }
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "TitlePart",
+              "Name": "TitlePart",
+              "Settings": { "ContentTypePartSettings": { "Position": "0" } }
+            },
+            {
+              "PartName": "AutoroutePart",
+              "Name": "AutoroutePart",
+              "Settings": {
+                "ContentTypePartSettings": { "Position": "1" },
+                "AutoroutePartSettings": {
+                  "AllowCustomPath": true,
+                  "Pattern": "facilities/{{ Model.ContentItem | display_text | slugify }}"
+                }
+              }
+            },
+            {
+              "PartName": "HtmlBodyPart",
+              "Name": "HtmlBodyPart",
+              "Settings": {
+                "ContentTypePartSettings": { "Editor": "Wysiwyg", "Position": "2" }
+              }
+            },
+            {
+              "PartName": "Facility",
+              "Name": "Facility",
+              "Settings": { "ContentTypePartSettings": { "Position": "3" } }
+            }
+          ]
+        },
+        {
+          "Name": "PlantProfile",
+          "DisplayName": "Plant Profile",
+          "Settings": {
+            "ContentTypeSettings": {
+              "Creatable": true,
+              "Draftable": true,
+              "Versionable": true,
+              "Listable": true
+            }
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "TitlePart",
+              "Name": "TitlePart",
+              "Settings": { "ContentTypePartSettings": { "Position": "0" } }
+            },
+            {
+              "PartName": "AutoroutePart",
+              "Name": "AutoroutePart",
+              "Settings": {
+                "ContentTypePartSettings": { "Position": "1" },
+                "AutoroutePartSettings": {
+                  "AllowCustomPath": true,
+                  "Pattern": "plants/{{ Model.ContentItem | display_text | slugify }}"
+                }
+              }
+            },
+            {
+              "PartName": "HtmlBodyPart",
+              "Name": "HtmlBodyPart",
+              "Settings": {
+                "ContentTypePartSettings": { "Editor": "Wysiwyg", "Position": "2" }
+              }
+            },
+            {
+              "PartName": "PlantProfile",
+              "Name": "PlantProfile",
+              "Settings": { "ContentTypePartSettings": { "Position": "3" } }
+            }
+          ]
+        },
+        {
+          "Name": "NewsArticle",
+          "DisplayName": "News Article",
+          "Settings": {
+            "ContentTypeSettings": {
+              "Creatable": true,
+              "Draftable": true,
+              "Versionable": true,
+              "Listable": true
+            }
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "TitlePart",
+              "Name": "TitlePart",
+              "Settings": { "ContentTypePartSettings": { "Position": "0" } }
+            },
+            {
+              "PartName": "AutoroutePart",
+              "Name": "AutoroutePart",
+              "Settings": {
+                "ContentTypePartSettings": { "Position": "1" },
+                "AutoroutePartSettings": {
+                  "AllowCustomPath": true,
+                  "Pattern": "news/{{ Model.ContentItem | display_text | slugify }}"
+                }
+              }
+            },
+            {
+              "PartName": "MarkdownBodyPart",
+              "Name": "MarkdownBodyPart",
+              "Settings": {
+                "ContentTypePartSettings": { "Position": "2" }
+              }
+            },
+            {
+              "PartName": "NewsArticle",
+              "Name": "NewsArticle",
+              "Settings": { "ContentTypePartSettings": { "Position": "3" } }
+            }
+          ]
+        },
+        {
+          "Name": "Membership",
+          "DisplayName": "Membership",
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "TitlePart",
+              "Name": "TitlePart",
+              "Settings": { "ContentTypePartSettings": { "Position": "0" } }
+            },
+            {
+              "PartName": "Membership",
+              "Name": "Membership",
+              "Settings": { "ContentTypePartSettings": { "Position": "1" } }
+            }
+          ]
+        },
+        {
+          "Name": "Partner",
+          "DisplayName": "Partner",
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "TitlePart",
+              "Name": "TitlePart",
+              "Settings": { "ContentTypePartSettings": { "Position": "0" } }
+            },
+            {
+              "PartName": "Partner",
+              "Name": "Partner",
+              "Settings": { "ContentTypePartSettings": { "Position": "1" } }
+            }
+          ]
+        },
+        {
+          "Name": "HeroBanner",
+          "DisplayName": "Hero Banner",
+          "Settings": {
+            "ContentTypeSettings": {
+              "Draftable": true,
+              "Versionable": true,
+              "Securable": true,
+              "Stereotype": "Widget"
+            }
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "TitlePart",
+              "Name": "TitlePart",
+              "Settings": { "ContentTypePartSettings": { "Position": "0" } }
+            },
+            {
+              "PartName": "HeroBanner",
+              "Name": "HeroBanner",
+              "Settings": { "ContentTypePartSettings": { "Position": "1" } }
+            }
+          ]
+        },
+        {
+          "Name": "RawHtml",
+          "DisplayName": "Html",
+          "Settings": {
+            "ContentTypeSettings": {
+              "Draftable": true,
+              "Versionable": true,
+              "Securable": true,
+              "Stereotype": "Widget"
+            }
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "RawHtml",
+              "Name": "RawHtml",
+              "Settings": { "ContentTypePartSettings": { "Position": "0" } }
+            }
+          ]
+        },
+        {
+          "Name": "Blockquote",
+          "DisplayName": "Blockquote",
+          "Settings": {
+            "ContentTypeSettings": {
+              "Draftable": true,
+              "Versionable": true,
+              "Securable": true,
+              "Stereotype": "Widget"
+            }
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "Blockquote",
+              "Name": "Blockquote",
+              "Settings": { "ContentTypePartSettings": { "Position": "0" } }
+            }
+          ]
+        },
+        {
+          "Name": "Container",
+          "DisplayName": "Container",
+          "Settings": {
+            "ContentTypeSettings": {
+              "Draftable": true,
+              "Versionable": true,
+              "Securable": true,
+              "Stereotype": "Widget"
+            }
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "Container",
+              "Name": "Container",
+              "Settings": { "ContentTypePartSettings": { "Position": "0" } }
+            },
+            {
+              "PartName": "FlowPart",
+              "Name": "FlowPart",
+              "Settings": { "ContentTypePartSettings": { "Position": "1" } }
+            }
+          ]
+        },
+        {
+          "Name": "Image",
+          "DisplayName": "Image",
+          "Settings": {
+            "ContentTypeSettings": {
+              "Draftable": true,
+              "Versionable": true,
+              "Securable": true,
+              "Stereotype": "Widget"
+            }
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "Image",
+              "Name": "Image",
+              "Settings": { "ContentTypePartSettings": { "Position": "0" } }
+            },
+            {
+              "PartName": "TitlePart",
+              "Name": "TitlePart",
+              "Settings": { "ContentTypePartSettings": { "Position": "0" } }
+            }
+          ]
+        },
+        {
+          "Name": "Paragraph",
+          "DisplayName": "Paragraph",
+          "Settings": {
+            "ContentTypeSettings": {
+              "Draftable": true,
+              "Versionable": true,
+              "Securable": true,
+              "Stereotype": "Widget"
+            }
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "Paragraph",
+              "Name": "Paragraph",
+              "Settings": { "ContentTypePartSettings": { "Position": "0" } }
+            }
+          ]
+        },
+        {
+          "Name": "ListPage",
+          "DisplayName": "List Page",
+          "Settings": {
+            "ContentTypeSettings": {
+              "Creatable": true,
+              "Draftable": true,
+              "Versionable": true,
+              "Listable": true
+            }
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "TitlePart",
+              "Name": "TitlePart",
+              "Settings": { "ContentTypePartSettings": { "Position": "0" } }
+            },
+            {
+              "PartName": "AutoroutePart",
+              "Name": "AutoroutePart",
+              "Settings": {
+                "ContentTypePartSettings": { "Position": "1" },
+                "AutoroutePartSettings": {
+                  "AllowCustomPath": true,
+                  "Pattern": "{{ Model.ContentItem | display_text | slugify }}"
+                }
+              }
+            },
+            {
+              "PartName": "HtmlBodyPart",
+              "Name": "HtmlBodyPart",
+              "Settings": { "ContentTypePartSettings": { "Position": "2" } }
+            },
+            {
+              "PartName": "ListPart",
+              "Name": "ListPart",
+              "Settings": {
+                "ContentTypePartSettings": { "Position": "3" },
+                "ListPartSettings": {
+                  "PageSize": 12,
+                  "ContainedContentTypes": [ "Program", "Event", "StaffMember", "Facility", "PlantProfile", "NewsArticle" ]
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "ContentParts": [
+        {
+          "Name": "Program",
+          "Settings": {},
+          "ContentPartFieldDefinitionRecords": [
+            {
+              "FieldName": "MediaField",
+              "Name": "Image",
+              "Settings": {
+                "ContentPartFieldSettings": { "DisplayName": "Image", "Position": "0" },
+                "MediaFieldSettings": { "Required": true, "Multiple": false }
+              }
+            },
+            {
+              "FieldName": "TaxonomyField",
+              "Name": "Category",
+              "Settings": {
+                "ContentPartFieldSettings": { "DisplayName": "Category", "Position": "1" },
+                "TaxonomyFieldSettings": { "TaxonomyContentItemId": "[js: variables('programCategoriesId')]" }
+              }
+            },
+            {
+              "FieldName": "TaxonomyField",
+              "Name": "AgeGroup",
+              "Settings": {
+                "ContentPartFieldSettings": { "DisplayName": "Age Group", "Position": "2" },
+                "TaxonomyFieldSettings": { "TaxonomyContentItemId": "[js: variables('ageGroupsId')]" }
+              }
+            },
+            {
+              "FieldName": "TextField",
+              "Name": "Schedule",
+              "Settings": {
+                "ContentPartFieldSettings": { "DisplayName": "Schedule", "Position": "3", "Editor": "TextArea" },
+                "TextFieldSettings": { "Hint": "e.g., Mon/Wed/Fri 9:00 AM - 10:00 AM" }
+              }
+            },
+            {
+              "FieldName": "TextField",
+              "Name": "Price",
+              "Settings": {
+                "ContentPartFieldSettings": { "DisplayName": "Price", "Position": "4" },
+                "TextFieldSettings": { "Hint": "e.g., $50 per session" }
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Event",
+          "Settings": {},
+          "ContentPartFieldDefinitionRecords": [
+            {
+              "FieldName": "MediaField",
+              "Name": "Image",
+              "Settings": {
+                "ContentPartFieldSettings": { "DisplayName": "Image", "Position": "0" },
+                "MediaFieldSettings": { "Multiple": false }
+              }
+            },
+            {
+              "FieldName": "DateTimeField",
+              "Name": "EventDate",
+              "Settings": {
+                "ContentPartFieldSettings": { "DisplayName": "Event Date", "Position": "1" }
+              }
+            },
+            {
+              "FieldName": "TaxonomyField",
+              "Name": "EventType",
+              "Settings": {
+                "ContentPartFieldSettings": { "DisplayName": "Event Type", "Position": "2" },
+                "TaxonomyFieldSettings": { "TaxonomyContentItemId": "[js: variables('eventTypesId')]" }
+              }
+            },
+            {
+              "FieldName": "TextField",
+              "Name": "RegistrationUrl",
+              "Settings": {
+                "ContentPartFieldSettings": { "DisplayName": "Registration URL", "Position": "3" },
+                "TextFieldSettings": { "Hint": "URL for event registration" }
+              }
+            }
+          ]
+        },
+        {
+          "Name": "StaffMember",
+          "Settings": {},
+          "ContentPartFieldDefinitionRecords": [
+            {
+              "FieldName": "MediaField",
+              "Name": "Photo",
+              "Settings": {
+                "ContentPartFieldSettings": { "DisplayName": "Photo", "Position": "0" },
+                "MediaFieldSettings": { "Required": true, "Multiple": false }
+              }
+            },
+            {
+              "FieldName": "TextField",
+              "Name": "Role",
+              "Settings": {
+                "ContentPartFieldSettings": { "DisplayName": "Role", "Position": "1" }
+              }
+            },
+            {
+              "FieldName": "TextField",
+              "Name": "Department",
+              "Settings": {
+                "ContentPartFieldSettings": { "DisplayName": "Department", "Position": "2" }
+              }
+            },
+            {
+              "FieldName": "TextField",
+              "Name": "Email",
+              "Settings": {
+                "ContentPartFieldSettings": { "DisplayName": "Email", "Position": "3" }
+              }
+            },
+            {
+              "FieldName": "TextField",
+              "Name": "Phone",
+              "Settings": {
+                "ContentPartFieldSettings": { "DisplayName": "Phone", "Position": "4" }
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Facility",
+          "Settings": {},
+          "ContentPartFieldDefinitionRecords": [
+            {
+              "FieldName": "MediaField",
+              "Name": "Image",
+              "Settings": {
+                "ContentPartFieldSettings": { "DisplayName": "Image", "Position": "0" },
+                "MediaFieldSettings": { "Required": true, "Multiple": false }
+              }
+            },
+            {
+              "FieldName": "NumericField",
+              "Name": "Capacity",
+              "Settings": {
+                "ContentPartFieldSettings": { "DisplayName": "Capacity", "Position": "1" }
+              }
+            },
+            {
+              "FieldName": "TextField",
+              "Name": "Amenities",
+              "Settings": {
+                "ContentPartFieldSettings": { "DisplayName": "Amenities", "Position": "2", "Editor": "TextArea" },
+                "TextFieldSettings": { "Hint": "List of amenities, one per line" }
+              }
+            }
+          ]
+        },
+        {
+          "Name": "PlantProfile",
+          "Settings": {},
+          "ContentPartFieldDefinitionRecords": [
+            {
+              "FieldName": "MediaField",
+              "Name": "Image",
+              "Settings": {
+                "ContentPartFieldSettings": { "DisplayName": "Image", "Position": "0" },
+                "MediaFieldSettings": { "Required": true, "Multiple": false }
+              }
+            },
+            {
+              "FieldName": "TextField",
+              "Name": "ScientificName",
+              "Settings": {
+                "ContentPartFieldSettings": { "DisplayName": "Scientific Name", "Position": "1" },
+                "TextFieldSettings": { "Required": true }
+              }
+            },
+            {
+              "FieldName": "TaxonomyField",
+              "Name": "PlantFamily",
+              "Settings": {
+                "ContentPartFieldSettings": { "DisplayName": "Plant Family", "Position": "2" },
+                "TaxonomyFieldSettings": { "TaxonomyContentItemId": "[js: variables('plantFamiliesId')]" }
+              }
+            },
+            {
+              "FieldName": "TaxonomyField",
+              "Name": "GardenZone",
+              "Settings": {
+                "ContentPartFieldSettings": { "DisplayName": "Garden Zone", "Position": "3" },
+                "TaxonomyFieldSettings": { "TaxonomyContentItemId": "[js: variables('gardenZonesId')]" }
+              }
+            },
+            {
+              "FieldName": "TextField",
+              "Name": "BloomSeason",
+              "Settings": {
+                "ContentPartFieldSettings": { "DisplayName": "Bloom Season", "Position": "4" },
+                "TextFieldSettings": { "Hint": "e.g., Spring, Summer, Year-round" }
+              }
+            },
+            {
+              "FieldName": "TextField",
+              "Name": "CareLevel",
+              "Settings": {
+                "ContentPartFieldSettings": { "DisplayName": "Care Level", "Position": "5" },
+                "TextFieldSettings": { "Hint": "Easy, Moderate, or Expert" }
+              }
+            }
+          ]
+        },
+        {
+          "Name": "NewsArticle",
+          "Settings": {},
+          "ContentPartFieldDefinitionRecords": [
+            {
+              "FieldName": "MediaField",
+              "Name": "Image",
+              "Settings": {
+                "ContentPartFieldSettings": { "DisplayName": "Image", "Position": "0" },
+                "MediaFieldSettings": { "Multiple": false }
+              }
+            },
+            {
+              "FieldName": "TextField",
+              "Name": "Summary",
+              "Settings": {
+                "ContentPartFieldSettings": { "DisplayName": "Summary", "Position": "1", "Editor": "TextArea" },
+                "TextFieldSettings": { "Hint": "Brief summary for listings" }
+              }
+            },
+            {
+              "FieldName": "TaxonomyField",
+              "Name": "Tags",
+              "Settings": {
+                "ContentPartFieldSettings": { "DisplayName": "Tags", "Editor": "Tags", "DisplayMode": "Tags", "Position": "2" },
+                "TaxonomyFieldSettings": { "TaxonomyContentItemId": "[js: variables('newsTagsId')]" },
+                "TaxonomyFieldTagsEditorSettings": {}
+              }
+            }
+          ]
+        },
+        {
+          "Name": "GardenZone",
+          "Settings": {},
+          "ContentPartFieldDefinitionRecords": [
+            {
+              "FieldName": "MediaField",
+              "Name": "Image",
+              "Settings": {
+                "ContentPartFieldSettings": { "DisplayName": "Image", "Position": "0" },
+                "MediaFieldSettings": { "Multiple": false }
+              }
+            },
+            {
+              "FieldName": "TextField",
+              "Name": "MapLocation",
+              "Settings": {
+                "ContentPartFieldSettings": { "DisplayName": "Map Location", "Position": "1" },
+                "TextFieldSettings": { "Hint": "Description of location within the garden" }
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Membership",
+          "Settings": {},
+          "ContentPartFieldDefinitionRecords": [
+            {
+              "FieldName": "TextField",
+              "Name": "Price",
+              "Settings": {
+                "ContentPartFieldSettings": { "DisplayName": "Price", "Position": "0" },
+                "TextFieldSettings": { "Hint": "e.g., $30" }
+              }
+            },
+            {
+              "FieldName": "HtmlField",
+              "Name": "Features",
+              "Settings": {
+                "ContentPartFieldSettings": { "DisplayName": "Features", "Position": "1", "Editor": "Wysiwyg" }
+              }
+            },
+            {
+              "FieldName": "BooleanField",
+              "Name": "Highlight",
+              "Settings": {
+                "ContentPartFieldSettings": { "DisplayName": "Featured Plan", "Position": "2" },
+                "BooleanFieldSettings": { "Hint": "Highlight this as the recommended plan", "Label": "Featured" }
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Partner",
+          "Settings": {},
+          "ContentPartFieldDefinitionRecords": [
+            {
+              "FieldName": "MediaField",
+              "Name": "Logo",
+              "Settings": {
+                "ContentPartFieldSettings": { "DisplayName": "Logo", "Position": "0" },
+                "MediaFieldSettings": { "Required": true, "Multiple": false }
+              }
+            },
+            {
+              "FieldName": "TextField",
+              "Name": "Url",
+              "Settings": {
+                "ContentPartFieldSettings": { "DisplayName": "Website URL", "Position": "1" }
+              }
+            }
+          ]
+        },
+        {
+          "Name": "HeroBanner",
+          "Settings": {},
+          "ContentPartFieldDefinitionRecords": [
+            {
+              "FieldName": "MediaField",
+              "Name": "BackgroundImage",
+              "Settings": {
+                "ContentPartFieldSettings": { "DisplayName": "Background Image", "Position": "0" },
+                "MediaFieldSettings": { "Multiple": false }
+              }
+            },
+            {
+              "FieldName": "TextField",
+              "Name": "Subtitle",
+              "Settings": {
+                "ContentPartFieldSettings": { "DisplayName": "Subtitle", "Position": "1" }
+              }
+            },
+            {
+              "FieldName": "TextField",
+              "Name": "CtaText",
+              "Settings": {
+                "ContentPartFieldSettings": { "DisplayName": "Button Text", "Position": "2" }
+              }
+            },
+            {
+              "FieldName": "TextField",
+              "Name": "CtaUrl",
+              "Settings": {
+                "ContentPartFieldSettings": { "DisplayName": "Button URL", "Position": "3" }
+              }
+            }
+          ]
+        },
+        {
+          "Name": "RawHtml",
+          "Settings": {},
+          "ContentPartFieldDefinitionRecords": [
+            {
+              "FieldName": "HtmlField",
+              "Name": "Content",
+              "Settings": {
+                "ContentPartFieldSettings": { "DisplayName": "Content", "Editor": "Multiline", "Position": "0" }
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Blockquote",
+          "Settings": {},
+          "ContentPartFieldDefinitionRecords": [
+            {
+              "FieldName": "TextField",
+              "Name": "Quote",
+              "Settings": {
+                "ContentPartFieldSettings": { "DisplayName": "Quote", "Position": "0", "Editor": "TextArea" }
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Image",
+          "Settings": {
+            "ContentPartSettings": { "Attachable": true }
+          },
+          "ContentPartFieldDefinitionRecords": [
+            {
+              "FieldName": "MediaField",
+              "Name": "Media",
+              "Settings": {
+                "ContentPartFieldSettings": { "DisplayName": "Image", "Position": "0" },
+                "MediaFieldSettings": { "Required": true, "Multiple": false }
+              }
+            },
+            {
+              "FieldName": "TextField",
+              "Name": "Caption",
+              "Settings": {
+                "ContentPartFieldSettings": { "DisplayName": "Caption", "Position": "1" },
+                "TextFieldSettings": { "Hint": "A description of the image used as title or alternate text" }
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Paragraph",
+          "Settings": {},
+          "ContentPartFieldDefinitionRecords": [
+            {
+              "FieldName": "HtmlField",
+              "Name": "Content",
+              "Settings": {
+                "ContentPartFieldSettings": { "DisplayName": "Content", "Position": "0", "Editor": "Wysiwyg" }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "content",
+      "Data": [
+        {
+          "ContentItemId": "[js: uuid()]",
+          "ContentType": "RawHtml",
+          "DisplayText": "Footer",
+          "Latest": true,
+          "Published": true,
+          "Owner": "[js: parameters('AdminUserId')]",
+          "Author": "[js: parameters('AdminUsername')]",
+          "LayerMetadata": {
+            "Layer": "Always",
+            "Zone": "Footer",
+            "RenderTitle": false,
+            "Position": 10
+          },
+          "RawHtml": {
+            "Content": {
+              "Html": "[file:text('Snippets/footer.html')]"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "layers",
+      "Layers": [
+        {
+          "Name": "Always",
+          "LayerRule": {
+            "ConditionId": "[js: uuid()]",
+            "Conditions": [
+              {
+                "$type": "OrchardCore.Rules.Models.BooleanCondition, OrchardCore.Rules",
+                "Name": "BooleanCondition",
+                "Value": true,
+                "ConditionId": "[js: uuid()]"
+              }
+            ]
+          },
+          "Description": "The widgets in this layer are displayed on any page of this site."
+        },
+        {
+          "Name": "Homepage",
+          "LayerRule": {
+            "ConditionId": "[js: uuid()]",
+            "Conditions": [
+              {
+                "$type": "OrchardCore.Rules.Models.HomepageCondition, OrchardCore.Rules",
+                "Name": "HomepageCondition",
+                "Value": true,
+                "ConditionId": "[js: uuid()]"
+              }
+            ]
+          },
+          "Description": "The widgets in this layer are only displayed on the homepage."
+        }
+      ]
+    },
+    {
+      "name": "media",
+      "Files": [
+        { "TargetPath": "hero/community-center.svg", "SourcePath": "../wwwroot/assets/img/hero/community-center.svg" },
+        { "TargetPath": "hero/botanical-garden.svg", "SourcePath": "../wwwroot/assets/img/hero/botanical-garden.svg" },
+        { "TargetPath": "hero/pool.svg", "SourcePath": "../wwwroot/assets/img/hero/pool.svg" },
+        { "TargetPath": "hero/fitness.svg", "SourcePath": "../wwwroot/assets/img/hero/fitness.svg" },
+        { "TargetPath": "programs/swim-lessons.svg", "SourcePath": "../wwwroot/assets/img/programs/swim-lessons.svg" },
+        { "TargetPath": "programs/yoga.svg", "SourcePath": "../wwwroot/assets/img/programs/yoga.svg" },
+        { "TargetPath": "programs/youth-basketball.svg", "SourcePath": "../wwwroot/assets/img/programs/youth-basketball.svg" },
+        { "TargetPath": "programs/art-class.svg", "SourcePath": "../wwwroot/assets/img/programs/art-class.svg" },
+        { "TargetPath": "programs/outdoor-recreation.svg", "SourcePath": "../wwwroot/assets/img/programs/outdoor-recreation.svg" },
+        { "TargetPath": "programs/senior-fitness.svg", "SourcePath": "../wwwroot/assets/img/programs/senior-fitness.svg" },
+        { "TargetPath": "events/summer-camp.svg", "SourcePath": "../wwwroot/assets/img/events/summer-camp.svg" },
+        { "TargetPath": "events/garden-tour.svg", "SourcePath": "../wwwroot/assets/img/events/garden-tour.svg" },
+        { "TargetPath": "events/community-bbq.svg", "SourcePath": "../wwwroot/assets/img/events/community-bbq.svg" },
+        { "TargetPath": "events/fundraiser-gala.svg", "SourcePath": "../wwwroot/assets/img/events/fundraiser-gala.svg" },
+        { "TargetPath": "plants/rose.svg", "SourcePath": "../wwwroot/assets/img/plants/rose.svg" },
+        { "TargetPath": "plants/fern.svg", "SourcePath": "../wwwroot/assets/img/plants/fern.svg" },
+        { "TargetPath": "plants/succulent.svg", "SourcePath": "../wwwroot/assets/img/plants/succulent.svg" },
+        { "TargetPath": "plants/herb.svg", "SourcePath": "../wwwroot/assets/img/plants/herb.svg" },
+        { "TargetPath": "plants/orchid.svg", "SourcePath": "../wwwroot/assets/img/plants/orchid.svg" },
+        { "TargetPath": "plants/oak-tree.svg", "SourcePath": "../wwwroot/assets/img/plants/oak-tree.svg" },
+        { "TargetPath": "facilities/pool.svg", "SourcePath": "../wwwroot/assets/img/facilities/pool.svg" },
+        { "TargetPath": "facilities/gymnasium.svg", "SourcePath": "../wwwroot/assets/img/facilities/gymnasium.svg" },
+        { "TargetPath": "facilities/studio.svg", "SourcePath": "../wwwroot/assets/img/facilities/studio.svg" },
+        { "TargetPath": "facilities/outdoor-fields.svg", "SourcePath": "../wwwroot/assets/img/facilities/outdoor-fields.svg" },
+        { "TargetPath": "facilities/conservatory.svg", "SourcePath": "../wwwroot/assets/img/facilities/conservatory.svg" },
+        { "TargetPath": "staff/director.svg", "SourcePath": "../wwwroot/assets/img/staff/director.svg" },
+        { "TargetPath": "staff/fitness-instructor.svg", "SourcePath": "../wwwroot/assets/img/staff/fitness-instructor.svg" },
+        { "TargetPath": "staff/swim-coach.svg", "SourcePath": "../wwwroot/assets/img/staff/swim-coach.svg" },
+        { "TargetPath": "staff/garden-curator.svg", "SourcePath": "../wwwroot/assets/img/staff/garden-curator.svg" },
+        { "TargetPath": "staff/youth-coordinator.svg", "SourcePath": "../wwwroot/assets/img/staff/youth-coordinator.svg" },
+        { "TargetPath": "staff/events-manager.svg", "SourcePath": "../wwwroot/assets/img/staff/events-manager.svg" },
+        { "TargetPath": "zones/rose-garden.svg", "SourcePath": "../wwwroot/assets/img/zones/rose-garden.svg" },
+        { "TargetPath": "zones/tropical-conservatory.svg", "SourcePath": "../wwwroot/assets/img/zones/tropical-conservatory.svg" },
+        { "TargetPath": "zones/native-woodland.svg", "SourcePath": "../wwwroot/assets/img/zones/native-woodland.svg" },
+        { "TargetPath": "zones/herb-garden.svg", "SourcePath": "../wwwroot/assets/img/zones/herb-garden.svg" },
+        { "TargetPath": "zones/children-discovery.svg", "SourcePath": "../wwwroot/assets/img/zones/children-discovery.svg" },
+        { "TargetPath": "sponsors/sponsor-1.svg", "SourcePath": "../wwwroot/assets/img/sponsors/sponsor-1.svg" },
+        { "TargetPath": "sponsors/sponsor-2.svg", "SourcePath": "../wwwroot/assets/img/sponsors/sponsor-2.svg" },
+        { "TargetPath": "sponsors/sponsor-3.svg", "SourcePath": "../wwwroot/assets/img/sponsors/sponsor-3.svg" },
+        { "TargetPath": "sponsors/sponsor-4.svg", "SourcePath": "../wwwroot/assets/img/sponsors/sponsor-4.svg" },
+        { "TargetPath": "news/announcement.svg", "SourcePath": "../wwwroot/assets/img/news/announcement.svg" },
+        { "TargetPath": "news/garden-news.svg", "SourcePath": "../wwwroot/assets/img/news/garden-news.svg" },
+        { "TargetPath": "news/program-update.svg", "SourcePath": "../wwwroot/assets/img/news/program-update.svg" }
+      ]
+    },
+    {
+      "name": "Content",
+      "data": [
+        {
+          "ContentItemId": "[js: variables('programCategoriesId')]",
+          "ContentItemVersionId": "[js:uuid()]",
+          "ContentType": "Taxonomy",
+          "DisplayText": "Program Categories",
+          "Latest": true,
+          "Published": true,
+          "Owner": "[js: parameters('AdminUserId')]",
+          "Author": "[js: parameters('AdminUsername')]",
+          "TitlePart": { "Title": "Program Categories" },
+          "AliasPart": { "Alias": "program-categories" },
+          "AutoroutePart": { "Path": "program-categories" },
+          "TaxonomyPart": {
+            "Terms": [
+              { "ContentItemId": "[js: variables('catAquaticsId')]", "ContentType": "Term", "DisplayText": "Aquatics", "TitlePart": { "Title": "Aquatics" }, "TermPart": { "TaxonomyContentItemId": "[js: variables('programCategoriesId')]" } },
+              { "ContentItemId": "[js: variables('catFitnessId')]", "ContentType": "Term", "DisplayText": "Fitness", "TitlePart": { "Title": "Fitness" }, "TermPart": { "TaxonomyContentItemId": "[js: variables('programCategoriesId')]" } },
+              { "ContentItemId": "[js: variables('catYouthId')]", "ContentType": "Term", "DisplayText": "Youth Programs", "TitlePart": { "Title": "Youth Programs" }, "TermPart": { "TaxonomyContentItemId": "[js: variables('programCategoriesId')]" } },
+              { "ContentItemId": "[js: variables('catArtsId')]", "ContentType": "Term", "DisplayText": "Arts & Culture", "TitlePart": { "Title": "Arts & Culture" }, "TermPart": { "TaxonomyContentItemId": "[js: variables('programCategoriesId')]" } },
+              { "ContentItemId": "[js: variables('catOutdoorId')]", "ContentType": "Term", "DisplayText": "Outdoor Recreation", "TitlePart": { "Title": "Outdoor Recreation" }, "TermPart": { "TaxonomyContentItemId": "[js: variables('programCategoriesId')]" } }
+            ],
+            "TermContentType": "Term"
+          }
+        },
+        {
+          "ContentItemId": "[js: variables('eventTypesId')]",
+          "ContentItemVersionId": "[js:uuid()]",
+          "ContentType": "Taxonomy",
+          "DisplayText": "Event Types",
+          "Latest": true,
+          "Published": true,
+          "Owner": "[js: parameters('AdminUserId')]",
+          "Author": "[js: parameters('AdminUsername')]",
+          "TitlePart": { "Title": "Event Types" },
+          "AliasPart": { "Alias": "event-types" },
+          "AutoroutePart": { "Path": "event-types" },
+          "TaxonomyPart": {
+            "Terms": [
+              { "ContentItemId": "[js: variables('evtClassId')]", "ContentType": "Term", "DisplayText": "Class", "TitlePart": { "Title": "Class" }, "TermPart": { "TaxonomyContentItemId": "[js: variables('eventTypesId')]" } },
+              { "ContentItemId": "[js: variables('evtWorkshopId')]", "ContentType": "Term", "DisplayText": "Workshop", "TitlePart": { "Title": "Workshop" }, "TermPart": { "TaxonomyContentItemId": "[js: variables('eventTypesId')]" } },
+              { "ContentItemId": "[js: variables('evtCampId')]", "ContentType": "Term", "DisplayText": "Camp", "TitlePart": { "Title": "Camp" }, "TermPart": { "TaxonomyContentItemId": "[js: variables('eventTypesId')]" } },
+              { "ContentItemId": "[js: variables('evtCommunityId')]", "ContentType": "Term", "DisplayText": "Community Event", "TitlePart": { "Title": "Community Event" }, "TermPart": { "TaxonomyContentItemId": "[js: variables('eventTypesId')]" } },
+              { "ContentItemId": "[js: variables('evtGardenTourId')]", "ContentType": "Term", "DisplayText": "Garden Tour", "TitlePart": { "Title": "Garden Tour" }, "TermPart": { "TaxonomyContentItemId": "[js: variables('eventTypesId')]" } },
+              { "ContentItemId": "[js: variables('evtFundraiserId')]", "ContentType": "Term", "DisplayText": "Fundraiser", "TitlePart": { "Title": "Fundraiser" }, "TermPart": { "TaxonomyContentItemId": "[js: variables('eventTypesId')]" } }
+            ],
+            "TermContentType": "Term"
+          }
+        },
+        {
+          "ContentItemId": "[js: variables('plantFamiliesId')]",
+          "ContentItemVersionId": "[js:uuid()]",
+          "ContentType": "Taxonomy",
+          "DisplayText": "Plant Families",
+          "Latest": true,
+          "Published": true,
+          "Owner": "[js: parameters('AdminUserId')]",
+          "Author": "[js: parameters('AdminUsername')]",
+          "TitlePart": { "Title": "Plant Families" },
+          "AliasPart": { "Alias": "plant-families" },
+          "AutoroutePart": { "Path": "plant-families" },
+          "TaxonomyPart": {
+            "Terms": [
+              { "ContentItemId": "[js: variables('pfFernsId')]", "ContentType": "Term", "DisplayText": "Ferns & Mosses", "TitlePart": { "Title": "Ferns & Mosses" }, "TermPart": { "TaxonomyContentItemId": "[js: variables('plantFamiliesId')]" } },
+              { "ContentItemId": "[js: variables('pfSucculentsId')]", "ContentType": "Term", "DisplayText": "Succulents", "TitlePart": { "Title": "Succulents" }, "TermPart": { "TaxonomyContentItemId": "[js: variables('plantFamiliesId')]" } },
+              { "ContentItemId": "[js: variables('pfFloweringId')]", "ContentType": "Term", "DisplayText": "Flowering Plants", "TitlePart": { "Title": "Flowering Plants" }, "TermPart": { "TaxonomyContentItemId": "[js: variables('plantFamiliesId')]" } },
+              { "ContentItemId": "[js: variables('pfTreesId')]", "ContentType": "Term", "DisplayText": "Trees & Shrubs", "TitlePart": { "Title": "Trees & Shrubs" }, "TermPart": { "TaxonomyContentItemId": "[js: variables('plantFamiliesId')]" } },
+              { "ContentItemId": "[js: variables('pfHerbsId')]", "ContentType": "Term", "DisplayText": "Herbs & Edibles", "TitlePart": { "Title": "Herbs & Edibles" }, "TermPart": { "TaxonomyContentItemId": "[js: variables('plantFamiliesId')]" } }
+            ],
+            "TermContentType": "Term"
+          }
+        },
+        {
+          "ContentItemId": "[js: variables('gardenZonesId')]",
+          "ContentItemVersionId": "[js:uuid()]",
+          "ContentType": "Taxonomy",
+          "DisplayText": "Garden Zones",
+          "Latest": true,
+          "Published": true,
+          "Owner": "[js: parameters('AdminUserId')]",
+          "Author": "[js: parameters('AdminUsername')]",
+          "TitlePart": { "Title": "Garden Zones" },
+          "AliasPart": { "Alias": "garden-zones" },
+          "AutoroutePart": { "Path": "garden-zones" },
+          "TaxonomyPart": {
+            "Terms": [
+              { "ContentItemId": "[js: variables('gzRoseId')]", "ContentType": "Term", "DisplayText": "Rose Garden", "TitlePart": { "Title": "Rose Garden" }, "TermPart": { "TaxonomyContentItemId": "[js: variables('gardenZonesId')]" } },
+              { "ContentItemId": "[js: variables('gzTropicalId')]", "ContentType": "Term", "DisplayText": "Tropical Conservatory", "TitlePart": { "Title": "Tropical Conservatory" }, "TermPart": { "TaxonomyContentItemId": "[js: variables('gardenZonesId')]" } },
+              { "ContentItemId": "[js: variables('gzWoodlandId')]", "ContentType": "Term", "DisplayText": "Native Woodland", "TitlePart": { "Title": "Native Woodland" }, "TermPart": { "TaxonomyContentItemId": "[js: variables('gardenZonesId')]" } },
+              { "ContentItemId": "[js: variables('gzHerbId')]", "ContentType": "Term", "DisplayText": "Herb Garden", "TitlePart": { "Title": "Herb Garden" }, "TermPart": { "TaxonomyContentItemId": "[js: variables('gardenZonesId')]" } },
+              { "ContentItemId": "[js: variables('gzChildrenId')]", "ContentType": "Term", "DisplayText": "Children's Discovery Garden", "TitlePart": { "Title": "Children's Discovery Garden" }, "TermPart": { "TaxonomyContentItemId": "[js: variables('gardenZonesId')]" } }
+            ],
+            "TermContentType": "Term"
+          }
+        },
+        {
+          "ContentItemId": "[js: variables('ageGroupsId')]",
+          "ContentItemVersionId": "[js:uuid()]",
+          "ContentType": "Taxonomy",
+          "DisplayText": "Age Groups",
+          "Latest": true,
+          "Published": true,
+          "Owner": "[js: parameters('AdminUserId')]",
+          "Author": "[js: parameters('AdminUsername')]",
+          "TitlePart": { "Title": "Age Groups" },
+          "AliasPart": { "Alias": "age-groups" },
+          "AutoroutePart": { "Path": "age-groups" },
+          "TaxonomyPart": {
+            "Terms": [
+              { "ContentItemId": "[js: variables('agToddlerId')]", "ContentType": "Term", "DisplayText": "Toddler (0-3)", "TitlePart": { "Title": "Toddler (0-3)" }, "TermPart": { "TaxonomyContentItemId": "[js: variables('ageGroupsId')]" } },
+              { "ContentItemId": "[js: variables('agYouthId')]", "ContentType": "Term", "DisplayText": "Youth (4-12)", "TitlePart": { "Title": "Youth (4-12)" }, "TermPart": { "TaxonomyContentItemId": "[js: variables('ageGroupsId')]" } },
+              { "ContentItemId": "[js: variables('agTeenId')]", "ContentType": "Term", "DisplayText": "Teen (13-17)", "TitlePart": { "Title": "Teen (13-17)" }, "TermPart": { "TaxonomyContentItemId": "[js: variables('ageGroupsId')]" } },
+              { "ContentItemId": "[js: variables('agAdultId')]", "ContentType": "Term", "DisplayText": "Adult (18+)", "TitlePart": { "Title": "Adult (18+)" }, "TermPart": { "TaxonomyContentItemId": "[js: variables('ageGroupsId')]" } },
+              { "ContentItemId": "[js: variables('agSeniorId')]", "ContentType": "Term", "DisplayText": "Senior (55+)", "TitlePart": { "Title": "Senior (55+)" }, "TermPart": { "TaxonomyContentItemId": "[js: variables('ageGroupsId')]" } },
+              { "ContentItemId": "[js: variables('agAllAgesId')]", "ContentType": "Term", "DisplayText": "All Ages", "TitlePart": { "Title": "All Ages" }, "TermPart": { "TaxonomyContentItemId": "[js: variables('ageGroupsId')]" } }
+            ],
+            "TermContentType": "Term"
+          }
+        },
+        {
+          "ContentItemId": "[js: variables('newsTagsId')]",
+          "ContentItemVersionId": "[js:uuid()]",
+          "ContentType": "Taxonomy",
+          "DisplayText": "News Tags",
+          "Latest": true,
+          "Published": true,
+          "Owner": "[js: parameters('AdminUserId')]",
+          "Author": "[js: parameters('AdminUsername')]",
+          "TitlePart": { "Title": "News Tags" },
+          "AliasPart": { "Alias": "news-tags" },
+          "AutoroutePart": { "Path": "news-tags" },
+          "TaxonomyPart": {
+            "Terms": [
+              { "ContentItemId": "[js: variables('ntAnnouncementsId')]", "ContentType": "Term", "DisplayText": "Announcements", "TitlePart": { "Title": "Announcements" }, "TermPart": { "TaxonomyContentItemId": "[js: variables('newsTagsId')]" } },
+              { "ContentItemId": "[js: variables('ntProgramsId')]", "ContentType": "Term", "DisplayText": "Programs", "TitlePart": { "Title": "Programs" }, "TermPart": { "TaxonomyContentItemId": "[js: variables('newsTagsId')]" } },
+              { "ContentItemId": "[js: variables('ntGardenId')]", "ContentType": "Term", "DisplayText": "Garden", "TitlePart": { "Title": "Garden" }, "TermPart": { "TaxonomyContentItemId": "[js: variables('newsTagsId')]" } },
+              { "ContentItemId": "[js: variables('ntEventsId')]", "ContentType": "Term", "DisplayText": "Events", "TitlePart": { "Title": "Events" }, "TermPart": { "TaxonomyContentItemId": "[js: variables('newsTagsId')]" } },
+              { "ContentItemId": "[js: variables('ntCommunityId')]", "ContentType": "Term", "DisplayText": "Community", "TitlePart": { "Title": "Community" }, "TermPart": { "TaxonomyContentItemId": "[js: variables('newsTagsId')]" } }
+            ],
+            "TermContentType": "Term"
+          }
+        },
+        {
+          "ContentItemId": "[js: variables('menuContentItemId')]",
+          "ContentItemVersionId": "[js:uuid()]",
+          "ContentType": "Menu",
+          "DisplayText": "Main Menu",
+          "Latest": true,
+          "Published": true,
+          "Owner": "[js: parameters('AdminUserId')]",
+          "Author": "[js: parameters('AdminUsername')]",
+          "MenuPart": {},
+          "TitlePart": { "Title": "Main Menu" },
+          "MenuItemsListPart": {
+            "MenuItems": [
+              { "ContentType": "LinkMenuItem", "ContentItemId": "[js:uuid()]", "DisplayText": "Home", "LinkMenuItemPart": { "Name": "Home", "Url": "~/" } },
+              { "ContentType": "LinkMenuItem", "ContentItemId": "[js:uuid()]", "DisplayText": "Programs", "LinkMenuItemPart": { "Name": "Programs", "Url": "~/programs" },
+                "MenuItemsListPart": { "MenuItems": [
+                  { "ContentType": "LinkMenuItem", "ContentItemId": "[js:uuid()]", "DisplayText": "All Programs", "LinkMenuItemPart": { "Name": "All Programs", "Url": "~/programs" } },
+                  { "ContentType": "LinkMenuItem", "ContentItemId": "[js:uuid()]", "DisplayText": "Aquatics", "LinkMenuItemPart": { "Name": "Aquatics", "Url": "~/program-categories/aquatics" } },
+                  { "ContentType": "LinkMenuItem", "ContentItemId": "[js:uuid()]", "DisplayText": "Fitness", "LinkMenuItemPart": { "Name": "Fitness", "Url": "~/program-categories/fitness" } },
+                  { "ContentType": "LinkMenuItem", "ContentItemId": "[js:uuid()]", "DisplayText": "Youth", "LinkMenuItemPart": { "Name": "Youth", "Url": "~/program-categories/youth-programs" } }
+                ]}
+              },
+              { "ContentType": "LinkMenuItem", "ContentItemId": "[js:uuid()]", "DisplayText": "Events", "LinkMenuItemPart": { "Name": "Events", "Url": "~/events" } },
+              { "ContentType": "LinkMenuItem", "ContentItemId": "[js:uuid()]", "DisplayText": "Botanical Garden", "LinkMenuItemPart": { "Name": "Botanical Garden", "Url": "~/botanical-garden" },
+                "MenuItemsListPart": { "MenuItems": [
+                  { "ContentType": "LinkMenuItem", "ContentItemId": "[js:uuid()]", "DisplayText": "Garden Home", "LinkMenuItemPart": { "Name": "Garden Home", "Url": "~/botanical-garden" } },
+                  { "ContentType": "LinkMenuItem", "ContentItemId": "[js:uuid()]", "DisplayText": "Plant Database", "LinkMenuItemPart": { "Name": "Plant Database", "Url": "~/plants" } },
+                  { "ContentType": "LinkMenuItem", "ContentItemId": "[js:uuid()]", "DisplayText": "Garden Zones", "LinkMenuItemPart": { "Name": "Garden Zones", "Url": "~/garden-zones" } }
+                ]}
+              },
+              { "ContentType": "LinkMenuItem", "ContentItemId": "[js:uuid()]", "DisplayText": "Facilities", "LinkMenuItemPart": { "Name": "Facilities", "Url": "~/facilities" } },
+              { "ContentType": "LinkMenuItem", "ContentItemId": "[js:uuid()]", "DisplayText": "About", "LinkMenuItemPart": { "Name": "About", "Url": "~/about" },
+                "MenuItemsListPart": { "MenuItems": [
+                  { "ContentType": "LinkMenuItem", "ContentItemId": "[js:uuid()]", "DisplayText": "About Us", "LinkMenuItemPart": { "Name": "About Us", "Url": "~/about" } },
+                  { "ContentType": "LinkMenuItem", "ContentItemId": "[js:uuid()]", "DisplayText": "Staff", "LinkMenuItemPart": { "Name": "Staff", "Url": "~/staff" } },
+                  { "ContentType": "LinkMenuItem", "ContentItemId": "[js:uuid()]", "DisplayText": "News", "LinkMenuItemPart": { "Name": "News", "Url": "~/news" } }
+                ]}
+              },
+              { "ContentType": "LinkMenuItem", "ContentItemId": "[js:uuid()]", "DisplayText": "Contact", "LinkMenuItemPart": { "Name": "Contact", "Url": "~/contact" } }
+            ]
+          },
+          "AliasPart": { "Alias": "main-menu" }
+        },
+        {
+          "ContentItemId": "[js: variables('programListId')]",
+          "ContentItemVersionId": "[js:uuid()]",
+          "ContentType": "ListPage",
+          "DisplayText": "Programs",
+          "Latest": true,
+          "Published": true,
+          "Owner": "[js: parameters('AdminUserId')]",
+          "Author": "[js: parameters('AdminUsername')]",
+          "TitlePart": { "Title": "Programs" },
+          "AutoroutePart": { "Path": "programs" },
+          "HtmlBodyPart": { "Html": "<p>Discover activities for every age and interest at our community recreation center.</p>" }
+        },
+        {
+          "ContentItemId": "[js: variables('eventListId')]",
+          "ContentItemVersionId": "[js:uuid()]",
+          "ContentType": "ListPage",
+          "DisplayText": "Events",
+          "Latest": true,
+          "Published": true,
+          "Owner": "[js: parameters('AdminUserId')]",
+          "Author": "[js: parameters('AdminUsername')]",
+          "TitlePart": { "Title": "Events" },
+          "AutoroutePart": { "Path": "events" },
+          "HtmlBodyPart": { "Html": "<p>Join us for fun community activities, workshops, and celebrations.</p>" }
+        },
+        {
+          "ContentItemId": "[js: variables('facilityListId')]",
+          "ContentItemVersionId": "[js:uuid()]",
+          "ContentType": "ListPage",
+          "DisplayText": "Facilities",
+          "Latest": true,
+          "Published": true,
+          "Owner": "[js: parameters('AdminUserId')]",
+          "Author": "[js: parameters('AdminUsername')]",
+          "TitlePart": { "Title": "Facilities" },
+          "AutoroutePart": { "Path": "facilities" },
+          "HtmlBodyPart": { "Html": "<p>Our state-of-the-art facilities are designed for recreation, wellness, and community gatherings.</p>" }
+        },
+        {
+          "ContentItemId": "[js: variables('staffListId')]",
+          "ContentItemVersionId": "[js:uuid()]",
+          "ContentType": "ListPage",
+          "DisplayText": "Staff",
+          "Latest": true,
+          "Published": true,
+          "Owner": "[js: parameters('AdminUserId')]",
+          "Author": "[js: parameters('AdminUsername')]",
+          "TitlePart": { "Title": "Our Staff" },
+          "AutoroutePart": { "Path": "staff" },
+          "HtmlBodyPart": { "Html": "<p>Meet the dedicated team behind Greenfield Community Recreation Center & Botanical Garden.</p>" }
+        },
+        {
+          "ContentItemId": "[js: variables('plantListId')]",
+          "ContentItemVersionId": "[js:uuid()]",
+          "ContentType": "ListPage",
+          "DisplayText": "Plants",
+          "Latest": true,
+          "Published": true,
+          "Owner": "[js: parameters('AdminUserId')]",
+          "Author": "[js: parameters('AdminUsername')]",
+          "TitlePart": { "Title": "Plant Database" },
+          "AutoroutePart": { "Path": "plants" },
+          "HtmlBodyPart": { "Html": "<p>Explore the diverse plant species in our botanical garden collection.</p>" }
+        },
+        {
+          "ContentItemId": "[js: variables('newsListId')]",
+          "ContentItemVersionId": "[js:uuid()]",
+          "ContentType": "ListPage",
+          "DisplayText": "News",
+          "Latest": true,
+          "Published": true,
+          "Owner": "[js: parameters('AdminUserId')]",
+          "Author": "[js: parameters('AdminUsername')]",
+          "TitlePart": { "Title": "News & Updates" },
+          "AutoroutePart": { "Path": "news" },
+          "HtmlBodyPart": { "Html": "<p>Stay up to date with the latest from our community center and botanical garden.</p>" }
+        },
+        {
+          "ContentItemId": "[js: variables('facilityPoolId')]",
+          "ContentItemVersionId": "[js:uuid()]",
+          "ContentType": "Facility",
+          "DisplayText": "Olympic Pool",
+          "ContainedPart": { "ListContentItemId": "[js: variables('facilityListId')]", "Order": 0 },
+          "Latest": true,
+          "Published": true,
+          "Owner": "[js: parameters('AdminUserId')]",
+          "Author": "[js: parameters('AdminUsername')]",
+          "TitlePart": { "Title": "Olympic Pool" },
+          "AutoroutePart": { "Path": "facilities/olympic-pool" },
+          "Facility": { "Image": { "Paths": [ "/facilities/pool.svg" ] }, "Capacity": { "Value": 200 }, "Amenities": { "Text": "50m lap pool\nFamily splash area\nLifeguard on duty\nLocker rooms\nSwim equipment rental" } },
+          "HtmlBodyPart": { "Html": "<p>Our state-of-the-art Olympic Pool features a 50-meter lap pool with 8 lanes, perfect for competitive swimming and fitness laps. The adjoining family splash area offers a zero-depth entry pool with water features for younger swimmers.</p><p>The facility includes heated changing rooms, equipment rental, and certified lifeguards on duty during all operating hours.</p>" }
+        },
+        {
+          "ContentItemId": "[js: variables('facilityGymId')]",
+          "ContentItemVersionId": "[js:uuid()]",
+          "ContentType": "Facility",
+          "DisplayText": "Main Gymnasium",
+          "ContainedPart": { "ListContentItemId": "[js: variables('facilityListId')]", "Order": 1 },
+          "Latest": true,
+          "Published": true,
+          "Owner": "[js: parameters('AdminUserId')]",
+          "Author": "[js: parameters('AdminUsername')]",
+          "TitlePart": { "Title": "Main Gymnasium" },
+          "AutoroutePart": { "Path": "facilities/main-gymnasium" },
+          "Facility": { "Image": { "Paths": [ "/facilities/gymnasium.svg" ] }, "Capacity": { "Value": 500 }, "Amenities": { "Text": "Full-size basketball court\nVolleyball nets\nBleacher seating\nScoreboard\nStorage lockers" } },
+          "HtmlBodyPart": { "Html": "<p>The Main Gymnasium is a versatile indoor sports facility featuring a regulation basketball court that converts to two volleyball courts. With seating for 500 spectators, it hosts our youth basketball leagues, community volleyball nights, and special events throughout the year.</p>" }
+        },
+        {
+          "ContentItemId": "[js: variables('facilityStudioId')]",
+          "ContentItemVersionId": "[js:uuid()]",
+          "ContentType": "Facility",
+          "DisplayText": "Wellness Studio",
+          "ContainedPart": { "ListContentItemId": "[js: variables('facilityListId')]", "Order": 2 },
+          "Latest": true,
+          "Published": true,
+          "Owner": "[js: parameters('AdminUserId')]",
+          "Author": "[js: parameters('AdminUsername')]",
+          "TitlePart": { "Title": "Wellness Studio" },
+          "AutoroutePart": { "Path": "facilities/wellness-studio" },
+          "Facility": { "Image": { "Paths": [ "/facilities/studio.svg" ] }, "Capacity": { "Value": 30 }, "Amenities": { "Text": "Mirrored walls\nHardwood floors\nYoga mats and blocks\nSound system\nNatural lighting" } },
+          "HtmlBodyPart": { "Html": "<p>Our Wellness Studio is a serene space designed for yoga, dance, fitness classes, and mindful movement. The room features floor-to-ceiling mirrors, premium hardwood floors, and natural lighting that creates an inspiring atmosphere for all types of wellness activities.</p>" }
+        },
+        {
+          "ContentItemId": "[js: variables('facilityFieldsId')]",
+          "ContentItemVersionId": "[js:uuid()]",
+          "ContentType": "Facility",
+          "DisplayText": "Outdoor Fields",
+          "ContainedPart": { "ListContentItemId": "[js: variables('facilityListId')]", "Order": 3 },
+          "Latest": true,
+          "Published": true,
+          "Owner": "[js: parameters('AdminUserId')]",
+          "Author": "[js: parameters('AdminUsername')]",
+          "TitlePart": { "Title": "Outdoor Fields" },
+          "AutoroutePart": { "Path": "facilities/outdoor-fields" },
+          "Facility": { "Image": { "Paths": [ "/facilities/outdoor-fields.svg" ] }, "Capacity": { "Value": 300 }, "Amenities": { "Text": "Soccer field\nBaseball diamond\nPicnic pavilion\nPlayground\nParking" } },
+          "HtmlBodyPart": { "Html": "<p>Our outdoor athletic complex features well-maintained playing fields for soccer, baseball, and multi-purpose use. The surrounding grounds include a covered picnic pavilion for community gatherings, a modern playground, and ample parking.</p>" }
+        },
+        {
+          "ContentItemId": "[js: variables('facilityConservatoryId')]",
+          "ContentItemVersionId": "[js:uuid()]",
+          "ContentType": "Facility",
+          "DisplayText": "Tropical Conservatory",
+          "ContainedPart": { "ListContentItemId": "[js: variables('facilityListId')]", "Order": 4 },
+          "Latest": true,
+          "Published": true,
+          "Owner": "[js: parameters('AdminUserId')]",
+          "Author": "[js: parameters('AdminUsername')]",
+          "TitlePart": { "Title": "Tropical Conservatory" },
+          "AutoroutePart": { "Path": "facilities/tropical-conservatory" },
+          "Facility": { "Image": { "Paths": [ "/facilities/conservatory.svg" ] }, "Capacity": { "Value": 75 }, "Amenities": { "Text": "Glass-enclosed greenhouse\nTropical plant collections\nWalking paths\nBench seating\nGuided tour availability" } },
+          "HtmlBodyPart": { "Html": "<p>The Tropical Conservatory is the crown jewel of our botanical garden. This glass-enclosed greenhouse maintains a warm, humid environment year-round, housing an impressive collection of tropical plants, orchids, and exotic species from around the world.</p>" }
+        },
+        {
+          "ContentItemId": "[js: variables('staffDirectorId')]",
+          "ContentItemVersionId": "[js:uuid()]",
+          "ContentType": "StaffMember",
+          "DisplayText": "Sarah Mitchell",
+          "ContainedPart": { "ListContentItemId": "[js: variables('staffListId')]", "Order": 0 },
+          "Latest": true,
+          "Published": true,
+          "Owner": "[js: parameters('AdminUserId')]",
+          "Author": "[js: parameters('AdminUsername')]",
+          "TitlePart": { "Title": "Sarah Mitchell" },
+          "AutoroutePart": { "Path": "staff/sarah-mitchell" },
+          "StaffMember": { "Photo": { "Paths": [ "/staff/director.svg" ] }, "Role": { "Text": "Executive Director" }, "Department": { "Text": "Administration" }, "Email": { "Text": "sarah.mitchell@communityrec.org" }, "Phone": { "Text": "(555) 123-4567" } },
+          "HtmlBodyPart": { "Html": "<p>Sarah has led the Community Recreation Center for over 15 years, transforming it from a small neighborhood facility into the thriving community hub it is today. Under her leadership, the center expanded to include the botanical garden and doubled its program offerings.</p>" }
+        },
+        {
+          "ContentItemId": "[js: variables('staffFitnessId')]",
+          "ContentItemVersionId": "[js:uuid()]",
+          "ContentType": "StaffMember",
+          "DisplayText": "Marcus Rivera",
+          "ContainedPart": { "ListContentItemId": "[js: variables('staffListId')]", "Order": 1 },
+          "Latest": true,
+          "Published": true,
+          "Owner": "[js: parameters('AdminUserId')]",
+          "Author": "[js: parameters('AdminUsername')]",
+          "TitlePart": { "Title": "Marcus Rivera" },
+          "AutoroutePart": { "Path": "staff/marcus-rivera" },
+          "StaffMember": { "Photo": { "Paths": [ "/staff/fitness-instructor.svg" ] }, "Role": { "Text": "Fitness Director" }, "Department": { "Text": "Fitness" }, "Email": { "Text": "marcus.rivera@communityrec.org" }, "Phone": { "Text": "(555) 123-4568" } },
+          "HtmlBodyPart": { "Html": "<p>Marcus brings a decade of personal training and group fitness experience to the recreation center. He oversees all fitness programs including yoga, strength training, and senior fitness classes.</p>" }
+        },
+        {
+          "ContentItemId": "[js: variables('staffSwimId')]",
+          "ContentItemVersionId": "[js:uuid()]",
+          "ContentType": "StaffMember",
+          "DisplayText": "Jennifer Walsh",
+          "ContainedPart": { "ListContentItemId": "[js: variables('staffListId')]", "Order": 2 },
+          "Latest": true,
+          "Published": true,
+          "Owner": "[js: parameters('AdminUserId')]",
+          "Author": "[js: parameters('AdminUsername')]",
+          "TitlePart": { "Title": "Jennifer Walsh" },
+          "AutoroutePart": { "Path": "staff/jennifer-walsh" },
+          "StaffMember": { "Photo": { "Paths": [ "/staff/swim-coach.svg" ] }, "Role": { "Text": "Head Swim Coach" }, "Department": { "Text": "Aquatics" }, "Email": { "Text": "jennifer.walsh@communityrec.org" }, "Phone": { "Text": "(555) 123-4569" } },
+          "HtmlBodyPart": { "Html": "<p>Jennifer is a former competitive swimmer and certified aquatics instructor. She manages all swim programs from toddler water safety to adult lap swimming and competitive team training.</p>" }
+        },
+        {
+          "ContentItemId": "[js: variables('staffGardenId')]",
+          "ContentItemVersionId": "[js:uuid()]",
+          "ContentType": "StaffMember",
+          "DisplayText": "Dr. Elena Patel",
+          "ContainedPart": { "ListContentItemId": "[js: variables('staffListId')]", "Order": 3 },
+          "Latest": true,
+          "Published": true,
+          "Owner": "[js: parameters('AdminUserId')]",
+          "Author": "[js: parameters('AdminUsername')]",
+          "TitlePart": { "Title": "Dr. Elena Patel" },
+          "AutoroutePart": { "Path": "staff/elena-patel" },
+          "StaffMember": { "Photo": { "Paths": [ "/staff/garden-curator.svg" ] }, "Role": { "Text": "Garden Curator" }, "Department": { "Text": "Botanical Garden" }, "Email": { "Text": "elena.patel@communityrec.org" }, "Phone": { "Text": "(555) 123-4570" } },
+          "HtmlBodyPart": { "Html": "<p>Dr. Patel holds a PhD in Botany and has curated botanical collections for over 20 years. She oversees all five garden zones and leads the center's plant conservation and education programs.</p>" }
+        },
+        {
+          "ContentItemId": "[js: variables('staffYouthId')]",
+          "ContentItemVersionId": "[js:uuid()]",
+          "ContentType": "StaffMember",
+          "DisplayText": "David Kim",
+          "ContainedPart": { "ListContentItemId": "[js: variables('staffListId')]", "Order": 4 },
+          "Latest": true,
+          "Published": true,
+          "Owner": "[js: parameters('AdminUserId')]",
+          "Author": "[js: parameters('AdminUsername')]",
+          "TitlePart": { "Title": "David Kim" },
+          "AutoroutePart": { "Path": "staff/david-kim" },
+          "StaffMember": { "Photo": { "Paths": [ "/staff/youth-coordinator.svg" ] }, "Role": { "Text": "Youth Programs Coordinator" }, "Department": { "Text": "Youth Programs" }, "Email": { "Text": "david.kim@communityrec.org" }, "Phone": { "Text": "(555) 123-4571" } },
+          "HtmlBodyPart": { "Html": "<p>David coordinates all youth programming including after-school activities, summer camps, and youth sports leagues. His passion for mentoring young people drives the center's commitment to youth development.</p>" }
+        },
+        {
+          "ContentItemId": "[js: variables('staffEventsId')]",
+          "ContentItemVersionId": "[js:uuid()]",
+          "ContentType": "StaffMember",
+          "DisplayText": "Rachel Torres",
+          "ContainedPart": { "ListContentItemId": "[js: variables('staffListId')]", "Order": 5 },
+          "Latest": true,
+          "Published": true,
+          "Owner": "[js: parameters('AdminUserId')]",
+          "Author": "[js: parameters('AdminUsername')]",
+          "TitlePart": { "Title": "Rachel Torres" },
+          "AutoroutePart": { "Path": "staff/rachel-torres" },
+          "StaffMember": { "Photo": { "Paths": [ "/staff/events-manager.svg" ] }, "Role": { "Text": "Events Manager" }, "Department": { "Text": "Events" }, "Email": { "Text": "rachel.torres@communityrec.org" }, "Phone": { "Text": "(555) 123-4572" } },
+          "HtmlBodyPart": { "Html": "<p>Rachel manages all community events, from seasonal festivals to fundraising galas. She works closely with local organizations and volunteers to create memorable experiences for the community.</p>" }
+        },
+        {
+          "ContentItemId": "[js:uuid()]",
+          "ContentItemVersionId": "[js:uuid()]",
+          "ContentType": "Program",
+          "DisplayText": "Swim Lessons",
+          "ContainedPart": { "ListContentItemId": "[js: variables('programListId')]", "Order": 0 },
+          "Latest": true,
+          "Published": true,
+          "Owner": "[js: parameters('AdminUserId')]",
+          "Author": "[js: parameters('AdminUsername')]",
+          "TitlePart": { "Title": "Swim Lessons" },
+          "AutoroutePart": { "Path": "programs/swim-lessons" },
+          "Program": {
+            "Image": { "Paths": [ "/programs/swim-lessons.svg" ] },
+            "Category": { "TermContentItemIds": [ "[js: variables('catAquaticsId')]" ], "TaxonomyContentItemId": "[js: variables('programCategoriesId')]" },
+            "AgeGroup": { "TermContentItemIds": [ "[js: variables('agYouthId')]" ], "TaxonomyContentItemId": "[js: variables('ageGroupsId')]" },
+            "Schedule": { "Text": "Mon/Wed/Fri 9:00 AM - 10:00 AM" },
+            "Price": { "Text": "$45 per session" }
+          },
+          "HtmlBodyPart": { "Html": "<p>Our swim lessons program offers instruction for all skill levels, from water safety basics for beginners to stroke refinement for advanced swimmers. Small class sizes ensure personalized attention from our certified instructors.</p><p>Each session runs for 8 weeks and includes access to open swim times for additional practice.</p>" }
+        },
+        {
+          "ContentItemId": "[js:uuid()]",
+          "ContentItemVersionId": "[js:uuid()]",
+          "ContentType": "Program",
+          "DisplayText": "Morning Yoga",
+          "ContainedPart": { "ListContentItemId": "[js: variables('programListId')]", "Order": 1 },
+          "Latest": true,
+          "Published": true,
+          "Owner": "[js: parameters('AdminUserId')]",
+          "Author": "[js: parameters('AdminUsername')]",
+          "TitlePart": { "Title": "Morning Yoga" },
+          "AutoroutePart": { "Path": "programs/morning-yoga" },
+          "Program": {
+            "Image": { "Paths": [ "/programs/yoga.svg" ] },
+            "Category": { "TermContentItemIds": [ "[js: variables('catFitnessId')]" ], "TaxonomyContentItemId": "[js: variables('programCategoriesId')]" },
+            "AgeGroup": { "TermContentItemIds": [ "[js: variables('agAdultId')]" ], "TaxonomyContentItemId": "[js: variables('ageGroupsId')]" },
+            "Schedule": { "Text": "Tue/Thu 7:00 AM - 8:00 AM" },
+            "Price": { "Text": "$35 per month" }
+          },
+          "HtmlBodyPart": { "Html": "<p>Start your day with mindful movement in our morning yoga class. Suitable for all levels, this Vinyasa-style class focuses on building strength, flexibility, and mental clarity in our beautiful Wellness Studio.</p>" }
+        },
+        {
+          "ContentItemId": "[js:uuid()]",
+          "ContentItemVersionId": "[js:uuid()]",
+          "ContentType": "Program",
+          "DisplayText": "Youth Basketball League",
+          "ContainedPart": { "ListContentItemId": "[js: variables('programListId')]", "Order": 2 },
+          "Latest": true,
+          "Published": true,
+          "Owner": "[js: parameters('AdminUserId')]",
+          "Author": "[js: parameters('AdminUsername')]",
+          "TitlePart": { "Title": "Youth Basketball League" },
+          "AutoroutePart": { "Path": "programs/youth-basketball-league" },
+          "Program": {
+            "Image": { "Paths": [ "/programs/youth-basketball.svg" ] },
+            "Category": { "TermContentItemIds": [ "[js: variables('catYouthId')]" ], "TaxonomyContentItemId": "[js: variables('programCategoriesId')]" },
+            "AgeGroup": { "TermContentItemIds": [ "[js: variables('agYouthId')]" ], "TaxonomyContentItemId": "[js: variables('ageGroupsId')]" },
+            "Schedule": { "Text": "Sat 9:00 AM - 12:00 PM" },
+            "Price": { "Text": "$60 per season" }
+          },
+          "HtmlBodyPart": { "Html": "<p>Our youth basketball league provides a fun, supportive environment for kids ages 4-12 to learn basketball fundamentals, teamwork, and sportsmanship. The season includes weekly practices and Saturday games.</p>" }
+        },
+        {
+          "ContentItemId": "[js:uuid()]",
+          "ContentItemVersionId": "[js:uuid()]",
+          "ContentType": "Program",
+          "DisplayText": "Watercolor Workshop",
+          "ContainedPart": { "ListContentItemId": "[js: variables('programListId')]", "Order": 3 },
+          "Latest": true,
+          "Published": true,
+          "Owner": "[js: parameters('AdminUserId')]",
+          "Author": "[js: parameters('AdminUsername')]",
+          "TitlePart": { "Title": "Watercolor Workshop" },
+          "AutoroutePart": { "Path": "programs/watercolor-workshop" },
+          "Program": {
+            "Image": { "Paths": [ "/programs/art-class.svg" ] },
+            "Category": { "TermContentItemIds": [ "[js: variables('catArtsId')]" ], "TaxonomyContentItemId": "[js: variables('programCategoriesId')]" },
+            "AgeGroup": { "TermContentItemIds": [ "[js: variables('agAdultId')]" ], "TaxonomyContentItemId": "[js: variables('ageGroupsId')]" },
+            "Schedule": { "Text": "Wed 6:00 PM - 8:00 PM" },
+            "Price": { "Text": "$40 per session" }
+          },
+          "HtmlBodyPart": { "Html": "<p>Explore your creativity in our watercolor workshop series. Each session focuses on different techniques from washes and glazing to wet-on-wet and botanical illustration. All materials provided.</p>" }
+        },
+        {
+          "ContentItemId": "[js:uuid()]",
+          "ContentItemVersionId": "[js:uuid()]",
+          "ContentType": "Event",
+          "DisplayText": "Summer Splash Camp",
+          "ContainedPart": { "ListContentItemId": "[js: variables('eventListId')]", "Order": 0 },
+          "Latest": true,
+          "Published": true,
+          "Owner": "[js: parameters('AdminUserId')]",
+          "Author": "[js: parameters('AdminUsername')]",
+          "TitlePart": { "Title": "Summer Splash Camp" },
+          "AutoroutePart": { "Path": "events/summer-splash-camp" },
+          "Event": {
+            "Image": { "Paths": [ "/events/summer-camp.svg" ] },
+            "EventDate": { "Value": "2026-07-14T09:00:00Z" },
+            "EventType": { "TermContentItemIds": [ "[js: variables('evtCampId')]" ], "TaxonomyContentItemId": "[js: variables('eventTypesId')]" },
+            "RegistrationUrl": { "Text": "#" }
+          },
+          "HtmlBodyPart": { "Html": "<p>A week-long summer camp combining swimming, outdoor games, arts and crafts, and nature exploration in the botanical garden. For ages 6-12. Includes lunch and snacks.</p>" }
+        },
+        {
+          "ContentItemId": "[js:uuid()]",
+          "ContentItemVersionId": "[js:uuid()]",
+          "ContentType": "Event",
+          "DisplayText": "Annual Garden Tour",
+          "ContainedPart": { "ListContentItemId": "[js: variables('eventListId')]", "Order": 1 },
+          "Latest": true,
+          "Published": true,
+          "Owner": "[js: parameters('AdminUserId')]",
+          "Author": "[js: parameters('AdminUsername')]",
+          "TitlePart": { "Title": "Annual Garden Tour" },
+          "AutoroutePart": { "Path": "events/annual-garden-tour" },
+          "Event": {
+            "Image": { "Paths": [ "/events/garden-tour.svg" ] },
+            "EventDate": { "Value": "2026-06-21T10:00:00Z" },
+            "EventType": { "TermContentItemIds": [ "[js: variables('evtGardenTourId')]" ], "TaxonomyContentItemId": "[js: variables('eventTypesId')]" },
+            "RegistrationUrl": { "Text": "#" }
+          },
+          "HtmlBodyPart": { "Html": "<p>Join Dr. Patel for a guided tour through all five garden zones. Learn about our plant collections, conservation efforts, and seasonal highlights. Free for members, $10 for non-members.</p>" }
+        },
+        {
+          "ContentItemId": "[js:uuid()]",
+          "ContentItemVersionId": "[js:uuid()]",
+          "ContentType": "Event",
+          "DisplayText": "Community BBQ",
+          "ContainedPart": { "ListContentItemId": "[js: variables('eventListId')]", "Order": 2 },
+          "Latest": true,
+          "Published": true,
+          "Owner": "[js: parameters('AdminUserId')]",
+          "Author": "[js: parameters('AdminUsername')]",
+          "TitlePart": { "Title": "Community BBQ" },
+          "AutoroutePart": { "Path": "events/community-bbq" },
+          "Event": {
+            "Image": { "Paths": [ "/events/community-bbq.svg" ] },
+            "EventDate": { "Value": "2026-08-15T12:00:00Z" },
+            "EventType": { "TermContentItemIds": [ "[js: variables('evtCommunityId')]" ], "TaxonomyContentItemId": "[js: variables('eventTypesId')]" },
+            "RegistrationUrl": { "Text": "#" }
+          },
+          "HtmlBodyPart": { "Html": "<p>Our annual end-of-summer community BBQ brings neighbors together for good food, live music, and family fun. Enjoy grilled favorites, lawn games, and a sunset concert on the outdoor fields.</p>" }
+        },
+        {
+          "ContentItemId": "[js:uuid()]",
+          "ContentItemVersionId": "[js:uuid()]",
+          "ContentType": "PlantProfile",
+          "DisplayText": "Grandiflora Rose",
+          "ContainedPart": { "ListContentItemId": "[js: variables('plantListId')]", "Order": 0 },
+          "Latest": true,
+          "Published": true,
+          "Owner": "[js: parameters('AdminUserId')]",
+          "Author": "[js: parameters('AdminUsername')]",
+          "TitlePart": { "Title": "Grandiflora Rose" },
+          "AutoroutePart": { "Path": "plants/grandiflora-rose" },
+          "PlantProfile": {
+            "Image": { "Paths": [ "/plants/rose.svg" ] },
+            "ScientificName": { "Text": "Rosa grandiflora" },
+            "PlantFamily": { "TermContentItemIds": [ "[js: variables('pfFloweringId')]" ], "TaxonomyContentItemId": "[js: variables('plantFamiliesId')]" },
+            "GardenZone": { "TermContentItemIds": [ "[js: variables('gzRoseId')]" ], "TaxonomyContentItemId": "[js: variables('gardenZonesId')]" },
+            "BloomSeason": { "Text": "Late Spring - Fall" },
+            "CareLevel": { "Text": "Moderate" }
+          },
+          "HtmlBodyPart": { "Html": "<p>The Grandiflora rose produces large, elegant blooms that combine the best qualities of Hybrid Tea and Floribunda roses. Our collection features several award-winning cultivars in shades of pink, red, and gold.</p>" }
+        },
+        {
+          "ContentItemId": "[js:uuid()]",
+          "ContentItemVersionId": "[js:uuid()]",
+          "ContentType": "PlantProfile",
+          "DisplayText": "Boston Fern",
+          "ContainedPart": { "ListContentItemId": "[js: variables('plantListId')]", "Order": 1 },
+          "Latest": true,
+          "Published": true,
+          "Owner": "[js: parameters('AdminUserId')]",
+          "Author": "[js: parameters('AdminUsername')]",
+          "TitlePart": { "Title": "Boston Fern" },
+          "AutoroutePart": { "Path": "plants/boston-fern" },
+          "PlantProfile": {
+            "Image": { "Paths": [ "/plants/fern.svg" ] },
+            "ScientificName": { "Text": "Nephrolepis exaltata" },
+            "PlantFamily": { "TermContentItemIds": [ "[js: variables('pfFernsId')]" ], "TaxonomyContentItemId": "[js: variables('plantFamiliesId')]" },
+            "GardenZone": { "TermContentItemIds": [ "[js: variables('gzTropicalId')]" ], "TaxonomyContentItemId": "[js: variables('gardenZonesId')]" },
+            "BloomSeason": { "Text": "Year-round (foliage)" },
+            "CareLevel": { "Text": "Easy" }
+          },
+          "HtmlBodyPart": { "Html": "<p>The Boston Fern is one of the most popular fern varieties, prized for its graceful arching fronds. Native to tropical regions, it thrives in the humidity of our Tropical Conservatory.</p>" }
+        },
+        {
+          "ContentItemId": "[js:uuid()]",
+          "ContentItemVersionId": "[js:uuid()]",
+          "ContentType": "PlantProfile",
+          "DisplayText": "Phalaenopsis Orchid",
+          "ContainedPart": { "ListContentItemId": "[js: variables('plantListId')]", "Order": 2 },
+          "Latest": true,
+          "Published": true,
+          "Owner": "[js: parameters('AdminUserId')]",
+          "Author": "[js: parameters('AdminUsername')]",
+          "TitlePart": { "Title": "Phalaenopsis Orchid" },
+          "AutoroutePart": { "Path": "plants/phalaenopsis-orchid" },
+          "PlantProfile": {
+            "Image": { "Paths": [ "/plants/orchid.svg" ] },
+            "ScientificName": { "Text": "Phalaenopsis spp." },
+            "PlantFamily": { "TermContentItemIds": [ "[js: variables('pfFloweringId')]" ], "TaxonomyContentItemId": "[js: variables('plantFamiliesId')]" },
+            "GardenZone": { "TermContentItemIds": [ "[js: variables('gzTropicalId')]" ], "TaxonomyContentItemId": "[js: variables('gardenZonesId')]" },
+            "BloomSeason": { "Text": "Winter - Spring" },
+            "CareLevel": { "Text": "Moderate" }
+          },
+          "HtmlBodyPart": { "Html": "<p>Known as Moth Orchids for their wing-shaped petals, Phalaenopsis are among the most beloved orchid genera. Our conservatory houses over 50 varieties, with blooms ranging from pure white to deep magenta.</p>" }
+        },
+        {
+          "ContentItemId": "[js:uuid()]",
+          "ContentItemVersionId": "[js:uuid()]",
+          "ContentType": "NewsArticle",
+          "DisplayText": "Community Center Celebrates 25th Anniversary",
+          "ContainedPart": { "ListContentItemId": "[js: variables('newsListId')]", "Order": 0 },
+          "Latest": true,
+          "Published": true,
+          "Owner": "[js: parameters('AdminUserId')]",
+          "Author": "[js: parameters('AdminUsername')]",
+          "TitlePart": { "Title": "Community Center Celebrates 25th Anniversary" },
+          "AutoroutePart": { "Path": "news/community-center-celebrates-25th-anniversary" },
+          "NewsArticle": {
+            "Image": { "Paths": [ "/news/announcement.svg" ] },
+            "Summary": { "Text": "Join us in celebrating 25 years of serving our community with special events and activities throughout the month." },
+            "Tags": { "TermContentItemIds": [ "[js: variables('ntAnnouncementsId')]", "[js: variables('ntCommunityId')]" ], "TaxonomyContentItemId": "[js: variables('newsTagsId')]", "TagNames": [ "Announcements", "Community" ] }
+          },
+          "MarkdownBodyPart": { "Markdown": "This year marks the **25th anniversary** of the Community Recreation Center! What began as a modest neighborhood gym has grown into a thriving community hub featuring world-class facilities, an award-winning botanical garden, and programs serving over 10,000 residents each year.\n\n## Anniversary Celebrations\n\nThroughout the month, we're hosting special events to celebrate this milestone:\n\n- **Open House Weekend** - Free admission to all facilities\n- **Community Photo Exhibition** - 25 years of memories\n- **Anniversary Gala** - A formal celebration with dinner and dancing\n- **Time Capsule Ceremony** - Sealing memories for the next 25 years\n\nWe couldn't have reached this milestone without the support of our incredible community. Thank you for 25 amazing years!" }
+        },
+        {
+          "ContentItemId": "[js:uuid()]",
+          "ContentItemVersionId": "[js:uuid()]",
+          "ContentType": "NewsArticle",
+          "DisplayText": "New Summer Programs Now Open for Registration",
+          "ContainedPart": { "ListContentItemId": "[js: variables('newsListId')]", "Order": 1 },
+          "Latest": true,
+          "Published": true,
+          "Owner": "[js: parameters('AdminUserId')]",
+          "Author": "[js: parameters('AdminUsername')]",
+          "TitlePart": { "Title": "New Summer Programs Now Open for Registration" },
+          "AutoroutePart": { "Path": "news/new-summer-programs-now-open-for-registration" },
+          "NewsArticle": {
+            "Image": { "Paths": [ "/news/program-update.svg" ] },
+            "Summary": { "Text": "Registration is now open for our exciting lineup of summer programs including swim camps, outdoor adventures, and arts workshops." },
+            "Tags": { "TermContentItemIds": [ "[js: variables('ntProgramsId')]" ], "TaxonomyContentItemId": "[js: variables('newsTagsId')]", "TagNames": [ "Programs" ] }
+          },
+          "MarkdownBodyPart": { "Markdown": "Summer is just around the corner, and we're thrilled to announce our expanded lineup of summer programs!\n\n## Highlights\n\n- **Summer Splash Camp** for ages 6-12\n- **Teen Adventure Series** with hiking and kayaking\n- **Botanical Art Classes** in the garden\n- **Family Swim Nights** every Friday\n\nEarly bird registration discounts are available through May 31. Members receive an additional 15% off all programs.\n\n[Register online](#) or visit the front desk to secure your spot!" }
+        },
+        {
+          "ContentItemId": "[js:uuid()]",
+          "ContentItemVersionId": "[js:uuid()]",
+          "ContentType": "NewsArticle",
+          "DisplayText": "Rare Orchid Species Added to Conservatory Collection",
+          "ContainedPart": { "ListContentItemId": "[js: variables('newsListId')]", "Order": 2 },
+          "Latest": true,
+          "Published": true,
+          "Owner": "[js: parameters('AdminUserId')]",
+          "Author": "[js: parameters('AdminUsername')]",
+          "TitlePart": { "Title": "Rare Orchid Species Added to Conservatory Collection" },
+          "AutoroutePart": { "Path": "news/rare-orchid-species-added-to-conservatory-collection" },
+          "NewsArticle": {
+            "Image": { "Paths": [ "/news/garden-news.svg" ] },
+            "Summary": { "Text": "Dr. Patel has acquired three rare orchid species for the Tropical Conservatory, including the elusive Ghost Orchid." },
+            "Tags": { "TermContentItemIds": [ "[js: variables('ntGardenId')]" ], "TaxonomyContentItemId": "[js: variables('newsTagsId')]", "TagNames": [ "Garden" ] }
+          },
+          "MarkdownBodyPart": { "Markdown": "We're excited to announce the addition of **three rare orchid species** to our Tropical Conservatory collection!\n\nGarden Curator Dr. Elena Patel traveled to Central America to acquire these specimens through a conservation partnership:\n\n1. **Dendrophylax lindenii** (Ghost Orchid) - One of the rarest orchids in the world\n2. **Dracula vampira** - Named for its dramatic dark, wing-like petals\n3. **Bulbophyllum nocturnum** - The only known orchid that blooms exclusively at night\n\nThese additions bring our orchid collection to over 200 species, making it one of the most diverse in the region.\n\nVisit the conservatory to see these remarkable plants. Guided tours highlighting the new arrivals are available every Saturday at 10 AM." }
+        },
+        {
+          "ContentItemId": "[js: variables('landingContentItemId')]",
+          "ContentItemVersionId": "[js:uuid()]",
+          "ContentType": "LandingPage",
+          "DisplayText": "[js: parameters('SiteName')]",
+          "Latest": true,
+          "Published": true,
+          "Owner": "[js: parameters('AdminUserId')]",
+          "Author": "[js: parameters('AdminUsername')]",
+          "LandingPage": {},
+          "AutoroutePart": { "Path": "home-page", "SetHomepage": true },
+          "TitlePart": { "Title": "[js: parameters('SiteName')]" },
+          "FeaturedPrograms": {
+            "ContentItems": [
+              {
+                "ContentItemId": "[js:uuid()]", "ContentItemVersionId": "[js:uuid()]", "ContentType": "Program", "DisplayText": "Swim Lessons", "Latest": false, "Published": false, "Owner": null, "Author": "[js: parameters('AdminUsername')]",
+                "Program": { "Image": { "Paths": [ "/programs/swim-lessons.svg" ] }, "Category": { "TermContentItemIds": [ "[js: variables('catAquaticsId')]" ], "TaxonomyContentItemId": "[js: variables('programCategoriesId')]" }, "Price": { "Text": "$45/session" } },
+                "TitlePart": { "Title": "Swim Lessons" },
+                "HtmlBodyPart": { "Html": "Learn to swim with certified instructors in our Olympic-size pool." }
+              },
+              {
+                "ContentItemId": "[js:uuid()]", "ContentItemVersionId": "[js:uuid()]", "ContentType": "Program", "DisplayText": "Morning Yoga", "Latest": false, "Published": false, "Owner": null, "Author": "[js: parameters('AdminUsername')]",
+                "Program": { "Image": { "Paths": [ "/programs/yoga.svg" ] }, "Category": { "TermContentItemIds": [ "[js: variables('catFitnessId')]" ], "TaxonomyContentItemId": "[js: variables('programCategoriesId')]" }, "Price": { "Text": "$35/month" } },
+                "TitlePart": { "Title": "Morning Yoga" },
+                "HtmlBodyPart": { "Html": "Start your day with mindful movement in our serene Wellness Studio." }
+              },
+              {
+                "ContentItemId": "[js:uuid()]", "ContentItemVersionId": "[js:uuid()]", "ContentType": "Program", "DisplayText": "Youth Basketball", "Latest": false, "Published": false, "Owner": null, "Author": "[js: parameters('AdminUsername')]",
+                "Program": { "Image": { "Paths": [ "/programs/youth-basketball.svg" ] }, "Category": { "TermContentItemIds": [ "[js: variables('catYouthId')]" ], "TaxonomyContentItemId": "[js: variables('programCategoriesId')]" }, "Price": { "Text": "$60/season" } },
+                "TitlePart": { "Title": "Youth Basketball" },
+                "HtmlBodyPart": { "Html": "Fun and competitive basketball for kids ages 4-12." }
+              },
+              {
+                "ContentItemId": "[js:uuid()]", "ContentItemVersionId": "[js:uuid()]", "ContentType": "Program", "DisplayText": "Watercolor Workshop", "Latest": false, "Published": false, "Owner": null, "Author": "[js: parameters('AdminUsername')]",
+                "Program": { "Image": { "Paths": [ "/programs/art-class.svg" ] }, "Category": { "TermContentItemIds": [ "[js: variables('catArtsId')]" ], "TaxonomyContentItemId": "[js: variables('programCategoriesId')]" }, "Price": { "Text": "$40/session" } },
+                "TitlePart": { "Title": "Watercolor Workshop" },
+                "HtmlBodyPart": { "Html": "Explore your creativity with guided watercolor techniques." }
+              }
+            ]
+          },
+          "UpcomingEvents": {
+            "ContentItems": [
+              {
+                "ContentItemId": "[js:uuid()]", "ContentItemVersionId": "[js:uuid()]", "ContentType": "Event", "DisplayText": "Summer Splash Camp", "Latest": false, "Published": false, "Owner": null, "Author": "[js: parameters('AdminUsername')]",
+                "Event": { "Image": { "Paths": [ "/events/summer-camp.svg" ] }, "EventType": { "TermContentItemIds": [ "[js: variables('evtCampId')]" ], "TaxonomyContentItemId": "[js: variables('eventTypesId')]" } },
+                "TitlePart": { "Title": "Summer Splash Camp" },
+                "HtmlBodyPart": { "Html": "A week-long adventure of swimming, games, and nature exploration." }
+              },
+              {
+                "ContentItemId": "[js:uuid()]", "ContentItemVersionId": "[js:uuid()]", "ContentType": "Event", "DisplayText": "Annual Garden Tour", "Latest": false, "Published": false, "Owner": null, "Author": "[js: parameters('AdminUsername')]",
+                "Event": { "Image": { "Paths": [ "/events/garden-tour.svg" ] }, "EventType": { "TermContentItemIds": [ "[js: variables('evtGardenTourId')]" ], "TaxonomyContentItemId": "[js: variables('eventTypesId')]" } },
+                "TitlePart": { "Title": "Annual Garden Tour" },
+                "HtmlBodyPart": { "Html": "Guided tour through all five garden zones with Dr. Patel." }
+              },
+              {
+                "ContentItemId": "[js:uuid()]", "ContentItemVersionId": "[js:uuid()]", "ContentType": "Event", "DisplayText": "Community BBQ", "Latest": false, "Published": false, "Owner": null, "Author": "[js: parameters('AdminUsername')]",
+                "Event": { "Image": { "Paths": [ "/events/community-bbq.svg" ] }, "EventType": { "TermContentItemIds": [ "[js: variables('evtCommunityId')]" ], "TaxonomyContentItemId": "[js: variables('eventTypesId')]" } },
+                "TitlePart": { "Title": "Community BBQ" },
+                "HtmlBodyPart": { "Html": "End-of-summer cookout with live music and family fun." }
+              },
+              {
+                "ContentItemId": "[js:uuid()]", "ContentItemVersionId": "[js:uuid()]", "ContentType": "Event", "DisplayText": "Fundraiser Gala", "Latest": false, "Published": false, "Owner": null, "Author": "[js: parameters('AdminUsername')]",
+                "Event": { "Image": { "Paths": [ "/events/fundraiser-gala.svg" ] }, "EventType": { "TermContentItemIds": [ "[js: variables('evtFundraiserId')]" ], "TaxonomyContentItemId": "[js: variables('eventTypesId')]" } },
+                "TitlePart": { "Title": "Fundraiser Gala" },
+                "HtmlBodyPart": { "Html": "Annual formal celebration supporting center programs and garden conservation." }
+              }
+            ]
+          },
+          "MembershipTiers": {
+            "ContentItems": [
+              {
+                "ContentItemId": "[js:uuid()]", "ContentItemVersionId": "[js:uuid()]", "ContentType": "Membership", "DisplayText": "Individual", "Latest": false, "Published": false, "Owner": null, "Author": "[js: parameters('AdminUsername')]",
+                "Membership": { "Price": { "Text": "$30" }, "Features": { "Html": "<ul class='features-list'><li>Unlimited facility access</li><li>10% program discount</li><li>Garden admission</li><li>Locker rental</li></ul>" }, "Highlight": { "Value": false } },
+                "TitlePart": { "Title": "Individual" }
+              },
+              {
+                "ContentItemId": "[js:uuid()]", "ContentItemVersionId": "[js:uuid()]", "ContentType": "Membership", "DisplayText": "Family", "Latest": false, "Published": false, "Owner": null, "Author": "[js: parameters('AdminUsername')]",
+                "Membership": { "Price": { "Text": "$75" }, "Features": { "Html": "<ul class='features-list'><li>Up to 5 family members</li><li>Unlimited facility access</li><li>15% program discount</li><li>Garden admission</li><li>Guest passes (4/month)</li><li>Priority registration</li></ul>" }, "Highlight": { "Value": true } },
+                "TitlePart": { "Title": "Family" }
+              },
+              {
+                "ContentItemId": "[js:uuid()]", "ContentItemVersionId": "[js:uuid()]", "ContentType": "Membership", "DisplayText": "Senior", "Latest": false, "Published": false, "Owner": null, "Author": "[js: parameters('AdminUsername')]",
+                "Membership": { "Price": { "Text": "$20" }, "Features": { "Html": "<ul class='features-list'><li>Unlimited facility access</li><li>15% program discount</li><li>Garden admission</li><li>Senior fitness classes</li></ul>" }, "Highlight": { "Value": false } },
+                "TitlePart": { "Title": "Senior" }
+              }
+            ]
+          },
+          "Partners": {
+            "ContentItems": [
+              {
+                "ContentItemId": "[js:uuid()]", "ContentItemVersionId": "[js:uuid()]", "ContentType": "Partner", "DisplayText": "Greenfield Foundation", "Latest": false, "Published": false, "Owner": null, "Author": "[js: parameters('AdminUsername')]",
+                "Partner": { "Logo": { "Paths": [ "/sponsors/sponsor-1.svg" ] }, "Url": { "Text": "#" } },
+                "TitlePart": { "Title": "Greenfield Foundation" }
+              },
+              {
+                "ContentItemId": "[js:uuid()]", "ContentItemVersionId": "[js:uuid()]", "ContentType": "Partner", "DisplayText": "Valley Health Network", "Latest": false, "Published": false, "Owner": null, "Author": "[js: parameters('AdminUsername')]",
+                "Partner": { "Logo": { "Paths": [ "/sponsors/sponsor-2.svg" ] }, "Url": { "Text": "#" } },
+                "TitlePart": { "Title": "Valley Health Network" }
+              },
+              {
+                "ContentItemId": "[js:uuid()]", "ContentItemVersionId": "[js:uuid()]", "ContentType": "Partner", "DisplayText": "First National Bank", "Latest": false, "Published": false, "Owner": null, "Author": "[js: parameters('AdminUsername')]",
+                "Partner": { "Logo": { "Paths": [ "/sponsors/sponsor-3.svg" ] }, "Url": { "Text": "#" } },
+                "TitlePart": { "Title": "First National Bank" }
+              },
+              {
+                "ContentItemId": "[js:uuid()]", "ContentItemVersionId": "[js:uuid()]", "ContentType": "Partner", "DisplayText": "Greenfield Garden Society", "Latest": false, "Published": false, "Owner": null, "Author": "[js: parameters('AdminUsername')]",
+                "Partner": { "Logo": { "Paths": [ "/sponsors/sponsor-4.svg" ] }, "Url": { "Text": "#" } },
+                "TitlePart": { "Title": "Greenfield Garden Society" }
+              }
+            ]
+          }
+        },
+        {
+          "ContentItemId": "[js:uuid()]",
+          "ContentItemVersionId": "[js:uuid()]",
+          "ContentType": "Page",
+          "DisplayText": "About Us",
+          "Latest": true,
+          "Published": true,
+          "Owner": "[js: parameters('AdminUserId')]",
+          "Author": "[js: parameters('AdminUsername')]",
+          "TitlePart": { "Title": "About Us" },
+          "AutoroutePart": { "Path": "about" },
+          "Page": {},
+          "FlowPart": {
+            "Widgets": [
+              {
+                "ContentItemId": "[js:uuid()]", "ContentItemVersionId": "[js:uuid()]", "ContentType": "Paragraph", "DisplayText": "",
+                "FlowMetadata": { "Alignment": 5, "Size": 100 },
+                "Paragraph": { "Content": { "Html": "<h2>About the Community Recreation Center</h2><p>For 25 years, the Community Recreation Center & Botanical Garden has been the heart of our neighborhood. What started as a small gym with a few classes has grown into a comprehensive community hub offering world-class facilities, diverse programs for all ages, and an award-winning botanical garden.</p><h3>Our Mission</h3><p>To enrich lives through recreation, education, and the beauty of nature. We believe every community member deserves access to quality fitness facilities, engaging programs, and green spaces that inspire wonder and connection.</p><h3>Our Facilities</h3><p>Our 50-acre campus includes an Olympic-size pool, gymnasium, wellness studio, outdoor athletic fields, and five distinct botanical garden zones. Whether you're training for a marathon, learning to paint, or simply enjoying a walk through the rose garden, there's something here for everyone.</p>" } }
+              }
+            ]
+          }
+        },
+        {
+          "ContentItemId": "[js:uuid()]",
+          "ContentItemVersionId": "[js:uuid()]",
+          "ContentType": "Page",
+          "DisplayText": "Contact",
+          "Latest": true,
+          "Published": true,
+          "Owner": "[js: parameters('AdminUserId')]",
+          "Author": "[js: parameters('AdminUsername')]",
+          "TitlePart": { "Title": "Contact" },
+          "AutoroutePart": { "Path": "contact" },
+          "Page": {},
+          "FlowPart": {
+            "Widgets": [
+              {
+                "ContentItemId": "[js:uuid()]", "ContentItemVersionId": "[js:uuid()]", "ContentType": "Paragraph", "DisplayText": "",
+                "FlowMetadata": { "Alignment": 5, "Size": 100 },
+                "Paragraph": { "Content": { "Html": "<h2>Contact Us</h2><div class='row'><div class='col-lg-6'><h4>Visit Us</h4><p><strong>Community Recreation Center & Botanical Garden</strong><br>123 Community Way<br>Greenfield, ST 12345</p><h4>Hours</h4><p>Monday - Friday: 6:00 AM - 9:00 PM<br>Saturday - Sunday: 8:00 AM - 6:00 PM<br>Botanical Garden: Dawn to Dusk</p></div><div class='col-lg-6'><h4>Get in Touch</h4><p><i class='fas fa-phone me-2'></i>(555) 123-4567<br><i class='fas fa-envelope me-2'></i>info@communityrec.org</p><h4>Follow Us</h4><p>Stay connected on social media for the latest updates on programs, events, and garden happenings.</p></div></div>" } }
+              }
+            ]
+          }
+        },
+        {
+          "ContentItemId": "[js:uuid()]",
+          "ContentItemVersionId": "[js:uuid()]",
+          "ContentType": "Page",
+          "DisplayText": "Botanical Garden",
+          "Latest": true,
+          "Published": true,
+          "Owner": "[js: parameters('AdminUserId')]",
+          "Author": "[js: parameters('AdminUsername')]",
+          "TitlePart": { "Title": "Botanical Garden" },
+          "AutoroutePart": { "Path": "botanical-garden" },
+          "Page": {},
+          "FlowPart": {
+            "Widgets": [
+              {
+                "ContentItemId": "[js:uuid()]", "ContentItemVersionId": "[js:uuid()]", "ContentType": "Paragraph", "DisplayText": "",
+                "FlowMetadata": { "Alignment": 5, "Size": 100 },
+                "Paragraph": { "Content": { "Html": "<h2>Welcome to the Botanical Garden</h2><p>Our botanical garden spans 15 acres and features five distinct zones, each showcasing unique plant collections from around the world. Whether you're a passionate gardener, a nature lover, or simply looking for a peaceful retreat, the garden offers something for everyone.</p><h3>Garden Zones</h3><ul><li><strong>Rose Garden</strong> - Over 200 varieties of heritage and modern roses</li><li><strong>Tropical Conservatory</strong> - A glass-enclosed paradise of tropical plants and orchids</li><li><strong>Native Woodland</strong> - Native trees, wildflowers, and walking trails</li><li><strong>Herb Garden</strong> - Culinary and medicinal herbs from five continents</li><li><strong>Children's Discovery Garden</strong> - Interactive garden spaces designed for young explorers</li></ul><h3>Visiting Hours</h3><p>The garden is open daily from dawn to dusk. Guided tours are available every Saturday at 10:00 AM. Admission is free for recreation center members.</p>" } }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "queries",
+      "Queries": [
+        {
+          "Source": "Sql",
+          "Name": "RecentEvents",
+          "Template": "SELECT TOP 4 DocumentId FROM ContentItemIndex WHERE ContentType='Event' AND Published = 1 ORDER BY CreatedUtc DESC",
+          "ReturnContentItems": true
+        },
+        {
+          "Source": "Sql",
+          "Name": "FeaturedPrograms",
+          "Template": "SELECT TOP 4 DocumentId FROM ContentItemIndex WHERE ContentType='Program' AND Published = 1 ORDER BY CreatedUtc DESC",
+          "ReturnContentItems": true
+        },
+        {
+          "Source": "Sql",
+          "Name": "RecentNews",
+          "Template": "SELECT TOP 3 DocumentId FROM ContentItemIndex WHERE ContentType='NewsArticle' AND Published = 1 ORDER BY CreatedUtc DESC",
+          "ReturnContentItems": true
+        }
+      ]
+    },
+    {
+      "name": "Templates",
+      "Templates": {
+        "Content__LandingPage": {
+          "Description": "A template for the Landing Page content type",
+          "Content": "[file:text('Snippets/landingpage.liquid')]"
+        }
+      }
+    },
+    {
+      "name": "MediaProfiles",
+      "MediaProfiles": {
+        "hero": {
+          "Hint": "A hero banner image (1920px x 600px)",
+          "Width": 1920,
+          "Height": 600,
+          "Mode": 2,
+          "Format": 0,
+          "Quality": 100
+        },
+        "card": {
+          "Hint": "A card image (600px x 400px)",
+          "Width": 600,
+          "Height": 400,
+          "Mode": 0,
+          "Format": 0,
+          "Quality": 100
+        },
+        "avatar": {
+          "Hint": "An avatar image (300px x 300px)",
+          "Width": 300,
+          "Height": 300,
+          "Mode": 0,
+          "Format": 0,
+          "Quality": 100
+        },
+        "thumbnail": {
+          "Hint": "A thumbnail image (150px x 150px)",
+          "Width": 150,
+          "Height": 150,
+          "Mode": 0,
+          "Format": 0,
+          "Quality": 100
+        }
+      }
+    },
+    {
+      "name": "AdminMenu",
+      "data": [
+        {
+          "Id": "communityAdminMenu",
+          "Name": "Community Admin Menu",
+          "Enabled": true,
+          "MenuItems": [
+            {
+              "$type": "OrchardCore.AdminMenu.AdminNodes.PlaceholderAdminNode, OrchardCore.AdminMenu",
+              "LinkText": "Content",
+              "IconClass": null,
+              "PermissionNames": [],
+              "UniqueId": "communityContentPlaceholder",
+              "Enabled": true,
+              "Text": null,
+              "Id": null,
+              "Href": null,
+              "Url": null,
+              "Position": null,
+              "LinkToFirstChild": true,
+              "LocalNav": false,
+              "Culture": null,
+              "Items": [
+                {
+                  "$type": "OrchardCore.AdminMenu.AdminNodes.LinkAdminNode, OrchardCore.AdminMenu",
+                  "LinkText": "Content Items",
+                  "LinkUrl": "[js: variables('adminUrlPrefix') + '/Contents/ContentItems/']",
+                  "IconClass": null,
+                  "UniqueId": "communityContentItemsLink",
+                  "Enabled": true,
+                  "Text": null,
+                  "Id": null,
+                  "Href": null,
+                  "Url": null,
+                  "Position": "0",
+                  "LinkToFirstChild": true,
+                  "LocalNav": false,
+                  "Culture": null,
+                  "Items": [],
+                  "Classes": []
+                },
+                {
+                  "$type": "OrchardCore.Contents.AdminNodes.ContentTypesAdminNode, OrchardCore.Contents",
+                  "ShowAll": false,
+                  "ContentTypes": [
+                    { "ContentTypeId": "Page" },
+                    { "ContentTypeId": "ListPage" },
+                    { "ContentTypeId": "LandingPage" },
+                    { "ContentTypeId": "Program" },
+                    { "ContentTypeId": "Event" },
+                    { "ContentTypeId": "StaffMember" },
+                    { "ContentTypeId": "Facility" },
+                    { "ContentTypeId": "PlantProfile" },
+                    { "ContentTypeId": "NewsArticle" },
+                    { "ContentTypeId": "Taxonomy" }
+                  ],
+                  "UniqueId": "communityContentTypesNode",
+                  "Enabled": true,
+                  "Text": null,
+                  "Id": null,
+                  "Href": null,
+                  "Url": null,
+                  "Position": "1",
+                  "LinkToFirstChild": true,
+                  "LocalNav": false,
+                  "Culture": null,
+                  "Items": [],
+                  "Classes": []
+                }
+              ],
+              "Classes": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

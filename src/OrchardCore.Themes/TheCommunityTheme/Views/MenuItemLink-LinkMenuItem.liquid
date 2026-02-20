@@ -1,0 +1,8 @@
+{% if Model.HasItems %}
+<a class="nav-link dropdown-toggle" href="{{ Model.ContentItem.Content.LinkMenuItemPart.Url | href }}" id="navbarDropdown{{ Model.ContentItem.ContentItemId }}" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    {{ Model.ContentItem.Content.LinkMenuItemPart.Name }}
+</a>
+{% else %}
+{% assign url = Model.ContentItem.Content.LinkMenuItemPart.Url %}
+<a class="nav-link" href="{{ url | href }}">{{ Model.ContentItem.Content.LinkMenuItemPart.Name }}</a>
+{% endif %}

@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="200" viewBox="0 0 360 200">
+  <rect fill="#2d6a4f" width="360" height="200"/>
+  <text x="50%" y="40%" fill="white" font-family="system-ui, sans-serif" font-size="22" font-weight="600" text-anchor="middle" dominant-baseline="middle">The Community Theme</text>
+  <text x="50%" y="60%" fill="white" font-family="system-ui, sans-serif" font-size="14" font-weight="400" text-anchor="middle" dominant-baseline="middle">Community Recreation Center</text>
+</svg>

@@ -1,0 +1,9 @@
+{% assign contentItemIds = Model.ContentItem.Content.ContentMenuItemPart.SelectedContentItem.ContentItemIds %}
+{% assign contentItemId = contentItemIds.first %}
+{% if Model.HasItems %}
+<a class="nav-link dropdown-toggle" href="{{ contentItemId | display_url }}" id="navbarDropdown{{ Model.ContentItem.ContentItemId }}" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    {{ Model.ContentItem | display_text }}
+</a>
+{% else %}
+<a class="nav-link" href="{{ contentItemId | display_url }}">{{ Model.ContentItem | display_text }}</a>
+{% endif %}

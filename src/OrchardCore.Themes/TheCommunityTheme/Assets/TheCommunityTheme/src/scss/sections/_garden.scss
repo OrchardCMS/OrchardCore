@@ -1,0 +1,41 @@
+// Garden section
+.garden-spotlight {
+    background-color: $garden-dark;
+    color: $white;
+    position: relative;
+    overflow: hidden;
+
+    .garden-overlay {
+        position: relative;
+        z-index: 1;
+    }
+
+    h2 {
+        color: $garden-pale;
+    }
+
+    p {
+        color: rgba($white, 0.85);
+    }
+
+    .btn-outline-light {
+        border-width: 2px;
+        &:hover {
+            background-color: $garden-light;
+            border-color: $garden-light;
+            color: $garden-dark;
+        }
+    }
+}
+
+// Plant cards get garden styling
+.plant-card {
+    .badge-zone {
+        background-color: $garden-medium;
+    }
+
+    .scientific-name {
+        font-style: italic;
+        color: $secondary;
+    }
+}

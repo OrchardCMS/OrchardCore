@@ -1,0 +1,22 @@
+{% if Model.Items.size > 0 %}
+<li class="nav-item dropdown">
+    {% shape_clear_alternates Model %}
+    {% shape_type Model "MenuItemLink" %}
+    {{ Model | shape_render }}
+    <ul class="dropdown-menu">
+        {% for item in Model.Items %}
+        <li>
+            {% shape_clear_alternates item %}
+            {% shape_type item "MenuItemLink" %}
+            {{ item | shape_render }}
+        </li>
+        {% endfor %}
+    </ul>
+</li>
+{% else %}
+<li class="nav-item">
+    {% shape_clear_alternates Model %}
+    {% shape_type Model "MenuItemLink" %}
+    {{ Model | shape_render }}
+</li>
+{% endif %}

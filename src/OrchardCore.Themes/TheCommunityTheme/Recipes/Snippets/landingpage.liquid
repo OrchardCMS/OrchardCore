@@ -1,0 +1,159 @@
+{% zone "Header" %}
+<!-- Hero Section -->
+<header class="masthead" style="background-image: url('{{ "~/TheCommunityTheme/assets/img/hero/community-center.svg" | href }}')">
+    <div class="container text-center">
+        <div class="masthead-heading">{{ "Welcome to" | t }} {{ Site.SiteName }}</div>
+        <div class="masthead-subheading">{{ "Your community recreation center & botanical garden" | t }}</div>
+        <a class="btn btn-primary btn-xl me-3" href="#programs">{{ "Explore Programs" | t }}</a>
+        <a class="btn btn-outline-light btn-xl" href="#garden">{{ "Visit the Garden" | t }}</a>
+    </div>
+</header>
+{% endzone %}
+
+{% if Model.ContentItem.Content.FeaturedPrograms.ContentItems.size > 0 %}
+<!-- Featured Programs -->
+<section class="py-5 programs-section" id="programs">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-heading">{{ "Our Programs" | t }}</h2>
+            <p class="section-subheading">{{ "Discover activities for every age and interest" | t }}</p>
+        </div>
+        <div class="row">
+            {% for item in Model.ContentItem.Content.FeaturedPrograms.ContentItems %}
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card program-card h-100">
+                    {% assign imagePath = item.Program.Image.Paths.first %}
+                    {% if imagePath %}
+                    <img class="card-img-top" src="{{ imagePath | asset_url | resize_url: profile: 'card' }}" alt="{{ item.DisplayText }}">
+                    {% endif %}
+                    <div class="card-body">
+                        {% assign category = item.Program.Category | taxonomy_terms %}
+                        {% for term in category %}
+                        <span class="badge bg-primary mb-2">{{ term | display_text }}</span>
+                        {% endfor %}
+                        <h5 class="card-title">{{ item.DisplayText }}</h5>
+                        {% assign price = item.Program.Price.Text %}
+                        {% if price and price != "" %}
+                        <p class="text-muted small">{{ price }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="text-center mt-3">
+            <a href="{{ '~/programs' | href }}" class="btn btn-outline-primary">{{ "View All Programs" | t }}</a>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+{% if Model.ContentItem.Content.UpcomingEvents.ContentItems.size > 0 %}
+<!-- Upcoming Events -->
+<section class="py-5 events-section bg-light" id="events">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-heading">{{ "Upcoming Events" | t }}</h2>
+            <p class="section-subheading">{{ "Join us for fun community activities" | t }}</p>
+        </div>
+        <div class="row">
+            {% for item in Model.ContentItem.Content.UpcomingEvents.ContentItems %}
+            <div class="col-md-6 col-lg-3 mb-4">
+                <div class="card event-card h-100">
+                    {% assign imagePath = item.Event.Image.Paths.first %}
+                    {% if imagePath %}
+                    <img class="card-img-top" src="{{ imagePath | asset_url | resize_url: profile: 'card' }}" alt="{{ item.DisplayText }}">
+                    {% endif %}
+                    <div class="card-body">
+                        {% assign eventType = item.Event.EventType | taxonomy_terms %}
+                        {% for term in eventType %}
+                        <span class="badge bg-secondary mb-2">{{ term | display_text }}</span>
+                        {% endfor %}
+                        <h5 class="card-title">{{ item.DisplayText }}</h5>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="text-center mt-3">
+            <a href="{{ '~/events' | href }}" class="btn btn-outline-primary">{{ "View All Events" | t }}</a>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Garden Spotlight -->
+<section class="py-5 garden-spotlight" id="garden">
+    <div class="container garden-overlay">
+        <div class="row align-items-center">
+            <div class="col-lg-6 mb-4 mb-lg-0">
+                <h2 class="display-5 fw-bold">{{ "Explore Our Botanical Garden" | t }}</h2>
+                <p class="lead">{{ "Wander through five distinct garden zones featuring hundreds of plant species from around the world. From the tropical conservatory to the native woodland, there's always something in bloom." | t }}</p>
+                <a href="{{ '~/botanical-garden' | href }}" class="btn btn-outline-light btn-xl mt-3">{{ "Discover the Garden" | t }}</a>
+            </div>
+            <div class="col-lg-6">
+                <img src="{{ "~/TheCommunityTheme/assets/img/hero/botanical-garden.svg" | href }}" alt="{{ "Botanical Garden" | t }}" class="img-fluid rounded shadow">
+            </div>
+        </div>
+    </div>
+</section>
+
+{% if Model.ContentItem.Content.MembershipTiers.ContentItems.size > 0 %}
+<!-- Membership -->
+<section class="py-5 membership-section bg-light" id="membership">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-heading">{{ "Membership Plans" | t }}</h2>
+            <p class="section-subheading">{{ "Choose the plan that fits your lifestyle" | t }}</p>
+        </div>
+        <div class="row justify-content-center">
+            {% for item in Model.ContentItem.Content.MembershipTiers.ContentItems %}
+            <div class="col-md-6 col-lg-4 mb-4">
+                {% assign highlight = item.Membership.Highlight.Value %}
+                <div class="pricing-card {% if highlight %}featured{% endif %}">
+                    {% if highlight %}
+                    <span class="featured-badge">{{ "Most Popular" | t }}</span>
+                    {% endif %}
+                    <h4 class="mt-3 mb-3">{{ item.DisplayText }}</h4>
+                    {% assign price = item.Membership.Price.Text %}
+                    {% if price and price != "" %}
+                    <div class="price mb-3">{{ price }}<span>/{{ "month" | t }}</span></div>
+                    {% endif %}
+                    {{ item.Membership.Features.Html | raw }}
+                    {% assign cta = item.Membership.CtaLink %}
+                    {% if cta.Url and cta.Url != "" %}
+                    <a href="{{ cta.Url }}" class="btn {% if highlight %}btn-primary{% else %}btn-outline-primary{% endif %} w-100 mt-3">{{ cta.Text | default: "Get Started" | t }}</a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+{% if Model.ContentItem.Content.Partners.ContentItems.size > 0 %}
+<!-- Partners -->
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-4">
+            <h4 class="text-muted text-uppercase">{{ "Our Partners & Sponsors" | t }}</h4>
+        </div>
+        <div class="row align-items-center justify-content-center">
+            {% for item in Model.ContentItem.Content.Partners.ContentItems %}
+            <div class="col-6 col-md-3 text-center mb-4">
+                {% assign logo = item.Partner.Logo.Paths.first %}
+                {% if logo %}
+                {% assign url = item.Partner.Url.Text %}
+                {% if url and url != "" %}
+                <a href="{{ url }}"><img src="{{ logo | asset_url }}" alt="{{ item.DisplayText }}" class="img-fluid" style="max-height: 80px; opacity: 0.6;"></a>
+                {% else %}
+                <img src="{{ logo | asset_url }}" alt="{{ item.DisplayText }}" class="img-fluid" style="max-height: 80px; opacity: 0.6;">
+                {% endif %}
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
