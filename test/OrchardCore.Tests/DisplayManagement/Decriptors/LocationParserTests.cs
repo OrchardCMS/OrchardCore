@@ -22,7 +22,7 @@ public class LocationParserTests
     [InlineData("/Content:5@Group1#Tab1%Card1|Col1")]
     public void ZoneShouldBeParsed(string location)
     {
-        Assert.Equal("Content", new PlacementInfo { Location = location }.GetZones().FirstOrDefault());
+        Assert.Equal("Content", new PlacementInfo(location).GetZones().FirstOrDefault());
     }
 
     [Theory]
@@ -57,7 +57,7 @@ public class LocationParserTests
     [InlineData("/Content:5@Group1#Tab1%Card1|Col1", "5")]
     public void PositionShouldBeParsed(string location, string expectedPosition)
     {
-        Assert.Equal(expectedPosition, new PlacementInfo { Location = location }.GetPosition());
+        Assert.Equal(expectedPosition, new PlacementInfo(location).GetPosition());
     }
 
     [Theory]
@@ -93,7 +93,7 @@ public class LocationParserTests
     [InlineData("/Content:5@Group1#Tab1|Card1%Col1", true)]
     public void LayoutZoneShouldBeParsed(string location, bool expectedIsLayoutZone)
     {
-        Assert.Equal(expectedIsLayoutZone, new PlacementInfo { Location = location }.IsLayoutZone());
+        Assert.Equal(expectedIsLayoutZone, new PlacementInfo(location).IsLayoutZone());
     }
 
     [Theory]
@@ -138,7 +138,7 @@ public class LocationParserTests
     [InlineData("/Content:5#Tab1@Group1%Card1|Col1", "Tab1")]
     public void TabShouldBeParsed(string location, string expectedTab)
     {
-        Assert.Equal(expectedTab, new PlacementInfo { Location = location }.GetTab());
+        Assert.Equal(expectedTab, new PlacementInfo(location).GetTab());
     }
 
     [Theory]
@@ -215,7 +215,7 @@ public class LocationParserTests
     [InlineData("/Content:5#Tab1@Group1%Card1|Col1", "Group1")]
     public void GroupShouldBeParsed(string location, string expectedGroup)
     {
-        Assert.Equal(expectedGroup, new PlacementInfo { Location = location }.GetGroup());
+        Assert.Equal(expectedGroup, new PlacementInfo(location).GetGroup());
     }
 
     [Theory]
@@ -261,7 +261,7 @@ public class LocationParserTests
     [InlineData("/Content:5#Tab1%Card1@Group1|Col1", "Card1")]
     public void CardShouldBeParsed(string location, string expectedCard)
     {
-        Assert.Equal(expectedCard, new PlacementInfo { Location = location }.GetCard());
+        Assert.Equal(expectedCard, new PlacementInfo(location).GetCard());
     }
 
     [Theory]
@@ -309,6 +309,6 @@ public class LocationParserTests
     [InlineData("/Content:5#Tab1%Card1@Group1|Col1", "Col1")]
     public void ColumnShouldBeParsed(string location, string expectedColumn)
     {
-        Assert.Equal(expectedColumn, new PlacementInfo { Location = location }.GetColumn());
+        Assert.Equal(expectedColumn, new PlacementInfo(location).GetColumn());
     }
 }
