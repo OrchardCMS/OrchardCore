@@ -1,10 +1,10 @@
 namespace OrchardCore.DisplayManagement;
 
 /// <summary>
-/// Helper methods for creating <see cref="IArgumentsProvider"/> implementations.
+/// Helper methods for creating <see cref="INamedEnumerable{T}"/> implementations.
 /// </summary>
 /// <remarks>
-/// This class provides utilities for manually implementing <see cref="IArgumentsProvider"/>
+/// This class provides utilities for manually implementing <see cref="INamedEnumerable{T}"/>
 /// when source generation is not available or desired.
 /// </remarks>
 public static class ArgumentsProviderHelper

@@ -19,7 +19,7 @@ public static class ArgumentsExtensions
 
     /// <summary>
     /// Converts an object's properties to arguments.
-    /// For best performance, the type should implement <see cref="IArgumentsProvider"/>.
+    /// For best performance, the type should implement <see cref="INamedEnumerable{T}"/>.
     /// </summary>
     public static INamedEnumerable<object> ToArguments<T>(this T obj) where T : notnull
         => Arguments.From(obj);

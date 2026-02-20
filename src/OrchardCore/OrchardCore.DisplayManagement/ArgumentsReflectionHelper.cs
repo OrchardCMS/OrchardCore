@@ -5,7 +5,7 @@ namespace OrchardCore.DisplayManagement;
 
 /// <summary>
 /// Internal helper class that provides cached reflection-based property access for types
-/// that don't implement <see cref="IArgumentsProvider"/>.
+/// that don't implement <see cref="INamedEnumerable{T}"/>.
 /// </summary>
 internal static class ArgumentsReflectionHelper
 {
@@ -15,7 +15,7 @@ internal static class ArgumentsReflectionHelper
     /// Creates an <see cref="INamedEnumerable{T}"/> from an object's properties using cached reflection.
     /// </summary>
     /// <remarks>
-    /// This method is slower than using <see cref="IArgumentsProvider"/> but provides a fallback
+    /// This method is slower than using <see cref="INamedEnumerable{T}"/> but provides a fallback
     /// for anonymous types and other types where compile-time generation isn't possible.
     /// </remarks>
     public static INamedEnumerable<object> FromReflection(object propertyObject)
