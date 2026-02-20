@@ -1,4 +1,4 @@
-{% if Model.Items.size > 0 %}
+{% if Model.HasItems %}
 <li class="nav-item dropdown">
     {% shape_clear_alternates Model %}
     {% shape_type Model "MenuItemLink" %}
@@ -6,9 +6,7 @@
     <ul class="dropdown-menu">
         {% for item in Model.Items %}
         <li>
-            {% shape_clear_alternates item %}
-            {% shape_type item "MenuItemLink" %}
-            {{ item | shape_render }}
+            <a class="dropdown-item" href="{{ item.ContentItem.Content.LinkMenuItemPart.Url | href }}">{{ item.ContentItem.DisplayText }}</a>
         </li>
         {% endfor %}
     </ul>
