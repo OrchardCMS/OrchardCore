@@ -46,11 +46,13 @@ public class ShapeTablePlacementProvider : IShapePlacementProvider
             if (_shapeTable.Descriptors.TryGetValue(placementContext.ShapeType, out var descriptor))
             {
                 var placement = descriptor.Placement(placementContext);
-                if (placement != null)
+                
+                if (placement != null && !string.IsNullOrEmpty(placementContext.Source))
                 {
-                    placement.Source = placementContext.Source;
-                    return placement;
+                    return placement.WithSource(placementContext.Source);
                 }
+                
+                return placement;
             }
 
             return null;
