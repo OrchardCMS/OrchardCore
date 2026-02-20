@@ -28,7 +28,10 @@ public class DataResourceManager
         culture ??= CultureInfo.CurrentUICulture;
 
         string value = null;
-        var dictionary = GetCultureDictionary(culture);
+        var dictionary = GetCultureDictionaryAsync(culture)
+            .AsTask()
+            .GetAwaiter()
+            .GetResult();
 
 
         if (dictionary != null)
@@ -41,13 +44,15 @@ public class DataResourceManager
         return value;
     }
 
-    public IDictionary<string, string> GetResources(CultureInfo culture, bool tryParents)
+    public async ValueTask<IDictionary<string, string>> GetResourcesAsync(CultureInfo culture, bool tryParents)
     {
         ArgumentNullException.ThrowIfNull(culture, nameof(culture));
 
         var currentCulture = culture;
 
-        var resources = GetCultureDictionary(culture).Translations
+        var cultureDictionary = await GetCultureDictionaryAsync(culture);
+
+        var resources = cultureDictionary.Translations
             .ToDictionary(t => t.Key.ToString(), t => t.Value[0]);
 
         if (tryParents)
@@ -56,7 +61,9 @@ public class DataResourceManager
             {
                 currentCulture = currentCulture.Parent;
 
-                var currentResources = GetCultureDictionary(currentCulture).Translations
+                var currentCultureDictionary = await GetCultureDictionaryAsync(culture);
+
+                var currentResources = currentCultureDictionary.Translations
                     .ToDictionary(t => t.Key.ToString(), t => t.Value[0]);
 
                 foreach (var translation in currentResources)
@@ -72,17 +79,17 @@ public class DataResourceManager
         return resources;
     }
 
-    private CultureDictionary GetCultureDictionary(CultureInfo culture)
+    private async ValueTask<CultureDictionary> GetCultureDictionaryAsync(CultureInfo culture)
     {
-        var cachedDictionary = _cache.GetOrCreate(CacheKeyPrefix + culture.Name, k => new Lazy<CultureDictionary>(() =>
+        var cachedDictionary = await _cache.GetOrCreateAsync(CacheKeyPrefix + culture.Name, async k =>
         {
             var dictionary = new CultureDictionary(culture.Name, _noPluralRule);
 
-            _translationProvider.LoadTranslationsAsync(culture.Name, dictionary);
+            await _translationProvider.LoadTranslationsAsync(culture.Name, dictionary);
 
             return dictionary;
-        }, LazyThreadSafetyMode.ExecutionAndPublication));
+        });
 
-        return cachedDictionary.Value;
+        return cachedDictionary;
     }
 }
