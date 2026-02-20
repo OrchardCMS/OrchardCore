@@ -21,10 +21,10 @@ public partial class ArgumentsTests
     }
 
     [Fact]
-    public void From_WithArgumentsProvider_UsesOptimizedPath()
+    public void From_WithNamedEnumerable_UsesOptimizedPath()
     {
         // Arrange
-        var obj = new TestArgumentsProvider { Name = "Test", Value = 42 };
+        var obj = new TestNamedEnumerableProvider { Name = "Test", Value = 42 };
 
         // Act
         var result = global::OrchardCore.DisplayManagement.Arguments.From(obj);
@@ -34,7 +34,7 @@ public partial class ArgumentsTests
         Assert.Equal(2, result.Named.Count);
         Assert.Equal("Test", result.Named["Name"]);
         Assert.Equal(42, result.Named["Value"]);
-        Assert.True(obj.GetArgumentsCalled);
+        Assert.Same(obj, result); // Should return the same instance since it implements INamedEnumerable<object>
     }
 
     [Fact]
@@ -128,8 +128,8 @@ public partial class ArgumentsTests
         Assert.Equal(42, result.Named["Value"]);
         Assert.Equal(true, result.Named["IsActive"]);
         
-        // Verify it's using IArgumentsProvider (not reflection)
-        Assert.IsAssignableFrom<IArgumentsProvider>(model);
+        // Verify it's using generated INamedEnumerable (not reflection)
+        Assert.IsAssignableFrom<INamedEnumerable<object>>(model);
     }
 
     [Fact]
@@ -178,19 +178,21 @@ public partial class ArgumentsTests
         public Dictionary<string, string> Metadata { get; set; }
     }
 
-    private sealed class TestArgumentsProvider : IArgumentsProvider
+    private sealed class TestNamedEnumerableProvider : PropertyBasedNamedEnumerable
     {
         public string Name { get; set; }
         public int Value { get; set; }
-        public bool GetArgumentsCalled { get; private set; }
 
-        public INamedEnumerable<object> GetArguments()
+        private static readonly string[] s_propertyNames = [nameof(Name), nameof(Value)];
+
+        protected override int PropertyCount => 2;
+        protected override IReadOnlyList<string> PropertyNames => s_propertyNames;
+        
+        protected override object GetPropertyValue(int index) => index switch
         {
-            GetArgumentsCalled = true;
-            return ArgumentsProviderHelper.Create(
-                [Name, (object)Value],
-                [nameof(Name), nameof(Value)]
-            );
-        }
+            0 => Name,
+            1 => Value,
+            _ => throw new ArgumentOutOfRangeException(nameof(index))
+        };
     }
 }

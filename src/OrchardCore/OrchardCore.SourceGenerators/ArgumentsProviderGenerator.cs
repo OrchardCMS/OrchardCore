@@ -44,7 +44,7 @@ public class ArgumentsProviderGenerator : IIncrementalGenerator
         {
             context.CancellationToken.ThrowIfCancellationRequested();
 
-            var source = GenerateArgumentsProviderImplementation(typeSymbol);
+            var source = GenerateNamedEnumerableImplementation(typeSymbol);
             if (!string.IsNullOrEmpty(source))
             {
                 context.AddSource($"{typeSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).Replace("global::", "").Replace(".", "_").Replace("<", "_").Replace(">", "_")}.g.cs", 
@@ -53,7 +53,7 @@ public class ArgumentsProviderGenerator : IIncrementalGenerator
         }
     }
 
-    private static string GenerateArgumentsProviderImplementation(INamedTypeSymbol typeSymbol)
+    private static string GenerateNamedEnumerableImplementation(INamedTypeSymbol typeSymbol)
     {
         // Get all public instance properties
         var properties = typeSymbol.GetMembers()
@@ -113,9 +113,11 @@ public class ArgumentsProviderGenerator : IIncrementalGenerator
         var keyword = isRecord ? "partial record" : "partial class";
         var accessibilityStr = GetAccessibilityText(typeSymbol.DeclaredAccessibility, typeSymbol.ContainingType != null);
 
-        sb.AppendLine($"{currentIndent}{accessibilityStr} {keyword} {typeSymbol.Name} : global::OrchardCore.DisplayManagement.IArgumentsProvider");
+        sb.AppendLine($"{currentIndent}{accessibilityStr} {keyword} {typeSymbol.Name} : global::OrchardCore.DisplayManagement.PropertyBasedNamedEnumerable");
         sb.AppendLine($"{currentIndent}{{");
-        sb.AppendLine($"{currentIndent}    private static readonly string[] s_names = new string[]");
+        
+        // Generate static property names array
+        sb.AppendLine($"{currentIndent}    private static readonly string[] s_propertyNames = new string[]");
         sb.AppendLine($"{currentIndent}    {{");
         for (int i = 0; i < properties.Count; i++)
         {
@@ -124,21 +126,27 @@ public class ArgumentsProviderGenerator : IIncrementalGenerator
         }
         sb.AppendLine($"{currentIndent}    }};");
         sb.AppendLine();
-        sb.AppendLine($"{currentIndent}    global::OrchardCore.DisplayManagement.INamedEnumerable<object> global::OrchardCore.DisplayManagement.IArgumentsProvider.GetArguments()");
-        sb.AppendLine($"{currentIndent}    {{");
-        sb.AppendLine($"{currentIndent}        var values = new object?[{properties.Count}];");
-        sb.AppendLine();
 
+        // Implement abstract properties and methods
+        sb.AppendLine($"{currentIndent}    protected override int PropertyCount => {properties.Count};");
+        sb.AppendLine();
+        sb.AppendLine($"{currentIndent}    protected override global::System.Collections.Generic.IReadOnlyList<string> PropertyNames => s_propertyNames;");
+        sb.AppendLine();
+        
+        // Implement GetPropertyValue with switch expression
+        sb.AppendLine($"{currentIndent}    protected override object? GetPropertyValue(int index)");
+        sb.AppendLine($"{currentIndent}    {{");
+        sb.AppendLine($"{currentIndent}        return index switch");
+        sb.AppendLine($"{currentIndent}        {{");
         for (int i = 0; i < properties.Count; i++)
         {
             var property = properties[i];
-            // Use 'this.' prefix to ensure we're accessing the instance property correctly
-            sb.AppendLine($"{currentIndent}        values[{i}] = this.{property.Name};");
+            sb.AppendLine($"{currentIndent}            {i} => this.{property.Name},");
         }
-
-        sb.AppendLine();
-        sb.AppendLine($"{currentIndent}        return global::OrchardCore.DisplayManagement.Arguments.From(values, s_names);");
+        sb.AppendLine($"{currentIndent}            _ => throw new global::System.ArgumentOutOfRangeException(nameof(index))");
+        sb.AppendLine($"{currentIndent}        }};");
         sb.AppendLine($"{currentIndent}    }}");
+        
         sb.AppendLine($"{currentIndent}}}");
 
         // Close containing types

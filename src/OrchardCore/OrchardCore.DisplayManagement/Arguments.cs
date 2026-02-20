@@ -57,19 +57,15 @@ public static class Arguments
 
     /// <summary>
     /// Creates an <see cref="INamedEnumerable{T}"/> from an object's properties.
-    /// This method uses a compile-time generated accessor for types implementing <see cref="IArgumentsProvider"/>.
+    /// For types marked with <see cref="GenerateArgumentsProviderAttribute"/>, this uses compile-time generated property access.
     /// For other types, it will use a slower fallback that caches reflection operations.
     /// </summary>
-    /// <remarks>
-    /// For optimal performance, types should implement <see cref="IArgumentsProvider"/> and use source generators
-    /// or manual implementation to provide property access without reflection.
-    /// </remarks>
     public static INamedEnumerable<object> From<T>(T propertyObject) where T : notnull
     {
-        // Fast path for types that implement IArgumentsProvider
-        if (propertyObject is IArgumentsProvider provider)
+        // Fast path for source-generated types that directly implement INamedEnumerable<object>
+        if (propertyObject is INamedEnumerable<object> namedEnumerable)
         {
-            return provider.GetArguments();
+            return namedEnumerable;
         }
 
         // Fallback to cached reflection-based approach for anonymous types and other objects
@@ -265,4 +261,131 @@ public static class Arguments
 public static class Arguments<T>
 {
     public static readonly INamedEnumerable<T> Empty = new Arguments.NamedEnumerable<T>([], []);
+}
+
+/// <summary>
+/// Helper class for implementing property-based INamedEnumerable.
+/// Used by source-generated code to avoid allocating arrays.
+/// </summary>
+public abstract class PropertyBasedNamedEnumerable : INamedEnumerable<object>
+{
+    private IDictionary<string, object> _named;
+
+    protected abstract int PropertyCount { get; }
+    protected abstract IReadOnlyList<string> PropertyNames { get; }
+    protected abstract object GetPropertyValue(int index);
+
+    IList<object> INamedEnumerable<object>.Positional => Array.Empty<object>();
+
+    IDictionary<string, object> INamedEnumerable<object>.Named => _named ??= new PropertyDictionary(this);
+
+    int IReadOnlyCollection<object>.Count => PropertyCount;
+
+    IEnumerator<object> IEnumerable<object>.GetEnumerator()
+    {
+        for (var i = 0; i < PropertyCount; i++)
+        {
+            yield return GetPropertyValue(i);
+        }
+    }
+
+    IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable<object>)this).GetEnumerator();
+
+    private sealed class PropertyDictionary : IDictionary<string, object>
+    {
+        private readonly PropertyBasedNamedEnumerable _parent;
+        private FrozenDictionary<string, int> _nameToIndex;
+        private KeyValuePair<string, object>[] _pairs;
+
+        public PropertyDictionary(PropertyBasedNamedEnumerable parent)
+        {
+            _parent = parent;
+        }
+
+        private void EnsureNameToIndex()
+        {
+            if (_nameToIndex != null)
+            {
+                return;
+            }
+
+            var names = _parent.PropertyNames;
+            var indexMap = new Dictionary<string, int>(names.Count);
+            for (var i = 0; i < names.Count; i++)
+            {
+                indexMap[names[i]] = i;
+            }
+            _nameToIndex = indexMap.ToFrozenDictionary();
+        }
+
+        private KeyValuePair<string, object>[] GetPairs()
+        {
+            if (_pairs != null)
+            {
+                return _pairs;
+            }
+
+            var names = _parent.PropertyNames;
+            var pairs = new KeyValuePair<string, object>[names.Count];
+            for (var i = 0; i < names.Count; i++)
+            {
+                pairs[i] = new KeyValuePair<string, object>(names[i], _parent.GetPropertyValue(i));
+            }
+            return _pairs = pairs;
+        }
+
+        public bool TryGetValue(string key, out object value)
+        {
+            EnsureNameToIndex();
+
+            if (_nameToIndex.TryGetValue(key, out var index))
+            {
+                value = _parent.GetPropertyValue(index);
+                return true;
+            }
+
+            value = default;
+            return false;
+        }
+
+        public object this[string key]
+        {
+            get
+            {
+                EnsureNameToIndex();
+                return _nameToIndex.TryGetValue(key, out var index) ? _parent.GetPropertyValue(index) : default;
+            }
+            set => throw new NotImplementedException();
+        }
+
+        public bool ContainsKey(string key)
+        {
+            EnsureNameToIndex();
+            return _nameToIndex.ContainsKey(key);
+        }
+
+        public ICollection<string> Keys => (ICollection<string>)_parent.PropertyNames;
+
+        public ICollection<object> Values => GetPairs().Select(p => p.Value).ToArray();
+
+        public int Count => _parent.PropertyCount;
+
+        public bool IsReadOnly => true;
+
+        public IEnumerator<KeyValuePair<string, object>> GetEnumerator() => ((IEnumerable<KeyValuePair<string, object>>)GetPairs()).GetEnumerator();
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+        public bool Contains(KeyValuePair<string, object> item)
+        {
+            return TryGetValue(item.Key, out var value) && EqualityComparer<object>.Default.Equals(value, item.Value);
+        }
+
+        public void Add(string key, object value) => throw new NotImplementedException();
+        public void Add(KeyValuePair<string, object> item) => throw new NotImplementedException();
+        public bool Remove(string key) => throw new NotImplementedException();
+        public bool Remove(KeyValuePair<string, object> item) => throw new NotImplementedException();
+        public void Clear() => throw new NotImplementedException();
+        public void CopyTo(KeyValuePair<string, object>[] array, int arrayIndex) => throw new NotImplementedException();
+    }
 }
