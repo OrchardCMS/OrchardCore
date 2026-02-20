@@ -138,9 +138,14 @@ public class DefaultMediaFileStore : IMediaFileStore
         await _mediaEventHandlers.InvokeAsync((handler, context) => handler.MediaMovedAsync(context), context, _logger);
     }
 
-    public virtual Task CopyFileAsync(string srcPath, string dstPath)
+    public virtual async Task CopyFileAsync(string srcPath, string dstPath)
     {
-        return _fileStore.CopyFileAsync(srcPath, dstPath);
+        if (await GetFileInfoAsync(srcPath) is { Length: { } sourceSize })
+        {
+            await ValidateAvailableStorageAsync(sourceSize);
+        }
+
+        await _fileStore.CopyFileAsync(srcPath, dstPath);
     }
 
     public virtual Task<Stream> GetFileStreamAsync(string path)
@@ -187,6 +192,7 @@ public class DefaultMediaFileStore : IMediaFileStore
                     }
                 }
 
+                await ValidateAvailableStorageAsync(outputStream.Length);
                 return await _fileStore.CreateFileFromStreamAsync(context.Path, outputStream, overwrite);
             }
             finally
@@ -197,6 +203,7 @@ public class DefaultMediaFileStore : IMediaFileStore
         }
         else
         {
+            await ValidateAvailableStorageAsync(inputStream.Length);
             return await _fileStore.CreateFileFromStreamAsync(path, inputStream, overwrite);
         }
     }
@@ -238,6 +245,16 @@ public class DefaultMediaFileStore : IMediaFileStore
             {
                 _requestBasePath = _fileStore.Combine(originalPathBase.Value, requestBasePath);
             }
+        }
+    }
+
+    private async Task ValidateAvailableStorageAsync(long requiredStorageSpace)
+    {
+        if (await GetPermittedStorageAsync() is { } storageLimit &&
+            requiredStorageSpace > storageLimit)
+        {
+            throw new FileStoreException($"The required storage space ({requiredStorageSpace} B) exceeds the " +
+                $"permitted storage space ({storageLimit} B).");
         }
     }
 }
