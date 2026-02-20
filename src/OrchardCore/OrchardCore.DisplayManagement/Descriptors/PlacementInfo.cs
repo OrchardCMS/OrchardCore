@@ -33,12 +33,6 @@ public class PlacementInfo
     /// </summary>
     private static readonly ConcurrentDictionary<string, PlacementInfo> _locationCache = new(StringComparer.OrdinalIgnoreCase);
 
-    /// <summary>
-    /// Cache for commonly used PlacementInfo instances with Location and Source set.
-    /// Uses a tuple key of (location, source).
-    /// </summary>
-    private static readonly ConcurrentDictionary<(string Location, string Source), PlacementInfo> _locationSourceCache = new();
-
     private readonly string[] _zones;
     private readonly string _position;
     private readonly string _tab;
@@ -97,23 +91,17 @@ public class PlacementInfo
     }
 
     /// <summary>
-    /// Creates a new <see cref="PlacementInfo"/> by merging this instance with additional properties.
-    /// Returns this instance if no properties need to be changed.
-    /// For simple cases where only Source changes on a cached location, returns a cached instance.
+    /// Returns a new PlacementInfo instance with the specified source value, or the current instance if the source is
+    /// unchanged.
     /// </summary>
+    /// <param name="source">The source identifier to associate with the returned PlacementInfo instance. Can be null or empty.</param>
+    /// <returns>A PlacementInfo instance with the specified source value. Returns the current instance if the source is
+    /// unchanged.</returns>
     public PlacementInfo WithSource(string source)
     {
         if (Source == source)
         {
             return this;
-        }
-
-        if (ShapeType == null && DefaultPosition == null &&
-            Alternates == null && Wrappers == null && Source == null &&
-            !string.IsNullOrEmpty(Location) && !string.IsNullOrEmpty(source))
-        {
-            var cacheKey = (Location, source);
-            return _locationSourceCache.GetOrAdd(cacheKey, static key => new PlacementInfo(key.Location, key.Source));
         }
 
         return new PlacementInfo(Location, source, ShapeType, DefaultPosition, Alternates, Wrappers);
@@ -140,9 +128,7 @@ public class PlacementInfo
         => !string.IsNullOrEmpty(Location) && Location[0] == '/';
 
     public bool IsHidden()
-    {
-        return string.IsNullOrEmpty(Location) || Location == HiddenLocation;
-    }
+        => string.IsNullOrEmpty(Location) || Location == HiddenLocation;
 
     /// <summary>
     /// Returns the list of zone names.
@@ -150,46 +136,34 @@ public class PlacementInfo
     /// </summary>
     /// <returns></returns>
     public string[] GetZones()
-    {
-        return _zones ?? [];
-    }
+        => _zones ?? [];
 
     public string GetPosition()
-    {
-        return _position ?? DefaultPosition ?? "";
-    }
+        => _position ?? DefaultPosition ?? "";
 
     public string GetTab()
-    {
-        return _tab ?? "";
-    }
+        => _tab ?? "";
 
     /// <summary>
     /// Extracts the group information from a location string, or <c>null</c> if it is not present.
     /// e.g., Content:12@search.
     /// </summary>
     public string GetGroup()
-    {
-        return _group;
-    }
+        => _group;
 
     /// <summary>
     /// Extracts the card information from a location string, or <c>null</c> if it is not present.
     /// e.g., Content:12%search.
     /// </summary>
     public string GetCard()
-    {
-        return _card;
-    }
+        => _card;
 
     /// <summary>
     /// Extracts the column information from a location string, or <c>null</c> if it is not present.
     /// e.g., Content:12!search.
     /// </summary>
     public string GetColumn()
-    {
-        return _column;
-    }
+        => _column;
 
     private static void ParseLocation(string location, out string[] zones, out string position, out string tab, out string group, out string card, out string column)
     {
