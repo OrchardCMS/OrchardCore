@@ -14,7 +14,7 @@ public sealed class ResourceManagementOptionsConfiguration : IConfigureOptions<R
         _manifest
             .DefineScript("TheCommunityTheme-bootstrap-bundle")
             .SetCdn("https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js", "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.js")
-            .SetCdnIntegrity("sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz", "sha384-ga0NLkToyMqEMFx4qJP3OgoiGlGq6r8EidUXlWBiid22ckMe1MBDkvBHjmY2Svz6")
+            .SetCdnIntegrity("sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz", "sha384-5xO2n1cyGKAe630nacBqFQxWoXjUIkhoc/FxQrWM07EIZ3TuqkAsusDeyPDOIeid")
             .SetVersion("5.3.3");
 
         _manifest
