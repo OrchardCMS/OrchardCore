@@ -50,7 +50,7 @@ public class LocalizationManager : ILocalizationManager
             var dictionary = new CultureDictionary(culture.Name, rule ?? _defaultPluralRule);
             foreach (var translationProvider in _translationProviders)
             {
-                translationProvider.LoadTranslations(culture.Name, dictionary);
+                translationProvider.LoadTranslationsAsync(culture.Name, dictionary);
             }
 
             return dictionary;

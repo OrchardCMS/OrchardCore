@@ -24,7 +24,7 @@ public class LocalizationManagerTests : IDisposable
     [Fact]
     public void GetDictionaryReturnsDictionaryWithPluralRuleAndCultureIfNoTranslationsExists()
     {
-        _translationProvider.Setup(o => o.LoadTranslations(
+        _translationProvider.Setup(o => o.LoadTranslationsAsync(
             It.Is<string>(culture => culture == "cs"),
             It.IsAny<CultureDictionary>())
         );
@@ -42,7 +42,7 @@ public class LocalizationManagerTests : IDisposable
     {
         var dictionaryRecord = new CultureDictionaryRecord("ball", "míč", "míče", "míčů");
         _translationProvider
-            .Setup(o => o.LoadTranslations(It.Is<string>(culture => culture == "cs"), It.IsAny<CultureDictionary>()))
+            .Setup(o => o.LoadTranslationsAsync(It.Is<string>(culture => culture == "cs"), It.IsAny<CultureDictionary>()))
             .Callback<string, CultureDictionary>((culture, dictioanry) => dictioanry.MergeTranslations(new[] { dictionaryRecord }));
 
         var manager = new LocalizationManager([_pluralRuleProvider.Object], [_translationProvider.Object], _memoryCache);
@@ -64,7 +64,7 @@ public class LocalizationManagerTests : IDisposable
         highPriorityRuleProvider.SetupGet(o => o.Order).Returns(-1);
         highPriorityRuleProvider.Setup(o => o.TryGetRule(It.Is<CultureInfo>(culture => culture.Name == "cs"), out csPluralRuleOverride)).Returns(true);
 
-        _translationProvider.Setup(o => o.LoadTranslations(
+        _translationProvider.Setup(o => o.LoadTranslationsAsync(
             It.Is<string>(culture => culture == "cs"),
             It.IsAny<CultureDictionary>())
         );

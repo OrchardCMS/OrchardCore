@@ -78,7 +78,7 @@ public class DataResourceManager
         {
             var dictionary = new CultureDictionary(culture.Name, _noPluralRule);
 
-            _translationProvider.LoadTranslations(culture.Name, dictionary);
+            _translationProvider.LoadTranslationsAsync(culture.Name, dictionary);
 
             return dictionary;
         }, LazyThreadSafetyMode.ExecutionAndPublication));
