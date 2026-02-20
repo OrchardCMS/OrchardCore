@@ -76,7 +76,7 @@ public static class Arguments
         return ArgumentsReflectionHelper.FromReflection(propertyObject);
     }
 
-    private sealed class NamedEnumerable<T> : INamedEnumerable<T>
+    internal sealed class NamedEnumerable<T> : INamedEnumerable<T>
     {
         private readonly T[] _arguments;
         private readonly string[] _names;
@@ -259,10 +259,10 @@ public static class Arguments
         }
     }
 
-    public static readonly INamedEnumerable<object> Empty = From([], []);
+    public static readonly INamedEnumerable<object> Empty = new NamedEnumerable<object>([], []);
 }
 
 public static class Arguments<T>
 {
-    public static readonly INamedEnumerable<T> Empty = Arguments.FromT(Array.Empty<T>(), Array.Empty<string>());
+    public static readonly INamedEnumerable<T> Empty = new Arguments.NamedEnumerable<T>([], []);
 }
