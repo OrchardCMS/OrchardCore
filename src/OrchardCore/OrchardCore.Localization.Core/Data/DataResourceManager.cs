@@ -61,7 +61,7 @@ public class DataResourceManager
             {
                 currentCulture = currentCulture.Parent;
 
-                var currentCultureDictionary = await GetCultureDictionaryAsync(culture);
+                var currentCultureDictionary = await GetCultureDictionaryAsync(currentCulture);
 
                 var currentResources = currentCultureDictionary.Translations
                     .ToDictionary(t => t.Key.ToString(), t => t.Value[0]);
