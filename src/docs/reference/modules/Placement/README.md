@@ -322,7 +322,7 @@ This setup would then show your template  (e.g. `GalleryPart.cshtml` or `Gallery
 
 When setting placement locations in display drivers, you can use the `PlacementLocationBuilder` fluent API as an alternative to manually constructing location strings. This makes the placement intent more explicit and reduces mistakes.
 
-The builder enforces the **nesting hierarchy** through the type system: after calling `.Zone()` you can add a `.Tab()`, after `.Tab()` you can add a `.Card()`, and after `.Card()` you can add a `.Column()`. This mirrors the rendering hierarchy (**Zone → Tab → Card → Column**) and prevents misordering.
+The builder enforces the **nesting hierarchy** through the rendering order (**Zone → Tab → Card → Column**), using a single fluent `PlacementLocationBuilder` class where all methods return the same instance for easy chaining.
 
 ### String syntax vs. Fluent API
 
@@ -336,18 +336,18 @@ The builder enforces the **nesting hierarchy** through the type system: after ca
 
 ### Available methods
 
-The builder starts with `.Zone()` and each method returns a progressively narrower builder type:
+The builder starts with `.Zone()` and all methods return the same `PlacementLocationBuilder` instance for fluent chaining:
 
-| Method | Returns | Description | String equivalent |
-|--------|---------|-------------|-------------------|
-| `.Zone("Content", "5")` | `PlacementZoneBuilder` | Sets the target zone and shape position (required) | `Content:5` |
-| `.AsLayoutZone()` | `PlacementZoneBuilder` | Targets a layout zone | `/` prefix |
-| `.Tab("Settings", "1")` | `PlacementTabBuilder` | Groups into a tab with optional group position | `#Settings;1` |
-| `.Card("Details", "2")` | `PlacementCardBuilder` | Groups into a card with optional group position | `%Details;2` |
-| `.Column("Left", "1", "9")` | `PlacementColumnBuilder` | Groups into a column with optional position and width | `\|Left_9;1` |
-| `.Group("search")` | *(same builder)* | Assigns a group (available at every level) | `@search` |
+| Method | Description | String equivalent |
+|--------|-------------|-------------------|
+| `.Zone("Content", "5")` | Sets the target zone and shape position (required) | `Content:5` |
+| `.AsLayoutZone()` | Targets a layout zone | `/` prefix |
+| `.Tab("Settings", "1")` | Groups into a tab with optional group position | `#Settings;1` |
+| `.Card("Details", "2")` | Groups into a card with optional group position | `%Details;2` |
+| `.Column("Left", "1", "9")` | Groups into a column with optional position and width | `\|Left_9;1` |
+| `.Group("search")` | Assigns a group (available at every level) | `@search` |
 
-**Hierarchy enforcement:** You can only move **deeper** in the nesting. `PlacementTabBuilder` exposes `.Card()` and `.Column()` but not `.Tab()`. `PlacementCardBuilder` exposes only `.Column()`. `PlacementColumnBuilder` is the terminal level. Levels can be skipped (e.g., `.Zone().Card()` without a `.Tab()` is valid).
+Methods can be called in any order after `.Zone()`. Levels can be skipped (e.g., `.Zone().Card()` without a `.Tab()` is valid).
 
 ### Examples
 

@@ -1,5 +1,3 @@
-using System.Text;
-
 namespace OrchardCore.DisplayManagement.Descriptors;
 
 /// <summary>
@@ -36,13 +34,18 @@ namespace OrchardCore.DisplayManagement.Descriptors;
 /// </remarks>
 public sealed class PlacementLocationBuilder
 {
-    internal string _zone;
-    internal string _position;
-    internal string _tab;
-    internal string _group;
-    internal string _card;
-    internal string _column;
-    internal bool _isLayoutZone;
+    private string _zone;
+    private string _position;
+    private string _tabName;
+    private string _tabPosition;
+    private string _group;
+    private string _cardName;
+    private string _cardPosition;
+    private string _columnName;
+    private string _columnPosition;
+    private string _columnWidth;
+    private bool _isLayoutZone;
+    private string _cachedResult;
 
     /// <summary>
     /// Sets the target zone and the shape's position within that zone.
@@ -62,99 +65,23 @@ public sealed class PlacementLocationBuilder
     /// <item>No position (default) is treated as <c>"0"</c>.</item>
     /// </list>
     /// </param>
-    /// <returns>A builder to optionally add groupings (Tab, Card, Column).</returns>
-    public PlacementZoneBuilder Zone(string zone, string position = null)
+    /// <returns>This builder instance for method chaining.</returns>
+    public PlacementLocationBuilder Zone(string zone, string position = null)
     {
         ArgumentException.ThrowIfNullOrEmpty(zone);
         _zone = zone;
         _position = position;
-        return new PlacementZoneBuilder(this);
-    }
-
-    /// <summary>
-    /// Builds the location string from the configured values.
-    /// </summary>
-    /// <returns>The placement location string.</returns>
-    /// <exception cref="InvalidOperationException">Thrown when <see cref="Zone"/> has not been called.</exception>
-    public string Build()
-    {
-        if (string.IsNullOrEmpty(_zone))
-        {
-            throw new InvalidOperationException("Zone is required. Call Zone() before Build().");
-        }
-
-        var sb = new StringBuilder();
-
-        if (_isLayoutZone)
-        {
-            sb.Append('/');
-        }
-
-        sb.Append(_zone);
-
-        if (!string.IsNullOrEmpty(_position))
-        {
-            sb.Append(PlacementInfo.PositionDelimiter);
-            sb.Append(_position);
-        }
-
-        if (!string.IsNullOrEmpty(_tab))
-        {
-            sb.Append(PlacementInfo.TabDelimiter);
-            sb.Append(_tab);
-        }
-
-        if (!string.IsNullOrEmpty(_group))
-        {
-            sb.Append(PlacementInfo.GroupDelimiter);
-            sb.Append(_group);
-        }
-
-        if (!string.IsNullOrEmpty(_card))
-        {
-            sb.Append(PlacementInfo.CardDelimiter);
-            sb.Append(_card);
-        }
-
-        if (!string.IsNullOrEmpty(_column))
-        {
-            sb.Append(PlacementInfo.ColumnDelimiter);
-            sb.Append(_column);
-        }
-
-        return sb.ToString();
-    }
-
-    /// <inheritdoc/>
-    public override string ToString()
-        => Build();
-
-    /// <summary>
-    /// Implicit conversion to string for convenience.
-    /// </summary>
-    public static implicit operator string(PlacementLocationBuilder builder)
-        => builder?.Build();
-}
-
-/// <summary>
-/// Provides grouping options after a zone has been configured.
-/// From here, you can add a Tab, Card, Column, or Group.
-/// </summary>
-public sealed class PlacementZoneBuilder
-{
-    private readonly PlacementLocationBuilder _root;
-
-    internal PlacementZoneBuilder(PlacementLocationBuilder root)
-    {
-        _root = root;
+        _cachedResult = null;
+        return this;
     }
 
     /// <summary>
     /// Marks this placement as targeting a layout zone (prefixed with <c>/</c>).
     /// </summary>
-    public PlacementZoneBuilder AsLayoutZone()
+    public PlacementLocationBuilder AsLayoutZone()
     {
-        _root._isLayoutZone = true;
+        _isLayoutZone = true;
+        _cachedResult = null;
         return this;
     }
 
@@ -162,10 +89,11 @@ public sealed class PlacementZoneBuilder
     /// Assigns a group to the shape.
     /// </summary>
     /// <param name="name">The group name (e.g., <c>"search"</c>).</param>
-    public PlacementZoneBuilder Group(string name)
+    public PlacementLocationBuilder Group(string name)
     {
         ArgumentException.ThrowIfNullOrEmpty(name);
-        _root._group = name;
+        _group = name;
+        _cachedResult = null;
         return this;
     }
 
@@ -177,32 +105,34 @@ public sealed class PlacementZoneBuilder
     /// Optional. The position of this tab relative to other tabs.
     /// All shapes in the same tab should use the same tab position value.
     /// </param>
-    /// <returns>A builder to optionally add a Card or Column inside this tab.</returns>
-    public PlacementTabBuilder Tab(string name, string position = null)
+    public PlacementLocationBuilder Tab(string name, string position = null)
     {
         ArgumentException.ThrowIfNullOrEmpty(name);
-        _root._tab = string.IsNullOrEmpty(position) ? name : $"{name};{position}";
-        return new PlacementTabBuilder(_root);
+        _tabName = name;
+        _tabPosition = position;
+        _cachedResult = null;
+        return this;
     }
 
     /// <summary>
-    /// Groups the shape into a card (without a containing tab).
+    /// Groups the shape into a card.
     /// </summary>
     /// <param name="name">The card name (e.g., <c>"Details"</c>).</param>
     /// <param name="position">
     /// Optional. The position of this card relative to other cards.
     /// All shapes in the same card should use the same card position value.
     /// </param>
-    /// <returns>A builder to optionally add a Column inside this card.</returns>
-    public PlacementCardBuilder Card(string name, string position = null)
+    public PlacementLocationBuilder Card(string name, string position = null)
     {
         ArgumentException.ThrowIfNullOrEmpty(name);
-        _root._card = string.IsNullOrEmpty(position) ? name : $"{name};{position}";
-        return new PlacementCardBuilder(_root);
+        _cardName = name;
+        _cardPosition = position;
+        _cachedResult = null;
+        return this;
     }
 
     /// <summary>
-    /// Groups the shape into a column (without a containing tab or card).
+    /// Groups the shape into a column.
     /// </summary>
     /// <param name="name">The column name (e.g., <c>"Left"</c>, <c>"Right"</c>).</param>
     /// <param name="position">
@@ -213,204 +143,167 @@ public sealed class PlacementZoneBuilder
     /// Optional. The Bootstrap grid column width (e.g., <c>"9"</c> for <c>col-md-9</c>,
     /// or <c>"lg-9"</c> for <c>col-lg-9</c>).
     /// </param>
-    public PlacementColumnBuilder Column(string name, string position = null, string width = null)
+    public PlacementLocationBuilder Column(string name, string position = null, string width = null)
     {
         ArgumentException.ThrowIfNullOrEmpty(name);
-        SetColumn(_root, name, position, width);
-        return new PlacementColumnBuilder(_root);
+        _columnName = name;
+        _columnPosition = position;
+        _columnWidth = width;
+        _cachedResult = null;
+        return this;
     }
 
-    /// <inheritdoc cref="PlacementLocationBuilder.Build"/>
-    public string Build() => _root.Build();
-
-    /// <inheritdoc/>
-    public override string ToString() => Build();
-
     /// <summary>
-    /// Implicit conversion to string for convenience.
+    /// Returns the placement location string. The result is cached until the builder is modified.
     /// </summary>
-    public static implicit operator string(PlacementZoneBuilder builder)
-        => builder?.Build();
-
-    internal static void SetColumn(PlacementLocationBuilder root, string name, string position, string width)
+    /// <exception cref="InvalidOperationException">Thrown when <see cref="Zone"/> has not been called.</exception>
+    public override string ToString()
     {
-        var value = name;
-
-        if (!string.IsNullOrEmpty(width))
+        if (_cachedResult != null)
         {
-            value = $"{value}_{width}";
+            return _cachedResult;
         }
 
-        if (!string.IsNullOrEmpty(position))
+        if (string.IsNullOrEmpty(_zone))
         {
-            value = $"{value};{position}";
+            throw new InvalidOperationException("Zone is required. Call Zone() before calling ToString().");
         }
 
-        root._column = value;
+        // Pre-calculate total length to use string.Create and avoid StringBuilder allocation.
+        var length = _zone.Length;
+
+        if (_isLayoutZone)
+        {
+            length++;
+        }
+
+        if (!string.IsNullOrEmpty(_position))
+        {
+            length += 1 + _position.Length;
+        }
+
+        if (!string.IsNullOrEmpty(_tabName))
+        {
+            length += 1 + _tabName.Length;
+
+            if (!string.IsNullOrEmpty(_tabPosition))
+            {
+                length += 1 + _tabPosition.Length;
+            }
+        }
+
+        if (!string.IsNullOrEmpty(_group))
+        {
+            length += 1 + _group.Length;
+        }
+
+        if (!string.IsNullOrEmpty(_cardName))
+        {
+            length += 1 + _cardName.Length;
+
+            if (!string.IsNullOrEmpty(_cardPosition))
+            {
+                length += 1 + _cardPosition.Length;
+            }
+        }
+
+        if (!string.IsNullOrEmpty(_columnName))
+        {
+            length += 1 + _columnName.Length;
+
+            if (!string.IsNullOrEmpty(_columnWidth))
+            {
+                length += 1 + _columnWidth.Length;
+            }
+
+            if (!string.IsNullOrEmpty(_columnPosition))
+            {
+                length += 1 + _columnPosition.Length;
+            }
+        }
+
+        _cachedResult = string.Create(length, this, static (span, builder) =>
+        {
+            var offset = 0;
+
+            if (builder._isLayoutZone)
+            {
+                span[offset++] = '/';
+            }
+
+            builder._zone.AsSpan().CopyTo(span[offset..]);
+            offset += builder._zone.Length;
+
+            if (!string.IsNullOrEmpty(builder._position))
+            {
+                span[offset++] = PlacementInfo.PositionDelimiter;
+                builder._position.AsSpan().CopyTo(span[offset..]);
+                offset += builder._position.Length;
+            }
+
+            if (!string.IsNullOrEmpty(builder._tabName))
+            {
+                span[offset++] = PlacementInfo.TabDelimiter;
+                builder._tabName.AsSpan().CopyTo(span[offset..]);
+                offset += builder._tabName.Length;
+
+                if (!string.IsNullOrEmpty(builder._tabPosition))
+                {
+                    span[offset++] = ';';
+                    builder._tabPosition.AsSpan().CopyTo(span[offset..]);
+                    offset += builder._tabPosition.Length;
+                }
+            }
+
+            if (!string.IsNullOrEmpty(builder._group))
+            {
+                span[offset++] = PlacementInfo.GroupDelimiter;
+                builder._group.AsSpan().CopyTo(span[offset..]);
+                offset += builder._group.Length;
+            }
+
+            if (!string.IsNullOrEmpty(builder._cardName))
+            {
+                span[offset++] = PlacementInfo.CardDelimiter;
+                builder._cardName.AsSpan().CopyTo(span[offset..]);
+                offset += builder._cardName.Length;
+
+                if (!string.IsNullOrEmpty(builder._cardPosition))
+                {
+                    span[offset++] = ';';
+                    builder._cardPosition.AsSpan().CopyTo(span[offset..]);
+                    offset += builder._cardPosition.Length;
+                }
+            }
+
+            if (!string.IsNullOrEmpty(builder._columnName))
+            {
+                span[offset++] = PlacementInfo.ColumnDelimiter;
+                builder._columnName.AsSpan().CopyTo(span[offset..]);
+                offset += builder._columnName.Length;
+
+                if (!string.IsNullOrEmpty(builder._columnWidth))
+                {
+                    span[offset++] = '_';
+                    builder._columnWidth.AsSpan().CopyTo(span[offset..]);
+                    offset += builder._columnWidth.Length;
+                }
+
+                if (!string.IsNullOrEmpty(builder._columnPosition))
+                {
+                    span[offset++] = ';';
+                    builder._columnPosition.AsSpan().CopyTo(span[offset..]);
+                    offset += builder._columnPosition.Length;
+                }
+            }
+        });
+
+        return _cachedResult;
     }
-}
-
-/// <summary>
-/// Provides nesting options after a tab has been configured.
-/// From here, you can add a Card or Column inside the tab.
-/// </summary>
-public sealed class PlacementTabBuilder
-{
-    private readonly PlacementLocationBuilder _root;
-
-    internal PlacementTabBuilder(PlacementLocationBuilder root)
-    {
-        _root = root;
-    }
-
-    /// <summary>
-    /// Assigns a group to the shape.
-    /// </summary>
-    /// <param name="name">The group name.</param>
-    public PlacementTabBuilder Group(string name)
-    {
-        ArgumentException.ThrowIfNullOrEmpty(name);
-        _root._group = name;
-        return this;
-    }
-
-    /// <summary>
-    /// Groups the shape into a card inside the current tab.
-    /// </summary>
-    /// <param name="name">The card name (e.g., <c>"Details"</c>).</param>
-    /// <param name="position">
-    /// Optional. The position of this card relative to other cards.
-    /// All shapes in the same card should use the same card position value.
-    /// </param>
-    /// <returns>A builder to optionally add a Column inside this card.</returns>
-    public PlacementCardBuilder Card(string name, string position = null)
-    {
-        ArgumentException.ThrowIfNullOrEmpty(name);
-        _root._card = string.IsNullOrEmpty(position) ? name : $"{name};{position}";
-        return new PlacementCardBuilder(_root);
-    }
-
-    /// <summary>
-    /// Groups the shape into a column inside the current tab (without a containing card).
-    /// </summary>
-    /// <param name="name">The column name (e.g., <c>"Left"</c>, <c>"Right"</c>).</param>
-    /// <param name="position">
-    /// Optional. The position of this column relative to other columns.
-    /// All shapes in the same column should use the same column position value.
-    /// </param>
-    /// <param name="width">
-    /// Optional. The Bootstrap grid column width (e.g., <c>"9"</c> for <c>col-md-9</c>,
-    /// or <c>"lg-9"</c> for <c>col-lg-9</c>).
-    /// </param>
-    public PlacementColumnBuilder Column(string name, string position = null, string width = null)
-    {
-        ArgumentException.ThrowIfNullOrEmpty(name);
-        PlacementZoneBuilder.SetColumn(_root, name, position, width);
-        return new PlacementColumnBuilder(_root);
-    }
-
-    /// <inheritdoc cref="PlacementLocationBuilder.Build"/>
-    public string Build() => _root.Build();
-
-    /// <inheritdoc/>
-    public override string ToString() => Build();
 
     /// <summary>
     /// Implicit conversion to string for convenience.
     /// </summary>
-    public static implicit operator string(PlacementTabBuilder builder)
-        => builder?.Build();
-}
-
-/// <summary>
-/// Provides nesting options after a card has been configured.
-/// From here, you can add a Column inside the card.
-/// </summary>
-public sealed class PlacementCardBuilder
-{
-    private readonly PlacementLocationBuilder _root;
-
-    internal PlacementCardBuilder(PlacementLocationBuilder root)
-    {
-        _root = root;
-    }
-
-    /// <summary>
-    /// Assigns a group to the shape.
-    /// </summary>
-    /// <param name="name">The group name.</param>
-    public PlacementCardBuilder Group(string name)
-    {
-        ArgumentException.ThrowIfNullOrEmpty(name);
-        _root._group = name;
-        return this;
-    }
-
-    /// <summary>
-    /// Groups the shape into a column inside the current card.
-    /// </summary>
-    /// <param name="name">The column name (e.g., <c>"Left"</c>, <c>"Right"</c>).</param>
-    /// <param name="position">
-    /// Optional. The position of this column relative to other columns.
-    /// All shapes in the same column should use the same column position value.
-    /// </param>
-    /// <param name="width">
-    /// Optional. The Bootstrap grid column width (e.g., <c>"9"</c> for <c>col-md-9</c>,
-    /// or <c>"lg-9"</c> for <c>col-lg-9</c>).
-    /// </param>
-    public PlacementColumnBuilder Column(string name, string position = null, string width = null)
-    {
-        ArgumentException.ThrowIfNullOrEmpty(name);
-        PlacementZoneBuilder.SetColumn(_root, name, position, width);
-        return new PlacementColumnBuilder(_root);
-    }
-
-    /// <inheritdoc cref="PlacementLocationBuilder.Build"/>
-    public string Build() => _root.Build();
-
-    /// <inheritdoc/>
-    public override string ToString() => Build();
-
-    /// <summary>
-    /// Implicit conversion to string for convenience.
-    /// </summary>
-    public static implicit operator string(PlacementCardBuilder builder)
-        => builder?.Build();
-}
-
-/// <summary>
-/// Terminal builder after a column has been configured.
-/// No further nesting is available.
-/// </summary>
-public sealed class PlacementColumnBuilder
-{
-    private readonly PlacementLocationBuilder _root;
-
-    internal PlacementColumnBuilder(PlacementLocationBuilder root)
-    {
-        _root = root;
-    }
-
-    /// <summary>
-    /// Assigns a group to the shape.
-    /// </summary>
-    /// <param name="name">The group name.</param>
-    public PlacementColumnBuilder Group(string name)
-    {
-        ArgumentException.ThrowIfNullOrEmpty(name);
-        _root._group = name;
-        return this;
-    }
-
-    /// <inheritdoc cref="PlacementLocationBuilder.Build"/>
-    public string Build() => _root.Build();
-
-    /// <inheritdoc/>
-    public override string ToString() => Build();
-
-    /// <summary>
-    /// Implicit conversion to string for convenience.
-    /// </summary>
-    public static implicit operator string(PlacementColumnBuilder builder)
-        => builder?.Build();
+    public static implicit operator string(PlacementLocationBuilder builder)
+        => builder?.ToString();
 }

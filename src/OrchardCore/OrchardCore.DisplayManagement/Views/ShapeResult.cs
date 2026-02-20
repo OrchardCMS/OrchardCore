@@ -102,7 +102,7 @@ public class ShapeResult : IDisplayResult
 
         var builder = new PlacementLocationBuilder();
         configure(builder);
-        _defaultLocation = builder.Build();
+        _defaultLocation = builder.ToString();
         return this;
     }
     
@@ -156,7 +156,7 @@ public class ShapeResult : IDisplayResult
 
         var builder = new PlacementLocationBuilder();
         configure(builder);
-        Location(displayType, builder.Build());
+        Location(displayType, builder.ToString());
         return this;
     }
     
