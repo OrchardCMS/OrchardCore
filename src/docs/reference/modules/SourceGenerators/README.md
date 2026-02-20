@@ -8,16 +8,16 @@ OrchardCore includes source generators that optimize performance by generating c
 
 The `Arguments` class is used throughout OrchardCore to convert objects into named argument collections for shapes and other scenarios. Source generation provides zero-reflection, zero-allocation property access for optimal performance.
 
-### Recommended: Use Named Types with `[GenerateArgumentsProvider]`
+### Recommended: Use Named Types with `[GenerateArguments]`
 
-**This is the preferred approach** for production code. Mark your classes with the `[GenerateArgumentsProvider]` attribute to generate optimized `INamedEnumerable<object>` implementations.
+**This is the preferred approach** for production code. Mark your classes with the `[GenerateArguments]` attribute to generate optimized `INamedEnumerable<object>` implementations.
 
 #### Quick Start
 
 ```csharp
 using OrchardCore.DisplayManagement;
 
-[GenerateArgumentsProvider]
+[GenerateArguments]
 public partial class MyShapeArguments
 {
     public string Title { get; set; }
@@ -80,7 +80,7 @@ This is suitable for prototyping or infrequent usage where performance isn't cri
 
 | Approach | Performance | Allocation | Setup | Use Case |
 |----------|-------------|------------|-------|----------|
-| **Named Types with `[GenerateArgumentsProvider]`** | ⚡⚡⚡ Fastest | Zero | Add attribute | **Production (Recommended)** |
+| **Named Types with `[GenerateArguments]`** | ⚡⚡⚡ Fastest | Zero | Add attribute | **Production (Recommended)** |
 | **Interceptors** | ⚡⚡⚡ Fastest | Minimal | None (.NET 9+) | .NET 9+ anonymous types |
 | **Reflection + Cache** | ⚡ Cached | Per call | None | Prototyping, rare usage |
 
@@ -91,7 +91,7 @@ OrchardCore modules use source-generated models extensively. For example:
 ### Pager Shape
 
 ```csharp
-[GenerateArgumentsProvider]
+[GenerateArguments]
 public partial class PagerSlim
 {
     public int PageSize { get; set; }
@@ -103,7 +103,7 @@ public partial class PagerSlim
 ### Content Zone Arguments
 
 ```csharp
-[GenerateArgumentsProvider]
+[GenerateArguments]
 internal sealed partial class ContentZoneArguments
 {
     public string Identifier { get; set; }
@@ -113,7 +113,7 @@ internal sealed partial class ContentZoneArguments
 ### Navigation Arguments
 
 ```csharp
-[GenerateArgumentsProvider]
+[GenerateArguments]
 internal sealed partial class NavigationArguments
 {
     public string MenuName { get; set; }
@@ -123,11 +123,11 @@ internal sealed partial class NavigationArguments
 
 ## What Gets Generated
 
-When you mark a class with `[GenerateArgumentsProvider]`, the generator creates an optimized implementation that extends `PropertyBasedNamedEnumerable`:
+When you mark a class with `[GenerateArguments]`, the generator creates an optimized implementation that extends `PropertyBasedNamedEnumerable`:
 
 ```csharp
 // Your code:
-[GenerateArgumentsProvider]
+[GenerateArguments]
 public partial class MyData
 {
     public string Name { get; set; }
@@ -171,7 +171,7 @@ var shape = await factory.CreateAsync("MyShape", new
 });
 
 // After (Recommended):
-[GenerateArgumentsProvider]
+[GenerateArguments]
 public partial class MyShapeArguments
 {
     public string Title { get; set; }
@@ -262,7 +262,7 @@ Properties → Direct access via switch → No intermediate allocations
 
 ## Best Practices
 
-1. **Use `[GenerateArgumentsProvider]` for production code** - Most stable and performant
+1. **Use `[GenerateArguments]` for production code** - Most stable and performant
 2. **Use descriptive names** - `UserRegistrationEmailData` over `Data`
 3. **Group related properties** - Create focused models for specific scenarios
 4. **Keep models simple** - Avoid complex logic in getters
@@ -278,11 +278,11 @@ Properties → Direct access via switch → No intermediate allocations
 
 ```csharp
 // ✅ Correct
-[GenerateArgumentsProvider]
+[GenerateArguments]
 public partial class MyData { ... }
 
 // ❌ Wrong
-[GenerateArgumentsProvider]
+[GenerateArguments]
 public class MyData { ... }
 ```
 
@@ -317,7 +317,7 @@ var title = enumerable.Named["Title"]; // Unnecessary
 
 ```
 Production code with reusable types?
-├─ Yes → Use [GenerateArgumentsProvider] ✅ RECOMMENDED
+├─ Yes → Use [GenerateArguments] ✅ RECOMMENDED
 └─ No
    └─ Using .NET 9+ with anonymous types?
       ├─ Yes → Interceptors (automatic) ✅
@@ -328,7 +328,7 @@ Production code with reusable types?
 
 ### ArgumentsProviderGenerator
 
-Generates `INamedEnumerable<object>` implementations for types marked with `[GenerateArgumentsProvider]`.
+Generates `INamedEnumerable<object>` implementations for types marked with `[GenerateArguments]`.
 
 **What it generates:**
 - Extends `PropertyBasedNamedEnumerable` base class
@@ -370,7 +370,7 @@ The generator supports nested types:
 ```csharp
 public partial class OuterClass
 {
-    [GenerateArgumentsProvider]
+    [GenerateArguments]
     public partial class InnerArguments
     {
         public string Value { get; set; }
@@ -383,7 +383,7 @@ public partial class OuterClass
 Works with both classes and records:
 
 ```csharp
-[GenerateArgumentsProvider]
+[GenerateArguments]
 public partial record MyRecordArgs(string Title, int Count);
 ```
 
@@ -392,7 +392,7 @@ public partial record MyRecordArgs(string Title, int Count);
 Generated classes can be used as base classes:
 
 ```csharp
-[GenerateArgumentsProvider]
+[GenerateArguments]
 public partial class BaseArgs
 {
     public string CommonProperty { get; set; }
@@ -405,4 +405,4 @@ public class ExtendedArgs : BaseArgs
 }
 ```
 
-Note: Only properties on the class marked with `[GenerateArgumentsProvider]` will be included in the generated accessor.
+Note: Only properties on the class marked with `[GenerateArguments]` will be included in the generated accessor.

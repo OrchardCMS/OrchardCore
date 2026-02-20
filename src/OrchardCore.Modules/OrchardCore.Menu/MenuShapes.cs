@@ -293,7 +293,7 @@ public class MenuShapes : ShapeTableProvider
     }
 }
 
-[GenerateArgumentsProvider]
+[GenerateArguments]
 internal sealed partial class MenuItemArguments
 {
     public ContentItem ContentItem { get; set; }

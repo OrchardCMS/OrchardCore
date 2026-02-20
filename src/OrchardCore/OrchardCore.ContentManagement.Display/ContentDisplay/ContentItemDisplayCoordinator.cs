@@ -409,7 +409,7 @@ public class ContentItemDisplayCoordinator : IContentDisplayHandler
     }
 }
 
-[GenerateArgumentsProvider]
+[GenerateArguments]
 internal sealed partial class ContentZoneArguments
 {
     public string Identifier { get; set; }

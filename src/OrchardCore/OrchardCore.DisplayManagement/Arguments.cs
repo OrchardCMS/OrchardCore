@@ -57,7 +57,7 @@ public static class Arguments
 
     /// <summary>
     /// Creates an <see cref="INamedEnumerable{T}"/> from an object's properties.
-    /// For types marked with <see cref="GenerateArgumentsProviderAttribute"/>, this uses compile-time generated property access.
+    /// For types marked with <see cref="GenerateArgumentsAttribute"/>, this uses compile-time generated property access.
     /// For other types, it will use a slower fallback that caches reflection operations.
     /// </summary>
     public static INamedEnumerable<object> From<T>(T propertyObject) where T : notnull

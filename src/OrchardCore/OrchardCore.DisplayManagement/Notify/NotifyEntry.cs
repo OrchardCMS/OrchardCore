@@ -13,7 +13,7 @@ public enum NotifyType
     Error,
 }
 
-[GenerateArgumentsProvider]
+[GenerateArguments]
 public partial class NotifyEntry
 {
     private (HtmlEncoder HtmlEncoder, string Message) _cache;

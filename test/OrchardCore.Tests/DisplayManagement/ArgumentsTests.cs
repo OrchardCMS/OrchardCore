@@ -159,7 +159,7 @@ public partial class ArgumentsTests
         Assert.Equal(new[] { "tag1", "tag2" }, result.Named["Tags"]);
     }
 
-    [GenerateArgumentsProvider]
+    [GenerateArguments]
     private sealed partial class TestSourceGeneratedModel
     {
         public string Name { get; set; }
@@ -167,7 +167,7 @@ public partial class ArgumentsTests
         public bool IsActive { get; set; }
     }
 
-    [GenerateArgumentsProvider]
+    [GenerateArguments]
     private sealed partial class TestComplexSourceGeneratedModel
     {
         public string Id { get; set; }

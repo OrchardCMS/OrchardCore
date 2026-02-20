@@ -124,12 +124,12 @@ public partial class ArgumentsInterceptorTests
 }
 
 /// <summary>
-/// Demonstrates the recommended approach using named types with [GenerateArgumentsProvider]
+/// Demonstrates the recommended approach using named types with [GenerateArguments]
 /// for production code that doesn't use preview features.
 /// </summary>
 public partial class ArgumentsNamedTypeTests
 {
-    [global::OrchardCore.DisplayManagement.GenerateArgumentsProvider]
+    [global::OrchardCore.DisplayManagement.GenerateArguments]
     public partial class ProductArguments
     {
         public int Id { get; set; }

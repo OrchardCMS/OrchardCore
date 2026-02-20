@@ -2,7 +2,7 @@ using OrchardCore.DisplayManagement;
 
 namespace OrchardCore.Navigation;
 
-[GenerateArgumentsProvider]
+[GenerateArguments]
 public partial class PagerSlim
 {
     /// <summary>

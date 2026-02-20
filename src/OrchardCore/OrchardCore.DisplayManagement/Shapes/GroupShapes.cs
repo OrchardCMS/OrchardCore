@@ -216,7 +216,7 @@ public class GroupShapes : IShapeAttributeProvider
 #pragma warning restore CA1822 // Mark members as static
 }
 
-[GenerateArgumentsProvider]
+[GenerateArguments]
 internal sealed partial class LocalNavigationArguments
 {
     public string Identifier { get; set; }

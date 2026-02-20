@@ -11,14 +11,14 @@ namespace OrchardCore.DisplayManagement.SourceGenerators;
 [Generator]
 public class ArgumentsProviderGenerator : IIncrementalGenerator
 {
-    private const string GenerateArgumentsProviderAttributeFullName = "OrchardCore.DisplayManagement.GenerateArgumentsProviderAttribute";
+    private const string GenerateArgumentsAttributeFullName = "OrchardCore.DisplayManagement.GenerateArgumentsAttribute";
 
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        // Filter classes with the GenerateArgumentsProvider attribute using ForAttributeWithMetadataName
+        // Filter classes with the GenerateArguments attribute using ForAttributeWithMetadataName
         var classDeclarations = context.SyntaxProvider
             .ForAttributeWithMetadataName(
-                GenerateArgumentsProviderAttributeFullName,
+                GenerateArgumentsAttributeFullName,
                 predicate: static (node, _) => node is ClassDeclarationSyntax or RecordDeclarationSyntax,
                 transform: static (context, _) => GetTargetType(context))
             .Where(static m => m is not null);

@@ -75,7 +75,7 @@ public sealed class AdminMenuFilter : IAsyncResultFilter
     }
 }
 
-[GenerateArgumentsProvider]
+[GenerateArguments]
 internal sealed partial class NavigationArguments
 {
     public string MenuName { get;set; }
