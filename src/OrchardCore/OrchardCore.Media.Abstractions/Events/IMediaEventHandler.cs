@@ -13,4 +13,5 @@ public interface IMediaEventHandler
     Task MediaMovedAsync(MediaMoveContext context);
     Task MediaCreatingDirectoryAsync(MediaCreatingContext context);
     Task MediaCreatedDirectoryAsync(MediaCreatedContext context);
+    Task MediaPermittedStorageAsync(MediaPermittedStorageContext context);
 }

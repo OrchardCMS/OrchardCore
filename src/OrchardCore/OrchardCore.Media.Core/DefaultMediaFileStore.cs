@@ -216,6 +216,13 @@ public class DefaultMediaFileStore : IMediaFileStore
         return _cdnBaseUrl + _requestBasePath + "/" + _fileStore.NormalizeAndEscapePath(path);
     }
 
+    public async Task<long?> GetPermittedStorageAsync()
+    {
+        var context = new MediaPermittedStorageContext();
+        await _mediaEventHandlers.InvokeAsync((handler, context) => handler.MediaPermittedStorageAsync(context), context, _logger);
+        return context.PermittedStorage;
+    }
+
     private void ValidateRequestBasePath(HttpContext httpContext)
     {
         var originalPathBase = httpContext.Features.Get<ShellContextFeature>()?.OriginalPathBase ?? PathString.Empty;
