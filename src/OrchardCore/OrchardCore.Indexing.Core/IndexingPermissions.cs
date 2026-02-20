@@ -21,6 +21,7 @@ public static class IndexingPermissions
 
         return _permissions.GetOrAdd(indexProfile.Id, indexId => new Permission(
             string.Format(_indexPermissionTemplate.Name, indexProfile.Name),
-            string.Format(_indexPermissionTemplate.Description, indexProfile.Name), _indexPermissionTemplate.ImpliedBy));
+            string.Format(_indexPermissionTemplate.Description, indexProfile.Name),
+            _indexPermissionTemplate.ImpliedBy));
     }
 }

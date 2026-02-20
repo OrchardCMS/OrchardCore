@@ -8,14 +8,6 @@ namespace OrchardCore.DisplayManagement.Extensions;
 
 public static class HttpContextExtensions
 {
-    public static ValueTask<ActionContext> GetActionContextAsync(this IHttpContextAccessor httpContextAccessor)
-    {
-        var httpContext = httpContextAccessor.HttpContext;
-
-        // In .NET 10, IActionContextAccessor is obsolete, so we create ActionContext directly
-        return GetActionContextAsync(httpContext);
-    }
-
     public static async ValueTask<ActionContext> GetActionContextAsync(this HttpContext httpContext)
     {
         if (httpContext.Items.TryGetValue("OrchardCore:ActionContext", out var currentActionContext))
