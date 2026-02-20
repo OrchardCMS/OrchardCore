@@ -122,7 +122,7 @@ public sealed class ResilientPolymorphicJsonConverter<T> : JsonConverter<T> wher
 
         var actualType = value.GetType();
 
-        // Serialize the concrete type's properties (won't recurse because CanConvert
+        // Serialize the concrete type's properties (won't recourse because CanConvert
         // returns false for concrete types).
         using var doc = JsonSerializer.SerializeToDocument(value, actualType, options);
 
