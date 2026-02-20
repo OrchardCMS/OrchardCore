@@ -3502,6 +3502,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "Youssef1313",
+      "name": "Youssef Victor",
+      "avatar_url": "https://avatars.githubusercontent.com/u/31348972?v=4",
+      "profile": "https://www.linkedin.com/in/youssef1313/",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,

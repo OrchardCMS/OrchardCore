@@ -1,7 +1,6 @@
-using System;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using OrchardCore.DataLocalization.Services;
+using OrchardCore.DataLocalization.ViewModels;
 using OrchardCore.Deployment;
 
 namespace OrchardCore.DataLocalization.Deployment;
@@ -29,7 +28,11 @@ public class AllDataTranslationsDeploymentSource : IDeploymentSource
 
         foreach (var translation in translationsDocument.Translations)
         {
-            translationObjects[translation.Key] = JObject.FromObject(translation.Value);
+            translationObjects.Add(JObject.FromObject(new TranslationsViewModel
+            {
+                Key = translation.Key,
+                Translations = translation.Value,
+            }));
         }
 
         result.Steps.Add(new JsonObject
