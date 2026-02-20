@@ -6,6 +6,7 @@ using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Data.Migration;
+using OrchardCore.Html.Fields;
 using OrchardCore.Html.Settings;
 using YesSql;
 
@@ -147,5 +148,32 @@ public sealed class Migrations : DataMigration
         }
 
         return 5;
+    }
+
+    public async Task<int> UpdateFrom5Async()
+    {
+        // Html field
+        await _contentDefinitionManager.MigrateFieldSettingsAsync<HtmlField, HtmlFieldSettings>();
+
+        // For backwards compatibility with liquid filters we disable html sanitization on existing field definitions.
+        var partDefinitions = await _contentDefinitionManager.LoadPartDefinitionsAsync();
+        foreach (var partDefinition in partDefinitions)
+        {
+            if (partDefinition.Fields.Any(x => x.FieldDefinition.Name == "HtmlField"))
+            {
+                await _contentDefinitionManager.AlterPartDefinitionAsync(partDefinition.Name, partBuilder =>
+                {
+                    foreach (var fieldDefinition in partDefinition.Fields.Where(x => x.FieldDefinition.Name == "HtmlField"))
+                    {
+                        partBuilder.WithField(fieldDefinition.Name, fieldBuilder =>
+                        {
+                            fieldBuilder.MergeSettings<HtmlFieldSettings>(x => x.SanitizeHtml = false);
+                        });
+                    }
+                });
+            }
+        }
+
+        return 6;
     }
 }

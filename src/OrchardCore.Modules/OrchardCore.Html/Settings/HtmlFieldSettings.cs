@@ -1,7 +1,7 @@
 using System.ComponentModel;
 using OrchardCore.ContentManagement.Metadata.Settings;
 
-namespace OrchardCore.ContentFields.Settings;
+namespace OrchardCore.Html.Settings;
 
 public class HtmlFieldSettings : FieldSettings
 {

@@ -48,9 +48,6 @@ public sealed class Migrations : DataMigration
         // Date time field
         await _contentDefinitionManager.MigrateFieldSettingsAsync<DateTimeField, DateTimeFieldSettings>();
 
-        // Html field
-        await _contentDefinitionManager.MigrateFieldSettingsAsync<HtmlField, HtmlFieldSettings>();
-
         // Link field
         await _contentDefinitionManager.MigrateFieldSettingsAsync<LinkField, LinkFieldSettings>();
 
@@ -73,33 +70,5 @@ public sealed class Migrations : DataMigration
 
         // YouTube field
         await _contentDefinitionManager.MigrateFieldSettingsAsync<YoutubeField, YoutubeFieldSettings>();
-
-        // Keep in sync the upgrade process.
-        await UpdateFrom1Async();
-    }
-
-    // This step is part of the upgrade process.
-    public async Task<int> UpdateFrom1Async()
-    {
-        // For backwards compatibility with liquid filters we disable html sanitization on existing field definitions.
-        var partDefinitions = await _contentDefinitionManager.LoadPartDefinitionsAsync();
-        foreach (var partDefinition in partDefinitions)
-        {
-            if (partDefinition.Fields.Any(x => x.FieldDefinition.Name == "HtmlField"))
-            {
-                await _contentDefinitionManager.AlterPartDefinitionAsync(partDefinition.Name, partBuilder =>
-                {
-                    foreach (var fieldDefinition in partDefinition.Fields.Where(x => x.FieldDefinition.Name == "HtmlField"))
-                    {
-                        partBuilder.WithField(fieldDefinition.Name, fieldBuilder =>
-                        {
-                            fieldBuilder.MergeSettings<HtmlFieldSettings>(x => x.SanitizeHtml = false);
-                        });
-                    }
-                });
-            }
-        }
-
-        return 2;
     }
 }

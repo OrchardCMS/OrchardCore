@@ -1,18 +1,15 @@
+using System.Text.Json.Nodes;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.Data;
+using OrchardCore.Html.Fields;
 using YesSql.Indexes;
 
-namespace OrchardCore.ContentFields.Indexing.SQL;
+namespace OrchardCore.Html.Indexing.SQL;
 
-public class HtmlFieldIndex : ContentFieldIndex
-{
-    public string Html { get; set; }
-}
-
-public class HtmlFieldIndexProvider : ContentFieldIndexProvider
+public class HtmlFieldIndexProvider : IndexProvider<ContentItem>, IScopedIndexProvider
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly HashSet<string> _ignoredTypes = [];
@@ -64,8 +61,7 @@ public class HtmlFieldIndexProvider : ContentFieldIndexProvider
                     return null;
                 }
 
-                return fieldDefinitions
-                    .GetContentFields<HtmlField>(contentItem)
+                return GetHtmlContentField(fieldDefinitions, contentItem)
                     .Select(pair =>
                         new HtmlFieldIndex
                         {
@@ -79,5 +75,31 @@ public class HtmlFieldIndexProvider : ContentFieldIndexProvider
                             Html = pair.Field.Html,
                         });
             });
+    }
+
+    private static IEnumerable<(ContentPartFieldDefinition Definition, HtmlField Field)> GetHtmlContentField(
+        IEnumerable<ContentPartFieldDefinition> fieldDefinitions,
+        ContentItem contentItem)
+    {
+        foreach (var fieldDefinition in fieldDefinitions)
+        {
+            var field = GetHtmlContentField(fieldDefinition, contentItem);
+
+            if (field is not null)
+            {
+                yield return (fieldDefinition, field);
+            }
+        }
+    }
+
+    private static HtmlField GetHtmlContentField(ContentPartFieldDefinition fieldDefinition, ContentItem contentItem)
+    {
+        if (((JsonObject)contentItem.Content)[fieldDefinition.ContentTypePartDefinition.Name] is not JsonObject jPart ||
+            jPart[fieldDefinition.Name] is not JsonObject jField)
+        {
+            return null;
+        }
+
+        return jField.ToObject<HtmlField>();
     }
 }
