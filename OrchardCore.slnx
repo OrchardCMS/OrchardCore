@@ -188,6 +188,7 @@
     <Project Path="src/OrchardCore/OrchardCore.AuditTrail.Abstractions/OrchardCore.AuditTrail.Abstractions.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Autoroute.Core/OrchardCore.Autoroute.Core.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Configuration.KeyVault/OrchardCore.Configuration.KeyVault.csproj" />
+    <Project Path="src/OrchardCore/OrchardCore.ContentFields.Core/OrchardCore.ContentFields.Core.csproj" Id="5f1b849a-6348-45cf-b577-ac04957c849b" />
     <Project Path="src/OrchardCore/OrchardCore.ContentLocalization.Abstractions/OrchardCore.ContentLocalization.Abstractions.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.ContentManagement.Abstractions/OrchardCore.ContentManagement.Abstractions.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.ContentManagement.Display/OrchardCore.ContentManagement.Display.csproj" />
