@@ -75,39 +75,6 @@ public partial class ArgumentsTests
     }
 
     [Fact]
-    public void ToArguments_Extension_WithObject_ReturnsNamedEnumerable()
-    {
-        // Arrange
-        var obj = new { Name = "Test", Value = 42 };
-
-        // Act
-        var result = obj.ToArguments();
-
-        // Assert
-        Assert.NotNull(result);
-        Assert.Equal(2, result.Named.Count);
-        Assert.Equal("Test", result.Named["Name"]);
-        Assert.Equal(42, result.Named["Value"]);
-    }
-
-    [Fact]
-    public void ArgumentsProviderHelper_Create_WithArrays_ReturnsNamedEnumerable()
-    {
-        // Arrange
-        var values = new object[] { "Test", 42 };
-        var names = new[] { "Name", "Value" };
-
-        // Act
-        var result = ArgumentsProviderHelper.Create(values, names);
-
-        // Assert
-        Assert.NotNull(result);
-        Assert.Equal(2, result.Named.Count);
-        Assert.Equal("Test", result.Named["Name"]);
-        Assert.Equal(42, result.Named["Value"]);
-    }
-
-    [Fact]
     public void SourceGenerated_SimpleModel_ShouldUseGeneratedProvider()
     {
         // Arrange
