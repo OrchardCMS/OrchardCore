@@ -205,7 +205,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
 
                         const result = ['KB', 'MB', 'GB', 'TB', 'PB'].reduce(
                             (data, unit) => data.value > 1024 ? { value: data.value / 1024, unit: unit } : data,
-                            { value: 111112138752, unit: 'B' });
+                            { value: this.permittedStorageBytes, unit: 'B' });
 
                         return `${Math.floor(result.value * 100) / 100} ${result.unit}`;
                     }
