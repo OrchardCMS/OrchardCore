@@ -495,7 +495,7 @@ public class PlacementLocationBuilderTests
             .Zone("Content")
             .Build();
 
-        var info = new PlacementInfo { Location = location };
+        var info = new PlacementInfo(location);
         Assert.Equal("Content", info.GetZones().First());
     }
 
@@ -507,7 +507,7 @@ public class PlacementLocationBuilderTests
             .Tab("Tab1")
             .Build();
 
-        var info = new PlacementInfo { Location = location };
+        var info = new PlacementInfo(location);
         Assert.Equal("Content", info.GetZones().First());
         Assert.Equal("5.1", info.GetPosition());
         Assert.Equal("Tab1", info.GetTab());
@@ -524,7 +524,7 @@ public class PlacementLocationBuilderTests
             .Column("Col1", "3", "9")
             .Build();
 
-        var info = new PlacementInfo { Location = location };
+        var info = new PlacementInfo(location);
         Assert.Equal("Content", info.GetZones().First());
         Assert.Equal("5", info.GetPosition());
         Assert.Equal("Tab1;1", info.GetTab());
@@ -541,7 +541,7 @@ public class PlacementLocationBuilderTests
             .AsLayoutZone()
             .Build();
 
-        var info = new PlacementInfo { Location = location };
+        var info = new PlacementInfo(location);
         Assert.True(info.IsLayoutZone());
         Assert.Equal("Content", info.GetZones().First());
         Assert.Equal("5", info.GetPosition());
@@ -554,7 +554,7 @@ public class PlacementLocationBuilderTests
             .Zone("Parameters")
             .Build();
 
-        var info = new PlacementInfo { Location = location };
+        var info = new PlacementInfo(location);
         Assert.Equal("Parameters", info.GetZones().First());
         Assert.Empty(info.GetPosition());
         Assert.Empty(info.GetTab());
@@ -571,7 +571,7 @@ public class PlacementLocationBuilderTests
             .Zone("Content", "3.5")
             .Build();
 
-        var info = new PlacementInfo { Location = location };
+        var info = new PlacementInfo(location);
         Assert.Equal("Content", info.GetZones().First());
         Assert.Equal("3.5", info.GetPosition());
     }
@@ -583,7 +583,7 @@ public class PlacementLocationBuilderTests
             .Zone("Content", "before")
             .Build();
 
-        var info = new PlacementInfo { Location = location };
+        var info = new PlacementInfo(location);
         Assert.Equal("Content", info.GetZones().First());
         Assert.Equal("before", info.GetPosition());
     }
@@ -596,7 +596,7 @@ public class PlacementLocationBuilderTests
             .Tab("Settings")
             .Build();
 
-        var info = new PlacementInfo { Location = location };
+        var info = new PlacementInfo(location);
         Assert.Equal("Content", info.GetZones().First());
         Assert.Equal("1", info.GetPosition());
         Assert.Equal("Settings", info.GetTab());
@@ -612,7 +612,7 @@ public class PlacementLocationBuilderTests
             .Tab("Settings", "2")
             .Build();
 
-        var info = new PlacementInfo { Location = location };
+        var info = new PlacementInfo(location);
         Assert.Equal("Settings;2", info.GetTab());
     }
 
@@ -624,7 +624,7 @@ public class PlacementLocationBuilderTests
             .Card("Details", "3")
             .Build();
 
-        var info = new PlacementInfo { Location = location };
+        var info = new PlacementInfo(location);
         Assert.Equal("Content", info.GetZones().First());
         Assert.Equal("5", info.GetPosition());
         Assert.Equal("Details;3", info.GetCard());
@@ -640,7 +640,7 @@ public class PlacementLocationBuilderTests
             .Column("Left", "1", "9")
             .Build();
 
-        var info = new PlacementInfo { Location = location };
+        var info = new PlacementInfo(location);
         Assert.Equal("Content", info.GetZones().First());
         Assert.Equal("5", info.GetPosition());
         Assert.Equal("Left_9;1", info.GetColumn());
@@ -656,7 +656,7 @@ public class PlacementLocationBuilderTests
             .Column("Sidebar", "2", "lg-3")
             .Build();
 
-        var info = new PlacementInfo { Location = location };
+        var info = new PlacementInfo(location);
         Assert.Equal("Sidebar_lg-3;2", info.GetColumn());
     }
 
@@ -668,7 +668,7 @@ public class PlacementLocationBuilderTests
             .Group("search")
             .Build();
 
-        var info = new PlacementInfo { Location = location };
+        var info = new PlacementInfo(location);
         Assert.Equal("search", info.GetGroup());
         Assert.Empty(info.GetTab());
         Assert.Null(info.GetCard());
@@ -683,7 +683,7 @@ public class PlacementLocationBuilderTests
             .Card("Details", "2")
             .Build();
 
-        var info = new PlacementInfo { Location = location };
+        var info = new PlacementInfo(location);
         Assert.Equal("Content", info.GetZones().First());
         Assert.Equal("5", info.GetPosition());
         Assert.Equal("Settings;1", info.GetTab());
@@ -701,7 +701,7 @@ public class PlacementLocationBuilderTests
             .Column("Left", "3", "6")
             .Build();
 
-        var info = new PlacementInfo { Location = location };
+        var info = new PlacementInfo(location);
         Assert.Equal("Content", info.GetZones().First());
         Assert.Equal("5", info.GetPosition());
         Assert.Equal("Settings;1", info.GetTab());
@@ -718,7 +718,7 @@ public class PlacementLocationBuilderTests
             .Column("Right", "2", "3")
             .Build();
 
-        var info = new PlacementInfo { Location = location };
+        var info = new PlacementInfo(location);
         Assert.Equal("Parts", info.GetZones().First());
         Assert.Equal("0", info.GetPosition());
         Assert.Empty(info.GetTab());
@@ -735,7 +735,7 @@ public class PlacementLocationBuilderTests
             .Group("advanced")
             .Build();
 
-        var info = new PlacementInfo { Location = location };
+        var info = new PlacementInfo(location);
         Assert.Equal("Settings", info.GetTab());
         Assert.Equal("advanced", info.GetGroup());
     }
@@ -751,7 +751,7 @@ public class PlacementLocationBuilderTests
             .Column("Wide", "1", "12")
             .Build();
 
-        var info = new PlacementInfo { Location = location };
+        var info = new PlacementInfo(location);
         Assert.True(info.IsLayoutZone());
         Assert.Equal("Content", info.GetZones().First());
         Assert.Equal("5", info.GetPosition());
@@ -767,7 +767,7 @@ public class PlacementLocationBuilderTests
             .Zone("Content.Metadata", "1")
             .Build();
 
-        var info = new PlacementInfo { Location = location };
+        var info = new PlacementInfo(location);
         var zones = info.GetZones();
         Assert.Equal("Content", zones[0]);
         Assert.Equal("Metadata", zones[1]);

@@ -22,7 +22,7 @@ public class PlacementInfoExtensionsCombineTests
     public void Combine_FirstNull_ShouldReturnSecond()
     {
         // Arrange
-        var second = new PlacementInfo { Location = "Content:1" };
+        var second = new PlacementInfo("Content:1");
 
         // Act
         var result = PlacementInfoExtensions.Combine(null, second);
@@ -35,7 +35,7 @@ public class PlacementInfoExtensionsCombineTests
     public void Combine_SecondNull_ShouldReturnFirst()
     {
         // Arrange
-        var first = new PlacementInfo { Location = "Content:1" };
+        var first = new PlacementInfo("Content:1");
 
         // Act
         var result = PlacementInfoExtensions.Combine(first, null);
@@ -52,8 +52,8 @@ public class PlacementInfoExtensionsCombineTests
     public void Combine_SecondHasLocation_ShouldOverrideFirst()
     {
         // Arrange
-        var first = new PlacementInfo { Location = "Content:1" };
-        var second = new PlacementInfo { Location = "Content:5" };
+        var first = new PlacementInfo("Content:1");
+        var second = new PlacementInfo("Content:5");
 
         // Act
         var result = PlacementInfoExtensions.Combine(first, second);
@@ -66,8 +66,8 @@ public class PlacementInfoExtensionsCombineTests
     public void Combine_SecondHasEmptyLocation_ShouldKeepFirst()
     {
         // Arrange
-        var first = new PlacementInfo { Location = "Content:1" };
-        var second = new PlacementInfo { Location = "" };
+        var first = new PlacementInfo("Content:1");
+        var second = new PlacementInfo("");
 
         // Act
         var result = PlacementInfoExtensions.Combine(first, second);
@@ -80,8 +80,8 @@ public class PlacementInfoExtensionsCombineTests
     public void Combine_SecondHasNullLocation_ShouldKeepFirst()
     {
         // Arrange
-        var first = new PlacementInfo { Location = "Content:1" };
-        var second = new PlacementInfo { Location = null };
+        var first = new PlacementInfo("Content:1");
+        var second = new PlacementInfo(null);
 
         // Act
         var result = PlacementInfoExtensions.Combine(first, second);
@@ -98,9 +98,9 @@ public class PlacementInfoExtensionsCombineTests
     public void Combine_MultipleProviders_LastNonEmptyLocationWins()
     {
         // Arrange - Simulating 3 providers.
-        var providerA = new PlacementInfo { Location = "Content:1" };
-        var providerB = new PlacementInfo { Location = "Content:5" };
-        var providerC = new PlacementInfo { Location = "Content:3" };
+        var providerA = new PlacementInfo("Content:1");
+        var providerB = new PlacementInfo("Content:5");
+        var providerC = new PlacementInfo("Content:3");
 
         // Act - Aggregate left-to-right as BaseDisplayManager does.
         var result = new[] { providerA, providerB, providerC }
@@ -119,9 +119,9 @@ public class PlacementInfoExtensionsCombineTests
     public void Combine_LaterProviderEmptyLocation_ShouldNotOverride()
     {
         // Arrange
-        var providerA = new PlacementInfo { Location = "Content:1" };
-        var providerB = new PlacementInfo { Location = "" };
-        var providerC = new PlacementInfo { Location = null };
+        var providerA = new PlacementInfo("Content:1");
+        var providerB = new PlacementInfo("");
+        var providerC = new PlacementInfo(null);
 
         // Act
         var result = new[] { providerA, providerB, providerC }
@@ -140,8 +140,8 @@ public class PlacementInfoExtensionsCombineTests
     public void Combine_SecondHasShapeType_ShouldOverrideFirst()
     {
         // Arrange
-        var first = new PlacementInfo { Location = "Content", ShapeType = "TypeA" };
-        var second = new PlacementInfo { Location = "Content", ShapeType = "TypeB" };
+        var first = new PlacementInfo("Content", shapeType: "TypeA");
+        var second = new PlacementInfo("Content", shapeType: "TypeB");
 
         // Act
         var result = PlacementInfoExtensions.Combine(first, second);
@@ -154,8 +154,8 @@ public class PlacementInfoExtensionsCombineTests
     public void Combine_SecondHasEmptyShapeType_ShouldKeepFirst()
     {
         // Arrange
-        var first = new PlacementInfo { Location = "Content", ShapeType = "TypeA" };
-        var second = new PlacementInfo { Location = "Content", ShapeType = "" };
+        var first = new PlacementInfo("Content", shapeType: "TypeA");
+        var second = new PlacementInfo("Content", shapeType: "");
 
         // Act
         var result = PlacementInfoExtensions.Combine(first, second);
@@ -172,8 +172,8 @@ public class PlacementInfoExtensionsCombineTests
     public void Combine_SecondHasDefaultPosition_ShouldOverrideFirst()
     {
         // Arrange
-        var first = new PlacementInfo { Location = "Content", DefaultPosition = "1" };
-        var second = new PlacementInfo { Location = "Content", DefaultPosition = "5" };
+        var first = new PlacementInfo("Content", defaultPosition: "1");
+        var second = new PlacementInfo("Content", defaultPosition: "5");
 
         // Act
         var result = PlacementInfoExtensions.Combine(first, second);
@@ -186,8 +186,8 @@ public class PlacementInfoExtensionsCombineTests
     public void Combine_SecondHasEmptyDefaultPosition_ShouldKeepFirst()
     {
         // Arrange
-        var first = new PlacementInfo { Location = "Content", DefaultPosition = "1" };
-        var second = new PlacementInfo { Location = "Content", DefaultPosition = "" };
+        var first = new PlacementInfo("Content", defaultPosition: "1");
+        var second = new PlacementInfo("Content", defaultPosition: "");
 
         // Act
         var result = PlacementInfoExtensions.Combine(first, second);
@@ -204,8 +204,8 @@ public class PlacementInfoExtensionsCombineTests
     public void Combine_ShouldConcatenateSources()
     {
         // Arrange
-        var first = new PlacementInfo { Location = "Content", Source = "ModuleA" };
-        var second = new PlacementInfo { Location = "Content", Source = "ModuleB" };
+        var first = new PlacementInfo("Content", source: "ModuleA");
+        var second = new PlacementInfo("Content", source: "ModuleB");
 
         // Act
         var result = PlacementInfoExtensions.Combine(first, second);
@@ -218,9 +218,9 @@ public class PlacementInfoExtensionsCombineTests
     public void Combine_MultipleProviders_ShouldTrackAllSources()
     {
         // Arrange
-        var providerA = new PlacementInfo { Location = "Content:1", Source = "ProjectA" };
-        var providerB = new PlacementInfo { Location = "Content:2", Source = "ThemeB" };
-        var providerC = new PlacementInfo { Location = "Content:3", Source = "ModuleC" };
+        var providerA = new PlacementInfo("Content:1", source: "ProjectA");
+        var providerB = new PlacementInfo("Content:2", source: "ThemeB");
+        var providerC = new PlacementInfo("Content:3", source: "ModuleC");
 
         // Act
         var result = new[] { providerA, providerB, providerC }
@@ -239,16 +239,8 @@ public class PlacementInfoExtensionsCombineTests
     public void Combine_ShouldMergeAlternates()
     {
         // Arrange
-        var first = new PlacementInfo
-        {
-            Location = "Content",
-            Alternates = new AlternatesCollection { "Alt1" },
-        };
-        var second = new PlacementInfo
-        {
-            Location = "Content",
-            Alternates = new AlternatesCollection { "Alt2" },
-        };
+        var first = new PlacementInfo("Content", alternates: ["Alt1"]);
+        var second = new PlacementInfo("Content", alternates: ["Alt2"]);
 
         // Act
         var result = PlacementInfoExtensions.Combine(first, second);
@@ -262,16 +254,8 @@ public class PlacementInfoExtensionsCombineTests
     public void Combine_ShouldMergeWrappers()
     {
         // Arrange
-        var first = new PlacementInfo
-        {
-            Location = "Content",
-            Wrappers = new AlternatesCollection { "Wrapper1" },
-        };
-        var second = new PlacementInfo
-        {
-            Location = "Content",
-            Wrappers = new AlternatesCollection { "Wrapper2" },
-        };
+        var first = new PlacementInfo("Content", wrappers: ["Wrapper1"]);
+        var second = new PlacementInfo("Content", wrappers: ["Wrapper2"]);
 
         // Act
         var result = PlacementInfoExtensions.Combine(first, second);
@@ -285,12 +269,8 @@ public class PlacementInfoExtensionsCombineTests
     public void Combine_NullAlternates_ShouldHandleGracefully()
     {
         // Arrange
-        var first = new PlacementInfo { Location = "Content", Alternates = null };
-        var second = new PlacementInfo
-        {
-            Location = "Content",
-            Alternates = new AlternatesCollection { "Alt1" },
-        };
+        var first = new PlacementInfo("Content", alternates: null);
+        var second = new PlacementInfo("Content", alternates: ["Alt1"]);
 
         // Act
         var result = PlacementInfoExtensions.Combine(first, second);
@@ -307,8 +287,8 @@ public class PlacementInfoExtensionsCombineTests
     public void Combine_ShouldReturnNewInstance_WhenBothNonNull()
     {
         // Arrange
-        var first = new PlacementInfo { Location = "Content:1" };
-        var second = new PlacementInfo { Location = "Content:2" };
+        var first = new PlacementInfo("Content:1");
+        var second = new PlacementInfo("Content:2");
 
         // Act
         var result = PlacementInfoExtensions.Combine(first, second);

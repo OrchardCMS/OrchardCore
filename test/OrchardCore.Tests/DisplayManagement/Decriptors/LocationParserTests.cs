@@ -152,7 +152,7 @@ public class LocationParserTests
     [InlineData("Content:after#Tab1", "after")]
     public void PositionShouldSupportSpecialAndDotFormats(string location, string expectedPosition)
     {
-        Assert.Equal(expectedPosition, new PlacementInfo { Location = location }.GetPosition());
+        Assert.Equal(expectedPosition, new PlacementInfo(location).GetPosition());
     }
 
     [Theory]
@@ -165,7 +165,7 @@ public class LocationParserTests
     {
         // When Location has no ':' delimiter, GetPosition returns DefaultPosition ?? "".
         // When Location has a ':' delimiter, the explicit position takes precedence.
-        var placement = new PlacementInfo { Location = location, DefaultPosition = defaultPosition };
+        var placement = new PlacementInfo(location, defaultPosition: defaultPosition);
         Assert.Equal(expectedPosition, placement.GetPosition());
     }
 
