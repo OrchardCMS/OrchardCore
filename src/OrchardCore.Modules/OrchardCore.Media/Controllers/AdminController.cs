@@ -588,4 +588,15 @@ public sealed class AdminController : Controller
 
     private bool IsSpecialFolder(string path)
        => string.Equals(path, _mediaOptions.AssetsUsersFolder, StringComparison.OrdinalIgnoreCase) || string.Equals(path, _attachedMediaFieldFileService.MediaFieldsFolder, StringComparison.OrdinalIgnoreCase);
+
+    public async Task<ActionResult<long?>> GetPermittedStorage()
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMedia) ||
+            !await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaFolder, (object)string.Empty))
+        {
+            return Forbid();
+        }
+
+        return Ok(await _mediaFileStore.GetPermittedStorageAsync());
+    }
 }

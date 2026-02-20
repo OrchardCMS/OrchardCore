@@ -44,7 +44,8 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                     mediaFilter: '',
                     sortBy: '',
                     sortAsc: true,
-                    itemsInPage: []
+                    itemsInPage: [],
+                    permittedStorageBytes: null,
                 },
                 created: function () {
                     var self = this;
@@ -198,6 +199,15 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                             this.selectedFolder = newPrefs.selectedFolder;
                             this.gridView = newPrefs.gridView;
                         }
+                    },
+                    permittedStorage: function () {
+                        if (isNaN(this.permittedStorageBytes)) return null;
+
+                        const result = ['KB', 'MB', 'GB', 'TB', 'PB'].reduce(
+                            (data, unit) => data.value > 1024 ? { value: data.value / 1024, unit: unit } : data,
+                            { value: 111112138752, unit: 'B' });
+
+                        return `${Math.floor(result.value * 100) / 100} ${result.unit}`;
                     }
                 },
                 watch: {
@@ -253,6 +263,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                                 self.selectedMedias = [];
                                 self.sortBy = '';
                                 self.sortAsc = true;
+                                self.getPermittedStorage();
                             },
                             error: function (error) {
                                 console.log('error loading folder:' + folder.path);
@@ -316,6 +327,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                                         },
                                         success: function (data) {
                                             bus.$emit('deleteFolder', folder);
+                                            self.getPermittedStorage();
                                         },
                                         error: function (error) {
                                             console.error(error.responseText);
@@ -340,6 +352,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                     },
                     selectAndDeleteMedia: function (media) {
                         this.deleteMedia();
+                        this.getPermittedStorage();
                     },
                     deleteMediaList: function () {
                         var mediaList = this.selectedMedias;
@@ -373,6 +386,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                                                 }
                                             }
                                             self.selectedMedias = [];
+                                            self.getPermittedStorage();
                                         },
                                         error: function (error) {
                                             console.error(error.responseText);
@@ -404,6 +418,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                                                 bus.$emit('mediaDeleted', media);
                                             }
                                             //self.selectedMedia = null;
+                                            self.getPermittedStorage();
                                         },
                                         error: function (error) {
                                             console.error(error.responseText);
@@ -448,6 +463,23 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                             this.sortAsc = true;
                             this.sortBy = newSort;
                         }
+                    },
+                    getPermittedStorage: function () {
+                        const self = this;
+                        $.ajax({
+                            url: document.getElementById('getPermittedStorageUrl').value,
+                            method: 'POST',
+                            data: {
+                                __RequestVerificationToken: $("input[name='__RequestVerificationToken']").val()
+                            },
+                            success: function (data) {
+                                console.log(data);
+                                self.permittedStorageBytes = data;
+                            },
+                            error: function (error) {
+                                console.error(error.responseText);
+                            }
+                        });
                     }
                 }
             });

@@ -90,6 +90,11 @@
                             <a :href="parents.length - i == 1 ? null : '#'" v-on:click="selectedFolder = folder;">{{ folder.name }}</a>
                         </span>
                     </div>
+                    <div class="justify-content-end p-3">
+                        @T["Available Storage: "]
+                        <span v-if="permittedStorage === null">@T["Unspecified"]</span>
+                        <span v-else>{{ permittedStorage }}</span>
+                    </div>
                 </nav>
             </div>
             <div class="media-container-middle p-3">
@@ -127,6 +132,7 @@
 <input type="hidden" id="moveMediaListUrl" value="@Url.Action("MoveMediaList", "Admin", new { area = "OrchardCore.Media" })" />
 <input type="hidden" id="uploadFiles" value="@Url.Action("Upload", "Admin", new { area = "OrchardCore.Media" })" />
 <input type="hidden" id="allowedExtensions" value="@Model.Extensions" />
+<input type="hidden" id="getPermittedStorageUrl" value="@Url.Action("GetPermittedStorage", "Admin", new { area = "OrchardCore.Media" })" />
 
 @* Settings *@
 <input type="hidden" id="allowNewRootFolders" value="@(Model.AllowNewRootFolders ? "true" : "false")" />
