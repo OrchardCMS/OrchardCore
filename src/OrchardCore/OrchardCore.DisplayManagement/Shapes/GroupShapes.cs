@@ -8,7 +8,7 @@ using OrchardCore.Mvc.Utilities;
 namespace OrchardCore.DisplayManagement.Shapes;
 
 [Feature(Application.DefaultFeatureId)]
-public partial class GroupShapes : IShapeAttributeProvider
+public class GroupShapes : IShapeAttributeProvider
 {
     [Shape]
 #pragma warning disable CA1822 // Mark members as static
@@ -175,7 +175,7 @@ public partial class GroupShapes : IShapeAttributeProvider
     [Shape]
     public async Task<IHtmlContent> TabContainer(IDisplayHelper displayAsync, GroupingsViewModel shape, IShapeFactory shapeFactory)
     {
-        var localNavigation = await shapeFactory.CreateAsync("LocalNavigation", Arguments.From(new Args
+        var localNavigation = await shapeFactory.CreateAsync("LocalNavigation", Arguments.From(new LocalNavigationArguments
         {
             Identifier = shape.Identifier,
             Tabs = shape.Groupings,
@@ -214,11 +214,11 @@ public partial class GroupShapes : IShapeAttributeProvider
         return displayAsync.ShapeExecuteAsync(shape);
     }
 #pragma warning restore CA1822 // Mark members as static
+}
 
-    [GenerateArgumentsProvider]
-    private partial class Args
-    {
-        public string Identifier { get; set; }
-        public IGrouping<string, object>[] Tabs { get; set; }
-    }
+[GenerateArgumentsProvider]
+internal sealed partial class LocalNavigationArguments
+{
+    public string Identifier { get; set; }
+    public IGrouping<string, object>[] Tabs { get; set; }
 }

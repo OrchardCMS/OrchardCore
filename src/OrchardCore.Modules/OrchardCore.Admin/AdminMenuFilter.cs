@@ -11,7 +11,7 @@ namespace OrchardCore.Admin;
 /// This filter inject a Navigation shape in the Navigation zone of the Layout
 /// for any ViewResult returned from an Admin controller.
 /// </summary>
-public sealed partial class AdminMenuFilter : IAsyncResultFilter
+public sealed class AdminMenuFilter : IAsyncResultFilter
 {
     private readonly ILayoutAccessor _layoutAccessor;
     private readonly IShapeFactory _shapeFactory;
@@ -56,7 +56,7 @@ public sealed partial class AdminMenuFilter : IAsyncResultFilter
 
         // Populate main nav
         var menuShape = await _shapeFactory.CreateAsync("Navigation",
-            Arguments.From(new Args
+            Arguments.From(new NavigationArguments
             {
                 MenuName = NavigationConstants.AdminId,
                 RouteData = filterContext.RouteData,
@@ -73,11 +73,11 @@ public sealed partial class AdminMenuFilter : IAsyncResultFilter
 
         await next();
     }
+}
 
-    [GenerateArgumentsProvider]
-    private sealed partial class Args
-    {
-        public string MenuName { get;set; }
-        public RouteData RouteData { get; set; }
-    }
+[GenerateArgumentsProvider]
+internal sealed partial class NavigationArguments
+{
+    public string MenuName { get;set; }
+    public RouteData RouteData { get; set; }
 }
