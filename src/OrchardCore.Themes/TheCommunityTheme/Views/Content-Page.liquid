@@ -1,5 +1,10 @@
 {% zone "Header" %}
+{% assign imagePath = Model.ContentItem.Content.HeaderPart.Image.Paths.first %}
+{% if imagePath %}
+<header class="masthead" style="background-image: url('{{ imagePath | asset_url | resize_url: profile: "hero" }}')">
+{% else %}
 <header class="masthead" style="background-image: url('{{ "~/TheCommunityTheme/assets/img/hero/community-center.svg" | href }}')">
+{% endif %}
     <div class="container">
         <div class="masthead-heading">{{ Model.ContentItem | display_text }}</div>
     </div>
