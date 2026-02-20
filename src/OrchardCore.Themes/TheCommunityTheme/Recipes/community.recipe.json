@@ -207,9 +207,14 @@
               "Settings": { "ContentTypePartSettings": { "Position": "2" } }
             },
             {
+              "PartName": "HeaderPart",
+              "Name": "HeaderPart",
+              "Settings": { "ContentTypePartSettings": { "Position": "3" } }
+            },
+            {
               "PartName": "Page",
               "Name": "Page",
-              "Settings": { "ContentTypePartSettings": { "Position": "3" } }
+              "Settings": { "ContentTypePartSettings": { "Position": "4" } }
             }
           ]
         },
@@ -254,7 +259,7 @@
               "Settings": {
                 "ContentTypePartSettings": {
                   "DisplayName": "Featured Programs",
-                  "Description": "Programs displayed on the landing page.",
+                  "Description": "Programs highlighted on the landing page.",
                   "Position": "3"
                 },
                 "BagPartSettings": { "ContainedContentTypes": [ "Program" ] }
@@ -266,7 +271,7 @@
               "Settings": {
                 "ContentTypePartSettings": {
                   "DisplayName": "Upcoming Events",
-                  "Description": "Events displayed on the landing page.",
+                  "Description": "Events highlighted on the landing page.",
                   "Position": "4"
                 },
                 "BagPartSettings": { "ContainedContentTypes": [ "Event" ] }
@@ -463,6 +468,11 @@
               "PartName": "Facility",
               "Name": "Facility",
               "Settings": { "ContentTypePartSettings": { "Position": "3" } }
+            },
+            {
+              "PartName": "FlowPart",
+              "Name": "FlowPart",
+              "Settings": { "ContentTypePartSettings": { "Position": "4" } }
             }
           ]
         },
@@ -745,14 +755,48 @@
               "Settings": { "ContentTypePartSettings": { "Position": "2" } }
             },
             {
+              "PartName": "HeaderPart",
+              "Name": "HeaderPart",
+              "Settings": { "ContentTypePartSettings": { "Position": "3" } }
+            },
+            {
               "PartName": "ListPart",
               "Name": "ListPart",
               "Settings": {
-                "ContentTypePartSettings": { "Position": "3" },
+                "ContentTypePartSettings": { "Position": "4" },
                 "ListPartSettings": {
                   "PageSize": 12,
                   "ContainedContentTypes": [ "Program", "Event", "StaffMember", "Facility", "PlantProfile", "NewsArticle" ]
                 }
+              }
+            }
+          ]
+        },
+        {
+          "Name": "GardenZone",
+          "DisplayName": "Garden Zone",
+          "Settings": {},
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "TitlePart",
+              "Name": "TitlePart",
+              "Settings": { "ContentTypePartSettings": { "Position": "0" } }
+            },
+            {
+              "PartName": "TermPart",
+              "Name": "TermPart",
+              "Settings": { "ContentTypePartSettings": { "Position": "1" } }
+            },
+            {
+              "PartName": "GardenZone",
+              "Name": "GardenZone",
+              "Settings": { "ContentTypePartSettings": { "Position": "2" } }
+            },
+            {
+              "PartName": "HtmlBodyPart",
+              "Name": "HtmlBodyPart",
+              "Settings": {
+                "ContentTypePartSettings": { "Editor": "Wysiwyg", "Position": "3" }
               }
             }
           ]
@@ -1016,6 +1060,20 @@
               "Settings": {
                 "ContentPartFieldSettings": { "DisplayName": "Map Location", "Position": "1" },
                 "TextFieldSettings": { "Hint": "Description of location within the garden" }
+              }
+            }
+          ]
+        },
+        {
+          "Name": "HeaderPart",
+          "Settings": {},
+          "ContentPartFieldDefinitionRecords": [
+            {
+              "FieldName": "MediaField",
+              "Name": "Image",
+              "Settings": {
+                "ContentPartFieldSettings": { "DisplayName": "Header Image", "Position": "0" },
+                "MediaFieldSettings": { "Multiple": false, "Required": false }
               }
             }
           ]
@@ -1365,13 +1423,43 @@
           "AutoroutePart": { "Path": "garden-zones" },
           "TaxonomyPart": {
             "Terms": [
-              { "ContentItemId": "[js: variables('gzRoseId')]", "ContentType": "Term", "DisplayText": "Rose Garden", "TitlePart": { "Title": "Rose Garden" }, "TermPart": { "TaxonomyContentItemId": "[js: variables('gardenZonesId')]" } },
-              { "ContentItemId": "[js: variables('gzTropicalId')]", "ContentType": "Term", "DisplayText": "Tropical Conservatory", "TitlePart": { "Title": "Tropical Conservatory" }, "TermPart": { "TaxonomyContentItemId": "[js: variables('gardenZonesId')]" } },
-              { "ContentItemId": "[js: variables('gzWoodlandId')]", "ContentType": "Term", "DisplayText": "Native Woodland", "TitlePart": { "Title": "Native Woodland" }, "TermPart": { "TaxonomyContentItemId": "[js: variables('gardenZonesId')]" } },
-              { "ContentItemId": "[js: variables('gzHerbId')]", "ContentType": "Term", "DisplayText": "Herb Garden", "TitlePart": { "Title": "Herb Garden" }, "TermPart": { "TaxonomyContentItemId": "[js: variables('gardenZonesId')]" } },
-              { "ContentItemId": "[js: variables('gzChildrenId')]", "ContentType": "Term", "DisplayText": "Children's Discovery Garden", "TitlePart": { "Title": "Children's Discovery Garden" }, "TermPart": { "TaxonomyContentItemId": "[js: variables('gardenZonesId')]" } }
+              {
+                "ContentItemId": "[js: variables('gzRoseId')]", "ContentType": "GardenZone", "DisplayText": "Rose Garden",
+                "TitlePart": { "Title": "Rose Garden" },
+                "TermPart": { "TaxonomyContentItemId": "[js: variables('gardenZonesId')]" },
+                "GardenZone": { "Image": { "Paths": [ "/zones/rose-garden.svg" ] }, "MapLocation": { "Text": "South wing, near the main fountain" } },
+                "HtmlBodyPart": { "Html": "<p>Our Rose Garden features over 200 varieties of heritage and modern roses arranged in formal beds around a central fountain. Peak bloom occurs from late May through October.</p>" }
+              },
+              {
+                "ContentItemId": "[js: variables('gzTropicalId')]", "ContentType": "GardenZone", "DisplayText": "Tropical Conservatory",
+                "TitlePart": { "Title": "Tropical Conservatory" },
+                "TermPart": { "TaxonomyContentItemId": "[js: variables('gardenZonesId')]" },
+                "GardenZone": { "Image": { "Paths": [ "/zones/tropical-conservatory.svg" ] }, "MapLocation": { "Text": "East side, glass-enclosed building" } },
+                "HtmlBodyPart": { "Html": "<p>Step into a tropical paradise in our glass-enclosed conservatory. Home to over 200 orchid species, exotic ferns, bromeliads, and rare tropical plants from Central and South America.</p>" }
+              },
+              {
+                "ContentItemId": "[js: variables('gzWoodlandId')]", "ContentType": "GardenZone", "DisplayText": "Native Woodland",
+                "TitlePart": { "Title": "Native Woodland" },
+                "TermPart": { "TaxonomyContentItemId": "[js: variables('gardenZonesId')]" },
+                "GardenZone": { "Image": { "Paths": [ "/zones/native-woodland.svg" ] }, "MapLocation": { "Text": "North section, along nature trails" } },
+                "HtmlBodyPart": { "Html": "<p>Wander through native hardwood forests, wildflower meadows, and shaded walking trails. This zone showcases the beauty of regional flora and serves as a habitat for native birds and pollinators.</p>" }
+              },
+              {
+                "ContentItemId": "[js: variables('gzHerbId')]", "ContentType": "GardenZone", "DisplayText": "Herb Garden",
+                "TitlePart": { "Title": "Herb Garden" },
+                "TermPart": { "TaxonomyContentItemId": "[js: variables('gardenZonesId')]" },
+                "GardenZone": { "Image": { "Paths": [ "/zones/herb-garden.svg" ] }, "MapLocation": { "Text": "West side, adjacent to community kitchen" } },
+                "HtmlBodyPart": { "Html": "<p>Explore culinary and medicinal herbs from five continents. Our herb garden features over 150 species organized by use, origin, and growing season. Free herb samples are available seasonally.</p>" }
+              },
+              {
+                "ContentItemId": "[js: variables('gzChildrenId')]", "ContentType": "GardenZone", "DisplayText": "Children's Discovery Garden",
+                "TitlePart": { "Title": "Children's Discovery Garden" },
+                "TermPart": { "TaxonomyContentItemId": "[js: variables('gardenZonesId')]" },
+                "GardenZone": { "Image": { "Paths": [ "/zones/children-discovery.svg" ] }, "MapLocation": { "Text": "Center of garden, near visitor center" } },
+                "HtmlBodyPart": { "Html": "<p>A whimsical space designed for young explorers! Interactive garden beds, a butterfly house, sensory plantings, and hands-on activities help children connect with nature through play.</p>" }
+              }
             ],
-            "TermContentType": "Term"
+            "TermContentType": "GardenZone"
           }
         },
         {
@@ -1475,6 +1563,7 @@
           "Author": "[js: parameters('AdminUsername')]",
           "TitlePart": { "Title": "Programs" },
           "AutoroutePart": { "Path": "programs" },
+          "HeaderPart": { "Image": { "Paths": [ "/hero/fitness.svg" ] } },
           "HtmlBodyPart": { "Html": "<p>Discover activities for every age and interest at our community recreation center.</p>" }
         },
         {
@@ -1488,6 +1577,7 @@
           "Author": "[js: parameters('AdminUsername')]",
           "TitlePart": { "Title": "Events" },
           "AutoroutePart": { "Path": "events" },
+          "HeaderPart": { "Image": { "Paths": [ "/hero/community-center.svg" ] } },
           "HtmlBodyPart": { "Html": "<p>Join us for fun community activities, workshops, and celebrations.</p>" }
         },
         {
@@ -1501,6 +1591,7 @@
           "Author": "[js: parameters('AdminUsername')]",
           "TitlePart": { "Title": "Facilities" },
           "AutoroutePart": { "Path": "facilities" },
+          "HeaderPart": { "Image": { "Paths": [ "/hero/pool.svg" ] } },
           "HtmlBodyPart": { "Html": "<p>Our state-of-the-art facilities are designed for recreation, wellness, and community gatherings.</p>" }
         },
         {
@@ -1514,6 +1605,7 @@
           "Author": "[js: parameters('AdminUsername')]",
           "TitlePart": { "Title": "Our Staff" },
           "AutoroutePart": { "Path": "staff" },
+          "HeaderPart": { "Image": { "Paths": [ "/hero/community-center.svg" ] } },
           "HtmlBodyPart": { "Html": "<p>Meet the dedicated team behind Greenfield Community Recreation Center & Botanical Garden.</p>" }
         },
         {
@@ -1527,6 +1619,7 @@
           "Author": "[js: parameters('AdminUsername')]",
           "TitlePart": { "Title": "Plant Database" },
           "AutoroutePart": { "Path": "plants" },
+          "HeaderPart": { "Image": { "Paths": [ "/hero/botanical-garden.svg" ] } },
           "HtmlBodyPart": { "Html": "<p>Explore the diverse plant species in our botanical garden collection.</p>" }
         },
         {
@@ -1540,6 +1633,7 @@
           "Author": "[js: parameters('AdminUsername')]",
           "TitlePart": { "Title": "News & Updates" },
           "AutoroutePart": { "Path": "news" },
+          "HeaderPart": { "Image": { "Paths": [ "/hero/community-center.svg" ] } },
           "HtmlBodyPart": { "Html": "<p>Stay up to date with the latest from our community center and botanical garden.</p>" }
         },
         {
@@ -1990,27 +2084,31 @@
             "ContentItems": [
               {
                 "ContentItemId": "[js:uuid()]", "ContentItemVersionId": "[js:uuid()]", "ContentType": "Program", "DisplayText": "Swim Lessons", "Latest": false, "Published": false, "Owner": null, "Author": "[js: parameters('AdminUsername')]",
-                "Program": { "Image": { "Paths": [ "/programs/swim-lessons.svg" ] }, "Category": { "TermContentItemIds": [ "[js: variables('catAquaticsId')]" ], "TaxonomyContentItemId": "[js: variables('programCategoriesId')]" }, "Price": { "Text": "$45/session" } },
+                "Program": { "Image": { "Paths": [ "/programs/swim-lessons.svg" ] }, "Category": { "TermContentItemIds": [ "[js: variables('catAquaticsId')]" ], "TaxonomyContentItemId": "[js: variables('programCategoriesId')]" }, "Price": { "Text": "$45 per session" } },
                 "TitlePart": { "Title": "Swim Lessons" },
-                "HtmlBodyPart": { "Html": "Learn to swim with certified instructors in our Olympic-size pool." }
+                "AutoroutePart": { "Path": "programs/swim-lessons" },
+                "HtmlBodyPart": { "Html": "<p>Our swim lessons program offers instruction for all skill levels, from water safety basics for beginners to stroke refinement for advanced swimmers.</p>" }
               },
               {
                 "ContentItemId": "[js:uuid()]", "ContentItemVersionId": "[js:uuid()]", "ContentType": "Program", "DisplayText": "Morning Yoga", "Latest": false, "Published": false, "Owner": null, "Author": "[js: parameters('AdminUsername')]",
-                "Program": { "Image": { "Paths": [ "/programs/yoga.svg" ] }, "Category": { "TermContentItemIds": [ "[js: variables('catFitnessId')]" ], "TaxonomyContentItemId": "[js: variables('programCategoriesId')]" }, "Price": { "Text": "$35/month" } },
+                "Program": { "Image": { "Paths": [ "/programs/yoga.svg" ] }, "Category": { "TermContentItemIds": [ "[js: variables('catFitnessId')]" ], "TaxonomyContentItemId": "[js: variables('programCategoriesId')]" }, "Price": { "Text": "$35 per month" } },
                 "TitlePart": { "Title": "Morning Yoga" },
-                "HtmlBodyPart": { "Html": "Start your day with mindful movement in our serene Wellness Studio." }
+                "AutoroutePart": { "Path": "programs/morning-yoga" },
+                "HtmlBodyPart": { "Html": "<p>Start your day with mindful movement in our morning yoga class. Suitable for all levels, this Vinyasa-style class focuses on building strength, flexibility, and mental clarity.</p>" }
               },
               {
-                "ContentItemId": "[js:uuid()]", "ContentItemVersionId": "[js:uuid()]", "ContentType": "Program", "DisplayText": "Youth Basketball", "Latest": false, "Published": false, "Owner": null, "Author": "[js: parameters('AdminUsername')]",
-                "Program": { "Image": { "Paths": [ "/programs/youth-basketball.svg" ] }, "Category": { "TermContentItemIds": [ "[js: variables('catYouthId')]" ], "TaxonomyContentItemId": "[js: variables('programCategoriesId')]" }, "Price": { "Text": "$60/season" } },
-                "TitlePart": { "Title": "Youth Basketball" },
-                "HtmlBodyPart": { "Html": "Fun and competitive basketball for kids ages 4-12." }
+                "ContentItemId": "[js:uuid()]", "ContentItemVersionId": "[js:uuid()]", "ContentType": "Program", "DisplayText": "Youth Basketball League", "Latest": false, "Published": false, "Owner": null, "Author": "[js: parameters('AdminUsername')]",
+                "Program": { "Image": { "Paths": [ "/programs/youth-basketball.svg" ] }, "Category": { "TermContentItemIds": [ "[js: variables('catYouthId')]" ], "TaxonomyContentItemId": "[js: variables('programCategoriesId')]" }, "Price": { "Text": "$60 per season" } },
+                "TitlePart": { "Title": "Youth Basketball League" },
+                "AutoroutePart": { "Path": "programs/youth-basketball-league" },
+                "HtmlBodyPart": { "Html": "<p>Our youth basketball league provides a fun, supportive environment for kids ages 4-12 to learn basketball fundamentals, teamwork, and sportsmanship.</p>" }
               },
               {
                 "ContentItemId": "[js:uuid()]", "ContentItemVersionId": "[js:uuid()]", "ContentType": "Program", "DisplayText": "Watercolor Workshop", "Latest": false, "Published": false, "Owner": null, "Author": "[js: parameters('AdminUsername')]",
-                "Program": { "Image": { "Paths": [ "/programs/art-class.svg" ] }, "Category": { "TermContentItemIds": [ "[js: variables('catArtsId')]" ], "TaxonomyContentItemId": "[js: variables('programCategoriesId')]" }, "Price": { "Text": "$40/session" } },
+                "Program": { "Image": { "Paths": [ "/programs/art-class.svg" ] }, "Category": { "TermContentItemIds": [ "[js: variables('catArtsId')]" ], "TaxonomyContentItemId": "[js: variables('programCategoriesId')]" }, "Price": { "Text": "$40 per session" } },
                 "TitlePart": { "Title": "Watercolor Workshop" },
-                "HtmlBodyPart": { "Html": "Explore your creativity with guided watercolor techniques." }
+                "AutoroutePart": { "Path": "programs/watercolor-workshop" },
+                "HtmlBodyPart": { "Html": "<p>Explore your creativity in our watercolor workshop series. Each session focuses on different techniques from washes and glazing to botanical illustration.</p>" }
               }
             ]
           },
@@ -2020,25 +2118,29 @@
                 "ContentItemId": "[js:uuid()]", "ContentItemVersionId": "[js:uuid()]", "ContentType": "Event", "DisplayText": "Summer Splash Camp", "Latest": false, "Published": false, "Owner": null, "Author": "[js: parameters('AdminUsername')]",
                 "Event": { "Image": { "Paths": [ "/events/summer-camp.svg" ] }, "EventType": { "TermContentItemIds": [ "[js: variables('evtCampId')]" ], "TaxonomyContentItemId": "[js: variables('eventTypesId')]" } },
                 "TitlePart": { "Title": "Summer Splash Camp" },
-                "HtmlBodyPart": { "Html": "A week-long adventure of swimming, games, and nature exploration." }
+                "AutoroutePart": { "Path": "events/summer-splash-camp" },
+                "HtmlBodyPart": { "Html": "<p>A week-long summer camp combining swimming, outdoor games, arts and crafts, and nature exploration in the botanical garden.</p>" }
               },
               {
                 "ContentItemId": "[js:uuid()]", "ContentItemVersionId": "[js:uuid()]", "ContentType": "Event", "DisplayText": "Annual Garden Tour", "Latest": false, "Published": false, "Owner": null, "Author": "[js: parameters('AdminUsername')]",
                 "Event": { "Image": { "Paths": [ "/events/garden-tour.svg" ] }, "EventType": { "TermContentItemIds": [ "[js: variables('evtGardenTourId')]" ], "TaxonomyContentItemId": "[js: variables('eventTypesId')]" } },
                 "TitlePart": { "Title": "Annual Garden Tour" },
-                "HtmlBodyPart": { "Html": "Guided tour through all five garden zones with Dr. Patel." }
+                "AutoroutePart": { "Path": "events/annual-garden-tour" },
+                "HtmlBodyPart": { "Html": "<p>Join Dr. Patel for a guided tour through all five garden zones. Learn about our plant collections, conservation efforts, and seasonal highlights.</p>" }
               },
               {
                 "ContentItemId": "[js:uuid()]", "ContentItemVersionId": "[js:uuid()]", "ContentType": "Event", "DisplayText": "Community BBQ", "Latest": false, "Published": false, "Owner": null, "Author": "[js: parameters('AdminUsername')]",
                 "Event": { "Image": { "Paths": [ "/events/community-bbq.svg" ] }, "EventType": { "TermContentItemIds": [ "[js: variables('evtCommunityId')]" ], "TaxonomyContentItemId": "[js: variables('eventTypesId')]" } },
                 "TitlePart": { "Title": "Community BBQ" },
-                "HtmlBodyPart": { "Html": "End-of-summer cookout with live music and family fun." }
+                "AutoroutePart": { "Path": "events/community-bbq" },
+                "HtmlBodyPart": { "Html": "<p>Our annual end-of-summer community BBQ brings neighbors together for good food, live music, and family fun.</p>" }
               },
               {
                 "ContentItemId": "[js:uuid()]", "ContentItemVersionId": "[js:uuid()]", "ContentType": "Event", "DisplayText": "Fundraiser Gala", "Latest": false, "Published": false, "Owner": null, "Author": "[js: parameters('AdminUsername')]",
                 "Event": { "Image": { "Paths": [ "/events/fundraiser-gala.svg" ] }, "EventType": { "TermContentItemIds": [ "[js: variables('evtFundraiserId')]" ], "TaxonomyContentItemId": "[js: variables('eventTypesId')]" } },
                 "TitlePart": { "Title": "Fundraiser Gala" },
-                "HtmlBodyPart": { "Html": "Annual formal celebration supporting center programs and garden conservation." }
+                "AutoroutePart": { "Path": "events/fundraiser-gala" },
+                "HtmlBodyPart": { "Html": "<p>Annual formal celebration supporting center programs and garden conservation efforts.</p>" }
               }
             ]
           },
@@ -2097,6 +2199,7 @@
           "Author": "[js: parameters('AdminUsername')]",
           "TitlePart": { "Title": "About Us" },
           "AutoroutePart": { "Path": "about" },
+          "HeaderPart": { "Image": { "Paths": [ "/hero/community-center.svg" ] } },
           "Page": {},
           "FlowPart": {
             "Widgets": [
@@ -2119,6 +2222,7 @@
           "Author": "[js: parameters('AdminUsername')]",
           "TitlePart": { "Title": "Contact" },
           "AutoroutePart": { "Path": "contact" },
+          "HeaderPart": { "Image": { "Paths": [ "/hero/community-center.svg" ] } },
           "Page": {},
           "FlowPart": {
             "Widgets": [
@@ -2141,6 +2245,7 @@
           "Author": "[js: parameters('AdminUsername')]",
           "TitlePart": { "Title": "Botanical Garden" },
           "AutoroutePart": { "Path": "botanical-garden" },
+          "HeaderPart": { "Image": { "Paths": [ "/hero/botanical-garden.svg" ] } },
           "Page": {},
           "FlowPart": {
             "Widgets": [

@@ -31,7 +31,7 @@
                         {% for term in category %}
                         <span class="badge bg-primary mb-2">{{ term | display_text }}</span>
                         {% endfor %}
-                        <h5 class="card-title">{{ item.DisplayText }}</h5>
+                        <h5 class="card-title"><a href="{{ item.AutoroutePart.Path | href }}" class="text-decoration-none text-dark">{{ item.DisplayText }}</a></h5>
                         {% assign price = item.Program.Price.Text %}
                         {% if price and price != "" %}
                         <p class="text-muted small">{{ price }}</p>
@@ -69,7 +69,7 @@
                         {% for term in eventType %}
                         <span class="badge bg-secondary mb-2">{{ term | display_text }}</span>
                         {% endfor %}
-                        <h5 class="card-title">{{ item.DisplayText }}</h5>
+                        <h5 class="card-title"><a href="{{ item.AutoroutePart.Path | href }}" class="text-decoration-none text-dark">{{ item.DisplayText }}</a></h5>
                     </div>
                 </div>
             </div>

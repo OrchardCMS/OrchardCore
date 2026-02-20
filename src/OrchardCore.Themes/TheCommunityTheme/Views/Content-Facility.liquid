@@ -37,5 +37,10 @@
                 </div>
             </div>
         </div>
+        {% if Model.Content.FlowPart %}
+        <div class="mt-4">
+            {{ Model.Content.FlowPart | shape_render }}
+        </div>
+        {% endif %}
     </div>
 </section>
