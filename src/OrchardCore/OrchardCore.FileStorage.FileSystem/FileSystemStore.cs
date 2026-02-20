@@ -1,13 +1,16 @@
 using Microsoft.Extensions.FileProviders.Physical;
+using Microsoft.Extensions.Logging;
 
 namespace OrchardCore.FileStorage.FileSystem;
 
 public class FileSystemStore : IFileStore
 {
+    private readonly ILogger<FileSystemStore> _logger;
     private readonly string _fileSystemPath;
 
-    public FileSystemStore(string fileSystemPath)
+    public FileSystemStore(string fileSystemPath, ILogger<FileSystemStore> logger)
     {
+        _logger = logger;
         _fileSystemPath = Path.GetFullPath(fileSystemPath);
     }
 
@@ -303,10 +306,8 @@ public class FileSystemStore : IFileStore
             Directory.CreateDirectory(physicalDirectoryPath);
 
             var fileInfo = new FileInfo(physicalPath);
-            using (var outputStream = fileInfo.Create())
-            {
-                await inputStream.CopyToAsync(outputStream);
-            }
+            await using var outputStream = fileInfo.Create();
+            await inputStream.CopyToAsync(outputStream);
 
             return path;
         }
@@ -317,6 +318,23 @@ public class FileSystemStore : IFileStore
         catch (Exception ex)
         {
             throw new FileStoreException($"Cannot create file '{path}'.", ex);
+        }
+    }
+
+    public Task<long?> GetPermittedStorageAsync()
+    {
+        try
+        {
+            var driveOfStoreRoot = new DriveInfo(GetPhysicalPath(null));
+            return Task.FromResult<long?>(driveOfStoreRoot.AvailableFreeSpace);
+        }
+        catch (Exception ex)
+        {
+            // It is possible, that the process only has limited access to the drive and trying to get this information
+            // raises some kind of error, yet regular use within the _fileSystemPath still works. So any error raised
+            // here should not be blocking.
+            _logger?.LogWarning(ex, "Unable to get free disk space for the file system store.");
+            return Task.FromResult<long?>(null);
         }
     }
 
