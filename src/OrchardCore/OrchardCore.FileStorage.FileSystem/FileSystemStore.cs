@@ -325,7 +325,11 @@ public class FileSystemStore : IFileStore
     {
         try
         {
-            var driveOfStoreRoot = new DriveInfo(GetPhysicalPath(null));
+            var path = GetPhysicalPath(null);
+            var driveOfStoreRoot = DriveInfo
+                .GetDrives()
+                .OrderByDescending(drive => drive.Name.Length)
+                .First(drive => path.StartsWith(drive.Name));
             return Task.FromResult<long?>(driveOfStoreRoot.AvailableFreeSpace);
         }
         catch (Exception ex)
