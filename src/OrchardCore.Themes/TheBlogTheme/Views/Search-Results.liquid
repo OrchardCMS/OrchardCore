@@ -4,42 +4,12 @@
             <li class="list-group-item">
             {% if Model.Highlights != null and Model.Highlights[item.ContentItemId] != null %}
                 {% assign highlights = Model.Highlights[item.ContentItemId] %}
-                <h2><a href="{{ item | display_url }}">{{ item | display_text }}</a></h2>
                 {% for key in highlights %}
                     {% assign content = key[1] %}
                     {% if content != null %}
+                        <h2><a href="{{ item | display_url }}">{{ item | display_text }}</a></h2>
                         {% for value in content %}
-                            {% assign preparedFragment = value %}
-                            {% for i in (0..Model.HighlightPreTags.size) %}
-                                {% assign preTag = Model.HighlightPreTags[i] %}
-                                {% if preTag != null %}
-                                    {% assign placeholder = "{{{HIGHLIGHT_PRE_TAG_" | append: i | append: "}}}" %}
-                                    {% assign preparedFragment = preparedFragment | replace: preTag, placeholder %}
-                                {% endif %}
-                            {% endfor %}
-                            {% for i in (0..Model.HighlightPostTags.size) %}
-                                {% assign postTag = Model.HighlightPostTags[i] %}
-                                {% if postTag != null %}
-                                    {% assign placeholder = "{{{HIGHLIGHT_POST_TAG_" | append: i | append: "}}}" %}
-                                    {% assign preparedFragment = preparedFragment | replace: postTag, placeholder %}
-                                {% endif %}
-                            {% endfor %}
-                            {% assign preparedFragment = preparedFragment | strip_html | escape %}
-                            {% for i in (0..Model.HighlightPreTags.size) %}
-                                {% assign preTag = Model.HighlightPreTags[i] %}
-                                {% if preTag != null %}
-                                    {% assign placeholder = "{{{HIGHLIGHT_PRE_TAG_" | append: i | append: "}}}" %}
-                                    {% assign preparedFragment = preparedFragment | replace: placeholder, preTag %}
-                                {% endif %}
-                            {% endfor %}
-                            {% for i in (0..Model.HighlightPostTags.size) %}
-                                {% assign postTag = Model.HighlightPostTags[i] %}
-                                {% if postTag != null %}
-                                    {% assign placeholder = "{{{HIGHLIGHT_POST_TAG_" | append: i | append: "}}}" %}
-                                    {% assign preparedFragment = preparedFragment | replace: placeholder, postTag %}
-                                {% endif %}
-                            {% endfor %}
-                            {{ preparedFragment | raw }}
+                            {{ value | raw }}
                         {% endfor %}
                     {% endif %}
                 {% endfor %}

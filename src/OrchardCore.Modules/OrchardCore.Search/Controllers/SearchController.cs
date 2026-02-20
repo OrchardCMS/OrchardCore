@@ -229,8 +229,6 @@ public sealed class SearchController : Controller
                 .Take(pager.PageSize)
                 .ToList(),
                 Highlights = searchResult.Highlights,
-                HighlightPreTags = searchResult.HighlightPreTags,
-                HighlightPostTags = searchResult.HighlightPostTags,
             },
             Pager = await _shapeFactory.PagerSlimAsync(pager, new Dictionary<string, string>()
             {
