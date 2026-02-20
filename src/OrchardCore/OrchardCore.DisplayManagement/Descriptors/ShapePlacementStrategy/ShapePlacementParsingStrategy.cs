@@ -1,6 +1,5 @@
 using System.Text.Json;
 using Microsoft.Extensions.Hosting;
-using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell;
@@ -81,22 +80,14 @@ public class ShapePlacementParsingStrategy : ShapeTableProvider, IShapeTableHarv
                     predicate = matches.Aggregate(predicate, BuildPredicate);
                 }
 
-                var placement = new PlacementInfo
-                {
-                    Location = filter.Location,
-                };
-
-                if (filter.Alternates?.Length > 0)
-                {
-                    placement.Alternates = new AlternatesCollection(filter.Alternates);
-                }
-
-                if (filter.Wrappers?.Length > 0)
-                {
-                    placement.Wrappers = new AlternatesCollection(filter.Wrappers);
-                }
-
-                placement.ShapeType = filter.ShapeType;
+                var placement = new PlacementInfo(
+                    filter.Location,
+                    null,
+                    filter.ShapeType,
+                    null,
+                    filter.Alternates,
+                    filter.Wrappers
+                );
 
                 builder.Describe(shapeType)
                     .From(featureDescriptor)
