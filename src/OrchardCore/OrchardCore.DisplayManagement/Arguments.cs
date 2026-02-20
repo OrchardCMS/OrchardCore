@@ -294,54 +294,22 @@ public abstract class PropertyBasedNamedEnumerable : INamedEnumerable<object>
     private sealed class PropertyDictionary : IDictionary<string, object>
     {
         private readonly PropertyBasedNamedEnumerable _parent;
-        private FrozenDictionary<string, int> _nameToIndex;
-        private KeyValuePair<string, object>[] _pairs;
 
         public PropertyDictionary(PropertyBasedNamedEnumerable parent)
         {
             _parent = parent;
         }
 
-        private void EnsureNameToIndex()
-        {
-            if (_nameToIndex != null)
-            {
-                return;
-            }
-
-            var names = _parent.PropertyNames;
-            var indexMap = new Dictionary<string, int>(names.Count);
-            for (var i = 0; i < names.Count; i++)
-            {
-                indexMap[names[i]] = i;
-            }
-            _nameToIndex = indexMap.ToFrozenDictionary();
-        }
-
-        private KeyValuePair<string, object>[] GetPairs()
-        {
-            if (_pairs != null)
-            {
-                return _pairs;
-            }
-
-            var names = _parent.PropertyNames;
-            var pairs = new KeyValuePair<string, object>[names.Count];
-            for (var i = 0; i < names.Count; i++)
-            {
-                pairs[i] = new KeyValuePair<string, object>(names[i], _parent.GetPropertyValue(i));
-            }
-            return _pairs = pairs;
-        }
-
         public bool TryGetValue(string key, out object value)
         {
-            EnsureNameToIndex();
-
-            if (_nameToIndex.TryGetValue(key, out var index))
+            var names = _parent.PropertyNames;
+            for (var i = 0; i < names.Count; i++)
             {
-                value = _parent.GetPropertyValue(index);
-                return true;
+                if (string.Equals(names[i], key, StringComparison.Ordinal))
+                {
+                    value = _parent.GetPropertyValue(i);
+                    return true;
+                }
             }
 
             value = default;
@@ -352,27 +320,55 @@ public abstract class PropertyBasedNamedEnumerable : INamedEnumerable<object>
         {
             get
             {
-                EnsureNameToIndex();
-                return _nameToIndex.TryGetValue(key, out var index) ? _parent.GetPropertyValue(index) : default;
+                if (TryGetValue(key, out var value))
+                {
+                    return value;
+                }
+                return default;
             }
             set => throw new NotImplementedException();
         }
 
         public bool ContainsKey(string key)
         {
-            EnsureNameToIndex();
-            return _nameToIndex.ContainsKey(key);
+            var names = _parent.PropertyNames;
+            for (var i = 0; i < names.Count; i++)
+            {
+                if (string.Equals(names[i], key, StringComparison.Ordinal))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         public ICollection<string> Keys => (ICollection<string>)_parent.PropertyNames;
 
-        public ICollection<object> Values => GetPairs().Select(p => p.Value).ToArray();
+        public ICollection<object> Values
+        {
+            get
+            {
+                var values = new object[_parent.PropertyCount];
+                for (var i = 0; i < values.Length; i++)
+                {
+                    values[i] = _parent.GetPropertyValue(i);
+                }
+                return values;
+            }
+        }
 
         public int Count => _parent.PropertyCount;
 
         public bool IsReadOnly => true;
 
-        public IEnumerator<KeyValuePair<string, object>> GetEnumerator() => ((IEnumerable<KeyValuePair<string, object>>)GetPairs()).GetEnumerator();
+        public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
+        {
+            var names = _parent.PropertyNames;
+            for (var i = 0; i < names.Count; i++)
+            {
+                yield return new KeyValuePair<string, object>(names[i], _parent.GetPropertyValue(i));
+            }
+        }
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
