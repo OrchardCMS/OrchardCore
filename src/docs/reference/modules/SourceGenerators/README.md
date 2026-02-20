@@ -6,7 +6,7 @@ OrchardCore includes source generators that optimize performance by generating c
 
 ### Overview
 
-The `Arguments` class is used throughout OrchardCore to convert objects into named argument collections for shapes and other scenarios. Source generation provides zero-reflection, zero-allocation property access for optimal performance.
+The `Arguments` class is used throughout OrchardCore to convert objects into named argument collections for shapes and other scenarios. Source generation provides compile-time generated property access to avoid reflection overhead.
 
 ### Recommended: Use Named Types with `[GenerateArguments]`
 
@@ -25,7 +25,7 @@ public partial class MyShapeArguments
     public bool IsActive { get; set; }
 }
 
-// Usage - zero reflection overhead, zero array allocation
+// Usage - direct property access, no reflection
 var args = new MyShapeArguments 
 { 
     Title = "Hello", 
@@ -40,12 +40,11 @@ var shape = await shapeFactory.CreateAsync("MyShape", args);
 - The class must be marked as `partial`
 - At least one public instance property with a getter
 
-**Performance Benefits:**
-- ✅ **Zero array allocation** - Properties accessed on-demand
-- ✅ **Zero reflection** - Direct property access via switch expressions
-- ✅ **Lazy evaluation** - Only accessed properties have cost
-- ✅ **Memory efficient** - No intermediate objects created
-- ✅ **Cache-friendly** - Linear search optimized for small property counts (typical 2-10)
+**Benefits:**
+- ✅ **No reflection** - Direct property access via switch expressions
+- ✅ **Compile-time code generation** - Errors caught at build time
+- ✅ **Lazy evaluation** - Properties accessed on-demand
+- ✅ **Type safety** - Strongly typed arguments with IntelliSense
 
 ### Alternative: Anonymous Types with Interceptors
 
@@ -77,15 +76,6 @@ var args = Arguments.From(new { Title = "Test", Count = 5 });
 
 This is suitable for prototyping or infrequent usage where performance isn't critical.
 
-## Performance Comparison
-
-| Approach | Performance | Allocation | Lookup | Use Case |
-|----------|-------------|------------|--------|----------|
-| **Named Types with `[GenerateArguments]`** | ⚡⚡⚡ Fastest | Zero | O(n) linear | **Production (Recommended)** |
-| **Interceptors** | ⚡⚡⚡ Fastest | Minimal | O(n) linear | .NET 9+ anonymous types |
-| **Reflection + Cache** | ⚡ Cached | Per call | O(1) hash | Prototyping, rare usage |
-
-**Note on Lookup Performance:** Generated classes use linear search (O(n)) which is faster than hash-based lookups for typical shape arguments with 2-15 properties due to better cache locality and zero allocation overhead.
 
 ## Real-World Examples
 
@@ -158,7 +148,7 @@ public partial class MyData : PropertyBasedNamedEnumerable
 **Key Features:**
 - Extends `PropertyBasedNamedEnumerable` helper class that implements all `INamedEnumerable<object>` logic
 - Properties accessed directly via switch expression (no reflection)
-- No intermediate arrays created (zero allocation)
+- Property names stored as static array
 - Lazy dictionary initialization only when named access is needed
 
 ## Migration Guide
@@ -191,6 +181,7 @@ var shape = await factory.CreateAsync("MyShape", args);
 - ✅ **Reusability** - Named types can be reused across multiple shapes
 - ✅ **Documentation** - Add XML comments to describe properties
 - ✅ **Testability** - Easier to unit test with named types
+- ✅ **No reflection** - Direct property access
 
 ## Interceptors for Anonymous Types (.NET 9+)
 
@@ -242,53 +233,50 @@ obj/Debug/net10.0/generated/
 
 Generated classes extend this abstract base class which:
 - Implements all `INamedEnumerable<object>` members
-- Uses linear search for property lookups (optimized for 2-15 properties)
+- Uses linear search for property lookups (simple and efficient for typical 2-15 properties)
 - Handles enumeration and collection operations
 - Only requires derived classes to implement 3 simple methods
-- Minimal allocation design - no intermediate dictionaries or arrays
+- Minimal allocation design - no intermediate dictionaries or arrays until accessed
 
-### Linear Search vs Hash-Based Lookup
+### Linear Search for Property Access
+
+The generated code uses a linear search (sequential scan) when looking up properties by name:
+
+```csharp
+public bool TryGetValue(string key, out object value)
+{
+    var names = _parent.PropertyNames;
+    for (var i = 0; i < names.Count; i++)
+    {
+        if (string.Equals(names[i], key, StringComparison.Ordinal))
+        {
+            value = _parent.GetPropertyValue(i);
+            return true;
+        }
+    }
+    value = default;
+    return false;
+}
+```
 
 **Why linear search?**
 
 For typical OrchardCore shape arguments (2-15 properties):
-- **Better cache locality** - Properties and names are in contiguous arrays
-- **Zero allocation** - No dictionary initialization overhead
-- **Simpler code** - Easier to understand and maintain
-- **Faster for small n** - Hash computation + lookup is slower than scanning 2-15 items
-
-**Performance characteristics:**
-- 1-10 properties: Linear search is fastest
-- 11-20 properties: Break-even point  
-- 20+ properties: Hash-based would be faster (but rare in shape arguments)
-
-### Zero-Allocation Design
-
-Traditional approach (old):
-```
-Properties → object[] array → NamedEnumerable wrapper → Dictionary for lookups
-```
-
-New optimized approach:
-```
-Properties → Direct access via switch → Linear scan when needed → No allocations
-```
-
-**Memory savings:**
-- For 10 properties: Saves 10 object references + array + dictionary overhead
-- For 100 calls: Saves 100 array allocations + dictionary allocations
-- Especially beneficial when only 1-2 properties are actually accessed
+- **Simplicity** - Easy to understand and maintain
+- **No allocation overhead** - No dictionary initialization unless needed
+- **Good cache locality** - Sequential memory access
+- **Adequate performance** - For small property counts, sequential scan is fast
 
 ## Best Practices
 
-1. **Use `[GenerateArguments]` for production code** - Most stable and performant
+1. **Use `[GenerateArguments]` for production code** - Recommended for reusable shape arguments
 2. **Use descriptive names** - `UserRegistrationEmailData` over `Data`
 3. **Group related properties** - Create focused models for specific scenarios
 4. **Keep models simple** - Avoid complex logic in getters
 5. **Document usage** - Add XML comments explaining the model's purpose
 6. **Look at OrchardCore examples** - Check existing modules for reference patterns
 7. **Consider reusability** - Named types can be shared across multiple call sites
-8. **Keep property counts reasonable** - Optimized for 2-15 properties typical in shapes
+8. **Keep property counts reasonable** - Designed for typical shape arguments with 2-20 properties
 
 ## Troubleshooting
 
@@ -312,12 +300,6 @@ public class MyData { ... }
 2. Close and reopen files
 3. Restart Visual Studio if needed
 4. Verify the source generator project reference
-
-### Interceptors not working (.NET 9+)
-
-1. Verify you're using .NET 9.0+ and C# 13+
-2. Clean and rebuild the solution
-3. Check for source generator errors in build output
 
 ### "Cannot access properties on PropertyBasedNamedEnumerable"
 
@@ -369,26 +351,6 @@ Intercepts `Arguments.From(anonymousType)` calls and optimizes them using type i
 **Status:** ✅ Stable (.NET 9+)
 
 **Generated Code Size:** ~20 lines per call site
-
-## Performance Metrics
-
-Based on OrchardCore benchmarks:
-
-| Scenario | Old (with array) | New (direct access) | Improvement |
-|----------|------------------|---------------------|-------------|
-| 3 properties, all accessed | 150 ns, 120 B | 50 ns, 0 B | 3x faster, zero allocation |
-| 10 properties, 2 accessed | 500 ns, 400 B | 30 ns, 0 B | 16x faster, zero allocation |
-| 10 properties, lookup by name | 200 ns, 0 B | 40 ns, 0 B | 5x faster (linear vs hash) |
-| Anonymous type (interceptor) | N/A | 60 ns, 32 B | Minimal overhead |
-| Reflection fallback | 2000 ns, 500 B | 2000 ns, 500 B | Same (cached) |
-
-*Benchmarks are approximate and may vary based on workload.*
-
-**Why is linear search faster for lookups?**
-- CPU cache efficiency for small arrays
-- No hash computation overhead
-- No dictionary allocation or initialization
-- Typical 2-10 property count makes linear scan trivial
 
 ## Advanced Usage
 
