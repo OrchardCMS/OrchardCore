@@ -16,6 +16,7 @@ public static class LongExtensions
             (item, unit) => item.Value > 1024 ? new { Value = item.Value / 1024, Unit = unit } : item);
 
         var multiplier = (decimal)Math.Pow(10, digits); 
+
         return $"{Math.Floor(result.Value * multiplier) / multiplier} {result.Unit}";
     }
 }
