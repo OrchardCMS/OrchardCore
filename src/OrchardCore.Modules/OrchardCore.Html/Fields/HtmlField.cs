@@ -1,6 +1,6 @@
 using OrchardCore.ContentManagement;
 
-namespace OrchardCore.ContentFields.Fields;
+namespace OrchardCore.Html.Fields;
 
 public class HtmlField : ContentField
 {

@@ -1,7 +1,7 @@
-using OrchardCore.ContentFields.Fields;
+using OrchardCore.Html.Fields;
 using OrchardCore.Indexing;
 
-namespace OrchardCore.ContentFields.Indexing;
+namespace OrchardCore.Html.Indexing;
 
 public class HtmlFieldIndexHandler : ContentFieldIndexHandler<HtmlField>
 {
