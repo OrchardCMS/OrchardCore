@@ -187,6 +187,9 @@ Appends a version hash for an asset. Can be piped together with the other media 
 
 ## Razor Helpers
 
+!!! note
+    When using tag helpers in Razor, you must take a direct reference to the `OrchardCore.Media` NuGet package in each theme or module that uses the tag helpers. This is not required when using Liquid.
+
 To obtain the correct URL for an asset, use the `AssetUrl` helper extension method on the view's base `Orchard` property, e.g.:
 
 `@Orchard.AssetUrl(Model.Paths[0])`
@@ -266,9 +269,6 @@ Or when using the MVC tag helpers and the image is resolved from static assets, 
 `<img src="/favicon.ico" asp-append-version="true"/>`
 
 > The Razor Helper is accessible on the `Orchard` property if the view is using Orchard Core's Razor base class, or by injecting `OrchardCore.IOrchardHelper` in all other cases.
-
-!!! note
-    When using tag helpers in Razor, you must take a direct reference to the `OrchardCore.Media` nuget package in each theme or module that uses the tag helpers. This is not required when using Liquid.
 
 ### Razor Anchor Tag Helper
 
