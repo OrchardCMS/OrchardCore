@@ -1,6 +1,6 @@
-namespace OrchardCore.Modules;
+namespace OrchardCore.Media.Core.Helpers;
 
-public static class LongExtensions
+public static class FileSizeHelpers
 {
     private static string[] _fileSizeUnits = ["KB", "MB", "GB", "TB", "PB"];
     
@@ -9,7 +9,7 @@ public static class LongExtensions
     /// </summary>
     /// <param name="bytes">The number of bytes to format.</param>
     /// <param name="digits">The number of digits that may be displayed after the decimal point.</param>
-    public static string FormatAsBytes(this long bytes, int digits = 2)
+    public static string FormatAsBytes(long bytes, int digits = 2)
     {
         var result = _fileSizeUnits.Aggregate(
             new { Value = (decimal)bytes, Unit = "B" },

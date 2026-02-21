@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.FileStorage;
+using OrchardCore.Media.Core.Helpers;
 using OrchardCore.Media.Events;
 using OrchardCore.Modules;
 
@@ -256,9 +257,9 @@ public class DefaultMediaFileStore : IMediaFileStore
             requiredStorageSpace > storageLimit)
         {
             throw new FileStoreException(
-                $"You tried to upload a file that requires {requiredStorageSpace.FormatAsBytes()} of storage space, " +
-                $"but only {storageLimit.FormatAsBytes()} is available. Try uploading a file that fits the available " +
-                "space, or delete some unnecessary files.");
+                $"You tried to upload a file that requires {FileSizeHelpers.FormatAsBytes(requiredStorageSpace)} of " +
+                $"storage space, but only {FileSizeHelpers.FormatAsBytes(storageLimit)} is available. Try uploading " +
+                $"a file that fits the available space, or delete some unnecessary files.");
         }
     }
 }

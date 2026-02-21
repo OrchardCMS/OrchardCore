@@ -9,9 +9,9 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.FileStorage;
+using OrchardCore.Media.Core.Helpers;
 using OrchardCore.Media.Services;
 using OrchardCore.Media.ViewModels;
-using OrchardCore.Modules;
 
 namespace OrchardCore.Media.Controllers;
 
@@ -599,7 +599,7 @@ public sealed class AdminController : Controller
         }
 
         var bytes = await _mediaFileStore.GetPermittedStorageAsync();
-        var text = bytes?.FormatAsBytes() ?? S["Unspecified"];
+        var text = bytes == null ? S["Unspecified"] : FileSizeHelpers.FormatAsBytes(bytes.Value);
         return Ok(new { bytes, text });
     }
 }
