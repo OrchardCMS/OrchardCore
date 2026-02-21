@@ -69,7 +69,13 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
                                 },
                                 error: function (error) {
                                     console.log(JSON.stringify(error));
-                                    items.splice(i, 1, { name: x.path, mime: '', mediaPath: 'not-found', mediaText: '', anchor: { x: 0.5, y: 0.5 }, attachedFileName: x.attachedFileName });
+                                    var item;
+                                    if (error.status === 404) {
+                                        item = { name: x.path, mime: '', mediaPath: 'not-found', mediaText: '', anchor: { x: 0.5, y: 0.5 }, attachedFileName: x.attachedFileName };
+                                    } else {
+                                        item = { name: x.path, mime: '', mediaPath: x.path, mediaText: x.mediaText, anchor: x.anchor, attachedFileName: x.attachedFileName, isTransientError: true };
+                                    }
+                                    items.splice(i, 1, item);
                                     if (items.length === ++length) {
                                         items.forEach(function (x) {
                                             self.mediaItems.push(x);

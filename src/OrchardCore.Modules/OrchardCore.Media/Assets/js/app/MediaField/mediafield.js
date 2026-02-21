@@ -84,7 +84,13 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple,
                                 },
                                 error: function (error) {
                                     console.log(error);
-                                    items.splice(i, 1, { name: x.path, mime: '', mediaPath: 'not-found', mediaText: '', anchor: { x: 0, y: 0 } });
+                                    var item;
+                                    if (error.status === 404) {
+                                        item = { name: x.path, mime: '', mediaPath: 'not-found', mediaText: '', anchor: { x: 0, y: 0 } };
+                                    } else {
+                                        item = { name: x.path, mime: '', mediaPath: x.path, mediaText: x.mediaText, anchor: x.anchor, isTransientError: true };
+                                    }
+                                    items.splice(i, 1, item);
                                     if (items.length === ++length) {
                                         items.forEach(function (x) {
                                             self.mediaItems.push(x);
