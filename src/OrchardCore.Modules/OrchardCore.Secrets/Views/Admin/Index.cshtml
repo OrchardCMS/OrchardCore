@@ -1,0 +1,131 @@
+@model SecretIndexViewModel
+
+<zone Name="Title"><h1>@RenderTitleSegments(T["Secrets"])</h1></zone>
+
+<form asp-action="Index" method="post" class="no-multisubmit">
+    <div class="card text-bg-theme mb-3 position-sticky action-bar">
+        <div class="card-body">
+            <div class="row gx-3">
+                <div class="col">
+                </div>
+                <div class="col-auto">
+                    <button type="button" class="btn btn-secondary create" data-bs-toggle="modal" data-bs-target="#modalSecretTypes">@T["Add Secret"]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <ul class="list-group">
+        @if (Model.Secrets.Any())
+        {
+            <li class="list-group-item text-bg-theme">
+                <div class="row">
+                    <div class="col-md-3"><strong>@T["Name"]</strong></div>
+                    <div class="col-md-2"><strong>@T["Type"]</strong></div>
+                    <div class="col-md-2"><strong>@T["Store"]</strong></div>
+                    <div class="col-md-2"><strong>@T["Expires"]</strong></div>
+                    <div class="col-md-3"><strong>@T["Actions"]</strong></div>
+                </div>
+            </li>
+            @foreach (var secret in Model.Secrets)
+            {
+                <li class="list-group-item @(secret.IsExpired ? "list-group-item-danger" : secret.IsExpiringSoon ? "list-group-item-warning" : "")">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <a asp-action="Edit" asp-route-name="@secret.Name">@secret.Name</a>
+                            @if (secret.IsExpired)
+                            {
+                                <span class="badge text-bg-danger ms-1" title="@T["This secret has expired"]">@T["Expired"]</span>
+                            }
+                            else if (secret.IsExpiringSoon)
+                            {
+                                <span class="badge text-bg-warning ms-1" title="@T["This secret expires within 30 days"]">@T["Expiring"]</span>
+                            }
+                        </div>
+                        <div class="col-md-2">
+                            @(secret.Type?.Split('.').LastOrDefault() ?? "Unknown")
+                        </div>
+                        <div class="col-md-2">
+                            <span class="badge text-bg-info">@secret.Store</span>
+                        </div>
+                        <div class="col-md-2">
+                            @if (secret.ExpiresUtc.HasValue)
+                            {
+                                <span title="@secret.ExpiresUtc.Value.ToString("g")">
+                                    @secret.ExpiresUtc.Value.ToString("d")
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="text-muted">@T["Never"]</span>
+                            }
+                        </div>
+                        <div class="col-md-3">
+                            <a asp-action="Edit" asp-route-name="@secret.Name" class="btn btn-sm btn-primary">@T["Edit"]</a>
+                            <a asp-action="Delete" asp-route-name="@secret.Name" class="btn btn-sm btn-danger" data-url-af="RemoveUrl UnsafeUrl" data-title="@T["Delete Secret"]" data-message="@T["Are you sure you want to delete this secret?"]">@T["Delete"]</a>
+                        </div>
+                    </div>
+                </li>
+            }
+        }
+        else
+        {
+            <li class="list-group-item">
+                <div class="alert alert-info mb-0" role="alert">
+                    @T["<strong>Nothing here!</strong> There are no secrets stored. Click 'Add Secret' to create one."]
+                </div>
+            </li>
+        }
+    </ul>
+</form>
+
+<!-- Modal for selecting secret type -->
+<div class="modal fade" id="modalSecretTypes" tabindex="-1" role="dialog" aria-labelledby="available-secret-types-title" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="available-secret-types-title">@T["Select Secret Type"]</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <input class="form-control" id="secret-type-search" type="search" placeholder="@T["Filter"]" aria-label="@T["Filter"]" autofocus />
+                </div>
+                <div id="secret-type-cards" class="row row-cols-1 row-cols-md-2 g-2">
+                    @foreach (var secretType in Model.AvailableTypes)
+                    {
+                        <div class="col secret-type-item" data-name="@secretType.DisplayName.ToLowerInvariant()">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title">@secretType.DisplayName</h5>
+                                    <p class="card-text text-muted small">@secretType.Description</p>
+                                </div>
+                                <div class="card-footer bg-transparent text-end">
+                                    <a asp-action="Create" asp-route-type="@secretType.Name" class="btn btn-primary btn-sm">@T["Create"]</a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@T["Cancel"]</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script at="Foot">
+    document.getElementById('secret-type-search').addEventListener('input', function() {
+        var filter = this.value.toLowerCase();
+        var items = document.querySelectorAll('.secret-type-item');
+        items.forEach(function(item) {
+            var name = item.getAttribute('data-name');
+            if (name.indexOf(filter) > -1) {
+                item.style.display = '';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    });
+</script>

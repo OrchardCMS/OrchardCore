@@ -1,8 +1,5 @@
-using System.Security.Cryptography;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -17,22 +14,16 @@ public sealed class GoogleAuthenticationSettingsDisplayDriver : SiteDisplayDrive
 {
     private readonly IShellReleaseManager _shellReleaseManager;
     private readonly IAuthorizationService _authorizationService;
-    private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly ILogger _logger;
 
     public GoogleAuthenticationSettingsDisplayDriver(
         IShellReleaseManager shellReleaseManager,
         IAuthorizationService authorizationService,
-        IDataProtectionProvider dataProtectionProvider,
-        IHttpContextAccessor httpContextAccessor,
-        ILogger<GoogleAuthenticationSettingsDisplayDriver> logger)
+        IHttpContextAccessor httpContextAccessor)
     {
         _shellReleaseManager = shellReleaseManager;
         _authorizationService = authorizationService;
-        _dataProtectionProvider = dataProtectionProvider;
         _httpContextAccessor = httpContextAccessor;
-        _logger = logger;
     }
 
     protected override string SettingsGroupId
@@ -46,27 +37,12 @@ public sealed class GoogleAuthenticationSettingsDisplayDriver : SiteDisplayDrive
             return null;
         }
 
+#pragma warning disable CS0618 // Type or member is obsolete
         return Initialize<GoogleAuthenticationSettingsViewModel>("GoogleAuthenticationSettings_Edit", model =>
         {
             model.ClientID = settings.ClientID;
-            if (!string.IsNullOrWhiteSpace(settings.ClientSecret))
-            {
-                try
-                {
-                    var protector = _dataProtectionProvider.CreateProtector(GoogleConstants.Features.GoogleAuthentication);
-                    model.ClientSecret = protector.Unprotect(settings.ClientSecret);
-                }
-                catch (CryptographicException)
-                {
-                    _logger.LogError("The client secret could not be decrypted. It may have been encrypted using a different key.");
-                    model.ClientSecret = string.Empty;
-                    model.HasDecryptionError = true;
-                }
-            }
-            else
-            {
-                model.ClientSecret = string.Empty;
-            }
+            model.ClientSecretSecretName = settings.ClientSecretSecretName;
+            model.HasClientSecret = !string.IsNullOrWhiteSpace(settings.ClientSecret);
             if (settings.CallbackPath.HasValue)
             {
                 model.CallbackPath = settings.CallbackPath.Value;
@@ -74,6 +50,7 @@ public sealed class GoogleAuthenticationSettingsDisplayDriver : SiteDisplayDrive
             model.SaveTokens = settings.SaveTokens;
         }).Location("Content:5")
         .OnGroup(SettingsGroupId);
+#pragma warning restore CS0618 // Type or member is obsolete
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, GoogleAuthenticationSettings settings, UpdateEditorContext context)
@@ -88,15 +65,9 @@ public sealed class GoogleAuthenticationSettingsDisplayDriver : SiteDisplayDrive
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
         settings.ClientID = model.ClientID;
+        settings.ClientSecretSecretName = model.ClientSecretSecretName;
         settings.CallbackPath = model.CallbackPath;
         settings.SaveTokens = model.SaveTokens;
-
-        if (context.Updater.ModelState.IsValid)
-        {
-            var protector = _dataProtectionProvider.CreateProtector(GoogleConstants.Features.GoogleAuthentication);
-
-            settings.ClientSecret = protector.Protect(model.ClientSecret);
-        }
 
         _shellReleaseManager.RequestRelease();
 

@@ -1,3 +1,5 @@
+#pragma warning disable CS0618 // Type or member is obsolete
+
 using System.ComponentModel.DataAnnotations;
 using Microsoft.Extensions.Options;
 using OrchardCore.Twitter.Settings;

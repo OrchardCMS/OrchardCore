@@ -3,7 +3,7 @@
 @model AzureAISearchDefaultSettingsViewModel
 
 @{
-    var apiKeyWrapperHtmlId = @Html.IdFor(x => x.ApiKey) + "_Wrapper";
+    var apiKeyWrapperHtmlId = @Html.IdFor(x => x.ApiKeySecretName) + "_Wrapper";
     var identityClientIdWrapperHtmlId = @Html.IdFor(x => x.IdentityClientId) + "_Wrapper";
 
     if (Model.ConfigurationsAreOptional)
@@ -35,10 +35,21 @@
         <span asp-validation-for="AuthenticationType"></span>
     </div>
 
-    <div class="mb-3@(Model.AuthenticationType == AzureAIAuthenticationType.ApiKey ? string.Empty : " d-none")" asp-validation-class-for="ApiKey" id="@apiKeyWrapperHtmlId">
-        <label asp-for="ApiKey" class="form-label">@T["Api Key"]</label>
-        <input type="text" asp-for="ApiKey" class="form-control" placeholder="@(Model.ApiKeyExists ? T["API key stored. Leave blank for current key or enter a new one"] : T["Provide an authentication key"])" />
-        <span asp-validation-for="ApiKey"></span>
+    <div class="mb-3@(Model.AuthenticationType == AzureAIAuthenticationType.ApiKey ? string.Empty : " d-none")" id="@apiKeyWrapperHtmlId">
+        <label asp-for="ApiKeySecretName" class="form-label">@T["Api Key"]</label>
+        @if (Model.ApiKeyExists)
+        {
+            <p class="alert alert-info mb-2">@T["A legacy API key is configured. Please create a new secret using the Secrets module and select it below to complete the migration."]</p>
+        }
+        @await Component.InvokeAsync("SelectSecret", new
+        {
+            secretTypes = new[] { "TextSecret" },
+            selectedSecret = Model.ApiKeySecretName,
+            htmlId = "ApiKeySecretName",
+            htmlName = Html.NameFor(m => m.ApiKeySecretName).ToString(),
+            required = false
+        })
+        <span class="hint">@T["Select a secret containing the Azure AI Search API key."]</span>
     </div>
 
     <div class="mb-3@(Model.AuthenticationType == AzureAIAuthenticationType.ManagedIdentity ? string.Empty : " d-none")" asp-validation-class-for="IdentityClientId" id="@identityClientIdWrapperHtmlId">

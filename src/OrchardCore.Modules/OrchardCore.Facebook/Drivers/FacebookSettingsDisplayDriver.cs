@@ -1,8 +1,5 @@
-using System.Security.Cryptography;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -17,23 +14,16 @@ public sealed class FacebookSettingsDisplayDriver : SiteDisplayDriver<FacebookSe
 {
     private readonly IShellReleaseManager _shellReleaseManager;
     private readonly IAuthorizationService _authorizationService;
-    private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly ILogger _logger;
 
     public FacebookSettingsDisplayDriver(
         IShellReleaseManager shellReleaseManager,
         IAuthorizationService authorizationService,
-        IDataProtectionProvider dataProtectionProvider,
-        IHttpContextAccessor httpContextAccessor,
-        ILogger<FacebookSettingsDisplayDriver> logger
-        )
+        IHttpContextAccessor httpContextAccessor)
     {
         _shellReleaseManager = shellReleaseManager;
         _authorizationService = authorizationService;
-        _dataProtectionProvider = dataProtectionProvider;
         _httpContextAccessor = httpContextAccessor;
-        _logger = logger;
     }
 
     protected override string SettingsGroupId
@@ -47,30 +37,19 @@ public sealed class FacebookSettingsDisplayDriver : SiteDisplayDriver<FacebookSe
             return null;
         }
 
+#pragma warning disable CS0618 // Type or member is obsolete
         return Initialize<FacebookSettingsViewModel>("FacebookSettings_Edit", model =>
         {
-            var protector = _dataProtectionProvider.CreateProtector(FacebookConstants.Features.Core);
-
             model.AppId = settings.AppId;
             model.FBInit = settings.FBInit;
             model.FBInitParams = settings.FBInitParams;
             model.Version = settings.Version;
             model.SdkJs = settings.SdkJs;
-            if (!string.IsNullOrWhiteSpace(settings.AppSecret))
-            {
-                try
-                {
-                    model.AppSecret = protector.Unprotect(settings.AppSecret);
-                }
-                catch (CryptographicException)
-                {
-                    _logger.LogError("The app secret could not be decrypted. It may have been encrypted using a different key.");
-                    model.AppSecret = string.Empty;
-                    model.HasDecryptionError = true;
-                }
-            }
+            model.AppSecretSecretName = settings.AppSecretSecretName;
+            model.HasAppSecret = !string.IsNullOrWhiteSpace(settings.AppSecret);
         }).Location("Content:0")
         .OnGroup(SettingsGroupId);
+#pragma warning restore CS0618 // Type or member is obsolete
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, FacebookSettings settings, UpdateEditorContext context)
@@ -89,16 +68,11 @@ public sealed class FacebookSettingsDisplayDriver : SiteDisplayDriver<FacebookSe
         settings.FBInit = model.FBInit;
         settings.SdkJs = model.SdkJs;
         settings.Version = model.Version;
+        settings.AppSecretSecretName = model.AppSecretSecretName;
 
         if (!string.IsNullOrWhiteSpace(model.FBInitParams))
         {
             settings.FBInitParams = model.FBInitParams;
-        }
-
-        if (context.Updater.ModelState.IsValid)
-        {
-            var protector = _dataProtectionProvider.CreateProtector(FacebookConstants.Features.Core);
-            settings.AppSecret = protector.Protect(model.AppSecret);
         }
 
         _shellReleaseManager.RequestRelease();

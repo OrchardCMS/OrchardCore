@@ -5,6 +5,7 @@ using System.Text.Json;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Secrets;
 using OrchardCore.Infrastructure;
 using OrchardCore.Settings;
 using OrchardCore.Sms.Models;
@@ -26,6 +27,7 @@ public class TwilioSmsProvider : ISmsProvider
 
     private readonly ISiteService _siteService;
     private readonly IDataProtectionProvider _dataProtectionProvider;
+    private readonly ISecretManager _secretManager;
     private readonly ILogger<TwilioSmsProvider> _logger;
     private readonly IHttpClientFactory _httpClientFactory;
 
@@ -34,12 +36,14 @@ public class TwilioSmsProvider : ISmsProvider
     public TwilioSmsProvider(
         ISiteService siteService,
         IDataProtectionProvider dataProtectionProvider,
+        ISecretManager secretManager,
         ILogger<TwilioSmsProvider> logger,
         IHttpClientFactory httpClientFactory,
         IStringLocalizer<TwilioSmsProvider> stringLocalizer)
     {
         _siteService = siteService;
         _dataProtectionProvider = dataProtectionProvider;
+        _secretManager = secretManager;
         _logger = logger;
         _httpClientFactory = httpClientFactory;
         S = stringLocalizer;
@@ -105,7 +109,9 @@ public class TwilioSmsProvider : ISmsProvider
 
     private HttpClient GetHttpClient(TwilioSettings settings)
     {
+#pragma warning disable CS0618 // Type or member is obsolete
         var token = $"{settings.AccountSID}:{settings.AuthToken}";
+#pragma warning restore CS0618 // Type or member is obsolete
         var base64Token = Convert.ToBase64String(Encoding.ASCII.GetBytes(token));
 
         var client = _httpClientFactory.CreateClient(TechnicalName);
@@ -123,14 +129,59 @@ public class TwilioSmsProvider : ISmsProvider
         {
             var settings = await _siteService.GetSettingsAsync<TwilioSettings>();
 
-            var protector = _dataProtectionProvider.CreateProtector(ProtectorName);
+            string authToken = null;
+
+            // First try to load from secrets
+            if (!string.IsNullOrWhiteSpace(settings.AuthTokenSecretName))
+            {
+                try
+                {
+                    var secret = await _secretManager.GetSecretAsync<TextSecret>(settings.AuthTokenSecretName);
+
+                    if (secret != null && !string.IsNullOrWhiteSpace(secret.Text))
+                    {
+                        authToken = secret.Text;
+
+                        if (_logger.IsEnabled(LogLevel.Debug))
+                        {
+                            _logger.LogDebug("Twilio auth token loaded from secret '{SecretName}'.", settings.AuthTokenSecretName);
+                        }
+                    }
+                    else
+                    {
+                        _logger.LogWarning("Twilio auth token secret '{SecretName}' was not found or is empty.", settings.AuthTokenSecretName);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to load Twilio auth token from secret '{SecretName}'.", settings.AuthTokenSecretName);
+                }
+            }
+
+            // Fall back to legacy encrypted auth token
+#pragma warning disable CS0618 // Type or member is obsolete
+            if (authToken == null && !string.IsNullOrEmpty(settings.AuthToken))
+            {
+                try
+                {
+                    var protector = _dataProtectionProvider.CreateProtector(ProtectorName);
+                    authToken = protector.Unprotect(settings.AuthToken);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "The Twilio auth token could not be decrypted. It may have been encrypted using a different key.");
+                }
+            }
+#pragma warning restore CS0618 // Type or member is obsolete
 
             // It is important to create a new instance of `TwilioSettings` privately to hold the plain auth-token value.
             _settings = new TwilioSettings
             {
                 PhoneNumber = settings.PhoneNumber,
                 AccountSID = settings.AccountSID,
-                AuthToken = settings.AuthToken == null ? null : protector.Unprotect(settings.AuthToken),
+#pragma warning disable CS0618 // Type or member is obsolete
+                AuthToken = authToken,
+#pragma warning restore CS0618 // Type or member is obsolete
             };
         }
 

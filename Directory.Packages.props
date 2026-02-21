@@ -13,6 +13,7 @@
     <PackageVersion Include="Azure.Extensions.AspNetCore.DataProtection.Blobs" Version="1.5.1" />
     <PackageVersion Include="Azure.Identity" Version="1.17.1" />
     <PackageVersion Include="Azure.Search.Documents" Version="11.7.0" />
+    <PackageVersion Include="Azure.Security.KeyVault.Secrets" Version="4.7.0" />
     <PackageVersion Include="Azure.Storage.Blobs" Version="12.27.0" />
     <PackageVersion Include="BenchmarkDotNet" Version="0.15.8" />
     <PackageVersion Include="Castle.Core" Version="5.2.1" />
