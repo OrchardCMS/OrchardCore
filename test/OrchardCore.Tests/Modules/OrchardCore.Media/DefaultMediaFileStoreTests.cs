@@ -121,7 +121,6 @@ public class DefaultMediaFileStoreTests
         var loggerMock = new Mock<ILogger<DefaultMediaFileStore>>();
         var stream1 = new MemoryStream(new byte[100]);
         var stream2 = new MemoryStream(new byte[200]);
-
         var handler = new Mock<IMediaEventHandler>();
 
         handler
