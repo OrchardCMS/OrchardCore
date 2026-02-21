@@ -7,7 +7,7 @@ using OrchardCore.Data;
 using OrchardCore.Html.Fields;
 using YesSql.Indexes;
 
-namespace OrchardCore.Html.Indexing.SQL;
+namespace OrchardCore.Html.Indexing;
 
 public class HtmlFieldIndexProvider : IndexProvider<ContentItem>, IScopedIndexProvider
 {

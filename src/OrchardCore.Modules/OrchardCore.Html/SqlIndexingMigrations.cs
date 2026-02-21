@@ -1,13 +1,52 @@
+using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Data.Migration;
+using OrchardCore.Html.Fields;
+using OrchardCore.Html.Indexing;
+using OrchardCore.Html.Settings;
 using YesSql.Sql;
 
-namespace OrchardCore.Html.Indexing.SQL;
+namespace OrchardCore.Html;
 
-public sealed class Migrations : DataMigration
+public sealed class SqlIndexingMigrations : DataMigration
 {
+    private readonly IContentDefinitionManager _contentDefinitionManager;
+
+    public SqlIndexingMigrations(IContentDefinitionManager contentDefinitionManager)
+    {
+        _contentDefinitionManager = contentDefinitionManager;
+    }
+
     public async Task<int> CreateAsync()
     {
+        await _contentDefinitionManager.AlterPartDefinitionAsync("HtmlBodyPart", builder => builder
+            .Attachable()
+            .WithDescription("Provides an HTML Body for your content item."));
+
+        // Html field
+        await _contentDefinitionManager.MigrateFieldSettingsAsync<HtmlField, HtmlFieldSettings>();
+
+        // For backwards compatibility with liquid filters we disable html sanitization on existing field definitions.
+        var partDefinitions = await _contentDefinitionManager.LoadPartDefinitionsAsync();
+
+        foreach (var partDefinition in partDefinitions)
+        {
+            if (partDefinition.Fields.Any(x => x.FieldDefinition.Name == "HtmlField"))
+            {
+                await _contentDefinitionManager.AlterPartDefinitionAsync(partDefinition.Name, partBuilder =>
+                {
+                    foreach (var fieldDefinition in partDefinition.Fields.Where(x => x.FieldDefinition.Name == "HtmlField"))
+                    {
+                        partBuilder.WithField(fieldDefinition.Name, fieldBuilder =>
+                        {
+                            fieldBuilder.MergeSettings<HtmlFieldSettings>(x => x.SanitizeHtml = false);
+                        });
+                    }
+                });
+            }
+        }
+
         await SchemaBuilder.CreateMapIndexTableAsync<HtmlFieldIndex>(table => table
             .Column<string>("ContentItemId", column => column.WithLength(26))
             .Column<string>("ContentItemVersionId", column => column.WithLength(26))
@@ -40,6 +79,6 @@ public sealed class Migrations : DataMigration
                 "Latest")
         );
 
-        return 2;
+        return 1;
     }
 }

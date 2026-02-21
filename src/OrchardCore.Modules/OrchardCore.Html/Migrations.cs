@@ -1,31 +1,21 @@
-using System.Text.Json;
-using System.Text.Json.Nodes;
-using Microsoft.Extensions.Logging;
-using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Data.Migration;
 using OrchardCore.Html.Fields;
+using OrchardCore.Html.Indexing;
 using OrchardCore.Html.Settings;
-using YesSql;
+using YesSql.Sql;
 
 namespace OrchardCore.Html;
 
 public sealed class Migrations : DataMigration
 {
-    private readonly ISession _session;
-    private readonly ILogger _logger;
     private readonly IContentDefinitionManager _contentDefinitionManager;
 
-    public Migrations(
-        IContentDefinitionManager contentDefinitionManager,
-        ISession session,
-        ILogger<Migrations> logger)
+    public Migrations(IContentDefinitionManager contentDefinitionManager)
     {
         _contentDefinitionManager = contentDefinitionManager;
-        _session = session;
-        _logger = logger;
     }
 
     public async Task<int> CreateAsync()
@@ -34,129 +24,12 @@ public sealed class Migrations : DataMigration
             .Attachable()
             .WithDescription("Provides an HTML Body for your content item."));
 
-        // Shortcut other migration steps on new content definition schemas.
-        return 5;
-    }
-
-    // This code can be removed in a later version.
-#pragma warning disable CA1822 // Mark members as static
-    public int UpdateFrom1()
-    {
-        return 2;
-    }
-
-    // This code can be removed in a later version.
-    public int UpdateFrom2()
-#pragma warning restore CA1822 // Mark members as static
-    {
-        return 3;
-    }
-
-    // This code can be removed in a later version.
-    public async Task<int> UpdateFrom3Async()
-    {
-        // Update content type definitions
-        foreach (var contentType in await _contentDefinitionManager.LoadTypeDefinitionsAsync())
-        {
-            if (contentType.Parts.Any(x => x.PartDefinition.Name == "BodyPart"))
-            {
-                await _contentDefinitionManager.AlterTypeDefinitionAsync(contentType.Name, x => x.RemovePart("BodyPart").WithPart("HtmlBodyPart"));
-            }
-        }
-
-        await _contentDefinitionManager.DeletePartDefinitionAsync("BodyPart");
-
-        // We are patching all content item versions by moving the Title to DisplayText
-        // This step doesn't need to be executed for a brand new site
-
-        var lastDocumentId = 0L;
-
-        for (; ; )
-        {
-            var contentItemVersions = await _session.Query<ContentItem, ContentItemIndex>(x => x.DocumentId > lastDocumentId).Take(10).ListAsync();
-
-            if (!contentItemVersions.Any())
-            {
-                // No more content item version to process
-                break;
-            }
-
-            foreach (var contentItemVersion in contentItemVersions)
-            {
-                if (UpdateBody((JsonObject)contentItemVersion.Content))
-                {
-                    await _session.SaveAsync(contentItemVersion);
-                    if (_logger.IsEnabled(LogLevel.Information))
-                    {
-                        _logger.LogInformation("A content item version's BodyPart was upgraded: {ContentItemVersionId}", contentItemVersion.ContentItemVersionId);
-                    }
-                }
-
-                lastDocumentId = contentItemVersion.Id;
-            }
-
-            await _session.FlushAsync();
-        }
-
-        static bool UpdateBody(JsonNode content)
-        {
-            var changed = false;
-
-            if (content.GetValueKind() == JsonValueKind.Object)
-            {
-                var body = content["BodyPart"]?["Body"]?.Value<string>();
-
-                if (!string.IsNullOrWhiteSpace(body))
-                {
-                    content["HtmlBodyPart"] = new JsonObject() { ["Html"] = body };
-                    changed = true;
-                }
-
-                foreach (var node in content.AsObject())
-                {
-                    changed = UpdateBody(node.Value) || changed;
-                }
-            }
-
-            if (content.GetValueKind() == JsonValueKind.Array)
-            {
-                foreach (var node in content.AsArray())
-                {
-                    changed = UpdateBody(node) || changed;
-                }
-            }
-
-            return changed;
-        }
-
-        return 4;
-    }
-
-    // This code can be removed in a later version.
-    public async Task<int> UpdateFrom4Async()
-    {
-        // For backwards compatibility with liquid filters we disable html sanitization on existing field definitions.
-        foreach (var contentType in await _contentDefinitionManager.LoadTypeDefinitionsAsync())
-        {
-            if (contentType.Parts.Any(x => x.PartDefinition.Name == "HtmlBodyPart"))
-            {
-                await _contentDefinitionManager.AlterTypeDefinitionAsync(contentType.Name, x => x.WithPart("HtmlBodyPart", part =>
-                {
-                    part.MergeSettings<HtmlBodyPartSettings>(x => x.SanitizeHtml = false);
-                }));
-            }
-        }
-
-        return 5;
-    }
-
-    public async Task<int> UpdateFrom5Async()
-    {
         // Html field
         await _contentDefinitionManager.MigrateFieldSettingsAsync<HtmlField, HtmlFieldSettings>();
 
         // For backwards compatibility with liquid filters we disable html sanitization on existing field definitions.
         var partDefinitions = await _contentDefinitionManager.LoadPartDefinitionsAsync();
+
         foreach (var partDefinition in partDefinitions)
         {
             if (partDefinition.Fields.Any(x => x.FieldDefinition.Name == "HtmlField"))
@@ -174,6 +47,38 @@ public sealed class Migrations : DataMigration
             }
         }
 
-        return 6;
+        await SchemaBuilder.CreateMapIndexTableAsync<HtmlFieldIndex>(table => table
+            .Column<string>("ContentItemId", column => column.WithLength(26))
+            .Column<string>("ContentItemVersionId", column => column.WithLength(26))
+            .Column<string>("ContentType", column => column.WithLength(ContentItemIndex.MaxContentTypeSize))
+            .Column<string>("ContentPart", column => column.WithLength(ContentItemIndex.MaxContentPartSize))
+            .Column<string>("ContentField", column => column.WithLength(ContentItemIndex.MaxContentFieldSize))
+            .Column<bool>("Published", column => column.Nullable())
+            .Column<bool>("Latest", column => column.Nullable())
+            .Column<string>("Html", column => column.Nullable().Unlimited())
+        );
+
+        await SchemaBuilder.AlterIndexTableAsync<HtmlFieldIndex>(table => table
+            .CreateIndex("IDX_HtmlFieldIndex_DocumentId",
+                "DocumentId",
+                "ContentItemId",
+                "ContentItemVersionId",
+                "Published",
+                "Latest")
+        );
+
+        // The index in MySQL can accommodate up to 768 characters or 3072 bytes.
+        // DocumentId (2) + ContentType (254) + ContentPart (254) + ContentField (254) + Published and Latest (1) = 765 (< 768).
+        await SchemaBuilder.AlterIndexTableAsync<HtmlFieldIndex>(table => table
+            .CreateIndex("IDX_HtmlFieldIndex_DocumentId_ContentType",
+                "DocumentId",
+                "ContentType(254)",
+                "ContentPart(254)",
+                "ContentField(254)",
+                "Published",
+                "Latest")
+        );
+
+        return 1;
     }
 }

@@ -1,6 +1,6 @@
 using YesSql.Indexes;
 
-namespace OrchardCore.Html.Indexing.SQL;
+namespace OrchardCore.Html.Indexing;
 
 public class HtmlFieldIndex : MapIndex
 {

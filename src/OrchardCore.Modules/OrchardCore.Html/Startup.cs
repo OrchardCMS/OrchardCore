@@ -9,7 +9,6 @@ using OrchardCore.Html.Drivers;
 using OrchardCore.Html.Fields;
 using OrchardCore.Html.Handlers;
 using OrchardCore.Html.Indexing;
-using OrchardCore.Html.Indexing.SQL;
 using OrchardCore.Html.Models;
 using OrchardCore.Html.Settings;
 using OrchardCore.Html.ViewModels;
@@ -54,7 +53,7 @@ public sealed class Startup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddDataMigration<Indexing.SQL.Migrations>();
+            services.AddDataMigration<SqlIndexingMigrations>();
             services.AddScopedIndexProvider<HtmlFieldIndexProvider>();
         }
     }
