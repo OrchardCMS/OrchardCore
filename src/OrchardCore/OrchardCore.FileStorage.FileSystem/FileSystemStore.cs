@@ -339,6 +339,7 @@ public class FileSystemStore : IFileStore
             // raises some kind of error, yet regular use within the _fileSystemPath still works. So any error raised
             // here should not be blocking.
             _logger?.LogWarning(ex, "Unable to get free disk space for the file system store.");
+
             return Task.FromResult<long?>(null);
         }
     }
