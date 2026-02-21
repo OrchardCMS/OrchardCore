@@ -1,5 +1,3 @@
-using Microsoft.Extensions.Localization;
-
 namespace OrchardCore.FileStorage;
 
 public class FileStoreException : Exception
