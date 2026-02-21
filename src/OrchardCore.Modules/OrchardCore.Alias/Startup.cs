@@ -16,6 +16,7 @@ using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement;
+using OrchardCore.Environment.Cache;
 using OrchardCore.Indexing;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
@@ -62,7 +63,11 @@ public sealed class Startup : StartupBase
         services.AddScoped<IContentHandler>(sp => sp.GetRequiredService<AliasPartIndexProvider>());
 
         services.AddDataMigration<Migrations>();
-        services.AddScoped<IContentHandleProvider, AliasPartContentHandleProvider>();
+
+        // Register as both IContentHandleProvider and ITagRemovedEventHandler for cache eviction.
+        services.AddScoped<AliasPartContentHandleProvider>();
+        services.AddScoped<IContentHandleProvider>(sp => sp.GetRequiredService<AliasPartContentHandleProvider>());
+        services.AddScoped<ITagRemovedEventHandler>(sp => sp.GetRequiredService<AliasPartContentHandleProvider>());
 
         // Identity Part
         services.AddContentPart<AliasPart>()

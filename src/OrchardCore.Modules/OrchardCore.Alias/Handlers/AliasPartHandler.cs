@@ -58,14 +58,14 @@ public class AliasPartHandler : ContentPartHandler<AliasPart>
 
     public override Task PublishedAsync(PublishContentContext context, AliasPart instance)
     {
-        return _tagCache.RemoveTagAsync(AliasConstants.AliasPrefix + instance.Alias);
+        return RemoveTagAsync(instance.Alias);
     }
 
     public override Task RemovedAsync(RemoveContentContext context, AliasPart instance)
     {
         if (context.NoActiveVersionLeft)
         {
-            return _tagCache.RemoveTagAsync(AliasConstants.AliasPrefix + instance.Alias);
+            return RemoveTagAsync(instance.Alias);
         }
 
         return Task.CompletedTask;
@@ -73,7 +73,7 @@ public class AliasPartHandler : ContentPartHandler<AliasPart>
 
     public override Task UnpublishedAsync(PublishContentContext context, AliasPart instance)
     {
-        return _tagCache.RemoveTagAsync(AliasConstants.AliasPrefix + instance.Alias);
+        return RemoveTagAsync(instance.Alias);
     }
 
     public override async Task CloningAsync(CloneContentContext context, AliasPart part)
@@ -82,6 +82,12 @@ public class AliasPartHandler : ContentPartHandler<AliasPart>
         clonedPart.Alias = await GenerateUniqueAliasAsync(part.Alias, clonedPart);
 
         clonedPart.Apply();
+    }
+
+    private Task RemoveTagAsync(string alias)
+    {
+        // Use lowercase alias for tag consistency with AliasPartContentHandleProvider caching.
+        return _tagCache.RemoveTagAsync(AliasConstants.AliasPrefix + alias?.ToLowerInvariant());
     }
 
     private async Task ComputeAliasAsync(AliasPart part)
