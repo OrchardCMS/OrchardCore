@@ -359,6 +359,7 @@ await _secretManager.SaveSecretAsync("Deployment.EncryptionKey", deploymentKey);
 ```
 
 Or create via Admin UI:
+
 1. Go to **Settings → Security → Secrets**
 2. Click **Add Secret**
 3. Select type **RsaKeySecret**
@@ -447,15 +448,18 @@ The exported JSON will contain encrypted secret values:
 ```
 
 **Step 3: Import Key on Target**
+
 - Create the same `Deployment.EncryptionKey` on TenantB
 - Must have identical key material (public + private)
 
 **Step 4: Export Secrets from Source**
+
 1. Create deployment plan with Secrets step
 2. Select `Deployment.EncryptionKey` for encryption
 3. Execute and download the recipe JSON
 
 **Step 5: Import on Target**
+
 1. Upload the recipe JSON to TenantB
 2. Run the recipe
 3. Secrets are decrypted and stored
@@ -489,12 +493,14 @@ Both `RsaKeySecret` and `X509Secret` can be used for cryptographic operations, b
 | **Security model** | Key stored encrypted in DB | Key never leaves OS secure store |
 
 **When to use RsaKeySecret:**
+
 - OpenID Connect signing keys that must persist across container restarts
 - JWT signing for APIs (self-contained, portable)
 - Multi-server deployments where keys should auto-sync via database
 - Development/testing without certificate infrastructure
 
 **When to use X509Secret:**
+
 - CA-issued certificates (SSL/TLS, client authentication)
 - Azure App Service certificates uploaded via portal
 - Enterprise PKI where certificates are managed by IT
@@ -512,6 +518,7 @@ public class TextSecret : ISecret
 ```
 
 **Use cases:**
+
 - SMTP passwords
 - API keys (Stripe, SendGrid, etc.)
 - Database connection strings
@@ -543,6 +550,7 @@ public class RsaKeySecret : ISecret
 ```
 
 **Use cases:**
+
 - OpenID Connect signing keys (addresses issues #7137, #13205)
 - JWT token signing/validation
 - Data encryption/decryption
@@ -550,6 +558,7 @@ public class RsaKeySecret : ISecret
 - Any scenario requiring portable RSA keys
 
 **Benefits over X509Secret:**
+
 - Key travels with database backup/restore
 - Works in containers without cert mounting
 - Can generate keys directly in Admin UI
@@ -591,6 +600,7 @@ public class X509Secret : ISecret
 ```
 
 **Use cases:**
+
 - CA-issued SSL/TLS certificates
 - Code signing certificates
 - Azure App Service certificates (uploaded via portal)
@@ -599,11 +609,13 @@ public class X509Secret : ISecret
 - Any certificate managed by IT infrastructure
 
 **How it works:**
+
 1. Certificate is installed in OS certificate store (manually, via Azure, or via deployment)
 2. X509Secret stores the thumbprint and store location as a "binding"
 3. At runtime, `GetCertificate()` loads the actual certificate from the OS store
 
 **Cross-platform notes:**
+
 - **Windows:** Full access to CurrentUser and LocalMachine stores; Admin UI shows available certs
 - **Linux:** Limited to CurrentUser store (~/.dotnet/corefx/cryptography); Admin UI may be empty
 - **macOS:** Keychain access; may require permissions for LocalMachine
@@ -694,6 +706,7 @@ public override void ConfigureServices(IServiceCollection services)
 ```
 
 **Potential custom store implementations:**
+
 - HashiCorp Vault
 - AWS Secrets Manager
 - Google Cloud Secret Manager
@@ -839,6 +852,7 @@ If you're currently storing passwords in configuration:
 ```
 
 **After:**
+
 1. Enable the Secrets module
 2. Create a secret named `Smtp.Password` with the password value
 3. Update your code to retrieve the password from the secret store
@@ -861,16 +875,19 @@ The Secrets module provides optional integration modules for common use cases.
 This feature allows you to store SMTP passwords as secrets instead of in settings.
 
 **Prerequisites:**
+
 - `OrchardCore.Email.Smtp` - SMTP email provider
 - `OrchardCore.Secrets` - Core secrets module
 
 **Setup:**
+
 1. Enable the `OrchardCore.Email.Smtp.Secrets` feature
 2. Create a `TextSecret` with your SMTP password
 3. Go to **Configuration → Settings → Email**
 4. In the SMTP settings, select your password secret from the **Password Secret** dropdown
 
 **Benefits:**
+
 - SMTP password stored encrypted in secrets store
 - Can use Azure Key Vault for password storage
 - Password not visible in settings export
@@ -880,10 +897,12 @@ This feature allows you to store SMTP passwords as secrets instead of in setting
 This feature allows you to store OpenID Connect signing and encryption keys as secrets instead of using auto-generated certificates.
 
 **Prerequisites:**
+
 - `OrchardCore.OpenId.Server` - OpenID Connect server
 - `OrchardCore.Secrets` - Core secrets module
 
 **Setup:**
+
 1. Enable the `OrchardCore.OpenId.Secrets` feature
 2. Create an `RsaKeySecret` for signing (with private key) or an `X509Secret` referencing a certificate
 3. Optionally create a separate secret for encryption
@@ -908,6 +927,7 @@ The module supports both `RsaKeySecret` and `X509Secret` for signing/encryption 
 3. This allows gradual migration from certificate-based to RSA key-based secrets
 
 **Benefits:**
+
 - Keys persist across deployments and container restarts
 - Can share signing keys across multiple instances
 - Keys stored in Azure Key Vault for HSM-backed security
