@@ -1,3 +1,4 @@
+@using Microsoft.AspNetCore.Html
 @using Microsoft.Extensions.Options
 @using OrchardCore.Media
 
@@ -91,7 +92,7 @@
                         </span>
                     </div>
                     <div class="justify-content-end p-3" v-if="permittedStorage">
-                        @T["Available Storage: "] <strong>{{ permittedStorage.text }}</strong>
+                        @T["Available Storage: <strong>{0}</strong>", "{{ permittedStorage.text }}"]
                     </div>
                 </nav>
             </div>
