@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-380-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-381-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key))!
@@ -526,6 +526,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <tr>
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/weirdyang"><img src="https://avatars.githubusercontent.com/u/25576022?v=4?s=100" width="100px;" alt="weirdyang"/><br /><sub><b>weirdyang</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=weirdyang" title="Code">💻</a></td>
       <td align="center" valign="top" width="16.66%"><a href="https://www.linkedin.com/in/youssef1313/"><img src="https://avatars.githubusercontent.com/u/31348972?v=4?s=100" width="100px;" alt="Youssef Victor"/><br /><sub><b>Youssef Victor</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=Youssef1313" title="Code">💻</a></td>
+      <td align="center" valign="top" width="16.66%"><a href="https://github.com/Manuel-dev-ing"><img src="https://avatars.githubusercontent.com/u/173723192?v=4?s=100" width="100px;" alt="Manuel Tamayo Montero"/><br /><sub><b>Manuel Tamayo Montero</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=Manuel-dev-ing" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
