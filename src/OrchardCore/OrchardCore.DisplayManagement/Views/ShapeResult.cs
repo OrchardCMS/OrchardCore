@@ -87,7 +87,25 @@ public class ShapeResult : IDisplayResult
         _defaultLocation = location;
         return this;
     }
+    
+    /// <summary>
+    /// Sets the default location of the shape using a fluent builder.
+    /// </summary>
+    /// <example>
+    /// <code>
+    /// .Location(l => l.Zone("Content", "5").Tab("Settings", "1"))
+    /// </code>
+    /// </example>
+    public ShapeResult Location(Action<PlacementLocationBuilder> configure)
+    {
+        ArgumentNullException.ThrowIfNull(configure);
 
+        var builder = new PlacementLocationBuilder();
+        configure(builder);
+        _defaultLocation = builder.ToString();
+        return this;
+    }
+    
     /// <summary>
     /// Sets the location to use for a matching display type.
     /// </summary>
@@ -124,6 +142,24 @@ public class ShapeResult : IDisplayResult
         return this;
     }
 
+    /// <summary>
+    /// Sets the location to use for a matching display type using a fluent builder.
+    /// </summary>
+    /// <example>
+    /// <code>
+    /// .Location("Summary", l => l.Zone("Content", "1"))
+    /// </code>
+    /// </example>
+    public ShapeResult Location(string displayType, Action<PlacementLocationBuilder> configure)
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+
+        var builder = new PlacementLocationBuilder();
+        configure(builder);
+        Location(displayType, builder.ToString());
+        return this;
+    }
+    
     /// <summary>
     /// Sets the delegate to be executed when the shape is being displayed.
     /// </summary>
