@@ -600,6 +600,7 @@ public sealed class AdminController : Controller
 
         var bytes = await _mediaFileStore.GetPermittedStorageAsync();
         var text = bytes == null ? S["Unspecified"] : FileSizeHelpers.FormatAsBytes(bytes.Value);
+
         return Ok(new { bytes, text });
     }
 }
