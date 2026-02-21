@@ -270,6 +270,8 @@ Or when using the MVC tag helpers and the image is resolved from static assets, 
 !!! note
     When using tag helpers in Razor, you must take a direct reference to the `OrchardCore.Media` nuget package in each theme or module that uses the tag helpers. This is not required when using Liquid.
 
+### Razor Anchor Tag Helper
+
 The `AnchorTagHelper` in the Media module allows you to generate links (`<a>`) to files in the Media Library using logical paths, automatically resolving the correct URL.
 
 
