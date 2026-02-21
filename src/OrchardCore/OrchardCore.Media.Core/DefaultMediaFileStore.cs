@@ -192,6 +192,7 @@ public class DefaultMediaFileStore : IMediaFileStore
                 }
 
                 await ValidateAvailableStorageAsync(outputStream.Length);
+
                 return await _fileStore.CreateFileFromStreamAsync(context.Path, outputStream, overwrite);
             }
             finally
@@ -203,6 +204,7 @@ public class DefaultMediaFileStore : IMediaFileStore
         else
         {
             await ValidateAvailableStorageAsync(inputStream.Length);
+
             return await _fileStore.CreateFileFromStreamAsync(path, inputStream, overwrite);
         }
     }
@@ -231,6 +233,7 @@ public class DefaultMediaFileStore : IMediaFileStore
         };
         
         await _mediaEventHandlers.InvokeAsync((handler, context) => handler.MediaPermittedStorageAsync(context), context, _logger);
+
         return context.PermittedStorage;
     }
 
