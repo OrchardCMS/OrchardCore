@@ -25,7 +25,7 @@
     <div class="@Orchard.GetEndClasses()">
         <div id="@vueElementId" class="vue-multiselect" data-part="@partName" data-field="@fieldName" data-editor-type="ContentPicker" data-selected-items="@selectedItems" data-edit-url="@editUrl" data-view-url="@viewUrl" data-search-url="@searchUrl" data-multiple="@multiple">
 
-            <ul class="mb-1 list-group w-lg-75 w-xxl-50 content-picker-default__list" v-show="arrayOfItems.length" v-cloak>
+            <ul class="mb-1 list-group w-100 content-picker-default__list" v-show="arrayOfItems.length" v-cloak>
                 <draggable v-model="arrayOfItems">
                     <li v-for="(item, i) in arrayOfItems"
                         class="cursor-move list-group-item content-picker-default__list-item d-flex align-items-start justify-content-between"
@@ -45,7 +45,7 @@
                 </draggable>
             </ul>
 
-            <div class="w-lg-75 w-xxl-50">
+            <div class="w-100">
                 <input asp-for="ContentItemIds" type="hidden" v-model="selectedIds" />
                 <vue-multiselect v-model="value" :options="options" track-by="id"
                                  label="displayText" placeholder="@(string.IsNullOrEmpty(settings.Placeholder) ? T["Type to search"] : settings.Placeholder)"
