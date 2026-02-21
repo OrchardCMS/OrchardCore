@@ -90,10 +90,8 @@
                             <a :href="parents.length - i == 1 ? null : '#'" v-on:click="selectedFolder = folder;">{{ folder.name }}</a>
                         </span>
                     </div>
-                    <div class="justify-content-end p-3">
-                        @T["Available Storage: "]
-                        <span v-if="permittedStorage === null">@T["Unspecified"]</span>
-                        <span v-else>{{ permittedStorage }}</span>
+                    <div class="justify-content-end p-3" v-if="permittedStorage">
+                        @T["Available Storage: "] {{ permittedStorage.text }}
                     </div>
                 </nav>
             </div>

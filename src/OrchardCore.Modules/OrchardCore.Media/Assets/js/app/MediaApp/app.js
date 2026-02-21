@@ -45,7 +45,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                     sortBy: '',
                     sortAsc: true,
                     itemsInPage: [],
-                    permittedStorageBytes: null,
+                    permittedStorage: null,
                 },
                 created: function () {
                     var self = this;
@@ -200,15 +200,6 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                             this.gridView = newPrefs.gridView;
                         }
                     },
-                    permittedStorage: function () {
-                        if (isNaN(this.permittedStorageBytes)) return null;
-
-                        const result = ['KB', 'MB', 'GB', 'TB', 'PB'].reduce(
-                            (data, unit) => data.value > 1024 ? { value: data.value / 1024, unit: unit } : data,
-                            { value: this.permittedStorageBytes, unit: 'B' });
-
-                        return `${Math.floor(result.value * 100) / 100} ${result.unit}`;
-                    }
                 },
                 watch: {
                     currentPrefs: function (newPrefs) {
@@ -474,7 +465,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                             },
                             success: function (data) {
                                 console.log(data);
-                                self.permittedStorageBytes = data;
+                                self.permittedStorage = data;
                             },
                             error: function (error) {
                                 console.error(error.responseText);

@@ -26,8 +26,7 @@ public class DefaultMediaFileStore : IMediaFileStore
         string cdnBaseUrl,
         IEnumerable<IMediaEventHandler> mediaEventHandlers,
         IEnumerable<IMediaCreatingEventHandler> mediaCreatingEventHandlers,
-        ILogger<DefaultMediaFileStore> logger
-        )
+        ILogger<DefaultMediaFileStore> logger)
     {
         _fileStore = fileStore;
 
@@ -253,8 +252,10 @@ public class DefaultMediaFileStore : IMediaFileStore
         if (await GetPermittedStorageAsync() is { } storageLimit &&
             requiredStorageSpace > storageLimit)
         {
-            throw new FileStoreException($"The required storage space ({requiredStorageSpace} B) exceeds the " +
-                $"permitted storage space ({storageLimit} B).");
+            throw new FileStoreException(
+                $"You tried to upload a file that requires {requiredStorageSpace.FormatAsBytes()} of storage space, " +
+                $"but only {storageLimit.FormatAsBytes()} is available. Try uploading a file that fits the available " +
+                "space, or delete some unnecessary files.");
         }
     }
 }
