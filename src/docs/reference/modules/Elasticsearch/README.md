@@ -90,17 +90,17 @@ Here is an example of how to create `Elasticsearch` index profile using the `Ind
     {
       "name":"CreateOrUpdateIndexProfile",
       "indexes": [
-	    {
-		    "Name": "BlogPostsES",
+        {
+            "Name": "BlogPostsES",
             "IndexName": "blogposts",
-		    "ProviderName": "Elasticsearch",
-		    "Type": "Content",
-		    "Properties": {
-			    "ContentIndexMetadata": {
-				    "IndexLatest": false,
-				    "IndexedContentTypes": ["BlogPosts"],
-				    "Culture": "any"
-			    },
+            "ProviderName": "Elasticsearch",
+            "Type": "Content",
+            "Properties": {
+                "ContentIndexMetadata": {
+                    "IndexLatest": false,
+                    "IndexedContentTypes": ["BlogPosts"],
+                    "Culture": "any"
+                },
                 "ElasticsearchIndexMetadata": {
                     "AnalyzerName": "standard",
                     "StoreSourceData": true,
@@ -113,8 +113,8 @@ Here is an example of how to create `Elasticsearch` index profile using the `Ind
                         "Content.ContentItem.FullText"
                     ]
                 }
-		    }
-	    }
+            }
+        }
       ]
     }
   ]
@@ -257,7 +257,9 @@ See: <https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.
 
 ## Elasticsearch configuration
 
-The Elasticsearch module connection configuration can be set globally in the `appsettings.json` file or per tenant.
+### Connection configuration
+
+The Elasticsearch module connection configuration can be set globally in the `appsettings.json` file or other configuration sources, globally for the whole app or per tenant (see [Configuration](../Configuration/README.md)).
 
 ```json
 {
@@ -291,13 +293,54 @@ The Elasticsearch module connection configuration can be set globally in the `ap
 !!! note
     When `CloudConnectionPool` connection type is used, `CertificateFingerprint` is not needed.
 
-The connection types documentation and examples can be found at this url:
+The connection types documentation and examples can be found [in the official Elasticsearch documentation](https://www.elastic.co/guide/en/elasticsearch/client/net-api/7.17/connection-pooling.html).
 
-<https://www.elastic.co/guide/en/elasticsearch/client/net-api/7.17/connection-pooling.html>
+### Indexing settings
+
+By editing a given Elasticsearch index on the dashboard, you have access to general indexing settings, as well as Elasticsearch-specific ones. Under the latter, you can set the following options:
+
+- Query analyzer: The analyzer to use when executing queries on this index. By default, it uses the `standard` analyzer; other analyzers are available if registered.
+- Search type: Determines how the index will be searched.
+  - Multi-Match Query: The default search type that uses the [`multi_match` query](https://www.elastic.co/docs/reference/query-languages/query-dsl/query-dsl-multi-match-query) to search across multiple fields, as configured.
+  - Query String Query: Uses the [`query_string` query](https://www.elastic.co/docs/reference/query-languages/query-dsl/query-dsl-query-string-query), which allows for more complex queries using a query syntax.
+  - Custom Query: Allows you to define a custom Elasticsearch query for each search request. Liquid is supported, so use the `{{ term }}` template in place of the user-provided search term. An example query that utilizes **search highlights** is shown below:
+
+```json
+{
+  "query": {
+    "multi_match": {
+      "fields": [
+        "Content.ContentItem.FullText"
+      ],
+      "query": "{{ term }}",
+      "fuzziness": "AUTO"
+    }
+  },
+  "highlight": {
+    "pre_tags": [
+      "<span style='background-color: #FFF3CD;'>"
+    ],
+    "post_tags": [
+      "</span>"
+    ],
+    "fields": {
+      "Content.ContentItem.FullText": {
+        "fragment_size": 150,
+        "number_of_fragments": 3
+      }
+    }
+  }
+}
+```
+
+With this feature, Elasticsearch will return highlighted fragments wrapped in `<span class="search-highlight">` HTML tags, which can then be displayed in the Search module or other components. This enables the presentation of more relevant content that directly matches the search term.
+
+!!! note
+    Highlight requests only work when the content item is stored in the Elasticsearch service, i.e. the "Store Source Data" checkbox under the index settings is checked.
 
 ## Elasticsearch Analyzers
 
-As of version 1.6, [built-in](https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-analyzers.html) and custom analyzers are supported. By default, only `standard` analyzer is available. You may update the Elasticsearch configurations to enable any of the built-in and any custom analyzers. For example, to enable the built in `stop` and `standard` analyzers, you may add the following to the [appsettings.json](../Configuration/README.md) file
+As of version 1.6, [built-in](https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-analyzers.html) and custom analyzers are supported. By default, only the `standard` analyzer is available. You may update the Elasticsearch configurations to enable any built-in or custom analyzers. For example, to enable the built-in `stop` and `standard` analyzers, you may add the following to the [appsettings.json](../Configuration/README.md) file:
 
 ```json
 {
