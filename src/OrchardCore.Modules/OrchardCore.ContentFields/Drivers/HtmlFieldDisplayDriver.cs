@@ -49,7 +49,8 @@ public sealed class HtmlFieldDisplayDriver : ContentFieldDisplayDriver<HtmlField
             model.PartFieldDefinition = context.PartFieldDefinition;
 
             var settings = context.PartFieldDefinition.GetSettings<HtmlFieldSettings>();
-            if (!settings.SanitizeHtml)
+
+            if (settings.RenderLiquid)
             {
                 model.Html = await _liquidTemplateManager.RenderStringAsync(field.Html, _htmlEncoder, model,
                     new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(field.ContentItem) });
@@ -81,22 +82,22 @@ public sealed class HtmlFieldDisplayDriver : ContentFieldDisplayDriver<HtmlField
     public override async Task<IDisplayResult> UpdateAsync(HtmlField field, UpdateFieldEditorContext context)
     {
         var viewModel = new EditHtmlFieldViewModel();
-
         var settings = context.PartFieldDefinition.GetSettings<HtmlFieldSettings>();
+
         await context.Updater.TryUpdateModelAsync(viewModel, Prefix, f => f.Html);
 
-        if (!string.IsNullOrEmpty(viewModel.Html) && !_liquidTemplateManager.Validate(viewModel.Html, out var errors))
+        field.Html = settings.SanitizeHtml
+            ? _htmlSanitizerService.Sanitize(viewModel.Html)
+            : viewModel.Html;
+
+        if (settings.RenderLiquid
+            && !string.IsNullOrEmpty(viewModel.Html)
+            && !_liquidTemplateManager.Validate(viewModel.Html, out var errors))
         {
-            var fieldName = context.PartFieldDefinition.DisplayName();
-            context.Updater.ModelState.AddModelError(
-                Prefix,
-                nameof(viewModel.Html), S["{0} doesn't contain a valid Liquid expression. Details: {1}",
-                fieldName,
-                string.Join(' ', errors)]);
-        }
-        else
-        {
-            field.Html = settings.SanitizeHtml ? _htmlSanitizerService.Sanitize(viewModel.Html) : viewModel.Html;
+            context.Updater.ModelState.AddModelError(Prefix, nameof(viewModel.Html),
+                S["{0} contains invalid Liquid expression: {1}",
+                    context.PartFieldDefinition.DisplayName(),
+                    string.Join(" ", errors)]);
         }
 
         return Edit(field, context);
