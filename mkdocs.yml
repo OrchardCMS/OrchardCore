@@ -29,6 +29,9 @@ theme:
     - 404.html
 
 extra:
+  version:
+    provider: mike
+    default: latest
   social:
     - icon: fontawesome/solid/leaf
       link: https://orchardcore.net
