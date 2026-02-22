@@ -10,7 +10,10 @@ namespace OrchardCore.Users.Recipes;
 /// <summary>
 /// This recipe step updates the custom user settings.
 /// </summary>
+[Obsolete("Implement IRecipeDeploymentStep instead. This class will be removed in a future version.", false)]
+#pragma warning disable CS0618 // Type or member is obsolete
 public sealed class CustomUserSettingsStep : NamedRecipeStepHandler
+#pragma warning restore CS0618
 {
     private readonly ISession _session;
 

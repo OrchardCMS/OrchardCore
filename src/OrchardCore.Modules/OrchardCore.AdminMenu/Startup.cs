@@ -21,7 +21,10 @@ public sealed class Startup : StartupBase
         services.AddScoped<IAdminMenuService, AdminMenuService>();
         services.AddScoped<AdminMenuNavigationProvidersCoordinator>();
 
-        services.AddRecipeExecutionStep<AdminMenuStep>();
+		#pragma warning disable CS0618 // Type or member is obsolete
+		services.AddRecipeExecutionStep<AdminMenuStep>();
+		#pragma warning restore CS0618 // Type or member is obsolete
+		services.AddRecipeDeploymentStep<AdminMenuRecipeStep>();
 
         services.AddDeployment<AdminMenuDeploymentSource, AdminMenuDeploymentStep, AdminMenuDeploymentStepDriver>();
 

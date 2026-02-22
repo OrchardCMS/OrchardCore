@@ -28,7 +28,11 @@ public sealed class MicrosoftAccountStartup : StartupBase
         services.AddSiteDisplayDriver<MicrosoftAccountSettingsDisplayDriver>();
         services.AddNavigationProvider<AdminMenuMicrosoftAccount>();
 
+
+        services.AddRecipeDeploymentStep<MicrosoftAccountSettingsRecipeStep>();
+#pragma warning disable CS0618 // Type or member is obsolete
         services.AddRecipeExecutionStep<MicrosoftAccountSettingsStep>();
+#pragma warning restore CS0618 // Type or member is obsolete
 
         services.AddTransient<IConfigureOptions<MicrosoftAccountSettings>, MicrosoftAccountSettingsConfiguration>();
         services.AddTransient<IConfigureOptions<AuthenticationOptions>, MicrosoftAccountOptionsConfiguration>();

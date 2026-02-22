@@ -9,7 +9,10 @@ namespace OrchardCore.OpenId.Recipes;
 /// <summary>
 /// This recipe step sets Token Validation OpenID Connect settings.
 /// </summary>
+[Obsolete("Implement IRecipeDeploymentStep instead. This class will be removed in a future version.", false)]
+#pragma warning disable CS0618 // Type or member is obsolete
 public sealed class OpenIdValidationSettingsStep : NamedRecipeStepHandler
+#pragma warning restore CS0618
 {
     private readonly IOpenIdValidationService _validationService;
 

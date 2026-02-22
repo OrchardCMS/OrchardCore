@@ -10,7 +10,10 @@ namespace OrchardCore.Search.Elasticsearch.Core.Recipes;
 /// <summary>
 /// This recipe step rebuilds an Elasticsearch index.
 /// </summary>
+[Obsolete("Implement IRecipeDeploymentStep instead. This class will be removed in a future version.", false)]
+#pragma warning disable CS0618 // Type or member is obsolete
 public sealed class ElasticsearchIndexRebuildStep : NamedRecipeStepHandler
+#pragma warning restore CS0618
 {
     private readonly IIndexProfileManager _indexProfileManager;
     private readonly IServiceProvider _serviceProvider;

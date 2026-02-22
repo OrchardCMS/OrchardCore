@@ -9,7 +9,10 @@ namespace OrchardCore.ContentTypes.RecipeSteps;
 /// <summary>
 /// This recipe step replaces content definition records.
 /// </summary>
+[Obsolete("Implement IRecipeDeploymentStep instead. This class will be removed in a future version.", false)]
+#pragma warning disable CS0618 // Type or member is obsolete
 public sealed class ReplaceContentDefinitionStep : NamedRecipeStepHandler
+#pragma warning restore CS0618
 {
     private readonly IContentDefinitionManager _contentDefinitionManager;
 

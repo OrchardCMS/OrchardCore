@@ -9,7 +9,10 @@ namespace OrchardCore.Shortcodes.Recipes;
 /// <summary>
 /// This recipe step creates a set of Shortcodes.
 /// </summary>
+[Obsolete("Implement IRecipeDeploymentStep instead. This class will be removed in a future version.", false)]
+#pragma warning disable CS0618 // Type or member is obsolete
 public sealed class ShortcodeTemplateStep : NamedRecipeStepHandler
+#pragma warning restore CS0618
 {
     private readonly ShortcodeTemplatesManager _templatesManager;
 

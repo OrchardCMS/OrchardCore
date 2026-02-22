@@ -8,7 +8,13 @@ namespace OrchardCore.Features.Recipes.Executors;
 /// <summary>
 /// This recipe step enables or disables a set of features.
 /// </summary>
+/// <remarks>
+/// This class is obsolete. Implement <see cref="IRecipeDeploymentStep"/> instead.
+/// </remarks>
+[Obsolete($"Implement {nameof(IRecipeDeploymentStep)} instead. This class will be removed in a future version.", false)]
+#pragma warning disable CS0618 // Type or member is obsolete - required for backwards compatibility
 public sealed class FeatureStep : NamedRecipeStepHandler
+#pragma warning restore CS0618
 {
     private readonly IShellFeaturesManager _shellFeaturesManager;
 

@@ -9,7 +9,10 @@ namespace OrchardCore.UrlRewriting.Recipes;
 /// <summary>
 /// This recipe step creates or updates a set of URL rewrite rule.
 /// </summary>
+[Obsolete("Implement IRecipeDeploymentStep instead. This class will be removed in a future version.", false)]
+#pragma warning disable CS0618 // Type or member is obsolete
 public sealed class UrlRewritingStep : NamedRecipeStepHandler
+#pragma warning restore CS0618
 {
     private readonly IRewriteRulesManager _rewriteRulesManager;
 

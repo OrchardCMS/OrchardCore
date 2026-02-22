@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\OrchardCore.Data.YesSql.Abstractions\OrchardCore.Data.YesSql.Abstractions.csproj" />
+    <ProjectReference Include="..\OrchardCore.Recipes.Abstractions\OrchardCore.Recipes.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

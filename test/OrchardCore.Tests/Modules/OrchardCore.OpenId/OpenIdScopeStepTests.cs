@@ -54,7 +54,7 @@ public class OpenIdScopeStepTests
                 actual = (OpenIdScopeDescriptor)s)
             .ReturnsAsync(Task.CompletedTask);
 
-        var step = new OpenIdScopeStep(scopeManagerMock.Object);
+        var step = new OpenIdScopeRecipeStep(scopeManagerMock.Object);
         var recipe = JsonNode.Parse(GetRecipeFileContent("scope-recipe"));
         var context = new RecipeExecutionContext
         {
@@ -124,7 +124,7 @@ public class OpenIdScopeStepTests
             .Returns(
                 ValueTask.CompletedTask);
 
-        var step = new OpenIdScopeStep(scopeManagerMock.Object);
+        var step = new OpenIdScopeRecipeStep(scopeManagerMock.Object);
         var recipe = JsonNode.Parse(GetRecipeFileContent("scope-recipe"));
         var context = new RecipeExecutionContext
         {
