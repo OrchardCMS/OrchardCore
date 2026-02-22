@@ -33,13 +33,6 @@ public class PlacementInfo
     /// </summary>
     private static readonly ConcurrentDictionary<string, PlacementInfo> _locationCache = new(StringComparer.OrdinalIgnoreCase);
 
-    private readonly string[] _zones;
-    private readonly string _position;
-    private readonly string _tab;
-    private readonly string _group;
-    private readonly string _card;
-    private readonly string _column;
-
     public string Location { get; }
     public string Source { get; }
     public string ShapeType { get; }
@@ -47,12 +40,56 @@ public class PlacementInfo
     public string[] Alternates { get; }
     public string[] Wrappers { get; }
 
+    /// <summary>
+    /// Returns the list of zone names.
+    /// e.g., <code>Content.Metadata:1</code> will return 'Content', 'Metadata'.
+    /// </summary>
+    public string[] Zones { get; }
+
+    /// <summary>
+    /// Gets the position of the shape within the zone.
+    /// Returns the explicit position if set, otherwise falls back to <see cref="DefaultPosition"/>, or empty string.
+    /// </summary>
+    public string Position => _position ?? DefaultPosition ?? "";
+
+    /// <summary>
+    /// Gets the tab information from the placement, or empty string if not present.
+    /// </summary>
+    public string Tab => _tab ?? "";
+
+    /// <summary>
+    /// Gets the group information from the placement, or <c>null</c> if not present.
+    /// e.g., Content:12@search.
+    /// </summary>
+    public string Group { get; }
+
+    /// <summary>
+    /// Gets the card information from the placement, or <c>null</c> if not present.
+    /// e.g., Content:12%search.
+    /// </summary>
+    public string Card { get; }
+
+    /// <summary>
+    /// Gets the column information from the placement, or <c>null</c> if not present.
+    /// e.g., Content:12|search.
+    /// </summary>
+    public string Column { get; }
+
+    private readonly string _position;
+    private readonly string _tab;
+
     public PlacementInfo()
     {
-        _zones = [];
+        Zones = [];
     }
 
-    public PlacementInfo(string location, string source = null, string shapeType = null, string defaultPosition = null, string[] alternates = null, string[] wrappers = null)
+    public PlacementInfo(
+        string location,
+        string source = null,
+        string shapeType = null,
+        string defaultPosition = null,
+        string[] alternates = null,
+        string[] wrappers = null)
     {
         Location = location;
         Source = source;
@@ -63,12 +100,44 @@ public class PlacementInfo
 
         if (!string.IsNullOrEmpty(location))
         {
-            ParseLocation(location, out _zones, out _position, out _tab, out _group, out _card, out _column);
+            ParseLocation(location, out var zones, out _position, out _tab, out var group, out var card, out var column);
+            Zones = zones;
+            Group = group;
+            Card = card;
+            Column = column;
         }
         else
         {
-            _zones = [];
+            Zones = [];
         }
+    }
+
+    public PlacementInfo(
+        string location,
+        string source,
+        string shapeType,
+        string defaultPosition,
+        string[] alternates,
+        string[] wrappers,
+        string[] zones,
+        string position,
+        string tab,
+        string group,
+        string card,
+        string column)
+    {
+        Location = location;
+        Source = source;
+        ShapeType = shapeType;
+        DefaultPosition = defaultPosition;
+        Alternates = alternates;
+        Wrappers = wrappers;
+        Zones = zones ?? [];
+        _position = position;
+        _tab = tab;
+        Group = group;
+        Card = card;
+        Column = column;
     }
 
     /// <summary>
@@ -104,7 +173,7 @@ public class PlacementInfo
             return this;
         }
 
-        return new PlacementInfo(Location, source, ShapeType, DefaultPosition, Alternates, Wrappers);
+        return new PlacementInfo(Location, source, ShapeType, DefaultPosition, Alternates, Wrappers, Zones, _position, _tab, Group, Card, Column);
     }
 
     /// <summary>
@@ -121,7 +190,17 @@ public class PlacementInfo
             return this;
         }
 
-        return new PlacementInfo(Location ?? location, Source, ShapeType, DefaultPosition ?? defaultPosition, Alternates, Wrappers);
+        var newLocation = Location ?? location;
+        var newDefaultPosition = DefaultPosition ?? defaultPosition;
+
+        // If the location is changing, we need to parse the new location to get the zones and other values.
+        if (locationChanged)
+        {
+            return new PlacementInfo(newLocation, Source, ShapeType, newDefaultPosition, Alternates, Wrappers);
+        }
+
+        // Location is not changing, preserve the already-parsed values.
+        return new PlacementInfo(newLocation, Source, ShapeType, newDefaultPosition, Alternates, Wrappers, Zones, _position, _tab, Group, Card, Column);
     }
 
     public bool IsLayoutZone()
@@ -132,38 +211,43 @@ public class PlacementInfo
 
     /// <summary>
     /// Returns the list of zone names.
-    /// e.g.,. <code>Content.Metadata:1</code> will return 'Content', 'Metadata'.
+    /// e.g., <code>Content.Metadata:1</code> will return 'Content', 'Metadata'.
     /// </summary>
-    /// <returns></returns>
+    [Obsolete($"Use the {nameof(Zones)} property instead.")]
     public string[] GetZones()
-        => _zones ?? [];
+        => Zones;
 
+    [Obsolete($"Use the {nameof(Position)} property instead.")]
     public string GetPosition()
-        => _position ?? DefaultPosition ?? "";
+        => Position;
 
+    [Obsolete($"Use the {nameof(Tab)} property instead.")]
     public string GetTab()
-        => _tab ?? "";
+        => Tab;
 
     /// <summary>
     /// Extracts the group information from a location string, or <c>null</c> if it is not present.
     /// e.g., Content:12@search.
     /// </summary>
+    [Obsolete($"Use the {nameof(Group)} property instead.")]
     public string GetGroup()
-        => _group;
+        => Group;
 
     /// <summary>
     /// Extracts the card information from a location string, or <c>null</c> if it is not present.
     /// e.g., Content:12%search.
     /// </summary>
+    [Obsolete($"Use the {nameof(Card)} property instead.")]
     public string GetCard()
-        => _card;
+        => Card;
 
     /// <summary>
     /// Extracts the column information from a location string, or <c>null</c> if it is not present.
-    /// e.g., Content:12!search.
+    /// e.g., Content:12|search.
     /// </summary>
+    [Obsolete($"Use the {nameof(Column)} property instead.")]
     public string GetColumn()
-        => _column;
+        => Column;
 
     private static void ParseLocation(string location, out string[] zones, out string position, out string tab, out string group, out string card, out string column)
     {
