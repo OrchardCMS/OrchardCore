@@ -56,7 +56,10 @@ public class DefaultShapeFactory : DynamicObject, IShapeFactory
         return _scopedShapeTable;
     }
 
-    public async ValueTask<IShape> CreateAsync(string shapeType, Func<ValueTask<IShape>> shapeFactory, Action<ShapeCreatingContext> creating, Action<ShapeCreatedContext> created)
+    public ValueTask<IShape> CreateAsync(string shapeType, Func<ValueTask<IShape>> shapeFactory, Action<ShapeCreatingContext> creating, Action<ShapeCreatedContext> created)
+        => CreateAsync(shapeType, state => ((Func<ValueTask<IShape>>)state).Invoke(), creating, created, shapeFactory);
+
+    public async ValueTask<IShape> CreateAsync(string shapeType, Func<object, ValueTask<IShape>> shapeFactory, Action<ShapeCreatingContext> creating, Action<ShapeCreatedContext> created, object state)
     {
         ShapeDescriptor shapeDescriptor;
         (await GetShapeTableAsync()).Descriptors.TryGetValue(shapeType, out shapeDescriptor);
@@ -67,6 +70,7 @@ public class DefaultShapeFactory : DynamicObject, IShapeFactory
             New = this,
             ShapeFactory = this,
             ShapeType = shapeType,
+            State = state,
             OnCreated = [],
             CreateAsync = shapeFactory,
         };
@@ -94,7 +98,8 @@ public class DefaultShapeFactory : DynamicObject, IShapeFactory
             New = creatingContext.New,
             ShapeFactory = creatingContext.ShapeFactory,
             ShapeType = creatingContext.ShapeType,
-            Shape = await creatingContext.CreateAsync(),
+            Shape = await creatingContext.CreateAsync(creatingContext.State),
+            State = state,
         };
 
         var shape = createdContext.Shape
