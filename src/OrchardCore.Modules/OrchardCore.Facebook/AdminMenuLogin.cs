@@ -21,24 +21,6 @@ public sealed class AdminMenuLogin : AdminNavigationProvider
 
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
-        if (NavigationHelper.UseLegacyFormat())
-        {
-            builder
-                .Add(S["Security"], security => security
-                    .Add(S["Authentication"], S["Authentication"].PrefixPosition(), authentication => authentication
-                        .Add(S["Meta"], S["Meta"].PrefixPosition(), meta => meta
-                            .AddClass("facebook")
-                            .Id("facebook")
-                            .Action("Index", "Admin", _routeValues)
-                            .Permission(Permissions.ManageFacebookApp)
-                            .LocalNav()
-                        )
-                    )
-                );
-
-            return ValueTask.CompletedTask;
-        }
-
         builder
             .Add(S["Settings"], settings => settings
                 .Add(S["Security"], S["Security"].PrefixPosition(), security => security
