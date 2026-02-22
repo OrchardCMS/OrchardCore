@@ -17,7 +17,7 @@ public abstract class BuildShapeContext : IBuildShapeContext
         Updater = updater;
     }
 
-    public IShape Shape { get; private set; }
+    public IShape Shape { get; set; }
     public IShapeFactory ShapeFactory { get; private set; }
     public dynamic New => ShapeFactory;
     public IZoneHolding Layout { get; set; }
