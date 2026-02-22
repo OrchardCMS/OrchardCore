@@ -17,19 +17,37 @@ public class ShapeTablePlacementProvider : IShapePlacementProvider
         _themeManager = themeManager;
     }
 
-    public async Task<IPlacementInfoResolver> BuildPlacementInfoResolverAsync(IBuildShapeContext context)
+    public Task<IPlacementInfoResolver> BuildPlacementInfoResolverAsync(IBuildShapeContext context)
     {
-        var theme = await _themeManager.GetThemeAsync();
+        var shapeTableTask = _themeManager.TryGetShapeTableAsync(_shapeTableManager);
 
-        // If there is no active theme, do nothing
-        if (theme == null)
+        if (shapeTableTask.IsCompletedSuccessfully)
         {
-            return null;
+            var shapeTable = shapeTableTask.Result;
+
+            // If there is no active theme, do nothing
+            if (shapeTable == null)
+            {
+                return null;
+            }
+
+            return Task.FromResult<IPlacementInfoResolver>(new ShapeTablePlacementResolver(shapeTable));
         }
 
-        var shapeTable = await _shapeTableManager.GetShapeTableAsync(theme.Id);
+        return BuildPlacementInfoResolverAwaitedAsync(shapeTableTask);
 
-        return new ShapeTablePlacementResolver(shapeTable);
+        static async Task<IPlacementInfoResolver> BuildPlacementInfoResolverAwaitedAsync(Task<ShapeTable> shapeTableTask)
+        {
+            var shapeTable = await shapeTableTask;
+
+            // If there is no active theme, do nothing
+            if (shapeTable == null)
+            {
+                return null;
+            }
+
+            return new ShapeTablePlacementResolver(shapeTable);
+        }
     }
 
     private sealed class ShapeTablePlacementResolver : IPlacementInfoResolver

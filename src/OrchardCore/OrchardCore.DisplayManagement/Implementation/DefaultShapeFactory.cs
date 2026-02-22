@@ -10,7 +10,6 @@ public class DefaultShapeFactory : DynamicObject, IShapeFactory
     private readonly IShapeTableManager _shapeTableManager;
     private readonly IThemeManager _themeManager;
     private readonly IServiceProvider _serviceProvider;
-    private ShapeTable _scopedShapeTable;
 
     public DefaultShapeFactory(
         IEnumerable<IShapeFactoryEvents> events,
@@ -45,21 +44,10 @@ public class DefaultShapeFactory : DynamicObject, IShapeFactory
         return true;
     }
 
-    private async Task<ShapeTable> GetShapeTableAsync()
-    {
-        if (_scopedShapeTable == null)
-        {
-            var theme = await _themeManager.GetThemeAsync();
-            _scopedShapeTable = await _shapeTableManager.GetShapeTableAsync(theme?.Id);
-        }
-
-        return _scopedShapeTable;
-    }
-
     public async ValueTask<IShape> CreateAsync(string shapeType, Func<ValueTask<IShape>> shapeFactory, Action<ShapeCreatingContext> creating, Action<ShapeCreatedContext> created)
     {
         ShapeDescriptor shapeDescriptor;
-        (await GetShapeTableAsync()).Descriptors.TryGetValue(shapeType, out shapeDescriptor);
+        (await _themeManager.GetShapeTableAsync(_shapeTableManager)).Descriptors.TryGetValue(shapeType, out shapeDescriptor);
 
         var creatingContext = new ShapeCreatingContext
         {
