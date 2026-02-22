@@ -1,0 +1,73 @@
+// Navbar
+#mainNav {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    transition: padding-top 0.3s, padding-bottom 0.3s, background-color 0.3s;
+
+    .navbar-brand {
+        font-family: $headings-font-family;
+        font-weight: 700;
+        color: $white;
+        letter-spacing: 0.0625em;
+        text-transform: uppercase;
+    }
+
+    .navbar-nav {
+        .nav-item {
+            .nav-link {
+                font-size: 0.9rem;
+                font-weight: 600;
+                padding: 0.75em 0;
+                letter-spacing: 0.0625em;
+                text-transform: uppercase;
+                color: rgba($white, 0.85);
+                &:hover,
+                &.active {
+                    color: $white;
+                }
+            }
+
+            .dropdown-menu {
+                border: none;
+                border-radius: 0.5rem;
+                box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+            }
+        }
+    }
+
+    // Navbar shrink state (applied via JS on scroll)
+    &.navbar-shrink {
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+        background-color: $garden-dark !important;
+
+        .navbar-brand {
+            font-size: 1.25em;
+        }
+    }
+}
+
+@include media-breakpoint-up(lg) {
+    #mainNav {
+        padding-top: 1.5rem;
+        padding-bottom: 1.5rem;
+        border: none;
+        background-color: transparent;
+        transition: padding-top 0.3s, padding-bottom 0.3s;
+
+        .navbar-brand {
+            font-size: 1.5em;
+            transition: font-size 0.3s;
+        }
+
+        .navbar-nav .nav-item .nav-link {
+            padding: 0.25rem 1rem !important;
+        }
+
+        &.navbar-shrink {
+            .navbar-brand {
+                font-size: 1.25em;
+            }
+        }
+    }
+}

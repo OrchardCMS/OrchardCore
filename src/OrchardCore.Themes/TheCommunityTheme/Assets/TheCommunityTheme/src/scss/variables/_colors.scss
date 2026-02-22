@@ -1,0 +1,26 @@
+// Community theme color palette
+// Greens for botanical garden
+$garden-dark: #1b4332;
+$garden-medium: #2d6a4f;
+$garden-light: #52b788;
+$garden-pale: #d8f3dc;
+
+// Blues for aquatics
+$aquatic-dark: #023e8a;
+$aquatic-medium: #0077b6;
+$aquatic-light: #48cae4;
+
+// Earth tones for rec center
+$earth-dark: #7f5539;
+$earth-medium: #b08968;
+$earth-light: #ddb892;
+
+// Override Bootstrap variables
+$primary: $garden-medium;
+$secondary: #6c757d;
+$success: $garden-light;
+$info: $aquatic-medium;
+$warning: #dda15e;
+$danger: #bc4749;
+$light: #f8f9fa;
+$dark: #212529;

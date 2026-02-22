@@ -1,0 +1,15 @@
+// Events section
+.events-section {
+    background-color: $light;
+
+    .event-date-badge {
+        display: inline-block;
+        background-color: $primary;
+        color: $white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 0.25rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+}

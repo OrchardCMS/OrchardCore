@@ -1,0 +1,54 @@
+// Membership / pricing section
+.membership-section {
+    background-color: $light;
+
+    .pricing-card {
+        border: 2px solid transparent;
+        border-radius: 1rem;
+        text-align: center;
+        padding: 2rem 1.5rem;
+        transition: border-color 0.2s ease;
+
+        &.featured {
+            border-color: $primary;
+            position: relative;
+
+            .featured-badge {
+                position: absolute;
+                top: 0;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background-color: $primary;
+                color: $white;
+                padding: 0.25rem 1rem;
+                border-radius: 1rem;
+                font-size: 0.85rem;
+                font-weight: 600;
+            }
+        }
+
+        .price {
+            font-size: 3rem;
+            font-weight: 700;
+            color: $primary;
+            line-height: 1;
+
+            span {
+                font-size: 1rem;
+                font-weight: 400;
+                color: $secondary;
+            }
+        }
+
+        .features-list {
+            list-style: none;
+            padding: 0;
+            margin: 1.5rem 0;
+
+            li {
+                padding: 0.5rem 0;
+                border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            }
+        }
+    }
+}

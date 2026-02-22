@@ -11,6 +11,7 @@
     - SafeMode Theme
     - TheAgency Theme
     - TheBlog Theme
+    - TheCommunity Theme
     - TheComingSoon Theme
     - TheTheme theme</Description>
     <PackageTags>$(PackageTags) OrchardCoreCMS CMS</PackageTags>
@@ -34,6 +35,7 @@
     <ProjectReference Include="..\..\OrchardCore.Themes\SafeMode\SafeMode.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Themes\TheAgencyTheme\TheAgencyTheme.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Themes\TheBlogTheme\TheBlogTheme.csproj" PrivateAssets="none" />
+    <ProjectReference Include="..\..\OrchardCore.Themes\TheCommunityTheme\TheCommunityTheme.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Themes\TheComingSoonTheme\TheComingSoonTheme.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Themes\TheTheme\TheTheme.csproj" PrivateAssets="none" />
   </ItemGroup>

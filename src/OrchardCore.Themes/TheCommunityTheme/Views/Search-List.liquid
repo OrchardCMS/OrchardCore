@@ -1,0 +1,19 @@
+{% zone "Header" %}
+<header class="masthead" style="background-image: url('{{ "~/TheCommunityTheme/assets/img/hero/community-center.svg" | href }}')">
+    <div class="container">
+        <div class="masthead-heading">{{ "Search" | t }}</div>
+    </div>
+</header>
+{% endzone %}
+
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                {{ Model.SearchForm | shape_render }}
+                {{ Model.SearchResults | shape_render }}
+                {{ Model.Pager | shape_render }}
+            </div>
+        </div>
+    </div>
+</section>

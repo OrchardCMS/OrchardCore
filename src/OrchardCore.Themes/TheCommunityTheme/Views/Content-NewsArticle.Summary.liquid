@@ -1,0 +1,18 @@
+<div class="col-md-6 col-lg-4 mb-4">
+    <div class="card news-card h-100">
+        {% assign imagePath = Model.ContentItem.Content.NewsArticle.Image.Paths.first %}
+        {% if imagePath %}
+        <img class="card-img-top" src="{{ imagePath | asset_url | resize_url: profile: 'card' }}" alt="{{ Model.ContentItem | display_text }}">
+        {% endif %}
+        <div class="card-body">
+            {% assign format = "MMM dd, yyyy" | t %}
+            {% assign dateStr = "DateTime" | shape_new: utc: Model.ContentItem.CreatedUtc, format: format | shape_stringify %}
+            <small class="text-muted">{{ dateStr }}</small>
+            <h5 class="card-title mt-2"><a href="{{ Model.ContentItem | display_url }}" class="text-decoration-none text-dark">{{ Model.ContentItem | display_text }}</a></h5>
+            {% assign summary = Model.ContentItem.Content.NewsArticle.Summary.Text %}
+            {% if summary and summary != "" %}
+            <p class="card-text text-muted">{{ summary | truncate: 120 }}</p>
+            {% endif %}
+        </div>
+    </div>
+</div>

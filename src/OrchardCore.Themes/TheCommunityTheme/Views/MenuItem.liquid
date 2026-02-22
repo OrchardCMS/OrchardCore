@@ -1,0 +1,20 @@
+{% if Model.HasItems %}
+<li class="nav-item dropdown">
+    {% shape_clear_alternates Model %}
+    {% shape_type Model "MenuItemLink" %}
+    {{ Model | shape_render }}
+    <ul class="dropdown-menu">
+        {% for item in Model.Items %}
+        <li>
+            <a class="dropdown-item" href="{{ item.ContentItem.Content.LinkMenuItemPart.Url | href }}">{{ item.ContentItem.DisplayText }}</a>
+        </li>
+        {% endfor %}
+    </ul>
+</li>
+{% else %}
+<li class="nav-item">
+    {% shape_clear_alternates Model %}
+    {% shape_type Model "MenuItemLink" %}
+    {{ Model | shape_render }}
+</li>
+{% endif %}

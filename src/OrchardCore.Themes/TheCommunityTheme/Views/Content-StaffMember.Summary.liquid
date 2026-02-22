@@ -1,0 +1,16 @@
+<div class="col-md-6 col-lg-4 mb-4">
+    <div class="card staff-card h-100">
+        {% assign photo = Model.ContentItem.Content.StaffMember.Photo.Paths.first %}
+        {% if photo %}
+        <img class="card-img-top" src="{{ photo | asset_url | resize_url: profile: 'avatar' }}" alt="{{ Model.ContentItem | display_text }}">
+        {% endif %}
+        <div class="card-body">
+            <h5 class="card-title"><a href="{{ Model.ContentItem | display_url }}" class="text-decoration-none text-dark">{{ Model.ContentItem | display_text }}</a></h5>
+            <p class="text-muted">{{ Model.ContentItem.Content.StaffMember.Role.Text }}</p>
+            {% assign dept = Model.ContentItem.Content.StaffMember.Department.Text %}
+            {% if dept and dept != "" %}
+            <span class="badge bg-primary">{{ dept }}</span>
+            {% endif %}
+        </div>
+    </div>
+</div>

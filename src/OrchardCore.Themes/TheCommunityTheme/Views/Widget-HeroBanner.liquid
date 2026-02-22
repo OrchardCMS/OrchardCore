@@ -1,0 +1,22 @@
+{% assign bgImage = Model.ContentItem.Content.HeroBanner.BackgroundImage.Paths.first %}
+<header class="masthead" {% if bgImage %}style="background-image: url('{{ bgImage | asset_url }}')"{% endif %}>
+    <div class="container text-center">
+        <div class="masthead-heading">{{ Model.ContentItem | display_text }}</div>
+        {% assign subtitle = Model.ContentItem.Content.HeroBanner.Subtitle.Text %}
+        {% if subtitle and subtitle != "" %}
+        <div class="masthead-subheading">{{ subtitle }}</div>
+        {% endif %}
+        {% assign ctaText = Model.ContentItem.Content.HeroBanner.CtaText.Text %}
+        {% assign ctaUrl = Model.ContentItem.Content.HeroBanner.CtaUrl.Text %}
+        {% assign ctaText2 = Model.ContentItem.Content.HeroBanner.CtaText2.Text %}
+        {% assign ctaUrl2 = Model.ContentItem.Content.HeroBanner.CtaUrl2.Text %}
+        <div class="mt-4">
+            {% if ctaText and ctaUrl %}
+            <a class="btn btn-primary btn-xl me-3" href="{{ ctaUrl }}">{{ ctaText }}</a>
+            {% endif %}
+            {% if ctaText2 and ctaUrl2 %}
+            <a class="btn btn-outline-light btn-xl" href="{{ ctaUrl2 }}">{{ ctaText2 }}</a>
+            {% endif %}
+        </div>
+    </div>
+</header>
