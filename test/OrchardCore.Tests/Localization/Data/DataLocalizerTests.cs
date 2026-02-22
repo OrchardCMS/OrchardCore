@@ -194,7 +194,7 @@ public class DataLocalizerTests : IDisposable
     private void SetupDictionary(string cultureName, IEnumerable<CultureDictionaryRecord> records)
     {
         _dataTranslationProviderMock
-            .Setup(tp => tp.LoadTranslations(It.Is<string>(c => c == cultureName), It.IsAny<CultureDictionary>()))
+            .Setup(tp => tp.LoadTranslationsAsync(It.Is<string>(c => c == cultureName), It.IsAny<CultureDictionary>()))
             .Callback<string, CultureDictionary>((c, d) =>
             {
                 d.MergeTranslations(records);

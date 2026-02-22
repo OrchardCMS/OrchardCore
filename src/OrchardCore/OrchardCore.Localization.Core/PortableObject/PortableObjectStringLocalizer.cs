@@ -108,7 +108,10 @@ public class PortableObjectStringLocalizer : IPluralStringLocalizer
 
     private IEnumerable<LocalizedString> GetAllStrings(CultureInfo culture)
     {
-        var dictionary = _localizationManager.GetDictionary(culture);
+        var dictionary = _localizationManager.GetDictionaryAsync(culture)
+            .AsTask()
+            .GetAwaiter()
+            .GetResult();
 
         foreach (var translation in dictionary.Translations)
         {
@@ -144,7 +147,10 @@ public class PortableObjectStringLocalizer : IPluralStringLocalizer
 
     protected string GetTranslation(string[] pluralForms, CultureInfo culture, int? count)
     {
-        var dictionary = _localizationManager.GetDictionary(culture);
+        var dictionary = _localizationManager.GetDictionaryAsync(culture)
+            .AsTask()
+            .GetAwaiter()
+            .GetResult();
 
         var pluralForm = count.HasValue ? dictionary.PluralRule(count.Value) : 0;
 
@@ -187,7 +193,10 @@ public class PortableObjectStringLocalizer : IPluralStringLocalizer
 
             string ExtractTranslation()
             {
-                var dictionary = _localizationManager.GetDictionary(culture);
+                var dictionary = _localizationManager.GetDictionaryAsync(culture)
+                    .AsTask()
+                    .GetAwaiter()
+                    .GetResult();
 
                 if (dictionary != null)
                 {

@@ -12,5 +12,5 @@ public interface ILocalizationManager
     /// </summary>
     /// <param name="culture">The <see cref="CultureInfo"/>.</param>
     /// <returns>A <see cref="CultureDictionary"/> for the specified culture.</returns>
-    CultureDictionary GetDictionary(CultureInfo culture);
+    ValueTask<CultureDictionary> GetDictionaryAsync(CultureInfo culture);
 }

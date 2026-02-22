@@ -331,7 +331,7 @@ public class PortableObjectStringLocalizerTests
     [InlineData("ar-YE", 2)]
     [InlineData("zh-Hans-CN", 3)]
     [InlineData("zh-Hant-TW", 3)]
-    public void LocalizerWithContextShouldCallGetDictionaryOncePerCulture(string culture, int expectedCalls)
+    public async Task LocalizerWithContextShouldCallGetDictionaryOncePerCulture(string culture, int expectedCalls)
     {
         // Arrange
         SetupDictionary(culture, Array.Empty<CultureDictionaryRecord>());
@@ -343,7 +343,7 @@ public class PortableObjectStringLocalizerTests
         var translation = localizer["Hello"];
 
         // Assert
-        _localizationManager.Verify(lm => lm.GetDictionary(It.IsAny<CultureInfo>()), Times.Exactly(expectedCalls));
+        _localizationManager.Verify(lm => lm.GetDictionaryAsync(It.IsAny<CultureInfo>()), Times.Exactly(expectedCalls));
 
         Assert.Equal("Hello", translation);
     }
@@ -359,7 +359,8 @@ public class PortableObjectStringLocalizerTests
         var dictionary = new CultureDictionary(cultureName, pluralRule);
         dictionary.MergeTranslations(records);
 
-        _localizationManager.Setup(o => o.GetDictionary(It.Is<CultureInfo>(c => c.Name == cultureName))).Returns(dictionary);
+        _localizationManager.Setup(o => o.GetDictionaryAsync(It.Is<CultureInfo>(c => c.Name == cultureName)))
+            .ReturnsAsync(dictionary);
     }
 
     public class PortableObjectLocalizationStartup
