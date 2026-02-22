@@ -52,7 +52,7 @@ public class LiquidViewTemplate
         {
             // Defer the buffer disposing so that a template can be rendered twice.
             var content = new ViewBufferTextWriterContent(releaseOnWrite: false);
-            ShellScope.Current.RegisterBeforeDispose(scope => content.Dispose());
+            ShellScope.Current.RegisterBeforeDispose((scope, content) => content.Dispose(), content);
 
             await context.EnterScopeAsync(page.ViewContext, (object)page.Model);
             await template.FluidTemplate.RenderAsync(content, htmlEncoder, context);

@@ -31,7 +31,8 @@ public class ShellDescriptorFeaturesManager : IShellDescriptorFeaturesManager
     public async Task<(IEnumerable<IFeatureInfo>, IEnumerable<IFeatureInfo>)> UpdateFeaturesAsync(ShellDescriptor shellDescriptor,
         IEnumerable<IFeatureInfo> featuresToDisable, IEnumerable<IFeatureInfo> featuresToEnable, bool force)
     {
-        var featureEventHandlers = ShellScope.Services.GetServices<IFeatureEventHandler>();
+        var shellScope =  ShellScope.Current;
+        var featureEventHandlers = shellScope.ServiceProvider.GetServices<IFeatureEventHandler>();
 
         var enabledFeatures = _extensionManager.GetFeatures()
             .Where(feature => shellDescriptor.Features.Any(shellFeature => shellFeature.Id == feature.Id))
@@ -113,7 +114,7 @@ public class ShellDescriptorFeaturesManager : IShellDescriptorFeaturesManager
                 shellDescriptor.SerialNumber,
                 enabledFeatureIds.Select(id => new ShellFeature(id)).ToArray());
 
-            ShellScope.AddDeferredTask(async scope =>
+            shellScope.AddDeferredTask(async (scope, allFeaturesToInstall, allFeaturesToEnable, allFeaturesToDisable) =>
             {
                 var featureEventHandlers = scope.ServiceProvider.GetServices<IFeatureEventHandler>();
                 var logger = scope.ServiceProvider.GetRequiredService<ILogger<ShellFeaturesManager>>();
@@ -147,7 +148,7 @@ public class ShellDescriptorFeaturesManager : IShellDescriptorFeaturesManager
 
                     await featureEventHandlers.InvokeAsync((handler, featureInfo) => handler.DisabledAsync(featureInfo), feature, logger);
                 }
-            });
+            }, allFeaturesToInstall, allFeaturesToEnable, allFeaturesToDisable);
         }
 
         return (allFeaturesToDisable, allFeaturesToEnable);

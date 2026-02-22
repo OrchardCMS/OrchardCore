@@ -55,7 +55,7 @@ public static class HttpBackgroundJob
         Interlocked.Increment(ref _activeJobsCount);
 
         // Fire and forget in an isolated child scope.
-        _ = ShellScope.UsingChildScopeAsync(async scope =>
+        _ = ShellScope.UsingChildScopeAsync(async (scope, state) =>
         {
             scope.RegisterBeforeDispose(scope =>
             {
@@ -63,6 +63,7 @@ public static class HttpBackgroundJob
                 Interlocked.Decrement(ref _activeJobsCount);
             }, true);
 
+            var (jobName, job, httpContextAccessor, userPrincipal) = state;
             var timeoutTask = Task.Delay(60_000);
 
             // Wait for the current 'HttpContext' to be released with a timeout of 60s.
@@ -106,8 +107,9 @@ public static class HttpBackgroundJob
             httpContextAccessor.HttpContext.User = userPrincipal;
 
             // Use a new scope as the shell context may have been reloaded.
-            await ShellScope.UsingChildScopeAsync(async scope =>
+            await ShellScope.UsingChildScopeAsync(async (scope, state) =>
             {
+                var (jobName, job) = state;
                 var logger = scope.ServiceProvider.GetRequiredService<ILogger<ShellScope>>();
 
                 try
@@ -122,11 +124,11 @@ public static class HttpBackgroundJob
                         jobName,
                         scope.ShellContext.Settings.Name);
                 }
-            });
+            }, (jobName, job));
 
             // Clear the 'HttpContext' for this async flow.
             httpContextAccessor.HttpContext = null;
-        });
+        }, (jobName, job, httpContextAccessor, userPrincipal));
 
         return Task.CompletedTask;
     }
