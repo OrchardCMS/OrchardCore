@@ -9,12 +9,15 @@ using OrchardCore.ReverseProxy.Configuration;
 using OrchardCore.ReverseProxy.Drivers;
 using OrchardCore.ReverseProxy.Settings;
 using OrchardCore.Security.Permissions;
+using OrchardCore.Settings;
 using OrchardCore.Settings.Deployment;
 
 namespace OrchardCore.ReverseProxy;
 
 public sealed class Startup : StartupBase
 {
+    public const string ConfigurationKey = "OrchardCore_ReverseProxy";
+
     public override int Order
         => OrchardCoreConstants.ConfigureOrder.ReverseProxy;
 
@@ -29,7 +32,9 @@ public sealed class Startup : StartupBase
         services.AddPermissionProvider<Permissions>();
         services.AddSiteDisplayDriver<ReverseProxySettingsDisplayDriver>();
 
-        services.AddTransient<IConfigureOptions<ReverseProxySettings>, ReverseProxySettingsConfiguration>();
+        // Register the configurable settings infrastructure
+        services.AddConfigurableSettings<ReverseProxySettings>(ConfigurationKey);
+
         services.AddTransient<IConfigureOptions<ForwardedHeadersOptions>, ForwardedHeadersOptionsConfiguration>();
     }
 }

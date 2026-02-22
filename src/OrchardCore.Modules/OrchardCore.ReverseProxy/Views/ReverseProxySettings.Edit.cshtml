@@ -1,42 +1,124 @@
 @using OrchardCore
+@using OrchardCore.Settings
 
 @model ReverseProxySettingsViewModel
 
 @inject IClientIPAddressAccessor ClientIPAddressAccessor
 
-<div class="mb-3" asp-validation-class-for="EnableXForwardedFor">
-    <div class="form-check">
-        <label class="form-check-label">
-            <input asp-for="EnableXForwardedFor" class="form-check-input" />
-            @T["Enables the forwarding of the HTTP header X-Forwarded-For"]
-        </label>
-    </div>
-    <span class="hint">@T["Enables the forwarding of the HTTP header X-Forwarded-For"]</span>
-    <span class="hint">@T["Current request value;"] @await ClientIPAddressAccessor.GetIPAddressAsync()</span>
-</div>
+@* Configuration alert - shows when file configuration is active *@
+<config-alert metadata="Model.Metadata" />
 
-<div class="mb-3" asp-validation-class-for="EnableXForwardedProto">
-    <div class="form-check">
-        <label class="form-check-label">
-            <input asp-for="EnableXForwardedProto" class="form-check-input" />
-            @T["Enables the forwarding of the HTTP header X-Forwarded-Proto"]
-        </label>
+<fieldset @(Model.IsReadOnly ? "disabled" : "")>
+    <div class="mb-3" asp-validation-class-for="EnableXForwardedFor">
+        <div class="form-check">
+            <label class="form-check-label">
+                <input asp-for="EnableXForwardedFor" class="form-check-input"
+                       config-property="ForwardedHeaders"
+                       config-metadata="Model.Metadata"
+                       config-readonly="Model.IsReadOnly" />
+                @T["Enables the forwarding of the HTTP header X-Forwarded-For"]
+            </label>
+            @if (Model.IsPropertyOverridden("ForwardedHeaders"))
+            {
+                <config-badge source="@ConfigurationSource.ConfigurationFile" class="ms-2" />
+            }
+        </div>
+        <span class="hint">@T["Enables the forwarding of the HTTP header X-Forwarded-For"]</span>
+        <span class="hint">@T["Current request value;"] @await ClientIPAddressAccessor.GetIPAddressAsync()</span>
     </div>
-    <span class="hint">@T["Enables the forwarding of the HTTP header X-Forwarded-Proto"]</span>
-    <span class="hint">@T["Current request value;"] @Context.Request.Scheme</span>
-</div>
 
-<div class="mb-3" asp-validation-class-for="EnableXForwardedHost">
-    <div class="form-check">
-        <label class="form-check-label">
-            <input asp-for="EnableXForwardedHost" class="form-check-input" />
-            @T["Enables the forwarding of the HTTP header X-Forwarded-Host"]
-        </label>
+    <div class="mb-3" asp-validation-class-for="EnableXForwardedProto">
+        <div class="form-check">
+            <label class="form-check-label">
+                <input asp-for="EnableXForwardedProto" class="form-check-input"
+                       config-property="ForwardedHeaders"
+                       config-metadata="Model.Metadata"
+                       config-readonly="Model.IsReadOnly" />
+                @T["Enables the forwarding of the HTTP header X-Forwarded-Proto"]
+            </label>
+            @if (Model.IsPropertyOverridden("ForwardedHeaders"))
+            {
+                <config-badge source="@ConfigurationSource.ConfigurationFile" class="ms-2" />
+            }
+        </div>
+        <span class="hint">@T["Enables the forwarding of the HTTP header X-Forwarded-Proto"]</span>
+        <span class="hint">@T["Current request value;"] @Context.Request.Scheme</span>
     </div>
-    <span class="hint">@T["Enables the forwarding of the HTTP header X-Forwarded-Host"]</span>
-    <span class="hint">@T["Current request value;"] @Context.Request.Host</span>
-</div>
+
+    <div class="mb-3" asp-validation-class-for="EnableXForwardedHost">
+        <div class="form-check">
+            <label class="form-check-label">
+                <input asp-for="EnableXForwardedHost" class="form-check-input"
+                       config-property="ForwardedHeaders"
+                       config-metadata="Model.Metadata"
+                       config-readonly="Model.IsReadOnly" />
+                @T["Enables the forwarding of the HTTP header X-Forwarded-Host"]
+            </label>
+            @if (Model.IsPropertyOverridden("ForwardedHeaders"))
+            {
+                <config-badge source="@ConfigurationSource.ConfigurationFile" class="ms-2" />
+            }
+        </div>
+        <span class="hint">@T["Enables the forwarding of the HTTP header X-Forwarded-Host"]</span>
+        <span class="hint">@T["Current request value;"] @Context.Request.Host</span>
+    </div>
+
+    <div class="mb-3" asp-validation-class-for="KnownNetworks">
+        <label asp-for="KnownNetworks" class="form-label">
+            @T["Known Networks"]
+            @if (Model.IsPropertyOverridden("KnownNetworks"))
+            {
+                <config-badge source="@ConfigurationSource.ConfigurationFile" class="ms-2" />
+            }
+        </label>
+        <textarea asp-for="KnownNetworks" class="form-control" rows="3"
+                  config-property="KnownNetworks"
+                  config-metadata="Model.Metadata"
+                  config-readonly="Model.IsReadOnly"></textarea>
+        <span class="hint">@T["Enter IP networks in CIDR notation, one per line (e.g., 10.0.0.0/8). These networks are trusted to forward headers."]</span>
+        @{
+            var knownNetworksMetadata = Model.GetPropertyMetadata("KnownNetworks");
+        }
+        @if (knownNetworksMetadata?.MergeStrategy == PropertyMergeStrategy.Merge)
+        {
+            <span class="hint text-info">
+                <i class="fa-solid fa-code-merge me-1"></i>@T["Networks from both UI and configuration files will be combined."]
+            </span>
+        }
+    </div>
+
+    <div class="mb-3" asp-validation-class-for="KnownProxies">
+        <label asp-for="KnownProxies" class="form-label">
+            @T["Known Proxies"]
+            @if (Model.IsPropertyOverridden("KnownProxies"))
+            {
+                <config-badge source="@ConfigurationSource.ConfigurationFile" class="ms-2" />
+            }
+        </label>
+        <textarea asp-for="KnownProxies" class="form-control" rows="3"
+                  config-property="KnownProxies"
+                  config-metadata="Model.Metadata"
+                  config-readonly="Model.IsReadOnly"></textarea>
+        <span class="hint">@T["Enter IP addresses of known reverse proxies, one per line. These proxies are trusted to forward headers."]</span>
+        @{
+            var knownProxiesMetadata = Model.GetPropertyMetadata("KnownProxies");
+        }
+        @if (knownProxiesMetadata?.MergeStrategy == PropertyMergeStrategy.Merge)
+        {
+            <span class="hint text-info">
+                <i class="fa-solid fa-code-merge me-1"></i>@T["Proxies from both UI and configuration files will be combined."]
+            </span>
+        }
+    </div>
+</fieldset>
 
 <p class="hint">
     @T["Documentation available at: {0}", "https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/proxy-load-balancer?view=aspnetcore-3.0"]
 </p>
+
+@if (Model.IsReadOnly)
+{
+    <div class="alert alert-warning mt-3" role="alert">
+        <i class="fa-solid fa-lock me-2"></i>@T["This form is read-only because DisableUIConfiguration is set to true in appsettings.json."]
+    </div>
+}
