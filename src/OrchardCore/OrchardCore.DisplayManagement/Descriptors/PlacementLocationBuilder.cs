@@ -45,7 +45,8 @@ public sealed class PlacementLocationBuilder
     private string _columnPosition;
     private string _columnWidth;
     private bool _isLayoutZone;
-    private string _cachedResult;
+    private string _cachedLocation;
+    private PlacementInfo _cachedPlacementInfo;
 
     /// <summary>
     /// Sets the target zone and the shape's position within that zone.
@@ -71,7 +72,7 @@ public sealed class PlacementLocationBuilder
         ArgumentException.ThrowIfNullOrEmpty(zone);
         _zone = zone;
         _position = position;
-        _cachedResult = null;
+        InvalidateCache();
         return this;
     }
 
@@ -81,7 +82,7 @@ public sealed class PlacementLocationBuilder
     public PlacementLocationBuilder AsLayoutZone()
     {
         _isLayoutZone = true;
-        _cachedResult = null;
+        InvalidateCache();
         return this;
     }
 
@@ -93,7 +94,7 @@ public sealed class PlacementLocationBuilder
     {
         ArgumentException.ThrowIfNullOrEmpty(name);
         _group = name;
-        _cachedResult = null;
+        InvalidateCache();
         return this;
     }
 
@@ -110,7 +111,7 @@ public sealed class PlacementLocationBuilder
         ArgumentException.ThrowIfNullOrEmpty(name);
         _tabName = name;
         _tabPosition = position;
-        _cachedResult = null;
+        InvalidateCache();
         return this;
     }
 
@@ -127,7 +128,7 @@ public sealed class PlacementLocationBuilder
         ArgumentException.ThrowIfNullOrEmpty(name);
         _cardName = name;
         _cardPosition = position;
-        _cachedResult = null;
+        InvalidateCache();
         return this;
     }
 
@@ -149,8 +150,53 @@ public sealed class PlacementLocationBuilder
         _columnName = name;
         _columnPosition = position;
         _columnWidth = width;
-        _cachedResult = null;
+        InvalidateCache();
         return this;
+    }
+
+    /// <summary>
+    /// Builds a <see cref="PlacementInfo"/> instance from the current builder state.
+    /// </summary>
+    /// <returns>A new <see cref="PlacementInfo"/> with the configured location.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when <see cref="Zone"/> has not been called.</exception>
+    public PlacementInfo Build()
+    {
+        if (_cachedPlacementInfo != null)
+        {
+            return _cachedPlacementInfo;
+        }
+
+        var location = ToString();
+
+        // Build tab string with position if specified, avoiding allocations when possible.
+        var tab = BuildComponentString(_tabName, _tabPosition, separator: ';');
+
+        // Build card string with position if specified.
+        var card = BuildComponentString(_cardName, _cardPosition, separator: ';');
+
+        // Build column string with width and position if specified.
+        var column = BuildColumnString();
+
+        // Split zones only once - use the zone string directly if no dots.
+        var zones = _zone.Contains('.')
+            ? _zone.Split('.')
+            : [_zone];
+
+        _cachedPlacementInfo = new PlacementInfo(
+            location: location,
+            source: null,
+            shapeType: null,
+            defaultPosition: null,
+            alternates: null,
+            wrappers: null,
+            zones: zones,
+            position: _position,
+            tab: tab,
+            group: _group,
+            card: card,
+            column: column);
+
+        return _cachedPlacementInfo;
     }
 
     /// <summary>
@@ -159,9 +205,9 @@ public sealed class PlacementLocationBuilder
     /// <exception cref="InvalidOperationException">Thrown when <see cref="Zone"/> has not been called.</exception>
     public override string ToString()
     {
-        if (_cachedResult != null)
+        if (_cachedLocation != null)
         {
-            return _cachedResult;
+            return _cachedLocation;
         }
 
         if (string.IsNullOrEmpty(_zone))
@@ -222,7 +268,7 @@ public sealed class PlacementLocationBuilder
             }
         }
 
-        _cachedResult = string.Create(length, this, static (span, builder) =>
+        _cachedLocation = string.Create(length, this, static (span, builder) =>
         {
             var offset = 0;
 
@@ -298,12 +344,97 @@ public sealed class PlacementLocationBuilder
             }
         });
 
-        return _cachedResult;
+        return _cachedLocation;
     }
+
+    /// <summary>
+    /// Implicit conversion to <see cref="PlacementInfo"/> for convenience.
+    /// </summary>
+    public static implicit operator PlacementInfo(PlacementLocationBuilder builder)
+        => builder?.Build();
 
     /// <summary>
     /// Implicit conversion to string for convenience.
     /// </summary>
     public static implicit operator string(PlacementLocationBuilder builder)
         => builder?.ToString();
+
+    private void InvalidateCache()
+    {
+        _cachedLocation = null;
+        _cachedPlacementInfo = null;
+    }
+
+    /// <summary>
+    /// Builds a component string (name + optional suffix) using string.Create to avoid intermediate allocations.
+    /// </summary>
+    private static string BuildComponentString(string name, string suffix, char separator)
+    {
+        if (string.IsNullOrEmpty(name))
+        {
+            return null;
+        }
+
+        if (string.IsNullOrEmpty(suffix))
+        {
+            return name;
+        }
+
+        var length = name.Length + 1 + suffix.Length;
+        return string.Create(length, (name, suffix, separator), static (span, state) =>
+        {
+            state.name.AsSpan().CopyTo(span);
+            span[state.name.Length] = state.separator;
+            state.suffix.AsSpan().CopyTo(span[(state.name.Length + 1)..]);
+        });
+    }
+
+    /// <summary>
+    /// Builds the column string with optional width and position using string.Create.
+    /// </summary>
+    private string BuildColumnString()
+    {
+        if (string.IsNullOrEmpty(_columnName))
+        {
+            return null;
+        }
+
+        // Fast path: no width or position.
+        if (string.IsNullOrEmpty(_columnWidth) && string.IsNullOrEmpty(_columnPosition))
+        {
+            return _columnName;
+        }
+
+        // Calculate length.
+        var length = _columnName.Length;
+        if (!string.IsNullOrEmpty(_columnWidth))
+        {
+            length += 1 + _columnWidth.Length; // '_' + width
+        }
+        if (!string.IsNullOrEmpty(_columnPosition))
+        {
+            length += 1 + _columnPosition.Length; // ';' + position
+        }
+
+        return string.Create(length, this, static (span, builder) =>
+        {
+            var offset = 0;
+
+            builder._columnName.AsSpan().CopyTo(span);
+            offset += builder._columnName.Length;
+
+            if (!string.IsNullOrEmpty(builder._columnWidth))
+            {
+                span[offset++] = '_';
+                builder._columnWidth.AsSpan().CopyTo(span[offset..]);
+                offset += builder._columnWidth.Length;
+            }
+
+            if (!string.IsNullOrEmpty(builder._columnPosition))
+            {
+                span[offset++] = ';';
+                builder._columnPosition.AsSpan().CopyTo(span[offset..]);
+            }
+        });
+    }
 }

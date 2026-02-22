@@ -344,8 +344,11 @@ The builder starts with `.Zone()` and all methods return the same `PlacementLoca
 | `.AsLayoutZone()` | Targets a layout zone | `/` prefix |
 | `.Tab("Settings", "1")` | Groups into a tab with optional group position | `#Settings;1` |
 | `.Card("Details", "2")` | Groups into a card with optional group position | `%Details;2` |
-| `.Column("Left", "1", "9")` | Groups into a column with optional position and width | `\|Left_9;1` |
-| `.Group("search")` | Assigns a group (available at every level) | `@search` |
+| `.Column("Left", "1", "9")` | Groups into a column with position and width | `\|Left_9;1` |
+| `.Group("search")` | Assigns a group identifier for filtering | `@search` |
+
+!!! note
+    The `.Column()` method parameters are: `name`, `position`, `width`. For example, `.Column("Left", "1", "9")` creates a column named "Left" at position 1 with width 9.
 
 Methods can be called in any order after `.Zone()`. Levels can be skipped (e.g., `.Zone().Card()` without a `.Tab()` is valid).
 
@@ -373,14 +376,14 @@ Full nesting — zone → tab → card → column:
     .Tab("Settings", "1")
     .Card("Details", "2")
     .Column("Left", "3", "9"))
-// Produces: "Parameters:5#Settings;1%Details;2|Left_9;3"
+    // Produces: "Parameters:5#Settings;1%Details;2|Left_9;3"
 ```
 
 Place a shape in a column with a width (skipping tab and card):
 
 ```csharp
 .Location(l => l.Zone("Parts", "0").Column("Content", "1", "9"))
-// Produces: "Parts:0|Content_9;1"
+    // Produces: "Parts:0|Content_9;1"
 ```
 
 Place a shape in a layout zone:
