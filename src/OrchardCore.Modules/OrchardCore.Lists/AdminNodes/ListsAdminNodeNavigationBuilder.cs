@@ -92,7 +92,8 @@ public class ListsAdminNodeNavigationBuilder : IAdminNodeNavigationBuilder
 
             if (cim.AdminRouteValues.Count > 0 && ci.DisplayText != null)
             {
-                listTypeMenu.Add(new LocalizedString(ci.DisplayText, ci.DisplayText), m =>
+                var displayText = !string.IsNullOrEmpty(_node.CustomAdminMenuName) ? _node.CustomAdminMenuName : ci.DisplayText;
+                listTypeMenu.Add(new LocalizedString(displayText, displayText), m =>
                 {
                     m.Action(cim.AdminRouteValues["Action"] as string, cim.AdminRouteValues["Controller"] as string, cim.AdminRouteValues);
                     m.Resource(ci);
