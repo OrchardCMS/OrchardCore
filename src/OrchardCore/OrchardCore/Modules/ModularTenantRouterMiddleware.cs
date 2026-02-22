@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.Modules;
@@ -16,21 +17,21 @@ public class ModularTenantRouterMiddleware
     public ModularTenantRouterMiddleware(RequestDelegate _, ILogger<ModularTenantRouterMiddleware> logger)
         => _logger = logger;
 
-    public async Task Invoke(HttpContext httpContext)
+    public Task Invoke(HttpContext httpContext)
     {
         if (_logger.IsEnabled(LogLevel.Information))
         {
             _logger.LogInformation("Begin Routing Request");
         }
 
-        var shellContext = ShellScope.Context;
+        var shellContext = httpContext.Features.Get<ShellContextFeature>().ShellContext;
 
         // Define a new 'PathBase' for the current request based on the tenant 'RequestUrlPrefix'.
         // Because IIS or another middleware might have already set it, we just append the prefix.
         // This allows to use any helper accepting the '~/' path to resolve the tenant's base url.
         if (!string.IsNullOrEmpty(shellContext.Settings.RequestUrlPrefix))
         {
-            PathString prefix = "/" + shellContext.Settings.RequestUrlPrefix;
+            var prefix = shellContext.Settings.RequestPathBase;
             httpContext.Request.PathBase += prefix;
             httpContext.Request.Path.StartsWithSegments(prefix, StringComparison.OrdinalIgnoreCase, out var remainingPath);
             httpContext.Request.Path = remainingPath;
@@ -39,9 +40,20 @@ public class ModularTenantRouterMiddleware
         // Do we need to rebuild the pipeline?
         if (!shellContext.HasPipeline())
         {
-            await shellContext.BuildPipelineAsync();
+            return Awaited(shellContext, httpContext);
         }
 
-        await shellContext.Pipeline.Invoke(httpContext);
+        return shellContext.Pipeline.Invoke(httpContext);
+
+        static async Task Awaited(ShellContext shellContext, HttpContext httpContext)
+        {
+            // Do we need to rebuild the pipeline?
+            if (!shellContext.HasPipeline())
+            {
+                await shellContext.BuildPipelineAsync();
+            }
+
+            await shellContext.Pipeline.Invoke(httpContext);
+        }
     }
 }
