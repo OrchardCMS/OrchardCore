@@ -8,7 +8,6 @@ namespace OrchardCore.Localization.PortableObject;
 public class PoFilesTranslationsProvider : ITranslationProvider
 {
     private readonly ILocalizationFileLocationProvider _poFilesLocationProvider;
-    private readonly PoParser _parser;
 
     /// <summary>
     /// Creates a new instance of <see cref="PoFilesTranslationsProvider"/>.
@@ -17,7 +16,6 @@ public class PoFilesTranslationsProvider : ITranslationProvider
     public PoFilesTranslationsProvider(ILocalizationFileLocationProvider poFileLocationProvider)
     {
         _poFilesLocationProvider = poFileLocationProvider;
-        _parser = new PoParser();
     }
 
     /// <inheritdocs />
@@ -29,13 +27,19 @@ public class PoFilesTranslationsProvider : ITranslationProvider
         }
     }
 
-    private void LoadFileToDictionary(IFileInfo fileInfo, CultureDictionary dictionary)
+    private static void LoadFileToDictionary(IFileInfo fileInfo, CultureDictionary dictionary)
     {
         if (fileInfo.Exists && !fileInfo.IsDirectory)
         {
             using var stream = fileInfo.CreateReadStream();
             using var reader = new StreamReader(stream);
-            dictionary.MergeTranslations(_parser.Parse(reader));
+            var culureDictionaryRecords = PoParser.ParseAsync(reader)
+                .ToListAsync()
+                .AsTask()
+                .GetAwaiter()
+                .GetResult();
+
+            dictionary.MergeTranslations(culureDictionaryRecords);
         }
     }
 }

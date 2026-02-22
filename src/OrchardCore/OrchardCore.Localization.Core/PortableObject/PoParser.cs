@@ -1,4 +1,5 @@
 using System.Collections.Frozen;
+using System.Runtime.CompilerServices;
 using Cysharp.Text;
 
 namespace OrchardCore.Localization.PortableObject;
@@ -21,17 +22,18 @@ public class PoParser
     }
 
     /// <summary>
-    /// Parses a .po file.
+    /// Parses a .po file asynchronously.
     /// </summary>
     /// <param name="reader">The <see cref="TextReader"/>.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>A list of culture records.</returns>
-#pragma warning disable CA1822 // Mark members as static
-    public IEnumerable<CultureDictionaryRecord> Parse(TextReader reader)
-#pragma warning restore CA1822 // Mark members as static
+    public static async IAsyncEnumerable<CultureDictionaryRecord> ParseAsync(
+        TextReader reader,
+        [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
         var entryBuilder = new DictionaryRecordBuilder();
         string line;
-        while ((line = reader.ReadLine()) != null)
+        while ((line = await reader.ReadLineAsync(cancellationToken).ConfigureAwait(false)) != null)
         {
             (var context, var content) = ParseLine(line);
 
@@ -40,7 +42,6 @@ public class PoParser
                 continue;
             }
 
-            // msgid or msgctxt are first lines of the entry. If builder contains valid entry return it and start building a new one.
             if ((context == PoContext.MessageId || context == PoContext.MessageContext) && entryBuilder.ShouldFlushRecord)
             {
                 yield return entryBuilder.BuildRecordAndReset();
@@ -121,19 +122,20 @@ public class PoParser
             return (PoContext.Text, Unescape(TrimQuote(line.Trim())));
         }
 
-        var keyAndValue = line.Split(null, 2);
-        if (keyAndValue.Length != 2)
+        var separatorIndex = line.IndexOf(' ');
+        if (separatorIndex <= 0 || separatorIndex == line.Length - 1)
         {
             return (PoContext.Other, string.Empty);
         }
 
-        var content = Unescape(TrimQuote(keyAndValue[1].Trim()));
-        return keyAndValue[0] switch
+        var key = line[..separatorIndex];
+        var content = Unescape(TrimQuote(line[(separatorIndex + 1)..].Trim()));
+        return key switch
         {
             "msgctxt" => (PoContext.MessageContext, content),
             "msgid" => (PoContext.MessageId, content),
             "msgid_plural" => (PoContext.MessageIdPlural, content),
-            var key when key.StartsWith("msgstr", StringComparison.Ordinal) => (PoContext.Translation, content),
+            var keyName when keyName.StartsWith("msgstr", StringComparison.Ordinal) => (PoContext.Translation, content),
             _ => (PoContext.Other, content),
         };
     }
