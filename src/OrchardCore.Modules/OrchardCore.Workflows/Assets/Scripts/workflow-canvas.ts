@@ -82,6 +82,7 @@ abstract class WorkflowCanvas {
                 outlineStroke: 'white'
             },
             connectorOverlays: [['Label', { location: [3, -1.5], cssClass: 'endpointSourceLabel' }]],
+            overlays: [['Label', { label: outcome.displayName, cssClass: 'outcome-label', id: 'outcome-label', location: [0.5, 1.5] }]],
             dragOptions: {},
             uuid: `${activity.id}-${outcome.name}`,
             parameters: {

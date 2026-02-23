@@ -103,4 +103,15 @@
         border-radius: var(--bs-border-radius, 2px);
         background-color: var(--bs-secondary-bg);
     }
+
+    .outcome-label {
+        z-index: 21;
+        font-size: 8px;
+        background-color: var(--bs-secondary-bg);
+        border: var(--bs-border-width, 1px) var(--bs-border-style, solid)
+            var(--bs-border-color, #e4e5e6);
+        padding: 0 0.25rem;
+        border-radius: var(--bs-border-radius, 2px);
+        white-space: nowrap;
+    }
 }

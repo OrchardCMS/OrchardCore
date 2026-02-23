@@ -78,6 +78,15 @@
   border-radius: var(--bs-border-radius, 2px);
   background-color: var(--bs-secondary-bg);
 }
+.workflow-canvas .outcome-label {
+  z-index: 21;
+  font-size: 8px;
+  background-color: var(--bs-secondary-bg);
+  border: var(--bs-border-width, 1px) var(--bs-border-style, solid) var(--bs-border-color, #e4e5e6);
+  padding: 0 0.25rem;
+  border-radius: var(--bs-border-radius, 2px);
+  white-space: nowrap;
+}
 
 .modal-activities h4.card-title .svg-inline--fa {
   margin-right: 0.5em;
