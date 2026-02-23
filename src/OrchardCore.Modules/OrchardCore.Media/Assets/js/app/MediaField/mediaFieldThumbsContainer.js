@@ -18,7 +18,7 @@ Vue.component('mediaFieldThumbsContainer', {
                 :style="{width: thumbSize + 2 + 'px'}"
                 v-on:click="selectMedia(media)"
                 v-if="!media.isRemoved">
-                    <div v-if="media.isTransientError">
+                    <div v-if="media.errorType==='transient'">
                         <div class="thumb-container flex-column" :style="{height: thumbSize + 'px'}">
                             <i class="fa-solid fa-triangle-exclamation text-warning d-block" aria-hidden="true"></i>
                             <span class="text-warning small d-block">{{ T.mediaTemporarilyUnavailable }}</span>
@@ -29,7 +29,7 @@ Vue.component('mediaFieldThumbsContainer', {
                             <span class="media-filename card-text small text-warning" :title="media.name">{{ media.name }}</span>
                         </div>
                     </div>
-                    <div v-else-if="media.mediaPath!== 'not-found'">
+                    <div v-else-if="!media.errorType">
                         <div class="thumb-container" :style="{height: thumbSize + 'px'}" >
                             <img v-if="media.mime.startsWith('image')"
                                 :src="buildMediaUrl(media.url, thumbSize)"
