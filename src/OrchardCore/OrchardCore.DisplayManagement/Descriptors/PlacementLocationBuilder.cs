@@ -45,7 +45,6 @@ public sealed class PlacementLocationBuilder
     private string _columnPosition;
     private string _columnWidth;
     private bool _isLayoutZone;
-    private string _cachedLocation;
     private PlacementInfo _cachedPlacementInfo;
 
     /// <summary>
@@ -72,7 +71,7 @@ public sealed class PlacementLocationBuilder
         ArgumentException.ThrowIfNullOrEmpty(zone);
         _zone = zone;
         _position = position;
-        InvalidateCache();
+        _cachedPlacementInfo = null;
         return this;
     }
 
@@ -82,7 +81,7 @@ public sealed class PlacementLocationBuilder
     public PlacementLocationBuilder AsLayoutZone()
     {
         _isLayoutZone = true;
-        InvalidateCache();
+        _cachedPlacementInfo = null;
         return this;
     }
 
@@ -94,7 +93,7 @@ public sealed class PlacementLocationBuilder
     {
         ArgumentException.ThrowIfNullOrEmpty(name);
         _group = name;
-        InvalidateCache();
+        _cachedPlacementInfo = null;
         return this;
     }
 
@@ -111,7 +110,7 @@ public sealed class PlacementLocationBuilder
         ArgumentException.ThrowIfNullOrEmpty(name);
         _tabName = name;
         _tabPosition = position;
-        InvalidateCache();
+        _cachedPlacementInfo = null;
         return this;
     }
 
@@ -128,7 +127,7 @@ public sealed class PlacementLocationBuilder
         ArgumentException.ThrowIfNullOrEmpty(name);
         _cardName = name;
         _cardPosition = position;
-        InvalidateCache();
+        _cachedPlacementInfo = null;
         return this;
     }
 
@@ -150,7 +149,7 @@ public sealed class PlacementLocationBuilder
         _columnName = name;
         _columnPosition = position;
         _columnWidth = width;
-        InvalidateCache();
+        _cachedPlacementInfo = null;
         return this;
     }
 
@@ -166,7 +165,10 @@ public sealed class PlacementLocationBuilder
             return _cachedPlacementInfo;
         }
 
-        var location = ToString();
+        if (string.IsNullOrEmpty(_zone))
+        {
+            throw new InvalidOperationException("Zone is required. Call Zone() before calling Build().");
+        }
 
         // Build tab string with position if specified, avoiding allocations when possible.
         var tab = BuildComponentString(_tabName, _tabPosition, separator: ';');
@@ -182,8 +184,9 @@ public sealed class PlacementLocationBuilder
             ? _zone.Split('.')
             : [_zone];
 
+        // Use the internal constructor that doesn't require a location string.
+        // The location string will be lazily computed by PlacementInfo.Location when needed.
         _cachedPlacementInfo = new PlacementInfo(
-            location: location,
             source: null,
             shapeType: null,
             defaultPosition: null,
@@ -194,158 +197,18 @@ public sealed class PlacementLocationBuilder
             tab: tab,
             group: _group,
             card: card,
-            column: column);
+            column: column,
+            isLayoutZone: _isLayoutZone);
 
         return _cachedPlacementInfo;
     }
 
     /// <summary>
-    /// Returns the placement location string. The result is cached until the builder is modified.
+    /// Returns the placement location string.
     /// </summary>
     /// <exception cref="InvalidOperationException">Thrown when <see cref="Zone"/> has not been called.</exception>
     public override string ToString()
-    {
-        if (_cachedLocation != null)
-        {
-            return _cachedLocation;
-        }
-
-        if (string.IsNullOrEmpty(_zone))
-        {
-            throw new InvalidOperationException("Zone is required. Call Zone() before calling ToString().");
-        }
-
-        // Pre-calculate total length to use string.Create and avoid StringBuilder allocation.
-        var length = _zone.Length;
-
-        if (_isLayoutZone)
-        {
-            length++;
-        }
-
-        if (!string.IsNullOrEmpty(_position))
-        {
-            length += 1 + _position.Length;
-        }
-
-        if (!string.IsNullOrEmpty(_tabName))
-        {
-            length += 1 + _tabName.Length;
-
-            if (!string.IsNullOrEmpty(_tabPosition))
-            {
-                length += 1 + _tabPosition.Length;
-            }
-        }
-
-        if (!string.IsNullOrEmpty(_group))
-        {
-            length += 1 + _group.Length;
-        }
-
-        if (!string.IsNullOrEmpty(_cardName))
-        {
-            length += 1 + _cardName.Length;
-
-            if (!string.IsNullOrEmpty(_cardPosition))
-            {
-                length += 1 + _cardPosition.Length;
-            }
-        }
-
-        if (!string.IsNullOrEmpty(_columnName))
-        {
-            length += 1 + _columnName.Length;
-
-            if (!string.IsNullOrEmpty(_columnWidth))
-            {
-                length += 1 + _columnWidth.Length;
-            }
-
-            if (!string.IsNullOrEmpty(_columnPosition))
-            {
-                length += 1 + _columnPosition.Length;
-            }
-        }
-
-        _cachedLocation = string.Create(length, this, static (span, builder) =>
-        {
-            var offset = 0;
-
-            if (builder._isLayoutZone)
-            {
-                span[offset++] = '/';
-            }
-
-            builder._zone.AsSpan().CopyTo(span[offset..]);
-            offset += builder._zone.Length;
-
-            if (!string.IsNullOrEmpty(builder._position))
-            {
-                span[offset++] = PlacementInfo.PositionDelimiter;
-                builder._position.AsSpan().CopyTo(span[offset..]);
-                offset += builder._position.Length;
-            }
-
-            if (!string.IsNullOrEmpty(builder._tabName))
-            {
-                span[offset++] = PlacementInfo.TabDelimiter;
-                builder._tabName.AsSpan().CopyTo(span[offset..]);
-                offset += builder._tabName.Length;
-
-                if (!string.IsNullOrEmpty(builder._tabPosition))
-                {
-                    span[offset++] = ';';
-                    builder._tabPosition.AsSpan().CopyTo(span[offset..]);
-                    offset += builder._tabPosition.Length;
-                }
-            }
-
-            if (!string.IsNullOrEmpty(builder._group))
-            {
-                span[offset++] = PlacementInfo.GroupDelimiter;
-                builder._group.AsSpan().CopyTo(span[offset..]);
-                offset += builder._group.Length;
-            }
-
-            if (!string.IsNullOrEmpty(builder._cardName))
-            {
-                span[offset++] = PlacementInfo.CardDelimiter;
-                builder._cardName.AsSpan().CopyTo(span[offset..]);
-                offset += builder._cardName.Length;
-
-                if (!string.IsNullOrEmpty(builder._cardPosition))
-                {
-                    span[offset++] = ';';
-                    builder._cardPosition.AsSpan().CopyTo(span[offset..]);
-                    offset += builder._cardPosition.Length;
-                }
-            }
-
-            if (!string.IsNullOrEmpty(builder._columnName))
-            {
-                span[offset++] = PlacementInfo.ColumnDelimiter;
-                builder._columnName.AsSpan().CopyTo(span[offset..]);
-                offset += builder._columnName.Length;
-
-                if (!string.IsNullOrEmpty(builder._columnWidth))
-                {
-                    span[offset++] = '_';
-                    builder._columnWidth.AsSpan().CopyTo(span[offset..]);
-                    offset += builder._columnWidth.Length;
-                }
-
-                if (!string.IsNullOrEmpty(builder._columnPosition))
-                {
-                    span[offset++] = ';';
-                    builder._columnPosition.AsSpan().CopyTo(span[offset..]);
-                    offset += builder._columnPosition.Length;
-                }
-            }
-        });
-
-        return _cachedLocation;
-    }
+        => Build().Location;
 
     /// <summary>
     /// Implicit conversion to <see cref="PlacementInfo"/> for convenience.
@@ -358,12 +221,6 @@ public sealed class PlacementLocationBuilder
     /// </summary>
     public static implicit operator string(PlacementLocationBuilder builder)
         => builder?.ToString();
-
-    private void InvalidateCache()
-    {
-        _cachedLocation = null;
-        _cachedPlacementInfo = null;
-    }
 
     /// <summary>
     /// Builds a component string (name + optional suffix) using string.Create to avoid intermediate allocations.

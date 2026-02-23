@@ -33,7 +33,13 @@ public class PlacementInfo
     /// </summary>
     private static readonly ConcurrentDictionary<string, PlacementInfo> _locationCache = new(StringComparer.OrdinalIgnoreCase);
 
-    public string Location { get; }
+    private string _location;
+
+    /// <summary>
+    /// Gets the location string. This is lazily computed from the parsed components if not explicitly set.
+    /// </summary>
+    public string Location => _location ??= BuildLocationString();
+
     public string Source { get; }
     public string ShapeType { get; }
     public string DefaultPosition { get; }
@@ -77,6 +83,7 @@ public class PlacementInfo
 
     private readonly string _position;
     private readonly string _tab;
+    private readonly bool _isLayoutZone;
 
     public PlacementInfo()
     {
@@ -91,7 +98,7 @@ public class PlacementInfo
         string[] alternates = null,
         string[] wrappers = null)
     {
-        Location = location;
+        _location = location;
         Source = source;
         ShapeType = shapeType;
         DefaultPosition = defaultPosition;
@@ -100,6 +107,7 @@ public class PlacementInfo
 
         if (!string.IsNullOrEmpty(location))
         {
+            _isLayoutZone = location[0] == '/';
             ParseLocation(location, out var zones, out _position, out _tab, out var group, out var card, out var column);
             Zones = zones;
             Group = group;
@@ -125,8 +133,29 @@ public class PlacementInfo
         string group,
         string card,
         string column)
+        : this(location, source, shapeType, defaultPosition, alternates, wrappers, zones, position, tab, group, card, column,
+            isLayoutZone: !string.IsNullOrEmpty(location) && location[0] == '/')
     {
-        Location = location;
+    }
+
+    /// <summary>
+    /// Creates a PlacementInfo with pre-parsed components. The location string will be lazily computed.
+    /// </summary>
+    internal PlacementInfo(
+        string source,
+        string shapeType,
+        string defaultPosition,
+        string[] alternates,
+        string[] wrappers,
+        string[] zones,
+        string position,
+        string tab,
+        string group,
+        string card,
+        string column,
+        bool isLayoutZone)
+    {
+        // _location is left null - will be computed lazily via BuildLocationString()
         Source = source;
         ShapeType = shapeType;
         DefaultPosition = defaultPosition;
@@ -138,6 +167,37 @@ public class PlacementInfo
         Group = group;
         Card = card;
         Column = column;
+        _isLayoutZone = isLayoutZone;
+    }
+
+    private PlacementInfo(
+        string location,
+        string source,
+        string shapeType,
+        string defaultPosition,
+        string[] alternates,
+        string[] wrappers,
+        string[] zones,
+        string position,
+        string tab,
+        string group,
+        string card,
+        string column,
+        bool isLayoutZone)
+    {
+        _location = location;
+        Source = source;
+        ShapeType = shapeType;
+        DefaultPosition = defaultPosition;
+        Alternates = alternates;
+        Wrappers = wrappers;
+        Zones = zones ?? [];
+        _position = position;
+        _tab = tab;
+        Group = group;
+        Card = card;
+        Column = column;
+        _isLayoutZone = isLayoutZone;
     }
 
     /// <summary>
@@ -173,7 +233,7 @@ public class PlacementInfo
             return this;
         }
 
-        return new PlacementInfo(Location, source, ShapeType, DefaultPosition, Alternates, Wrappers, Zones, _position, _tab, Group, Card, Column);
+        return new PlacementInfo(_location, source, ShapeType, DefaultPosition, Alternates, Wrappers, Zones, _position, _tab, Group, Card, Column, _isLayoutZone);
     }
 
     /// <summary>
@@ -182,7 +242,7 @@ public class PlacementInfo
     /// </summary>
     public PlacementInfo WithDefaults(string location, string defaultPosition)
     {
-        var locationChanged = Location != location && location != null && Location == null;
+        var locationChanged = _location != location && location != null && _location == null;
         var defaultPositionChanged = DefaultPosition != defaultPosition && defaultPosition != null && DefaultPosition == null;
 
         if (!locationChanged && !defaultPositionChanged)
@@ -190,7 +250,7 @@ public class PlacementInfo
             return this;
         }
 
-        var newLocation = Location ?? location;
+        var newLocation = _location ?? location;
         var newDefaultPosition = DefaultPosition ?? defaultPosition;
 
         // If the location is changing, we need to parse the new location to get the zones and other values.
@@ -200,14 +260,26 @@ public class PlacementInfo
         }
 
         // Location is not changing, preserve the already-parsed values.
-        return new PlacementInfo(newLocation, Source, ShapeType, newDefaultPosition, Alternates, Wrappers, Zones, _position, _tab, Group, Card, Column);
+        return new PlacementInfo(_location, Source, ShapeType, newDefaultPosition, Alternates, Wrappers, Zones, _position, _tab, Group, Card, Column, _isLayoutZone);
     }
 
+    /// <summary>
+    /// Determines whether this placement targets a layout zone (location starts with '/').
+    /// </summary>
     public bool IsLayoutZone()
-        => !string.IsNullOrEmpty(Location) && Location[0] == '/';
+        => _isLayoutZone;
 
+    /// <summary>
+    /// Determines whether this placement represents a hidden shape.
+    /// </summary>
     public bool IsHidden()
-        => string.IsNullOrEmpty(Location) || Location == HiddenLocation;
+        => Zones.Length == 0 || _location == HiddenLocation;
+
+    /// <summary>
+    /// Returns the location string for debugging purposes.
+    /// </summary>
+    public override string ToString()
+        => Location ?? "(empty)";
 
     /// <summary>
     /// Returns the list of zone names.
@@ -248,6 +320,115 @@ public class PlacementInfo
     [Obsolete($"Use the {nameof(Column)} property instead.")]
     public string GetColumn()
         => Column;
+
+    /// <summary>
+    /// Builds the location string from the parsed components.
+    /// </summary>
+    private string BuildLocationString()
+    {
+        if (Zones.Length == 0)
+        {
+            return null;
+        }
+
+        // Calculate the required length.
+        var length = 0;
+
+        if (_isLayoutZone)
+        {
+            length++; // '/'
+        }
+
+        // Zones joined by '.'
+        for (var i = 0; i < Zones.Length; i++)
+        {
+            if (i > 0)
+            {
+                length++; // '.'
+            }
+            length += Zones[i].Length;
+        }
+
+        if (!string.IsNullOrEmpty(_position))
+        {
+            length += 1 + _position.Length; // ':' + position
+        }
+
+        if (!string.IsNullOrEmpty(_tab))
+        {
+            length += 1 + _tab.Length; // '#' + tab
+        }
+
+        if (!string.IsNullOrEmpty(Group))
+        {
+            length += 1 + Group.Length; // '@' + group
+        }
+
+        if (!string.IsNullOrEmpty(Card))
+        {
+            length += 1 + Card.Length; // '%' + card
+        }
+
+        if (!string.IsNullOrEmpty(Column))
+        {
+            length += 1 + Column.Length; // '|' + column
+        }
+
+        return string.Create(length, this, static (span, info) =>
+        {
+            var offset = 0;
+
+            if (info._isLayoutZone)
+            {
+                span[offset++] = '/';
+            }
+
+            // Write zones joined by '.'
+            for (var i = 0; i < info.Zones.Length; i++)
+            {
+                if (i > 0)
+                {
+                    span[offset++] = '.';
+                }
+                info.Zones[i].AsSpan().CopyTo(span[offset..]);
+                offset += info.Zones[i].Length;
+            }
+
+            if (!string.IsNullOrEmpty(info._position))
+            {
+                span[offset++] = PositionDelimiter;
+                info._position.AsSpan().CopyTo(span[offset..]);
+                offset += info._position.Length;
+            }
+
+            if (!string.IsNullOrEmpty(info._tab))
+            {
+                span[offset++] = TabDelimiter;
+                info._tab.AsSpan().CopyTo(span[offset..]);
+                offset += info._tab.Length;
+            }
+
+            if (!string.IsNullOrEmpty(info.Group))
+            {
+                span[offset++] = GroupDelimiter;
+                info.Group.AsSpan().CopyTo(span[offset..]);
+                offset += info.Group.Length;
+            }
+
+            if (!string.IsNullOrEmpty(info.Card))
+            {
+                span[offset++] = CardDelimiter;
+                info.Card.AsSpan().CopyTo(span[offset..]);
+                offset += info.Card.Length;
+            }
+
+            if (!string.IsNullOrEmpty(info.Column))
+            {
+                span[offset++] = ColumnDelimiter;
+                info.Column.AsSpan().CopyTo(span[offset..]);
+            }
+        });
+    }
 
     private static void ParseLocation(string location, out string[] zones, out string position, out string tab, out string group, out string card, out string column)
     {
