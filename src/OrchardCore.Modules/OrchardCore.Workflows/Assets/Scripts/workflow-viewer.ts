@@ -69,7 +69,8 @@ class WorkflowViewer extends WorkflowCanvas {
                     // Add source endpoints.
                     for (let outcome of activity.outcomes) {
                         const sourceEndpointOptions = this.getSourceEndpointOptions(activity, outcome);
-                        plumber.addEndpoint(activityElement, { connectorOverlays: [['Label', { label: outcome.displayName, cssClass: 'connection-label' }]] }, sourceEndpointOptions);
+                        const endpoint = plumber.addEndpoint(activityElement, { connectorOverlays: [['Label', { label: outcome.displayName, cssClass: 'connection-label' }]] }, sourceEndpointOptions);
+                        this.endpointMap.push({ endpoint, activityElement });
                     }
                 });
 
@@ -84,6 +85,8 @@ class WorkflowViewer extends WorkflowCanvas {
 
                 this.updateCanvasHeight();
             });
+
+            this.orientOutcomeLabels();
 
             this.jsPlumbInstance = plumber;
         });

@@ -5,6 +5,7 @@ import './workflow-models';
 
 abstract class WorkflowCanvas {
     private minCanvasHeight: number = 400;
+    protected endpointMap: Array<{ endpoint: any, activityElement: HTMLElement }> = [];
 
     constructor(protected container: HTMLElement, protected workflowType: Workflows.WorkflowType) {
     }
@@ -82,7 +83,7 @@ abstract class WorkflowCanvas {
                 outlineStroke: 'white'
             },
             connectorOverlays: [['Label', { location: [3, -1.5], cssClass: 'endpointSourceLabel' }]],
-            overlays: [['Label', { label: outcome.displayName, cssClass: 'outcome-label', id: 'outcome-label', location: [0.5, 1.5] }]],
+            overlays: [['Label', { label: outcome.displayName, cssClass: 'outcome-label', id: 'outcome-label', location: [0, 0] }]],
             dragOptions: {},
             uuid: `${activity.id}-${outcome.name}`,
             parameters: {
@@ -141,6 +142,78 @@ abstract class WorkflowCanvas {
         }
 
         $container.height(Math.max(this.minCanvasHeight, newCanvasHeight));
+    };
+
+    protected orientOutcomeLabels = () => {
+        for (const { endpoint, activityElement } of this.endpointMap) {
+            const overlay: any = endpoint.getOverlay ? endpoint.getOverlay('outcome-label') : null;
+            if (!overlay) continue;
+
+            const overlayEl = overlay.getElement ? overlay.getElement() : overlay.canvas;
+            if (!overlayEl) continue;
+
+            const epCanvas = endpoint.canvas;
+            if (!epCanvas) continue;
+
+            const activityRect = activityElement.getBoundingClientRect();
+            const epRect = epCanvas.getBoundingClientRect();
+
+            const activityCenterX = activityRect.left + activityRect.width / 2;
+            const activityCenterY = activityRect.top + activityRect.height / 2;
+            const epCenterX = epRect.left + epRect.width / 2;
+            const epCenterY = epRect.top + epRect.height / 2;
+
+            const dx = epCenterX - activityCenterX;
+            const dy = epCenterY - activityCenterY;
+            const normDx = activityRect.width > 0 ? Math.abs(dx) / (activityRect.width / 2) : 0;
+            const normDy = activityRect.height > 0 ? Math.abs(dy) / (activityRect.height / 2) : 0;
+
+            let face: string;
+            if (normDx > normDy) {
+                face = dx > 0 ? 'right' : 'left';
+            } else {
+                face = dy > 0 ? 'bottom' : 'top';
+            }
+
+            const $ol = $(overlayEl);
+
+            // Measure label width, temporarily showing if hidden.
+            let halfWidth = $ol.outerWidth() / 2;
+            if (halfWidth === 0) {
+                const prevDisplay = overlayEl.style.display;
+                overlayEl.style.display = 'block';
+                halfWidth = $ol.outerWidth() / 2;
+                overlayEl.style.display = prevDisplay;
+            }
+
+            const currentTransform = overlayEl.style.transform || '';
+            const baseTransform = !currentTransform || currentTransform === 'none' ? '' : currentTransform + ' ';
+
+            switch (face) {
+                case 'bottom':
+                    $ol.css({
+                        'transform': baseTransform + `translateY(${halfWidth}px) rotate(90deg)`,
+                        'transform-origin': 'center center'
+                    });
+                    break;
+                case 'top':
+                    $ol.css({
+                        'transform': baseTransform + `translateY(-${halfWidth}px) rotate(-90deg)`,
+                        'transform-origin': 'center center'
+                    });
+                    break;
+                case 'left':
+                    $ol.css({
+                        'transform': baseTransform + `translateX(-${halfWidth}px)`
+                    });
+                    break;
+                case 'right':
+                    $ol.css({
+                        'transform': baseTransform + `translateX(${halfWidth}px)`
+                    });
+                    break;
+            }
+        }
     };
 }
 

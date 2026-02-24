@@ -148,6 +148,8 @@ class WorkflowEditor extends WorkflowCanvas {
                             sourceEndpointOptions,
                         );
 
+                        this.endpointMap.push({ endpoint, activityElement });
+
                         // Add Title for each dot.
                         if (endpoint.canvas) {
                             endpoint.canvas.setAttribute("title", outcome.displayName);
@@ -166,6 +168,8 @@ class WorkflowEditor extends WorkflowCanvas {
 
                 this.updateCanvasHeight();
             });
+
+            this.orientOutcomeLabels();
 
             // Initialize popovers.
             activityElements.each((_, item) => {
