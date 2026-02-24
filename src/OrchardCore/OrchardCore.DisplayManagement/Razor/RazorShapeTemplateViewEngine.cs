@@ -93,7 +93,7 @@ public class RazorShapeTemplateViewEngine : IShapeTemplateViewEngine
 
     public async Task<string> RenderViewToStringAsync(string viewName, object model, IViewEngine viewEngine)
     {
-        var actionContext = await _httpContextAccessor.GetActionContextAsync();
+        var actionContext = await _httpContextAccessor.HttpContext.GetActionContextAsync();
         var view = FindView(actionContext, viewName, viewEngine);
 
         using var output = new ZStringWriter();
