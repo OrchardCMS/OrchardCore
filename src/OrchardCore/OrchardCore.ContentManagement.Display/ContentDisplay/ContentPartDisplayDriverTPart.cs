@@ -26,26 +26,20 @@ public abstract class ContentPartDisplayDriver<TPart> : DisplayDriverBase, ICont
 
         if (_typePartDefinition != null)
         {
-            // The stereotype is used when not displaying for a specific content type. We don't use [Stereotype] and [ContentType] at
-            // the same time in an alternate because a content type is always of one stereotype.
+            // Get or create cached alternates for this part configuration
+            var alternatesCollection = ContentPartAlternatesFactory.GetOrCreate(_typePartDefinition, shapeType);
 
-            var partName = _typePartDefinition.Name;
-            var partType = _typePartDefinition.PartDefinition.Name;
-            var contentType = _typePartDefinition.ContentTypeDefinition.Name;
-            var editorPartType = GetEditorShapeType(_typePartDefinition);
-            var displayMode = _typePartDefinition.DisplayMode();
-            var hasDisplayMode = !string.IsNullOrEmpty(displayMode);
-            var isDisplayModeShapeType = shapeType == partType + DisplaySeparator + displayMode;
-            var stereotype = _typePartDefinition.ContentTypeDefinition.GetStereotype() ?? string.Empty;
+            var partName = alternatesCollection.PartName;
+            var partType = alternatesCollection.PartType;
 
             // If the shape type and the field type only differ by the display mode
-            if (hasDisplayMode && isDisplayModeShapeType)
+            if (alternatesCollection.HasDisplayMode && alternatesCollection.IsDisplayModeShapeType)
             {
                 // Preserve the shape name regardless its differentiator
                 result.Name(partName);
             }
 
-            if (partType == shapeType || editorPartType == shapeType || isDisplayModeShapeType)
+            if (partType == shapeType || alternatesCollection.EditorPartType == shapeType || alternatesCollection.IsDisplayModeShapeType)
             {
                 // HtmlBodyPart, Services
                 result.Differentiator(partName);
@@ -58,114 +52,11 @@ public abstract class ContentPartDisplayDriver<TPart> : DisplayDriverBase, ICont
 
             result.Displaying(ctx =>
             {
-                string[] displayTypes;
+                var displayType = ctx.Shape.Metadata.DisplayType;
 
-                if (editorPartType == shapeType)
-                {
-                    displayTypes = ["_" + ctx.Shape.Metadata.DisplayType];
-                }
-                else
-                {
-                    displayTypes = ["", "_" + ctx.Shape.Metadata.DisplayType];
-
-                    if (!isDisplayModeShapeType)
-                    {
-                        // Do not add  Display type suffix to display mode shapes since display modes are already existing custom shapes.
-                        // [ShapeType]_[DisplayType], e.g. HtmlBodyPart.Summary, BagPart.Summary, ListPartFeed.Summary
-                        ctx.Shape.Metadata.Alternates.Add($"{shapeType}_{ctx.Shape.Metadata.DisplayType}");
-                    }
-                }
-
-                if (shapeType == partType || shapeType == editorPartType)
-                {
-                    foreach (var displayType in displayTypes)
-                    {
-                        // [ContentType]_[DisplayType]__[PartType], e.g. Blog-HtmlBodyPart, LandingPage-BagPart
-                        ctx.Shape.Metadata.Alternates.Add($"{contentType}{displayType}__{partType}");
-
-                        if (!string.IsNullOrEmpty(stereotype))
-                        {
-                            // [Stereotype]__[DisplayType]__[PartType], e.g. Widget-ContentsMetadata
-                            ctx.Shape.Metadata.Alternates.Add($"{stereotype}{displayType}__{partType}");
-                        }
-                    }
-
-                    if (partType != partName)
-                    {
-                        foreach (var displayType in displayTypes)
-                        {
-                            // [ContentType]_[DisplayType]__[PartName], e.g. LandingPage-Services
-                            ctx.Shape.Metadata.Alternates.Add($"{contentType}{displayType}__{partName}");
-
-                            if (!string.IsNullOrEmpty(stereotype))
-                            {
-                                // [Stereotype]_[DisplayType]__[PartType]__[PartName], e.g. Widget-ServicePart-Services
-                                ctx.Shape.Metadata.Alternates.Add($"{stereotype}{displayType}__{partType}__{partName}");
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    if (hasDisplayMode)
-                    {
-                        // [PartType]_[DisplayType]__[DisplayMode]_Display, e.g. HtmlBodyPart-MyDisplayMode.Display.Summary
-                        ctx.Shape.Metadata.Alternates.Add($"{partType}_{ctx.Shape.Metadata.DisplayType}__{displayMode}{DisplayToken}");
-                    }
-
-                    var lastAlternatesOfNamedPart = new List<string>();
-
-                    foreach (var displayType in displayTypes)
-                    {
-                        var shapeTypeSuffix = shapeType;
-                        var displayTypeDisplayToken = displayType;
-
-                        if (hasDisplayMode)
-                        {
-                            if (isDisplayModeShapeType)
-                            {
-                                // In case of display mode, update shape type to only include DisplayMode and DisplayToken
-                                shapeTypeSuffix = displayMode;
-                            }
-                            else
-                            {
-                                shapeTypeSuffix = $"{shapeTypeSuffix}__{displayMode}";
-                            }
-
-                            if (displayType == "")
-                            {
-                                displayTypeDisplayToken = DisplayToken;
-                            }
-                            else
-                            {
-                                shapeTypeSuffix = $"{shapeTypeSuffix}{DisplayToken}";
-                            }
-                        }
-
-                        // [ContentType]_[DisplayType]__[PartType]__[ShapeType], e.g. Blog-ListPart-ListPartFeed
-                        ctx.Shape.Metadata.Alternates.Add($"{contentType}{displayTypeDisplayToken}__{partType}__{shapeTypeSuffix}");
-
-                        if (!string.IsNullOrEmpty(stereotype))
-                        {
-                            // [Stereotype]_[DisplayType]__[PartType]__[ShapeType], e.g. Blog-ListPart-ListPartFeed
-                            ctx.Shape.Metadata.Alternates.Add($"{stereotype}{displayTypeDisplayToken}__{partType}__{shapeTypeSuffix}");
-                        }
-
-                        if (partType != partName)
-                        {
-                            // [ContentType]_[DisplayType]__[PartName]__[ShapeType], e.g. LandingPage-Services-BagPartSummary
-                            lastAlternatesOfNamedPart.Add($"{contentType}{displayTypeDisplayToken}__{partName}__{shapeTypeSuffix}");
-
-                            if (!string.IsNullOrEmpty(stereotype))
-                            {
-                                // [Stereotype]_[DisplayType]__[PartType]__[PartName]__[ShapeType], e.g. Widget-ServicePart-Services-BagPartSummary
-                                lastAlternatesOfNamedPart.Add($"{stereotype}{displayTypeDisplayToken}__{partType}__{partName}__{shapeTypeSuffix}");
-                            }
-                        }
-                    }
-
-                    ctx.Shape.Metadata.Alternates.AddRange(lastAlternatesOfNamedPart);
-                }
+                // Get cached alternates for this display type and add them efficiently
+                var cachedAlternates = alternatesCollection.GetAlternates(displayType);
+                ctx.Shape.Metadata.Alternates.AddRange(cachedAlternates);
             });
         }
 

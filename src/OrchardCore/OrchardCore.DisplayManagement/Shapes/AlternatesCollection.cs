@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Frozen;
 using System.Collections.ObjectModel;
 
 namespace OrchardCore.DisplayManagement.Shapes;
@@ -84,9 +85,38 @@ public class AlternatesCollection : IEnumerable<string>
     {
         ArgumentNullException.ThrowIfNull(alternates);
 
+        EnsureCollection();
+
         foreach (var alternate in alternates)
         {
-            Add(alternate);
+            if (!_collection.Contains(alternate))
+            {
+                _collection.Add(alternate);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Adds alternates from a frozen set. This is optimized for cached alternate collections.
+    /// </summary>
+    /// <param name="alternates">The frozen set of alternates to add.</param>
+    public void AddRange(FrozenSet<string> alternates)
+    {
+        ArgumentNullException.ThrowIfNull(alternates);
+
+        if (alternates.Count == 0)
+        {
+            return;
+        }
+
+        EnsureCollection();
+
+        foreach (var alternate in alternates)
+        {
+            if (!_collection.Contains(alternate))
+            {
+                _collection.Add(alternate);
+            }
         }
     }
 

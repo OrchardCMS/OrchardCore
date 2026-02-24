@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Utilities;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Taxonomies.Models;
@@ -188,28 +189,13 @@ public class TermShapes : ShapeTableProvider
                     }
                 }
 
-                var encodedContentType = taxonomyPart.TermContentType.EncodeAlternateElement();
+                // Use cached alternates and add them efficiently
+                var cachedAlternates = ShapeAlternatesFactory.GetTermItemAlternates(
+                    taxonomyPart.TermContentType,
+                    differentiator,
+                    level);
 
-                // TermItem__level__[level] e.g. TermItem-level-2.
-                termItem.Metadata.Alternates.Add("TermItem__level__" + level);
-
-                // TermItem__[ContentType] e.g. TermItem-Category
-                // TermItem__[ContentType]__level__[level] e.g. TermItem-Category-level-2.
-                termItem.Metadata.Alternates.Add("TermItem__" + encodedContentType);
-                termItem.Metadata.Alternates.Add("TermItem__" + encodedContentType + "__level__" + level);
-
-                if (!string.IsNullOrEmpty(differentiator))
-                {
-                    // TermItem__[Differentiator] e.g. TermItem-Categories, TermItem-Travel.
-                    // TermItem__[Differentiator]__level__[level] e.g. TermItem-Categories-level-2.
-                    termItem.Metadata.Alternates.Add("TermItem__" + differentiator);
-                    termItem.Metadata.Alternates.Add("TermItem__" + differentiator + "__level__" + level);
-
-                    // TermItem__[Differentiator]__[ContentType] e.g. TermItem-Categories-Category.
-                    // TermItem__[Differentiator]__[ContentType]__level__[level] e.g. TermItem-Categories-Category-level-2.
-                    termItem.Metadata.Alternates.Add("TermItem__" + differentiator + "__" + encodedContentType);
-                    termItem.Metadata.Alternates.Add("TermItem__" + differentiator + "__" + encodedContentType + "__level__" + level);
-                }
+                termItem.Metadata.Alternates.AddRange(cachedAlternates.TermItemAlternates);
             });
 
         builder.Describe("TermContentItem")
@@ -221,27 +207,13 @@ public class TermShapes : ShapeTableProvider
 
                 var termContentItem = termItem.GetProperty<ContentItem>("TermContentItem");
 
-                var encodedContentType = termContentItem.ContentItem.ContentType.EncodeAlternateElement();
+                // Use cached alternates and add them efficiently
+                var cachedAlternates = ShapeAlternatesFactory.GetTermItemAlternates(
+                    termContentItem.ContentItem.ContentType,
+                    differentiator,
+                    level);
 
-                termItem.Metadata.Alternates.Add("TermContentItem__level__" + level);
-
-                // TermContentItem__[ContentType] e.g. TermContentItem-Category.
-                // TermContentItem__[ContentType]__level__[level] e.g. TermContentItem-Category-level-2.
-                termItem.Metadata.Alternates.Add("TermContentItem__" + encodedContentType);
-                termItem.Metadata.Alternates.Add("TermContentItem__" + encodedContentType + "__level__" + level);
-
-                if (!string.IsNullOrEmpty(differentiator))
-                {
-                    // TermContentItem__[Differentiator] e.g. TermContentItem-Categories.
-                    termItem.Metadata.Alternates.Add("TermContentItem__" + differentiator);
-                    // TermContentItem__[Differentiator]__level__[level] e.g. TermContentItem-Categories-level-2.
-                    termItem.Metadata.Alternates.Add("TermContentItem__" + differentiator + "__level__" + level);
-
-                    // TermContentItem__[Differentiator]__[ContentType] e.g. TermContentItem-Categories-Category.
-                    // TermContentItem__[Differentiator]__[ContentType] e.g. TermContentItem-Categories-Category-level-2.
-                    termItem.Metadata.Alternates.Add("TermContentItem__" + differentiator + "__" + encodedContentType);
-                    termItem.Metadata.Alternates.Add("TermContentItem__" + differentiator + "__" + encodedContentType + "__level__" + level);
-                }
+                termItem.Metadata.Alternates.AddRange(cachedAlternates.TermContentItemAlternates);
             });
 
         return ValueTask.CompletedTask;
