@@ -12,7 +12,6 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay;
 /// <typeparam name="TPart"></typeparam>
 public abstract class ContentPartDisplayDriver<TPart> : DisplayDriverBase, IContentPartDisplayDriver where TPart : ContentPart, new()
 {
-    private const string DisplayToken = "_Display";
     private const string DisplaySeparator = "_Display__";
 
     private ContentTypePartDefinition _typePartDefinition;
