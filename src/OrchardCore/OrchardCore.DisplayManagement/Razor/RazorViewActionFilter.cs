@@ -58,85 +58,121 @@ public sealed class RazorViewActionFilter : IAsyncViewActionFilter
             context.HttpContext.Features.Set(razorViewFeature);
         }
 
-        Task<ISite> getSiteSettingsTask = null;
-        Task<Zones.IZoneHolding> layoutAccessorTask = null;
-        Task<Environment.Extensions.IExtensionInfo> themeTask = null;
+        var services = context.HttpContext.RequestServices;
 
         if (razorViewFeature.Site is null)
         {
-            var shellSettings = context.HttpContext.RequestServices.GetService<ShellSettings>();
-            var siteService = context.HttpContext.RequestServices.GetService<ISiteService>();
+            var shellSettings = services.GetService<ShellSettings>();
+            var siteService = services.GetService<ISiteService>();
 
             // 'ISiteService' may be null during a setup and can't be used if the tenant is 'Uninitialized'.
             if (siteService is not null && !shellSettings.IsUninitialized())
             {
-                getSiteSettingsTask = siteService.GetSiteSettingsAsync();
+                var getSiteSettingsTask = siteService.GetSiteSettingsAsync();
 
-                if (getSiteSettingsTask.IsCompletedSuccessfully)
+                if (!getSiteSettingsTask.IsCompletedSuccessfully)
                 {
-                    razorViewFeature.Site = getSiteSettingsTask.Result;
-                    getSiteSettingsTask = null;
+                    // Must go async - execute remaining operations sequentially
+                    return AwaitedSiteSettings(razorViewFeature, services, getSiteSettingsTask);
                 }
+
+                razorViewFeature.Site = getSiteSettingsTask.Result;
             }
         }
 
         if (razorViewFeature.ThemeLayout is null)
         {
-            var layoutAccessor = context.HttpContext.RequestServices.GetService<ILayoutAccessor>();
+            var layoutAccessor = services.GetService<ILayoutAccessor>();
 
             if (layoutAccessor is not null)
             {
-                layoutAccessorTask = layoutAccessor.GetLayoutAsync();
+                var layoutAccessorTask = layoutAccessor.GetLayoutAsync();
 
-                if (layoutAccessorTask.IsCompletedSuccessfully)
+                if (!layoutAccessorTask.IsCompletedSuccessfully)
                 {
-                    razorViewFeature.ThemeLayout = layoutAccessorTask.Result;
-                    layoutAccessorTask = null;
+                    // Must go async - execute remaining operations sequentially
+                    return AwaitedLayout(razorViewFeature, services, layoutAccessorTask);
                 }
+
+                razorViewFeature.ThemeLayout = layoutAccessorTask.Result;
             }
         }
 
+        // Step 3: Theme
         if (razorViewFeature.Theme is null)
         {
-            var themeManager = context.HttpContext.RequestServices.GetService<IThemeManager>();
+            var themeManager = services.GetService<IThemeManager>();
 
             if (themeManager is not null)
             {
-                themeTask = themeManager.GetThemeAsync();
+                var themeTask = themeManager.GetThemeAsync();
 
-                if (themeTask.IsCompletedSuccessfully)
+                if (!themeTask.IsCompletedSuccessfully)
                 {
-                    razorViewFeature.Theme = themeTask.Result;
-                    themeTask = null;
+                    // Must go async
+                    return AwaitedTheme(razorViewFeature, themeTask);
                 }
-            }
-        }
 
-        if (getSiteSettingsTask is not null ||
-            layoutAccessorTask is not null ||
-            themeTask is not null)
-        {
-            return Awaited(razorViewFeature, getSiteSettingsTask, layoutAccessorTask, themeTask);
+                razorViewFeature.Theme = themeTask.Result;
+            }
         }
 
         return Task.CompletedTask;
 
-        static async Task Awaited(RazorViewFeature razorViewFeature, Task<ISite> getSiteSettingsTask, Task<Zones.IZoneHolding> layoutAccessorTask, Task<Environment.Extensions.IExtensionInfo> themeTask)
+        static async Task AwaitedSiteSettings(
+            RazorViewFeature razorViewFeature,
+            IServiceProvider services,
+            Task<ISite> getSiteSettingsTask)
         {
-            if (getSiteSettingsTask is not null)
+            razorViewFeature.Site = await getSiteSettingsTask;
+
+            // Continue with layout
+            if (razorViewFeature.ThemeLayout is null)
             {
-                razorViewFeature.Site = await getSiteSettingsTask;
+                var layoutAccessor = services.GetService<ILayoutAccessor>();
+
+                if (layoutAccessor is not null)
+                {
+                    razorViewFeature.ThemeLayout = await layoutAccessor.GetLayoutAsync();
+                }
             }
 
-            if (layoutAccessorTask is not null)
+            // Continue with theme
+            if (razorViewFeature.Theme is null)
             {
-                razorViewFeature.ThemeLayout = await layoutAccessorTask;
-            }
+                var themeManager = services.GetService<IThemeManager>();
 
-            if (themeTask is not null)
-            {
-                razorViewFeature.Theme = await themeTask;
+                if (themeManager is not null)
+                {
+                    razorViewFeature.Theme = await themeManager.GetThemeAsync();
+                }
             }
+        }
+
+        static async Task AwaitedLayout(
+            RazorViewFeature razorViewFeature,
+            IServiceProvider services,
+            Task<Zones.IZoneHolding> layoutAccessorTask)
+        {
+            razorViewFeature.ThemeLayout = await layoutAccessorTask;
+
+            // Continue with theme
+            if (razorViewFeature.Theme is null)
+            {
+                var themeManager = services.GetService<IThemeManager>();
+
+                if (themeManager is not null)
+                {
+                    razorViewFeature.Theme = await themeManager.GetThemeAsync();
+                }
+            }
+        }
+
+        static async Task AwaitedTheme(
+            RazorViewFeature razorViewFeature,
+            Task<Environment.Extensions.IExtensionInfo> themeTask)
+        {
+            razorViewFeature.Theme = await themeTask;
         }
     }
 }

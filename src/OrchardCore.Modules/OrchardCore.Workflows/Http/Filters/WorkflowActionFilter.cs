@@ -43,40 +43,70 @@ internal sealed class WorkflowActionFilter : IAsyncActionFilter
         var routeValues = context.RouteData.Values;
 
         var workflowTypeEntriesTask = _workflowTypeRouteEntries.GetWorkflowRouteEntriesAsync(httpMethod, routeValues);
+
+        if (!workflowTypeEntriesTask.IsCompletedSuccessfully)
+        {
+            return AwaitedWorkflowTypeEntries(this, routeValues, next, httpMethod, workflowTypeEntriesTask);
+        }
+
+        var workflowTypeEntries = workflowTypeEntriesTask.Result;
+
         var workflowEntriesTask = _workflowRouteEntries.GetWorkflowRouteEntriesAsync(httpMethod, routeValues);
 
-        if (workflowEntriesTask.IsCompletedSuccessfully && workflowTypeEntriesTask.IsCompletedSuccessfully)
+        if (!workflowEntriesTask.IsCompletedSuccessfully)
         {
-            var workflowTypeEntries = workflowTypeEntriesTask.Result;
-            var workflowEntries = workflowEntriesTask.Result;
-
-            if(!workflowTypeEntries.Any() && !workflowEntries.Any())
-            {
-                return next();
-            }
-
-            return ProcessWorkflowsAsync(routeValues, workflowTypeEntries, workflowEntries, next);
+            return AwaitedWorkflowEntries(this, routeValues, next, workflowTypeEntries, workflowEntriesTask);
         }
-        else
-        {
-            return Awaited(this, routeValues, next, workflowTypeEntriesTask, workflowEntriesTask);
 
-            static async Task Awaited(
-                WorkflowActionFilter workflowActionFilter,
-                RouteValueDictionary routeValues,
-                ActionExecutionDelegate next,
-                Task<IEnumerable<Models.WorkflowRoutesEntry>> workflowTypeEntriesTask,
-                Task<IEnumerable<Models.WorkflowRoutesEntry>> workflowEntriesTask)
+        var workflowEntries = workflowEntriesTask.Result;
+
+        if (!workflowTypeEntries.Any() && !workflowEntries.Any())
+        {
+            return next();
+        }
+
+        return ProcessWorkflowsAsync(routeValues, workflowTypeEntries, workflowEntries, next);
+
+        static async Task AwaitedWorkflowTypeEntries(
+            WorkflowActionFilter workflowActionFilter,
+            RouteValueDictionary routeValues,
+            ActionExecutionDelegate next,
+            string httpMethod,
+            Task<IEnumerable<Models.WorkflowRoutesEntry>> workflowTypeEntriesTask)
+        {
+            var workflowTypeEntries = await workflowTypeEntriesTask;
+            var workflowEntries = await workflowActionFilter._workflowRouteEntries.GetWorkflowRouteEntriesAsync(httpMethod, routeValues);
+
+            if (!workflowTypeEntries.Any() && !workflowEntries.Any())
             {
-                var workflowTypeEntries = await workflowTypeEntriesTask;
-                var workflowEntries = await workflowEntriesTask;
-                await workflowActionFilter.ProcessWorkflowsAsync(routeValues, workflowTypeEntries, workflowEntries, next);
+                await next();
+                return;
             }
+
+            await workflowActionFilter.ProcessWorkflowsAsync(routeValues, workflowTypeEntries, workflowEntries, next);
+        }
+
+        static async Task AwaitedWorkflowEntries(
+            WorkflowActionFilter workflowActionFilter,
+            RouteValueDictionary routeValues,
+            ActionExecutionDelegate next,
+            IEnumerable<Models.WorkflowRoutesEntry> workflowTypeEntries,
+            Task<IEnumerable<Models.WorkflowRoutesEntry>> workflowEntriesTask)
+        {
+            var workflowEntries = await workflowEntriesTask;
+
+            if (!workflowTypeEntries.Any() && !workflowEntries.Any())
+            {
+                await next();
+                return;
+            }
+
+            await workflowActionFilter.ProcessWorkflowsAsync(routeValues, workflowTypeEntries, workflowEntries, next);
         }
     }
 
     private async Task ProcessWorkflowsAsync(RouteValueDictionary routeValues, IEnumerable<Models.WorkflowRoutesEntry> workflowTypeEntries, IEnumerable<Models.WorkflowRoutesEntry> workflowEntries, ActionExecutionDelegate next)
-    { 
+    {
         if (workflowTypeEntries.Any())
         {
             var workflowTypeIds = workflowTypeEntries.Select(x => long.Parse(x.WorkflowId)).ToList();
