@@ -56,6 +56,7 @@ public sealed class Startup : StartupBase
             .UseDisplayDriver<MarkdownFieldDisplayDriver>();
 
         services.AddScoped<IContentPartFieldDefinitionDisplayDriver, MarkdownFieldSettingsDriver>();
+        services.AddScoped<IContentPartFieldDefinitionDisplayDriver, MarkdownFieldWysiwygEditorSettingsDriver>();
         services.AddScoped<IContentFieldIndexHandler, MarkdownFieldIndexHandler>();
 
         services.AddOptions<MarkdownPipelineOptions>();
