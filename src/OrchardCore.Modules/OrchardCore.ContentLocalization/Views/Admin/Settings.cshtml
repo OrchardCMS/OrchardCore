@@ -1,0 +1,75 @@
+@using OrchardCore.Localization.Data
+@model LocalizationSettingsViewModel
+@inject IDataLocalizer D
+
+<zone Name="Title">
+    <h1>@RenderTitleSegments(T["Content Localization Settings"])</h1>
+</zone>
+
+<form method="post">
+    @Html.AntiForgeryToken()
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th width="5%">
+                    <input id="select-all" type="checkbox" class="me-2" />
+                    <label for="select-all" class="sr-only"></label>
+                </th>
+                <th>
+                    @T["Content Type"]
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var contentType in Model.ContentTypeEntries)
+            {
+                <tr>
+                    <td>
+                        <input type="checkbox"
+                               name="SelectedContentTypes"
+                               class="me-2"
+                               value="@contentType.Name"
+                               @(contentType.IsLocalized ? "checked" : null) />
+                    </td>
+                    <td>
+                        <span>@D[contentType.DisplayName, "Content Types"]</span>
+                        <span class="badge rounded-pill ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@T["Technical Name"]">
+                            <i class="fa-solid fa-file-alt text-danger" aria-hidden="true"></i> @contentType.Name
+                        </span>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <button type="submit" class="btn btn-primary">@T["Save"]</button>
+</form>
+
+<script at="Foot">
+    var selectAll = document.getElementById("select-all");
+    var checkboxes = document.querySelectorAll("input[name='SelectedContentTypes']");
+
+    var updateSelectAll = function () {
+        var allChecked = true;
+
+        for (var i = 0; i < checkboxes.length; i++) {
+            if (!checkboxes[i].checked) {
+                allChecked = false;
+                break;
+            }
+        }
+
+        selectAll.checked = allChecked;
+    };
+
+    selectAll.addEventListener("change", function () {
+        for (var i = 0; i < checkboxes.length; i++) {
+            checkboxes[i].checked = selectAll.checked;
+        }
+    });
+
+    for (var i = 0; i < checkboxes.length; i++) {
+        checkboxes[i].addEventListener("change", updateSelectAll);
+    }
+
+    updateSelectAll();
+</script>

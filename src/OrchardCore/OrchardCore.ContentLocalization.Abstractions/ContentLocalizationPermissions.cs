@@ -9,4 +9,6 @@ public static class ContentLocalizationPermissions
     public static readonly Permission LocalizeOwnContent = new("LocalizeOwnContent", "Localize own content", new[] { LocalizeContent });
 
     public static readonly Permission ManageContentCulturePicker = new("ManageContentCulturePicker", "Manage ContentCulturePicker settings");
+
+    public static readonly Permission ManageContentLocalizationSettings = new("ManageContentLocalizationSettings", "Manage content localization settings");
 }

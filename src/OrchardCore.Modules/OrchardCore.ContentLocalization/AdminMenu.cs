@@ -19,6 +19,11 @@ public sealed class AdminMenu : AdminNavigationProvider
         { "groupId", ContentCulturePickerSettingsDriver.GroupId },
     };
 
+    private static readonly RouteValueDictionary _contentLocalizationRouteValues = new()
+    {
+        { "area", "OrchardCore.ContentLocalization" },
+    };
+
     internal readonly IStringLocalizer S;
 
     public AdminMenu(IStringLocalizer<AdminMenu> stringLocalizer)
@@ -58,6 +63,13 @@ public sealed class AdminMenu : AdminNavigationProvider
         builder
             .Add(S["Settings"], settings => settings
                 .Add(S["Localization"], S["Localization"].PrefixPosition(), localization => localization
+                    .Add(S["Content Localization"], S["Content Localization"].PrefixPosition(), provider => provider
+                        .AddClass("contentlocalization")
+                        .Id("contentlocalization")
+                        .Action("Settings", "Admin", _contentLocalizationRouteValues)
+                        .Permission(ContentLocalizationPermissions.ManageContentLocalizationSettings)
+                        .LocalNav()
+                    )
                     .Add(S["Content Culture"], S["Content Culture"].PrefixPosition(), provider => provider
                         .AddClass("contentrequestcultureprovider")
                         .Id("contentrequestcultureprovider")
