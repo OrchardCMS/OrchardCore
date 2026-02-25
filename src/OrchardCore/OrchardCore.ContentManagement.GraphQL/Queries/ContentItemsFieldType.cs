@@ -339,7 +339,7 @@ public class ContentItemsFieldType : FieldType
                 {
                     // Loop through the part's properties, passing the name of the part as the table tableAlias.
                     // This tableAlias can then be used with the table alias to index mappings to join with the correct table.
-                    BuildWhereExpressions(entry.Value, expressions, values[0], currentField?.ResolvedType as IFilterInputObjectGraphType ?? filterInputGraphType, indexAliases);
+                    BuildWhereExpressions(entry.Value, expressions, values[0], filterInputGraphType, indexAliases);
                 }
                 else
                 {
