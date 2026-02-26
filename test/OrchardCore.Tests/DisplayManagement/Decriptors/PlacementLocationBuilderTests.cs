@@ -496,7 +496,7 @@ public class PlacementLocationBuilderTests
             .ToString();
 
         var info = new PlacementInfo(location);
-        Assert.Equal("Content", info.GetZones().First());
+        Assert.Equal("Content", info.Zones.First());
     }
 
     [Fact]
@@ -508,9 +508,9 @@ public class PlacementLocationBuilderTests
             .ToString();
 
         var info = new PlacementInfo(location);
-        Assert.Equal("Content", info.GetZones().First());
-        Assert.Equal("5.1", info.GetPosition());
-        Assert.Equal("Tab1", info.GetTab());
+        Assert.Equal("Content", info.Zones.First());
+        Assert.Equal("5.1", info.Position);
+        Assert.Equal("Tab1", info.Tab.Name);
     }
 
     [Fact]
@@ -525,12 +525,16 @@ public class PlacementLocationBuilderTests
             .ToString();
 
         var info = new PlacementInfo(location);
-        Assert.Equal("Content", info.GetZones().First());
-        Assert.Equal("5", info.GetPosition());
-        Assert.Equal("Tab1;1", info.GetTab());
-        Assert.Equal("Group1", info.GetGroup());
-        Assert.Equal("Card1;2", info.GetCard());
-        Assert.Equal("Col1_9;3", info.GetColumn());
+        Assert.Equal("Content", info.Zones.First());
+        Assert.Equal("5", info.Position);
+        Assert.Equal("Tab1", info.Tab.Name);
+        Assert.Equal("1", info.Tab.Position);
+        Assert.Equal("Group1", info.Group);
+        Assert.Equal("Card1", info.Card.Name);
+        Assert.Equal("2", info.Card.Position);
+        Assert.Equal("Col1", info.Column.Name);
+        Assert.Equal("3", info.Column.Position);
+        Assert.Equal("9", info.Column.Width);
     }
 
     [Fact]
@@ -543,8 +547,8 @@ public class PlacementLocationBuilderTests
 
         var info = new PlacementInfo(location);
         Assert.True(info.IsLayoutZone());
-        Assert.Equal("Content", info.GetZones().First());
-        Assert.Equal("5", info.GetPosition());
+        Assert.Equal("Content", info.Zones.First());
+        Assert.Equal("5", info.Position);
     }
 
     [Fact]
@@ -555,12 +559,12 @@ public class PlacementLocationBuilderTests
             .ToString();
 
         var info = new PlacementInfo(location);
-        Assert.Equal("Parameters", info.GetZones().First());
-        Assert.Empty(info.GetPosition());
-        Assert.Empty(info.GetTab());
-        Assert.Null(info.GetGroup());
-        Assert.Null(info.GetCard());
-        Assert.Null(info.GetColumn());
+        Assert.Equal("Parameters", info.Zones.First());
+        Assert.Empty(info.Position);
+        Assert.False(info.Tab.HasValue);
+        Assert.Null(info.Group);
+        Assert.False(info.Card.HasValue);
+        Assert.False(info.Column.HasValue);
         Assert.False(info.IsLayoutZone());
     }
 
@@ -572,8 +576,8 @@ public class PlacementLocationBuilderTests
             .ToString();
 
         var info = new PlacementInfo(location);
-        Assert.Equal("Content", info.GetZones().First());
-        Assert.Equal("3.5", info.GetPosition());
+        Assert.Equal("Content", info.Zones.First());
+        Assert.Equal("3.5", info.Position);
     }
 
     [Fact]
@@ -584,8 +588,8 @@ public class PlacementLocationBuilderTests
             .ToString();
 
         var info = new PlacementInfo(location);
-        Assert.Equal("Content", info.GetZones().First());
-        Assert.Equal("before", info.GetPosition());
+        Assert.Equal("Content", info.Zones.First());
+        Assert.Equal("before", info.Position);
     }
 
     [Fact]
@@ -597,11 +601,11 @@ public class PlacementLocationBuilderTests
             .ToString();
 
         var info = new PlacementInfo(location);
-        Assert.Equal("Content", info.GetZones().First());
-        Assert.Equal("1", info.GetPosition());
-        Assert.Equal("Settings", info.GetTab());
-        Assert.Null(info.GetCard());
-        Assert.Null(info.GetColumn());
+        Assert.Equal("Content", info.Zones.First());
+        Assert.Equal("1", info.Position);
+        Assert.Equal("Settings", info.Tab.Name);
+        Assert.False(info.Card.HasValue);
+        Assert.False(info.Column.HasValue);
     }
 
     [Fact]
@@ -613,7 +617,8 @@ public class PlacementLocationBuilderTests
             .ToString();
 
         var info = new PlacementInfo(location);
-        Assert.Equal("Settings;2", info.GetTab());
+        Assert.Equal("Settings", info.Tab.Name);
+        Assert.Equal("2", info.Tab.Position);
     }
 
     [Fact]
@@ -625,11 +630,12 @@ public class PlacementLocationBuilderTests
             .ToString();
 
         var info = new PlacementInfo(location);
-        Assert.Equal("Content", info.GetZones().First());
-        Assert.Equal("5", info.GetPosition());
-        Assert.Equal("Details;3", info.GetCard());
-        Assert.Empty(info.GetTab());
-        Assert.Null(info.GetColumn());
+        Assert.Equal("Content", info.Zones.First());
+        Assert.Equal("5", info.Position);
+        Assert.Equal("Details", info.Card.Name);
+        Assert.Equal("3", info.Card.Position);
+        Assert.False(info.Tab.HasValue);
+        Assert.False(info.Column.HasValue);
     }
 
     [Fact]
@@ -641,11 +647,13 @@ public class PlacementLocationBuilderTests
             .ToString();
 
         var info = new PlacementInfo(location);
-        Assert.Equal("Content", info.GetZones().First());
-        Assert.Equal("5", info.GetPosition());
-        Assert.Equal("Left_9;1", info.GetColumn());
-        Assert.Empty(info.GetTab());
-        Assert.Null(info.GetCard());
+        Assert.Equal("Content", info.Zones.First());
+        Assert.Equal("5", info.Position);
+        Assert.Equal("Left", info.Column.Name);
+        Assert.Equal("1", info.Column.Position);
+        Assert.Equal("9", info.Column.Width);
+        Assert.False(info.Tab.HasValue);
+        Assert.False(info.Card.HasValue);
     }
 
     [Fact]
@@ -657,7 +665,9 @@ public class PlacementLocationBuilderTests
             .ToString();
 
         var info = new PlacementInfo(location);
-        Assert.Equal("Sidebar_lg-3;2", info.GetColumn());
+        Assert.Equal("Sidebar", info.Column.Name);
+        Assert.Equal("2", info.Column.Position);
+        Assert.Equal("lg-3", info.Column.Width);
     }
 
     [Fact]
@@ -669,9 +679,9 @@ public class PlacementLocationBuilderTests
             .ToString();
 
         var info = new PlacementInfo(location);
-        Assert.Equal("search", info.GetGroup());
-        Assert.Empty(info.GetTab());
-        Assert.Null(info.GetCard());
+        Assert.Equal("search", info.Group);
+        Assert.False(info.Tab.HasValue);
+        Assert.False(info.Card.HasValue);
     }
 
     [Fact]
@@ -684,11 +694,13 @@ public class PlacementLocationBuilderTests
             .ToString();
 
         var info = new PlacementInfo(location);
-        Assert.Equal("Content", info.GetZones().First());
-        Assert.Equal("5", info.GetPosition());
-        Assert.Equal("Settings;1", info.GetTab());
-        Assert.Equal("Details;2", info.GetCard());
-        Assert.Null(info.GetColumn());
+        Assert.Equal("Content", info.Zones.First());
+        Assert.Equal("5", info.Position);
+        Assert.Equal("Settings", info.Tab.Name);
+        Assert.Equal("1", info.Tab.Position);
+        Assert.Equal("Details", info.Card.Name);
+        Assert.Equal("2", info.Card.Position);
+        Assert.False(info.Column.HasValue);
     }
 
     [Fact]
@@ -702,11 +714,15 @@ public class PlacementLocationBuilderTests
             .ToString();
 
         var info = new PlacementInfo(location);
-        Assert.Equal("Content", info.GetZones().First());
-        Assert.Equal("5", info.GetPosition());
-        Assert.Equal("Settings;1", info.GetTab());
-        Assert.Equal("Details;2", info.GetCard());
-        Assert.Equal("Left_6;3", info.GetColumn());
+        Assert.Equal("Content", info.Zones.First());
+        Assert.Equal("5", info.Position);
+        Assert.Equal("Settings", info.Tab.Name);
+        Assert.Equal("1", info.Tab.Position);
+        Assert.Equal("Details", info.Card.Name);
+        Assert.Equal("2", info.Card.Position);
+        Assert.Equal("Left", info.Column.Name);
+        Assert.Equal("3", info.Column.Position);
+        Assert.Equal("6", info.Column.Width);
     }
 
     [Fact]
@@ -719,11 +735,13 @@ public class PlacementLocationBuilderTests
             .ToString();
 
         var info = new PlacementInfo(location);
-        Assert.Equal("Parts", info.GetZones().First());
-        Assert.Equal("0", info.GetPosition());
-        Assert.Empty(info.GetTab());
-        Assert.Equal("Main", info.GetCard());
-        Assert.Equal("Right_3;2", info.GetColumn());
+        Assert.Equal("Parts", info.Zones.First());
+        Assert.Equal("0", info.Position);
+        Assert.False(info.Tab.HasValue);
+        Assert.Equal("Main", info.Card.Name);
+        Assert.Equal("Right", info.Column.Name);
+        Assert.Equal("2", info.Column.Position);
+        Assert.Equal("3", info.Column.Width);
     }
 
     [Fact]
@@ -736,8 +754,8 @@ public class PlacementLocationBuilderTests
             .ToString();
 
         var info = new PlacementInfo(location);
-        Assert.Equal("Settings", info.GetTab());
-        Assert.Equal("advanced", info.GetGroup());
+        Assert.Equal("Settings", info.Tab.Name);
+        Assert.Equal("advanced", info.Group);
     }
 
     [Fact]
@@ -753,11 +771,15 @@ public class PlacementLocationBuilderTests
 
         var info = new PlacementInfo(location);
         Assert.True(info.IsLayoutZone());
-        Assert.Equal("Content", info.GetZones().First());
-        Assert.Equal("5", info.GetPosition());
-        Assert.Equal("General;1", info.GetTab());
-        Assert.Equal("Info;2", info.GetCard());
-        Assert.Equal("Wide_12;1", info.GetColumn());
+        Assert.Equal("Content", info.Zones.First());
+        Assert.Equal("5", info.Position);
+        Assert.Equal("General", info.Tab.Name);
+        Assert.Equal("1", info.Tab.Position);
+        Assert.Equal("Info", info.Card.Name);
+        Assert.Equal("2", info.Card.Position);
+        Assert.Equal("Wide", info.Column.Name);
+        Assert.Equal("1", info.Column.Position);
+        Assert.Equal("12", info.Column.Width);
     }
 
     [Fact]
@@ -768,10 +790,10 @@ public class PlacementLocationBuilderTests
             .ToString();
 
         var info = new PlacementInfo(location);
-        var zones = info.GetZones();
+        var zones = info.Zones;
         Assert.Equal("Content", zones[0]);
         Assert.Equal("Metadata", zones[1]);
-        Assert.Equal("1", info.GetPosition());
+        Assert.Equal("1", info.Position);
     }
 
     #endregion

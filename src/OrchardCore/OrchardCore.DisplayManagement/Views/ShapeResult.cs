@@ -14,17 +14,17 @@ public class ShapeResult : IDisplayResult
     private readonly Func<IBuildShapeContext, ValueTask<IShape>> _shapeBuilder;
     private readonly Func<IShape, Task> _initializingAsync;
 
-    private string _defaultLocation;
+    private PlacementInfo _defaultLocation;
     private string _name;
     private string _differentiator;
     private string _prefix;
     private string _cacheId;
     private StringValues _groupIds;
-    private Dictionary<string, string> _otherLocations;
+    private Dictionary<string, PlacementInfo> _otherLocations;
     private string _firstDisplayType;
-    private string _firstLocation;
+    private PlacementInfo _firstLocation;
     private string _secondDisplayType;
-    private string _secondLocation;
+    private PlacementInfo _secondLocation;
 
     private Action<CacheContext> _cache;
     private Action<ShapeDisplayContext> _displaying;
@@ -84,10 +84,10 @@ public class ShapeResult : IDisplayResult
     /// </summary>
     public ShapeResult Location(string location)
     {
-        _defaultLocation = location;
+        _defaultLocation = PlacementInfo.FromLocation(location);
         return this;
     }
-    
+
     /// <summary>
     /// Sets the default location of the shape using a fluent builder.
     /// </summary>
@@ -102,14 +102,20 @@ public class ShapeResult : IDisplayResult
 
         var builder = new PlacementLocationBuilder();
         configure(builder);
-        _defaultLocation = builder.ToString();
+        _defaultLocation = builder.Build();
         return this;
     }
-    
+
     /// <summary>
     /// Sets the location to use for a matching display type.
     /// </summary>
     public ShapeResult Location(string displayType, string location)
+        => Location(displayType, PlacementInfo.FromLocation(location));
+
+    /// <summary>
+    /// Sets the location to use for a matching display type.
+    /// </summary>
+    public ShapeResult Location(string displayType, PlacementInfo location)
     {
         if (_otherLocations != null)
         {
@@ -127,7 +133,7 @@ public class ShapeResult : IDisplayResult
         }
         else
         {
-            _otherLocations = new Dictionary<string, string>(4)
+            _otherLocations = new Dictionary<string, PlacementInfo>(4)
             {
                 [_firstDisplayType] = _firstLocation,
                 [_secondDisplayType] = _secondLocation,
@@ -156,10 +162,10 @@ public class ShapeResult : IDisplayResult
 
         var builder = new PlacementLocationBuilder();
         configure(builder);
-        Location(displayType, builder.ToString());
+        Location(displayType, builder.Build());
         return this;
     }
-    
+
     /// <summary>
     /// Sets the delegate to be executed when the shape is being displayed.
     /// </summary>
@@ -258,9 +264,9 @@ public class ShapeResult : IDisplayResult
     private Task ApplyImplementationAsync(BuildShapeContext context, string displayType)
     {
         // If no location is set from the driver, use the one from the context.
-        if (string.IsNullOrEmpty(_defaultLocation))
+        if (_defaultLocation is null && !string.IsNullOrEmpty(context.DefaultZone))
         {
-            _defaultLocation = context.DefaultZone;
+            _defaultLocation = PlacementInfo.FromLocation(context.DefaultZone);
         }
 
         // Look into specific implementations of placements (like placement.json files and IShapePlacementProviders).
@@ -289,12 +295,13 @@ public class ShapeResult : IDisplayResult
         // If no placement is found, use the default location.
         if (placement == null)
         {
-            placement = PlacementInfo.FromLocation(_defaultLocation);
-            
-            // Only create a new instance if we need to add default position
+            placement = _defaultLocation;
+
+            // Only create a new instance if we need to add default position.
             if (placement != null && context.DefaultPosition != null)
             {
-                placement = placement.WithDefaults(_defaultLocation, context.DefaultPosition);
+                // Pass null for location since we're not changing it, only updating DefaultPosition.
+                placement = placement.WithDefaults(null, context.DefaultPosition);
             }
             else if (placement == null)
             {
@@ -305,8 +312,8 @@ public class ShapeResult : IDisplayResult
         }
         else
         {
-            // Use the WithDefaults method to avoid unnecessary allocations
-            placement = placement.WithDefaults(_defaultLocation, context.DefaultPosition);
+            // Use the WithDefaults method to merge defaults from _defaultLocation.
+            placement = placement.WithDefaults(_defaultLocation?.Location, context.DefaultPosition);
         }
 
         // If the placement should be hidden, then stop rendering execution.
@@ -316,7 +323,7 @@ public class ShapeResult : IDisplayResult
         }
 
         // Parse group placement.
-        var groupId = placement.GetGroup();
+        var groupId = placement.Group;
 
         // Apply group constraints from placement
         if (!string.IsNullOrEmpty(groupId))
@@ -386,9 +393,9 @@ public class ShapeResult : IDisplayResult
         newShapeMetadata.Differentiator = _differentiator ?? _shapeType;
         newShapeMetadata.DisplayType = displayType;
         newShapeMetadata.PlacementSource = placement.Source;
-        newShapeMetadata.Tab = placement.GetTab();
-        newShapeMetadata.Card = placement.GetCard();
-        newShapeMetadata.Column = placement.GetColumn();
+        newShapeMetadata.TabGrouping = placement.Tab;
+        newShapeMetadata.CardGrouping = placement.Card;
+        newShapeMetadata.ColumnGrouping = placement.Column;
         newShapeMetadata.Type = _shapeType;
 
         // Invoke the initialization code first when all Displaying events are invoked.
@@ -441,8 +448,8 @@ public class ShapeResult : IDisplayResult
             parentShape = context.Layout;
         }
 
-        var position = placement.GetPosition();
-        var zones = placement.GetZones();
+        var position = placement.Position;
+        var zones = placement.Zones;
 
         foreach (var zone in zones)
         {
