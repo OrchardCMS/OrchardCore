@@ -170,14 +170,18 @@ public sealed class PlacementLocationBuilder
             throw new InvalidOperationException("Zone is required. Call Zone() before calling Build().");
         }
 
-        // Build tab string with position if specified, avoiding allocations when possible.
-        var tab = BuildComponentString(_tabName, _tabPosition, separator: ';');
+        // Create GroupingMetadata directly without string allocation.
+        var tabGrouping = !string.IsNullOrEmpty(_tabName)
+            ? new GroupingMetadata(_tabName, _tabPosition)
+            : GroupingMetadata.Empty;
 
-        // Build card string with position if specified.
-        var card = BuildComponentString(_cardName, _cardPosition, separator: ';');
+        var cardGrouping = !string.IsNullOrEmpty(_cardName)
+            ? new GroupingMetadata(_cardName, _cardPosition)
+            : GroupingMetadata.Empty;
 
-        // Build column string with width and position if specified.
-        var column = BuildColumnString();
+        var columnGrouping = !string.IsNullOrEmpty(_columnName)
+            ? new GroupingMetadata(_columnName, _columnPosition, _columnWidth)
+            : GroupingMetadata.Empty;
 
         // Split zones only once - use the zone string directly if no dots.
         var zones = _zone.Contains('.')
@@ -194,10 +198,10 @@ public sealed class PlacementLocationBuilder
             wrappers: null,
             zones: zones,
             position: _position,
-            tab: tab,
+            tabGrouping: tabGrouping,
             group: _group,
-            card: card,
-            column: column,
+            cardGrouping: cardGrouping,
+            columnGrouping: columnGrouping,
             isLayoutZone: _isLayoutZone);
 
         return _cachedPlacementInfo;
@@ -221,77 +225,4 @@ public sealed class PlacementLocationBuilder
     /// </summary>
     public static implicit operator string(PlacementLocationBuilder builder)
         => builder?.ToString();
-
-    /// <summary>
-    /// Builds a component string (name + optional suffix) using string.Create to avoid intermediate allocations.
-    /// </summary>
-    private static string BuildComponentString(string name, string suffix, char separator)
-    {
-        if (string.IsNullOrEmpty(name))
-        {
-            return null;
-        }
-
-        if (string.IsNullOrEmpty(suffix))
-        {
-            return name;
-        }
-
-        var length = name.Length + 1 + suffix.Length;
-        return string.Create(length, (name, suffix, separator), static (span, state) =>
-        {
-            state.name.AsSpan().CopyTo(span);
-            span[state.name.Length] = state.separator;
-            state.suffix.AsSpan().CopyTo(span[(state.name.Length + 1)..]);
-        });
-    }
-
-    /// <summary>
-    /// Builds the column string with optional width and position using string.Create.
-    /// </summary>
-    private string BuildColumnString()
-    {
-        if (string.IsNullOrEmpty(_columnName))
-        {
-            return null;
-        }
-
-        // Fast path: no width or position.
-        if (string.IsNullOrEmpty(_columnWidth) && string.IsNullOrEmpty(_columnPosition))
-        {
-            return _columnName;
-        }
-
-        // Calculate length.
-        var length = _columnName.Length;
-        if (!string.IsNullOrEmpty(_columnWidth))
-        {
-            length += 1 + _columnWidth.Length; // '_' + width
-        }
-        if (!string.IsNullOrEmpty(_columnPosition))
-        {
-            length += 1 + _columnPosition.Length; // ';' + position
-        }
-
-        return string.Create(length, this, static (span, builder) =>
-        {
-            var offset = 0;
-
-            builder._columnName.AsSpan().CopyTo(span);
-            offset += builder._columnName.Length;
-
-            if (!string.IsNullOrEmpty(builder._columnWidth))
-            {
-                span[offset++] = '_';
-                builder._columnWidth.AsSpan().CopyTo(span[offset..]);
-                offset += builder._columnWidth.Length;
-            }
-
-            if (!string.IsNullOrEmpty(builder._columnPosition))
-            {
-                span[offset++] = ';';
-                builder._columnPosition.AsSpan().CopyTo(span[offset..]);
-            }
-        });
-    }
 }

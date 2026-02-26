@@ -393,9 +393,9 @@ public class ShapeResult : IDisplayResult
         newShapeMetadata.Differentiator = _differentiator ?? _shapeType;
         newShapeMetadata.DisplayType = displayType;
         newShapeMetadata.PlacementSource = placement.Source;
-        newShapeMetadata.Tab = placement.Tab;
-        newShapeMetadata.Card = placement.Card;
-        newShapeMetadata.Column = placement.Column;
+        newShapeMetadata.TabGrouping = placement.Tab;
+        newShapeMetadata.CardGrouping = placement.Card;
+        newShapeMetadata.ColumnGrouping = placement.Column;
         newShapeMetadata.Type = _shapeType;
 
         // Invoke the initialization code first when all Displaying events are invoked.

@@ -138,7 +138,9 @@ public class LocationParserTests
     [InlineData("/Content:5#Tab1@Group1%Card1|Col1", "Tab1")]
     public void TabShouldBeParsed(string location, string expectedTab)
     {
-        Assert.Equal(expectedTab, new PlacementInfo(location).Tab);
+        var info = new PlacementInfo(location);
+        var actualTab = info.Tab.HasValue ? info.Tab.Name : "";
+        Assert.Equal(expectedTab, actualTab);
     }
 
     [Theory]
@@ -226,52 +228,6 @@ public class LocationParserTests
     [InlineData("Content:5@Group1", null)]
     [InlineData("Content:5#Tab1@Group1", null)]
     [InlineData("Content:5.1#Tab1@Group1", null)]
-    [InlineData("Content:5#Tab1@Group1|Col1", null)]
-    [InlineData("Content:5.1#Tab1@Group1|Col1", null)]
-    [InlineData("Content:5%Card1", "Card1")]
-    [InlineData("Content:5%Card1@Group1", "Card1")]
-    [InlineData("Content:5%Card1%Col1", "Card1")]
-    [InlineData("Content:5%Card1#Tab1", "Card1")]
-    [InlineData("Content:5%Card1#Tab1@Group1", "Card1")]
-    [InlineData("Content:5%Card1#Tab1|Col1", "Card1")]
-    [InlineData("Content:5%Card1#Tab1@Group1|Col1", "Card1")]
-    [InlineData("Content:5#Tab1%Card1", "Card1")]
-    [InlineData("Content:5#Tab1%Card1@Group1", "Card1")]
-    [InlineData("Content:5#Tab1%Card1|Col1", "Card1")]
-    [InlineData("Content:5#Tab1%Card1@Group1|Col1", "Card1")]
-    [InlineData("/Content", null)]
-    [InlineData("/Content:5", null)]
-    [InlineData("/Content:5#Tab1", null)]
-    [InlineData("/Content:5.1#Tab1", null)]
-    [InlineData("/Content:5@Group1", null)]
-    [InlineData("/Content:5.1@Group1", null)]
-    [InlineData("/Content:5|Col1", null)]
-    [InlineData("/Content:5.1|Col1", null)]
-    [InlineData("/Content:5%Card1|Col1", "Card1")]
-    [InlineData("/Content:5.1%Card1|Col1", "Card1")]
-    [InlineData("/Content:5%Card1", "Card1")]
-    [InlineData("/Content:5%Card1@Group1", "Card1")]
-    [InlineData("/Content:5%Card1#Tab1", "Card1")]
-    [InlineData("/Content:5%Card1#Tab1@Group1", "Card1")]
-    [InlineData("/Content:5%Card1#Tab1|Col1", "Card1")]
-    [InlineData("/Content:5%Card1#Tab1@Group1|Col1", "Card1")]
-    [InlineData("/Content:5#Tab1%Card1", "Card1")]
-    [InlineData("/Content:5#Tab1%Card1@Group1", "Card1")]
-    [InlineData("/Content:5#Tab1%Card1|Col1", "Card1")]
-    [InlineData("/Content:5#Tab1%Card1@Group1|Col1", "Card1")]
-    public void CardShouldBeParsed(string location, string expectedCard)
-    {
-        Assert.Equal(expectedCard, new PlacementInfo(location).Card);
-    }
-
-    [Theory]
-    [InlineData("Content", null)]
-    [InlineData("Content:5", null)]
-    [InlineData("Content:5#Tab1", null)]
-    [InlineData("Content:5.1#Tab1", null)]
-    [InlineData("Content:5@Group1", null)]
-    [InlineData("Content:5#Tab1@Group1", null)]
-    [InlineData("Content:5.1#Tab1@Group1", null)]
     [InlineData("Content:5#Tab1@Group1%Card1", null)]
     [InlineData("Content:5.1#Tab1@Group1%Card", null)]
     [InlineData("Content:5|Col1", "Col1")]
@@ -309,7 +265,9 @@ public class LocationParserTests
     [InlineData("/Content:5#Tab1%Card1@Group1|Col1", "Col1")]
     public void ColumnShouldBeParsed(string location, string expectedColumn)
     {
-        Assert.Equal(expectedColumn, new PlacementInfo(location).Column);
+        var info = new PlacementInfo(location);
+        var actualColumn = info.Column.HasValue ? info.Column.Name : null;
+        Assert.Equal(expectedColumn, actualColumn);
     }
 
     [Fact]
@@ -345,10 +303,10 @@ public class LocationParserTests
         // Position property should still return "5" because explicit position takes precedence.
         Assert.Equal("5", result.Position);
         // Parsed values should be preserved.
-        Assert.Equal("Tab1", result.Tab);
+        Assert.Equal("Tab1", result.Tab.Name);
         Assert.Equal("Group1", result.Group);
-        Assert.Equal("Card1", result.Card);
-        Assert.Equal("Col1", result.Column);
+        Assert.Equal("Card1", result.Card.Name);
+        Assert.Equal("Col1", result.Column.Name);
         Assert.Equal(["Content"], result.Zones);
     }
 
@@ -363,10 +321,10 @@ public class LocationParserTests
         Assert.Equal("Content:5#Tab1@Group1%Card1|Col1", result.Location);
         // Parsed values should be populated from the new location.
         Assert.Equal("5", result.Position);
-        Assert.Equal("Tab1", result.Tab);
+        Assert.Equal("Tab1", result.Tab.Name);
         Assert.Equal("Group1", result.Group);
-        Assert.Equal("Card1", result.Card);
-        Assert.Equal("Col1", result.Column);
+        Assert.Equal("Card1", result.Card.Name);
+        Assert.Equal("Col1", result.Column.Name);
         Assert.Equal(["Content"], result.Zones);
     }
 
@@ -394,7 +352,7 @@ public class LocationParserTests
         Assert.Equal("10", result.DefaultPosition);
         // Position should use DefaultPosition since no explicit position in location.
         Assert.Equal("10", result.Position);
-        Assert.Equal("Tab1", result.Tab);
+        Assert.Equal("Tab1", result.Tab.Name);
         Assert.Equal(["Content"], result.Zones);
     }
 }

@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Html;
+using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.Environment.Cache;
 
@@ -19,11 +20,53 @@ public class ShapeMetadata
 
     public string Position { get; set; }
 
-    public string Tab { get; set; }
+    /// <summary>
+    /// Gets or sets the tab grouping metadata.
+    /// </summary>
+    [JsonIgnore]
+    public GroupingMetadata TabGrouping { get; set; }
 
-    public string Card { get; set; }
+    /// <summary>
+    /// Gets or sets the tab grouping information as a string.
+    /// This property is provided for backward compatibility and JSON serialization.
+    /// </summary>
+    public string Tab
+    {
+        get => TabGrouping.HasValue ? TabGrouping.ToString() : null;
+        set => TabGrouping = GroupingMetadata.ParseTabOrCard(value);
+    }
 
-    public string Column { get; set; }
+    /// <summary>
+    /// Gets or sets the card grouping metadata.
+    /// </summary>
+    [JsonIgnore]
+    public GroupingMetadata CardGrouping { get; set; }
+
+    /// <summary>
+    /// Gets or sets the card grouping information as a string.
+    /// This property is provided for backward compatibility and JSON serialization.
+    /// </summary>
+    public string Card
+    {
+        get => CardGrouping.HasValue ? CardGrouping.ToString() : null;
+        set => CardGrouping = GroupingMetadata.ParseTabOrCard(value);
+    }
+
+    /// <summary>
+    /// Gets or sets the column grouping metadata.
+    /// </summary>
+    [JsonIgnore]
+    public GroupingMetadata ColumnGrouping { get; set; }
+
+    /// <summary>
+    /// Gets or sets the column grouping information as a string.
+    /// This property is provided for backward compatibility and JSON serialization.
+    /// </summary>
+    public string Column
+    {
+        get => ColumnGrouping.HasValue ? ColumnGrouping.ToString() : null;
+        set => ColumnGrouping = GroupingMetadata.ParseColumn(value);
+    }
 
     public string PlacementSource { get; set; }
 
