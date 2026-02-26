@@ -45,7 +45,7 @@ public sealed class MarkdownFieldWysiwygEditorSettingsDriver : ContentPartFieldD
 
                     if (!options.StartsWith('{') || !options.EndsWith('}'))
                     {
-                        throw new Exception();
+                        throw new ParseErrorException("The options must be a valid JavaScript object literal.");
                     }
 
                     var parser = new Parser();
@@ -59,7 +59,7 @@ public sealed class MarkdownFieldWysiwygEditorSettingsDriver : ContentPartFieldD
 
                     context.Builder.WithSettings(settings);
                 }
-                catch
+                catch (ParseErrorException)
                 {
                     context.Updater.ModelState.AddModelError(Prefix, nameof(model.Options), S["The options are written in an incorrect format."]);
                 }
