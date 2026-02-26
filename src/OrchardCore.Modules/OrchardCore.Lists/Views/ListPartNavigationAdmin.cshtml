@@ -17,6 +17,14 @@
 
         authorizedContentTypeDefinitions.Add(contentTypeDefinition);
     }
+
+    var returnUrl = Context.Request.Query["returnUrl"].ToString();
+    var originContentItemsListUrl = Url.Action("List", "Admin", new { area = "OrchardCore.Contents", contentTypeId = Model.ContainerContentTypeDefinition?.Name })
+        ?? Url.Action("List", "Admin", new { area = "OrchardCore.Contents" })
+        ?? "#";
+    var backUrl = !string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl)
+        ? returnUrl
+        : originContentItemsListUrl;
 }
 <div class="card text-bg-theme text-right mb-3 second-action-bar">
     <div class="card-body">
@@ -24,7 +32,7 @@
 
             @if (await AuthorizationService.AuthorizeAsync(User, CommonPermissions.ListContent, Model.Container))
             {
-                <a class="btn btn-secondary me-1" role="button" href="javascript:history.back();">@T["Back"]</a>
+                <a class="btn btn-secondary me-1" role="button" href="@backUrl">@T["Back"]</a>
             }
 
             @if (await AuthorizationService.AuthorizeContentTypeDefinitionsAsync(User, CommonPermissions.ViewContent, Model.ContainedContentTypeDefinitions, ContentManager))
