@@ -150,6 +150,16 @@ public sealed class ColumnSourceIdentifier : ColumnSource
     }
 }
 
+public sealed class ColumnSourceValue : ColumnSource
+{
+    public Expression Value { get; }
+
+    public ColumnSourceValue(Expression value)
+    {
+        Value = value;
+    }
+}
+
 public sealed class ColumnSourceFunction : ColumnSource
 {
     public FunctionCall FunctionCall { get; }

@@ -67,7 +67,7 @@ public static readonly Parser<StatementList> Statements;
         };
 
         // Literals
-        var numberLiteral = Terms.Decimal().Then<Expression>(d => new LiteralExpression<decimal>(d));
+        var numberLiteral = Terms.Decimal().Then<Expression>(d => d.Scale == 0 ? new LiteralExpression<long>((long)d) : new LiteralExpression<decimal>(d));
 
         var stringLiteral = Terms.String(StringLiteralQuotes.Single)
             .Then<Expression>(s => new LiteralExpression<string>(s.ToString()));
@@ -211,6 +211,9 @@ public static readonly Parser<StatementList> Statements;
         // Column source
         var columnSourceId = identifier.Then<ColumnSource>(id => new ColumnSourceIdentifier(id));
 
+        // e.g. SELECT 1, 'text', etc.
+        var columnSourceValue = primary.Then<ColumnSource>(x => new ColumnSourceValue(x));
+
         // Deferred for OVER clause components
         var columnItemList = Separated(COMMA, columnItem.Or(STAR.Then(new ColumnItem(new ColumnSourceIdentifier(Identifier.STAR), null))));
         var orderByList = Separated(COMMA, orderByItem);
@@ -238,7 +241,7 @@ public static readonly Parser<StatementList> Statements;
                 return new ColumnSourceFunction((FunctionCall)func, over.OrSome(null));
             });
 
-        var columnSource = columnSourceFunc.Or(columnSourceId);
+        var columnSource = columnSourceFunc.Or(columnSourceId).Or(columnSourceValue);
 
         // Column item with alias
         var columnAlias = AS.Optional().SkipAnd(identifierNoKeywords);

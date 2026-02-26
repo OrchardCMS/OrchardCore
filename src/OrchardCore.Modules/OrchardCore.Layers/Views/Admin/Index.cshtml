@@ -3,12 +3,14 @@
 @using OrchardCore.Layers.Drivers
 @using OrchardCore.ContentManagement.Metadata.Models
 @using OrchardCore.ContentManagement.Metadata
+@using OrchardCore.Localization.Data
 
 @model OrchardCore.Layers.ViewModels.LayersIndexViewModel
 
 @inject IContentManager ContentManager
 @inject IContentDefinitionManager ContentDefinitionManager
 @inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
+@inject IDataLocalizer D
 
 <script asp-name="jquery-ui" at="Foot"></script>
 
@@ -78,7 +80,7 @@
                                         <button type="button" class="btn btn-primary btn-sm dropdown-toggle" id="@htmlId" data-bs-toggle="dropdown" aria-expanded="false">
                                             @T["Add Widget"]
                                         </button>
-                                        <ul class="dropdown-menu px-2 overflow-auto" aria-labelledby="@htmlId" style="max-height: 15rem;">
+                                        <ul class="dropdown-menu px-2 overflow-auto" style="max-height: 15rem;">
                                             @foreach (var type in widgetContentTypes)
                                             {
                                                 var contentItem = await ContentManager.NewAsync(type.Name);
@@ -90,7 +92,7 @@
                                                     <a class="dropdown-item add-list-widget"
                                                        data-widget-type="@type.Name"
                                                        data-zone="@zone"
-                                                       href="@Url.Action((string)createRoute["Action"], (string)createRoute["controller"], createRoute)">@type.DisplayName</a>
+                                                       href="@Url.Action((string)createRoute["Action"], (string)createRoute["controller"], createRoute)">@D[type.DisplayName, "Content Types"]</a>
                                                 </li>
                                             }
                                         </ul>

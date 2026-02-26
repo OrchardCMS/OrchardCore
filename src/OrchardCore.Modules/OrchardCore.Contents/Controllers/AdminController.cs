@@ -312,14 +312,16 @@ public sealed class AdminController : Controller, IUpdateModel
                 case ContentsBulkAction.Remove:
                     foreach (var item in checkedContentItems)
                     {
-                        if (!await IsAuthorizedAsync(CommonPermissions.DeleteContent, item))
+                        if (await IsAuthorizedAsync(CommonPermissions.DeleteContent, item) is var authorized
+                            && !(authorized && await _contentManager.RemoveAsync(item)))
                         {
                             await _notifier.WarningAsync(H["Couldn't remove selected content."]);
                             await _session.CancelAsync();
-                            return Forbid();
-                        }
 
-                        await _contentManager.RemoveAsync(item);
+                            return authorized
+                               ? RedirectToAction(nameof(List))
+                               : Forbid();
+                        }
                     }
                     await _notifier.SuccessAsync(H["Content removed successfully."]);
                     break;
@@ -456,7 +458,6 @@ public sealed class AdminController : Controller, IUpdateModel
         var stayOnSamePage = submitSave == "submit.SaveAndContinue";
         return EditInternalAsync(contentItemId, returnUrl, stayOnSamePage, async contentItem =>
         {
-            await _contentManager.UpdateAsync(contentItem);
             await _contentManager.SaveDraftAsync(contentItem);
 
             var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
@@ -500,9 +501,15 @@ public sealed class AdminController : Controller, IUpdateModel
             return Forbid();
         }
 
-        await _contentManager.RemoveAsync(contentItem);
-
-        await _notifier.SuccessAsync(H["Your content has been deleted."]);
+        var removed = await _contentManager.RemoveAsync(contentItem);
+        if (removed)
+        {
+            await _notifier.SuccessAsync(H["Your content has been deleted."]);
+        }
+        else if (Url.IsLocalUrl(returnUrl))
+        {
+            await _notifier.ErrorAsync(H["The operation was canceled."]);
+        }
 
         return Url.IsLocalUrl(returnUrl)
             ? this.LocalRedirect(returnUrl, true)
@@ -586,13 +593,19 @@ public sealed class AdminController : Controller, IUpdateModel
 
         if (contentItem != null)
         {
-            await _contentManager.RemoveAsync(contentItem);
+            var removed = await _contentManager.RemoveAsync(contentItem);
+            if (removed)
+            {
+                var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
 
-            var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
-
-            await _notifier.SuccessAsync(string.IsNullOrWhiteSpace(typeDefinition?.DisplayName)
-                ? H["That content has been removed."]
-                : H["That {0} has been removed.", typeDefinition.DisplayName]);
+                await _notifier.SuccessAsync(string.IsNullOrWhiteSpace(typeDefinition?.DisplayName)
+                    ? H["That content has been removed."]
+                    : H["That {0} has been removed.", typeDefinition.DisplayName]);
+            }
+            else if (Url.IsLocalUrl(returnUrl))
+            {
+                await _notifier.ErrorAsync(H["The operation was canceled."]);
+            }
         }
 
         return Url.IsLocalUrl(returnUrl)
@@ -743,6 +756,11 @@ public sealed class AdminController : Controller, IUpdateModel
 
         var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, this, false);
 
+        if (ModelState.IsValid)
+        {
+            await _contentManager.UpdateAsync(contentItem);
+        }
+
         if (!ModelState.IsValid || !(await conditionallyPublish(contentItem)))
         {
             await _session.CancelAsync();
@@ -859,8 +877,6 @@ public sealed class AdminController : Controller, IUpdateModel
 
         return await EditInternalAsync(contentItemId, returnUrl, stayOnSamePage, async contentItem =>
         {
-            await _contentManager.UpdateAsync(contentItem);
-
             var hasBeenPublishedOrUnpublished = publish
                 ? await _contentManager.PublishAsync(contentItem)
                 : await _contentManager.UnpublishAsync(contentItem);

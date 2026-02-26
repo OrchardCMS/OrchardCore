@@ -104,9 +104,9 @@ Add the following widgets to the Form widget:
 ### Configuring NoCaptcha
 
 When adding the NoCaptcha widget, a message was displayed that the NoCaptcha settings need to be configured before it will be displayed on the form. Let's do that right away.  
-Click on the **NoCaptcha Settings** link that is displayed within the message. Alternatively, go to *Configuration* -> *Settings* -> *Forms*.
+Click on the **NoCaptcha Settings** link that is displayed within the message. Alternatively, go to *Settings* -> *Security* -> *reCaptcha*.
 
-The Forms settings shows two fields: **SiteKey** and **Site Secret**. You can get these values for free from [https://developers.google.com/recaptcha/](https://developers.google.com/recaptcha/). The widget uses **reCaptcha V2**, so make sure to create Site Key and Site Secret for that version.  
+The reCaptcha settings show two fields: **SiteKey** and **Site Secret**. You can get these values for free from [https://developers.google.com/recaptcha/](https://developers.google.com/recaptcha/). The widget uses **reCaptcha V2**, so make sure to create Site Key and Site Secret for that version.  
 Once you have generated a Site Key and Site Secret with Google, copy & paste those values in the SiteKey and Site Secret fields, respectively, and click the **Save** button.
 
 The final form configuration should look something like this:
@@ -203,7 +203,7 @@ Click the **Add Task** button and locate the Send Email activity. Enter the foll
 
 #### Configuring SMTP
 
-In order to try out sending emails, you will need to configure the SMTP settings. You can do so via *Configuration* -> *Settings* -> *Smtp*. For development purposes, I am a big fan of [Smtp4Dev](https://github.com/rnwood/smtp4dev), which makes it super easy to try out sending emails *without actually sending them*. It's basically an SMTP host that intercepts emails being sent that you can then inspect.  
+In order to try out sending emails, you will need to configure the SMTP settings. You can do so via *Settings* -> *Communication* -> *Email* and then select the *SMTP* tab. For development purposes, I am a big fan of [Smtp4Dev](https://github.com/rnwood/smtp4dev), which makes it super easy to try out sending emails *without actually sending them*. It's basically an SMTP host that intercepts emails being sent that you can then inspect.  
 When configuring the SMTP settings in Orchard, make sure to provide the **Sender email address**, which will be used by default (remember, we didn't specify a Sender in the Send Email activity). Enter `system@orchardcore.io` or any other valid email address you like.  
 If you're using Smtp4Dev, make sure to enter `localhost` in the Host name field, and the configured port number.
 

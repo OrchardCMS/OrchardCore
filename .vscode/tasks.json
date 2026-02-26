@@ -249,13 +249,13 @@
       ]
     },
     {
-      "label": "gulp build",
+      "label": "yarn build - rebuild all assets",
       "type": "shell",
-      "command": "gulp",
+      "command": "yarn",
       "args": [
         "build"
       ],
-      "problemMatcher": "$gulp-tsc"
+      "problemMatcher": []
     }
   ]
 }

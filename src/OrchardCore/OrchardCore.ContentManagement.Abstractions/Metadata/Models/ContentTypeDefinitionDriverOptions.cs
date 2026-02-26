@@ -13,4 +13,6 @@ public class ContentTypeDefinitionDriverOptions
     public bool ShowSecurable { get; set; } = true;
 
     public IEnumerable<StereotypeDescription> Stereotypes { get; set; }
+
+    public IEnumerable<string> Categories { get; set; }
 }

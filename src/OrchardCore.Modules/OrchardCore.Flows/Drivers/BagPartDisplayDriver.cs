@@ -79,11 +79,15 @@ public sealed class BagPartDisplayDriver : ContentPartDisplayDriver<BagPart>
         {
             var contentDefinitionManager = _serviceProvider.GetRequiredService<IContentDefinitionManager>();
 
+            var blocksSettings = context.TypePartDefinition.GetSettings<BagPartBlocksEditorSettings>();
+
             m.BagPart = bagPart;
             m.Updater = context.Updater;
             m.ContainedContentTypeDefinitions = await GetContainedContentTypesAsync(context.TypePartDefinition);
             m.AccessibleWidgets = await GetAccessibleWidgetsAsync(bagPart.ContentItems, contentDefinitionManager);
             m.TypePartDefinition = context.TypePartDefinition;
+            m.AddButtonText = blocksSettings.AddButtonText;
+            m.ModalTitleText = blocksSettings.ModalTitleText;
         });
     }
 

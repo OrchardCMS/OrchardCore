@@ -673,6 +673,350 @@ This template is called when displaying a User Name.
 | `UserDisplayName_SummaryAdmin__johndoe`  | `UserDisplayName-johndoe.SummaryAdmin.cshtml`  |
 | `UserDisplayName_SummaryAdmin` | `UserDisplayName.SummaryAdmin.cshtml` |
 
+### Customizing User Display in Admin Lists
+
+The `UserDisplayName` shape provides a flexible way to display user information throughout OrchardCore, particularly in admin lists. This shape is commonly used when displaying content authors, audit trail users, or any user reference.
+
+#### Creating a UserDisplayName Shape
+
+=== "Razor"
+
+    Use the `<user-display-name>` tag helper to render user information:
+
+    ```html
+    <user-display-name 
+        user-name="@(contentItem.Author)" 
+        display-type="SummaryAdmin"
+        cache-id="user-display-name-author" 
+        title="@T["Author"].Value" />
+    ```
+
+=== "Liquid"
+
+    Use the `shape_new` filter to create a UserDisplayName shape:
+
+    ```liquid
+    {% assign user_display_name = "UserDisplayName" | shape_new: user_name: contentItem.Author, display_type: "SummaryAdmin", cache_id: "user-display-name-author", title: "Author" %}
+    {{ user_display_name | shape_render }}
+    ```
+
+    Or create and render in a single line:
+
+    ```liquid
+    {{ "UserDisplayName" | shape_new: user_name: contentItem.Author, display_type: "SummaryAdmin" | shape_render }}
+    ```
+
+##### Tag Helper Parameters
+
+| Parameter | Description | Required |
+|-----------|-------------|----------|
+| `user-name` | The username to display | Yes |
+| `display-type` | The display type for template resolution (e.g., `SummaryAdmin`) | No |
+| `cache-id` | Cache identifier for the rendered output | No (defaults to `"user-display-name"`) |
+| `title` | Tooltip text to display on hover | No |
+| `cache-tag` | Cache tags for cache invalidation | No (automatically includes `user-display-name` and `user-display-name:{username}`) |
+| `cache-context` | Cache context for cache variation | No (automatically includes `username-{username}`) |
+| `cache-fixed-duration` | Fixed cache duration (e.g., `"00:05:00"` for 5 minutes) | No |
+| `cache-sliding-duration` | Sliding cache duration | No |
+
+#### Shape Morphing
+
+The `UserDisplayName` shape automatically morphs into two sub-shapes:
+
+1. **`UserDisplayNameIcon`** - Renders the user icon
+2. **`UserDisplayNameText`** - Renders the username text
+
+This morphing behavior allows you to customize the icon and text independently by creating specific template overrides.
+
+#### Default Templates
+
+##### `UserDisplayName.SummaryAdmin.cshtml` / `UserDisplayName.SummaryAdmin.liquid`
+
+=== "Razor"
+
+    ```cshtml
+    <span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@Model.Title">
+        @await DisplayAsAsync(Model, "UserDisplayNameIcon")
+        @await DisplayAsAsync(Model, "UserDisplayNameText")
+    </span>
+    ```
+
+=== "Liquid"
+
+    ```liquid
+    <span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="{{ Model.Title }}">
+        {{ "UserDisplayNameIcon" | shape_new | shape_render }}
+        {{ "UserDisplayNameText" | shape_new | shape_render }}
+    </span>
+    ```
+
+##### `UserDisplayNameIcon.cshtml` / `UserDisplayNameIcon.liquid`
+
+=== "Razor"
+
+    ```cshtml
+    <i class="fa-solid fa-user text-secondary" aria-hidden="true"></i>
+    ```
+
+=== "Liquid"
+
+    ```liquid
+    <i class="fa-solid fa-user text-secondary" aria-hidden="true"></i>
+    ```
+
+##### `UserDisplayNameText.cshtml` / `UserDisplayNameText.liquid`
+
+=== "Razor"
+
+    ```cshtml
+    @Model.UserName
+    ```
+
+=== "Liquid"
+
+    ```liquid
+    {{ Model.UserName }}
+    ```
+
+##### `UserDisplayName.cshtml` / `UserDisplayName.liquid` (Base template)
+
+=== "Razor"
+
+    ```cshtml
+    @await DisplayAsAsync(Model, "UserDisplayNameIcon")
+    @await DisplayAsAsync(Model, "UserDisplayNameText")
+    ```
+
+=== "Liquid"
+
+    ```liquid
+    {{ "UserDisplayNameIcon" | shape_new | shape_render }}
+    {{ "UserDisplayNameText" | shape_new | shape_render }}
+    ```
+
+#### Available Shape Properties
+
+The `UserDisplayName` shape exposes the following properties:
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `Model.UserName` | `string` | The username of the user to display |
+| `Model.Title` | `string` | The title/tooltip text (typically used in the HTML `title` attribute) |
+
+!!! note
+    The shape uses a dynamic `IShape` type, not a strongly-typed model. Additional properties can be accessed dynamically.
+
+#### Customization Examples
+
+##### Custom Icon Template
+
+Create `UserDisplayNameIcon.cshtml` or `UserDisplayNameIcon.liquid` in your theme to customize the icon:
+
+=== "Razor"
+
+    ```cshtml
+    <i class="fa-solid fa-user-circle text-primary" aria-hidden="true"></i>
+    ```
+
+=== "Liquid"
+
+    ```liquid
+    <i class="fa-solid fa-user-circle text-primary" aria-hidden="true"></i>
+    ```
+
+##### Loading User Object to Access Custom Properties
+
+To access the full user object with custom properties and content parts:
+
+=== "Razor"
+
+    Inject `UserManager<IUser>`:
+
+    ```cshtml
+    @using Microsoft.AspNetCore.Identity
+    @using OrchardCore.Users
+    @using OrchardCore.Users.Models
+
+    @inject UserManager<IUser> UserManager
+
+    @{
+        var user = await UserManager.FindByNameAsync((string)Model.UserName);
+        if (user != null)
+        {
+            // Access standard user properties
+            var email = user.Email;
+            var userId = user.UserId;
+            
+            // Access custom content parts if the user is a content item
+            if (user is User userContent)
+            {
+                // Example: Access a custom ProfilePart with FirstName and LastName fields
+                // Replace ProfilePart with your actual custom part name
+                var firstName = userContent.Content.ProfilePart?.FirstName?.Text;
+                var lastName = userContent.Content.ProfilePart?.LastName?.Text;
+            }
+        }
+    }
+    ```
+
+=== "Liquid"
+
+    Use the `users_by_name` filter to load the user:
+
+    ```liquid
+    {% assign user = Model.UserName | users_by_name %}
+    {% if user %}
+        {# Access standard user properties #}
+        {{ user.Email }}
+        {{ user.UserId }}
+        
+        {# Access custom content parts if available #}
+        {# Example: Access a custom ProfilePart with FirstName and LastName fields #}
+        {# Replace ProfilePart with your actual custom part name #}
+        {% assign first_name = user.Content.ProfilePart.FirstName.Text %}
+        {% assign last_name = user.Content.ProfilePart.LastName.Text %}
+    {% endif %}
+    ```
+
+##### Displaying Full Name Instead of Username
+
+Create `UserDisplayNameText.cshtml` or `UserDisplayNameText.liquid` to display a full name:
+
+=== "Razor"
+
+    ```cshtml
+    @using Microsoft.AspNetCore.Identity
+    @using OrchardCore.Users
+    @using OrchardCore.Users.Models
+
+    @inject UserManager<IUser> UserManager
+
+    @{
+        var user = await UserManager.FindByNameAsync((string)Model.UserName);
+        var displayName = Model.UserName;
+        
+        if (user is User userContent)
+        {
+            // Example: Access a custom ProfilePart with FirstName and LastName fields
+            // Replace ProfilePart with your actual custom part name
+            var firstName = userContent.Content.ProfilePart?.FirstName?.Text;
+            var lastName = userContent.Content.ProfilePart?.LastName?.Text;
+            
+            if (!string.IsNullOrEmpty(firstName) || !string.IsNullOrEmpty(lastName))
+            {
+                displayName = $"{firstName} {lastName}".Trim();
+            }
+        }
+    }
+    @displayName
+    ```
+
+=== "Liquid"
+
+    ```liquid
+    {% assign user = Model.UserName | users_by_name %}
+    {% assign display_name = Model.UserName %}
+
+    {% if user %}
+        {# Example: Access a custom ProfilePart with FirstName and LastName fields #}
+        {# Replace ProfilePart with your actual custom part name #}
+        {% assign first_name = user.Content.ProfilePart.FirstName.Text %}
+        {% assign last_name = user.Content.ProfilePart.LastName.Text %}
+        
+        {% if first_name != blank or last_name != blank %}
+            {% assign display_name = first_name | append: " " | append: last_name | strip %}
+        {% endif %}
+    {% endif %}
+
+    {{ display_name }}
+    ```
+
+##### Per-User Template Override
+
+Create a user-specific template for a particular username (e.g., for user "admin"):
+
+=== "Razor"
+
+    **Filename:** `UserDisplayName-admin.SummaryAdmin.cshtml`
+
+    ```cshtml
+    <span class="badge ta-badge font-weight-normal text-danger" data-bs-toggle="tooltip" title="@Model.Title">
+        <i class="fa-solid fa-user-shield" aria-hidden="true"></i>
+        <strong>@Model.UserName</strong>
+    </span>
+    ```
+
+=== "Liquid"
+
+    **Filename:** `UserDisplayName-admin.SummaryAdmin.liquid`
+
+    ```liquid
+    <span class="badge ta-badge font-weight-normal text-danger" data-bs-toggle="tooltip" title="{{ Model.Title }}">
+        <i class="fa-solid fa-user-shield" aria-hidden="true"></i>
+        <strong>{{ Model.UserName }}</strong>
+    </span>
+    ```
+
+#### Template Priority (Alternates Resolution Order)
+
+Templates are resolved in the following priority order (most specific to least specific):
+
+1. `UserDisplayName_[DisplayType]__[UserName]` (e.g., `UserDisplayName-johndoe.SummaryAdmin.cshtml` or `.liquid`)
+2. `UserDisplayName_[DisplayType]` (e.g., `UserDisplayName.SummaryAdmin.cshtml` or `.liquid`)
+3. `UserDisplayName` (base template: `UserDisplayName.cshtml` or `.liquid`)
+
+When customizing sub-shapes:
+
+- `UserDisplayNameIcon_[DisplayType]` (e.g., `UserDisplayNameIcon.SummaryAdmin.cshtml` or `.liquid`)
+- `UserDisplayNameIcon` (e.g., `UserDisplayNameIcon.cshtml` or `.liquid`)
+- `UserDisplayNameText_[DisplayType]` (e.g., `UserDisplayNameText.SummaryAdmin.cshtml` or `.liquid`)
+- `UserDisplayNameText` (e.g., `UserDisplayNameText.cshtml` or `.liquid`)
+
+OrchardCore will use the first matching template it finds.
+
+#### Performance Considerations
+
+##### Caching Behavior
+
+The `UserDisplayName` tag helper automatically configures caching with:
+
+- **Default cache-id**: `"user-display-name"`
+- **Automatic cache tags**: `"user-display-name"` and `"user-display-name:{username}"`
+- **Automatic cache context**: `"username-{username}"`
+
+This ensures that:
+- User displays are cached for better performance
+- Cache is invalidated per-user when user data changes
+- Multiple instances of the same username can share cached output
+
+You can override these defaults or add additional cache configuration via tag helper parameters.
+
+##### Database Query Implications
+
+!!! warning
+    Loading the full user object via `UserManager.FindByNameAsync()` in Razor templates or the `users_by_name` filter in Liquid templates will execute a database query **for each user display**, leading to the N+1 query problem. When displaying lists with many users:
+    
+    - The default templates only use the `UserName` property (no database query)
+    - Custom templates that load the user object should be used carefully to avoid performance degradation
+    - Consider using shape table events or content handlers to pre-load user data in bulk
+    - Rely on caching to minimize repeated queries for the same users
+
+#### Common Use Cases
+
+1. **Display content author in list views** - Show who created or modified content items
+2. **Audit trail user display** - Display user information in activity logs
+3. **Custom user badges** - Add role-based or status-based visual indicators
+4. **User avatars** - Replace the default icon with user profile pictures
+5. **Full name display** - Show user's full name instead of username for better UX
+6. **Administrative user highlighting** - Apply special styling for admin or system users
+7. **User reputation or level indicators** - Display user rank, points, or achievements
+
+#### Implementation Details
+
+- **Tag Helper**: `src/OrchardCore/OrchardCore.DisplayManagement/TagHelpers/UserDisplayNameTagHelper.cs`
+- **Shape Table Provider**: `src/OrchardCore/OrchardCore.Users.Core/Services/UserDisplayNameShapeTableProvider.cs`
+- **Default Templates**: `src/OrchardCore.Modules/OrchardCore.Users/Views/UserDisplayName*.cshtml`
+
 ## Overriding Views
 
 Some modules (namely the OrchardCore.Users module) allow you to override some of its views in your Theme. Since these views are not shapes, the way to override them is a little different than mentioned above.
@@ -695,7 +1039,7 @@ Views/Shared/{0}.cshtml
 
 For example, if you want to override the `OrchardCore.Users\Views\Account\Login.cshtml` view you would need to create a file in your theme and place it under `YourTheme\Views\OrchardCore.Users\Account\Login.cshtml`.  
 For this particular file, you would also need to select the `Use site theme for login page`
-option under the `Configuration->Login` page in the admin.
+option under the `Settings -> Security -> User Login` page in the admin.
 
 ## Videos
 

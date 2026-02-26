@@ -2,6 +2,8 @@
 @inject IContentManager ContentManager
 @inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
 @inject OrchardCore.DisplayManagement.ModelBinding.IUpdateModelAccessor ModelUpdaterAccessor
+@using OrchardCore.Localization.Data
+@inject IDataLocalizer D
 @*
     This template is used to render the editor for a Menu content item.
     It render the hierarchy of the menu items.
@@ -64,7 +66,7 @@
                         var menuItem = await ContentManager.NewAsync(type.Name);
                         var thumbnail = await ContentItemDisplayManager.BuildDisplayAsync(menuItem, updater, "Thumbnail");
                         thumbnail.Properties["MenuItemType"] = type.Name;
-                        thumbnail.Properties["MenuItemTypeDisplayName"] = type.DisplayName;
+                        thumbnail.Properties["MenuItemTypeDisplayName"] = D[type.DisplayName, "Content Types"].ToString();
                         thumbnail.Properties["MenuContentItemId"] = Model.MenuPart.ContentItem.ContentItemId;
                         <div class="col">
                             @await DisplayAsync(thumbnail)

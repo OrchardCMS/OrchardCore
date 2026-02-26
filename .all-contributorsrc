@@ -3457,6 +3457,69 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "MissAndileN",
+      "name": "Andile Ntuli",
+      "avatar_url": "https://avatars.githubusercontent.com/u/139638609?v=4",
+      "profile": "https://andilentuli-portfolio.netlify.app/",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "moamen-0",
+      "name": "Moamen Hassan",
+      "avatar_url": "https://avatars.githubusercontent.com/u/140275501?v=4",
+      "profile": "https://moamen-0.github.io/Moamen-Hassan-Portfolio/",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "Notorious-Ali",
+      "name": "Seied Ali Mirkarimi",
+      "avatar_url": "https://avatars.githubusercontent.com/u/84094431?v=4",
+      "profile": "https://wakavi.com",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "shivampandey0709",
+      "name": "Shivam Pandey",
+      "avatar_url": "https://avatars.githubusercontent.com/u/59027725?v=4",
+      "profile": "https://github.com/shivampandey0709",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "weirdyang",
+      "name": "weirdyang",
+      "avatar_url": "https://avatars.githubusercontent.com/u/25576022?v=4",
+      "profile": "https://github.com/weirdyang",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "Youssef1313",
+      "name": "Youssef Victor",
+      "avatar_url": "https://avatars.githubusercontent.com/u/31348972?v=4",
+      "profile": "https://www.linkedin.com/in/youssef1313/",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "Manuel-dev-ing",
+      "name": "Manuel Tamayo Montero",
+      "avatar_url": "https://avatars.githubusercontent.com/u/173723192?v=4",
+      "profile": "https://github.com/Manuel-dev-ing",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,

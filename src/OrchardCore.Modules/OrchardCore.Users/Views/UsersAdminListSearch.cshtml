@@ -18,7 +18,7 @@
     <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" id="filter-dropdown" aria-haspopup="true" aria-expanded="false">
         <i class="fa-solid fa-filter" title="@T["Filters"]" aria-hidden="true"></i>
     </button>
-    <ul class="@string.Join(' ', dropdownClassList)" aria-labelledby="filter-dropdown">
+    <ul class="@string.Join(' ', dropdownClassList)">
         <li><a class="dropdown-item" href="?q=status:Enabled">@T["Only enabled users"]</a></li>
         <li><a class="dropdown-item" href="?q=status:Disabled">@T["Only disabled users"]</a></li>
         <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#modalUserIndexOptionsFilterSyntax">@T["Filter syntax"]</a></li>

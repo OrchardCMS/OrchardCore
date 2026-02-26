@@ -11,7 +11,7 @@ The editor returns the selection as a `string[]` on the model.
 #### Parameters
 
 | Parameter               | Type       | Description                                                                            |
-|-------------------------|------------|----------------------------------------------------------------------------------------|
+| ----------------------- | ---------- | -------------------------------------------------------------------------------------- |
 | `selectedContentTypes`  | `string[]` | The list of content types that should be marked as selected when rendering the editor. |
 | `htmlName`              | `string`   | The name of the model property to bind the result to.                                  |
 | `stereotype` (optional) | `string`   | A stereotype name to filter the list of content types available to select.             |
@@ -24,7 +24,7 @@ The editor returns the selection as a `string[]` on the model.
 
 ## Migrations
 
-Migration classes can be used to alter the content type definitions, like by adding new __types__, or configuring their __parts__ and __fields__.
+Migration classes can be used to alter the content type definitions, like by adding new **types**, or configuring their **parts** and **fields**.
 
 ### `IContentDefinitionManager`
 
@@ -84,7 +84,7 @@ await _contentDefinitionManager.AlterTypeDefinitionAsync("Product", type => type
 );
 ```
 
-Each part can also be configured in the context of a type. For instance the `AutoroutePart` requires a __Liquid__ template as its pattern to generate custom routes. It's defined in a custom setting for this part.
+Each part can also be configured in the context of a type. For instance the `AutoroutePart` requires a **Liquid** template as its pattern to generate custom routes. It's defined in a custom setting for this part.
 
 ```csharp
 await _contentDefinitionManager.AlterTypeDefinitionAsync("Product", type => type
@@ -127,7 +127,7 @@ When added to a part, fields can also have custom settings which for instance wi
 It's possible to get strongly typed versions of Content Parts and Fields from the above type definitions.
 
 !!! warning
-    These types may be modified in the CMS. It's important to make sure these types will not be modified outside of the development cycle when consuming them in code.
+These types may be modified in the CMS. It's important to make sure these types will not be modified outside of the development cycle when consuming them in code.
 
 First, create a part that matches the type definition:
 
@@ -174,7 +174,7 @@ public sealed class ProductController : Controller
     {
         var product = _orchardHelper.GetContentItemByIdAsync(productId);
 
-        if (product == null) 
+        if (product == null)
         {
             return NotFoundObjectResult();
         }
@@ -188,23 +188,23 @@ public sealed class ProductController : Controller
              Price = productPart.Price.Value,
         });
     }
-    
+
     [HttpPost("/api/product/{productId}/price/{price}")]
     public async Task<ContentValidateResult> UpdateProductPriceAsync(string productId, int price)
     {
         //this call will only fetch published content item, which makes publishing after update redundant
         var product = _orchardHelper.GetContentItemByIdAsync(productId);
 
-        if (product == null) 
+        if (product == null)
         {
             return NotFoundObjectResult();
         }
 
         var productPart = product.As<Product>();
         productPart.Price.Value = price;
-        
+
         product.Apply(productPart) //apply modified part to a content item
-        
+
         await _contentManager.UpdateAsync(product); //update will fire handlers which could alter the content item.
 
         //validation will cancel changes if product is not valid. It's fired after update since handlers could change the object.
@@ -212,6 +212,61 @@ public sealed class ProductController : Controller
     }
 }
 ```
+
+## Content Type Settings for Block Pickers
+
+Content types can be configured with a category and thumbnail for use in block picker modals (such as those used by the [Flows module](../Flow/README.md#blocks-editor)).
+
+### Category
+
+Content types can be organized into categories. To set a category:
+
+1. Navigate to **Content Definition** → **Content Types**
+2. Edit the content type
+3. In the **Content Type Settings** section, set the **Category** field
+
+Or programmatically:
+
+```csharp
+_contentDefinitionManager.AlterTypeDefinition("MyWidget", type => type
+    .WithCategory("Media")
+);
+```
+
+Content types with the same category are grouped together in the picker's sidebar.
+
+### Thumbnail
+
+Content types can display a thumbnail image in block pickers. To set a thumbnail:
+
+1. Navigate to **Content Definition** → **Content Types**
+2. Edit the content type
+3. In the **Content Type Settings** section, set the **Thumbnail Path** field to an image path (e.g., `/media/thumbnails/my-widget.png`)
+
+Or programmatically:
+
+```csharp
+_contentDefinitionManager.AlterTypeDefinition("MyWidget", type => type
+    .WithThumbnailPath("/media/thumbnails/my-widget.png")
+);
+```
+
+### Default Category and Thumbnail
+
+Default values for category and thumbnail can be configured in `appsettings.json` using `ContentTypesOptions`:
+
+```json
+{
+    "OrchardCore": {
+        "OrchardCore_ContentTypes": {
+            "DefaultCategory": "Widgets",
+            "DefaultThumbnailPath": "/media/thumbnails/default.png"
+        }
+    }
+}
+```
+
+These defaults are applied to content types that do not have an explicit category or thumbnail configured.
 
 ## Videos
 
