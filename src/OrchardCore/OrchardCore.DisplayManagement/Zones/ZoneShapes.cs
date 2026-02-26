@@ -78,21 +78,14 @@ public class ZoneShapes : IShapeAttributeProvider
             var orderedGroupings = groupings.OrderBy(grouping =>
             {
                 var firstGroupWithModifier = grouping.FirstOrDefault(group =>
-                {
-                    if (group is IShape s && !string.IsNullOrEmpty(s.Metadata.TabGrouping.Position))
-                    {
-                        return true;
-                    }
-
-                    return false;
-                });
+                    group is IShape s && !string.IsNullOrEmpty(s.Metadata.TabGrouping.Position));
 
                 if (firstGroupWithModifier is IShape shape)
                 {
-                    return new PositionalGrouping { Position = shape.Metadata.TabGrouping.Position };
+                    return shape.Metadata.TabGrouping.Position;
                 }
 
-                return new PositionalGrouping(null);
+                return null;
             }, FlatPositionComparer.Instance).ToArray();
 
             var container = (GroupingsViewModel)await ShapeFactory.CreateAsync<GroupingsViewModel>("TabContainer", m =>
@@ -164,21 +157,14 @@ public class ZoneShapes : IShapeAttributeProvider
             var orderedGroupings = groupings.OrderBy(grouping =>
             {
                 var firstGroupWithModifier = grouping.FirstOrDefault(group =>
-                {
-                    if (group is IShape s && !string.IsNullOrEmpty(s.Metadata.CardGrouping.Position))
-                    {
-                        return true;
-                    }
-
-                    return false;
-                });
+                    group is IShape s && !string.IsNullOrEmpty(s.Metadata.CardGrouping.Position));
 
                 if (firstGroupWithModifier is IShape shape)
                 {
-                    return new PositionalGrouping { Position = shape.Metadata.CardGrouping.Position };
+                    return shape.Metadata.CardGrouping.Position;
                 }
 
-                return new PositionalGrouping();
+                return null;
             }, FlatPositionComparer.Instance);
 
             var container = (GroupViewModel)await ShapeFactory.CreateAsync<GroupViewModel>("CardContainer", m =>
@@ -250,14 +236,8 @@ public class ZoneShapes : IShapeAttributeProvider
 
             var orderedGroupings = groupings.OrderBy(grouping =>
             {
-                if (positionModifiers.TryGetValue(grouping.Key, out var position))
-                {
-                    return new PositionalGrouping { Position = position };
-                }
-                else
-                {
-                    return new PositionalGrouping();
-                }
+                positionModifiers.TryGetValue(grouping.Key, out var position);
+                return position;
             }, FlatPositionComparer.Instance);
 
             var columnModifiers = GetColumnModifiers(orderedGroupings);
@@ -321,7 +301,9 @@ public class ZoneShapes : IShapeAttributeProvider
         var positionModifiers = new Dictionary<string, string>();
         foreach (var grouping in groupings)
         {
-            var firstGroupWithModifier = FirstGroupingWithPositionOrDefault(grouping);
+            var firstGroupWithModifier = grouping.FirstOrDefault(group =>
+                group is IShape s && !string.IsNullOrEmpty(s.Metadata.ColumnGrouping.Position));
+
             if (firstGroupWithModifier is IShape shape)
             {
                 var columnGrouping = shape.Metadata.ColumnGrouping;
@@ -337,7 +319,9 @@ public class ZoneShapes : IShapeAttributeProvider
         var columnModifiers = new Dictionary<string, string>();
         foreach (var grouping in groupings)
         {
-            var firstGroupWithModifier = FirstGroupingWithWidthOrDefault(grouping);
+            var firstGroupWithModifier = grouping.FirstOrDefault(group =>
+                group is IShape s && !string.IsNullOrEmpty(s.Metadata.ColumnGrouping.Width));
+
             if (firstGroupWithModifier is IShape shape)
             {
                 var columnGrouping = shape.Metadata.ColumnGrouping;
@@ -347,50 +331,4 @@ public class ZoneShapes : IShapeAttributeProvider
 
         return columnModifiers;
     }
-
-    private static object FirstGroupingWithPositionOrDefault(IGrouping<string, object> grouping)
-    {
-        return grouping.FirstOrDefault(group =>
-        {
-            if (group is IShape s && !string.IsNullOrEmpty(s.Metadata.ColumnGrouping.Position))
-            {
-                return true;
-            }
-
-            return false;
-        });
-    }
-
-    private static object FirstGroupingWithWidthOrDefault(IGrouping<string, object> grouping)
-    {
-        return grouping.FirstOrDefault(group =>
-        {
-            if (group is IShape s && !string.IsNullOrEmpty(s.Metadata.ColumnGrouping.Width))
-            {
-                return true;
-            }
-
-            return false;
-        });
-    }
-}
-
-internal sealed class PositionalGrouping : IPositioned
-{
-    public PositionalGrouping()
-    {
-    }
-
-    public PositionalGrouping(string key)
-    {
-        if (!string.IsNullOrEmpty(key))
-        {
-            var modifierIndex = key.IndexOf(';');
-            if (modifierIndex != -1)
-            {
-                Position = key[(modifierIndex + 1)..];
-            }
-        }
-    }
-    public string Position { get; set; }
 }
