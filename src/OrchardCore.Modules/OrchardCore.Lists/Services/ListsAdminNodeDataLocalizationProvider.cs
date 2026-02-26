@@ -16,7 +16,7 @@ public class ListsAdminNodeDataLocalizationProvider : AdminNodeDataLocalizationP
 
         return adminMenuList.SelectMany(m =>
         {
-            var context = string.Concat(Context, Constants.ContextSeparator, m.Name);
+            var context = string.Concat(OrchardCoreConstants.DataLocalizationContext.AdminMenu, Constants.ContextSeparator, m.Name);
 
             return m.MenuItems.OfType<ListsAdminNode>()
                 .Select(n => new DataLocalizedString(context, n.ContentType, string.Empty));

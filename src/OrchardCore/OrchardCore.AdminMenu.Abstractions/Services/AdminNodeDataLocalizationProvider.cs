@@ -6,8 +6,6 @@ public abstract class AdminNodeDataLocalizationProvider : ILocalizationDataProvi
 {
     private readonly IAdminMenuService _adminMenuService;
 
-    public static readonly string Context = "Admin Menu Items";
-
     public AdminNodeDataLocalizationProvider(IAdminMenuService adminMenuService)
     {
         _adminMenuService = adminMenuService;
