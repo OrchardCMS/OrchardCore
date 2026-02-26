@@ -62,6 +62,12 @@ public class SqlTranslator
                     {
                         _ctes ??= new HashSet<string>();
                         _ctes.Add(cte.Name);
+
+                        // Collect table aliases from within CTE query bodies
+                        foreach (var cteUnionStatement in cte.Query)
+                        {
+                            CollectTableAliases(cteUnionStatement.Statement.SelectStatement);
+                        }
                     }
                 }
 
