@@ -189,7 +189,6 @@ public class ContentItemsFieldType : FieldType
 
         var whereSqlClause = expressions.ToSqlString(predicateQuery);
 
-
         query = query.Where(whereSqlClause);
 
         // Add all parameters that were used in the predicate query.
@@ -303,8 +302,7 @@ public class ContentItemsFieldType : FieldType
                             if ((tableAlias == null && field.GetMetadata<bool>("PartCollapsed") && field.Name.Equals(property, StringComparison.OrdinalIgnoreCase)) ||
                                 (tableAlias != null && partName.ToFieldName().Equals(tableAlias, StringComparison.OrdinalIgnoreCase)))
                             {
-                                tableAlias = indexAliases.TryGetValue(partName, out var indexTableAlias) ? indexTableAlias : tableAlias;
-
+                                tableAlias = ResolveIndexAlias(partName, tableAlias, indexAliases);
                                 break;
                             }
                         }
@@ -337,9 +335,17 @@ public class ContentItemsFieldType : FieldType
                 }
                 else if (entry.Value.HasValues() && entry.Value.GetValueKind() == JsonValueKind.Object)
                 {
-                    // Loop through the part's properties, passing the name of the part as the table tableAlias.
-                    // This tableAlias can then be used with the table alias to index mappings to join with the correct table.
-                    BuildWhereExpressions(entry.Value, expressions, values[0], filterInputGraphType, indexAliases);
+                    tableAlias = values[0];
+                    var currentPartName = currentField?.GetMetadata<string>("PartName");
+
+                    if (currentPartName != null && tableAlias.Equals(currentPartName.ToFieldName(), StringComparison.OrdinalIgnoreCase))
+                    {
+                        tableAlias = ResolveIndexAlias(currentPartName, tableAlias, indexAliases);
+                    }
+
+                    // Loop through the part's properties, passing the name of the part as the table alias.
+                    // This alias can then be used with the table alias to index mappings to join with the correct table.
+                    BuildWhereExpressions(entry.Value, expressions, tableAlias, currentField?.ResolvedType as IFilterInputObjectGraphType ?? filterInputGraphType, indexAliases);
                 }
                 else
                 {
@@ -403,6 +409,13 @@ public class ContentItemsFieldType : FieldType
         }
     }
 
+    /// <summary>
+    /// Resolves the index alias for a given name from the set of known aliases,
+    /// returning <paramref name="fallback"/> if no match is found.
+    /// </summary>
+    private static string ResolveIndexAlias(string name, string fallback, HashSet<string> indexAliases)
+        => indexAliases.TryGetValue(name, out var alias) ? alias : fallback;
+
     private static IQuery<ContentItem, ContentItemIndex> OrderBy(IQuery<ContentItem, ContentItemIndex> query,
         IResolveFieldContext context)
     {
@@ -440,15 +453,13 @@ public class ContentItemsFieldType : FieldType
                         {
                             query = direction == OrderByDirection.Ascending
                                     ? query.OrderBy(selector)
-                                    : query.OrderByDescending(selector)
-                                ;
+                                    : query.OrderByDescending(selector);
                         }
                         else
                         {
                             query = direction == OrderByDirection.Ascending
                                     ? query.ThenBy(selector)
-                                    : query.ThenByDescending(selector)
-                                ;
+                                    : query.ThenByDescending(selector);
                         }
 
                         thenBy = true;
