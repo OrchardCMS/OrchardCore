@@ -5,10 +5,10 @@ namespace OrchardCore.FileStorage.FileSystem;
 
 public class FileSystemStore : IFileStore
 {
-    private readonly ILogger<FileSystemStore> _logger;
+    private readonly ILogger _logger;
     private readonly string _fileSystemPath;
 
-    public FileSystemStore(string fileSystemPath, ILogger<FileSystemStore> logger)
+    public FileSystemStore(string fileSystemPath, ILogger logger)
     {
         _logger = logger;
         _fileSystemPath = Path.GetFullPath(fileSystemPath);

@@ -116,7 +116,6 @@ public sealed class Startup : StartupBase
             var mediaEventHandlers = serviceProvider.GetServices<IMediaEventHandler>();
             var mediaCreatingEventHandlers = serviceProvider.GetServices<IMediaCreatingEventHandler>();
             var fileSystemStoreLogger = serviceProvider.GetRequiredService<ILogger<FileSystemStore>>();
-            var defaultMediaFileStoreLogger = serviceProvider.GetRequiredService<ILogger<DefaultMediaFileStore>>();
 
             var mediaPath = GetMediaPath(shellOptions.Value, shellSettings, mediaOptions.AssetsPath);
             var fileStore = new FileSystemStore(mediaPath, fileSystemStoreLogger);
@@ -132,7 +131,7 @@ public sealed class Startup : StartupBase
                 mediaUrlBase = fileStore.Combine(originalPathBase.Value, mediaUrlBase);
             }
 
-            return new DefaultMediaFileStore(fileStore, mediaUrlBase, mediaOptions.CdnBaseUrl, mediaEventHandlers, mediaCreatingEventHandlers, defaultMediaFileStoreLogger);
+            return new DefaultMediaFileStore(fileStore, mediaUrlBase, mediaOptions.CdnBaseUrl, mediaEventHandlers, mediaCreatingEventHandlers, fileSystemStoreLogger);
         });
 
         services.AddPermissionProvider<PermissionProvider>();
