@@ -6,7 +6,7 @@ public class AdminMenuDataLocalizationProvider : ILocalizationDataProvider
 {
     private readonly IAdminMenuService _adminMenuService;
 
-    private static readonly string _adminMenuContext = "Admin Menus";
+    internal static readonly string Context = "Admin Menus";
 
     public AdminMenuDataLocalizationProvider(IAdminMenuService adminMenuService)
     {
@@ -17,6 +17,6 @@ public class AdminMenuDataLocalizationProvider : ILocalizationDataProvider
     {
         var adminMenuList = await _adminMenuService.GetAdminMenuListAsync();
 
-        return adminMenuList.AdminMenu.Select(item => new DataLocalizedString(_adminMenuContext, item.Name, string.Empty));
+        return adminMenuList.AdminMenu.Select(item => new DataLocalizedString(Context, item.Name, string.Empty));
     }
 }
