@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using Cysharp.Text;
 
 namespace OrchardCore.DisplayManagement.Descriptors;
 
@@ -293,12 +294,10 @@ public class PlacementInfo
             return null;
         }
 
-        // Calculate the required length.
-        var length = 0;
-
+        using var sb = ZString.CreateStringBuilder();
         if (_isLayoutZone)
         {
-            length++; // '/'
+            sb.Append('/');
         }
 
         // Zones joined by '.'
@@ -306,88 +305,78 @@ public class PlacementInfo
         {
             if (i > 0)
             {
-                length++; // '.'
+                sb.Append('.');
             }
-            length += Zones[i].Length;
+            sb.Append(Zones[i]);
         }
 
         if (!string.IsNullOrEmpty(_position))
         {
-            length += 1 + _position.Length; // ':' + position
+            sb.Append(PositionDelimiter);
+            sb.Append(_position);
         }
 
         if (Tab.HasValue)
         {
-            length += 1 + Tab.GetLocationStringLength(); // '#' + tab
+            sb.Append(TabDelimiter);
+            sb.Append(Tab.Name);
+
+            if (!string.IsNullOrEmpty(Tab.Width))
+            {
+                sb.Append('_');
+                sb.Append(Tab.Width);
+            }
+
+            if (!string.IsNullOrEmpty(Tab.Position))
+            {
+                sb.Append(';');
+                sb.Append(Tab.Position);
+            }
         }
 
         if (!string.IsNullOrEmpty(Group))
         {
-            length += 1 + Group.Length; // '@' + group
+            sb.Append(GroupDelimiter);
+            sb.Append(Group);
         }
 
         if (Card.HasValue)
         {
-            length += 1 + Card.GetLocationStringLength(); // '%' + card
+            sb.Append(CardDelimiter);
+            sb.Append(Card.Name);
+
+            if (!string.IsNullOrEmpty(Card.Width))
+            {
+                sb.Append('_');
+                sb.Append(Card.Width);
+            }
+
+            if (!string.IsNullOrEmpty(Card.Position))
+            {
+                sb.Append(';');
+                sb.Append(Card.Position);
+            }
         }
 
         if (Column.HasValue)
         {
-            length += 1 + Column.GetLocationStringLength(); // '|' + column
+            sb.Append(ColumnDelimiter);
+            sb.Append(Column.Name);
+
+            if (!string.IsNullOrEmpty(Column.Width))
+            {
+                sb.Append('_');
+                sb.Append(Column.Width);
+            }
+
+            if (!string.IsNullOrEmpty(Column.Position))
+            {
+                sb.Append(';');
+                sb.Append(Column.Position);
+            }
         }
 
-        return string.Create(length, this, static (span, info) =>
-        {
-            var offset = 0;
-
-            if (info._isLayoutZone)
-            {
-                span[offset++] = '/';
-            }
-
-            // Write zones joined by '.')
-            for (var i = 0; i < info.Zones.Length; i++)
-            {
-                if (i > 0)
-                {
-                    span[offset++] = '.';
-                }
-                info.Zones[i].AsSpan().CopyTo(span[offset..]);
-                offset += info.Zones[i].Length;
-            }
-
-            if (!string.IsNullOrEmpty(info._position))
-            {
-                span[offset++] = PositionDelimiter;
-                info._position.AsSpan().CopyTo(span[offset..]);
-                offset += info._position.Length;
-            }
-
-            if (info.Tab.HasValue)
-            {
-                span[offset++] = TabDelimiter;
-                offset += info.Tab.WriteToSpan(span, offset);
-            }
-
-            if (!string.IsNullOrEmpty(info.Group))
-            {
-                span[offset++] = GroupDelimiter;
-                info.Group.AsSpan().CopyTo(span[offset..]);
-                offset += info.Group.Length;
-            }
-
-            if (info.Card.HasValue)
-            {
-                span[offset++] = CardDelimiter;
-                offset += info.Card.WriteToSpan(span, offset);
-            }
-
-            if (info.Column.HasValue)
-            {
-                span[offset++] = ColumnDelimiter;
-                info.Column.WriteToSpan(span, offset);
-            }
-        });
+        return sb.ToString();
     }
 
     private static void ParseLocation(string location, out string[] zones, out string position, out string group, out GroupingMetadata tabGrouping, out GroupingMetadata cardGrouping, out GroupingMetadata columnGrouping)

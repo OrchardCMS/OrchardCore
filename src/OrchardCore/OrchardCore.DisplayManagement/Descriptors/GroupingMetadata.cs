@@ -1,3 +1,5 @@
+using Cysharp.Text;
+
 namespace OrchardCore.DisplayManagement.Descriptors;
 
 /// <summary>
@@ -175,37 +177,22 @@ public readonly struct GroupingMetadata : IEquatable<GroupingMetadata>
             return Name;
         }
 
-        // Calculate length
-        var length = Name.Length;
+        using var sb = ZString.CreateStringBuilder();
+        sb.Append(Name);
+
         if (!string.IsNullOrEmpty(Width))
         {
-            length += 1 + Width.Length; // '_' + width
+            sb.Append('_');
+            sb.Append(Width);
         }
+
         if (!string.IsNullOrEmpty(Position))
         {
-            length += 1 + Position.Length; // ';' + position
+            sb.Append(';');
+            sb.Append(Position);
         }
 
-        return string.Create(length, this, static (span, metadata) =>
-        {
-            var offset = 0;
-
-            metadata.Name.AsSpan().CopyTo(span);
-            offset += metadata.Name.Length;
-
-            if (!string.IsNullOrEmpty(metadata.Width))
-            {
-                span[offset++] = '_';
-                metadata.Width.AsSpan().CopyTo(span[offset..]);
-                offset += metadata.Width.Length;
-            }
-
-            if (!string.IsNullOrEmpty(metadata.Position))
-            {
-                span[offset++] = ';';
-                metadata.Position.AsSpan().CopyTo(span[offset..]);
-            }
-        });
+        return sb.ToString();
     }
 
     /// <summary>
