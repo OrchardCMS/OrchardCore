@@ -39,29 +39,31 @@ public sealed class MarkdownFieldWysiwygEditorSettingsDriver : ContentPartFieldD
 
             if (!string.IsNullOrWhiteSpace(model.Options))
             {
-                try
-                {
-                    var options = model.Options.Trim();
+                var options = model.Options.Trim();
 
-                    if (!options.StartsWith('{') || !options.EndsWith('}'))
-                    {
-                        throw new ParseErrorException("The options must be a valid JavaScript object literal.");
-                    }
-
-                    var parser = new Parser();
-
-                    parser.ParseScript("var config = " + options);
-
-                    var settings = new MarkdownFieldWysiwygEditorSettings
-                    {
-                        Options = options,
-                    };
-
-                    context.Builder.WithSettings(settings);
-                }
-                catch (ParseErrorException)
+                if (!options.StartsWith('{') || !options.EndsWith('}'))
                 {
                     context.Updater.ModelState.AddModelError(Prefix, nameof(model.Options), S["The options are written in an incorrect format."]);
+                }
+                else
+                {
+                    try
+                    {
+                        var parser = new Parser();
+
+                        parser.ParseScript("var config = " + options);
+
+                        var settings = new MarkdownFieldWysiwygEditorSettings
+                        {
+                            Options = options,
+                        };
+
+                        context.Builder.WithSettings(settings);
+                    }
+                    catch (ParseErrorException)
+                    {
+                        context.Updater.ModelState.AddModelError(Prefix, nameof(model.Options), S["The options are written in an incorrect format."]);
+                    }
                 }
             }
             else
