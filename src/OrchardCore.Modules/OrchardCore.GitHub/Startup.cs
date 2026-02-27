@@ -2,6 +2,7 @@ using AspNet.Security.OAuth.GitHub;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.GitHub.Configuration;
 using OrchardCore.GitHub.Drivers;
@@ -36,6 +37,8 @@ public sealed class GitHubLoginStartup : StartupBase
 
         // Built-in initializers:
         services.AddTransient<IPostConfigureOptions<GitHubAuthenticationOptions>, OAuthPostConfigureOptions<GitHubAuthenticationOptions, GitHubAuthenticationHandler>>();
+
+        services.AddScoped<IDataMigration, Migrations>();
     }
 }
 

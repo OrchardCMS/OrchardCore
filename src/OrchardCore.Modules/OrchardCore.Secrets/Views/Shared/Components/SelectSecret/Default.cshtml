@@ -1,0 +1,8 @@
+@model OrchardCore.Secrets.ViewModels.SelectSecretViewModel
+
+<select id="@Model.HtmlId" name="@Model.HtmlName" class="form-select">
+    @foreach (var secret in Model.Secrets)
+    {
+        <option value="@secret.Value" selected="@secret.Selected">@secret.Text</option>
+    }
+</select>

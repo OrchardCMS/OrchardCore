@@ -1,8 +1,5 @@
-using System.Security.Cryptography;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -17,22 +14,16 @@ public sealed class MicrosoftAccountSettingsDisplayDriver : SiteDisplayDriver<Mi
 {
     private readonly IShellReleaseManager _shellReleaseManager;
     private readonly IAuthorizationService _authorizationService;
-    private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly ILogger _logger;
 
     public MicrosoftAccountSettingsDisplayDriver(
         IShellReleaseManager shellReleaseManager,
         IAuthorizationService authorizationService,
-        IDataProtectionProvider dataProtectionProvider,
-        IHttpContextAccessor httpContextAccessor,
-        ILogger<MicrosoftAccountSettingsDisplayDriver> logger)
+        IHttpContextAccessor httpContextAccessor)
     {
         _shellReleaseManager = shellReleaseManager;
         _authorizationService = authorizationService;
-        _dataProtectionProvider = dataProtectionProvider;
         _httpContextAccessor = httpContextAccessor;
-        _logger = logger;
     }
 
     protected override string SettingsGroupId
@@ -46,27 +37,12 @@ public sealed class MicrosoftAccountSettingsDisplayDriver : SiteDisplayDriver<Mi
             return null;
         }
 
+#pragma warning disable CS0618 // Type or member is obsolete
         return Initialize<MicrosoftAccountSettingsViewModel>("MicrosoftAccountSettings_Edit", model =>
         {
             model.AppId = settings.AppId;
-            if (!string.IsNullOrWhiteSpace(settings.AppSecret))
-            {
-                try
-                {
-                    var protector = _dataProtectionProvider.CreateProtector(MicrosoftAuthenticationConstants.Features.MicrosoftAccount);
-                    model.AppSecret = protector.Unprotect(settings.AppSecret);
-                }
-                catch (CryptographicException)
-                {
-                    _logger.LogError("The app secret could not be decrypted. It may have been encrypted using a different key.");
-                    model.AppSecret = string.Empty;
-                    model.HasDecryptionError = true;
-                }
-            }
-            else
-            {
-                model.AppSecret = string.Empty;
-            }
+            model.AppSecretSecretName = settings.AppSecretSecretName;
+            model.HasAppSecret = !string.IsNullOrWhiteSpace(settings.AppSecret);
             if (settings.CallbackPath.HasValue)
             {
                 model.CallbackPath = settings.CallbackPath.Value;
@@ -74,6 +50,7 @@ public sealed class MicrosoftAccountSettingsDisplayDriver : SiteDisplayDriver<Mi
             model.SaveTokens = settings.SaveTokens;
         }).Location("Content:5")
         .OnGroup(SettingsGroupId);
+#pragma warning restore CS0618 // Type or member is obsolete
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, MicrosoftAccountSettings settings, UpdateEditorContext context)
@@ -88,15 +65,9 @@ public sealed class MicrosoftAccountSettingsDisplayDriver : SiteDisplayDriver<Mi
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
         settings.AppId = model.AppId;
+        settings.AppSecretSecretName = model.AppSecretSecretName;
         settings.CallbackPath = model.CallbackPath;
         settings.SaveTokens = model.SaveTokens;
-
-        if (context.Updater.ModelState.IsValid)
-        {
-            var protector = _dataProtectionProvider.CreateProtector(MicrosoftAuthenticationConstants.Features.MicrosoftAccount);
-
-            settings.AppSecret = protector.Protect(model.AppSecret);
-        }
 
         _shellReleaseManager.RequestRelease();
 

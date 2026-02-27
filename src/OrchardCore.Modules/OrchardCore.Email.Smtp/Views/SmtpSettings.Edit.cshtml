@@ -131,11 +131,9 @@
                                 <span class="hint">@T["The username for authentication."]</span>
                             </div>
 
-                            <div class="mb-3" asp-validation-class-for="Password">
-                                <label asp-for="Password" class="form-label">@T["Password"]</label>
-                                <input asp-for="Password" class="form-control" type="password" autocomplete="off" />
-                                <span asp-validation-for="Password"></span>
-                                <span class="hint">@T["The password for authentication."]</span>
+                            <div class="alert alert-info">
+                                <i class="fa-solid fa-info-circle"></i>
+                                @T["Password is managed via the Secrets module. Enable <strong>OrchardCore.Email.Smtp.Secrets</strong> feature to configure the SMTP password securely."]
                             </div>
                         </div>
                     </div>

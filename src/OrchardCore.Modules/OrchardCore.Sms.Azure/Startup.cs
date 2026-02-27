@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Modules;
@@ -28,5 +29,7 @@ public sealed class Startup : StartupBase
 
             options.IsEnabled = options.ConfigurationExists();
         });
+
+        services.AddScoped<IDataMigration, Migrations>();
     }
 }

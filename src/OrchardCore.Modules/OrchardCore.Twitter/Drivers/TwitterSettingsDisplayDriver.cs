@@ -1,8 +1,5 @@
-using System.Security.Cryptography;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -17,22 +14,16 @@ public sealed class TwitterSettingsDisplayDriver : SiteDisplayDriver<TwitterSett
 {
     private readonly IShellReleaseManager _shellReleaseManager;
     private readonly IAuthorizationService _authorizationService;
-    private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly ILogger _logger;
 
     public TwitterSettingsDisplayDriver(
         IShellReleaseManager shellReleaseManager,
         IAuthorizationService authorizationService,
-        IDataProtectionProvider dataProtectionProvider,
-        IHttpContextAccessor httpContextAccessor,
-        ILogger<TwitterSettingsDisplayDriver> logger)
+        IHttpContextAccessor httpContextAccessor)
     {
         _shellReleaseManager = shellReleaseManager;
         _authorizationService = authorizationService;
-        _dataProtectionProvider = dataProtectionProvider;
         _httpContextAccessor = httpContextAccessor;
-        _logger = logger;
     }
 
     protected override string SettingsGroupId
@@ -47,48 +38,18 @@ public sealed class TwitterSettingsDisplayDriver : SiteDisplayDriver<TwitterSett
             return null;
         }
 
+#pragma warning disable CS0618 // Type or member is obsolete
         return Initialize<TwitterSettingsViewModel>("TwitterSettings_Edit", model =>
         {
             model.APIKey = settings.ConsumerKey;
-            if (!string.IsNullOrWhiteSpace(settings.ConsumerSecret))
-            {
-                try
-                {
-                    var protector = _dataProtectionProvider.CreateProtector(TwitterConstants.Features.Twitter);
-                    model.APISecretKey = protector.Unprotect(settings.ConsumerSecret);
-                }
-                catch (CryptographicException)
-                {
-                    _logger.LogError("The API secret key could not be decrypted. It may have been encrypted using a different key.");
-                    model.APISecretKey = string.Empty;
-                    model.HasDecryptionError = true;
-                }
-            }
-            else
-            {
-                model.APISecretKey = string.Empty;
-            }
+            model.ConsumerSecretSecretName = settings.ConsumerSecretSecretName;
+            model.HasConsumerSecret = !string.IsNullOrWhiteSpace(settings.ConsumerSecret);
             model.AccessToken = settings.AccessToken;
-            if (!string.IsNullOrWhiteSpace(settings.AccessTokenSecret))
-            {
-                try
-                {
-                    var protector = _dataProtectionProvider.CreateProtector(TwitterConstants.Features.Twitter);
-                    model.AccessTokenSecret = protector.Unprotect(settings.AccessTokenSecret);
-                }
-                catch (CryptographicException)
-                {
-                    _logger.LogError("The access token secret could not be decrypted. It may have been encrypted using a different key.");
-                    model.AccessTokenSecret = string.Empty;
-                    model.HasDecryptionError = true;
-                }
-            }
-            else
-            {
-                model.AccessTokenSecret = string.Empty;
-            }
+            model.AccessTokenSecretSecretName = settings.AccessTokenSecretSecretName;
+            model.HasAccessTokenSecret = !string.IsNullOrWhiteSpace(settings.AccessTokenSecret);
         }).Location("Content:5")
         .OnGroup(SettingsGroupId);
+#pragma warning restore CS0618 // Type or member is obsolete
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, TwitterSettings settings, UpdateEditorContext context)
@@ -103,15 +64,9 @@ public sealed class TwitterSettingsDisplayDriver : SiteDisplayDriver<TwitterSett
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
         settings.ConsumerKey = model.APIKey;
+        settings.ConsumerSecretSecretName = model.ConsumerSecretSecretName;
         settings.AccessToken = model.AccessToken;
-
-        if (context.Updater.ModelState.IsValid)
-        {
-            var protector = _dataProtectionProvider.CreateProtector(TwitterConstants.Features.Twitter);
-
-            settings.ConsumerSecret = protector.Protect(model.APISecretKey);
-            settings.AccessTokenSecret = protector.Protect(model.AccessTokenSecret);
-        }
+        settings.AccessTokenSecretSecretName = model.AccessTokenSecretSecretName;
 
         _shellReleaseManager.RequestRelease();
 
