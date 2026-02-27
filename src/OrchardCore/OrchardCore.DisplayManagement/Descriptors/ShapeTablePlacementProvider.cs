@@ -7,6 +7,7 @@ public class ShapeTablePlacementProvider : IShapePlacementProvider
 {
     private readonly IShapeTableManager _shapeTableManager;
     private readonly IThemeManager _themeManager;
+    private readonly Dictionary<ShapeTable, Task<IPlacementInfoResolver>> _resolvers = new();
 
     public ShapeTablePlacementProvider(
         IShapeTableManager shapeTableManager,
@@ -31,12 +32,19 @@ public class ShapeTablePlacementProvider : IShapePlacementProvider
                 return null;
             }
 
-            return Task.FromResult<IPlacementInfoResolver>(new ShapeTablePlacementResolver(shapeTable));
+            if (_resolvers.TryGetValue(shapeTable, out var resolver))
+            {
+                return resolver;
+            }
+
+            resolver = Task.FromResult<IPlacementInfoResolver>(new ShapeTablePlacementResolver(shapeTable));
+            _resolvers[shapeTable] = resolver;
+            return resolver;
         }
 
-        return BuildPlacementInfoResolverAwaitedAsync(shapeTableTask);
+        return BuildPlacementInfoResolverAwaitedAsync(shapeTableTask, _resolvers);
 
-        static async Task<IPlacementInfoResolver> BuildPlacementInfoResolverAwaitedAsync(Task<ShapeTable> shapeTableTask)
+        static async Task<IPlacementInfoResolver> BuildPlacementInfoResolverAwaitedAsync(Task<ShapeTable> shapeTableTask, Dictionary<ShapeTable, Task<IPlacementInfoResolver>> resolvers)
         {
             var shapeTable = await shapeTableTask;
 
@@ -46,7 +54,9 @@ public class ShapeTablePlacementProvider : IShapePlacementProvider
                 return null;
             }
 
-            return new ShapeTablePlacementResolver(shapeTable);
+            var resolver = new ShapeTablePlacementResolver(shapeTable);
+            resolvers[shapeTable] = Task.FromResult<IPlacementInfoResolver>(resolver);
+            return resolver;
         }
     }
 
@@ -64,11 +74,13 @@ public class ShapeTablePlacementProvider : IShapePlacementProvider
             if (_shapeTable.Descriptors.TryGetValue(placementContext.ShapeType, out var descriptor))
             {
                 var placement = descriptor.Placement(placementContext);
-                if (placement != null)
+                
+                if (placement != null && !string.IsNullOrEmpty(placementContext.Source))
                 {
-                    placement.Source = placementContext.Source;
-                    return placement;
+                    return placement.WithSource(placementContext.Source);
                 }
+                
+                return placement;
             }
 
             return null;
