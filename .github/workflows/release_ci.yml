@@ -23,11 +23,9 @@ jobs:
     - name: Get the version
       id: get_version
       run: |
-        arrTag=(${GITHUB_REF//\// })
-        VERSION="${arrTag[2]}"
-        VERSION="${VERSION//v}"
-        echo VERSION:${VERSION}
-        echo "VERSION=${VERSION}" >> $GITHUB_OUTPUT
+          # Strip leading 'v' if present
+          VERSION="${GITHUB_REF_NAME#v}"
+          echo "VERSION=${VERSION}" >> $GITHUB_OUTPUT
       shell: bash
     - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
     - uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0

@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Infrastructure;
 
 namespace OrchardCore.Sms.Services;
 
@@ -21,10 +22,10 @@ public class LogSmsProvider : ISmsProvider
         _logger = logger;
     }
 
-    public Task<SmsResult> SendAsync(SmsMessage message)
+    public Task<Result> SendAsync(SmsMessage message)
     {
         _logger.LogWarning("A message with the body '{Body}' was set to '{PhoneNumber}'.", message.Body, message.To);
 
-        return Task.FromResult(SmsResult.Success);
+        return Task.FromResult(Result.Success());
     }
 }

@@ -376,8 +376,8 @@ public class DefaultShapeTableManagerTests : IDisposable
 
         _serviceProvider.GetService<TestShapeProvider>().Discover =
             builder => builder.Describe("Hello1").From(TestFeature())
-                .Placement(ctx => ctx.DisplayType == "Detail" ? new PlacementInfo { Location = "Main" } : null)
-                .Placement(ctx => ctx.DisplayType == "Summary" ? new PlacementInfo { Location = string.Empty } : null);
+                .Placement(ctx => ctx.DisplayType == "Detail" ? new PlacementInfo("Main") : null)
+                .Placement(ctx => ctx.DisplayType == "Summary" ? new PlacementInfo(string.Empty) : null);
 
         var manager = _serviceProvider.GetService<IShapeTableManager>();
         var hello = (await manager.GetShapeTableAsync(null)).Descriptors["Hello1"];
@@ -406,8 +406,8 @@ public class DefaultShapeTableManagerTests : IDisposable
 
         _serviceProvider.GetService<TestShapeProvider>().Discover =
             builder => builder.Describe("Hello2").From(TestFeature())
-                .Placement(ctx => ctx.DisplayType == "Detail", new PlacementInfo { Location = "Main" })
-                .Placement(ctx => ctx.DisplayType == "Summary", new PlacementInfo { Location = string.Empty });
+                .Placement(ctx => ctx.DisplayType == "Detail", new PlacementInfo("Main"))
+                .Placement(ctx => ctx.DisplayType == "Summary", new PlacementInfo(string.Empty));
 
         var manager = _serviceProvider.GetService<IShapeTableManager>();
         var hello = (await manager.GetShapeTableAsync(null)).Descriptors["Hello2"];
@@ -454,7 +454,7 @@ public class DefaultShapeTableManagerTests : IDisposable
 
             _serviceProvider.GetService<TestShapeProvider>().Discover =
                 builder => builder.Describe("Hello").From(TestFeature())
-                               .Placement(ctx => true, new PlacementInfo { Location = "Match" });
+                               .Placement(ctx => true, new PlacementInfo("Match"));
 
             var manager = _serviceProvider.GetService<IShapeTableManager>();
             var hello = (await manager.GetShapeTableAsync(null)).Descriptors["Hello"];

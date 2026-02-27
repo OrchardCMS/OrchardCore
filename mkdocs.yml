@@ -153,6 +153,7 @@ nav:
       - Microsoft Entra ID (Azure AD) integration: guides/microsoft-entra-id-integration/README.md
       - Create a Liquid Widget: guides/create-liquid-widget/README.md
       - Query Content Items Based on Taxonomy: guides/query-content-items-based-on-taxonomy/README.md
+      - Data Protection: guides/data-protection/README.md
       - Manage Assets and NPM dependencies:
         - Assets manager: guides/assets-manager/README.md
         - Using NPM aliases: guides/assets-manager/NPM_ALIASING_GUIDE.md
