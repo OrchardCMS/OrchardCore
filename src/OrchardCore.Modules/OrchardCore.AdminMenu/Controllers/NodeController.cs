@@ -225,10 +225,14 @@ public sealed class NodeController : Controller
             await _adminMenuService.SaveAsync(adminMenu);
 
             await _notifier.SuccessAsync(H["Admin node updated successfully."]);
+
             if (submit == "SaveAndContinue")
             {
-                model.Editor = editor;
-                return View(model);
+                return RedirectToAction(nameof(Edit), new
+                {
+                    id = model.AdminMenuId,
+                    treeNodeId = model.AdminNodeId,
+                });
             }
             else
             {
