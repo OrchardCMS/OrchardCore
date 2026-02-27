@@ -29,7 +29,7 @@ public class ShapeTablePlacementProvider : IShapePlacementProvider
             // If there is no active theme, do nothing
             if (shapeTable == null)
             {
-                return null;
+                return Task.FromResult<IPlacementInfoResolver>(null);
             }
 
             if (_resolvers.TryGetValue(shapeTable, out var resolver))
@@ -74,12 +74,12 @@ public class ShapeTablePlacementProvider : IShapePlacementProvider
             if (_shapeTable.Descriptors.TryGetValue(placementContext.ShapeType, out var descriptor))
             {
                 var placement = descriptor.Placement(placementContext);
-                
+
                 if (placement != null && !string.IsNullOrEmpty(placementContext.Source))
                 {
                     return placement.WithSource(placementContext.Source);
                 }
-                
+
                 return placement;
             }
 
