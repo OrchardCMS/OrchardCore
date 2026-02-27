@@ -52,55 +52,36 @@ public class StyleTagHelper : TagHelper
 
         if (!hasName && hasSource)
         {
-            // Include custom style.
             // <style asp-src="~/example.css" at="Head"></style>
+            RequireSettings setting;
 
-            var setting = _resourceManager.RegisterUrl("stylesheet", Src, DebugSrc);
-
-            foreach (var attribute in output.Attributes)
+            if (string.IsNullOrEmpty(DependsOn))
             {
-                setting.SetAttribute(attribute.Name, attribute.Value.ToString());
-            }
-
-            if (At != ResourceLocation.Unspecified)
-            {
-                setting.AtLocation(At);
+                // Include custom style url.
+                setting = _resourceManager.RegisterUrl("stylesheet", Src, DebugSrc);
             }
             else
             {
-                setting.AtLocation(ResourceLocation.Head);
+                // Anonymous declaration with dependencies, then display.
+
+                // Using the source as the name to prevent duplicate references to the same file.
+                var name = Src.ToLowerInvariant();
+
+                PopulateResourceDefinition(_resourceManager.InlineManifest.DefineStyle(name));
+
+                setting = _resourceManager.RegisterResource("stylesheet", name);
             }
 
-            if (!string.IsNullOrEmpty(Condition))
-            {
-                setting.UseCondition(Condition);
-            }
+            PopulateRequireSettings(setting, output, hasName: false);
 
-            if (AppendVersion.HasValue == true)
+            if (AppendVersion.HasValue)
             {
                 setting.ShouldAppendVersion(AppendVersion);
             }
 
-            if (Debug != null)
-            {
-                setting.UseDebugMode(Debug.Value);
-            }
-
-            if (!string.IsNullOrEmpty(Culture))
-            {
-                setting.UseCulture(Culture);
-            }
-
-            if (!string.IsNullOrEmpty(DependsOn))
-            {
-                setting.SetDependencies(DependsOn.Split(ResourceManagementConstants.ParameterValuesSeparator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries));
-            }
-
             if (At == ResourceLocation.Inline)
             {
-                using var sw = new StringWriter();
-                _resourceManager.RenderLocalStyle(setting, sw);
-                output.Content.AppendHtml(sw.ToString());
+                RenderStyle(output, setting);
             }
         }
         else if (hasName && !hasSource)
@@ -110,41 +91,9 @@ public class StyleTagHelper : TagHelper
 
             var setting = _resourceManager.RegisterResource("stylesheet", Name);
 
-            foreach (var attribute in output.Attributes)
-            {
-                setting.SetAttribute(attribute.Name, attribute.Value.ToString());
-            }
+            PopulateRequireSettings(setting, output, hasName: true);
 
-            if (At != ResourceLocation.Unspecified)
-            {
-                setting.AtLocation(At);
-            }
-            else
-            {
-                setting.AtLocation(ResourceLocation.Head);
-            }
-
-            if (UseCdn != null)
-            {
-                setting.UseCdn(UseCdn.Value);
-            }
-
-            if (!string.IsNullOrEmpty(Condition))
-            {
-                setting.UseCondition(Condition);
-            }
-
-            if (Debug != null)
-            {
-                setting.UseDebugMode(Debug.Value);
-            }
-
-            if (!string.IsNullOrEmpty(Culture))
-            {
-                setting.UseCulture(Culture);
-            }
-
-            if (AppendVersion.HasValue == true)
+            if (AppendVersion.HasValue)
             {
                 setting.ShouldAppendVersion(AppendVersion);
             }
@@ -160,90 +109,45 @@ public class StyleTagHelper : TagHelper
                 setting.SetDependencies(DependsOn.Split(ResourceManagementConstants.ParameterValuesSeparator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries));
             }
 
-            var childContent = await output.GetChildContentAsync();
-            if (!childContent.IsEmptyOrWhiteSpace)
+            // Allow Inline to work with both named styles, and named inline styles.
+            if (At != ResourceLocation.Unspecified)
             {
-                // Inline named style definition.
-                _resourceManager.InlineManifest.DefineStyle(Name)
-                    .SetInnerContent(childContent.GetContent());
-            }
+                // Named inline declaration.
+                var childContent = await output.GetChildContentAsync();
+                if (!childContent.IsEmptyOrWhiteSpace)
+                {
+                    // Inline content definition.
+                    _resourceManager.InlineManifest.DefineStyle(Name)
+                       .SetInnerContent(childContent.GetContent());
+                }
 
-            if (At == ResourceLocation.Inline)
+                if (At == ResourceLocation.Inline)
+                {
+                    RenderStyle(output, setting);
+                }
+            }
+            else
             {
-                using var sw = new StringWriter();
-                _resourceManager.RenderLocalStyle(setting, sw);
-                output.Content.AppendHtml(sw.ToString());
+                RenderStyle(output, setting);
             }
         }
         else if (hasName && hasSource)
         {
             // Inline declaration.
 
-            var definition = _resourceManager.InlineManifest.DefineStyle(Name);
-            definition.SetUrl(Src, DebugSrc);
+            PopulateResourceDefinition(_resourceManager.InlineManifest.DefineStyle(Name));
 
-            foreach (var attribute in output.Attributes)
-            {
-                definition.SetAttribute(attribute.Name, attribute.Value.ToString());
-            }
-
-            if (!string.IsNullOrEmpty(Version))
-            {
-                definition.SetVersion(Version);
-            }
-
-            if (!string.IsNullOrEmpty(CdnSrc))
-            {
-                definition.SetCdn(CdnSrc, DebugCdnSrc);
-            }
-
-            if (!string.IsNullOrEmpty(Culture))
-            {
-                definition.SetCultures(Culture.Split(ResourceManagementConstants.ParameterValuesSeparator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries));
-            }
-
-            if (!string.IsNullOrEmpty(DependsOn))
-            {
-                definition.SetDependencies(DependsOn.Split(ResourceManagementConstants.ParameterValuesSeparator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries));
-            }
-
-            // Also include the style.
-            var setting = _resourceManager.RegisterResource("stylesheet", Name);
-
-            if (UseCdn != null)
-            {
-                setting.UseCdn(UseCdn.Value);
-            }
-
-            if (!string.IsNullOrEmpty(Condition))
-            {
-                setting.UseCondition(Condition);
-            }
-
-            if (Debug != null)
-            {
-                setting.UseDebugMode(Debug.Value);
-            }
-
-            if (!string.IsNullOrEmpty(Culture))
-            {
-                setting.UseCulture(Culture);
-            }
-
+            // If At is specified then we also render it.
             if (At != ResourceLocation.Unspecified)
             {
-                setting.AtLocation(At);
-            }
-            else
-            {
-                setting.AtLocation(ResourceLocation.Head);
-            }
+                var setting = _resourceManager.RegisterResource("stylesheet", Name);
 
-            if (At == ResourceLocation.Inline)
-            {
-                using var sw = new StringWriter();
-                _resourceManager.RenderLocalStyle(setting, sw);
-                output.Content.AppendHtml(sw.ToString());
+                PopulateRequireSettings(setting, output, hasName: true);
+
+                if (At == ResourceLocation.Inline)
+                {
+                    RenderStyle(output, setting);
+                }
             }
         }
         else
@@ -298,5 +202,79 @@ public class StyleTagHelper : TagHelper
                 _resourceManager.RegisterStyle(builder);
             }
         }
+    }
+
+    private void PopulateResourceDefinition(ResourceDefinition definition)
+    {
+        definition.SetUrl(Src, DebugSrc);
+
+        if (!string.IsNullOrEmpty(CdnSrc))
+        {
+            definition.SetCdn(CdnSrc, DebugCdnSrc);
+        }
+
+        if (!string.IsNullOrEmpty(Culture))
+        {
+            definition.SetCultures(Culture.Split(ResourceManagementConstants.ParameterValuesSeparator, StringSplitOptions.RemoveEmptyEntries));
+        }
+
+        if (!string.IsNullOrEmpty(DependsOn))
+        {
+            definition.SetDependencies(DependsOn.Split(ResourceManagementConstants.ParameterValuesSeparator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries));
+        }
+
+        if (AppendVersion.HasValue)
+        {
+            definition.ShouldAppendVersion(AppendVersion);
+        }
+
+        if (!string.IsNullOrEmpty(Version))
+        {
+            definition.SetVersion(Version);
+        }
+    }
+
+    private void PopulateRequireSettings(RequireSettings setting, TagHelperOutput output, bool hasName)
+    {
+        if (At != ResourceLocation.Unspecified)
+        {
+            setting.AtLocation(At);
+        }
+        else
+        {
+            setting.AtLocation(ResourceLocation.Head);
+        }
+
+        if (hasName && UseCdn != null)
+        {
+            setting.UseCdn(UseCdn.Value);
+        }
+
+        if (!string.IsNullOrEmpty(Condition))
+        {
+            setting.UseCondition(Condition);
+        }
+
+        if (Debug != null)
+        {
+            setting.UseDebugMode(Debug.Value);
+        }
+
+        if (!string.IsNullOrEmpty(Culture))
+        {
+            setting.UseCulture(Culture);
+        }
+
+        foreach (var attribute in output.Attributes)
+        {
+            setting.SetAttribute(attribute.Name, attribute.Value.ToString());
+        }
+    }
+
+    private void RenderStyle(TagHelperOutput output, RequireSettings setting)
+    {
+        using var sw = new StringWriter();
+        _resourceManager.RenderLocalStyle(setting, sw);
+        output.Content.AppendHtml(sw.ToString());
     }
 }
