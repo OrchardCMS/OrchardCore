@@ -321,12 +321,6 @@ public class PlacementInfo
             sb.Append(TabDelimiter);
             sb.Append(Tab.Name);
 
-            if (!string.IsNullOrEmpty(Tab.Width))
-            {
-                sb.Append('_');
-                sb.Append(Tab.Width);
-            }
-
             if (!string.IsNullOrEmpty(Tab.Position))
             {
                 sb.Append(';');
@@ -344,12 +338,6 @@ public class PlacementInfo
         {
             sb.Append(CardDelimiter);
             sb.Append(Card.Name);
-
-            if (!string.IsNullOrEmpty(Card.Width))
-            {
-                sb.Append('_');
-                sb.Append(Card.Width);
-            }
 
             if (!string.IsNullOrEmpty(Card.Position))
             {
