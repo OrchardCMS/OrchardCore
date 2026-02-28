@@ -1,8 +1,0 @@
-{
-  "SiteSettings_SaveButton": [
-    {
-      "path": "/Admin/Settings/localization*",
-      "placement": "-"
-    }
-  ]
-}
