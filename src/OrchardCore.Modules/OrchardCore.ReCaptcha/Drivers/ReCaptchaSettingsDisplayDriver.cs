@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
@@ -17,15 +18,18 @@ public sealed class ReCaptchaSettingsDisplayDriver : SiteDisplayDriver<ReCaptcha
     private readonly IShellReleaseManager _shellReleaseManager;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
+    private readonly IDataProtectionProvider _dataProtectionProvider;
 
     public ReCaptchaSettingsDisplayDriver(
         IShellReleaseManager shellReleaseManager,
         IHttpContextAccessor httpContextAccessor,
-        IAuthorizationService authorizationService)
+        IAuthorizationService authorizationService,
+        IDataProtectionProvider dataProtectionProvider)
     {
         _shellReleaseManager = shellReleaseManager;
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
+        _dataProtectionProvider = dataProtectionProvider;
     }
 
     protected override string SettingsGroupId
@@ -63,8 +67,17 @@ public sealed class ReCaptchaSettingsDisplayDriver : SiteDisplayDriver<ReCaptcha
 
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
+        var protector = _dataProtectionProvider.CreateProtector(ReCaptchaSettingsConfiguration.ProtectorName);
+
+        if (!string.IsNullOrWhiteSpace(model.SecretKey))
+        {
+            if (settings.SecretKey != model.SecretKey)
+            {
+                settings.SecretKey = protector.Protect(model.SecretKey);
+            }
+        }
+
         settings.SiteKey = model.SiteKey?.Trim();
-        settings.SecretKey = model.SecretKey?.Trim();
 
         _shellReleaseManager.RequestRelease();
 
