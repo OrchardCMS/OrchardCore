@@ -1,12 +1,8 @@
 @using System.Text.Json.Serialization
 @model dynamic
 
-<div class="row w-100 g-0 d-flex align-items-center">
-    <div class="col-md-11">
-        @await DisplayAsync(Model.Content)
-    </div>
-
-    <div class="col-md-1 text-end">
+<div class="w-100">
+    <div class="float-end">
         @if (Model.DeploymentStep is not IUnknownTypePlaceholder)
         {
             <a asp-action="Edit"
@@ -23,4 +19,6 @@
            class="btn btn-danger btn-sm"
            data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
     </div>
+
+    @await DisplayAsync(Model.Content)
 </div>

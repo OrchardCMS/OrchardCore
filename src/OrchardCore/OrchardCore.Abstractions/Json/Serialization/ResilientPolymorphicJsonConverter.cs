@@ -28,6 +28,8 @@ public sealed class ResilientPolymorphicJsonConverterFactory : JsonConverterFact
 
     public override JsonConverter CreateConverter(Type typeToConvert, JsonSerializerOptions options)
     {
+        // We don't need to cache the result since JsonSerializerOptions caches converters per type.
+        // This method is called at most once per type per JsonSerializerOptions instance.
         _derivedTypesOptions.TryGetDerivedTypes(typeToConvert, out var derivedTypes);
 
         var discriminatorToType = new Dictionary<string, Type>();
