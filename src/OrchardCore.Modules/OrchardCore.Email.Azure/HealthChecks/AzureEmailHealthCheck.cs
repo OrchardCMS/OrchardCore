@@ -20,7 +20,7 @@ public class AzureEmailHealthCheck : IHealthCheck
             }
             else
             {
-                return HealthCheckResult.Unhealthy(description: $"Unable to connect to Azure Email service.");
+                return HealthCheckResult.Unhealthy(description: "Unable to connect to Azure Email service.");
             }
         }
         catch (Exception ex)
