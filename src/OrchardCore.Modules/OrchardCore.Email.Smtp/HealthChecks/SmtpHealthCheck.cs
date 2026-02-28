@@ -33,7 +33,7 @@ public class SmtpHealthCheck : IHealthCheck
 
             if (!client.IsConnected)
             {
-                return HealthCheckResult.Unhealthy(description: $"The client is not connected to the SMTP server.");
+                return HealthCheckResult.Unhealthy(description: "The client is not connected to the SMTP server.");
             }
 
             if (_smtpOptions.RequireCredentials)
