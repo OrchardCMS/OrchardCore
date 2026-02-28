@@ -3511,6 +3511,24 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "Manuel-dev-ing",
+      "name": "Manuel Tamayo Montero",
+      "avatar_url": "https://avatars.githubusercontent.com/u/173723192?v=4",
+      "profile": "https://github.com/Manuel-dev-ing",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "lamualfa",
+      "name": "Laode Muhammad Al Fatih",
+      "avatar_url": "https://avatars.githubusercontent.com/u/39755201?v=4",
+      "profile": "https://lamualfa.co",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,
