@@ -29,3 +29,7 @@ For more information about configurations, please refer to [Configuration](../Co
 
 !!! note
     Configuration of the **Default Azure Communication Services** provider cannot be performed through Admin Settings. Instead, use the configuration provider for setup. Note that the provider will only appear if the configuration is present.
+
+## Health Checks
+
+This module provides a health check to report the status for the Redis server. Refer also to the [Health Checks Section](../HealthChecks/README.md).
