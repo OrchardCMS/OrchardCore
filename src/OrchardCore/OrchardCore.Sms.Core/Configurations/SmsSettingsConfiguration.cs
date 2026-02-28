@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Options;
 using OrchardCore.Settings;
 
-namespace OrchardCore.Sms.Services;
+namespace OrchardCore.Sms.Configurations;
 
 public class SmsSettingsConfiguration : IPostConfigureOptions<SmsSettings>
 {

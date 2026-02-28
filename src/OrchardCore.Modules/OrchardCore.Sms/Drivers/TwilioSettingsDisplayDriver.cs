@@ -12,6 +12,7 @@ using OrchardCore.Entities;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Settings;
+using OrchardCore.Sms.Configurations;
 using OrchardCore.Sms.Models;
 using OrchardCore.Sms.Services;
 using OrchardCore.Sms.ViewModels;
@@ -126,7 +127,7 @@ public sealed class TwilioSettingsDisplayDriver : SiteDisplayDriver<TwilioSettin
 
             if (!string.IsNullOrWhiteSpace(model.AuthToken))
             {
-                var protector = _dataProtectionProvider.CreateProtector(TwilioSmsProvider.ProtectorName);
+                var protector = _dataProtectionProvider.CreateProtector(TwilioOptionsConfiguration.ProtectorName);
 
                 var protectedToken = protector.Protect(model.AuthToken);
                 hasChanges |= settings.AuthToken != protectedToken;
