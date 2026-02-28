@@ -77,7 +77,7 @@ public sealed class ReCaptchaSettingsDisplayDriver : SiteDisplayDriver<ReCaptcha
             }
         }
 
-        settings.SiteKey = model.SiteKey?.Trim();
+        settings.SiteKey = model.SiteKey.Trim();
 
         _shellReleaseManager.RequestRelease();
 
