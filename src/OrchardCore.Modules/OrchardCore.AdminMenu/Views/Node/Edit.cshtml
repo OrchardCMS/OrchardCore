@@ -11,6 +11,11 @@
     <input type="hidden" asp-for="AdminNodeType" />
 
     <div class="mb-3">
+        <label asp-for="CustomAdminMenuName" class="form-label">@T["Custom Menu Name"]</label>
+        <input asp-for="CustomAdminMenuName" class="form-control" />
+        <span class="hint">@T["The custom name of this link to be displayed in the admin menu, overriding the default name."]</span>
+    </div>
+    <div class="mb-3">
         <label asp-for="Priority" class="form-label">@T["Selection Priority"]</label>
         <input asp-for="Priority" class="form-control col-md-2">
         <span class="hint">@T["The priority of this link to be displayed as active instead of another one when both are pointing to the same url. The link with the highest value has the active status in the navigation."]</span>

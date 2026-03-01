@@ -184,6 +184,7 @@ public sealed class NodeController : Controller
             AdminNodeType = treeNode.GetType().Name,
             Priority = treeNode.Priority,
             Position = treeNode.Position,
+            CustomAdminMenuName = treeNode.CustomAdminMenuName,
             Editor = await _displayManager.BuildEditorAsync(treeNode, updater: _updateModelAccessor.ModelUpdater, isNew: false, "", ""),
         };
 
@@ -221,6 +222,7 @@ public sealed class NodeController : Controller
         {
             treeNode.Priority = model.Priority;
             treeNode.Position = model.Position;
+            treeNode.CustomAdminMenuName = model.CustomAdminMenuName;
 
             await _adminMenuService.SaveAsync(adminMenu);
 
