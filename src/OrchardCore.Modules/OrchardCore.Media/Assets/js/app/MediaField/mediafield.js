@@ -44,7 +44,7 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple,
                         return JSON.stringify(initialPaths);
                     }
                     this.mediaItems.forEach(function (x) {
-                        if (x.mediaPath === 'not-found') {
+                        if (x.errorType === 'not-found') {
                             return;
                         }
                         mediaPaths.push({ path: x.mediaPath, mediaText: x.mediaText, anchor: x.anchor });
@@ -84,7 +84,13 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple,
                                 },
                                 error: function (error) {
                                     console.log(error);
-                                    items.splice(i, 1, { name: x.path, mime: '', mediaPath: 'not-found', mediaText: '', anchor: { x: 0, y: 0 } });
+                                    var item;
+                                    if (error.status === 404) {
+                                        item = { name: x.path, mime: '', mediaPath: '', errorType: 'not-found', mediaText: '', anchor: { x: 0, y: 0 } };
+                                    } else {
+                                        item = { name: x.path, mime: '', mediaPath: x.path, errorType: 'transient', mediaText: x.mediaText, anchor: x.anchor };
+                                    }
+                                    items.splice(i, 1, item);
                                     if (items.length === ++length) {
                                         items.forEach(function (x) {
                                             self.mediaItems.push(x);

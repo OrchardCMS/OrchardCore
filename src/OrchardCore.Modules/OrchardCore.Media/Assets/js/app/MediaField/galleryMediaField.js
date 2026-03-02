@@ -4,24 +4,26 @@ Vue.component("mediaFieldGalleryListItem", {
     template:
     /*html*/
     `
-        <li class="list-group-item d-flex p-0 overflow-hidden align-items-center" v-if="!media.isRemoved" :class="media.mediaPath=='not-found' ? 'text-danger' : ''">
+        <li class="list-group-item d-flex p-0 overflow-hidden align-items-center" v-if="!media.isRemoved" :class="media.errorType==='not-found' ? 'text-danger' : (media.errorType==='transient' ? 'text-warning' : '')">
             <div class="media-preview flex-shrink-0">
                 <img
-                    v-if="media.mime.startsWith('image')"
+                    v-if="media.mime.startsWith('image') && !media.errorType"
                     :src="buildMediaUrl(media.url, media.anchor)"
                     :data-mime="media.mime"
                     class="w-100 object-fit-scale"
                 />
-                <i v-else-if="media.mediaPath=='not-found'" :title="media.name" class="fa-solid fa-triangle-exclamation"></i>
+                <i v-else-if="media.errorType==='transient'" :title="media.name" class="fa-solid fa-triangle-exclamation"></i>
+                <i v-else-if="media.errorType==='not-found'" :title="media.name" class="fa-solid fa-triangle-exclamation"></i>
                 <i v-else :class="$parent.getfontAwesomeClassNameForFileName(media.name, 'fa-4x card-text')" :data-mime="media.mime"></i>
             </div>
             <div class="me-auto flex-shrink-1">
-                <span v-if="media.mediaPath=='not-found'" class="media-filename card-text small">{{ $parent.T.mediaNotFound }} - {{ $parent.T.discardWarning }}</span>
+                <span v-if="media.errorType==='transient'" class="media-filename card-text small">{{ $parent.T.mediaTemporarilyUnavailable }}</span>
+                <span v-else-if="media.errorType==='not-found'" class="media-filename card-text small">{{ $parent.T.mediaNotFound }} - {{ $parent.T.discardWarning }}</span>
                 <span v-else class="media-filename card-text small" :title="media.name">{{ media.name }}</span>
             </div>
             <div class="media-field-gallery-list-actions flex-shrink-0">
                 <a
-                    v-show="allowMediaText && media.mediaPath!=='not-found'"
+                    v-show="allowMediaText && !media.errorType"
                     class="btn btn-light btn-sm inline-media-button view-button"
                     v-on:click.prevent.stop="$parent.showMediaTextModal(media)"
                     href="javascript:;"
@@ -36,7 +38,7 @@ Vue.component("mediaFieldGalleryListItem", {
                 </a>
                 <a
                     href="javascript:;"
-                    v-show="allowAnchors && media.mime.startsWith('image') && media.mediaPath!=='not-found'"
+                    v-show="allowAnchors && media.mime.startsWith('image') && !media.errorType"
                     v-on:click="$parent.showAnchorModal(media)"
                     class="btn btn-light btn-sm inline-media-button view-button"
                     title="Set anchor"
@@ -46,7 +48,7 @@ Vue.component("mediaFieldGalleryListItem", {
                 <a
                     :href="media.url"
                     target="_blank"
-                    v-show="media.mediaPath!=='not-found'"
+                    v-show="!media.errorType"
                     class="btn btn-light btn-sm inline-media-button view-button"
                     title="View media"
                 >
@@ -85,20 +87,24 @@ Vue.component("mediaFieldGalleryCardItem", {
     /*html*/
     `
         <li class="media-field-gallery-item" v-if="!media.isRemoved">
-            <div class="card ratio ratio-1x1 overflow-hidden" :class="media.mediaPath=='not-found' ? 'text-danger border-danger' : ''">
+            <div class="card ratio ratio-1x1 overflow-hidden" :class="media.errorType==='not-found' ? 'text-danger border-danger' : (media.errorType==='transient' ? 'text-warning border-warning' : '')">
                 <div class="d-flex flex-column h-100">
                     <div class="flex-grow-1 media-preview d-flex justify-content-center align-items-center">
                         <div class="update-media" v-if="!$parent.allowMultiple" v-on:click="$parent.showMediaModal">
                             + Media Library
                         </div>
-                        <div class="image-wrapper" v-if="media.mime.startsWith('image')">
+                        <div class="image-wrapper" v-if="media.mime.startsWith('image') && !media.errorType">
                             <img
                                 :src="buildMediaUrl(media.url)"
                                 :data-mime="media.mime"
                                 class="w-100 h-100 object-fit-scale"
                             />
                         </div>
-                        <div v-else-if="media.mediaPath=='not-found'" class="d-flex flex-column justify-content-center align-items-center h-100 bg-body file-icon not-found" :title="media.name">
+                        <div v-else-if="media.errorType==='transient'" class="d-flex flex-column justify-content-center align-items-center h-100 bg-body file-icon" :title="media.name">
+                            <i class="fa-solid fa-triangle-exclamation fa-2x card-text"></i>
+                            <span class="card-text small pt-2" :title="media.name">{{ $parent.T.mediaTemporarilyUnavailable }}</span>
+                        </div>
+                        <div v-else-if="media.errorType==='not-found'" class="d-flex flex-column justify-content-center align-items-center h-100 bg-body file-icon not-found" :title="media.name">
                             <i class="fa-solid fa-triangle-exclamation fa-2x card-text'"></i>
                             <span class="card-text small pt-2" :title="media.name">{{ $parent.T.mediaNotFound }}</span>
                             <span class="card-text small pt-2 px-2 text-center" :title="media.name">{{ $parent.T.discardWarning }}</span>
@@ -111,7 +117,7 @@ Vue.component("mediaFieldGalleryCardItem", {
 
                     <div class="media-field-gallery-card-actions flex-shrink-0">
                         <a
-                            v-show="allowMediaText && media.mediaPath!=='not-found'"
+                            v-show="allowMediaText && !media.errorType"
                             class="btn btn-light btn-sm inline-media-button view-button"
                             v-on:click.prevent.stop="$parent.showMediaTextModal(media)"
                             href="javascript:;"
@@ -126,7 +132,7 @@ Vue.component("mediaFieldGalleryCardItem", {
                         </a>
                         <a
                             href="javascript:;"
-                            v-show="allowAnchors && media.mime.startsWith('image') && media.mediaPath!=='not-found'"
+                            v-show="allowAnchors && media.mime.startsWith('image') && !media.errorType"
                             v-on:click="$parent.showAnchorModal(media)"
                             class="btn btn-light btn-sm inline-media-button view-button"
                             title="Set anchor"
@@ -136,7 +142,7 @@ Vue.component("mediaFieldGalleryCardItem", {
                         <a
                             :href="media.url"
                             target="_blank"
-                            v-show="media.mediaPath!=='not-found'"
+                            v-show="!media.errorType"
                             class="btn btn-light btn-sm inline-media-button view-button"
                             title="View media"
                         >
@@ -280,6 +286,7 @@ Vue.component("mediaFieldGalleryContainer", {
         // retrieving localized strings from view
         self.T.mediaNotFound = $("#t-media-not-found").val();
         self.T.discardWarning = $("#t-discard-warning").val();
+        self.T.mediaTemporarilyUnavailable = $("#t-media-temporarily-unavailable").val();
         self.T.noImages = $("#t-no-images").val();
     },
     mounted: function mounted() {
