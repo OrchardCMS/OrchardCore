@@ -7,7 +7,7 @@ public class ShapeTablePlacementProvider : IShapePlacementProvider
 {
     private readonly IShapeTableManager _shapeTableManager;
     private readonly IThemeManager _themeManager;
-    private readonly Dictionary<ShapeTable, ShapeTablePlacementResolver> _resolvers = new();
+    private readonly Dictionary<ShapeTable, Task<IPlacementInfoResolver>> _resolvers = new();
 
     public ShapeTablePlacementProvider(
         IShapeTableManager shapeTableManager,
@@ -18,26 +18,46 @@ public class ShapeTablePlacementProvider : IShapePlacementProvider
         _themeManager = themeManager;
     }
 
-    public async Task<IPlacementInfoResolver> BuildPlacementInfoResolverAsync(IBuildShapeContext context)
+    public Task<IPlacementInfoResolver> BuildPlacementInfoResolverAsync(IBuildShapeContext context)
     {
-        var theme = await _themeManager.GetThemeAsync();
+        var shapeTableTask = _themeManager.TryGetShapeTableAsync(_shapeTableManager);
 
-        // If there is no active theme, do nothing
-        if (theme == null)
+        if (shapeTableTask.IsCompletedSuccessfully)
         {
-            return null;
-        }
+            var shapeTable = shapeTableTask.Result;
 
-        var shapeTable = await _shapeTableManager.GetShapeTableAsync(theme.Id);
+            // If there is no active theme, do nothing
+            if (shapeTable == null)
+            {
+                return Task.FromResult<IPlacementInfoResolver>(null);
+            }
 
-        if(_resolvers.TryGetValue(shapeTable, out var resolver))
-        {
+            if (_resolvers.TryGetValue(shapeTable, out var resolver))
+            {
+                return resolver;
+            }
+
+            resolver = Task.FromResult<IPlacementInfoResolver>(new ShapeTablePlacementResolver(shapeTable));
+            _resolvers[shapeTable] = resolver;
             return resolver;
         }
 
-        resolver = new ShapeTablePlacementResolver(shapeTable);
-        _resolvers[shapeTable] = resolver;
-        return resolver;
+        return BuildPlacementInfoResolverAwaitedAsync(shapeTableTask, _resolvers);
+
+        static async Task<IPlacementInfoResolver> BuildPlacementInfoResolverAwaitedAsync(Task<ShapeTable> shapeTableTask, Dictionary<ShapeTable, Task<IPlacementInfoResolver>> resolvers)
+        {
+            var shapeTable = await shapeTableTask;
+
+            // If there is no active theme, do nothing
+            if (shapeTable == null)
+            {
+                return null;
+            }
+
+            var resolver = new ShapeTablePlacementResolver(shapeTable);
+            resolvers[shapeTable] = Task.FromResult<IPlacementInfoResolver>(resolver);
+            return resolver;
+        }
     }
 
     private sealed class ShapeTablePlacementResolver : IPlacementInfoResolver
@@ -54,12 +74,12 @@ public class ShapeTablePlacementProvider : IShapePlacementProvider
             if (_shapeTable.Descriptors.TryGetValue(placementContext.ShapeType, out var descriptor))
             {
                 var placement = descriptor.Placement(placementContext);
-                
+
                 if (placement != null && !string.IsNullOrEmpty(placementContext.Source))
                 {
                     return placement.WithSource(placementContext.Source);
                 }
-                
+
                 return placement;
             }
 
