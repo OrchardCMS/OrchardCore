@@ -263,6 +263,7 @@
     <Project Path="src/OrchardCore/OrchardCore.Sitemaps.Abstractions/OrchardCore.Sitemaps.Abstractions.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Sms.Abstractions/OrchardCore.Sms.Abstractions.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Sms.Core/OrchardCore.Sms.Core.csproj" />
+    <Project Path="src/OrchardCore/OrchardCore.SourceGenerators/OrchardCore.SourceGenerators.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Taxonomies.Core/OrchardCore.Taxonomies.Core.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.UrlRewriting.Abstractions/OrchardCore.UrlRewriting.Abstractions.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.UrlRewriting.Core/OrchardCore.UrlRewriting.Core.csproj" />

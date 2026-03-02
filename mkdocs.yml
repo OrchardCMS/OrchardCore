@@ -284,6 +284,7 @@ nav:
               - Security: reference/modules/Security/README.md
               - Setup: reference/modules/Setup/README.md
               - Shells: reference/modules/Shells/README.md
+              - Source Generators: reference/modules/SourceGenerators/README.md
               - Tenants: reference/modules/Tenants/README.md
               - Workflows: reference/modules/Workflows/README.md
               - DataProtection (Azure Storage): reference/modules/DataProtection.Azure/README.md
