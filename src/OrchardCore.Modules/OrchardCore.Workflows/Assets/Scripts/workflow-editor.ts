@@ -35,6 +35,21 @@ class WorkflowEditor extends WorkflowCanvas {
 
                 const label: any = connection.getOverlay("label");
                 label.setLabel(outcome.displayName);
+
+                // Hide the outcome label on the source endpoint since it's now connected.
+                const sourceEndpoint: any = connInfo.sourceEndpoint;
+                if (sourceEndpoint && sourceEndpoint.hideOverlay) {
+                    sourceEndpoint.hideOverlay("outcome-label");
+                }
+            });
+
+            // Listen for detached connections.
+            plumber.bind("connectionDetached", function (connInfo, originalEvent) {
+                const sourceEndpoint: any = connInfo.sourceEndpoint;
+                // Show the outcome label if no connections remain on this endpoint.
+                if (sourceEndpoint && sourceEndpoint.connections && sourceEndpoint.connections.length === 0 && sourceEndpoint.showOverlay) {
+                    sourceEndpoint.showOverlay("outcome-label");
+                }
             });
 
             let activityElements = this.getActivityElements();
@@ -133,6 +148,8 @@ class WorkflowEditor extends WorkflowCanvas {
                             sourceEndpointOptions,
                         );
 
+                        this.endpointMap.push({ endpoint, activityElement });
+
                         // Add Title for each dot.
                         if (endpoint.canvas) {
                             endpoint.canvas.setAttribute("title", outcome.displayName);
@@ -151,6 +168,8 @@ class WorkflowEditor extends WorkflowCanvas {
 
                 this.updateCanvasHeight();
             });
+
+            this.orientOutcomeLabels();
 
             // Initialize popovers.
             activityElements.each((_, item) => {
