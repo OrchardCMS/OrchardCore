@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
+using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
@@ -132,7 +133,16 @@ public sealed class AdminController : Controller
                 return;
             }
 
-            await featureService.EnableOrDisableFeaturesAsync(new[] { feature }, FeaturesBulkAction.Disable, true, async (features, isEnabled) => await NotifyAsync(features, isEnabled));
+            var disabledFeatures = await _shellFeaturesManager.DisableFeaturesAsync([feature], force: true);
+
+            if (disabledFeatures.Any())
+            {
+                await _notifier.SuccessAsync(H["{0} was disabled.", feature.Name ?? feature.Id]);
+            }
+            else
+            {
+                await _notifier.ErrorAsync(H["This feature cannot be disabled because it is already in use."]);
+            }
         });
 
         if (!found)
