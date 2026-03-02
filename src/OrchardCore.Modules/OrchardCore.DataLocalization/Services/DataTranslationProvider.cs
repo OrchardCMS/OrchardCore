@@ -14,13 +14,13 @@ public class DataTranslationProvider : IDataTranslationProvider
     }
 
     /// <inheritdoc/>
-    public void LoadTranslations(string cultureName, CultureDictionary dictionary)
+    public async ValueTask LoadTranslationsAsync(string cultureName, CultureDictionary dictionary)
     {
         using (var scope = _scopeFactory.CreateScope())
         {
             var translationsManager = scope.ServiceProvider.GetService<TranslationsManager>();
 
-            var translationsDocument = translationsManager.GetTranslationsDocumentAsync().Result;
+            var translationsDocument = await translationsManager.GetTranslationsDocumentAsync();
 
             if (translationsDocument.Translations.TryGetValue(cultureName, out var translations))
             {

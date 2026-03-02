@@ -33,29 +33,33 @@ public class LocalizationManager : ILocalizationManager
     }
 
     /// <inheritdoc />
-    public CultureDictionary GetDictionary(CultureInfo culture)
+    public async ValueTask<CultureDictionary> GetDictionaryAsync(CultureInfo culture)
     {
-        var cachedDictionary = _cache.GetOrCreate(CacheKeyPrefix + culture.Name, k => new Lazy<CultureDictionary>(() =>
+        var cacheKey = CacheKeyPrefix + culture.Name;
+
+        if (_cache.TryGetValue(cacheKey, out var cachedObj) && cachedObj is CultureDictionary cachedDictionary)
         {
-            var rule = _defaultPluralRule;
+            return cachedDictionary;
+        }
 
-            foreach (var provider in _pluralRuleProviders)
+        var rule = _defaultPluralRule;
+
+        foreach (var provider in _pluralRuleProviders)
+        {
+            if (provider.TryGetRule(culture, out rule))
             {
-                if (provider.TryGetRule(culture, out rule))
-                {
-                    break;
-                }
+                break;
             }
+        }
 
-            var dictionary = new CultureDictionary(culture.Name, rule ?? _defaultPluralRule);
-            foreach (var translationProvider in _translationProviders)
-            {
-                translationProvider.LoadTranslations(culture.Name, dictionary);
-            }
+        var dictionary = new CultureDictionary(culture.Name, rule ?? _defaultPluralRule);
+        foreach (var translationProvider in _translationProviders)
+        {
+            await translationProvider.LoadTranslationsAsync(culture.Name, dictionary);
+        }
 
-            return dictionary;
-        }, LazyThreadSafetyMode.ExecutionAndPublication));
+        _cache.CreateEntry(cacheKey).Value = dictionary;
 
-        return cachedDictionary.Value;
+        return dictionary;
     }
 }

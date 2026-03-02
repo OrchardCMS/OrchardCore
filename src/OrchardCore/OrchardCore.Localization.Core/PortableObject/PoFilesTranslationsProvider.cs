@@ -21,12 +21,14 @@ public class PoFilesTranslationsProvider : ITranslationProvider
     }
 
     /// <inheritdocs />
-    public void LoadTranslations(string cultureName, CultureDictionary dictionary)
+    public ValueTask LoadTranslationsAsync(string cultureName, CultureDictionary dictionary)
     {
         foreach (var fileInfo in _poFilesLocationProvider.GetLocations(cultureName))
         {
             LoadFileToDictionary(fileInfo, dictionary);
         }
+
+        return ValueTask.CompletedTask;
     }
 
     private void LoadFileToDictionary(IFileInfo fileInfo, CultureDictionary dictionary)

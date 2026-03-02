@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using System.Globalization;
 using Microsoft.Extensions.Logging;
 
@@ -50,7 +48,10 @@ public class DataLocalizer : IDataLocalizer
     {
         var culture = CultureInfo.CurrentUICulture;
 
-        var translations = _dataResourceManager.GetResources(culture, includeParentCultures);
+        var translations = _dataResourceManager.GetResourcesAsync(culture, includeParentCultures)
+            .AsTask()
+            .GetAwaiter()
+            .GetResult();
 
         foreach (var translation in translations)
         {
