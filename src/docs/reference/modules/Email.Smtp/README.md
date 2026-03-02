@@ -59,7 +59,7 @@ For more information about configurations, please refer to [Configuration](../..
 
 ## Health Checks
 
-This module provides a health check to report the status for the Redis server. Refer also to the [Health Checks Section](../HealthChecks/README.md).
+This module provides a health check to report the status for the SMTP server. Refer also to the [Health Checks Section](../HealthChecks/README.md).
 
 ## Credits
 
