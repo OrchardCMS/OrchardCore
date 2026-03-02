@@ -1,0 +1,21 @@
+<div class="col-md-6 col-lg-4 mb-4">
+    <div class="card event-card h-100">
+        {% assign imagePath = Model.ContentItem.Content.Event.Image.Paths.first %}
+        {% if imagePath %}
+        <img class="card-img-top" src="{{ imagePath | asset_url | resize_url: profile: 'card' }}" alt="{{ Model.ContentItem | display_text }}">
+        {% endif %}
+        <div class="card-body">
+            {% assign eventDate = Model.ContentItem.Content.Event.EventDate.Value %}
+            {% if eventDate %}
+            {% assign format = "MMM dd, yyyy" | t %}
+            {% assign dateStr = "DateTime" | shape_new: utc: eventDate, format: format | shape_stringify %}
+            <span class="event-date-badge">{{ dateStr }}</span>
+            {% endif %}
+            {% assign eventType = Model.ContentItem.Content.Event.EventType | taxonomy_terms %}
+            {% for term in eventType %}
+            <span class="badge bg-secondary mb-2">{{ term | display_text }}</span>
+            {% endfor %}
+            <h5 class="card-title"><a href="{{ Model.ContentItem | display_url }}" class="text-decoration-none text-dark">{{ Model.ContentItem | display_text }}</a></h5>
+        </div>
+    </div>
+</div>

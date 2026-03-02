@@ -1,0 +1,13 @@
+{% if Model.ContentItems.size > 0 %}
+<div class="list-group">
+    {% for item in Model.ContentItems %}
+    <div class="list-group-item list-group-item-action">
+        {{ item | shape_build_display: "Summary" | shape_render }}
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+{% if Model.Terms and Model.Terms != "" %}
+<div class="alert alert-info">{{ "No results found for '{0}'." | t: Model.Terms }}</div>
+{% endif %}
+{% endif %}
