@@ -12,7 +12,7 @@ namespace OrchardCore.DisplayManagement.Implementation;
 public class DefaultHtmlDisplay : IHtmlDisplay
 {
     private const string _separator = "__";
-    private static readonly ConcurrentDictionary<string, string[]> _alternateShapeTypes = [];
+    private static readonly ConcurrentDictionary<string, List<string>> _alternateShapeTypes = [];
 
     private readonly IShapeTableManager _shapeTableManager;
     private readonly IEnumerable<IShapeDisplayEvents> _shapeDisplayEvents;
@@ -247,7 +247,7 @@ public class DefaultHtmlDisplay : IHtmlDisplay
                 segments.Add(alternate);
             } while (TryGetParentShapeTypeName(alternate, out alternate));
 
-            return segments.ToArray();
+            return segments;
         });
 
         foreach (var shapeTypeSegment in alternateShapeTypes)
