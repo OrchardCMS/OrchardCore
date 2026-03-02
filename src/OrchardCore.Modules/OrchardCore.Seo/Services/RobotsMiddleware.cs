@@ -31,7 +31,7 @@ public class RobotsMiddleware
 
             if (file.Exists)
             {
-                // At this point we know that the a robots.txt file exists as a static file.
+                // At this point we know that a robots.txt file exists as a static file.
                 // Let the static file provider handle it.
                 await _next(httpContext);
 
