@@ -1,6 +1,9 @@
 using System.Text;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Features;
 using OrchardCore.Modules.FileProviders;
+using System.Net;
+using System.Net.Mime;
 
 namespace OrchardCore.Seo.Services;
 
@@ -49,7 +52,7 @@ public class RobotsMiddleware
                 content.AppendLine(item);
             }
 
-            httpContext.Response.ContentType = "text/plain";
+            httpContext.Response.ContentType = MediaTypeNames.Text.Plain;
             httpContext.Response.StatusCode = (int)HttpStatusCode.OK;
             httpContext.Response.HttpContext.Features.GetRequiredFeature<IHttpResponseFeature>().ReasonPhrase = null;
             
