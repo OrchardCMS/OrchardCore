@@ -110,7 +110,7 @@ This feature provides you a way to send user notifications using SMS based on us
 
 ## Health Checks
 
-This module provides a health check to report the status for the Redis server. Refer also to the [Health Checks Section](../HealthChecks/README.md).
+This module provides a health check to report the status for the Twilio SMS service. Refer also to the [Health Checks Section](../HealthChecks/README.md).
 
 ## Credits
 
