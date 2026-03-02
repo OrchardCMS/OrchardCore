@@ -58,7 +58,7 @@ public class ShellContext : IDisposable, IAsyncDisposable
     /// <summary>
     /// PlaceHolder class used for shell lazy initialization.
     /// </summary>
-    public class PlaceHolder : ShellContext
+    public sealed class PlaceHolder : ShellContext
     {
         /// <summary>
         /// Initializes a placeHolder used for shell lazy initialization.
@@ -77,12 +77,12 @@ public class ShellContext : IDisposable, IAsyncDisposable
     /// <summary>
     /// Creates a <see cref="ShellScope"/> on this shell context.
     /// </summary>
-    public async Task<ShellScope> CreateScopeAsync()
+    public Task<ShellScope> CreateScopeAsync()
     {
         // Don't create a shell scope on a released shell.
         if (_released)
         {
-            return null;
+            return Task.FromResult((ShellScope)null);
         }
 
         var scope = new ShellScope(this);
@@ -91,11 +91,23 @@ public class ShellContext : IDisposable, IAsyncDisposable
         if (_released)
         {
             // But let this scope manage the shell state as usual.
-            await scope.TerminateShellAsync();
-            return null;
+            var terminateTask = scope.TerminateShellAsync();
+
+            if (terminateTask.IsCompletedSuccessfully)
+            {
+                return Task.FromResult((ShellScope)null);
+            }
+
+            return Awaited(terminateTask);
         }
 
-        return scope;
+        return Task.FromResult(scope);
+
+        static async Task<ShellScope> Awaited(Task terminateTask)
+        {
+            await terminateTask;
+            return null;
+        }
     }
 
     /// <summary>
@@ -288,38 +300,67 @@ public class ShellContext : IDisposable, IAsyncDisposable
         return false;
     }
 
-    internal async Task<bool> TerminateShellContextAsync()
+    internal Task<bool> TerminateShellContextAsync()
     {
         // Check if this is the last scope that is releasing the shell context.
         if (Interlocked.CompareExchange(ref _refCount, 1, 1) != 1)
         {
-            return false;
+            return Task.FromResult(false);
         }
 
         // A disabled shell still in use is released by its last scope.
         if (Settings.IsDisabled())
         {
-            await ReleaseFromLastScopeAsync();
+            var releaseTask = ReleaseFromLastScopeAsync();
+
+            if (!releaseTask.IsCompletedSuccessfully)
+            {
+                return Awaited(releaseTask);
+            }
         }
 
         if (!_released)
         {
-            return false;
+            return Task.FromResult(false);
         }
 
         // If more than one scope is still using the shell context, we can't terminate it yet.
         if (Interlocked.CompareExchange(ref _refCount, 1, 1) != 1)
         {
-            return false;
+            return Task.FromResult(false);
         }
 
         // If a new last scope reached this point, ensure that the shell is terminated once.
         if (Interlocked.CompareExchange(ref _terminated, 1, 0) >= 1)
         {
-            return false;
+            return Task.FromResult(false);
         }
 
-        return true;
+        return Task.FromResult(true);
+
+        async Task<bool> Awaited(Task releaseTask)
+        {
+            await releaseTask;
+
+            if (!_released)
+            {
+                return false;
+            }
+
+            // If more than one scope is still using the shell context, we can't terminate it yet.
+            if (Interlocked.CompareExchange(ref _refCount, 1, 1) != 1)
+            {
+                return false;
+            }
+
+            // If a new last scope reached this point, ensure that the shell is terminated once.
+            if (Interlocked.CompareExchange(ref _terminated, 1, 0) >= 1)
+            {
+                return false;
+            }
+
+            return true;
+        }
     }
 
     public void Dispose()
