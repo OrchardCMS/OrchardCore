@@ -45,3 +45,11 @@ using OrchardCore.Modules.Manifest;
     Dependencies = ["OrchardCore.Redis"],
     Category = "Security"
 )]
+
+[assembly: Feature(
+    Id = "OrchardCore.Redis.HealthChecks",
+    Name = "Redis Health Check",
+    Description = "Redis health check support.",
+    Dependencies = ["OrchardCore.Redis", "OrchardCore.HealthChecks"],
+    Category = "Infrastructure"
+)]
