@@ -9,11 +9,11 @@ using YesSql.Sql;
 
 namespace OrchardCore.Html;
 
-public sealed class Migrations : DataMigration
+public sealed class SqlIndexingMigrations : DataMigration
 {
     private readonly IContentDefinitionManager _contentDefinitionManager;
 
-    public Migrations(IContentDefinitionManager contentDefinitionManager)
+    public SqlIndexingMigrations(IContentDefinitionManager contentDefinitionManager)
     {
         _contentDefinitionManager = contentDefinitionManager;
     }
