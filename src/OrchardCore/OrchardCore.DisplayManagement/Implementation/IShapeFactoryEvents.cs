@@ -12,12 +12,13 @@ public class ShapeCreatingContext
     public IShapeFactory ShapeFactory { get; set; }
     public dynamic New { get; set; }
     public string ShapeType { get; set; }
-    public Func<ValueTask<IShape>> CreateAsync { get; set; }
+    public Func<object, ValueTask<IShape>> CreateAsync { get; set; }
+    public object State { get; set; }
     public IList<Func<ShapeCreatedContext, Task>> OnCreated { get; set; }
 
     public Func<IShape> Create
     {
-        set => CreateAsync = () => ValueTask.FromResult(value());
+        set => CreateAsync = (state) => ValueTask.FromResult(value());
     }
 }
 
@@ -28,6 +29,7 @@ public class ShapeCreatedContext
     public dynamic New { get; set; }
     public string ShapeType { get; set; }
     public IShape Shape { get; set; }
+    public object State { get; set; }
 }
 
 public abstract class ShapeFactoryEvents : IShapeFactoryEvents
