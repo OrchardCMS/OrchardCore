@@ -11,7 +11,8 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddJsonDerivedTypeInfo<TDerived, TBase>(this IServiceCollection services)
         where TDerived : class
         where TBase : class
-        => services.Configure<JsonDerivedTypesOptions>(options =>
+    {
+        return services.Configure<JsonDerivedTypesOptions>(options =>
         {
             if (!options.DerivedTypes.TryGetValue(typeof(TBase), out var derivedTypes))
             {
@@ -21,4 +22,18 @@ public static class ServiceCollectionExtensions
 
             derivedTypes.Add(new JsonDerivedTypeInfo<TDerived, TBase>());
         });
+    }
+
+    /// <summary>
+    /// Registers a concrete fallback type for an abstract or interface base type. When the JSON
+    /// deserializer encounters an unrecognized type discriminator for <typeparamref name="TBase"/>,
+    /// it will deserialize as <typeparamref name="TFallback"/> instead of throwing.
+    /// </summary>
+    public static IServiceCollection AddJsonDerivedTypeFallback<TBase, TFallback>(this IServiceCollection services)
+        where TBase : class
+        where TFallback : TBase, IUnknownTypePlaceholder, new()
+    {
+        return services.Configure<JsonDerivedTypesOptions>(options =>
+                options.FallbackTypes[typeof(TBase)] = typeof(TFallback));
+    }
 }
