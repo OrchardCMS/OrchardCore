@@ -1,6 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
+using OrchardCore.Sms.Configurations;
+using OrchardCore.Sms.Models;
 using OrchardCore.Sms.Services;
 
 namespace OrchardCore.Sms;
@@ -12,6 +14,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ISmsService, SmsService>();
         services.AddScoped<ISmsProviderResolver, DefaultSmsProviderResolver>();
         services.AddTransient<IPostConfigureOptions<SmsSettings>, SmsSettingsConfiguration>();
+        services.AddTransient<IConfigureOptions<TwilioOptions>, TwilioOptionsConfiguration>();
 
         return services;
     }

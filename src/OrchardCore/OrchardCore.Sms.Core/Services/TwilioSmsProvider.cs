@@ -2,11 +2,10 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using OrchardCore.Infrastructure;
-using OrchardCore.Settings;
 using OrchardCore.Sms.Models;
 
 namespace OrchardCore.Sms.Services;
@@ -15,8 +14,6 @@ public class TwilioSmsProvider : ISmsProvider
 {
     public const string TechnicalName = "Twilio";
 
-    public const string ProtectorName = "Twilio";
-
     private static readonly JsonSerializerOptions _jsonSerializerOptions = new()
     {
         PropertyNamingPolicy = SnakeCaseNamingPolicy.Instance,
@@ -24,22 +21,19 @@ public class TwilioSmsProvider : ISmsProvider
 
     public LocalizedString Name => S["Twilio"];
 
-    private readonly ISiteService _siteService;
-    private readonly IDataProtectionProvider _dataProtectionProvider;
+    private readonly TwilioOptions _twilioOptions;
     private readonly ILogger<TwilioSmsProvider> _logger;
     private readonly IHttpClientFactory _httpClientFactory;
 
     protected readonly IStringLocalizer S;
 
     public TwilioSmsProvider(
-        ISiteService siteService,
-        IDataProtectionProvider dataProtectionProvider,
+        IOptions<TwilioOptions> twilioOptions,
         ILogger<TwilioSmsProvider> logger,
         IHttpClientFactory httpClientFactory,
         IStringLocalizer<TwilioSmsProvider> stringLocalizer)
     {
-        _siteService = siteService;
-        _dataProtectionProvider = dataProtectionProvider;
+        _twilioOptions = twilioOptions.Value;
         _logger = logger;
         _httpClientFactory = httpClientFactory;
         S = stringLocalizer;
@@ -61,9 +55,7 @@ public class TwilioSmsProvider : ISmsProvider
 
         try
         {
-            var settings = await GetSettingsAsync();
-
-            var senderNumber = settings.PhoneNumber;
+            var senderNumber = _twilioOptions.PhoneNumber;
 
             if (!string.IsNullOrEmpty(message.From))
             {
@@ -77,8 +69,8 @@ public class TwilioSmsProvider : ISmsProvider
                 new ("Body", message.Body),
             };
 
-            var client = GetHttpClient(settings);
-            var response = await client.PostAsync($"{settings.AccountSID}/Messages.json", new FormUrlEncodedContent(data));
+            var client = GetHttpClient();
+            var response = await client.PostAsync($"{_twilioOptions.AccountSID}/Messages.json", new FormUrlEncodedContent(data));
 
             if (response.IsSuccessStatusCode)
             {
@@ -103,9 +95,9 @@ public class TwilioSmsProvider : ISmsProvider
         }
     }
 
-    private HttpClient GetHttpClient(TwilioSettings settings)
+    private HttpClient GetHttpClient()
     {
-        var token = $"{settings.AccountSID}:{settings.AuthToken}";
+        var token = $"{_twilioOptions.AccountSID}:{_twilioOptions.AuthToken}";
         var base64Token = Convert.ToBase64String(Encoding.ASCII.GetBytes(token));
 
         var client = _httpClientFactory.CreateClient(TechnicalName);
@@ -113,27 +105,5 @@ public class TwilioSmsProvider : ISmsProvider
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", base64Token);
 
         return client;
-    }
-
-    private TwilioSettings _settings;
-
-    private async Task<TwilioSettings> GetSettingsAsync()
-    {
-        if (_settings == null)
-        {
-            var settings = await _siteService.GetSettingsAsync<TwilioSettings>();
-
-            var protector = _dataProtectionProvider.CreateProtector(ProtectorName);
-
-            // It is important to create a new instance of `TwilioSettings` privately to hold the plain auth-token value.
-            _settings = new TwilioSettings
-            {
-                PhoneNumber = settings.PhoneNumber,
-                AccountSID = settings.AccountSID,
-                AuthToken = settings.AuthToken == null ? null : protector.Unprotect(settings.AuthToken),
-            };
-        }
-
-        return _settings;
     }
 }
