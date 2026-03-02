@@ -28,3 +28,7 @@ For more information about configurations, please refer to [Configuration](../Co
 
 !!! note
     Configuration of the **Default Azure Communication Services** provider is not possible through Admin Settings. Utilize the configuration provider for the necessary setup. The provider will appear only if the configuration exists.
+
+## Health Checks
+
+This module provides a health check to report the status for the Azure Email service. Refer also to the [Health Checks Section](../HealthChecks/README.md).
