@@ -49,8 +49,15 @@ public class RobotsMiddleware
                 content.AppendLine(item);
             }
 
-            httpContext.Response.Clear();
             httpContext.Response.ContentType = "text/plain";
+            httpContext.Response.StatusCode = (int)HttpStatusCode.OK;
+            httpContext.Response.HttpContext.Features.GetRequiredFeature<IHttpResponseFeature>().ReasonPhrase = null;
+            
+            if (httpContext.Response.Body.CanSeek)
+            {
+                httpContext.Response.Body.SetLength(0);
+            }
+            
             await httpContext.Response.WriteAsync(content.ToString());
 
             return;
