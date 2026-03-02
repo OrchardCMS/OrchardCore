@@ -31,4 +31,4 @@ For more information about configurations, please refer to [Configuration](../Co
 
 ## Health Checks
 
-This module provides a health check to report the status for the Redis server. Refer also to the [Health Checks Section](../HealthChecks/README.md).
+This module provides a health check to report the status for the Azure Email service. Refer also to the [Health Checks Section](../HealthChecks/README.md).
