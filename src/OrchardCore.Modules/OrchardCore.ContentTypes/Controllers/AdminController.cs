@@ -963,6 +963,7 @@ public sealed class AdminController : Controller
         }
 
         viewModel.TypePartDefinition = part;
+        viewModel.DisplayName ??= part.DisplayName();
 
         if (part.PartDefinition.IsReusable())
         {
