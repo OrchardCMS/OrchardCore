@@ -128,7 +128,7 @@ public class StyleTag
             }
         }
 
-        if (string.IsNullOrEmpty(name) && !string.IsNullOrEmpty(src))
+        void ProcessSourceStyle()
         {
             // {% style src:"~/example.css" %}
             RequireSettings setting;
@@ -157,7 +157,8 @@ public class StyleTag
                 resourceManager.RenderLocalStyle(setting, writer);
             }
         }
-        else if (!string.IsNullOrEmpty(name) && string.IsNullOrEmpty(src))
+
+        void ProcessNamedStyle()
         {
             // Resource required.
             // {% style name:"bootstrap" %}
@@ -182,7 +183,8 @@ public class StyleTag
                 resourceManager.RenderLocalStyle(setting, writer);
             }
         }
-        else if (!string.IsNullOrEmpty(name) && !string.IsNullOrEmpty(src))
+
+        void ProcessInlineDeclaration()
         {
             // Inline declaration.
 
@@ -200,6 +202,19 @@ public class StyleTag
                     resourceManager.RenderLocalStyle(setting, writer);
                 }
             }
+        }
+
+        if (string.IsNullOrEmpty(name) && !string.IsNullOrEmpty(src))
+        {
+            ProcessSourceStyle();
+        }
+        else if (!string.IsNullOrEmpty(name) && string.IsNullOrEmpty(src))
+        {
+            ProcessNamedStyle();
+        }
+        else if (!string.IsNullOrEmpty(name) && !string.IsNullOrEmpty(src))
+        {
+            ProcessInlineDeclaration();
         }
 
         return Completion.Normal;
