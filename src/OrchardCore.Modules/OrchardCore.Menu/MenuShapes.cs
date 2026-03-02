@@ -142,28 +142,13 @@ public class MenuShapes : ShapeTableProvider
                     }
                 }
 
-                var encodedContentType = menuContentItem.ContentItem.ContentType.EncodeAlternateElement();
+                // Use cached alternates and add them efficiently
+                var cachedAlternates = ShapeAlternatesFactory.GetMenuItemAlternates(
+                    menuContentItem.ContentItem.ContentType,
+                    differentiator,
+                    level);
 
-                // MenuItem__level__[level] e.g. MenuItem-level-2
-                menuItem.Metadata.Alternates.Add("MenuItem__level__" + level);
-
-                // MenuItem__[ContentType] e.g. MenuItem-HtmlMenuItem
-                // MenuItem__[ContentType]__level__[level] e.g. MenuItem-HtmlMenuItem-level-2
-                menuItem.Metadata.Alternates.Add("MenuItem__" + encodedContentType);
-                menuItem.Metadata.Alternates.Add("MenuItem__" + encodedContentType + "__level__" + level);
-
-                if (!string.IsNullOrEmpty(differentiator))
-                {
-                    // MenuItem__[MenuName] e.g. MenuItem-MainMenu
-                    // MenuItem__[MenuName]__level__[level] e.g. MenuItem-MainMenu-level-2
-                    menuItem.Metadata.Alternates.Add("MenuItem__" + differentiator);
-                    menuItem.Metadata.Alternates.Add("MenuItem__" + differentiator + "__level__" + level);
-
-                    // MenuItem__[MenuName]__[ContentType] e.g. MenuItem-MainMenu-HtmlMenuItem
-                    // MenuItem__[MenuName]__[ContentType]__level__[level] e.g. MenuItem-MainMenu-HtmlMenuItem-level-2
-                    menuItem.Metadata.Alternates.Add("MenuItem__" + differentiator + "__" + encodedContentType);
-                    menuItem.Metadata.Alternates.Add("MenuItem__" + differentiator + "__" + encodedContentType + "__level__" + level);
-                }
+                menuItem.Metadata.Alternates.AddRange(cachedAlternates.MenuItemAlternates);
             });
 
         builder.Describe("MenuItemLink")
@@ -175,27 +160,13 @@ public class MenuShapes : ShapeTableProvider
 
                 var menuContentItem = menuItem.GetProperty<ContentItem>("ContentItem");
 
-                var encodedContentType = menuContentItem.ContentItem.ContentType.EncodeAlternateElement();
+                // Use cached alternates and add them efficiently
+                var cachedAlternates = ShapeAlternatesFactory.GetMenuItemAlternates(
+                    menuContentItem.ContentItem.ContentType,
+                    differentiator,
+                    level);
 
-                menuItem.Metadata.Alternates.Add("MenuItemLink__level__" + level);
-
-                // MenuItemLink__[ContentType] e.g. MenuItemLink-HtmlMenuItem
-                // MenuItemLink__[ContentType]__level__[level] e.g. MenuItemLink-HtmlMenuItem-level-2
-                menuItem.Metadata.Alternates.Add("MenuItemLink__" + encodedContentType);
-                menuItem.Metadata.Alternates.Add("MenuItemLink__" + encodedContentType + "__level__" + level);
-
-                if (!string.IsNullOrEmpty(differentiator))
-                {
-                    // MenuItemLink__[MenuName] e.g. MenuItemLink-MainMenu
-                    // MenuItemLink__[MenuName]__level__[level] e.g. MenuItemLink-MainMenu-level-2
-                    menuItem.Metadata.Alternates.Add("MenuItemLink__" + differentiator);
-                    menuItem.Metadata.Alternates.Add("MenuItemLink__" + differentiator + "__level__" + level);
-
-                    // MenuItemLink__[MenuName]__[ContentType] e.g. MenuItemLink-MainMenu-HtmlMenuItem
-                    // MenuItemLink__[MenuName]__[ContentType] e.g. MenuItemLink-MainMenu-HtmlMenuItem-level-2
-                    menuItem.Metadata.Alternates.Add("MenuItemLink__" + differentiator + "__" + encodedContentType);
-                    menuItem.Metadata.Alternates.Add("MenuItemLink__" + differentiator + "__" + encodedContentType + "__level__" + level);
-                }
+                menuItem.Metadata.Alternates.AddRange(cachedAlternates.MenuItemLinkAlternates);
             });
 
         return ValueTask.CompletedTask;
