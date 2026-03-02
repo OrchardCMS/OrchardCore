@@ -1,15 +1,17 @@
+@using OrchardCore.Localization.Data
 @model AdminNodeListViewModel
 @inject OrchardCore.DisplayManagement.IDisplayManager<MenuItem> MenuItemDisplayManager
 @inject OrchardCore.DisplayManagement.ModelBinding.IUpdateModelAccessor ModelUpdaterAccessor
-
+@inject IDataLocalizer D
 @{
     var index = 0;
+    string localizedAdminMenuName = D[Model.AdminMenu.Name, "Admin Menus"];
 }
 
 <script asp-name="jQuery.nestedSortable" at="Foot" depends-on="jQuery-ui"></script>
 <style asp-src="~/OrchardCore.AdminMenu/Styles/admin-menu.min.css" debug-src="~/OrchardCore.AdminMenu/Styles/admin-menu.css"></style>
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Edit Nodes for '{0}'", Model.AdminMenu.Name])</h1></zone>
+<zone Name="Title"><h1>@RenderTitleSegments(T["Edit Nodes for '{0}'", localizedAdminMenuName])</h1></zone>
 
 <nav class="card text-bg-theme mb-3">
     <div class="card-body p-3">
