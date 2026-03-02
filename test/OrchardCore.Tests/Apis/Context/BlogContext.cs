@@ -1,11 +1,8 @@
-using OrchardCore.Recipes;
-
 namespace OrchardCore.Tests.Apis.Context;
 
 public class BlogContext : SiteContext
 {
-    public const string luceneRecipePath = $"Areas/TheBlogTheme/{RecipesConstants.RecipesFolderName}";
-    public const string luceneRecipeName = $"blog.lucene.query{RecipesConstants.RecipeExtension}";
+    public const string luceneRecipeName = "Blog.Lucene.Query";
     public const string luceneIndexName = "Search";
 
     public string BlogContentItemId { get; private set; }
@@ -17,7 +14,7 @@ public class BlogContext : SiteContext
     public override async Task InitializeAsync()
     {
         await base.InitializeAsync();
-        await RunRecipeAsync(luceneRecipeName, luceneRecipePath);
+        await RunRecipeAsync(luceneRecipeName);
         // await ResetLuceneIndexesAsync(luceneIndexName);
 
         var result = await GraphQLClient

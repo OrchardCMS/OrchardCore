@@ -31,5 +31,6 @@ public sealed class Startup : StartupBase
         services.AddScoped<IContentTypePartDefinitionDisplayDriver, HtmlBodyPartMonacoEditorSettingsDriver>();
         services.AddDataMigration<Migrations>();
         services.AddScoped<IContentPartIndexHandler, HtmlBodyPartIndexHandler>();
+        services.AddContentPartSchemaHandler<HtmlBodyPartSchemaHandler>();
     }
 }

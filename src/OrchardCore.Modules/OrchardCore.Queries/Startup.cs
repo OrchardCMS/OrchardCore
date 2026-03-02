@@ -35,7 +35,10 @@ public sealed class CoreStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.AddRecipeDeploymentStep<QueryRecipeStep>();
+#pragma warning disable CS0618 // Type or member is obsolete
         services.AddRecipeExecutionStep<QueryStep>();
+#pragma warning restore CS0618
         services.AddDeployment<AllQueriesDeploymentSource, AllQueriesDeploymentStep, AllQueriesDeploymentStepDriver>();
         services.AddSingleton<IGlobalMethodProvider, QueryGlobalMethodProvider>();
 

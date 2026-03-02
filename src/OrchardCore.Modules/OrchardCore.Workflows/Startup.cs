@@ -82,7 +82,10 @@ public sealed class Startup : StartupBase
         services.AddActivity<ScriptTask, ScriptTaskDisplayDriver>();
         services.AddActivity<LogTask, LogTaskDisplayDriver>();
 
+#pragma warning disable CS0618 // Type or member is obsolete
         services.AddRecipeExecutionStep<WorkflowTypeStep>();
+#pragma warning restore CS0618 // Type or member is obsolete
+        services.AddRecipeDeploymentStep<WorkflowTypeRecipeStep>();
         services.AddResourceConfiguration<ResourceManagementOptionsConfiguration>();
 
         services.AddTrimmingServices(_shellConfiguration);

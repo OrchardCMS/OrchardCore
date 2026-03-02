@@ -1,4 +1,5 @@
 using OrchardCore.Recipes.Models;
+using OrchardCore.Recipes.Services;
 
 namespace OrchardCore.Setup.Services;
 
@@ -17,7 +18,7 @@ public interface ISetupService
     /// <returns>A task that represents the asynchronous operation. The task result contains an enumerable collection of <see
     /// cref="RecipeDescriptor"/> objects describing available setup recipes. The collection will be empty if no setup
     /// recipes are found.</returns>
-    Task<IEnumerable<RecipeDescriptor>> GetSetupRecipesAsync();
+    Task<IEnumerable<IRecipeDescriptor>> GetSetupRecipesAsync();
 
     /// <summary>
     /// Initializes the setup process asynchronously using the specified context and returns a status message upon

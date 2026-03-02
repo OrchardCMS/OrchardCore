@@ -159,10 +159,15 @@ public sealed class Startup : StartupBase
         services.AddDisplayDriver<UserMenu, UserMenuDisplayDriver>();
         services.AddShapeTableProvider<UserMenuShapeTableProvider>();
 
+        services.AddRecipeDeploymentStep<UsersRecipeStep>();
+        services.AddRecipeDeploymentStep<Recipes.CustomUserSettingsRecipeStep>();
+#pragma warning disable CS0618 // Type or member is obsolete
         services.AddRecipeExecutionStep<UsersStep>();
+        services.AddRecipeExecutionStep<CustomUserSettingsStep>();
+#pragma warning restore CS0618 // Type or member is obsolete
 
         services.AddScoped<CustomUserSettingsService>();
-        services.AddRecipeExecutionStep<CustomUserSettingsStep>();
+
         services.AddDisplayDriver<LoginForm, LoginFormDisplayDriver>();
         services.AddScoped<ILoginFormEvent, EmailConfirmationLoginFormEvent>();
     }

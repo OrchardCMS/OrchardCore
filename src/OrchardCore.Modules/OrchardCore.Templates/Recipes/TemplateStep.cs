@@ -9,7 +9,10 @@ namespace OrchardCore.Templates.Recipes;
 /// <summary>
 /// This recipe step creates a set of templates.
 /// </summary>
+[Obsolete("Implement IRecipeDeploymentStep instead. This class will be removed in a future version.", false)]
+#pragma warning disable CS0618 // Type or member is obsolete
 public sealed class TemplateStep : NamedRecipeStepHandler
+#pragma warning restore CS0618
 {
     private readonly TemplatesManager _templatesManager;
 

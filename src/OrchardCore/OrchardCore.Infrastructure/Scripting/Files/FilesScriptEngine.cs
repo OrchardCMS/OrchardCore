@@ -3,7 +3,8 @@ using Microsoft.Extensions.FileProviders;
 namespace OrchardCore.Scripting.Files;
 
 /// <summary>
-/// Provides.
+/// Provides file-based scripting operations like [file:text('path')] and [file:base64('path')].
+/// Requires a valid <see cref="IFileProvider"/> and base path to function.
 /// </summary>
 public class FilesScriptEngine : IScriptingEngine
 {
@@ -11,6 +12,8 @@ public class FilesScriptEngine : IScriptingEngine
 
     public IScriptingScope CreateScope(IEnumerable<GlobalMethod> methods, IServiceProvider serviceProvider, IFileProvider fileProvider, string basePath)
     {
+        // FileProvider and basePath are required for this engine.
+        // If not provided, return a scope that will throw on evaluation.
         return new FilesScriptScope(fileProvider, basePath);
     }
 
@@ -21,6 +24,11 @@ public class FilesScriptEngine : IScriptingEngine
         if (scope is not FilesScriptScope fileScope)
         {
             throw new ArgumentException($"Expected a scope of type {nameof(FilesScriptScope)}", nameof(scope));
+        }
+
+        if (fileScope.FileProvider is null)
+        {
+            throw new InvalidOperationException("The file scripting engine requires a file provider. This recipe source does not support file operations.");
         }
 
         if (script.StartsWith("text('", StringComparison.Ordinal) && script.EndsWith("')", StringComparison.Ordinal))

@@ -12,6 +12,7 @@ namespace OrchardCore.Deployment.Recipes;
 /// <summary>
 /// This recipe step creates a deployment plan.
 /// </summary>
+[Obsolete($"Use {nameof(DeploymentPlansRecipeDeploymentStep)} instead. This class will be removed in a future version.", false)]
 public sealed class DeploymentPlansRecipeStep : NamedRecipeStepHandler
 {
     private readonly IServiceProvider _serviceProvider;
@@ -37,7 +38,7 @@ public sealed class DeploymentPlansRecipeStep : NamedRecipeStepHandler
     {
         var deploymentStepFactories = _serviceProvider.GetServices<IDeploymentStepFactory>().ToDictionary(f => f.Name);
 
-        var model = context.Step.ToObject<DeploymentPlansModel>();
+        var model = context.Step.ToObject<DeploymentPlansRecipeStepModel>();
 
         var unknownTypes = new List<string>();
         var deploymentPlans = new List<DeploymentPlan>();
@@ -78,22 +79,4 @@ public sealed class DeploymentPlansRecipeStep : NamedRecipeStepHandler
         return _deploymentPlanService.CreateOrUpdateDeploymentPlansAsync(deploymentPlans);
     }
 
-    private sealed class DeploymentPlansModel
-    {
-        public DeploymentPlanModel[] Plans { get; set; }
-    }
-
-    private sealed class DeploymentPlanModel
-    {
-        public string Name { get; set; }
-
-        public DeploymentStepModel[] Steps { get; set; }
-    }
-
-    private sealed class DeploymentStepModel
-    {
-        public string Type { get; set; }
-
-        public JsonObject Step { get; set; }
-    }
 }

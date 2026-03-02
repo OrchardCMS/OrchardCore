@@ -70,7 +70,11 @@ public sealed class Startup : StartupBase
         services.AddRolesCoreServices()
             .AddScoped<IAuthorizationHandler, SuperUserHandler>();
 
+        services.AddRecipeDeploymentStep<UnifiedSettingsStep>();
+#pragma warning disable CS0618 // Type or member is obsolete
         services.AddRecipeExecutionStep<SettingsStep>();
+#pragma warning restore CS0618 // Type or member is obsolete
+
         services.AddSingleton<ISiteService, SiteService>();
 
         // Site Settings editor

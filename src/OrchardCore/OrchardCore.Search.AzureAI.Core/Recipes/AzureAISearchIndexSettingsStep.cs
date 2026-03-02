@@ -8,7 +8,10 @@ using OrchardCore.Recipes.Services;
 
 namespace OrchardCore.Search.AzureAI.Recipes;
 
+[Obsolete("Implement IRecipeDeploymentStep instead. This class will be removed in a future version.", false)]
+#pragma warning disable CS0618 // Type or member is obsolete
 public sealed class AzureAISearchIndexSettingsStep : NamedRecipeStepHandler
+#pragma warning restore CS0618
 {
     public const string Name = "azureai-index-create";
 

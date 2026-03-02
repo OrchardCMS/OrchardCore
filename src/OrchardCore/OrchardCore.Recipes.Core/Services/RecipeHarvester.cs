@@ -26,7 +26,7 @@ public class RecipeHarvester : IRecipeHarvester
     }
 
     /// <inheritdoc/>
-    public virtual Task<IEnumerable<RecipeDescriptor>> HarvestRecipesAsync()
+    public virtual Task<IEnumerable<IRecipeDescriptor>> HarvestRecipesAsync()
         => _extensionManager.GetExtensions().InvokeAsync(GetRecipesAsync, _logger);
 
     /// <summary>
@@ -34,7 +34,7 @@ public class RecipeHarvester : IRecipeHarvester
     /// </summary>
     /// <param name="path">A path string relative to the content root of the application.</param>
     /// <returns>The list of <see cref="RecipeDescriptor"/> instances.</returns>
-    protected async Task<IEnumerable<RecipeDescriptor>> HarvestRecipesAsync(string path)
+    protected async Task<IEnumerable<IRecipeDescriptor>> HarvestRecipesAsync(string path)
     {
         var recipeDescriptors = new List<RecipeDescriptor>();
 
@@ -56,7 +56,7 @@ public class RecipeHarvester : IRecipeHarvester
         return recipeDescriptors;
     }
 
-    private Task<IEnumerable<RecipeDescriptor>> GetRecipesAsync(IExtensionInfo extension)
+    private Task<IEnumerable<IRecipeDescriptor>> GetRecipesAsync(IExtensionInfo extension)
     {
         var folderSubPath = PathExtensions.Combine(extension.SubPath, RecipesConstants.RecipesFolderName);
 

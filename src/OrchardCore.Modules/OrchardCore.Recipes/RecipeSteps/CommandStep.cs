@@ -11,7 +11,10 @@ namespace OrchardCore.Recipes.RecipeSteps;
 /// <summary>
 /// This recipe step executes a set of commands.
 /// </summary>
+[Obsolete($"Use {nameof(UnifiedCommandStep)} instead. This class will be removed in a future version.", false)]
+#pragma warning disable CS0618 // Type or member is obsolete
 public sealed class CommandStep : NamedRecipeStepHandler
+#pragma warning restore CS0618
 {
     private readonly ICommandManager _commandManager;
     private readonly ICommandParser _commandParser;

@@ -10,7 +10,10 @@ namespace OrchardCore.Media.Recipes;
 /// <summary>
 /// This recipe step creates a set of queries.
 /// </summary>
+[Obsolete($"Use {nameof(UnifiedMediaStep)} instead. This class will be removed in a future version.", false)]
+#pragma warning disable CS0618 // Type or member is obsolete
 public sealed class MediaStep : NamedRecipeStepHandler
+#pragma warning restore CS0618
 {
     private readonly IMediaFileStore _mediaFileStore;
     private readonly HashSet<string> _allowedFileExtensions;
@@ -54,7 +57,14 @@ public sealed class MediaStep : NamedRecipeStepHandler
                 }
                 else if (!string.IsNullOrWhiteSpace(file.SourcePath))
                 {
-                    var fileInfo = context.RecipeDescriptor.FileProvider.GetRelativeFileInfo(context.RecipeDescriptor.BasePath, file.SourcePath);
+                    // SourcePath requires a file-based recipe with FileProvider context.
+                    if (context.RecipeDescriptor is not RecipeDescriptor legacyDescriptor || legacyDescriptor.FileProvider is null)
+                    {
+                        context.Errors.Add(S["SourcePath is only supported for file-based recipes. Use Base64 or SourceUrl instead for code-based recipes."]);
+                        continue;
+                    }
+
+                    var fileInfo = legacyDescriptor.FileProvider.GetRelativeFileInfo(legacyDescriptor.BasePath, file.SourcePath);
 
                     stream = fileInfo.CreateReadStream();
                 }

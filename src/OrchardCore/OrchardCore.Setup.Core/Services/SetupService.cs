@@ -32,9 +32,11 @@ public class SetupService : ISetupService
     protected readonly IStringLocalizer S;
     private readonly IHostApplicationLifetime _applicationLifetime;
     private readonly IHttpContextAccessor _httpContextAccessor;
+
     private readonly IDbConnectionValidator _dbConnectionValidator;
     private readonly string _applicationName;
-    private IEnumerable<RecipeDescriptor> _recipes;
+
+    private IEnumerable<IRecipeDescriptor> _recipes;
 
     /// <summary>
     /// Creates a new instance of <see cref="SetupService"/>.
@@ -74,7 +76,7 @@ public class SetupService : ISetupService
     }
 
     /// <inheritdoc />
-    public async Task<IEnumerable<RecipeDescriptor>> GetSetupRecipesAsync()
+    public async Task<IEnumerable<IRecipeDescriptor>> GetSetupRecipesAsync()
     {
         if (_recipes is null)
         {

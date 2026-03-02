@@ -78,7 +78,10 @@ public sealed class Startup : StartupBase
         services.AddDisplayDriver<SitemapSource, CustomPathSitemapSourceDriver>();
         services.AddScoped<ISitemapSourceFactory, SitemapSourceFactory<CustomPathSitemapSource>>();
 
+        services.AddRecipeDeploymentStep<Recipes.SitemapsRecipeStep>();
+#pragma warning disable CS0618 // Type or member is obsolete
         services.AddRecipeExecutionStep<SitemapsStep>();
+#pragma warning restore CS0618
 
         // Allows to serialize 'SitemapType' derived types.
         services.AddJsonDerivedTypeInfo<Sitemap, SitemapType>();

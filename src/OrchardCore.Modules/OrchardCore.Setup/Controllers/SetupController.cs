@@ -10,7 +10,7 @@ using OrchardCore.Data;
 using OrchardCore.Email;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
-using OrchardCore.Recipes.Models;
+using OrchardCore.Recipes.Services;
 using OrchardCore.Setup.Services;
 using OrchardCore.Setup.ViewModels;
 
@@ -53,8 +53,9 @@ public sealed class SetupController : Controller
 
     public async Task<ActionResult> Index(string token)
     {
-        var recipes = await _setupService.GetSetupRecipesAsync();
-        var defaultRecipe = recipes.FirstOrDefault(x => x.Tags.Contains("default")) ?? recipes.FirstOrDefault();
+        var recipes = (await _setupService.GetSetupRecipesAsync()).Where(x => x.IsAvailable(_shellSettings)).ToList();
+
+        var defaultRecipe = recipes.FirstOrDefault(x => x.Tags is not null && x.Tags.Contains("default", StringComparer.OrdinalIgnoreCase)) ?? recipes.FirstOrDefault();
 
         if (!await ShouldProceedWithTokenAsync(token))
         {
@@ -95,7 +96,7 @@ public sealed class SetupController : Controller
         }
 
         model.DatabaseProviders = _databaseProviders;
-        model.Recipes = await _setupService.GetSetupRecipesAsync();
+        model.Recipes = (await _setupService.GetSetupRecipesAsync()).Where(x => x.IsAvailable(_shellSettings)).ToList();
 
         if (string.IsNullOrEmpty(model.Password))
         {
@@ -107,7 +108,7 @@ public sealed class SetupController : Controller
             ModelState.AddModelError(nameof(model.PasswordConfirmation), S["The password confirmation doesn't match the password."]);
         }
 
-        RecipeDescriptor selectedRecipe = null;
+        IRecipeDescriptor selectedRecipe = null;
         if (!string.IsNullOrEmpty(_shellSettings["RecipeName"]))
         {
             selectedRecipe = model.Recipes.FirstOrDefault(x => x.Name == _shellSettings["RecipeName"]);

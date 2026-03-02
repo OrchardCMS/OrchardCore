@@ -33,7 +33,7 @@ public class OpenIdApplicationStepTests
             .ReturnsAsync(actual);
 
 
-        var step = new OpenIdApplicationStep(appManagerMock.Object);
+        var step = new OpenIdApplicationRecipeStep(appManagerMock.Object);
         var recipe = JsonNode.Parse(GetRecipeFileContent(recipeName));
         var context = new RecipeExecutionContext
         {
@@ -123,7 +123,7 @@ public class OpenIdApplicationStepTests
             .Returns(
                 ValueTask.CompletedTask);
 
-        var step = new OpenIdApplicationStep(appManagerMock.Object);
+        var step = new OpenIdApplicationRecipeStep(appManagerMock.Object);
         var recipe = JsonNode.Parse(GetRecipeFileContent(recipeName));
         var context = new RecipeExecutionContext
         {
