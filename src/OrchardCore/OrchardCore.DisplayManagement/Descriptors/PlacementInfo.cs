@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using Cysharp.Text;
 
 namespace OrchardCore.DisplayManagement.Descriptors;
 
@@ -19,6 +20,15 @@ public class PlacementInfo
     private static readonly char[] _delimiters = [PositionDelimiter, TabDelimiter, GroupDelimiter, CardDelimiter, ColumnDelimiter];
 
     /// <summary>
+    /// Cache for commonly used PlacementInfo instances with only Location set.
+    /// </summary>
+    private static readonly ConcurrentDictionary<string, PlacementInfo> _locationCache = new(StringComparer.OrdinalIgnoreCase);
+
+    private readonly string _position;
+    private readonly bool _isLayoutZone;
+    private string _location;
+
+    /// <summary>
     /// A shared instance representing a hidden placement.
     /// </summary>
     public static readonly PlacementInfo Hidden = new(HiddenLocation);
@@ -29,32 +39,63 @@ public class PlacementInfo
     public static readonly PlacementInfo Empty = new();
 
     /// <summary>
-    /// Cache for commonly used PlacementInfo instances with only Location set.
+    /// Gets the location string. This is lazily computed from the parsed components if not explicitly set.
     /// </summary>
-    private static readonly ConcurrentDictionary<string, PlacementInfo> _locationCache = new(StringComparer.OrdinalIgnoreCase);
+    public string Location => _location ??= BuildLocationString();
 
-    private readonly string[] _zones;
-    private readonly string _position;
-    private readonly string _tab;
-    private readonly string _group;
-    private readonly string _card;
-    private readonly string _column;
-
-    public string Location { get; }
     public string Source { get; }
     public string ShapeType { get; }
     public string DefaultPosition { get; }
     public string[] Alternates { get; }
     public string[] Wrappers { get; }
 
+    /// <summary>
+    /// Returns the list of zone names.
+    /// e.g., <code>Content.Metadata:1</code> will return 'Content', 'Metadata'.
+    /// </summary>
+    public string[] Zones { get; }
+
+    /// <summary>
+    /// Gets the position of the shape within the zone.
+    /// Returns the explicit position if set, otherwise falls back to <see cref="DefaultPosition"/>, or empty string.
+    /// </summary>
+    public string Position => _position ?? DefaultPosition ?? "";
+
+    /// <summary>
+    /// Gets the group information from the placement, or <c>null</c> if not present.
+    /// e.g., <code>Content:12@search</code> will return 'search'.
+    /// </summary>
+    public string Group { get; }
+
+    /// <summary>
+    /// Gets the tab grouping metadata from the placement.
+    /// </summary>
+    public GroupingMetadata Tab { get; }
+
+    /// <summary>
+    /// Gets the card grouping metadata from the placement.
+    /// </summary>
+    public GroupingMetadata Card { get; }
+
+    /// <summary>
+    /// Gets the column grouping metadata from the placement.
+    /// </summary>
+    public GroupingMetadata Column { get; }
+
     public PlacementInfo()
     {
-        _zones = [];
+        Zones = [];
     }
 
-    public PlacementInfo(string location, string source = null, string shapeType = null, string defaultPosition = null, string[] alternates = null, string[] wrappers = null)
+    public PlacementInfo(
+        string location,
+        string source = null,
+        string shapeType = null,
+        string defaultPosition = null,
+        string[] alternates = null,
+        string[] wrappers = null)
     {
-        Location = location;
+        _location = location;
         Source = source;
         ShapeType = shapeType;
         DefaultPosition = defaultPosition;
@@ -63,12 +104,83 @@ public class PlacementInfo
 
         if (!string.IsNullOrEmpty(location))
         {
-            ParseLocation(location, out _zones, out _position, out _tab, out _group, out _card, out _column);
+            _isLayoutZone = location[0] == '/';
+            ParseLocation(location, out var zones, out _position, out var group, out var tabGrouping, out var cardGrouping, out var columnGrouping);
+            Zones = zones;
+            Tab = tabGrouping;
+            Group = group;
+            Card = cardGrouping;
+            Column = columnGrouping;
         }
         else
         {
-            _zones = [];
+            Zones = [];
         }
+    }
+
+    /// <summary>
+    /// Creates a PlacementInfo with pre-parsed components.
+    /// </summary>
+    public PlacementInfo(
+        string location,
+        string source,
+        string shapeType,
+        string defaultPosition,
+        string[] alternates,
+        string[] wrappers,
+        string[] zones,
+        string position,
+        GroupingMetadata tabGrouping,
+        string group,
+        GroupingMetadata cardGrouping,
+        GroupingMetadata columnGrouping,
+        bool isLayoutZone)
+    {
+        _location = location;
+        Source = source;
+        ShapeType = shapeType;
+        DefaultPosition = defaultPosition;
+        Alternates = alternates;
+        Wrappers = wrappers;
+        Zones = zones ?? [];
+        _position = position;
+        Tab = tabGrouping;
+        Group = group;
+        Card = cardGrouping;
+        Column = columnGrouping;
+        _isLayoutZone = isLayoutZone;
+    }
+
+    /// <summary>
+    /// Creates a PlacementInfo with pre-parsed components. The location string will be lazily computed.
+    /// </summary>
+    internal PlacementInfo(
+        string source,
+        string shapeType,
+        string defaultPosition,
+        string[] alternates,
+        string[] wrappers,
+        string[] zones,
+        string position,
+        GroupingMetadata tabGrouping,
+        string group,
+        GroupingMetadata cardGrouping,
+        GroupingMetadata columnGrouping,
+        bool isLayoutZone)
+    {
+        // _location is left null - will be computed lazily via BuildLocationString()
+        Source = source;
+        ShapeType = shapeType;
+        DefaultPosition = defaultPosition;
+        Alternates = alternates;
+        Wrappers = wrappers;
+        Zones = zones ?? [];
+        _position = position;
+        Tab = tabGrouping;
+        Group = group;
+        Card = cardGrouping;
+        Column = columnGrouping;
+        _isLayoutZone = isLayoutZone;
     }
 
     /// <summary>
@@ -104,7 +216,7 @@ public class PlacementInfo
             return this;
         }
 
-        return new PlacementInfo(Location, source, ShapeType, DefaultPosition, Alternates, Wrappers);
+        return new PlacementInfo(_location, source, ShapeType, DefaultPosition, Alternates, Wrappers, Zones, _position, Tab, Group, Card, Column, _isLayoutZone);
     }
 
     /// <summary>
@@ -113,7 +225,7 @@ public class PlacementInfo
     /// </summary>
     public PlacementInfo WithDefaults(string location, string defaultPosition)
     {
-        var locationChanged = Location != location && location != null && Location == null;
+        var locationChanged = _location != location && location != null && _location == null;
         var defaultPositionChanged = DefaultPosition != defaultPosition && defaultPosition != null && DefaultPosition == null;
 
         if (!locationChanged && !defaultPositionChanged)
@@ -121,57 +233,147 @@ public class PlacementInfo
             return this;
         }
 
-        return new PlacementInfo(Location ?? location, Source, ShapeType, DefaultPosition ?? defaultPosition, Alternates, Wrappers);
+        var newLocation = _location ?? location;
+        var newDefaultPosition = DefaultPosition ?? defaultPosition;
+
+        // If the location is changing, we need to parse the new location to get the zones and other values.
+        if (locationChanged)
+        {
+            return new PlacementInfo(newLocation, Source, ShapeType, newDefaultPosition, Alternates, Wrappers);
+        }
+
+        // Location is not changing, preserve the already-parsed values.
+        return new PlacementInfo(_location, Source, ShapeType, newDefaultPosition, Alternates, Wrappers, Zones, _position, Tab, Group, Card, Column, _isLayoutZone);
     }
 
+    /// <summary>
+    /// Determines whether this placement targets a layout zone (location starts with '/').
+    /// </summary>
     public bool IsLayoutZone()
-        => !string.IsNullOrEmpty(Location) && Location[0] == '/';
+        => _isLayoutZone;
 
+    /// <summary>
+    /// Determines whether this placement represents a hidden shape.
+    /// </summary>
     public bool IsHidden()
-        => string.IsNullOrEmpty(Location) || Location == HiddenLocation;
+        => Zones.Length == 0 || _location == HiddenLocation;
+
+    /// <summary>
+    /// Returns the location string for debugging purposes.
+    /// </summary>
+    public override string ToString()
+        => Location ?? "(empty)";
 
     /// <summary>
     /// Returns the list of zone names.
-    /// e.g.,. <code>Content.Metadata:1</code> will return 'Content', 'Metadata'.
+    /// e.g., <code>Content.Metadata:1</code> will return 'Content', 'Metadata'.
     /// </summary>
-    /// <returns></returns>
+    [Obsolete($"Use the {nameof(Zones)} property instead.")]
     public string[] GetZones()
-        => _zones ?? [];
+        => Zones;
 
+    [Obsolete($"Use the {nameof(Position)} property instead.")]
     public string GetPosition()
-        => _position ?? DefaultPosition ?? "";
-
-    public string GetTab()
-        => _tab ?? "";
+        => Position;
 
     /// <summary>
     /// Extracts the group information from a location string, or <c>null</c> if it is not present.
     /// e.g., Content:12@search.
     /// </summary>
+    [Obsolete($"Use the {nameof(Group)} property instead.")]
     public string GetGroup()
-        => _group;
+        => Group;
 
     /// <summary>
-    /// Extracts the card information from a location string, or <c>null</c> if it is not present.
-    /// e.g., Content:12%search.
+    /// Builds the location string from the parsed components.
     /// </summary>
-    public string GetCard()
-        => _card;
+    private string BuildLocationString()
+    {
+        if (Zones.Length == 0)
+        {
+            return null;
+        }
 
-    /// <summary>
-    /// Extracts the column information from a location string, or <c>null</c> if it is not present.
-    /// e.g., Content:12!search.
-    /// </summary>
-    public string GetColumn()
-        => _column;
+        using var sb = ZString.CreateStringBuilder();
+        if (_isLayoutZone)
+        {
+            sb.Append('/');
+        }
 
-    private static void ParseLocation(string location, out string[] zones, out string position, out string tab, out string group, out string card, out string column)
+        // Zones joined by '.'
+        for (var i = 0; i < Zones.Length; i++)
+        {
+            if (i > 0)
+            {
+                sb.Append('.');
+            }
+            sb.Append(Zones[i]);
+        }
+
+        if (!string.IsNullOrEmpty(_position))
+        {
+            sb.Append(PositionDelimiter);
+            sb.Append(_position);
+        }
+
+        if (Tab.HasValue)
+        {
+            sb.Append(TabDelimiter);
+            sb.Append(Tab.Name);
+
+            if (!string.IsNullOrEmpty(Tab.Position))
+            {
+                sb.Append(';');
+                sb.Append(Tab.Position);
+            }
+        }
+
+        if (!string.IsNullOrEmpty(Group))
+        {
+            sb.Append(GroupDelimiter);
+            sb.Append(Group);
+        }
+
+        if (Card.HasValue)
+        {
+            sb.Append(CardDelimiter);
+            sb.Append(Card.Name);
+
+            if (!string.IsNullOrEmpty(Card.Position))
+            {
+                sb.Append(';');
+                sb.Append(Card.Position);
+            }
+        }
+
+        if (Column.HasValue)
+        {
+            sb.Append(ColumnDelimiter);
+            sb.Append(Column.Name);
+
+            if (!string.IsNullOrEmpty(Column.Width))
+            {
+                sb.Append('_');
+                sb.Append(Column.Width);
+            }
+
+            if (!string.IsNullOrEmpty(Column.Position))
+            {
+                sb.Append(';');
+                sb.Append(Column.Position);
+            }
+        }
+
+        return sb.ToString();
+    }
+
+    private static void ParseLocation(string location, out string[] zones, out string position, out string group, out GroupingMetadata tabGrouping, out GroupingMetadata cardGrouping, out GroupingMetadata columnGrouping)
     {
         position = null;
-        tab = null;
         group = null;
-        card = null;
-        column = null;
+        tabGrouping = GroupingMetadata.Empty;
+        cardGrouping = GroupingMetadata.Empty;
+        columnGrouping = GroupingMetadata.Empty;
 
         if (location[0] == '/')
         {
@@ -208,14 +410,16 @@ public class PlacementInfo
         if (tabDelimiter != -1)
         {
             var nextDelimiter = location.IndexOfAny(_delimiters, tabDelimiter + 1);
+            string tabString;
             if (nextDelimiter == -1)
             {
-                tab = location[(tabDelimiter + 1)..];
+                tabString = location[(tabDelimiter + 1)..];
             }
             else
             {
-                tab = location[(tabDelimiter + 1)..nextDelimiter];
+                tabString = location[(tabDelimiter + 1)..nextDelimiter];
             }
+            tabGrouping = GroupingMetadata.ParseTabOrCard(tabString);
         }
 
         var groupDelimiter = location.IndexOf(GroupDelimiter);
@@ -236,28 +440,32 @@ public class PlacementInfo
         if (cardDelimiter != -1)
         {
             var nextDelimiter = location.IndexOfAny(_delimiters, cardDelimiter + 1);
+            string cardString;
             if (nextDelimiter == -1)
             {
-                card = location[(cardDelimiter + 1)..];
+                cardString = location[(cardDelimiter + 1)..];
             }
             else
             {
-                card = location[(cardDelimiter + 1)..nextDelimiter];
+                cardString = location[(cardDelimiter + 1)..nextDelimiter];
             }
+            cardGrouping = GroupingMetadata.ParseTabOrCard(cardString);
         }
 
         var colDelimiter = location.IndexOf(ColumnDelimiter);
         if (colDelimiter != -1)
         {
             var nextDelimiter = location.IndexOfAny(_delimiters, colDelimiter + 1);
+            string columnString;
             if (nextDelimiter == -1)
             {
-                column = location[(colDelimiter + 1)..];
+                columnString = location[(colDelimiter + 1)..];
             }
             else
             {
-                column = location[(colDelimiter + 1)..nextDelimiter];
+                columnString = location[(colDelimiter + 1)..nextDelimiter];
             }
+            columnGrouping = GroupingMetadata.ParseColumn(columnString);
         }
     }
 }
