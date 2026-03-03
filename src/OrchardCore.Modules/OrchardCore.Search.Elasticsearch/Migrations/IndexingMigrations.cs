@@ -32,7 +32,7 @@ internal sealed class IndexingMigrations : DataMigration
 
     public int Create()
     {
-        const int stepNumber = 1;
+        const int stepNumber = 2;
 
         if (_shellSettings.IsInitializing())
         {
@@ -218,9 +218,19 @@ internal sealed class IndexingMigrations : DataMigration
                     }
                 }
             }
+
+            await UpdateLegacyAnalyzerNameAsync(indexProfileManager);
         });
 
         return stepNumber;
+    }
+    
+    public async Task<int> UpdateFrom1Async()
+    {
+        ShellScope.AddDeferredTask(scope =>
+            UpdateLegacyAnalyzerNameAsync(scope.ServiceProvider.GetRequiredService<IIndexProfileManager>()));
+        
+        return 2;
     }
 
     private static string[] GetDefaultSearchFields(JsonNode settings)
@@ -248,5 +258,27 @@ internal sealed class IndexingMigrations : DataMigration
         }
 
         return defaultSearchFields.ToArray();
+    }
+
+    private static async Task UpdateLegacyAnalyzerNameAsync(IIndexProfileManager indexProfileManager)
+    {
+        // The name "standardanalyzer" is a legacy used prior OC 1.6 release. It can be removed in future releases.
+        static bool IsLegacyAnalyzerName(string analyzerName) =>
+            analyzerName == "standardanalyzer" || string.IsNullOrEmpty(analyzerName);
+            
+        var indexProfiles = await indexProfileManager.GetByProviderAsync(ElasticsearchConstants.ProviderName);
+        foreach (var indexProfile in indexProfiles)
+        {
+            if (IsLegacyAnalyzerName(indexProfile.As<ElasticsearchDefaultQueryMetadata>()?.QueryAnalyzerName) ||
+                IsLegacyAnalyzerName(indexProfile.As<ElasticsearchIndexMetadata>()?.AnalyzerName))
+            {
+                indexProfile.Alter<ElasticsearchDefaultQueryMetadata>(metadata =>
+                    metadata.QueryAnalyzerName = ElasticsearchConstants.DefaultAnalyzer);
+                indexProfile.Alter<ElasticsearchIndexMetadata>(metadata =>
+                    metadata.AnalyzerName = ElasticsearchConstants.DefaultAnalyzer);
+
+                await indexProfileManager.UpdateAsync(indexProfile);
+            }
+        }
     }
 }
