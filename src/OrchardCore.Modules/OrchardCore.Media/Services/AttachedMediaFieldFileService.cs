@@ -87,7 +87,6 @@ public class AttachedMediaFieldFileService
     // Newly added files
     private async Task MoveNewFilesToContentItemDirAndUpdatePathsAsync(List<EditMediaFieldItemInfo> items, ContentItem contentItem)
     {
-        var exceptions = new List<Exception>();
         // Copy to a list to allow removing files from the original items argument.
         var itemToParse = items.Where(i => !i.IsRemoved && !string.IsNullOrEmpty(i.Path)).ToList();
         foreach (var item in itemToParse)
@@ -96,10 +95,7 @@ public class AttachedMediaFieldFileService
 
             if (fileInfo == null)
             {
-                // Use the AttachedFileName property, as it contains the original file name and may be more familiar to the user.
-                exceptions.Add(new FileNotFoundException($"A file with the path '{item.Path}' does not exist.", item.AttachedFileName));
-                // Remove the item to prevent users from seeing the not-found files in the media field editor.
-                items.Remove(item);
+                // File not found — keep the reference so the user can see which files are missing.
                 continue;
             }
 
@@ -124,10 +120,6 @@ public class AttachedMediaFieldFileService
             await DeleteDirIfEmptyAsync(previousDirPath);
         }
 
-        if (exceptions.Count > 0)
-        {
-            throw new AggregateException("Some files could not be processed.", exceptions);
-        }
     }
 
     private string GetContentItemFolder(ContentItem contentItem)

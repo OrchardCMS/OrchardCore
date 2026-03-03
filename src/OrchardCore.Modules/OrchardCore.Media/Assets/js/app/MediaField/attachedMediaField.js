@@ -35,9 +35,6 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
                         return JSON.stringify(initialPaths);
                     }
                     this.mediaItems.forEach(function (x) {
-                        if (x.errorType === 'not-found') {
-                            return;
-                        }
                         mediaPaths.push({ path: x.mediaPath, isRemoved: x.isRemoved, isNew: x.isNew, mediaText: x.mediaText, anchor: x.anchor, attachedFileName: x.attachedFileName });
                     });
                     return JSON.stringify(mediaPaths);
@@ -71,7 +68,7 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
                                     console.log(JSON.stringify(error));
                                     var item;
                                     if (error.status === 404) {
-                                        item = { name: x.path, mime: '', mediaPath: '', errorType: 'not-found', mediaText: '', anchor: { x: 0.5, y: 0.5 }, attachedFileName: x.attachedFileName };
+                                        item = { name: x.path, mime: '', mediaPath: x.path, errorType: 'not-found', mediaText: x.mediaText, anchor: x.anchor, attachedFileName: x.attachedFileName };
                                     } else {
                                         item = { name: x.path, mime: '', mediaPath: x.path, errorType: 'transient', mediaText: x.mediaText, anchor: x.anchor, attachedFileName: x.attachedFileName };
                                     }
