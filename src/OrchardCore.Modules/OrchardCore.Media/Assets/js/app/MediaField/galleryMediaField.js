@@ -18,7 +18,7 @@ Vue.component("mediaFieldGalleryListItem", {
             </div>
             <div class="me-auto flex-shrink-1">
                 <span v-if="media.errorType==='transient'" class="media-filename card-text small">{{ $parent.T.mediaTemporarilyUnavailable }}</span>
-                <span v-else-if="media.errorType==='not-found'" class="media-filename card-text small">{{ $parent.T.mediaNotFound }} - {{ $parent.T.discardWarning }}</span>
+                <span v-else-if="media.errorType==='not-found'" class="media-filename card-text small">{{ $parent.T.mediaNotFound }}</span>
                 <span v-else class="media-filename card-text small" :title="media.name">{{ media.name }}</span>
             </div>
             <div class="media-field-gallery-list-actions flex-shrink-0">
@@ -107,7 +107,6 @@ Vue.component("mediaFieldGalleryCardItem", {
                         <div v-else-if="media.errorType==='not-found'" class="d-flex flex-column justify-content-center align-items-center h-100 bg-body file-icon not-found" :title="media.name">
                             <i class="fa-solid fa-triangle-exclamation fa-2x card-text'"></i>
                             <span class="card-text small pt-2" :title="media.name">{{ $parent.T.mediaNotFound }}</span>
-                            <span class="card-text small pt-2 px-2 text-center" :title="media.name">{{ $parent.T.discardWarning }}</span>
                         </div>
                         <div v-else class="d-flex flex-column justify-content-center align-items-center h-100 bg-body file-icon">
                             <i :class="$parent.getfontAwesomeClassNameForFileName(media.name, 'fa-4x card-text')" :data-mime="media.mime"></i>

@@ -49,7 +49,6 @@ Vue.component('mediaFieldThumbsContainer', {
                         <div class="thumb-container flex-column" :style="{height: thumbSize + 'px'}">
                             <i class="fa-solid fa-ban text-danger d-block" aria-hidden="true"></i>
                             <span class="text-danger small d-block">{{ T.mediaNotFound }}</span>
-                            <span class="text-danger small d-block text-center">{{ T.discardWarning }}</span>
                         </div>
                         <div class="media-container-main-item-title card-body">
                             <a href="javascript:;" class="btn btn-light btn-sm float-end inline-media-button delete-button"

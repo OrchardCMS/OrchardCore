@@ -3311,7 +3311,6 @@ Vue.component('mediaFieldThumbsContainer', {
                         <div class="thumb-container flex-column" :style="{height: thumbSize + 'px'}">
                             <i class="fa-solid fa-ban text-danger d-block" aria-hidden="true"></i>
                             <span class="text-danger small d-block">{{ T.mediaNotFound }}</span>
-                            <span class="text-danger small d-block text-center">{{ T.discardWarning }}</span>
                         </div>
                         <div class="media-container-main-item-title card-body">
                             <a href="javascript:;" class="btn btn-light btn-sm float-end inline-media-button delete-button"
@@ -3785,7 +3784,7 @@ Vue.component("mediaFieldGalleryListItem", {
             </div>
             <div class="me-auto flex-shrink-1">
                 <span v-if="media.errorType==='transient'" class="media-filename card-text small">{{ $parent.T.mediaTemporarilyUnavailable }}</span>
-                <span v-else-if="media.errorType==='not-found'" class="media-filename card-text small">{{ $parent.T.mediaNotFound }} - {{ $parent.T.discardWarning }}</span>
+                <span v-else-if="media.errorType==='not-found'" class="media-filename card-text small">{{ $parent.T.mediaNotFound }}</span>
                 <span v-else class="media-filename card-text small" :title="media.name">{{ media.name }}</span>
             </div>
             <div class="media-field-gallery-list-actions flex-shrink-0">
@@ -3874,7 +3873,6 @@ Vue.component("mediaFieldGalleryCardItem", {
                         <div v-else-if="media.errorType==='not-found'" class="d-flex flex-column justify-content-center align-items-center h-100 bg-body file-icon not-found" :title="media.name">
                             <i class="fa-solid fa-triangle-exclamation fa-2x card-text'"></i>
                             <span class="card-text small pt-2" :title="media.name">{{ $parent.T.mediaNotFound }}</span>
-                            <span class="card-text small pt-2 px-2 text-center" :title="media.name">{{ $parent.T.discardWarning }}</span>
                         </div>
                         <div v-else class="d-flex flex-column justify-content-center align-items-center h-100 bg-body file-icon">
                             <i :class="$parent.getfontAwesomeClassNameForFileName(media.name, 'fa-4x card-text')" :data-mime="media.mime"></i>
