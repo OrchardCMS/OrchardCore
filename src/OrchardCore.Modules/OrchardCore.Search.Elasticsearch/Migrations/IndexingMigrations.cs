@@ -227,7 +227,7 @@ internal sealed class IndexingMigrations : DataMigration
     }
     
     [SuppressMessage("Performance", "CA1822:Mark members as static")]
-    public async Task<int> UpdateFrom1Async()
+    public int UpdateFrom1()
     {
         ShellScope.AddDeferredTask(scope =>
             UpdateLegacyAnalyzerNameAsync(scope.ServiceProvider.GetRequiredService<IIndexProfileManager>()));
