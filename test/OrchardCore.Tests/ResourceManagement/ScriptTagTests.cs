@@ -79,7 +79,7 @@ public class ScriptTagTests : IDisposable
         // Assert — Resource should be defined in InlineManifest with correct URLs and dependencies.
         var inlineDefinition = resourceManager.InlineManifest
             .GetResources("script")
-            .FirstOrDefault(r => r.Key == "~/app.js".ToLowerInvariant())
+            .FirstOrDefault(r => r.Key == "~/app.js")
             .Value?.FirstOrDefault();
 
         Assert.NotNull(inlineDefinition);
@@ -455,12 +455,12 @@ public class ScriptTagTests : IDisposable
         return new LiquidTemplateContext(services, new TemplateOptions());
     }
 
-    private static IReadOnlyList<FilterArgument> CreateArguments(params (string name, string value)[] args)
+    private static List<FilterArgument> CreateArguments(params (string name, string value)[] args)
     {
         return args.Select(a => new FilterArgument(a.name, new LiteralExpression(StringValue.Create(a.value)))).ToList();
     }
 
-    private async Task<IDocument> ParseHtmlAsync(IHtmlContent content)
+    private async Task<IDocument> ParseHtmlAsync(HtmlContentBuilder content)
     {
         using var writer = new StringWriter();
 

@@ -79,7 +79,7 @@ public class ScriptTagHelperTests : IDisposable
         // Assert — Resource should be defined in InlineManifest with correct URLs and dependencies.
         var inlineDefinition = resourceManager.InlineManifest
             .GetResources("script")
-            .FirstOrDefault(r => r.Key == "~/app.js".ToLowerInvariant())
+            .FirstOrDefault(r => r.Key == "~/app.js")
             .Value?.FirstOrDefault();
 
         Assert.NotNull(inlineDefinition);
@@ -427,7 +427,7 @@ public class ScriptTagHelperTests : IDisposable
             });
     }
 
-    private async Task<IDocument> ParseHtmlAsync(IHtmlContent content)
+    private async Task<IDocument> ParseHtmlAsync(HtmlContentBuilder content)
     {
         using var writer = new StringWriter();
 

@@ -79,7 +79,7 @@ public class StyleTagHelperTests : IDisposable
         // Assert — Resource should be defined in InlineManifest with correct URLs and dependencies.
         var inlineDefinition = resourceManager.InlineManifest
             .GetResources("stylesheet")
-            .FirstOrDefault(r => r.Key == "~/app.css".ToLowerInvariant())
+            .FirstOrDefault(r => r.Key == "~/app.css")
             .Value?.FirstOrDefault();
 
         Assert.NotNull(inlineDefinition);
@@ -308,7 +308,7 @@ public class StyleTagHelperTests : IDisposable
             });
     }
 
-    private async Task<IDocument> ParseHtmlAsync(IHtmlContent content)
+    private async Task<IDocument> ParseHtmlAsync(HtmlContentBuilder content)
     {
         using var writer = new StringWriter();
 
