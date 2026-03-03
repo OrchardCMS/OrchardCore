@@ -46,7 +46,7 @@
                    asp-route-id="@Model.TaxonomyPart.TermContentType"
                    asp-route-taxonomyContentItemId="@Model.TaxonomyPart.ContentItem.ContentItemId"
                    asp-route-area="OrchardCore.Taxonomies">
-                    @T["Add {0}", D[termContentType.DisplayName, "Content Types"]]
+                    @T["Add {0}", D[termContentType.DisplayName, "Content Types"].Value]
                 </a>
             }
         }
