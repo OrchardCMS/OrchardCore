@@ -52,20 +52,28 @@ public class RobotsMiddleware
                 content.AppendLine(item);
             }
 
+            ClearResponse(httpContext.Response);
             httpContext.Response.ContentType = MediaTypeNames.Text.Plain;
-            httpContext.Response.StatusCode = (int)HttpStatusCode.OK;
-            httpContext.Response.HttpContext.Features.GetRequiredFeature<IHttpResponseFeature>().ReasonPhrase = null;
-            
-            if (httpContext.Response.Body.CanSeek)
-            {
-                httpContext.Response.Body.SetLength(0);
-            }
-            
             await httpContext.Response.WriteAsync(content.ToString());
 
             return;
         }
 
         await _next(httpContext);
+    }
+
+    /// <summary>
+    /// Resets the <paramref name="response"/> status and body. Similar to <see cref="ResponseExtensions.Clear"/>, but
+    /// doesn't clear <see cref="HttpResponse.Headers"/> so headers added by other middlewares can persist.
+    /// </summary>
+    private static void ClearResponse(HttpResponse response)
+    {
+        response.StatusCode = (int)HttpStatusCode.OK;
+        response.HttpContext.Features.GetRequiredFeature<IHttpResponseFeature>().ReasonPhrase = null;
+            
+        if (response.Body.CanSeek)
+        {
+            response.Body.SetLength(0);
+        }
     }
 }
