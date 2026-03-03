@@ -231,7 +231,7 @@ internal sealed class IndexingMigrations : DataMigration
     {
         ShellScope.AddDeferredTask(scope =>
             UpdateLegacyAnalyzerNameAsync(scope.ServiceProvider.GetRequiredService<IIndexProfileManager>()));
-        
+
         return 2;
     }
 
@@ -267,7 +267,7 @@ internal sealed class IndexingMigrations : DataMigration
         // The name "standardanalyzer" is a legacy used prior OC 1.6 release. It can be removed in future releases.
         static bool IsLegacyAnalyzerName(string analyzerName) =>
             analyzerName == "standardanalyzer" || string.IsNullOrEmpty(analyzerName);
-            
+
         var indexProfiles = await indexProfileManager.GetByProviderAsync(ElasticsearchConstants.ProviderName);
         foreach (var indexProfile in indexProfiles)
         {
