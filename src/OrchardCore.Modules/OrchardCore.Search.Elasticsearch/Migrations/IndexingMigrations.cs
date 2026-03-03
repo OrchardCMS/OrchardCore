@@ -32,7 +32,7 @@ internal sealed class IndexingMigrations : DataMigration
 
     public int Create()
     {
-        var stepNumber = 1;
+        const int stepNumber = 1;
 
         if (_shellSettings.IsInitializing())
         {
