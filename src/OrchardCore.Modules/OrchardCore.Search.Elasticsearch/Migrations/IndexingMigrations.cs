@@ -15,6 +15,7 @@ using OrchardCore.Search.Elasticsearch.Core.Models;
 using OrchardCore.Search.Elasticsearch.Core.Services;
 using OrchardCore.Search.Elasticsearch.Models;
 using OrchardCore.Settings;
+using System.Diagnostics.CodeAnalysis;
 using YesSql;
 using YesSql.Sql;
 
@@ -225,6 +226,7 @@ internal sealed class IndexingMigrations : DataMigration
         return stepNumber;
     }
     
+    [SuppressMessage("Performance", "CA1822:Mark members as static")]
     public async Task<int> UpdateFrom1Async()
     {
         ShellScope.AddDeferredTask(scope =>
