@@ -297,7 +297,9 @@ The connection types documentation and examples can be found [in the official El
 
 ### Indexing settings
 
-By editing a given Elasticsearch index on the dashboard, you have access to general indexing settings, as well as Elasticsearch-specific ones. Under the latter, you can set the following options:
+When editing an Elasticsearch-based index from the Index Management page (Search > Indexing), you can configure both general indexing settings and Elasticsearch-specific settings.
+
+Under the Elasticsearch-specific settings, the following configuration options are available:
 
 - Query analyzer: The analyzer to use when executing queries on this index. By default, it uses the `standard` analyzer; other analyzers are available if registered.
 - Search type: Determines how the index will be searched.
