@@ -9,7 +9,6 @@ public static class ShapeFactoryExtensions
 {
     private static readonly ConcurrentDictionary<Type, Type> _proxyTypesCache = [];
     private static readonly ProxyGenerator _proxyGenerator = new();
-    private static readonly Func<object, ValueTask<IShape>> _newShape = (state) => ValueTask.FromResult<IShape>(new Shape());
 
     /// <summary>
     /// Creates a new generic shape by copying the properties of an object.
@@ -25,7 +24,7 @@ public static class ShapeFactoryExtensions
     /// Creates a new generic shape instance.
     /// </summary>
     public static ValueTask<IShape> CreateAsync(this IShapeFactory factory, string shapeType)
-        => factory.CreateAsync(shapeType, _newShape, null, null, null);
+        => factory.CreateAsync<object>(shapeType, static (state) => ValueTask.FromResult<IShape>(new Shape()), null, null, null);
 
     /// <summary>
     /// Creates a new generic shape instance and initializes it.
@@ -36,12 +35,8 @@ public static class ShapeFactoryExtensions
     /// <summary>
     /// Creates a new generic shape instance and initializes it.
     /// </summary>
-    public static ValueTask<IShape> CreateAsync<T>(this IShapeFactory factory, string shapeType, Func<T, ValueTask<IShape>> shapeFactory, T state)
-        => factory.CreateAsync(shapeType, (state) =>
-        {
-            var (shapeFactory, arg) = ((Func<T, ValueTask<IShape>>, T))state;
-            return shapeFactory(arg);
-        } , null, null, (shapeFactory, state));
+    public static ValueTask<IShape> CreateAsync<TState>(this IShapeFactory factory, string shapeType, Func<TState, ValueTask<IShape>> shapeFactory, TState state)
+        => factory.CreateAsync(shapeType, shapeFactory, null, null, state);
 
     /// <summary>
     /// Creates a dynamic proxy instance for the type and initializes it.
@@ -65,7 +60,7 @@ public static class ShapeFactoryExtensions
     public static ValueTask<IShape> CreateAsync<TModel>(this IShapeFactory factory, string shapeType, Action<TModel> initialize = null)
         where TModel : class
     {
-        return factory.CreateAsync<TModel, Action<TModel>>(shapeType, initializeAsync: (model, initialize) =>
+        return factory.CreateAsync<TModel, Action<TModel>>(shapeType, initializeAsync: static (model, initialize) =>
         {
             initialize?.Invoke(model);
 
@@ -73,10 +68,10 @@ public static class ShapeFactoryExtensions
         }, initialize);
     }
 
-    public static ValueTask<IShape> CreateAsync<TModel, T>(this IShapeFactory factory, string shapeType, Action<TModel, T> initialize, T state)
+    public static ValueTask<IShape> CreateAsync<TModel, TState>(this IShapeFactory factory, string shapeType, Action<TModel, TState> initialize, TState state)
         where TModel : class
     {
-        return factory.CreateAsync<TModel, (Action<TModel, T>, T)>(shapeType, initializeAsync: (model, state) =>
+        return factory.CreateAsync<TModel, (Action<TModel, TState>, TState)>(shapeType, initializeAsync: static (model, state) =>
         {
             var (initialize, arg) = state;
             initialize?.Invoke(model, arg);
@@ -97,10 +92,9 @@ public static class ShapeFactoryExtensions
             return factory.CreateAsync(shapeType);
         }
 
-        return factory.CreateAsync(shapeType, _newShape, null, createdContext =>
+        return factory.CreateAsync(shapeType, static (state) => ValueTask.FromResult<IShape>(new Shape()), null, static (createdContext, parameters) =>
         {
             var shape = (Shape)createdContext.Shape;
-            var parameters = (INamedEnumerable<object>)createdContext.State;
 
             // If only one non-Type, use it as the source object to copy.
             var initializer = parameters.Positional.SingleOrDefault();
@@ -147,16 +141,16 @@ public static class ShapeFactoryExtensions
     /// <returns></returns>
     public static ValueTask<IShape> CreateAsync<TModel>(this IShapeFactory factory, string shapeType, Func<TModel, ValueTask> initializeAsync)
         where TModel : class
-        => factory.CreateAsync<TModel, Func<TModel, ValueTask>>(shapeType, (model, initializeAsync) => initializeAsync(model), initializeAsync);
+        => factory.CreateAsync<TModel, Func<TModel, ValueTask>>(shapeType, static (model, initializeAsync) => initializeAsync(model), initializeAsync);
 
-    public static ValueTask<IShape> CreateAsync<TModel, T>(this IShapeFactory factory, string shapeType, Func<TModel, T, ValueTask> initializeAsync, T state)
+    public static ValueTask<IShape> CreateAsync<TModel, TState>(this IShapeFactory factory, string shapeType, Func<TModel, TState, ValueTask> initializeAsync, TState state)
         where TModel : class
     {
         ArgumentException.ThrowIfNullOrEmpty(shapeType);
 
-        return factory.CreateAsync(shapeType, (state) => ShapeFactory(state.initializeAsync, state.state), (initializeAsync, state));
+        return factory.CreateAsync(shapeType, static (state) => ShapeFactory(state.initializeAsync, state.state), (initializeAsync, state));
 
-        static ValueTask<IShape> ShapeFactory(Func<TModel, T, ValueTask> init, T state)
+        static ValueTask<IShape> ShapeFactory(Func<TModel, TState, ValueTask> init, TState state)
         {
             var shape = CreateStronglyTypedShape(typeof(TModel));
 

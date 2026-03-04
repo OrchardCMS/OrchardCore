@@ -56,10 +56,24 @@ public class DefaultShapeFactory : DynamicObject, IShapeFactory
         return _scopedShapeTable;
     }
 
-    public ValueTask<IShape> CreateAsync(string shapeType, Func<ValueTask<IShape>> shapeFactory, Action<ShapeCreatingContext> creating, Action<ShapeCreatedContext> created)
-        => CreateAsync(shapeType, state => ((Func<ValueTask<IShape>>)state).Invoke(), creating, created, shapeFactory);
+    public ValueTask<IShape> CreateAsync(
+        string shapeType,
+        Func<ValueTask<IShape>> shapeFactory,
+        Action<ShapeCreatingContext> creating,
+        Action<ShapeCreatedContext> created)
+        => CreateAsync(
+            shapeType,
+            static state => state.shapeFactory(),
+            static (ctx, state) => state.creating?.Invoke(ctx),
+            static (ctx, state) => state.created?.Invoke(ctx),
+            (shapeFactory, creating, created));
 
-    public async ValueTask<IShape> CreateAsync(string shapeType, Func<object, ValueTask<IShape>> shapeFactory, Action<ShapeCreatingContext> creating, Action<ShapeCreatedContext> created, object state)
+    public async ValueTask<IShape> CreateAsync<TState>(
+        string shapeType,
+        Func<TState, ValueTask<IShape>> shapeFactory,
+        Action<ShapeCreatingContext, TState> creating,
+        Action<ShapeCreatedContext, TState> created,
+        TState state)
     {
         ShapeDescriptor shapeDescriptor;
         (await GetShapeTableAsync()).Descriptors.TryGetValue(shapeType, out shapeDescriptor);
@@ -70,12 +84,11 @@ public class DefaultShapeFactory : DynamicObject, IShapeFactory
             New = this,
             ShapeFactory = this,
             ShapeType = shapeType,
-            State = state,
             OnCreated = [],
-            CreateAsync = shapeFactory,
+            Activator = new ShapeActivator<TState>(shapeFactory, state),
         };
 
-        creating?.Invoke(creatingContext);
+        creating?.Invoke(creatingContext, state);
 
         // 'Creating' events may add behaviors and alter base type.
         foreach (var ev in _events)
@@ -92,18 +105,17 @@ public class DefaultShapeFactory : DynamicObject, IShapeFactory
         }
 
         // Create the new instance.
+        var shape = await creatingContext.Activator.CreateAsync()
+            ?? throw new InvalidOperationException($"Shape creation failed for type '{shapeType}'. The shape factory returned null.");
+
         var createdContext = new ShapeCreatedContext
         {
             ServiceProvider = _serviceProvider,
             New = creatingContext.New,
             ShapeFactory = creatingContext.ShapeFactory,
             ShapeType = creatingContext.ShapeType,
-            Shape = await creatingContext.CreateAsync(creatingContext.State),
-            State = state,
+            Shape = shape,
         };
-
-        var shape = createdContext.Shape
-            ?? throw new InvalidOperationException("Invalid base type for shape: " + createdContext.Shape.GetType().ToString());
 
         var shapeMetadata = shape.Metadata;
         shapeMetadata.Type = shapeType;
@@ -133,8 +145,22 @@ public class DefaultShapeFactory : DynamicObject, IShapeFactory
             await ev(createdContext);
         }
 
-        created?.Invoke(createdContext);
+        created?.Invoke(createdContext, state);
 
         return createdContext.Shape;
+    }
+
+    private readonly struct ShapeActivator<TState> : IShapeActivator
+    {
+        private readonly Func<TState, ValueTask<IShape>> _factory;
+        private readonly TState _state;
+
+        public ShapeActivator(Func<TState, ValueTask<IShape>> factory, TState state)
+        {
+            _factory = factory;
+            _state = state;
+        }
+
+        public ValueTask<IShape> CreateAsync() => _factory(_state);
     }
 }

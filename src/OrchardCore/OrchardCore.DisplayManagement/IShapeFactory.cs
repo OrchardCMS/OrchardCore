@@ -14,12 +14,12 @@ public interface IShapeFactory
         Action<ShapeCreatingContext> creating,
         Action<ShapeCreatedContext> created);
 
-    ValueTask<IShape> CreateAsync(
+    ValueTask<IShape> CreateAsync<TState>(
         string shapeType,
-        Func<object, ValueTask<IShape>> shapeFactory,
-        Action<ShapeCreatingContext> creating,
-        Action<ShapeCreatedContext> created,
-        object state) => CreateAsync(shapeType, () => shapeFactory(state), creating, created);
+        Func<TState, ValueTask<IShape>> shapeFactory,
+        Action<ShapeCreatingContext, TState> creating,
+        Action<ShapeCreatedContext, TState> created,
+        TState state) => CreateAsync(shapeType, () => shapeFactory(state), (ctx) => creating(ctx, state), (ctx) => created(ctx, state));
 
     dynamic New { get; }
 }
