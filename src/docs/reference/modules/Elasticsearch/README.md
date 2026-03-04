@@ -338,7 +338,7 @@ Under the Elasticsearch-specific settings, the following configuration options a
 With this feature, Elasticsearch will return highlighted fragments wrapped in `<span class="search-highlight">` HTML tags, which can then be displayed in the Search module or other components. This enables the presentation of more relevant content that directly matches the search term.
 
 !!! note
-    Highlight requests only work when the content item is stored in the Elasticsearch service, i.e. the "Store Source Data" checkbox under the index settings is checked.
+    Highlight requests only work when the content item is stored in the Elasticsearch service, i.e., the "Store Source Data" checkbox under the index settings is checked.
 
 ## Elasticsearch Analyzers
 
