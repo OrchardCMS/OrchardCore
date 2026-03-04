@@ -1,5 +1,4 @@
 using System.Collections.Concurrent;
-using System.Collections.Frozen;
 using OrchardCore.ContentManagement.Metadata.Models;
 
 namespace OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -52,7 +51,7 @@ public static class ContentPartAlternatesFactory
     public sealed class PartAlternatesCollection
     {
         private readonly PartAlternatesCacheKey _key;
-        private readonly ConcurrentDictionary<string, FrozenSet<string>> _alternatesByDisplayType = new(StringComparer.OrdinalIgnoreCase);
+        private readonly ConcurrentDictionary<string, string[]> _alternatesByDisplayType = new(StringComparer.OrdinalIgnoreCase);
 
         // Pre-computed values
         private readonly string _editorPartType;
@@ -123,13 +122,13 @@ public static class ContentPartAlternatesFactory
         /// Gets the cached alternates for a specific display type.
         /// </summary>
         /// <param name="displayType">The display type (e.g., "Summary", "Detail").</param>
-        /// <returns>A frozen set of alternates.</returns>
-        public FrozenSet<string> GetAlternates(string displayType)
+        /// <returns>An array of alternates.</returns>
+        public string[] GetAlternates(string displayType)
         {
             return _alternatesByDisplayType.GetOrAdd(displayType, BuildAlternates);
         }
 
-        private FrozenSet<string> BuildAlternates(string displayType)
+        private string[] BuildAlternates(string displayType)
         {
             var alternates = new List<string>();
 
@@ -240,7 +239,7 @@ public static class ContentPartAlternatesFactory
                 alternates.AddRange(lastAlternatesOfNamedPart);
             }
 
-            return alternates.ToFrozenSet(StringComparer.OrdinalIgnoreCase);
+            return alternates.ToArray();
         }
     }
 }

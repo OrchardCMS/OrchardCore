@@ -1,5 +1,4 @@
 using System.Collections.Concurrent;
-using System.Collections.Frozen;
 using OrchardCore.DisplayManagement.Utilities;
 
 namespace OrchardCore.Menu;
@@ -32,8 +31,8 @@ internal static class MenuItemAlternatesFactory
     internal sealed class MenuItemAlternatesCollection
     {
         private readonly MenuItemAlternatesCacheKey _key;
-        private FrozenSet<string> _menuItemAlternates;
-        private FrozenSet<string> _menuItemLinkAlternates;
+        private string[] _menuItemAlternates;
+        private string[] _menuItemLinkAlternates;
 
         internal MenuItemAlternatesCollection(MenuItemAlternatesCacheKey key)
         {
@@ -43,14 +42,14 @@ internal static class MenuItemAlternatesFactory
         /// <summary>
         /// Gets the cached alternates for MenuItem shapes.
         /// </summary>
-        public FrozenSet<string> MenuItemAlternates => _menuItemAlternates ??= BuildMenuItemAlternates();
+        public string[] MenuItemAlternates => _menuItemAlternates ??= BuildMenuItemAlternates();
 
         /// <summary>
         /// Gets the cached alternates for MenuItemLink shapes.
         /// </summary>
-        public FrozenSet<string> MenuItemLinkAlternates => _menuItemLinkAlternates ??= BuildMenuItemLinkAlternates();
+        public string[] MenuItemLinkAlternates => _menuItemLinkAlternates ??= BuildMenuItemLinkAlternates();
 
-        private FrozenSet<string> BuildMenuItemAlternates()
+        private string[] BuildMenuItemAlternates()
         {
             var alternates = new List<string>();
             var encodedContentType = _key.ContentType.EncodeAlternateElement();
@@ -76,10 +75,10 @@ internal static class MenuItemAlternatesFactory
                 alternates.Add("MenuItem__" + _key.Differentiator + "__" + encodedContentType + "__level__" + _key.Level);
             }
 
-            return alternates.ToFrozenSet(StringComparer.OrdinalIgnoreCase);
+            return alternates.ToArray();
         }
 
-        private FrozenSet<string> BuildMenuItemLinkAlternates()
+        private string[] BuildMenuItemLinkAlternates()
         {
             var alternates = new List<string>();
             var encodedContentType = _key.ContentType.EncodeAlternateElement();
@@ -104,7 +103,7 @@ internal static class MenuItemAlternatesFactory
                 alternates.Add("MenuItemLink__" + _key.Differentiator + "__" + encodedContentType + "__level__" + _key.Level);
             }
 
-            return alternates.ToFrozenSet(StringComparer.OrdinalIgnoreCase);
+            return alternates.ToArray();
         }
     }
 }

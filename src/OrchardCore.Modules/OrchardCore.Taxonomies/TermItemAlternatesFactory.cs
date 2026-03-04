@@ -1,5 +1,4 @@
 using System.Collections.Concurrent;
-using System.Collections.Frozen;
 using OrchardCore.DisplayManagement.Utilities;
 
 namespace OrchardCore.Taxonomies;
@@ -32,8 +31,8 @@ internal static class TermItemAlternatesFactory
     internal sealed class TermItemAlternatesCollection
     {
         private readonly TermItemAlternatesCacheKey _key;
-        private FrozenSet<string> _termItemAlternates;
-        private FrozenSet<string> _termContentItemAlternates;
+        private string[] _termItemAlternates;
+        private string[] _termContentItemAlternates;
 
         internal TermItemAlternatesCollection(TermItemAlternatesCacheKey key)
         {
@@ -43,14 +42,14 @@ internal static class TermItemAlternatesFactory
         /// <summary>
         /// Gets the cached alternates for TermItem shapes.
         /// </summary>
-        public FrozenSet<string> TermItemAlternates => _termItemAlternates ??= BuildTermItemAlternates();
+        public string[] TermItemAlternates => _termItemAlternates ??= BuildTermItemAlternates();
 
         /// <summary>
         /// Gets the cached alternates for TermContentItem shapes.
         /// </summary>
-        public FrozenSet<string> TermContentItemAlternates => _termContentItemAlternates ??= BuildTermContentItemAlternates();
+        public string[] TermContentItemAlternates => _termContentItemAlternates ??= BuildTermContentItemAlternates();
 
-        private FrozenSet<string> BuildTermItemAlternates()
+        private string[] BuildTermItemAlternates()
         {
             var alternates = new List<string>();
             var encodedContentType = _key.ContentType.EncodeAlternateElement();
@@ -76,10 +75,10 @@ internal static class TermItemAlternatesFactory
                 alternates.Add("TermItem__" + _key.Differentiator + "__" + encodedContentType + "__level__" + _key.Level);
             }
 
-            return alternates.ToFrozenSet(StringComparer.OrdinalIgnoreCase);
+            return alternates.ToArray();
         }
 
-        private FrozenSet<string> BuildTermContentItemAlternates()
+        private string[] BuildTermContentItemAlternates()
         {
             var alternates = new List<string>();
             var encodedContentType = _key.ContentType.EncodeAlternateElement();
@@ -104,7 +103,7 @@ internal static class TermItemAlternatesFactory
                 alternates.Add("TermContentItem__" + _key.Differentiator + "__" + encodedContentType + "__level__" + _key.Level);
             }
 
-            return alternates.ToFrozenSet(StringComparer.OrdinalIgnoreCase);
+            return alternates.ToArray();
         }
     }
 }

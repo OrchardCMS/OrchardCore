@@ -1,5 +1,4 @@
 using System.Collections.Concurrent;
-using System.Collections.Frozen;
 using OrchardCore.DisplayManagement.Utilities;
 
 namespace OrchardCore.Contents;
@@ -31,7 +30,7 @@ internal static class ContentShapeAlternatesFactory
     internal sealed class ContentAlternatesCollection
     {
         private readonly ContentAlternatesCacheKey _key;
-        private readonly ConcurrentDictionary<string, FrozenSet<string>> _alternatesByDisplayType = new(StringComparer.OrdinalIgnoreCase);
+        private readonly ConcurrentDictionary<string, string[]> _alternatesByDisplayType = new(StringComparer.OrdinalIgnoreCase);
 
         internal ContentAlternatesCollection(ContentAlternatesCacheKey key)
         {
@@ -41,12 +40,12 @@ internal static class ContentShapeAlternatesFactory
         /// <summary>
         /// Gets the cached alternates for a specific display type.
         /// </summary>
-        public FrozenSet<string> GetAlternates(string displayType)
+        public string[] GetAlternates(string displayType)
         {
             return _alternatesByDisplayType.GetOrAdd(displayType, BuildAlternates);
         }
 
-        private FrozenSet<string> BuildAlternates(string displayType)
+        private string[] BuildAlternates(string displayType)
         {
             var alternates = new List<string>();
             var encodedContentType = _key.ContentType.EncodeAlternateElement();
@@ -66,7 +65,7 @@ internal static class ContentShapeAlternatesFactory
             // Content_[DisplayType]__[Id] e.g. Content-42.Summary
             alternates.Add("Content_" + displayType + "__" + _key.ContentItemId);
 
-            return alternates.ToFrozenSet(StringComparer.OrdinalIgnoreCase);
+            return alternates.ToArray();
         }
     }
 }
