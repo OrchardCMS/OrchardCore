@@ -8,7 +8,6 @@ using OrchardCore.Contents;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Shapes;
-using OrchardCore.DisplayManagement.Utilities;
 using OrchardCore.Menu.Models;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Security.Permissions;
@@ -143,7 +142,7 @@ public class MenuShapes : ShapeTableProvider
                 }
 
                 // Use cached alternates and add them efficiently
-                var cachedAlternates = ShapeAlternatesFactory.GetMenuItemAlternates(
+                var cachedAlternates = MenuItemAlternatesFactory.GetAlternates(
                     menuContentItem.ContentItem.ContentType,
                     differentiator,
                     level);
@@ -161,7 +160,7 @@ public class MenuShapes : ShapeTableProvider
                 var menuContentItem = menuItem.GetProperty<ContentItem>("ContentItem");
 
                 // Use cached alternates and add them efficiently
-                var cachedAlternates = ShapeAlternatesFactory.GetMenuItemAlternates(
+                var cachedAlternates = MenuItemAlternatesFactory.GetAlternates(
                     menuContentItem.ContentItem.ContentType,
                     differentiator,
                     level);

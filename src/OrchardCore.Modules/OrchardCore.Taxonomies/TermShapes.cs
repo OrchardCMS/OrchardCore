@@ -4,7 +4,6 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
-using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Utilities;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Taxonomies.Models;
@@ -190,7 +189,7 @@ public class TermShapes : ShapeTableProvider
                 }
 
                 // Use cached alternates and add them efficiently
-                var cachedAlternates = ShapeAlternatesFactory.GetTermItemAlternates(
+                var cachedAlternates = TermItemAlternatesFactory.GetAlternates(
                     taxonomyPart.TermContentType,
                     differentiator,
                     level);
@@ -208,7 +207,7 @@ public class TermShapes : ShapeTableProvider
                 var termContentItem = termItem.GetProperty<ContentItem>("TermContentItem");
 
                 // Use cached alternates and add them efficiently
-                var cachedAlternates = ShapeAlternatesFactory.GetTermItemAlternates(
+                var cachedAlternates = TermItemAlternatesFactory.GetAlternates(
                     termContentItem.ContentItem.ContentType,
                     differentiator,
                     level);

@@ -4,8 +4,6 @@ using OrchardCore.ContentManagement.Display;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.ModelBinding;
-using OrchardCore.DisplayManagement.Shapes;
-using OrchardCore.DisplayManagement.Utilities;
 
 namespace OrchardCore.Contents;
 
@@ -22,7 +20,7 @@ public class Shapes : ShapeTableProvider
                 if (contentItem != null)
                 {
                     // Use cached alternates for content shapes and add them efficiently
-                    var cachedAlternates = ShapeAlternatesFactory.GetContentAlternates(
+                    var cachedAlternates = ContentShapeAlternatesFactory.GetAlternates(
                         contentItem.ContentType,
                         contentItem.Id.ToString());
 
