@@ -19,13 +19,7 @@ public static class ShellScopeExtensions
     /// <returns>The <see cref="ShellScope"/> instance for chaining further calls.</returns>
     public static ShellScope RegisterBeforeDispose<TState>(this ShellScope scope, Func<ShellScope, TState, Task> callback, TState state, bool last = false)
     {
-        scope?.BeforeDispose((scope, s) =>
-        {
-            var (callback, state) = ((Func<ShellScope, TState, Task>, TState))s;
-
-            return callback(scope, state);
-        }, (callback, state), last);
-
+        scope?.BeforeDispose(callback, state, last);
         return scope;
     }
 
@@ -39,7 +33,7 @@ public static class ShellScopeExtensions
     /// <returns>The <see cref="ShellScope"/> instance for chaining further calls.</returns>
     public static ShellScope RegisterBeforeDispose(this ShellScope scope, Func<ShellScope, Task> callback, bool last = false)
     {
-        scope?.BeforeDispose((scope, s) => ((Func<ShellScope, Task>)s)(scope), callback, last);
+        scope?.BeforeDispose(static (scope, cb) => cb(scope), callback, last);
         return scope;
     }
 
@@ -53,9 +47,9 @@ public static class ShellScopeExtensions
     /// <returns>The <see cref="ShellScope"/> instance for chaining further calls.</returns>
     public static ShellScope RegisterBeforeDispose(this ShellScope scope, Action<ShellScope> callback, bool last = false)
     {
-        scope?.BeforeDispose((scope, s) =>
+        scope?.BeforeDispose(static (scope, cb) =>
         {
-            ((Action<ShellScope>)s)(scope);
+            cb(scope);
             return Task.CompletedTask;
         }, callback, last);
 
@@ -73,10 +67,10 @@ public static class ShellScopeExtensions
     /// <returns>The <see cref="ShellScope"/> instance for chaining further calls.</returns>
     public static ShellScope RegisterBeforeDispose<TState>(this ShellScope scope, Action<ShellScope, TState> callback, TState state, bool last = false)
     {
-        scope?.BeforeDispose((scope, s) =>
+        scope?.BeforeDispose(static (scope, s) =>
         {
-            var (callback, state) = ((Action<ShellScope, TState>, TState))s;
-            callback(scope, state);
+            var (cb, st) = s;
+            cb(scope, st);
             return Task.CompletedTask;
         }, (callback, state), last);
 
@@ -105,12 +99,7 @@ public static class ShellScopeExtensions
     /// <returns>The <see cref="ShellScope"/> instance for chaining further calls.</returns>
     public static ShellScope AddDeferredTask<TState>(this ShellScope scope, Func<ShellScope, TState, Task> task, TState state)
     {
-        scope?.DeferredTask((scope, s) =>
-        {
-            var (task, state) = ((Func<ShellScope, TState, Task>, TState))s;
-            return task(scope, state);
-        }, (task, state));
-
+        scope?.DeferredTask(task, state);
         return scope;
     }
 
@@ -126,10 +115,10 @@ public static class ShellScopeExtensions
     /// <returns>The <see cref="ShellScope"/> instance for chaining further calls.</returns>
     public static ShellScope AddDeferredTask<T1, T2>(this ShellScope scope, Func<ShellScope, T1, T2, Task> task, T1 arg1, T2 arg2)
     {
-        scope?.DeferredTask((scope, s) =>
+        scope?.DeferredTask(static (scope, s) =>
         {
-            var (task, arg1, arg2) = ((Func<ShellScope, T1, T2, Task>, T1, T2))s;
-            return task(scope, arg1, arg2);
+            var (t, a1, a2) = s;
+            return t(scope, a1, a2);
         }, (task, arg1, arg2));
         return scope;
     }
@@ -148,10 +137,10 @@ public static class ShellScopeExtensions
     /// <returns>The <see cref="ShellScope"/> instance for chaining further calls.</returns>
     public static ShellScope AddDeferredTask<T1, T2, T3>(this ShellScope scope, Func<ShellScope, T1, T2, T3, Task> task, T1 arg1, T2 arg2, T3 arg3)
     {
-        scope?.DeferredTask((scope, s) =>
+        scope?.DeferredTask(static (scope, s) =>
         {
-            var (task, arg1, arg2, arg3) = ((Func<ShellScope, T1, T2, T3, Task>, T1, T2, T3))s;
-            return task(scope, arg1, arg2, arg3);
+            var (t, a1, a2, a3) = s;
+            return t(scope, a1, a2, a3);
         }, (task, arg1, arg2, arg3));
         return scope;
     }
@@ -172,10 +161,10 @@ public static class ShellScopeExtensions
     /// <returns>The <see cref="ShellScope"/> instance for chaining further calls.</returns>
     public static ShellScope AddDeferredTask<T1, T2, T3, T4>(this ShellScope scope, Func<ShellScope, T1, T2, T3, T4, Task> task, T1 arg1, T2 arg2, T3 arg3, T4 arg4)
     {
-        scope?.DeferredTask((scope, s) =>
+        scope?.DeferredTask(static (scope, s) =>
         {
-            var (task, arg1, arg2, arg3, arg4) = ((Func<ShellScope, T1, T2, T3, T4, Task>, T1, T2, T3, T4))s;
-            return task(scope, arg1, arg2, arg3, arg4);
+            var (t, a1, a2, a3, a4) = s;
+            return t(scope, a1, a2, a3, a4);
         }, (task, arg1, arg2, arg3, arg4));
         return scope;
     }
@@ -198,10 +187,10 @@ public static class ShellScopeExtensions
     /// <returns>The <see cref="ShellScope"/> instance for chaining further calls.</returns>
     public static ShellScope AddDeferredTask<T1, T2, T3, T4, T5>(this ShellScope scope, Func<ShellScope, T1, T2, T3, T4, T5, Task> task, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5)
     {
-        scope?.DeferredTask((scope, s) =>
+        scope?.DeferredTask(static (scope, s) =>
         {
-            var (task, arg1, arg2, arg3, arg4, arg5) = ((Func<ShellScope, T1, T2, T3, T4, T5, Task>, T1, T2, T3, T4, T5))s;
-            return task(scope, arg1, arg2, arg3, arg4, arg5);
+            var (t, a1, a2, a3, a4, a5) = s;
+            return t(scope, a1, a2, a3, a4, a5);
         }, (task, arg1, arg2, arg3, arg4, arg5));
         return scope;
     }
@@ -214,7 +203,7 @@ public static class ShellScopeExtensions
     /// <returns>The <see cref="ShellScope"/> instance for chaining further calls.</returns>
     public static ShellScope AddDeferredTask(this ShellScope scope, Func<ShellScope, Task> task)
     {
-        scope?.DeferredTask((scope, s) => ((Func<ShellScope, Task>)s)(scope), task);
+        scope?.DeferredTask(static (scope, t) => t(scope), task);
         return scope;
     }
 
@@ -226,9 +215,9 @@ public static class ShellScopeExtensions
     /// <returns>The <see cref="ShellScope"/> instance for chaining further calls.</returns>
     public static ShellScope AddDeferredTask(this ShellScope scope, Action<ShellScope> callback)
     {
-        scope?.DeferredTask((scope, s) =>
+        scope?.DeferredTask(static (scope, cb) =>
         {
-            ((Action<ShellScope>)s)(scope);
+            cb(scope);
             return Task.CompletedTask;
         }, callback);
 
@@ -245,10 +234,10 @@ public static class ShellScopeExtensions
     /// <returns>The <see cref="ShellScope"/> instance for chaining further calls.</returns>
     public static ShellScope AddDeferredTask<TState>(this ShellScope scope, Action<ShellScope, TState> callback, TState state)
     {
-        scope?.DeferredTask((scope, s) =>
+        scope?.DeferredTask(static (scope, s) =>
         {
-            var (callback, state) = ((Action<ShellScope, TState>, TState))s;
-            callback(scope, state);
+            var (cb, st) = s;
+            cb(scope, st);
             return Task.CompletedTask;
         }, (callback, state));
 
@@ -267,10 +256,10 @@ public static class ShellScopeExtensions
     /// <returns>The <see cref="ShellScope"/> instance for chaining further calls.</returns>
     public static ShellScope AddDeferredTask<T1, T2>(this ShellScope scope, Action<ShellScope, T1, T2> callback, T1 arg1, T2 arg2)
     {
-        scope?.DeferredTask((scope, s) =>
+        scope?.DeferredTask(static (scope, s) =>
         {
-            var (callback, arg1, arg2) = ((Action<ShellScope, T1, T2>, T1, T2))s;
-            callback(scope, arg1, arg2);
+            var (cb, a1, a2) = s;
+            cb(scope, a1, a2);
             return Task.CompletedTask;
         }, (callback, arg1, arg2));
         return scope;
@@ -290,10 +279,10 @@ public static class ShellScopeExtensions
     /// <returns>The <see cref="ShellScope"/> instance for chaining further calls.</returns>
     public static ShellScope AddDeferredTask<T1, T2, T3>(this ShellScope scope, Action<ShellScope, T1, T2, T3> callback, T1 arg1, T2 arg2, T3 arg3)
     {
-        scope?.DeferredTask((scope, s) =>
+        scope?.DeferredTask(static (scope, s) =>
         {
-            var (callback, arg1, arg2, arg3) = ((Action<ShellScope, T1, T2, T3>, T1, T2, T3))s;
-            callback(scope, arg1, arg2, arg3);
+            var (cb, a1, a2, a3) = s;
+            cb(scope, a1, a2, a3);
             return Task.CompletedTask;
         }, (callback, arg1, arg2, arg3));
         return scope;
@@ -315,10 +304,10 @@ public static class ShellScopeExtensions
     /// <returns>The <see cref="ShellScope"/> instance for chaining further calls.</returns>
     public static ShellScope AddDeferredTask<T1, T2, T3, T4>(this ShellScope scope, Action<ShellScope, T1, T2, T3, T4> callback, T1 arg1, T2 arg2, T3 arg3, T4 arg4)
     {
-        scope?.DeferredTask((scope, s) =>
+        scope?.DeferredTask(static (scope, s) =>
         {
-            var (callback, arg1, arg2, arg3, arg4) = ((Action<ShellScope, T1, T2, T3, T4>, T1, T2, T3, T4))s;
-            callback(scope, arg1, arg2, arg3, arg4);
+            var (cb, a1, a2, a3, a4) = s;
+            cb(scope, a1, a2, a3, a4);
             return Task.CompletedTask;
         }, (callback, arg1, arg2, arg3, arg4));
         return scope;
@@ -342,10 +331,10 @@ public static class ShellScopeExtensions
     /// <returns>The <see cref="ShellScope"/> instance for chaining further calls.</returns>
     public static ShellScope AddDeferredTask<T1, T2, T3, T4, T5>(this ShellScope scope, Action<ShellScope, T1, T2, T3, T4, T5> callback, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5)
     {
-        scope?.DeferredTask((scope, s) =>
+        scope?.DeferredTask(static (scope, s) =>
         {
-            var (callback, arg1, arg2, arg3, arg4, arg5) = ((Action<ShellScope, T1, T2, T3, T4, T5>, T1, T2, T3, T4, T5))s;
-            callback(scope, arg1, arg2, arg3, arg4, arg5);
+            var (cb, a1, a2, a3, a4, a5) = s;
+            cb(scope, a1, a2, a3, a4, a5);
             return Task.CompletedTask;
         }, (callback, arg1, arg2, arg3, arg4, arg5));
         return scope;
@@ -393,7 +382,7 @@ public static class ShellScopeExtensions
     /// <param name="activateShell">A boolean value indicating whether the shell should be activated. The default value is true.</param>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     public static Task UsingAsync<T1, T2>(this ShellScope scope, Func<ShellScope, T1, T2, Task> execute, T1 arg1, T2 arg2, bool activateShell = true)
-        => scope.UsingAsync((scope, state) => state.execute(scope, state.arg1, state.arg2), (execute, arg1, arg2), activateShell);
+        => scope.UsingAsync(static (scope, state) => state.execute(scope, state.arg1, state.arg2), (execute, arg1, arg2), activateShell);
 
     /// <summary>
     /// Executes a delegate using this shell scope in an isolated async flow,
@@ -410,7 +399,7 @@ public static class ShellScopeExtensions
     /// <param name="activateShell">A boolean value indicating whether the shell should be activated. The default value is true.</param>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     public static Task UsingAsync<T1, T2, T3>(this ShellScope scope, Func<ShellScope, T1, T2, T3, Task> execute, T1 arg1, T2 arg2, T3 arg3, bool activateShell = true)
-        => scope.UsingAsync((scope, state) => state.execute(scope, state.arg1, state.arg2, state.arg3), (execute, arg1, arg2, arg3), activateShell);
+        => scope.UsingAsync(static (scope, state) => state.execute(scope, state.arg1, state.arg2, state.arg3), (execute, arg1, arg2, arg3), activateShell);
 
     /// <summary>
     /// Executes a delegate using this shell scope in an isolated async flow,
@@ -429,7 +418,7 @@ public static class ShellScopeExtensions
     /// <param name="activateShell">A boolean value indicating whether the shell should be activated. The default value is true.</param>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     public static Task UsingAsync<T1, T2, T3, T4>(this ShellScope scope, Func<ShellScope, T1, T2, T3, T4, Task> execute, T1 arg1, T2 arg2, T3 arg3, T4 arg4, bool activateShell = true)
-        => scope.UsingAsync((scope, state) => state.execute(scope, state.arg1, state.arg2, state.arg3, state.arg4), (execute, arg1, arg2, arg3, arg4), activateShell);
+        => scope.UsingAsync(static (scope, state) => state.execute(scope, state.arg1, state.arg2, state.arg3, state.arg4), (execute, arg1, arg2, arg3, arg4), activateShell);
 
     /// <summary>
     /// Executes a delegate using this shell scope in an isolated async flow,
@@ -450,5 +439,5 @@ public static class ShellScopeExtensions
     /// <param name="activateShell">A boolean value indicating whether the shell should be activated. The default value is true.</param>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     public static Task UsingAsync<T1, T2, T3, T4, T5>(this ShellScope scope, Func<ShellScope, T1, T2, T3, T4, T5, Task> execute, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, bool activateShell = true)
-        => scope.UsingAsync((scope, state) => state.execute(scope, state.arg1, state.arg2, state.arg3, state.arg4, state.arg5), (execute, arg1, arg2, arg3, arg4, arg5), activateShell);
+        => scope.UsingAsync(static (scope, state) => state.execute(scope, state.arg1, state.arg2, state.arg3, state.arg4, state.arg5), (execute, arg1, arg2, arg3, arg4, arg5), activateShell);
 }
