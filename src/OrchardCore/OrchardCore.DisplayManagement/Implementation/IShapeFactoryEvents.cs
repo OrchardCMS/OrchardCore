@@ -8,15 +8,18 @@ public interface IShapeFactoryEvents
 
 public class ShapeCreatingContext
 {
+    private Func<ValueTask<IShape>> _createAsync;
+
     public IServiceProvider ServiceProvider { get; set; }
     public IShapeFactory ShapeFactory { get; set; }
     public dynamic New { get; set; }
     public string ShapeType { get; set; }
     public Func<ValueTask<IShape>> CreateAsync
     {
-        get => Activator != null ? Activator.CreateAsync : null;
-        set => Activator = new DelegateShapeActivator(value);
+        get => CreateInternalAsync;
+        set => _createAsync = value;
     }
+
     public IList<Func<ShapeCreatedContext, Task>> OnCreated { get; set; }
 
     public Func<IShape> Create
@@ -24,24 +27,27 @@ public class ShapeCreatingContext
         set => CreateAsync = () => ValueTask.FromResult(value());
     }
 
-    internal IShapeActivator Activator { get; set; }
-
-    private readonly struct DelegateShapeActivator : IShapeActivator
+    protected internal virtual ValueTask<IShape> CreateInternalAsync()
     {
-        private readonly Func<ValueTask<IShape>> _factory;
-
-        public DelegateShapeActivator(Func<ValueTask<IShape>> factory)
-        {
-            _factory = factory;
-        }
-
-        public ValueTask<IShape> CreateAsync() => _factory();
+        return _createAsync != null ? _createAsync() : ValueTask.FromResult<IShape>(null);
     }
 }
 
-internal interface IShapeActivator
+internal class ShapeCreatingContext<TState> : ShapeCreatingContext
 {
-    ValueTask<IShape> CreateAsync();
+    public TState State { get; set; }
+
+    public Func<TState, ValueTask<IShape>> CreateAsyncWithState { get; set; }
+
+    protected internal override ValueTask<IShape> CreateInternalAsync()
+    {
+        if (CreateAsyncWithState != null)
+        {
+            return CreateAsyncWithState(State);
+        }
+
+        return base.CreateInternalAsync();
+    }
 }
 
 public class ShapeCreatedContext
