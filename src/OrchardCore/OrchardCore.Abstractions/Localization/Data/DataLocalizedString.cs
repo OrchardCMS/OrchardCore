@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Localization;
+
 namespace OrchardCore.Localization.Data;
 
 public class DataLocalizedString
@@ -19,6 +21,9 @@ public class DataLocalizedString
     }
 
     public static implicit operator string(DataLocalizedString dataLocalizedString) => dataLocalizedString?.Value;
+
+    public static implicit operator LocalizedString(DataLocalizedString dataLocalizedString)
+        => new LocalizedString(dataLocalizedString.Name, dataLocalizedString.Value, dataLocalizedString.ResourceNotFound);
 
     /// <summary>
     /// The context string for categorization (e.g., "Content Types", "Content Fields:BlogPost").

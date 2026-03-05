@@ -29,6 +29,8 @@ public class MenuItem
     /// </summary>
     public string Id { get; set; }
 
+    public string MenuName { get; set; }
+
     /// <summary>
     /// The final url that the menu item will link to. This property is computed
     /// based on <see cref="Url"/> or <see cref="RouteValues"/>.
