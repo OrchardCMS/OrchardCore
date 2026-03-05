@@ -12,7 +12,7 @@
 
     var selectedDisplayNames = allContentTypes
         .Where(x => isSelected(x, selectedContentTypes))
-        .Select(x => D[x.DisplayName, "Content Types"].ToString())
+        .Select(x => D[x.DisplayName, "Content Types"].Value)
         .ToList();
 
     bool isSelected(ContentTypeDefinition ctd, ContentTypeEntry[] selectedList)
