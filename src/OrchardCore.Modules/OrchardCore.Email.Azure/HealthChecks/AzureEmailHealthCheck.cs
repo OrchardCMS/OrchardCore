@@ -47,7 +47,7 @@ internal sealed class AzureEmailHealthCheck : IHealthCheck
                 throw new InvalidOperationException("Invalid connection string format.");
             }
 
-            using var httpClient = _httpClientFactory.CreateClient();
+            var httpClient = _httpClientFactory.CreateClient();
             httpClient.DefaultRequestHeaders.Add("x-ms-date", DateTime.UtcNow.ToString("R"));
             httpClient.DefaultRequestHeaders.Add("User-Agent", "AzureEmailPingClient");
 
