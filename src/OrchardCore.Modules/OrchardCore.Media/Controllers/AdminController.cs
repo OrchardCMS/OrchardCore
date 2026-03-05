@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.FileStorage;
+using OrchardCore.Media.Core.Helpers;
 using OrchardCore.Media.Services;
 using OrchardCore.Media.ViewModels;
 
@@ -588,4 +589,18 @@ public sealed class AdminController : Controller
 
     private bool IsSpecialFolder(string path)
        => string.Equals(path, _mediaOptions.AssetsUsersFolder, StringComparison.OrdinalIgnoreCase) || string.Equals(path, _attachedMediaFieldFileService.MediaFieldsFolder, StringComparison.OrdinalIgnoreCase);
+
+    public async Task<ActionResult<object>> GetPermittedStorage()
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMedia) ||
+            !await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaFolder, (object)string.Empty))
+        {
+            return Forbid();
+        }
+
+        var bytes = await _mediaFileStore.GetPermittedStorageAsync();
+        var text = bytes == null ? S["Unspecified"] : FileSizeHelpers.FormatAsBytes(bytes.Value);
+
+        return Ok(new { bytes, text });
+    }
 }
