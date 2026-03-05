@@ -1,14 +1,20 @@
+using System.Data.Common;
 using Azure.Communication.Email;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using OrchardCore.Email.Azure.Models;
 
 namespace OrchardCore.Email.Azure.HealthChecks;
 
-public class AzureEmailHealthCheck : IHealthCheck
+internal sealed class AzureEmailHealthCheck : IHealthCheck
 {
+    private readonly IHttpClientFactory _httpClientFactory;
     private readonly AzureEmailOptions _azureEmailOptions;
 
-    public AzureEmailHealthCheck(AzureEmailOptions azureEmailOptions) => _azureEmailOptions = azureEmailOptions;
+    public AzureEmailHealthCheck(IHttpClientFactory httpClientFactory, AzureEmailOptions azureEmailOptions)
+    {
+        _httpClientFactory = httpClientFactory;
+        _azureEmailOptions = azureEmailOptions;
+    }
 
     public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
     {
@@ -29,7 +35,7 @@ public class AzureEmailHealthCheck : IHealthCheck
         }
     }
 
-    private static async Task<bool> PingAzureEmailService(string connectionString)
+    private async Task<bool> PingAzureEmailService(string connectionString)
     {
         try
         {
@@ -41,7 +47,7 @@ public class AzureEmailHealthCheck : IHealthCheck
                 throw new InvalidOperationException("Invalid connection string format.");
             }
 
-            using var httpClient = new HttpClient();
+            using var httpClient = _httpClientFactory.CreateClient();
             httpClient.DefaultRequestHeaders.Add("x-ms-date", DateTime.UtcNow.ToString("R"));
             httpClient.DefaultRequestHeaders.Add("User-Agent", "AzureEmailPingClient");
 
@@ -58,14 +64,13 @@ public class AzureEmailHealthCheck : IHealthCheck
 
     private static string GetEndpointFromConnectionString(string connectionString)
     {
-        foreach (var part in connectionString.Split(';'))
+        var builder = new DbConnectionStringBuilder
         {
-            if (part.StartsWith("endpoint=", StringComparison.OrdinalIgnoreCase))
-            {
-                return part.Substring("endpoint=".Length).TrimEnd('/');
-            }
-        }
+            ConnectionString = connectionString,
+        };
 
-        return null;
+        builder.TryGetValue("endpoint", out var endpoint);
+
+        return endpoint.ToString();
     }
 }
