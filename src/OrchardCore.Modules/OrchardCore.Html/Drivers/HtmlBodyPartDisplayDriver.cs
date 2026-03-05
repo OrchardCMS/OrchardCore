@@ -63,10 +63,6 @@ public sealed class HtmlBodyPartDisplayDriver : ContentPartDisplayDriver<HtmlBod
 
         await context.Updater.TryUpdateModelAsync(viewModel, Prefix, t => t.Html);
 
-        model.Html = settings.SanitizeHtml
-            ? _htmlSanitizerService.Sanitize(viewModel.Html)
-            : viewModel.Html;
-
         if (settings.RenderLiquid
             && !string.IsNullOrEmpty(viewModel.Html)
             && !_liquidTemplateManager.Validate(viewModel.Html, out var errors))
@@ -76,6 +72,10 @@ public sealed class HtmlBodyPartDisplayDriver : ContentPartDisplayDriver<HtmlBod
                     context.TypePartDefinition.DisplayName(),
                     string.Join(" ", errors)]);
         }
+
+        model.Html = settings.SanitizeHtml
+            ? _htmlSanitizerService.Sanitize(viewModel.Html)
+            : viewModel.Html;
 
         return Edit(model, context);
     }

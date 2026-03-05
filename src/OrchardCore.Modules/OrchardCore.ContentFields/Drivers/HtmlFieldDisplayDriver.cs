@@ -86,10 +86,6 @@ public sealed class HtmlFieldDisplayDriver : ContentFieldDisplayDriver<HtmlField
 
         await context.Updater.TryUpdateModelAsync(viewModel, Prefix, f => f.Html);
 
-        field.Html = settings.SanitizeHtml
-            ? _htmlSanitizerService.Sanitize(viewModel.Html)
-            : viewModel.Html;
-
         if (settings.RenderLiquid
             && !string.IsNullOrEmpty(viewModel.Html)
             && !_liquidTemplateManager.Validate(viewModel.Html, out var errors))
@@ -99,6 +95,10 @@ public sealed class HtmlFieldDisplayDriver : ContentFieldDisplayDriver<HtmlField
                     context.PartFieldDefinition.DisplayName(),
                     string.Join(" ", errors)]);
         }
+
+        field.Html = settings.SanitizeHtml
+            ? _htmlSanitizerService.Sanitize(viewModel.Html)
+            : viewModel.Html;
 
         return Edit(field, context);
     }
