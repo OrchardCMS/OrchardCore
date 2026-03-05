@@ -8,7 +8,7 @@ public interface IShapeFactoryEvents
 
 public class ShapeCreatingContext
 {
-    private Func<ValueTask<IShape>> _createAsync;
+    protected internal Func<ValueTask<IShape>> _createAsync;
 
     public IServiceProvider ServiceProvider { get; set; }
     public IShapeFactory ShapeFactory { get; set; }
@@ -41,7 +41,7 @@ internal class ShapeCreatingContext<TState> : ShapeCreatingContext
 
     protected internal override ValueTask<IShape> CreateInternalAsync()
     {
-        if (CreateAsyncWithState != null)
+        if (_createAsync == null && CreateAsyncWithState != null)
         {
             return CreateAsyncWithState(State);
         }
