@@ -1,5 +1,6 @@
+@using OrchardCore.Localization.Data
 @model ContentTypesAdminNodeViewModel
-
+@inject IDataLocalizer D
 <style asp-src="~/OrchardCore.Contents/Styles/Contents.min.css" debug-src="~/OrchardCore.Contents/Styles/Contents.css"></style>
 <style asp-src="~/OrchardCore.AdminMenu/Styles/admin-menu-icon-picker.min.css" debug-src="~/OrchardCore.AdminMenu/Styles/admin-menu-icon-picker.css" at="Head"></style>
 
@@ -31,9 +32,9 @@
 
                             <div class="btn-group input-group me-2" role="group" aria-label="Icon Selector">
                                 <button type="button" class="btn btn-primary sample-icon">
-                                    <i id="@("sample-icon-" + Html.IdFor(m=>m.IconClass))" class="@Model.IconClass"></i>
+                                    <i id="@("sample-icon-" + Html.IdFor(m => m.IconClass))" class="@Model.IconClass"></i>
                                 </button>
-                                <input type="hidden" name="@Html.NameFor(m=>m.IconClass)" id="@Html.IdFor(m => m.IconClass)" class="icon-val" value="@Model.IconClass" />
+                                <input type="hidden" name="@Html.NameFor(m => m.IconClass)" id="@Html.IdFor(m => m.IconClass)" class="icon-val" value="@Model.IconClass" />
                                 <button type="button"
                                         class="btn btn-primary icon-picker-trigger"
                                         data-related-node="@Html.IdFor(m => m.IconClass)">
@@ -67,14 +68,15 @@
                         <ul class="list-group">
                             @for (int i = 0; i < Model.ContentTypes.Count(); i++)
                             {
-                                var name = Model.ContentTypes[i].ContentTypeId;
+                                var name = Model.ContentTypes[i].ContentTypeDisplayName;
                                 var checkd = Model.ContentTypes[i].IsChecked;
                                 <li class="list-group-item d-flex align-items-center @(checkd ? "" : "disabled-content-type")">
                                     <div class="flex-grow-1">
-                                        <input type="hidden" name="@Html.NameFor(m => m.ContentTypes[i].ContentTypeId)" value="@Model.ContentTypes[i].ContentTypeId" />
+                                        <input type="hidden" name="@Html.NameFor(m => m.ContentTypes[i].ContentTypeName)" value="@Model.ContentTypes[i].ContentTypeName" />
+                                        <input type="hidden" name="@Html.NameFor(m => m.ContentTypes[i].ContentTypeDisplayName)" value="@Model.ContentTypes[i].ContentTypeDisplayName" />
                                         <div class="form-check">
                                             <input asp-for="ContentTypes[i].IsChecked" class="form-check-input content-type-checkbox" />
-                                            <label class="form-check-label" for="@Html.IdFor(m => m.ContentTypes[i].IsChecked)">@name</label>
+                                            <label class="form-check-label" for="@Html.IdFor(m => m.ContentTypes[i].IsChecked)">@D[name, "Content Types"]</label>
                                         </div>
                                     </div>
 
@@ -83,11 +85,11 @@
                                         <div class="btn-group input-group me-2" role="group" aria-label="Icon Selector">
                                             <button type="button" class="btn btn-primary sample-icon">
                                                 <i id="@("sample-icon-" + Html.IdFor(m => m.ContentTypes[i].IconClass))"
-                                                    class="@(Model.ContentTypes[i].IconClass)"></i>
+                                                   class="@(Model.ContentTypes[i].IconClass)"></i>
                                             </button>
-                                            <input type="hidden" name="@Html.NameFor(m=>m.ContentTypes[i].IconClass)"
-                                                    id="@Html.IdFor(m => m.ContentTypes[i].IconClass)" class="icon-val"
-                                                    value="@Model.ContentTypes[i].IconClass" />
+                                            <input type="hidden" name="@Html.NameFor(m => m.ContentTypes[i].IconClass)"
+                                                   id="@Html.IdFor(m => m.ContentTypes[i].IconClass)" class="icon-val"
+                                                   value="@Model.ContentTypes[i].IconClass" />
                                             <button type="button"
                                                     class="btn btn-primary icon-picker-trigger"
                                                     data-related-node="@Html.IdFor(m => m.ContentTypes[i].IconClass)">
