@@ -56,7 +56,7 @@ abstract class WorkflowCanvas {
         const paintColor = this.getEndpointColor(activity);
         return {
             endpoint: 'Dot',
-            anchor: 'Continuous',
+            anchor: 'ContinuousRight',
             paintStyle: {
                 stroke: paintColor,
                 fill: paintColor,
@@ -83,7 +83,7 @@ abstract class WorkflowCanvas {
                 outlineStroke: 'white'
             },
             connectorOverlays: [['Label', { location: [3, -1.5], cssClass: 'endpointSourceLabel' }]],
-            overlays: [['Label', { label: outcome.displayName, cssClass: 'outcome-label', id: 'outcome-label', location: [0, 0] }]],
+            overlays: [['Label', { label: outcome.displayName, cssClass: 'outcome-label', id: 'outcome-label', location: [1.6, 0] }]],
             dragOptions: {},
             uuid: `${activity.id}-${outcome.name}`,
             parameters: {
