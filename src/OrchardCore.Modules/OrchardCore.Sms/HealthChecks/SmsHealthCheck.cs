@@ -8,7 +8,7 @@ using OrchardCore.Sms.Services;
 
 namespace OrchardCore.Sms.HealthChecks;
 
-public class SmsHealthCheck : IHealthCheck
+internal sealed class SmsHealthCheck : IHealthCheck
 {
     private readonly ISmsService _smsService;
     private readonly ISiteService _siteService;
@@ -57,7 +57,7 @@ public class SmsHealthCheck : IHealthCheck
 
     private async Task<bool> ValidateTwilioCredentialsAsync(string accountSid, string authToken)
     {
-        var client = _httpClientFactory.CreateClient(TwilioSmsProvider.TechnicalName);
+        using var client = _httpClientFactory.CreateClient(TwilioSmsProvider.TechnicalName);
 
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic",
             Convert.ToBase64String(Encoding.ASCII.GetBytes($"{accountSid}:{authToken}")));
