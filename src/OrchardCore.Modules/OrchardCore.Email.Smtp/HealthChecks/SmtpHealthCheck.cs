@@ -4,7 +4,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace OrchardCore.Email.Smtp.HealthChecks;
 
-public class SmtpHealthCheck : IHealthCheck
+internal sealed class SmtpHealthCheck : IHealthCheck
 {
     private readonly SmtpOptions _smtpOptions;
 
