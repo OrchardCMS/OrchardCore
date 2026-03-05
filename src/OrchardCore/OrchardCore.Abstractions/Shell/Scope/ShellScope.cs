@@ -676,7 +676,7 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
     /// <summary>
     /// Generic callback invoker that stores state without boxing value types.
     /// </summary>
-    private readonly struct CallbackInvoker<TState> : ICallbackInvoker
+    private sealed class CallbackInvoker<TState> : ICallbackInvoker
     {
         private readonly Func<ShellScope, TState, Task> _callback;
         private readonly TState _state;
