@@ -90,7 +90,7 @@ public class ContentTypesAdminNodeNavigationBuilder : IAdminNodeNavigationBuilde
 
         foreach (var contentTypeDefinition in contentTypeDefinitions)
         {
-            if (!node.ShowAll && !node.ContentTypes.Any(entry => string.Equals(contentTypeDefinition.Name, entry.ContentTypeId, StringComparison.OrdinalIgnoreCase)))
+            if (!node.ShowAll && !node.ContentTypes.Any(entry => string.Equals(contentTypeDefinition.Name, entry.ContentTypeName, StringComparison.OrdinalIgnoreCase)))
             {
                 continue;
             }
@@ -115,7 +115,7 @@ public class ContentTypesAdminNodeNavigationBuilder : IAdminNodeNavigationBuilde
         else
         {
             var typeEntry = node.ContentTypes
-                .FirstOrDefault(x => string.Equals(x.ContentTypeId, contentType.Name, StringComparison.OrdinalIgnoreCase));
+                .FirstOrDefault(x => string.Equals(x.ContentTypeName, contentType.Name, StringComparison.OrdinalIgnoreCase));
 
             return AddPrefixToClasses(typeEntry.IconClass);
         }

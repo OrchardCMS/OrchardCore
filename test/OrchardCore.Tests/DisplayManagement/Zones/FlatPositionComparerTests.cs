@@ -454,4 +454,115 @@ public class FlatPositionComparerTests
     }
 
     #endregion
+
+    #region Dot Notation Ordering Tests
+
+    [Theory]
+    [InlineData("12.5", "12.4", 1)]
+    [InlineData("12.4", "12.5", -1)]
+    [InlineData("12.5", "11", 1)]
+    [InlineData("11", "12.5", -1)]
+    [InlineData("12.4", "11", 1)]
+    [InlineData("11", "12.4", -1)]
+    [InlineData("12.5", "12", 1)]
+    [InlineData("12", "12.5", -1)]
+    public void Compare_DotNotation_ShouldOrderCorrectly(string x, string y, int expected)
+    {
+        // Act
+        var result = _comparer.Compare(x, y);
+
+        // Assert
+        Assert.Equal(expected, result);
+    }
+
+    [Fact]
+    public void OrderBy_DotNotation_ShouldProduceCorrectSequence()
+    {
+        // Arrange - Positions that simulate shapes from different modules.
+        var positions = new[] { "12.5", "11", "12.4", "12", "1", "1.1" };
+
+        // Act
+        var ordered = positions.OrderBy(x => x, _comparer).ToArray();
+
+        // Assert - Expected: 1, 1.1, 11, 12, 12.4, 12.5
+        Assert.Equal(["1", "1.1", "11", "12", "12.4", "12.5"], ordered);
+    }
+
+    #endregion
+
+    #region Full List Ordering Tests
+
+    [Fact]
+    public void OrderBy_FullOrdering_BeforeNumbersAfter()
+    {
+        // Arrange
+        var positions = new[] { "after", "2", "before", "0", "1", "10", "1.5" };
+
+        // Act
+        var ordered = positions.OrderBy(x => x, _comparer).ToArray();
+
+        // Assert - before < 0 < 1 < 1.5 < 2 < 10 < after
+        Assert.Equal(["before", "0", "1", "1.5", "2", "10", "after"], ordered);
+    }
+
+    [Fact]
+    public void OrderBy_EmptyAndNull_ShouldSortCorrectly()
+    {
+        // Arrange - null normalizes to "before.", empty/whitespace normalizes to "0".
+        var items = new TestPositioned[]
+        {
+            new() { Position = "2" },
+            new() { Position = null },
+            new() { Position = "" },
+            new() { Position = "1" },
+        };
+
+        // Act
+        var ordered = items.OrderBy(x => x, _comparer).ToArray();
+
+        // Assert - null (before) < empty (0) < 1 < 2
+        Assert.Null(ordered[0].Position);     // null → "before." → first
+        Assert.Equal("", ordered[1].Position); // empty → "0"
+        Assert.Equal("1", ordered[2].Position);
+        Assert.Equal("2", ordered[3].Position);
+    }
+
+    [Fact]
+    public void OrderBy_ComplexScenario_ShouldOrderCorrectly()
+    {
+        // Arrange - A realistic scenario with various position formats.
+        var positions = new[]
+        {
+            "5", "before", "1.2", "after", "1", "0", "1.1", "3", "1.10", "2.5",
+        };
+
+        // Act
+        var ordered = positions.OrderBy(x => x, _comparer).ToArray();
+
+        // Assert
+        Assert.Equal(
+            ["before", "0", "1", "1.1", "1.2", "1.10", "2.5", "3", "5", "after"],
+            ordered);
+    }
+
+    #endregion
+
+    #region Default Position Behavior Tests
+
+    [Theory]
+    [InlineData("", "1", -1)]
+    [InlineData("1", "", 1)]
+    [InlineData("", "before", 1)]
+    [InlineData("before", "", -1)]
+    [InlineData("", "after", -1)]
+    [InlineData("after", "", 1)]
+    public void Compare_EmptyPosition_ShouldBehaveAsZero(string x, string y, int expected)
+    {
+        // Empty position normalizes to "0", meaning:
+        // "before" < "" (0) < any positive number < "after"
+        var result = _comparer.Compare(x, y);
+        Assert.Equal(expected, result);
+    }
+
+    #endregion
 }
