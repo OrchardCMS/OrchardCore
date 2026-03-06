@@ -58,14 +58,14 @@ public class AliasPartHandler : ContentPartHandler<AliasPart>
 
     public override Task PublishedAsync(PublishContentContext context, AliasPart instance)
     {
-        return _tagCache.RemoveTagAsync($"alias:{instance.Alias}");
+        return _tagCache.RemoveTagAsync(AliasConstants.AliasPrefix + instance.Alias);
     }
 
     public override Task RemovedAsync(RemoveContentContext context, AliasPart instance)
     {
         if (context.NoActiveVersionLeft)
         {
-            return _tagCache.RemoveTagAsync($"alias:{instance.Alias}");
+            return _tagCache.RemoveTagAsync(AliasConstants.AliasPrefix + instance.Alias);
         }
 
         return Task.CompletedTask;
@@ -73,7 +73,7 @@ public class AliasPartHandler : ContentPartHandler<AliasPart>
 
     public override Task UnpublishedAsync(PublishContentContext context, AliasPart instance)
     {
-        return _tagCache.RemoveTagAsync($"alias:{instance.Alias}");
+        return _tagCache.RemoveTagAsync(AliasConstants.AliasPrefix + instance.Alias);
     }
 
     public override async Task CloningAsync(CloneContentContext context, AliasPart part)
@@ -106,7 +106,7 @@ public class AliasPartHandler : ContentPartHandler<AliasPart>
             part.Alias = await _liquidTemplateManager.RenderStringAsync(pattern, NullEncoder.Default, model,
                 new Dictionary<string, FluidValue>() { [nameof(ContentItem)] = new ObjectValue(model.ContentItem) });
 
-            part.Alias = part.Alias.Replace("\r", string.Empty).Replace("\n", string.Empty);
+            part.Alias = part.Alias.ReplaceLineEndings(string.Empty);
 
             if (part.Alias?.Length > AliasPart.MaxAliasLength)
             {

@@ -9,9 +9,9 @@
 
 @* the form is necessary to generate and antiforgery token for the delete action *@
 <form asp-action="Index">
-    <input type="submit" name="submit.Filter" id="submitFilter" class="sr-only" />
+    <input type="submit" name="submit.Filter" id="submitFilter" class="visually-hidden" />
     <input asp-for="Options.BulkAction" type="hidden" />
-    <input type="submit" name="submit.BulkAction" class="sr-only" />
+    <input type="submit" name="submit.BulkAction" class="visually-hidden" />
 
     <div class="card text-bg-theme mb-3 position-sticky action-bar">
         <div class="card-body">
@@ -37,7 +37,7 @@
                         <div class="form-check my-1">
                             <input type="checkbox" class="form-check-input" id="select-all">
                             <label class="form-check-label" for="select-all" id="select-all-label" title="@T["Select All"]"></label>
-                            <label id="items" for="select-all">@T.Plural(Model.FeatureProfiles.Count, "1 item", "{0} items")<span class="text-muted" title="@T["Items {0} to {1}", startIndex, endIndex]">@T.Plural((int)Model.Pager.TotalItemCount, " / {0} item in total", " / {0} items in total")</span></label>
+                            <label id="items" for="select-all">@T.Plural(Model.FeatureProfiles.Count, "{0} item", "{0} items")<span class="text-muted" title="@T["Items {0} to {1}", startIndex, endIndex]">@T.Plural((int)Model.Pager.TotalItemCount, " / {0} item in total", " / {0} items in total")</span></label>
                             <label id="selected-items" class="text-muted" for="select-all"></label>
                         </div>
                     </div>
@@ -46,7 +46,7 @@
                             <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="bulk-action-menu-button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 @T["Actions"]
                             </button>
-                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bulk-action-menu-button">
+                            <ul class="dropdown-menu dropdown-menu-end">
                                 @foreach (var item in Model.Options.ContentsBulkAction)
                                 {
                                     <li><a class="dropdown-item" href="javascript:void(0)" data-action="@item.Value" data-title="@T["Bulk Action"]" data-message="@T["Are you sure you want to {0} these items?", @item.Text.ToLower()]">@item.Text</a></li>

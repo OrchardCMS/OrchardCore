@@ -54,15 +54,15 @@ The `OrchardCore.Resources` module provides some commonly used ones:
 | popper                | Script | 1.16.1       | -             |
 | popperjs              | Script | 2.11.8       | -             |
 | bootstrap             | Script | 4.6.1        | popper        |
-| bootstrap             | Script | 5.3.7        | popperjs      |
-| bootstrap             | Style  | 4.6.1, 5.3.7 | -             |
+| bootstrap             | Script | 5.3.8        | popperjs      |
+| bootstrap             | Style  | 4.6.1, 5.3.8 | -             |
 | bootstrap-select      | Script | 1.14.0-beta3 | -             |
 | bootstrap-select      | Style  | 1.14.0-beta3 | -             |
 | codemirror            | Script | 5.65.7       | -             |
 | codemirror            | Style  | 5.65.7       | -             |
-| font-awesome          | Style  | 6.6.0, 6.7.2 | -             |
-| font-awesome          | Script | 6.6.0, 6.7.2 | -             |
-| font-awesome-v4-shims | Script | 6.6.0, 6.7.2 | -             |
+| font-awesome          | Style  | 6.7.2, 7.2.0 | -             |
+| font-awesome          | Script | 6.7.2, 7.2.0 | -             |
+| font-awesome-v4-shims | Script | 6.7.2, 7.2.0 | -             |
 | Sortable              | Script | 1.10.2       | -             |
 | trumbowyg             | Style  | 2.28.0       | -             |
 | trumbowyg             | Script | 2.28.0       | -             |
@@ -590,7 +590,7 @@ If you register a resource by name and it is not found this will be logged as an
 
 ## CDN disabled by default
 
-The `UseCdn` option, configured in the _Configuration -> Settings -> General_ section, is disabled by default.
+The `UseCdn` option, configured in the _Settings -> General_ section, is disabled by default.
 This is to allow access to resources when an internet connection is not available or in countries like China, where CDNs are not always accessible.  
 
 !!! note

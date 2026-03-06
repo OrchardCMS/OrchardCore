@@ -20,7 +20,7 @@ You can disable an Admin Node and neither it nor their descendants will be shown
 
 1. Ensure the Admin Menu module is enabled.
 
-2. Go to Configuration: Admin Menu.
+2. Go to Tools: Admin Menus.
 
 3. Create a new Admin Menu, and start adding Admin Nodes to it. The Link Admin Node is the simplest type and it's perfect to test the feature.
 

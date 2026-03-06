@@ -14,10 +14,22 @@ Vue.component('mediaFieldThumbsContainer', {
             <li v-for="media in mediaItems"
                 :key="media.vuekey"
                 class="media-thumb-item media-container-main-list-item card overflow"
+                :class="{'media-thumb-item-active': !allowMultiple && selectedMedia === media}"
                 :style="{width: thumbSize + 2 + 'px'}"
                 v-on:click="selectMedia(media)"
                 v-if="!media.isRemoved">
-                    <div v-if="media.mediaPath!== 'not-found'">
+                    <div v-if="media.errorType==='transient'">
+                        <div class="thumb-container flex-column" :style="{height: thumbSize + 'px'}">
+                            <i class="fa-solid fa-triangle-exclamation text-warning d-block" aria-hidden="true"></i>
+                            <span class="text-warning small d-block">{{ T.mediaTemporarilyUnavailable }}</span>
+                        </div>
+                        <div class="media-container-main-item-title card-body">
+                            <a href="javascript:;" class="btn btn-light btn-sm float-end inline-media-button delete-button"
+                                v-on:click.stop="selectAndDeleteMedia(media)"><i class="fa-solid fa-trash" aria-hidden="true"></i></a>
+                            <span class="media-filename card-text small text-warning" :title="media.name">{{ media.name }}</span>
+                        </div>
+                    </div>
+                    <div v-else-if="!media.errorType">
                         <div class="thumb-container" :style="{height: thumbSize + 'px'}" >
                             <img v-if="media.mime.startsWith('image')"
                                 :src="buildMediaUrl(media.url, thumbSize)"
@@ -37,7 +49,6 @@ Vue.component('mediaFieldThumbsContainer', {
                         <div class="thumb-container flex-column" :style="{height: thumbSize + 'px'}">
                             <i class="fa-solid fa-ban text-danger d-block" aria-hidden="true"></i>
                             <span class="text-danger small d-block">{{ T.mediaNotFound }}</span>
-                            <span class="text-danger small d-block text-center">{{ T.discardWarning }}</span>
                         </div>
                         <div class="media-container-main-item-title card-body">
                             <a href="javascript:;" class="btn btn-light btn-sm float-end inline-media-button delete-button"
@@ -73,6 +84,7 @@ Vue.component('mediaFieldThumbsContainer', {
         // retrieving localized strings from view
         self.T.mediaNotFound = $('#t-media-not-found').val();
         self.T.discardWarning = $('#t-discard-warning').val();
+        self.T.mediaTemporarilyUnavailable = $('#t-media-temporarily-unavailable').val();
         self.T.noImages = $('#t-no-images').val();
     },
     mounted: function () {

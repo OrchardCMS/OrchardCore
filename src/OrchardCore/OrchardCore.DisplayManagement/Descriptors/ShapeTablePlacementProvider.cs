@@ -7,6 +7,7 @@ public class ShapeTablePlacementProvider : IShapePlacementProvider
 {
     private readonly IShapeTableManager _shapeTableManager;
     private readonly IThemeManager _themeManager;
+    private readonly Dictionary<ShapeTable, ShapeTablePlacementResolver> _resolvers = new();
 
     public ShapeTablePlacementProvider(
         IShapeTableManager shapeTableManager,
@@ -29,7 +30,14 @@ public class ShapeTablePlacementProvider : IShapePlacementProvider
 
         var shapeTable = await _shapeTableManager.GetShapeTableAsync(theme.Id);
 
-        return new ShapeTablePlacementResolver(shapeTable);
+        if(_resolvers.TryGetValue(shapeTable, out var resolver))
+        {
+            return resolver;
+        }
+
+        resolver = new ShapeTablePlacementResolver(shapeTable);
+        _resolvers[shapeTable] = resolver;
+        return resolver;
     }
 
     private sealed class ShapeTablePlacementResolver : IPlacementInfoResolver
@@ -46,11 +54,13 @@ public class ShapeTablePlacementProvider : IShapePlacementProvider
             if (_shapeTable.Descriptors.TryGetValue(placementContext.ShapeType, out var descriptor))
             {
                 var placement = descriptor.Placement(placementContext);
-                if (placement != null)
+                
+                if (placement != null && !string.IsNullOrEmpty(placementContext.Source))
                 {
-                    placement.Source = placementContext.Source;
-                    return placement;
+                    return placement.WithSource(placementContext.Source);
                 }
+                
+                return placement;
             }
 
             return null;

@@ -50,13 +50,13 @@ The last step is to copy Application Id and Tenant Id from Azure Portal
 
 ![image](assets/get-appid-tenantid-from-portal.jpg)
 
-[Navigate to Security/Microsoft Entra ID](https://localhost:5001/Admin/Settings/OrchardCore.Microsoft.Authentication.AzureAD) in OrchardCore Admin to configure the AzureAD app.
+[Navigate to Settings/Security/Authentication/Microsoft Entra ID](https://localhost:5001/Admin/Settings/OrchardCore.Microsoft.Authentication.AzureAD) in OrchardCore Admin to configure the AzureAD app.
 
 ![image](assets/configure-orchardcore-azuread.jpg)
 
 ## Configure registration settings
 
-[Navigate to Security/Settings/Registration](https://localhost:5001/Admin/Settings/RegistrationSettings) and enable registration as shown
+[Navigate to Settings/Security/Registration](https://localhost:5001/Admin/Settings/RegistrationSettings) and enable registration as shown
 
 ![image](assets/registration-settings-a.jpg)
 
@@ -86,7 +86,7 @@ also check the settings to disable asking user info on first registration
 
 ## Configure login settings
 
-[Navigate to Security/Settings/Login](https://localhost:5001/Admin/Settings/LoginSettings) and check Use a script to set user roles, user claims and user properties based on external provider claims and copy the following script
+[Navigate to Settings/Security/User Login](https://localhost:5001/Admin/Settings/LoginSettings) and check Use a script to set user roles, user claims and user properties based on external provider claims and copy the following script
 
 ```javascript
 switch (context.loginProvider) {

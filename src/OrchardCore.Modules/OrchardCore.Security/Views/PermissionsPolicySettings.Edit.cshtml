@@ -1,0 +1,191 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@using OrchardCore.Security.Options
+@using OrchardCore.Security.ViewModels
+@model SecuritySettingsViewModel
+
+@functions
+{
+    public LocalizedHtmlString GetPermissionPolicyName(string value)
+    {
+        LocalizedHtmlString name = null;
+        switch (value)
+        {
+            case PermissionsPolicyValue.Accelerometer:
+                name = T["Accelerometer"];
+                break;
+            case PermissionsPolicyValue.AmbientLightSensor:
+                name = T["Ambient Light Sensor"];
+                break;
+            case PermissionsPolicyValue.Autoplay:
+                name = T["Autoplay"];
+                break;
+            case PermissionsPolicyValue.Battery:
+                name = T["Battery"];
+                break;
+            case PermissionsPolicyValue.Camera:
+                name = T["Camera"];
+                break;
+            case PermissionsPolicyValue.DisplayCapture:
+                name = T["Display Capture"];
+                break;
+            case PermissionsPolicyValue.DocumentDomain:
+                name = T["Document Domain"];
+                break;
+            case PermissionsPolicyValue.EncryptedMedia:
+                name = T["Encrypted Media"];
+                break;
+            case PermissionsPolicyValue.FullScreen:
+                name = T["Full Screen"];
+                break;
+            case PermissionsPolicyValue.GamePad:
+                name = T["Game Pad"];
+                break;
+            case PermissionsPolicyValue.Geolocation:
+                name = T["Geolocation"];
+                break;
+            case PermissionsPolicyValue.Gyroscope:
+                name = T["Gyroscope"];
+                break;
+            case PermissionsPolicyValue.LayoutAnimations:
+                name = T["Layout Animations"];
+                break;
+            case PermissionsPolicyValue.LegacyImageFormat:
+                name = T["Legacy ImageFormat"];
+                break;
+            case PermissionsPolicyValue.Magnetometer:
+                name = T["Magnetometer"];
+                break;
+            case PermissionsPolicyValue.Microphone:
+                name = T["Microphone"];
+                break;
+            case PermissionsPolicyValue.Midi:
+                name = T["Midi"];
+                break;
+            case PermissionsPolicyValue.OversizedImages:
+                name = T["Oversized Images"];
+                break;
+            case PermissionsPolicyValue.Payment:
+                name = T["Payment"];
+                break;
+            case PermissionsPolicyValue.PictureInPicture:
+                name = T["Picture In Picture"];
+                break;
+            case PermissionsPolicyValue.PublicKeyRetrieval:
+                name = T["Public Key Retrieval"];
+                break;
+            case PermissionsPolicyValue.Push:
+                name = T["Push"];
+                break;
+            case PermissionsPolicyValue.SpeakerSelection:
+                name = T["Speaker Selection"];
+                break;
+            case PermissionsPolicyValue.ScreenWakeLock:
+                name = T["Screen Wake Lock"];
+                break;
+            case PermissionsPolicyValue.SyncXhr:
+                name = T["Synchronous XML Http Request"];
+                break;
+            case PermissionsPolicyValue.UnoptimizedImages:
+                name = T["Unoptimized Images"];
+                break;
+            case PermissionsPolicyValue.UnsizedMedia:
+                name = T["Unsized Media"];
+                break;
+            case PermissionsPolicyValue.Usb:
+                name = T["USB"];
+                break;
+            case PermissionsPolicyValue.WebShare:
+                name = T["Web Share"];
+                break;
+            case PermissionsPolicyValue.WebXR:
+                name = T["Web XR"];
+                break;
+        }
+
+        return name;
+    }
+}
+
+<div class="mb-3">
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th>@T["Name"]</th>
+                <th>@T["None"]</th>
+                <th>@T["Any"]</th>
+                <th>@T["Self"]</th>
+                <th style="width:40%"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var key in Model.PermissionsPolicy.Keys)
+            {
+                var value = Model.PermissionsPolicy[key];
+                var originType = value ?? PermissionsPolicyOriginValue.None;
+                var allowedOrigins = string.Empty;
+
+                if (value != null)
+                {
+                    var originsSeparatorIndex = value.IndexOf(' ');
+                    if (originsSeparatorIndex > -1)
+                    {
+                        originType = value.Substring(0, originsSeparatorIndex);
+                        allowedOrigins = value.Substring(originsSeparatorIndex + 1);
+                    }
+                }
+
+                <tr>
+                    <td>@GetPermissionPolicyName(key)</td>
+                    <td>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="@key" value="None" @(originType == PermissionsPolicyOriginValue.None ? "checked" : null) onchange="changeOrigin(this, '@PermissionsPolicyOriginValue.None');">
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="@key" value="Any" @(originType == PermissionsPolicyOriginValue.Any ? "checked" : null) onchange="changeOrigin(this, '@PermissionsPolicyOriginValue.Any');">
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="@key" value="Self" @(originType == PermissionsPolicyOriginValue.Self ? "checked" : null) onchange="changeOrigin(this, '@PermissionsPolicyOriginValue.Self');">
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-group mb-0">
+                            <input class="form-control d-@(originType == PermissionsPolicyOriginValue.Self ? "block" : "none")" id="@(key)AllowedOrigins" placeholder="https://www.domain.com https://www.another.domain.com" value="@allowedOrigins" oninput="changeAllowedOrigins(this)" />
+                            <input id="@Html.IdFor(m => m.PermissionsPolicy[key])" name="@Html.NameFor(m => m.PermissionsPolicy[key])" type="hidden" value="@originType" />
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <span class="hint">@T["Allows a site to control which features and APIs can be used in the browser."]</span>
+</div>
+<script>
+    function changeOrigin(e, origin) {
+        var allowedOrigins = $('#' + e.name + 'AllowedOrigins');
+
+        if (e.value == "Self") {
+            allowedOrigins.removeClass('d-none').addClass('d-block');
+
+            if (allowedOrigins.val() != '') {
+                origin += ' ' + allowedOrigins.val().trim();
+            }
+        }
+        else {
+            allowedOrigins.removeClass('d-block').addClass('d-none');
+        }
+
+        allowedOrigins.siblings().val(origin);
+    }
+
+    function changeAllowedOrigins(e) {
+        var permissionValue = $(e).siblings();
+
+        if (permissionValue.val().startsWith('self')) {
+            permissionValue.val('self ' + e.value.trim());
+        }
+    }
+</script>

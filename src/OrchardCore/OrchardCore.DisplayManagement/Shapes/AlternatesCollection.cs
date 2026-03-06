@@ -14,11 +14,12 @@ public class AlternatesCollection : IEnumerable<string>
 
     public AlternatesCollection(params string[] alternates)
     {
-        EnsureCollection();
-
-        foreach (var alternate in alternates)
+        if (alternates != null)
         {
-            Add(alternate);
+            foreach (var alternate in alternates)
+            {
+                Add(alternate);
+            }
         }
     }
 
@@ -83,14 +84,9 @@ public class AlternatesCollection : IEnumerable<string>
     {
         ArgumentNullException.ThrowIfNull(alternates);
 
-        if (alternates.Any())
+        foreach (var alternate in alternates)
         {
-            EnsureCollection();
-
-            foreach (var alternate in alternates)
-            {
-                Add(alternate);
-            }
+            Add(alternate);
         }
     }
 
@@ -108,7 +104,7 @@ public class AlternatesCollection : IEnumerable<string>
     {
         if (_collection == null)
         {
-            return ((IEnumerable<string>)[]).GetEnumerator();
+            return Enumerable.Empty<string>().GetEnumerator();
         }
 
         return _collection.GetEnumerator();

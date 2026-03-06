@@ -1,14 +1,17 @@
+@using OrchardCore.Localization.Data
 @inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
+@inject IDataLocalizer D
 @{
     var contentItem = (IContent)Model.ContentItem;
-    var contentTypeDisplayText = (await ContentDefinitionManager.GetTypeDefinitionAsync((string)Model.ContentItem.ContentType)).DisplayName;
+    var contentTypeDefinition = await ContentDefinitionManager.GetTypeDefinitionAsync((string)Model.ContentItem.ContentType);
+    var contentTypeDisplayText = D[contentTypeDefinition.DisplayName, "Content Types"];
     var contentItemDisplayText = contentItem.ContentItem.DisplayText;
 }
 <div class="widget widget-editor card my-1 @(Model.Inline != true ? "collapsed" : "")">
     <div class="widget-editor-header card-header text-muted">
         @if (Model.CanMove != false)
         {
-            <div class="widget-editor-handle"><i class="fa-solid fa-arrows-alt" aria-hidden="true"></i></div>
+            <div class="widget-editor-handle"><i class="fa-solid fa-up-down-left-right" aria-hidden="true"></i></div>
         }
 
         <button type="button" class="btn btn-outline-secondary btn-sm widget-editor-btn-toggle widget-editor-btn-collapse"><i class="fa-solid fa-minus" aria-hidden="true"></i></button>

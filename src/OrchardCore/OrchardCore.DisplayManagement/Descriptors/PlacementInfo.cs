@@ -1,4 +1,4 @@
-using OrchardCore.DisplayManagement.Shapes;
+using System.Collections.Concurrent;
 
 namespace OrchardCore.DisplayManagement.Descriptors;
 
@@ -18,23 +18,117 @@ public class PlacementInfo
 
     private static readonly char[] _delimiters = [PositionDelimiter, TabDelimiter, GroupDelimiter, CardDelimiter, ColumnDelimiter];
 
-    public string Location { get; set; }
-    public string Source { get; set; }
-    public string ShapeType { get; set; }
-    public string DefaultPosition { get; set; }
-    public AlternatesCollection Alternates { get; set; }
-    public AlternatesCollection Wrappers { get; set; }
+    /// <summary>
+    /// A shared instance representing a hidden placement.
+    /// </summary>
+    public static readonly PlacementInfo Hidden = new(HiddenLocation);
+
+    /// <summary>
+    /// A shared instance representing an empty placement with no properties set.
+    /// </summary>
+    public static readonly PlacementInfo Empty = new();
+
+    /// <summary>
+    /// Cache for commonly used PlacementInfo instances with only Location set.
+    /// </summary>
+    private static readonly ConcurrentDictionary<string, PlacementInfo> _locationCache = new(StringComparer.OrdinalIgnoreCase);
+
+    private readonly string[] _zones;
+    private readonly string _position;
+    private readonly string _tab;
+    private readonly string _group;
+    private readonly string _card;
+    private readonly string _column;
+
+    public string Location { get; }
+    public string Source { get; }
+    public string ShapeType { get; }
+    public string DefaultPosition { get; }
+    public string[] Alternates { get; }
+    public string[] Wrappers { get; }
+
+    public PlacementInfo()
+    {
+        _zones = [];
+    }
+
+    public PlacementInfo(string location, string source = null, string shapeType = null, string defaultPosition = null, string[] alternates = null, string[] wrappers = null)
+    {
+        Location = location;
+        Source = source;
+        ShapeType = shapeType;
+        DefaultPosition = defaultPosition;
+        Alternates = alternates;
+        Wrappers = wrappers;
+
+        if (!string.IsNullOrEmpty(location))
+        {
+            ParseLocation(location, out _zones, out _position, out _tab, out _group, out _card, out _column);
+        }
+        else
+        {
+            _zones = [];
+        }
+    }
+
+    /// <summary>
+    /// Creates a new <see cref="PlacementInfo"/> with the specified location.
+    /// Returns a cached instance for common locations.
+    /// </summary>
+    public static PlacementInfo FromLocation(string location)
+    {
+        if (string.IsNullOrEmpty(location))
+        {
+            return null;
+        }
+
+        if (location == HiddenLocation)
+        {
+            return Hidden;
+        }
+
+        return _locationCache.GetOrAdd(location, static loc => new PlacementInfo(loc));
+    }
+
+    /// <summary>
+    /// Returns a new PlacementInfo instance with the specified source value, or the current instance if the source is
+    /// unchanged.
+    /// </summary>
+    /// <param name="source">The source identifier to associate with the returned PlacementInfo instance. Can be null or empty.</param>
+    /// <returns>A PlacementInfo instance with the specified source value. Returns the current instance if the source is
+    /// unchanged.</returns>
+    public PlacementInfo WithSource(string source)
+    {
+        if (Source == source)
+        {
+            return this;
+        }
+
+        return new PlacementInfo(Location, source, ShapeType, DefaultPosition, Alternates, Wrappers);
+    }
+
+    /// <summary>
+    /// Creates a new <see cref="PlacementInfo"/> by merging this instance with location and default position.
+    /// Returns this instance if no properties need to be changed.
+    /// </summary>
+    public PlacementInfo WithDefaults(string location, string defaultPosition)
+    {
+        var locationChanged = Location != location && location != null && Location == null;
+        var defaultPositionChanged = DefaultPosition != defaultPosition && defaultPosition != null && DefaultPosition == null;
+
+        if (!locationChanged && !defaultPositionChanged)
+        {
+            return this;
+        }
+
+        return new PlacementInfo(Location ?? location, Source, ShapeType, DefaultPosition ?? defaultPosition, Alternates, Wrappers);
+    }
 
     public bool IsLayoutZone()
-    {
-        return Location.StartsWith('/');
-    }
+        => !string.IsNullOrEmpty(Location) && Location[0] == '/';
 
     public bool IsHidden()
-    {
-        // If there are no placement or it's explicitly noop then its hidden.
-        return string.IsNullOrEmpty(Location) || Location == HiddenLocation;
-    }
+        => string.IsNullOrEmpty(Location) || Location == HiddenLocation;
 
     /// <summary>
     /// Returns the list of zone names.
@@ -42,123 +136,128 @@ public class PlacementInfo
     /// </summary>
     /// <returns></returns>
     public string[] GetZones()
-    {
-        string zones;
-        var location = Location;
-
-        // Strip the Layout marker.
-        if (IsLayoutZone())
-        {
-            location = location[1..];
-        }
-
-        var firstDelimiter = location.IndexOfAny(_delimiters);
-        if (firstDelimiter == -1)
-        {
-            zones = location;
-        }
-        else
-        {
-            zones = location[..firstDelimiter];
-        }
-
-        return zones.Split('.');
-    }
+        => _zones ?? [];
 
     public string GetPosition()
-    {
-        var contentDelimiter = Location.IndexOf(PositionDelimiter);
-        if (contentDelimiter == -1)
-        {
-            return DefaultPosition ?? "";
-        }
-
-        var secondDelimiter = Location.IndexOfAny(_delimiters, contentDelimiter + 1);
-        if (secondDelimiter == -1)
-        {
-            return Location[(contentDelimiter + 1)..];
-        }
-
-        return Location[(contentDelimiter + 1)..secondDelimiter];
-    }
+        => _position ?? DefaultPosition ?? "";
 
     public string GetTab()
-    {
-        var tabDelimiter = Location.IndexOf(TabDelimiter);
-        if (tabDelimiter == -1)
-        {
-            return "";
-        }
-
-        var nextDelimiter = Location.IndexOfAny(_delimiters, tabDelimiter + 1);
-        if (nextDelimiter == -1)
-        {
-            return Location[(tabDelimiter + 1)..];
-        }
-
-        return Location[(tabDelimiter + 1)..nextDelimiter];
-    }
+        => _tab ?? "";
 
     /// <summary>
     /// Extracts the group information from a location string, or <c>null</c> if it is not present.
     /// e.g., Content:12@search.
     /// </summary>
     public string GetGroup()
-    {
-        var groupDelimiter = Location.IndexOf(GroupDelimiter);
-        if (groupDelimiter == -1)
-        {
-            return null;
-        }
-
-        var nextDelimiter = Location.IndexOfAny(_delimiters, groupDelimiter + 1);
-        if (nextDelimiter == -1)
-        {
-            return Location[(groupDelimiter + 1)..];
-        }
-
-        return Location[(groupDelimiter + 1)..nextDelimiter];
-    }
+        => _group;
 
     /// <summary>
     /// Extracts the card information from a location string, or <c>null</c> if it is not present.
     /// e.g., Content:12%search.
     /// </summary>
     public string GetCard()
-    {
-        var cardDelimiter = Location.IndexOf(CardDelimiter);
-        if (cardDelimiter == -1)
-        {
-            return null;
-        }
-
-        var nextDelimiter = Location.IndexOfAny(_delimiters, cardDelimiter + 1);
-        if (nextDelimiter == -1)
-        {
-            return Location[(cardDelimiter + 1)..];
-        }
-
-        return Location[(cardDelimiter + 1)..nextDelimiter];
-    }
+        => _card;
 
     /// <summary>
     /// Extracts the column information from a location string, or <c>null</c> if it is not present.
     /// e.g., Content:12!search.
     /// </summary>
     public string GetColumn()
+        => _column;
+
+    private static void ParseLocation(string location, out string[] zones, out string position, out string tab, out string group, out string card, out string column)
     {
-        var colDelimiter = Location.IndexOf(ColumnDelimiter);
-        if (colDelimiter == -1)
+        position = null;
+        tab = null;
+        group = null;
+        card = null;
+        column = null;
+
+        if (location[0] == '/')
         {
-            return null;
+            location = location[1..];
         }
 
-        var nextDelimiter = Location.IndexOfAny(_delimiters, colDelimiter + 1);
-        if (nextDelimiter == -1)
+        var firstDelimiter = location.IndexOfAny(_delimiters);
+        string zonesString;
+        if (firstDelimiter == -1)
         {
-            return Location[(colDelimiter + 1)..];
+            zonesString = location;
+        }
+        else
+        {
+            zonesString = location[..firstDelimiter];
+        }
+        zones = zonesString.Split('.');
+
+        var positionDelimiter = location.IndexOf(PositionDelimiter);
+        if (positionDelimiter != -1)
+        {
+            var secondDelimiter = location.IndexOfAny(_delimiters, positionDelimiter + 1);
+            if (secondDelimiter == -1)
+            {
+                position = location[(positionDelimiter + 1)..];
+            }
+            else
+            {
+                position = location[(positionDelimiter + 1)..secondDelimiter];
+            }
         }
 
-        return Location[(colDelimiter + 1)..nextDelimiter];
+        var tabDelimiter = location.IndexOf(TabDelimiter);
+        if (tabDelimiter != -1)
+        {
+            var nextDelimiter = location.IndexOfAny(_delimiters, tabDelimiter + 1);
+            if (nextDelimiter == -1)
+            {
+                tab = location[(tabDelimiter + 1)..];
+            }
+            else
+            {
+                tab = location[(tabDelimiter + 1)..nextDelimiter];
+            }
+        }
+
+        var groupDelimiter = location.IndexOf(GroupDelimiter);
+        if (groupDelimiter != -1)
+        {
+            var nextDelimiter = location.IndexOfAny(_delimiters, groupDelimiter + 1);
+            if (nextDelimiter == -1)
+            {
+                group = location[(groupDelimiter + 1)..];
+            }
+            else
+            {
+                group = location[(groupDelimiter + 1)..nextDelimiter];
+            }
+        }
+
+        var cardDelimiter = location.IndexOf(CardDelimiter);
+        if (cardDelimiter != -1)
+        {
+            var nextDelimiter = location.IndexOfAny(_delimiters, cardDelimiter + 1);
+            if (nextDelimiter == -1)
+            {
+                card = location[(cardDelimiter + 1)..];
+            }
+            else
+            {
+                card = location[(cardDelimiter + 1)..nextDelimiter];
+            }
+        }
+
+        var colDelimiter = location.IndexOf(ColumnDelimiter);
+        if (colDelimiter != -1)
+        {
+            var nextDelimiter = location.IndexOfAny(_delimiters, colDelimiter + 1);
+            if (nextDelimiter == -1)
+            {
+                column = location[(colDelimiter + 1)..];
+            }
+            else
+            {
+                column = location[(colDelimiter + 1)..nextDelimiter];
+            }
+        }
     }
 }

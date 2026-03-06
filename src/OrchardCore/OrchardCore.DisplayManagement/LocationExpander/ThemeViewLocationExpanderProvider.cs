@@ -41,7 +41,7 @@ public class ThemeViewLocationExpanderProvider : IViewLocationExpanderProvider
         }
 
         var currentThemeAndBaseThemesOrdered = _extensionManager
-            .GetFeatures([currentThemeId])
+            .GetFeatures((IEnumerable<string>)[currentThemeId])
             .Where(f => f.IsTheme())
             .Reverse()
             .ToList();

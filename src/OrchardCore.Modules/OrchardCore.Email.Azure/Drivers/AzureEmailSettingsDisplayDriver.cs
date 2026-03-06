@@ -10,7 +10,6 @@ using OrchardCore.Email;
 using OrchardCore.Email.Azure;
 using OrchardCore.Email.Azure.Services;
 using OrchardCore.Email.Azure.ViewModels;
-using OrchardCore.Email.Core;
 using OrchardCore.Email.Services;
 using OrchardCore.Entities;
 using OrchardCore.Environment.Shell;

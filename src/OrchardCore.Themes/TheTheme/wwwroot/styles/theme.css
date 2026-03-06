@@ -95,6 +95,10 @@ ul.pager {
   text-align: justify;
 }
 
+.widget-align-inherit {
+  text-align: inherit;
+}
+
 .widget-size-100, .widget-size-75, .widget .widget-size-75, .widget-size-66, .widget .widget-size-66, .widget-size-50, .widget .widget-size-50, .widget-size-33, .widget .widget-size-33, .widget-size-25, .widget .widget-size-25 {
   flex-shrink: 0;
   width: 100%;

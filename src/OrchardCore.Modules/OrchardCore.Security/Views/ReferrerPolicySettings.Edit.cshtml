@@ -1,0 +1,35 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@using OrchardCore.Security.Options
+@using OrchardCore.Security.ViewModels
+@model SecuritySettingsViewModel
+
+<div class="mb-3" asp-validation-class-for="ReferrerPolicy">
+    <select asp-for="ReferrerPolicy" class="form-select">
+        <option value="@ReferrerPolicyValue.NoReferrer" selected="@(Model.ReferrerPolicy == ReferrerPolicyValue.NoReferrer)">
+            @T["No referrer"]
+        </option>
+        <option value="@ReferrerPolicyValue.NoReferrerWhenDowngrade" selected="@(Model.ReferrerPolicy == ReferrerPolicyValue.NoReferrerWhenDowngrade)">
+            @T["No referrer when downgrade"]
+        </option>
+        <option value="@ReferrerPolicyValue.Origin" selected="@(Model.ReferrerPolicy == ReferrerPolicyValue.Origin)">
+            @T["Origin"]
+        </option>
+        <option value="@ReferrerPolicyValue.OriginWhenCrossOrigin" selected="@(Model.ReferrerPolicy == ReferrerPolicyValue.OriginWhenCrossOrigin)">
+            @T["Origin when cross origin"]
+        </option>
+        <option value="@ReferrerPolicyValue.SameOrigin" selected="@(Model.ReferrerPolicy == ReferrerPolicyValue.SameOrigin)">
+            @T["Same origin"]
+        </option>
+        <option value="@ReferrerPolicyValue.StrictOrigin" selected="@(Model.ReferrerPolicy == ReferrerPolicyValue.StrictOrigin)">
+            @T["Strict origin"]
+        </option>
+        <option value="@ReferrerPolicyValue.StrictOriginWhenCrossOrigin" selected="@(Model.ReferrerPolicy == ReferrerPolicyValue.StrictOriginWhenCrossOrigin)">
+            @T["Strict origin when cross origin"]
+        </option>
+        <option value="@ReferrerPolicyValue.UnsafeUrl" selected="@(Model.ReferrerPolicy == ReferrerPolicyValue.UnsafeUrl)">
+            @T["Unsafe URL"]
+        </option>
+    </select>
+    <span asp-validation-for="ReferrerPolicy"></span>
+    <span class="hint">@T["Allows a site to control how much information the browser includes when navigating away from a page."]</span>
+</div>

@@ -1,3 +1,4 @@
+using Fluid.Parser;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -86,10 +87,7 @@ public sealed class AdminController : Controller
 
                 foreach (var error in result.Errors)
                 {
-                    foreach (var errorMessage in error.Value)
-                    {
-                        ModelState.AddModelError(error.Key, errorMessage);
-                    }
+                    ModelState.AddModelError(error.Key, error.Message.Value);
                 }
             }
             catch (InvalidEmailProviderException)
@@ -119,7 +117,7 @@ public sealed class AdminController : Controller
 
         if (!string.IsNullOrWhiteSpace(testSettings.From))
         {
-            message.Sender = testSettings.From;
+            message.From = testSettings.From;
         }
 
         if (!string.IsNullOrWhiteSpace(testSettings.Subject))

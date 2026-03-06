@@ -24,7 +24,7 @@
                                 trumbowyg.restoreRange();
                                 trumbowyg.range.deleteContents();
                                 
-                                for (i = 0; i < mediaApp.selectedMedias.length; i++) {
+                                for (let i = 0; i < mediaApp.selectedMedias.length; i++) {
                                     var mediaBodyContent = ' [image]' + mediaApp.selectedMedias[i].mediaPath + '[/image]';
                                     var node = document.createTextNode(mediaBodyContent);
                                     trumbowyg.range.insertNode(node);

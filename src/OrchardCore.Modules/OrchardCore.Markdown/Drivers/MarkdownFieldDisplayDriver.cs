@@ -76,8 +76,8 @@ public sealed class MarkdownFieldDisplayDriver : ContentFieldDisplayDriver<Markd
                 model.Html = _htmlSanitizerService.Sanitize(model.Html ?? string.Empty);
             }
         })
-        .Location("Detail", "Content")
-        .Location("Summary", "Content");
+        .Location(OrchardCoreConstants.DisplayType.Detail, "Content")
+        .Location(OrchardCoreConstants.DisplayType.Summary, "Content");
     }
 
     public override IDisplayResult Edit(MarkdownField field, BuildFieldEditorContext context)

@@ -32,6 +32,11 @@ public sealed class AzureAISearchIndexProfileHandler : IndexProfileHandlerBase
             return Task.CompletedTask;
         }
 
+        if (!AzureAISearchIndexNamingHelper.TryGetSafeIndexName(context.Model.IndexName, out var safeName) || context.Model.IndexName != safeName)
+        {
+            context.Result.Fail(new ValidationResult(S["Invalid index name. Must start with a letter and be 1–128 characters long. Only letters, numbers, and underscores are allowed. Names cannot begin with 'azureSearch'."]));
+        }
+
         var metadata = context.Model.As<AzureAISearchIndexMetadata>();
 
         if (metadata.IndexMappings is null || metadata.IndexMappings.Count == 0)

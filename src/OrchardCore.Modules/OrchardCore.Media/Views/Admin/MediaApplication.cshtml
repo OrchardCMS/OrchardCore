@@ -1,3 +1,4 @@
+@using Microsoft.AspNetCore.Html
 @using Microsoft.Extensions.Options
 @using OrchardCore.Media
 
@@ -46,10 +47,10 @@
                     </div>
                     <div class="btn-group visibility-buttons">
                         <button type="button" id="toggle-grid-table-button-grid" class="btn btn-sm" :class="{selected: gridView}" v-on:click="gridView = true">
-                            <span title="@T["Grid View"]"><i class="fa-solid fa-th-large" aria-hidden="true"></i></span>
+                            <span title="@T["Grid View"]"><i class="fa-solid fa-table-cells-large" aria-hidden="true"></i></span>
                         </button>
                         <button type="button" id="toggle-grid-table-button-table" class="btn btn-sm" :class="{selected: !gridView}" v-on:click="gridView = false">
-                            <span title="@T["List View"]"><i class="fa-solid fa-th-list" aria-hidden="true"></i></span>
+                            <span title="@T["List View"]"><i class="fa-solid fa-list" aria-hidden="true"></i></span>
                         </button>
                     </div>
                     <div class="btn-group visibility-buttons" v-show="gridView">
@@ -66,7 +67,7 @@
                             <div class="input-group input-group-sm">
                                 <span class="fa-solid fa-filter icon-inside-input"></span>
                                 <input type="text" id="media-filter-input" v-model="mediaFilter" class="form-control input-filter" placeholder="@T["Filter..."]" aria-label="@T["Filter..."]">
-                                <button id="clear-media-filter-button" class="btn btn-outline-secondary" type="button" :disabled="mediaFilter == '' " v-on:click="mediaFilter = '' "><i class="fa-solid fa-times" aria-hidden="true"></i></button>
+                                <button id="clear-media-filter-button" class="btn btn-outline-secondary" type="button" :disabled="mediaFilter == '' " v-on:click="mediaFilter = '' "><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
                             </div>
                         </div>
                     </div>
@@ -89,6 +90,9 @@
                               :class="{active: parents.length - i == 1}">
                             <a :href="parents.length - i == 1 ? null : '#'" v-on:click="selectedFolder = folder;">{{ folder.name }}</a>
                         </span>
+                    </div>
+                    <div class="justify-content-end p-3" v-if="permittedStorage">
+                        @T["Available Storage: <strong>{0}</strong>", "{{ permittedStorage.text }}"]
                     </div>
                 </nav>
             </div>
@@ -127,6 +131,7 @@
 <input type="hidden" id="moveMediaListUrl" value="@Url.Action("MoveMediaList", "Admin", new { area = "OrchardCore.Media" })" />
 <input type="hidden" id="uploadFiles" value="@Url.Action("Upload", "Admin", new { area = "OrchardCore.Media" })" />
 <input type="hidden" id="allowedExtensions" value="@Model.Extensions" />
+<input type="hidden" id="getPermittedStorageUrl" value="@Url.Action("GetPermittedStorage", "Admin", new { area = "OrchardCore.Media" })" />
 
 @* Settings *@
 <input type="hidden" id="allowNewRootFolders" value="@(Model.AllowNewRootFolders ? "true" : "false")" />

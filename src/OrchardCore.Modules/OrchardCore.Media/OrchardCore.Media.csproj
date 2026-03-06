@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Razor">
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
@@ -46,8 +46,8 @@
     <PackageReference Include="System.IO.Hashing" />
   </ItemGroup>
 
-  <ItemGroup Condition="!$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net10.0'))">
-    <PackageReference Include="System.Linq.Async" />
+  <ItemGroup>
+    <InternalsVisibleTo Include="OrchardCore.Tests" />
   </ItemGroup>
 
 </Project>

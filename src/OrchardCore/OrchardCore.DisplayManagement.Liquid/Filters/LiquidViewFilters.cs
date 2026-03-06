@@ -17,7 +17,7 @@ public static class LiquidViewFilters
             return ThrowArgumentException<ValueTask<FluidValue>>("ViewLocalizer missing while invoking 't'");
         }
 
-        var parameters = new object[arguments.Count];
+        var parameters = arguments.Count > 0 ? new object[arguments.Count] : [];
         for (var i = 0; i < arguments.Count; i++)
         {
             parameters[i] = arguments.At(i).ToStringValue();

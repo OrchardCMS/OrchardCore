@@ -22,8 +22,8 @@ namespace OrchardCore.Templates.Cms.Module.Drivers
         public override IDisplayResult Display(MyTestPart part, BuildPartDisplayContext context)
         {
             return Initialize<MyTestPartViewModel>(GetDisplayShapeType(context), m => BuildViewModel(m, part, context))
-                .Location("Detail", "Content:10")
-                .Location("Summary", "Content:10");
+                .Location(OrchardCoreConstants.DisplayType.Detail, "Content:10")
+                .Location(OrchardCoreConstants.DisplayType.Summary, "Content:10");
         }
 
         public override IDisplayResult Edit(MyTestPart part, BuildPartEditorContext context)

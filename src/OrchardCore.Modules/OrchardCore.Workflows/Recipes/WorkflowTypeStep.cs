@@ -1,8 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Options;
 using OrchardCore.Json;
 using OrchardCore.Recipes.Models;
@@ -19,28 +18,27 @@ public sealed class WorkflowTypeStep : NamedRecipeStepHandler
 {
     private readonly IWorkflowTypeStore _workflowTypeStore;
     private readonly ISecurityTokenService _securityTokenService;
-    private readonly IActionContextAccessor _actionContextAccessor;
-    private readonly IUrlHelperFactory _urlHelperFactory;
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly LinkGenerator _linkGenerator;
     private readonly JsonSerializerOptions _jsonSerializerOptions;
 
     public WorkflowTypeStep(IWorkflowTypeStore workflowTypeStore,
         ISecurityTokenService securityTokenService,
-        IActionContextAccessor actionContextAccessor,
-        IUrlHelperFactory urlHelperFactory,
+        IHttpContextAccessor httpContextAccessor,
+        LinkGenerator linkGenerator,
         IOptions<DocumentJsonSerializerOptions> jsonSerializerOptions)
         : base("WorkflowType")
     {
         _workflowTypeStore = workflowTypeStore;
         _securityTokenService = securityTokenService;
-        _actionContextAccessor = actionContextAccessor;
-        _urlHelperFactory = urlHelperFactory;
+        _httpContextAccessor = httpContextAccessor;
+        _linkGenerator = linkGenerator;
         _jsonSerializerOptions = jsonSerializerOptions.Value.SerializerOptions;
     }
 
     protected override async Task HandleAsync(RecipeExecutionContext context)
     {
         var model = context.Step.ToObject<WorkflowStepModel>();
-        var urlHelper = GetUrlHelper();
 
         foreach (var token in model.Data.Cast<JsonObject>())
         {
@@ -52,17 +50,14 @@ public sealed class WorkflowTypeStep : NamedRecipeStepHandler
             {
                 workflow.Id = 0;
 
-                if (urlHelper is not null)
+                foreach (var activity in workflow.Activities.Where(a => a.Name == nameof(HttpRequestEvent)))
                 {
-                    foreach (var activity in workflow.Activities.Where(a => a.Name == nameof(HttpRequestEvent)))
+                    if (!activity.Properties.TryGetPropertyValue("TokenLifeSpan", out var tokenLifeSpan))
                     {
-                        if (!activity.Properties.TryGetPropertyValue("TokenLifeSpan", out var tokenLifeSpan))
-                        {
-                            continue;
-                        }
-
-                        activity.Properties["Url"] = ReGenerateHttpRequestEventUrl(urlHelper, workflow, activity, tokenLifeSpan.ToObject<int>());
+                        continue;
                     }
+
+                    activity.Properties["Url"] = GetRegenerateHttpRequestEventUrl(workflow, activity, tokenLifeSpan.ToObject<int>());
                 }
             }
             else
@@ -74,25 +69,13 @@ public sealed class WorkflowTypeStep : NamedRecipeStepHandler
         }
     }
 
-    private IUrlHelper _urlHelper;
-
-    private IUrlHelper GetUrlHelper()
+    private string GetRegenerateHttpRequestEventUrl(WorkflowType workflow, ActivityRecord activity, int tokenLifeSpan)
     {
-        // When 'UrlHelper' is instantiated outside a controller's action (e.g., in a BackgroundTask), the ActionContext is null.
-        if (_urlHelper is null && _actionContextAccessor.ActionContext is not null)
-        {
-            _urlHelper = _urlHelperFactory.GetUrlHelper(_actionContextAccessor.ActionContext);
-        }
+        var lifespan = TimeSpan.FromDays(tokenLifeSpan == 0 ? HttpWorkflowController.NoExpiryTokenLifespan : tokenLifeSpan);
 
-        return _urlHelper;
-    }
+        var token = _securityTokenService.CreateToken(new WorkflowPayload(workflow.WorkflowTypeId, activity.ActivityId), lifespan);
 
-    private string ReGenerateHttpRequestEventUrl(IUrlHelper urlHelper, WorkflowType workflow, ActivityRecord activity, int tokenLifeSpan)
-    {
-        var token = _securityTokenService.CreateToken(new WorkflowPayload(workflow.WorkflowTypeId, activity.ActivityId),
-            TimeSpan.FromDays(tokenLifeSpan == 0 ? HttpWorkflowController.NoExpiryTokenLifespan : tokenLifeSpan));
-
-        return urlHelper.Action("Invoke", "HttpWorkflow", new { token });
+        return _linkGenerator.GetPathByAction(_httpContextAccessor.HttpContext, "Invoke", "HttpWorkflow", new { area = "OrchardCore.Workflows", token });
     }
 }
 

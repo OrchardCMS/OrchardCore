@@ -19,9 +19,9 @@ public class ElasticsearchQueryService
         _logger = logger;
     }
 
-    public async Task PopulateResultAsync(ElasticsearchSearchContext request, SearchResult result)
+    public async Task PopulateResultAsync(ElasticsearchSearchContext context, SearchResult result)
     {
-        var searchResult = await _elasticIndexManager.SearchAsync(request);
+        var searchResult = await _elasticIndexManager.SearchAsync(context);
 
         result.ContentItemIds = [];
 
@@ -30,6 +30,7 @@ public class ElasticsearchQueryService
             return;
         }
 
+        result.TotalCount = searchResult.TotalCount;
         result.Highlights = [];
 
         foreach (var item in searchResult.TopDocs)

@@ -290,7 +290,7 @@ public class AutoroutePartHandler : ContentPartHandler<AutoroutePart>
 
                 // This is only relevant if the content items have an autoroute part as we adjust the part value as required to guarantee a unique route.
                 // Content items routed only through the handler aspect already guarantee uniqueness.
-                if (containedAutoroutePart != null && !containedAutoroutePart.Disabled)
+                if (containedAutoroutePart is { Disabled: false, Path.Length: > 0 })
                 {
                     var path = containedAutoroutePart.Path;
 
@@ -405,7 +405,7 @@ public class AutoroutePartHandler : ContentPartHandler<AutoroutePart>
                     new Dictionary<string, FluidValue>() { [nameof(ContentItem)] = new ObjectValue(model.ContentItem) });
             }
 
-            part.Path = part.Path.Replace("\r", string.Empty).Replace("\n", string.Empty);
+            part.Path = part.Path.ReplaceLineEndings(string.Empty);
 
             if (part.Path?.Length > AutoroutePart.MaxPathLength)
             {

@@ -2,7 +2,7 @@
 
 The Azure AI Search module allows you to manage Azure AI Search indices.
 
-Before enabling the service, you'll need to configure the connection to the service. By default, you can navigate to `Configurations` >> `Settings` >> `Azure AI Search` and provide the Azure Search AI service info.
+Before enabling the service, you'll need to configure the connection to the service. By default, you can navigate to `Settings` → `Search` → `Azure AI Search` and provide the Azure Search AI service info.
 
 Alternatively, you can configure the Azure Search AI service for all your tenants using one of the configuration providers. For example, you can add the following to the `appsettings.json`:
 

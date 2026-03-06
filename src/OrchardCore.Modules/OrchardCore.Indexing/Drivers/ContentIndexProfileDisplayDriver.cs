@@ -15,10 +15,13 @@ namespace OrchardCore.Indexing.Drivers;
 
 internal sealed class ContentIndexProfileDisplayDriver : DisplayDriver<IndexProfile>
 {
+    private readonly ILocalizationService _localizationService;
+
     internal readonly IStringLocalizer S;
 
-    public ContentIndexProfileDisplayDriver(IStringLocalizer<ContentIndexProfileDisplayDriver> stringLocalizer)
+    public ContentIndexProfileDisplayDriver(ILocalizationService localizationService, IStringLocalizer<ContentIndexProfileDisplayDriver> stringLocalizer)
     {
+        _localizationService = localizationService;
         S = stringLocalizer;
     }
 
@@ -36,7 +39,7 @@ internal sealed class ContentIndexProfileDisplayDriver : DisplayDriver<IndexProf
             model.IndexLatest = metadata.IndexLatest;
             model.IndexedContentTypes = metadata.IndexedContentTypes;
             model.Culture = metadata.Culture;
-            model.Cultures = ILocalizationService.GetAllCulturesAndAliases()
+            model.Cultures = _localizationService.GetAllCulturesAndAliases()
             .Select(culture => new SelectListItem
             {
                 Text = $"{culture.Name} ({culture.DisplayName})",

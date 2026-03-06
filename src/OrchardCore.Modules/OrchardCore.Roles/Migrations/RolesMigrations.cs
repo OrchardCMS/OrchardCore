@@ -94,7 +94,10 @@ public sealed class RolesMigrations : DataMigration
                         // We'll need to create a new role name that does not exists and assign it as the system 'Administrator' role.
                         adminSystemRoleName = GenerateNewAdminRoleName(roles);
 
-                        _logger.LogInformation("The {DefaultAdministratorRoleName} does not contain SiteOwner permission. Creating a new AdminRoleName as the system admin name. The new role name is {NewAdminRoleName}.", OrchardCoreConstants.Roles.Administrator, adminSystemRoleName);
+                        if (_logger.IsEnabled(LogLevel.Information))
+                        {
+                            _logger.LogInformation("The {DefaultAdministratorRoleName} does not contain SiteOwner permission. Creating a new AdminRoleName as the system admin name. The new role name is {NewAdminRoleName}.", OrchardCoreConstants.Roles.Administrator, adminSystemRoleName);
+                        }
 
                         await roleManager.CreateAsync(new Role
                         {
@@ -103,7 +106,10 @@ public sealed class RolesMigrations : DataMigration
                     }
                     else
                     {
-                        _logger.LogInformation("Removing all existing permission claims from the default {DefaultAdministratorRoleName} Administrator name.", OrchardCoreConstants.Roles.Administrator);
+                        if (_logger.IsEnabled(LogLevel.Information))
+                        {
+                            _logger.LogInformation("Removing all existing permission claims from the default {DefaultAdministratorRoleName} Administrator name.", OrchardCoreConstants.Roles.Administrator);
+                        }
 
                         r.RoleClaims.Clear();
 
@@ -133,7 +139,10 @@ public sealed class RolesMigrations : DataMigration
 
                         if (users.Count > 0)
                         {
-                            _logger.LogInformation("Migrating all users {Count} users from {PreviousRoleName} to {NewRoleName}", users.Count, adminRole, adminSystemRoleName);
+                            if (_logger.IsEnabled(LogLevel.Information))
+                            {
+                                _logger.LogInformation("Migrating all users {Count} users from {PreviousRoleName} to {NewRoleName}", users.Count, adminRole, adminSystemRoleName);
+                            }
 
                             foreach (var user in users)
                             {
@@ -150,7 +159,10 @@ public sealed class RolesMigrations : DataMigration
                 var shellSettings = scope.ServiceProvider.GetRequiredService<ShellSettings>();
                 var shellHost = scope.ServiceProvider.GetRequiredService<IShellHost>();
 
-                _logger.LogInformation("The {DefaultAdministratorRoleName} does not contain SiteOwner permission. Creating a new AdminRoleName as the system admin name and storing it in the tenant app settings provider. The new name is {NewAdminRoleName}", OrchardCoreConstants.Roles.Administrator, adminSystemRoleName);
+                if (_logger.IsEnabled(LogLevel.Information))
+                {
+                    _logger.LogInformation("The {DefaultAdministratorRoleName} does not contain SiteOwner permission. Creating a new AdminRoleName as the system admin name and storing it in the tenant app settings provider. The new name is {NewAdminRoleName}", OrchardCoreConstants.Roles.Administrator, adminSystemRoleName);
+                }
 
                 shellSettings["AdminRoleName"] = adminSystemRoleName;
 

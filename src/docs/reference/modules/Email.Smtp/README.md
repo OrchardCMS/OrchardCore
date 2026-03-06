@@ -4,7 +4,7 @@ This module provides an Email provider for sending emails through the Simple Mai
 
 ## Simple Mail Transfer Protocol (SMTP) Settings
 
-To enable the `SMTP` provider, navigate to `Configurations` → `Settings` → `Email`. Click on the `SMTP` tab, click the Enable checkbox, and provide your SMTP configuration. Then in the `Providers` tab, select SMTP as your default provider.
+To enable the `SMTP` provider, navigate to `Settings` → `Communication` → `Email`. Click on the `SMTP` tab, click the Enable checkbox, and provide your SMTP configuration. Then in the `Providers` tab, select SMTP as your default provider.
 
 Here are the available SMTP settings
 

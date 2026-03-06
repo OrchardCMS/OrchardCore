@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Localization;
+using OrchardCore.Infrastructure;
 
 namespace OrchardCore.Sms.Services;
 
@@ -17,13 +18,13 @@ public class SmsService : ISmsService
         S = stringLocalizer;
     }
 
-    public async Task<SmsResult> SendAsync(SmsMessage message)
+    public async Task<Result> SendAsync(SmsMessage message)
     {
         _provider ??= await _smsProviderResolver.GetAsync();
 
         if (_provider is null)
         {
-            return SmsResult.Failed(S["SMS settings must be configured before an SMS message can be sent."]);
+            return Result.Failed(S["SMS settings must be configured before an SMS message can be sent."]);
         }
 
         return await _provider.SendAsync(message);

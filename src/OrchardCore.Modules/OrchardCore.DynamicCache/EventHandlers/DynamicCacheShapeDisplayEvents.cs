@@ -2,6 +2,7 @@ using System.Text.Encodings.Web;
 using Cysharp.Text;
 using Microsoft.AspNetCore.Html;
 using Microsoft.Extensions.Options;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.Environment.Cache;
 
@@ -14,7 +15,7 @@ namespace OrchardCore.DynamicCache.EventHandlers;
 public class DynamicCacheShapeDisplayEvents : IShapeDisplayEvents
 {
     private readonly Dictionary<string, CacheContext> _cached = [];
-    private readonly Dictionary<string, CacheContext> _openScopes = [];
+    private readonly Stack<CacheContext> _activeCacheContexts = [];
 
     private readonly IDynamicCacheService _dynamicCacheService;
     private readonly ICacheScopeManager _cacheScopeManager;
@@ -45,7 +46,7 @@ public class DynamicCacheShapeDisplayEvents : IShapeDisplayEvents
         {
             var cacheContext = context.Shape.Metadata.Cache();
             _cacheScopeManager.EnterScope(cacheContext);
-            _openScopes[cacheContext.CacheId] = cacheContext;
+            _activeCacheContexts.Push(cacheContext);
 
             var cachedContent = await _dynamicCacheService.GetCachedValueAsync(cacheContext);
 
@@ -56,10 +57,10 @@ public class DynamicCacheShapeDisplayEvents : IShapeDisplayEvents
                 _cached[cacheContext.CacheId] = cacheContext;
                 context.ChildContent = new HtmlString(cachedContent);
             }
-            else if (_cacheOptions.DebugMode)
-            {
-                context.Shape.Metadata.Wrappers.Add("CachedShapeWrapper");
-            }
+        }
+        else
+        {
+            _activeCacheContexts.Push(null);
         }
     }
 
@@ -70,10 +71,8 @@ public class DynamicCacheShapeDisplayEvents : IShapeDisplayEvents
             return;
         }
 
-        var cacheContext = context.Shape.Metadata.Cache();
-
         // If the shape is not configured to be cached, continue as usual.
-        if (cacheContext == null)
+        if (!_activeCacheContexts.TryPeek(out var cacheContext) || cacheContext == null)
         {
             context.ChildContent ??= HtmlString.Empty;
 
@@ -87,7 +86,7 @@ public class DynamicCacheShapeDisplayEvents : IShapeDisplayEvents
 
         // If the ChildContent was retrieved form the cache, then the Cache Context will be present in the _cached collection (see the DisplayingAsync method in this class).
         // So, if the cache context is not present in the _cached collection, we need to insert the ChildContent value into the cache:
-        if (!_cached.ContainsKey(cacheContext.CacheId) && context.ChildContent != null)
+        if (!_cached.Remove(cacheContext.CacheId) && context.ChildContent != null)
         {
             // The content is pre-encoded in the cache so we don't have to do it every time it's rendered.
             using var sw = new ZStringWriter();
@@ -95,10 +94,39 @@ public class DynamicCacheShapeDisplayEvents : IShapeDisplayEvents
             // 'ChildContent' may be a 'ViewBufferTextWriterContent' on which we can't
             // call 'WriteTo()' twice, so here we update it with a new 'HtmlString()'.
             context.ChildContent.WriteTo(sw, _htmlEncoder);
-            var contentHtmlString = new HtmlString(sw.ToString());
-            context.ChildContent = contentHtmlString;
 
-            await _dynamicCacheService.SetCachedValueAsync(cacheContext, contentHtmlString.Value);
+            if (_cacheOptions.DebugMode)
+            {
+                var contentBuilder = new HtmlContentBuilder();
+                var debugLog = Guid.NewGuid();
+
+                contentBuilder.AppendLine();
+                contentBuilder.AppendHtmlLine($"<!-- START CACHED SHAPE: {cacheContext.CacheId} ({debugLog})");
+                contentBuilder.AppendHtmlLine($"          VARY BY: {string.Join(", ", cacheContext.Contexts)}");
+                contentBuilder.AppendHtmlLine($"     DEPENDENCIES: {string.Join(", ", cacheContext.Tags)}");
+                contentBuilder.AppendHtmlLine($"       EXPIRES ON: {cacheContext.ExpiresOn}");
+                contentBuilder.AppendHtmlLine($"    EXPIRES AFTER: {cacheContext.ExpiresAfter}");
+                contentBuilder.AppendHtmlLine($"  EXPIRES SLIDING: {cacheContext.ExpiresSliding}");
+                contentBuilder.AppendHtmlLine("-->");
+
+                contentBuilder.AppendHtml(sw.ToString());
+
+                contentBuilder.AppendLine();
+                contentBuilder.AppendHtmlLine($"<!-- END CACHED SHAPE: {cacheContext.CacheId} ({debugLog}) -->");
+
+                context.ChildContent = contentBuilder;
+
+                using var swForCache = new ZStringWriter();
+                context.ChildContent.WriteTo(swForCache, _htmlEncoder);
+
+                await _dynamicCacheService.SetCachedValueAsync(cacheContext, swForCache.ToString());
+            }
+            else
+            {
+                var content = sw.ToString();
+                context.ChildContent = new HtmlString(content);
+                await _dynamicCacheService.SetCachedValueAsync(cacheContext, content);
+            }
         }
     }
 
@@ -109,12 +137,9 @@ public class DynamicCacheShapeDisplayEvents : IShapeDisplayEvents
             return Task.CompletedTask;
         }
 
-        var cacheContext = context.Shape.Metadata.Cache();
-
-        if (cacheContext != null && _openScopes.ContainsKey(cacheContext.CacheId))
+        if (_activeCacheContexts.TryPop(out var cacheContext) && cacheContext != null)
         {
             _cacheScopeManager.ExitScope();
-            _openScopes.Remove(cacheContext.CacheId);
         }
 
         return Task.CompletedTask;

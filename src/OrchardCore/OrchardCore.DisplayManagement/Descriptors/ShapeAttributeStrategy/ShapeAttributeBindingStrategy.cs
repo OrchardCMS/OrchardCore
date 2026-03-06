@@ -43,15 +43,18 @@ public class ShapeAttributeBindingStrategy : ShapeTableProvider, IShapeTableHarv
             }
         }
 
-        foreach (var iter in shapeAttributeOccurrences)
+        foreach (var occurrence in shapeAttributeOccurrences)
         {
-            var occurrence = iter;
             var shapeType = occurrence.ShapeAttribute.ShapeType ?? occurrence.MethodInfo.Name;
-            builder.Describe(shapeType)
-                .From(_typeFeatureProvider.GetFeatureForDependency(occurrence.ServiceType))
-                .BoundAs(
-                    occurrence.MethodInfo.DeclaringType.FullName + "::" + occurrence.MethodInfo.Name,
-                    CreateDelegate(occurrence));
+            var bindingSource = occurrence.MethodInfo.DeclaringType.FullName + "::" + occurrence.MethodInfo.Name;
+            var bindingDelegate = CreateDelegate(occurrence);
+
+            foreach (var feature in _typeFeatureProvider.GetFeaturesForDependency(occurrence.ServiceType))
+            {
+                builder.Describe(shapeType)
+                    .From(feature)
+                    .BoundAs(bindingSource, bindingDelegate);
+            }
         }
 
         return ValueTask.CompletedTask;
@@ -75,7 +78,7 @@ public class ShapeAttributeBindingStrategy : ShapeTableProvider, IShapeTableHarv
         {
             action = (s, d) =>
             {
-                var arguments = new object[argumentBuilders.Length];
+                var arguments = argumentBuilders.Length > 0 ? new object[argumentBuilders.Length] : [];
                 for (var i = 0; i < arguments.Length; i++)
                 {
                     arguments[i] = argumentBuilders[i](d);
@@ -88,7 +91,7 @@ public class ShapeAttributeBindingStrategy : ShapeTableProvider, IShapeTableHarv
         {
             action = (s, d) =>
             {
-                var arguments = new object[argumentBuilders.Length];
+                var arguments = argumentBuilders.Length > 0 ? new object[argumentBuilders.Length] : [];
                 for (var i = 0; i < arguments.Length; i++)
                 {
                     arguments[i] = argumentBuilders[i](d);
@@ -101,7 +104,7 @@ public class ShapeAttributeBindingStrategy : ShapeTableProvider, IShapeTableHarv
         {
             action = (s, d) =>
             {
-                var arguments = new object[argumentBuilders.Length];
+                var arguments = argumentBuilders.Length > 0 ? new object[argumentBuilders.Length] : [];
                 for (var i = 0; i < arguments.Length; i++)
                 {
                     arguments[i] = argumentBuilders[i](d);

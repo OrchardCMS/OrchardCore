@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.Logging;
 using OrchardCore.Locking.Distributed;
 using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Http.Services;
@@ -14,6 +15,7 @@ internal sealed class WorkflowActionFilter : IAsyncActionFilter
     private readonly IWorkflowTypeStore _workflowTypeStore;
     private readonly IWorkflowStore _workflowStore;
     private readonly IDistributedLock _distributedLock;
+    private readonly ILogger<WorkflowActionFilter> _logger;
 
     public WorkflowActionFilter(
         IWorkflowManager workflowManager,
@@ -21,7 +23,8 @@ internal sealed class WorkflowActionFilter : IAsyncActionFilter
         IWorkflowInstanceRouteEntries workflowRouteEntries,
         IWorkflowTypeStore workflowTypeStore,
         IWorkflowStore workflowStore,
-        IDistributedLock distributedLock
+        IDistributedLock distributedLock,
+        ILogger<WorkflowActionFilter> logger
     )
     {
         _workflowManager = workflowManager;
@@ -30,6 +33,7 @@ internal sealed class WorkflowActionFilter : IAsyncActionFilter
         _workflowTypeStore = workflowTypeStore;
         _workflowStore = workflowStore;
         _distributedLock = distributedLock;
+        _logger = logger;
     }
 
     public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
@@ -49,7 +53,12 @@ internal sealed class WorkflowActionFilter : IAsyncActionFilter
             {
                 if (workflowTypes.TryGetValue(long.Parse(entry.WorkflowId), out var workflowType))
                 {
-                    var activity = workflowType.Activities.Single(x => x.ActivityId == entry.ActivityId);
+                    var activity = workflowType.Activities.SingleOrDefault(x => x.ActivityId == entry.ActivityId);
+                    if (activity is null)
+                    {
+                        _logger.LogWarning("The activity with id '{ActivityId}' could not be found in the workflow type '{WorkflowTypeId}'.", entry.ActivityId, workflowType.Id);
+                        continue;
+                    }
 
                     if (activity.IsStart)
                     {

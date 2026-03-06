@@ -39,14 +39,20 @@ public sealed class MediaBlobContainerTenantEvents : ModularTenantEvents
             return;
         }
 
-        _logger.LogDebug("Testing Azure Media Storage container {ContainerName} existence", _options.ContainerName);
+        if (_logger.IsEnabled(LogLevel.Debug))
+        {
+            _logger.LogDebug("Testing Azure Media Storage container {ContainerName} existence", _options.ContainerName);
+        }
 
         try
         {
             var blobContainer = new BlobContainerClient(_options.ConnectionString, _options.ContainerName);
             var response = await blobContainer.CreateIfNotExistsAsync(PublicAccessType.None);
 
-            _logger.LogDebug("Azure Media Storage container {ContainerName} created.", _options.ContainerName);
+            if (_logger.IsEnabled(LogLevel.Debug))
+            {
+                _logger.LogDebug("Azure Media Storage container {ContainerName} created.", _options.ContainerName);
+            }
         }
         catch (RequestFailedException ex)
         {
@@ -91,7 +97,7 @@ public sealed class MediaBlobContainerTenantEvents : ModularTenantEvents
         {
             try
             {
-                await foreach (var blobItem in blobContainer.GetBlobsAsync(prefix: _options.BasePath))
+                await foreach (var blobItem in blobContainer.GetBlobsAsync(BlobTraits.None, BlobStates.None, _options.BasePath, CancellationToken.None))
                 {
                     var response = await blobContainer.DeleteBlobIfExistsAsync(blobItem.Name);
                     if (!response.Value)

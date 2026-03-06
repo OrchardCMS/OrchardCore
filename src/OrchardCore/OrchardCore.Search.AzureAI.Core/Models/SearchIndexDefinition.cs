@@ -12,12 +12,14 @@ public sealed class SearchIndexDefinition
     {
         Map = indexMap;
         IndexEntry = indexEntry;
-        Index = index;
+        IndexProfile = index;
     }
 
     public AzureAISearchIndexMap Map { get; }
 
     public DocumentIndexEntry IndexEntry { get; }
 
-    public IndexProfile Index { get; }
+    public IndexProfile IndexProfile { get; }
+
+    public bool IsRootField { get; set; }
 }

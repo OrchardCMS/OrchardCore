@@ -2,8 +2,8 @@
 name: Feature request
 about: Suggest an idea for this project
 title: ''
-labels: enhancement
 assignees: ''
+type: feature
 
 ---
 <!-- Please also see the docs on how we manage issues: https://docs.orchardcore.net/en/latest/docs/contributing/managing-issues/. -->

@@ -59,7 +59,7 @@
             var elementsToFilter = $("[data-cacheentry]");
 
             // On ESC, clear the search box and display all cache entries
-            if (e.keyCode == 27 || search == '') {
+            if (e.key === "Escape" || search == '') {
                 searchBox.val('');
                 elementsToFilter.removeClass("d-none first-child-visible last-child-visible");
             }

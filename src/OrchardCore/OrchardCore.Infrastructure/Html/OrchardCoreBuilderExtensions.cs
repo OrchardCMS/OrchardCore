@@ -18,6 +18,9 @@ public static partial class OrchardCoreBuilderExtensions
             {
                 sanitizer.AllowedAttributes.Add("class");
                 sanitizer.AllowedTags.Remove("form");
+
+                sanitizer.AllowedSchemes.Add("mailto");
+                sanitizer.AllowedSchemes.Add("tel");
             });
 
             services.AddSingleton<IHtmlSanitizerService, HtmlSanitizerService>();

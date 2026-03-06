@@ -20,7 +20,7 @@ public sealed class SearchMigrations : DataMigration
 
         await _contentDefinitionManager.AlterTypeDefinitionAsync("SearchForm", type => type
             .Stereotype("Widget")
-            .DisplayedAs("Search Form")
+            .WithDisplayName("Search Form")
             .WithDescription("Provides a search form")
             .WithPart("SearchFormPart")
         );

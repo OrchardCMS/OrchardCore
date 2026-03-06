@@ -1,0 +1,147 @@
+# Orchard Core Documentation
+
+> Orchard Core is an open-source, modular, multi-tenant application framework and CMS for ASP.NET Core.
+
+Orchard Core consists of two different targets:
+
+- **Orchard Core Framework**: An application framework for building modular, multi-tenant applications on ASP.NET Core.
+- **Orchard Core CMS**: A Web Content Management System (CMS) built on top of the Orchard Core Framework.
+
+## Getting Started
+
+- [Development Tools](getting-started/development-tools.md): IDEs, editors, and extensions for Orchard Core development.
+- [Create a CMS Web Application](getting-started/README.md): Step-by-step guide to creating your first Orchard Core CMS application including NuGet packages, first launch, and configuration.
+- [Test Drive Orchard Core](getting-started/test-drive-orchard-core.md): Quick start to try Orchard Core.
+- [Configure Preview Package Source](getting-started/preview-package-source.md): Using preview NuGet packages.
+- [Recipes and Starter Themes](getting-started/starter-recipes.md): Available setup recipes and starter themes.
+- [Code Generation Templates](getting-started/templates/README.md): dotnet new templates for scaffolding modules and themes.
+- [Create a Theme](getting-started/theme.md): Building custom themes for Orchard Core.
+
+## Guides
+
+- [Create a Modular Application](guides/create-modular-application-mvc/README.md): Build a modular MVC application using the Orchard Core Framework without CMS features.
+- [Create a Website](guides/create-cms-application/README.md): Build a full CMS website with Orchard Core.
+- [Create a Decoupled CMS Site](guides/decoupled-cms/README.md): Use Orchard Core as a headless CMS with a decoupled frontend.
+- [Create a Blazor CMS Application](guides/create-blazor-cms/README.md): Integrate Orchard Core CMS with a .NET Blazor Server application.
+- [Add an Admin Menu](guides/add-admin-menu/README.md): Extend the admin dashboard with custom menu entries.
+- [Implement Full Text Search](guides/implement-fulltext-search/README.md): Set up full text search using Lucene or Elasticsearch.
+- [Install Localization Files](guides/install-localization-files/README.md): Add and configure translations.
+- [Run Code on Startup](guides/run-code-on-startup/README.md): Execute initialization logic when the application starts.
+- [Create a Custom Admin Theme](guides/create-admin-theme/README.md): Customize the admin panel appearance.
+- [Understanding Content Definitions Stores](guides/content-definitions/README.md): Content type and part definition storage.
+- [Password Configuration](guides/password-configuration/README.md): Configure password policies.
+- [Lockout Configuration](guides/lockout-configuration/README.md): Configure account lockout settings.
+- [Microsoft Entra ID Integration](guides/microsoft-entra-id-integration/README.md): Integrate Azure AD authentication.
+- [Create a Liquid Widget](guides/create-liquid-widget/README.md): Build widgets using the Liquid template language.
+- [Query Content Items Based on Taxonomy](guides/query-content-items-based-on-taxonomy/README.md): Query and filter content by taxonomy terms.
+
+## Key Topics
+
+- [Content Management](topics/content-management/README.md): Managing content types, parts, fields, and content items from the admin dashboard.
+- [Content Relationships](topics/content-relationships/README.md): Relating content items to each other.
+- [Display Management](topics/display/README.md): Shapes, templates, display drivers, and placement for customizing content rendering.
+- [Localization](topics/localize/README.md): Multi-language support, cultures, and translation management.
+- [Media](topics/media/README.md): Media library, file uploads, and storage configuration (local, Azure Blob, Amazon S3).
+- [Navigation](topics/navigation/README.md): Menus, admin menus, and site navigation.
+- [Search and Indexing](topics/search/README.md): Full text search with Lucene, Elasticsearch, or Azure AI Search and content indexing.
+- [Security](topics/security/README.md): Authentication, authorization, roles, permissions, and security best practices.
+- [Data](topics/data/README.md): YesSql document database, data migrations, and database providers (SQL Server, PostgreSQL, MySQL, SQLite).
+- [Configuration](topics/configuration/README.md): Application settings, configuration sources, and tenant configuration.
+- [Workflows](topics/workflows/README.md): Visual workflow editor for automating business processes.
+- [Using Docker](topics/docker/README.md): Running Orchard Core in Docker containers.
+
+## CMS Modules
+
+- [Content Types](reference/modules/ContentTypes/README.md): Define and manage content types which are the building blocks of content in Orchard Core.
+- [Content Parts](reference/modules/ContentParts/README.md): Reusable content components (Title, Autoroute, Alias, Html, Markdown, List, Flow, Bag, Publish Later, SEO Meta) that can be attached to content types.
+- [Content Fields](reference/modules/ContentFields/README.md): Typed data fields (Text, Numeric, Boolean, Date, Link, Html, Markdown, Content Picker, Media, etc.) attachable to content parts.
+- [Content Preview](reference/modules/ContentPreview/README.md): Live preview of content items while editing.
+- [Content Localization](reference/modules/ContentLocalization/README.md): Translate content items into multiple cultures.
+- [Layers](reference/modules/Layers/README.md): Conditional widget display rules based on URL, roles, or custom expressions.
+- [Widgets](reference/modules/Widgets/README.md): Reusable UI components that can be placed in zones across the site.
+- [Forms](reference/modules/Forms/README.md): Build and manage web forms.
+- [Templates](reference/modules/Templates/README.md): Override shape templates using Liquid or Razor from the admin UI.
+- [Placements](reference/modules/Placements/README.md): Control the positioning and rendering of content part editors and display shapes.
+- [Themes](reference/modules/Themes/README.md): Manage site themes for front-end appearance.
+- [Liquid](reference/modules/Liquid/README.md): Liquid template language support with custom filters and tags for Orchard Core.
+- [Media](reference/modules/Media/README.md): Media library for managing files, images, and assets.
+- [Media Amazon S3](reference/modules/Media.AmazonS3/README.md): Store media files in Amazon S3.
+- [Media Azure](reference/modules/Media.Azure/README.md): Store media files in Azure Blob Storage.
+- [ReCaptcha](reference/modules/ReCaptcha/README.md): Google ReCaptcha integration for form protection.
+- [Resources](reference/modules/Resources/README.md): Manage scripts and stylesheets.
+- [Rules](reference/modules/Rules/README.md): Business rules engine for event-driven actions.
+- [Azure AI Search](reference/modules/AzureAISearch/README.md): Azure AI Search integration for indexing and search.
+- [Elasticsearch](reference/modules/Elasticsearch/README.md): Elasticsearch integration for full text search.
+- [Indexing](reference/modules/Indexing/README.md): Content indexing infrastructure.
+- [Lucene](reference/modules/Lucene/README.md): Lucene.NET-based search and indexing.
+- [Queries](reference/modules/Queries/README.md): Query content using SQL, Lucene, or GraphQL.
+- [Shortcodes](reference/modules/Shortcodes/README.md): Shortcode processing for content.
+- [Sitemaps](reference/modules/Sitemaps/README.md): XML sitemap generation.
+- [Menu](reference/modules/Menu/README.md): Menu management for site navigation.
+- [Navigation](reference/modules/Navigation/README.md): Navigation providers and menu rendering.
+- [Admin](reference/modules/Admin/README.md): Admin panel UI and configuration.
+- [Admin Dashboard](reference/modules/AdminDashboard/README.md): Customizable admin dashboard with widgets.
+- [Admin Menu](reference/modules/AdminMenu/README.md): Admin navigation menu management.
+- [Taxonomies](reference/modules/Taxonomies/README.md): Hierarchical taxonomy management for categorizing content.
+- [Users](reference/modules/Users/README.md): User management, registration, and authentication settings.
+- [Custom User Settings](reference/modules/Users/CustomUserSettings/README.md): Custom settings per user.
+- [Notifications](reference/modules/Notifications/README.md): User notification system.
+- [Authentication - Microsoft](reference/modules/Microsoft.Authentication/README.md): Microsoft account authentication.
+- [Authentication - Facebook](reference/modules/Facebook/README.md): Facebook login integration.
+- [Authentication - Google](reference/modules/Google/README.md): Google login integration.
+- [Authentication - GitHub](reference/modules/GitHub/README.md): GitHub login integration.
+- [Home Route](reference/modules/HomeRoute/README.md): Configure the site home page route.
+- [Feeds](reference/modules/Feeds/README.md): RSS and Atom feed generation.
+
+## Core Modules
+
+- [Display Management](reference/modules/DisplayManagement/README.md): Shape rendering, display drivers, and view model management.
+- [Audit Trail](reference/modules/AuditTrail/README.md): Track and log changes to content and settings.
+- [Auto Setup](reference/modules/AutoSetup/README.md): Automate tenant setup without the setup screen.
+- [Features](reference/modules/Features/README.md): Enable and disable modules and features.
+- [Contents](reference/modules/Contents/README.md): Core content management API and services.
+- [Configuration](reference/modules/Configuration/README.md): Configuration providers and settings.
+- [CORS](reference/modules/Cors/README.md): Cross-Origin Resource Sharing configuration.
+- [Custom Settings](reference/modules/CustomSettings/README.md): Define custom site-wide settings editable from the admin.
+- [Deployment](reference/modules/Deployment/README.md): Import and export site configuration and content using deployment plans.
+- [Placement](reference/modules/Placement/README.md): Shape placement infrastructure for controlling rendering order and location.
+- [Data](reference/modules/Data/README.md): Database configuration, providers, and YesSql document storage.
+- [Data Migrations](reference/modules/Migrations/README.md): Schema and data migration framework.
+- [Dynamic Cache](reference/modules/DynamicCache/README.md): Shape-level output caching.
+- [Email](reference/modules/Email/README.md): Email sending infrastructure.
+- [SMTP Provider](reference/modules/Email.Smtp/README.md): Send emails via SMTP.
+- [Azure Email Provider](reference/modules/Email.Azure/README.md): Send emails via Azure Communication Services.
+- [GraphQL](reference/modules/Apis.GraphQL/README.md): GraphQL API for querying and mutating content.
+- [Health Check](reference/modules/HealthChecks/README.md): Application health check endpoints.
+- [HTTPS](reference/modules/Https/README.md): Enforce HTTPS and configure SSL.
+- [Localization](reference/modules/Localize/README.md): Multi-language and culture support with PO file translations.
+- [OpenID Connect](reference/modules/OpenId/README.md): OpenID Connect server and client implementation for OAuth2/OIDC authentication.
+- [Permissions](reference/modules/Security/Permissions.md): Role-based permission system.
+- [Recipes](reference/modules/Recipes/README.md): JSON-based setup and configuration recipes for automating site provisioning.
+- [Redis](reference/modules/Redis/README.md): Redis integration for distributed caching, messaging, and locking.
+- [Remote Deployment](reference/modules/Deployment.Remote/README.md): Deploy content and configuration to remote Orchard Core instances.
+- [Roles](reference/modules/Roles/README.md): Role management for authorization.
+- [Scripting](reference/modules/Scripting/README.md): JavaScript scripting engine for dynamic expressions.
+- [Security](reference/modules/Security/README.md): Security headers, content security policy, and permissions.
+- [Setup](reference/modules/Setup/README.md): Initial site setup wizard for database, admin user, and recipe selection.
+- [Shells](reference/modules/Shells/README.md): Multi-tenancy shell infrastructure.
+- [Tenants](reference/modules/Tenants/README.md): Multi-tenant site management for hosting multiple isolated sites in a single application.
+- [Workflows](reference/modules/Workflows/README.md): Visual workflow engine with activities, events, and transitions.
+- [Background Tasks](reference/modules/BackgroundTasks/README.md): Schedule and run background tasks.
+- [URL Rewriting](reference/modules/UrlRewriting/README.md): URL rewriting and redirect rules.
+- [Reverse Proxy](reference/modules/ReverseProxy/README.md): Configure reverse proxy headers (X-Forwarded-For, etc.).
+
+## Additional Resources
+
+- [Libraries](reference/libraries/README.md): Third-party libraries used in Orchard Core.
+- [Glossary](reference/glossary/README.md): Glossary of Orchard Core terms and concepts.
+- [Branding](reference/branding/README.md): Orchard Core branding guidelines and assets.
+- [Contributing](contributing/README.md): How to contribute to Orchard Core development.
+- [Release Notes](releases/2.2.1.md): Latest release notes and changelog.
+
+## Source Code and Community
+
+- Source: https://github.com/OrchardCMS/OrchardCore
+- Website: https://orchardcore.net
+- Discord: https://orchardcore.net/discord
+- Documentation: https://docs.orchardcore.net

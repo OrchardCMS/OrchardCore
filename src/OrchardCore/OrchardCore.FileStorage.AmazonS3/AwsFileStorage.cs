@@ -39,10 +39,13 @@ public class AwsFileStore : IFileStore
 
             return new AwsFile(path, objectMetadata.ContentLength, objectMetadata.LastModified);
         }
-        // Bucket or file does not exist
-        catch (AmazonS3Exception)
+        catch (AmazonS3Exception ex) when (ex.StatusCode == HttpStatusCode.NotFound)
         {
             return null;
+        }
+        catch (AmazonS3Exception ex)
+        {
+            throw new FileStoreException($"Error retrieving file info for '{path}': {ex.Message}", ex);
         }
     }
 
@@ -67,6 +70,8 @@ public class AwsFileStore : IFileStore
     public async IAsyncEnumerable<IFileStoreEntry> GetDirectoryContentAsync(string path = null,
         bool includeSubDirectories = false)
     {
+        path = this.NormalizePath(path);
+        
         var listObjectsResponse = await _amazonS3Client.ListObjectsV2Async(new ListObjectsV2Request
         {
             BucketName = _options.BucketName,
@@ -115,9 +120,13 @@ public class AwsFileStore : IFileStore
 
             return response.IsSuccessful();
         }
-        catch (AmazonS3Exception)
+        catch (AmazonS3Exception ex) when (ex.StatusCode == HttpStatusCode.NotFound)
         {
             return false;
+        }
+        catch (AmazonS3Exception ex)
+        {
+            throw new FileStoreException($"Error creating directory '{path}': {ex.Message}", ex);
         }
     }
 
@@ -133,9 +142,13 @@ public class AwsFileStore : IFileStore
 
             return response.IsDeleteSuccessful();
         }
-        catch (AmazonS3Exception)
+        catch (AmazonS3Exception ex) when (ex.StatusCode == HttpStatusCode.NotFound)
         {
             return false;
+        }
+        catch (AmazonS3Exception ex)
+        {
+            throw new FileStoreException($"Error deleting file '{path}': {ex.Message}", ex);
         }
     }
 
@@ -189,9 +202,13 @@ public class AwsFileStore : IFileStore
                 Key = this.Combine(_basePrefix, srcPath),
             });
         }
-        catch (AmazonS3Exception)
+        catch (AmazonS3Exception ex) when (ex.StatusCode == HttpStatusCode.NotFound)
         {
             throw new FileStoreException($"Cannot copy file '{srcPath}' because it does not exist.");
+        }
+        catch (AmazonS3Exception ex)
+        {
+            throw new FileStoreException($"Error accessing file '{srcPath}': {ex.Message}", ex);
         }
 
         try
@@ -221,9 +238,9 @@ public class AwsFileStore : IFileStore
             }
 
         }
-        catch (AmazonS3Exception)
+        catch (AmazonS3Exception ex)
         {
-            throw new FileStoreException($"Error while copying file '{srcPath}'");
+            throw new FileStoreException($"Error while copying file '{srcPath}': {ex.Message}", ex);
         }
     }
 
@@ -234,9 +251,13 @@ public class AwsFileStore : IFileStore
             var transferUtility = new TransferUtility(_amazonS3Client);
             return transferUtility.OpenStreamAsync(_options.BucketName, this.Combine(_basePrefix, path));
         }
-        catch (AmazonS3Exception)
+        catch (AmazonS3Exception ex) when (ex.StatusCode == HttpStatusCode.NotFound)
         {
             throw new FileStoreException($"Cannot get file stream because the file '{path}' does not exist.");
+        }
+        catch (AmazonS3Exception ex)
+        {
+            throw new FileStoreException($"Error getting file stream for '{path}': {ex.Message}", ex);
         }
     }
 

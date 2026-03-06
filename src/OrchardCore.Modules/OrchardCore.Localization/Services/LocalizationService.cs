@@ -12,6 +12,12 @@ public class LocalizationService : ILocalizationService
     private static readonly string _defaultCulture = CultureInfo.InstalledUICulture.Name;
     private static readonly string[] _supportedCultures = [CultureInfo.InstalledUICulture.Name];
 
+    private static readonly CultureInfo[] _cultureAliases =
+    [
+        CultureInfo.GetCultureInfo("zh-CN"),
+        CultureInfo.GetCultureInfo("zh-TW")
+    ];
+
     private readonly ISiteService _siteService;
 
     private LocalizationSettings _localizationSettings;
@@ -24,6 +30,9 @@ public class LocalizationService : ILocalizationService
     {
         _siteService = siteService;
     }
+
+    /// <inheritdocs />
+    public bool FallBackToParentCultures => _localizationSettings.FallBackToParentCulture;
 
     /// <inheritdocs />
     public async Task<string> GetDefaultCultureAsync()
@@ -42,6 +51,16 @@ public class LocalizationService : ILocalizationService
             ? _supportedCultures
             : _localizationSettings.SupportedCultures
             ;
+    }
+
+    /// <inheritdocs />
+    public IEnumerable<CultureInfo> GetAllCulturesAndAliases()
+    {
+        var cultures = CultureInfo.GetCultures(CultureTypes.AllCultures)
+            .Union(_cultureAliases)
+            .OrderBy(c => c.Name);
+
+        return cultures;
     }
 
     private async Task InitializeLocalizationSettingsAsync()
