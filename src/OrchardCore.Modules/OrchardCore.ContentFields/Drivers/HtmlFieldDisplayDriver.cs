@@ -86,19 +86,19 @@ public sealed class HtmlFieldDisplayDriver : ContentFieldDisplayDriver<HtmlField
 
         await context.Updater.TryUpdateModelAsync(viewModel, Prefix, f => f.Html);
 
+        field.Html = settings.SanitizeHtml
+            ? _htmlSanitizerService.Sanitize(viewModel.Html)
+            : viewModel.Html;
+
         if (settings.RenderLiquid
-            && !string.IsNullOrEmpty(viewModel.Html)
-            && !_liquidTemplateManager.Validate(viewModel.Html, out var errors))
+            && !string.IsNullOrEmpty(field.Html)
+            && !_liquidTemplateManager.Validate(field.Html, out var errors))
         {
-            context.Updater.ModelState.AddModelError(Prefix, nameof(viewModel.Html),
+            context.Updater.ModelState.AddModelError(Prefix, nameof(field.Html),
                 S["{0} contains invalid Liquid expression: {1}",
                     context.PartFieldDefinition.DisplayName(),
                     string.Join(" ", errors)]);
         }
-
-        field.Html = settings.SanitizeHtml
-            ? _htmlSanitizerService.Sanitize(viewModel.Html)
-            : viewModel.Html;
 
         return Edit(field, context);
     }
