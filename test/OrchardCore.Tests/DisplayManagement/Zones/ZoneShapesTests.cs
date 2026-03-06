@@ -406,7 +406,7 @@ public class ZoneShapesTests
         Assert.Contains("tab-container", html);
 
         // Should contain two tab divs
-        var tabCount = System.Text.RegularExpressions.Regex.Matches(html, "<div class=\"tab\">").Count;
+        var tabCount = System.Text.RegularExpressions.Regex.Count(html, "<div class=\"tab\">");
         Assert.Equal(2, tabCount);
 
         // Should render the shape with explicit Tab1 grouping
@@ -537,7 +537,7 @@ public class ZoneShapesTests
         Assert.Contains("card-container", html);
         Assert.Contains("<div>TestShape</div>", html);
         // Verify there are 2 shapes rendered
-        var shapeCount = System.Text.RegularExpressions.Regex.Matches(html, "<div>TestShape</div>").Count;
+        var shapeCount = System.Text.RegularExpressions.Regex.Count(html, "<div>TestShape</div>");
         Assert.Equal(2, shapeCount);
     }
 
@@ -593,7 +593,7 @@ public class ZoneShapesTests
         Assert.DoesNotContain("row", html);
         Assert.Contains("<div>TestShape</div>", html);
         // Verify there are 2 shapes rendered
-        var shapeCount = System.Text.RegularExpressions.Regex.Matches(html, "<div>TestShape</div>").Count;
+        var shapeCount = System.Text.RegularExpressions.Regex.Count(html, "<div>TestShape</div>");
         Assert.Equal(2, shapeCount);
     }
 
@@ -768,11 +768,11 @@ public class ZoneShapesTests
         Assert.Contains("<div>TestShape</div>", html);
 
         // Verify there are 2 tabs (Tab1 and Tab2)
-        var tabCount = System.Text.RegularExpressions.Regex.Matches(html, "<div class=\"tab\">").Count;
+        var tabCount = System.Text.RegularExpressions.Regex.Count(html, "<div class=\"tab\">");
         Assert.Equal(2, tabCount);
 
         // Verify there are 3 shapes rendered
-        var shapeCount = System.Text.RegularExpressions.Regex.Matches(html, "<div>TestShape</div>").Count;
+        var shapeCount = System.Text.RegularExpressions.Regex.Count(html, "<div>TestShape</div>");
         Assert.Equal(3, shapeCount);
     }
 
@@ -808,7 +808,7 @@ public class ZoneShapesTests
         Assert.Contains("<div>TestShape</div>", html);
 
         // Verify there are 2 tabs (Content and Tab1)
-        var tabCount = System.Text.RegularExpressions.Regex.Matches(html, "<div class=\"tab\">").Count;
+        var tabCount = System.Text.RegularExpressions.Regex.Count(html, "<div class=\"tab\">");
         Assert.Equal(2, tabCount);
     }
 
