@@ -1,23 +1,29 @@
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using OrchardCore.Recipes.Schema;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
+using OrchardCore.Json;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 using OrchardCore.UrlRewriting.Models;
 
 namespace OrchardCore.UrlRewriting.Recipes;
 
-public sealed class UrlRewritingRecipeStep : RecipeImportStep<UrlRewritingRecipeStep.UrlRewritingStepModel>
+public sealed class UrlRewritingRecipeStep : RecipeDeploymentStep<UrlRewritingRecipeStep.UrlRewritingStepModel>
 {
     private readonly IRewriteRulesManager _rewriteRulesManager;
+    private readonly JsonSerializerOptions _serializationOptions;
 
     internal readonly IStringLocalizer S;
 
     public UrlRewritingRecipeStep(
         IRewriteRulesManager rewriteRulesManager,
+        IOptions<DocumentJsonSerializerOptions> serializationOptions,
         IStringLocalizer<UrlRewritingRecipeStep> stringLocalizer)
     {
         _rewriteRulesManager = rewriteRulesManager;
+        _serializationOptions = serializationOptions.Value.SerializerOptions;
         S = stringLocalizer;
     }
 
@@ -98,6 +104,21 @@ public sealed class UrlRewritingRecipeStep : RecipeImportStep<UrlRewritingRecipe
 
             await _rewriteRulesManager.SaveAsync(rule);
         }
+    }
+
+    protected override async Task<UrlRewritingStepModel> BuildExportModelAsync(RecipeExportContext context)
+    {
+        var rules = await _rewriteRulesManager.GetAllAsync();
+
+        return new UrlRewritingStepModel
+        {
+            Rules = JArray.FromObject(rules, _serializationOptions),
+        };
+    }
+
+    protected override JsonObject SerializeStep(UrlRewritingStepModel model)
+    {
+        return JsonSerializer.SerializeToNode(model, _serializationOptions)?.AsObject() ?? [];
     }
 
     public sealed class UrlRewritingStepModel

@@ -6,7 +6,6 @@ using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
-using OrchardCore.Templates.Deployment;
 using OrchardCore.Templates.Recipes;
 using OrchardCore.Templates.Services;
 using OrchardCore.Templates.Settings;
@@ -34,8 +33,6 @@ public sealed class Startup : StartupBase
         services.AddScoped<IContentTypeDefinitionDisplayDriver, TemplateContentTypeDefinitionDriver>();
         services.AddScoped<IContentTypePartDefinitionDisplayDriver, TemplateContentTypePartDefinitionDriver>();
 
-        services.AddDeployment<AllTemplatesDeploymentSource, AllTemplatesDeploymentStep, AllTemplatesDeploymentStepDriver>();
-
         services.AddScoped<AdminTemplatesManager>();
         services.AddPermissionProvider<AdminTemplatesPermissions>();
     }
@@ -53,6 +50,22 @@ public sealed class AdminTemplatesStartup : StartupBase
 #pragma warning disable CS0618 // Type or member is obsolete
         services.AddRecipeExecutionStep<AdminTemplateStep>();
 #pragma warning restore CS0618
-        services.AddDeployment<AllAdminTemplatesDeploymentSource, AllAdminTemplatesDeploymentStep, AllAdminTemplatesDeploymentStepDriver>();
+    }
+}
+
+[RequireFeatures("OrchardCore.Deployment")]
+public sealed class DeploymentStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+    }
+}
+
+[Feature("OrchardCore.AdminTemplates")]
+[RequireFeatures("OrchardCore.Deployment")]
+public sealed class AdminDeploymentStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
     }
 }

@@ -10,7 +10,7 @@ using OrchardCore.Recipes.Services;
 
 namespace OrchardCore.AdminMenu.Recipes;
 
-public sealed class AdminMenuRecipeStep : RecipeImportStep<AdminMenuStepModel>
+public sealed class AdminMenuRecipeStep : RecipeDeploymentStep<AdminMenuStepModel>
 {
     private readonly IAdminMenuService _adminMenuService;
     private readonly JsonSerializerOptions _serializationOptions;
@@ -79,5 +79,20 @@ public sealed class AdminMenuRecipeStep : RecipeImportStep<AdminMenuStepModel>
 
             await _adminMenuService.SaveAsync(adminMenu);
         }
+    }
+
+    protected override async Task<AdminMenuStepModel> BuildExportModelAsync(RecipeExportContext context)
+    {
+        var adminMenuList = await _adminMenuService.GetAdminMenuListAsync();
+
+        return new AdminMenuStepModel
+        {
+            Data = JArray.FromObject(adminMenuList.AdminMenu, _serializationOptions),
+        };
+    }
+
+    protected override JsonObject SerializeStep(AdminMenuStepModel model)
+    {
+        return JsonSerializer.SerializeToNode(model, _serializationOptions)?.AsObject() ?? [];
     }
 }

@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using OrchardCore.Deployment;
 using OrchardCore.Recipes.Schema;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -15,7 +16,7 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Recipes;
 
-public sealed class WorkflowTypeRecipeStep : RecipeImportStep<WorkflowStepModel>
+public sealed class WorkflowTypeRecipeStep : RecipeDeploymentStep<WorkflowStepModel>
 {
     private readonly IWorkflowTypeStore _workflowTypeStore;
     private readonly ISecurityTokenService _securityTokenService;
@@ -41,6 +42,47 @@ public sealed class WorkflowTypeRecipeStep : RecipeImportStep<WorkflowStepModel>
 
     protected override JsonSchema BuildSchema()
         => JsonSchema.Any;
+
+    protected override async Task<WorkflowStepModel> BuildExportModelAsync(RecipeExportContext context)
+    {
+        var workflowTypes = await _workflowTypeStore.ListAsync();
+        var data = new JsonArray();
+
+        foreach (var workflowType in workflowTypes)
+        {
+            var objectData = JObject.FromObject(workflowType, _jsonSerializerOptions);
+            objectData.Remove(nameof(workflowType.Id));
+            data.Add(objectData);
+        }
+
+        return new WorkflowStepModel { Data = data };
+    }
+
+    protected override JsonObject SerializeStep(WorkflowStepModel model)
+    {
+        return new JsonObject
+        {
+            ["data"] = model.Data,
+        };
+    }
+
+    public static void ProcessWorkflowType(DeploymentPlanResult result, IEnumerable<WorkflowType> workflowTypes, JsonSerializerOptions jsonSerializerOptions)
+    {
+        var data = new JsonArray();
+
+        foreach (var workflowType in workflowTypes)
+        {
+            var objectData = JObject.FromObject(workflowType, jsonSerializerOptions);
+            objectData.Remove(nameof(workflowType.Id));
+            data.Add(objectData);
+        }
+
+        result.Steps.Add(new JsonObject
+        {
+            ["name"] = "WorkflowType",
+            ["data"] = data,
+        });
+    }
 
     protected override async Task ImportAsync(WorkflowStepModel model, RecipeExecutionContext context)
     {

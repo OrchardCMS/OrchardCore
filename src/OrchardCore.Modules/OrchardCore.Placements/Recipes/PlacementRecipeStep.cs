@@ -1,4 +1,3 @@
-using System.Text.Json.Nodes;
 using OrchardCore.Recipes.Schema;
 using OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy;
 using OrchardCore.Placements.Services;
@@ -7,7 +6,7 @@ using OrchardCore.Recipes.Services;
 
 namespace OrchardCore.Placements.Recipes;
 
-public sealed class PlacementRecipeStep : RecipeImportStep<object>
+public sealed class PlacementRecipeStep : RecipeDeploymentStep<PlacementRecipeStep.PlacementsStepModel>
 {
     private readonly PlacementsManager _placementsManager;
 
@@ -39,17 +38,29 @@ public sealed class PlacementRecipeStep : RecipeImportStep<object>
             .Build();
     }
 
-    protected override async Task ImportAsync(object model, RecipeExecutionContext context)
+    protected override async Task ImportAsync(PlacementsStepModel model, RecipeExecutionContext context)
     {
-        if (context.Step.TryGetPropertyValue("Placements", out var jsonNode) && jsonNode is JsonObject templates)
+        if (model.Placements != null)
         {
-            foreach (var property in templates)
+            foreach (var placement in model.Placements)
             {
-                var name = property.Key;
-                var value = property.Value.ToObject<PlacementNode[]>();
-
-                await _placementsManager.UpdateShapePlacementsAsync(name, value);
+                await _placementsManager.UpdateShapePlacementsAsync(placement.Key, placement.Value);
             }
         }
+    }
+
+    protected override async Task<PlacementsStepModel> BuildExportModelAsync(RecipeExportContext context)
+    {
+        var placements = await _placementsManager.ListShapePlacementsAsync();
+
+        return new PlacementsStepModel
+        {
+            Placements = placements.ToDictionary(k => k.Key, v => v.Value),
+        };
+    }
+
+    public sealed class PlacementsStepModel
+    {
+        public Dictionary<string, PlacementNode[]> Placements { get; set; }
     }
 }

@@ -1,21 +1,27 @@
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using OrchardCore.Recipes.Schema;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
+using OrchardCore.Json;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 
 namespace OrchardCore.Queries.Recipes;
 
-public sealed class QueryRecipeStep : RecipeImportStep<QueryRecipeStep.QueryStepModel>
+public sealed class QueryRecipeStep : RecipeDeploymentStep<QueryRecipeStep.QueryStepModel>
 {
     private readonly IQueryManager _queryManager;
+    private readonly JsonSerializerOptions _jsonSerializerOptions;
     internal readonly IStringLocalizer S;
 
     public QueryRecipeStep(
         IQueryManager queryManager,
+        IOptions<DocumentJsonSerializerOptions> jsonSerializerOptions,
         IStringLocalizer<QueryRecipeStep> stringLocalizer)
     {
         _queryManager = queryManager;
+        _jsonSerializerOptions = jsonSerializerOptions.Value.SerializerOptions;
         S = stringLocalizer;
     }
 
@@ -99,6 +105,16 @@ public sealed class QueryRecipeStep : RecipeImportStep<QueryRecipeStep.QueryStep
         }
 
         await _queryManager.SaveAsync(queries.ToArray());
+    }
+
+    protected override async Task<QueryStepModel> BuildExportModelAsync(RecipeExportContext context)
+    {
+        var queries = await _queryManager.ListQueriesAsync();
+
+        return new QueryStepModel
+        {
+            Queries = JArray.FromObject(queries, _jsonSerializerOptions),
+        };
     }
 
     public sealed class QueryStepModel

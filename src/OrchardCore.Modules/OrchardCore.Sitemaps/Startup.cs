@@ -16,7 +16,6 @@ using OrchardCore.Security.Permissions;
 using OrchardCore.Seo;
 using OrchardCore.Sitemaps.Builders;
 using OrchardCore.Sitemaps.Cache;
-using OrchardCore.Sitemaps.Deployment;
 using OrchardCore.Sitemaps.Drivers;
 using OrchardCore.Sitemaps.Handlers;
 using OrchardCore.Sitemaps.Models;
@@ -119,11 +118,10 @@ public sealed class SitemapsCleanupStartup : StartupBase
 }
 
 [RequireFeatures("OrchardCore.Deployment", "OrchardCore.Sitemaps")]
-public sealed class SitemapsDeploymentStartup : StartupBase
+public sealed class DeploymentStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddDeployment<AllSitemapsDeploymentSource, AllSitemapsDeploymentStep, AllSitemapsDeploymentStepDriver>();
     }
 }
 

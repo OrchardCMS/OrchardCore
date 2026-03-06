@@ -4,20 +4,24 @@ using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
+using OrchardCore.Security.Services;
 
 namespace OrchardCore.Roles.Recipes;
 
-public sealed class RolesRecipeStep : RecipeImportStep<RolesRecipeStep.RolesStepModel>
+public sealed class RolesRecipeStep : RecipeDeploymentStep<RolesRecipeStep.RolesStepModel>
 {
     private readonly RoleManager<IRole> _roleManager;
     private readonly ISystemRoleProvider _systemRoleProvider;
+    private readonly IRoleService _roleService;
 
     public RolesRecipeStep(
         RoleManager<IRole> roleManager,
-        ISystemRoleProvider systemRoleProvider)
+        ISystemRoleProvider systemRoleProvider,
+        IRoleService roleService)
     {
         _roleManager = roleManager;
         _systemRoleProvider = systemRoleProvider;
+        _roleService = roleService;
     }
 
     public override string Name => "Roles";
@@ -119,6 +123,35 @@ public sealed class RolesRecipeStep : RecipeImportStep<RolesRecipeStep.RolesStep
                 await _roleManager.UpdateAsync(role);
             }
         }
+    }
+
+    protected override async Task<RolesStepModel> BuildExportModelAsync(RecipeExportContext context)
+    {
+        var allRoles = await _roleService.GetRolesAsync();
+        var roles = new List<RolesStepRoleModel>();
+
+        foreach (var role in allRoles)
+        {
+            var currentRole = await _roleManager.FindByNameAsync(role.RoleName);
+
+            if (currentRole is Role r)
+            {
+                roles.Add(new RolesStepRoleModel
+                {
+                    Name = r.RoleName,
+                    Description = r.RoleDescription,
+                    Permissions = r.RoleClaims
+                        .Where(x => x.ClaimType == Permission.ClaimType)
+                        .Select(x => x.ClaimValue)
+                        .ToArray(),
+                });
+            }
+        }
+
+        return new RolesStepModel
+        {
+            Roles = roles.ToArray(),
+        };
     }
 
     public sealed class RolesStepModel

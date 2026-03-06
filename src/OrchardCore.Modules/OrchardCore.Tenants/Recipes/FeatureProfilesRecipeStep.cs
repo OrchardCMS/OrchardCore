@@ -7,7 +7,7 @@ using OrchardCore.Tenants.Services;
 
 namespace OrchardCore.Tenants.Recipes;
 
-public sealed class FeatureProfilesRecipeStep : RecipeImportStep<object>
+public sealed class FeatureProfilesRecipeStep : RecipeDeploymentStep<FeatureProfilesRecipeStep.FeatureProfilesStepModel>
 {
     private readonly FeatureProfilesManager _featureProfilesManager;
 
@@ -53,17 +53,29 @@ public sealed class FeatureProfilesRecipeStep : RecipeImportStep<object>
             .Build();
     }
 
-    protected override async Task ImportAsync(object model, RecipeExecutionContext context)
+    protected override async Task ImportAsync(FeatureProfilesStepModel model, RecipeExecutionContext context)
     {
-        if (context.Step.TryGetPropertyValue("FeatureProfiles", out var jsonNode) && jsonNode is JsonObject featureProfiles)
+        if (model.FeatureProfiles != null)
         {
-            foreach (var property in featureProfiles)
+            foreach (var property in model.FeatureProfiles)
             {
-                var name = property.Key;
-                var value = property.Value.ToObject<FeatureProfile>();
-
-                await _featureProfilesManager.UpdateFeatureProfileAsync(name, value);
+                await _featureProfilesManager.UpdateFeatureProfileAsync(property.Key, property.Value);
             }
         }
+    }
+
+    protected override async Task<FeatureProfilesStepModel> BuildExportModelAsync(RecipeExportContext context)
+    {
+        var featureProfilesDocument = await _featureProfilesManager.GetFeatureProfilesDocumentAsync();
+
+        return new FeatureProfilesStepModel
+        {
+            FeatureProfiles = new Dictionary<string, FeatureProfile>(featureProfilesDocument.FeatureProfiles),
+        };
+    }
+
+    public sealed class FeatureProfilesStepModel
+    {
+        public Dictionary<string, FeatureProfile> FeatureProfiles { get; set; }
     }
 }

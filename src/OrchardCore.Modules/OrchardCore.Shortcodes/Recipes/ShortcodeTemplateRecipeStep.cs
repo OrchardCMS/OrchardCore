@@ -1,4 +1,3 @@
-using System.Text.Json.Nodes;
 using OrchardCore.Recipes.Schema;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
@@ -7,7 +6,7 @@ using OrchardCore.Shortcodes.Services;
 
 namespace OrchardCore.Shortcodes.Recipes;
 
-public sealed class ShortcodeTemplateRecipeStep : RecipeImportStep<object>
+public sealed class ShortcodeTemplateRecipeStep : RecipeDeploymentStep<ShortcodeTemplateRecipeStep.ShortcodeTemplatesStepModel>
 {
     private readonly ShortcodeTemplatesManager _templatesManager;
 
@@ -50,17 +49,26 @@ public sealed class ShortcodeTemplateRecipeStep : RecipeImportStep<object>
             .Build();
     }
 
-    protected override async Task ImportAsync(object model, RecipeExecutionContext context)
+    protected override async Task ImportAsync(ShortcodeTemplatesStepModel model, RecipeExecutionContext context)
     {
-        if (context.Step.TryGetPropertyValue("ShortcodeTemplates", out var jsonNode) && jsonNode is JsonObject templates)
+        foreach (var template in model.ShortcodeTemplates)
         {
-            foreach (var property in templates)
-            {
-                var name = property.Key;
-                var value = property.Value.ToObject<ShortcodeTemplate>();
-
-                await _templatesManager.UpdateShortcodeTemplateAsync(name, value);
-            }
+            await _templatesManager.UpdateShortcodeTemplateAsync(template.Key, template.Value);
         }
+    }
+
+    protected override async Task<ShortcodeTemplatesStepModel> BuildExportModelAsync(RecipeExportContext context)
+    {
+        var templates = await _templatesManager.GetShortcodeTemplatesDocumentAsync();
+
+        return new ShortcodeTemplatesStepModel
+        {
+            ShortcodeTemplates = templates.ShortcodeTemplates.ToDictionary(k => k.Key, v => v.Value),
+        };
+    }
+
+    public sealed class ShortcodeTemplatesStepModel
+    {
+        public Dictionary<string, ShortcodeTemplate> ShortcodeTemplates { get; set; }
     }
 }

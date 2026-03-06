@@ -13,7 +13,7 @@ using OrchardCore.Rules.Services;
 
 namespace OrchardCore.Layers.Recipes;
 
-public sealed class LayerRecipeStep : RecipeImportStep<LayerRecipeStep.LayersStepModel>
+public sealed class LayerRecipeStep : RecipeDeploymentStep<LayerRecipeStep.LayersStepModel>
 {
     private readonly ILayerService _layerService;
     private readonly IConditionIdGenerator _conditionIdGenerator;
@@ -84,6 +84,24 @@ public sealed class LayerRecipeStep : RecipeImportStep<LayerRecipeStep.LayersSte
                         .AdditionalProperties(true))))
             .AdditionalProperties(true)
             .Build();
+    }
+
+    protected override async Task<LayersStepModel> BuildExportModelAsync(RecipeExportContext context)
+    {
+        var layers = await _layerService.GetLayersAsync();
+
+        return new LayersStepModel
+        {
+            Layers = JArray.FromObject(layers.Layers, _serializationOptions)
+                .Cast<JsonObject>()
+                .Select(o => o.ToObject<LayerStepModel>(_serializationOptions))
+                .ToArray(),
+        };
+    }
+
+    protected override JsonObject SerializeStep(LayersStepModel model)
+    {
+        return JsonSerializer.SerializeToNode(model, _serializationOptions)?.AsObject() ?? [];
     }
 
     protected override async Task ImportAsync(LayersStepModel model, RecipeExecutionContext context)

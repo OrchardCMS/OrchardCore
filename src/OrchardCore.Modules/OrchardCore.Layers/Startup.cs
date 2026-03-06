@@ -8,7 +8,6 @@ using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.Layers.Deployment;
 using OrchardCore.Layers.Drivers;
 using OrchardCore.Layers.Handlers;
 using OrchardCore.Layers.Indexes;
@@ -51,7 +50,6 @@ public sealed class Startup : StartupBase
 #pragma warning disable CS0618 // Type or member is obsolete
         services.AddRecipeExecutionStep<LayerStep>();
 #pragma warning restore CS0618
-        services.AddDeployment<AllLayersDeploymentSource, AllLayersDeploymentStep, AllLayersDeploymentStepDriver>();
         services.AddSingleton<IGlobalMethodProvider, DefaultLayersMethodProvider>();
     }
 }

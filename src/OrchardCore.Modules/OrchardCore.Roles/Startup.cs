@@ -11,7 +11,6 @@ using OrchardCore.Localization.Data;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
-using OrchardCore.Roles.Deployment;
 using OrchardCore.Roles.Migrations;
 using OrchardCore.Roles.Recipes;
 using OrchardCore.Roles.Services;
@@ -69,7 +68,6 @@ public sealed class DeploymentStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddDeployment<AllRolesDeploymentSource, AllRolesDeploymentStep, AllRolesDeploymentStepDriver>();
     }
 }
 

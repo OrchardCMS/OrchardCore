@@ -39,7 +39,6 @@ public sealed class CoreStartup : StartupBase
 #pragma warning disable CS0618 // Type or member is obsolete
         services.AddRecipeExecutionStep<QueryStep>();
 #pragma warning restore CS0618
-        services.AddDeployment<AllQueriesDeploymentSource, AllQueriesDeploymentStep, AllQueriesDeploymentStepDriver>();
         services.AddSingleton<IGlobalMethodProvider, QueryGlobalMethodProvider>();
 
         services.Configure<TemplateOptions>(o =>

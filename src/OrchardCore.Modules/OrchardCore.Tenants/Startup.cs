@@ -14,7 +14,6 @@ using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Setup;
-using OrchardCore.Tenants.Deployment;
 using OrchardCore.Tenants.Recipes;
 using OrchardCore.Tenants.Services;
 
@@ -128,7 +127,6 @@ public sealed class FeatureProfilesDeploymentStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddDeployment<AllFeatureProfilesDeploymentSource, AllFeatureProfilesDeploymentStep, AllFeatureProfilesDeploymentStepDriver>();
     }
 }
 

@@ -266,7 +266,6 @@ public sealed class DeploymentStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddDeployment<MediaDeploymentSource, MediaDeploymentStep, MediaDeploymentStepDriver>();
-        services.AddDeployment<AllMediaProfilesDeploymentSource, AllMediaProfilesDeploymentStep, AllMediaProfilesDeploymentStepDriver>();
     }
 }
 

@@ -9,7 +9,7 @@ using OrchardCore.Sitemaps.Services;
 
 namespace OrchardCore.Sitemaps.Recipes;
 
-public sealed class SitemapsRecipeStep : RecipeImportStep<SitemapsRecipeStep.SitemapStepModel>
+public sealed class SitemapsRecipeStep : RecipeDeploymentStep<SitemapsRecipeStep.SitemapStepModel>
 {
     private readonly ISitemapManager _sitemapManager;
     private readonly DocumentJsonSerializerOptions _documentJsonSerializerOptions;
@@ -53,6 +53,16 @@ public sealed class SitemapsRecipeStep : RecipeImportStep<SitemapsRecipeStep.Sit
             var sitemap = token.ToObject<SitemapType>(_documentJsonSerializerOptions.SerializerOptions);
             await _sitemapManager.UpdateSitemapAsync(sitemap);
         }
+    }
+
+    protected override async Task<SitemapStepModel> BuildExportModelAsync(RecipeExportContext context)
+    {
+        var sitemaps = await _sitemapManager.GetSitemapsAsync();
+
+        return new SitemapStepModel
+        {
+            Data = JArray.FromObject(sitemaps, _documentJsonSerializerOptions.SerializerOptions),
+        };
     }
 
     public sealed class SitemapStepModel

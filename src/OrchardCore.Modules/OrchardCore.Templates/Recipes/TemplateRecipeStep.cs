@@ -1,4 +1,3 @@
-using System.Text.Json.Nodes;
 using OrchardCore.Recipes.Schema;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
@@ -7,7 +6,7 @@ using OrchardCore.Templates.Services;
 
 namespace OrchardCore.Templates.Recipes;
 
-public sealed class TemplateRecipeStep : RecipeImportStep<object>
+public sealed class TemplateRecipeStep : RecipeDeploymentStep<TemplateRecipeStep.TemplatesStepModel>
 {
     private readonly TemplatesManager _templatesManager;
 
@@ -45,17 +44,29 @@ public sealed class TemplateRecipeStep : RecipeImportStep<object>
             .Build();
     }
 
-    protected override async Task ImportAsync(object model, RecipeExecutionContext context)
+    protected override async Task ImportAsync(TemplatesStepModel model, RecipeExecutionContext context)
     {
-        if (context.Step.TryGetPropertyValue("Templates", out var jsonNode) && jsonNode is JsonObject templates)
+        if (model.Templates != null)
         {
-            foreach (var property in templates)
+            foreach (var template in model.Templates)
             {
-                var name = property.Key;
-                var value = property.Value.ToObject<Template>();
-
-                await _templatesManager.UpdateTemplateAsync(name, value);
+                await _templatesManager.UpdateTemplateAsync(template.Key, template.Value);
             }
         }
+    }
+
+    protected override async Task<TemplatesStepModel> BuildExportModelAsync(RecipeExportContext context)
+    {
+        var templates = await _templatesManager.GetTemplatesDocumentAsync();
+
+        return new TemplatesStepModel
+        {
+            Templates = templates.Templates.ToDictionary(k => k.Key, v => v.Value),
+        };
+    }
+
+    public sealed class TemplatesStepModel
+    {
+        public Dictionary<string, Template> Templates { get; set; }
     }
 }

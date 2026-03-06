@@ -6,7 +6,7 @@ using OrchardCore.Recipes.Services;
 
 namespace OrchardCore.Media.Recipes;
 
-public sealed class MediaProfileRecipeStep : RecipeImportStep<MediaProfileRecipeStep.MediaProfileStepModel>
+public sealed class MediaProfileRecipeStep : RecipeDeploymentStep<MediaProfileRecipeStep.MediaProfileStepModel>
 {
     private readonly MediaProfilesManager _mediaProfilesManager;
 
@@ -64,6 +64,16 @@ public sealed class MediaProfileRecipeStep : RecipeImportStep<MediaProfileRecipe
         {
             await _mediaProfilesManager.UpdateMediaProfileAsync(mediaProfile.Key, mediaProfile.Value);
         }
+    }
+
+    protected override async Task<MediaProfileStepModel> BuildExportModelAsync(RecipeExportContext context)
+    {
+        var mediaProfiles = await _mediaProfilesManager.GetMediaProfilesDocumentAsync();
+
+        return new MediaProfileStepModel
+        {
+            MediaProfiles = mediaProfiles.MediaProfiles,
+        };
     }
 
     public sealed class MediaProfileStepModel

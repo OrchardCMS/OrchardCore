@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
@@ -57,5 +58,13 @@ public sealed class RecipesStartup : StartupBase
 #pragma warning disable CS0618 // Type or member is obsolete
         services.AddRecipeExecutionStep<UrlRewritingStep>();
 #pragma warning restore CS0618 // Type or member is obsolete
+    }
+}
+
+[RequireFeatures("OrchardCore.Deployment", "OrchardCore.UrlRewriting")]
+public sealed class DeploymentStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
     }
 }

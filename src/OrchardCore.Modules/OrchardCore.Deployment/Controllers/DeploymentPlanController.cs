@@ -25,7 +25,7 @@ public sealed class DeploymentPlanController : Controller
 
     private readonly IAuthorizationService _authorizationService;
     private readonly IDisplayManager<DeploymentStep> _displayManager;
-    private readonly IEnumerable<IDeploymentStepFactory> _factories;
+    private readonly IDeploymentStepFactoryResolver _factoryResolver;
     private readonly ISession _session;
     private readonly PagerOptions _pagerOptions;
     private readonly INotifier _notifier;
@@ -38,7 +38,7 @@ public sealed class DeploymentPlanController : Controller
     public DeploymentPlanController(
         IAuthorizationService authorizationService,
         IDisplayManager<DeploymentStep> displayManager,
-        IEnumerable<IDeploymentStepFactory> factories,
+        IDeploymentStepFactoryResolver factoryResolver,
         ISession session,
         IOptions<PagerOptions> pagerOptions,
         IShapeFactory shapeFactory,
@@ -48,7 +48,7 @@ public sealed class DeploymentPlanController : Controller
         IUpdateModelAccessor updateModelAccessor)
     {
         _displayManager = displayManager;
-        _factories = factories;
+        _factoryResolver = factoryResolver;
         _authorizationService = authorizationService;
         _session = session;
         _pagerOptions = pagerOptions.Value;
@@ -175,7 +175,7 @@ public sealed class DeploymentPlanController : Controller
         }
 
         var thumbnails = new Dictionary<string, dynamic>();
-        foreach (var factory in _factories)
+        foreach (var factory in _factoryResolver.GetFactories())
         {
             var step = factory.Create();
             var thumbnail = await _displayManager.BuildDisplayAsync(step, _updateModelAccessor.ModelUpdater, "Thumbnail");
