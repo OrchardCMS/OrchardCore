@@ -71,7 +71,7 @@ public class RoleUpdater : FeatureEventHandler, IRoleCreatedEventHandler, IRoleR
             var stereotypes = provider.GetDefaultStereotypes();
             foreach (var stereotype in stereotypes)
             {
-                var role = rolesDocument.Roles.FirstOrDefault(role => string.Equals(role.RoleName, stereotype.Name, StringComparison.OrdinalIgnoreCase));
+                var role = rolesDocument.Roles.FirstOrDefault(role => string.Equals(role.Name, stereotype.Name, StringComparison.OrdinalIgnoreCase));
                 if (role == null)
                 {
                     continue;
@@ -112,7 +112,7 @@ public class RoleUpdater : FeatureEventHandler, IRoleCreatedEventHandler, IRoleR
         var rolesDocument = await _documentManager.GetOrCreateMutableAsync();
         foreach (var role in rolesDocument.Roles)
         {
-            if (!rolesDocument.MissingFeaturesByRole.TryGetValue(role.RoleName, out var missingFeatures) ||
+            if (!rolesDocument.MissingFeaturesByRole.TryGetValue(role.Name, out var missingFeatures) ||
                 !missingFeatures.Contains(feature.Id))
             {
                 continue;
@@ -133,7 +133,7 @@ public class RoleUpdater : FeatureEventHandler, IRoleCreatedEventHandler, IRoleR
     private async Task UpdateRoleForInstalledFeaturesAsync(string roleName)
     {
         var rolesDocument = await _documentManager.GetOrCreateMutableAsync();
-        var role = rolesDocument.Roles.FirstOrDefault(role => string.Equals(role.RoleName, roleName, StringComparison.OrdinalIgnoreCase));
+        var role = rolesDocument.Roles.FirstOrDefault(role => string.Equals(role.Name, roleName, StringComparison.OrdinalIgnoreCase));
         if (role == null)
         {
             return;
@@ -182,7 +182,7 @@ public class RoleUpdater : FeatureEventHandler, IRoleCreatedEventHandler, IRoleR
     {
         var stereotypes = providers
             .SelectMany(provider => provider.GetDefaultStereotypes())
-            .Where(stereotype => string.Equals(stereotype.Name, role.RoleName, StringComparison.OrdinalIgnoreCase));
+            .Where(stereotype => string.Equals(stereotype.Name, role.Name, StringComparison.OrdinalIgnoreCase));
 
         if (!stereotypes.Any())
         {
@@ -203,7 +203,7 @@ public class RoleUpdater : FeatureEventHandler, IRoleCreatedEventHandler, IRoleR
 
     private bool UpdatePermissions(Role role, IEnumerable<string> permissions)
     {
-        if (_systemRoleProvider.IsAdminRole(role.RoleName))
+        if (_systemRoleProvider.IsAdminRole(role.Name))
         {
             // Don't update claims for admin role.
             return true;
@@ -227,7 +227,7 @@ public class RoleUpdater : FeatureEventHandler, IRoleCreatedEventHandler, IRoleR
         {
             if (_logger.IsEnabled(LogLevel.Debug))
             {
-                _logger.LogDebug("Default role '{RoleName}' granted permission '{PermissionName}'.", role.RoleName, permission);
+                _logger.LogDebug("Default role '{RoleName}' granted permission '{PermissionName}'.", role.Name, permission);
             }
 
             role.RoleClaims.Add(RoleClaim.Create(permission));

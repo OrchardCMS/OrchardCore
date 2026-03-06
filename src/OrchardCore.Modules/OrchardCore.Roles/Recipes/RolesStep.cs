@@ -44,13 +44,13 @@ public sealed class RolesStep : NamedRecipeStepHandler
             {
                 role = new Role
                 {
-                    RoleName = roleName,
+                    Name = roleName,
                 };
             }
 
             if (role is Role r)
             {
-                r.RoleDescription = roleEntry.Description;
+                r.Description = roleEntry.Description;
 
                 if (roleEntry.PermissionBehavior == PermissionBehavior.Replace)
                 {

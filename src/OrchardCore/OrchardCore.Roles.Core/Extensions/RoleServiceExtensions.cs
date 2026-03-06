@@ -10,6 +10,6 @@ public static class RoleServiceExtensions
 
         var roles = await roleService.GetRolesAsync();
 
-        return roles.Select(role => role.RoleName);
+        return roles.Select(role => role.Name);
     }
 }

@@ -31,15 +31,15 @@ public sealed class AllRolesDeploymentSource
 
         foreach (var role in allRoles)
         {
-            var currentRole = await _roleManager.FindByNameAsync(role.RoleName);
+            var currentRole = await _roleManager.FindByNameAsync(role.Name);
 
             if (currentRole is Role r)
             {
                 permissions.Add(JObject.FromObject(
                     new RolesStepRoleModel
                     {
-                        Name = r.RoleName,
-                        Description = r.RoleDescription,
+                        Name = r.Name,
+                        Description = r.Description,
                         Permissions = r.RoleClaims.Where(x => x.ClaimType == Permission.ClaimType).Select(x => x.ClaimValue).ToArray(),
                     }));
             }

@@ -32,7 +32,7 @@ public class SuperUserHandler : IAuthorizationHandler
 
         var adminRole = _systemRoleProvider.GetAdminRole();
 
-        if (user.IsInRole(adminRole.RoleName))
+        if (user.IsInRole(adminRole.Name))
         {
             SucceedAllRequirements(context);
 

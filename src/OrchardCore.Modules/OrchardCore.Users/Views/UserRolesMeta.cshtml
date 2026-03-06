@@ -4,7 +4,7 @@
 @inject IRoleService RoleService
 
 @{
-    var roles = (await RoleService.GetRolesAsync()).ToDictionary(x => x.RoleName, x => x, StringComparer.OrdinalIgnoreCase);
+    var roles = (await RoleService.GetRolesAsync()).ToDictionary(x => x.Name, x => x, StringComparer.OrdinalIgnoreCase);
 }
 
 <div data-bs-toggle="tooltip" title="@T["The roles this user has"]">
@@ -15,6 +15,6 @@
             continue;
         }
 
-        <span class="badge ta-badge">@role.RoleName</span>
+        <span class="badge ta-badge">@role.Name</span>
     }
 </div>

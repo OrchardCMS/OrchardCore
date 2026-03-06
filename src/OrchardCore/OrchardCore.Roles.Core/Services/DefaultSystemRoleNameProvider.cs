@@ -15,11 +15,11 @@ internal sealed class DefaultSystemRoleNameProvider : ISystemRoleNameProvider
     public DefaultSystemRoleNameProvider(ISystemRoleProvider provider)
     {
         _provider = provider;
-        _systemRoleNames = provider.GetSystemRoles().Select(x => x.RoleName).ToFrozenSet(StringComparer.OrdinalIgnoreCase);
+        _systemRoleNames = provider.GetSystemRoles().Select(x => x.Name).ToFrozenSet(StringComparer.OrdinalIgnoreCase);
     }
 
     public ValueTask<string> GetAdminRoleAsync()
-        => ValueTask.FromResult(_provider.GetAdminRole().RoleName);
+        => ValueTask.FromResult(_provider.GetAdminRole().Name);
 
     public ValueTask<FrozenSet<string>> GetSystemRolesAsync()
         => ValueTask.FromResult(_systemRoleNames);

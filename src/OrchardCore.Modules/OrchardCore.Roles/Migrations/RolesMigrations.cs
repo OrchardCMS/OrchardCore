@@ -86,7 +86,7 @@ public sealed class RolesMigrations : DataMigration
                 // Check to see if the role contains the obsolete 'SiteOwner' permission claim.
                 var hasSiteOwner = r.RoleClaims is not null && r.RoleClaims.Any(x => x.ClaimValue == "SiteOwner");
 
-                if (r.RoleName.Equals(OrchardCoreConstants.Roles.Administrator, StringComparison.OrdinalIgnoreCase))
+                if (r.Name.Equals(OrchardCoreConstants.Roles.Administrator, StringComparison.OrdinalIgnoreCase))
                 {
                     if (!hasSiteOwner)
                     {
@@ -101,7 +101,7 @@ public sealed class RolesMigrations : DataMigration
 
                         await roleManager.CreateAsync(new Role
                         {
-                            RoleName = adminSystemRoleName,
+                            Name = adminSystemRoleName,
                         });
                     }
                     else
@@ -135,7 +135,7 @@ public sealed class RolesMigrations : DataMigration
 
                     foreach (var adminRole in adminRoles)
                     {
-                        var users = await userManager.GetUsersInRoleAsync(adminRole.RoleName);
+                        var users = await userManager.GetUsersInRoleAsync(adminRole.Name);
 
                         if (users.Count > 0)
                         {
@@ -187,5 +187,5 @@ public sealed class RolesMigrations : DataMigration
     }
 
     private static bool RoleExists(List<IRole> roles, string roleName)
-        => roles.Any(role => role.RoleName.Equals(roleName, StringComparison.OrdinalIgnoreCase));
+        => roles.Any(role => role.Name.Equals(roleName, StringComparison.OrdinalIgnoreCase));
 }

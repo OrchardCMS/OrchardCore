@@ -8,6 +8,6 @@ public static class SystemRoleProviderExtensions
 
         var adminRole = systemRoleNameProvider.GetAdminRole();
 
-        return adminRole.RoleName.Equals(name, StringComparison.OrdinalIgnoreCase);
+        return adminRole.Name.Equals(name, StringComparison.OrdinalIgnoreCase);
     }
 }

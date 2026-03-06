@@ -20,7 +20,7 @@ public class PermissionHandlerHelperTests
         var permissionHandler = CreatePermissionHandler(
             new Role
             {
-                RoleName = OrchardCoreConstants.Roles.Anonymous,
+                Name = OrchardCoreConstants.Roles.Anonymous,
                 RoleClaims =
                 [
                     RoleClaim.Create("AllowAnonymous"),
@@ -28,7 +28,7 @@ public class PermissionHandlerHelperTests
             },
             new Role
             {
-                RoleName = OrchardCoreConstants.Roles.Authenticated,
+                Name = OrchardCoreConstants.Roles.Authenticated,
                 RoleClaims =
                 [
                     RoleClaim.Create("AllowAuthenticated"),
@@ -73,7 +73,7 @@ public class PermissionHandlerHelperTests
         var permissionHandler = CreatePermissionHandler(
             new Role
             {
-                RoleName = OrchardCoreConstants.Roles.Anonymous,
+                Name = OrchardCoreConstants.Roles.Anonymous,
                 RoleClaims =
                 [
                     RoleClaim.Create("Implicit2"),
@@ -99,7 +99,7 @@ public class PermissionHandlerHelperTests
         var permissionHandler = CreatePermissionHandler(
             new Role
             {
-                RoleName = OrchardCoreConstants.Roles.Anonymous,
+                Name = OrchardCoreConstants.Roles.Anonymous,
                 RoleClaims =
                 [
                     RoleClaim.Create("aLlOwAnOnYmOuS"),
@@ -107,7 +107,7 @@ public class PermissionHandlerHelperTests
             },
             new Role
             {
-                RoleName = OrchardCoreConstants.Roles.Authenticated,
+                Name = OrchardCoreConstants.Roles.Authenticated,
                 RoleClaims =
                 [
                     RoleClaim.Create("aLlOwAuThEnTiCaTeD"),
@@ -128,7 +128,7 @@ public class PermissionHandlerHelperTests
 
         foreach (var role in roles)
         {
-            roleManager.Setup(m => m.FindByNameAsync(role.RoleName)).ReturnsAsync(role);
+            roleManager.Setup(m => m.FindByNameAsync(role.Name)).ReturnsAsync(role);
         }
 
         var permissionGrantingService = new DefaultPermissionGrantingService();

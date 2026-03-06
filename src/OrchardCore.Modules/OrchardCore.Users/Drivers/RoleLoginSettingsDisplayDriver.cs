@@ -46,8 +46,8 @@ public sealed class RoleLoginSettingsDisplayDriver : SiteDisplayDriver<RoleLogin
             model.Roles = roles
                 .Select(role => new RoleEntry()
                 {
-                    Role = role.RoleName,
-                    IsSelected = settings.Roles != null && settings.Roles.Contains(role.RoleName, StringComparer.OrdinalIgnoreCase),
+                    Role = role.Name,
+                    IsSelected = settings.Roles != null && settings.Roles.Contains(role.Name, StringComparer.OrdinalIgnoreCase),
                 }).OrderBy(entry => entry.Role)
                 .ToArray();
         }).Location("Content:6#Two-Factor Authentication")
@@ -71,7 +71,7 @@ public sealed class RoleLoginSettingsDisplayDriver : SiteDisplayDriver<RoleLogin
             var roles = await _roleService.GetAssignableRolesAsync();
 
             var selectedRoles = model.Roles.Where(x => x.IsSelected)
-                .Join(roles, e => e.Role, r => r.RoleName, (e, r) => r.RoleName)
+                .Join(roles, e => e.Role, r => r.Name, (e, r) => r.Name)
                 .ToArray();
 
             if (selectedRoles.Length == 0)

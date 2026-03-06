@@ -39,7 +39,7 @@ public sealed class RoleAuthorizationHandler : AuthorizationHandler<PermissionRe
 
         if (context.Resource is IRole role)
         {
-            var variantPermission = GetPermissionVariation(requirement.Permission, role.RoleName);
+            var variantPermission = GetPermissionVariation(requirement.Permission, role.Name);
 
             if (variantPermission != null && await _authorizationService.AuthorizeAsync(context.User, variantPermission))
             {
@@ -75,7 +75,7 @@ public sealed class RoleAuthorizationHandler : AuthorizationHandler<PermissionRe
             {
                 // When the user is in no roles, we check to see if the current user can manage any roles.
                 roleNames = (await _roleService.GetAssignableRolesAsync())
-                    .Select(x => x.RoleName);
+                    .Select(x => x.Name);
             }
 
             // Check every role to see if the current user has permission to at least one role.

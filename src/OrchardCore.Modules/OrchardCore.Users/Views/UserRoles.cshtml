@@ -4,7 +4,7 @@
 
 @inject IRoleService RoleService
 @{
-    var roles = (await RoleService.GetRolesAsync()).ToDictionary(x => x.RoleName, x => x, StringComparer.OrdinalIgnoreCase);
+    var roles = (await RoleService.GetRolesAsync()).ToDictionary(x => x.Name, x => x, StringComparer.OrdinalIgnoreCase);
 }
 
 <h4>@T["Roles"]</h4>
@@ -16,6 +16,6 @@
             continue;
         }
 
-        <li>@role.RoleName</li>
+        <li>@role.Name</li>
     }
 </ul>

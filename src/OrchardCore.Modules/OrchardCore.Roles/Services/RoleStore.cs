@@ -75,7 +75,7 @@ public class RoleStore : IRoleClaimStore<IRole>, IQueryableRoleStore<IRole>
         var roleCreatedEventHandlers = _serviceProvider.GetRequiredService<IEnumerable<IRoleCreatedEventHandler>>();
 
         await roleCreatedEventHandlers.InvokeAsync((handler, roleToCreate) =>
-            handler.RoleCreatedAsync(roleToCreate.RoleName), roleToCreate, _logger);
+            handler.RoleCreatedAsync(roleToCreate.Name), roleToCreate, _logger);
 
         return IdentityResult.Success;
     }
@@ -92,7 +92,7 @@ public class RoleStore : IRoleClaimStore<IRole>, IQueryableRoleStore<IRole>
             });
         }
 
-        if (_systemRoleProvider.IsSystemRole(roleToRemove.RoleName))
+        if (_systemRoleProvider.IsSystemRole(roleToRemove.Name))
         {
             return IdentityResult.Failed(new IdentityError
             {
@@ -103,10 +103,10 @@ public class RoleStore : IRoleClaimStore<IRole>, IQueryableRoleStore<IRole>
         var roleRemovedEventHandlers = _serviceProvider.GetRequiredService<IEnumerable<IRoleRemovedEventHandler>>();
 
         await roleRemovedEventHandlers.InvokeAsync((handler, roleToRemove) =>
-            handler.RoleRemovedAsync(roleToRemove.RoleName), roleToRemove, _logger);
+            handler.RoleRemovedAsync(roleToRemove.Name), roleToRemove, _logger);
 
         var roles = await LoadRolesAsync();
-        roleToRemove = roles.Roles.FirstOrDefault(r => string.Equals(r.RoleName, roleToRemove.RoleName, StringComparison.OrdinalIgnoreCase));
+        roleToRemove = roles.Roles.FirstOrDefault(r => string.Equals(r.Name, roleToRemove.Name, StringComparison.OrdinalIgnoreCase));
         roles.Roles.Remove(roleToRemove);
 
         await UpdateRolesAsync(roles);
@@ -119,7 +119,7 @@ public class RoleStore : IRoleClaimStore<IRole>, IQueryableRoleStore<IRole>
         // While updating find a role from the loaded document being mutated.
         var roles = _updating ? await LoadRolesAsync() : await GetRolesAsync();
 
-        var role = roles.Roles.FirstOrDefault(x => string.Equals(x.RoleName, roleId, StringComparison.OrdinalIgnoreCase));
+        var role = roles.Roles.FirstOrDefault(x => string.Equals(x.Name, roleId, StringComparison.OrdinalIgnoreCase));
 
         if (role == null)
         {
@@ -153,21 +153,21 @@ public class RoleStore : IRoleClaimStore<IRole>, IQueryableRoleStore<IRole>
             return Task.FromResult(r.NormalizedRoleName);
         }
 
-        return Task.FromResult(role.RoleName);
+        return Task.FromResult(role.Name);
     }
 
     public Task<string> GetRoleIdAsync(IRole role, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(role);
 
-        return Task.FromResult(role.RoleName.ToUpperInvariant());
+        return Task.FromResult(role.Name.ToUpperInvariant());
     }
 
     public Task<string> GetRoleNameAsync(IRole role, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(role);
 
-        return Task.FromResult(role.RoleName);
+        return Task.FromResult(role.Name);
     }
 
     public Task SetNormalizedRoleNameAsync(IRole role, string normalizedName, CancellationToken cancellationToken)
@@ -188,7 +188,7 @@ public class RoleStore : IRoleClaimStore<IRole>, IQueryableRoleStore<IRole>
 
         if (role is Role r)
         {
-            r.RoleName = roleName;
+            r.Name = roleName;
         }
 
         return Task.CompletedTask;
@@ -199,7 +199,7 @@ public class RoleStore : IRoleClaimStore<IRole>, IQueryableRoleStore<IRole>
         ArgumentNullException.ThrowIfNull(role);
 
         var roles = await LoadRolesAsync();
-        var existingRole = roles.Roles.FirstOrDefault(x => string.Equals(x.RoleName, role.RoleName, StringComparison.OrdinalIgnoreCase));
+        var existingRole = roles.Roles.FirstOrDefault(x => string.Equals(x.Name, role.Name, StringComparison.OrdinalIgnoreCase));
         roles.Roles.Remove(existingRole);
 
         if (role is Role r)

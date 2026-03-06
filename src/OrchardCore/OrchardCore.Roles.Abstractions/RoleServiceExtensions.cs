@@ -10,7 +10,7 @@ public static class RoleServiceExtensions
     {
         var roles = await roleService.GetRolesAsync();
 
-        return roles.Select(r => r.RoleName);
+        return roles.Select(r => r.Name);
     }
 
     public static async Task<IEnumerable<IRole>> GetAssignableRolesAsync(this IRoleService roleService)
@@ -20,7 +20,7 @@ public static class RoleServiceExtensions
         var assignableRoles = new List<IRole>();
         foreach (var role in roles)
         {
-            if (!await roleService.IsAdminRoleAsync(role.RoleName) && await roleService.IsSystemRoleAsync(role.RoleName))
+            if (!await roleService.IsAdminRoleAsync(role.Name) && await roleService.IsSystemRoleAsync(role.Name))
             {
                 continue;
             }

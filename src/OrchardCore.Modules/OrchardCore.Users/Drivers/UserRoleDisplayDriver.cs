@@ -94,7 +94,7 @@ public sealed class UserRoleDisplayDriver : DisplayDriver<User>
         var currentUserRoleNames = await _userRoleStore.GetRolesAsync(user, default);
 
         var selectedRoleNames = model.Roles.Where(x => x.IsSelected).Select(x => x.Role);
-        var selectedRoles = roles.Where(x => selectedRoleNames.Contains(x.RoleName, StringComparer.OrdinalIgnoreCase));
+        var selectedRoles = roles.Where(x => selectedRoleNames.Contains(x.Name, StringComparer.OrdinalIgnoreCase));
         var accessibleAndSelectedRoleNames = await GetAccessibleRoleNamesAsync(selectedRoles);
 
         if (context.IsNew)
@@ -162,7 +162,7 @@ public sealed class UserRoleDisplayDriver : DisplayDriver<User>
         {
             if (await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, UsersPermissions.AssignRoleToUsers, role))
             {
-                authorizedRoleNames.Add(role.RoleName);
+                authorizedRoleNames.Add(role.Name);
             }
         }
 

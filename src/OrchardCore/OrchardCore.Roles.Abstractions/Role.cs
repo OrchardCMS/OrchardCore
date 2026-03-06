@@ -2,9 +2,9 @@ namespace OrchardCore.Security;
 
 public class Role : IRole
 {
-    public string RoleName { get; set; }
+    public string Name { get; set; }
 
-    public string RoleDescription { get; set; }
+    public string Description { get; set; }
 
     public string NormalizedRoleName { get; set; }
 
@@ -14,8 +14,8 @@ public class Role : IRole
     {
         var role = new Role
         {
-            RoleName = RoleName,
-            RoleDescription = RoleDescription,
+            Name = Name,
+            Description = Description,
             NormalizedRoleName = NormalizedRoleName,
         };
 

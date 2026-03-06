@@ -20,7 +20,7 @@ public sealed class UserRolePermissions : IPermissionProvider
         };
 
         var roleNames = (await _roleService.GetAssignableRolesAsync())
-            .Select(role => role.RoleName)
+            .Select(role => role.Name)
             .OrderBy(roleName => roleName);
 
         foreach (var roleName in roleNames)

@@ -70,18 +70,18 @@ public sealed class AdminController : Controller
             RoleEntries = [],
         };
 
-        foreach (var role in roles.OrderBy(r => r.RoleName))
+        foreach (var role in roles.OrderBy(r => r.Name))
         {
             var entry = new RoleEntry
             {
-                Name = role.RoleName,
-                Description = role.RoleDescription,
-                IsSystemRole = await _roleService.IsSystemRoleAsync(role.RoleName),
+                Name = role.Name,
+                Description = role.Description,
+                IsSystemRole = await _roleService.IsSystemRoleAsync(role.Name),
             };
 
             if (entry.IsSystemRole)
             {
-                entry.IsAdminRole = await _roleService.IsAdminRoleAsync(role.RoleName);
+                entry.IsAdminRole = await _roleService.IsAdminRoleAsync(role.Name);
             }
 
             model.RoleEntries.Add(entry);
@@ -114,8 +114,8 @@ public sealed class AdminController : Controller
         {
             var role = new Role
             {
-                RoleName = model.RoleName,
-                RoleDescription = model.RoleDescription,
+                Name = model.RoleName,
+                Description = model.RoleDescription,
             };
 
             var result = await _roleManager.CreateAsync(role);
@@ -154,9 +154,9 @@ public sealed class AdminController : Controller
         var model = new EditRoleViewModel
         {
             Role = role,
-            Name = role.RoleName,
-            RoleDescription = role.RoleDescription,
-            IsAdminRole = await _roleService.IsAdminRoleAsync(role.RoleName),
+            Name = role.Name,
+            RoleDescription = role.Description,
+            IsAdminRole = await _roleService.IsAdminRoleAsync(role.Name),
         };
 
         var installedPermissions = await GetInstalledPermissionsAsync();
@@ -168,7 +168,7 @@ public sealed class AdminController : Controller
             .Select(g => g.First().Name)
             .ToArray();
 
-        if (!await _roleService.IsAdminRoleAsync(role.RoleName))
+        if (!await _roleService.IsAdminRoleAsync(role.Name))
         {
             model.EffectivePermissions = await GetEffectivePermissions(role, allPermissions);
             model.RoleCategoryPermissions = installedPermissions;
@@ -190,9 +190,9 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
-        role.RoleDescription = roleDescription;
+        role.Description = roleDescription;
 
-        if (!await _roleService.IsAdminRoleAsync(role.RoleName))
+        if (!await _roleService.IsAdminRoleAsync(role.Name))
         {
             role.RoleClaims.RemoveAll(c => c.ClaimType == Permission.ClaimType);
             role.RoleClaims.AddRange(ExtractSelectedPermissions());
@@ -220,7 +220,7 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
-        if (await _roleService.IsSystemRoleAsync(role.RoleName))
+        if (await _roleService.IsSystemRoleAsync(role.Name))
         {
             await _notifier.ErrorAsync(H["System roles cannot be deleted."]);
 
@@ -292,7 +292,7 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
-        var model = await GetEditRoleViewModelAsync(role, role.RoleName, role.RoleDescription);
+        var model = await GetEditRoleViewModelAsync(role, role.Name, role.Description);
 
         return View(nameof(Edit), model);
     }
@@ -322,8 +322,8 @@ public sealed class AdminController : Controller
         {
             var newRole = new Role
             {
-                RoleName = name,
-                RoleDescription = roleDescription,
+                Name = name,
+                Description = roleDescription,
                 RoleClaims = [.. ExtractSelectedPermissions()],
             };
 
@@ -391,11 +391,11 @@ public sealed class AdminController : Controller
     {
         // Create a fake user to check the actual permissions. If the role is anonymous
         // IsAuthenticated needs to be false.
-        var authenticationType = !string.Equals(role.RoleName, OrchardCoreConstants.Roles.Anonymous, StringComparison.OrdinalIgnoreCase)
+        var authenticationType = !string.Equals(role.Name, OrchardCoreConstants.Roles.Anonymous, StringComparison.OrdinalIgnoreCase)
             ? "FakeAuthenticationType"
             : null;
 
-        var fakeIdentity = new ClaimsIdentity([new Claim(ClaimTypes.Role, role.RoleName)], authenticationType);
+        var fakeIdentity = new ClaimsIdentity([new Claim(ClaimTypes.Role, role.Name)], authenticationType);
 
         // Add role claims.
         fakeIdentity.AddClaims(role.RoleClaims.Select(c => c.ToClaim()));

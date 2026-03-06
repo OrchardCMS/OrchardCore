@@ -19,7 +19,7 @@ public class DefaultSystemRoleProviderTests
         var roles = provider.GetSystemRoles();
 
         // Assert
-        var roleNames = roles.Select(r => r.RoleName);
+        var roleNames = roles.Select(r => r.Name);
         Assert.Contains(OrchardCoreConstants.Roles.Administrator, roleNames);
         Assert.Contains(OrchardCoreConstants.Roles.Authenticated, roleNames);
         Assert.Contains(OrchardCoreConstants.Roles.Anonymous, roleNames);
@@ -44,8 +44,8 @@ public class DefaultSystemRoleProviderTests
         var role = provider.GetAdminRole();
 
         // Assert
-        Assert.Equal(configureSystemAdminRoleName, role.RoleName);
-        Assert.NotEqual(OrchardCoreConstants.Roles.Administrator, role.RoleName);
+        Assert.Equal(configureSystemAdminRoleName, role.Name);
+        Assert.NotEqual(OrchardCoreConstants.Roles.Administrator, role.Name);
     }
 
     [Fact]
@@ -66,8 +66,8 @@ public class DefaultSystemRoleProviderTests
         var role = provider.GetAdminRole();
 
         // Assert
-        Assert.Equal(adminRoleName, role.RoleName);
-        Assert.NotEqual(OrchardCoreConstants.Roles.Administrator, role.RoleName);
+        Assert.Equal(adminRoleName, role.Name);
+        Assert.NotEqual(OrchardCoreConstants.Roles.Administrator, role.Name);
     }
 
     [Theory]

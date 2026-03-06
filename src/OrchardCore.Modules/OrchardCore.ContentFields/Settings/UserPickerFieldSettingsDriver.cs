@@ -27,8 +27,8 @@ public sealed class UserPickerFieldSettingsDriver : ContentPartFieldDefinitionDi
             var roles = await _roleService.GetAssignableRolesAsync();
             var roleEntries = roles.Select(role => new RoleEntry
             {
-                Role = role.RoleName,
-                IsSelected = settings.DisplayedRoles.Contains(role.RoleName, StringComparer.OrdinalIgnoreCase),
+                Role = role.Name,
+                IsSelected = settings.DisplayedRoles.Contains(role.Name, StringComparer.OrdinalIgnoreCase),
             }).ToArray();
 
             model.Roles = roleEntries;
@@ -54,7 +54,7 @@ public sealed class UserPickerFieldSettingsDriver : ContentPartFieldDefinitionDi
         var roles = await _roleService.GetAssignableRolesAsync();
 
         var selectedRoles = model.Roles
-            .Where(x => x.IsSelected && roles.Any(y => y.RoleName == x.Role))
+            .Where(x => x.IsSelected && roles.Any(y => y.Name == x.Role))
             .Select(x => x.Role)
             .ToArray();
 

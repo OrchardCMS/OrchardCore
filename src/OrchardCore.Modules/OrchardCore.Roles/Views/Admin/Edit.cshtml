@@ -7,7 +7,7 @@
     <h1>
         @if (Model.IsCloning)
         {
-            @RenderTitleSegments(T["Clone '{0}' Role", Model.Role.RoleName])
+            @RenderTitleSegments(T["Clone '{0}' Role", Model.Role.Name])
         }
         else
         {

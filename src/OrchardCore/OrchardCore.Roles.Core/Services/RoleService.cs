@@ -45,7 +45,7 @@ public class RoleService : IRoleService
 
     public Task<IEnumerable<string>> GetNormalizedRoleNamesAsync()
     {
-        return Task.FromResult<IEnumerable<string>>(_roleManager.Roles.Select(a => _roleManager.NormalizeKey(a.RoleName)));
+        return Task.FromResult<IEnumerable<string>>(_roleManager.Roles.Select(a => _roleManager.NormalizeKey(a.Name)));
     }
 
     public ValueTask<bool> IsAdminRoleAsync(string role)

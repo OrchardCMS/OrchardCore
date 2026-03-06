@@ -27,25 +27,25 @@ public sealed class DefaultSystemRoleProvider : ISystemRoleProvider
 
         _adminRole = new Role
         {
-            RoleName = adminRoleName,
-            RoleDescription = "A system role that grants all permissions to the assigned users.",
+            Name = adminRoleName,
+            Description = "A system role that grants all permissions to the assigned users.",
         };
 
         _systemRoles = new Dictionary<string, Role>()
         {
-            { _adminRole.RoleName, _adminRole },
+            { _adminRole.Name, _adminRole },
             {
                 OrchardCoreConstants.Roles.Authenticated, new Role
                 {
-                    RoleName = OrchardCoreConstants.Roles.Authenticated,
-                    RoleDescription = "A system role representing all authenticated users.",
+                    Name = OrchardCoreConstants.Roles.Authenticated,
+                    Description = "A system role representing all authenticated users.",
                 }
             },
             {
                 OrchardCoreConstants.Roles.Anonymous, new Role
                 {
-                    RoleName = OrchardCoreConstants.Roles.Anonymous,
-                    RoleDescription = "A system role representing all non-authenticated users.",
+                    Name = OrchardCoreConstants.Roles.Anonymous,
+                    Description = "A system role representing all non-authenticated users.",
                 }
             },
         }.ToFrozenDictionary(StringComparer.OrdinalIgnoreCase);
