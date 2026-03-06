@@ -300,7 +300,7 @@ public class ShapeResult : IDisplayResult
             // Only create a new instance if we need to add default position.
             if (placement != null && context.DefaultPosition != null)
             {
-                // Pass null for location since we're not changing it, only updating DefaultPosition.
+                // Pass null for defaults since we're not changing the location, only updating DefaultPosition.
                 placement = placement.WithDefaults(null, context.DefaultPosition);
             }
             else if (placement == null)
@@ -313,7 +313,7 @@ public class ShapeResult : IDisplayResult
         else
         {
             // Use the WithDefaults method to merge defaults from _defaultLocation.
-            placement = placement.WithDefaults(_defaultLocation?.Location, context.DefaultPosition);
+            placement = placement.WithDefaults(_defaultLocation, context.DefaultPosition);
         }
 
         // If the placement should be hidden, then stop rendering execution.

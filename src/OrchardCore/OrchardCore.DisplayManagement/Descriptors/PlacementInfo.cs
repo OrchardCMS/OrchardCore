@@ -62,6 +62,11 @@ public class PlacementInfo
     public string Position => _position ?? DefaultPosition ?? "";
 
     /// <summary>
+    /// Gets the explicit position value associated with the current instance.
+    /// </summary>
+    internal string ExplicitPosition => _position;
+
+    /// <summary>
     /// Gets the group information from the placement, or <c>null</c> if not present.
     /// e.g., <code>Content:12@search</code> will return 'search'.
     /// </summary>
@@ -220,12 +225,12 @@ public class PlacementInfo
     }
 
     /// <summary>
-    /// Creates a new <see cref="PlacementInfo"/> by merging this instance with location and default position.
+    /// Creates a new <see cref="PlacementInfo"/> by merging this instance with defaults from another PlacementInfo.
     /// Returns this instance if no properties need to be changed.
     /// </summary>
-    public PlacementInfo WithDefaults(string location, string defaultPosition)
+    public PlacementInfo WithDefaults(PlacementInfo defaults, string defaultPosition)
     {
-        var locationChanged = _location != location && location != null && _location == null;
+        var locationChanged = defaults != null && Zones.Length == 0 && defaults.Zones.Length > 0;
         var defaultPositionChanged = DefaultPosition != defaultPosition && defaultPosition != null && DefaultPosition == null;
 
         if (!locationChanged && !defaultPositionChanged)
@@ -233,13 +238,24 @@ public class PlacementInfo
             return this;
         }
 
-        var newLocation = _location ?? location;
         var newDefaultPosition = DefaultPosition ?? defaultPosition;
 
-        // If the location is changing, we need to parse the new location to get the zones and other values.
+        // If the location is changing, we need to copy the location values from defaults.
         if (locationChanged)
         {
-            return new PlacementInfo(newLocation, Source, ShapeType, newDefaultPosition, Alternates, Wrappers);
+            return new PlacementInfo(
+                Source,
+                ShapeType,
+                newDefaultPosition,
+                Alternates,
+                Wrappers,
+                defaults.Zones,
+                defaults._position,
+                defaults.Tab,
+                defaults.Group,
+                defaults.Card,
+                defaults.Column,
+                defaults._isLayoutZone);
         }
 
         // Location is not changing, preserve the already-parsed values.
