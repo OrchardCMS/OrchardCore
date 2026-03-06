@@ -66,8 +66,9 @@ public class MenuShapes : ShapeTableProvider
 
                 if (!string.IsNullOrEmpty(differentiator))
                 {
-                    // Menu__[MenuName] e.g. Menu-MainMenu
-                    menu.Metadata.Alternates.Add("Menu__" + differentiator);
+                    // Get cached alternate and add it efficiently
+                    var cachedAlternates = MenuAlternatesFactory.GetMenuAlternates(differentiator);
+                    menu.Metadata.Alternates.AddRange(cachedAlternates);
                     menu.Metadata.Differentiator = differentiator;
                     menu.Classes.Add(("menu-" + differentiator).HtmlClassify());
                 }
@@ -141,7 +142,7 @@ public class MenuShapes : ShapeTableProvider
                     }
                 }
 
-                // Use cached alternates and add them efficiently
+                // Get cached alternates and add them efficiently
                 var cachedAlternates = MenuItemAlternatesFactory.GetAlternates(
                     menuContentItem.ContentItem.ContentType,
                     differentiator,
@@ -159,7 +160,7 @@ public class MenuShapes : ShapeTableProvider
 
                 var menuContentItem = menuItem.GetProperty<ContentItem>("ContentItem");
 
-                // Use cached alternates and add them efficiently
+                // Get cached alternates and add them efficiently
                 var cachedAlternates = MenuItemAlternatesFactory.GetAlternates(
                     menuContentItem.ContentItem.ContentType,
                     differentiator,
