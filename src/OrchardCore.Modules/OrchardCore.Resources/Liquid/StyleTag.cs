@@ -53,136 +53,9 @@ public class StyleTag
             }
         }
 
-        if (string.IsNullOrEmpty(name) && !string.IsNullOrEmpty(src))
+        void PopulateDefinition(ResourceDefinition definition)
         {
-            // Include custom style
-            var setting = resourceManager.RegisterUrl("stylesheet", src, debugSrc);
-
-            if (customAttributes != null)
-            {
-                foreach (var attribute in customAttributes)
-                {
-                    setting.SetAttribute(attribute.Key, attribute.Value);
-                }
-            }
-
-            if (at != ResourceLocation.Unspecified)
-            {
-                setting.AtLocation(at);
-            }
-            else
-            {
-                setting.AtLocation(ResourceLocation.Head);
-            }
-
-            if (!string.IsNullOrEmpty(condition))
-            {
-                setting.UseCondition(condition);
-            }
-
-            if (appendversion.HasValue)
-            {
-                setting.ShouldAppendVersion(appendversion);
-            }
-
-            if (debug != null)
-            {
-                setting.UseDebugMode(debug.Value);
-            }
-
-            if (!string.IsNullOrEmpty(culture))
-            {
-                setting.UseCulture(culture);
-            }
-
-            if (!string.IsNullOrEmpty(dependsOn))
-            {
-                setting.SetDependencies(dependsOn.Split(_separators, StringSplitOptions.RemoveEmptyEntries));
-            }
-
-            if (at == ResourceLocation.Inline)
-            {
-                resourceManager.RenderLocalStyle(setting, writer);
-            }
-        }
-        else if (!string.IsNullOrEmpty(name) && string.IsNullOrEmpty(src))
-        {
-            // Resource required
-
-            var setting = resourceManager.RegisterResource("stylesheet", name);
-
-            if (customAttributes != null)
-            {
-                foreach (var attribute in customAttributes)
-                {
-                    setting.SetAttribute(attribute.Key, attribute.Value);
-                }
-            }
-
-            if (at != ResourceLocation.Unspecified)
-            {
-                setting.AtLocation(at);
-            }
-            else
-            {
-                setting.AtLocation(ResourceLocation.Head);
-            }
-
-            if (useCdn != null)
-            {
-                setting.UseCdn(useCdn.Value);
-            }
-
-            if (!string.IsNullOrEmpty(condition))
-            {
-                setting.UseCondition(condition);
-            }
-
-            if (debug != null)
-            {
-                setting.UseDebugMode(debug.Value);
-            }
-
-            if (!string.IsNullOrEmpty(culture))
-            {
-                setting.UseCulture(culture);
-            }
-
-            if (appendversion.HasValue)
-            {
-                setting.ShouldAppendVersion(appendversion);
-            }
-
-            if (!string.IsNullOrEmpty(version))
-            {
-                setting.UseVersion(version);
-            }
-
-            // This allows additions to the pre registered style dependencies.
-            if (!string.IsNullOrEmpty(dependsOn))
-            {
-                setting.SetDependencies(dependsOn.Split(_separators, StringSplitOptions.RemoveEmptyEntries));
-            }
-
-            if (at == ResourceLocation.Inline)
-            {
-                resourceManager.RenderLocalStyle(setting, writer);
-            }
-        }
-        else if (!string.IsNullOrEmpty(name) && !string.IsNullOrEmpty(src))
-        {
-            // Inline declaration
-
-            var definition = resourceManager.InlineManifest.DefineStyle(name);
             definition.SetUrl(src, debugSrc);
-
-            if (customAttributes != null)
-            {
-                foreach (var attribute in customAttributes)
-                {
-                    definition.SetAttribute(attribute.Key, attribute.Value);
-                }
-            }
 
             if (!string.IsNullOrEmpty(version))
             {
@@ -204,10 +77,24 @@ public class StyleTag
                 definition.SetDependencies(dependsOn.Split(_separators, StringSplitOptions.RemoveEmptyEntries));
             }
 
-            // Also include the style.
-            var setting = resourceManager.RegisterResource("stylesheet", name);
+            if (appendversion.HasValue)
+            {
+                definition.ShouldAppendVersion(appendversion);
+            }
+        }
 
-            if (useCdn != null)
+        void PopulateSettings(RequireSettings setting, bool hasName)
+        {
+            if (at != ResourceLocation.Unspecified)
+            {
+                setting.AtLocation(at);
+            }
+            else
+            {
+                setting.AtLocation(ResourceLocation.Head);
+            }
+
+            if (hasName && useCdn != null)
             {
                 setting.UseCdn(useCdn.Value);
             }
@@ -227,19 +114,107 @@ public class StyleTag
                 setting.UseCulture(culture);
             }
 
-            if (at != ResourceLocation.Unspecified)
+            if (appendversion.HasValue)
             {
-                setting.AtLocation(at);
+                setting.ShouldAppendVersion(appendversion);
+            }
+
+            if (customAttributes != null)
+            {
+                foreach (var attribute in customAttributes)
+                {
+                    setting.SetAttribute(attribute.Key, attribute.Value);
+                }
+            }
+        }
+
+        void ProcessSourceStyle()
+        {
+            // {% style src:"~/example.css" %}
+            RequireSettings setting;
+
+            if (string.IsNullOrEmpty(dependsOn))
+            {
+                // Include custom style url.
+                setting = resourceManager.RegisterUrl("stylesheet", src, debugSrc);
             }
             else
             {
-                setting.AtLocation(ResourceLocation.Head);
+                // Anonymous declaration with dependencies, then display.
+
+                // Using the source as the name to prevent duplicate references to the same file.
+                var s = src.ToLowerInvariant();
+
+                PopulateDefinition(resourceManager.InlineManifest.DefineStyle(s));
+
+                setting = resourceManager.RegisterResource("stylesheet", s);
+            }
+
+            PopulateSettings(setting, hasName: false);
+
+            if (at == ResourceLocation.Inline)
+            {
+                resourceManager.RenderLocalStyle(setting, writer);
+            }
+        }
+
+        void ProcessNamedStyle()
+        {
+            // Resource required.
+            // {% style name:"bootstrap" %}
+
+            var setting = resourceManager.RegisterResource("stylesheet", name);
+
+            PopulateSettings(setting, hasName: true);
+
+            if (!string.IsNullOrEmpty(version))
+            {
+                setting.UseVersion(version);
+            }
+
+            // This allows additions to the pre registered style dependencies.
+            if (!string.IsNullOrEmpty(dependsOn))
+            {
+                setting.SetDependencies(dependsOn.Split(_separators, StringSplitOptions.RemoveEmptyEntries));
             }
 
             if (at == ResourceLocation.Inline)
             {
                 resourceManager.RenderLocalStyle(setting, writer);
             }
+        }
+
+        void ProcessInlineDeclaration()
+        {
+            // Inline declaration.
+
+            PopulateDefinition(resourceManager.InlineManifest.DefineStyle(name));
+
+            // If At is specified then we also render it.
+            if (at != ResourceLocation.Unspecified)
+            {
+                var setting = resourceManager.RegisterResource("stylesheet", name);
+
+                PopulateSettings(setting, hasName: true);
+
+                if (at == ResourceLocation.Inline)
+                {
+                    resourceManager.RenderLocalStyle(setting, writer);
+                }
+            }
+        }
+
+        if (string.IsNullOrEmpty(name) && !string.IsNullOrEmpty(src))
+        {
+            ProcessSourceStyle();
+        }
+        else if (!string.IsNullOrEmpty(name) && string.IsNullOrEmpty(src))
+        {
+            ProcessNamedStyle();
+        }
+        else if (!string.IsNullOrEmpty(name) && !string.IsNullOrEmpty(src))
+        {
+            ProcessInlineDeclaration();
         }
 
         return Completion.Normal;

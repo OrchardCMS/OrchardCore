@@ -963,7 +963,6 @@ public sealed class AdminController : Controller
         }
 
         viewModel.TypePartDefinition = part;
-
         if (part.PartDefinition.IsReusable())
         {
             if (part.DisplayName() != viewModel.DisplayName)
@@ -988,6 +987,10 @@ public sealed class AdminController : Controller
                     return View(viewModel);
                 }
             }
+        }
+        else
+        {
+            viewModel.DisplayName = part.DisplayName();
         }
 
         await _contentDefinitionService.AlterTypePartAsync(new AlterTypePartContext
