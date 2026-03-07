@@ -24,7 +24,7 @@ public sealed class Startup
             .AddSiteDisplayDriver<SmtpSettingsDisplayDriver>()
             .AddTransient<IConfigureOptions<SmtpOptions>, SmtpOptionsConfiguration>();
 
-        services.Configure<DefaultSmtpOptions>(options =>
+        services.Configure<SmtpOptions>(options =>
         {
             // To ensure backward compatibility, we will try to associate SMTP settings from multiple sections.
             // The 'OrchardCore_Email' section will be phased out in an upcoming release.
