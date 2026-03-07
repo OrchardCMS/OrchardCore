@@ -1,6 +1,7 @@
 using System.Data.Common;
 using Azure.Communication.Email;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Options;
 using OrchardCore.Email.Azure.Models;
 
 namespace OrchardCore.Email.Azure.HealthChecks;
@@ -10,10 +11,10 @@ internal sealed class AzureEmailHealthCheck : IHealthCheck
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly AzureEmailOptions _azureEmailOptions;
 
-    public AzureEmailHealthCheck(IHttpClientFactory httpClientFactory, AzureEmailOptions azureEmailOptions)
+    public AzureEmailHealthCheck(IHttpClientFactory httpClientFactory, IOptions<AzureEmailOptions> azureEmailOptions)
     {
         _httpClientFactory = httpClientFactory;
-        _azureEmailOptions = azureEmailOptions;
+        _azureEmailOptions = azureEmailOptions.Value;
     }
 
     public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
