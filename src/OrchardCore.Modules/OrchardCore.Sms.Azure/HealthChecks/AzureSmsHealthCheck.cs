@@ -1,10 +1,11 @@
+using System.Data.Common;
 using System.Text;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using OrchardCore.Sms.Azure.Models;
 
 namespace OrchardCore.Sms.Azure.HealthChecks;
 
-public class AzureSmsHealthCheck : IHealthCheck
+internal sealed class AzureSmsHealthCheck : IHealthCheck
 {
     private readonly AzureSmsOptions _azureSmsOptions;
 
@@ -69,14 +70,13 @@ public class AzureSmsHealthCheck : IHealthCheck
 
     private static string GetEndpointFromConnectionString(string connectionString)
     {
-        foreach (var part in connectionString.Split(';'))
+        var builder = new DbConnectionStringBuilder
         {
-            if (part.StartsWith("endpoint=", StringComparison.OrdinalIgnoreCase))
-            {
-                return part.Substring("endpoint=".Length).TrimEnd('/');
-            }
-        }
+            ConnectionString = connectionString,
+        };
 
-        return null;
+        builder.TryGetValue("endpoint", out var endpoint);
+
+        return endpoint.ToString();
     }
 }
