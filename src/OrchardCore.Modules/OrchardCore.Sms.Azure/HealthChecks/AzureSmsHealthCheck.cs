@@ -1,6 +1,7 @@
 using System.Data.Common;
 using System.Text;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Options;
 using OrchardCore.Sms.Azure.Models;
 
 namespace OrchardCore.Sms.Azure.HealthChecks;
@@ -9,7 +10,7 @@ internal sealed class AzureSmsHealthCheck : IHealthCheck
 {
     private readonly AzureSmsOptions _azureSmsOptions;
 
-    public AzureSmsHealthCheck(AzureSmsOptions azureSmsOptions) => _azureSmsOptions = azureSmsOptions;
+    public AzureSmsHealthCheck(IOptions<AzureSmsOptions> azureSmsOptions) => _azureSmsOptions = azureSmsOptions.Value;
 
     public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
     {
