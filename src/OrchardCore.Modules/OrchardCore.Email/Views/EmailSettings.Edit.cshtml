@@ -1,10 +1,6 @@
-@using Microsoft.Extensions.Options
-@using OrchardCore.Email.Services
 @using OrchardCore.Email.ViewModels
 
 @model EmailSettingsViewModel
-
-@inject IOptions<EmailProviderOptions> EmailProviderOptions
 
 @if (Model.Providers.Count == 0)
 {

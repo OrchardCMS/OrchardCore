@@ -48,14 +48,14 @@ public class EmailTaskTests
         Assert.Equal("Failed", result.Outcomes.First());
     }
 
-    private static DefaultEmailService CreateSmtpService(SmtpOptions smtpOptions)
+    private static EmailService CreateSmtpService(SmtpOptions smtpOptions)
     {
         var options = new Mock<IOptions<SmtpOptions>>();
         var logger = new Mock<ILogger<SmtpEmailProvider>>();
-        var logger2 = new Mock<ILogger<DefaultEmailService>>();
+        var logger2 = new Mock<ILogger<EmailService>>();
 
         var localizer = new Mock<IStringLocalizer<SmtpEmailProvider>>();
-        var emailServiceLocalizer = new Mock<IStringLocalizer<DefaultEmailService>>();
+        var emailServiceLocalizer = new Mock<IStringLocalizer<EmailService>>();
         var emailValidator = new Mock<IEmailAddressValidator>();
 
         emailValidator.Setup(x => x.Validate(It.IsAny<string>()))
@@ -66,17 +66,13 @@ public class EmailTaskTests
 
         var smtp = new SmtpEmailProvider(options.Object, emailValidator.Object, logger.Object, localizer.Object);
 
-        var resolver = new Mock<IEmailProviderResolver>();
-        resolver.Setup(x => x.GetAsync(It.IsAny<string>()))
-            .ReturnsAsync(smtp);
+        var emailProviderFactory = new Mock<IEmailProviderFactory>();
+        emailProviderFactory.Setup(f => f.GetProvider(It.IsAny<string>()))
+            .Returns(smtp);
 
         var emailService = new Mock<IEmailService>();
 
-        return new DefaultEmailService(
-            resolver.Object,
-            [],
-            logger2.Object,
-            emailServiceLocalizer.Object);
+        return new EmailService(emailProviderFactory.Object, Options.Create(new EmailOptions()));
     }
 
     private sealed class SimpleWorkflowExpressionEvaluator : IWorkflowExpressionEvaluator

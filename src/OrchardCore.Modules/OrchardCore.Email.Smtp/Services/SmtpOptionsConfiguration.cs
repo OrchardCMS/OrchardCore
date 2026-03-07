@@ -54,7 +54,5 @@ public sealed class SmtpOptionsConfiguration : IConfigureOptions<SmtpOptions>
                 _logger.LogError("The Smtp password could not be decrypted. It may have been encrypted using a different key.");
             }
         }
-
-        options.IsEnabled = settings.IsEnabled ?? options.ConfigurationExists();
     }
 }

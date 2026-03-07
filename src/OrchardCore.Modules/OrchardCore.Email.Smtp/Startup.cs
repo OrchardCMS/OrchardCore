@@ -1,41 +1,20 @@
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Email.Services;
 using OrchardCore.Email.Smtp.Drivers;
-using OrchardCore.Email.Smtp.Extensions;
 using OrchardCore.Email.Smtp.Services;
-using OrchardCore.Environment.Shell.Configuration;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Email.Smtp;
 
-public sealed class Startup
+public sealed class Startup : StartupBase
 {
-    private readonly IShellConfiguration _shellConfiguration;
-
-    public Startup(IShellConfiguration shellConfiguration)
+    public override void ConfigureServices(IServiceCollection services)
     {
-        _shellConfiguration = shellConfiguration;
-    }
+        services.AddSiteDisplayDriver<SmtpSettingsDisplayDriver>();
 
-    public void ConfigureServices(IServiceCollection services)
-    {
-        services.AddSiteDisplayDriver<SmtpSettingsDisplayDriver>()
-            .AddTransient<IConfigureOptions<SmtpOptions>, SmtpOptionsConfiguration>();
-        //services.AddSmtpEmailProvider()
-        //    .AddSiteDisplayDriver<SmtpSettingsDisplayDriver>()
-        //    .AddTransient<IConfigureOptions<SmtpOptions>, SmtpOptionsConfiguration>();
-
-        //services.Configure<SmtpOptions>(options =>
-        //{
-        //    // To ensure backward compatibility, we will try to associate SMTP settings from multiple sections.
-        //    // The 'OrchardCore_Email' section will be phased out in an upcoming release.
-        //    _shellConfiguration.GetSection("OrchardCore_Email").Bind(options);
-        //    _shellConfiguration.GetSection("OrchardCore_Email_Smtp").Bind(options);
-
-        //    options.IsEnabled = options.ConfigurationExists();
-        //});
+        services.AddTransient<IConfigureOptions<SmtpOptions>, SmtpOptionsConfiguration>();
 
         services.AddTransient<IEmailProvider, SmtpEmailProvider>();
     }

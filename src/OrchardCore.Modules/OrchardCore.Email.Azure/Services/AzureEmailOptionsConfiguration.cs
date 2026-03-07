@@ -25,7 +25,6 @@ public sealed class AzureEmailOptionsConfiguration : IConfigureOptions<AzureEmai
     {
         var settings = _siteService.GetSettings<AzureEmailSettings>();
 
-        options.IsEnabled = settings.IsEnabled;
         options.DefaultSender = settings.DefaultSender;
 
         if (!string.IsNullOrEmpty(settings.ConnectionString))
