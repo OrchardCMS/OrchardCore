@@ -89,11 +89,11 @@ public class AzureEmailProvider : IEmailProvider
     protected readonly IStringLocalizer S;
 
     public AzureEmailProvider(
-        IOptionsSnapshot<AzureEmailOptions> options,
+        IOptions<AzureEmailOptions> options,
         ILogger<AzureEmailProvider> logger,
         IStringLocalizer<AzureEmailProvider> stringLocalizer)
     {
-        _providerOptions = options.Get(Name);
+        _providerOptions = options.Value;
         _logger = logger;
         S = stringLocalizer;
     }
