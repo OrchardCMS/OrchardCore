@@ -8,7 +8,6 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Email.Smtp.Services;
 using OrchardCore.Email.Smtp.ViewModels;
-using OrchardCore.Entities;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Settings;
@@ -23,9 +22,9 @@ public sealed class SmtpSettingsDisplayDriver : SiteDisplayDriver<SmtpSettings>
     private readonly IShellReleaseManager _shellReleaseManager;
     private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly SmtpOptions _smtpOptions;
     private readonly IAuthorizationService _authorizationService;
     private readonly IEmailAddressValidator _emailValidator;
+    private readonly EmailOptions _emailOptions;
 
     internal readonly IStringLocalizer S;
 
@@ -36,17 +35,17 @@ public sealed class SmtpSettingsDisplayDriver : SiteDisplayDriver<SmtpSettings>
         IShellReleaseManager shellReleaseManager,
         IDataProtectionProvider dataProtectionProvider,
         IHttpContextAccessor httpContextAccessor,
-        IOptions<SmtpOptions> options,
         IAuthorizationService authorizationService,
         IEmailAddressValidator emailAddressValidator,
+        IOptions<EmailOptions> emailOptions,
         IStringLocalizer<SmtpSettingsDisplayDriver> stringLocalizer)
     {
         _shellReleaseManager = shellReleaseManager;
         _dataProtectionProvider = dataProtectionProvider;
         _httpContextAccessor = httpContextAccessor;
-        _smtpOptions = options.Value;
         _authorizationService = authorizationService;
         _emailValidator = emailAddressValidator;
+        _emailOptions = emailOptions.Value;
         S = stringLocalizer;
     }
 
@@ -61,7 +60,6 @@ public sealed class SmtpSettingsDisplayDriver : SiteDisplayDriver<SmtpSettings>
         {
             // For backward compatibility with instances before the SMTP provider was factored out of
             // OrchardCore.Email, if IsEnabled is null, we check to see if there's already valid configuration.
-            model.IsEnabled = settings.IsEnabled ?? _smtpOptions.ConfigurationExists();
             model.DefaultSender = settings.DefaultSender;
             model.DeliveryMethod = settings.DeliveryMethod;
             model.PickupDirectoryLocation = settings.PickupDirectoryLocation;
@@ -87,76 +85,33 @@ public sealed class SmtpSettingsDisplayDriver : SiteDisplayDriver<SmtpSettings>
             return null;
         }
 
-        var model = new SmtpSettingsViewModel();
-
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
-
-        var emailSettings = site.As<EmailSettings>();
-
-        var hasChanges = model.IsEnabled != settings.IsEnabled;
-
-        if (!model.IsEnabled)
+        if (_emailOptions.DefaultProviderName != "SMTP")
         {
-            if (hasChanges && emailSettings.DefaultProviderName == SmtpEmailProvider.TechnicalName)
-            {
-                emailSettings.DefaultProviderName = null;
+            var model = new SmtpSettingsViewModel();
 
-                site.Put(emailSettings);
-            }
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-            settings.IsEnabled = false;
-        }
-        else
-        {
             if (string.IsNullOrEmpty(model.DefaultSender))
             {
                 context.Updater.ModelState.AddModelError(Prefix, nameof(model.DefaultSender), S["The Default Sender is a required field."]);
             }
-            else if (!_emailValidator.Validate(model.DefaultSender))
+
+            if (!_emailValidator.Validate(model.DefaultSender))
             {
                 context.Updater.ModelState.AddModelError(Prefix, nameof(model.DefaultSender), S["The Default Sender is invalid."]);
             }
 
-            if (model.DeliveryMethod == SmtpDeliveryMethod.Network
-                && string.IsNullOrWhiteSpace(model.Host))
+            if (model.DeliveryMethod == SmtpDeliveryMethod.Network && string.IsNullOrWhiteSpace(model.Host))
             {
                 context.Updater.ModelState.AddModelError(Prefix, nameof(model.Host), S["The {0} field is required.", "Host name"]);
             }
-            else if (model.DeliveryMethod == SmtpDeliveryMethod.SpecifiedPickupDirectory
+
+            if (model.DeliveryMethod == SmtpDeliveryMethod.SpecifiedPickupDirectory
                 && string.IsNullOrWhiteSpace(model.PickupDirectoryLocation))
             {
                 context.Updater.ModelState.AddModelError(Prefix, nameof(model.PickupDirectoryLocation), S["The {0} field is required.", "Pickup directory location"]);
             }
 
-            hasChanges |= model.DefaultSender != settings.DefaultSender;
-            hasChanges |= model.Host != settings.Host;
-            hasChanges |= model.Port != settings.Port;
-            hasChanges |= model.AutoSelectEncryption != settings.AutoSelectEncryption;
-            hasChanges |= model.RequireCredentials != settings.RequireCredentials;
-            hasChanges |= model.UseDefaultCredentials != settings.UseDefaultCredentials;
-            hasChanges |= model.EncryptionMethod != settings.EncryptionMethod;
-            hasChanges |= model.UserName != settings.UserName;
-            hasChanges |= model.ProxyHost != settings.ProxyHost;
-            hasChanges |= model.ProxyPort != settings.ProxyPort;
-            hasChanges |= model.IgnoreInvalidSslCertificate != settings.IgnoreInvalidSslCertificate;
-            hasChanges |= model.DeliveryMethod != settings.DeliveryMethod;
-            hasChanges |= model.PickupDirectoryLocation != settings.PickupDirectoryLocation;
-
-            // Store the password when there is a new value.
-            if (!string.IsNullOrWhiteSpace(model.Password))
-            {
-                // Encrypt the password.
-                var protector = _dataProtectionProvider.CreateProtector(SmtpOptionsConfiguration.ProtectorName);
-
-                var protectedPassword = protector.Protect(model.Password);
-
-                // Check if the password changed before setting the password.
-                hasChanges |= protectedPassword != settings.Password;
-
-                settings.Password = protectedPassword;
-            }
-
-            settings.IsEnabled = true;
             settings.DefaultSender = model.DefaultSender;
             settings.Host = model.Host;
             settings.Port = model.Port;
@@ -170,23 +125,15 @@ public sealed class SmtpSettingsDisplayDriver : SiteDisplayDriver<SmtpSettings>
             settings.IgnoreInvalidSslCertificate = model.IgnoreInvalidSslCertificate;
             settings.DeliveryMethod = model.DeliveryMethod;
             settings.PickupDirectoryLocation = model.PickupDirectoryLocation;
-        }
 
-        if (context.Updater.ModelState.IsValid)
-        {
-            if (settings.IsEnabled == true && string.IsNullOrEmpty(emailSettings.DefaultProviderName))
+            if (settings.Password != model.Password)
             {
-                // If we are enabling the only provider, set it as the default one.
-                emailSettings.DefaultProviderName = SmtpEmailProvider.TechnicalName;
-                site.Put(emailSettings);
+                var protector = _dataProtectionProvider.CreateProtector(SmtpOptionsConfiguration.ProtectorName);
 
-                hasChanges = true;
+                settings.Password = protector.Protect(model.Password);
             }
 
-            if (hasChanges)
-            {
-                _shellReleaseManager.RequestRelease();
-            }
+            _shellReleaseManager.RequestRelease();
         }
 
         return await EditAsync(site, settings, context);

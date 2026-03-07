@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Email;
+using OrchardCore.Email.Services;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;

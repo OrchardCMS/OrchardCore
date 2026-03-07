@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Email;
+using OrchardCore.Email.Services;
 using OrchardCore.Liquid;
 using OrchardCore.Settings;
 using OrchardCore.Users.Models;

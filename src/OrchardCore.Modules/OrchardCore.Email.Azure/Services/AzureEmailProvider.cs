@@ -5,14 +5,13 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Email.Azure.Models;
+using OrchardCore.Email.Services;
 using OrchardCore.Infrastructure;
 
 namespace OrchardCore.Email.Azure.Services;
 
 public class AzureEmailProvider : IEmailProvider
 {
-    public const string TechnicalName = "Azure";
-
     // Common supported file extensions and their corresponding MIME types for email attachments
     // using Azure Communication Services Email.
     // For more info <see href="https://learn.microsoft.com/en-us/azure/communication-services/concepts/email/email-attachment-allowed-mime-types" />
@@ -90,16 +89,18 @@ public class AzureEmailProvider : IEmailProvider
     protected readonly IStringLocalizer S;
 
     public AzureEmailProvider(
-        IOptions<AzureEmailOptions> options,
+        IOptionsSnapshot<AzureEmailOptions> options,
         ILogger<AzureEmailProvider> logger,
         IStringLocalizer<AzureEmailProvider> stringLocalizer)
     {
-        _providerOptions = options.Value;
+        _providerOptions = options.Get(Name);
         _logger = logger;
         S = stringLocalizer;
     }
 
     public LocalizedString DisplayName => S["Azure Communication Services"];
+
+    public string Name => "Azure";
 
     public virtual async Task<Result> SendAsync(MailMessage message)
     {

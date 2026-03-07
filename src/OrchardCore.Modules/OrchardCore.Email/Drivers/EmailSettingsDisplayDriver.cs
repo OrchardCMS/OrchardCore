@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -17,10 +16,8 @@ public sealed class EmailSettingsDisplayDriver : SiteDisplayDriver<EmailSettings
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
-    private readonly EmailOptions _emailOptions;
-    private readonly IEmailProviderResolver _emailProviderResolver;
     private readonly IShellReleaseManager _shellReleaseManager;
-    private readonly EmailProviderOptions _emailProviders;
+    private readonly IEnumerable<IEmailProvider> _emailProviders;
 
     internal readonly IStringLocalizer S;
 
@@ -30,18 +27,14 @@ public sealed class EmailSettingsDisplayDriver : SiteDisplayDriver<EmailSettings
     public EmailSettingsDisplayDriver(
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
-        IOptions<EmailProviderOptions> emailProviders,
-        IOptions<EmailOptions> emailOptions,
-        IEmailProviderResolver emailProviderResolver,
         IShellReleaseManager shellReleaseManager,
+        IEnumerable<IEmailProvider> emailProviders,
         IStringLocalizer<EmailSettingsDisplayDriver> stringLocalizer)
     {
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
-        _emailOptions = emailOptions.Value;
-        _emailProviderResolver = emailProviderResolver;
-        _emailProviders = emailProviders.Value;
         _shellReleaseManager = shellReleaseManager;
+        _emailProviders = emailProviders;
         S = stringLocalizer;
     }
     public override async Task<IDisplayResult> EditAsync(ISite site, EmailSettings settings, BuildEditorContext context)
@@ -53,10 +46,12 @@ public sealed class EmailSettingsDisplayDriver : SiteDisplayDriver<EmailSettings
 
         context.AddTenantReloadWarningWrapper();
 
+        var providers = _emailProviders.Select(p => new SelectListItem(p.DisplayName, p.Name));
+
         return Initialize<EmailSettingsViewModel>("EmailSettings_Edit", async model =>
         {
-            model.DefaultProvider = settings.DefaultProviderName ?? _emailOptions.DefaultProviderName;
-            model.Providers = await GetProviderOptionsAsync();
+            model.DefaultProvider = settings.DefaultProviderName;
+            model.Providers = providers.ToList();
         }).Location("Content:1#Providers")
         .OnGroup(SettingsGroupId);
     }
@@ -80,24 +75,5 @@ public sealed class EmailSettingsDisplayDriver : SiteDisplayDriver<EmailSettings
         }
 
         return await EditAsync(site, settings, context);
-    }
-
-    private async Task<SelectListItem[]> GetProviderOptionsAsync()
-    {
-        var options = new List<SelectListItem>();
-
-        foreach (var entry in _emailProviders.Providers)
-        {
-            if (!entry.Value.IsEnabled)
-            {
-                continue;
-            }
-
-            var provider = await _emailProviderResolver.GetAsync(entry.Key);
-
-            options.Add(new SelectListItem(provider.DisplayName, entry.Key));
-        }
-
-        return options.OrderBy(x => x.Text).ToArray();
     }
 }

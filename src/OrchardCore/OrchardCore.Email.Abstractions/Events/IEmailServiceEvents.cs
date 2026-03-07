@@ -1,4 +1,4 @@
-namespace OrchardCore.Email;
+namespace OrchardCore.Email.Events;
 
 public interface IEmailServiceEvents
 {

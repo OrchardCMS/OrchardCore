@@ -3,15 +3,14 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Email;
 using OrchardCore.Email.Azure;
-using OrchardCore.Email.Azure.Services;
 using OrchardCore.Email.Azure.ViewModels;
 using OrchardCore.Email.Services;
-using OrchardCore.Entities;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Settings;
@@ -25,6 +24,7 @@ public sealed class AzureEmailSettingsDisplayDriver : SiteDisplayDriver<AzureEma
     private readonly IAuthorizationService _authorizationService;
     private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly IEmailAddressValidator _emailValidator;
+    private readonly EmailOptions _emailOptions;
 
     internal readonly IStringLocalizer S;
 
@@ -34,6 +34,7 @@ public sealed class AzureEmailSettingsDisplayDriver : SiteDisplayDriver<AzureEma
         IAuthorizationService authorizationService,
         IDataProtectionProvider dataProtectionProvider,
         IEmailAddressValidator emailValidator,
+        IOptions<EmailOptions> emailOptions,
         IStringLocalizer<AzureEmailSettingsDisplayDriver> stringLocalizer)
     {
         _shellReleaseManager = shellReleaseManager;
@@ -41,6 +42,7 @@ public sealed class AzureEmailSettingsDisplayDriver : SiteDisplayDriver<AzureEma
         _authorizationService = authorizationService;
         _dataProtectionProvider = dataProtectionProvider;
         _emailValidator = emailValidator;
+        _emailOptions = emailOptions.Value;
         S = stringLocalizer;
     }
 
@@ -56,9 +58,8 @@ public sealed class AzureEmailSettingsDisplayDriver : SiteDisplayDriver<AzureEma
 
         return Initialize<AzureEmailSettingsViewModel>("AzureEmailSettings_Edit", model =>
         {
-            model.IsEnabled = settings.IsEnabled;
             model.DefaultSender = settings.DefaultSender;
-            model.HasConnectionString = !string.IsNullOrWhiteSpace(settings.ConnectionString);
+            model.ConnectionString = settings.ConnectionString;
         }).Location("Content:5#Azure Communication Services")
         .OnGroup(SettingsGroupId);
     }
@@ -70,74 +71,37 @@ public sealed class AzureEmailSettingsDisplayDriver : SiteDisplayDriver<AzureEma
             return null;
         }
 
-        var model = new AzureEmailSettingsViewModel();
-
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
-
-        var emailSettings = site.As<EmailSettings>();
-
-        var hasChanges = model.IsEnabled != settings.IsEnabled;
-
-        settings.IsEnabled = model.IsEnabled;
-
-        if (!model.IsEnabled)
+        if (_emailOptions.DefaultProviderName == "Azure")
         {
-            if (hasChanges && emailSettings.DefaultProviderName == AzureEmailProvider.TechnicalName)
-            {
-                emailSettings.DefaultProviderName = null;
+            var model = new AzureEmailSettingsViewModel();
 
-                site.Put(emailSettings);
-            }
-        }
-        else
-        {
-            hasChanges |= model.DefaultSender != settings.DefaultSender;
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
 
             if (string.IsNullOrEmpty(model.DefaultSender))
             {
                 context.Updater.ModelState.AddModelError(Prefix, nameof(model.DefaultSender), S["The Default Sender is a required field."]);
             }
-            else if (!_emailValidator.Validate(model.DefaultSender))
+
+            if (!_emailValidator.Validate(model.DefaultSender))
             {
                 context.Updater.ModelState.AddModelError(Prefix, nameof(model.DefaultSender), S["The Default Sender is invalid."]);
             }
 
-            settings.DefaultSender = model.DefaultSender;
-
-            if (string.IsNullOrWhiteSpace(model.ConnectionString)
-                && settings.ConnectionString is null)
+            if (string.IsNullOrWhiteSpace(model.ConnectionString))
             {
                 context.Updater.ModelState.AddModelError(Prefix, nameof(model.ConnectionString), S["Connection string is required."]);
             }
-            else if (!string.IsNullOrWhiteSpace(model.ConnectionString))
+
+            model.DefaultSender = settings.DefaultSender;
+
+            if (settings.ConnectionString != model.ConnectionString)
             {
-                // Encrypt the connection string.
                 var protector = _dataProtectionProvider.CreateProtector(AzureEmailOptionsConfiguration.ProtectorName);
 
-                var protectedConnection = protector.Protect(model.ConnectionString);
-
-                // Check if the connection string changed before setting it.
-                hasChanges |= protectedConnection != settings.ConnectionString;
-
-                settings.ConnectionString = protectedConnection;
-            }
-        }
-
-        if (context.Updater.ModelState.IsValid)
-        {
-            if (settings.IsEnabled && string.IsNullOrEmpty(emailSettings.DefaultProviderName))
-            {
-                // If we are enabling the only provider, set it as the default one.
-                emailSettings.DefaultProviderName = AzureEmailProvider.TechnicalName;
-                site.Put(emailSettings);
-
-                hasChanges = true;
+                settings.ConnectionString = protector.Protect(model.ConnectionString);
             }
 
-            if (hasChanges)
-            {
-                _shellReleaseManager.RequestRelease();
-            }
+            _shellReleaseManager.RequestRelease();
         }
 
         return await EditAsync(site, settings, context);

@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.Email;
+using OrchardCore.Email.Services;
 using OrchardCore.Users.Models;
 
 namespace OrchardCore.Notifications.Services;

@@ -5,8 +5,6 @@ namespace OrchardCore.Email.Azure;
 /// </summary>
 public class AzureEmailSettings
 {
-    public bool IsEnabled { get; set; }
-
     public string DefaultSender { get; set; }
 
     /// <summary>

@@ -14,11 +14,11 @@ public sealed class SmtpProviderOptionsConfigurations : IConfigureOptions<EmailP
 
     public void Configure(EmailProviderOptions options)
     {
-        var typeOptions = new EmailProviderTypeOptions(typeof(SmtpEmailProvider))
-        {
-            IsEnabled = _smtpOptions.IsEnabled,
-        };
+        //var typeOptions = new EmailProviderTypeOptions(typeof(SmtpEmailProvider))
+        //{
+        //    IsEnabled = _smtpOptions.IsEnabled,
+        //};
 
-        options.TryAddProvider(SmtpEmailProvider.TechnicalName, typeOptions);
+        //options.TryAddProvider(SmtpEmailProvider.TechnicalName, typeOptions);
     }
 }

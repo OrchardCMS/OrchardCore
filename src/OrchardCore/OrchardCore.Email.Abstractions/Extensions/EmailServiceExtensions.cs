@@ -1,3 +1,4 @@
+using OrchardCore.Email.Services;
 using OrchardCore.Infrastructure;
 
 namespace OrchardCore.Email;

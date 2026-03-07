@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Localization;
+using OrchardCore.Email.Events;
 
 namespace OrchardCore.Email.Services;
 

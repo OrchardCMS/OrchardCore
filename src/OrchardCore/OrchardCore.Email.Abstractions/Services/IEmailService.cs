@@ -1,6 +1,6 @@
 using OrchardCore.Infrastructure;
 
-namespace OrchardCore.Email;
+namespace OrchardCore.Email.Services;
 
 public interface IEmailService
 {

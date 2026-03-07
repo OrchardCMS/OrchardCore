@@ -7,14 +7,13 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MimeKit;
+using OrchardCore.Email.Services;
 using OrchardCore.Infrastructure;
 
 namespace OrchardCore.Email.Smtp.Services;
 
 public class SmtpEmailProvider : IEmailProvider
 {
-    public const string TechnicalName = "SMTP";
-
     private const string EmailExtension = ".eml";
 
     private readonly SmtpOptions _providerOptions;
@@ -35,7 +34,9 @@ public class SmtpEmailProvider : IEmailProvider
         S = stringLocalizer;
     }
 
-    public LocalizedString DisplayName => S["SMTP"];
+    public LocalizedString DisplayName => S["Simple Message Transfer Protocol (SMTP)"];
+
+    public string Name => "SMTP";
 
     public virtual async Task<Result> SendAsync(MailMessage message)
     {

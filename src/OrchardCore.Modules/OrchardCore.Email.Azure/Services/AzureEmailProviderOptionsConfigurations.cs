@@ -20,6 +20,6 @@ public sealed class AzureEmailProviderOptionsConfigurations : IConfigureOptions<
             IsEnabled = _azureOptions.IsEnabled,
         };
 
-        options.TryAddProvider(AzureEmailProvider.TechnicalName, typeOptions);
+        //options.TryAddProvider(AzureEmailProvider.TechnicalName, typeOptions);
     }
 }

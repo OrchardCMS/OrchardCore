@@ -1,4 +1,3 @@
-using Fluid.Parser;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -16,10 +15,9 @@ public sealed class AdminController : Controller
 {
     private readonly IAuthorizationService _authorizationService;
     private readonly INotifier _notifier;
+    private readonly EmailService _emailService;
     private readonly EmailOptions _emailOptions;
-    private readonly EmailProviderOptions _providerOptions;
-    private readonly IEmailService _emailService;
-    private readonly IEmailProviderResolver _emailProviderResolver;
+    private readonly IEnumerable<IEmailProvider> _emailProviders;
 
     internal readonly IHtmlLocalizer H;
     internal readonly IStringLocalizer S;
@@ -27,19 +25,17 @@ public sealed class AdminController : Controller
     public AdminController(
         IAuthorizationService authorizationService,
         INotifier notifier,
-        IOptions<EmailProviderOptions> providerOptions,
+        EmailService emailService,
         IOptions<EmailOptions> emailOptions,
-        IEmailService emailService,
-        IEmailProviderResolver emailProviderResolver,
+        IEnumerable<IEmailProvider> emailProviders,
         IHtmlLocalizer<AdminController> htmlLocalizer,
         IStringLocalizer<AdminController> stringLocalizer)
     {
         _authorizationService = authorizationService;
         _notifier = notifier;
-        _emailOptions = emailOptions.Value;
-        _providerOptions = providerOptions.Value;
         _emailService = emailService;
-        _emailProviderResolver = emailProviderResolver;
+        _emailOptions = emailOptions.Value;
+        _emailProviders = emailProviders;
         H = htmlLocalizer;
         S = stringLocalizer;
     }
@@ -52,14 +48,7 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        var model = new EmailTestViewModel()
-        {
-            Provider = _emailOptions.DefaultProviderName,
-        };
-
-        await PopulateModelAsync(model);
-
-        return View(model);
+        return View(GetModel());
     }
 
     [HttpPost]
@@ -100,9 +89,7 @@ public sealed class AdminController : Controller
             }
         }
 
-        await PopulateModelAsync(model);
-
-        return View(model);
+        return View(GetModel());
     }
 
     private static MailMessage GetMessage(EmailTestViewModel testSettings)
@@ -133,22 +120,9 @@ public sealed class AdminController : Controller
         return message;
     }
 
-    private async Task PopulateModelAsync(EmailTestViewModel model)
+    private EmailTestViewModel GetModel() => new EmailTestViewModel()
     {
-        var options = new List<SelectListItem>();
-
-        foreach (var entry in _providerOptions.Providers)
-        {
-            if (!entry.Value.IsEnabled)
-            {
-                continue;
-            }
-
-            var provider = await _emailProviderResolver.GetAsync(entry.Key);
-
-            options.Add(new SelectListItem(provider.DisplayName, entry.Key));
-        }
-
-        model.Providers = options.OrderBy(x => x.Text).ToArray();
-    }
+        Provider = _emailOptions.DefaultProviderName,
+        Providers = _emailProviders.Select(p => new SelectListItem(p.DisplayName, p.Name)).ToList(),
+    };
 }

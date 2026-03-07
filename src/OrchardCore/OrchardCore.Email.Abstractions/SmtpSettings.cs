@@ -3,8 +3,10 @@ namespace OrchardCore.Email;
 /// <summary>
 /// Represents a settings for SMTP.
 /// </summary>
-public class SmtpSettings : EmailProviderSettings
+public class SmtpSettings
 {
+    public string DefaultSender { get; set; }
+
     /// <summary>
     /// Gets or sets the SMTP server/host.
     /// </summary>
