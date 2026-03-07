@@ -16,7 +16,7 @@ using OpenIddict.Validation.DataProtection;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
-using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;

@@ -11,7 +11,7 @@ using OrchardCore.Admin.Controllers;
 using OrchardCore.Admin.Drivers;
 using OrchardCore.Admin.Models;
 using OrchardCore.DisplayManagement;
-using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Environment.Shell.Configuration;

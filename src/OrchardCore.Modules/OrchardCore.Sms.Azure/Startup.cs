@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Modules;
 using OrchardCore.Sms.Azure.Drivers;

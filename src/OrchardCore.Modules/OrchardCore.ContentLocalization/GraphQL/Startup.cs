@@ -1,8 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.Apis;
 using OrchardCore.ContentLocalization.Models;
 using OrchardCore.ContentLocalization.Records;
-using OrchardCore.ContentManagement.GraphQL;
 using OrchardCore.ContentManagement.GraphQL.Queries;
 using OrchardCore.Modules;
 

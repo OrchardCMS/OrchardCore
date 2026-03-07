@@ -1,5 +1,4 @@
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.ContentManagement.GraphQL;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Contents.GraphQL;

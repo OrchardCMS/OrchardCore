@@ -2,7 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.AuditTrail.Models;
 using OrchardCore.AuditTrail.Services.Models;
-using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.Modules;
 using OrchardCore.Users.AuditTrail.Drivers;
 using OrchardCore.Users.AuditTrail.Handlers;

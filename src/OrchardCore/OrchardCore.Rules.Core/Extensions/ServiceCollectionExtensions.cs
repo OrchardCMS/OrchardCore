@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Rules.Services;
 

@@ -1,11 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.Contents.Core.Services;
 
-namespace OrchardCore.Contents.Core;
+namespace Microsoft.Extensions.DependencyInjection;
 
-public static class ServiceCollectionExtensions
+public static class ContentsServiceCollectionExtensions
 {
     public static IServiceCollection AddContentServices(this IServiceCollection services)
     {

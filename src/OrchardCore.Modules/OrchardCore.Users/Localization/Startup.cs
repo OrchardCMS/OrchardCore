@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.Modules;
 using OrchardCore.Users.Localization.Drivers;
 using OrchardCore.Users.Localization.Providers;

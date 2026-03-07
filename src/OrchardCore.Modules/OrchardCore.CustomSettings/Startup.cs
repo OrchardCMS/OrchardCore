@@ -7,7 +7,7 @@ using OrchardCore.CustomSettings.Drivers;
 using OrchardCore.CustomSettings.Recipes;
 using OrchardCore.CustomSettings.Services;
 using OrchardCore.Deployment;
-using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;

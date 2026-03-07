@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.Google.Analytics;
 using OrchardCore.Google.Analytics.Drivers;
 using OrchardCore.Google.Analytics.Services;

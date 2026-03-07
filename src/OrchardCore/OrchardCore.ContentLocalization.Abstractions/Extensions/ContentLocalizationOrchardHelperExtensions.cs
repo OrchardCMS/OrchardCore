@@ -1,8 +1,9 @@
 using System.Globalization;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore;
 using OrchardCore.ContentLocalization;
 using OrchardCore.ContentManagement;
+
+namespace OrchardCore;
 
 /// <summary>
 /// Provides an extension methods for <see cref="IOrchardHelper"/>.

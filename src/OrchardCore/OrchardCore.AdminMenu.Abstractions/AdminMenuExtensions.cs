@@ -2,6 +2,7 @@ using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.AdminMenu.Models;
 using OrchardCore.AdminMenu.Services;
+using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Navigation;
 

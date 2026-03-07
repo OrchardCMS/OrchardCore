@@ -1,5 +1,5 @@
 using OrchardCore.BackgroundTasks;
-using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Navigation;
 using OrchardCore.Workflows.Trimming;

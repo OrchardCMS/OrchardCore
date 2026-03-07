@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.Email.Smtp.Drivers;
 using OrchardCore.Email.Smtp.Extensions;
 using OrchardCore.Email.Smtp.Services;

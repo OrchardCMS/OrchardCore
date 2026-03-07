@@ -1,6 +1,6 @@
 using Fluid;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Liquid;
 using OrchardCore.ContentManagement.Display.Placement;
@@ -8,9 +8,9 @@ using OrchardCore.ContentManagement.Display.ViewModels;
 using OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy;
 using OrchardCore.Liquid;
 
-namespace OrchardCore.ContentManagement.Display;
+namespace Microsoft.Extensions.DependencyInjection;
 
-public static class ServiceCollectionExtensions
+public static class ContentManagementDisplayServiceCollectionExtensions
 {
     public static IServiceCollection AddContentManagementDisplay(this IServiceCollection services)
     {

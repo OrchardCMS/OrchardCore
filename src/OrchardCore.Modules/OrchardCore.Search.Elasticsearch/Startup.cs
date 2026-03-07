@@ -6,7 +6,7 @@ using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Descriptors;
-using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Indexing.Core;
 using OrchardCore.Indexing.Models;

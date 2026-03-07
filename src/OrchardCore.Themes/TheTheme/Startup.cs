@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Admin.Models;
-using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.Modules;
 using TheTheme.Drivers;
 

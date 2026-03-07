@@ -2,7 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.Contents.ViewModels;
 using OrchardCore.Deployment;
-using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan;

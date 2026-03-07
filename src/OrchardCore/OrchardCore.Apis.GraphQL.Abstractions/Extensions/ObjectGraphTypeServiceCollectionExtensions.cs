@@ -1,10 +1,9 @@
 using GraphQL.Types;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-namespace OrchardCore.Apis;
+namespace Microsoft.Extensions.DependencyInjection;
 
-public static class ServiceCollectionExtensions
+public static class ObjectGraphTypeServiceCollectionExtensions
 {
     /// <summary>
     /// Registers a type describing input arguments.
