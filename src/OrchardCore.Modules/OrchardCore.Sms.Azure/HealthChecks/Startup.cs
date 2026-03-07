@@ -10,6 +10,6 @@ public sealed class Startup : StartupBase
     {
         services
             .AddHealthChecks()
-            .AddAzureSmsCheck();
+            .AddAzureSmsHealthCheck();
     }
 }
