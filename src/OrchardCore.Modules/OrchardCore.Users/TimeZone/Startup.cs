@@ -1,5 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.Modules;
 using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Models;

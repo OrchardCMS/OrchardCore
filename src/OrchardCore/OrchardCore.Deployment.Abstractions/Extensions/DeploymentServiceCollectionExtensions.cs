@@ -1,11 +1,11 @@
 using System.Text.Json.Serialization;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 
-namespace OrchardCore.Deployment;
+namespace Microsoft.Extensions.DependencyInjection;
 
-public static class ServiceCollectionExtensions
+public static class DeploymentServiceCollectionExtensions
 {
     public static IServiceCollection AddDeploymentTargetHandler<TImplementation>(this IServiceCollection services)
         where TImplementation : class, IDeploymentTargetHandler

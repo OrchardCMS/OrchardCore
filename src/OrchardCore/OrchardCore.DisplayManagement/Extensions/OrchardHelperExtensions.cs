@@ -3,31 +3,25 @@ using OrchardCore;
 using OrchardCore.Localization;
 
 #pragma warning disable CA1050 // Declare types in namespaces
-public static class RazorHelperExtensions
+public static class OrchardHelperExtensions
 {
     /// <summary>
     /// Returns the text writing directionality or the current request.
     /// </summary>
     /// <returns><c>"rtl"</c> if the current culture is Left To Right, <c>"ltr"</c> otherwise.</returns>
     public static string CultureDir(this IOrchardHelper _)
-    {
-        return CultureInfo.CurrentUICulture.GetLanguageDirection();
-    }
+        => CultureInfo.CurrentUICulture.GetLanguageDirection();
 
     /// <summary>
     /// Gets whether the culture is RTL or not.
     /// </summary>
     public static bool IsRightToLeft(this IOrchardHelper _)
-    {
-        return CultureInfo.CurrentUICulture.IsRightToLeft();
-    }
+        => CultureInfo.CurrentUICulture.IsRightToLeft();
 
     /// <summary>
     /// Returns the current culture name.
     /// </summary>
     public static string CultureName(this IOrchardHelper _)
-    {
-        return CultureInfo.CurrentUICulture.Name;
-    }
+        => CultureInfo.CurrentUICulture.Name;
 }
 #pragma warning restore CA1050 // Declare types in namespaces

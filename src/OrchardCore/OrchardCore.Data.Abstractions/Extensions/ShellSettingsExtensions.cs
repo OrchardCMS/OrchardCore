@@ -1,6 +1,6 @@
-using OrchardCore.Environment.Shell;
+using OrchardCore.Data;
 
-namespace OrchardCore.Data;
+namespace OrchardCore.Environment.Shell;
 
 public static class ShellSettingsExtensions
 {

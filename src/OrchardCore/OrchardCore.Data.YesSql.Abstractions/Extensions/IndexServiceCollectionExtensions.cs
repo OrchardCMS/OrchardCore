@@ -1,8 +1,8 @@
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using OrchardCore.Data;
 using YesSql.Indexes;
 
-namespace OrchardCore.Data;
+namespace Microsoft.Extensions.DependencyInjection;
 
 public static class IndexServiceCollectionExtensions
 {

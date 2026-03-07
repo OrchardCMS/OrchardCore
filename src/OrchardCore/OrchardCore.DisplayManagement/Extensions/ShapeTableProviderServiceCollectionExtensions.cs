@@ -7,7 +7,7 @@ namespace OrchardCore.DisplayManagement;
 /// <summary>
 /// Provides an extension methods for <see cref="IShapeTableProvider"/>.
 /// </summary>
-public static class ShapeTableProviderExtensions
+public static class ShapeTableProviderServiceCollectionExtensions
 {
     /// <summary>
     /// Registers required services for the specified <see cref="IShapeTableProvider"/>.

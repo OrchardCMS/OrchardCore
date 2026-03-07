@@ -19,7 +19,7 @@ using OrchardCore.Demo.Services;
 using OrchardCore.Demo.TagHelpers;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
-using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.Environment.Commands;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;

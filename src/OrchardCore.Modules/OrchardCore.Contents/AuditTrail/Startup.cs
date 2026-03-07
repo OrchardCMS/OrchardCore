@@ -12,7 +12,7 @@ using OrchardCore.Contents.AuditTrail.Models;
 using OrchardCore.Contents.AuditTrail.Services;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
-using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Contents.AuditTrail;

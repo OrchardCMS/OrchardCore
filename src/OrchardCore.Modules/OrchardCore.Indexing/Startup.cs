@@ -5,7 +5,7 @@ using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
-using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.Indexing.Core;
 using OrchardCore.Indexing.Core.Deployments;
 using OrchardCore.Indexing.Core.Handlers;

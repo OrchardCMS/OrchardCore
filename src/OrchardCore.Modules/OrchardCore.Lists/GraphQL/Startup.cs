@@ -1,6 +1,4 @@
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.Apis;
-using OrchardCore.ContentManagement.GraphQL;
 using OrchardCore.ContentManagement.GraphQL.Queries;
 using OrchardCore.ContentManagement.GraphQL.Queries.Types;
 using OrchardCore.Lists.Indexes;

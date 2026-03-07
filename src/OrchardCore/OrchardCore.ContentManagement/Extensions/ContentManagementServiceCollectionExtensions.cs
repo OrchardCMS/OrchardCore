@@ -1,5 +1,5 @@
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Cache;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
@@ -8,9 +8,9 @@ using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.Environment.Cache;
 
-namespace OrchardCore.ContentManagement;
+namespace Microsoft.Extensions.DependencyInjection;
 
-public static class ServiceCollectionExtensions
+public static class ContentManagementServiceCollectionExtensions
 {
     public static IServiceCollection AddContentManagement(this IServiceCollection services)
     {

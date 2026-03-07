@@ -1,10 +1,10 @@
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using OrchardCore.Email;
 using OrchardCore.Email.Core.Services;
 
-namespace OrchardCore.Email.Core;
+namespace Microsoft.Extensions.DependencyInjection;
 
-public static class ServiceCollectionExtensions
+public static class EmailServiceCollectionExtensions
 {
     public static IServiceCollection AddEmailServices(this IServiceCollection services)
     {

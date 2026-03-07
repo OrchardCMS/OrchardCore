@@ -1,5 +1,6 @@
-using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Apis.GraphQL;
+using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.GraphQL;
 using OrchardCore.ContentManagement.GraphQL.Options;
 using OrchardCore.ContentManagement.GraphQL.Queries;
 using OrchardCore.ContentManagement.GraphQL.Queries.Types;
@@ -8,9 +9,9 @@ using OrchardCore.ContentTypes.Events;
 using OrchardCore.Security.Permissions;
 using YesSql.Indexes;
 
-namespace OrchardCore.ContentManagement.GraphQL;
+namespace Microsoft.Extensions.DependencyInjection;
 
-public static class ServiceCollectionExtensions
+public static class GraphQLServiceCollectionExtensions
 {
     public static IServiceCollection AddContentGraphQL(this IServiceCollection services)
     {

@@ -1,10 +1,10 @@
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Settings;
 
-namespace OrchardCore.DisplayManagement.Handlers;
+namespace Microsoft.Extensions.DependencyInjection;
 
-public static class ServiceCollectionExtensions
+public static class DisplayDriverServiceCollectionExtensions
 {
     public static IServiceCollection AddSiteDisplayDriver<TDriver>(this IServiceCollection services)
         where TDriver : class, IDisplayDriver<ISite>
