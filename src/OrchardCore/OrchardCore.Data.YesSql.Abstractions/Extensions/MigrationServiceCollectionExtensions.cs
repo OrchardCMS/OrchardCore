@@ -1,7 +1,7 @@
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using OrchardCore.Data.Migration;
 
-namespace OrchardCore.Data.Migration;
+namespace Microsoft.Extensions.DependencyInjection;
 
 /// <summary>
 /// Provides extension methods for <see cref="IServiceCollection"/> to add YesSql migration <see cref="IDataMigration"/>.

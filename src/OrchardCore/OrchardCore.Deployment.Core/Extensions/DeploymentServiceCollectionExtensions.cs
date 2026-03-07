@@ -1,10 +1,9 @@
-using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Deployment.Core.Services;
 using OrchardCore.Deployment.Services;
 
-namespace OrchardCore.Deployment.Core;
+namespace Microsoft.Extensions.DependencyInjection;
 
-public static class ServiceCollectionExtensions
+public static class DeploymentServiceCollectionExtensions
 {
     public static IServiceCollection AddDeploymentServices(this IServiceCollection services)
     {

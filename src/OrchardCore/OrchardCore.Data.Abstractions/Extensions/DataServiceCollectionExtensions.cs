@@ -1,12 +1,12 @@
-using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Data;
 using OrchardCore.Environment.Shell.Builders;
 
-namespace OrchardCore.Data;
+namespace Microsoft.Extensions.DependencyInjection;
 
 /// <summary>
 /// Provides extension methods for <see cref="IServiceCollection"/> to add YesSQL <see cref="DatabaseProvider"/>s.
 /// </summary>
-public static class ServiceCollectionExtensions
+public static class DataServiceCollectionExtensions
 {
     /// <summary>
     ///
