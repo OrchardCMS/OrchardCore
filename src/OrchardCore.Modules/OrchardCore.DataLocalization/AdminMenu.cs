@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
+using OrchardCore.Localization;
 using OrchardCore.Localization.Data;
 using OrchardCore.Navigation;
 
@@ -17,14 +18,17 @@ public sealed class AdminMenu : AdminNavigationProvider
         { "action", "Index" },
     };
 
+    private readonly ILocalizationService _localizationService;
+
     internal readonly IStringLocalizer S;
 
-    public AdminMenu(IStringLocalizer<AdminMenu> stringLocalizer)
+    public AdminMenu(ILocalizationService localizationService, IStringLocalizer<AdminMenu> stringLocalizer)
     {
+        _localizationService = localizationService;
         S = stringLocalizer;
     }
 
-    protected override ValueTask BuildAsync(NavigationBuilder builder)
+    protected async override ValueTask BuildAsync(NavigationBuilder builder)
     {
         if (NavigationHelper.UseLegacyFormat())
         {
@@ -43,22 +47,26 @@ public sealed class AdminMenu : AdminNavigationProvider
                     )
                 );
 
-            return ValueTask.CompletedTask;
+            return;
         }
 
-        builder
-            .Add(S["Settings"], settings => settings
-                .Add(S["Localization"], S["Localization"].PrefixPosition(), localization => localization
-                    .Add(S["Dynamic Translations"], S["Dynamic Translations"].PrefixPosition(), translations => translations
-                        .AddClass("dynamic-translations")
-                        .Id("dynamicTranslations")
-                        .Permission(DataLocalizationPermissions.ViewDynamicTranslations)
-                        .Action(_routeValues["action"].ToString(), _routeValues["controller"].ToString(), _routeValues)
-                        .LocalNav()
-                    )
-                )
-            );
+        var supportedCultures = await _localizationService.GetSupportedCulturesAsync();
 
-        return ValueTask.CompletedTask;
+        if (supportedCultures.Length > 1)
+        {
+
+            builder
+                .Add(S["Settings"], settings => settings
+                    .Add(S["Localization"], S["Localization"].PrefixPosition(), localization => localization
+                        .Add(S["Dynamic Translations"], S["Dynamic Translations"].PrefixPosition(), translations => translations
+                            .AddClass("dynamic-translations")
+                            .Id("dynamicTranslations")
+                            .Permission(DataLocalizationPermissions.ViewDynamicTranslations)
+                            .Action(_routeValues["action"].ToString(), _routeValues["controller"].ToString(), _routeValues)
+                            .LocalNav()
+                        )
+                    )
+                );
+        }
     }
 }
