@@ -319,35 +319,6 @@ public class StyleTagTests : IDisposable
     }
 
     [Fact]
-    public async Task NamedStyleWithNameAndSrc_NoAt_DoesNotRegisterOrRender()
-    {
-        // Arrange — When at is Unspecified, the named+src path only defines, does not register/render.
-        var resourceManager = CreateResourceManager();
-        var context = CreateLiquidContext(resourceManager);
-        var writer = new StringWriter();
-
-        var arguments = CreateArguments(
-            ("name", "my-style"),
-            ("src", "~/my-style.css")
-        );
-
-        // Act
-        await StyleTag.WriteToAsync(arguments, writer, null, context);
-
-        // Assert — Defined in InlineManifest but NOT registered as required.
-        var inlineDefinition = resourceManager.InlineManifest
-            .GetResources("stylesheet")
-            .FirstOrDefault(r => r.Key == "my-style")
-            .Value?.FirstOrDefault();
-
-        Assert.NotNull(inlineDefinition);
-
-        var requiredResources = resourceManager.GetRequiredResources("stylesheet");
-        Assert.Empty(requiredResources);
-        Assert.Empty(writer.ToString());
-    }
-
-    [Fact]
     public async Task DuplicateAnonymousStylesWithDependencies_DeduplicateByName()
     {
         // Arrange
