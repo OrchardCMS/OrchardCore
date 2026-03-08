@@ -183,17 +183,13 @@ public class StyleTag
 
             PopulateDefinition(resourceManager.InlineManifest.DefineStyle(name));
 
-            // If At is specified then we also render it.
-            if (at != ResourceLocation.Unspecified)
+            var setting = resourceManager.RegisterResource("stylesheet", name);
+
+            PopulateSettings(setting, hasName: true);
+
+            if (at == ResourceLocation.Inline)
             {
-                var setting = resourceManager.RegisterResource("stylesheet", name);
-
-                PopulateSettings(setting, hasName: true);
-
-                if (at == ResourceLocation.Inline)
-                {
-                    resourceManager.RenderLocalStyle(setting, writer);
-                }
+                resourceManager.RenderLocalStyle(setting, writer);
             }
         }
 

@@ -157,17 +157,13 @@ public class StyleTagHelper : TagHelper
 
         PopulateResourceDefinition(_resourceManager.InlineManifest.DefineStyle(Name));
 
-        // If At is specified then we also render it.
-        if (At != ResourceLocation.Unspecified)
+        var setting = _resourceManager.RegisterResource("stylesheet", Name);
+
+        PopulateRequireSettings(setting, output, hasName: true);
+
+        if (At == ResourceLocation.Inline)
         {
-            var setting = _resourceManager.RegisterResource("stylesheet", Name);
-
-            PopulateRequireSettings(setting, output, hasName: true);
-
-            if (At == ResourceLocation.Inline)
-            {
-                RenderStyle(output, setting);
-            }
+            RenderStyle(output, setting);
         }
     }
 
