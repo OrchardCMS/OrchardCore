@@ -200,6 +200,8 @@ public class AdminController : Controller
 
     private async Task<IList<CultureViewModel>> GetAllowedCulturesAsync()
     {
+        var defaultCulture = await _localizationService.GetDefaultCultureAsync();
+
         var supportedCultures = await _localizationService.GetSupportedCulturesAsync();
 
         var canManageAll = await _authorizationService.AuthorizeAsync(User, DataLocalizationPermissions.ManageTranslations);
@@ -208,7 +210,7 @@ public class AdminController : Controller
 
         var cultures = new List<CultureViewModel>();
 
-        foreach (var cultureName in supportedCultures)
+        foreach (var cultureName in supportedCultures.Where(c => c != defaultCulture))
         {
             var cultureInfo = CultureInfo.GetCultureInfo(cultureName);
             var displayName = !string.IsNullOrEmpty(cultureInfo.DisplayName)
