@@ -17,10 +17,10 @@ public sealed class AlternatesCollection : IEnumerable<string>
     private List<string> _items;
 
     // First array segment (common case: only one).
-    private string[] _segment;
+    private ArraySegment<string> _segment;
 
     // Additional array segments, allocated only when more than one segment is added.
-    private List<string[]> _additionalSegments;
+    private List<ArraySegment<string>> _additionalSegments;
 
     private int _count;
 
@@ -39,26 +39,26 @@ public sealed class AlternatesCollection : IEnumerable<string>
     {
         get
         {
-            if (_segment != null)
+            if (_segment.Array != null)
             {
-                if (index < _segment.Length)
+                if (index < _segment.Count)
                 {
                     return _segment[index];
                 }
 
-                index -= _segment.Length;
+                index -= _segment.Count;
 
                 if (_additionalSegments != null)
                 {
                     for (var s = 0; s < _additionalSegments.Count; s++)
                     {
                         var segment = _additionalSegments[s];
-                        if (index < segment.Length)
+                        if (index < segment.Count)
                         {
                             return segment[index];
                         }
 
-                        index -= segment.Length;
+                        index -= segment.Count;
                     }
                 }
             }
@@ -84,12 +84,12 @@ public sealed class AlternatesCollection : IEnumerable<string>
             if (_additionalSegments != null && _additionalSegments.Count > 0)
             {
                 var lastSegment = _additionalSegments[^1];
-                return lastSegment[^1];
+                return lastSegment[lastSegment.Count - 1];
             }
 
-            if (_segment != null)
+            if (_segment.Array != null)
             {
-                return _segment[^1];
+                return _segment[_segment.Count - 1];
             }
 
             return "";
@@ -135,18 +135,39 @@ public sealed class AlternatesCollection : IEnumerable<string>
         }
 
         // Item must be in a segment.
-        if (_segment != null)
+        if (_segment.Array != null)
         {
-            var index = Array.IndexOf(_segment, alternate);
+            var index = Array.IndexOf(_segment.Array, alternate, _segment.Offset, _segment.Count);
             if (index >= 0)
             {
-                _segment = RemoveFromSegment(_segment, index);
+                var localIndex = index - _segment.Offset;
 
-                if (_segment == null && _additionalSegments != null && _additionalSegments.Count > 0)
+                if (_segment.Count == 1)
                 {
-                    // Promote the first additional segment to be the main segment to avoid fragmentation.
-                    _segment = _additionalSegments[0];
-                    _additionalSegments.RemoveAt(0);
+                    _segment = default;
+
+                    if (_additionalSegments != null && _additionalSegments.Count > 0)
+                    {
+                        // Promote the first additional segment to be the main segment.
+                        _segment = _additionalSegments[0];
+                        _additionalSegments.RemoveAt(0);
+                    }
+                }
+                else if (localIndex == 0)
+                {
+                    // Remove from beginning: adjust offset
+                    _segment = new ArraySegment<string>(_segment.Array, _segment.Offset + 1, _segment.Count - 1);
+                }
+                else if (localIndex == _segment.Count - 1)
+                {
+                    // Remove from end: adjust count
+                    _segment = new ArraySegment<string>(_segment.Array, _segment.Offset, _segment.Count - 1);
+                }
+                else
+                {
+                    // Remove from middle: need to copy
+                    var newSegment = RemoveFromSegment(_segment, localIndex);
+                    _segment = new ArraySegment<string>(newSegment);
                 }
 
                 return;
@@ -157,17 +178,30 @@ public sealed class AlternatesCollection : IEnumerable<string>
                 for (var i = 0; i < _additionalSegments.Count; i++)
                 {
                     var segment = _additionalSegments[i];
-                    index = Array.IndexOf(segment, alternate);
+                    index = Array.IndexOf(segment.Array, alternate, segment.Offset, segment.Count);
                     if (index >= 0)
                     {
-                        var newSegment = RemoveFromSegment(segment, index);
-                        if (newSegment == null)
+                        var localIndex = index - segment.Offset;
+
+                        if (segment.Count == 1)
                         {
                             _additionalSegments.RemoveAt(i);
                         }
+                        else if (localIndex == 0)
+                        {
+                            // Remove from beginning: adjust offset
+                            _additionalSegments[i] = new ArraySegment<string>(segment.Array, segment.Offset + 1, segment.Count - 1);
+                        }
+                        else if (localIndex == segment.Count - 1)
+                        {
+                            // Remove from end: adjust count
+                            _additionalSegments[i] = new ArraySegment<string>(segment.Array, segment.Offset, segment.Count - 1);
+                        }
                         else
                         {
-                            _additionalSegments[i] = newSegment;
+                            // Remove from middle: need to copy
+                            var newSegment = RemoveFromSegment(segment, localIndex);
+                            _additionalSegments[i] = new ArraySegment<string>(newSegment);
                         }
 
                         return;
@@ -188,7 +222,7 @@ public sealed class AlternatesCollection : IEnumerable<string>
 
         _dictionary.Clear();
         _items?.Clear();
-        _segment = null;
+        _segment = default;
         _additionalSegments?.Clear();
         _count = 0;
     }
@@ -204,7 +238,7 @@ public sealed class AlternatesCollection : IEnumerable<string>
 
     public void AddRange(AlternatesCollection alternates)
     {
-        if (alternates._segment != null)
+        if (alternates._segment.Array != null)
         {
             AddRange(alternates._segment);
 
@@ -252,36 +286,85 @@ public sealed class AlternatesCollection : IEnumerable<string>
             return;
         }
 
+        AddRange(new ArraySegment<string>(alternates));
+    }
+
+    private void AddRange(ArraySegment<string> segment)
+    {
+        if (segment.Count == 0)
+        {
+            return;
+        }
+
         EnsureMutable();
 
-        // Check for duplicates before adding the segment.
-        for (var i = 0; i < alternates.Length; i++)
+        // Find the first non-duplicate element
+        var start = segment.Offset;
+        var end = segment.Offset + segment.Count;
+
+        while (start < end && _dictionary.ContainsKey(segment.Array[start]))
         {
-            if (_dictionary.ContainsKey(alternates[i]))
+            start++;
+        }
+
+        // All elements are duplicates
+        if (start == end)
+        {
+            return;
+        }
+
+        // Find the last non-duplicate element
+        while (end > start && _dictionary.ContainsKey(segment.Array[end - 1]))
+        {
+            end--;
+        }
+
+        // Check if there are duplicates in the middle
+        var hasMiddleDuplicates = false;
+        for (var i = start; i < end; i++)
+        {
+            if (_dictionary.ContainsKey(segment.Array[i]))
             {
-                // If any alternate already exists, fall back to adding them one by one to preserve call order.
-                AddRange((IEnumerable<string>)alternates);
-                return;
+                hasMiddleDuplicates = true;
+                break;
             }
         }
+
+        if (hasMiddleDuplicates)
+        {
+            // Duplicates scattered throughout: fall back to individual additions
+            for (var i = start; i < end; i++)
+            {
+                if (_dictionary.TryAdd(segment.Array[i], segment.Array[i]))
+                {
+                    _items ??= [];
+                    _items.Add(segment.Array[i]);
+                    _count++;
+                }
+            }
+            return;
+        }
+
+        // No duplicates in the range [start, end) - use zero-copy segment
+        var newSegment = new ArraySegment<string>(segment.Array, start, end - start);
 
         // Flush any pending Add() items as a segment first so the array
         // segment is appended after them, preserving call order.
         FlushItems();
 
-        AppendSegment(alternates);
+        AppendSegment(newSegment);
 
-        for (var i = 0; i < alternates.Length; i++)
+        for (var i = start; i < end; i++)
         {
-            _dictionary.Add(alternates[i], alternates[i]);
+            _dictionary.Add(segment.Array[i], segment.Array[i]);
         }
 
-        _count += alternates.Length;
+        _count += newSegment.Count;
     }
 
-    private void AppendSegment(string[] segment)
+    private void AppendSegment(ArraySegment<string> segment)
     {
-        if (_segment == null)
+        if (_segment.Array == null)
         {
             _segment = segment;
         }
@@ -303,28 +386,24 @@ public sealed class AlternatesCollection : IEnumerable<string>
             return;
         }
 
-        AppendSegment([.. _items]);
+        var itemsArray = _items.ToArray();
+        AppendSegment(new ArraySegment<string>(itemsArray));
         _items.Clear();
     }
 
-    private static string[] RemoveFromSegment(string[] segment, int index)
+    private static string[] RemoveFromSegment(ArraySegment<string> segment, int localIndex)
     {
-        if (segment.Length == 1)
+        // Create a new array without the element at localIndex
+        var newSegment = new string[segment.Count - 1];
+
+        if (localIndex > 0)
         {
-            return null;
+            Array.Copy(segment.Array, segment.Offset, newSegment, 0, localIndex);
         }
 
-        // Use array slicing for better performance
-        var newSegment = new string[segment.Length - 1];
-
-        if (index > 0)
+        if (localIndex < segment.Count - 1)
         {
-            Array.Copy(segment, 0, newSegment, 0, index);
-        }
-
-        if (index < segment.Length - 1)
-        {
-            Array.Copy(segment, index + 1, newSegment, index, segment.Length - index - 1);
+            Array.Copy(segment.Array, segment.Offset + localIndex + 1, newSegment, localIndex, segment.Count - localIndex - 1);
         }
 
         return newSegment;
@@ -350,9 +429,9 @@ public sealed class AlternatesCollection : IEnumerable<string>
 
     private IEnumerable<string> Enumerate()
     {
-        if (_segment != null)
+        if (_segment.Array != null)
         {
-            for (var i = 0; i < _segment.Length; i++)
+            for (var i = 0; i < _segment.Count; i++)
             {
                 yield return _segment[i];
             }
@@ -362,7 +441,7 @@ public sealed class AlternatesCollection : IEnumerable<string>
                 for (var s = 0; s < _additionalSegments.Count; s++)
                 {
                     var segment = _additionalSegments[s];
-                    for (var i = 0; i < segment.Length; i++)
+                    for (var i = 0; i < segment.Count; i++)
                     {
                         yield return segment[i];
                     }

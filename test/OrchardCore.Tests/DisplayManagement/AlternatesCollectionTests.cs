@@ -958,4 +958,176 @@ public class AlternatesCollectionTests
         Assert.Equal("A", collection[0]);
         Assert.Equal("B", collection[1]);
     }
+
+    [Fact]
+    public void AddRangeArray_WithDuplicatesAtStart_UsesSlice()
+    {
+        var collection = new AlternatesCollection();
+
+        collection.Add("A");
+        collection.AddRange(new[] { "A", "B", "C", "D" });
+
+        // Should skip "A" and use zero-copy slice for B, C, D
+        Assert.Equal(4, collection.Count);
+        Assert.Equal("A", collection[0]);
+        Assert.Equal("B", collection[1]);
+        Assert.Equal("C", collection[2]);
+        Assert.Equal("D", collection[3]);
+    }
+
+    [Fact]
+    public void AddRangeArray_WithDuplicatesAtEnd_UsesSlice()
+    {
+        var collection = new AlternatesCollection();
+
+        collection.Add("D");
+        collection.AddRange(new[] { "A", "B", "C", "D" });
+
+        // Should skip trailing "D" and use zero-copy slice for A, B, C
+        Assert.Equal(4, collection.Count);
+        Assert.Equal("D", collection[0]);
+        Assert.Equal("A", collection[1]);
+        Assert.Equal("B", collection[2]);
+        Assert.Equal("C", collection[3]);
+    }
+
+    [Fact]
+    public void AddRangeArray_WithDuplicatesAtBothEnds_UsesSlice()
+    {
+        var collection = new AlternatesCollection();
+
+        collection.Add("A");
+        collection.Add("E");
+        collection.AddRange(new[] { "A", "B", "C", "D", "E" });
+
+        // Should skip "A" at start and "E" at end, use zero-copy slice for B, C, D
+        Assert.Equal(5, collection.Count);
+        Assert.Equal("A", collection[0]);
+        Assert.Equal("E", collection[1]);
+        Assert.Equal("B", collection[2]);
+        Assert.Equal("C", collection[3]);
+        Assert.Equal("D", collection[4]);
+    }
+
+    [Fact]
+    public void AddRangeArray_AllDuplicates_IgnoresAll()
+    {
+        var collection = new AlternatesCollection();
+
+        collection.AddRange(new[] { "A", "B", "C" });
+        collection.AddRange(new[] { "A", "B", "C" });
+
+        Assert.Equal(3, collection.Count);
+        Assert.Equal("A", collection[0]);
+        Assert.Equal("B", collection[1]);
+        Assert.Equal("C", collection[2]);
+    }
+
+    [Fact]
+    public void AddRangeArray_WithMiddleDuplicate_FallsBackToIndividualAdd()
+    {
+        var collection = new AlternatesCollection();
+
+        collection.Add("C");
+        collection.AddRange(new[] { "A", "B", "C", "D", "E" });
+
+        // Middle duplicate "C" should trigger fallback to individual additions
+        Assert.Equal(5, collection.Count);
+        Assert.True(collection.Contains("A"));
+        Assert.True(collection.Contains("B"));
+        Assert.True(collection.Contains("C"));
+        Assert.True(collection.Contains("D"));
+        Assert.True(collection.Contains("E"));
+    }
+
+    [Fact]
+    public void Remove_FromSlicedSegment_Beginning_AdjustsOffset()
+    {
+        var collection = new AlternatesCollection();
+
+        collection.Add("X");
+        collection.AddRange(new[] { "X", "A", "B", "C" }); // Will slice to [A, B, C]
+
+        collection.Remove("A");
+
+        Assert.Equal(3, collection.Count);
+        Assert.Equal("X", collection[0]);
+        Assert.Equal("B", collection[1]);
+        Assert.Equal("C", collection[2]);
+    }
+
+    [Fact]
+    public void Remove_FromSlicedSegment_End_AdjustsCount()
+    {
+        var collection = new AlternatesCollection();
+
+        collection.Add("X");
+        collection.AddRange(new[] { "X", "A", "B", "C" }); // Will slice to [A, B, C]
+
+        collection.Remove("C");
+
+        Assert.Equal(3, collection.Count);
+        Assert.Equal("X", collection[0]);
+        Assert.Equal("A", collection[1]);
+        Assert.Equal("B", collection[2]);
+    }
+
+    [Fact]
+    public void Remove_FromSlicedSegment_Middle_CopiesArray()
+    {
+        var collection = new AlternatesCollection();
+
+        collection.Add("X");
+        collection.AddRange(new[] { "X", "A", "B", "C" }); // Will slice to [A, B, C]
+
+        collection.Remove("B");
+
+        Assert.Equal(3, collection.Count);
+        Assert.Equal("X", collection[0]);
+        Assert.Equal("A", collection[1]);
+        Assert.Equal("C", collection[2]);
+    }
+
+    [Fact]
+    public void Indexer_OnSlicedSegment_ReturnsCorrectValues()
+    {
+        var collection = new AlternatesCollection();
+
+        collection.Add("X");
+        collection.Add("Y");
+        collection.AddRange(new[] { "X", "A", "B", "C", "Y" }); // Will slice to [A, B, C]
+
+        Assert.Equal(5, collection.Count);
+        Assert.Equal("X", collection[0]);
+        Assert.Equal("Y", collection[1]);
+        Assert.Equal("A", collection[2]);
+        Assert.Equal("B", collection[3]);
+        Assert.Equal("C", collection[4]);
+    }
+
+    [Fact]
+    public void AddRangeArray_EdgeDuplicates_PreservesZeroCopyForLargeArrays()
+    {
+        var collection = new AlternatesCollection();
+
+        // Create a large array with duplicates at edges
+        var largeArray = new string[1000];
+        for (var i = 0; i < 1000; i++)
+        {
+            largeArray[i] = $"Item{i}";
+        }
+
+        // Add edge items to collection first
+        collection.Add("Item0");
+        collection.Add("Item999");
+
+        // AddRange should use zero-copy slice for middle 998 items
+        collection.AddRange(largeArray);
+
+        Assert.Equal(1000, collection.Count);
+        Assert.Equal("Item0", collection[0]);
+        Assert.Equal("Item999", collection[1]);
+        Assert.Equal("Item1", collection[2]);
+        Assert.Equal("Item998", collection[999]);
+    }
 }
