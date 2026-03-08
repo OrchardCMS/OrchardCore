@@ -1,6 +1,7 @@
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
-using OrchardCore.Localization;
+using Microsoft.Extensions.Options;
 using OrchardCore.Localization.Data;
 using OrchardCore.Navigation;
 
@@ -18,13 +19,13 @@ public sealed class AdminMenu : AdminNavigationProvider
         { "action", "Index" },
     };
 
-    private readonly ILocalizationService _localizationService;
+    private readonly RequestLocalizationOptions _requestLocalizationOptions;
 
     internal readonly IStringLocalizer S;
 
-    public AdminMenu(ILocalizationService localizationService, IStringLocalizer<AdminMenu> stringLocalizer)
+    public AdminMenu(IOptions<RequestLocalizationOptions> requestLocalizationOptions, IStringLocalizer<AdminMenu> stringLocalizer)
     {
-        _localizationService = localizationService;
+        _requestLocalizationOptions = requestLocalizationOptions.Value;
         S = stringLocalizer;
     }
 
@@ -50,9 +51,7 @@ public sealed class AdminMenu : AdminNavigationProvider
             return;
         }
 
-        var supportedCultures = await _localizationService.GetSupportedCulturesAsync();
-
-        if (supportedCultures.Length > 1)
+        if (_requestLocalizationOptions.SupportedCultures.Count > 1)
         {
 
             builder
