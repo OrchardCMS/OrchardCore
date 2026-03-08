@@ -1130,4 +1130,164 @@ public class AlternatesCollectionTests
         Assert.Equal("Item1", collection[2]);
         Assert.Equal("Item998", collection[999]);
     }
+
+    [Fact]
+    public void AddRangeArray_WithMiddleDuplicate_KeepsLargerSliceAtStart()
+    {
+        var collection = new AlternatesCollection();
+
+        // Add a middle item that will be a duplicate
+        collection.Add("C");
+
+        // Array: [A, B, C, D, E] where C is a duplicate
+        // Before C: 2 items (A, B)
+        // After C: 2 items (D, E)
+        // Should keep the larger or equal slice (in this case, the first one by default)
+        collection.AddRange(new[] { "A", "B", "C", "D", "E" });
+
+        Assert.Equal(5, collection.Count);
+        Assert.Equal("C", collection[0]);  // Original C
+        Assert.Equal("A", collection[1]);  // From segment
+        Assert.Equal("B", collection[2]);  // From segment
+        Assert.Equal("D", collection[3]);  // Added individually
+        Assert.Equal("E", collection[4]);  // Added individually
+    }
+
+    [Fact]
+    public void AddRangeArray_WithMiddleDuplicate_KeepsLargerSliceAtEnd()
+    {
+        var collection = new AlternatesCollection();
+
+        // Add early items that will be duplicates
+        collection.Add("B");
+
+        // Array: [A, B, C, D, E, F, G] where B is a duplicate
+        // Before B: 1 item (A)
+        // After B: 5 items (C, D, E, F, G)
+        // Should keep the larger slice after the duplicate
+        collection.AddRange(new[] { "A", "B", "C", "D", "E", "F", "G" });
+
+        Assert.Equal(7, collection.Count);
+        Assert.Equal("B", collection[0]);  // Original B
+        Assert.Equal("A", collection[1]);  // Added individually
+        Assert.Equal("C", collection[2]);  // From segment
+        Assert.Equal("D", collection[3]);  // From segment
+        Assert.Equal("E", collection[4]);  // From segment
+        Assert.Equal("F", collection[5]);  // From segment
+        Assert.Equal("G", collection[6]);  // From segment
+    }
+
+    [Fact]
+    public void AddRangeArray_WithMultipleMiddleDuplicates_KeepsLargestContiguousSlice()
+    {
+        var collection = new AlternatesCollection();
+
+        // Add items that will be duplicates in the middle
+        collection.Add("C");
+        collection.Add("E");
+
+        // Array: [A, B, C, D, E, F, G, H, I] where C and E are duplicates
+        // Before first duplicate (C): 2 items (A, B)
+        // After last duplicate (E): 4 items (F, G, H, I)
+        // Should keep the larger slice after the last duplicate
+        collection.AddRange(new[] { "A", "B", "C", "D", "E", "F", "G", "H", "I" });
+
+        Assert.Equal(9, collection.Count);
+        Assert.True(collection.Contains("A"));
+        Assert.True(collection.Contains("B"));
+        Assert.True(collection.Contains("C"));
+        Assert.True(collection.Contains("D"));
+        Assert.True(collection.Contains("E"));
+        Assert.True(collection.Contains("F"));
+        Assert.True(collection.Contains("G"));
+        Assert.True(collection.Contains("H"));
+        Assert.True(collection.Contains("I"));
+
+        // Verify order: original C, E, then A, B, D as items, then F-I as segment
+        Assert.Equal("C", collection[0]);  // Original
+        Assert.Equal("E", collection[1]);  // Original
+        // A, B, D added individually (order depends on when they were added relative to segment)
+        // F, G, H, I should be from the zero-copy segment
+        var list = collection.ToList();
+        Assert.Contains("F", list.Skip(2));
+        Assert.Contains("G", list.Skip(2));
+        Assert.Contains("H", list.Skip(2));
+        Assert.Contains("I", list.Skip(2));
+    }
+
+    [Fact]
+    public void AddRangeArray_OnlyOneDuplicateInMiddle_KeepsEqualSlices()
+    {
+        var collection = new AlternatesCollection();
+
+        collection.Add("D");
+
+        // Array: [A, B, C, D, E, F, G] where D is the only duplicate
+        // Before D: 3 items (A, B, C)
+        // After D: 3 items (E, F, G)
+        // Should keep the first slice when equal
+        collection.AddRange(new[] { "A", "B", "C", "D", "E", "F", "G" });
+
+        Assert.Equal(7, collection.Count);
+        Assert.True(collection.Contains("A"));
+        Assert.True(collection.Contains("B"));
+        Assert.True(collection.Contains("C"));
+        Assert.True(collection.Contains("D"));
+        Assert.True(collection.Contains("E"));
+        Assert.True(collection.Contains("F"));
+        Assert.True(collection.Contains("G"));
+    }
+
+    [Fact]
+    public void AddRangeArray_LargeArrayWithSingleMiddleDuplicate_OptimizesCorrectly()
+    {
+        var collection = new AlternatesCollection();
+
+        // Create array with 1000 items where only item 5 is a duplicate
+        var array = new string[1000];
+        for (var i = 0; i < 1000; i++)
+        {
+            array[i] = $"Item{i}";
+        }
+
+        collection.Add("Item5");
+
+        // Should keep the larger slice (after Item5: 994 items) as zero-copy segment
+        collection.AddRange(array);
+
+        Assert.Equal(1000, collection.Count);
+        Assert.Equal("Item5", collection[0]);  // Original
+        
+        // Verify all items are present
+        for (var i = 0; i < 1000; i++)
+        {
+            Assert.True(collection.Contains($"Item{i}"));
+        }
+    }
+
+    [Fact]
+    public void AddRangeArray_ConsecutiveDuplicatesInMiddle_TreatAsOneBlock()
+    {
+        var collection = new AlternatesCollection();
+
+        collection.Add("C");
+        collection.Add("D");
+        collection.Add("E");
+
+        // Array: [A, B, C, D, E, F, G, H] where C, D, E are consecutive duplicates
+        // Before first duplicate: 2 items (A, B)
+        // After last duplicate: 3 items (F, G, H)
+        // Should keep the larger slice after the duplicates
+        collection.AddRange(new[] { "A", "B", "C", "D", "E", "F", "G", "H" });
+
+        Assert.Equal(8, collection.Count);
+        Assert.True(collection.Contains("A"));
+        Assert.True(collection.Contains("B"));
+        Assert.True(collection.Contains("C"));
+        Assert.True(collection.Contains("D"));
+        Assert.True(collection.Contains("E"));
+        Assert.True(collection.Contains("F"));
+        Assert.True(collection.Contains("G"));
+        Assert.True(collection.Contains("H"));
+    }
 }

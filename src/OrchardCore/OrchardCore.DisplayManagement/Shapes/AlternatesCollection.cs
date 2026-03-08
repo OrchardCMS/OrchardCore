@@ -301,7 +301,7 @@ public sealed class AlternatesCollection : IEnumerable<string>
         // Find the first non-duplicate element
         var start = segment.Offset;
         var end = segment.Offset + segment.Count;
-
+        
         while (start < end && _dictionary.ContainsKey(segment.Array[start]))
         {
             start++;
@@ -320,20 +320,67 @@ public sealed class AlternatesCollection : IEnumerable<string>
         }
 
         // Check if there are duplicates in the middle
-        var hasMiddleDuplicates = false;
+        var firstMiddleDuplicate = -1;
         for (var i = start; i < end; i++)
         {
             if (_dictionary.ContainsKey(segment.Array[i]))
             {
-                hasMiddleDuplicates = true;
+                firstMiddleDuplicate = i;
                 break;
             }
         }
 
-        if (hasMiddleDuplicates)
+        if (firstMiddleDuplicate == -1)
         {
-            // Duplicates scattered throughout: fall back to individual additions
+            // No duplicates in the range [start, end) - use zero-copy segment for everything
+            var newSegment = new ArraySegment<string>(segment.Array, start, end - start);
+            FlushItems();
+            AppendSegment(newSegment);
+
             for (var i = start; i < end; i++)
+            {
+                _dictionary.Add(segment.Array[i], segment.Array[i]);
+            }
+
+            _count += newSegment.Count;
+            return;
+        }
+
+        // There are duplicates in the middle. Keep the larger contiguous slice.
+        var beforeDuplicateCount = firstMiddleDuplicate - start;
+
+        // Find the last duplicate in the middle section
+        var lastMiddleDuplicate = firstMiddleDuplicate;
+        for (var i = firstMiddleDuplicate + 1; i < end; i++)
+        {
+            if (_dictionary.ContainsKey(segment.Array[i]))
+            {
+                lastMiddleDuplicate = i;
+            }
+        }
+
+        var afterLastDuplicateStart = lastMiddleDuplicate + 1;
+        var afterDuplicateCount = end - afterLastDuplicateStart;
+
+        if (beforeDuplicateCount > afterDuplicateCount)
+        {
+            // Keep the slice before the first duplicate as a zero-copy segment
+            if (beforeDuplicateCount > 0)
+            {
+                var beforeSegment = new ArraySegment<string>(segment.Array, start, beforeDuplicateCount);
+                FlushItems();
+                AppendSegment(beforeSegment);
+
+                for (var i = start; i < firstMiddleDuplicate; i++)
+                {
+                    _dictionary.Add(segment.Array[i], segment.Array[i]);
+                }
+
+                _count += beforeDuplicateCount;
+            }
+
+            // Add remaining non-duplicate items individually
+            for (var i = firstMiddleDuplicate; i < end; i++)
             {
                 if (_dictionary.TryAdd(segment.Array[i], segment.Array[i]))
                 {
@@ -342,24 +389,36 @@ public sealed class AlternatesCollection : IEnumerable<string>
                     _count++;
                 }
             }
-            return;
         }
-
-        // No duplicates in the range [start, end) - use zero-copy segment
-        var newSegment = new ArraySegment<string>(segment.Array, start, end - start);
-
-        // Flush any pending Add() items as a segment first so the array
-        // segment is appended after them, preserving call order.
-        FlushItems();
-
-        AppendSegment(newSegment);
-
-        for (var i = start; i < end; i++)
+        else
         {
-            _dictionary.Add(segment.Array[i], segment.Array[i]);
-        }
+            // Keep the slice after the last duplicate as a zero-copy segment
+            // First add items before and including duplicates individually
+            for (var i = start; i <= lastMiddleDuplicate; i++)
+            {
+                if (_dictionary.TryAdd(segment.Array[i], segment.Array[i]))
+                {
+                    _items ??= [];
+                    _items.Add(segment.Array[i]);
+                    _count++;
+                }
+            }
 
-        _count += newSegment.Count;
+            // Then add the trailing slice as a segment
+            if (afterDuplicateCount > 0)
+            {
+                var afterSegment = new ArraySegment<string>(segment.Array, afterLastDuplicateStart, afterDuplicateCount);
+                FlushItems();
+                AppendSegment(afterSegment);
+
+                for (var i = afterLastDuplicateStart; i < end; i++)
+                {
+                    _dictionary.Add(segment.Array[i], segment.Array[i]);
+                }
+
+                _count += afterDuplicateCount;
+            }
+        }
     }
 
     private void AppendSegment(ArraySegment<string> segment)
