@@ -66,7 +66,7 @@ public static class GetIntellisenseEndpoint
         // max-age is needed because immutable is not widely supported
         context.Response.Headers.CacheControl = "public, max-age=31536000, immutable";
 
-        return Results.Bytes(scriptBytes, "application/javascript");
+        return Results.Bytes(scriptBytes, "text/javascript");
     }
 
     private static byte[] GenerateScriptBytes(LiquidViewParser liquidViewParser, IOptions<TemplateOptions> templateOptions)
