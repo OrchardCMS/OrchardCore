@@ -256,14 +256,7 @@ public class StyleTagHelper : TagHelper
 
     private void PopulateRequireSettings(RequireSettings setting, TagHelperOutput output, bool hasName)
     {
-        if (At != ResourceLocation.Unspecified)
-        {
-            setting.AtLocation(At);
-        }
-        else
-        {
-            setting.AtLocation(ResourceLocation.Head);
-        }
+        setting.AtLocation(At != ResourceLocation.Unspecified ? At : ResourceLocation.Head);
 
         if (hasName && UseCdn != null)
         {

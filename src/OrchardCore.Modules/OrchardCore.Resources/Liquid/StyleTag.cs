@@ -85,14 +85,7 @@ public class StyleTag
 
         void PopulateSettings(RequireSettings setting, bool hasName)
         {
-            if (at != ResourceLocation.Unspecified)
-            {
-                setting.AtLocation(at);
-            }
-            else
-            {
-                setting.AtLocation(ResourceLocation.Head);
-            }
+            setting.AtLocation(at != ResourceLocation.Unspecified ? at : ResourceLocation.Head);
 
             if (hasName && useCdn != null)
             {
