@@ -84,6 +84,14 @@ public class AlternatesCollectionTests
     }
 
     [Fact]
+    public void Remove_ThrowsForNull()
+    {
+        var collection = new AlternatesCollection();
+
+        Assert.Throws<ArgumentNullException>(() => collection.Remove(null));
+    }
+
+    [Fact]
     public void Clear_ShouldRemoveAllItems()
     {
         var collection = new AlternatesCollection();
@@ -300,6 +308,14 @@ public class AlternatesCollectionTests
     }
 
     [Fact]
+    public void AddRangeEnumerable_ThrowsForNull()
+    {
+        var collection = new AlternatesCollection();
+
+        Assert.Throws<ArgumentNullException>(() => collection.AddRange((IEnumerable<string>)null));
+    }
+
+    [Fact]
     public void AddRangeAlternatesCollection_ShouldCopyAll()
     {
         var source = new AlternatesCollection();
@@ -456,21 +472,6 @@ public class AlternatesCollectionTests
     }
 
     [Fact]
-    public void AddRangeArray_DuplicateAcrossSegments_StillCounted()
-    {
-        // Note: AddRange(string[]) does not deduplicate across segments for performance.
-        // Deduplication only happens via Contains checks in Add/AddRange(IEnumerable).
-        var collection = new AlternatesCollection();
-
-        collection.AddRange(new[] { "A", "B" });
-        collection.AddRange(new[] { "B", "C" });
-
-        // Both segments are stored; "B" appears in both.
-        Assert.Equal(4, collection.Count);
-        Assert.True(collection.Contains("B"));
-    }
-
-    [Fact]
     public void Constructor_WithParams_ShouldAddItems()
     {
         var collection = new AlternatesCollection("A", "B", "C");
@@ -487,6 +488,14 @@ public class AlternatesCollectionTests
         var collection = new AlternatesCollection("A", "B", "A");
 
         Assert.Equal(2, collection.Count);
+    }
+
+    [Fact]
+    public void Constructor_WithNullArray_DoesNotThrow()
+    {
+        var collection = new AlternatesCollection(null);
+
+        Assert.Equal(0, collection.Count);
     }
 
     [Fact]
@@ -507,6 +516,17 @@ public class AlternatesCollectionTests
         Assert.Equal(0, AlternatesCollection.Empty.Count);
         Assert.Equal("", AlternatesCollection.Empty.Last);
         Assert.Empty(AlternatesCollection.Empty.ToList());
+    }
+
+    [Fact]
+    public void Empty_IsReadOnly()
+    {
+        // Verify that Empty is truly immutable
+        var empty = AlternatesCollection.Empty;
+
+        Assert.Equal(0, empty.Count);
+        Assert.Equal("", empty.Last);
+        Assert.False(empty.Contains("test"));
     }
 
     [Fact]
@@ -583,6 +603,19 @@ public class AlternatesCollectionTests
     }
 
     [Fact]
+    public void AddRangeAlternatesCollection_Empty_DoesNothing()
+    {
+        var source = new AlternatesCollection();
+        var target = new AlternatesCollection();
+
+        target.Add("A");
+        target.AddRange(source);
+
+        Assert.Equal(1, target.Count);
+        Assert.Equal("A", target[0]);
+    }
+
+    [Fact]
     public void Last_AfterClear_ShouldReturnEmpty()
     {
         var collection = new AlternatesCollection();
@@ -591,6 +624,16 @@ public class AlternatesCollectionTests
         collection.Clear();
 
         Assert.Equal("", collection.Last);
+    }
+
+    [Fact]
+    public void Last_WithSingleItem_ReturnsItem()
+    {
+        var collection = new AlternatesCollection();
+
+        collection.Add("Only");
+
+        Assert.Equal("Only", collection.Last);
     }
 
     [Fact]
@@ -631,9 +674,21 @@ public class AlternatesCollectionTests
         collection.Add("A");
         collection.AddRange(new[] { "A", "B", "C" });
 
-        // AddRange(string[]) stores the array as a segment without deduplication.
-        // "A" appears in both the single-element segment and the array segment.
-        Assert.Equal(4, collection.Count);
+        Assert.Equal(3, collection.Count);
+        Assert.True(collection.Contains("A"));
+        Assert.True(collection.Contains("B"));
+        Assert.True(collection.Contains("C"));
+    }
+
+    [Fact]
+    public void AddRangeArray_WithDuplicatesInArray_FallsBackToItemByItem()
+    {
+        var collection = new AlternatesCollection();
+
+        collection.Add("B");
+        collection.AddRange(new[] { "A", "B", "C" });
+
+        Assert.Equal(3, collection.Count);
         Assert.True(collection.Contains("A"));
         Assert.True(collection.Contains("B"));
         Assert.True(collection.Contains("C"));
@@ -705,5 +760,202 @@ public class AlternatesCollectionTests
         collection.AddRange(new[] { "C" });
 
         Assert.Equal("C", collection.Last);
+    }
+
+    [Fact]
+    public void Remove_FromMiddleOfSegment_PreservesOrder()
+    {
+        var collection = new AlternatesCollection();
+
+        collection.AddRange(new[] { "A", "B", "C", "D" });
+        collection.Remove("B");
+
+        Assert.Equal(3, collection.Count);
+        Assert.Equal("A", collection[0]);
+        Assert.Equal("C", collection[1]);
+        Assert.Equal("D", collection[2]);
+    }
+
+    [Fact]
+    public void Remove_FromAdditionalSegment_Works()
+    {
+        var collection = new AlternatesCollection();
+
+        collection.AddRange(new[] { "A", "B" });
+        collection.AddRange(new[] { "C", "D" });
+        collection.Remove("C");
+
+        Assert.Equal(3, collection.Count);
+        Assert.Equal("A", collection[0]);
+        Assert.Equal("B", collection[1]);
+        Assert.Equal("D", collection[2]);
+    }
+
+    [Fact]
+    public void Remove_EntireSegment_PromotesNextSegment()
+    {
+        var collection = new AlternatesCollection();
+
+        collection.AddRange(new[] { "A" });
+        collection.AddRange(new[] { "B", "C" });
+        collection.Remove("A");
+
+        Assert.Equal(2, collection.Count);
+        Assert.Equal("B", collection[0]);
+        Assert.Equal("C", collection[1]);
+    }
+
+    [Fact]
+    public void Remove_EntireAdditionalSegment_RemovesSegment()
+    {
+        var collection = new AlternatesCollection();
+
+        collection.AddRange(new[] { "A", "B" });
+        collection.AddRange(new[] { "C" });
+        collection.AddRange(new[] { "D", "E" });
+        collection.Remove("C");
+
+        Assert.Equal(4, collection.Count);
+        Assert.Equal("A", collection[0]);
+        Assert.Equal("B", collection[1]);
+        Assert.Equal("D", collection[2]);
+        Assert.Equal("E", collection[3]);
+    }
+
+    [Fact]
+    public void Count_AfterRemove_IsCorrect()
+    {
+        var collection = new AlternatesCollection();
+
+        collection.AddRange(new[] { "A", "B", "C" });
+        Assert.Equal(3, collection.Count);
+
+        collection.Remove("B");
+        Assert.Equal(2, collection.Count);
+
+        collection.Remove("A");
+        Assert.Equal(1, collection.Count);
+
+        collection.Remove("C");
+        Assert.Equal(0, collection.Count);
+    }
+
+    [Fact]
+    public void Count_AfterClear_IsZero()
+    {
+        var collection = new AlternatesCollection();
+
+        collection.AddRange(new[] { "A", "B" });
+        collection.Add("C");
+
+        collection.Clear();
+
+        Assert.Equal(0, collection.Count);
+    }
+
+    [Fact]
+    public void Count_DuringComplexOperations_RemainsAccurate()
+    {
+        var collection = new AlternatesCollection();
+
+        Assert.Equal(0, collection.Count);
+
+        collection.Add("A");
+        Assert.Equal(1, collection.Count);
+
+        collection.AddRange(new[] { "B", "C" });
+        Assert.Equal(3, collection.Count);
+
+        collection.Add("D");
+        Assert.Equal(4, collection.Count);
+
+        collection.Remove("B");
+        Assert.Equal(3, collection.Count);
+
+        collection.AddRange(new[] { "E", "F", "G" });
+        Assert.Equal(6, collection.Count);
+
+        collection.Clear();
+        Assert.Equal(0, collection.Count);
+    }
+
+    [Fact]
+    public void Indexer_LargeIndex_ReturnsEmpty()
+    {
+        var collection = new AlternatesCollection();
+
+        collection.AddRange(new[] { "A", "B" });
+
+        Assert.Equal("", collection[1000]);
+    }
+
+    [Fact]
+    public void Enumerate_AfterMultipleOperations_ReturnsCorrectOrder()
+    {
+        var collection = new AlternatesCollection();
+
+        collection.AddRange(new[] { "A", "B" });
+        collection.Add("C");
+        collection.Remove("B");
+        collection.AddRange(new[] { "D" });
+        collection.Add("E");
+
+        var list = collection.ToList();
+
+        Assert.Equal(4, list.Count);
+        Assert.Equal("A", list[0]);
+        Assert.Equal("C", list[1]);
+        Assert.Equal("D", list[2]);
+        Assert.Equal("E", list[3]);
+    }
+
+    [Fact]
+    public void Indexer_SpansMultipleSegments_ReturnsCorrectItems()
+    {
+        var collection = new AlternatesCollection();
+
+        collection.AddRange(new[] { "A", "B" }); // segment 0
+        collection.AddRange(new[] { "C", "D", "E" }); // segment 1
+        collection.AddRange(new[] { "F" }); // segment 2
+        collection.Add("G"); // items
+
+        Assert.Equal("A", collection[0]);
+        Assert.Equal("B", collection[1]);
+        Assert.Equal("C", collection[2]);
+        Assert.Equal("D", collection[3]);
+        Assert.Equal("E", collection[4]);
+        Assert.Equal("F", collection[5]);
+        Assert.Equal("G", collection[6]);
+    }
+
+    [Fact]
+    public void FlushItems_PreservesOrderWhenAddingSegment()
+    {
+        var collection = new AlternatesCollection();
+
+        collection.Add("X");
+        collection.Add("Y");
+        collection.AddRange(new[] { "A", "B" });
+
+        // Items X, Y should be flushed as a segment before A, B segment is added
+        Assert.Equal("X", collection[0]);
+        Assert.Equal("Y", collection[1]);
+        Assert.Equal("A", collection[2]);
+        Assert.Equal("B", collection[3]);
+    }
+
+    [Fact]
+    public void AddRange_MultipleEmptyArrays_DoesNotAffectCollection()
+    {
+        var collection = new AlternatesCollection();
+
+        collection.Add("A");
+        collection.AddRange(Array.Empty<string>());
+        collection.AddRange(Array.Empty<string>());
+        collection.Add("B");
+
+        Assert.Equal(2, collection.Count);
+        Assert.Equal("A", collection[0]);
+        Assert.Equal("B", collection[1]);
     }
 }

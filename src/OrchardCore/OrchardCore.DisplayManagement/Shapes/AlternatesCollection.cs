@@ -9,11 +9,11 @@ namespace OrchardCore.DisplayManagement.Shapes;
 /// list. When segments and the list coexist, the logical order is segments
 /// first, then list items.
 /// </summary>
-public class AlternatesCollection : IEnumerable<string>
+public sealed class AlternatesCollection : IEnumerable<string>
 {
     public static readonly AlternatesCollection Empty = [];
 
-    // Items added via Add().
+    private readonly Dictionary<string, string> _dictionary = new(StringComparer.Ordinal);
     private List<string> _items;
 
     // First array segment (common case: only one).
@@ -22,8 +22,7 @@ public class AlternatesCollection : IEnumerable<string>
     // Additional array segments, allocated only when more than one segment is added.
     private List<string[]> _additionalSegments;
 
-    // Cached total count across all segments.
-    private int _segmentsCount;
+    private int _count;
 
     public AlternatesCollection(params string[] alternates)
     {
@@ -79,18 +78,18 @@ public class AlternatesCollection : IEnumerable<string>
         {
             if (_items != null && _items.Count > 0)
             {
-                return _items[_items.Count - 1];
+                return _items[^1];
             }
 
             if (_additionalSegments != null && _additionalSegments.Count > 0)
             {
-                var lastSegment = _additionalSegments[_additionalSegments.Count - 1];
-                return lastSegment[lastSegment.Length - 1];
+                var lastSegment = _additionalSegments[^1];
+                return lastSegment[^1];
             }
 
             if (_segment != null)
             {
-                return _segment[_segment.Length - 1];
+                return _segment[^1];
             }
 
             return "";
@@ -103,10 +102,11 @@ public class AlternatesCollection : IEnumerable<string>
 
         EnsureMutable();
 
-        if (!Contains(alternate))
+        if (_dictionary.TryAdd(alternate, alternate))
         {
             _items ??= [];
             _items.Add(alternate);
+            _count++;
         }
     }
 
@@ -114,12 +114,19 @@ public class AlternatesCollection : IEnumerable<string>
     {
         ArgumentNullException.ThrowIfNull(alternate);
 
-        if (Count == 0)
+        if (_count == 0)
         {
             return;
         }
 
         EnsureMutable();
+
+        if (!_dictionary.Remove(alternate))
+        {
+            return;
+        }
+
+        _count--;
 
         // Fast path: item is in _items (added via Add()).
         if (_items != null && _items.Remove(alternate))
@@ -127,14 +134,13 @@ public class AlternatesCollection : IEnumerable<string>
             return;
         }
 
-        // Item must be in a segment (or not present at all).
+        // Item must be in a segment.
         if (_segment != null)
         {
             var index = Array.IndexOf(_segment, alternate);
             if (index >= 0)
             {
                 _segment = RemoveFromSegment(_segment, index);
-                _segmentsCount--;
 
                 if (_segment == null && _additionalSegments != null && _additionalSegments.Count > 0)
                 {
@@ -164,7 +170,6 @@ public class AlternatesCollection : IEnumerable<string>
                             _additionalSegments[i] = newSegment;
                         }
 
-                        _segmentsCount--;
                         return;
                     }
                 }
@@ -174,51 +179,28 @@ public class AlternatesCollection : IEnumerable<string>
 
     public void Clear()
     {
-        if (Count == 0)
+        if (_count == 0)
         {
             return;
         }
 
         EnsureMutable();
 
+        _dictionary.Clear();
         _items?.Clear();
         _segment = null;
         _additionalSegments?.Clear();
-        _segmentsCount = 0;
+        _count = 0;
     }
 
     public bool Contains(string alternate)
     {
         ArgumentNullException.ThrowIfNull(alternate);
 
-        if (_items != null && _items.Contains(alternate))
-        {
-            return true;
-        }
-
-        if (_segment != null)
-        {
-            if (Array.IndexOf(_segment, alternate) >= 0)
-            {
-                return true;
-            }
-
-            if (_additionalSegments != null)
-            {
-                for (var i = 0; i < _additionalSegments.Count; i++)
-                {
-                    if (Array.IndexOf(_additionalSegments[i], alternate) >= 0)
-                    {
-                        return true;
-                    }
-                }
-            }
-        }
-
-        return false;
+        return _dictionary.ContainsKey(alternate);
     }
 
-    public int Count => _segmentsCount + (_items?.Count ?? 0);
+    public int Count => _count;
 
     public void AddRange(AlternatesCollection alternates)
     {
@@ -272,11 +254,29 @@ public class AlternatesCollection : IEnumerable<string>
 
         EnsureMutable();
 
+        // Check for duplicates before adding the segment.
+        for (var i = 0; i < alternates.Length; i++)
+        {
+            if (_dictionary.ContainsKey(alternates[i]))
+            {
+                // If any alternate already exists, fall back to adding them one by one to preserve call order.
+                AddRange((IEnumerable<string>)alternates);
+                return;
+            }
+        }
+
         // Flush any pending Add() items as a segment first so the array
         // segment is appended after them, preserving call order.
         FlushItems();
 
         AppendSegment(alternates);
+
+        for (var i = 0; i < alternates.Length; i++)
+        {
+            _dictionary.Add(alternates[i], alternates[i]);
+        }
+
+        _count += alternates.Length;
     }
 
     private void AppendSegment(string[] segment)
@@ -290,8 +290,6 @@ public class AlternatesCollection : IEnumerable<string>
             _additionalSegments ??= [];
             _additionalSegments.Add(segment);
         }
-
-        _segmentsCount += segment.Length;
     }
 
     /// <summary>
@@ -316,9 +314,19 @@ public class AlternatesCollection : IEnumerable<string>
             return null;
         }
 
+        // Use array slicing for better performance
         var newSegment = new string[segment.Length - 1];
-        Array.Copy(segment, 0, newSegment, 0, index);
-        Array.Copy(segment, index + 1, newSegment, index, segment.Length - index - 1);
+
+        if (index > 0)
+        {
+            Array.Copy(segment, 0, newSegment, 0, index);
+        }
+
+        if (index < segment.Length - 1)
+        {
+            Array.Copy(segment, index + 1, newSegment, index, segment.Length - index - 1);
+        }
+
         return newSegment;
     }
 
