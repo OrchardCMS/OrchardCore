@@ -23,7 +23,7 @@
     <PackageVersion Include="GraphQL.DataLoader" Version="8.8.3" />
     <PackageVersion Include="GraphQL.MicrosoftDI" Version="8.8.3" />
     <PackageVersion Include="GraphQL.SystemTextJson" Version="8.8.3" />
-    <PackageVersion Include="Jint" Version="4.6.0" />
+    <PackageVersion Include="Jint" Version="4.6.2" />
     <PackageVersion Include="JsonPath.Net" Version="2.2.0" />
     <PackageVersion Include="HtmlSanitizer" Version="9.1.893-beta" />
     <PackageVersion Include="Parlot" Version="1.5.7" />
@@ -34,7 +34,7 @@
     <PackageVersion Include="Lucene.Net.QueryParser" Version="4.8.0-beta00017" />
     <PackageVersion Include="Lucene.Net.Spatial" Version="4.8.0-beta00017" />
     <PackageVersion Include="MailKit" Version="4.15.1" />
-    <PackageVersion Include="Markdig" Version="1.1.0" />
+    <PackageVersion Include="Markdig" Version="1.1.1" />
     <PackageVersion Include="Microsoft.Extensions.Azure" Version="1.13.1" />
     <PackageVersion Include="Microsoft.Identity.Web" Version="4.4.0" />
     <PackageVersion Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="8.16.0" />
@@ -46,7 +46,7 @@
     <PackageVersion Include="ncrontab" Version="3.4.0" />
     <PackageVersion Include="NJsonSchema" Version="11.5.2" />
     <PackageVersion Include="NLog.Web.AspNetCore" Version="6.1.2" />
-    <PackageVersion Include="NodaTime" Version="3.3.0" />
+    <PackageVersion Include="NodaTime" Version="3.3.1" />
     <PackageVersion Include="OpenIddict.Core" Version="7.2.0" />
     <PackageVersion Include="OpenIddict.Server.AspNetCore" Version="7.2.0" />
     <PackageVersion Include="OpenIddict.Server.DataProtection" Version="7.2.0" />
