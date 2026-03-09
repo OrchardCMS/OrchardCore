@@ -3156,7 +3156,6 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                                 __RequestVerificationToken: $("input[name='__RequestVerificationToken']").val()
                             },
                             success: function (data) {
-                                console.log(data);
                                 self.permittedStorage = data;
                             },
                             error: function (error) {
