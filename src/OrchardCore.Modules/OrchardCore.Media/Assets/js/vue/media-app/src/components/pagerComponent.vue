@@ -44,11 +44,11 @@
 </template>
 
 <script lang="ts">
-import { IFileStoreEntry } from '../services/MediaApiClient';
+import type { IFileStoreEntry } from '../interfaces/interfaces';
 import { defineComponent } from 'vue'
 import dbg from 'debug';
 
-const debug = dbg("aptix:file-app");
+const debug = dbg("media:file-app");
 
 export default defineComponent({
   name: "pager",

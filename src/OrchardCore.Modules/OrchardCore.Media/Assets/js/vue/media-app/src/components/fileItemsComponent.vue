@@ -17,9 +17,9 @@
           {{ t.NameHeader }}
           <sort-indicator colname="name" :selectedcolname="sortBy" :asc="sortAsc"></sort-indicator>
         </div>
-        <div class="table-cell" scope="col" v-on:click="changeSort('lastModify')">
+        <div class="table-cell" scope="col" v-on:click="changeSort('lastModifiedUtc')">
           {{ t.LastModifyHeader }}
-          <sort-indicator colname="lastModify" :selectedcolname="sortBy" :asc="sortAsc"></sort-indicator>
+          <sort-indicator colname="lastModifiedUtc" :selectedcolname="sortBy" :asc="sortAsc"></sort-indicator>
         </div>
         <div class="table-cell" scope="col" v-on:click="changeSort('size')">
           <span class="optional-col">
@@ -27,7 +27,6 @@
             <sort-indicator colname="size" :selectedcolname="sortBy" :asc="sortAsc"></sort-indicator>
           </span>
         </div>
-        <div class="table-cell text-center">{{ t.Status }}</div>
         <div class="table-cell"></div>
       </div>
     </div>
@@ -47,12 +46,12 @@
                 <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path
                     d="M10.28 4.46553H13.4658C13.4889 4.4658 13.5118 4.46145 13.5332 4.45274C13.5545 4.44402 13.574 4.43113 13.5903 4.4148C13.6066 4.39848 13.6195 4.37906 13.6282 4.35768C13.6369 4.3363 13.6413 4.3134 13.641 4.29031C13.6417 4.13738 13.6084 3.9862 13.5437 3.84764C13.479 3.70907 13.3844 3.58656 13.2667 3.48889L10.5946 1.26233C10.3921 1.09433 10.137 1.00273 9.87384 1.00348C9.83983 1.00342 9.80614 1.01007 9.7747 1.02305C9.74327 1.03604 9.71471 1.0551 9.69066 1.07915C9.66661 1.1032 9.64755 1.13176 9.63456 1.1632C9.62158 1.19463 9.61493 1.22832 9.61499 1.26233V3.801C9.61499 3.88831 9.6322 3.97476 9.66562 4.05542C9.69905 4.13607 9.74804 4.20935 9.8098 4.27107C9.87156 4.33278 9.94488 4.38172 10.0256 4.41509C10.1062 4.44845 10.1927 4.46559 10.28 4.46553Z"
-                    fill="#2D2D2D" />
+                    fill="currentColor" />
                   <path
                     d="M8.70453 3.8V1H4.12C3.82324 1.00092 3.5389 1.11921 3.32906 1.32906C3.11921 1.5389 3.00092 1.82324 3 2.12V13.88C3.00092 14.1768 3.11921 14.4611 3.32906 14.6709C3.5389 14.8808 3.82324 14.9991 4.12 15H12.52C12.8168 14.9991 13.1011 14.8808 13.3109 14.6709C13.5208 14.4611 13.6391 14.1768 13.64 13.88V5.37497H10.28C9.86241 5.37444 9.46206 5.20836 9.16673 4.91312C8.87141 4.61788 8.70519 4.21759 8.70453 3.8Z"
-                    fill="#2D2D2D" />
+                    fill="currentColor" />
                 </svg>
-                <span class="uppercase file-ext text-white">{{ getFileExtension(file.name) }}</span>
+                <span class="uppercase file-ext">{{ getFileExtension(file.name) }}</span>
               </div>
             </div>
             <div class="file-name-cell">
@@ -61,12 +60,11 @@
           </div>
         </div>
         <div class="table-cell">
-          <div class="text-col"> {{ printDateTime(file.lastModify ?? '') }} </div>
+          <div class="text-col"> {{ printDateTime(file.lastModifiedUtc ?? '') }} </div>
         </div>
         <div class="table-cell">
           <div class="text-col optional-col"> {{ printSize(file) }}</div>
         </div>
-        <div class="table-cell text-center"><span class="dot"></span></div>
         <div class="table-cell text-right text-end">
           <a href="javascript:void(0)" class="btn btn-link btn-sm action-button px-4 py-3"
             @click="() => openFileModal('file-action', [file])">
@@ -89,7 +87,7 @@
 import { defineComponent, PropType, nextTick } from 'vue'
 import dbg from 'debug';
 import { useVfm, useModal, ModalsContainer, VueFinalModal } from 'vue-final-modal'
-import { IFileStoreEntry } from "../services/MediaApiClient";
+import type { IFileStoreEntry } from "../interfaces/interfaces";
 import ModalFileActionConfirm from './ModalFileActionConfirm.vue'
 import SortIndicatorComponent from './sortIndicatorComponent.vue';
 import { FileAction, IConfirmFileActionViewModel, IConfirmFileActionEntry, IModalFileEvent } from '../interfaces/interfaces';
@@ -97,7 +95,7 @@ import { humanFileSize } from '../services/Utils'
 import { SeverityLevel } from '../interfaces/interfaces';
 import { notify } from "../services/notifier";
 
-const debug = dbg("aptix:file-app");
+const debug = dbg("media:file-app");
 
 export default defineComponent({
   components: {

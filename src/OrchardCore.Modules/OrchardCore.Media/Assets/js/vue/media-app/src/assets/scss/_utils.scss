@@ -26,9 +26,9 @@
     flex-direction: column;
     min-width: 0;
     word-wrap: break-word;
-    background-color: #fff;
+    background-color: var(--media-card-bg);
     background-clip: border-box;
-    border: 1px solid #b9dcff;
+    border: 1px solid var(--media-card-border);
     border-radius: 0.25rem;
     margin-bottom: unset !important;
 }
@@ -44,7 +44,7 @@
 
 .card-footer {
     padding: 0.5rem 1rem;
-    background-color: #e1f0ff;
+    background-color: var(--media-card-footer-bg);
     border-top: $file-border-content;
 }
 

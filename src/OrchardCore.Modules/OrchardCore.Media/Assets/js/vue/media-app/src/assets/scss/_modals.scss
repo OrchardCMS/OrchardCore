@@ -100,11 +100,11 @@
 
   .vfm__content {
     &.bg-white {
-      background: #fff !important;
-      color: #000;
+      background: var(--media-card-bg) !important;
+      color: var(--bs-body-color);
     }
 
-    border: 1px solid rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--bs-border-color);
     border-radius: 0.3rem;
     width: 50vw;
   }

@@ -1,5 +1,5 @@
-<!-- 
-    <upload-list> component 
+<!--
+    <upload-list> component
 -->
 
 <template>
@@ -22,7 +22,7 @@
     </div>
     <div class="card-body" v-show="expanded">
       <div class="d-grid p-2">
-        <upload :upload-input-id="uploadInputId" v-for="f in files" :key="f.name" :model="f"></upload>
+        <upload v-for="f in files" :key="f.name" :model="f"></upload>
       </div>
     </div>
   </div>
@@ -32,6 +32,12 @@
 import { defineComponent } from 'vue'
 import UploadComponent from './uploadComponent.vue';
 
+interface UploadFile {
+  name: string;
+  percentage: number;
+  errorMessage: string;
+}
+
 export default defineComponent({
   components: {
     Upload: UploadComponent,
@@ -39,24 +45,17 @@ export default defineComponent({
   name: "uploadList",
   data: function () {
     return {
-      files: <any>[],
+      files: [] as UploadFile[],
       expanded: false,
       pendingCount: 0,
       errorCount: 0
     }
   },
   props: {
-    uploadInputId: {
-      type: String,
-      required: true
-    },
     t: {
       type: Object,
       required: true
     }
-  },
-  created: function () {
-
   },
   computed: {
     fileCount: function () {
@@ -66,61 +65,40 @@ export default defineComponent({
   mounted: function () {
     const me = this;
 
-    $('#' + me.uploadInputId).on('fileuploadadd', function (e: any, data: any) {
-      if (!data.files) {
-        return;
+    this.emitter.on('uploadFileAdded', (file: { name: string }) => {
+      const alreadyInList = me.files.some((f) => f.name === file.name);
+
+      if (!alreadyInList) {
+        me.files.push({ name: file.name, percentage: 0, errorMessage: '' });
+        me.expanded = true;
       }
-
-      data.files.forEach(function (newFile: any) {
-        var alreadyInList = me.files.some(function (f: any) {
-          return f.name == newFile.name;
-        });
-
-        if (!alreadyInList) {
-          me.files.push({ name: newFile.name, percentage: 0, errorMessage: '' });
-        } else {
-          console.error('A file with the same name is already on the queue:' + newFile.name);
-        }
-      });
     });
 
-    this.emitter.on('removalRequest', (fileUpload: any) => {
-      me.files.forEach(function (item: any, index: any, array: any) {
-        if (item.name == fileUpload.name) {
-          array.splice(index, 1);
-        }
-      });
-    })
+    this.emitter.on('uploadProgress', (data: { name: string; percentage: number }) => {
+      const file = me.files.find((f) => f.name === data.name);
+      if (file) {
+        file.percentage = data.percentage;
+      }
+    });
 
-    this.emitter.on('ErrorOnUpload', () => {
-      me.updateCount();
-    })
+    this.emitter.on('uploadSuccess', (data: { name: string }) => {
+      me.files = me.files.filter((f) => f.name !== data.name);
+    });
+
+    this.emitter.on('uploadError', (data: { name: string; errorMessage: string }) => {
+      const file = me.files.find((f) => f.name === data.name);
+      if (file) {
+        file.errorMessage = data.errorMessage;
+      }
+    });
+
+    this.emitter.on('removalRequest', (fileUpload: { name: string }) => {
+      me.files = me.files.filter((f) => f.name !== fileUpload.name);
+    });
   },
   methods: {
-    fileUploadAdd: function (data: any, ev: any) {
-      const me = this;
-
-      if (!data.files) {
-        return;
-      }
-
-      data.files.forEach(function (newFile: any) {
-        let alreadyInList = me.files.some(function (f: any) {
-          return f.name == newFile.name;
-        });
-
-        if (!alreadyInList) {
-          me.files.push({ name: newFile.name, percentage: 0, errorMessage: '' });
-        } else {
-          console.error('A file with the same name is already on the queue:' + newFile.name);
-        }
-      });
-    },
     updateCount: function () {
-      this.errorCount = this.files.filter(function (item: any) {
-        return item.errorMessage != '';
-      }).length;
-
+      this.errorCount = this.files.filter((item) => item.errorMessage !== '').length;
       this.pendingCount = this.files.length - this.errorCount;
 
       if (this.files.length < 1) {
@@ -128,9 +106,7 @@ export default defineComponent({
       }
     },
     clearErrors: function () {
-      this.files = this.files.filter(function (item: any) {
-        return item.errorMessage == '';
-      });
+      this.files = this.files.filter((item) => item.errorMessage === '');
     }
   },
   watch: {

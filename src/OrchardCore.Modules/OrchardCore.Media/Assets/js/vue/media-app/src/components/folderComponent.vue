@@ -29,7 +29,7 @@
               :modal-name="getFolderModalName('folder-action', currentFolder)" :folder="currentFolder"
               :title="t.ActionFolderTitle"
               @confirm="(viewModel: IConfirmFolderActionViewModel) => confirmFolderModal('folder-action', viewModel)">
-              <p class="font-bold">{{ currentFolder.path }}</p>
+              <p class="font-bold">{{ currentFolder.filePath }}</p>
               <p>{{ t.ActionFolderMessage }}</p>
               <template #submit>{{ t.Ok }}</template>
             </ModalFolderActionConfirm>
@@ -38,7 +38,7 @@
       </a>
     </div>
     <ol v-show="open">
-      <folder :base-url="baseUrl" v-for="folder in children" :t="t" :key="folder.path" :current-folder="folder"
+      <folder :base-url="baseUrl" v-for="folder in children" :t="t" :key="folder.filePath" :current-folder="folder"
         :selected-in-file-app="selectedInFileApp" :level="(level ? level : 0) + 1">
       </folder>
     </ol>
@@ -51,12 +51,13 @@ import dbg from 'debug';
 import { useVfm } from 'vue-final-modal'
 import ModalConfirm from './ModalConfirm.vue'
 import ModalFolderActionConfirm from './ModalFolderActionConfirm.vue'
-import { MediaApiClient, IFileStoreEntry } from "../services/MediaApiClient";
+import { MediaApiClient } from "../services/MediaApiClient";
+import type { IFileStoreEntry } from "../interfaces/interfaces";
 import { notify, tryGetErrorMessage } from "../services/notifier";
 import { SeverityLevel } from "../interfaces/interfaces"
 import { IConfirmFolderActionViewModel, FolderAction, FileAction } from '../interfaces/interfaces';
 
-const debug = dbg("aptix:file-app");
+const debug = dbg("media:file-app");
 let moveAssetsState = <any>{};
 const modalAction = ref<InstanceType<typeof ModalFolderActionConfirm>>();
 
@@ -94,10 +95,10 @@ export default defineComponent({
       return !this.children || this.children.length == 0;
     },
     isSelected: function () {
-      return (this.selectedInFileApp?.name == this.$props.currentFolder.name) && (this.selectedInFileApp.path == this.$props.currentFolder.path);
+      return (this.selectedInFileApp?.name == this.$props.currentFolder.name) && (this.selectedInFileApp.filePath == this.$props.currentFolder.filePath);
     },
     isRoot: function () {
-      return this.currentFolder?.path === '';
+      return this.currentFolder?.filePath === '';
     }
   },
   mounted() {
@@ -146,7 +147,7 @@ export default defineComponent({
       let parentFolder = this.selectedInFileApp;
 
       while (parentFolder) {
-        if (parentFolder.path == this.currentFolder?.path) {
+        if (parentFolder.filePath == this.currentFolder?.filePath) {
           return true;
         }
         parentFolder = parentFolder.parent; // TODO: refactor as this is a param added programmatically
@@ -185,7 +186,7 @@ export default defineComponent({
 
       const apiClient = new MediaApiClient(me.baseUrl);
       apiClient
-        .getFolders(me.currentFolder?.path)
+        .getFolders(me.currentFolder?.filePath)
         .then((response) => {
           me.children = response;
           me.children.forEach(function (c: any) {
@@ -215,7 +216,7 @@ export default defineComponent({
       }
 
       let sourceFolder = e.dataTransfer?.getData('sourceFolder');
-      let targetFolder = folder.path;
+      let targetFolder = folder.filePath;
 
       if (sourceFolder === '') {
         sourceFolder = 'root';
@@ -260,7 +261,7 @@ export default defineComponent({
       uVfm.close(this.getFolderModalName(modalName, confirmAction.folder));
 
       if (confirmAction.action == FolderAction.Create && confirmAction.inputValue) {
-        this.createFolder({ name: confirmAction.inputValue, path: confirmAction.inputValue, isDirectory: true });
+        this.createFolder({ name: confirmAction.inputValue, filePath: confirmAction.inputValue, isDirectory: true });
       }
       else if (confirmAction.action == FolderAction.Delete) {
         this.deleteFolder(confirmAction.folder);

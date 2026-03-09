@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { ref, getCurrentInstance, PropType } from 'vue'
 import { VueFinalModal } from 'vue-final-modal'
-import { IFileStoreEntry } from "../services/MediaApiClient";
 import { IFileActionElem, IConfirmFolderActionViewModel, FolderAction } from '../interfaces/interfaces';
+import type { IFileStoreEntry } from "../interfaces/interfaces";
 import dbg from 'debug';
 
-const debug = dbg("aptix:file-app");
+const debug = dbg("media:file-app");
 const emitter = getCurrentInstance()?.appContext.app.config.globalProperties.emitter;
 
 const props = defineProps({

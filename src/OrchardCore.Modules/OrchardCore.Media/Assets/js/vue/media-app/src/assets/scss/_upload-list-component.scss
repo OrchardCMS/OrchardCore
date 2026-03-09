@@ -7,11 +7,11 @@
         align-items: center;
         height: 40px;
         padding: 10px;
-        background-color: rgba(0,0,0,0.03);
-        border: solid 1px #b9dcff;
+        background-color: var(--media-upload-list-header-bg);
+        border: solid 1px var(--media-card-border);
         cursor: pointer;
         font-size: 0.875rem;
-        color: #666;
+        color: var(--media-upload-list-header-color);
     }
 
     .toggle-button {
@@ -19,7 +19,7 @@
     }
 
     .card-body {
-        border: solid 1px #b9dcff;
+        border: solid 1px var(--media-card-border);
         border-top: none;
         padding: 0;
 

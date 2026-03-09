@@ -1,4 +1,12 @@
-import { IFileStoreEntry } from "../services/MediaApiClient";
+import type { IFileStoreEntryDto } from "@bloom/services/OpenApiClient";
+
+/**
+ * Extends the NSwag-generated IFileStoreEntryDto with UI-augmented properties.
+ */
+export interface IFileStoreEntry extends IFileStoreEntryDto {
+  selected?: boolean;
+  parent?: IFileStoreEntry | null;
+}
 
 /**
  * Used to match folders with specific actions.

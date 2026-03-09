@@ -1,4 +1,4 @@
-<!-- 
+<!--
     <upload> component
 -->
 
@@ -27,49 +27,8 @@ export default defineComponent({
       type: Object,
       required: true,
     },
-    uploadInputId: String
-  },
-  mounted: function () {
-    const me = this;
-    const uploadInput = <HTMLInputElement>document.getElementById(me.uploadInputId ?? 'fileupload');
-
-    // TODO: refactor as JQuery bind method is deprecated
-    $(uploadInput).bind('fileuploadprogress', function (e, data) {
-      if (data.files[0].name !== me.model.name) {
-        return;
-      }
-      me.model.percentage = Math.round(data.loaded / data.total * 100);
-    });
-
-    // TODO: refactor as JQuery bind method is deprecated
-    $(uploadInput).bind('fileuploaddone', function (e, data) {
-      if (data.files[0].name !== me.model.name) {
-        return;
-      }
-      if (data.result.files[0].error) {
-        me.handleFailure(data.files[0].name, data.result.files[0].error);
-      } else {
-        me.emitter.emit('removalRequest', me.model);
-      }
-    });
-
-    // TODO: refactor as JQuery bind method is deprecated
-    $(uploadInput).bind('fileuploadfail', function (e, data) {
-      if (data.files[0].name !== me.model.name) {
-        return;
-      }
-      me.handleFailure(data.files[0].name, $('#t-error').val());
-    });
   },
   methods: {
-    handleFailure: function (fileName: any, message: any) {
-      if (fileName !== this.model.name) {
-        return;
-      }
-
-      this.model.errorMessage = message;
-      this.emitter.emit('ErrorOnUpload', this.model);
-    },
     dismissWarning: function () {
       this.emitter.emit('removalRequest', this.model);
     }

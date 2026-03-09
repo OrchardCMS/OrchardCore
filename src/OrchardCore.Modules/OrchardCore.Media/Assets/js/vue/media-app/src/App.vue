@@ -28,7 +28,7 @@
                                     {{ t.FolderRoot }}
                                 </a>
                             </span>
-                            <span v-for="(folder, i) in parents" :key="folder.path" v-cloak class="breadcrumb-item"
+                            <span v-for="(folder, i) in parents" :key="folder.filePath" v-cloak class="breadcrumb-item"
                                 :class="{
         active: parents.length - i == 1,
         'no-breadcrumb-divider': i == 0,
@@ -47,7 +47,7 @@
                             <div class="btn-group btn-group me-2">
                                 <label :title="t.UploadFiles" for="fileupload"
                                     class="btn btn-primary fileinput-button upload-button">
-                                    <input id="fileupload" type="file" name="files" multiple />
+                                    <input id="fileupload" type="file" name="files" multiple @change="onFileInputChange" />
                                     <fa-icon icon="fa-solid fa-cloud-arrow-up"></fa-icon>
                                     {{ t.UploadFiles }}
                                 </label>
@@ -66,6 +66,16 @@
                                     <p>{{ t.DeleteFileMessage }}</p>
                                 </ModalConfirm>
                             </a>
+                            <div class="btn-group visibility-buttons">
+                                <button class="btn btn-light" :class="{ selected: !gridView }"
+                                    @click="gridView = false" :title="t.TableView || 'Table view'">
+                                    <fa-icon icon="fa-solid fa-list"></fa-icon>
+                                </button>
+                                <button class="btn btn-light" :class="{ selected: gridView }"
+                                    @click="gridView = true" :title="t.GridView || 'Grid view'">
+                                    <fa-icon icon="fa-solid fa-grip"></fa-icon>
+                                </button>
+                            </div>
                         </div>
                         <div class="nav-item mx-2 mt-3 md:mt-0">
                             <div class="file-filter">
@@ -84,11 +94,15 @@
                     </nav>
                 </div>
                 <div class="file-container-middle p-3">
-                    <upload-list upload-input-id="fileupload" :t="t"></upload-list>
+                    <upload-list :t="t"></upload-list>
 
                     <file-items :t="t" :is-selected-all="isSelectedAll" :sort-by="sortBy" :sort-asc="sortAsc"
                         :filtered-file-items="itemsInPage" :selected-files="selectedFiles" :thumb-size="thumbSize"
                         v-show="itemsInPage.length > 0 && !gridView" ref="fileItems" :base-host="baseHost"></file-items>
+
+                    <file-items-grid :t="t" :filtered-file-items="itemsInPage" :selected-files="selectedFiles"
+                        :thumb-size="thumbSize" v-show="itemsInPage.length > 0 && gridView"
+                        :base-host="baseHost"></file-items-grid>
 
                     <div v-show="fileItems.length > 0 && filteredFileItems.length < 1
         " class="p-message p-component p-message-info" role="alert" aria-live="assertive" aria-atomic="true"
@@ -136,23 +150,20 @@
 </style>
 
 <script lang="ts">
-import { defineComponent, ref, nextTick } from "vue";
+import { defineComponent, ref } from "vue";
 import dbg from "debug";
 import FolderComponent from "./components/folderComponent.vue";
 import UploadListComponent from "./components/uploadListComponent.vue";
 import FileItemsComponent from "./components/fileItemsComponent.vue";
+import FileItemsGridComponent from "./components/fileItemsGridComponent.vue";
 import PagerComponent from "./components/pagerComponent.vue";
 import DragDropThumbnail from "./assets/drag-thumbnail.png";
-import {
-    MediaApiClient,
-    IFileStoreEntry,
-    MoveMedia,
-} from "./services/MediaApiClient";
+import { MediaApiClient, MoveMedia } from "./services/MediaApiClient";
+import type { IFileStoreEntry } from "./interfaces/interfaces";
 import { notify, tryGetErrorMessage } from "./services/notifier";
 import { SeverityLevel } from "./interfaces/interfaces";
 import { useVfm } from "vue-final-modal";
 import ModalConfirm from "./components/ModalConfirm.vue";
-import { v4 as uuidv4 } from "uuid";
 import Uppy, { debugLogger } from "@uppy/core";
 import DropTarget from "@uppy/drop-target";
 import XHRUpload from "@uppy/xhr-upload";
@@ -160,7 +171,7 @@ import XHRUpload from "@uppy/xhr-upload";
 import "@uppy/core/dist/style.css";
 import "@uppy/drop-target/dist/style.css";
 
-const debug = dbg("aptix:file-app");
+const debug = dbg("media:file-app");
 const baseFolder = ref(null);
 const fileItems = ref(null);
 
@@ -175,6 +186,7 @@ export default defineComponent({
         Folder: FolderComponent,
         UploadList: UploadListComponent,
         FileItems: FileItemsComponent,
+        FileItemsGrid: FileItemsGridComponent,
         Pager: PagerComponent,
         ModalConfirm: ModalConfirm,
     },
@@ -207,13 +219,13 @@ export default defineComponent({
     },
     data() {
         return {
-            t: <any>Object,
+            t: {} as Record<string, string>,
             selectedFolder: {} as IFileStoreEntry,
-            fileItems: <any>[],
+            fileItems: [] as IFileStoreEntry[],
             uploadedFileItems: [] as IFileStoreEntry[],
             selectedFiles: [] as IFileStoreEntry[],
             isSelectedAll: false,
-            errors: <any>[],
+            errors: [] as string[],
             dragDropThumbnail: new Image(),
             smallThumbs: false,
             gridView: false,
@@ -222,6 +234,7 @@ export default defineComponent({
             sortAsc: true,
             itemsInPage: [] as IFileStoreEntry[],
             rootFolder: {} as IFileStoreEntry,
+            uppy: null as Uppy | null,
         };
     },
     created: function () {
@@ -232,7 +245,7 @@ export default defineComponent({
 
         this.rootFolder = {
             name: this.t.FileLibrary,
-            path: "/",
+            filePath: "/",
             isDirectory: true,
         };
 
@@ -330,7 +343,7 @@ export default defineComponent({
             let p = [];
             let parentFolder = this.selectedFolder;
 
-            while (parentFolder && parentFolder.path != "") {
+            while (parentFolder && parentFolder.filePath != "") {
                 p.unshift(parentFolder);
                 parentFolder = parentFolder.parent; // TODO: refactor as this is a param added programmatically
             }
@@ -365,11 +378,11 @@ export default defineComponent({
                                 .localeCompare(a.mime.toLowerCase());
                     });
                     break;
-                case "lastModify":
+                case "lastModifiedUtc":
                     filtered.sort(function (a: any, b: any) {
                         return me.sortAsc
-                            ? a.lastModify - b.lastModify
-                            : b.lastModify - a.lastModify;
+                            ? a.lastModifiedUtc - b.lastModifiedUtc
+                            : b.lastModifiedUtc - a.lastModifiedUtc;
                     });
                     break;
                 default:
@@ -447,28 +460,44 @@ export default defineComponent({
             },
         });
 
+        me.uppy = uppy;
         window.uppy = uppy;
 
-        uppy.on("file-added", (data) => {
-            debug("file added", data);
+        uppy.on("file-added", (file) => {
+            debug("file added", file);
+            me.emitter.emit("uploadFileAdded", { name: file.name });
             uppy.upload();
         })
 
-        uppy.on("upload-success", () => {
-            console.log("ddd");
-        })
-
-        uppy.on("complete", (result) => {
-            if (result.failed.length === 0) {
-                console.log("Upload successful!");
-            } else {
-                console.warn("Upload failed!");
+        uppy.on("upload-progress", (file, progress) => {
+            if (file) {
+                me.emitter.emit("uploadProgress", {
+                    name: file.name,
+                    percentage: Math.round((progress.bytesUploaded / progress.bytesTotal) * 100),
+                });
             }
-            console.log("successful files:", result.successful);
-            console.log("failed files:", result.failed);
         });
 
-        
+        uppy.on("upload-success", (file) => {
+            if (file) {
+                me.emitter.emit("uploadSuccess", { name: file.name });
+            }
+        });
+
+        uppy.on("upload-error", (file, error) => {
+            if (file) {
+                me.emitter.emit("uploadError", {
+                    name: file.name,
+                    errorMessage: error?.message ?? me.t.ErrorUploadFile,
+                });
+            }
+        });
+
+        uppy.on("complete", (result) => {
+            if (result.successful.length > 0) {
+                me.loadFolder(me.selectedFolder);
+            }
+        });
 
         if (me.currentPrefs.selectedFolder != null) {
             (<any>me.$refs.baseFolder).selectFolder(
@@ -481,6 +510,22 @@ export default defineComponent({
 
     },
     methods: {
+        onFileInputChange: function (event: Event) {
+            const input = event.target as HTMLInputElement;
+            if (!input.files) return;
+            for (const file of Array.from(input.files)) {
+                try {
+                    this.uppy.addFile({
+                        name: file.name,
+                        type: file.type,
+                        data: file,
+                    });
+                } catch (err) {
+                    debug("Error adding file", err);
+                }
+            }
+            input.value = "";
+        },
         openModal: function (action: string) {
             const uVfm = useVfm();
             uVfm.open(action);
@@ -530,11 +575,8 @@ export default defineComponent({
 
             const apiClient = new MediaApiClient(me.baseUrl);
             apiClient
-                .getMediaItems(folder.path, null)
-                .then((response: any) => {
-                    response.forEach(function (item: any) {
-                        item.open = false;
-                    });
+                .getMediaItems(folder.filePath, undefined)
+                .then((response) => {
                     me.fileItems = response;
                     me.selectedFiles = [];
                     me.sortBy = "";
@@ -584,14 +626,9 @@ export default defineComponent({
             }
         },
         isFileSelected: function (file: IFileStoreEntry) {
-            let result = this.selectedFiles?.some(function (
-                element: any,
-                index: any,
-                array: any,
-            ) {
-                return element.url.toLowerCase() === file.url?.toLowerCase();
-            });
-            return result;
+            return this.selectedFiles?.some(
+                (element) => element.url?.toLowerCase() === file.url?.toLowerCase(),
+            );
         },
         deleteFolder: function (folder: IFileStoreEntry) {
             const me = this;
@@ -602,8 +639,8 @@ export default defineComponent({
 
             const apiClient = new MediaApiClient(me.baseUrl);
             apiClient
-                .deleteFolder(folder.path)
-                .then((response: any) => {
+                .deleteFolder(folder.filePath)
+                .then(() => {
                     me.emitter.emit("deleteFolder", folder);
                 })
                 .catch(async (error) => {
@@ -616,7 +653,6 @@ export default defineComponent({
         },
         createFolder: function (folder: IFileStoreEntry) {
             const me = this;
-            $("createFolderModal-errors")?.empty();
 
             if (folder.name === "") {
                 return;
@@ -624,13 +660,13 @@ export default defineComponent({
 
             debug(
                 "selected folder before create new one",
-                me.selectedFolder.path,
+                me.selectedFolder.filePath,
             );
 
             const apiClient = new MediaApiClient(me.baseUrl);
             apiClient
-                .createFolder(me.selectedFolder.path, folder.name)
-                .then((response: any) => {
+                .createFolder(me.selectedFolder.filePath, folder.name)
+                .then((response) => {
                     me.emitter.emit("addFolder", {
                         selectedFolder: me.selectedFolder,
                         data: response,
@@ -658,7 +694,7 @@ export default defineComponent({
             const apiClient = new MediaApiClient(me.baseUrl);
             apiClient
                 .moveMedia(oldPath, newPath)
-                .then((response: any) => {
+                .then(() => {
                     me.emitter.emit("fileRenamed", {
                         newName: newName,
                         newPath: newPath,
@@ -666,13 +702,10 @@ export default defineComponent({
                     });
                 })
                 .catch(async (error) => {
-                    error.response.text().then((text: any) => {
-                        const error = JSON.parse(text);
-                        notify({
-                            summary: me.t.ErrorRenamingFile,
-                            detail: error.detail,
-                            severity: SeverityLevel.Error,
-                        });
+                    notify({
+                        summary: me.t.ErrorRenamingFile,
+                        detail: await tryGetErrorMessage(error),
+                        severity: SeverityLevel.Error,
                     });
                 });
         },
@@ -687,13 +720,13 @@ export default defineComponent({
             let imagePaths: string[] = [];
 
             for (let i = 0; i < files.length; i++) {
-                imagePaths.push(files[i].mediaPath ?? ""); // Can't be a required field on IFileStoreEntry for a folder
+                imagePaths.push(files[i].filePath ?? "");
             }
 
             const apiClient = new MediaApiClient(me.baseUrl);
             apiClient
                 .deleteMediaList(imagePaths)
-                .then((response: any) => {
+                .then(() => {
                     for (let i = 0; i < me.selectedFiles.length; i++) {
                         let index =
                             me.fileItems &&
@@ -726,8 +759,8 @@ export default defineComponent({
 
             const apiClient = new MediaApiClient(me.baseUrl);
             apiClient
-                .deleteMedia(file.mediaPath)
-                .then((response: any) => {
+                .deleteMedia(file.filePath)
+                .then(() => {
                     let index = me.fileItems && me.fileItems.indexOf(file);
                     if (index > -1) {
                         me.fileItems.splice(index, 1);
@@ -735,12 +768,10 @@ export default defineComponent({
                     }
                 })
                 .catch(async (error) => {
-                    tryGetErrorMessage(error).then((message: any) => {
-                        notify({
-                            summary: me.t.ErrorDeleteFile,
-                            detail: message,
-                            severity: SeverityLevel.Error,
-                        });
+                    notify({
+                        summary: me.t.ErrorDeleteFile,
+                        detail: await tryGetErrorMessage(error),
+                        severity: SeverityLevel.Error,
                     });
                 });
         },
@@ -764,7 +795,7 @@ export default defineComponent({
             );
             element.e.dataTransfer.setData(
                 "sourceFolder",
-                this.selectedFolder.path,
+                this.selectedFolder.filePath,
             );
             element.e.dataTransfer.setDragImage(this.dragDropThumbnail, 10, 10);
             element.e.dataTransfer.effectAllowed = "move";

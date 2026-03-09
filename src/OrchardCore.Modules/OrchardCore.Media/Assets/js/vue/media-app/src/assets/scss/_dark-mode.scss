@@ -1,0 +1,87 @@
+// Dark mode overrides — uses Bootstrap 5's [data-bs-theme="dark"] approach
+// as used by Orchard's TheAdmin theme.
+@import "../../../node_modules/bootstrap/scss/mixins/color-mode";
+
+@include color-mode(dark) {
+    --media-selected-bg: rgba(13, 110, 253, 0.15);
+    --media-accent: #e06c68;
+    --media-card-bg: var(--bs-body-bg);
+    --media-card-border: var(--bs-border-color);
+    --media-card-footer-bg: rgba(255, 255, 255, 0.05);
+    --media-breadcrumb-bg: rgba(255, 255, 255, 0.05);
+    --media-upload-bg: rgba(255, 255, 255, 0.05);
+    --media-upload-list-header-bg: rgba(255, 255, 255, 0.05);
+    --media-upload-list-header-color: var(--bs-secondary-color);
+    --media-thumb-checker-color: #3a3a3a;
+
+    .fileApp {
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.4);
+    }
+
+    #folder-tree {
+        li.selected > div:not(.treeroot),
+        li.selected > .treeroot {
+            background-color: var(--media-selected-bg);
+            border-left-color: var(--media-accent);
+        }
+
+        .folderhovered {
+            background-color: var(--media-selected-bg);
+        }
+    }
+
+    .file-items-table {
+        .header-row .table-cell {
+            color: var(--bs-body-color);
+        }
+
+        .file-item {
+            border-top-color: var(--bs-border-color);
+
+            &:hover {
+                background-color: var(--media-selected-bg);
+            }
+        }
+
+    }
+
+    ol.file-items-grid li {
+        &.selected {
+            border-color: $primary;
+        }
+
+        &:hover {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+        }
+
+        .thumb-container {
+            background: var(--bs-body-bg);
+        }
+    }
+
+    .action-bar {
+        .badge {
+            color: var(--bs-body-color);
+        }
+
+        .btn-light {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-color: var(--bs-border-color);
+            color: var(--bs-body-color);
+
+            &:hover {
+                background-color: rgba(255, 255, 255, 0.18);
+            }
+        }
+    }
+
+    #breadcrumb {
+        background-color: var(--media-breadcrumb-bg);
+    }
+
+    .vfm .vfm__content {
+        background: var(--bs-body-bg) !important;
+        color: var(--bs-body-color);
+        border-color: var(--bs-border-color);
+    }
+}

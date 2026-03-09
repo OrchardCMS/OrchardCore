@@ -26,6 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Azure.Storage.Files.DataLake" />
     <PackageReference Include="SixLabors.ImageSharp.Web.Providers.Azure" />
   </ItemGroup>
 

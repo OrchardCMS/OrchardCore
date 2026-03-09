@@ -14,6 +14,7 @@
     <PackageVersion Include="Azure.Identity" Version="1.18.0" />
     <PackageVersion Include="Azure.Search.Documents" Version="11.7.0" />
     <PackageVersion Include="Azure.Storage.Blobs" Version="12.27.0" />
+    <PackageVersion Include="Azure.Storage.Files.DataLake" Version="12.19.1" />
     <PackageVersion Include="BenchmarkDotNet" Version="0.15.8" />
     <PackageVersion Include="Castle.Core" Version="5.2.1" />
     <PackageVersion Include="DocumentFormat.OpenXml" Version="3.4.1" />
@@ -40,6 +41,7 @@
     <PackageVersion Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="8.16.0" />
     <PackageVersion Include="Microsoft.IO.RecyclableMemoryStream" Version="3.0.1" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.3.0" />
+    <PackageVersion Include="Microsoft.OpenApi" Version="2.4.1" />
     <PackageVersion Include="MimeKit" Version="4.15.1" />
     <PackageVersion Include="MiniProfiler.AspNetCore.Mvc" Version="4.5.4" />
     <PackageVersion Include="Moq" Version="4.20.72" />
@@ -47,6 +49,7 @@
     <PackageVersion Include="NJsonSchema" Version="11.5.2" />
     <PackageVersion Include="NLog.Web.AspNetCore" Version="6.1.2" />
     <PackageVersion Include="NodaTime" Version="3.3.0" />
+    <PackageVersion Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageVersion Include="OpenIddict.Core" Version="7.2.0" />
     <PackageVersion Include="OpenIddict.Server.AspNetCore" Version="7.2.0" />
     <PackageVersion Include="OpenIddict.Server.DataProtection" Version="7.2.0" />
@@ -55,12 +58,16 @@
     <PackageVersion Include="OpenIddict.Validation.SystemNetHttp" Version="7.2.0" />
     <PackageVersion Include="OrchardCore.Translations.All" Version="2.1.0" />
     <PackageVersion Include="PdfPig" Version="0.1.13" />
+    <PackageVersion Include="Scalar.AspNetCore" Version="2.0.0" />
     <PackageVersion Include="Shortcodes" Version="1.3.6" />
     <PackageVersion Include="SixLabors.ImageSharp.Web" Version="3.2.0" />
     <PackageVersion Include="SixLabors.ImageSharp.Web.Providers.Azure" Version="3.2.0" />
     <PackageVersion Include="SixLabors.ImageSharp.Web.Providers.AWS" Version="3.2.0" />
     <PackageVersion Include="StackExchange.Redis" Version="2.11.8" />
     <PackageVersion Include="StyleCop.Analyzers" Version="1.1.118" />
+    <PackageVersion Include="Swashbuckle.AspNetCore.ReDoc" Version="10.1.4" />
+    <PackageVersion Include="Swashbuckle.AspNetCore.SwaggerGen" Version="10.1.4" />
+    <PackageVersion Include="Swashbuckle.AspNetCore.SwaggerUI" Version="10.1.4" />
     <PackageVersion Include="xunit.v3.mtp-v2" Version="3.2.2" />
     <PackageVersion Include="YesSql" Version="5.4.7" />
     <PackageVersion Include="YesSql.Abstractions" Version="5.4.7" />
@@ -96,6 +103,7 @@
     <PackageVersion Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="10.0.3" />
     <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.3" />
     <PackageVersion Include="Microsoft.AspNetCore.Owin" Version="10.0.3" />
+    <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="10.0.3" />
     <PackageVersion Include="Microsoft.Extensions.Caching.Memory" Version="10.0.3" />
     <PackageVersion Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="10.0.3" />
     <!-- dotnet/extensions repository -->

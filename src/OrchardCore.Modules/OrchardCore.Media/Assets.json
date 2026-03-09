@@ -29,5 +29,11 @@
       "Assets/js/app/MediaField/mediafield.js"
     ],
     "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "vite",
+    "name": "media-app",
+    "source": "Assets/js/vue/media-app",
+    "tags": ["admin", "dashboard", "js"]
   }
 ]

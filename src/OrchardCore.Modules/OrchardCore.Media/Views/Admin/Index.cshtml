@@ -8,7 +8,6 @@
 
 <script type="module" asp-name="media" version="2" at="Foot"></script>
 <style asp-name="media" version="2" at="Head"></style>
-<style asp-src="~/OrchardCore.Media/Styles/media2-oc.css"></style>
 
 <h1 style="display:none">@RenderTitleSegments(T["Assets"])</h1>
 
@@ -17,7 +16,7 @@
         site-id="@siteId"
         translations="@Json.Serialize(jsLocalizations).ToString()"
         base-path="@Href("~")"
-        upload-files-url="@Href("~/api/media/upload")"
+        upload-files-url="@Href("~/api/media-gen2/Upload")"
         :max-upload-chunk-size="0"
     >
     </media-app>

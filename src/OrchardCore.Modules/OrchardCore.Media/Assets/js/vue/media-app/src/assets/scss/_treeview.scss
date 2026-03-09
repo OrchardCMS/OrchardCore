@@ -29,12 +29,12 @@
 
   li.selected > div:not(.treeroot), li.selected > .treeroot {
     font-weight: bold;
-    background-color: $selected-background-color;
-    border-left: 2px solid var(--topcon-red);
+    background-color: var(--media-selected-bg);
+    border-left: 2px solid var(--media-accent);
   }
 
   .folderhovered {
-    background-color: $selected-background-color;
+    background-color: var(--media-selected-bg);
   }
 
   li div {

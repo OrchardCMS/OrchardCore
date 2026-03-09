@@ -1,25 +1,11 @@
-import mitt from "mitt";
 import dbg from "debug";
+import {
+  notify as bloomNotify,
+  notifiersClose,
+  registerNotificationBus,
+} from "@bloom/services/notifications/notifier";
 
 const debug = dbg("notifier");
-
-declare global {
-  interface Window {
-    notificationBus: any;
-  }
-}
-
-/**
- * Registers the mitt object on the window
- * @returns the notificationBus mitt object
- */
-export function registerNotificationBus() {
-  if (window.notificationBus === undefined) {
-    window.notificationBus = mitt();
-  }
-
-  return window.notificationBus;
-}
 
 /**
  * Notify a message through a mitt even
@@ -27,29 +13,7 @@ export function registerNotificationBus() {
  */
 export function notify(message) {
   debug(message);
-  window.notificationBus.emit("notify", message);
-}
-
-/**
- * Adds close notifier(s) functionality
- */
-export function notifiersClose() {
-  const notifiers = document.querySelectorAll<HTMLElement>('.p-message[role="alert"]');
-
-  if (notifiers.length > 0) {
-    notifiers.forEach((notifier) => {
-      let btnClose = notifier.querySelector(":scope > .p-message-wrapper > .p-message-close");
-
-      if (btnClose) {
-        btnClose.addEventListener("click", (e: Event) => notifier.classList.add("hidden"));
-      }
-
-      setInterval(function () {
-        notifier.style.transition = "0.8s";
-        notifier.style.opacity = "0";
-      }, 5000);
-    });
-  }
+  bloomNotify(message);
 }
 
 /**
