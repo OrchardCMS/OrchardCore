@@ -3,7 +3,6 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Lists.Models;
 using OrchardCore.Lists.Services;
 
@@ -38,28 +37,17 @@ public class ContainedPartHandler : ContentHandlerBase
 
         if (!context.ContentItem.TryGet<ContainedPart>(out var containedPart))
         {
-            // Creatable content types can be created independently outside of a list,
-            // so containment is not required when there is no ContainedPart.
-            var contentDefinitionManager = _serviceProvider.GetRequiredService<IContentDefinitionManager>();
-            var contentTypeDefinition = await contentDefinitionManager.GetTypeDefinitionAsync(contentType);
-
-            if (contentTypeDefinition is null || contentTypeDefinition.IsCreatable())
-            {
-                return;
-            }
-
-            context.Fail(S["The content item of type '{0}' must be associated with a list via ContainedPart.", contentType], nameof(ContainedPart));
             return;
         }
 
         if (string.IsNullOrEmpty(containedPart.ListContentItemId))
         {
-            context.Fail(S["The content item of type '{0}' must have a valid ListContentItemId as it is contained by a list.", contentType], nameof(ContainedPart.ListContentItemId));
-        }
+            if (string.IsNullOrEmpty(containedPart.ListContentType))
+            {
+                return;
+            }
 
-        if (string.IsNullOrEmpty(containedPart.ListContentType))
-        {
-            context.Fail(S["The content item of type '{0}' must have a valid ListContentType as it is contained by a list.", contentType], nameof(ContainedPart.ListContentType));
+            context.Fail(S["The content item of type '{0}' must have a valid ListContentItemId as it is contained by a list.", contentType], nameof(ContainedPart.ListContentItemId));
         }
     }
 

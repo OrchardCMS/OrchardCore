@@ -48,7 +48,7 @@ public class ContainedPartHandlerTests
     }
 
     [Fact]
-    public async Task ValidatingAsync_ShouldFail_WhenContainedTypeHasNoContainedPart()
+    public async Task ValidatingAsync_ShouldNotFail_WhenContainedTypeHasNoContainedPart()
     {
         SetupBlogWithBlogPostContainedType();
 
@@ -57,7 +57,7 @@ public class ContainedPartHandlerTests
 
         await _handler.ValidatingAsync(context);
 
-        Assert.NotEmpty(context.ContentValidateResult.Errors);
+        Assert.Empty(context.ContentValidateResult.Errors);
     }
 
     [Fact]
@@ -82,7 +82,7 @@ public class ContainedPartHandlerTests
     }
 
     [Fact]
-    public async Task ValidatingAsync_ShouldFail_WhenListContentTypeIsEmpty()
+    public async Task ValidatingAsync_ShouldNotFail_WhenListContentTypeIsEmpty()
     {
         SetupBlogWithBlogPostContainedType();
 
@@ -98,8 +98,7 @@ public class ContainedPartHandlerTests
 
         await _handler.ValidatingAsync(context);
 
-        Assert.Contains(context.ContentValidateResult.Errors,
-            e => e.MemberNames.Contains(nameof(ContainedPart.ListContentType)));
+        Assert.Empty(context.ContentValidateResult.Errors);
     }
 
     [Fact]
@@ -149,7 +148,7 @@ public class ContainedPartHandlerTests
     }
 
     [Fact]
-    public async Task ValidatingAsync_ShouldFail_WhenCreatableTypeHasContainedPartWithMissingFields()
+    public async Task ValidatingAsync_ShouldNotFail_WhenCreatableTypeHasEmptyContainedPart()
     {
         SetupBlogWithBlogPostContainedType(creatable: true);
 
@@ -165,10 +164,28 @@ public class ContainedPartHandlerTests
 
         await _handler.ValidatingAsync(context);
 
+        Assert.Empty(context.ContentValidateResult.Errors);
+    }
+
+    [Fact]
+    public async Task ValidatingAsync_ShouldFail_WhenCreatableTypeHasPartialContainedPartData()
+    {
+        SetupBlogWithBlogPostContainedType(creatable: true);
+
+        var contentItem = new ContentItem { ContentType = "BlogPost" };
+        contentItem.Weld<ContainedPart>();
+        contentItem.Alter<ContainedPart>(p =>
+        {
+            p.ListContentItemId = string.Empty;
+            p.ListContentType = "Blog";
+        });
+
+        var context = new ValidateContentContext(contentItem);
+
+        await _handler.ValidatingAsync(context);
+
         Assert.Contains(context.ContentValidateResult.Errors,
             e => e.MemberNames.Contains(nameof(ContainedPart.ListContentItemId)));
-        Assert.Contains(context.ContentValidateResult.Errors,
-            e => e.MemberNames.Contains(nameof(ContainedPart.ListContentType)));
     }
 
     private void SetupBlogWithBlogPostContainedType(bool creatable = false)
