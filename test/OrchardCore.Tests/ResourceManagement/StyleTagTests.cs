@@ -322,7 +322,7 @@ public class StyleTagTests : IDisposable
     [Fact]
     public async Task NamedStyleWithNameAndSrc_NoAt_RendersAtHead()
     {
-        // Arrange — When at is Unspecified, the named+src path only defines, does not register/render.
+        // Arrange — When "name" and "src" path are provided, but no "at" is provided.
         var resourceManager = CreateResourceManager();
         var context = CreateLiquidContext(resourceManager);
         var writer = new StringWriter();
@@ -335,7 +335,8 @@ public class StyleTagTests : IDisposable
         // Act
         await StyleTag.WriteToAsync(arguments, writer, null, context);
 
-        // Assert — Defined in InlineManifest but NOT registered as required.
+        // Assert — Defined in InlineManifest, resource is required at Head (instead of Undefined), nothing is rendered
+        // in place of the style tag.
         var inlineDefinition = resourceManager.InlineManifest
             .GetResources("stylesheet")
             .FirstOrDefault(r => r.Key == "my-style")
