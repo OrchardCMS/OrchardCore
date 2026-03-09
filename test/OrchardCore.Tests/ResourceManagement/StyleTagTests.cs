@@ -12,6 +12,7 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Liquid;
 using OrchardCore.ResourceManagement;
 using OrchardCore.Resources.Liquid;
+using ResourceLocation = OrchardCore.ResourceManagement.ResourceLocation;
 
 namespace OrchardCore.Tests.ResourceManagement;
 
@@ -319,7 +320,7 @@ public class StyleTagTests : IDisposable
     }
 
     [Fact]
-    public async Task NamedStyleWithNameAndSrc_NoAt_DoesNotRegisterOrRender()
+    public async Task NamedStyleWithNameAndSrc_NoAt_RendersAtHead()
     {
         // Arrange — When at is Unspecified, the named+src path only defines, does not register/render.
         var resourceManager = CreateResourceManager();
@@ -342,8 +343,9 @@ public class StyleTagTests : IDisposable
 
         Assert.NotNull(inlineDefinition);
 
-        var requiredResources = resourceManager.GetRequiredResources("stylesheet");
-        Assert.Empty(requiredResources);
+        var requiredResources = resourceManager.GetRequiredResources("stylesheet").ToList();
+        Assert.Single(requiredResources);
+        Assert.Equal(ResourceLocation.Head, requiredResources[0].Settings.Location);
         Assert.Empty(writer.ToString());
     }
 
