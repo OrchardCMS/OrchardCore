@@ -99,6 +99,7 @@ public class MediaJSLocalizer(IStringLocalizer<MediaJSLocalizer> S) : IJSLocaliz
                 { "ErrorLoadingFolder", S["Error loading folder"].Value },
                 { "ErrorUploadFile", S["Error uploading file"].Value },
                 { "ErrorValidateConnection", S["Validation error"].Value },
+                { "FileAlreadyExists", S["A file with this name already exists in the current folder."].Value },
             };
         }
 

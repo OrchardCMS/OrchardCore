@@ -94,54 +94,41 @@
                     </nav>
                 </div>
                 <div class="file-container-middle p-3">
-                    <upload-list :t="t"></upload-list>
-
                     <file-items :t="t" :is-selected-all="isSelectedAll" :sort-by="sortBy" :sort-asc="sortAsc"
                         :filtered-file-items="itemsInPage" :selected-files="selectedFiles" :thumb-size="thumbSize"
-                        v-show="itemsInPage.length > 0 && !gridView" ref="fileItems" :base-host="baseHost"></file-items>
+                        v-show="!isLoadingFolder && itemsInPage.length > 0 && !gridView" ref="fileItems" :base-host="baseHost"></file-items>
 
                     <file-items-grid :t="t" :filtered-file-items="itemsInPage" :selected-files="selectedFiles"
-                        :thumb-size="thumbSize" v-show="itemsInPage.length > 0 && gridView"
+                        :thumb-size="thumbSize" v-show="!isLoadingFolder && itemsInPage.length > 0 && gridView"
                         :base-host="baseHost"></file-items-grid>
 
-                    <div v-show="fileItems.length > 0 && filteredFileItems.length < 1
-        " class="p-message p-component p-message-info" role="alert" aria-live="assertive" aria-atomic="true"
-                        data-pc-name="message" data-pc-section="root">
-                        <div class="p-message-wrapper" data-pc-section="wrapper">
-                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"
-                                xmlns="http://www.w3.org/2000/svg" class="p-icon p-message-icon" aria-hidden="true"
-                                data-pc-section="icon">
-                                <path fill-rule="evenodd" clip-rule="evenodd"
-                                    d="M3.11101 12.8203C4.26215 13.5895 5.61553 14 7 14C8.85652 14 10.637 13.2625 11.9497 11.9497C13.2625 10.637 14 8.85652 14 7C14 5.61553 13.5895 4.26215 12.8203 3.11101C12.0511 1.95987 10.9579 1.06266 9.67879 0.532846C8.3997 0.00303296 6.99224 -0.13559 5.63437 0.134506C4.2765 0.404603 3.02922 1.07129 2.05026 2.05026C1.07129 3.02922 0.404603 4.2765 0.134506 5.63437C-0.13559 6.99224 0.00303296 8.3997 0.532846 9.67879C1.06266 10.9579 1.95987 12.0511 3.11101 12.8203ZM3.75918 2.14976C4.71846 1.50879 5.84628 1.16667 7 1.16667C8.5471 1.16667 10.0308 1.78125 11.1248 2.87521C12.2188 3.96918 12.8333 5.45291 12.8333 7C12.8333 8.15373 12.4912 9.28154 11.8502 10.2408C11.2093 11.2001 10.2982 11.9478 9.23232 12.3893C8.16642 12.8308 6.99353 12.9463 5.86198 12.7212C4.73042 12.4962 3.69102 11.9406 2.87521 11.1248C2.05941 10.309 1.50384 9.26958 1.27876 8.13803C1.05367 7.00647 1.16919 5.83358 1.61071 4.76768C2.05222 3.70178 2.79989 2.79074 3.75918 2.14976ZM7.00002 4.8611C6.84594 4.85908 6.69873 4.79698 6.58977 4.68801C6.48081 4.57905 6.4187 4.43185 6.41669 4.27776V3.88888C6.41669 3.73417 6.47815 3.58579 6.58754 3.4764C6.69694 3.367 6.84531 3.30554 7.00002 3.30554C7.15473 3.30554 7.3031 3.367 7.4125 3.4764C7.52189 3.58579 7.58335 3.73417 7.58335 3.88888V4.27776C7.58134 4.43185 7.51923 4.57905 7.41027 4.68801C7.30131 4.79698 7.1541 4.85908 7.00002 4.8611ZM7.00002 10.6945C6.84594 10.6925 6.69873 10.6304 6.58977 10.5214C6.48081 10.4124 6.4187 10.2652 6.41669 10.1111V6.22225C6.41669 6.06754 6.47815 5.91917 6.58754 5.80977C6.69694 5.70037 6.84531 5.63892 7.00002 5.63892C7.15473 5.63892 7.3031 5.70037 7.4125 5.80977C7.52189 5.91917 7.58335 6.06754 7.58335 6.22225V10.1111C7.58134 10.2652 7.51923 10.4124 7.41027 10.5214C7.30131 10.6304 7.1541 10.6925 7.00002 10.6945Z"
-                                    fill="currentColor"></path>
-                            </svg>
-                            <div class="p-message-text p-message-text" data-pc-section="text">
-                                {{ t.FolderFilterEmpty }}
-                            </div>
-                        </div>
+                    <!-- Filter returned no results -->
+                    <div v-show="!isLoadingFolder && fileItems.length > 0 && filteredFileItems.length < 1" class="empty-state">
+                        <fa-icon icon="fa-solid fa-filter" class="empty-state-icon"></fa-icon>
+                        <p class="empty-state-text">{{ t.FolderFilterEmpty }}</p>
                     </div>
 
-                    <div v-show="fileItems.length < 1" class="p-message p-component p-message-info" role="alert"
-                        aria-live="assertive" aria-atomic="true" data-pc-name="message" data-pc-section="root">
-                        <div class="p-message-wrapper" data-pc-section="wrapper">
-                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"
-                                xmlns="http://www.w3.org/2000/svg" class="p-icon p-message-icon" aria-hidden="true"
-                                data-pc-section="icon">
-                                <path fill-rule="evenodd" clip-rule="evenodd"
-                                    d="M3.11101 12.8203C4.26215 13.5895 5.61553 14 7 14C8.85652 14 10.637 13.2625 11.9497 11.9497C13.2625 10.637 14 8.85652 14 7C14 5.61553 13.5895 4.26215 12.8203 3.11101C12.0511 1.95987 10.9579 1.06266 9.67879 0.532846C8.3997 0.00303296 6.99224 -0.13559 5.63437 0.134506C4.2765 0.404603 3.02922 1.07129 2.05026 2.05026C1.07129 3.02922 0.404603 4.2765 0.134506 5.63437C-0.13559 6.99224 0.00303296 8.3997 0.532846 9.67879C1.06266 10.9579 1.95987 12.0511 3.11101 12.8203ZM3.75918 2.14976C4.71846 1.50879 5.84628 1.16667 7 1.16667C8.5471 1.16667 10.0308 1.78125 11.1248 2.87521C12.2188 3.96918 12.8333 5.45291 12.8333 7C12.8333 8.15373 12.4912 9.28154 11.8502 10.2408C11.2093 11.2001 10.2982 11.9478 9.23232 12.3893C8.16642 12.8308 6.99353 12.9463 5.86198 12.7212C4.73042 12.4962 3.69102 11.9406 2.87521 11.1248C2.05941 10.309 1.50384 9.26958 1.27876 8.13803C1.05367 7.00647 1.16919 5.83358 1.61071 4.76768C2.05222 3.70178 2.79989 2.79074 3.75918 2.14976ZM7.00002 4.8611C6.84594 4.85908 6.69873 4.79698 6.58977 4.68801C6.48081 4.57905 6.4187 4.43185 6.41669 4.27776V3.88888C6.41669 3.73417 6.47815 3.58579 6.58754 3.4764C6.69694 3.367 6.84531 3.30554 7.00002 3.30554C7.15473 3.30554 7.3031 3.367 7.4125 3.4764C7.52189 3.58579 7.58335 3.73417 7.58335 3.88888V4.27776C7.58134 4.43185 7.51923 4.57905 7.41027 4.68801C7.30131 4.79698 7.1541 4.85908 7.00002 4.8611ZM7.00002 10.6945C6.84594 10.6925 6.69873 10.6304 6.58977 10.5214C6.48081 10.4124 6.4187 10.2652 6.41669 10.1111V6.22225C6.41669 6.06754 6.47815 5.91917 6.58754 5.80977C6.69694 5.70037 6.84531 5.63892 7.00002 5.63892C7.15473 5.63892 7.3031 5.70037 7.4125 5.80977C7.52189 5.91917 7.58335 6.06754 7.58335 6.22225V10.1111C7.58134 10.2652 7.51923 10.4124 7.41027 10.5214C7.30131 10.6304 7.1541 10.6925 7.00002 10.6945Z"
-                                    fill="currentColor"></path>
-                            </svg>
-                            <div class="p-message-text p-message-text" data-pc-section="text">
-                                {{ t.FolderEmpty }}
-                            </div>
-                        </div>
+                    <!-- Loading spinner -->
+                    <div v-show="isLoadingFolder" class="loading-spinner-container">
+                        <svg class="loading-spinner" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="25" cy="25" r="20" fill="none" stroke="currentColor" stroke-width="4"
+                                stroke-linecap="round" stroke-dasharray="90, 150" stroke-dashoffset="0" />
+                        </svg>
+                    </div>
+
+                    <!-- Folder is empty -->
+                    <div v-show="fileItems.length < 1 && !isLoadingFolder" class="empty-state">
+                        <fa-icon icon="fa-regular fa-folder-open" class="empty-state-icon"></fa-icon>
+                        <p class="empty-state-text">{{ t.FolderEmpty }}</p>
+                        <p class="empty-state-hint">{{ t.DropTitle }}</p>
                     </div>
                 </div>
-                <div v-show="filteredFileItems.length > 0" class="file-container-footer p-3 pb-0">
+                <div v-show="!isLoadingFolder && filteredFileItems.length > 0" class="file-container-footer p-3 pb-0">
                     <pager :t="t" :source-items="filteredFileItems"> </pager>
                 </div>
             </div>
         </div>
+        <upload-toast :t="t"></upload-toast>
     </div>
 </template>
 
@@ -153,7 +140,7 @@
 import { defineComponent, ref } from "vue";
 import dbg from "debug";
 import FolderComponent from "./components/folderComponent.vue";
-import UploadListComponent from "./components/uploadListComponent.vue";
+import UploadToast from "./components/uploadToast.vue";
 import FileItemsComponent from "./components/fileItemsComponent.vue";
 import FileItemsGridComponent from "./components/fileItemsGridComponent.vue";
 import PagerComponent from "./components/pagerComponent.vue";
@@ -167,6 +154,7 @@ import ModalConfirm from "./components/ModalConfirm.vue";
 import Uppy, { debugLogger } from "@uppy/core";
 import DropTarget from "@uppy/drop-target";
 import XHRUpload from "@uppy/xhr-upload";
+import axios from "axios";
 
 import "@uppy/core/dist/style.css";
 import "@uppy/drop-target/dist/style.css";
@@ -184,7 +172,7 @@ declare global {
 export default defineComponent({
     components: {
         Folder: FolderComponent,
-        UploadList: UploadListComponent,
+        UploadToast: UploadToast,
         FileItems: FileItemsComponent,
         FileItemsGrid: FileItemsGridComponent,
         Pager: PagerComponent,
@@ -235,6 +223,9 @@ export default defineComponent({
             itemsInPage: [] as IFileStoreEntry[],
             rootFolder: {} as IFileStoreEntry,
             uppy: null as Uppy | null,
+            isLoadingFolder: true,
+            loadFolderRequestId: 0,
+            loadFolderCancelSource: null as ReturnType<typeof axios.CancelToken.source> | null,
         };
     },
     created: function () {
@@ -466,6 +457,17 @@ export default defineComponent({
         uppy.on("file-added", (file) => {
             debug("file added", file);
             me.emitter.emit("uploadFileAdded", { name: file.name });
+
+            // Update the endpoint to include the current folder path.
+            const folderPath = me.selectedFolder?.filePath ?? "/";
+            const xhrPlugin = uppy.getPlugin("XHRUpload");
+            if (xhrPlugin) {
+                const sep = uploadUrl.includes("?") ? "&" : "?";
+                xhrPlugin.setOptions({
+                    endpoint: uploadUrl + sep + "path=" + encodeURIComponent(folderPath),
+                });
+            }
+
             uppy.upload();
         })
 
@@ -478,9 +480,29 @@ export default defineComponent({
             }
         });
 
-        uppy.on("upload-success", (file) => {
+        uppy.on("upload-success", (file, response) => {
             if (file) {
+                // In bundle mode the server returns { files: [...] } where each
+                // entry may carry an `error` field for rejected uploads.
+                const body = response?.body as any;
+                const serverFiles = body?.files as any[];
+                if (serverFiles) {
+                    const match = serverFiles.find(
+                        (sf: any) => sf.name?.toLowerCase() === file.name.toLowerCase()
+                    );
+                    if (match?.error) {
+                        me.emitter.emit("uploadError", {
+                            name: file.name,
+                            errorMessage: match.error,
+                        });
+                        uppy.removeFile(file.id);
+                        return;
+                    }
+                }
+
                 me.emitter.emit("uploadSuccess", { name: file.name });
+                me.loadFolder(me.selectedFolder);
+                uppy.removeFile(file.id);
             }
         });
 
@@ -490,6 +512,7 @@ export default defineComponent({
                     name: file.name,
                     errorMessage: error?.message ?? me.t.ErrorUploadFile,
                 });
+                uppy.removeFile(file.id);
             }
         });
 
@@ -520,8 +543,13 @@ export default defineComponent({
                         type: file.type,
                         data: file,
                     });
-                } catch (err) {
+                } catch (err: any) {
                     debug("Error adding file", err);
+                    this.emitter.emit("uploadFileAdded", { name: file.name });
+                    this.emitter.emit("uploadError", {
+                        name: file.name,
+                        errorMessage: err?.message ?? this.t.ErrorUploadFile,
+                    });
                 }
             }
             input.value = "";
@@ -569,25 +597,40 @@ export default defineComponent({
             }
         },
         loadFolder: function (folder: IFileStoreEntry) {
+            // Cancel any in-flight folder load request.
+            if (this.loadFolderCancelSource) {
+                this.loadFolderCancelSource.cancel();
+            }
+
             this.errors = [];
             this.selectedFiles = [];
+            this.fileItems = [];
+            this.isLoadingFolder = true;
             const me = this;
+
+            const requestId = ++this.loadFolderRequestId;
+            const cancelSource = axios.CancelToken.source();
+            this.loadFolderCancelSource = cancelSource;
 
             const apiClient = new MediaApiClient(me.baseUrl);
             apiClient
-                .getMediaItems(folder.filePath, undefined)
+                .getMediaItems(folder.filePath, undefined, cancelSource.token)
                 .then((response) => {
+                    if (requestId !== me.loadFolderRequestId) return;
                     me.fileItems = response;
                     me.selectedFiles = [];
                     me.sortBy = "";
                     me.sortAsc = true;
+                    me.isLoadingFolder = false;
                 })
                 .catch(async (error) => {
+                    if (requestId !== me.loadFolderRequestId) return;
                     notify({
                         summary: me.t.ErrorLoadingFolder,
                         detail: await tryGetErrorMessage(error),
                         severity: SeverityLevel.Error,
                     });
+                    me.isLoadingFolder = false;
                     me.selectRootFolder();
                 });
         },

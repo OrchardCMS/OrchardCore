@@ -69,7 +69,7 @@ public class MediaGen2ApiController : Controller
     {
         if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMedia))
         {
-            return Forbid();
+            return this.ApiChallengeOrForbidForCookieAuth();
         }
 
         if (String.IsNullOrEmpty(path))
@@ -79,7 +79,7 @@ public class MediaGen2ApiController : Controller
 
         if (await _mediaFileStore.GetDirectoryInfoAsync(path) == null)
         {
-            return NotFound();
+            return this.ApiNotFoundProblem();
         }
 
         // create default folders if not exist
@@ -119,12 +119,12 @@ public class MediaGen2ApiController : Controller
         if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMedia)
             || !await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaFolder, (object)path))
         {
-            return Forbid();
+            return this.ApiChallengeOrForbidForCookieAuth();
         }
 
         if (await _mediaFileStore.GetDirectoryInfoAsync(path) == null)
         {
-            return NotFound();
+            return this.ApiNotFoundProblem();
         }
 
         var allowedExtensions = GetRequestedExtensions(extensions, false);
@@ -154,19 +154,19 @@ public class MediaGen2ApiController : Controller
     {
         if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMedia))
         {
-            return Forbid();
+            return this.ApiChallengeOrForbidForCookieAuth();
         }
 
         if (String.IsNullOrEmpty(path))
         {
-            return NotFound();
+            return this.ApiNotFoundProblem();
         }
 
         var fileEntry = await _mediaFileStore.GetFileInfoAsync(path);
 
         if (fileEntry == null)
         {
-            return NotFound();
+            return this.ApiNotFoundProblem();
         }
 
         return CreateFileResult(fileEntry);
@@ -182,7 +182,7 @@ public class MediaGen2ApiController : Controller
     {
         if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMedia))
         {
-            return Forbid();
+            return this.ApiChallengeOrForbidForCookieAuth();
         }
 
         var allowedExtensions = GetRequestedExtensions(extensions, true);
@@ -230,6 +230,20 @@ public class MediaGen2ApiController : Controller
                     try
                     {
                         var mediaFilePath = _mediaFileStore.Combine(path, fileName);
+
+                        if (await _mediaFileStore.GetFileInfoAsync(mediaFilePath) != null)
+                        {
+                            result.Add(new
+                            {
+                                name = fileName,
+                                size = file.Length,
+                                folder = path,
+                                error = S["A file with this name already exists in the current folder."].ToString(),
+                            });
+
+                            continue;
+                        }
+
                         stream = file.OpenReadStream();
                         mediaFilePath = await _mediaFileStore.CreateFileFromStreamAsync(mediaFilePath, stream);
 
@@ -270,23 +284,23 @@ public class MediaGen2ApiController : Controller
         if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMedia)
             || !await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaFolder, (object)path))
         {
-            return Forbid();
+            return this.ApiChallengeOrForbidForCookieAuth();
         }
 
         if (String.IsNullOrEmpty(path))
         {
-            return StatusCode(StatusCodes.Status403Forbidden, S["Cannot delete root media folder"]);
+            return this.ApiBadRequestProblem(detail: S["Cannot delete root media folder"]);
         }
 
         var mediaFolder = await _mediaFileStore.GetDirectoryInfoAsync(path);
         if (mediaFolder != null && !mediaFolder.IsDirectory)
         {
-            return StatusCode(StatusCodes.Status403Forbidden, S["Cannot delete path because it is not a directory"]);
+            return this.ApiBadRequestProblem(detail: S["Cannot delete path because it is not a directory"]);
         }
 
         if (await _mediaFileStore.TryDeleteDirectoryAsync(path) == false)
         {
-            return NotFound();
+            return this.ApiNotFoundProblem();
         }
 
         return Ok();
@@ -303,17 +317,17 @@ public class MediaGen2ApiController : Controller
         if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMedia)
             || !await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaFolder, (object)path))
         {
-            return Forbid();
+            return this.ApiChallengeOrForbidForCookieAuth();
         }
 
         if (String.IsNullOrEmpty(path))
         {
-            return NotFound();
+            return this.ApiNotFoundProblem();
         }
 
         if (!await _mediaFileStore.TryDeleteFileAsync(path))
         {
-            return NotFound();
+            return this.ApiNotFoundProblem();
         }
 
         return Ok();
@@ -331,29 +345,29 @@ public class MediaGen2ApiController : Controller
         if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMedia)
             || !await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaFolder, (object)oldPath))
         {
-            return Forbid();
+            return this.ApiChallengeOrForbidForCookieAuth();
         }
 
         if (String.IsNullOrEmpty(oldPath) || String.IsNullOrEmpty(newPath))
         {
-            return NotFound();
+            return this.ApiNotFoundProblem();
         }
 
         if (await _mediaFileStore.GetFileInfoAsync(oldPath) == null)
         {
-            return NotFound();
+            return this.ApiNotFoundProblem();
         }
 
         var newExtension = Path.GetExtension(newPath);
 
         if (!_mediaOptions.AllowedFileExtensions.Contains(newExtension, StringComparer.OrdinalIgnoreCase))
         {
-            return BadRequest(S["This file extension is not allowed: {0}", newExtension]);
+            return this.ApiValidationProblem(detail: S["This file extension is not allowed: {0}", newExtension]);
         }
 
         if (await _mediaFileStore.GetFileInfoAsync(newPath) != null)
         {
-            return BadRequest(S["Cannot move media because a file already exists with the same name"]);
+            return this.ApiValidationProblem(detail: S["Cannot move media because a file already exists with the same name"]);
         }
 
         await _mediaFileStore.MoveFileAsync(oldPath, newPath);
@@ -371,19 +385,19 @@ public class MediaGen2ApiController : Controller
     {
         if (paths == null)
         {
-            return NotFound();
+            return this.ApiNotFoundProblem();
         }
 
         if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMedia))
         {
-            return Forbid();
+            return this.ApiChallengeOrForbidForCookieAuth();
         }
 
         foreach (var path in paths)
         {
             if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageAttachedMediaFieldsFolder, (object)path))
             {
-                return Forbid();
+                return this.ApiChallengeOrForbidForCookieAuth();
             }
         }
 
@@ -391,7 +405,7 @@ public class MediaGen2ApiController : Controller
         {
             if (!await _mediaFileStore.TryDeleteFileAsync(path))
             {
-                return NotFound();
+                return this.ApiNotFoundProblem();
             }
         }
 
@@ -411,14 +425,14 @@ public class MediaGen2ApiController : Controller
             || !await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaFolder, (object)model.sourceFolder)
             || !await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaFolder, (object)model.targetFolder))
         {
-            return Forbid();
+            return this.ApiChallengeOrForbidForCookieAuth();
         }
 
         if ((model.mediaNames == null) || (model.mediaNames.Length < 1)
             || String.IsNullOrEmpty(model.sourceFolder)
             || String.IsNullOrEmpty(model.targetFolder))
         {
-            return NotFound();
+            return this.ApiNotFoundProblem();
         }
 
         model.sourceFolder = model.sourceFolder == "root" ? String.Empty : model.sourceFolder;
@@ -442,7 +456,7 @@ public class MediaGen2ApiController : Controller
 
         if (filesOnError.Count > 0)
         {
-            return BadRequest(S["Error when moving files. Maybe they already exist on the target folder? Files on error: {0}", String.Join(",", filesOnError)].ToString());
+            return this.ApiValidationProblem(detail: S["Error when moving files. Maybe they already exist on the target folder? Files on error: {0}", String.Join(",", filesOnError)]);
         }
 
         return Ok();
@@ -467,7 +481,7 @@ public class MediaGen2ApiController : Controller
 
         if (InvalidFolderNameCharacters.Any(invalidChar => name.Contains(invalidChar)))
         {
-            return BadRequest(S["Cannot create folder because the folder name contains invalid characters"]);
+            return this.ApiValidationProblem(detail: S["Cannot create folder because the folder name contains invalid characters"]);
         }
 
         var newPath = _mediaFileStore.Combine(path, name);
@@ -475,19 +489,19 @@ public class MediaGen2ApiController : Controller
         if (!await authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMedia)
             || !await authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaFolder, (object)newPath))
         {
-            return Forbid();
+            return this.ApiChallengeOrForbidForCookieAuth();
         }
 
         var mediaFolder = await _mediaFileStore.GetDirectoryInfoAsync(newPath);
         if (mediaFolder != null)
         {
-            return BadRequest(S["Cannot create folder because a folder already exists with the same name"]);
+            return this.ApiValidationProblem(detail: S["Cannot create folder because a folder already exists with the same name"]);
         }
 
         var existingFile = await _mediaFileStore.GetFileInfoAsync(newPath);
         if (existingFile != null)
         {
-            return BadRequest(S["Cannot create folder because a file already exists with the same name"]);
+            return this.ApiValidationProblem(detail: S["Cannot create folder because a file already exists with the same name"]);
         }
 
         await _mediaFileStore.TryCreateDirectoryAsync(newPath);

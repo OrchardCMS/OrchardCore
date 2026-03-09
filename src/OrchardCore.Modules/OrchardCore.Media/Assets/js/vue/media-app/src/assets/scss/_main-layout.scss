@@ -32,6 +32,8 @@
             flex-grow: 1;
 
             .file-container-middle {
+                display: flex;
+                flex-direction: column;
                 flex-grow: 1;
                 flex-shrink: 0;
 
@@ -49,9 +51,9 @@
     @media only screen and (min-width: 923px) {
         #fileContainer {
             flex-direction: row;
-            // Orchard admin has a 52px fixed navbar + 1rem (16px) content padding = 68px.
-            // Add 2rem (32px) for our own vertical padding/margins = ~100px total.
-            height: calc(100vh - var(--oc-top-nav-height, 52px) - 3rem);
+            // .ta-content padding: top = nav-height + 1rem, bottom = 1rem.
+            // Use 2.25rem so the box doesn't sit flush against the bottom padding edge.
+            height: calc(100vh - var(--oc-top-nav-height, 52px) - 2.25rem);
 
             #fileContainerMain {
                 display: flex;
@@ -95,6 +97,57 @@
 
     a.disabled {
         cursor: default;
+    }
+
+    .loading-spinner-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-grow: 1;
+        padding: 3rem;
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            color: var(--bs-primary, #0d6efd);
+            animation: spinner-rotate 1s linear infinite;
+        }
+    }
+
+    .empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        flex-grow: 1;
+        padding: 3rem 1rem;
+        text-align: center;
+
+        .empty-state-icon {
+            font-size: 3rem;
+            color: var(--bs-secondary-color, #6c757d);
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .empty-state-text {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--bs-body-color, #212529);
+            margin-bottom: 0.25rem;
+        }
+
+        .empty-state-hint {
+            font-size: 0.85rem;
+            color: var(--bs-secondary-color, #6c757d);
+            margin-bottom: 0;
+        }
+    }
+}
+
+@keyframes spinner-rotate {
+    100% {
+        transform: rotate(360deg);
     }
 }
 

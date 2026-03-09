@@ -18327,10 +18327,10 @@ const jo = ["innerHTML"], Wo = /* @__PURE__ */ defineComponent({
     ]), 1040, ["modelValue", "onUpdate:modelValue", "onClosed", "onOpened"]))), 128)) : createCommentVNode("", true);
   }
 });
-const _hoisted_1$a = { class: "flex justify-content-between" };
-const _hoisted_2$9 = { class: "modal__title" };
+const _hoisted_1$9 = { class: "flex justify-content-between" };
+const _hoisted_2$8 = { class: "modal__title" };
 const _hoisted_3$8 = { class: "mt-3 flex flex-row justify-content-end" };
-const _sfc_main$a = /* @__PURE__ */ defineComponent({
+const _sfc_main$9 = /* @__PURE__ */ defineComponent({
   __name: "ModalConfirm",
   props: {
     title: String,
@@ -18361,8 +18361,8 @@ const _sfc_main$a = /* @__PURE__ */ defineComponent({
         "content-class": "flex flex-column max-w-xl mx-4 p-4 bg-white dark:bg-gray-900 border dark:border-gray-700 rounded-lg space-y-2"
       }, {
         default: withCtx(() => [
-          createBaseVNode("div", _hoisted_1$a, [
-            createBaseVNode("span", _hoisted_2$9, toDisplayString(__props.title), 1),
+          createBaseVNode("div", _hoisted_1$9, [
+            createBaseVNode("span", _hoisted_2$8, toDisplayString(__props.title), 1),
             createBaseVNode("span", {
               class: "cursor-pointer",
               onClick: _cache[0] || (_cache[0] = ($event) => isRef(showModal) ? showModal.value = false : showModal = false)
@@ -18405,14 +18405,14 @@ var SeverityLevel$1 = /* @__PURE__ */ ((SeverityLevel2) => {
   SeverityLevel2["Error"] = "Error";
   return SeverityLevel2;
 })(SeverityLevel$1 || {});
-const _hoisted_1$9 = { class: "flex justify-content-between" };
-const _hoisted_2$8 = { class: "modal__title" };
+const _hoisted_1$8 = { class: "flex justify-content-between" };
+const _hoisted_2$7 = { class: "modal__title" };
 const _hoisted_3$7 = { class: "list-none m-0 p-0" };
 const _hoisted_4$7 = { class: "p-1 w-100 flex align-items-center" };
-const _hoisted_5$5 = ["id", "value"];
-const _hoisted_6$5 = ["for"];
-const _hoisted_7$5 = { class: "mt-3 flex flex-row justify-content-end" };
-const _sfc_main$9 = /* @__PURE__ */ defineComponent({
+const _hoisted_5$6 = ["id", "value"];
+const _hoisted_6$6 = ["for"];
+const _hoisted_7$6 = { class: "mt-3 flex flex-row justify-content-end" };
+const _sfc_main$8 = /* @__PURE__ */ defineComponent({
   __name: "ModalFolderActionConfirm",
   props: {
     title: String,
@@ -18470,8 +18470,8 @@ const _sfc_main$9 = /* @__PURE__ */ defineComponent({
         "content-class": "flex flex-column max-w-xl mx-4 p-4 bg-white dark:bg-gray-900 border dark:border-gray-700 rounded-lg space-y-2 action-modal"
       }, {
         default: withCtx(() => [
-          createBaseVNode("div", _hoisted_1$9, [
-            createBaseVNode("span", _hoisted_2$8, toDisplayString(__props.title), 1),
+          createBaseVNode("div", _hoisted_1$8, [
+            createBaseVNode("span", _hoisted_2$7, toDisplayString(__props.title), 1),
             createBaseVNode("span", {
               class: "cursor-pointer",
               onClick: _cache[0] || (_cache[0] = ($event) => isRef(showModal) ? showModal.value = false : showModal = false)
@@ -18505,17 +18505,17 @@ const _sfc_main$9 = /* @__PURE__ */ defineComponent({
                   id: "action-" + folderActionElem.id,
                   value: folderActionElem.id,
                   "onUpdate:modelValue": _cache[2] || (_cache[2] = ($event) => isRef(folderAction) ? folderAction.value = $event : folderAction = $event)
-                }, null, 8, _hoisted_5$5), [
+                }, null, 8, _hoisted_5$6), [
                   [vModelRadio, unref(folderAction)]
                 ]),
                 createBaseVNode("label", {
                   class: "ms-2 cursor-pointer w-100",
                   for: "action-" + folderActionElem.id
-                }, toDisplayString(folderActionElem.displayName), 9, _hoisted_6$5)
+                }, toDisplayString(folderActionElem.displayName), 9, _hoisted_6$6)
               ]);
             }), 256))
           ]),
-          createBaseVNode("div", _hoisted_7$5, [
+          createBaseVNode("div", _hoisted_7$6, [
             createBaseVNode("button", {
               class: "btn btn-secondary",
               onClick: _cache[3] || (_cache[3] = ($event) => isRef(showModal) ? showModal.value = false : showModal = false)
@@ -21253,6 +21253,8 @@ async function tryGetErrorMessage(error) {
     } else {
       return error.response.detail ?? error.response.title;
     }
+  } else if (error.detail || error.title) {
+    return error.detail ?? error.title;
   } else {
     return error.message;
   }
@@ -21260,10 +21262,10 @@ async function tryGetErrorMessage(error) {
 const debug$2 = dbg$1("media:file-app");
 let moveAssetsState = {};
 ref();
-const _sfc_main$8 = /* @__PURE__ */ defineComponent({
+const _sfc_main$7 = /* @__PURE__ */ defineComponent({
   components: {
-    ModalConfirm: _sfc_main$a,
-    ModalFolderActionConfirm: _sfc_main$9
+    ModalConfirm: _sfc_main$9,
+    ModalFolderActionConfirm: _sfc_main$8
   },
   expose: ["select", "selectFolder"],
   name: "folder",
@@ -21476,11 +21478,11 @@ const _export_sfc = (sfc, props) => {
   }
   return target;
 };
-const _hoisted_1$8 = { class: "folder-name ms-2" };
-const _hoisted_2$7 = { class: "folder-actions" };
+const _hoisted_1$7 = { class: "folder-name ms-2" };
+const _hoisted_2$6 = { class: "folder-actions" };
 const _hoisted_3$6 = ["title"];
 const _hoisted_4$6 = { class: "font-bold" };
-function _sfc_render$7(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render$6(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_ModalConfirm = resolveComponent("ModalConfirm");
   const _component_fa_icon = resolveComponent("fa-icon");
   const _component_ModalFolderActionConfirm = resolveComponent("ModalFolderActionConfirm");
@@ -21545,8 +21547,8 @@ function _sfc_render$7(_ctx, _cache, $props, $setup, $data, $options) {
             })
           ])
         ], -1)),
-        createBaseVNode("div", _hoisted_1$8, toDisplayString(_ctx.currentFolder.name), 1),
-        createBaseVNode("div", _hoisted_2$7, [
+        createBaseVNode("div", _hoisted_1$7, toDisplayString(_ctx.currentFolder.name), 1),
+        createBaseVNode("div", _hoisted_2$6, [
           _ctx.isSelected && !_ctx.isRoot ? (openBlock(), createElementBlock("a", {
             key: 0,
             href: "javascript:void(0)",
@@ -21595,86 +21597,29 @@ function _sfc_render$7(_ctx, _cache, $props, $setup, $data, $options) {
     ])
   ], 34);
 }
-const FolderComponent = /* @__PURE__ */ _export_sfc(_sfc_main$8, [["render", _sfc_render$7]]);
-const _sfc_main$7 = /* @__PURE__ */ defineComponent({
-  name: "upload",
-  props: {
-    model: {
-      type: Object,
-      required: true
-    }
-  },
-  methods: {
-    dismissWarning: function() {
-      this.emitter.emit("removalRequest", this.model);
-    }
-  }
-});
-const _hoisted_1$7 = ["title"];
-const _hoisted_2$6 = ["title"];
-function _sfc_render$6(_ctx, _cache, $props, $setup, $data, $options) {
-  var _a, _b, _c, _d, _e, _f, _g;
-  const _component_fa_icon = resolveComponent("fa-icon");
-  return openBlock(), createElementBlock("div", {
-    class: normalizeClass([{ "upload-warning": (_a = _ctx.model) == null ? void 0 : _a.errorMessage }, "upload p-2"])
-  }, [
-    ((_b = _ctx.model) == null ? void 0 : _b.errorMessage) ? (openBlock(), createElementBlock("span", {
-      key: 0,
-      onClick: _cache[0] || (_cache[0] = ($event) => _ctx.dismissWarning()),
-      class: "close-warning"
-    }, [
-      createVNode(_component_fa_icon, { icon: "fa-solid fa-times" })
-    ])) : createCommentVNode("", true),
-    createBaseVNode("p", {
-      class: "upload-name",
-      title: (_c = _ctx.model) == null ? void 0 : _c.errorMessage
-    }, toDisplayString((_d = _ctx.model) == null ? void 0 : _d.name), 9, _hoisted_1$7),
-    createBaseVNode("div", null, [
-      withDirectives(createBaseVNode("span", {
-        style: normalizeStyle({ width: ((_e = _ctx.model) == null ? void 0 : _e.percentage) + "%" }),
-        class: "progress-bar"
-      }, null, 4), [
-        [vShow, !((_f = _ctx.model) == null ? void 0 : _f.errorMessage)]
-      ]),
-      ((_g = _ctx.model) == null ? void 0 : _g.errorMessage) ? (openBlock(), createElementBlock("span", {
-        key: 0,
-        class: "error-message",
-        title: _ctx.model.errorMessage
-      }, " Error: " + toDisplayString(_ctx.model.errorMessage), 9, _hoisted_2$6)) : createCommentVNode("", true)
-    ])
-  ], 2);
-}
-const UploadComponent = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["render", _sfc_render$6]]);
+const FolderComponent = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["render", _sfc_render$6]]);
 const _sfc_main$6 = /* @__PURE__ */ defineComponent({
-  components: {
-    Upload: UploadComponent
-  },
-  name: "uploadList",
-  data: function() {
-    return {
-      files: [],
-      expanded: false,
-      pendingCount: 0,
-      errorCount: 0
-    };
-  },
+  name: "uploadToast",
   props: {
     t: {
       type: Object,
       required: true
     }
   },
-  computed: {
-    fileCount: function() {
-      return this.files.length;
-    }
+  data() {
+    return {
+      files: [],
+      expanded: true,
+      pendingCount: 0,
+      errorCount: 0
+    };
   },
-  mounted: function() {
+  mounted() {
     const me = this;
     this.emitter.on("uploadFileAdded", (file) => {
-      const alreadyInList = me.files.some((f) => f.name === file.name);
-      if (!alreadyInList) {
-        me.files.push({ name: file.name, percentage: 0, errorMessage: "" });
+      const existing = me.files.find((f) => f.name === file.name);
+      if (!existing) {
+        me.files.push({ name: file.name, percentage: 0, errorMessage: "", success: false });
         me.expanded = true;
       }
     });
@@ -21685,7 +21630,15 @@ const _sfc_main$6 = /* @__PURE__ */ defineComponent({
       }
     });
     this.emitter.on("uploadSuccess", (data) => {
-      me.files = me.files.filter((f) => f.name !== data.name);
+      const file = me.files.find((f) => f.name === data.name);
+      if (file) {
+        file.success = true;
+        file.percentage = 100;
+      }
+      setTimeout(() => {
+        me.files = me.files.filter((f) => !(f.name === data.name && f.success));
+        me.updateCount();
+      }, 3e3);
     });
     this.emitter.on("uploadError", (data) => {
       const file = me.files.find((f) => f.name === data.name);
@@ -21693,80 +21646,123 @@ const _sfc_main$6 = /* @__PURE__ */ defineComponent({
         file.errorMessage = data.errorMessage;
       }
     });
-    this.emitter.on("removalRequest", (fileUpload) => {
-      me.files = me.files.filter((f) => f.name !== fileUpload.name);
-    });
   },
   methods: {
-    updateCount: function() {
-      this.errorCount = this.files.filter((item) => item.errorMessage !== "").length;
-      this.pendingCount = this.files.length - this.errorCount;
+    updateCount() {
+      this.errorCount = this.files.filter((f) => f.errorMessage !== "").length;
+      this.pendingCount = this.files.filter((f) => !f.errorMessage && !f.success).length;
       if (this.files.length < 1) {
         this.expanded = false;
       }
     },
-    clearErrors: function() {
-      this.files = this.files.filter((item) => item.errorMessage === "");
+    clearErrors() {
+      this.files = this.files.filter((f) => f.errorMessage === "");
+    },
+    dismiss(file) {
+      this.files = this.files.filter((f) => f.name !== file.name);
+    },
+    dismissAll() {
+      this.files = [];
     }
   },
   watch: {
-    files: function() {
-      this.updateCount();
+    files: {
+      handler() {
+        this.updateCount();
+      },
+      deep: true
     }
   }
 });
-const _hoisted_1$6 = { class: "upload-list" };
-const _hoisted_2$5 = { class: "toggle-button" };
-const _hoisted_3$5 = { class: "card-body" };
-const _hoisted_4$5 = { class: "d-grid p-2" };
+const _hoisted_1$6 = { class: "upload-toast-container" };
+const _hoisted_2$5 = { class: "upload-toast-title" };
+const _hoisted_3$5 = {
+  key: 0,
+  class: "ms-1"
+};
+const _hoisted_4$5 = {
+  key: 1,
+  class: "text-danger ms-1"
+};
+const _hoisted_5$5 = { class: "upload-toast-actions" };
+const _hoisted_6$5 = { class: "upload-toast-body" };
+const _hoisted_7$5 = { class: "d-flex justify-content-between align-items-center" };
+const _hoisted_8$5 = ["title"];
+const _hoisted_9$4 = ["onClick"];
+const _hoisted_10$4 = {
+  key: 0,
+  class: "upload-toast-error text-danger"
+};
+const _hoisted_11$2 = {
+  key: 1,
+  class: "upload-toast-progress"
+};
 function _sfc_render$5(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_fa_icon = resolveComponent("fa-icon");
-  const _component_upload = resolveComponent("upload");
   return withDirectives((openBlock(), createElementBlock("div", _hoisted_1$6, [
     createBaseVNode("div", {
-      class: "header",
-      onClick: _cache[1] || (_cache[1] = ($event) => _ctx.expanded = !_ctx.expanded)
+      class: "upload-toast-header",
+      onClick: _cache[3] || (_cache[3] = ($event) => _ctx.expanded = !_ctx.expanded)
     }, [
-      createBaseVNode("div", null, [
-        createBaseVNode("span", null, toDisplayString(_ctx.t.Uploads), 1),
-        withDirectives(createBaseVNode("span", null, " (Pending: " + toDisplayString(_ctx.pendingCount) + ") ", 513), [
-          [vShow, _ctx.pendingCount]
-        ]),
-        withDirectives(createBaseVNode("span", {
-          class: normalizeClass({ "text-danger": _ctx.errorCount })
-        }, [
-          createTextVNode(" ( " + toDisplayString(_ctx.t.Errors) + ": " + toDisplayString(_ctx.errorCount) + " / ", 1),
-          createBaseVNode("a", {
-            href: "javascript:void(0)",
-            onClick: _cache[0] || (_cache[0] = withModifiers((...args) => _ctx.clearErrors && _ctx.clearErrors(...args), ["stop"]))
-          }, toDisplayString(_ctx.t.ClearErrors), 1),
-          _cache[2] || (_cache[2] = createTextVNode(")"))
-        ], 2), [
-          [vShow, _ctx.errorCount]
-        ])
-      ]),
       createBaseVNode("div", _hoisted_2$5, [
-        withDirectives(createBaseVNode("div", null, [
-          createVNode(_component_fa_icon, { icon: "fa-solid fa-chevron-down" })
-        ], 512), [
-          [vShow, _ctx.expanded]
+        createBaseVNode("span", null, toDisplayString(_ctx.t.Uploads), 1),
+        _ctx.pendingCount > 0 ? (openBlock(), createElementBlock("span", _hoisted_3$5, "(" + toDisplayString(_ctx.pendingCount) + ")", 1)) : createCommentVNode("", true),
+        _ctx.errorCount > 0 ? (openBlock(), createElementBlock("span", _hoisted_4$5, toDisplayString(_ctx.t.Errors) + ": " + toDisplayString(_ctx.errorCount), 1)) : createCommentVNode("", true)
+      ]),
+      createBaseVNode("div", _hoisted_5$5, [
+        _ctx.errorCount > 0 ? (openBlock(), createElementBlock("button", {
+          key: 0,
+          class: "btn btn-link btn-sm text-danger p-0 me-2",
+          onClick: _cache[0] || (_cache[0] = withModifiers((...args) => _ctx.clearErrors && _ctx.clearErrors(...args), ["stop"]))
+        }, toDisplayString(_ctx.t.ClearErrors), 1)) : createCommentVNode("", true),
+        createBaseVNode("button", {
+          class: "btn btn-link btn-sm p-0",
+          onClick: _cache[1] || (_cache[1] = withModifiers(($event) => _ctx.expanded = !_ctx.expanded, ["stop"]))
+        }, [
+          createVNode(_component_fa_icon, {
+            icon: _ctx.expanded ? "fa-solid fa-chevron-down" : "fa-solid fa-chevron-up"
+          }, null, 8, ["icon"])
         ]),
-        withDirectives(createBaseVNode("div", null, [
-          createVNode(_component_fa_icon, { icon: "fa-solid fa-chevron-up" })
-        ], 512), [
-          [vShow, !_ctx.expanded]
-        ])
+        _ctx.pendingCount === 0 ? (openBlock(), createElementBlock("button", {
+          key: 1,
+          class: "btn btn-link btn-sm p-0 ms-2",
+          onClick: _cache[2] || (_cache[2] = withModifiers((...args) => _ctx.dismissAll && _ctx.dismissAll(...args), ["stop"]))
+        }, [
+          createVNode(_component_fa_icon, { icon: "fa-solid fa-times" })
+        ])) : createCommentVNode("", true)
       ])
     ]),
-    withDirectives(createBaseVNode("div", _hoisted_3$5, [
-      createBaseVNode("div", _hoisted_4$5, [
-        (openBlock(true), createElementBlock(Fragment, null, renderList(_ctx.files, (f) => {
-          return openBlock(), createBlock(_component_upload, {
-            key: f.name,
-            model: f
-          }, null, 8, ["model"]);
-        }), 128))
-      ])
+    withDirectives(createBaseVNode("div", _hoisted_6$5, [
+      (openBlock(true), createElementBlock(Fragment, null, renderList(_ctx.files, (f) => {
+        return openBlock(), createElementBlock("div", {
+          key: f.name,
+          class: normalizeClass(["upload-toast-item", { "is-error": f.errorMessage, "is-success": f.success }])
+        }, [
+          createBaseVNode("div", _hoisted_7$5, [
+            createBaseVNode("span", {
+              class: "upload-toast-filename",
+              title: f.errorMessage || f.name
+            }, toDisplayString(f.name), 9, _hoisted_8$5),
+            f.errorMessage ? (openBlock(), createElementBlock("button", {
+              key: 0,
+              class: "btn btn-link btn-sm p-0 text-danger",
+              onClick: ($event) => _ctx.dismiss(f)
+            }, [
+              createVNode(_component_fa_icon, { icon: "fa-solid fa-times" })
+            ], 8, _hoisted_9$4)) : f.success ? (openBlock(), createBlock(_component_fa_icon, {
+              key: 1,
+              icon: "fa-solid fa-check",
+              class: "text-success"
+            })) : createCommentVNode("", true)
+          ]),
+          f.errorMessage ? (openBlock(), createElementBlock("div", _hoisted_10$4, toDisplayString(f.errorMessage), 1)) : !f.success ? (openBlock(), createElementBlock("div", _hoisted_11$2, [
+            createBaseVNode("div", {
+              class: "upload-toast-progress-bar",
+              style: normalizeStyle({ width: f.percentage + "%" })
+            }, null, 4)
+          ])) : createCommentVNode("", true)
+        ], 2);
+      }), 128))
     ], 512), [
       [vShow, _ctx.expanded]
     ])
@@ -21774,7 +21770,7 @@ function _sfc_render$5(_ctx, _cache, $props, $setup, $data, $options) {
     [vShow, _ctx.files.length > 0]
   ]);
 }
-const UploadListComponent = /* @__PURE__ */ _export_sfc(_sfc_main$6, [["render", _sfc_render$5]]);
+const UploadToast = /* @__PURE__ */ _export_sfc(_sfc_main$6, [["render", _sfc_render$5]]);
 const _hoisted_1$5 = { class: "flex justify-content-between" };
 const _hoisted_2$4 = { class: "modal__title" };
 const _hoisted_3$4 = { class: "mb-3" };
@@ -26633,11 +26629,11 @@ ref(null);
 const _sfc_main = /* @__PURE__ */ defineComponent({
   components: {
     Folder: FolderComponent,
-    UploadList: UploadListComponent,
+    UploadToast,
     FileItems: FileItemsComponent,
     FileItemsGrid: FileItemsGridComponent,
     Pager: PagerComponent,
-    ModalConfirm: _sfc_main$a
+    ModalConfirm: _sfc_main$9
   },
   name: "file-app",
   props: {
@@ -26683,7 +26679,10 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       sortAsc: true,
       itemsInPage: [],
       rootFolder: {},
-      uppy: null
+      uppy: null,
+      isLoadingFolder: true,
+      loadFolderRequestId: 0,
+      loadFolderCancelSource: null
     };
   },
   created: function() {
@@ -26854,8 +26853,17 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
     me.uppy = uppy;
     window.uppy = uppy;
     uppy.on("file-added", (file) => {
+      var _a;
       debug("file added", file);
       me.emitter.emit("uploadFileAdded", { name: file.name });
+      const folderPath = ((_a = me.selectedFolder) == null ? void 0 : _a.filePath) ?? "/";
+      const xhrPlugin = uppy.getPlugin("XHRUpload");
+      if (xhrPlugin) {
+        const sep = uploadUrl.includes("?") ? "&" : "?";
+        xhrPlugin.setOptions({
+          endpoint: uploadUrl + sep + "path=" + encodeURIComponent(folderPath)
+        });
+      }
       uppy.upload();
     });
     uppy.on("upload-progress", (file, progress) => {
@@ -26866,9 +26874,29 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
         });
       }
     });
-    uppy.on("upload-success", (file) => {
+    uppy.on("upload-success", (file, response) => {
       if (file) {
+        const body = response == null ? void 0 : response.body;
+        const serverFiles = body == null ? void 0 : body.files;
+        if (serverFiles) {
+          const match2 = serverFiles.find(
+            (sf) => {
+              var _a;
+              return ((_a = sf.name) == null ? void 0 : _a.toLowerCase()) === file.name.toLowerCase();
+            }
+          );
+          if (match2 == null ? void 0 : match2.error) {
+            me.emitter.emit("uploadError", {
+              name: file.name,
+              errorMessage: match2.error
+            });
+            uppy.removeFile(file.id);
+            return;
+          }
+        }
         me.emitter.emit("uploadSuccess", { name: file.name });
+        me.loadFolder(me.selectedFolder);
+        uppy.removeFile(file.id);
       }
     });
     uppy.on("upload-error", (file, error) => {
@@ -26877,6 +26905,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
           name: file.name,
           errorMessage: (error == null ? void 0 : error.message) ?? me.t.ErrorUploadFile
         });
+        uppy.removeFile(file.id);
       }
     });
     uppy.on("complete", (result) => {
@@ -26905,6 +26934,11 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
           });
         } catch (err) {
           debug("Error adding file", err);
+          this.emitter.emit("uploadFileAdded", { name: file.name });
+          this.emitter.emit("uploadError", {
+            name: file.name,
+            errorMessage: (err == null ? void 0 : err.message) ?? this.t.ErrorUploadFile
+          });
         }
       }
       input.value = "";
@@ -26946,21 +26980,33 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       }
     },
     loadFolder: function(folder) {
+      if (this.loadFolderCancelSource) {
+        this.loadFolderCancelSource.cancel();
+      }
       this.errors = [];
       this.selectedFiles = [];
+      this.fileItems = [];
+      this.isLoadingFolder = true;
       const me = this;
+      const requestId = ++this.loadFolderRequestId;
+      const cancelSource = axios.CancelToken.source();
+      this.loadFolderCancelSource = cancelSource;
       const apiClient = new MediaGen2ApiClient(me.baseUrl);
-      apiClient.getMediaItems(folder.filePath, void 0).then((response) => {
+      apiClient.getMediaItems(folder.filePath, void 0, cancelSource.token).then((response) => {
+        if (requestId !== me.loadFolderRequestId) return;
         me.fileItems = response;
         me.selectedFiles = [];
         me.sortBy = "";
         me.sortAsc = true;
+        me.isLoadingFolder = false;
       }).catch(async (error) => {
+        if (requestId !== me.loadFolderRequestId) return;
         notify({
           summary: me.t.ErrorLoadingFolder,
           detail: await tryGetErrorMessage(error),
           severity: SeverityLevel$1.Error
         });
+        me.isLoadingFolder = false;
         me.selectRootFolder();
       });
     },
@@ -27196,47 +27242,21 @@ const _hoisted_23 = { class: "input-group input-group" };
 const _hoisted_24 = ["placeholder", "aria-label"];
 const _hoisted_25 = ["disabled"];
 const _hoisted_26 = { class: "file-container-middle p-3" };
-const _hoisted_27 = {
-  class: "p-message p-component p-message-info",
-  role: "alert",
-  "aria-live": "assertive",
-  "aria-atomic": "true",
-  "data-pc-name": "message",
-  "data-pc-section": "root"
-};
-const _hoisted_28 = {
-  class: "p-message-wrapper",
-  "data-pc-section": "wrapper"
-};
-const _hoisted_29 = {
-  class: "p-message-text p-message-text",
-  "data-pc-section": "text"
-};
-const _hoisted_30 = {
-  class: "p-message p-component p-message-info",
-  role: "alert",
-  "aria-live": "assertive",
-  "aria-atomic": "true",
-  "data-pc-name": "message",
-  "data-pc-section": "root"
-};
-const _hoisted_31 = {
-  class: "p-message-wrapper",
-  "data-pc-section": "wrapper"
-};
-const _hoisted_32 = {
-  class: "p-message-text p-message-text",
-  "data-pc-section": "text"
-};
+const _hoisted_27 = { class: "empty-state" };
+const _hoisted_28 = { class: "empty-state-text" };
+const _hoisted_29 = { class: "loading-spinner-container" };
+const _hoisted_30 = { class: "empty-state" };
+const _hoisted_31 = { class: "empty-state-text" };
+const _hoisted_32 = { class: "empty-state-hint" };
 const _hoisted_33 = { class: "file-container-footer p-3 pb-0" };
 function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_folder = resolveComponent("folder");
   const _component_fa_icon = resolveComponent("fa-icon");
   const _component_ModalConfirm = resolveComponent("ModalConfirm");
-  const _component_upload_list = resolveComponent("upload-list");
   const _component_file_items = resolveComponent("file-items");
   const _component_file_items_grid = resolveComponent("file-items-grid");
   const _component_pager = resolveComponent("pager");
+  const _component_upload_toast = resolveComponent("upload-toast");
   return openBlock(), createElementBlock("div", {
     class: "fileApp",
     onDragover: _cache[9] || (_cache[9] = (...args) => _ctx.handleScrollWhileDrag && _ctx.handleScrollWhileDrag(...args))
@@ -27389,7 +27409,6 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
           ])
         ]),
         createBaseVNode("div", _hoisted_26, [
-          createVNode(_component_upload_list, { t: _ctx.t }, null, 8, ["t"]),
           withDirectives(createVNode(_component_file_items, {
             t: _ctx.t,
             "is-selected-all": _ctx.isSelectedAll,
@@ -27401,7 +27420,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
             ref: "fileItems",
             "base-host": _ctx.baseHost
           }, null, 8, ["t", "is-selected-all", "sort-by", "sort-asc", "filtered-file-items", "selected-files", "thumb-size", "base-host"]), [
-            [vShow, _ctx.itemsInPage.length > 0 && !_ctx.gridView]
+            [vShow, !_ctx.isLoadingFolder && _ctx.itemsInPage.length > 0 && !_ctx.gridView]
           ]),
           withDirectives(createVNode(_component_file_items_grid, {
             t: _ctx.t,
@@ -27410,58 +27429,47 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
             "thumb-size": _ctx.thumbSize,
             "base-host": _ctx.baseHost
           }, null, 8, ["t", "filtered-file-items", "selected-files", "thumb-size", "base-host"]), [
-            [vShow, _ctx.itemsInPage.length > 0 && _ctx.gridView]
+            [vShow, !_ctx.isLoadingFolder && _ctx.itemsInPage.length > 0 && _ctx.gridView]
           ]),
           withDirectives(createBaseVNode("div", _hoisted_27, [
-            createBaseVNode("div", _hoisted_28, [
-              _cache[10] || (_cache[10] = createBaseVNode("svg", {
-                width: "14",
-                height: "14",
-                viewBox: "0 0 14 14",
-                fill: "none",
-                xmlns: "http://www.w3.org/2000/svg",
-                class: "p-icon p-message-icon",
-                "aria-hidden": "true",
-                "data-pc-section": "icon"
-              }, [
-                createBaseVNode("path", {
-                  "fill-rule": "evenodd",
-                  "clip-rule": "evenodd",
-                  d: "M3.11101 12.8203C4.26215 13.5895 5.61553 14 7 14C8.85652 14 10.637 13.2625 11.9497 11.9497C13.2625 10.637 14 8.85652 14 7C14 5.61553 13.5895 4.26215 12.8203 3.11101C12.0511 1.95987 10.9579 1.06266 9.67879 0.532846C8.3997 0.00303296 6.99224 -0.13559 5.63437 0.134506C4.2765 0.404603 3.02922 1.07129 2.05026 2.05026C1.07129 3.02922 0.404603 4.2765 0.134506 5.63437C-0.13559 6.99224 0.00303296 8.3997 0.532846 9.67879C1.06266 10.9579 1.95987 12.0511 3.11101 12.8203ZM3.75918 2.14976C4.71846 1.50879 5.84628 1.16667 7 1.16667C8.5471 1.16667 10.0308 1.78125 11.1248 2.87521C12.2188 3.96918 12.8333 5.45291 12.8333 7C12.8333 8.15373 12.4912 9.28154 11.8502 10.2408C11.2093 11.2001 10.2982 11.9478 9.23232 12.3893C8.16642 12.8308 6.99353 12.9463 5.86198 12.7212C4.73042 12.4962 3.69102 11.9406 2.87521 11.1248C2.05941 10.309 1.50384 9.26958 1.27876 8.13803C1.05367 7.00647 1.16919 5.83358 1.61071 4.76768C2.05222 3.70178 2.79989 2.79074 3.75918 2.14976ZM7.00002 4.8611C6.84594 4.85908 6.69873 4.79698 6.58977 4.68801C6.48081 4.57905 6.4187 4.43185 6.41669 4.27776V3.88888C6.41669 3.73417 6.47815 3.58579 6.58754 3.4764C6.69694 3.367 6.84531 3.30554 7.00002 3.30554C7.15473 3.30554 7.3031 3.367 7.4125 3.4764C7.52189 3.58579 7.58335 3.73417 7.58335 3.88888V4.27776C7.58134 4.43185 7.51923 4.57905 7.41027 4.68801C7.30131 4.79698 7.1541 4.85908 7.00002 4.8611ZM7.00002 10.6945C6.84594 10.6925 6.69873 10.6304 6.58977 10.5214C6.48081 10.4124 6.4187 10.2652 6.41669 10.1111V6.22225C6.41669 6.06754 6.47815 5.91917 6.58754 5.80977C6.69694 5.70037 6.84531 5.63892 7.00002 5.63892C7.15473 5.63892 7.3031 5.70037 7.4125 5.80977C7.52189 5.91917 7.58335 6.06754 7.58335 6.22225V10.1111C7.58134 10.2652 7.51923 10.4124 7.41027 10.5214C7.30131 10.6304 7.1541 10.6925 7.00002 10.6945Z",
-                  fill: "currentColor"
-                })
-              ], -1)),
-              createBaseVNode("div", _hoisted_29, toDisplayString(_ctx.t.FolderFilterEmpty), 1)
-            ])
+            createVNode(_component_fa_icon, {
+              icon: "fa-solid fa-filter",
+              class: "empty-state-icon"
+            }),
+            createBaseVNode("p", _hoisted_28, toDisplayString(_ctx.t.FolderFilterEmpty), 1)
           ], 512), [
-            [
-              vShow,
-              _ctx.fileItems.length > 0 && _ctx.filteredFileItems.length < 1
-            ]
+            [vShow, !_ctx.isLoadingFolder && _ctx.fileItems.length > 0 && _ctx.filteredFileItems.length < 1]
+          ]),
+          withDirectives(createBaseVNode("div", _hoisted_29, _cache[10] || (_cache[10] = [
+            createBaseVNode("svg", {
+              class: "loading-spinner",
+              viewBox: "0 0 50 50",
+              xmlns: "http://www.w3.org/2000/svg"
+            }, [
+              createBaseVNode("circle", {
+                cx: "25",
+                cy: "25",
+                r: "20",
+                fill: "none",
+                stroke: "currentColor",
+                "stroke-width": "4",
+                "stroke-linecap": "round",
+                "stroke-dasharray": "90, 150",
+                "stroke-dashoffset": "0"
+              })
+            ], -1)
+          ]), 512), [
+            [vShow, _ctx.isLoadingFolder]
           ]),
           withDirectives(createBaseVNode("div", _hoisted_30, [
-            createBaseVNode("div", _hoisted_31, [
-              _cache[11] || (_cache[11] = createBaseVNode("svg", {
-                width: "14",
-                height: "14",
-                viewBox: "0 0 14 14",
-                fill: "none",
-                xmlns: "http://www.w3.org/2000/svg",
-                class: "p-icon p-message-icon",
-                "aria-hidden": "true",
-                "data-pc-section": "icon"
-              }, [
-                createBaseVNode("path", {
-                  "fill-rule": "evenodd",
-                  "clip-rule": "evenodd",
-                  d: "M3.11101 12.8203C4.26215 13.5895 5.61553 14 7 14C8.85652 14 10.637 13.2625 11.9497 11.9497C13.2625 10.637 14 8.85652 14 7C14 5.61553 13.5895 4.26215 12.8203 3.11101C12.0511 1.95987 10.9579 1.06266 9.67879 0.532846C8.3997 0.00303296 6.99224 -0.13559 5.63437 0.134506C4.2765 0.404603 3.02922 1.07129 2.05026 2.05026C1.07129 3.02922 0.404603 4.2765 0.134506 5.63437C-0.13559 6.99224 0.00303296 8.3997 0.532846 9.67879C1.06266 10.9579 1.95987 12.0511 3.11101 12.8203ZM3.75918 2.14976C4.71846 1.50879 5.84628 1.16667 7 1.16667C8.5471 1.16667 10.0308 1.78125 11.1248 2.87521C12.2188 3.96918 12.8333 5.45291 12.8333 7C12.8333 8.15373 12.4912 9.28154 11.8502 10.2408C11.2093 11.2001 10.2982 11.9478 9.23232 12.3893C8.16642 12.8308 6.99353 12.9463 5.86198 12.7212C4.73042 12.4962 3.69102 11.9406 2.87521 11.1248C2.05941 10.309 1.50384 9.26958 1.27876 8.13803C1.05367 7.00647 1.16919 5.83358 1.61071 4.76768C2.05222 3.70178 2.79989 2.79074 3.75918 2.14976ZM7.00002 4.8611C6.84594 4.85908 6.69873 4.79698 6.58977 4.68801C6.48081 4.57905 6.4187 4.43185 6.41669 4.27776V3.88888C6.41669 3.73417 6.47815 3.58579 6.58754 3.4764C6.69694 3.367 6.84531 3.30554 7.00002 3.30554C7.15473 3.30554 7.3031 3.367 7.4125 3.4764C7.52189 3.58579 7.58335 3.73417 7.58335 3.88888V4.27776C7.58134 4.43185 7.51923 4.57905 7.41027 4.68801C7.30131 4.79698 7.1541 4.85908 7.00002 4.8611ZM7.00002 10.6945C6.84594 10.6925 6.69873 10.6304 6.58977 10.5214C6.48081 10.4124 6.4187 10.2652 6.41669 10.1111V6.22225C6.41669 6.06754 6.47815 5.91917 6.58754 5.80977C6.69694 5.70037 6.84531 5.63892 7.00002 5.63892C7.15473 5.63892 7.3031 5.70037 7.4125 5.80977C7.52189 5.91917 7.58335 6.06754 7.58335 6.22225V10.1111C7.58134 10.2652 7.51923 10.4124 7.41027 10.5214C7.30131 10.6304 7.1541 10.6925 7.00002 10.6945Z",
-                  fill: "currentColor"
-                })
-              ], -1)),
-              createBaseVNode("div", _hoisted_32, toDisplayString(_ctx.t.FolderEmpty), 1)
-            ])
+            createVNode(_component_fa_icon, {
+              icon: "fa-regular fa-folder-open",
+              class: "empty-state-icon"
+            }),
+            createBaseVNode("p", _hoisted_31, toDisplayString(_ctx.t.FolderEmpty), 1),
+            createBaseVNode("p", _hoisted_32, toDisplayString(_ctx.t.DropTitle), 1)
           ], 512), [
-            [vShow, _ctx.fileItems.length < 1]
+            [vShow, _ctx.fileItems.length < 1 && !_ctx.isLoadingFolder]
           ])
         ]),
         withDirectives(createBaseVNode("div", _hoisted_33, [
@@ -27470,10 +27478,11 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
             "source-items": _ctx.filteredFileItems
           }, null, 8, ["t", "source-items"])
         ], 512), [
-          [vShow, _ctx.filteredFileItems.length > 0]
+          [vShow, !_ctx.isLoadingFolder && _ctx.filteredFileItems.length > 0]
         ])
       ])
-    ])
+    ]),
+    createVNode(_component_upload_toast, { t: _ctx.t }, null, 8, ["t"])
   ], 32);
 }
 const App = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render]]);
