@@ -7,11 +7,13 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.FileStorage;
+using OrchardCore.Media.Hubs;
 using OrchardCore.Media.Services;
 using OrchardCore.Media.ViewModels;
 
@@ -35,6 +37,7 @@ public class MediaGen2ApiController : Controller
     private readonly MediaOptions _mediaOptions;
     private readonly IUserAssetFolderNameProvider _userAssetFolderNameProvider;
     private readonly IChunkFileUploadService _chunkFileUploadService;
+    private readonly IHubContext<MediaHub> _mediaHub;
 
     public MediaGen2ApiController(
         IMediaFileStore mediaFileStore,
@@ -45,7 +48,8 @@ public class MediaGen2ApiController : Controller
         ILogger<MediaGen2ApiController> logger,
         IStringLocalizer<MediaGen2ApiController> stringLocalizer,
         IUserAssetFolderNameProvider userAssetFolderNameProvider,
-        IChunkFileUploadService chunkFileUploadService
+        IChunkFileUploadService chunkFileUploadService,
+        IHubContext<MediaHub> mediaHub
         )
     {
         _mediaFileStore = mediaFileStore;
@@ -57,6 +61,7 @@ public class MediaGen2ApiController : Controller
         S = stringLocalizer;
         _userAssetFolderNameProvider = userAssetFolderNameProvider;
         _chunkFileUploadService = chunkFileUploadService;
+        _mediaHub = mediaHub;
     }
 
     [HttpGet]
@@ -268,6 +273,13 @@ public class MediaGen2ApiController : Controller
                         stream?.Dispose();
                     }
                 }
+
+                // Broadcast file upload event via SignalR (no IMediaEventHandler for file creation).
+                await _mediaHub.Clients.All.SendAsync("MediaChanged", new
+                {
+                    action = "fileUploaded",
+                    path,
+                });
 
                 return Ok(new { files = result.ToArray() });
             });

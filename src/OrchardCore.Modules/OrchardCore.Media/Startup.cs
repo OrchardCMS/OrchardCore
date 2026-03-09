@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
@@ -17,6 +18,7 @@ using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Liquid.Tags;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.FileStorage;
 using OrchardCore.FileStorage.FileSystem;
 using OrchardCore.Indexing;
@@ -30,6 +32,7 @@ using OrchardCore.Media.Events;
 using OrchardCore.Media.Fields;
 using OrchardCore.Media.Filters;
 using OrchardCore.Media.Handlers;
+using OrchardCore.Media.Hubs;
 using OrchardCore.Media.Indexing;
 using OrchardCore.Media.Liquid;
 using OrchardCore.Media.Processing;
@@ -60,10 +63,14 @@ public sealed class Startup : StartupBase
     private const string ImageSharpCacheFolder = "is-cache";
 
     private readonly ShellSettings _shellSettings;
+    private readonly IShellConfiguration _configuration;
+    private readonly ILogger _logger;
 
-    public Startup(ShellSettings shellSettings)
+    public Startup(ShellSettings shellSettings, IShellConfiguration configuration, ILogger<Startup> logger)
     {
         _shellSettings = shellSettings;
+        _configuration = configuration;
+        _logger = logger;
     }
 
     public override void ConfigureServices(IServiceCollection services)
@@ -195,6 +202,23 @@ public sealed class Startup : StartupBase
         services.AddScoped<IUserAssetFolderNameProvider, DefaultUserAssetFolderNameProvider>();
         services.AddSingleton<IChunkFileUploadService, ChunkFileUploadService>();
         services.AddSingleton<IBackgroundTask, ChunkFileUploadBackgroundTask>();
+
+        // SignalR for real-time media updates.
+        var signalRConnectionString = _configuration
+            .GetSection("OrchardCore_Media_SignalR")
+            .GetValue<string>("ConnectionString");
+
+        if (!string.IsNullOrEmpty(signalRConnectionString))
+        {
+            _logger.LogInformation("Azure SignalR Service is enabled for media real-time updates.");
+            services.AddSignalR().AddAzureSignalR(signalRConnectionString);
+        }
+        else
+        {
+            services.AddSignalR();
+        }
+
+        services.AddSingleton<IMediaEventHandler, MediaSignalREventHandler>();
     }
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -225,6 +249,9 @@ public sealed class Startup : StartupBase
 
         // Use services.PostConfigure<MediaOptions>() to alter the media static file options event handlers.
         app.UseStaticFiles(mediaOptions.StaticFileOptions);
+
+        // SignalR hub for real-time media updates.
+        routes.MapHub<MediaHub>("/hubs/media");
     }
 
     private static string GetMediaPath(ShellOptions shellOptions, ShellSettings shellSettings, string assetsPath)

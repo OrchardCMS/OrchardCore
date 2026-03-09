@@ -155,6 +155,7 @@ import Uppy, { debugLogger } from "@uppy/core";
 import DropTarget from "@uppy/drop-target";
 import XHRUpload from "@uppy/xhr-upload";
 import axios from "axios";
+import SignalRApp from "@bloom/services/signalr/signalr-app";
 
 import "@uppy/core/dist/style.css";
 import "@uppy/drop-target/dist/style.css";
@@ -530,7 +531,20 @@ export default defineComponent({
             (<any>me.$refs.baseFolder).select();
         }
 
+        // SignalR: connect to the media hub for real-time updates.
+        const hubUrl = (me.baseHost ?? "") + "/hubs/media";
+        const signalRApp = new SignalRApp(hubUrl);
+        signalRApp.init({ url: hubUrl });
 
+        signalRApp.connection?.on("MediaChanged", (payload: { action: string; path: string }) => {
+            debug("SignalR MediaChanged", payload);
+            me.loadFolder(me.selectedFolder);
+        });
+
+        signalRApp.onConnect(
+            () => debug("SignalR connected to", hubUrl),
+            (err) => debug("SignalR connection failed", err),
+        );
     },
     methods: {
         onFileInputChange: function (event: Event) {

@@ -53,11 +53,22 @@ export default class SignalRApp {
             .withAutomaticReconnect([0, 3000, 5000, 10000, 15000, 30000])
             .build();
 
-        this._processResponse = this.connection.processIncomingData.bind(this.connection);
-        this.connection.processIncomingData = (data: unknown) => {
-            this._processResponse?.(data);
-            this.handleResponse(data);
-        };
+        // Intercept incoming data for logging. The internal method name changed
+        // from `processIncomingData` (v7) to `_processIncomingData` (v10+).
+        const conn = this.connection as any; // eslint-disable-line @typescript-eslint/no-explicit-any
+        const methodName = typeof conn.processIncomingData === "function"
+            ? "processIncomingData"
+            : typeof conn._processIncomingData === "function"
+                ? "_processIncomingData"
+                : null;
+
+        if (methodName) {
+            this._processResponse = conn[methodName].bind(this.connection);
+            conn[methodName] = (data: unknown) => {
+                this._processResponse?.(data);
+                this.handleResponse(data);
+            };
+        }
 
         this.connection.onreconnecting((error: Error | undefined) => {
             signalRLogger.emit(`Connection lost due to error \"${error}\". Reconnecting.`);

@@ -41,6 +41,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Azure.SignalR" />
     <PackageReference Include="Shortcodes" />
     <PackageReference Include="SixLabors.ImageSharp.Web" />
     <PackageReference Include="System.IO.Hashing" />
