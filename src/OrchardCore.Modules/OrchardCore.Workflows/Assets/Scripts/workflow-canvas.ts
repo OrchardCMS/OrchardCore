@@ -185,33 +185,49 @@ abstract class WorkflowCanvas {
                 halfWidth = $ol.outerWidth() / 2;
                 overlayEl.style.display = prevDisplay;
             }
+            const labelOffset = Math.max(halfWidth - 6, 0);
 
-            const currentTransform = overlayEl.style.transform || '';
-            const baseTransform = !currentTransform || currentTransform === 'none' ? '' : currentTransform + ' ';
+            const overlayHtmlElement = overlayEl as HTMLElement;
+            const storedBaseTransform = overlayHtmlElement.dataset.outcomeLabelBaseTransform;
+            const currentTransform = overlayHtmlElement.style.transform || '';
+            const normalizedCurrentTransform = !currentTransform || currentTransform === 'none' ? '' : currentTransform;
+            const baseTransform = storedBaseTransform ?? normalizedCurrentTransform;
+            if (!storedBaseTransform) {
+                overlayHtmlElement.dataset.outcomeLabelBaseTransform = baseTransform;
+            }
+
+            let orientedTransform = '';
 
             switch (face) {
                 case 'bottom':
-                    $ol.css({
-                        'transform': baseTransform + `translateY(${halfWidth}px) rotate(90deg)`,
-                        'transform-origin': 'center center'
-                    });
+                    orientedTransform = `translateY(${labelOffset}px) rotate(90deg)`;
                     break;
                 case 'top':
-                    $ol.css({
-                        'transform': baseTransform + `translateY(-${halfWidth}px) rotate(-90deg)`,
-                        'transform-origin': 'center center'
-                    });
+                    orientedTransform = `translateY(-${labelOffset}px) rotate(-90deg)`;
                     break;
                 case 'left':
-                    $ol.css({
-                        'transform': baseTransform + `translateX(-${halfWidth}px)`
-                    });
+                    orientedTransform = `translateX(-${labelOffset}px)`;
                     break;
                 case 'right':
-                    $ol.css({
-                        'transform': baseTransform + `translateX(${halfWidth}px)`
-                    });
+                    orientedTransform = `translateX(${labelOffset}px)`;
                     break;
+            }
+
+            const transformPrefix = baseTransform ? `${baseTransform} ` : '';
+            $ol.css({
+                'transform': `${transformPrefix}${orientedTransform}`.trim(),
+                'transform-origin': 'center center'
+            });
+
+            // Ensure left/right outcome badges are vertically centered with the endpoint dot.
+            if (face === 'left' || face === 'right') {
+                const overlayRect = overlayEl.getBoundingClientRect();
+                const overlayCenterY = overlayRect.top + overlayRect.height / 2;
+                const verticalOffset = Math.round((epCenterY - overlayCenterY) * 10) / 10;
+
+                if (Math.abs(verticalOffset) >= 0.5) {
+                    $ol.css('transform', `${transformPrefix}${orientedTransform} translateY(${verticalOffset}px)`.trim());
+                }
             }
         }
     };
