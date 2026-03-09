@@ -72,7 +72,9 @@ public sealed class HtmlBodyPartDisplayDriver : ContentPartDisplayDriver<HtmlBod
             && !_liquidTemplateManager.Validate(model.Html, out var errors))
         {
             context.Updater.ModelState.AddModelError(Prefix, nameof(model.Html),
-                S["{0} contains invalid Liquid expression: {1}",
+                S[settings.SanitizeHtml
+                    ? "{0} contains invalid Liquid expression. Note that HTML sanitization affects the value being saved and thus can break Liquid code: {1}"
+                    : "{0} contains invalid Liquid expression: {1}",
                     context.TypePartDefinition.DisplayName(),
                     string.Join(" ", errors)]);
         }
