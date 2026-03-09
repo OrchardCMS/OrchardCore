@@ -25,6 +25,7 @@ public sealed class DocumentJsonSerializerOptionsConfiguration : IConfigureOptio
         options.SerializerOptions.WriteIndented = JOptions.Base.WriteIndented;
         options.SerializerOptions.PreferredObjectCreationHandling = JOptions.Base.PreferredObjectCreationHandling;
 
+        options.SerializerOptions.Converters.Add(new ResilientPolymorphicJsonConverterFactory(_derivedTypesOptions));
         options.SerializerOptions.TypeInfoResolverChain.Add(new PolymorphicJsonTypeInfoResolver(_derivedTypesOptions));
 
         foreach (var converter in JOptions.KnownConverters)
