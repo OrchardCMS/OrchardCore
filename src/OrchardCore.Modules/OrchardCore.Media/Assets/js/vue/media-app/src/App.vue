@@ -68,11 +68,11 @@
                             </a>
                             <div class="btn-group visibility-buttons">
                                 <button class="btn btn-light" :class="{ selected: !gridView }"
-                                    @click="gridView = false" :title="t.TableView || 'Table view'">
+                                    @click="gridView = false" :title="t.TableView">
                                     <fa-icon icon="fa-solid fa-list"></fa-icon>
                                 </button>
                                 <button class="btn btn-light" :class="{ selected: gridView }"
-                                    @click="gridView = true" :title="t.GridView || 'Grid view'">
+                                    @click="gridView = true" :title="t.GridView">
                                     <fa-icon icon="fa-solid fa-grip"></fa-icon>
                                 </button>
                             </div>

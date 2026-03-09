@@ -1,0 +1,279 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: fr\n"
+
+#. MediaJSLocalizer — Vue media-app strings
+
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "New folder"
+msgstr "Nouveau dossier"
+
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Delete folder"
+msgstr "Supprimer le dossier"
+
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Are you sure you want to delete this folder?"
+msgstr "Êtes-vous sûr de vouloir supprimer ce dossier ?"
+
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Delete file"
+msgstr "Supprimer le fichier"
+
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Are you sure you want to delete this/these file(s)?"
+msgstr "Êtes-vous sûr de vouloir supprimer ce(s) fichier(s) ?"
+
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Rename file"
+msgstr "Renommer le fichier"
+
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "New name"
+msgstr "Nouveau nom"
+
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Move file(s)"
+msgstr "Déplacer le(s) fichier(s)"
+
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Are you sure you want to move the selected file(s) to this folder?"
+msgstr "Êtes-vous sûr de vouloir déplacer le(s) fichier(s) sélectionné(s) dans ce dossier ?"
+
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Create folder"
+msgstr "Créer un dossier"
+
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Folder name"
+msgstr "Nom du dossier"
+
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "The file is already in this folder"
+msgstr "Le fichier est déjà dans ce dossier"
+
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Rename"
+msgstr "Renommer"
+
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Delete"
+msgstr "Supprimer"
+
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Download"
+msgstr "Télécharger"
+
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Select All"
+msgstr "Tout sélectionner"
+
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "This folder is empty"
+msgstr "Ce dossier est vide"
+
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Nothing to show with this filter"
+msgstr "Rien à afficher avec ce filtre"
+
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Upload"
+msgstr "Téléverser"
+
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Upload files"
+msgstr "Téléverser des fichiers"
+
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Select None"
+msgstr "Tout désélectionner"
+
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Invert"
+msgstr "Inverser"
+
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Drop your file here"
+msgstr "Déposez votre fichier ici"
+
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Your files will be uploaded to the current folder when you drop them here"
+msgstr "Vos fichiers seront téléversés dans le dossier courant lorsque vous les déposez ici"
+
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Files"
+msgstr "Fichiers"
+
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "/"
+msgstr "/"
+
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Search and filter..."
+msgstr "Rechercher et filtrer..."
+
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Cancel"
+msgstr "Annuler"
+
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "This file exceeds the maximum upload size"
+msgstr "Ce fichier dépasse la taille maximale de téléversement"
+
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Uploads"
+msgstr "Téléversements"
+
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Errors"
+msgstr "Erreurs"
+
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Clear Errors"
+msgstr "Effacer les erreurs"
+
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "File"
+msgstr "Fichier"
+
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Name"
+msgstr "Nom"
+
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Last modified"
+msgstr "Dernière modification"
+
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Size"
+msgstr "Taille"
+
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Type"
+msgstr "Type"
+
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "First"
+msgstr "Premier"
+
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Previous"
+msgstr "Précédent"
+
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Next"
+msgstr "Suivant"
+
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Last"
+msgstr "Dernier"
+
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Page Size"
+msgstr "Taille de page"
+
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Page:"
+msgstr "Page :"
+
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Total items:"
+msgstr "Total :"
+
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Error renaming file"
+msgstr "Erreur lors du renommage du fichier"
+
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Error moving file"
+msgstr "Erreur lors du déplacement du fichier"
+
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Error deleting file"
+msgstr "Erreur lors de la suppression du fichier"
+
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Error deleting files"
+msgstr "Erreur lors de la suppression des fichiers"
+
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Error creating folder"
+msgstr "Erreur lors de la création du dossier"
+
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Error deleting folder"
+msgstr "Erreur lors de la suppression du dossier"
+
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Error getting folders"
+msgstr "Erreur lors de la récupération des dossiers"
+
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Ok"
+msgstr "Ok"
+
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "File Action"
+msgstr "Action sur le fichier"
+
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "What do you want to do with this file?"
+msgstr "Que voulez-vous faire avec ce fichier ?"
+
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Files Bulk Action"
+msgstr "Action groupée sur les fichiers"
+
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "What do you want to do with these file(s)?"
+msgstr "Que voulez-vous faire avec ce(s) fichier(s) ?"
+
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Processing"
+msgstr "Traitement"
+
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Common"
+msgstr "Commun"
+
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Status"
+msgstr "Statut"
+
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Renaming file failed. File name was identical."
+msgstr "Le renommage du fichier a échoué. Le nom du fichier était identique."
+
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Create a subfolder"
+msgstr "Créer un sous-dossier"
+
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Folder Action"
+msgstr "Action sur le dossier"
+
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "What do you want to do with this folder?"
+msgstr "Que voulez-vous faire avec ce dossier ?"
+
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Table view"
+msgstr "Vue en tableau"
+
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Grid view"
+msgstr "Vue en grille"
+
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Error loading folder"
+msgstr "Erreur lors du chargement du dossier"
+
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Error uploading file"
+msgstr "Erreur lors du téléversement du fichier"
+
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Validation error"
+msgstr "Erreur de validation"

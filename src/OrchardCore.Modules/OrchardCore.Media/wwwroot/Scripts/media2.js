@@ -21962,6 +21962,9 @@ function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
   ]);
 }
 const SortIndicatorComponent = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["render", _sfc_render$4]]);
+function getPageLocale() {
+  return document.documentElement.lang || navigator.language;
+}
 function humanFileSize(bytes, si = false, dp = 1) {
   const thresh = si ? 1e3 : 1024;
   if (Math.abs(bytes) < thresh) {
@@ -22093,7 +22096,7 @@ const _sfc_main$3 = /* @__PURE__ */ defineComponent({
     printDateTime: function(datemillis) {
       if (datemillis != "") {
         let d2 = new Date(datemillis);
-        return d2.toLocaleString();
+        return d2.toLocaleString(getPageLocale());
       }
     },
     getFileModalName: function(action, files) {
@@ -27345,14 +27348,14 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                 createBaseVNode("button", {
                   class: normalizeClass(["btn btn-light", { selected: !_ctx.gridView }]),
                   onClick: _cache[5] || (_cache[5] = ($event) => _ctx.gridView = false),
-                  title: _ctx.t.TableView || "Table view"
+                  title: _ctx.t.TableView
                 }, [
                   createVNode(_component_fa_icon, { icon: "fa-solid fa-list" })
                 ], 10, _hoisted_19),
                 createBaseVNode("button", {
                   class: normalizeClass(["btn btn-light", { selected: _ctx.gridView }]),
                   onClick: _cache[6] || (_cache[6] = ($event) => _ctx.gridView = true),
-                  title: _ctx.t.GridView || "Grid view"
+                  title: _ctx.t.GridView
                 }, [
                   createVNode(_component_fa_icon, { icon: "fa-solid fa-grip" })
                 ], 10, _hoisted_20)

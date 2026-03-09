@@ -91,7 +91,7 @@ import type { IFileStoreEntry } from "../interfaces/interfaces";
 import ModalFileActionConfirm from './ModalFileActionConfirm.vue'
 import SortIndicatorComponent from './sortIndicatorComponent.vue';
 import { FileAction, IConfirmFileActionViewModel, IConfirmFileActionEntry, IModalFileEvent } from '../interfaces/interfaces';
-import { humanFileSize } from '../services/Utils'
+import { humanFileSize, getPageLocale } from '../services/Utils'
 import { SeverityLevel } from '../interfaces/interfaces';
 import { notify } from "../services/notifier";
 
@@ -214,7 +214,7 @@ export default defineComponent({
       if (datemillis != "") {
         let d = new Date(datemillis);
 
-        return d.toLocaleString();
+        return d.toLocaleString(getPageLocale());
       }
     },
     getFileModalName: function (action: string, files: IFileStoreEntry[]) {

@@ -9,8 +9,6 @@ using OrchardCore.Security.Permissions;
 using Scalar.AspNetCore;
 using Microsoft.OpenApi;
 using System.Collections.Generic;
-using OrchardCore.OpenApi.Endpoints.Api;
-
 namespace OrchardCore.OpenApi;
 
 public sealed class Startup : StartupBase
@@ -87,8 +85,6 @@ public sealed class Startup : StartupBase
         IServiceProvider serviceProvider
     )
     {
-        routes.AddGetContentEndpoint();
-
         // Bearer token middleware disabled - relying on cookie auth for now.
         // TODO: Re-enable once proper JWT signature validation is implemented.
         // app.UseMiddleware<BearerTokenMiddleware>();

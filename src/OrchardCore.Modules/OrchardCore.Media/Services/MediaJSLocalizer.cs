@@ -94,6 +94,11 @@ public class MediaJSLocalizer(IStringLocalizer<MediaJSLocalizer> S) : IJSLocaliz
                 { "CreateSubFolder", S["Create a subfolder"].Value },
                 { "ActionFolderTitle", S["Folder Action"].Value },
                 { "ActionFolderMessage", S["What do you want to do with this folder?"].Value },
+                { "TableView", S["Table view"].Value },
+                { "GridView", S["Grid view"].Value },
+                { "ErrorLoadingFolder", S["Error loading folder"].Value },
+                { "ErrorUploadFile", S["Error uploading file"].Value },
+                { "ErrorValidateConnection", S["Validation error"].Value },
             };
         }
 

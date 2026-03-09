@@ -1,4 +1,11 @@
 /**
+ * Returns the page locale from the HTML lang attribute, falling back to the browser default.
+ */
+export function getPageLocale(): string {
+  return document.documentElement.lang || navigator.language;
+}
+
+/**
  * Format bytes as human-readable text.
  *
  * @param bytes Number of bytes.
