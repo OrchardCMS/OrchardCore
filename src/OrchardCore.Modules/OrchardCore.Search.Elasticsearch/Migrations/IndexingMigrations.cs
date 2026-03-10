@@ -66,14 +66,8 @@ internal sealed class IndexingMigrations : DataMigration
             await connection.OpenAsync();
             var jsonContent = await connection.QueryFirstOrDefaultAsync<string>(sqlBuilder.ToSqlString());
 
-            if (string.IsNullOrEmpty(jsonContent))
-            {
-                return;
-            }
-
-            var jsonObject = JsonNode.Parse(jsonContent);
-
-            if (jsonObject?["ElasticIndexSettings"] is not JsonObject indexesObject)
+            if (string.IsNullOrEmpty(jsonContent) ||
+                JsonNode.Parse(jsonContent)?["ElasticIndexSettings"] is not JsonObject indexesObject)
             {
                 return;
             }
