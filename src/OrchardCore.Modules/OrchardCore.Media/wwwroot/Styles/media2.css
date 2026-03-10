@@ -7400,6 +7400,11 @@ to {
   width: auto !important;
   min-width: 150px !important;
 }
+#overlay_menu .p-menu-list {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
 #overlay_menu .p-menuitem-text {
   white-space: nowrap;
 }
