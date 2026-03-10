@@ -1,5 +1,6 @@
 @model OrchardCore.Queries.Sql.ViewModels.AdminQueryViewModel
 @using OrchardCore.ContentManagement
+@using OrchardCore.Infrastructure
 @inject IContentManager ContentManager
 
 @{
@@ -87,29 +88,29 @@
 }
 
 @{
-    string sqlmode =  "text/x-sql";
+    string sqlmode =  MediaTypeNamesExtended.Text.SQL;
 
     if (Model.FactoryName.Contains("Sqlite"))
     {
-        sqlmode = "text/x-sqlite";
+        sqlmode = MediaTypeNamesExtended.Text.SQLite;
     }
     else if (Model.FactoryName.Contains("Mysql"))
     {
-        sqlmode = "text/x-mysql";
+        sqlmode = MediaTypeNamesExtended.Text.MySQL;
     }
     else if (Model.FactoryName.Contains("Npgsql"))
     {
-        sqlmode = "text/x-pgsql";
+        sqlmode = MediaTypeNamesExtended.Text.PostgreSQL;
     }
     else if (Model.FactoryName.Contains("Sql"))
     {
-        sqlmode = "text/x-mssql";
+        sqlmode = MediaTypeNamesExtended.Text.SqlServer;
     }
 }
 
 <script at="Foot">
     $(function () {
-        CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(m => m.DecodedQuery)'), { mode: "text/x-pgsql", lineNumbers: true, viewportMargin: Infinity });
+        CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(m => m.DecodedQuery)'), { mode: @MediaTypeNamesExtended.Text.PostgreSQL, lineNumbers: true, viewportMargin: Infinity });
         CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(m => m.Parameters)'), { mode: "javascript", json: true, lineNumbers: true, viewportMargin: Infinity });
         if (rawSql = document.getElementById('@Html.IdFor(m => m.RawSql)')) {
             CodeMirror.fromTextArea(rawSql, { mode: "@sqlmode", lineNumbers: true, readonly: true, viewportMargin: Infinity });

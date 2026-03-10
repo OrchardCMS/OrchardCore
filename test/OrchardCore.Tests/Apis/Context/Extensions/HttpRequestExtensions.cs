@@ -1,5 +1,6 @@
 using System.Net.Mime;
 using System.Text.Json;
+using OrchardCore.Infrastructure;
 
 namespace OrchardCore.Tests.Apis.Context;
 
@@ -180,7 +181,7 @@ internal static class HttpRequestExtensions
         var content = new StringContent(
             json,
             Encoding.UTF8,
-            "application/vnd.api+json");
+            MediaTypeNamesExtended.Application.JsonVendeorPrefix);
 
         var request = new HttpRequestMessage(HttpMethod.Post, requestUri)
         {
@@ -189,7 +190,7 @@ internal static class HttpRequestExtensions
 
         request.Headers
             .Accept
-            .Add(new MediaTypeWithQualityHeaderValue("application/vnd.api+json"));
+            .Add(new MediaTypeWithQualityHeaderValue(MediaTypeNamesExtended.Application.JsonVendeorPrefix));
 
         return client.SendAsync(request);
     }
