@@ -118,54 +118,25 @@ describe("FileDataService", () => {
   });
 
   describe("listAllItems", () => {
-    it("recursively fetches all folders and files", async () => {
-      // Root: 1 folder, 0 files; Images: 0 folders, 1 file
-      vi.mocked(global.fetch)
-        .mockResolvedValueOnce(makeOkResponse([mockFolder])) // getFolders("/")
-        .mockResolvedValueOnce(makeOkResponse([]))           // getMediaItems("/")
-        .mockResolvedValueOnce(makeOkResponse([]))           // getFolders("/Images")
-        .mockResolvedValueOnce(makeOkResponse([mockFile]));  // getMediaItems("/Images")
+    it("fetches all items from GetAllMediaItems endpoint", async () => {
+      vi.mocked(global.fetch).mockResolvedValue(makeOkResponse([mockFolder, mockFile]));
 
       const result = await service.listAllItems();
 
+      expect(global.fetch).toHaveBeenCalledWith(
+        "/api/media-gen2/GetAllMediaItems",
+        expect.objectContaining({ headers: expect.objectContaining({ "Content-Type": "application/json" }) }),
+      );
       expect(result).toHaveLength(2);
       expect(result.some((x) => x.name === "Images")).toBe(true);
       expect(result.some((x) => x.name === "photo.jpg")).toBe(true);
     });
 
-    it("returns empty array when root has no items", async () => {
-      vi.mocked(global.fetch)
-        .mockResolvedValueOnce(makeOkResponse([]))  // getFolders
-        .mockResolvedValueOnce(makeOkResponse([])); // getMediaItems
+    it("returns empty array when no items exist", async () => {
+      vi.mocked(global.fetch).mockResolvedValue(makeOkResponse([]));
 
       const result = await service.listAllItems();
       expect(result).toHaveLength(0);
-    });
-
-    it("handles deeply nested folders", async () => {
-      const subFolder: IFileLibraryItemDto = {
-        name: "Sub",
-        directoryPath: "/Images/Sub",
-        filePath: "/Images/Sub",
-        isDirectory: true,
-      };
-      const subFile: IFileLibraryItemDto = {
-        name: "deep.jpg",
-        directoryPath: "/Images/Sub",
-        filePath: "/Images/Sub/deep.jpg",
-        isDirectory: false,
-      };
-
-      vi.mocked(global.fetch)
-        .mockResolvedValueOnce(makeOkResponse([mockFolder])) // root folders
-        .mockResolvedValueOnce(makeOkResponse([]))           // root files
-        .mockResolvedValueOnce(makeOkResponse([subFolder]))  // /Images folders
-        .mockResolvedValueOnce(makeOkResponse([mockFile]))   // /Images files
-        .mockResolvedValueOnce(makeOkResponse([]))           // /Images/Sub folders
-        .mockResolvedValueOnce(makeOkResponse([subFile]));   // /Images/Sub files
-
-      const result = await service.listAllItems();
-      expect(result).toHaveLength(4);
     });
   });
 

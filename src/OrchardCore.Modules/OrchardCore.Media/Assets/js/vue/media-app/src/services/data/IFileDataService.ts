@@ -54,28 +54,10 @@ export class FileDataService implements IFileDataService {
   }
 
   /**
-   * Lists all items (folders and files) by recursively fetching folders and their media items.
+   * Lists all items (folders and files) in a single server-side request.
    */
   async listAllItems(): Promise<IFileLibraryItemDto[]> {
-    const allItems: IFileLibraryItemDto[] = [];
-    await this.fetchItemsRecursive("", allItems);
-    return allItems;
-  }
-
-  private async fetchItemsRecursive(path: string, allItems: IFileLibraryItemDto[]): Promise<void> {
-    const [folders, files] = await Promise.all([
-      this.getFolders(path),
-      this.getMediaItems(path),
-    ]);
-
-    for (const folder of folders) {
-      allItems.push(folder);
-      await this.fetchItemsRecursive(folder.directoryPath, allItems);
-    }
-
-    for (const file of files) {
-      allItems.push(file);
-    }
+    return this.fetchJson<IFileLibraryItemDto[]>(`${this.baseUrl}/GetAllMediaItems`);
   }
 
   async moveMedia(oldPath: string, newPath: string): Promise<void> {

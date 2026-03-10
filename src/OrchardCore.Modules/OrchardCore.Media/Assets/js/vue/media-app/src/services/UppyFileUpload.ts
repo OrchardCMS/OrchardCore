@@ -219,7 +219,7 @@ export const useFileUpload = (model: IFileUploadModel): void => {
       const uppyFiles = uppy.getFiles();
       uppyFiles.forEach((file) => {
         emit("UploadProgress", {
-          name: file.name,
+          name: file.name ?? "",
           percentage: file.progress?.percentage ?? progress,
         });
       });
@@ -233,7 +233,7 @@ export const useFileUpload = (model: IFileUploadModel): void => {
       console.debug("upload-error", file, error, response);
       if (file) {
         emit("UploadError", {
-          name: file.name,
+          name: file.name ?? "",
           errorMessage: error?.message ?? t.Error,
         });
       }

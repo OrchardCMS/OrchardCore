@@ -35014,7 +35014,7 @@ const useFileUpload = (model) => {
       uppyFiles.forEach((file) => {
         var _a2;
         emit$4("UploadProgress", {
-          name: file.name,
+          name: file.name ?? "",
           percentage: ((_a2 = file.progress) == null ? void 0 : _a2.percentage) ?? progress
         });
       });
@@ -35026,7 +35026,7 @@ const useFileUpload = (model) => {
       console.debug("upload-error", file, error, response);
       if (file) {
         emit$4("UploadError", {
-          name: file.name,
+          name: file.name ?? "",
           errorMessage: (error == null ? void 0 : error.message) ?? t$2.Error
         });
       }
@@ -35257,25 +35257,10 @@ class FileDataService {
     return this.fetchJson(`${this.baseUrl}/GetMediaItems?path=${encodeURIComponent(path)}`);
   }
   /**
-   * Lists all items (folders and files) by recursively fetching folders and their media items.
+   * Lists all items (folders and files) in a single server-side request.
    */
   async listAllItems() {
-    const allItems = [];
-    await this.fetchItemsRecursive("", allItems);
-    return allItems;
-  }
-  async fetchItemsRecursive(path, allItems) {
-    const [folders, files] = await Promise.all([
-      this.getFolders(path),
-      this.getMediaItems(path)
-    ]);
-    for (const folder of folders) {
-      allItems.push(folder);
-      await this.fetchItemsRecursive(folder.directoryPath, allItems);
-    }
-    for (const file of files) {
-      allItems.push(file);
-    }
+    return this.fetchJson(`${this.baseUrl}/GetAllMediaItems`);
   }
   async moveMedia(oldPath, newPath) {
     await this.fetchJson(

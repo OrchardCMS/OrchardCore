@@ -177,6 +177,62 @@ public class MediaGen2ApiController : Controller
         return CreateFileResult(fileEntry);
     }
 
+    [HttpGet]
+    [Route("GetAllMediaItems")]
+    [ProducesResponseType(typeof(IEnumerable<FileStoreEntryDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+    public async Task<ActionResult<IEnumerable<FileStoreEntryDto>>> GetAllMediaItems(string extensions)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMedia))
+        {
+            return this.ApiChallengeOrForbidForCookieAuth();
+        }
+
+        // create default folders if not exist
+        if (await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageOwnMedia)
+            && await _mediaFileStore.GetDirectoryInfoAsync(_mediaFileStore.Combine(_mediaOptions.AssetsUsersFolder, _userAssetFolderNameProvider.GetUserAssetFolderName(User))) == null)
+        {
+            await _mediaFileStore.TryCreateDirectoryAsync(_mediaFileStore.Combine(_mediaOptions.AssetsUsersFolder, _userAssetFolderNameProvider.GetUserAssetFolderName(User)));
+        }
+
+        var allowedExtensions = GetRequestedExtensions(extensions, false);
+        var allItems = new List<FileStoreEntryDto>();
+
+        await CollectAllItemsRecursiveAsync(String.Empty, allowedExtensions, allItems);
+
+        return Ok(allItems);
+    }
+
+    private async Task CollectAllItemsRecursiveAsync(string path, HashSet<string> allowedExtensions, List<FileStoreEntryDto> allItems)
+    {
+        var subFolders = new List<IFileStoreEntry>();
+
+        await foreach (var entry in _mediaFileStore.GetDirectoryContentAsync(path))
+        {
+            if (entry.IsDirectory)
+            {
+                if (await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaFolder, (object)entry.Path))
+                {
+                    allItems.Add(CreateFolderResult(entry));
+                    subFolders.Add(entry);
+                }
+            }
+            else if (allowedExtensions.Count == 0 || allowedExtensions.Contains(Path.GetExtension(entry.Path)))
+            {
+                if (await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaFolder, (object)entry.Path))
+                {
+                    allItems.Add(CreateFileResult(entry));
+                }
+            }
+        }
+
+        foreach (var folder in subFolders)
+        {
+            await CollectAllItemsRecursiveAsync(folder.Path, allowedExtensions, allItems);
+        }
+    }
+
     [HttpPost]
     [MediaSizeLimit]
     [Route("Upload")]
