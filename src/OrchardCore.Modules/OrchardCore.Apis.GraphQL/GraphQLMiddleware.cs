@@ -29,7 +29,7 @@ public class GraphQLMiddleware : IMiddleware
     private readonly IGraphQLSerializer _serializer;
     private readonly IDocumentExecuter _executer;
     internal static readonly Encoding _utf8Encoding = new UTF8Encoding(false);
-    private static readonly MediaType _jsonMediaType = new("application/json");
+    private static readonly MediaType _jsonMediaType = new(MediaTypeNames.Application.Json);
     private static readonly MediaType _graphQlMediaType = new("application/graphql");
 
     public GraphQLMiddleware(
