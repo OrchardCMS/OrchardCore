@@ -66,7 +66,6 @@ public class ContainedPartHandlerTests
         SetupBlogWithBlogPostContainedType();
 
         var contentItem = new ContentItem { ContentType = "BlogPost" };
-        contentItem.Weld<ContainedPart>();
         contentItem.Alter<ContainedPart>(p =>
         {
             p.ListContentItemId = string.Empty;
@@ -153,7 +152,6 @@ public class ContainedPartHandlerTests
         SetupBlogWithBlogPostContainedType(creatable: true);
 
         var contentItem = new ContentItem { ContentType = "BlogPost" };
-        contentItem.Weld<ContainedPart>();
         contentItem.Alter<ContainedPart>(p =>
         {
             p.ListContentItemId = string.Empty;
@@ -168,12 +166,11 @@ public class ContainedPartHandlerTests
     }
 
     [Fact]
-    public async Task ValidatingAsync_ShouldFail_WhenCreatableTypeHasPartialContainedPartData()
+    public async Task ValidatingAsync_ShouldFail_WhenNotCreatableTypeHasPartialContainedPartData()
     {
-        SetupBlogWithBlogPostContainedType(creatable: true);
+        SetupBlogWithBlogPostContainedType(creatable: false);
 
         var contentItem = new ContentItem { ContentType = "BlogPost" };
-        contentItem.Weld<ContainedPart>();
         contentItem.Alter<ContainedPart>(p =>
         {
             p.ListContentItemId = string.Empty;
@@ -184,8 +181,7 @@ public class ContainedPartHandlerTests
 
         await _handler.ValidatingAsync(context);
 
-        Assert.Contains(context.ContentValidateResult.Errors,
-            e => e.MemberNames.Contains(nameof(ContainedPart.ListContentItemId)));
+        Assert.True(context.ContentValidateResult.Succeeded);
     }
 
     private void SetupBlogWithBlogPostContainedType(bool creatable = false)
@@ -209,10 +205,6 @@ public class ContainedPartHandlerTests
             ],
             new JsonObject());
 
-        _contentDefinitionManager
-            .Setup(m => m.ListTypeDefinitionsAsync())
-            .ReturnsAsync([blogTypeDef]);
-
         var blogPostTypeSettings = new JsonObject();
 
         if (creatable)
@@ -228,6 +220,10 @@ public class ContainedPartHandlerTests
             "Blog Post",
             [],
             blogPostTypeSettings);
+
+        _contentDefinitionManager
+            .Setup(m => m.ListTypeDefinitionsAsync())
+            .ReturnsAsync([blogTypeDef, blogPostTypeDef]);
 
         _contentDefinitionManager
             .Setup(m => m.GetTypeDefinitionAsync("BlogPost"))

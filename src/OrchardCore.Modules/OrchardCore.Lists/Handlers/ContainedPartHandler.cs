@@ -3,6 +3,7 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Lists.Models;
 using OrchardCore.Lists.Services;
 
@@ -30,8 +31,18 @@ public class ContainedPartHandler : ContentHandlerBase
 
         var containedContentTypes = await GetContainedContentTypesAsync();
 
-        if (!containedContentTypes.Contains(contentType))
+        if (!containedContentTypes.TryGetValue(contentType, out _))
         {
+            return;
+        }
+
+        var contentDefinitionManager = _serviceProvider.GetRequiredService<IContentDefinitionManager>();
+
+        var definition = await contentDefinitionManager.GetTypeDefinitionAsync(contentType);
+
+        if (definition.IsCreatable())
+        {
+            // If the content type is creatable, it means it can be created outside of a list, so we don't require the ListContentItemId to be set.
             return;
         }
 
@@ -57,13 +68,13 @@ public class ContainedPartHandler : ContentHandlerBase
         {
             // Resolve from DI to avoid circular references.
             var contentDefinitionManager = _serviceProvider.GetRequiredService<IContentDefinitionManager>();
-            var allTypeDefinitions = await contentDefinitionManager.ListTypeDefinitionsAsync();
+            var typeDefinitions = await contentDefinitionManager.ListTypeDefinitionsAsync();
 
             _containedContentTypes = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
-            foreach (var typeDef in allTypeDefinitions)
+            foreach (var typeDefinition in typeDefinitions)
             {
-                var listPartDefinition = typeDef.Parts.FirstOrDefault(p =>
+                var listPartDefinition = typeDefinition.Parts.FirstOrDefault(p =>
                     string.Equals(p.PartDefinition.Name, nameof(ListPart), StringComparison.Ordinal));
 
                 if (listPartDefinition == null)
@@ -75,7 +86,15 @@ public class ContainedPartHandler : ContentHandlerBase
 
                 if (settings.ContainedContentTypes != null)
                 {
-                    _containedContentTypes.UnionWith(settings.ContainedContentTypes);
+                    foreach (var containedContentType in settings.ContainedContentTypes)
+                    {
+                        if (string.IsNullOrEmpty(containedContentType))
+                        {
+                            continue;
+                        }
+
+                        _containedContentTypes.Add(containedContentType);
+                    }
                 }
             }
         }
