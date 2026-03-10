@@ -279,6 +279,7 @@ internal sealed class IndexingMigrations : DataMigration
                 indexProfile.Alter<ElasticsearchIndexMetadata>(metadata =>
                     metadata.AnalyzerName = ElasticsearchConstants.DefaultAnalyzer);
 
+                await indexProfileManager.ResetAsync(indexProfile);
                 await indexProfileManager.UpdateAsync(indexProfile);
             }
         }
