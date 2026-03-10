@@ -35784,6 +35784,13 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
     const { showFileActionModal } = useFileActionModal();
     const showModal = ref(props.showModalProp);
     const menu = ref();
+    const { on: on2 } = useEventBus();
+    on2("CloseFileMenus", (sender) => {
+      var _a2;
+      if (sender !== menu) {
+        (_a2 = menu.value) == null ? void 0 : _a2.hide();
+      }
+    });
     const items = computed(() => {
       return [
         {
@@ -35833,6 +35840,7 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
     });
     const toggle3 = (event) => {
       var _a2;
+      emit2("CloseFileMenus", menu);
       (_a2 = menu.value) == null ? void 0 : _a2.toggle(event);
     };
     return (_ctx, _cache) => {
@@ -39205,22 +39213,34 @@ const _hoisted_13 = { class: "btn-group btn-group me-2" };
 const _hoisted_14 = ["title"];
 const _hoisted_15 = ["title"];
 const _hoisted_16 = ["title"];
-const _hoisted_17 = { class: "nav-item mx-2 mt-3 md:mt-0" };
-const _hoisted_18 = { class: "file-filter" };
-const _hoisted_19 = { class: "input-group input-group" };
-const _hoisted_20 = ["placeholder", "aria-label"];
-const _hoisted_21 = ["disabled"];
-const _hoisted_22 = {
+const _hoisted_17 = ["title"];
+const _hoisted_18 = { class: "nav-item mx-2 mt-3 md:mt-0" };
+const _hoisted_19 = { class: "file-filter" };
+const _hoisted_20 = { class: "input-group input-group" };
+const _hoisted_21 = ["placeholder", "aria-label"];
+const _hoisted_22 = ["disabled"];
+const _hoisted_23 = {
   key: 0,
   class: "file-container-middle p-3"
 };
-const _hoisted_23 = { class: "p-message p-component p-message-info" };
-const _hoisted_24 = { class: "p-message-wrapper" };
-const _hoisted_25 = { class: "p-message-text" };
-const _hoisted_26 = { class: "p-message p-component p-message-info" };
-const _hoisted_27 = { class: "p-message-wrapper" };
-const _hoisted_28 = { class: "p-message-text" };
-const _hoisted_29 = { class: "file-container-footer p-3 pb-0" };
+const _hoisted_24 = { class: "file-items-grid" };
+const _hoisted_25 = ["onDragstart", "onClick"];
+const _hoisted_26 = { class: "thumb-container" };
+const _hoisted_27 = ["src", "alt"];
+const _hoisted_28 = {
+  key: 1,
+  class: "file-icon-placeholder"
+};
+const _hoisted_29 = { class: "uppercase file-ext text-white" };
+const _hoisted_30 = { class: "card-footer" };
+const _hoisted_31 = ["title"];
+const _hoisted_32 = { class: "p-message p-component p-message-info" };
+const _hoisted_33 = { class: "p-message-wrapper" };
+const _hoisted_34 = { class: "p-message-text" };
+const _hoisted_35 = { class: "p-message p-component p-message-info" };
+const _hoisted_36 = { class: "p-message-wrapper" };
+const _hoisted_37 = { class: "p-message-text" };
+const _hoisted_38 = { class: "file-container-footer p-3 pb-0" };
 const _sfc_main = /* @__PURE__ */ defineComponent({
   __name: "App",
   props: {
@@ -39292,6 +39312,25 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
     useFileUpload({
       maxUploadChunkSize: props.maxUploadChunkSize
     });
+    const imageExtensions = /* @__PURE__ */ new Set(["jpg", "jpeg", "png", "gif", "webp", "svg", "bmp", "ico", "avif"]);
+    const isImage = (file) => {
+      var _a2, _b;
+      if ((_a2 = file.mime) == null ? void 0 : _a2.startsWith("image/")) return true;
+      const ext = ((_b = getFileExtension(file.name)) == null ? void 0 : _b.toLowerCase()) ?? "";
+      return imageExtensions.has(ext);
+    };
+    const isFileSelected = (file) => {
+      return selectedFiles2.value.some((el) => {
+        var _a2, _b;
+        return ((_a2 = el.url) == null ? void 0 : _a2.toLowerCase()) === ((_b = file.url) == null ? void 0 : _b.toLowerCase());
+      });
+    };
+    const toggleFile = (file) => {
+      emit2("FileSelectReq", file);
+    };
+    const dragFileStart = (file, e) => {
+      emit2("FileDragReq", { file, e });
+    };
     const filteredFileItems = computed(() => {
       let filtered = fileItems2.value.filter(function(item) {
         return item.name.toLowerCase().indexOf(fileFilter2.value.toLowerCase()) > -1;
@@ -39428,7 +39467,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
                         for: "fileupload",
                         class: "btn btn-primary fileinput-button upload-button"
                       }, [
-                        _cache[4] || (_cache[4] = createBaseVNode("input", {
+                        _cache[6] || (_cache[6] = createBaseVNode("input", {
                           id: "fileupload",
                           type: "file",
                           name: "files",
@@ -39459,39 +39498,49 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
                       withDirectives(createBaseVNode("span", { class: "badge rounded-pill ml-1" }, toDisplayString(unref(selectedFiles2).length), 513), [
                         [vShow, unref(selectedFiles2).length > 0]
                       ])
-                    ], 10, _hoisted_16)
+                    ], 10, _hoisted_16),
+                    createBaseVNode("a", {
+                      title: unref(gridView2) ? unref(t2).TableView ?? "Table view" : unref(t2).GridView ?? "Grid view",
+                      href: "javascript:void(0)",
+                      class: "btn btn-light me-2",
+                      onClick: _cache[2] || (_cache[2] = ($event) => gridView2.value = !unref(gridView2))
+                    }, [
+                      createVNode(_component_fa_icon, {
+                        icon: unref(gridView2) ? "fa-solid fa-list" : "fa-solid fa-grip"
+                      }, null, 8, ["icon"])
+                    ], 8, _hoisted_17)
                   ], 512), [
                     [vShow, unref(canManage2)]
                   ])
                 ]),
-                createBaseVNode("div", _hoisted_17, [
-                  createBaseVNode("div", _hoisted_18, [
-                    createBaseVNode("div", _hoisted_19, [
+                createBaseVNode("div", _hoisted_18, [
+                  createBaseVNode("div", _hoisted_19, [
+                    createBaseVNode("div", _hoisted_20, [
                       createVNode(_component_fa_icon, { icon: "fa-solid fa-filter icon-inside-input" }),
                       withDirectives(createBaseVNode("input", {
                         type: "text",
                         id: "file-filter-input",
-                        "onUpdate:modelValue": _cache[2] || (_cache[2] = ($event) => isRef$1(fileFilter2) ? fileFilter2.value = $event : null),
+                        "onUpdate:modelValue": _cache[3] || (_cache[3] = ($event) => isRef$1(fileFilter2) ? fileFilter2.value = $event : null),
                         class: "form-control input-filter",
                         placeholder: unref(t2).Filter,
                         "aria-label": unref(t2).Filter
-                      }, null, 8, _hoisted_20), [
+                      }, null, 8, _hoisted_21), [
                         [vModelText, unref(fileFilter2)]
                       ]),
                       createBaseVNode("button", {
                         id: "clear-file-filter-button",
                         class: "btn btn-outline-secondary",
                         disabled: unref(fileFilter2) == "",
-                        onClick: _cache[3] || (_cache[3] = ($event) => fileFilter2.value = "")
+                        onClick: _cache[4] || (_cache[4] = ($event) => fileFilter2.value = "")
                       }, [
                         createVNode(_component_fa_icon, { icon: "fa-solid fa-times" })
-                      ], 8, _hoisted_21)
+                      ], 8, _hoisted_22)
                     ])
                   ])
                 ])
               ])
             ]),
-            unref(assetsStore2).length > 0 ? (openBlock(), createElementBlock("div", _hoisted_22, [
+            unref(assetsStore2).length > 0 ? (openBlock(), createElementBlock("div", _hoisted_23, [
               withDirectives((openBlock(), createBlock(unref(RouterView), {
                 key: unref(selectedDirectory2).directoryPath,
                 "is-selected-all": unref(isSelectedAll2),
@@ -39500,22 +39549,71 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
               }, null, 8, ["is-selected-all", "filtered-file-items", "selected-files"])), [
                 [vShow, filteredFileItems.value.length > 0 && !unref(gridView2)]
               ]),
-              withDirectives(createBaseVNode("div", _hoisted_23, [
-                createBaseVNode("div", _hoisted_24, [
-                  createBaseVNode("div", _hoisted_25, toDisplayString(unref(t2).FolderFilterEmpty), 1)
+              withDirectives(createBaseVNode("ol", _hoisted_24, [
+                (openBlock(true), createElementBlock(Fragment, null, renderList(unref(itemsInPage2), (file) => {
+                  return openBlock(), createElementBlock("li", {
+                    key: file.filePath,
+                    class: normalizeClass([{ selected: isFileSelected(file) }, "card"]),
+                    draggable: "true",
+                    onDragstart: ($event) => dragFileStart(file, $event),
+                    onClick: withModifiers(($event) => toggleFile(file), ["stop"])
+                  }, [
+                    createBaseVNode("div", _hoisted_26, [
+                      isImage(file) ? (openBlock(), createElementBlock("img", {
+                        key: 0,
+                        src: file.url,
+                        alt: file.name,
+                        loading: "lazy"
+                      }, null, 8, _hoisted_27)) : (openBlock(), createElementBlock("div", _hoisted_28, [
+                        _cache[7] || (_cache[7] = createBaseVNode("svg", {
+                          viewBox: "0 0 16 16",
+                          fill: "none",
+                          xmlns: "http://www.w3.org/2000/svg"
+                        }, [
+                          createBaseVNode("path", {
+                            d: "M10.28 4.46553H13.4658C13.4889 4.4658 13.5118 4.46145 13.5332 4.45274C13.5545 4.44402 13.574 4.43113 13.5903 4.4148C13.6066 4.39848 13.6195 4.37906 13.6282 4.35768C13.6369 4.3363 13.6413 4.3134 13.641 4.29031C13.6417 4.13738 13.6084 3.9862 13.5437 3.84764C13.479 3.70907 13.3844 3.58656 13.2667 3.48889L10.5946 1.26233C10.3921 1.09433 10.137 1.00273 9.87384 1.00348C9.83983 1.00342 9.80614 1.01007 9.7747 1.02305C9.74327 1.03604 9.71471 1.0551 9.69066 1.07915C9.66661 1.1032 9.64755 1.13176 9.63456 1.1632C9.62158 1.19463 9.61493 1.22832 9.61499 1.26233V3.801C9.61499 3.88831 9.6322 3.97476 9.66562 4.05542C9.69905 4.13607 9.74804 4.20935 9.8098 4.27107C9.87156 4.33278 9.94488 4.38172 10.0256 4.41509C10.1062 4.44845 10.1927 4.46559 10.28 4.46553Z",
+                            class: "file-icon-path"
+                          }),
+                          createBaseVNode("path", {
+                            d: "M8.70453 3.8V1H4.12C3.82324 1.00092 3.5389 1.11921 3.32906 1.32906C3.11921 1.5389 3.00092 1.82324 3 2.12V13.88C3.00092 14.1768 3.11921 14.4611 3.32906 14.6709C3.5389 14.8808 3.82324 14.9991 4.12 15H12.52C12.8168 14.9991 13.1011 14.8808 13.3109 14.6709C13.5208 14.4611 13.6391 14.1768 13.64 13.88V5.37497H10.28C9.86241 5.37444 9.46206 5.20836 9.16673 4.91312C8.87141 4.61788 8.70519 4.21759 8.70453 3.8Z",
+                            class: "file-icon-path"
+                          })
+                        ], -1)),
+                        createBaseVNode("span", _hoisted_29, toDisplayString(unref(getFileExtension)(file.name)), 1)
+                      ]))
+                    ]),
+                    createBaseVNode("div", _hoisted_30, [
+                      createBaseVNode("span", {
+                        class: "text-truncate small flex-grow-1",
+                        title: file.name
+                      }, toDisplayString(file.name), 9, _hoisted_31),
+                      createVNode(_sfc_main$2, {
+                        "file-item": file,
+                        onClick: _cache[5] || (_cache[5] = withModifiers(() => {
+                        }, ["stop"]))
+                      }, null, 8, ["file-item"])
+                    ])
+                  ], 42, _hoisted_25);
+                }), 128))
+              ], 512), [
+                [vShow, filteredFileItems.value.length > 0 && unref(gridView2)]
+              ]),
+              withDirectives(createBaseVNode("div", _hoisted_32, [
+                createBaseVNode("div", _hoisted_33, [
+                  createBaseVNode("div", _hoisted_34, toDisplayString(unref(t2).FolderFilterEmpty), 1)
                 ])
               ], 512), [
                 [vShow, unref(assetsStore2).filter((x2) => x2.isDirectory == false && x2.directoryPath == unref(selectedDirectory2).directoryPath).length > 0 && filteredFileItems.value.length < 1]
               ]),
-              withDirectives(createBaseVNode("div", _hoisted_26, [
-                createBaseVNode("div", _hoisted_27, [
-                  createBaseVNode("div", _hoisted_28, toDisplayString(unref(t2).FolderEmpty), 1)
+              withDirectives(createBaseVNode("div", _hoisted_35, [
+                createBaseVNode("div", _hoisted_36, [
+                  createBaseVNode("div", _hoisted_37, toDisplayString(unref(t2).FolderEmpty), 1)
                 ])
               ], 512), [
                 [vShow, unref(assetsStore2).filter((x2) => x2.isDirectory == false && x2.directoryPath == unref(selectedDirectory2).directoryPath).length < 1]
               ])
             ])) : createCommentVNode("", true),
-            withDirectives(createBaseVNode("div", _hoisted_29, [
+            withDirectives(createBaseVNode("div", _hoisted_38, [
               (openBlock(), createBlock(_sfc_main$5, {
                 "source-items": filteredFileItems.value,
                 key: unref(selectedDirectory2).directoryPath

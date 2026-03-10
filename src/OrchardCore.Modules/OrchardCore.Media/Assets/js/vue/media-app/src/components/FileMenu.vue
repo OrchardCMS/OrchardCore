@@ -43,6 +43,13 @@ const { showFileActionModal } = useFileActionModal();
 const showModal = ref(props.showModalProp);
 
 const menu = ref();
+const { on } = useEventBus();
+
+on("CloseFileMenus", (sender: unknown) => {
+  if (sender !== menu) {
+    menu.value?.hide();
+  }
+});
 
 const items = computed(() => {
   return [
@@ -97,6 +104,7 @@ const items = computed(() => {
  * @param {object} event The event object of the component.
  */
 const toggle = (event: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
+  emit("CloseFileMenus", menu);
   menu.value?.toggle(event);
 };
 </script>

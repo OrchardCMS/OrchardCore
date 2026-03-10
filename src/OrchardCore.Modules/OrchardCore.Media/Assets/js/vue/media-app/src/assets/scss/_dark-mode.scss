@@ -65,6 +65,10 @@
                     background-color: var(--media-selected-bg);
                 }
             }
+
+            .img-wrapper svg path {
+                fill: var(--bs-secondary-color);
+            }
         }
 
         ol.file-items-grid li {
@@ -78,6 +82,10 @@
 
             .thumb-container {
                 background: var(--bs-body-bg);
+            }
+
+            .file-icon-placeholder .file-icon-path {
+                fill: var(--bs-secondary-color);
             }
         }
 
