@@ -24,11 +24,22 @@ class WorkflowViewer extends WorkflowCanvas {
                 const label: any = connection.getOverlay('label');
                 label.setLabel(outcome.displayName);
 
-                // Hide the outcome label on the source endpoint since it's now connected.
+                // Change anchor to Continuous for better routing when connected
                 const sourceEndpoint: any = connInfo.sourceEndpoint;
-                if (sourceEndpoint && sourceEndpoint.hideOverlay) {
-                    sourceEndpoint.hideOverlay('outcome-label');
+                if (sourceEndpoint && sourceEndpoint.setAnchor) {
+                    sourceEndpoint.setAnchor('Continuous');
                 }
+
+                // Hide the outcome label on the source endpoint since it's now connected, but only if it has content.
+                if (sourceEndpoint && sourceEndpoint.hideOverlay && outcome.displayName) {
+                    const overlay = sourceEndpoint.getOverlay('outcome-label');
+                    if (overlay) {
+                        sourceEndpoint.hideOverlay('outcome-label');
+                    }
+                }
+                
+                // Re-orient labels after connection
+                self.orientOutcomeLabels();
             });
 
             let activityElements = this.getActivityElements();

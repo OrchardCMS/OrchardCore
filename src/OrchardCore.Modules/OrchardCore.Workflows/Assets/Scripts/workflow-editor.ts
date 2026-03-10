@@ -36,20 +36,48 @@ class WorkflowEditor extends WorkflowCanvas {
                 const label: any = connection.getOverlay("label");
                 label.setLabel(outcome.displayName);
 
-                // Hide the outcome label on the source endpoint since it's now connected.
+                // Change anchor to Continuous for better routing when connected
                 const sourceEndpoint: any = connInfo.sourceEndpoint;
-                if (sourceEndpoint && sourceEndpoint.hideOverlay) {
-                    sourceEndpoint.hideOverlay("outcome-label");
+                if (sourceEndpoint && sourceEndpoint.setAnchor) {
+                    sourceEndpoint.setAnchor('Continuous');
                 }
+
+                // Hide the outcome label on the source endpoint since it's now connected, but only if it has content.
+                if (sourceEndpoint && sourceEndpoint.hideOverlay && outcome.displayName) {
+                    const overlay = sourceEndpoint.getOverlay('outcome-label');
+                    if (overlay) {
+                        sourceEndpoint.hideOverlay("outcome-label");
+                    }
+                }
+                
+                // Re-orient labels after connection
+                self.orientOutcomeLabels();
             });
 
             // Listen for detached connections.
             plumber.bind("connectionDetached", function (connInfo, originalEvent) {
                 const sourceEndpoint: any = connInfo.sourceEndpoint;
-                // Show the outcome label if no connections remain on this endpoint.
-                if (sourceEndpoint && sourceEndpoint.connections && sourceEndpoint.connections.length === 0 && sourceEndpoint.showOverlay) {
-                    sourceEndpoint.showOverlay("outcome-label");
+                
+                // Change anchor back to ContinuousRight when no connections remain
+                if (sourceEndpoint && sourceEndpoint.connections && sourceEndpoint.connections.length === 0) {
+                    if (sourceEndpoint.setAnchor) {
+                        sourceEndpoint.setAnchor('ContinuousRight');
+                    }
+                    
+                    // Show the outcome label if no connections remain on this endpoint, but only if it has content.
+                    if (sourceEndpoint.showOverlay) {
+                        const overlay = sourceEndpoint.getOverlay('outcome-label');
+                        if (overlay) {
+                            const outcome: Workflows.Outcome = sourceEndpoint.getParameters().outcome;
+                            if (outcome && outcome.displayName) {
+                                sourceEndpoint.showOverlay("outcome-label");
+                            }
+                        }
+                    }
                 }
+                
+                // Re-orient labels after disconnection
+                self.orientOutcomeLabels();
             });
 
             let activityElements = this.getActivityElements();
@@ -129,6 +157,8 @@ class WorkflowEditor extends WorkflowCanvas {
                         stop: (args: any) => {
                             this.hasDragged = this.dragStart.left != args.e.screenX || this.dragStart.top != args.e.screenY;
                             this.updateCanvasHeight();
+                            // Re-orient labels after dragging (connections may have repositioned)
+                            self.orientOutcomeLabels();
                         },
                     });
 
@@ -150,8 +180,8 @@ class WorkflowEditor extends WorkflowCanvas {
 
                         this.endpointMap.push({ endpoint, activityElement });
 
-                        // Add Title for each dot.
-                        if (endpoint.canvas) {
+                        // Add Title for each dot, only if outcome has a display name.
+                        if (endpoint.canvas && outcome.displayName) {
                             endpoint.canvas.setAttribute("title", outcome.displayName);
                         }
                     }
