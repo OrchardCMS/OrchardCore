@@ -1,19 +1,19 @@
 import { usePermissions } from "./Permissions";
 import { useGlobals } from "./Globals";
-import { IFileLibraryItemDto, IFileCopyDto, IFileListMoveDto, IRenameFileLibraryItemDto } from "../interfaces/interfaces";
+import { IFileLibraryItemDto, IFileCopyDto, IFileListMoveDto, IRenameFileLibraryItemDto } from "@bloom/media/interfaces";
 import { NotificationMessage, notify } from "@bloom/services/notifications/notifier";
 import { SeverityLevel } from "@bloom/services/notifications/interfaces";
 import { useEventBus } from "./UseEventBus";
 import { useHierarchicalTreeBuilder } from "./HierarchicalTreeBuilder";
-import { FileDataService, IFileDataService } from "./data/IFileDataService";
-import { useLocalizations } from "./Localizations";
-import { BASE_DIR } from "../interfaces/contants";
+import { FileDataService, IFileDataService } from "@bloom/media/api/file-data-service";
+import { useLocalizations } from "@bloom/helpers/localizations";
+import { BASE_DIR } from "@bloom/media/constants";
 
 const { canManage } = usePermissions();
 const { setHierarchicalDirectories } = useHierarchicalTreeBuilder();
 const { assetsStore, fileItems, selectedDirectory, rootDirectory, selectedFiles, setAssetsStore, setSelectedFiles, setSelectedAll } = useGlobals();
 const { translations } = useLocalizations();
-const t = translations.value;
+const t = translations;
 const { emit } = useEventBus();
 
 export function useFileLibraryManager() {

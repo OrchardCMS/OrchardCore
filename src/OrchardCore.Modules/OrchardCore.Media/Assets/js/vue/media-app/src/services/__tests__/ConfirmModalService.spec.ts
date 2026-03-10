@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useConfirmModal } from "../ConfirmModalService";
 import { useModal } from "vue-final-modal";
-import { FileAction, IConfirmViewModel, IModalFileEvent } from "../../interfaces/interfaces";
+import { FileAction, IConfirmViewModel, IModalFileEvent } from "@bloom/media/interfaces";
 import ModalConfirm from "../../components/ModalConfirm.vue";
-import { useLocalizations } from "../Localizations";
+import { useLocalizations } from "@bloom/helpers/localizations";
 import { translationsData } from "../../__tests__/mockdata";
 import { useEventBus } from "../UseEventBus";
 

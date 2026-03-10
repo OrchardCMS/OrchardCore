@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { FileDataService } from "../data/IFileDataService";
-import { IFileLibraryItemDto } from "../../interfaces/interfaces";
+import { FileDataService } from "@bloom/media/api/file-data-service";
+import { IFileLibraryItemDto } from "@bloom/media/interfaces";
 
 const mockFolder: IFileLibraryItemDto = {
   name: "Images",

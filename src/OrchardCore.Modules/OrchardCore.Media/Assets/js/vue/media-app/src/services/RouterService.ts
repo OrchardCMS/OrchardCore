@@ -1,4 +1,4 @@
-import { IFileLibraryItemDto } from "../interfaces/interfaces";
+import { IFileLibraryItemDto } from "@bloom/media/interfaces";
 import router from "../router";
 import { useEventBus } from "./UseEventBus";
 import { useGlobals } from "./Globals";

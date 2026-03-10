@@ -1,9 +1,9 @@
 import { describe, expect, it, vi } from "vitest";
-import { FileAction, IModalFileEvent } from "../../interfaces/interfaces";
+import { FileAction, IModalFileEvent } from "@bloom/media/interfaces";
 import { useConfirmModal } from "../../services/ConfirmModalService";
 import { useModal } from "vue-final-modal";
 import ModalConfirm from "../../components/ModalConfirm.vue";
-import { useLocalizations } from "../../services/Localizations";
+import { useLocalizations } from "@bloom/helpers/localizations";
 import { translationsData } from "../../__tests__/mockdata";
 
 const { showConfirmModal } = useConfirmModal();

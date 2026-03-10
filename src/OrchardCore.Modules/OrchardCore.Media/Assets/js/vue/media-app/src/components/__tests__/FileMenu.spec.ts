@@ -1,17 +1,17 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { mount, VueWrapper } from "@vue/test-utils";
 import fileMenu from "../FileMenu.vue";
-import { FileAction, IRenameFileLibraryItemDto, IFileLibraryItemDto } from "../../interfaces/interfaces";
+import { FileAction, IRenameFileLibraryItemDto, IFileLibraryItemDto } from "@bloom/media/interfaces";
 import PrimeVue from "primevue/config";
 import Menu from "primevue/menu";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { useGlobals } from "../../services/Globals";
-import { useLocalizations } from "../../services/Localizations";
+import { useLocalizations } from "@bloom/helpers/localizations";
 import { useEventBusService } from "../../services/EventBusService";
 import { createVfm } from "vue-final-modal";
 
 // Mock FileDataService to avoid real API calls
-vi.mock("../../services/data/IFileDataService", () => ({
+vi.mock("@bloom/media/api/file-data-service", () => ({
   FileDataService: vi.fn().mockImplementation(() => ({
     getFileItem: vi.fn().mockResolvedValue({} as IFileLibraryItemDto),
     moveMedia: vi.fn().mockResolvedValue(undefined),

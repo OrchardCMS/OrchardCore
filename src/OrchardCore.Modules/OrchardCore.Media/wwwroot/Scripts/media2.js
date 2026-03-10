@@ -18813,10 +18813,10 @@ const emitter = mitt();
 function useEventBus() {
   return emitter;
 }
-const translations$4 = ref({});
+const translations$4 = reactive({});
 function useLocalizations() {
   const setTranslations = (t2) => {
-    translations$4.value = t2;
+    Object.assign(translations$4, t2);
   };
   return { translations: translations$4, setTranslations };
 }
@@ -18845,7 +18845,7 @@ const _sfc_main$a = /* @__PURE__ */ defineComponent({
   emits: ["confirm"],
   setup(__props, { emit: __emit }) {
     const { translations: translations2 } = useLocalizations();
-    const t2 = translations2.value;
+    const t2 = translations2;
     const { on: on2 } = useEventBus();
     const props = __props;
     let folderActionElems = [
@@ -24588,6 +24588,204 @@ function requireLodash() {
 }
 var lodashExports = requireLodash();
 const _ = /* @__PURE__ */ getDefaultExportFromCjs(lodashExports);
+function humanFileSize(bytes, si = false, dp = 1) {
+  if (bytes === null || bytes === void 0) {
+    throw new Error("humanFileSize: bytes is null or undefined");
+  }
+  const thresh = si ? 1e3 : 1024;
+  if (Math.abs(bytes) < thresh) {
+    return bytes + " B";
+  }
+  const units = si ? ["kB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"] : ["KiB", "MiB", "GiB", "TiB", "PiB", "EiB", "ZiB", "YiB"];
+  let u2 = -1;
+  const r2 = 10 ** dp;
+  do {
+    bytes /= thresh;
+    ++u2;
+  } while (Math.round(Math.abs(bytes) * r2) / r2 >= thresh && u2 < units.length - 1);
+  return bytes.toFixed(dp) + " " + units[u2];
+}
+function getFileExtension(fileName) {
+  if (fileName && fileName.includes(".")) {
+    return fileName.split(".").pop();
+  }
+  return "";
+}
+function printDateTime(datemillis) {
+  if (datemillis != "" && datemillis != null && datemillis != void 0) {
+    const d2 = new Date(datemillis);
+    return d2.toLocaleString();
+  } else {
+    return "";
+  }
+}
+const _hoisted_1$f = { class: "tw-flex tw-justify-between" };
+const _hoisted_2$e = { class: "modal__title" };
+const _hoisted_3$d = {
+  key: 0,
+  class: "file-wrapper"
+};
+const _hoisted_4$8 = { class: "img-wrapper" };
+const _hoisted_5$8 = { class: "tw-uppercase file-ext tw-text-white" };
+const _hoisted_6$7 = { class: "tw-font-bold tw-text-lg tw-ml-2" };
+const _hoisted_7$7 = { class: "tw-mt-3 tw-flex tw-flex-row tw-justify-end" };
+const _sfc_main$9 = /* @__PURE__ */ defineComponent({
+  __name: "ModalConfirm",
+  props: {
+    title: String,
+    modalName: {
+      type: String,
+      required: true
+    },
+    action: {
+      type: Number
+    },
+    files: {
+      type: Object
+    },
+    targetFolder: {
+      type: String
+    },
+    showModalProp: {
+      type: Boolean,
+      default: false
+    }
+  },
+  emits: ["confirm", "closed"],
+  setup(__props, { emit: __emit }) {
+    var _a2;
+    const { translations: translations2 } = useLocalizations();
+    const t2 = translations2;
+    const props = __props;
+    let showModal = ref(props.showModalProp);
+    const fileItem = (_a2 = props.files) == null ? void 0 : _a2.at(0);
+    const emit2 = __emit;
+    return (_ctx, _cache) => {
+      const _component_fa_icon = resolveComponent("fa-icon");
+      return openBlock(), createBlock(unref(Ro), {
+        "focus-trap": false,
+        modelValue: unref(showModal),
+        "onUpdate:modelValue": _cache[3] || (_cache[3] = ($event) => isRef$1(showModal) ? showModal.value = $event : showModal = $event),
+        "modal-id": __props.modalName,
+        class: "tw-flex tw-justify-center tw-items-center",
+        "content-class": "tw-flex tw-flex-col tw-max-w-xl tw-mx-4 tw-p-4 tw-rounded-lg tw-space-y-3 action-modal"
+      }, {
+        default: withCtx(() => {
+          var _a3, _b, _c;
+          return [
+            createBaseVNode("div", _hoisted_1$f, [
+              createBaseVNode("span", _hoisted_2$e, toDisplayString(__props.title), 1),
+              createBaseVNode("span", {
+                class: "tw-cursor-pointer",
+                onClick: _cache[0] || (_cache[0] = ($event) => emit2("closed"))
+              }, [
+                createVNode(_component_fa_icon, { icon: "fa-solid fa-xmark fa-2xl" })
+              ])
+            ]),
+            renderSlot(_ctx.$slots, "default"),
+            ((_a3 = props.files) == null ? void 0 : _a3.length) == 1 ? (openBlock(), createElementBlock("div", _hoisted_3$d, [
+              createBaseVNode("div", _hoisted_4$8, [
+                _cache[4] || (_cache[4] = createBaseVNode("svg", {
+                  viewBox: "0 0 16 16",
+                  fill: "none",
+                  xmlns: "http://www.w3.org/2000/svg"
+                }, [
+                  createBaseVNode("path", {
+                    d: "M10.28 4.46553H13.4658C13.4889 4.4658 13.5118 4.46145 13.5332 4.45274C13.5545 4.44402 13.574 4.43113 13.5903 4.4148C13.6066 4.39848 13.6195 4.37906 13.6282 4.35768C13.6369 4.3363 13.6413 4.3134 13.641 4.29031C13.6417 4.13738 13.6084 3.9862 13.5437 3.84764C13.479 3.70907 13.3844 3.58656 13.2667 3.48889L10.5946 1.26233C10.3921 1.09433 10.137 1.00273 9.87384 1.00348C9.83983 1.00342 9.80614 1.01007 9.7747 1.02305C9.74327 1.03604 9.71471 1.0551 9.69066 1.07915C9.66661 1.1032 9.64755 1.13176 9.63456 1.1632C9.62158 1.19463 9.61493 1.22832 9.61499 1.26233V3.801C9.61499 3.88831 9.6322 3.97476 9.66562 4.05542C9.69905 4.13607 9.74804 4.20935 9.8098 4.27107C9.87156 4.33278 9.94488 4.38172 10.0256 4.41509C10.1062 4.44845 10.1927 4.46559 10.28 4.46553Z",
+                    fill: "#2D2D2D"
+                  }),
+                  createBaseVNode("path", {
+                    d: "M8.70453 3.8V1H4.12C3.82324 1.00092 3.5389 1.11921 3.32906 1.32906C3.11921 1.5389 3.00092 1.82324 3 2.12V13.88C3.00092 14.1768 3.11921 14.4611 3.32906 14.6709C3.5389 14.8808 3.82324 14.9991 4.12 15H12.52C12.8168 14.9991 13.1011 14.8808 13.3109 14.6709C13.5208 14.4611 13.6391 14.1768 13.64 13.88V5.37497H10.28C9.86241 5.37444 9.46206 5.20836 9.16673 4.91312C8.87141 4.61788 8.70519 4.21759 8.70453 3.8Z",
+                    fill: "#2D2D2D"
+                  })
+                ], -1)),
+                createBaseVNode("span", _hoisted_5$8, toDisplayString(unref(getFileExtension)((_b = unref(fileItem)) == null ? void 0 : _b.filePath)), 1)
+              ]),
+              createBaseVNode("div", _hoisted_6$7, toDisplayString((_c = unref(fileItem)) == null ? void 0 : _c.name), 1)
+            ])) : createCommentVNode("", true),
+            createBaseVNode("div", _hoisted_7$7, [
+              createBaseVNode("button", {
+                class: "ma-btn ma-btn-light tw-border tw-border-gray-400",
+                onClick: _cache[1] || (_cache[1] = ($event) => emit2("closed"))
+              }, toDisplayString(unref(t2).Cancel), 1),
+              createBaseVNode("button", {
+                class: "tw-ml-2 ma-btn ma-btn-primary",
+                onClick: _cache[2] || (_cache[2] = ($event) => emit2("confirm", { action: __props.action, files: __props.files, targetFolder: _ctx.$props.targetFolder }))
+              }, [
+                renderSlot(_ctx.$slots, "submit")
+              ])
+            ])
+          ];
+        }),
+        _: 3
+      }, 8, ["modelValue", "modal-id"]);
+    };
+  }
+});
+const { emit: emit$5 } = useEventBus();
+const useConfirmModal = () => {
+  const showConfirmModal = (modalFileEvent) => {
+    if (modalFileEvent.files.length > 0) {
+      const { translations: translations2 } = useLocalizations();
+      const t2 = translations2;
+      let defaultSlotMessage = "";
+      if (modalFileEvent.action == FileAction.Delete) {
+        if (modalFileEvent.files.length > 1) {
+          defaultSlotMessage += `<p class="tw-m-0">${t2.DeleteMultipleFilesMessage}</p>`;
+        } else {
+          defaultSlotMessage += `<p class="tw-m-0">${t2.DeleteSingleFileMessage}</p>`;
+        }
+      } else if (modalFileEvent.action == FileAction.Move) {
+        defaultSlotMessage += `<p class="tw-m-0">${t2.MoveFileMessage}</p>`;
+      }
+      const { open, destroy } = Go({
+        defaultModelValue: false,
+        keepAlive: false,
+        component: _sfc_main$9,
+        slots: {
+          default: defaultSlotMessage,
+          submit: t2.Ok
+        },
+        attrs: {
+          title: modalFileEvent.modalTitle,
+          modalName: modalFileEvent.uuid,
+          files: modalFileEvent.files,
+          action: modalFileEvent.action ?? FileAction.Rename,
+          targetFolder: modalFileEvent.targetFolder,
+          onConfirm(action) {
+            confirmModal(action);
+            destroy();
+          },
+          onClosed() {
+            destroy();
+          }
+        }
+      });
+      open();
+    }
+  };
+  const confirmModal = (confirmAction) => {
+    if (confirmAction.action == FileAction.Delete) {
+      if (confirmAction.files && confirmAction.files.length > 0) {
+        if (confirmAction.files.length > 1) {
+          emit$5("FilesDeleteReq");
+        } else {
+          emit$5("FileDeleteReq", confirmAction.files[0]);
+        }
+      }
+    } else if (confirmAction.action == FileAction.Move) {
+      if (confirmAction.files && confirmAction.files.length > 0) {
+        const moveAssetsState = {
+          files: confirmAction.files,
+          sourceFolder: confirmAction.files[0].directoryPath,
+          targetFolder: confirmAction.targetFolder
+        };
+        emit$5("FileListMove", moveAssetsState);
+      }
+    }
+  };
+  return { showConfirmModal, confirmModal };
+};
 const assetsStore$5 = ref([]);
 const selectedDirectory$6 = ref({});
 const fileItems$2 = ref([]);
@@ -24691,252 +24889,6 @@ const useGlobals = () => {
     setIsDownloading: setIsDownloading2,
     setUploadFilesUrl
   };
-};
-const { translations: translations$3 } = useLocalizations();
-const t$J = translations$3.value;
-const { setIsDownloading, selectedFiles: selectedFiles$2, setSelectedFiles: setSelectedFiles$2, setSelectedAll: setSelectedAll$2 } = useGlobals();
-function humanFileSize(bytes, si = false, dp = 1) {
-  if (bytes === null || bytes === void 0) {
-    throw new Error("humanFileSize: bytes is null or undefined");
-  }
-  const thresh = si ? 1e3 : 1024;
-  if (Math.abs(bytes) < thresh) {
-    return bytes + " B";
-  }
-  const units = si ? ["kB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"] : ["KiB", "MiB", "GiB", "TiB", "PiB", "EiB", "ZiB", "YiB"];
-  let u2 = -1;
-  const r2 = 10 ** dp;
-  do {
-    bytes /= thresh;
-    ++u2;
-  } while (Math.round(Math.abs(bytes) * r2) / r2 >= thresh && u2 < units.length - 1);
-  return bytes.toFixed(dp) + " " + units[u2];
-}
-function getFileExtension(fileName) {
-  if (fileName && fileName.includes(".")) {
-    return fileName.split(".").pop();
-  }
-  return "";
-}
-function printDateTime(datemillis) {
-  if (datemillis != "" && datemillis != null && datemillis != void 0) {
-    const d2 = new Date(datemillis);
-    return d2.toLocaleString();
-  } else {
-    return "";
-  }
-}
-function downloadFile(file) {
-  if (file && file.url) {
-    const xhr = new XMLHttpRequest();
-    xhr.open("HEAD", file.url, false);
-    xhr.onload = function() {
-      if (xhr.status === 200) {
-        const aElement = document.createElement("a");
-        if (aElement) {
-          aElement.setAttribute("download", file.name);
-          aElement.href = file.url ?? "";
-          aElement.setAttribute("target", "_blank");
-          aElement.click();
-        }
-      } else {
-        notify(new NotificationMessage({ summary: t$J.Error, detail: t$J.FailedDownload, severity: SeverityLevel.Error }));
-      }
-    };
-    xhr.onerror = function() {
-      notify(new NotificationMessage({ summary: t$J.Error, detail: t$J.FailedDownload, severity: SeverityLevel.Error }));
-    };
-    xhr.send();
-  }
-}
-const downloadSelectedFiles = async () => {
-  setIsDownloading(true);
-  const promises = selectedFiles$2.value.map((file) => {
-    if (file.url) {
-      return fetch(file.url).then((response) => response.blob()).then((blob) => {
-        const url = window.URL.createObjectURL(blob);
-        const a2 = document.createElement("a");
-        a2.href = url;
-        a2.download = file.name || "download";
-        document.body.appendChild(a2);
-        a2.click();
-        a2.remove();
-        window.URL.revokeObjectURL(url);
-      });
-    }
-  });
-  await Promise.all(promises).then(() => {
-    setIsDownloading(false);
-    setSelectedFiles$2([]);
-    setSelectedAll$2(false);
-  });
-};
-const _hoisted_1$f = { class: "tw-flex tw-justify-between" };
-const _hoisted_2$e = { class: "modal__title" };
-const _hoisted_3$d = {
-  key: 0,
-  class: "file-wrapper"
-};
-const _hoisted_4$8 = { class: "img-wrapper" };
-const _hoisted_5$8 = { class: "tw-uppercase file-ext tw-text-white" };
-const _hoisted_6$7 = { class: "tw-font-bold tw-text-lg tw-ml-2" };
-const _hoisted_7$7 = { class: "tw-mt-3 tw-flex tw-flex-row tw-justify-end" };
-const _sfc_main$9 = /* @__PURE__ */ defineComponent({
-  __name: "ModalConfirm",
-  props: {
-    title: String,
-    modalName: {
-      type: String,
-      required: true
-    },
-    action: {
-      type: Number
-    },
-    files: {
-      type: Object
-    },
-    targetFolder: {
-      type: String
-    },
-    showModalProp: {
-      type: Boolean,
-      default: false
-    }
-  },
-  emits: ["confirm", "closed"],
-  setup(__props, { emit: __emit }) {
-    var _a2;
-    const { translations: translations2 } = useLocalizations();
-    const t2 = translations2.value;
-    const props = __props;
-    let showModal = ref(props.showModalProp);
-    const fileItem = (_a2 = props.files) == null ? void 0 : _a2.at(0);
-    const emit2 = __emit;
-    return (_ctx, _cache) => {
-      const _component_fa_icon = resolveComponent("fa-icon");
-      return openBlock(), createBlock(unref(Ro), {
-        "focus-trap": false,
-        modelValue: unref(showModal),
-        "onUpdate:modelValue": _cache[3] || (_cache[3] = ($event) => isRef$1(showModal) ? showModal.value = $event : showModal = $event),
-        "modal-id": __props.modalName,
-        class: "tw-flex tw-justify-center tw-items-center",
-        "content-class": "tw-flex tw-flex-col tw-max-w-xl tw-mx-4 tw-p-4 tw-rounded-lg tw-space-y-3 action-modal"
-      }, {
-        default: withCtx(() => {
-          var _a3, _b, _c;
-          return [
-            createBaseVNode("div", _hoisted_1$f, [
-              createBaseVNode("span", _hoisted_2$e, toDisplayString(__props.title), 1),
-              createBaseVNode("span", {
-                class: "tw-cursor-pointer",
-                onClick: _cache[0] || (_cache[0] = ($event) => emit2("closed"))
-              }, [
-                createVNode(_component_fa_icon, { icon: "fa-solid fa-xmark fa-2xl" })
-              ])
-            ]),
-            renderSlot(_ctx.$slots, "default"),
-            ((_a3 = props.files) == null ? void 0 : _a3.length) == 1 ? (openBlock(), createElementBlock("div", _hoisted_3$d, [
-              createBaseVNode("div", _hoisted_4$8, [
-                _cache[4] || (_cache[4] = createBaseVNode("svg", {
-                  viewBox: "0 0 16 16",
-                  fill: "none",
-                  xmlns: "http://www.w3.org/2000/svg"
-                }, [
-                  createBaseVNode("path", {
-                    d: "M10.28 4.46553H13.4658C13.4889 4.4658 13.5118 4.46145 13.5332 4.45274C13.5545 4.44402 13.574 4.43113 13.5903 4.4148C13.6066 4.39848 13.6195 4.37906 13.6282 4.35768C13.6369 4.3363 13.6413 4.3134 13.641 4.29031C13.6417 4.13738 13.6084 3.9862 13.5437 3.84764C13.479 3.70907 13.3844 3.58656 13.2667 3.48889L10.5946 1.26233C10.3921 1.09433 10.137 1.00273 9.87384 1.00348C9.83983 1.00342 9.80614 1.01007 9.7747 1.02305C9.74327 1.03604 9.71471 1.0551 9.69066 1.07915C9.66661 1.1032 9.64755 1.13176 9.63456 1.1632C9.62158 1.19463 9.61493 1.22832 9.61499 1.26233V3.801C9.61499 3.88831 9.6322 3.97476 9.66562 4.05542C9.69905 4.13607 9.74804 4.20935 9.8098 4.27107C9.87156 4.33278 9.94488 4.38172 10.0256 4.41509C10.1062 4.44845 10.1927 4.46559 10.28 4.46553Z",
-                    fill: "#2D2D2D"
-                  }),
-                  createBaseVNode("path", {
-                    d: "M8.70453 3.8V1H4.12C3.82324 1.00092 3.5389 1.11921 3.32906 1.32906C3.11921 1.5389 3.00092 1.82324 3 2.12V13.88C3.00092 14.1768 3.11921 14.4611 3.32906 14.6709C3.5389 14.8808 3.82324 14.9991 4.12 15H12.52C12.8168 14.9991 13.1011 14.8808 13.3109 14.6709C13.5208 14.4611 13.6391 14.1768 13.64 13.88V5.37497H10.28C9.86241 5.37444 9.46206 5.20836 9.16673 4.91312C8.87141 4.61788 8.70519 4.21759 8.70453 3.8Z",
-                    fill: "#2D2D2D"
-                  })
-                ], -1)),
-                createBaseVNode("span", _hoisted_5$8, toDisplayString(unref(getFileExtension)((_b = unref(fileItem)) == null ? void 0 : _b.filePath)), 1)
-              ]),
-              createBaseVNode("div", _hoisted_6$7, toDisplayString((_c = unref(fileItem)) == null ? void 0 : _c.name), 1)
-            ])) : createCommentVNode("", true),
-            createBaseVNode("div", _hoisted_7$7, [
-              createBaseVNode("button", {
-                class: "ma-btn ma-btn-light tw-border tw-border-gray-400",
-                onClick: _cache[1] || (_cache[1] = ($event) => emit2("closed"))
-              }, toDisplayString(unref(t2).Cancel), 1),
-              createBaseVNode("button", {
-                class: "tw-ml-2 ma-btn ma-btn-primary",
-                onClick: _cache[2] || (_cache[2] = ($event) => emit2("confirm", { action: __props.action, files: __props.files, targetFolder: _ctx.$props.targetFolder }))
-              }, [
-                renderSlot(_ctx.$slots, "submit")
-              ])
-            ])
-          ];
-        }),
-        _: 3
-      }, 8, ["modelValue", "modal-id"]);
-    };
-  }
-});
-const { emit: emit$5 } = useEventBus();
-const useConfirmModal = () => {
-  const showConfirmModal = (modalFileEvent) => {
-    if (modalFileEvent.files.length > 0) {
-      const { translations: translations2 } = useLocalizations();
-      const t2 = translations2.value;
-      let defaultSlotMessage = "";
-      if (modalFileEvent.action == FileAction.Delete) {
-        if (modalFileEvent.files.length > 1) {
-          defaultSlotMessage += `<p class="tw-m-0">${t2.DeleteMultipleFilesMessage}</p>`;
-        } else {
-          defaultSlotMessage += `<p class="tw-m-0">${t2.DeleteSingleFileMessage}</p>`;
-        }
-      } else if (modalFileEvent.action == FileAction.Move) {
-        defaultSlotMessage += `<p class="tw-m-0">${t2.MoveFileMessage}</p>`;
-      }
-      const { open, destroy } = Go({
-        defaultModelValue: false,
-        keepAlive: false,
-        component: _sfc_main$9,
-        slots: {
-          default: defaultSlotMessage,
-          submit: t2.Ok
-        },
-        attrs: {
-          title: modalFileEvent.modalTitle,
-          modalName: modalFileEvent.uuid,
-          files: modalFileEvent.files,
-          action: modalFileEvent.action ?? FileAction.Rename,
-          targetFolder: modalFileEvent.targetFolder,
-          onConfirm(action) {
-            confirmModal(action);
-            destroy();
-          },
-          onClosed() {
-            destroy();
-          }
-        }
-      });
-      open();
-    }
-  };
-  const confirmModal = (confirmAction) => {
-    if (confirmAction.action == FileAction.Delete) {
-      if (confirmAction.files && confirmAction.files.length > 0) {
-        if (confirmAction.files.length > 1) {
-          emit$5("FilesDeleteReq");
-        } else {
-          emit$5("FileDeleteReq", confirmAction.files[0]);
-        }
-      }
-    } else if (confirmAction.action == FileAction.Move) {
-      if (confirmAction.files && confirmAction.files.length > 0) {
-        const moveAssetsState = {
-          files: confirmAction.files,
-          sourceFolder: confirmAction.files[0].directoryPath,
-          targetFolder: confirmAction.targetFolder
-        };
-        emit$5("FileListMove", moveAssetsState);
-      }
-    }
-  };
-  return { showConfirmModal, confirmModal };
 };
 /*!
  * Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com
@@ -25066,7 +25018,7 @@ var S$2 = {
   PRIMARY: "primary",
   SECONDARY: "secondary"
 }, P$1 = ["fa-classic", "fa-duotone", "fa-sharp", "fa-sharp-duotone"];
-var s$d = "classic", t$I = "duotone", r$1j = "sharp", o$1m = "sharp-duotone", L = [s$d, t$I, r$1j, o$1m];
+var s$d = "classic", t$J = "duotone", r$1j = "sharp", o$1m = "sharp-duotone", L = [s$d, t$J, r$1j, o$1m];
 var G$2 = {
   classic: {
     900: "fas",
@@ -25862,7 +25814,7 @@ function getCanonicalPrefix(styleOrPrefix) {
     family = s$d
   } = params;
   const style2 = PREFIX_TO_STYLE[family][styleOrPrefix];
-  if (family === t$I && !styleOrPrefix) {
+  if (family === t$J && !styleOrPrefix) {
     return "fad";
   }
   const prefix = STYLE_TO_PREFIX[family][styleOrPrefix] || STYLE_TO_PREFIX[family][style2];
@@ -25944,7 +25896,7 @@ function applyShimAndAlias(skipLookups, givenPrefix, canonical) {
   };
 }
 const newCanonicalFamilies = L.filter((familyId) => {
-  return familyId !== s$d || familyId !== t$I;
+  return familyId !== s$d || familyId !== t$J;
 });
 const newCanonicalStyles = Object.keys(ga).filter((key) => key !== s$d).map((key) => Object.keys(ga[key])).flat();
 function getDefaultCanonicalPrefix(prefixOptions) {
@@ -25956,7 +25908,7 @@ function getDefaultCanonicalPrefix(prefixOptions) {
     styles: styles2 = {},
     config: config$$1 = {}
   } = prefixOptions;
-  const isDuotoneFamily = family === t$I;
+  const isDuotoneFamily = family === t$J;
   const valuesHasDuotone = values.includes("fa-duotone") || values.includes("fad");
   const defaultFamilyIsDuotone = config$$1.familyDefault === "duotone";
   const canonicalPrefixIsDuotone = canonical.prefix === "fad" || canonical.prefix === "fa-duotone";
@@ -28210,7 +28162,7 @@ const _sfc_main$8 = /* @__PURE__ */ defineComponent({
     const { selectedDirectory: selectedDirectory2 } = useGlobals();
     const { canManageFolder } = usePermissions();
     const { translations: translations2 } = useLocalizations();
-    const t2 = translations2.value;
+    const t2 = translations2;
     const { on: on2, emit: emit2 } = useEventBus();
     const props = __props;
     let open = ref(false);
@@ -28466,7 +28418,7 @@ const _sfc_main$7 = /* @__PURE__ */ defineComponent({
   setup(__props) {
     const { on: on2 } = useEventBus();
     const { translations: translations2 } = useLocalizations();
-    const t2 = translations2.value;
+    const t2 = translations2;
     const files = ref([]);
     const expanded2 = ref(true);
     const pendingCount = computed(() => files.value.filter((f2) => !f2.errorMessage && !f2.success).length);
@@ -28710,7 +28662,7 @@ const _sfc_main$5 = /* @__PURE__ */ defineComponent({
   setup(__props) {
     const { emit: emit2 } = useEventBus();
     const { translations: translations2 } = useLocalizations();
-    const t2 = translations2.value;
+    const t2 = translations2;
     const props = __props;
     const pageSize = ref(10);
     const current = ref(0);
@@ -34845,8 +34797,8 @@ es_ES.strings = {
 const { on: on$1, emit: emit$4 } = useEventBus();
 const { selectedDirectory: selectedDirectory$5, fileItems: fileItems$1, uploadFilesUrl, assetsStore: assetsStore$4, setAssetsStore: setAssetsStore$1 } = useGlobals();
 const permissionsService = usePermissions();
-const { translations: translations$2 } = useLocalizations();
-const t$H = translations$2.value;
+const { translations: translations$3 } = useLocalizations();
+const t$I = translations$3;
 const culture = (_a = document.querySelector("html")) == null ? void 0 : _a.getAttribute("lang");
 let uppyLocale = en_US;
 if (culture == "fr") {
@@ -34878,7 +34830,7 @@ const useFileUpload = (model) => {
     uppy.on("restriction-failed", (_file, error) => {
       notify(
         new NotificationMessage({
-          summary: t$H.ValidationError,
+          summary: t$I.ValidationError,
           detail: error.message,
           severity: SeverityLevel.Warn
         })
@@ -34919,7 +34871,7 @@ const useFileUpload = (model) => {
           const jsonResponse = JSON.parse(xhr.response);
           notify(
             new NotificationMessage({
-              summary: jsonResponse.title ?? t$H.Error,
+              summary: jsonResponse.title ?? t$I.Error,
               detail: jsonResponse.detail ?? xhr.response,
               severity: SeverityLevel.Warn
             })
@@ -34941,8 +34893,8 @@ const useFileUpload = (model) => {
       if (!permissionsService.canManage.value) {
         notify(
           new NotificationMessage({
-            summary: t$H.Unauthorized,
-            detail: t$H.UnauthorizedFolder,
+            summary: t$I.Unauthorized,
+            detail: t$I.UnauthorizedFolder,
             severity: SeverityLevel.Warn
           })
         );
@@ -34959,8 +34911,8 @@ const useFileUpload = (model) => {
       if (hasExisting) {
         notify(
           new NotificationMessage({
-            summary: t$H.ValidationError,
-            detail: t$H.ValidationErrorUploadFileExist ?? "A file with this name already exists.",
+            summary: t$I.ValidationError,
+            detail: t$I.ValidationErrorUploadFileExist ?? "A file with this name already exists.",
             severity: SeverityLevel.Warn
           })
         );
@@ -35004,7 +34956,7 @@ const useFileUpload = (model) => {
       if (file) {
         emit$4("UploadError", {
           name: file.name ?? "",
-          errorMessage: (error == null ? void 0 : error.message) ?? t$H.Error
+          errorMessage: (error == null ? void 0 : error.message) ?? t$I.Error
         });
       }
     });
@@ -35019,7 +34971,7 @@ const useFileUpload = (model) => {
         result.failed.forEach((file) => {
           emit$4("UploadError", {
             name: file.name,
-            errorMessage: file.error ?? t$H.Error
+            errorMessage: file.error ?? t$I.Error
           });
         });
       }
@@ -35027,13 +34979,13 @@ const useFileUpload = (model) => {
   });
 };
 const { assetsStore: assetsStore$3, selectedDirectory: selectedDirectory$4, hierarchicalDirectories, setHierarchicalData, setRootDirectory } = useGlobals();
-const { translations: translations$1 } = useLocalizations();
-const t$G = translations$1.value;
+const { translations: translations$2 } = useLocalizations();
+const t$H = translations$2;
 function useHierarchicalTreeBuilder() {
   const convertToHierarchyTreeNode = (fileLibraryItems) => {
     const rootNode = {
       key: "",
-      label: t$G.FileLibrary ?? "Media Library",
+      label: t$H.FileLibrary ?? "Media Library",
       data: {},
       icon: "fa-solid fa-folder",
       selectable: selectedDirectory$4.value.directoryPath != "",
@@ -35071,7 +35023,7 @@ function useHierarchicalTreeBuilder() {
     return [result];
   };
   const convertToHierarchy = (fileLibraryItems) => {
-    const rootNode = { name: t$G.FileLibrary ?? "Media Library", directoryPath: "", filePath: "", isDirectory: true, selected: true, children: [] };
+    const rootNode = { name: t$H.FileLibrary ?? "Media Library", directoryPath: "", filePath: "", isDirectory: true, selected: true, children: [] };
     setRootDirectory({ ...rootNode });
     for (const fileLibraryItem of fileLibraryItems) {
       const folderPath = fileLibraryItem.directoryPath.replace(/^\//, "");
@@ -35108,7 +35060,7 @@ function useHierarchicalTreeBuilder() {
   const convertToFileHierarchyTreeNode = (fileLibraryItems) => {
     const rootNode = {
       key: "/",
-      label: t$G.FileLibrary ?? "Media Library",
+      label: t$H.FileLibrary ?? "Media Library",
       data: { isDirectory: true },
       icon: "fa-solid fa-folder",
       selectable: false,
@@ -38885,7 +38837,6 @@ function toFileLibraryItem(dto) {
 }
 class FileDataService {
   constructor(baseUrl = "") {
-    __publicField(this, "client");
     this.client = new MediaGen2ApiClient(baseUrl);
   }
   async getFileItem(path) {
@@ -38931,9 +38882,9 @@ class FileDataService {
 }
 const { canManage } = usePermissions();
 const { setHierarchicalDirectories } = useHierarchicalTreeBuilder();
-const { assetsStore: assetsStore$2, fileItems, selectedDirectory: selectedDirectory$2, rootDirectory: rootDirectory$2, selectedFiles: selectedFiles$1, setAssetsStore, setSelectedFiles: setSelectedFiles$1, setSelectedAll: setSelectedAll$1 } = useGlobals();
-const { translations } = useLocalizations();
-const t$F = translations.value;
+const { assetsStore: assetsStore$2, fileItems, selectedDirectory: selectedDirectory$2, rootDirectory: rootDirectory$2, selectedFiles: selectedFiles$2, setAssetsStore, setSelectedFiles: setSelectedFiles$2, setSelectedAll: setSelectedAll$2 } = useGlobals();
+const { translations: translations$1 } = useLocalizations();
+const t$G = translations$1;
 const { emit: emit$3 } = useEventBus();
 function useFileLibraryManager() {
   const fileDataService = new FileDataService();
@@ -38981,13 +38932,13 @@ function useFileLibraryManager() {
             elem.files[i2].filePath = targetFolder != "" ? elem.targetFolder + "/" + elem.files[i2].name : elem.files[i2].name;
           }
           emit$3("FileListMoved", elem);
-          notify(new NotificationMessage({ summary: t$F.Success ?? "Success", detail: t$F.FilesMoved ?? "File(s) moved successfully.", severity: SeverityLevel.Success }));
+          notify(new NotificationMessage({ summary: t$G.Success ?? "Success", detail: t$G.FilesMoved ?? "File(s) moved successfully.", severity: SeverityLevel.Success }));
         } catch (error) {
           notify(error);
         }
       }
     } else {
-      notify(new NotificationMessage({ summary: t$F.Unauthorized, detail: t$F.UnauthorizedFile, severity: SeverityLevel.Warn }));
+      notify(new NotificationMessage({ summary: t$G.Unauthorized, detail: t$G.UnauthorizedFile, severity: SeverityLevel.Warn }));
     }
   };
   const fileCopy2 = async (elem) => {
@@ -38998,13 +38949,13 @@ function useFileLibraryManager() {
           assetsStore$2.value.push(copiedFile);
           setAssetsStore(assetsStore$2.value);
           emit$3("FileCopied", copiedFile);
-          notify(new NotificationMessage({ summary: t$F.Success ?? "Success", detail: t$F.FileCopied ?? "File copied successfully.", severity: SeverityLevel.Success }));
+          notify(new NotificationMessage({ summary: t$G.Success ?? "Success", detail: t$G.FileCopied ?? "File copied successfully.", severity: SeverityLevel.Success }));
         } catch (error) {
           notify(error);
         }
       }
     } else {
-      notify(new NotificationMessage({ summary: t$F.Unauthorized, detail: t$F.UnauthorizedFile, severity: SeverityLevel.Warn }));
+      notify(new NotificationMessage({ summary: t$G.Unauthorized, detail: t$G.UnauthorizedFile, severity: SeverityLevel.Warn }));
     }
   };
   const createDirectory2 = async (directory) => {
@@ -39023,7 +38974,7 @@ function useFileLibraryManager() {
         notify(error);
       }
     } else {
-      notify(new NotificationMessage({ summary: t$F.Unauthorized, detail: t$F.UnauthorizedFolder, severity: SeverityLevel.Warn }));
+      notify(new NotificationMessage({ summary: t$G.Unauthorized, detail: t$G.UnauthorizedFolder, severity: SeverityLevel.Warn }));
     }
   };
   const renameFile2 = async (element) => {
@@ -39039,11 +38990,11 @@ function useFileLibraryManager() {
         notify(error);
       }
     } else {
-      notify(new NotificationMessage({ summary: t$F.Unauthorized, detail: t$F.UnauthorizedFiles, severity: SeverityLevel.Warn }));
+      notify(new NotificationMessage({ summary: t$G.Unauthorized, detail: t$G.UnauthorizedFiles, severity: SeverityLevel.Warn }));
     }
   };
   const deleteFileList2 = async () => {
-    const files = selectedFiles$1.value;
+    const files = selectedFiles$2.value;
     if (canManage.value) {
       if (files.length < 1) {
         return;
@@ -39054,21 +39005,21 @@ function useFileLibraryManager() {
       }
       try {
         await fileDataService.deleteMediaList(imagePaths);
-        for (let i2 = 0; i2 < selectedFiles$1.value.length; i2++) {
-          const index2 = assetsStore$2.value && assetsStore$2.value.indexOf(selectedFiles$1.value[i2]);
+        for (let i2 = 0; i2 < selectedFiles$2.value.length; i2++) {
+          const index2 = assetsStore$2.value && assetsStore$2.value.indexOf(selectedFiles$2.value[i2]);
           if (index2 > -1) {
             assetsStore$2.value.splice(index2, 1);
             setAssetsStore(assetsStore$2.value);
           }
-          emit$3("FileDeleted", selectedFiles$1.value[i2]);
+          emit$3("FileDeleted", selectedFiles$2.value[i2]);
         }
-        setSelectedFiles$1([]);
-        setSelectedAll$1(false);
+        setSelectedFiles$2([]);
+        setSelectedAll$2(false);
       } catch (error) {
         notify(error);
       }
     } else {
-      notify(new NotificationMessage({ summary: t$F.Unauthorized, detail: t$F.UnauthorizedFiles, severity: SeverityLevel.Warn }));
+      notify(new NotificationMessage({ summary: t$G.Unauthorized, detail: t$G.UnauthorizedFiles, severity: SeverityLevel.Warn }));
     }
   };
   const deleteFileItem2 = async (file) => {
@@ -39087,18 +39038,18 @@ function useFileLibraryManager() {
             emit$3("FileDeleted", file);
           }
         }
-        setSelectedFiles$1([]);
-        setSelectedAll$1(false);
+        setSelectedFiles$2([]);
+        setSelectedAll$2(false);
       } catch (error) {
         notify(error);
       }
     } else {
-      notify(new NotificationMessage({ summary: t$F.Unauthorized, detail: t$F.UnauthorizedFile, severity: SeverityLevel.Warn }));
+      notify(new NotificationMessage({ summary: t$G.Unauthorized, detail: t$G.UnauthorizedFile, severity: SeverityLevel.Warn }));
     }
   };
   const deleteDirectory2 = async (directory) => {
     if (directory.directoryPath == rootDirectory$2.value.directoryPath) {
-      notify(new NotificationMessage({ summary: t$F.ErrorDeleteRootFolder, detail: t$F.ErrorDeleteRootFolder, severity: SeverityLevel.Warn }));
+      notify(new NotificationMessage({ summary: t$G.ErrorDeleteRootFolder, detail: t$G.ErrorDeleteRootFolder, severity: SeverityLevel.Warn }));
       return;
     }
     if (canManage.value) {
@@ -39120,7 +39071,7 @@ function useFileLibraryManager() {
         notify(error);
       }
     } else {
-      notify(new NotificationMessage({ summary: t$F.Unauthorized, detail: t$F.UnauthorizedFolder, severity: SeverityLevel.Warn }));
+      notify(new NotificationMessage({ summary: t$G.Unauthorized, detail: t$G.UnauthorizedFolder, severity: SeverityLevel.Warn }));
     }
   };
   const getFileLibraryStoreAsync2 = async () => {
@@ -39132,7 +39083,7 @@ function useFileLibraryManager() {
         setHierarchicalDirectories(response);
         result = response;
       } else {
-        notify(new NotificationMessage({ summary: t$F.ErrorGetFolders, detail: t$F.ErrorGetFolders, severity: SeverityLevel.Error }));
+        notify(new NotificationMessage({ summary: t$G.ErrorGetFolders, detail: t$G.ErrorGetFolders, severity: SeverityLevel.Error }));
       }
     } catch (error) {
       notify(error);
@@ -39228,7 +39179,7 @@ const _sfc_main$3 = /* @__PURE__ */ defineComponent({
   emits: ["confirm", "closed"],
   setup(__props, { emit: __emit }) {
     const { translations: translations2 } = useLocalizations();
-    const t2 = translations2.value;
+    const t2 = translations2;
     const { getDirectoryTreeNode } = useHierarchicalTreeBuilder();
     const props = __props;
     const fileActionEntry = ref({ file: props.fileItem, inputValue: props.fileItem.name });
@@ -39359,7 +39310,7 @@ const useFileActionModal = () => {
   const showFileActionModal = (modalFileEvent) => {
     if (modalFileEvent.files.length > 0) {
       const { translations: translations2 } = useLocalizations();
-      const t2 = translations2.value;
+      const t2 = translations2;
       const { open, destroy } = Go({
         defaultModelValue: false,
         keepAlive: false,
@@ -39408,6 +39359,54 @@ const useFileActionModal = () => {
   };
   return { showFileActionModal };
 };
+const { translations } = useLocalizations();
+const t$F = translations;
+const { setIsDownloading, selectedFiles: selectedFiles$1, setSelectedFiles: setSelectedFiles$1, setSelectedAll: setSelectedAll$1 } = useGlobals();
+function downloadFile(file) {
+  if (file && file.url) {
+    const xhr = new XMLHttpRequest();
+    xhr.open("HEAD", file.url, false);
+    xhr.onload = function() {
+      if (xhr.status === 200) {
+        const aElement = document.createElement("a");
+        if (aElement) {
+          aElement.setAttribute("download", file.name);
+          aElement.href = file.url ?? "";
+          aElement.setAttribute("target", "_blank");
+          aElement.click();
+        }
+      } else {
+        notify(new NotificationMessage({ summary: t$F.Error, detail: t$F.FailedDownload, severity: SeverityLevel.Error }));
+      }
+    };
+    xhr.onerror = function() {
+      notify(new NotificationMessage({ summary: t$F.Error, detail: t$F.FailedDownload, severity: SeverityLevel.Error }));
+    };
+    xhr.send();
+  }
+}
+const downloadSelectedFiles = async () => {
+  setIsDownloading(true);
+  const promises = selectedFiles$1.value.map((file) => {
+    if (file.url) {
+      return fetch(file.url).then((response) => response.blob()).then((blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a2 = document.createElement("a");
+        a2.href = url;
+        a2.download = file.name || "download";
+        document.body.appendChild(a2);
+        a2.click();
+        a2.remove();
+        window.URL.revokeObjectURL(url);
+      });
+    }
+  });
+  await Promise.all(promises).then(() => {
+    setIsDownloading(false);
+    setSelectedFiles$1([]);
+    setSelectedAll$1(false);
+  });
+};
 const _sfc_main$2 = /* @__PURE__ */ defineComponent({
   __name: "FileMenu",
   props: {
@@ -39425,7 +39424,7 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
     const props = __props;
     const { emit: emit2 } = useEventBus();
     const { translations: translations2 } = useLocalizations();
-    const t2 = translations2.value;
+    const t2 = translations2;
     const { showConfirmModal } = useConfirmModal();
     const { showFileActionModal } = useFileActionModal();
     const showModal = ref(props.showModalProp);
@@ -39561,7 +39560,7 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
   setup(__props) {
     const { sortAsc: sortAsc2, sortBy: sortBy2 } = useGlobals();
     const { translations: translations2 } = useLocalizations();
-    const t2 = translations2.value;
+    const t2 = translations2;
     const { emit: emit2 } = useEventBus();
     const props = __props;
     const selectAll = () => {
@@ -42933,7 +42932,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
     setIsDownloading2(false);
     const { translations: translations2, setTranslations } = useLocalizations();
     setTranslations(typeof props.translations === "string" ? JSON.parse(props.translations) : props.translations);
-    const t2 = translations2.value;
+    const t2 = translations2;
     const { on: on2, emit: emit2 } = useEventBus();
     setIsLoading(true);
     const { getFileLibraryStoreAsync: getFileLibraryStoreAsync2 } = useFileLibraryManager();

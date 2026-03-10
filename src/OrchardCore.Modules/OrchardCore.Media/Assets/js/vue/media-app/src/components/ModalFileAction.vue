@@ -56,16 +56,16 @@
 <script setup lang="ts">
 import { ref, PropType } from 'vue'
 import { VueFinalModal } from 'vue-final-modal'
-import { FileAction, IConfirmFileActionViewModel, IConfirmFileEntry, IRenameFileLibraryItemDto, TreeNode } from '../interfaces/interfaces';
-import { getFileExtension } from '../services/Utils'
+import { FileAction, IConfirmFileActionViewModel, IConfirmFileEntry, IRenameFileLibraryItemDto, TreeNode } from '@bloom/media/interfaces';
+import { getFileExtension } from '@bloom/media/utils'
 //import dbg from 'debug';
 import { useHierarchicalTreeBuilder } from '../services/HierarchicalTreeBuilder';
-import { useLocalizations } from '../services/Localizations';
-import { isValidFileExtension } from '../services/FileExtensionsService';
+import { useLocalizations } from '@bloom/helpers/localizations';
+import { isValidFileExtension } from '@bloom/media/file-extensions';
 
 //const debug = dbg("aptix:file-app");
 const { translations } = useLocalizations();
-const t = translations.value
+const t = translations
 const { getDirectoryTreeNode } = useHierarchicalTreeBuilder();
 
 const props = defineProps({

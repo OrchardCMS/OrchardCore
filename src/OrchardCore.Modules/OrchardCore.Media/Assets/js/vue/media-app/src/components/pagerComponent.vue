@@ -44,13 +44,13 @@
  * As the user interacts with the pager, it raises events with the items in the current page.
  * It's the parent's responsibility to listen for these events and display the received items
  */
-import { IFileLibraryItemDto } from '../interfaces/interfaces';
+import { IFileLibraryItemDto } from '@bloom/media/interfaces';
 import { computed, ref, watch } from 'vue'
 import { useEventBus } from '../services/UseEventBus'
-import { useLocalizations } from '../services/Localizations';
+import { useLocalizations } from '@bloom/helpers/localizations';
 const { emit } = useEventBus();
 const { translations } = useLocalizations();
-const t = translations.value
+const t = translations
 
 const props = defineProps({
   sourceItems: {

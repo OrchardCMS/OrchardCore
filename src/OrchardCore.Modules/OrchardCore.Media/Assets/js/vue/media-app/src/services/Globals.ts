@@ -1,5 +1,5 @@
 import { computed, ref } from "vue";
-import { IFileLibraryItemDto, IHFileLibraryItemDto } from "../interfaces/interfaces";
+import { IFileLibraryItemDto, IHFileLibraryItemDto } from "@bloom/media/interfaces";
 
 const assetsStore = ref([] as IFileLibraryItemDto[]);
 const selectedDirectory = ref({} as IFileLibraryItemDto);

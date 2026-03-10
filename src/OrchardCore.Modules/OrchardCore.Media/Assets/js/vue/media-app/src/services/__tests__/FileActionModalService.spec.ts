@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useFileActionModal } from "../FileActionModalService";
 import { useModal } from "vue-final-modal";
-import { FileAction, IConfirmFileActionViewModel, IModalFileEvent } from "../../interfaces/interfaces";
-import { useLocalizations } from "../Localizations";
+import { FileAction, IConfirmFileActionViewModel, IModalFileEvent } from "@bloom/media/interfaces";
+import { useLocalizations } from "@bloom/helpers/localizations";
 import { translationsData } from "../../__tests__/mockdata";
 import { useEventBus } from "../UseEventBus";
 

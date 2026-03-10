@@ -50,7 +50,7 @@ import { PropType, nextTick, ref, computed, onMounted } from 'vue'
 import dbg from 'debug';
 import { useVfm } from 'vue-final-modal'
 import ModalFolderAction from './ModalFolderAction.vue'
-import { IFileLibraryItemDto } from "../interfaces/interfaces";
+import { IFileLibraryItemDto } from "@bloom/media/interfaces";
 import { NotificationMessage, notify } from "@bloom/services/notifications/notifier";
 import { SeverityLevel } from "@bloom/services/notifications/interfaces";
 import Folder from "./FolderComponent.vue";
@@ -60,17 +60,17 @@ import {
   IHFileLibraryItemDto,
   FileAction,
   IModalFileEvent
-} from '../interfaces/interfaces';
+} from '@bloom/media/interfaces';
 import {
   BASE_DIR
-} from "../interfaces/contants"
+} from "@bloom/media/constants"
 // @ts-ignore
 import _ from "lodash";
 import { useEventBus } from '../services/UseEventBus'
 import { useConfirmModal } from '../services/ConfirmModalService';
 import { useGlobals } from '../services/Globals';
 import { FontAwesomeIcon as FaIcon } from '@fortawesome/vue-fontawesome';
-import { useLocalizations } from '../services/Localizations';
+import { useLocalizations } from '@bloom/helpers/localizations';
 import { usePermissions } from '../services/Permissions';
 
 const debug = dbg("aptix:file-app");
@@ -81,7 +81,7 @@ const { selectedDirectory } = useGlobals();
 const { canManageFolder } = usePermissions();
 
 const { translations } = useLocalizations();
-const t = translations.value
+const t = translations
 const { on, emit } = useEventBus();
 
 const props = defineProps({

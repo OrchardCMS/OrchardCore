@@ -1,12 +1,12 @@
-import { IHFileLibraryItemDto, TreeNode, IFileLibraryItemDto } from "../interfaces/interfaces";
-import { BASE_DIR } from "../interfaces/contants";
+import { IHFileLibraryItemDto, TreeNode, IFileLibraryItemDto } from "@bloom/media/interfaces";
+import { BASE_DIR } from "@bloom/media/constants";
 import { useGlobals } from "./Globals";
-import { useLocalizations } from "./Localizations";
-import { getFileExtension } from "./Utils";
+import { useLocalizations } from "@bloom/helpers/localizations";
+import { getFileExtension } from "@bloom/media/utils";
 
 const { assetsStore, selectedDirectory, hierarchicalDirectories, rootDirectory, setHierarchicalData, setRootDirectory } = useGlobals();
 const { translations } = useLocalizations();
-const t = translations.value;
+const t = translations;
 
 export function useHierarchicalTreeBuilder() {
   const convertToHierarchyTreeNode = (fileLibraryItems: IFileLibraryItemDto[]) => {

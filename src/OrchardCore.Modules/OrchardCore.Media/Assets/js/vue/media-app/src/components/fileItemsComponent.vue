@@ -73,22 +73,22 @@
 
 <script setup lang="ts">
 import { PropType } from 'vue'
-import { IFileLibraryItemDto } from "../interfaces/interfaces";
+import { IFileLibraryItemDto } from "@bloom/media/interfaces";
 import SortIndicator from './SortIndicatorComponent.vue';
-import { getFileExtension } from '../services/Utils'
+import { getFileExtension } from '@bloom/media/utils'
 import FileMenu from './FileMenu.vue';
-import { IRenameFileLibraryItemDto } from '../interfaces/interfaces';
-import { humanFileSize } from '../services/Utils'
+import { IRenameFileLibraryItemDto } from '@bloom/media/interfaces';
+import { humanFileSize } from '@bloom/media/utils'
 import { useEventBus } from '../services/UseEventBus'
 //import dbg from "debug";
 import { useGlobals } from '../services/Globals';
-import { printDateTime } from '../services/Utils'
-import { useLocalizations } from '../services/Localizations';
+import { printDateTime } from '@bloom/media/utils'
+import { useLocalizations } from '@bloom/helpers/localizations';
 //const debug = dbg("aptix:file-app");
 
 const { sortAsc, sortBy, selectedDirectory } = useGlobals();
 const { translations } = useLocalizations();
-const t = translations.value;
+const t = translations;
 const { emit } = useEventBus();
 
 const props = defineProps({

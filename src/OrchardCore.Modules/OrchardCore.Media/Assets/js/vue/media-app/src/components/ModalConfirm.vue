@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { PropType, ref } from 'vue'
 import { VueFinalModal } from 'vue-final-modal'
-import { FileAction, IConfirmViewModel } from '../interfaces/interfaces';
-import { IFileLibraryItemDto } from '../interfaces/interfaces';
-import { getFileExtension } from '../services/Utils';
-import { useLocalizations } from '../services/Localizations';
+import { FileAction, IConfirmViewModel } from '@bloom/media/interfaces';
+import { IFileLibraryItemDto } from '@bloom/media/interfaces';
+import { getFileExtension } from '@bloom/media/utils';
+import { useLocalizations } from '@bloom/helpers/localizations';
 
 const { translations } = useLocalizations();
-const t = translations.value
+const t = translations
 
 const props = defineProps({
   title: String,

@@ -35,5 +35,11 @@
     "name": "media-app",
     "source": "Assets/js/vue/media-app",
     "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "vite",
+    "name": "media-field",
+    "source": "Assets/js/vue/media-field",
+    "tags": ["admin", "dashboard", "js"]
   }
 ]

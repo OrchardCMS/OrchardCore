@@ -99,6 +99,33 @@ public class MediaJSLocalizer(IStringLocalizer<MediaJSLocalizer> S) : IJSLocaliz
             };
         }
 
+        if (groups.Contains("media-field", StringComparer.OrdinalIgnoreCase))
+        {
+            return new Dictionary<string, string>
+            {
+                { "noImages", S["No Files"].Value },
+                { "addMedia", S["Add media"].Value },
+                { "removeMedia", S["Remove"].Value },
+                { "mediaText", S["Media text"].Value },
+                { "editMediaText", S["Enter media text"].Value },
+                { "anchor", S["Anchor"].Value },
+                { "editAnchor", S["Select an anchor"].Value },
+                { "resetAnchor", S["Reset Anchor"].Value },
+                { "ok", S["OK"].Value },
+                { "cancel", S["Cancel"].Value },
+                { "mediaNotFound", S["Not Found"].Value },
+                { "mediaTemporarilyUnavailable", S["Temporarily unavailable"].Value },
+                { "smallThumbsTitle", S["Small Thumbs"].Value },
+                { "largeThumbsTitle", S["Large Thumbs"].Value },
+                { "dropFiles", S["Drop files here"].Value },
+                { "uploads", S["Uploads"].Value },
+                { "errors", S["Errors"].Value },
+                { "clearErrors", S["Clear Errors"].Value },
+                { "selectMedia", S["Select Media"].Value },
+                { "loadingMediaBrowser", S["Loading media browser..."].Value },
+            };
+        }
+
         return null;
     }
 }

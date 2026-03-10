@@ -2,7 +2,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 import { useGlobals } from "../Globals";
 import { assetsStoreData } from "../../__tests__/mockdata";
 import { useHierarchicalTreeBuilder } from "../HierarchicalTreeBuilder";
-import { IFileLibraryItemDto } from "../../interfaces/interfaces";
+import { IFileLibraryItemDto } from "@bloom/media/interfaces";
 
 const { hierarchicalDirectories, setAssetsStore, setSelectedDirectory, assetsStore } = useGlobals();
 const { getDirectoryTreeNode, setHierarchicalDirectories, getFileTreeNode } = useHierarchicalTreeBuilder();

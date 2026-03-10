@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { useLocalStorage } from "../LocalStorage";
 import { useGlobals } from "../Globals";
-import { LS_ID } from "../../interfaces/contants";
+import { LS_ID } from "@bloom/media/constants";
 
 const { setRootDirectory, selectedDirectory, setSelectedDirectory } = useGlobals();
 

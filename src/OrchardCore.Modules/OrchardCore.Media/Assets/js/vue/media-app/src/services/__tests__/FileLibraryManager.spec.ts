@@ -2,10 +2,10 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useFileLibraryManager } from "../FileLibraryManager";
 import { useGlobals } from "../Globals";
 import { assetsStoreData } from "../../__tests__/mockdata";
-import { IFileLibraryItemDto, IRenameFileLibraryItemDto } from "../../interfaces/interfaces";
+import { IFileLibraryItemDto, IRenameFileLibraryItemDto } from "@bloom/media/interfaces";
 
 // Mock the FileDataService
-vi.mock("../data/IFileDataService", () => {
+vi.mock("@bloom/media/api/file-data-service", () => {
   return {
     FileDataService: vi.fn().mockImplementation(() => ({
       getFileItem: vi.fn().mockResolvedValue({

@@ -40,18 +40,18 @@
 <script setup lang="ts">
 import { ref, PropType } from 'vue'
 import { VueFinalModal } from 'vue-final-modal'
-import { IFileLibraryItemDto } from "../interfaces/interfaces";
-import { IConfirmFolderActionViewModel, FolderAction } from '../interfaces/interfaces';
+import { IFileLibraryItemDto } from "@bloom/media/interfaces";
+import { IConfirmFolderActionViewModel, FolderAction } from '@bloom/media/interfaces';
 
 type IFileActionElem = { id: FolderAction; displayName: string; allowedDirectory: string };
 import { useEventBus } from '../services/UseEventBus'
 //import dbg from 'debug';
-import { useLocalizations } from '../services/Localizations';
+import { useLocalizations } from '@bloom/helpers/localizations';
 
 //const debug = dbg("aptix:file-app");
 
 const { translations } = useLocalizations();
-const t = translations.value
+const t = translations
 const { on } = useEventBus();
 
 const props = defineProps({

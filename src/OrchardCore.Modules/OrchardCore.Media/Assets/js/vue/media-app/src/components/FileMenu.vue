@@ -10,13 +10,13 @@
 
 <script setup lang="ts">
 import { computed, PropType, ref } from "vue";
-import { FileAction, IModalFileEvent, IRenameFileLibraryItemDto, IFileLibraryItemDto } from "../interfaces/interfaces";
+import { FileAction, IModalFileEvent, IRenameFileLibraryItemDto, IFileLibraryItemDto } from "@bloom/media/interfaces";
 import { v4 as uuidv4 } from 'uuid';
 import { useConfirmModal } from "../services/ConfirmModalService";
 import { useFileActionModal } from "../services/FileActionModalService";
 import { useGlobals } from "../services/Globals";
 import { useEventBus } from "../services/UseEventBus";
-import { useLocalizations } from "../services/Localizations"
+import { useLocalizations } from "@bloom/helpers/localizations"
 import { downloadFile } from "../services/Utils";
 import { ModalsContainer } from 'vue-final-modal'
 import dbg from "debug";
@@ -36,7 +36,7 @@ const props = defineProps({
 
 const { emit } = useEventBus();
 const { translations } = useLocalizations();
-const t = translations.value
+const t = translations
 const { showConfirmModal } = useConfirmModal();
 const { showFileActionModal } = useFileActionModal();
 

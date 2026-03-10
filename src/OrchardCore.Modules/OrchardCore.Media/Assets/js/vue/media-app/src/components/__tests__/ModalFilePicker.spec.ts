@@ -1,10 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { mount, VueWrapper } from "@vue/test-utils";
 import ModalFilePicker from "../ModalFilePicker.vue";
-import { TreeNode } from "../../interfaces/interfaces";
+import { TreeNode } from "@bloom/media/interfaces";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { createVfm } from "vue-final-modal";
-import { useLocalizations } from "../../services/Localizations";
+import { useLocalizations } from "@bloom/helpers/localizations";
 
 const translationsData = {
   Ok: "Ok",
@@ -16,7 +16,7 @@ const translationsData = {
 
 const { setTranslations, translations } = useLocalizations();
 setTranslations(translationsData);
-const t = translations.value;
+const t = translations;
 
 describe("ModalFilePicker", () => {
   let wrapper: VueWrapper | null = null;

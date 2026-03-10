@@ -1,10 +1,10 @@
-import { IFileLibraryItemDto } from "../interfaces/interfaces";
+import { IFileLibraryItemDto } from "@bloom/media/interfaces";
 import {
   IFileCopyDto,
   IFileListMoveDto,
   IHFileLibraryItemDto,
   IRenameFileLibraryItemDto,
-} from "../interfaces/interfaces";
+} from "@bloom/media/interfaces";
 import { useFileLibraryManager } from "./FileLibraryManager";
 import { useEventBus } from "./UseEventBus";
 import { useGlobals } from "./Globals";

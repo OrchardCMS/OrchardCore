@@ -1,4 +1,4 @@
-import { IFileLibraryItemDto } from "../../interfaces/interfaces";
+import { IFileLibraryItemDto } from "../interfaces";
 import { MediaGen2ApiClient, FileStoreEntryDto, MoveMedias } from "@bloom/services/OpenApiClient";
 
 export interface IFileDataService {

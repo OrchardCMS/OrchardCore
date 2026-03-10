@@ -136,8 +136,7 @@ import folder from "./components/FolderComponent.vue";
 import UploadToast from "./components/UploadToast.vue";
 import NotificationToast from "./components/NotificationToast.vue";
 import pager from "./components/PagerComponent.vue";
-import { IFileLibraryItemDto } from "./interfaces/interfaces";
-import { FileAction, IModalFileEvent } from "./interfaces/interfaces";
+import { IFileLibraryItemDto, FileAction, IModalFileEvent } from "@bloom/media/interfaces";
 import { ModalsContainer } from 'vue-final-modal';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -153,7 +152,7 @@ import { useEventBusService } from "./services/EventBusService";
 import { useSignalR } from "./services/SignalR";
 import { useEventBus } from "./services/UseEventBus";
 import { useRouterService } from "./services/RouterService";
-import { useLocalizations } from "./services/Localizations";
+import { useLocalizations } from "@bloom/helpers/localizations";
 import { downloadSelectedFiles, getFileExtension } from "./services/Utils";
 import FileMenu from "./components/FileMenu.vue";
 
@@ -205,7 +204,7 @@ setIsDownloading(false);
 
 const { translations, setTranslations } = useLocalizations();
 setTranslations(typeof props.translations === "string" ? JSON.parse(props.translations) : props.translations);
-const t = translations.value;
+const t = translations;
 
 const { on, emit } = useEventBus();
 

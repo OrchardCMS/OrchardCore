@@ -47,12 +47,12 @@
 <script setup lang="ts">
 import { ref, PropType } from 'vue'
 import { VueFinalModal } from 'vue-final-modal'
-import { IFileLibraryItemDto } from '../interfaces/interfaces';
-import { getFileExtension } from '../services/Utils'
-import { useLocalizations } from '../services/Localizations';
+import { IFileLibraryItemDto } from '@bloom/media/interfaces';
+import { getFileExtension } from '@bloom/media/utils'
+import { useLocalizations } from '@bloom/helpers/localizations';
 
 const { translations } = useLocalizations();
-const t = translations.value
+const t = translations
 
 interface IFileProcessEntry {
   file: IFileLibraryItemDto;

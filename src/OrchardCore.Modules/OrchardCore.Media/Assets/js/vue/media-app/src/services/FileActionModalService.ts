@@ -1,8 +1,8 @@
-import { FileAction, IConfirmFileActionViewModel, IModalFileEvent, IRenameFileLibraryItemDto } from "../interfaces/interfaces";
+import { FileAction, IConfirmFileActionViewModel, IModalFileEvent, IRenameFileLibraryItemDto } from "@bloom/media/interfaces";
 import { useEventBus } from "./UseEventBus";
 import { useModal } from "vue-final-modal";
 import ModalFileAction from "../components/ModalFileAction.vue";
-import { useLocalizations } from "./Localizations";
+import { useLocalizations } from "@bloom/helpers/localizations";
 
 const { emit } = useEventBus();
 
@@ -10,7 +10,7 @@ export const useFileActionModal = () => {
   const showFileActionModal = (modalFileEvent: IModalFileEvent) => {
     if (modalFileEvent.files.length > 0) {
       const { translations } = useLocalizations();
-      const t = translations.value;
+      const t = translations;
       const { open, destroy } = useModal({
         defaultModelValue: false,
         keepAlive: false,

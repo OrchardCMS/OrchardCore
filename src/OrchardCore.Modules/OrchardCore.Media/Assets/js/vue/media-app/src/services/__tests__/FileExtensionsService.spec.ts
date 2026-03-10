@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { isValidFileExtension, getAllowedFileExtensions } from "../FileExtensionsService";
+import { isValidFileExtension, getAllowedFileExtensions } from "@bloom/media/file-extensions";
 
 describe("FileExtensionsService", () => {
   describe("isValidFileExtension", () => {

@@ -44,6 +44,17 @@ public sealed class ResourceManagementOptionsConfiguration : IConfigureOptions<R
             .DefineStyle("media")
             .SetUrl("~/OrchardCore.Media/Styles/media2.css")
             .SetVersion("2.0.0");
+
+        _manifest
+            .DefineScript("media-field")
+            .SetUrl("~/OrchardCore.Media/Scripts/media-field2.js")
+            .SetVersion("2.0.0")
+            .SetAttribute("type", "module");
+
+        _manifest
+            .DefineStyle("media-field")
+            .SetUrl("~/OrchardCore.Media/Styles/media-field2.css")
+            .SetVersion("2.0.0");
     }
 
     public void Configure(ResourceManagementOptions options)

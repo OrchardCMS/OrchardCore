@@ -5,14 +5,14 @@ import ModalFolderAction from "../ModalFolderAction.vue";
 import { useHierarchicalTreeBuilder } from "../../services/HierarchicalTreeBuilder";
 import { useGlobals } from "../../services/Globals";
 import { createVfm, ModalsContainer } from "vue-final-modal";
-import { FolderAction, IConfirmFolderActionViewModel, IFileLibraryItemDto, IRenameFileLibraryItemDto } from "../../interfaces/interfaces";
+import { FolderAction, IConfirmFolderActionViewModel, IFileLibraryItemDto, IRenameFileLibraryItemDto } from "@bloom/media/interfaces";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { useLocalizations } from "../../services/Localizations";
+import { useLocalizations } from "@bloom/helpers/localizations";
 import { useEventBus } from "../../services/UseEventBus";
 import { useEventBusService } from "../../services/EventBusService";
 
 // Mock FileDataService
-vi.mock("../../services/data/IFileDataService", () => ({
+vi.mock("@bloom/media/api/file-data-service", () => ({
   FileDataService: vi.fn().mockImplementation(() => ({
     getFileItem: vi.fn().mockResolvedValue({} as IFileLibraryItemDto),
     moveMedia: vi.fn().mockResolvedValue(undefined),

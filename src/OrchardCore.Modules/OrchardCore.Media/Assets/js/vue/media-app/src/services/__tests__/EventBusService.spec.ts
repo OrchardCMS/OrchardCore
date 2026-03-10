@@ -6,7 +6,7 @@ import {
   IHFileLibraryItemDto,
   IRenameFileLibraryItemDto,
   IFileLibraryItemDto,
-} from "../../interfaces/interfaces";
+} from "@bloom/media/interfaces";
 import { useEventBusService } from "../EventBusService";
 import { useEventBus } from "../../services/UseEventBus";
 import { useGlobals } from "../Globals";

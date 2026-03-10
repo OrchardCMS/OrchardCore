@@ -1,7 +1,7 @@
-import { LS_ID } from "../interfaces/contants";
+import { LS_ID } from "@bloom/media/constants";
 import { computed, ref, Ref, watch } from "vue";
 import { useGlobals } from "./Globals";
-import { ILocalStorageData } from "../interfaces/interfaces";
+import { ILocalStorageData } from "@bloom/media/interfaces";
 
 const { selectedDirectory, rootDirectory, setSelectedDirectory } = useGlobals();
 

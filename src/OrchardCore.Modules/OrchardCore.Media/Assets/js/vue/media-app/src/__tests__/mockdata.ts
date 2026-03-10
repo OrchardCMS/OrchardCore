@@ -1,4 +1,4 @@
-import { IFileLibraryItemDto } from "../interfaces/interfaces";
+import { IFileLibraryItemDto } from "@bloom/media/interfaces";
 
 const assetsStoreData: IFileLibraryItemDto[] = [
   {
