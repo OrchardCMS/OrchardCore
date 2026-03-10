@@ -51,7 +51,9 @@ class WorkflowEditor extends WorkflowCanvas {
                 }
                 
                 // Re-orient labels after connection
-                self.orientOutcomeLabels();
+                requestAnimationFrame(() => {
+                    self.orientOutcomeLabels();
+                });
             });
 
             // Listen for detached connections.
@@ -77,7 +79,9 @@ class WorkflowEditor extends WorkflowCanvas {
                 }
                 
                 // Re-orient labels after disconnection
-                self.orientOutcomeLabels();
+                requestAnimationFrame(() => {
+                    self.orientOutcomeLabels();
+                });
             });
 
             let activityElements = this.getActivityElements();
@@ -158,7 +162,9 @@ class WorkflowEditor extends WorkflowCanvas {
                             this.hasDragged = this.dragStart.left != args.e.screenX || this.dragStart.top != args.e.screenY;
                             this.updateCanvasHeight();
                             // Re-orient labels after dragging (connections may have repositioned)
-                            self.orientOutcomeLabels();
+                            requestAnimationFrame(() => {
+                                self.orientOutcomeLabels();
+                            });
                         },
                     });
 
@@ -168,38 +174,60 @@ class WorkflowEditor extends WorkflowCanvas {
                         anchor: "Continuous",
                         endpoint: ["Blank", { radius: 8 }],
                     });
-
-                    // Add source endpoints.
-                    for (let outcome of activity.outcomes) {
-                        const sourceEndpointOptions = this.getSourceEndpointOptions(activity, outcome);
-                        var endpoint = plumber.addEndpoint(
-                            activityElement,
-                            { connectorOverlays: [["Label", { label: outcome.displayName, cssClass: "connection-label" }]] },
-                            sourceEndpointOptions,
-                        );
-
-                        this.endpointMap.push({ endpoint, activityElement });
-
-                        // Add Title for each dot, only if outcome has a display name.
-                        if (endpoint.canvas && outcome.displayName) {
-                            endpoint.canvas.setAttribute("title", outcome.displayName);
-                        }
-                    }
                 });
 
-                // Connect activities.
-                this.updateConnections(plumber);
-
-                // Re-query the activity elements.
-                activityElements = this.getActivityElements();
-
-                // Make all activity elements visible.
+                // Make all activity elements visible
                 activityElements.show();
 
                 this.updateCanvasHeight();
             });
 
-            this.orientOutcomeLabels();
+            // Wait for layout to complete before adding endpoints and connections
+            setTimeout(() => {
+                plumber.batch(() => {
+                    activityElements.each((_, activityElement) => {
+                        const $activityElement = $(activityElement);
+                        const activityId = $activityElement.data("activity-id");
+                        const isDeleted = this.workflowType.removedActivities.indexOf(activityId) > -1;
+
+                        if (isDeleted) {
+                            return;
+                        }
+
+                        let activity = this.getActivity(activityId);
+
+                        // Add source endpoints after layout is complete
+                        for (let outcome of activity.outcomes) {
+                            const sourceEndpointOptions = this.getSourceEndpointOptions(activity, outcome);
+                            var endpoint = plumber.addEndpoint(
+                                activityElement,
+                                { connectorOverlays: [["Label", { label: outcome.displayName, cssClass: "connection-label" }]] },
+                                sourceEndpointOptions,
+                            );
+
+                            this.endpointMap.push({ endpoint, activityElement });
+
+                            // Add Title for each dot, only if outcome has a display name.
+                            if (endpoint.canvas && outcome.displayName) {
+                                endpoint.canvas.setAttribute("title", outcome.displayName);
+                            }
+                        }
+                    });
+
+                    // Connect activities after endpoints are created
+                    this.updateConnections(plumber);
+                });
+
+                // Orient labels after everything is set up
+                requestAnimationFrame(() => {
+                    this.orientOutcomeLabels();
+                });
+            }, 0);
+
+            // Use requestAnimationFrame to ensure DOM has been updated before orienting labels
+            requestAnimationFrame(() => {
+                this.orientOutcomeLabels();
+            });
 
             // Initialize popovers.
             activityElements.each((_, item) => {

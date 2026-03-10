@@ -39,7 +39,9 @@ class WorkflowViewer extends WorkflowCanvas {
                 }
                 
                 // Re-orient labels after connection
-                self.orientOutcomeLabels();
+                requestAnimationFrame(() => {
+                    self.orientOutcomeLabels();
+                });
             });
 
             let activityElements = this.getActivityElements();
@@ -76,28 +78,39 @@ class WorkflowViewer extends WorkflowCanvas {
                         anchor: 'Continuous',
                         endpoint: ['Blank', { radius: 8 }]
                     });
-
-                    // Add source endpoints.
-                    for (let outcome of activity.outcomes) {
-                        const sourceEndpointOptions = this.getSourceEndpointOptions(activity, outcome);
-                        const endpoint = plumber.addEndpoint(activityElement, { connectorOverlays: [['Label', { label: outcome.displayName, cssClass: 'connection-label' }]] }, sourceEndpointOptions);
-                        this.endpointMap.push({ endpoint, activityElement });
-                    }
                 });
 
-                // Connect activities.
-                this.updateConnections(plumber);
-
-                // Re-query the activity elements.
-                activityElements = this.getActivityElements();
-
-                // Make all activity elements visible.
+                // Make all activity elements visible
                 activityElements.show();
 
                 this.updateCanvasHeight();
             });
 
-            this.orientOutcomeLabels();
+            // Wait for layout to complete before adding endpoints and connections
+            setTimeout(() => {
+                plumber.batch(() => {
+                    activityElements.each((_, activityElement) => {
+                        const $activityElement = $(activityElement);
+                        const activityId = $activityElement.data('activity-id');
+                        const activity = this.getActivity(activityId);
+
+                        // Add source endpoints after layout is complete
+                        for (let outcome of activity.outcomes) {
+                            const sourceEndpointOptions = this.getSourceEndpointOptions(activity, outcome);
+                            const endpoint = plumber.addEndpoint(activityElement, { connectorOverlays: [['Label', { label: outcome.displayName, cssClass: 'connection-label' }]] }, sourceEndpointOptions);
+                            this.endpointMap.push({ endpoint, activityElement });
+                        }
+                    });
+
+                    // Connect activities after endpoints are created
+                    this.updateConnections(plumber);
+                });
+
+                // Orient labels after everything is set up
+                requestAnimationFrame(() => {
+                    this.orientOutcomeLabels();
+                });
+            }, 0);
 
             this.jsPlumbInstance = plumber;
         });
