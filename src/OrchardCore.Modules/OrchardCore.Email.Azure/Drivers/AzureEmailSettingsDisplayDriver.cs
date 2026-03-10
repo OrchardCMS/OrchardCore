@@ -108,18 +108,20 @@ public sealed class AzureEmailSettingsDisplayDriver : SiteDisplayDriver<AzureEma
             {
                 context.Updater.ModelState.AddModelError(Prefix, nameof(model.ConnectionString), S["Connection string is required."]);
             }
-
-            if (model.ConnectionString != settings.ConnectionString)
+            else
             {
-                // Encrypt the connection string.
-                var protector = _dataProtectionProvider.CreateProtector(AzureEmailOptionsConfiguration.ProtectorName);
+                if (model.ConnectionString != settings.ConnectionString)
+                {
+                    // Encrypt the connection string.
+                    var protector = _dataProtectionProvider.CreateProtector(AzureEmailOptionsConfiguration.ProtectorName);
 
-                var protectedConnection = protector.Protect(model.ConnectionString);
+                    var protectedConnection = protector.Protect(model.ConnectionString);
 
-                // Check if the connection string changed before setting it.
-                hasChanges |= protectedConnection != settings.ConnectionString;
+                    // Check if the connection string changed before setting it.
+                    hasChanges |= protectedConnection != settings.ConnectionString;
 
-                settings.ConnectionString = protectedConnection;
+                    settings.ConnectionString = protectedConnection;
+                }
             }
         }
 
