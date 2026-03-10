@@ -1,6 +1,6 @@
 ol.file-items-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     align-items: stretch;
     gap: 15px;
 
@@ -14,67 +14,37 @@ ol.file-items-grid {
         margin-left: 0;
         border-radius: 0;
 
-        &.selected {
-            border-color: $primary;
-            box-shadow: 0 0 0 1px $primary;
+        .inline-file-button {
+            color: $gray-700;
+            margin-left: 5px;
         }
 
-        &:hover {
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        .card-footer{
+            display: flex;
+            justify-content: center;
+        }
+
+        &.selected {
+            border: 1px solid var(--red-400);
+        }
+
+        &.selected .inline-file-button, &:hover .inline-file-button {
+            opacity: 1;
+            margin-top: 0px;
+            transition: all 0.2s;
         }
     }
 
     .thumb-container {
         width: 100%;
-        height: 160px;
         display: flex;
         align-items: center;
         justify-content: center;
-        overflow: hidden;
-        background: var(--media-card-bg);
+        background: var(--surface-0);
 
         img {
             width: 100%;
-            height: 100%;
-            object-fit: cover;
-            background: repeating-conic-gradient(var(--media-thumb-checker-color) 0% 25%, transparent 0% 50%) 50% / 10px 10px;
-        }
-    }
-
-    .file-icon-placeholder {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        width: 100%;
-        height: 100%;
-        color: var(--bs-secondary-color, $gray-500);
-
-        svg {
-            width: 48px;
-            height: 48px;
-            opacity: 0.6;
-        }
-
-        .file-ext {
-            margin-top: -8px;
-            font-size: 0.65rem;
-            font-weight: bold;
-            color: var(--bs-body-bg, #fff);
-        }
-    }
-
-    .card-footer {
-        .file-filename {
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            font-size: 0.8125rem;
-        }
-
-        .btn-link {
-            color: var(--bs-secondary-color, $gray-600);
-            flex-shrink: 0;
+            background: repeating-conic-gradient($gray-200 0% 25%, transparent 0% 50%) 50% / 10px 10px;
         }
     }
 

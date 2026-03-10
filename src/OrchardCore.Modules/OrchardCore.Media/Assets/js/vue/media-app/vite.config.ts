@@ -7,8 +7,7 @@ export default defineConfig({
     resolve: {
         alias: {
             vue: "vue/dist/vue.esm-bundler.js",
-            "@bloom/services": path.resolve(__dirname, "../../../../../../../.scripts/bloom/services"),
-            "@microsoft/signalr": path.resolve(__dirname, "node_modules/@microsoft/signalr/dist/esm/index.js"),
+            "@bloom": path.resolve(__dirname, "../../../../../../../.scripts/bloom"),
         },
     },
     plugins: [vue()],

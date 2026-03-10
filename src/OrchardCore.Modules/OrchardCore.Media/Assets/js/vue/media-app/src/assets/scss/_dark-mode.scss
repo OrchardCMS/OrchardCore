@@ -3,6 +3,7 @@
 @import "../../../node_modules/bootstrap/scss/mixins/color-mode";
 
 @include color-mode(dark) {
+    // CSS custom property overrides
     --media-selected-bg: rgba(13, 110, 253, 0.15);
     --media-accent: #e06c68;
     --media-card-bg: var(--bs-body-bg);
@@ -13,83 +14,197 @@
     --media-upload-list-header-bg: rgba(255, 255, 255, 0.05);
     --media-upload-list-header-color: var(--bs-secondary-color);
     --media-thumb-checker-color: #3a3a3a;
+    --surface-border: var(--bs-border-color);
 
-    .fileApp {
-        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.4);
-    }
+    // Scope under #media-app .fileApp to match specificity of original rules
+    #media-app .fileApp {
+        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.5);
 
-    #folder-tree {
-        li.selected > div:not(.treeroot),
-        li.selected > .treeroot {
-            background-color: var(--media-selected-bg);
-            border-left-color: var(--media-accent);
+        #fileContainer {
+            border-color: var(--bs-border-color);
         }
 
-        .folderhovered {
-            background-color: var(--media-selected-bg);
-        }
-    }
-
-    .file-items-table {
-        .header-row .table-cell {
-            color: var(--bs-body-color);
+        #navigationApp {
+            border-right-color: var(--bs-border-color);
+            scrollbar-color: var(--gray-600) transparent;
         }
 
-        .file-item {
-            border-top-color: var(--bs-border-color);
+        #fileContainerMain .file-container-middle {
+            scrollbar-color: #495057 transparent;
+        }
 
-            &:hover {
+        #folder-tree {
+            li.selected > div:not(.treeroot),
+            li.selected > .treeroot {
+                background-color: var(--media-selected-bg);
+                border-left-color: var(--media-accent);
+            }
+
+            .folderhovered {
                 background-color: var(--media-selected-bg);
             }
-        }
 
-    }
-
-    ol.file-items-grid li {
-        &.selected {
-            border-color: $primary;
-        }
-
-        &:hover {
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-        }
-
-        .thumb-container {
-            background: var(--bs-body-bg);
-        }
-    }
-
-    .action-bar {
-        .badge {
-            color: var(--bs-body-color);
-        }
-
-        .btn-light {
-            background-color: rgba(255, 255, 255, 0.1);
-            border-color: var(--bs-border-color);
-            color: var(--bs-body-color);
-
-            &:hover {
-                background-color: rgba(255, 255, 255, 0.18);
+            .treeroot {
+                border-bottom-color: var(--bs-border-color);
             }
         }
+
+        .file-items-table {
+            .header-row .table-cell {
+                color: var(--bs-body-color);
+            }
+
+            .table-head .table-row {
+                border-bottom-color: var(--bs-border-color);
+            }
+
+            .file-item {
+                border-top-color: var(--bs-border-color);
+
+                &:hover {
+                    background-color: var(--media-selected-bg);
+                }
+            }
+        }
+
+        ol.file-items-grid li {
+            &.selected {
+                border-color: $primary;
+            }
+
+            &:hover {
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+            }
+
+            .thumb-container {
+                background: var(--bs-body-bg);
+            }
+        }
+
+        .action-bar {
+            border-bottom-color: var(--bs-border-color);
+
+            .badge {
+                color: var(--bs-body-color);
+            }
+
+            .btn-light {
+                background-color: rgba(255, 255, 255, 0.1);
+                border-color: var(--bs-border-color);
+                color: var(--bs-body-color);
+
+                &:hover {
+                    background-color: rgba(255, 255, 255, 0.18);
+                }
+            }
+        }
+
+        #breadcrumb {
+            background-color: var(--media-breadcrumb-bg);
+            border-bottom-color: var(--bs-border-color);
+
+            .breadcrumb-item a {
+                color: var(--bs-secondary-color);
+            }
+        }
+
+        .file-container-footer {
+            border-top-color: var(--bs-border-color);
+        }
+
+        // PrimeVue info message
+        .p-message-info {
+            background: rgba(13, 202, 240, 0.1);
+            border-color: var(--bs-border-color);
+            color: var(--bs-body-color);
+        }
+
+        .file-filter {
+            button {
+                border-color: var(--bs-border-color);
+            }
+
+            .input-filter {
+                border-color: var(--bs-border-color);
+            }
+        }
+
+        .visibility-buttons button {
+            color: var(--bs-secondary-color);
+        }
     }
 
-    #breadcrumb {
-        background-color: var(--media-breadcrumb-bg);
-    }
-
+    // Modals (vue-final-modal)
     .vfm .vfm__content {
         background: var(--bs-body-bg) !important;
         color: var(--bs-body-color);
+        border-color: var(--bs-border-color) !important;
+    }
+
+    .vfm .modal__title {
+        color: var(--bs-body-color);
+    }
+
+    .vfm .file-wrapper {
+        background-color: rgba(255, 255, 255, 0.06);
+        border-color: var(--bs-border-color);
+
+        svg path {
+            fill: var(--bs-secondary-color);
+        }
+
+        .file-ext {
+            color: #fff;
+        }
+    }
+
+    .vfm .p-inputtext {
+        background-color: var(--bs-body-bg);
+        border-color: var(--bs-border-color);
+        color: var(--bs-body-color);
+    }
+
+    .vfm .btn-light {
+        background-color: rgba(255, 255, 255, 0.1);
+        border-color: var(--bs-border-color);
+        color: var(--bs-body-color);
+
+        &:hover {
+            background-color: rgba(255, 255, 255, 0.18);
+        }
+    }
+
+    .vfm .p-radiobutton-box {
+        background-color: var(--bs-body-bg);
         border-color: var(--bs-border-color);
     }
 
+    .vfm label {
+        color: var(--bs-body-color);
+    }
+
+    .action-modal {
+        .file-list .stepper-header {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+    }
+
+    // Upload toast (bottom-right)
     .upload-toast-container {
+        background: var(--bs-body-bg);
+        border-color: var(--bs-border-color);
         box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
     }
 
+    .upload-toast-header {
+        background: rgba(255, 255, 255, 0.05);
+        border-bottom-color: var(--bs-border-color);
+        color: var(--bs-body-color);
+    }
+
     .upload-toast-item {
+        border-bottom-color: rgba(255, 255, 255, 0.06);
+
         &.is-error {
             background: rgba(220, 53, 69, 0.12);
         }
@@ -97,5 +212,23 @@
         &.is-success {
             background: rgba(25, 135, 84, 0.12);
         }
+    }
+
+    .upload-toast-filename {
+        color: var(--bs-body-color);
+    }
+
+    // Notification toast (top-right)
+    .notification-toast-item {
+        background: var(--bs-body-bg);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    }
+
+    .notification-toast-summary {
+        color: var(--bs-body-color);
+    }
+
+    .notification-toast-detail {
+        color: var(--bs-secondary-color);
     }
 }

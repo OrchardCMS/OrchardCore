@@ -1,21 +1,30 @@
-import type { IFileStoreEntryDto } from "@bloom/services/OpenApiClient";
-
 /**
- * Extends the NSwag-generated IFileStoreEntryDto with UI-augmented properties.
+ * Maps to OrchardCore's FileStoreEntryDto returned by the MediaGen2ApiController.
  */
-export interface IFileStoreEntry extends IFileStoreEntryDto {
-  selected?: boolean;
-  parent?: IFileStoreEntry | null;
+export interface IFileLibraryItemDto {
+  name: string;
+  size?: number;
+  directoryPath: string;
+  filePath: string;
+  lastModifiedUtc?: string;
+  isDirectory: boolean;
+  url?: string;
+  mime?: string;
 }
 
 /**
- * Used to match folders with specific actions.
- * Use "*"" as allowedFolder name for common actions.
+ * Used for folders/files hierarchy structure.
  */
-export interface IFileActionElem {
-  id: number;
-  displayName: string;
-  allowedFolder: string;
+export interface IHFileLibraryItemDto extends IFileLibraryItemDto {
+  selected: boolean | undefined;
+  children: IHFileLibraryItemDto[];
+}
+
+/**
+ * Inherited interface for renaming a file.
+ */
+export interface IRenameFileLibraryItemDto extends IFileLibraryItemDto {
+  newName: string;
 }
 
 /**
@@ -24,6 +33,8 @@ export interface IFileActionElem {
 export enum FileAction {
   Rename,
   Delete,
+  Copy,
+  Move,
   Download,
 }
 
@@ -32,21 +43,55 @@ export enum FileAction {
  */
 export enum FolderAction {
   Create,
-  //Rename, TODO: this needs to be implemented
   Delete,
+}
+
+/**
+ * Browser LocalStorage
+ */
+export interface ILocalStorageData {
+  smallThumbs: boolean;
+  selectedDirectory: IFileLibraryItemDto;
+  gridView: boolean;
 }
 
 /**
  * ViewModel returned by a ModalFileActionConfirm component.
  */
 export interface IConfirmFileActionViewModel {
-  actionEntries: IConfirmFileActionEntry[]
+  action: FileAction;
+  file: IFileLibraryItemDto;
+  inputValue?: string;
 }
 
-export interface IConfirmFileActionEntry {
-  action?: FileAction;
-  file: IFileStoreEntry;
+/**
+ * ViewModel returned by a ModalFilePicker component.
+ */
+export interface IConfirmFilePickerViewModel {
   inputValue?: string;
+}
+
+/**
+ * ViewModel returned by a ModalFileActionConfirm component.
+ */
+export interface IConfirmViewModel {
+  action?: FileAction;
+  files?: IFileLibraryItemDto[];
+  targetFolder?: string;
+}
+
+/**
+ * File modal event
+ */
+export interface IModalFileEvent {
+  files: IRenameFileLibraryItemDto[];
+  modalName: string;
+  uuid: string;
+  isEdit: boolean;
+  modalTitle?: string;
+  action?: FileAction;
+  targetFolder?: string;
+  showModal?: boolean;
 }
 
 /**
@@ -54,26 +99,38 @@ export interface IConfirmFileActionEntry {
  */
 export interface IConfirmFolderActionViewModel {
   action: FolderAction;
-  folder: IFileStoreEntry;
+  folder: IFileLibraryItemDto;
   inputValue?: string;
 }
 
-/**
- * File modal event
- */
-export interface IModalFileEvent {
-  files: IFileStoreEntry[];
-  action: string;
-  uuid: string;
+export type TreeNode = {
+  key: string;
+  label: string;
+  data: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+  type?: string;
+  icon: string;
+  children: TreeNode[];
+  style?: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+  styleClass?: string;
+  selectable?: boolean;
+  leaf?: boolean;
+  loading?: boolean;
+  expandedIcon?: string;
+  collapsedIcon?: string;
+};
+
+export interface IConfirmFileEntry {
+  file: IRenameFileLibraryItemDto;
+  inputValue?: string;
 }
 
-/**
- * Represent a notification severity level
- */
-export enum SeverityLevel {
-    Success = "Success",
-    Info = "Info",
-    Warn = "Warn",
-    Error = "Error"  
-  }
-  
+export interface IFileListMoveDto {
+  files: IFileLibraryItemDto[];
+  targetFolder: string;
+  sourceFolder: string;
+}
+
+export interface IFileCopyDto {
+  newPath: string;
+  oldPath: string;
+}

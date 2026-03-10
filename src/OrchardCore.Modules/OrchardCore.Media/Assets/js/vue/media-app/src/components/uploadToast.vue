@@ -45,8 +45,14 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
+<script setup lang="ts">
+import { ref, computed } from 'vue'
+import { useEventBus } from '../services/UseEventBus'
+import { useLocalizations } from '../services/Localizations'
+
+const { on } = useEventBus();
+const { translations } = useLocalizations();
+const t = translations.value;
 
 interface UploadFile {
   name: string;
@@ -55,87 +61,55 @@ interface UploadFile {
   success: boolean;
 }
 
-export default defineComponent({
-  name: "uploadToast",
-  props: {
-    t: {
-      type: Object,
-      required: true,
-    }
-  },
-  data() {
-    return {
-      files: [] as UploadFile[],
-      expanded: true,
-      pendingCount: 0,
-      errorCount: 0,
-    }
-  },
-  mounted() {
-    const me = this;
+const files = ref<UploadFile[]>([]);
+const expanded = ref(true);
 
-    this.emitter.on('uploadFileAdded', (file: { name: string }) => {
-      const existing = me.files.find((f) => f.name === file.name);
-      if (!existing) {
-        me.files.push({ name: file.name, percentage: 0, errorMessage: '', success: false });
-        me.expanded = true;
-      }
-    });
+const pendingCount = computed(() => files.value.filter((f) => !f.errorMessage && !f.success).length);
+const errorCount = computed(() => files.value.filter((f) => f.errorMessage !== '').length);
 
-    this.emitter.on('uploadProgress', (data: { name: string; percentage: number }) => {
-      const file = me.files.find((f) => f.name === data.name);
-      if (file) {
-        file.percentage = data.percentage;
-      }
-    });
-
-    this.emitter.on('uploadSuccess', (data: { name: string }) => {
-      const file = me.files.find((f) => f.name === data.name);
-      if (file) {
-        file.success = true;
-        file.percentage = 100;
-      }
-
-      // Auto-dismiss successful uploads after 3 seconds
-      setTimeout(() => {
-        me.files = me.files.filter((f) => !(f.name === data.name && f.success));
-        me.updateCount();
-      }, 3000);
-    });
-
-    this.emitter.on('uploadError', (data: { name: string; errorMessage: string }) => {
-      const file = me.files.find((f) => f.name === data.name);
-      if (file) {
-        file.errorMessage = data.errorMessage;
-      }
-    });
-  },
-  methods: {
-    updateCount() {
-      this.errorCount = this.files.filter((f) => f.errorMessage !== '').length;
-      this.pendingCount = this.files.filter((f) => !f.errorMessage && !f.success).length;
-
-      if (this.files.length < 1) {
-        this.expanded = false;
-      }
-    },
-    clearErrors() {
-      this.files = this.files.filter((f) => f.errorMessage === '');
-    },
-    dismiss(file: UploadFile) {
-      this.files = this.files.filter((f) => f.name !== file.name);
-    },
-    dismissAll() {
-      this.files = [];
-    },
-  },
-  watch: {
-    files: {
-      handler() {
-        this.updateCount();
-      },
-      deep: true,
-    }
+on('UploadFileAdded', (data) => {
+  const existing = files.value.find((f) => f.name === data.name);
+  if (!existing) {
+    files.value.push({ name: data.name, percentage: 0, errorMessage: '', success: false });
+    expanded.value = true;
   }
 });
+
+on('UploadProgress', (data) => {
+  const file = files.value.find((f) => f.name === data.name);
+  if (file) {
+    file.percentage = data.percentage;
+  }
+});
+
+on('UploadSuccess', (data) => {
+  const file = files.value.find((f) => f.name === data.name);
+  if (file) {
+    file.success = true;
+    file.percentage = 100;
+  }
+
+  setTimeout(() => {
+    files.value = files.value.filter((f) => !(f.name === data.name && f.success));
+  }, 3000);
+});
+
+on('UploadError', (data) => {
+  const file = files.value.find((f) => f.name === data.name);
+  if (file) {
+    file.errorMessage = data.errorMessage;
+  }
+});
+
+const clearErrors = () => {
+  files.value = files.value.filter((f) => f.errorMessage === '');
+};
+
+const dismiss = (file: UploadFile) => {
+  files.value = files.value.filter((f) => f.name !== file.name);
+};
+
+const dismissAll = () => {
+  files.value = [];
+};
 </script>

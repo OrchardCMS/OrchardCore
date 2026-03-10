@@ -3,11 +3,11 @@
   align-items: center;
 
   .badge {
-    color: var(--bs-body-color);
+    color: black;
   }
 
   .btn-light{
-    background-color: var(--media-breadcrumb-bg);
+    background-color: #f1f6ff;
   }
 
   .file-filter {
@@ -83,7 +83,7 @@
 }
 
 #breadcrumb {
-  background-color: var(--media-breadcrumb-bg);
+  background-color: #f1f6ff;
   border-bottom: $file-border-content;
   border-radius: 0px;
   min-height: 40px;

@@ -1,34 +1,26 @@
-<!-- 
-    <sort-indicator> component
--->
-
 <template>
-  <div v-show="isActive" class="sort-indicator">
-    <span v-show="asc"><i class="small fa fa-chevron-up"></i></span>
-    <span v-show="!asc"><i class="small fa fa-chevron-down"></i></span>
+  <div v-if="isActive" class="sort-indicator">
+    <span v-if="asc"><i class="small fa fa-chevron-up"></i></span>
+    <span v-if="!asc"><i class="small fa fa-chevron-down"></i></span>
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script setup lang="ts">
+import { computed } from 'vue';
 
-export default defineComponent({
-  name: "sortIndicator",
-  props: {
-    colname: {
-      type: String,
-      required: true,
-    },
-    selectedcolname: {
-      type: String,
-      required: true,
-    },
-    asc: Boolean
+const props = defineProps({
+  colname: {
+    type: String,
+    required: true,
   },
-  computed: {
-    isActive: function () {
-      return this.colname.toLowerCase() == this.selectedcolname.toLowerCase();
-    }
-  }
+  selectedcolname: {
+    type: String,
+    required: true,
+  },
+  asc: Boolean
+})
+
+const isActive = computed(() => {
+  return props.colname.toLowerCase() == props.selectedcolname.toLowerCase();
 });
 </script>

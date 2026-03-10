@@ -1,0 +1,73 @@
+import { IFileLibraryItemDto } from "../interfaces/interfaces";
+
+const assetsStoreData: IFileLibraryItemDto[] = [
+  {
+    filePath: "/Images",
+    directoryPath: "/Images",
+    name: "Images",
+    isDirectory: true,
+    size: 0,
+    url: "/media/Images",
+  },
+  {
+    filePath: "/Documents",
+    directoryPath: "/Documents",
+    name: "Documents",
+    isDirectory: true,
+    size: 0,
+    url: "/media/Documents",
+  },
+  {
+    filePath: "/Images/photo1.jpg",
+    directoryPath: "/Images",
+    name: "photo1.jpg",
+    isDirectory: false,
+    size: 896,
+    url: "/media/Images/photo1.jpg",
+    lastModifiedUtc: "2024-09-01T12:00:00Z",
+  },
+  {
+    filePath: "/Images/photo2.jpg",
+    directoryPath: "/Images",
+    name: "photo2.jpg",
+    isDirectory: false,
+    size: 1024,
+    url: "/media/Images/photo2.jpg",
+    lastModifiedUtc: "2024-09-02T12:00:00Z",
+  },
+];
+
+const translationsData: Record<string, string> = {
+  NewFolder: "New folder",
+  MoveFileMessage: "Are you sure you want to move the selected file(s) to this folder?",
+  Ok: "Ok",
+  Cancel: "Cancel",
+  DeleteMultipleFilesMessage: "Are you sure you want to delete these files?",
+  DeleteSingleFileMessage: "Are you sure you want to delete this file?",
+  Rename: "Rename",
+  Delete: "Delete",
+  Move: "Move",
+  Copy: "Copy",
+  Download: "Download",
+  Filename: "Filename",
+  SelectFolder: "Select a folder",
+  Error: "Error",
+  FailedDownload: "Failed to download file",
+  Unauthorized: "Unauthorized",
+  UnauthorizedFile: "You are not authorized to perform this action",
+  UnauthorizedFiles: "You are not authorized to perform this action on these files",
+  UnauthorizedFolder: "You are not authorized to perform this action on this folder",
+  ErrorDeleteRootFolder: "Cannot delete root folder",
+  ErrorGetFolders: "Failed to get folders",
+  ValidationFolderRequired: "Folder is required",
+  ValidationFilenameRequired: "File name is required",
+  ValidationFileExtensionRequired: "File extension is not allowed",
+  FileLibrary: "Media Library",
+  RenameSingleFileTitle: "Rename file",
+  MoveSingleFileTitle: "Move file",
+  CopySingleFileTitle: "Copy file",
+  DeleteFileTitle: "Delete file",
+  MoveFileTitle: "Move file(s)",
+};
+
+export { assetsStoreData, translationsData };

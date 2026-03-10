@@ -1,0 +1,95 @@
+<template>
+  <VueFinalModal :focus-trap="false" v-model="showModal" :modal-id="modalName" :esc-to-close="false" :click-to-close="false"
+    class="flex justify-center items-center"
+    content-class="flex flex-column max-w-xl mx-4 p-4 rounded-lg space-y-2 action-modal">
+    <div class="flex justify-content-between">
+      <span class="modal__title">
+        {{ title }}
+      </span>
+      <span class="cursor-pointer" @click="emit('closed')">
+        <fa-icon icon="fa-solid fa-xmark fa-2xl"></fa-icon>
+      </span>
+    </div>
+    <slot></slot>
+    <ul class="list-none m-0 p-0">
+      <p-treeselect v-on:change="onFileChange" v-model="fileActionEntry.inputValue" :options="treeNode" :placeholder="t.SelectFile"
+        class="md:w-80 w-full" />
+      <div class="text-danger mt-2">{{ errorMessage }}</div>
+    </ul>
+    <div class="mt-3 flex flex-row justify-content-end">
+      <button class="p-button p-button-sm p-component p-button-secondary" @click="emit('closed')">
+        {{ t.Cancel }}
+      </button>
+      <button id="btn-submit" class="ml-2 p-button p-button-sm p-component p-button-primary"
+        @click="validate({ inputValue: fileActionEntry.inputValue })">
+        <slot name="submit"></slot>
+      </button>
+    </div>
+  </VueFinalModal>
+</template>
+
+<script setup lang="ts">
+import { ref, PropType } from 'vue'
+import { VueFinalModal } from 'vue-final-modal'
+import { type IConfirmFilePickerViewModel, TreeNode } from '../interfaces/interfaces';
+import dbg from 'debug';
+import { getFileExtension } from '../services/Utils';
+import { useLocalizations } from '../services/Localizations';
+
+const { translations } = useLocalizations();
+const t = translations.value
+
+const debug = dbg("aptix:file-app");
+
+const props = defineProps({
+  title: String,
+  modalName: {
+    type: String,
+    required: true
+  },
+  files: {
+    type: {} as PropType<TreeNode[]>,
+    required: true
+  },
+  allowedExtensions: Array<string>,
+  showModalProp: {
+    type: Boolean,
+    default: false
+  }
+})
+
+const fileActionEntry = ref<IConfirmFilePickerViewModel>({ inputValue: "" });
+
+let treeNode = ref<TreeNode[]>(props.files);
+let errorMessage = ref<string>("");
+let showModal = ref(props.showModalProp);
+
+/**
+ * Reset error message when user changes file selection
+ */
+const onFileChange = () => {
+  errorMessage.value = "";
+}
+
+/**
+ * Validate user input and emit confirm or set error message
+ * @param {IConfirmFilePickerViewModel} elem
+ */
+const validate = (elem: IConfirmFilePickerViewModel) => {
+  if (elem.inputValue == null || elem.inputValue == "") {
+    errorMessage.value = t.ValidationFilenameRequired;
+  }
+  else if (props.allowedExtensions && !props.allowedExtensions.find(x => x.replace(".", "") == getFileExtension(Object.keys(elem.inputValue ?? {})[0]))) {
+    errorMessage.value = t.ValidationFileExtensionRequired;
+  }
+  else {
+    debug("validate pass", elem)
+    emit('confirm', elem)
+  }
+}
+
+const emit = defineEmits<{
+  (e: 'confirm', viewModel: IConfirmFilePickerViewModel): void
+  (e: 'closed', viewModel?: IConfirmFilePickerViewModel): void
+}>()
+</script>

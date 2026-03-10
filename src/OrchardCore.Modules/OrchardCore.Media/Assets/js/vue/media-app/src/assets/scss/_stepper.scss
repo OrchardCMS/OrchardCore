@@ -1,0 +1,56 @@
+.stepper {
+  background-color: #f1f1f1;
+  display: flex;
+  gap: 15px;
+  padding: 10px;
+  align-items: center;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--blue-400) var(--surface-0);
+
+  button {
+    border: none;
+    gap: 8px;
+    cursor: pointer;
+  }
+
+  .step-circle.active {
+    background-color: rgb(10, 140, 250);
+    color: #fff;
+  }
+
+  .step-circle {
+    position: relative;
+    border-radius: 50%;
+    background-color: rgb(255, 255, 255);
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .step-divider {
+    display: flex;
+    width: 100%;
+    top: calc(14px);
+    left: calc(-50% + 16px);
+    right: calc(50% + 24px);
+    background-color: rgb(255, 255, 255);
+    height: 4px;
+    border-radius: 2px;
+
+    .bar {
+      width: 100%;
+      height: 100%;
+      border-radius: 2px;
+      background-color: #FFF;
+
+      &.active {
+        background-color: rgb(10, 140, 250);
+      }
+    }
+
+
+  }
+}

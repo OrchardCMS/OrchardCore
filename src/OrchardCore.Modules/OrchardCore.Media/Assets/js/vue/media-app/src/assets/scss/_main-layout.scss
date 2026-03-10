@@ -1,169 +1,128 @@
-.fileApp {
+#media-app {
+  // 100vh minus the admin top navbar, top padding, and bottom padding of .ta-content
+  height: calc(100vh - var(--oc-top-nav-height, 52px) - 2rem);
+
+  .fileApp {
     display: flex;
     flex-direction: column;
+    height: 100%;
     transition: left 0.2s ease-in-out, width 0.2s ease-in-out;
     width: 100%;
-    color: var(--bs-body-color, #000);
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+    color: var(--gray-1000);
+    box-shadow: 0 3px 6px #00000029;
 
     ::-webkit-scrollbar {
-        width: 4px;
+      width: 4px;
     }
 
     ::-webkit-scrollbar-thumb {
-        background-color: var(--bs-secondary-color, #495057);
+      background-color: var(--gray-600);
     }
 
     #fileContainer {
-        border: $file-border-content;
+      border: $file-border-content;
+      display: flex;
+      flex-direction: column; // on small screen #navigationApp and #fileContainerstacked
+
+      height: 100%;
+      width: 100%;
+      align-items: stretch;
+
+      #navigationApp {
+        flex-shrink: 0;
+      }
+
+      #fileContainerMain {
         display: flex;
-        flex-direction: column; // on small screen #navigationApp and #fileContainer stacked
+        flex-direction: column;
+        flex-grow: 1;
 
-        width: 100%;
-        align-items: stretch;
+        .file-container-middle {
+          flex-grow: 1;
+          flex-shrink: 0;
 
-        #navigationApp {
-            flex-shrink: 0;
+          .p-message .p-message-text {
+            margin-left: unset !important;
+          }
         }
 
-        #fileContainerMain {
-            display: flex;
-            flex-direction: column;
-            flex-grow: 1;
-
-            .file-container-middle {
-                display: flex;
-                flex-direction: column;
-                flex-grow: 1;
-                flex-shrink: 0;
-
-                .p-message .p-message-text {
-                    margin-left: unset !important;
-                }
-            }
-
-            .file-container-footer {
-                border-top: $file-border-content;
-            }
+        .file-container-footer {
+          border-top: $file-border-content;
         }
+      }
     }
     // on large screen they are side by side
     @media only screen and (min-width: 923px) {
-        #fileContainer {
-            flex-direction: row;
-            // .ta-content padding: top = nav-height + 1rem, bottom = 1rem.
-            // Use 2.25rem so the box doesn't sit flush against the bottom padding edge.
-            height: calc(100vh - var(--oc-top-nav-height, 52px) - 2.25rem);
+      #fileContainer {
+        flex-direction: row;
 
-            #fileContainerMain {
-                display: flex;
-                flex-direction: column;
-                justify-content: space-between;
+        #fileContainerMain {
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
 
-                .file-container-middle {
-                    flex-shrink: 1;
-                    overflow: auto;
-                    scrollbar-width: thin;
-                    scrollbar-color: var(--bs-secondary-color, #495057) var(--bs-tertiary-bg, #eaeaea);
-                }
-            }
-        }
-        // we don't want left navigation 100% tall when on stacked over the thumbs list
-        #navigationApp {
-            min-width: 240px;
-            border-right: $file-border-content;
+          .file-container-middle {
+            flex-shrink: 1;
             overflow: auto;
             scrollbar-width: thin;
-            scrollbar-color: var(--bs-secondary-color, #495057) var(--bs-tertiary-bg, #eaeaea);
+            scrollbar-color: #495057 #eaeaea;
+          }
         }
+      }
+      // we don't want left navigation 100% tall when on stacked over the thumbs list
+      #navigationApp {
+        min-width: 240px;
+        border-right: $file-border-content;
+        overflow: auto;
+        scrollbar-width: thin;
+        scrollbar-color: var(--gray-600) #eaeaea;
+      }
     }
 
     .alert-info {
-        font-size: 0.875rem;
+      font-size: 0.875rem;
     }
 
     .message-warning {
-        width: 100%;
-        display: flex;
-        padding: 20px;
-        margin-bottom: 15px;
+      width: 100%;
+      display: flex;
+      padding: 20px;
+      margin-bottom: 15px;
 
-        ul {
-            list-style: none;
-            margin: 0;
-            padding: 0;
-        }
+      ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
     }
 
     a.disabled {
-        cursor: default;
+      cursor: default;
     }
-
-    .loading-spinner-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        flex-grow: 1;
-        padding: 3rem;
-
-        .loading-spinner {
-            width: 40px;
-            height: 40px;
-            color: var(--bs-primary, #0d6efd);
-            animation: spinner-rotate 1s linear infinite;
-        }
-    }
-
-    .empty-state {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        flex-grow: 1;
-        padding: 3rem 1rem;
-        text-align: center;
-
-        .empty-state-icon {
-            font-size: 3rem;
-            color: var(--bs-secondary-color, #6c757d);
-            margin-bottom: 1rem;
-            opacity: 0.5;
-        }
-
-        .empty-state-text {
-            font-size: 1rem;
-            font-weight: 500;
-            color: var(--bs-body-color, #212529);
-            margin-bottom: 0.25rem;
-        }
-
-        .empty-state-hint {
-            font-size: 0.85rem;
-            color: var(--bs-secondary-color, #6c757d);
-            margin-bottom: 0;
-        }
-    }
+  }
 }
 
-@keyframes spinner-rotate {
-    100% {
-        transform: rotate(360deg);
-    }
-}
-
-.left-sidebar-compact #fileApp {
-    left: 48px;
+.left-sidebar-compact #media-app {
+  left: 48px;
 }
 
 .no-breadcrumb-divider {
-    &::before {
-        content: none !important;
-    }
+  &::before {
+    content: none !important;
+  }
 }
-.breadcrumb-item + .breadcrumb-item {
-    padding-left: 2px;
 
-    &:before {
-        padding-right: 2px;
-    }
+.breadcrumb-item::before {
+    float: left;
+    color: var(--bs-breadcrumb-divider-color);
+    content: var(--bs-breadcrumb-divider, "/");
+    padding-right: 2px;
+}
+
+.breadcrumb-item + .breadcrumb-item {
+  padding-left: 2px;
+
+  &:before {
+    padding-right: 2px;
+  }
 }

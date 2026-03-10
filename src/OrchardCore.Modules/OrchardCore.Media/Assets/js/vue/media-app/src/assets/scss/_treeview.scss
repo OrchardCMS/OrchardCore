@@ -29,17 +29,23 @@
 
   li.selected > div:not(.treeroot), li.selected > .treeroot {
     font-weight: bold;
-    background-color: var(--media-selected-bg);
-    border-left: 2px solid var(--media-accent);
+    background-color: $selected-background-color;
+    border-left: 2px solid var(--topcon-red);
+  }
+
+  li > div:not(.treeroot), li > .treeroot {
+    border-left: 2px solid transparent;
   }
 
   .folderhovered {
-    background-color: var(--media-selected-bg);
+    background-color: $selected-background-color;
   }
 
   li div {
     min-height: 40px;
     padding: 0;
+    display: flex;
+    align-items: center;
 
     a {
       display: block;
@@ -80,6 +86,7 @@
   }
 
   .folder-menu-item {
+    width: 100%;
     display: flex;
     align-items: center;
 

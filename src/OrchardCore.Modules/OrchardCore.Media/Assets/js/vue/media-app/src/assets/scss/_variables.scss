@@ -1,19 +1,6 @@
 @import "../../../node_modules/bootstrap/scss/functions";
 @import "../../../node_modules/bootstrap/scss/variables";
 
-// file-specific
-$file-border-content: 1px solid var(--bs-border-color, #dee2e6);
+// File App specific styles
+$file-border-content: 1px solid var(--surface-border);
 $selected-background-color: lighten($primary, 45%);
-
-:root {
-    --media-selected-bg: #{lighten($primary, 45%)};
-    --media-accent: #d9534f;
-    --media-card-bg: #fff;
-    --media-card-border: #b9dcff;
-    --media-card-footer-bg: #e1f0ff;
-    --media-breadcrumb-bg: #f1f6ff;
-    --media-upload-bg: rgba(0, 0, 0, 0.05);
-    --media-upload-list-header-bg: rgba(0, 0, 0, 0.03);
-    --media-upload-list-header-color: #666;
-    --media-thumb-checker-color: #{$gray-200};
-}

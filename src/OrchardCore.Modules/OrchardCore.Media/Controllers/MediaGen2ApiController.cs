@@ -546,8 +546,7 @@ public class MediaGen2ApiController : Controller
         {
             Name = folder.Name,
             Size = folder.Length,
-            DirectoryPath = folder.DirectoryPath,
-            FilePath = folder.Path,
+            DirectoryPath = folder.Path,
             LastModifiedUtc = folder.LastModifiedUtc,
             IsDirectory = true,
         };
