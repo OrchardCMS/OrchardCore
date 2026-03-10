@@ -102,6 +102,8 @@ export const useEventBusService = () => {
 
     if (directory.directoryPath && directory.directoryPath != "") {
       router.push({ name: "folder", params: { path: directory.directoryPath } });
+    } else {
+      router.push({ name: "home" });
     }
 
     setSelectedAll(false);

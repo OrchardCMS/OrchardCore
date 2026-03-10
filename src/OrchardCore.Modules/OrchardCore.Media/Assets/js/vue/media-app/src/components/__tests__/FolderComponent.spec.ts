@@ -20,6 +20,7 @@ vi.mock("../../services/data/IFileDataService", () => ({
     deleteMedia: vi.fn().mockResolvedValue(undefined),
     deleteMediaList: vi.fn().mockResolvedValue(undefined),
     deleteFolder: vi.fn().mockResolvedValue(undefined),
+    copyMedia: vi.fn().mockResolvedValue({} as IFileLibraryItemDto),
     createFolder: vi.fn().mockResolvedValue({
       name: "Test 2", filePath: "/Test2", directoryPath: "/Test2", isDirectory: true,
     } as IFileLibraryItemDto),

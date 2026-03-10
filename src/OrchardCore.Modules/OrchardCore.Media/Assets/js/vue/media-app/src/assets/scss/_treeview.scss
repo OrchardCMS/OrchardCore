@@ -101,7 +101,13 @@
       display: flex;
       align-items: center;
       font-size: 0.875rem;
-      margin-right: 10px;
+      margin-right: 0;
+
+      .action-button {
+        padding: 4px 4px;
+        display: flex;
+        align-items: center;
+      }
 
       a.btn {
         display: flex;

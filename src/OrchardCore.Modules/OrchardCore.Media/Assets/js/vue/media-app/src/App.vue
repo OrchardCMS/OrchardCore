@@ -309,20 +309,22 @@ const selectAll = () => {
 const breadcrumbs = computed((): IFileLibraryItemDto[] => {
   let result: IFileLibraryItemDto[] = [];
 
-  if (assetsStore.value.length > 0 && selectedDirectory.value?.directoryPath) {
+  if (assetsStore.value.length > 0 && selectedDirectory.value) {
     result.push(rootDirectory.value);
 
-    const directories = selectedDirectory.value.directoryPath.split("/");
-    let directoryName = ""
+    if (selectedDirectory.value.directoryPath) {
+      const directories = selectedDirectory.value.directoryPath.split("/");
+      let directoryName = ""
 
-    directories.forEach((directory, index) => {
-      directoryName = index > 0 ? directoryName + "/" + directory : directory;
-      const directoryFound = assetsStore.value.find(x => x.isDirectory && x.directoryPath == directoryName);
+      directories.forEach((directory, index) => {
+        directoryName = index > 0 ? directoryName + "/" + directory : directory;
+        const directoryFound = assetsStore.value.find(x => x.isDirectory && x.directoryPath == directoryName);
 
-      if (directoryFound) {
-        result.push(directoryFound)
-      }
-    });
+        if (directoryFound) {
+          result.push(directoryFound)
+        }
+      });
+    }
   }
 
   return result;

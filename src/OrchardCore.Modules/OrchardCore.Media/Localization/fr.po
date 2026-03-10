@@ -232,6 +232,20 @@ msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
 msgid "You are not authorized to perform this action on this folder"
 msgstr "Vous n'êtes pas autorisé à effectuer cette action sur ce dossier"
 
+#. Success messages
+
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "Success"
+msgstr "Succès"
+
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "File(s) moved successfully."
+msgstr "Fichier(s) déplacé(s) avec succès."
+
+msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"
+msgid "File copied successfully."
+msgstr "Fichier copié avec succès."
+
 #. Validation messages
 
 msgctxt "OrchardCore.Media.Services.MediaJSLocalizer"

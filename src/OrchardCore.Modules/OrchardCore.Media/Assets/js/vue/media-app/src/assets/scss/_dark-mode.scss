@@ -116,7 +116,7 @@
             }
         }
 
-        .file-container-footer {
+        #fileContainer #fileContainerMain .file-container-footer {
             border-top-color: var(--bs-border-color);
         }
 
@@ -130,6 +130,12 @@
         .file-filter {
             button {
                 border-color: var(--bs-border-color);
+                color: var(--bs-border-color);
+            }
+
+            button:not(:disabled) {
+                background-color: rgba(255, 255, 255, 0.12);
+                color: var(--bs-body-color);
             }
 
             .input-filter {
@@ -168,6 +174,21 @@
 
     .vfm .p-inputtext {
         background-color: var(--bs-body-bg);
+        border-color: var(--bs-border-color);
+        color: var(--bs-body-color);
+    }
+
+    .vfm .p-treeselect {
+        background-color: var(--bs-body-bg);
+        border-color: var(--bs-border-color);
+
+        .p-treeselect-label {
+            color: var(--bs-body-color);
+        }
+    }
+
+    .p-treeselect-panel {
+        background: var(--bs-body-bg);
         border-color: var(--bs-border-color);
         color: var(--bs-body-color);
     }

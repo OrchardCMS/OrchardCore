@@ -86,6 +86,10 @@ public class MediaJSLocalizer(IStringLocalizer<MediaJSLocalizer> S) : IJSLocaliz
                 { "UnauthorizedFile", S["You are not authorized to perform this action on this file"].Value },
                 { "UnauthorizedFiles", S["You are not authorized to perform this action on these files"].Value },
                 { "UnauthorizedFolder", S["You are not authorized to perform this action on this folder"].Value },
+                // Success messages
+                { "Success", S["Success"].Value },
+                { "FilesMoved", S["File(s) moved successfully."].Value },
+                { "FileCopied", S["File copied successfully."].Value },
                 // Validation messages
                 { "ValidationError", S["Validation error"].Value },
                 { "ValidationErrorUploadFileExist", S["A file with this name already exists in the current folder."].Value },

@@ -49,8 +49,8 @@ export function useFileLibraryManager() {
         try {
           await fileDataService.moveMediaList(
             elem.files.map((x: { name: string }) => x.name),
-            elem.sourceFolder,
-            elem.targetFolder,
+            elem.sourceFolder || "root",
+            elem.targetFolder || "root",
           );
 
           for (let i = 0; i < elem.files.length; i++) {
@@ -73,6 +73,7 @@ export function useFileLibraryManager() {
           }
 
           emit("FileListMoved", elem);
+          notify(new NotificationMessage({ summary: t.Success ?? "Success", detail: t.FilesMoved ?? "File(s) moved successfully.", severity: SeverityLevel.Success }));
         } catch (error) {
           notify(error);
         }
@@ -85,7 +86,15 @@ export function useFileLibraryManager() {
   const fileCopy = async (elem: IFileCopyDto): Promise<void> => {
     if (canManage.value) {
       if (elem) {
-        notify(new NotificationMessage({ summary: "Info", detail: "File copy is not yet supported.", severity: SeverityLevel.Info }));
+        try {
+          const copiedFile = await fileDataService.copyMedia(elem.oldPath, elem.newPath);
+          assetsStore.value.push(copiedFile);
+          setAssetsStore(assetsStore.value);
+          emit("FileCopied", copiedFile);
+          notify(new NotificationMessage({ summary: t.Success ?? "Success", detail: t.FileCopied ?? "File copied successfully.", severity: SeverityLevel.Success }));
+        } catch (error) {
+          notify(error);
+        }
       }
     } else {
       notify(new NotificationMessage({ summary: t.Unauthorized, detail: t.UnauthorizedFile, severity: SeverityLevel.Warn }));

@@ -342,6 +342,59 @@ public class MediaGen2ApiController : Controller
     }
 
     [HttpPost]
+    [Route("CopyMedia")]
+    [ProducesResponseType(typeof(FileStoreEntryDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<FileStoreEntryDto>> CopyMedia(string oldPath, string newPath)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMedia)
+            || !await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaFolder, (object)oldPath)
+            || !await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaFolder, (object)newPath))
+        {
+            return this.ApiChallengeOrForbidForCookieAuth();
+        }
+
+        if (String.IsNullOrEmpty(oldPath) || String.IsNullOrEmpty(newPath))
+        {
+            return this.ApiNotFoundProblem();
+        }
+
+        if (await _mediaFileStore.GetFileInfoAsync(oldPath) == null)
+        {
+            return this.ApiNotFoundProblem();
+        }
+
+        var newExtension = Path.GetExtension(newPath);
+
+        if (!_mediaOptions.AllowedFileExtensions.Contains(newExtension, StringComparer.OrdinalIgnoreCase))
+        {
+            return this.ApiValidationProblem(detail: S["This file extension is not allowed: {0}", newExtension]);
+        }
+
+        if (await _mediaFileStore.GetFileInfoAsync(newPath) != null)
+        {
+            return this.ApiValidationProblem(detail: S["Cannot copy media because a file already exists with the same name"]);
+        }
+
+        await _mediaFileStore.CopyFileAsync(oldPath, newPath);
+
+        var copiedFile = await _mediaFileStore.GetFileInfoAsync(newPath);
+
+        // Broadcast file copy event via SignalR (no IMediaEventHandler for file copy).
+        await _mediaHub.Clients.All.SendAsync("MediaChanged", new
+        {
+            action = "fileCopied",
+            path = oldPath,
+            newPath,
+        });
+
+        return Ok(CreateFileResult(copiedFile));
+    }
+
+    [HttpPost]
     [Route("DeleteFolder")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]

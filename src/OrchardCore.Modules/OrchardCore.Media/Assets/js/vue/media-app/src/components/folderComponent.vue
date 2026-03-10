@@ -22,7 +22,7 @@
           <div class="pr-2">{{ hierarchicalDirectories.name }}</div>
         </div>
         <div class="folder-actions">
-          <a v-cloak href="javascript:void(0)" :title="t.ActionFolderTitle" class="action-button px-2"
+          <a v-cloak href="javascript:void(0)" :title="t.ActionFolderTitle" class="action-button"
             @click="() => openFolderModal('folder-action', hierarchicalDirectories)" v-if="isSelected"><fa-icon
               icon="fas fa-ellipsis-v" size="xl"></fa-icon>
             <ModalFolderAction ref="modalAction" :show-modal-prop="showModal"

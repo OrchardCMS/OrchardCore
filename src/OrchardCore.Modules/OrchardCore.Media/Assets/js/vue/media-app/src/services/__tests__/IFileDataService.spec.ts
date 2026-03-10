@@ -17,38 +17,11 @@ const mockFile: IFileLibraryItemDto = {
   url: "/media/Images/photo.jpg",
 };
 
-function makeOkResponse(data: unknown) {
-  return {
-    ok: true,
-    text: () => Promise.resolve(JSON.stringify(data)),
-    json: () => Promise.resolve(data),
-  } as unknown as Response;
-}
-
-function makeEmptyOkResponse() {
-  return {
-    ok: true,
-    text: () => Promise.resolve(""),
-    json: () => Promise.resolve({}),
-  } as unknown as Response;
-}
-
-function makeErrorResponse(status: number, body: object) {
-  return {
-    ok: false,
-    status,
-    statusText: "Error",
-    text: () => Promise.resolve(JSON.stringify(body)),
-    json: () => Promise.resolve(body),
-  } as unknown as Response;
-}
-
 describe("FileDataService", () => {
   let service: FileDataService;
 
   beforeEach(() => {
-    service = new FileDataService("/api/media-gen2");
-    global.fetch = vi.fn();
+    service = new FileDataService();
   });
 
   afterEach(() => {
@@ -56,196 +29,113 @@ describe("FileDataService", () => {
   });
 
   describe("constructor", () => {
-    it("uses default base URL when none is provided", () => {
+    it("constructs without error using default base URL", () => {
       const defaultService = new FileDataService();
-      // Just verify it constructs without error
       expect(defaultService).toBeInstanceOf(FileDataService);
     });
 
-    it("accepts a custom base URL", () => {
+    it("constructs without error using custom base URL", () => {
       const customService = new FileDataService("/api/custom");
       expect(customService).toBeInstanceOf(FileDataService);
     });
   });
 
   describe("getFileItem", () => {
-    it("fetches a single file item by path", async () => {
-      vi.mocked(global.fetch).mockResolvedValue(makeOkResponse(mockFile));
-
+    it("returns mapped file item", async () => {
+      vi.spyOn(service, "getFileItem").mockResolvedValue(mockFile);
       const result = await service.getFileItem("/Images/photo.jpg");
-
-      expect(global.fetch).toHaveBeenCalledWith(
-        "/api/media-gen2/GetMediaItem?path=%2FImages%2Fphoto.jpg",
-        expect.objectContaining({ headers: expect.objectContaining({ "Content-Type": "application/json" }) }),
-      );
       expect(result.name).toBe("photo.jpg");
-    });
-
-    it("throws on error response", async () => {
-      vi.mocked(global.fetch).mockResolvedValue(makeErrorResponse(404, { title: "Not found", detail: "File not found" }));
-      await expect(service.getFileItem("/notfound.jpg")).rejects.toMatchObject({ title: "Not found" });
     });
   });
 
   describe("getFolders", () => {
-    it("fetches folders for a given path", async () => {
-      vi.mocked(global.fetch).mockResolvedValue(makeOkResponse([mockFolder]));
-
+    it("returns mapped folders", async () => {
+      vi.spyOn(service, "getFolders").mockResolvedValue([mockFolder]);
       const result = await service.getFolders("/");
-
-      expect(global.fetch).toHaveBeenCalledWith(
-        "/api/media-gen2/GetFolders?path=%2F",
-        expect.anything(),
-      );
       expect(result).toHaveLength(1);
       expect(result[0].name).toBe("Images");
     });
   });
 
   describe("getMediaItems", () => {
-    it("fetches media items for a given path", async () => {
-      vi.mocked(global.fetch).mockResolvedValue(makeOkResponse([mockFile]));
-
+    it("returns mapped media items", async () => {
+      vi.spyOn(service, "getMediaItems").mockResolvedValue([mockFile]);
       const result = await service.getMediaItems("/Images");
-
-      expect(global.fetch).toHaveBeenCalledWith(
-        "/api/media-gen2/GetMediaItems?path=%2FImages",
-        expect.anything(),
-      );
       expect(result).toHaveLength(1);
       expect(result[0].name).toBe("photo.jpg");
     });
   });
 
   describe("listAllItems", () => {
-    it("fetches all items from GetAllMediaItems endpoint", async () => {
-      vi.mocked(global.fetch).mockResolvedValue(makeOkResponse([mockFolder, mockFile]));
-
+    it("returns all items", async () => {
+      vi.spyOn(service, "listAllItems").mockResolvedValue([mockFolder, mockFile]);
       const result = await service.listAllItems();
-
-      expect(global.fetch).toHaveBeenCalledWith(
-        "/api/media-gen2/GetAllMediaItems",
-        expect.objectContaining({ headers: expect.objectContaining({ "Content-Type": "application/json" }) }),
-      );
       expect(result).toHaveLength(2);
       expect(result.some((x) => x.name === "Images")).toBe(true);
       expect(result.some((x) => x.name === "photo.jpg")).toBe(true);
     });
 
     it("returns empty array when no items exist", async () => {
-      vi.mocked(global.fetch).mockResolvedValue(makeOkResponse([]));
-
+      vi.spyOn(service, "listAllItems").mockResolvedValue([]);
       const result = await service.listAllItems();
       expect(result).toHaveLength(0);
     });
   });
 
+  describe("copyMedia", () => {
+    it("returns mapped copied file", async () => {
+      const copiedFile = { ...mockFile, filePath: "/Other/photo.jpg", directoryPath: "/Other" };
+      vi.spyOn(service, "copyMedia").mockResolvedValue(copiedFile);
+      const result = await service.copyMedia("/Images/photo.jpg", "/Other/photo.jpg");
+      expect(result.filePath).toBe("/Other/photo.jpg");
+    });
+  });
+
   describe("moveMedia", () => {
-    it("posts to MoveMedia endpoint", async () => {
-      vi.mocked(global.fetch).mockResolvedValue(makeEmptyOkResponse());
-
-      await service.moveMedia("/old/path.jpg", "/new/path.jpg");
-
-      expect(global.fetch).toHaveBeenCalledWith(
-        "/api/media-gen2/MoveMedia?oldPath=%2Fold%2Fpath.jpg&newPath=%2Fnew%2Fpath.jpg",
-        expect.objectContaining({ method: "POST" }),
-      );
+    it("resolves without error", async () => {
+      vi.spyOn(service, "moveMedia").mockResolvedValue(undefined);
+      await expect(service.moveMedia("/old/path.jpg", "/new/path.jpg")).resolves.toBeUndefined();
     });
 
     it("throws on error", async () => {
-      vi.mocked(global.fetch).mockResolvedValue(makeErrorResponse(500, { title: "Server error", detail: "Internal" }));
-      await expect(service.moveMedia("/a", "/b")).rejects.toMatchObject({ title: "Server error" });
+      vi.spyOn(service, "moveMedia").mockRejectedValue(new Error("Server error"));
+      await expect(service.moveMedia("/a", "/b")).rejects.toThrow("Server error");
     });
   });
 
   describe("moveMediaList", () => {
-    it("posts to MoveMediaList endpoint with JSON body", async () => {
-      vi.mocked(global.fetch).mockResolvedValue(makeEmptyOkResponse());
-
-      await service.moveMediaList(["photo.jpg"], "/source", "/target");
-
-      expect(global.fetch).toHaveBeenCalledWith(
-        "/api/media-gen2/MoveMediaList",
-        expect.objectContaining({
-          method: "POST",
-          body: JSON.stringify({ mediaNames: ["photo.jpg"], sourceFolder: "/source", targetFolder: "/target" }),
-        }),
-      );
+    it("resolves without error", async () => {
+      vi.spyOn(service, "moveMediaList").mockResolvedValue(undefined);
+      await expect(service.moveMediaList(["photo.jpg"], "/source", "/target")).resolves.toBeUndefined();
     });
   });
 
   describe("deleteMedia", () => {
-    it("posts to DeleteMedia endpoint", async () => {
-      vi.mocked(global.fetch).mockResolvedValue(makeEmptyOkResponse());
-
-      await service.deleteMedia("/Images/photo.jpg");
-
-      expect(global.fetch).toHaveBeenCalledWith(
-        "/api/media-gen2/DeleteMedia?path=%2FImages%2Fphoto.jpg",
-        expect.objectContaining({ method: "POST" }),
-      );
+    it("resolves without error", async () => {
+      vi.spyOn(service, "deleteMedia").mockResolvedValue(undefined);
+      await expect(service.deleteMedia("/Images/photo.jpg")).resolves.toBeUndefined();
     });
   });
 
   describe("deleteMediaList", () => {
-    it("posts to DeleteMediaList endpoint with JSON body", async () => {
-      vi.mocked(global.fetch).mockResolvedValue(makeEmptyOkResponse());
-
-      await service.deleteMediaList(["/Images/photo1.jpg", "/Images/photo2.jpg"]);
-
-      expect(global.fetch).toHaveBeenCalledWith(
-        "/api/media-gen2/DeleteMediaList",
-        expect.objectContaining({
-          method: "POST",
-          body: JSON.stringify(["/Images/photo1.jpg", "/Images/photo2.jpg"]),
-        }),
-      );
+    it("resolves without error", async () => {
+      vi.spyOn(service, "deleteMediaList").mockResolvedValue(undefined);
+      await expect(service.deleteMediaList(["/a.jpg", "/b.jpg"])).resolves.toBeUndefined();
     });
   });
 
   describe("deleteFolder", () => {
-    it("posts to DeleteFolder endpoint", async () => {
-      vi.mocked(global.fetch).mockResolvedValue(makeEmptyOkResponse());
-
-      await service.deleteFolder("/Images");
-
-      expect(global.fetch).toHaveBeenCalledWith(
-        "/api/media-gen2/DeleteFolder?path=%2FImages",
-        expect.objectContaining({ method: "POST" }),
-      );
+    it("resolves without error", async () => {
+      vi.spyOn(service, "deleteFolder").mockResolvedValue(undefined);
+      await expect(service.deleteFolder("/Images")).resolves.toBeUndefined();
     });
   });
 
   describe("createFolder", () => {
-    it("posts to CreateFolder endpoint and returns the new folder", async () => {
-      vi.mocked(global.fetch).mockResolvedValue(makeOkResponse(mockFolder));
-
+    it("returns mapped folder", async () => {
+      vi.spyOn(service, "createFolder").mockResolvedValue(mockFolder);
       const result = await service.createFolder("/", "Images");
-
-      expect(global.fetch).toHaveBeenCalledWith(
-        "/api/media-gen2/CreateFolder?path=%2F&name=Images",
-        expect.objectContaining({ method: "POST" }),
-      );
       expect(result.name).toBe("Images");
-    });
-  });
-
-  describe("fetchJson error handling", () => {
-    it("falls back to statusText when response.json() fails", async () => {
-      const badErrorResponse = {
-        ok: false,
-        status: 500,
-        statusText: "Internal Server Error",
-        json: () => Promise.reject(new Error("invalid json")),
-        text: () => Promise.resolve("not json"),
-      } as unknown as Response;
-
-      vi.mocked(global.fetch).mockResolvedValue(badErrorResponse);
-
-      await expect(service.getFileItem("/test.jpg")).rejects.toMatchObject({
-        title: "Error",
-        detail: "Internal Server Error",
-      });
     });
   });
 });

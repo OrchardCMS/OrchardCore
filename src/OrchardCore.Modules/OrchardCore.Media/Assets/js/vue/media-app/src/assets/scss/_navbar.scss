@@ -12,12 +12,15 @@
 
   .file-filter {
     button {
-        border-color: #6c757d;
+        border-color: $gray-400;
+        color: $gray-400;
+        opacity: 1;
     }
 
-    button:disabled{
-        border-color: #CED4DA !important;
-        opacity: 1;
+    button:not(:disabled) {
+        border-color: $gray-500;
+        background-color: $gray-200;
+        color: $gray-700;
     }
 
     svg {

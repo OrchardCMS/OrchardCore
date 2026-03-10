@@ -201,6 +201,23 @@
   }
 }
 
+// PrimeVue TreeSelect — reset browser default <ul> padding
+.p-treeselect-panel .p-tree {
+  padding: 0;
+
+  .p-treenode-children {
+    padding: 0 0 0 1rem;
+    margin: 0;
+    list-style: none;
+  }
+
+  .p-tree-container {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+}
+
 #overlay_menu.file-app {
   .p-submenu-header {
     display: none;

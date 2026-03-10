@@ -105,22 +105,19 @@ const onPressEnter = () => {
  * @param elem - Data containing file item and user input
  */
 const validate = (elem: IConfirmFileActionViewModel) => {
-  if (elem.inputValue == null || elem.inputValue == "") {
-    if (elem.action == FileAction.Copy || elem.action == FileAction.Move) {
+  if (elem.action == FileAction.Copy || elem.action == FileAction.Move) {
+    if (elem.inputValue == null || elem.inputValue === "" || (typeof elem.inputValue === "object" && Object.keys(elem.inputValue).length === 0)) {
       errorMessage.value = t.ValidationFolderRequired;
+    } else {
+      emit('confirm', elem);
     }
-    else if (elem.action == FileAction.Rename) {
+  } else if (elem.action == FileAction.Rename) {
+    if (elem.inputValue == null || elem.inputValue === "") {
       errorMessage.value = t.ValidationFilenameRequired;
-    }
-  }
-  else {
-    const isValidExtension = isValidFileExtension(elem.file.directoryPath, elem.inputValue);
-
-    if (isValidExtension) {
-      emit('confirm', elem)
-    }
-    else {
+    } else if (!isValidFileExtension(elem.file.directoryPath, elem.inputValue as string)) {
       errorMessage.value = t.ValidationFileExtensionRequired;
+    } else {
+      emit('confirm', elem);
     }
   }
 }

@@ -166,12 +166,6 @@ export interface IGetEndpointClient {
      * @return OK
      */
     contentGETGET(contentItemId: string,  cancelToken?: CancelToken): Promise<void>;
-    /**
-     * @param contentItemId (optional) 
-     * @param latest (optional) If true, returns the latest (draft) version. Otherwise, returns the published version.
-     * @return OK
-     */
-    getContentItem(contentItemId: string | undefined, latest: boolean | undefined,  cancelToken?: CancelToken): Promise<void>;
 }
 
 export class GetEndpointClient implements IGetEndpointClient {
@@ -217,63 +211,6 @@ export class GetEndpointClient implements IGetEndpointClient {
     }
 
     protected processContentGETGET(response: AxiosResponse): Promise<void> {
-        const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
-        if (status === 200) {
-            const _responseText = response.data;
-            return Promise.resolve<void>(null as any);
-
-        } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-        }
-        return Promise.resolve<void>(null as any);
-    }
-
-    /**
-     * @param contentItemId (optional) 
-     * @param latest (optional) If true, returns the latest (draft) version. Otherwise, returns the published version.
-     * @return OK
-     */
-    getContentItem(contentItemId: string | undefined, latest: boolean | undefined, cancelToken?: CancelToken): Promise<void> {
-        let url_ = this.baseUrl + "/api/content-with-version-option/{contentItemId}?";
-        if (contentItemId !== null && contentItemId !== undefined)
-        url_ = url_.replace("{contentItemId}", encodeURIComponent("" + contentItemId));
-        else
-            url_ = url_.replace("/{contentItemId}", "");
-        if (latest === null)
-            throw new globalThis.Error("The parameter 'latest' cannot be null.");
-        else if (latest !== undefined)
-            url_ += "latest=" + encodeURIComponent("" + latest) + "&";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_: AxiosRequestConfig = {
-            method: "GET",
-            url: url_,
-            headers: {
-            },
-            cancelToken
-        };
-
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
-            return this.processGetContentItem(_response);
-        });
-    }
-
-    protected processGetContentItem(response: AxiosResponse): Promise<void> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -381,11 +318,22 @@ export interface IMediaGen2ApiClient {
      */
     getMediaItem(path: string | undefined,  cancelToken?: CancelToken): Promise<FileStoreEntryDto>;
     /**
+     * @param extensions (optional) 
+     * @return OK
+     */
+    getAllMediaItems(extensions: string | undefined,  cancelToken?: CancelToken): Promise<FileStoreEntryDto[]>;
+    /**
      * @param path (optional) 
      * @param extensions (optional) 
      * @return OK
      */
     upload(path: string | undefined, extensions: string | undefined,  cancelToken?: CancelToken): Promise<void>;
+    /**
+     * @param oldPath (optional) 
+     * @param newPath (optional) 
+     * @return OK
+     */
+    copyMedia(oldPath: string | undefined, newPath: string | undefined,  cancelToken?: CancelToken): Promise<FileStoreEntryDto>;
     /**
      * @param path (optional) 
      * @return OK
@@ -684,6 +632,83 @@ export class MediaGen2ApiClient implements IMediaGen2ApiClient {
     }
 
     /**
+     * @param extensions (optional) 
+     * @return OK
+     */
+    getAllMediaItems(extensions: string | undefined, cancelToken?: CancelToken): Promise<FileStoreEntryDto[]> {
+        let url_ = this.baseUrl + "/api/media-gen2/GetAllMediaItems?";
+        if (extensions === null)
+            throw new globalThis.Error("The parameter 'extensions' cannot be null.");
+        else if (extensions !== undefined)
+            url_ += "extensions=" + encodeURIComponent("" + extensions) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: AxiosRequestConfig = {
+            method: "GET",
+            url: url_,
+            headers: {
+                "Accept": "application/json"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processGetAllMediaItems(_response);
+        });
+    }
+
+    protected processGetAllMediaItems(response: AxiosResponse): Promise<FileStoreEntryDto[]> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(FileStoreEntryDto.fromJS(item));
+            }
+            else {
+                result200 = null as any;
+            }
+            return Promise.resolve<FileStoreEntryDto[]>(result200);
+
+        } else if (status === 401) {
+            const _responseText = response.data;
+            let result401: any = null;
+            let resultData401  = _responseText;
+            result401 = ProblemDetails.fromJS(resultData401);
+            return throwException("Unauthorized", status, _responseText, _headers, result401);
+
+        } else if (status === 403) {
+            const _responseText = response.data;
+            let result403: any = null;
+            let resultData403  = _responseText;
+            result403 = ProblemDetails.fromJS(resultData403);
+            return throwException("Forbidden", status, _responseText, _headers, result403);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<FileStoreEntryDto[]>(null as any);
+    }
+
+    /**
      * @param path (optional) 
      * @param extensions (optional) 
      * @return OK
@@ -752,6 +777,95 @@ export class MediaGen2ApiClient implements IMediaGen2ApiClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
         }
         return Promise.resolve<void>(null as any);
+    }
+
+    /**
+     * @param oldPath (optional) 
+     * @param newPath (optional) 
+     * @return OK
+     */
+    copyMedia(oldPath: string | undefined, newPath: string | undefined, cancelToken?: CancelToken): Promise<FileStoreEntryDto> {
+        let url_ = this.baseUrl + "/api/media-gen2/CopyMedia?";
+        if (oldPath === null)
+            throw new globalThis.Error("The parameter 'oldPath' cannot be null.");
+        else if (oldPath !== undefined)
+            url_ += "oldPath=" + encodeURIComponent("" + oldPath) + "&";
+        if (newPath === null)
+            throw new globalThis.Error("The parameter 'newPath' cannot be null.");
+        else if (newPath !== undefined)
+            url_ += "newPath=" + encodeURIComponent("" + newPath) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: AxiosRequestConfig = {
+            method: "POST",
+            url: url_,
+            headers: {
+                "Accept": "application/json"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processCopyMedia(_response);
+        });
+    }
+
+    protected processCopyMedia(response: AxiosResponse): Promise<FileStoreEntryDto> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = FileStoreEntryDto.fromJS(resultData200);
+            return Promise.resolve<FileStoreEntryDto>(result200);
+
+        } else if (status === 400) {
+            const _responseText = response.data;
+            let result400: any = null;
+            let resultData400  = _responseText;
+            result400 = ValidationProblemDetails.fromJS(resultData400);
+            return throwException("Bad Request", status, _responseText, _headers, result400);
+
+        } else if (status === 401) {
+            const _responseText = response.data;
+            let result401: any = null;
+            let resultData401  = _responseText;
+            result401 = ProblemDetails.fromJS(resultData401);
+            return throwException("Unauthorized", status, _responseText, _headers, result401);
+
+        } else if (status === 403) {
+            const _responseText = response.data;
+            let result403: any = null;
+            let resultData403  = _responseText;
+            result403 = ProblemDetails.fromJS(resultData403);
+            return throwException("Forbidden", status, _responseText, _headers, result403);
+
+        } else if (status === 404) {
+            const _responseText = response.data;
+            let result404: any = null;
+            let resultData404  = _responseText;
+            result404 = ProblemDetails.fromJS(resultData404);
+            return throwException("Not Found", status, _responseText, _headers, result404);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<FileStoreEntryDto>(null as any);
     }
 
     /**
