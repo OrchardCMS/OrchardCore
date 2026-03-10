@@ -73,7 +73,7 @@ internal sealed class IndexingMigrations : DataMigration
 
             var jsonObject = JsonNode.Parse(jsonContent);
 
-            if (jsonObject["ElasticIndexSettings"] is not JsonObject indexesObject)
+            if (jsonObject?["ElasticIndexSettings"] is not JsonObject indexesObject)
             {
                 return;
             }
