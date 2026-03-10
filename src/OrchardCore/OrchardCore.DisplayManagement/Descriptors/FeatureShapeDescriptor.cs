@@ -189,10 +189,7 @@ public class ShapeDescriptor
             return null;
         }
 
-        return new PlacementInfo
-        {
-            Location = DefaultPlacement,
-        };
+        return PlacementInfo.FromLocation(DefaultPlacement);
     }
 }
 

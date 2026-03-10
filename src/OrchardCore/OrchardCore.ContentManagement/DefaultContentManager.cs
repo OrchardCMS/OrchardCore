@@ -839,11 +839,6 @@ public class DefaultContentManager : IContentManager
 
         await ReversedHandlers.InvokeAsync((handler, context) => handler.ValidatedAsync(context), validateContext, _logger);
 
-        if (!validateContext.ContentValidateResult.Succeeded)
-        {
-            await _session.CancelAsync();
-        }
-
         return validateContext.ContentValidateResult;
     }
 
@@ -867,7 +862,7 @@ public class DefaultContentManager : IContentManager
         var validationResult = await ValidateAsync(contentItem);
         if (!validationResult.Succeeded)
         {
-            // The session is already cancelled.
+            await _session.CancelAsync();
             return validationResult;
         }
 
@@ -1044,6 +1039,7 @@ public class DefaultContentManager : IContentManager
         var result = await ValidateAsync(contentItem);
         if (!result.Succeeded)
         {
+            await _session.CancelAsync();
             return result;
         }
 
@@ -1145,9 +1141,9 @@ public class DefaultContentManager : IContentManager
         await UpdateAsync(updatingVersion);
         var result = await ValidateAsync(updatingVersion);
 
-        // Session is cancelled now so previous updates to versions are cancelled also.
         if (!result.Succeeded)
         {
+            await _session.CancelAsync();
             return result;
         }
 
