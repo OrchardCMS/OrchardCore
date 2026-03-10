@@ -11,6 +11,7 @@ using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Indexing;
 using OrchardCore.Indexing.Core;
 using OrchardCore.Indexing.Core.Models;
+using OrchardCore.Indexing.Models;
 using OrchardCore.Search.Elasticsearch.Core.Models;
 using OrchardCore.Search.Elasticsearch.Core.Services;
 using OrchardCore.Search.Elasticsearch.Models;
@@ -23,8 +24,10 @@ namespace OrchardCore.Search.Elasticsearch.Migrations;
 
 internal sealed class IndexingMigrations : DataMigration
 {
-    private readonly ShellSettings _shellSettings;
+    private const string SearchSettings = nameof(SearchSettings);
+    private const string DefaultIndexProfileName = nameof(DefaultIndexProfileName);
 
+    private readonly ShellSettings _shellSettings;
 
     public IndexingMigrations(ShellSettings shellSettings)
     {
@@ -221,6 +224,8 @@ internal sealed class IndexingMigrations : DataMigration
             }
 
             await UpdateLegacyAnalyzerNameAsync(indexProfileManager);
+
+            await EnsureDefaultSearchSiteSettingAsync(indexProfileManager, siteService, site);
         });
 
         return stepNumber;
@@ -281,6 +286,33 @@ internal sealed class IndexingMigrations : DataMigration
                 await indexProfileManager.ResetAsync(indexProfile);
                 await indexProfileManager.UpdateAsync(indexProfile);
             }
+        }
+    }
+
+    /// <summary>
+    /// In previous versions, if there was one Elasticsearch index it was already treated as the default search index
+    /// even if the site setting was not explicitly saved. Since this is no longer the default behavior, the setting has
+    /// to be applied in a migration if there are applicable indexes.
+    /// </summary>
+    private static async Task EnsureDefaultSearchSiteSettingAsync(
+        IIndexProfileManager indexProfileManager,
+        ISiteService siteService,
+        ISite site)
+    {
+        // Ensure that the site.Properties.SearchSettings object exists so we can safely set its property.
+        if (site.Properties[SearchSettings] is not JsonObject searchSettings)
+        {
+            searchSettings = [];
+            site.Properties[SearchSettings] = searchSettings;
+        }
+        
+        // If the site.Properties.SearchSettings.DefaultIndexProfileName setting is missing or empty, and there is at
+        // least one Elasticsearch index in store, set it to the first index.
+        if (string.IsNullOrWhiteSpace((searchSettings[DefaultIndexProfileName] as JsonValue)?.GetValue<string>()) && 
+            (await GetElasticsearchIndexesAsync(indexProfileManager))?.OrderBy(index => index.CreatedUtc).FirstOrDefault() is { } indexProfile)
+        {
+            searchSettings[DefaultIndexProfileName] = indexProfile.Name;
+            await siteService.UpdateSiteSettingsAsync(site);
         }
     }
 
