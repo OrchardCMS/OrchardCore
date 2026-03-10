@@ -28,3 +28,11 @@
         <span class="hint dashed">@T["Check this option to show a header for the owning content."]</span>
     </div>
 </div>
+
+<div class="mb-3">
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" asp-for="UseTraditionalPager" />
+        <label class="form-check-label" asp-for="UseTraditionalPager">@T["Use Traditional Pager (Shows page numbers)"]</label>
+        <span class="hint dashed">@T["When enabled, the list will use a traditional pager with page numbers. Note: This requires an additional database query to count total items."]</span>
+    </div>
+</div>

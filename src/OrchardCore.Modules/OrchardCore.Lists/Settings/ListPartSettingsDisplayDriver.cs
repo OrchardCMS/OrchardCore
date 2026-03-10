@@ -36,6 +36,7 @@ public sealed class ListPartSettingsDisplayDriver : ContentTypePartDefinitionDis
             model.EnableOrdering = model.ListPartSettings.EnableOrdering;
             model.ContainedContentTypes = model.ListPartSettings.ContainedContentTypes;
             model.ShowHeader = model.ListPartSettings.ShowHeader;
+            model.UseTraditionalPager = model.ListPartSettings.UseTraditionalPager;  // Expose the ListPartSettings properties directly on the view model to make it easier to bind to them in the Razor view.
             model.ContentTypes = [];
 
             foreach (var contentTypeDefinition in await _contentDefinitionManager.ListTypeDefinitionsAsync())
@@ -51,7 +52,7 @@ public sealed class ListPartSettingsDisplayDriver : ContentTypePartDefinitionDis
 
         var model = new ListPartSettingsViewModel();
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix, m => m.ContainedContentTypes, m => m.PageSize, m => m.EnableOrdering, m => m.ShowHeader);
+        await context.Updater.TryUpdateModelAsync(model, Prefix, m => m.ContainedContentTypes, m => m.PageSize, m => m.EnableOrdering, m => m.ShowHeader, m => m.UseTraditionalPager);
 
         if (model.ContainedContentTypes == null || model.ContainedContentTypes.Length == 0)
         {
@@ -65,6 +66,7 @@ public sealed class ListPartSettingsDisplayDriver : ContentTypePartDefinitionDis
                 EnableOrdering = model.EnableOrdering,
                 ContainedContentTypes = model.ContainedContentTypes,
                 ShowHeader = model.ShowHeader,
+                UseTraditionalPager = model.UseTraditionalPager,  // Expose the ListPartSettings properties directly on the view model to make it easier to bind to them in the Razor view.
             });
 
             // Update order of existing content if enable ordering has been turned on.
