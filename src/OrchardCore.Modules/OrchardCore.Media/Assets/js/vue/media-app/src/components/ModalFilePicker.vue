@@ -1,26 +1,26 @@
 <template>
   <VueFinalModal :focus-trap="false" v-model="showModal" :modal-id="modalName" :esc-to-close="false" :click-to-close="false"
-    class="flex justify-center items-center"
-    content-class="flex flex-column max-w-xl mx-4 p-4 rounded-lg space-y-2 action-modal">
-    <div class="flex justify-content-between">
+    class="tw-flex tw-justify-center tw-items-center"
+    content-class="tw-flex tw-flex-col tw-max-w-xl tw-mx-4 tw-p-4 tw-rounded-lg tw-space-y-4 action-modal">
+    <div class="tw-flex tw-justify-between">
       <span class="modal__title">
         {{ title }}
       </span>
-      <span class="cursor-pointer" @click="emit('closed')">
+      <span class="tw-cursor-pointer" @click="emit('closed')">
         <fa-icon icon="fa-solid fa-xmark fa-2xl"></fa-icon>
       </span>
     </div>
     <slot></slot>
-    <ul class="list-none m-0 p-0">
-      <p-treeselect v-on:change="onFileChange" v-model="fileActionEntry.inputValue" :options="treeNode" :placeholder="t.SelectFile"
-        class="md:w-80 w-full" />
-      <div class="text-danger mt-2">{{ errorMessage }}</div>
+    <ul class="tw-list-none tw-m-0 tw-p-0">
+      <p-treeselect @update:modelValue="onFileChange" v-model="fileActionEntry.inputValue" :options="treeNode" :placeholder="t.SelectFile"
+        class="md:tw-w-80 tw-w-full" />
+      <div class="tw-text-red-500 tw-mt-2">{{ errorMessage }}</div>
     </ul>
-    <div class="mt-3 flex flex-row justify-content-end">
-      <button class="p-button p-button-sm p-component p-button-secondary" @click="emit('closed')">
+    <div class="tw-mt-3 tw-flex tw-flex-row tw-justify-end">
+      <button class="ma-btn ma-btn-light tw-border tw-border-gray-400" @click="emit('closed')">
         {{ t.Cancel }}
       </button>
-      <button id="btn-submit" class="ml-2 p-button p-button-sm p-component p-button-primary"
+      <button id="btn-submit" class="tw-ml-2 ma-btn ma-btn-primary"
         @click="validate({ inputValue: fileActionEntry.inputValue })">
         <slot name="submit"></slot>
       </button>

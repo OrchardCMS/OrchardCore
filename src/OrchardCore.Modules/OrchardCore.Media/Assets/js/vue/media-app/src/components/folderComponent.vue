@@ -11,15 +11,15 @@
         </span>
         <span class="expand empty" v-else>&nbsp;</span>
         <span>
-          <svg class="ml-1 ms-1" width="16" height="16" viewBox="0 0 16 16" fill="none"
+          <svg class="tw-ml-1" width="16" height="16" viewBox="0 0 16 16" fill="none"
             xmlns="http://www.w3.org/2000/svg">
             <path
               d="M7.06065 3.06033C6.80732 2.80699 6.46732 2.66699 6.11398 2.66699H2.66732C1.93398 2.66699 1.34065 3.26699 1.34065 4.00033L1.33398 12.0003C1.33398 12.7337 1.93398 13.3337 2.66732 13.3337H13.334C14.0673 13.3337 14.6673 12.7337 14.6673 12.0003V5.33366C14.6673 4.60033 14.0673 4.00033 13.334 4.00033H8.00065L7.06065 3.06033Z"
               fill="#2c84d8" />
           </svg>
         </span>
-        <div class="folder-name ms-2">
-          <div class="pr-2">{{ hierarchicalDirectories.name }}</div>
+        <div class="folder-name tw-ms-2">
+          <div class="tw-pr-2">{{ hierarchicalDirectories.name }}</div>
         </div>
         <div class="folder-actions">
           <a v-cloak href="javascript:void(0)" :title="t.ActionFolderTitle" class="action-button"
@@ -29,8 +29,8 @@
               :modal-name="getFolderModalName('folder-action', hierarchicalDirectories)"
               :folder="hierarchicalDirectories" :title="t.ActionFolderTitle"
               @confirm="(viewModel: IConfirmFolderActionViewModel) => confirmFolderModal('folder-action', viewModel)">
-              <p class="font-bold">{{ hierarchicalDirectories.directoryPath }}</p>
-              <p>{{ t.ActionFolderMessage }}</p>
+              <p class="tw-font-bold tw-m-0">{{ hierarchicalDirectories.directoryPath }}</p>
+              <p class="tw-m-0">{{ t.ActionFolderMessage }}</p>
               <template #submit>{{ t.Ok }}</template>
             </ModalFolderAction>
           </a>

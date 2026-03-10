@@ -1,6 +1,6 @@
 <template>
   <div>
-    <a href="javascript:void(0)" class="btn btn-link btn-sm action-button px-4 py-3" @click="toggle">
+    <a href="javascript:void(0)" class="ma-btn ma-btn-link ma-btn-sm action-button tw-px-4 tw-py-3" @click="toggle">
       <fa-icon icon="fas fa-ellipsis-v" size="xl"></fa-icon>
     </a>
     <p-menu ref="menu" id="overlay_menu" class="file-app" :model="items" :popup="true" />

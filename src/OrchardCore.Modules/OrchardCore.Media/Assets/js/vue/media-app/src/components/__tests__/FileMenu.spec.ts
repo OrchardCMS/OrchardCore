@@ -103,7 +103,7 @@ describe("fileMenu", () => {
 
   it("renders the component with toggle button", () => {
     const w = mountMenu();
-    expect(w.find("a.btn-link").exists()).toBe(true);
+    expect(w.find("a.ma-btn-link").exists()).toBe(true);
   });
 
   it("has the correct menu items configured", () => {

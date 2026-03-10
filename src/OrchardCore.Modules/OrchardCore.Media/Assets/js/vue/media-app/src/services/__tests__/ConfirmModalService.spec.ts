@@ -58,7 +58,7 @@ describe("ConfirmModalService", () => {
       keepAlive: false,
       component: ModalConfirm,
       slots: {
-        default: '<p class="mb-4">Are you sure you want to delete this file?</p>',
+        default: '<p class="tw-m-0">Are you sure you want to delete this file?</p>',
         submit: "Ok",
       },
       attrs: {
@@ -93,7 +93,7 @@ describe("ConfirmModalService", () => {
     expect(useModal).toHaveBeenCalledWith(
       expect.objectContaining({
         slots: {
-          default: '<p class="mb-4">Are you sure you want to delete these files?</p>',
+          default: '<p class="tw-m-0">Are you sure you want to delete these files?</p>',
           submit: "Ok",
         },
       }),
@@ -120,7 +120,7 @@ describe("ConfirmModalService", () => {
     expect(useModal).toHaveBeenCalledWith(
       expect.objectContaining({
         slots: {
-          default: '<p class="mb-4">Are you sure you want to move the selected file(s) to this folder?</p>',
+          default: '<p class="tw-m-0">Are you sure you want to move the selected file(s) to this folder?</p>',
           submit: "Ok",
         },
       }),

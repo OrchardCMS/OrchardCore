@@ -16,10 +16,8 @@ import { fas } from "@fortawesome/free-solid-svg-icons";
 import { far } from "@fortawesome/free-regular-svg-icons";
 import { createVfm } from "vue-final-modal";
 import { registerNotificationBus } from "@bloom/services/notifications/notifier";
-import "primeflex/primeflex.scss";
-import "primevue/resources/primevue.css";
-import "primevue/resources/themes/lara-light-blue/theme.css";
 import PrimeVue from 'primevue/config';
+import Aura from '@primevue/themes/aura';
 import Menu from 'primevue/menu';
 import TreeSelect from 'primevue/treeselect';
 
@@ -37,7 +35,19 @@ app.component('p-treeselect', TreeSelect);
 
 registerNotificationBus();
 
-app.use(PrimeVue);
+app.use(PrimeVue, {
+  theme: {
+    preset: Aura,
+    options: {
+      prefix: 'p',
+      darkModeSelector: '[data-bs-theme="dark"]',
+      cssLayer: {
+        name: 'primevue',
+        order: 'tailwind-base, primevue, tailwind-utilities',
+      },
+    },
+  },
+});
 app.use(vfm);
 app.use(router)
 app.mount("#media-app");

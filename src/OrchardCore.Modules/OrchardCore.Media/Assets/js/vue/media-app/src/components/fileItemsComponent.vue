@@ -1,10 +1,10 @@
 <template>
-  <div class="file-items-table m-0">
+  <div class="file-items-table tw-m-0">
     <div class="table-head">
       <div class="table-row header-row">
-        <div scope="col" class="table-cell thumbnail-column">
-          <div class="form-check">
-            <input :checked="isSelectedAll" class="form-check-input cursor-pointer" type="checkbox" value=""
+        <div scope="col" class="table-cell checkbox-column">
+          <div class="ma-check">
+            <input :checked="isSelectedAll" class="ma-check-input tw-cursor-pointer" type="checkbox" value=""
               id="select-all" name="select-all" role="checkbox" :title="isSelectedAll ? t.SelectNone : t.SelectAll"
               v-on:click="selectAll">
           </div>
@@ -29,15 +29,15 @@
     <div class="table-body">
       <template v-for="file in filteredFileItems" :key="file.filePath">
         <div class="table-row file-item" draggable="true" v-on:dragstart="dragStart(file, $event)">
-          <div class="table-cell text-center">
-            <div class="form-check">
+          <div class="table-cell checkbox-column">
+            <div class="ma-check">
               <input :checked="isFileSelected(file)"
-                class="form-check-input cursor-pointer" type="checkbox" value="" name="select-file" role="checkbox"
+                class="ma-check-input tw-cursor-pointer" type="checkbox" value="" name="select-file" role="checkbox"
                 v-on:click.stop="toggleSelectionOfFile(file)">
             </div>
           </div>
           <div class="table-cell">
-            <div class="flex align-items-center">
+            <div class="tw-flex tw-items-center">
               <div class="thumbnail-column">
                 <div class="img-wrapper">
                   <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -48,7 +48,7 @@
                       d="M8.70453 3.8V1H4.12C3.82324 1.00092 3.5389 1.11921 3.32906 1.32906C3.11921 1.5389 3.00092 1.82324 3 2.12V13.88C3.00092 14.1768 3.11921 14.4611 3.32906 14.6709C3.5389 14.8808 3.82324 14.9991 4.12 15H12.52C12.8168 14.9991 13.1011 14.8808 13.3109 14.6709C13.5208 14.4611 13.6391 14.1768 13.64 13.88V5.37497H10.28C9.86241 5.37444 9.46206 5.20836 9.16673 4.91312C8.87141 4.61788 8.70519 4.21759 8.70453 3.8Z"
                       fill="#2D2D2D" />
                   </svg>
-                  <span class="uppercase file-ext text-white">{{ getFileExtension(file.name) }}</span>
+                  <span class="tw-uppercase file-ext tw-text-white">{{ getFileExtension(file.name) }}</span>
                 </div>
               </div>
               <div class="file-name-cell">
@@ -62,7 +62,7 @@
           <div class="table-cell size">
             <div class="text-col optional-col"> {{ humanFileSize(file.size ?? 0, true, 2) }}</div>
           </div>
-          <div class="table-cell text-right text-end">
+          <div class="table-cell tw-text-right">
             <FileMenu :file-item="file"></FileMenu>
           </div>
         </div>

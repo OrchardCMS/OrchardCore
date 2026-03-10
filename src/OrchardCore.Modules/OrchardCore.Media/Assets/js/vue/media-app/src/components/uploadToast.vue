@@ -7,18 +7,18 @@
     <div class="upload-toast-header" @click="expanded = !expanded">
       <div class="upload-toast-title">
         <span>{{ t.Uploads }}</span>
-        <span v-if="pendingCount > 0" class="ms-1">({{ pendingCount }})</span>
-        <span v-if="errorCount > 0" class="text-danger ms-1">
+        <span v-if="pendingCount > 0" class="tw-ms-1">({{ pendingCount }})</span>
+        <span v-if="errorCount > 0" class="tw-text-red-500 tw-ms-1">
           {{ t.Errors }}: {{ errorCount }}
         </span>
       </div>
       <div class="upload-toast-actions">
-        <button v-if="errorCount > 0" class="btn btn-link btn-sm text-danger p-0 me-2"
+        <button v-if="errorCount > 0" class="ma-btn ma-btn-link ma-btn-sm tw-text-red-500 tw-p-0 tw-me-2"
           @click.stop="clearErrors">{{ t.ClearErrors }}</button>
-        <button class="btn btn-link btn-sm p-0" @click.stop="expanded = !expanded">
+        <button class="ma-btn ma-btn-link ma-btn-sm tw-p-0" @click.stop="expanded = !expanded">
           <fa-icon :icon="expanded ? 'fa-solid fa-chevron-down' : 'fa-solid fa-chevron-up'"></fa-icon>
         </button>
-        <button v-if="pendingCount === 0" class="btn btn-link btn-sm p-0 ms-2" @click.stop="dismissAll">
+        <button v-if="pendingCount === 0" class="ma-btn ma-btn-link ma-btn-sm tw-p-0 tw-ms-2" @click.stop="dismissAll">
           <fa-icon icon="fa-solid fa-times"></fa-icon>
         </button>
       </div>
@@ -26,15 +26,15 @@
     <div class="upload-toast-body" v-show="expanded">
       <div v-for="f in files" :key="f.name" class="upload-toast-item"
         :class="{ 'is-error': f.errorMessage, 'is-success': f.success }">
-        <div class="d-flex justify-content-between align-items-center">
+        <div class="tw-flex tw-justify-between tw-items-center">
           <span class="upload-toast-filename" :title="f.errorMessage || f.name">{{ f.name }}</span>
-          <button v-if="f.errorMessage" class="btn btn-link btn-sm p-0 text-danger"
+          <button v-if="f.errorMessage" class="ma-btn ma-btn-link ma-btn-sm tw-p-0 tw-text-red-500"
             @click="dismiss(f)">
             <fa-icon icon="fa-solid fa-times"></fa-icon>
           </button>
-          <fa-icon v-else-if="f.success" icon="fa-solid fa-check" class="text-success"></fa-icon>
+          <fa-icon v-else-if="f.success" icon="fa-solid fa-check" class="tw-text-green-500"></fa-icon>
         </div>
-        <div v-if="f.errorMessage" class="upload-toast-error text-danger">
+        <div v-if="f.errorMessage" class="upload-toast-error tw-text-red-500">
           {{ f.errorMessage }}
         </div>
         <div v-else-if="!f.success" class="upload-toast-progress">

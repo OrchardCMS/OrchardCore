@@ -8,14 +8,14 @@ import { nextTick } from 'vue';
  * Helper to extract visible page numbers from rendered page-number elements.
  */
 const getPageNumbers = (wrapper: ReturnType<typeof mount>) => {
-  return wrapper.findAll('.page-number .page-link').map(el => Number(el.text().replace(/\(current\)/, '').trim()));
+  return wrapper.findAll('.ma-page-number .ma-page-link').map(el => Number(el.text().replace(/\(current\)/, '').trim()));
 };
 
 /**
  * Helper to get the active page number.
  */
 const getActivePage = (wrapper: ReturnType<typeof mount>) => {
-  const active = wrapper.find('.page-number.active .page-link');
+  const active = wrapper.find('.ma-page-number.active .ma-page-link');
   if (!active.exists()) return null;
   return Number(active.text().replace(/\(current\)/, '').trim());
 };
@@ -67,7 +67,7 @@ describe('PagerComponent', () => {
     });
     await nextTick();
 
-    expect(wrapper.find('.file-first-button').classes()).toContain('disabled');
+    expect(wrapper.find('.file-first-button').classes()).toContain('is-disabled');
     expect(getActivePage(wrapper)).toBe(1);
   });
 

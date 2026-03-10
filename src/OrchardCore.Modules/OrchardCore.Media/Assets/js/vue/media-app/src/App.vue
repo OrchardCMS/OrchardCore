@@ -1,6 +1,6 @@
 <template>
   <div class="fileApp" v-on:dragover="handleScrollWhileDrag">
-    <div class="alert alert-danger message-warning" v-if="errors.length > 0">
+    <div class="ma-alert ma-alert-danger message-warning" v-if="errors.length > 0">
       <ul>
         <li v-for="(e, i) in errors" :key="i">{{ e }}</li>
       </ul>
@@ -9,16 +9,16 @@
       <h3>{{ t.DropHere }}</h3>
       <p>{{ t.DropTitle }}</p>
     </div>
-    <div id="fileContainer" class="align-items-stretch">
-      <div id="navigationApp" class="file-container-navigation m-0 p-0" v-cloak>
+    <div id="fileContainer" class="tw-items-stretch">
+      <div id="navigationApp" class="file-container-navigation tw-m-0 tw-p-0" v-cloak>
         <ol id="folder-tree">
           <folder v-if="!isLoading" :hierarchical-directories="hierarchicalDirectories" :level="1"></folder>
         </ol>
       </div>
       <div id="fileContainerMain" v-cloak>
         <div class="file-container-top-bar">
-          <nav id="breadcrumb" class="d-flex justify-content-end align-items-center">
-            <div class="breadcrumb-path px-3">
+          <nav id="breadcrumb" class="tw-flex tw-justify-end tw-items-center">
+            <div class="breadcrumb-path tw-px-3">
               <span v-for="(breadcrumb, i) in breadcrumbs" :key="breadcrumb.directoryPath" v-cloak
                 class="breadcrumb-item">
                 <a :href="breadcrumbs.length - i == 1 ? 'javascript:void(0)' : '#'"
@@ -28,52 +28,52 @@
               </span>
             </div>
           </nav>
-          <nav class="nav action-bar p-3 flex">
-            <div class="me-auto">
-              <div v-show="canManage">
-                <div class="btn-group btn-group me-2">
-                  <label :title="t.UploadFiles" for="fileupload" class="btn btn-primary fileinput-button upload-button">
+          <div class="action-bar tw-py-3 tw-px-4 tw-flex">
+            <div class="tw-mr-auto">
+              <div v-show="canManage" class="tw-flex tw-items-center tw-flex-wrap">
+                <div class="ma-btn-group tw-mr-2">
+                  <label :title="t.UploadFiles" for="fileupload" class="ma-btn ma-btn-primary fileinput-button upload-button">
                     <input id="fileupload" type="file" name="files" multiple />
                     <fa-icon icon="fa-solid fa-cloud-arrow-up"></fa-icon>
                     {{ t.UploadFiles }}
                   </label>
                 </div>
-                <a :title="t.DeleteAll" href="javascript:void(0)" class="btn btn-light me-2"
-                  @click="() => deleteSelectedFiles()" :class="{ disabled: selectedFiles.length < 1 }">
+                <a :title="t.DeleteAll" href="javascript:void(0)" class="ma-btn ma-btn-light tw-mr-2"
+                  @click="() => deleteSelectedFiles()" :class="{ 'is-disabled': selectedFiles.length < 1 }">
                   <fa-icon icon="fa-solid fa-trash"></fa-icon>
-                  <span class="badge rounded-pill ml-1" v-show="selectedFiles.length > 0">{{ selectedFiles.length
+                  <span class="ma-badge tw-ml-1" v-show="selectedFiles.length > 0">{{ selectedFiles.length
                     }}</span>
                 </a>
-                <a :title="t.DownloadAll" href="javascript:void(0)" class="btn btn-light me-2"
+                <a :title="t.DownloadAll" href="javascript:void(0)" class="ma-btn ma-btn-light tw-mr-2"
                   @click="() => downloadSelectedFiles()"
-                  :class="{ disabled: selectedFiles.length < 1 || isDownloading }">
+                  :class="{ 'is-disabled': selectedFiles.length < 1 || isDownloading }">
                   <fa-icon icon="fa-solid fa-download"></fa-icon>
-                  <span class="badge rounded-pill ml-1" v-show="selectedFiles.length > 0">{{ selectedFiles.length
+                  <span class="ma-badge tw-ml-1" v-show="selectedFiles.length > 0">{{ selectedFiles.length
                     }}</span>
                 </a>
                 <a :title="gridView ? (t.TableView ?? 'Table view') : (t.GridView ?? 'Grid view')"
-                  href="javascript:void(0)" class="btn btn-light me-2"
+                  href="javascript:void(0)" class="ma-btn ma-btn-light tw-mr-2"
                   @click="gridView = !gridView">
                   <fa-icon :icon="gridView ? 'fa-solid fa-list' : 'fa-solid fa-grip'"></fa-icon>
                 </a>
               </div>
             </div>
-            <div class="nav-item mx-2 mt-3 md:mt-0">
+            <div class="tw-mt-3 md:tw-mt-0">
               <div class="file-filter">
-                <div class="input-group input-group">
+                <div class="ma-input-group">
                   <fa-icon icon="fa-solid fa-filter icon-inside-input"></fa-icon>
-                  <input type="text" id="file-filter-input" v-model="fileFilter" class="form-control input-filter"
+                  <input type="text" id="file-filter-input" v-model="fileFilter" class="ma-input input-filter"
                     :placeholder="t.Filter" :aria-label="t.Filter" />
-                  <button id="clear-file-filter-button" class="btn btn-outline-secondary" :disabled="fileFilter == ''"
+                  <button id="clear-file-filter-button" class="ma-btn ma-btn-outline" :disabled="fileFilter == ''"
                     v-on:click="fileFilter = ''">
                     <fa-icon icon="fa-solid fa-times"></fa-icon>
                   </button>
                 </div>
               </div>
             </div>
-          </nav>
+          </div>
         </div>
-        <div v-if="assetsStore.length > 0" class="file-container-middle p-3">
+        <div v-if="assetsStore.length > 0" class="file-container-middle tw-p-3">
           <router-view :key="selectedDirectory.directoryPath" :is-selected-all="isSelectedAll"
             :filtered-file-items="itemsInPage" :selected-files="selectedFiles"
             v-show="filteredFileItems.length > 0 && !gridView">
@@ -95,31 +95,27 @@
                       d="M8.70453 3.8V1H4.12C3.82324 1.00092 3.5389 1.11921 3.32906 1.32906C3.11921 1.5389 3.00092 1.82324 3 2.12V13.88C3.00092 14.1768 3.11921 14.4611 3.32906 14.6709C3.5389 14.8808 3.82324 14.9991 4.12 15H12.52C12.8168 14.9991 13.1011 14.8808 13.3109 14.6709C13.5208 14.4611 13.6391 14.1768 13.64 13.88V5.37497H10.28C9.86241 5.37444 9.46206 5.20836 9.16673 4.91312C8.87141 4.61788 8.70519 4.21759 8.70453 3.8Z"
                       class="file-icon-path" />
                   </svg>
-                  <span class="uppercase file-ext text-white">{{ getFileExtension(file.name) }}</span>
+                  <span class="tw-uppercase file-ext tw-text-white">{{ getFileExtension(file.name) }}</span>
                 </div>
               </div>
               <div class="card-footer">
-                <span class="text-truncate small flex-grow-1" :title="file.name">{{ file.name }}</span>
+                <span class="tw-truncate tw-text-sm tw-grow" :title="file.name">{{ file.name }}</span>
                 <FileMenu :file-item="file" @click.stop></FileMenu>
               </div>
             </li>
           </ol>
           <div
             v-show="assetsStore.filter(x => x.isDirectory == false && x.directoryPath == selectedDirectory.directoryPath).length > 0 && filteredFileItems.length < 1"
-            class="p-message p-component p-message-info">
-            <div class="p-message-wrapper">
-              <div class="p-message-text">{{ t.FolderFilterEmpty }}</div>
-            </div>
+            class="alert-info-box tw-bg-blue-50 tw-border tw-border-blue-200 tw-text-blue-800 tw-rounded tw-px-4 tw-py-3 tw-text-sm">
+            {{ t.FolderFilterEmpty }}
           </div>
           <div
             v-show="assetsStore.filter(x => x.isDirectory == false && x.directoryPath == selectedDirectory.directoryPath).length < 1"
-            class="p-message p-component p-message-info">
-            <div class="p-message-wrapper">
-              <div class="p-message-text">{{ t.FolderEmpty }}</div>
-            </div>
+            class="alert-info-box tw-bg-blue-50 tw-border tw-border-blue-200 tw-text-blue-800 tw-rounded tw-px-4 tw-py-3 tw-text-sm">
+            {{ t.FolderEmpty }}
           </div>
         </div>
-        <div v-show="filteredFileItems.length > 0" class="file-container-footer p-3 pb-0">
+        <div v-show="filteredFileItems.length > 0" class="file-container-footer tw-p-3 tw-pb-0">
           <pager :source-items="filteredFileItems" :key="selectedDirectory.directoryPath"></pager>
         </div>
       </div>
@@ -130,8 +126,8 @@
   </div>
 </template>
 
-<style lang="scss">
-@import "./assets/scss/file.scss";
+<style>
+@import "./assets/css/file.css";
 </style>
 
 <script setup lang="ts">
