@@ -268,8 +268,7 @@ internal sealed class IndexingMigrations : DataMigration
         static bool IsLegacyAnalyzerName(string analyzerName) =>
             analyzerName == "standardanalyzer" || string.IsNullOrEmpty(analyzerName);
 
-        var indexProfiles = await indexProfileManager.GetByProviderAsync(ElasticsearchConstants.ProviderName);
-        foreach (var indexProfile in indexProfiles)
+        foreach (var indexProfile in await GetElasticsearchIndexesAsync(indexProfileManager))
         {
             if (IsLegacyAnalyzerName(indexProfile.As<ElasticsearchDefaultQueryMetadata>()?.QueryAnalyzerName) ||
                 IsLegacyAnalyzerName(indexProfile.As<ElasticsearchIndexMetadata>()?.AnalyzerName))
@@ -284,4 +283,7 @@ internal sealed class IndexingMigrations : DataMigration
             }
         }
     }
+
+    private static ValueTask<IEnumerable<IndexProfile>> GetElasticsearchIndexesAsync(IIndexProfileManager indexProfileManager) =>
+        indexProfileManager.GetByProviderAsync(ElasticsearchConstants.ProviderName);
 }
