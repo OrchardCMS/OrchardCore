@@ -1,3 +1,13 @@
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.OpenApi;
+using OrchardCore.Environment.Shell;
+using OrchardCore.Modules;
+using OrchardCore.Navigation;
+using OrchardCore.Security.Permissions;
+using Scalar.AspNetCore;
+
 namespace OrchardCore.OpenApi;
 
 public sealed class Startup : StartupBase
