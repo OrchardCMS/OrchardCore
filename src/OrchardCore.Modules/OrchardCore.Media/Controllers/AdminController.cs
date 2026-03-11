@@ -1,3 +1,4 @@
+using System.Net.Mime;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -510,7 +511,7 @@ public sealed class AdminController : Controller
             folder = mediaFile.DirectoryPath,
             url = GetCacheBustingMediaPublicUrl(mediaFile.Path),
             mediaPath = mediaFile.Path,
-            mime = contentType ?? "application/octet-stream",
+            mime = contentType ?? MediaTypeNames.Application.Octet,
             mediaText = string.Empty,
             anchor = new { x = 0.5f, y = 0.5f },
             attachedFileName = string.Empty,
