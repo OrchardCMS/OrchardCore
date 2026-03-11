@@ -36,7 +36,7 @@ public sealed class ListPartSettingsDisplayDriver : ContentTypePartDefinitionDis
             model.EnableOrdering = model.ListPartSettings.EnableOrdering;
             model.ContainedContentTypes = model.ListPartSettings.ContainedContentTypes;
             model.ShowHeader = model.ListPartSettings.ShowHeader;
-            model.UseTraditionalPager = model.ListPartSettings.UseTraditionalPager;  // Expose the ListPartSettings properties directly on the view model to make it easier to bind to them in the Razor view.
+            model.UseTraditionalPager = model.ListPartSettings.UseTraditionalPager;
             model.ContentTypes = [];
 
             foreach (var contentTypeDefinition in await _contentDefinitionManager.ListTypeDefinitionsAsync())
