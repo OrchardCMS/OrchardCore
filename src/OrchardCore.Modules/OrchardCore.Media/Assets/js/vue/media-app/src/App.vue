@@ -9,10 +9,20 @@
       <h3>{{ t.DropHere }}</h3>
       <p>{{ t.DropTitle }}</p>
     </div>
-    <div id="fileContainer" class="tw:items-stretch">
+    <div v-show="isLoading" class="file-loading-overlay">
+      <div class="spinner">
+        <div class="loader">
+          <svg class="circular" viewBox="25 25 50 50">
+            <circle class="track" cx="50" cy="50" r="20" fill="none" stroke-width="4" />
+            <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="4" />
+          </svg>
+        </div>
+      </div>
+    </div>
+    <div v-show="!isLoading" id="fileContainer" class="tw:items-stretch">
       <div id="navigationApp" class="file-container-navigation tw:m-0 tw:p-0" v-cloak>
         <ol id="folder-tree">
-          <folder v-if="!isLoading" :hierarchical-directories="hierarchicalDirectories" :level="1"></folder>
+          <folder :hierarchical-directories="hierarchicalDirectories" :level="1"></folder>
         </ol>
       </div>
       <div id="fileContainerMain" v-cloak>

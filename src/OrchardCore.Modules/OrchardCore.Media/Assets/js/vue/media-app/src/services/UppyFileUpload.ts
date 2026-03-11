@@ -251,10 +251,29 @@ export const useFileUpload = (model: IFileUploadModel): void => {
       fileInput.value = "";
 
       if (result.successful) {
+        // Update placeholders in assetsStore with real metadata from the server response.
+        // The server returns { files: [{ Name, Size, DirectoryPath, FilePath, LastModifiedUtc, Url, Mime }, ...] }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         result.successful.forEach((file: any) => {
+          const serverFiles = file.response?.body?.files;
+          if (Array.isArray(serverFiles)) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            serverFiles.forEach((serverFile: any) => {
+              const placeholder = assetsStore.value.find(
+                (a) => !a.isDirectory && a.name === serverFile.name && a.directoryPath === serverFile.directoryPath
+              );
+              if (placeholder) {
+                placeholder.filePath = serverFile.filePath;
+                placeholder.size = serverFile.size;
+                placeholder.lastModifiedUtc = serverFile.lastModifiedUtc;
+                placeholder.url = serverFile.url;
+                placeholder.mime = serverFile.mime;
+              }
+            });
+          }
           emit("UploadSuccess", { name: file.name });
         });
+        setAssetsStore(assetsStore.value);
       }
 
       if (result.failed) {

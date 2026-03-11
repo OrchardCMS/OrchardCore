@@ -33540,7 +33540,7 @@ const _sfc_main$8 = /* @__PURE__ */ defineComponent({
               key: media.vuekey,
               class: normalizeClass([
                 "mf-thumb-item",
-                { "mf-thumb-item-active": !_ctx.allowMultiple && _ctx.selectedMedia === media }
+                { "mf-thumb-item-active": _ctx.selectedMedia === media }
               ]),
               style: normalizeStyle({ width: _ctx.thumbSize + 2 + "px" }),
               draggable: _ctx.allowMultiple,
@@ -33678,7 +33678,6 @@ const _sfc_main$7 = /* @__PURE__ */ defineComponent({
     fieldId: {},
     allowedExtensions: {},
     allowMultiple: { type: Boolean },
-    mediaAppUrl: {},
     mediaAppTranslations: {},
     basePath: {},
     uploadFilesUrl: {}
@@ -33694,31 +33693,6 @@ const _sfc_main$7 = /* @__PURE__ */ defineComponent({
     const containerRef = ref(null);
     const selectedCount = ref(0);
     let pickerHandle = null;
-    function resolveSiblingUrl(filename) {
-      try {
-        return new URL(
-          /* @vite-ignore */
-          filename,
-          import.meta.url
-        ).href;
-      } catch {
-        return `/OrchardCore.Media/Scripts/${filename}`;
-      }
-    }
-    function resolveMediaAppUrl() {
-      return props.mediaAppUrl || resolveSiblingUrl("media2.js");
-    }
-    function ensureMediaAppCss() {
-      const existing = [...document.querySelectorAll('link[rel="stylesheet"]')].some((l2) => l2.href.includes("/Styles/media2.css"));
-      if (existing) return;
-      const jsUrl = resolveMediaAppUrl();
-      const cssUrl = jsUrl.replace("/Scripts/media2.js", "/Styles/media2.css");
-      const link = document.createElement("link");
-      link.id = "media-app-picker-css";
-      link.rel = "stylesheet";
-      link.href = cssUrl;
-      document.head.appendChild(link);
-    }
     function open() {
       visible.value = true;
       loading.value = true;
@@ -33728,16 +33702,8 @@ const _sfc_main$7 = /* @__PURE__ */ defineComponent({
     async function onOpened() {
       if (!containerRef.value) return;
       try {
-        ensureMediaAppCss();
-        const moduleUrl = resolveMediaAppUrl();
-        const mediaAppModule = await import(
-          /* @vite-ignore */
-          moduleUrl
-        );
-        if (!mediaAppModule.mountMediaAppAsPicker) {
-          throw new Error("mountMediaAppAsPicker not found in media-app module");
-        }
-        pickerHandle = mediaAppModule.mountMediaAppAsPicker(containerRef.value, {
+        const { mountMediaAppAsPicker } = await import("./media2.js");
+        pickerHandle = mountMediaAppAsPicker(containerRef.value, {
           translations: props.mediaAppTranslations,
           basePath: props.basePath,
           uploadFilesUrl: props.uploadFilesUrl,
@@ -33968,6 +33934,17 @@ const _sfc_main$6 = /* @__PURE__ */ defineComponent({
         selectedMedia.value = mediaItems.value[0];
       }
     }
+    function onDocumentClick(e2) {
+      const el = e2.target;
+      if (el.closest(".mf-thumb-item") || el.closest(".mf-toolbar") || el.closest(".vfm")) return;
+      selectedMedia.value = null;
+    }
+    onMounted(() => {
+      document.addEventListener("click", onDocumentClick);
+    });
+    onBeforeUnmount(() => {
+      document.removeEventListener("click", onDocumentClick);
+    });
     function selectMedia(media) {
       selectedMedia.value = media;
     }
@@ -34145,12 +34122,11 @@ const _sfc_main$6 = /* @__PURE__ */ defineComponent({
           "field-id": _ctx.inputName,
           "allowed-extensions": _ctx.config.allowedExtensions,
           "allow-multiple": multiple.value,
-          "media-app-url": _ctx.config.mediaAppUrl || "",
           "media-app-translations": _ctx.config.mediaAppTranslations || "",
           "base-path": _ctx.config.basePath || "",
           "upload-files-url": _ctx.config.uploadFilesUrl || "",
           onSelect: onPickerSelect
-        }, null, 8, ["field-id", "allowed-extensions", "allow-multiple", "media-app-url", "media-app-translations", "base-path", "upload-files-url"]),
+        }, null, 8, ["field-id", "allowed-extensions", "allow-multiple", "media-app-translations", "base-path", "upload-files-url"]),
         createVNode(unref(Ro), {
           modelValue: mediaTextModalVisible.value,
           "onUpdate:modelValue": _cache[2] || (_cache[2] = ($event) => mediaTextModalVisible.value = $event),
@@ -34643,13 +34619,7 @@ const _sfc_main$4 = /* @__PURE__ */ defineComponent({
         if (newItems.length > 1 && !multiple.value) {
           mediaItems.value = [newItems[0]];
         } else if (multiple.value) {
-          const existingNames = new Set(
-            mediaItems.value.map((m2) => (m2.attachedFileName || m2.name).toLowerCase())
-          );
-          const uniqueNew = newItems.filter(
-            (n2) => !existingNames.has((n2.attachedFileName || n2.name).toLowerCase())
-          );
-          mediaItems.value = mediaItems.value.concat(uniqueNew);
+          mediaItems.value = mediaItems.value.concat(newItems);
         } else {
           mediaItems.value = [newItems[0]];
         }
@@ -35630,12 +35600,11 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
           "field-id": _ctx.inputName,
           "allowed-extensions": _ctx.config.allowedExtensions,
           "allow-multiple": multiple.value,
-          "media-app-url": _ctx.config.mediaAppUrl || "",
           "media-app-translations": _ctx.config.mediaAppTranslations || "",
           "base-path": _ctx.config.basePath || "",
           "upload-files-url": _ctx.config.uploadFilesUrl || "",
           onSelect: onPickerSelect
-        }, null, 8, ["field-id", "allowed-extensions", "allow-multiple", "media-app-url", "media-app-translations", "base-path", "upload-files-url"]),
+        }, null, 8, ["field-id", "allowed-extensions", "allow-multiple", "media-app-translations", "base-path", "upload-files-url"]),
         createVNode(unref(Ro), {
           modelValue: mediaTextModalVisible.value,
           "onUpdate:modelValue": _cache[1] || (_cache[1] = ($event) => mediaTextModalVisible.value = $event),
@@ -35745,7 +35714,6 @@ function readConfig(el) {
     allowAnchors: dataset.allowAnchors === "true",
     allowedExtensions: dataset.allowedExtensions || "",
     mediaItemUrl: dataset.mediaItemUrl || "",
-    mediaAppUrl: dataset.mediaAppUrl || "",
     mediaAppTranslations: dataset.mediaAppTranslations || "",
     basePath: dataset.basePath || "",
     uploadFilesUrl: dataset.uploadFilesUrl || ""

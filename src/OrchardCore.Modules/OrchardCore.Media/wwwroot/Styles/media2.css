@@ -1710,6 +1710,23 @@ to {
     display: none;
 }
 }
+.file-loading-overlay {
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  display: flex;
+}
+.file-loading-overlay .spinner {
+  font-size: 1rem;
+}
+.file-loading-overlay .spinner .loader {
+  width: 40px;
+}
+.file-loading-overlay .spinner .circular {
+  width: 40px;
+  height: 40px;
+}
 .spinner {
   color: #0a8cfa;
   font-size: .7rem;

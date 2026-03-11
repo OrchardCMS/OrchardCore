@@ -74,7 +74,6 @@
       :field-id="inputName"
       :allowed-extensions="config.allowedExtensions"
       :allow-multiple="multiple"
-      :media-app-url="config.mediaAppUrl || ''"
       :media-app-translations="config.mediaAppTranslations || ''"
       :base-path="config.basePath || ''"
       :upload-files-url="config.uploadFilesUrl || ''"
@@ -141,7 +140,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, nextTick } from "vue";
+import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from "vue";
 import { VueFinalModal } from "vue-final-modal";
 import ThumbsContainer from "./ThumbsContainer.vue";
 import MediaPickerModal from "./MediaPickerModal.vue";
@@ -274,6 +273,22 @@ async function loadInitialPaths(paths: IMediaFieldPath[]) {
     selectedMedia.value = mediaItems.value[0];
   }
 }
+
+// --- Click outside to deselect ---
+function onDocumentClick(e: MouseEvent) {
+  const el = (e.target as HTMLElement);
+  // If the click is inside a thumb item or the toolbar, do nothing
+  if (el.closest('.mf-thumb-item') || el.closest('.mf-toolbar') || el.closest('.vfm')) return;
+  selectedMedia.value = null;
+}
+
+onMounted(() => {
+  document.addEventListener('click', onDocumentClick);
+});
+
+onBeforeUnmount(() => {
+  document.removeEventListener('click', onDocumentClick);
+});
 
 // --- Actions ---
 function selectMedia(media: IMediaFieldItem) {

@@ -16,7 +16,8 @@
     "allowSyntheticDefaultImports": true,
     "baseUrl": ".",
     "paths": {
-      "@bloom/*": ["../../../../../../../.scripts/bloom/*"]
+      "@bloom/*": ["../../../../../../../.scripts/bloom/*"],
+      "@media-app": ["../media-app/src/main.ts"]
     }
   },
   "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"],

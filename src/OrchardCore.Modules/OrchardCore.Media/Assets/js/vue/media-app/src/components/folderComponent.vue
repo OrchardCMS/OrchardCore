@@ -46,7 +46,7 @@
 </template>
 
 <script setup lang="ts">
-import { PropType, nextTick, ref, computed, onMounted } from 'vue'
+import { PropType, nextTick, ref, computed, onMounted, watch } from 'vue'
 import dbg from 'debug';
 import { useVfm } from 'vue-final-modal'
 import ModalFolderAction from './ModalFolderAction.vue'
@@ -330,19 +330,23 @@ const confirmFolderModal = (modalName: string, confirmAction: IConfirmFolderActi
   }
 }
 
+// Open root folder when data becomes available (handles both v-if and v-show mounting).
+// With v-show, onMounted fires before data loads so isRoot may be false at that point.
+watch(isRoot, (val) => {
+  if (val && !open.value) {
+    open.value = true;
+  }
+}, { immediate: true });
+
+// Open ancestor folders when a directory is already selected on mount.
+watch(() => selectedDirectory.value?.directoryPath, (dirPath) => {
+  if (dirPath) {
+    openSelectedFolder();
+  }
+}, { immediate: true });
+
 onMounted(() => {
-  // We always open the root folder
-  if (isRoot.value) {
-    toggle();
-  }
-
-  // If a folder is selected we open all folders that are required to be opened.
-  if (selectedDirectory.value.directoryPath) {
-    openSelectedFolder()
-  }
-
   let level = props.level ? props.level : 0;
-
   padding.value = level < 2 ? 10 : (level * 10);
 });
 </script>

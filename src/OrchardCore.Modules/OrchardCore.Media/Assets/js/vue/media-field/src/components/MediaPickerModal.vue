@@ -1,7 +1,6 @@
 <!--
   Media Picker Modal — opens a vue-final-modal with the full Media App
   embedded inside for browsing, uploading, and selecting media items.
-  The media-app module URL and config come from data-* attributes on the field element.
 -->
 <template>
   <VueFinalModal
@@ -55,19 +54,12 @@ import { ref } from "vue";
 import { VueFinalModal } from "vue-final-modal";
 import type { IMediaFieldItem } from "../interfaces/MediaFieldTypes";
 import { useLocalizations } from "@bloom/helpers/localizations";
-
-interface IMediaPickerHandle {
-  getSelectedFiles(): { filePath: string; name: string; mime?: string; url?: string; size?: number }[];
-  clearSelection(): void;
-  unmount(): void;
-}
+import type { IMediaPickerHandle } from "@media-app";
 
 const props = defineProps<{
   fieldId: string;
   allowedExtensions: string;
   allowMultiple?: boolean;
-  /** URL to the media-app ES module (from data-media-app-url) */
-  mediaAppUrl: string;
   /** JSON-serialized translations for the media-app */
   mediaAppTranslations: string;
   /** Base path (e.g., "/") */
@@ -90,43 +82,6 @@ const selectedCount = ref(0);
 
 let pickerHandle: IMediaPickerHandle | null = null;
 
-/**
- * Resolve a sibling file URL relative to this script (media-field2.js).
- */
-function resolveSiblingUrl(filename: string): string {
-  try {
-    return new URL(/* @vite-ignore */ filename, import.meta.url).href;
-  } catch {
-    return `/OrchardCore.Media/Scripts/${filename}`;
-  }
-}
-
-/**
- * Resolve the media-app module URL.
- */
-function resolveMediaAppUrl(): string {
-  return props.mediaAppUrl || resolveSiblingUrl("media2.js");
-}
-
-/**
- * Ensure media-app CSS is loaded (inject link tag if not already present).
- */
-function ensureMediaAppCss() {
-  // Check if media2.css is already loaded (e.g. by Razor <style> tag with version hash)
-  const existing = [...document.querySelectorAll('link[rel="stylesheet"]')]
-    .some(l => l.href.includes("/Styles/media2.css"));
-  if (existing) return;
-
-  // Derive CSS URL: Scripts/media2.js → Styles/media2.css
-  const jsUrl = resolveMediaAppUrl();
-  const cssUrl = jsUrl.replace("/Scripts/media2.js", "/Styles/media2.css");
-  const link = document.createElement("link");
-  link.id = "media-app-picker-css";
-  link.rel = "stylesheet";
-  link.href = cssUrl;
-  document.head.appendChild(link);
-}
-
 function open() {
   visible.value = true;
   loading.value = true;
@@ -138,15 +93,9 @@ async function onOpened() {
   if (!containerRef.value) return;
 
   try {
-    ensureMediaAppCss();
-    const moduleUrl = resolveMediaAppUrl();
-    const mediaAppModule = await import(/* @vite-ignore */ moduleUrl);
+    const { mountMediaAppAsPicker } = await import("@media-app");
 
-    if (!mediaAppModule.mountMediaAppAsPicker) {
-      throw new Error("mountMediaAppAsPicker not found in media-app module");
-    }
-
-    pickerHandle = mediaAppModule.mountMediaAppAsPicker(containerRef.value, {
+    pickerHandle = mountMediaAppAsPicker(containerRef.value, {
       translations: props.mediaAppTranslations,
       basePath: props.basePath,
       uploadFilesUrl: props.uploadFilesUrl,

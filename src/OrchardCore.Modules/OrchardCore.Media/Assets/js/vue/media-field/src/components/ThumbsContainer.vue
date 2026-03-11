@@ -15,7 +15,7 @@
         :key="media.vuekey"
         :class="[
           'mf-thumb-item',
-          { 'mf-thumb-item-active': !allowMultiple && selectedMedia === media },
+          { 'mf-thumb-item-active': selectedMedia === media },
         ]"
         :style="{ width: thumbSize + 2 + 'px' }"
         :draggable="allowMultiple"

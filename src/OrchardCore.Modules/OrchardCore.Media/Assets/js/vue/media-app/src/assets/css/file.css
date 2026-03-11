@@ -1647,6 +1647,30 @@ ol.file-items-grid .file-icon-placeholder .file-ext {
 }
 
 /* ============================================================
+   Loading overlay (centered spinner while folders/files load)
+   ============================================================ */
+.file-loading-overlay {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  width: 100%;
+}
+
+.file-loading-overlay .spinner {
+  font-size: 1rem;
+}
+
+.file-loading-overlay .spinner .loader {
+  width: 40px;
+}
+
+.file-loading-overlay .spinner .circular {
+  width: 40px;
+  height: 40px;
+}
+
+/* ============================================================
    Spinner / Progress
    ============================================================ */
 .spinner {

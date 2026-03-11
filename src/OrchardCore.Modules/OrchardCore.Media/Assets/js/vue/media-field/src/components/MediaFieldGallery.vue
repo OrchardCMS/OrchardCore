@@ -23,7 +23,6 @@
       :field-id="inputName"
       :allowed-extensions="config.allowedExtensions"
       :allow-multiple="multiple"
-      :media-app-url="config.mediaAppUrl || ''"
       :media-app-translations="config.mediaAppTranslations || ''"
       :base-path="config.basePath || ''"
       :upload-files-url="config.uploadFilesUrl || ''"
