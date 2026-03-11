@@ -285,5 +285,18 @@ watch(
   { deep: true }
 );
 
-defineExpose({ addMediaFiles, mediaItems, selectedMedia });
+defineExpose({
+  addMediaFiles,
+  mediaItems,
+  selectedMedia,
+  onEditMediaText,
+  saveMediaText,
+  editingMediaText,
+  onEditAnchor,
+  saveAnchor,
+  resetAnchor,
+  editingAnchor,
+  mediaTextModalVisible,
+  anchorModalVisible,
+});
 </script>

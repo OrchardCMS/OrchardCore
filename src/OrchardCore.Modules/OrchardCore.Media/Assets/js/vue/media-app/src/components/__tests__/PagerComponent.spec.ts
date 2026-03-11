@@ -120,4 +120,57 @@ describe('PagerComponent', () => {
     expect(ss(wrapper).current).toBe(2);
     expect(getActivePage(wrapper)).toBe(3);
   });
+
+  it('previous decrements current page', async () => {
+    const wrapper = mount(PagerComponent, {
+      props: { sourceItems: Array(30).fill(null) },
+    });
+    await nextTick();
+
+    // Navigate to page 2 first
+    await callAndUpdate(wrapper, () => ss(wrapper).next());
+    expect(ss(wrapper).current).toBe(1);
+    expect(getActivePage(wrapper)).toBe(2);
+
+    // Click previous to go back to page 1
+    await callAndUpdate(wrapper, () => ss(wrapper).previous());
+    expect(ss(wrapper).current).toBe(0);
+    expect(getActivePage(wrapper)).toBe(1);
+  });
+
+  it('watch resets current page when sourceItems array is mutated', async () => {
+    // Use a parent wrapper component so the reactive prop and the watcher share
+    // the same underlying reactive array.  The parent re-renders with the SAME
+    // array reference while mutating it, which triggers the deep watcher set up
+    // via `watch(props.sourceItems, () => { current.value = 0 })` in PagerComponent.
+    const { defineComponent, reactive, h } = await import('vue');
+
+    const state = reactive({ items: Array(30).fill(null) as any[] }); // eslint-disable-line @typescript-eslint/no-explicit-any
+    const ParentWrapper = defineComponent({
+      setup() {
+        return () => h(PagerComponent, { sourceItems: state.items });
+      },
+    });
+
+    const parentWrapper = mount(ParentWrapper);
+    await nextTick();
+
+    const pager = parentWrapper.findComponent(PagerComponent);
+    const pagerState = ss(pager);
+
+    // Navigate to page 2
+    pagerState.next();
+    await nextTick();
+    await nextTick();
+    expect(pagerState.current).toBe(1);
+
+    // Mutate the same reactive array in place to trigger the deep watcher
+    state.items.push(null);
+    await nextTick();
+    await nextTick();
+    await nextTick();
+    await nextTick();
+
+    expect(pagerState.current).toBe(0);
+  });
 });

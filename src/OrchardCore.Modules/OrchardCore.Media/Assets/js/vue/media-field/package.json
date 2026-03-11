@@ -18,6 +18,8 @@
     "@fortawesome/free-solid-svg-icons": "^6.4.2",
     "@fortawesome/vue-fontawesome": "^3.0.3",
     "@primevue/themes": "^4.3.0",
+    "@uppy/core": "4.2.1",
+    "@uppy/tus": "4.2.0",
     "axios": "^1.7.2",
     "debug": "^4.3.4",
     "primevue": "^4.3.0",

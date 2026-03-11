@@ -3,6 +3,8 @@ import { useFileLibraryManager } from "../FileLibraryManager";
 import { useGlobals } from "../Globals";
 import { assetsStoreData } from "../../__tests__/mockdata";
 import { IFileLibraryItemDto, IRenameFileLibraryItemDto } from "@bloom/media/interfaces";
+import { notify } from "@bloom/services/notifications/notifier";
+import { FileDataService } from "@bloom/media/api/file-data-service";
 
 // Mock the FileDataService
 vi.mock("@bloom/media/api/file-data-service", () => {
@@ -204,5 +206,32 @@ describe("FileLibraryManager", () => {
     await fileCopy({ oldPath: "/Images/photo1.jpg", newPath: "/Documents/photo1.jpg" });
 
     // Should not throw - just shows notification
+  });
+
+  it("should notify error when getFileLibraryStoreAsync returns falsy response", async () => {
+    const { getFileLibraryStoreAsync } = useFileLibraryManager();
+
+    // Override listAllItems to return null for this test
+    const mockInstance = vi.mocked(FileDataService).mock.results[vi.mocked(FileDataService).mock.results.length - 1].value;
+    mockInstance.listAllItems.mockResolvedValueOnce(null);
+
+    const result = await getFileLibraryStoreAsync();
+
+    expect(result).toEqual([]);
+    expect(notify).toHaveBeenCalled();
+  });
+
+  it("should notify error when getFileLibraryStoreAsync throws", async () => {
+    const { getFileLibraryStoreAsync } = useFileLibraryManager();
+
+    // Override listAllItems to reject for this test
+    const mockInstance = vi.mocked(FileDataService).mock.results[vi.mocked(FileDataService).mock.results.length - 1].value;
+    const testError = new Error("Network error");
+    mockInstance.listAllItems.mockRejectedValueOnce(testError);
+
+    const result = await getFileLibraryStoreAsync();
+
+    expect(result).toEqual([]);
+    expect(notify).toHaveBeenCalledWith(testError);
   });
 });

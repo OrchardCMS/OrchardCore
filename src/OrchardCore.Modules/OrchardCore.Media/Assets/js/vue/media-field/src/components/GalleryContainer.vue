@@ -195,19 +195,21 @@ function onDragStart(e: DragEvent, media: IMediaFieldItem) {
 }
 
 function onDrop(_e: DragEvent, targetMedia: IMediaFieldItem) {
-  if (!draggedItem.value || draggedItem.value === targetMedia) return;
+  if (!draggedItem.value || draggedItem.value.mediaPath === targetMedia.mediaPath) return;
   const items = [...props.mediaItems];
-  const fromIdx = items.indexOf(draggedItem.value);
-  const toIdx = items.indexOf(targetMedia);
+  const fromIdx = items.findIndex((i) => i.mediaPath === draggedItem.value!.mediaPath);
+  const toIdx = items.findIndex((i) => i.mediaPath === targetMedia.mediaPath);
   if (fromIdx < 0 || toIdx < 0) return;
-  items.splice(fromIdx, 1);
-  items.splice(toIdx, 0, draggedItem.value);
+  const [moved] = items.splice(fromIdx, 1);
+  items.splice(toIdx, 0, moved);
   emit("reorder", items);
 }
 
 function onDragEnd() {
   draggedItem.value = null;
 }
+
+defineExpose({ gridView, size, onDragStart, onDrop, onDragEnd });
 
 // Enforce single item for non-multiple mode
 watch(
@@ -217,6 +219,6 @@ watch(
       emit("reorder", [items[items.length - 1]]);
     }
   },
-  { deep: true }
+  { deep: true, immediate: true }
 );
 </script>

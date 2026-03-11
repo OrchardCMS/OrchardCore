@@ -465,6 +465,8 @@
 }
 
 .fileApp #fileContainer #fileContainerMain .file-container-middle {
+  display: flex;
+  flex-direction: column;
   flex-grow: 1;
   flex-shrink: 0;
 }
@@ -1373,7 +1375,7 @@ ol.file-items-grid .file-icon-placeholder .file-ext {
   position: fixed;
   bottom: 1rem;
   right: 1rem;
-  width: 360px;
+  width: 420px;
   max-height: 50vh;
   z-index: 1080;
   background: var(--media-card-bg, #fff);
@@ -1448,6 +1450,21 @@ ol.file-items-grid .file-icon-placeholder .file-ext {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  cursor: pointer;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.25rem;
+}
+
+.upload-toast-error.is-expanded {
+  white-space: normal;
+  word-break: break-word;
+}
+
+.upload-toast-error-toggle {
+  flex-shrink: 0;
+  font-size: 0.625rem;
+  margin-top: 0.2em;
 }
 
 .upload-toast-progress {
@@ -1463,6 +1480,24 @@ ol.file-items-grid .file-icon-placeholder .file-ext {
   background: var(--media-primary);
   border-radius: 2px;
   transition: width 0.2s ease;
+}
+
+.upload-toast-progress-bar.is-paused {
+  background: var(--bs-warning, #ffc107);
+  animation: paused-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes paused-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.upload-toast-speed {
+  font-size: 0.7rem;
+  color: var(--bs-secondary-color, #6c757d);
+  white-space: nowrap;
+  min-width: 65px;
+  text-align: right;
 }
 
 /* ============================================================
@@ -1555,6 +1590,7 @@ ol.file-items-grid .file-icon-placeholder .file-ext {
   white-space: pre-line;
 }
 
+.notification-toast-copy,
 .notification-toast-close {
   flex-shrink: 0;
   background: none;
@@ -1567,8 +1603,13 @@ ol.file-items-grid .file-icon-placeholder .file-ext {
   opacity: 0.6;
 }
 
+.notification-toast-copy:hover,
 .notification-toast-close:hover {
   opacity: 1;
+}
+
+.notification-toast-copy {
+  margin-right: 0.5rem;
 }
 
 .notification-toast-enter-active {
@@ -2143,4 +2184,16 @@ ol.file-items-grid .file-icon-placeholder .file-ext {
 
 [data-bs-theme="dark"] .notification-toast-detail {
   color: var(--bs-secondary-color);
+}
+
+/* Empty folder state */
+.empty-folder-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-grow: 1;
+  color: var(--bs-secondary-color, #6c757d);
+  font-size: 0.9rem;
+  user-select: none;
 }

@@ -103,7 +103,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, ref, toRaw } from "vue";
 import type { IMediaFieldItem } from "../interfaces/MediaFieldTypes";
 import { getIconClassForFilename } from "../services/FontAwesomeThumbnails";
 import { useLocalizations } from "@bloom/helpers/localizations";
@@ -139,10 +139,12 @@ function onDragStart(e: DragEvent, media: IMediaFieldItem) {
 }
 
 function onDrop(_e: DragEvent, targetMedia: IMediaFieldItem) {
-  if (!draggedItem.value || draggedItem.value === targetMedia) return;
+  if (!draggedItem.value || toRaw(draggedItem.value) === toRaw(targetMedia)) return;
   const items = [...props.mediaItems];
-  const fromIdx = items.indexOf(draggedItem.value);
-  const toIdx = items.indexOf(targetMedia);
+  const rawDragged = toRaw(draggedItem.value);
+  const rawTarget = toRaw(targetMedia);
+  const fromIdx = items.findIndex((i) => toRaw(i) === rawDragged);
+  const toIdx = items.findIndex((i) => toRaw(i) === rawTarget);
   if (fromIdx < 0 || toIdx < 0) return;
   items.splice(fromIdx, 1);
   items.splice(toIdx, 0, draggedItem.value);

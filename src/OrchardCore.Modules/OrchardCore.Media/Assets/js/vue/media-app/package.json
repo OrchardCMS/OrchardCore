@@ -21,6 +21,7 @@
     "@uppy/core": "4.2.1",
     "@uppy/drop-target": "3.0.1",
     "@uppy/locales": "4.1.0",
+    "@uppy/tus": "4.2.0",
     "@uppy/xhr-upload": "4.2.0",
     "debug": "^4.3.4",
     "primevue": "^4.3.0",

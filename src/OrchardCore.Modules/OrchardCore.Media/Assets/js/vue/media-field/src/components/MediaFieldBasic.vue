@@ -413,5 +413,5 @@ watch(
 );
 
 // Expose addMediaFiles for external use (parent/mount function)
-defineExpose({ addMediaFiles, mediaItems, selectedMedia });
+defineExpose({ addMediaFiles, mediaItems, selectedMedia, smallThumbs });
 </script>

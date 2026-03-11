@@ -2,7 +2,9 @@ using Fluid;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -52,6 +54,9 @@ using SixLabors.ImageSharp.Web.Caching;
 using SixLabors.ImageSharp.Web.DependencyInjection;
 using SixLabors.ImageSharp.Web.Middleware;
 using SixLabors.ImageSharp.Web.Providers;
+using tusdotnet;
+using tusdotnet.Models;
+using tusdotnet.Models.Configuration;
 
 namespace OrchardCore.Media;
 
@@ -362,5 +367,177 @@ public sealed class SecureMediaStartup : StartupBase
         services.AddScoped<IAuthorizationHandler, ViewMediaFolderAuthorizationHandler>();
 
         services.AddSingleton<IMediaEventHandler, SecureMediaFileStoreEventHandler>();
+    }
+}
+
+[Feature("OrchardCore.Media.Tus")]
+public sealed class MediaTusStartup : StartupBase
+{
+    // Run very early so the size-limit middleware executes before anything
+    // else in the tenant pipeline can attempt to read the request body.
+    public override int Order => OrchardCoreConstants.ConfigureOrder.ReverseProxy - 10;
+
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        // Marker service so views/controllers can detect TUS is enabled.
+        services.AddSingleton<MediaTusMarker>();
+        services.AddSingleton<MediaTusStore>();
+        services.AddSingleton<TusUploadMetadataStore>();
+    }
+
+    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+    {
+        // Disable Kestrel/IIS request body size limit AND ASP.NET Core form size
+        // limit for TUS uploads. This MUST run as early middleware — before any
+        // other middleware reads the request body — otherwise the server rejects
+        // the request with "Request body too large".
+        // tusdotnet enforces its own size limit via MaxAllowedUploadSizeInBytesLong.
+        app.Use(async (context, next) =>
+        {
+            if (context.Request.Path.StartsWithSegments("/api/media/tus"))
+            {
+                // Disable Kestrel's MaxRequestBodySize.
+                var maxRequestBodySizeFeature = context.Features.Get<IHttpMaxRequestBodySizeFeature>();
+                if (maxRequestBodySizeFeature != null && !maxRequestBodySizeFeature.IsReadOnly)
+                {
+                    maxRequestBodySizeFeature.MaxRequestBodySize = null;
+                }
+
+                // Override the form feature so that if anything downstream tries to
+                // read the request as a form, the body length limit won't block it.
+                var formFeature = context.Features.Get<IFormFeature>();
+                if (formFeature == null || formFeature.Form == null)
+                {
+                    context.Features.Set<IFormFeature>(new FormFeature(context.Request, new FormOptions
+                    {
+                        MultipartBodyLengthLimit = long.MaxValue,
+                    }));
+                }
+            }
+
+            await next();
+        });
+
+        routes.MapTus("/api/media/tus", async httpContext =>
+        {
+            var authService = httpContext.RequestServices.GetRequiredService<IAuthorizationService>();
+            if (!await authService.AuthorizeAsync(httpContext.User, MediaPermissions.ManageMedia))
+            {
+                httpContext.Response.StatusCode = StatusCodes.Status403Forbidden;
+                return null;
+            }
+
+            var store = httpContext.RequestServices.GetRequiredService<MediaTusStore>();
+            var mediaOptions = httpContext.RequestServices.GetRequiredService<IOptions<MediaOptions>>();
+
+            return new DefaultTusConfiguration
+            {
+                Store = store,
+                // Disable tusdotnet's in-memory file lock to allow immediate pause/resume.
+                // Without this, resuming after pause returns HTTP 423 while the aborted
+                // PATCH request is still being torn down. File-level contention is handled
+                // by OpenDataFileWithRetryAsync in MediaTusStore instead.
+                FileLockProvider = new NoOpFileLockProvider(),
+                MaxAllowedUploadSizeInBytesLong = mediaOptions.Value.MaxFileSize,
+                Expiration = new tusdotnet.Models.Expiration.SlidingExpiration(mediaOptions.Value.TemporaryFileLifetime),
+                Events = new tusdotnet.Models.Configuration.Events
+                {
+                    OnBeforeCreateAsync = async ctx =>
+                    {
+                        // Validate file extension and destination path from metadata.
+                        var metadata = ctx.Metadata;
+
+                        if (!metadata.TryGetValue("fileName", out var fileNameMeta))
+                        {
+                            ctx.FailRequest("Missing required metadata: fileName");
+                            return;
+                        }
+
+                        var fileName = fileNameMeta.GetString(System.Text.Encoding.UTF8);
+                        var extension = Path.GetExtension(fileName);
+
+                        if (!mediaOptions.Value.AllowedFileExtensions.Contains(extension, StringComparer.OrdinalIgnoreCase))
+                        {
+                            ctx.FailRequest($"File extension not allowed: {extension}");
+                            return;
+                        }
+
+                        // Validate folder permissions if destinationPath is provided.
+                        if (metadata.TryGetValue("destinationPath", out var destMeta))
+                        {
+                            var destinationPath = destMeta.GetString(System.Text.Encoding.UTF8);
+                            if (!await authService.AuthorizeAsync(
+                                httpContext.User,
+                                MediaPermissions.ManageMediaFolder,
+                                (object)destinationPath))
+                            {
+                                ctx.FailRequest("You do not have permission to upload to this folder.");
+                                return;
+                            }
+                        }
+                    },
+
+                    OnCreateCompleteAsync = async ctx =>
+                    {
+                        // Store upload metadata for later retrieval.
+                        var metadata = ctx.Metadata;
+
+                        var fileName = metadata.TryGetValue("fileName", out var fileNameMeta)
+                            ? fileNameMeta.GetString(System.Text.Encoding.UTF8)
+                            : string.Empty;
+                        var destinationPath = metadata.TryGetValue("destinationPath", out var destMeta)
+                            ? destMeta.GetString(System.Text.Encoding.UTF8)
+                            : string.Empty;
+
+                        // Normalize file name if the service is available.
+                        var nameNormalizer = httpContext.RequestServices.GetService<IMediaNameNormalizerService>();
+                        if (nameNormalizer != null)
+                        {
+                            fileName = nameNormalizer.NormalizeFileName(fileName);
+                        }
+
+                        var metadataStore = httpContext.RequestServices.GetRequiredService<TusUploadMetadataStore>();
+                        metadataStore.Set(ctx.FileId, new TusUploadEntry
+                        {
+                            DestinationPath = destinationPath,
+                            FileName = fileName,
+                        });
+                    },
+
+                    OnFileCompleteAsync = async ctx =>
+                    {
+                        // Move completed file from temp to IMediaFileStore.
+                        var metadataStore = httpContext.RequestServices.GetRequiredService<TusUploadMetadataStore>();
+                        var entry = metadataStore.Get(ctx.FileId);
+
+                        if (entry == null)
+                        {
+                            return;
+                        }
+
+                        var mediaFileStore = httpContext.RequestServices.GetRequiredService<IMediaFileStore>();
+                        var mediaFilePath = mediaFileStore.Combine(entry.DestinationPath, entry.FileName);
+
+                        using var stream = store.OpenReadStream(ctx.FileId);
+                        var finalPath = await mediaFileStore.CreateFileFromStreamAsync(mediaFilePath, stream);
+                        entry.MediaFilePath = finalPath;
+
+                        // Clean up the temp file.
+                        await store.DeleteFileAsync(ctx.FileId, ctx.CancellationToken);
+
+                        // Broadcast via SignalR.
+                        var mediaHub = httpContext.RequestServices.GetService<IHubContext<MediaHub>>();
+                        if (mediaHub != null)
+                        {
+                            await mediaHub.Clients.All.SendAsync("MediaChanged", new
+                            {
+                                action = "fileUploaded",
+                                path = entry.DestinationPath,
+                            });
+                        }
+                    },
+                },
+            };
+        });
     }
 }

@@ -15,6 +15,9 @@
             <div v-if="n.summary" class="notification-toast-summary">{{ n.summary }}</div>
             <div v-if="n.detail" class="notification-toast-detail">{{ n.detail }}</div>
           </div>
+          <button class="notification-toast-copy" @click="copyMessage(n)" :title="n.copied ? t.Copied : t.CopyError">
+            <fa-icon :icon="n.copied ? 'fa-solid fa-check' : 'fa-regular fa-copy'"></fa-icon>
+          </button>
           <button class="notification-toast-close" @click="dismiss(n.id)">
             <fa-icon icon="fa-solid fa-times"></fa-icon>
           </button>
@@ -27,12 +30,17 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue';
 import { SeverityLevel } from '@bloom/services/notifications/interfaces';
+import { useLocalizations } from '@bloom/helpers/localizations';
+
+const { translations } = useLocalizations();
+const t = translations;
 
 interface ToastNotification {
   id: number;
   summary?: string;
   detail?: string;
   severity?: SeverityLevel;
+  copied: boolean;
 }
 
 let nextId = 0;
@@ -43,6 +51,17 @@ const dismiss = (id: number) => {
   notifications.value = notifications.value.filter((n) => n.id !== id);
 };
 
+const copyMessage = async (n: ToastNotification) => {
+  const text = [n.summary, n.detail].filter(Boolean).join('\n');
+  try {
+    await navigator.clipboard.writeText(text);
+    n.copied = true;
+    setTimeout(() => { n.copied = false; }, 2000);
+  } catch {
+    // Clipboard API not available
+  }
+};
+
 const addNotification = (message: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
   const id = nextId++;
   notifications.value.push({
@@ -50,6 +69,7 @@ const addNotification = (message: any) => { // eslint-disable-line @typescript-e
     summary: message?.summary,
     detail: message?.detail,
     severity: message?.severity ?? SeverityLevel.Info,
+    copied: false,
   });
 
   const autoCloseMs = message?.severity === SeverityLevel.Error ? 8000 : 5000;

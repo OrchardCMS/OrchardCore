@@ -38,7 +38,7 @@
               </span>
             </div>
           </nav>
-          <div class="action-bar tw:py-3 tw:px-4 tw:flex">
+          <div class="action-bar tw:py-3 tw:px-4 tw:flex tw:flex-wrap">
             <div class="tw:mr-auto">
               <div v-show="canManage" class="tw:flex tw:items-center tw:flex-wrap">
                 <div class="ma-btn-group tw:mr-2">
@@ -116,13 +116,19 @@
           </ol>
           <div
             v-show="assetsStore.filter(x => x.isDirectory == false && x.directoryPath == selectedDirectory.directoryPath).length > 0 && filteredFileItems.length < 1"
-            class="alert-info-box tw:bg-blue-50 tw:border tw:border-blue-200 tw:text-blue-800 tw:rounded tw:px-4 tw:py-3 tw:text-sm">
-            {{ t.FolderFilterEmpty }}
+            class="empty-folder-state">
+            <svg width="64" height="64" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M1.5 13.25V2.75C1.5 2.33579 1.83579 2 2.25 2H5.58579C5.78471 2 5.97547 2.07902 6.11612 2.21967L7.38388 3.48744C7.52453 3.62808 7.71529 3.70711 7.91421 3.70711H13.75C14.1642 3.70711 14.5 4.04289 14.5 4.45711V13.25C14.5 13.6642 14.1642 14 13.75 14H2.25C1.83579 14 1.5 13.6642 1.5 13.25Z" stroke="currentColor" stroke-width="0.8" fill="none"/>
+            </svg>
+            <span class="tw:mt-3">{{ t.FolderFilterEmpty }}</span>
           </div>
           <div
             v-show="assetsStore.filter(x => x.isDirectory == false && x.directoryPath == selectedDirectory.directoryPath).length < 1"
-            class="alert-info-box tw:bg-blue-50 tw:border tw:border-blue-200 tw:text-blue-800 tw:rounded tw:px-4 tw:py-3 tw:text-sm">
-            {{ t.FolderEmpty }}
+            class="empty-folder-state">
+            <svg width="64" height="64" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M1.5 13.25V2.75C1.5 2.33579 1.83579 2 2.25 2H5.58579C5.78471 2 5.97547 2.07902 6.11612 2.21967L7.38388 3.48744C7.52453 3.62808 7.71529 3.70711 7.91421 3.70711H13.75C14.1642 3.70711 14.5 4.04289 14.5 4.45711V13.25C14.5 13.6642 14.1642 14 13.75 14H2.25C1.83579 14 1.5 13.6642 1.5 13.25Z" stroke="currentColor" stroke-width="0.8" fill="none"/>
+            </svg>
+            <span class="tw:mt-3">{{ t.FolderEmpty }}</span>
           </div>
         </div>
         <div v-show="filteredFileItems.length > 0" class="file-container-footer tw:p-3 tw:pb-0">
@@ -182,6 +188,18 @@ const props = defineProps({
   maxUploadChunkSize: {
     type: Number,
     required: true,
+  },
+  tusEnabled: {
+    type: String,
+    default: "false",
+  },
+  tusEndpointUrl: {
+    type: String,
+    default: "",
+  },
+  tusFileInfoUrl: {
+    type: String,
+    default: "",
   },
 })
 
@@ -250,6 +268,9 @@ const { showConfirmModal } = useConfirmModal();
 
 useFileUpload({
   maxUploadChunkSize: props.maxUploadChunkSize,
+  tusEnabled: props.tusEnabled === "true",
+  tusEndpointUrl: props.tusEndpointUrl,
+  tusFileInfoUrl: props.tusFileInfoUrl,
 });
 
 const imageExtensions = new Set(["jpg", "jpeg", "png", "gif", "webp", "svg", "bmp", "ico", "avif"]);

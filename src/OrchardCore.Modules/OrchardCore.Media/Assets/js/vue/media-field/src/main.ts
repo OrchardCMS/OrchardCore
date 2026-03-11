@@ -48,6 +48,9 @@ function readConfig(el: HTMLElement): IMediaFieldConfig {
     mediaAppTranslations: dataset.mediaAppTranslations || "",
     basePath: dataset.basePath || "",
     uploadFilesUrl: dataset.uploadFilesUrl || "",
+    tusEnabled: dataset.tusEnabled === "true",
+    tusEndpointUrl: dataset.tusEndpointUrl || "",
+    tusFileInfoUrl: dataset.tusFileInfoUrl || "",
   };
 }
 
@@ -105,6 +108,9 @@ function readAttachedConfig(el: HTMLElement): IAttachedFieldConfig {
     maxUploadChunkSize: dataset.maxUploadChunkSize
       ? parseInt(dataset.maxUploadChunkSize, 10)
       : undefined,
+    tusEnabled: dataset.tusEnabled === "true",
+    tusEndpointUrl: dataset.tusEndpointUrl || "",
+    tusFileInfoUrl: dataset.tusFileInfoUrl || "",
   };
 }
 
@@ -222,6 +228,7 @@ function autoMount() {
 autoMount();
 
 // Also export for manual mounting and dev mode
+/* v8 ignore next 5 -- DEV-only code, import.meta.env.DEV is a compile-time constant */
 if (import.meta.env.DEV) {
   const devEl = document.getElementById("media-field-dev");
   if (devEl) {

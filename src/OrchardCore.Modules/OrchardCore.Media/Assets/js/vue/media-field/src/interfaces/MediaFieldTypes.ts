@@ -49,4 +49,10 @@ export interface IMediaFieldConfig {
   basePath?: string;
   /** Upload endpoint URL for the media-app picker */
   uploadFilesUrl?: string;
+  /** Whether TUS resumable uploads are enabled */
+  tusEnabled?: boolean;
+  /** TUS upload endpoint URL */
+  tusEndpointUrl?: string;
+  /** TUS file info endpoint URL for fetching metadata after upload */
+  tusFileInfoUrl?: string;
 }

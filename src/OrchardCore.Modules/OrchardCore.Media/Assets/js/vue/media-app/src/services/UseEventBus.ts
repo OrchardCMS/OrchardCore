@@ -26,9 +26,11 @@ export type MittEvents = {
     SelectAll: any; // eslint-disable-line @typescript-eslint/no-explicit-any
     ResetModalFolderAction: any; // eslint-disable-line @typescript-eslint/no-explicit-any
     UploadFileAdded: { name: string };
-    UploadProgress: { name: string; percentage: number };
-    UploadSuccess: { name: string };
+    UploadProgress: { name: string; percentage: number; bytesUploaded: number; bytesTotal: number };
+    UploadSuccess: { name: string; resumed?: boolean };
     UploadError: { name: string; errorMessage: string };
+    UploadPauseToggle: { name: string };
+    UploadPaused: { name: string; paused: boolean };
 };
 
 const emitter = mitt<MittEvents>();

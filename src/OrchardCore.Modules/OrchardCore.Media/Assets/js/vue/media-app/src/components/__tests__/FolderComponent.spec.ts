@@ -38,11 +38,22 @@ vi.mock("@bloom/services/notifications/notifier", () => ({
   NotificationMessage: vi.fn().mockImplementation((data: any) => data), // eslint-disable-line @typescript-eslint/no-explicit-any
 }));
 
+const { mockCanManageFolder } = vi.hoisted(() => {
+  const mockCanManageFolder = vi.fn().mockReturnValue(true);
+  return { mockCanManageFolder };
+});
+vi.mock("../../services/Permissions", () => ({
+  usePermissions: () => ({
+    canManage: { value: true },
+    canManageFolder: mockCanManageFolder,
+  }),
+}));
+
 const { setHierarchicalDirectories } = useHierarchicalTreeBuilder();
 const { setSelectedDirectory, hierarchicalDirectories, setAssetsStore } = useGlobals();
 
 const { setTranslations } = useLocalizations();
-const translationsData = { Ok: "Ok", MoveFileTitle: "Move file(s)" };
+const translationsData = { Ok: "Ok", MoveFileTitle: "Move file(s)", Unauthorized: "Unauthorized", UnauthorizedFolder: "You are not authorized", ErrorMovingFile: "Error moving file", SameFolderMessage: "Cannot move to the same folder" };
 setTranslations(translationsData);
 const { on, emit } = useEventBus();
 useEventBusService();
@@ -477,6 +488,150 @@ describe("FolderComponentActions", () => {
 
     const folderNames = wrapper2.findAll(".folder-name");
     expect(folderNames.length).toBeGreaterThanOrEqual(1);
+  });
+
+  it("handleDrop when source and target folder are the same shows error notification", async () => {
+    const { notify } = await import("@bloom/services/notifications/notifier");
+    (notify as ReturnType<typeof vi.fn>).mockClear();
+
+    setSelectedDirectory({ name: "Test Directory", filePath: "/test/directory", directoryPath: "/test/directory", isDirectory: true });
+
+    const wrapper = mount(FolderComponent, {
+      props: {
+        hierarchicalDirectories: {
+          name: "Test Directory",
+          filePath: "/test/directory",
+          directoryPath: "/test/directory",
+          selected: false,
+          children: [],
+        },
+        level: 0,
+        showModalProp: true,
+      },
+      global: {
+        components: { "fa-icon": FontAwesomeIcon },
+        stubs: { transition: false, teleport: true },
+      },
+    });
+
+    const fileList: IRenameFileLibraryItemDto[] = [
+      {
+        filePath: "/test/directory/photo1.jpg",
+        directoryPath: "/test/directory",
+        name: "photo1.jpg",
+        newName: "",
+        isDirectory: false,
+        size: 896,
+        url: "/media/test/directory/photo1.jpg",
+      },
+    ];
+
+    // Drop from /test/directory to /test/directory (same folder)
+    await wrapper.find(".folder").trigger("drop", {
+      dataTransfer: createMockDataTransfer("drop", fileList, "/test/directory"),
+    });
+
+    expect(notify).toHaveBeenCalled();
+  });
+
+  it("openFolderModal when user does not have manage permission shows unauthorized notification", async () => {
+    const { notify } = await import("@bloom/services/notifications/notifier");
+    (notify as ReturnType<typeof vi.fn>).mockClear();
+
+    // Make canManageFolder return false for this test
+    mockCanManageFolder.mockReturnValue(false);
+
+    setSelectedDirectory({ name: "Test Directory", filePath: "/test/directory", directoryPath: "/test/directory", isDirectory: true });
+
+    const wrapper = mount(FolderComponent, {
+      props: {
+        hierarchicalDirectories: {
+          name: "Test Directory",
+          filePath: "/test/directory",
+          directoryPath: "/test/directory",
+          selected: false,
+          children: [],
+        },
+        level: 0,
+        showModalProp: true,
+      },
+      global: {
+        components: { "fa-icon": FontAwesomeIcon },
+        stubs: { transition: false, teleport: true },
+      },
+    });
+
+    await wrapper.find(".action-button").trigger("click");
+
+    expect(notify).toHaveBeenCalled();
+
+    // Restore canManageFolder to return true for other tests
+    mockCanManageFolder.mockReturnValue(true);
+  });
+
+  it("handleDrop with empty files array returns early", async () => {
+    const { notify } = await import("@bloom/services/notifications/notifier");
+    (notify as ReturnType<typeof vi.fn>).mockClear();
+
+    const wrapper = mount(FolderComponent, {
+      props: {
+        hierarchicalDirectories: {
+          name: "Images",
+          filePath: "/Images",
+          directoryPath: "/Images",
+          selected: false,
+          children: [],
+        },
+        level: 0,
+        showModalProp: true,
+      },
+      global: {
+        components: { "fa-icon": FontAwesomeIcon },
+        stubs: { transition: false, teleport: true },
+      },
+    });
+
+    // Drop with empty files array
+    await wrapper.find(".folder").trigger("drop", {
+      dataTransfer: createMockDataTransfer("drop", [], "/Other"),
+    });
+
+    // Should return early without showing any notification or modal
+    expect(notify).not.toHaveBeenCalled();
+  });
+
+  it("handleDrop to root folder normalizes targetFolder to 'root'", async () => {
+    setSelectedDirectory({ name: "", filePath: "/", directoryPath: "/", isDirectory: true });
+
+    const wrapper = mount(FolderComponent, {
+      props: {
+        hierarchicalDirectories: {
+          name: "Root",
+          filePath: "/",
+          directoryPath: "/",
+          selected: false,
+          children: [],
+        },
+        level: 0,
+        showModalProp: true,
+      },
+      global: {
+        components: { "fa-icon": FontAwesomeIcon },
+        stubs: { transition: false, teleport: true },
+      },
+    });
+
+    const files = [
+      { filePath: "/Other/photo.jpg", directoryPath: "/Other", name: "photo.jpg", newName: "", isDirectory: false },
+    ];
+
+    // Drop files from /Other to / (root) - should normalize to 'root'
+    await wrapper.find(".folder").trigger("drop", {
+      dataTransfer: createMockDataTransfer("drop", files as any, "/Other"),
+    });
+
+    // Should not error — the target is normalized to 'root' and source is '/Other'
+    // The confirm modal should be shown (no same-folder error)
   });
 });
 

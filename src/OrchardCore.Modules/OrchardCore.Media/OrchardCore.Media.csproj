@@ -45,6 +45,7 @@
     <PackageReference Include="Shortcodes" />
     <PackageReference Include="SixLabors.ImageSharp.Web" />
     <PackageReference Include="System.IO.Hashing" />
+    <PackageReference Include="tusdotnet" />
   </ItemGroup>
 
   <ItemGroup>

@@ -8,6 +8,7 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { useGlobals } from "../../services/Globals";
 import { useLocalizations } from "@bloom/helpers/localizations";
 import { useEventBusService } from "../../services/EventBusService";
+import { useEventBus } from "../../services/UseEventBus";
 import { createVfm } from "vue-final-modal";
 
 // Mock FileDataService to avoid real API calls
@@ -178,5 +179,38 @@ describe("fileMenu", () => {
     expect(deleteItem.label).toBe("Delete");
     expect(deleteItem.icon).toBe("fa-solid fa-trash");
     expect(() => deleteItem.command()).not.toThrow();
+  });
+
+  it("toggle emits CloseFileMenus and calls menu.toggle", async () => {
+    const w = mountMenu();
+    const setupState = (w.vm.$ as any).setupState; // eslint-disable-line @typescript-eslint/no-explicit-any
+    const { emit } = useEventBus();
+
+    // Spy on the event bus emit
+    const closeFileMenusSpy = vi.fn();
+    const { on } = useEventBus();
+    on("CloseFileMenus", closeFileMenusSpy);
+
+    // Click the toggle button to invoke the toggle function
+    await w.find("a.ma-btn-link").trigger("click");
+
+    // toggle() calls emit("CloseFileMenus", menu) and menu.value?.toggle(event)
+    expect(closeFileMenusSpy).toHaveBeenCalled();
+  });
+
+  it("CloseFileMenus handler hides menu when sender is different", () => {
+    const w = mountMenu();
+    const setupState = (w.vm.$ as any).setupState; // eslint-disable-line @typescript-eslint/no-explicit-any
+
+    // Replace the menu ref value with a mock object that has hide
+    const hideSpy = vi.fn();
+    const toggleSpy = vi.fn();
+    setupState.menu = { hide: hideSpy, toggle: toggleSpy };
+
+    const { emit } = useEventBus();
+    // Emit CloseFileMenus with a different sender (not this component's menu ref)
+    emit("CloseFileMenus", { different: "sender" });
+
+    expect(hideSpy).toHaveBeenCalled();
   });
 });

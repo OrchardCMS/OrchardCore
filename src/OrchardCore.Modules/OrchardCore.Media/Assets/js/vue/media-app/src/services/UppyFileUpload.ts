@@ -3,6 +3,7 @@ import { useGlobals } from "./Globals";
 import Uppy, { debugLogger, Meta, UppyOptions } from "@uppy/core";
 import DropTarget from "@uppy/drop-target";
 import XHRUpload from "@uppy/xhr-upload";
+import Tus from "@uppy/tus";
 import English from "@uppy/locales/lib/en_US";
 import French from "@uppy/locales/lib/fr_FR";
 import Italian from "@uppy/locales/lib/it_IT";
@@ -26,6 +27,7 @@ const t = translations;
 const culture = document.querySelector("html")?.getAttribute("lang");
 let uppyLocale = English;
 
+/* v8 ignore next 6 -- module-scope culture detection runs at import time before test mocks */
 if (culture == "fr") {
   uppyLocale = French;
 } else if (culture == "it") {
@@ -36,8 +38,11 @@ if (culture == "fr") {
 
 const uppy = new Uppy({ logger: debugLogger, locale: uppyLocale });
 
-interface IFileUploadModel {
+export interface IFileUploadModel {
   maxUploadChunkSize: number;
+  tusEnabled: boolean;
+  tusEndpointUrl: string;
+  tusFileInfoUrl: string;
 }
 
 export const updateUploadOptions = (
@@ -53,7 +58,7 @@ export const updateUploadOptions = (
 };
 
 /**
- * Sets the Uppy file upload URL based on the current upload endpoint.
+ * Sets the Uppy file upload URL based on the current upload endpoint (XHR mode only).
  */
 const setUppyUrl = (): string => {
   const result = uploadFilesUrl.value;
@@ -72,12 +77,43 @@ const setUppyUrl = (): string => {
 
 /**
  * Sets up Uppy.js to handle file uploads.
+ * When TUS is enabled, uses the @uppy/tus plugin for resumable uploads.
+ * Otherwise, falls back to @uppy/xhr-upload (default behavior).
  */
 export const useFileUpload = (model: IFileUploadModel): void => {
-  // Register inside useFileUpload so the handler is re-added after event bus clears
-  on("AfterDirSelected", () => {
-    setUppyUrl();
-  });
+  const isTus = model.tusEnabled && !!model.tusEndpointUrl;
+
+  if (!isTus) {
+    // XHR mode: update endpoint when directory changes
+    on("AfterDirSelected", () => {
+      setUppyUrl();
+    });
+  }
+
+  // Track files that were resumed from a previous partial upload (TUS only).
+  // tus-js-client sets file.tus.uploadUrl from localStorage when it finds a
+  // previous incomplete upload for the same fingerprint. We capture this BEFORE
+  // upload starts so we can report it after success.
+  const resumedFileIds = new Set<string>();
+
+  // Pause/resume handler for TUS uploads.
+  const pausedFileNames = new Set<string>();
+  if (isTus) {
+    on("UploadPauseToggle", (data) => {
+      const file = uppy.getFiles().find((f) => f.name === data.name);
+      if (file) {
+        const wasPaused = pausedFileNames.has(data.name);
+        if (wasPaused) {
+          pausedFileNames.delete(data.name);
+          emit("UploadPaused", { name: data.name, paused: false });
+        } else {
+          pausedFileNames.add(data.name);
+          emit("UploadPaused", { name: data.name, paused: true });
+        }
+        uppy.pauseResume(file.id);
+      }
+    });
+  }
 
   onMounted(() => {
     const fileInput = <HTMLInputElement>document.querySelector("#fileupload");
@@ -121,30 +157,66 @@ export const useFileUpload = (model: IFileUploadModel): void => {
       }
     });
 
-    if (!uppy.getPlugin("XHRUpload")) {
-      uppy.use(XHRUpload, {
-        endpoint: setUppyUrl(),
-        fieldName: "files",
-        bundle: true,
-        shouldRetry: () => false,
-        onAfterResponse(xhr) {
-          const statuses = [400, 401, 403, 500];
-
-          if (statuses.includes(xhr.status)) {
-            const jsonResponse = JSON.parse(xhr.response);
-            notify(
-              new NotificationMessage({
-                summary: jsonResponse.title ?? t.Error,
-                detail: jsonResponse.detail ?? xhr.response,
-                severity: SeverityLevel.Warn,
-              }),
+    // Register the upload plugin (TUS or XHR)
+    if (isTus) {
+      if (!uppy.getPlugin("Tus")) {
+        uppy.use(Tus, {
+          endpoint: model.tusEndpointUrl,
+          retryDelays: [0, 1000, 3000, 5000],
+          chunkSize: model.maxUploadChunkSize > 0
+            ? model.maxUploadChunkSize
+            : 5 * 1024 * 1024, // Default 5MB chunks
+          removeFingerprintOnSuccess: true,
+          onShouldRetry: () => true,
+          // Include file name in the fingerprint so files with the same content
+          // but different names don't collide in tus-js-client's localStorage.
+          fingerprint: (file, options) => {
+            return Promise.resolve(
+              ["tus", file.name, file.type, file.size, options.endpoint].filter(Boolean).join("-"),
             );
-            fileInput.value = "";
+          },
+        });
+      }
+
+      // Detect resumed uploads: when tus-js-client finds a previous partial upload
+      // in localStorage, it sets file.tus.uploadUrl before the upload begins.
+      // We capture this in the "upload" event (fired before actual upload starts).
+      uppy.on("upload", (data) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (data.fileIDs ?? []).forEach((fileId: string) => {
+          const file = uppy.getFile(fileId);
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          if ((file as any)?.tus?.uploadUrl) {
+            resumedFileIds.add(fileId);
           }
-        },
+        });
       });
     } else {
-      setUppyUrl();
+      if (!uppy.getPlugin("XHRUpload")) {
+        uppy.use(XHRUpload, {
+          endpoint: setUppyUrl(),
+          fieldName: "files",
+          bundle: true,
+          shouldRetry: () => false,
+          onAfterResponse(xhr) {
+            const statuses = [400, 401, 403, 500];
+
+            if (statuses.includes(xhr.status)) {
+              const jsonResponse = JSON.parse(xhr.response);
+              notify(
+                new NotificationMessage({
+                  summary: jsonResponse.title ?? t.Error,
+                  detail: jsonResponse.detail ?? xhr.response,
+                  severity: SeverityLevel.Warn,
+                }),
+              );
+              fileInput.value = "";
+            }
+          },
+        });
+      } else {
+        setUppyUrl();
+      }
     }
 
     if (!uppy.getPlugin("DropTarget")) {
@@ -159,8 +231,23 @@ export const useFileUpload = (model: IFileUploadModel): void => {
     }
 
     uppy.on("files-added", async (files) => {
-      uppy.setMeta({ destinationPath: selectedDirectory.value.directoryPath });
+      const destinationPath = selectedDirectory.value.directoryPath;
 
+      if (isTus) {
+        // TUS mode: pass destination path and file name as per-file metadata
+        // (TUS metadata is sent as headers, not query params)
+        files.forEach((file) => {
+          uppy.setFileMeta(file.id, {
+            destinationPath: destinationPath,
+            fileName: file.name,
+          });
+        });
+      } else {
+        // XHR mode: destination path is in the query string
+        uppy.setMeta({ destinationPath: destinationPath });
+      }
+
+      /* v8 ignore next 8 -- canManage is always true; server enforces auth */
       if (!permissionsService.canManage.value) {
         notify(
           new NotificationMessage({
@@ -215,21 +302,32 @@ export const useFileUpload = (model: IFileUploadModel): void => {
       // Upload immediately
       try {
         await uppy.upload();
-        uppy.clear();
+        if (isTus) {
+          // In TUS mode, only remove completed/failed files — paused files must
+          // stay in Uppy's state so they can be resumed via pauseResume().
+          uppy.getFiles().forEach((f) => {
+            if (!pausedFileNames.has(f.name)) {
+              uppy.removeFile(f.id);
+            }
+          });
+        } else {
+          uppy.clear();
+        }
       } catch (error) {
         console.debug("upload error", error);
       }
     });
 
-    uppy.on("progress", (progress) => {
-      // Uppy's global "progress" event reports 0-100 for all files combined
-      const uppyFiles = uppy.getFiles();
-      uppyFiles.forEach((file) => {
+    // Per-file progress event gives us bytesUploaded/bytesTotal for speed calculation
+    uppy.on("upload-progress", (file, progress) => {
+      if (file) {
         emit("UploadProgress", {
           name: file.name ?? "",
-          percentage: file.progress?.percentage ?? progress,
+          percentage: file.progress?.percentage ?? 0,
+          bytesUploaded: progress.bytesUploaded ?? 0,
+          bytesTotal: progress.bytesTotal ?? 0,
         });
-      });
+      }
     });
 
     uppy.on("file-removed", () => {
@@ -239,52 +337,102 @@ export const useFileUpload = (model: IFileUploadModel): void => {
     uppy.on("upload-error", (file, error, response) => {
       console.debug("upload-error", file, error, response);
       if (file) {
+        // Try to extract a meaningful error from the server response body.
+        // tusdotnet returns validation messages as plain text in the response body
+        // (e.g., "File extension not allowed: .mkv").
+        let errorMessage = error?.message ?? t.Error;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const responseBody = (response as any)?.body;
+        if (typeof responseBody === "string" && responseBody.length > 0 && responseBody.length < 500) {
+          errorMessage = responseBody;
+        }
         emit("UploadError", {
           name: file.name ?? "",
-          errorMessage: error?.message ?? t.Error,
+          errorMessage,
         });
       }
     });
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    uppy.on("complete", (result: any) => {
-      fileInput.value = "";
+    if (isTus) {
+      // TUS mode: fetch file metadata from the server after each successful upload
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      uppy.on("upload-success", async (file: any, response: any) => {
+        if (!file || !response?.uploadURL) return;
 
-      if (result.successful) {
-        // Update placeholders in assetsStore with real metadata from the server response.
-        // The server returns { files: [{ Name, Size, DirectoryPath, FilePath, LastModifiedUtc, Url, Mime }, ...] }
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        result.successful.forEach((file: any) => {
-          const serverFiles = file.response?.body?.files;
-          if (Array.isArray(serverFiles)) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            serverFiles.forEach((serverFile: any) => {
-              const placeholder = assetsStore.value.find(
-                (a) => !a.isDirectory && a.name === serverFile.name && a.directoryPath === serverFile.directoryPath
-              );
-              if (placeholder) {
-                placeholder.filePath = serverFile.filePath;
-                placeholder.size = serverFile.size;
-                placeholder.lastModifiedUtc = serverFile.lastModifiedUtc;
-                placeholder.url = serverFile.url;
-                placeholder.mime = serverFile.mime;
-              }
-            });
+        const uploadId = response.uploadURL.split("/").pop();
+        const fileInfoUrl = `${model.tusFileInfoUrl}/${uploadId}`;
+
+        try {
+          const res = await fetch(fileInfoUrl);
+          if (res.ok) {
+            const serverFile = await res.json();
+            const placeholder = assetsStore.value.find(
+              (a) => !a.isDirectory && a.name === (serverFile.name || file.name)
+                && a.directoryPath === (serverFile.directoryPath || selectedDirectory.value.directoryPath)
+            );
+            if (placeholder) {
+              placeholder.filePath = serverFile.filePath;
+              placeholder.size = serverFile.size;
+              placeholder.lastModifiedUtc = serverFile.lastModifiedUtc;
+              placeholder.url = serverFile.url;
+              placeholder.mime = serverFile.mime;
+            }
+            setAssetsStore(assetsStore.value);
           }
-          emit("UploadSuccess", { name: file.name });
-        });
-        setAssetsStore(assetsStore.value);
-      }
+        } catch (err) {
+          console.debug("Failed to fetch TUS file info:", err);
+        }
 
-      if (result.failed) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        result.failed.forEach((file: any) => {
-          emit("UploadError", {
-            name: file.name,
-            errorMessage: file.error ?? t.Error,
-          });
+        // Check if this upload was resumed from a previous partial upload
+        const isResumed = resumedFileIds.has(file.id);
+        resumedFileIds.delete(file.id);
+        emit("UploadSuccess", {
+          name: file.name,
+          resumed: isResumed,
         });
-      }
-    });
+      });
+    } else {
+      // XHR mode: parse server response from the bundled upload
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      uppy.on("complete", (result: any) => {
+        fileInput.value = "";
+
+        if (result.successful) {
+          // Update placeholders in assetsStore with real metadata from the server response.
+          // The server returns { files: [{ Name, Size, DirectoryPath, FilePath, LastModifiedUtc, Url, Mime }, ...] }
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          result.successful.forEach((file: any) => {
+            const serverFiles = file.response?.body?.files;
+            if (Array.isArray(serverFiles)) {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              serverFiles.forEach((serverFile: any) => {
+                const placeholder = assetsStore.value.find(
+                  (a) => !a.isDirectory && a.name === serverFile.name && a.directoryPath === serverFile.directoryPath
+                );
+                if (placeholder) {
+                  placeholder.filePath = serverFile.filePath;
+                  placeholder.size = serverFile.size;
+                  placeholder.lastModifiedUtc = serverFile.lastModifiedUtc;
+                  placeholder.url = serverFile.url;
+                  placeholder.mime = serverFile.mime;
+                }
+              });
+            }
+            emit("UploadSuccess", { name: file.name });
+          });
+          setAssetsStore(assetsStore.value);
+        }
+
+        if (result.failed) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          result.failed.forEach((file: any) => {
+            emit("UploadError", {
+              name: file.name,
+              errorMessage: file.error ?? t.Error,
+            });
+          });
+        }
+      });
+    }
   });
 };

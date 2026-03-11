@@ -180,6 +180,9 @@ export interface IAttachedFieldConfig {
   uploadAction: string;
   tempUploadFolder: string;
   maxUploadChunkSize?: number;
+  tusEnabled?: boolean;
+  tusEndpointUrl?: string;
+  tusFileInfoUrl?: string;
 }
 
 const props = defineProps<{
@@ -194,6 +197,9 @@ const uploadConfig: IFieldUploadConfig = {
   uploadAction: props.config.uploadAction,
   tempUploadFolder: props.config.tempUploadFolder,
   maxUploadChunkSize: props.config.maxUploadChunkSize,
+  tusEnabled: props.config.tusEnabled,
+  tusEndpointUrl: props.config.tusEndpointUrl,
+  tusFileInfoUrl: props.config.tusFileInfoUrl,
 };
 const uploadService = useFieldUpload(uploadConfig);
 
@@ -451,5 +457,5 @@ watch(
   { deep: true }
 );
 
-defineExpose({ mediaItems, selectedMedia });
+defineExpose({ mediaItems, selectedMedia, isDraggingOver });
 </script>

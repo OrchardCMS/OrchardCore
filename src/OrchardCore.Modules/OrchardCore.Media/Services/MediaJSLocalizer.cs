@@ -70,6 +70,11 @@ public class MediaJSLocalizer(IStringLocalizer<MediaJSLocalizer> S) : IJSLocaliz
                 { "Uploads", S["Uploads"].Value },
                 { "Errors", S["Errors"].Value },
                 { "ClearErrors", S["Clear Errors"].Value },
+                { "UploadResumed", S["Resumed"].Value },
+                { "PauseUpload", S["Pause upload"].Value },
+                { "ResumeUpload", S["Resume upload"].Value },
+                { "CopyError", S["Copy error"].Value },
+                { "Copied", S["Copied!"].Value },
                 // Pager component
                 { "PagerFirstButton", S["First"].Value },
                 { "PagerPreviousButton", S["Previous"].Value },

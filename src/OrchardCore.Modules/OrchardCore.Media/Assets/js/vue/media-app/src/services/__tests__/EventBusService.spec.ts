@@ -11,6 +11,7 @@ import { useEventBusService } from "../EventBusService";
 import { useEventBus } from "../../services/UseEventBus";
 import { useGlobals } from "../Globals";
 import { assetsStoreData } from "../../__tests__/mockdata";
+import router from "../../router";
 
 useEventBusService();
 const { on, emit } = useEventBus();
@@ -88,6 +89,24 @@ describe("EventBusService", () => {
 
     expect(spy).toHaveBeenCalledTimes(1);
     expect(spy).toHaveBeenCalledWith(directory);
+  });
+
+  it('should emit "DirDeleted" with subdirectory and navigate to parent', () => {
+    const pushSpy = vi.spyOn(router, "push").mockImplementation(() => Promise.resolve());
+
+    // Use a subdirectory so that the parent path "/Images" is truthy and found in assetsStore
+    const subdirectory: IFileLibraryItemDto = {
+      filePath: "/Images/SubFolder",
+      directoryPath: "/Images/SubFolder",
+      name: "SubFolder",
+      isDirectory: true,
+      size: 0,
+    };
+    emit("DirDeleted", subdirectory);
+
+    // The parent "/Images" should be found in assetsStore and DirSelected should be emitted
+    expect(pushSpy).toHaveBeenCalled();
+    pushSpy.mockRestore();
   });
 
   it('should emit "DirAdded" event', () => {
@@ -276,6 +295,23 @@ describe("EventBusService", () => {
       emit("FileSelectReq", file);
 
       expect(selectedFiles.value.length).toBeGreaterThan(0);
+    });
+  });
+
+  describe("DirSelected with empty directoryPath", () => {
+    it('should call router.push({ name: "home" }) when directoryPath is empty', () => {
+      const pushSpy = vi.spyOn(router, "push").mockImplementation(() => Promise.resolve());
+
+      const directory: IFileLibraryItemDto = {
+        name: "Root",
+        directoryPath: "",
+        filePath: "",
+        isDirectory: true,
+      };
+      emit("DirSelected", directory);
+
+      expect(pushSpy).toHaveBeenCalledWith({ name: "home" });
+      pushSpy.mockRestore();
     });
   });
 

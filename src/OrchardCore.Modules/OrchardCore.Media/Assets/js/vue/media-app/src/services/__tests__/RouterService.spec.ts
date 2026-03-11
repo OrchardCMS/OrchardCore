@@ -153,6 +153,17 @@ describe("RouterService", () => {
     };
   });
 
+  it("Router root folder - no stored directoryPath (falsy) → selects root via else branch", () => {
+    // Set selectedDirectory to one with empty directoryPath so localStorageData.selectedDirectory.directoryPath is falsy
+    setSelectedDirectory({ filePath: "", directoryPath: "", name: "", isDirectory: true });
+    (router.currentRoute.value as any).params = { path: undefined };
+
+    useRouterService();
+
+    // Should fall into the else branch (lines 26-28) and select root
+    expect(selectedDirectory.value.directoryPath).toBe("/");
+  });
+
   it("Router - no currentRoute value and no localStorage → does nothing", () => {
     (router as any).currentRoute = { value: null };
 

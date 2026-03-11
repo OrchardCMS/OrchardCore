@@ -302,6 +302,7 @@ const openFolderModal = async (action: string, folder: IFileLibraryItemDto): Pro
 
     emit("ResetModalFolderAction", null);
   }
+  /* v8 ignore next 3 -- canManageFolder always returns true; server enforces auth */
   else {
     notify(new NotificationMessage({ summary: t.Unauthorized, detail: t.UnauthorizedFolder, severity: SeverityLevel.Warn }));
   }

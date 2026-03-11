@@ -672,6 +672,40 @@ public class MediaGen2ApiController : Controller
         return View(_mediaOptions);
     }
 
+    [HttpGet]
+    [Route("TusFileInfo/{uploadId}")]
+    [ProducesResponseType(typeof(FileStoreEntryDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<FileStoreEntryDto>> GetTusFileInfo(
+        string uploadId,
+        [FromServices] TusUploadMetadataStore tusMetadataStore)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMedia))
+        {
+            return this.ApiChallengeOrForbidForCookieAuth();
+        }
+
+        var entry = tusMetadataStore.Get(uploadId);
+
+        if (entry == null || string.IsNullOrEmpty(entry.MediaFilePath))
+        {
+            return this.ApiNotFoundProblem();
+        }
+
+        var fileInfo = await _mediaFileStore.GetFileInfoAsync(entry.MediaFilePath);
+
+        if (fileInfo == null)
+        {
+            return this.ApiNotFoundProblem();
+        }
+
+        // Remove the entry now that the client has retrieved it.
+        tusMetadataStore.Remove(uploadId);
+
+        return Ok(CreateFileResult(fileInfo));
+    }
+
     private HashSet<string> GetRequestedExtensions(string exts, bool fallback)
     {
         if (!String.IsNullOrWhiteSpace(exts))

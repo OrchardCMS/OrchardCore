@@ -1,9 +1,11 @@
 @using OrchardCore.Localization
 @using OrchardCore.Environment.Shell
+@using OrchardCore.Media.Services
 @inject ShellSettings ShellSettings
 @{
     var jsLocalizations = Orchard.GetJSLocalizations("media-app");
     var siteId = ShellSettings.TenantId;
+    var tusEnabled = Context.RequestServices.IsMediaTusEnabled();
 }
 
 <script type="module" asp-name="media" version="2" at="Foot"></script>
@@ -18,6 +20,9 @@
         base-path="@Href("~")"
         upload-files-url="@Href("~/api/media-gen2/Upload")"
         :max-upload-chunk-size="0"
+        tus-enabled="@(tusEnabled ? "true" : "false")"
+        tus-endpoint-url="@Href("~/api/media/tus")"
+        tus-file-info-url="@Href("~/api/media-gen2/TusFileInfo")"
     >
     </media-app>
 </div>
