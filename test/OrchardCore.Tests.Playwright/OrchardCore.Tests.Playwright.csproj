@@ -1,11 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
+    <TargetFramework>$(CommonTargetFrameworks)</TargetFramework>
     <!-- This project is a placeholder to include the Playwright test files in the solution. -->
     <!-- It does not build or produce any output. -->
-    <NoBuild>true</NoBuild>
-    <NoDefaultLaunchSettingsFile>true</NoDefaultLaunchSettingsFile>
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,5 +13,4 @@
     <Content Include="**\*.ts" />
     <Content Include="**\*.json" Exclude="node_modules\**;test-results\**;playwright-report\**" />
   </ItemGroup>
-
 </Project>
