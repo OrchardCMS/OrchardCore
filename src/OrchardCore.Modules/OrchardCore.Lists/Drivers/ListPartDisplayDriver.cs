@@ -250,7 +250,7 @@ public sealed class ListPartDisplayDriver : ContentPartDisplayDriver<ListPart>
 
             if (!string.IsNullOrEmpty(currentUserName))
             {
-                query = query.With<ContentItemIndex>(x => x.Latest && x.Author.Contains(currentUserName));
+                query = query.With<ContentItemIndex>(x => x.Latest && x.Author == currentUserName);
             }
             else
             {
