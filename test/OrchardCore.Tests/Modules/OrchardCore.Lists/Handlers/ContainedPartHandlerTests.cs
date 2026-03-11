@@ -224,9 +224,5 @@ public class ContainedPartHandlerTests
         _contentDefinitionManager
             .Setup(m => m.ListTypeDefinitionsAsync())
             .ReturnsAsync([blogTypeDef, blogPostTypeDef]);
-
-        _contentDefinitionManager
-            .Setup(m => m.GetTypeDefinitionAsync("BlogPost"))
-            .ReturnsAsync(blogPostTypeDef);
     }
 }

@@ -15,7 +15,7 @@ public class ContainedPartHandler : ContentHandlerBase
 
     internal readonly IStringLocalizer S;
 
-    private HashSet<string> _containedContentTypes;
+    private Dictionary<string, ContentTypeDefinition> _containedContentTypes;
 
     public ContainedPartHandler(
         IServiceProvider serviceProvider,
@@ -31,14 +31,10 @@ public class ContainedPartHandler : ContentHandlerBase
 
         var containedContentTypes = await GetContainedContentTypesAsync();
 
-        if (!containedContentTypes.TryGetValue(contentType, out _))
+        if (!containedContentTypes.TryGetValue(contentType, out var definition))
         {
             return;
         }
-
-        var contentDefinitionManager = _serviceProvider.GetRequiredService<IContentDefinitionManager>();
-
-        var definition = await contentDefinitionManager.GetTypeDefinitionAsync(contentType);
 
         if (definition.IsCreatable())
         {
@@ -62,7 +58,7 @@ public class ContainedPartHandler : ContentHandlerBase
         }
     }
 
-    private async Task<HashSet<string>> GetContainedContentTypesAsync()
+    private async Task<Dictionary<string, ContentTypeDefinition>> GetContainedContentTypesAsync()
     {
         if (_containedContentTypes == null)
         {
@@ -70,7 +66,10 @@ public class ContainedPartHandler : ContentHandlerBase
             var contentDefinitionManager = _serviceProvider.GetRequiredService<IContentDefinitionManager>();
             var typeDefinitions = await contentDefinitionManager.ListTypeDefinitionsAsync();
 
-            _containedContentTypes = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            // Build a lookup of all type definitions by name for quick access.
+            var typeDefinitionMap = typeDefinitions.ToDictionary(t => t.Name, StringComparer.OrdinalIgnoreCase);
+
+            _containedContentTypes = new Dictionary<string, ContentTypeDefinition>(StringComparer.OrdinalIgnoreCase);
 
             foreach (var typeDefinition in typeDefinitions)
             {
@@ -93,7 +92,10 @@ public class ContainedPartHandler : ContentHandlerBase
                             continue;
                         }
 
-                        _containedContentTypes.Add(containedContentType);
+                        if (typeDefinitionMap.TryGetValue(containedContentType, out var containedTypeDef))
+                        {
+                            _containedContentTypes.TryAdd(containedContentType, containedTypeDef);
+                        }
                     }
                 }
             }
