@@ -1,0 +1,48 @@
+@model ContentVersionPruningSettingsViewModel
+
+<div class="mb-3">
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" asp-for="Disabled" checked="@Model.Disabled" />
+        <label class="form-check-label" asp-for="Disabled">@T["Disable"]</label>
+        <span class="hint dashed">@T["Whether the pruning task is disabled."]</span>
+    </div>
+</div>
+
+<div class="mb-3" asp-validation-class-for="RetentionDays">
+    <label asp-for="RetentionDays" class="form-label">@T["Retention period (days)"]</label>
+    <input asp-for="RetentionDays" type="number" min="0" class="form-control" />
+    <span class="hint">@T["Non-latest, non-published versions older than this number of days will be deleted."]</span>
+</div>
+
+<div class="mb-3" asp-validation-class-for="VersionsToKeep">
+    <label asp-for="VersionsToKeep" class="form-label">@T["Archived versions to keep per item"]</label>
+    <input asp-for="VersionsToKeep" type="number" min="0" class="form-control" />
+    <span class="hint">@T["The number of most-recent archived (non-latest, non-published) versions to always retain per content item, regardless of age. Set to 0 to disable this protection."]</span>
+</div>
+
+<div class="mb-3">
+    <label class="form-label">@T["Content types to prune"]</label>
+    <span class="hint dashed">@T["Select the content types whose old archived versions should be pruned. Leave all unchecked to prune all content types."]</span>
+    @await Component.InvokeAsync("SelectContentTypes", new { selectedContentTypes = Model.ContentTypes, htmlName = Html.NameFor(m => m.ContentTypes) })
+</div>
+
+<div class="mb-3">
+    <label asp-for="LastRunUtc" class="form-label">@T["Last run"]</label>
+    <div class="form-control">
+        @(Model.LastRunUtc.HasValue
+            ? await DisplayAsync(await New.DateTime(Utc: Model.LastRunUtc.Value, Format: "g"))
+            : T["Never"])
+    </div>
+    <span class="hint">@T["The last time the content version pruning task was run."]</span>
+</div>
+
+<div class="mb-3">
+    <button type="submit"
+            class="btn btn-secondary"
+            formaction="@Url.Action("Prune", "Admin", new { area = "OrchardCore.Contents.VersionPruning" })"
+            formmethod="post">
+        <i class="fa-solid fa-play" aria-hidden="true"></i>
+        @T["Prune now"]
+    </button>
+    <span class="hint">@T["Immediately run the pruning task using the current settings."]</span>
+</div>
