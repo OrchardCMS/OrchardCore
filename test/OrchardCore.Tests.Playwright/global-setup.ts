@@ -1,6 +1,6 @@
 import path from 'path';
 import fs from 'fs';
-import { buildApp, deleteAppData, copyMigrationsRecipe, hostApp, waitForReady } from './helpers/app-lifecycle';
+import { deleteAppData, copyMigrationsRecipe, hostApp, waitForReady } from './helpers/app-lifecycle';
 
 const isMvc = process.env.ORCHARD_APP === 'mvc';
 const projectRoot = path.resolve(__dirname, '..', '..');
@@ -20,13 +20,12 @@ async function globalSetup(): Promise<void> {
         return;
     }
 
-    // Copy migrations recipe for CMS tests
+    deleteAppData(appDir);
+
+    // Copy migrations recipe for CMS tests (after clean so it's not deleted)
     if (!isMvc) {
         copyMigrationsRecipe(fixturesDir, appDir);
     }
-
-    deleteAppData(appDir);
-    buildApp(appDir);
 
     const server = hostApp(appDir, assembly);
 
