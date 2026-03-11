@@ -28,8 +28,8 @@ Wait for the message "Application started." in the console.
 
 Navigate to the Swagger UI to verify your new endpoints are discovered:
 
-- For Vloparts tenant: `https://localhost:5001/vloparts/swagger`
-- OpenAPI JSON: `https://localhost:5001/vloparts/openapi/v1.json`
+- For Swagger: `https://localhost:5001/tenant-prefix/swagger`
+- OpenAPI JSON: `https://localhost:5001/tenant-prefix/openapi/v1.json`
 
 Check that your new `MediaApiController` endpoints appear in the list.
 
@@ -74,18 +74,11 @@ After regenerating the TypeScript client, rebuild the frontend assets:
 yarn build
 ```
 
-Or for faster incremental builds:
-
-```powershell
-cd src/OrchardCore.Modules/GoRide.Dashboard/Assets/content-editor
-yarn build
-```
-
 ## Configuration
 
 The generation is configured via `OrchardCore.OpenApi.nswag`:
 
-- **Source URL**: `https://localhost:5001/vloparts/openapi/v1.json`
+- **Source URL**: `https://localhost:5001/tenant-prefix/openapi/v1.json`
 - **TypeScript Output**: `../../../.scripts/bloom/services/OpenApiClient.ts`
 - **C# Output**: `Services/OpenApiClient.cs`
 - **Template**: Axios (for TypeScript), HttpClient (for C#)

@@ -73,7 +73,7 @@ import { FontAwesomeIcon as FaIcon } from '@fortawesome/vue-fontawesome';
 import { useLocalizations } from '@bloom/helpers/localizations';
 import { usePermissions } from '../services/Permissions';
 
-const debug = dbg("aptix:file-app");
+const debug = dbg("orchardcore:file-app");
 const modalAction = ref<InstanceType<typeof ModalFolderAction>>();
 
 const { showConfirmModal } = useConfirmModal();

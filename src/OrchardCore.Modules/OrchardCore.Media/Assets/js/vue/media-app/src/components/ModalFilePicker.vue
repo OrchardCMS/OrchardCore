@@ -39,7 +39,7 @@ import { useLocalizations } from '@bloom/helpers/localizations';
 const { translations } = useLocalizations();
 const t = translations
 
-const debug = dbg("aptix:file-app");
+const debug = dbg("orchardcore:file-app");
 
 const props = defineProps({
   title: String,

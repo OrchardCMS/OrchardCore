@@ -48,7 +48,7 @@ import { useEventBus } from '../services/UseEventBus'
 //import dbg from 'debug';
 import { useLocalizations } from '@bloom/helpers/localizations';
 
-//const debug = dbg("aptix:file-app");
+//const debug = dbg("orchardcore:file-app");
 
 const { translations } = useLocalizations();
 const t = translations

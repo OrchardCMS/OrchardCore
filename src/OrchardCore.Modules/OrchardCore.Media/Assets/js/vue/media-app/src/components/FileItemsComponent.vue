@@ -84,7 +84,7 @@ import { useEventBus } from '../services/UseEventBus'
 import { useGlobals } from '../services/Globals';
 import { printDateTime } from '@bloom/media/utils'
 import { useLocalizations } from '@bloom/helpers/localizations';
-//const debug = dbg("aptix:file-app");
+//const debug = dbg("orchardcore:file-app");
 
 const { sortAsc, sortBy, selectedDirectory } = useGlobals();
 const { translations } = useLocalizations();

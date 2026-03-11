@@ -63,7 +63,7 @@ import { useHierarchicalTreeBuilder } from '../services/HierarchicalTreeBuilder'
 import { useLocalizations } from '@bloom/helpers/localizations';
 import { isValidFileExtension } from '@bloom/media/file-extensions';
 
-//const debug = dbg("aptix:file-app");
+//const debug = dbg("orchardcore:file-app");
 const { translations } = useLocalizations();
 const t = translations
 const { getDirectoryTreeNode } = useHierarchicalTreeBuilder();

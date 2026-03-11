@@ -21,7 +21,7 @@ import { downloadFile } from "../services/Utils";
 import { ModalsContainer } from 'vue-final-modal'
 import dbg from "debug";
 
-const debug = dbg("aptix:file-app");
+const debug = dbg("orchardcore:file-app");
 
 const props = defineProps({
   fileItem: {

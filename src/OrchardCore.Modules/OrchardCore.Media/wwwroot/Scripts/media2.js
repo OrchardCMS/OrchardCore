@@ -28156,7 +28156,7 @@ const _sfc_main$8 = /* @__PURE__ */ defineComponent({
     }
   },
   setup(__props) {
-    const debug2 = dbg("aptix:file-app");
+    const debug2 = dbg("orchardcore:file-app");
     const modalAction = ref();
     const { showConfirmModal } = useConfirmModal();
     const { selectedDirectory: selectedDirectory2 } = useGlobals();
@@ -39450,7 +39450,7 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
     }
   },
   setup(__props) {
-    dbg("aptix:file-app");
+    dbg("orchardcore:file-app");
     const props = __props;
     const { emit: emit2 } = useEventBus();
     const { translations: translations2 } = useLocalizations();
