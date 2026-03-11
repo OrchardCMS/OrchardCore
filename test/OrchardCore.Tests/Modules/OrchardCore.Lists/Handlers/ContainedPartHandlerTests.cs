@@ -181,7 +181,7 @@ public class ContainedPartHandlerTests
 
         await _handler.ValidatingAsync(context);
 
-        Assert.True(context.ContentValidateResult.Succeeded);
+        Assert.False(context.ContentValidateResult.Succeeded);
     }
 
     private void SetupBlogWithBlogPostContainedType(bool creatable = false)
