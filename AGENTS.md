@@ -96,14 +96,13 @@ of each filter.
         This is categorized as a simple filter. You cannot use both simple filters and query filters.
 
 
-### Functional Tests (Cypress)
+### Functional Tests (Playwright)
 
-End-to-end tests are located in `test/OrchardCore.Tests.Functional/`.
+End-to-end tests are located in `test/OrchardCore.Tests.Playwright/`.
 
 ```bash
-cd test/OrchardCore.Tests.Functional
-npm install
-npm run cms:test
+yarn workspace @orchardcore/tests-playwright test:cms
+yarn workspace @orchardcore/tests-playwright test:mvc
 ```
 
 ### Automated Browser Testing (Playwright MCP)
@@ -128,7 +127,7 @@ For AI agents, the Playwright MCP (Model Context Protocol) provides automated br
 
 - `test/OrchardCore.Tests/` - Main unit test project
 - `test/OrchardCore.Abstractions.Tests/` - Tests for abstractions
-- `test/OrchardCore.Tests.Functional/` - Cypress E2E tests
+- `test/OrchardCore.Tests.Playwright/` - Playwright E2E tests
 - `test/OrchardCore.Tests.Modules/` - Test modules used by tests
 
 ## Project Structure
@@ -373,20 +372,18 @@ Stop-Process -Id (Get-Content .orchardcore-pid) -Force; Remove-Item .orchardcore
 
 **Debugging**: Check `src/OrchardCore.Cms.Web/App_Data/logs/orchard-log-{date}.log`
 
-### Functional Testing with Cypress
+### Functional Testing with Playwright
 
-Create new functional tests under `test/OrchardCore.Tests.Functional/cypress/` following the existing spec patterns.
+Create new functional tests under `test/OrchardCore.Tests.Playwright/tests/` following the existing spec patterns.
 
-Run the Cypress functional tests:
+Run the Playwright functional tests:
 
 ```bash
-cd test/OrchardCore.Tests.Functional
+# Run CMS functional tests
+yarn workspace @orchardcore/tests-playwright test:cms
 
-# Required before first usage
-npm install
-
-# Run all functional tests
-npm run cms:test
+# Run MVC functional tests
+yarn workspace @orchardcore/tests-playwright test:mvc
 ```
 
 ## Common Extension Points
