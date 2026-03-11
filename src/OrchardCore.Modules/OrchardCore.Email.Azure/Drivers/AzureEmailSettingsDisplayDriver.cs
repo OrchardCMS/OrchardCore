@@ -58,7 +58,7 @@ public sealed class AzureEmailSettingsDisplayDriver : SiteDisplayDriver<AzureEma
         {
             model.IsEnabled = settings.IsEnabled;
             model.DefaultSender = settings.DefaultSender;
-            model.HasConnectionString = !string.IsNullOrWhiteSpace(settings.ConnectionString);
+            model.ConnectionString = settings.ConnectionString;
         }).Location("Content:5#Azure Communication Services")
         .OnGroup(SettingsGroupId);
     }
@@ -104,22 +104,24 @@ public sealed class AzureEmailSettingsDisplayDriver : SiteDisplayDriver<AzureEma
 
             settings.DefaultSender = model.DefaultSender;
 
-            if (string.IsNullOrWhiteSpace(model.ConnectionString)
-                && settings.ConnectionString is null)
+            if (string.IsNullOrWhiteSpace(model.ConnectionString))
             {
                 context.Updater.ModelState.AddModelError(Prefix, nameof(model.ConnectionString), S["Connection string is required."]);
             }
-            else if (!string.IsNullOrWhiteSpace(model.ConnectionString))
+            else
             {
-                // Encrypt the connection string.
-                var protector = _dataProtectionProvider.CreateProtector(AzureEmailOptionsConfiguration.ProtectorName);
+                if (model.ConnectionString != settings.ConnectionString)
+                {
+                    // Encrypt the connection string.
+                    var protector = _dataProtectionProvider.CreateProtector(AzureEmailOptionsConfiguration.ProtectorName);
 
-                var protectedConnection = protector.Protect(model.ConnectionString);
+                    var protectedConnection = protector.Protect(model.ConnectionString);
 
-                // Check if the connection string changed before setting it.
-                hasChanges |= protectedConnection != settings.ConnectionString;
+                    // Check if the connection string changed before setting it.
+                    hasChanges |= protectedConnection != settings.ConnectionString;
 
-                settings.ConnectionString = protectedConnection;
+                    settings.ConnectionString = protectedConnection;
+                }
             }
         }
 

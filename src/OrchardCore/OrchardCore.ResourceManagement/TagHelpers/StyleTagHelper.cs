@@ -1,3 +1,4 @@
+using System.Net.Mime;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
@@ -207,7 +208,7 @@ public class StyleTagHelper : TagHelper
         // If no type was specified, define a default one.
         if (!builder.Attributes.ContainsKey("type"))
         {
-            builder.Attributes.Add("type", "text/css");
+            builder.Attributes.Add("type", MediaTypeNames.Text.Css);
         }
 
         if (At == ResourceLocation.Inline)
