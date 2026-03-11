@@ -1,26 +1,26 @@
 <template>
   <VueFinalModal :focus-trap="false" v-model="showModal" :modal-id="modalName" :esc-to-close="false" :click-to-close="false"
-    class="tw-flex tw-justify-center tw-items-center"
-    content-class="tw-flex tw-flex-col tw-max-w-xl tw-mx-4 tw-p-4 tw-rounded-lg tw-space-y-4 action-modal">
-    <div class="tw-flex tw-justify-between">
+    class="ma-vfm tw:flex tw:justify-center tw:items-center"
+    content-class="tw:flex tw:flex-col tw:max-w-xl tw:mx-4 tw:p-4 tw:rounded-lg tw:space-y-4 action-modal">
+    <div class="tw:flex tw:justify-between">
       <span class="modal__title">
         {{ title }}
       </span>
-      <span class="tw-cursor-pointer" @click="emit('closed')">
+      <span class="tw:cursor-pointer" @click="emit('closed')">
         <fa-icon icon="fa-solid fa-xmark fa-2xl"></fa-icon>
       </span>
     </div>
     <slot></slot>
-    <ul class="tw-list-none tw-m-0 tw-p-0">
+    <ul class="tw:list-none tw:m-0 tw:p-0">
       <p-treeselect @update:modelValue="onFileChange" v-model="fileActionEntry.inputValue" :options="treeNode" :placeholder="t.SelectFile"
-        class="md:tw-w-80 tw-w-full" />
-      <div class="tw-text-red-500 tw-mt-2">{{ errorMessage }}</div>
+        class="tw:md:w-80 tw:w-full" />
+      <div class="tw:text-red-500 tw:mt-2">{{ errorMessage }}</div>
     </ul>
-    <div class="tw-mt-3 tw-flex tw-flex-row tw-justify-end">
-      <button class="ma-btn ma-btn-light tw-border tw-border-gray-400" @click="emit('closed')">
+    <div class="tw:mt-3 tw:flex tw:flex-row tw:justify-end">
+      <button class="ma-btn ma-btn-light tw:border tw:border-gray-400" @click="emit('closed')">
         {{ t.Cancel }}
       </button>
-      <button id="btn-submit" class="tw-ml-2 ma-btn ma-btn-primary"
+      <button id="btn-submit" class="tw:ml-2 ma-btn ma-btn-primary"
         @click="validate({ inputValue: fileActionEntry.inputValue })">
         <slot name="submit"></slot>
       </button>

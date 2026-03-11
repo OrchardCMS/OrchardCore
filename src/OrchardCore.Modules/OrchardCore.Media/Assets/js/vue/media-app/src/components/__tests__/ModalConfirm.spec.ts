@@ -37,7 +37,7 @@ describe("ConfirmationDialogDeleteFile", () => {
       keepAlive: false,
       component: ModalConfirm,
       slots: {
-        default: '<p class="tw-m-0">Are you sure you want to delete this file?</p>',
+        default: '<p class="tw:m-0">Are you sure you want to delete this file?</p>',
         submit: "Ok",
       },
       attrs: {

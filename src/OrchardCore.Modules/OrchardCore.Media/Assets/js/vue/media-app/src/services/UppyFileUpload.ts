@@ -52,10 +52,6 @@ export const updateUploadOptions = (
   uppy.setOptions(options);
 };
 
-on("AfterDirSelected", () => {
-  setUppyUrl();
-});
-
 /**
  * Sets the Uppy file upload URL based on the current upload endpoint.
  */
@@ -78,6 +74,11 @@ const setUppyUrl = (): string => {
  * Sets up Uppy.js to handle file uploads.
  */
 export const useFileUpload = (model: IFileUploadModel): void => {
+  // Register inside useFileUpload so the handler is re-added after event bus clears
+  on("AfterDirSelected", () => {
+    setUppyUrl();
+  });
+
   onMounted(() => {
     const fileInput = <HTMLInputElement>document.querySelector("#fileupload");
 
@@ -120,36 +121,42 @@ export const useFileUpload = (model: IFileUploadModel): void => {
       }
     });
 
-    uppy.use(XHRUpload, {
-      endpoint: setUppyUrl(),
-      fieldName: "files",
-      bundle: true,
-      shouldRetry: () => false,
-      onAfterResponse(xhr) {
-        const statuses = [400, 401, 403, 500];
+    if (!uppy.getPlugin("XHRUpload")) {
+      uppy.use(XHRUpload, {
+        endpoint: setUppyUrl(),
+        fieldName: "files",
+        bundle: true,
+        shouldRetry: () => false,
+        onAfterResponse(xhr) {
+          const statuses = [400, 401, 403, 500];
 
-        if (statuses.includes(xhr.status)) {
-          const jsonResponse = JSON.parse(xhr.response);
-          notify(
-            new NotificationMessage({
-              summary: jsonResponse.title ?? t.Error,
-              detail: jsonResponse.detail ?? xhr.response,
-              severity: SeverityLevel.Warn,
-            }),
-          );
-          fileInput.value = "";
-        }
-      },
-    });
+          if (statuses.includes(xhr.status)) {
+            const jsonResponse = JSON.parse(xhr.response);
+            notify(
+              new NotificationMessage({
+                summary: jsonResponse.title ?? t.Error,
+                detail: jsonResponse.detail ?? xhr.response,
+                severity: SeverityLevel.Warn,
+              }),
+            );
+            fileInput.value = "";
+          }
+        },
+      });
+    } else {
+      setUppyUrl();
+    }
 
-    uppy.use(DropTarget, {
-      target: document.body,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      onDragLeave: (event: any) => {
-        uppy.clear();
-        event.stopPropagation();
-      },
-    });
+    if (!uppy.getPlugin("DropTarget")) {
+      uppy.use(DropTarget, {
+        target: document.body,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        onDragLeave: (event: any) => {
+          uppy.clear();
+          event.stopPropagation();
+        },
+      });
+    }
 
     uppy.on("files-added", async (files) => {
       uppy.setMeta({ destinationPath: selectedDirectory.value.directoryPath });

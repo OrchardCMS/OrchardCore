@@ -27,26 +27,26 @@
           <img
             :src="buildMediaUrl(media.url!, thumbSize)"
             :data-mime="media.mime"
-            class="tw-w-full tw-h-full tw-object-cover"
+            class="tw:w-full tw:h-full tw:object-cover"
           />
         </div>
         <div
           v-else-if="media.errorType === 'transient'"
-          class="mf-gallery-card-icon tw-text-yellow-500"
+          class="mf-gallery-card-icon tw:text-yellow-500"
         >
           <i class="fa-solid fa-triangle-exclamation fa-2x"></i>
-          <span class="tw-text-xs tw-mt-1">{{ T.mediaTemporarilyUnavailable }}</span>
+          <span class="tw:text-xs tw:mt-1">{{ T.mediaTemporarilyUnavailable }}</span>
         </div>
         <div
           v-else-if="media.errorType === 'not-found'"
-          class="mf-gallery-card-icon tw-text-red-500"
+          class="mf-gallery-card-icon tw:text-red-500"
         >
           <i class="fa-solid fa-triangle-exclamation fa-2x"></i>
-          <span class="tw-text-xs tw-mt-1">{{ T.mediaNotFound }}</span>
+          <span class="tw:text-xs tw:mt-1">{{ T.mediaNotFound }}</span>
         </div>
         <div v-else class="mf-gallery-card-icon">
           <i :class="getIconClassForFilename(media.name, 'fa-3x')" :data-mime="media.mime"></i>
-          <span class="tw-text-xs tw-mt-1 tw-truncate tw-max-w-full tw-px-1" :title="media.name">
+          <span class="tw:text-xs tw:mt-1 tw:truncate tw:max-w-full tw:px-1" :title="media.name">
             {{ media.name }}
           </span>
         </div>

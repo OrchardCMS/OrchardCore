@@ -23,27 +23,31 @@
       :field-id="inputName"
       :allowed-extensions="config.allowedExtensions"
       :allow-multiple="multiple"
+      :media-app-url="config.mediaAppUrl || ''"
+      :media-app-translations="config.mediaAppTranslations || ''"
+      :base-path="config.basePath || ''"
+      :upload-files-url="config.uploadFilesUrl || ''"
       @select="onPickerSelect"
     />
 
     <!-- Media Text Modal -->
     <VueFinalModal
       v-model="mediaTextModalVisible"
-      class="tw-flex tw-items-center tw-justify-center"
+      class="tw:flex tw:items-center tw:justify-center"
       content-class="mf-modal-content"
     >
       <div class="mf-modal-header">
         <h5>{{ T.editMediaText }}</h5>
       </div>
       <div class="mf-modal-body" v-if="selectedMedia">
-        <label class="tw-block tw-text-sm tw-font-medium tw-mb-1">{{ T.mediaText }}</label>
+        <label class="tw:block tw:text-sm tw:font-medium tw:mb-1">{{ T.mediaText }}</label>
         <textarea
           v-model="editingMediaText"
-          class="mf-input tw-w-full"
+          class="mf-input tw:w-full"
           rows="3"
         ></textarea>
       </div>
-      <div class="mf-modal-footer tw-flex tw-justify-end tw-gap-2">
+      <div class="mf-modal-footer tw:flex tw:justify-end tw:gap-2">
         <button type="button" class="mf-btn" @click="cancelMediaText">{{ T.cancel }}</button>
         <button type="button" class="mf-btn mf-btn-primary" @click="saveMediaText">{{ T.ok }}</button>
       </div>
@@ -52,18 +56,18 @@
     <!-- Anchor Modal -->
     <VueFinalModal
       v-model="anchorModalVisible"
-      class="tw-flex tw-items-center tw-justify-center"
+      class="tw:flex tw:items-center tw:justify-center"
       content-class="mf-modal-content mf-modal-anchor"
     >
       <div class="mf-modal-header">
         <h5>{{ T.editAnchor }}</h5>
       </div>
-      <div class="mf-modal-body tw-relative" v-if="selectedMedia">
-        <div class="mf-anchor-image-container tw-relative tw-inline-block tw-cursor-crosshair" @click="setAnchor">
+      <div class="mf-modal-body tw:relative" v-if="selectedMedia">
+        <div class="mf-anchor-image-container tw:relative tw:inline-block tw:cursor-crosshair" @click="setAnchor">
           <img
             ref="anchorImageRef"
             :src="selectedMedia.url"
-            class="tw-max-w-full"
+            class="tw:max-w-full"
           />
           <div
             class="mf-anchor-marker"
@@ -76,7 +80,7 @@
           </div>
         </div>
       </div>
-      <div class="mf-modal-footer tw-flex tw-justify-end tw-gap-2">
+      <div class="mf-modal-footer tw:flex tw:justify-end tw:gap-2">
         <button type="button" class="mf-btn" @click="resetAnchor">{{ T.resetAnchor }}</button>
         <button type="button" class="mf-btn" @click="cancelAnchor">{{ T.cancel }}</button>
         <button type="button" class="mf-btn mf-btn-primary" @click="saveAnchor">{{ T.ok }}</button>

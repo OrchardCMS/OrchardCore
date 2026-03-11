@@ -43,4 +43,12 @@ export interface IMediaFieldConfig {
   allowAnchors: boolean;
   allowedExtensions: string;
   mediaItemUrl: string;
+  /** URL to the media-app ES module (media2.js) for the picker modal */
+  mediaAppUrl?: string;
+  /** JSON-serialized translations for the media-app picker */
+  mediaAppTranslations?: string;
+  /** Base path for media URLs (e.g., "/") */
+  basePath?: string;
+  /** Upload endpoint URL for the media-app picker */
+  uploadFilesUrl?: string;
 }

@@ -7,8 +7,8 @@
     <div class="mf-upload-toast-header" @click="expanded = !expanded">
       <div class="mf-upload-toast-title">
         <span>{{ T.uploads }}</span>
-        <span v-if="pendingCount > 0" class="tw-ms-1">({{ pendingCount }})</span>
-        <span v-if="errorCount > 0" class="tw-text-red-500 tw-ms-1">
+        <span v-if="pendingCount > 0" class="tw:ms-1">({{ pendingCount }})</span>
+        <span v-if="errorCount > 0" class="tw:text-red-500 tw:ms-1">
           {{ T.errors }}: {{ errorCount }}
         </span>
       </div>
@@ -16,7 +16,7 @@
         <button
           v-if="errorCount > 0"
           type="button"
-          class="mf-btn-icon tw-text-red-500 tw-me-1"
+          class="mf-btn-icon tw:text-red-500 tw:me-1"
           @click.stop="$emit('clearErrors')"
           :title="T.clearErrors"
         >
@@ -32,7 +32,7 @@
         <button
           v-if="pendingCount === 0"
           type="button"
-          class="mf-btn-icon tw-ms-1"
+          class="mf-btn-icon tw:ms-1"
           @click.stop="dismissAll"
         >
           <i class="fa-solid fa-xmark" aria-hidden="true"></i>
@@ -46,19 +46,19 @@
         class="mf-upload-toast-item"
         :class="{ 'is-error': f.errorMessage, 'is-success': f.success }"
       >
-        <div class="tw-flex tw-justify-between tw-items-center">
+        <div class="tw:flex tw:justify-between tw:items-center">
           <span class="mf-upload-toast-filename" :title="f.errorMessage || f.name">{{ f.name }}</span>
           <button
             v-if="f.errorMessage"
             type="button"
-            class="mf-btn-icon tw-text-red-500"
+            class="mf-btn-icon tw:text-red-500"
             @click="$emit('dismiss', f)"
           >
             <i class="fa-solid fa-xmark" aria-hidden="true"></i>
           </button>
-          <i v-else-if="f.success" class="fa-solid fa-check tw-text-green-500" aria-hidden="true"></i>
+          <i v-else-if="f.success" class="fa-solid fa-check tw:text-green-500" aria-hidden="true"></i>
         </div>
-        <div v-if="f.errorMessage" class="mf-upload-toast-error tw-text-red-500">
+        <div v-if="f.errorMessage" class="mf-upload-toast-error tw:text-red-500">
           {{ f.errorMessage }}
         </div>
         <div v-else-if="!f.success" class="mf-upload-toast-progress">

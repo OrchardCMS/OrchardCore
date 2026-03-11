@@ -1,7 +1,7 @@
 <template>
   <div v-if="isActive" class="sort-indicator">
-    <span v-if="asc"><i class="tw-text-sm fa fa-chevron-up"></i></span>
-    <span v-if="!asc"><i class="tw-text-sm fa fa-chevron-down"></i></span>
+    <span v-if="asc"><i class="tw:text-sm fa fa-chevron-up"></i></span>
+    <span v-if="!asc"><i class="tw:text-sm fa fa-chevron-down"></i></span>
   </div>
 </template>
 

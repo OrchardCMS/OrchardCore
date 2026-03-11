@@ -4957,7 +4957,7 @@ function createAppAPI(render2, hydrate2) {
     const installedPlugins = /* @__PURE__ */ new WeakSet();
     const pluginCleanupFns = [];
     let isMounted = false;
-    const app2 = context.app = {
+    const app = context.app = {
       _uid: uid$1++,
       _component: rootComponent,
       _props: rootProps,
@@ -4974,12 +4974,12 @@ function createAppAPI(render2, hydrate2) {
         if (installedPlugins.has(plugin)) ;
         else if (plugin && isFunction$3(plugin.install)) {
           installedPlugins.add(plugin);
-          plugin.install(app2, ...options2);
+          plugin.install(app, ...options2);
         } else if (isFunction$3(plugin)) {
           installedPlugins.add(plugin);
-          plugin(app2, ...options2);
+          plugin(app, ...options2);
         } else ;
-        return app2;
+        return app;
       },
       mixin(mixin) {
         {
@@ -4987,25 +4987,25 @@ function createAppAPI(render2, hydrate2) {
             context.mixins.push(mixin);
           }
         }
-        return app2;
+        return app;
       },
       component(name, component) {
         if (!component) {
           return context.components[name];
         }
         context.components[name] = component;
-        return app2;
+        return app;
       },
       directive(name, directive) {
         if (!directive) {
           return context.directives[name];
         }
         context.directives[name] = directive;
-        return app2;
+        return app;
       },
       mount(rootContainer, isHydrate, namespace2) {
         if (!isMounted) {
-          const vnode = app2._ceVNode || createVNode(rootComponent, rootProps);
+          const vnode = app._ceVNode || createVNode(rootComponent, rootProps);
           vnode.appContext = context;
           if (namespace2 === true) {
             namespace2 = "svg";
@@ -5018,8 +5018,8 @@ function createAppAPI(render2, hydrate2) {
             render2(vnode, rootContainer, namespace2);
           }
           isMounted = true;
-          app2._container = rootContainer;
-          rootContainer.__vue_app__ = app2;
+          app._container = rootContainer;
+          rootContainer.__vue_app__ = app;
           return getComponentPublicInstance(vnode.component);
         }
       },
@@ -5030,20 +5030,20 @@ function createAppAPI(render2, hydrate2) {
         if (isMounted) {
           callWithAsyncErrorHandling(
             pluginCleanupFns,
-            app2._instance,
+            app._instance,
             16
           );
-          render2(null, app2._container);
-          delete app2._container.__vue_app__;
+          render2(null, app._container);
+          delete app._container.__vue_app__;
         }
       },
       provide(key, value) {
         context.provides[key] = value;
-        return app2;
+        return app;
       },
       runWithContext(fn) {
         const lastApp = currentApp;
-        currentApp = app2;
+        currentApp = app;
         try {
           return fn();
         } finally {
@@ -5051,7 +5051,7 @@ function createAppAPI(render2, hydrate2) {
         }
       }
     };
-    return app2;
+    return app;
   };
 }
 let currentApp = null;
@@ -10273,12 +10273,12 @@ const hydrate = (...args) => {
   ensureHydrationRenderer().hydrate(...args);
 };
 const createApp = (...args) => {
-  const app2 = ensureRenderer().createApp(...args);
-  const { mount } = app2;
-  app2.mount = (containerOrSelector) => {
+  const app = ensureRenderer().createApp(...args);
+  const { mount } = app;
+  app.mount = (containerOrSelector) => {
     const container = normalizeContainer(containerOrSelector);
     if (!container) return;
-    const component = app2._component;
+    const component = app._component;
     if (!isFunction$2(component) && !component.render && !component.template) {
       component.template = container.innerHTML;
     }
@@ -10292,18 +10292,18 @@ const createApp = (...args) => {
     }
     return proxy;
   };
-  return app2;
+  return app;
 };
 const createSSRApp = (...args) => {
-  const app2 = ensureHydrationRenderer().createApp(...args);
-  const { mount } = app2;
-  app2.mount = (containerOrSelector) => {
+  const app = ensureHydrationRenderer().createApp(...args);
+  const { mount } = app;
+  app.mount = (containerOrSelector) => {
     const container = normalizeContainer(containerOrSelector);
     if (container) {
       return mount(container, true, resolveRootNamespace(container));
     }
   };
-  return app2;
+  return app;
 };
 function resolveRootNamespace(container) {
   if (container instanceof SVGElement) {
@@ -18820,11 +18820,11 @@ function useLocalizations() {
   };
   return { translations: translations$4, setTranslations };
 }
-const _hoisted_1$g = { class: "tw-flex tw-justify-between" };
+const _hoisted_1$g = { class: "tw:flex tw:justify-between" };
 const _hoisted_2$f = { class: "modal__title" };
 const _hoisted_3$e = ["id", "value"];
 const _hoisted_4$9 = ["for"];
-const _hoisted_5$9 = { class: "tw-mt-3 tw-flex tw-flex-row tw-justify-end" };
+const _hoisted_5$9 = { class: "tw:mt-3 tw:flex tw:flex-row tw:justify-end" };
 const _sfc_main$a = /* @__PURE__ */ defineComponent({
   __name: "ModalFolderAction",
   props: {
@@ -18886,14 +18886,14 @@ const _sfc_main$a = /* @__PURE__ */ defineComponent({
         "modal-id": __props.modalName,
         "esc-to-close": false,
         "click-to-close": false,
-        class: "tw-flex tw-justify-center tw-items-center",
-        "content-class": "tw-flex tw-flex-col tw-max-w-xl tw-mx-4 tw-p-4 tw-rounded-lg tw-space-y-3 action-modal"
+        class: "ma-vfm tw:flex tw:justify-center tw:items-center",
+        "content-class": "tw:flex tw:flex-col tw:max-w-xl tw:mx-4 tw:p-4 tw:rounded-lg tw:space-y-3 action-modal"
       }, {
         default: withCtx(() => [
           createBaseVNode("div", _hoisted_1$g, [
             createBaseVNode("span", _hoisted_2$f, toDisplayString(__props.title), 1),
             createBaseVNode("span", {
-              class: "tw-cursor-pointer",
+              class: "tw:cursor-pointer",
               onClick: _cache[0] || (_cache[0] = ($event) => isRef$1(showModal) ? showModal.value = false : showModal = false)
             }, [
               createVNode(_component_fa_icon, { icon: "fa-solid fa-xmark fa-2xl" })
@@ -18901,11 +18901,11 @@ const _sfc_main$a = /* @__PURE__ */ defineComponent({
           ]),
           renderSlot(_ctx.$slots, "default"),
           createBaseVNode("div", {
-            class: normalizeClass(["tw-mb-3", { "tw-hidden": unref(folderAction) == null || unref(folderAction) != unref(FolderAction).Create }])
+            class: normalizeClass(["tw:mb-3", { "tw:hidden": unref(folderAction) == null || unref(folderAction) != unref(FolderAction).Create }])
           }, [
             withDirectives(createBaseVNode("input", {
               onKeyup: withKeys(onPressEnter, ["enter"]),
-              class: "p-inputtext tw-w-full",
+              class: "p-inputtext tw:w-full",
               placeholder: "Enter a folder name",
               type: "text",
               name: "create-folder",
@@ -18918,10 +18918,10 @@ const _sfc_main$a = /* @__PURE__ */ defineComponent({
             (openBlock(true), createElementBlock(Fragment, null, renderList(unref(commonActions), (folderActionElem, index2) => {
               return openBlock(), createElementBlock("div", {
                 key: index2,
-                class: "tw-py-1 tw-w-full tw-flex tw-items-center"
+                class: "tw:py-1 tw:w-full tw:flex tw:items-center"
               }, [
                 withDirectives(createBaseVNode("input", {
-                  class: "tw-w-4 tw-h-4",
+                  class: "tw:w-4 tw:h-4",
                   role: "radiobutton",
                   name: "folder-action",
                   type: "radio",
@@ -18932,7 +18932,7 @@ const _sfc_main$a = /* @__PURE__ */ defineComponent({
                   [vModelRadio, unref(folderAction)]
                 ]),
                 createBaseVNode("label", {
-                  class: "tw-ml-2 tw-cursor-pointer tw-w-full",
+                  class: "tw:ml-2 tw:cursor-pointer tw:w-full",
                   for: "action-" + folderActionElem.id
                 }, toDisplayString(folderActionElem.displayName), 9, _hoisted_4$9)
               ]);
@@ -18940,12 +18940,12 @@ const _sfc_main$a = /* @__PURE__ */ defineComponent({
           ]),
           createBaseVNode("div", _hoisted_5$9, [
             createBaseVNode("button", {
-              class: "ma-btn ma-btn-light tw-border tw-border-gray-400 cancel",
+              class: "ma-btn ma-btn-light tw:border tw:border-gray-400 cancel",
               onClick: _cache[3] || (_cache[3] = ($event) => isRef$1(showModal) ? showModal.value = false : showModal = false)
             }, toDisplayString(unref(t2).Cancel), 1),
             createBaseVNode("button", {
               id: "btn-submit",
-              class: "tw-ml-2 ma-btn ma-btn-primary",
+              class: "tw:ml-2 ma-btn ma-btn-primary",
               onClick: _cache[4] || (_cache[4] = ($event) => emit2("confirm", { action: unref(folderAction), folder: __props.folder, inputValue: unref(inputValue) }))
             }, [
               renderSlot(_ctx.$slots, "submit")
@@ -24619,16 +24619,16 @@ function printDateTime(datemillis) {
     return "";
   }
 }
-const _hoisted_1$f = { class: "tw-flex tw-justify-between" };
+const _hoisted_1$f = { class: "tw:flex tw:justify-between" };
 const _hoisted_2$e = { class: "modal__title" };
 const _hoisted_3$d = {
   key: 0,
   class: "file-wrapper"
 };
 const _hoisted_4$8 = { class: "img-wrapper" };
-const _hoisted_5$8 = { class: "tw-uppercase file-ext tw-text-white" };
-const _hoisted_6$7 = { class: "tw-font-bold tw-text-lg tw-ml-2" };
-const _hoisted_7$7 = { class: "tw-mt-3 tw-flex tw-flex-row tw-justify-end" };
+const _hoisted_5$8 = { class: "tw:uppercase file-ext tw:text-white" };
+const _hoisted_6$7 = { class: "tw:font-bold tw:text-lg tw:ml-2" };
+const _hoisted_7$7 = { class: "tw:mt-3 tw:flex tw:flex-row tw:justify-end" };
 const _sfc_main$9 = /* @__PURE__ */ defineComponent({
   __name: "ModalConfirm",
   props: {
@@ -24667,8 +24667,8 @@ const _sfc_main$9 = /* @__PURE__ */ defineComponent({
         modelValue: unref(showModal),
         "onUpdate:modelValue": _cache[3] || (_cache[3] = ($event) => isRef$1(showModal) ? showModal.value = $event : showModal = $event),
         "modal-id": __props.modalName,
-        class: "tw-flex tw-justify-center tw-items-center",
-        "content-class": "tw-flex tw-flex-col tw-max-w-xl tw-mx-4 tw-p-4 tw-rounded-lg tw-space-y-3 action-modal"
+        class: "ma-vfm tw:flex tw:justify-center tw:items-center",
+        "content-class": "tw:flex tw:flex-col tw:max-w-xl tw:mx-4 tw:p-4 tw:rounded-lg tw:space-y-3 action-modal"
       }, {
         default: withCtx(() => {
           var _a3, _b, _c;
@@ -24676,7 +24676,7 @@ const _sfc_main$9 = /* @__PURE__ */ defineComponent({
             createBaseVNode("div", _hoisted_1$f, [
               createBaseVNode("span", _hoisted_2$e, toDisplayString(__props.title), 1),
               createBaseVNode("span", {
-                class: "tw-cursor-pointer",
+                class: "tw:cursor-pointer",
                 onClick: _cache[0] || (_cache[0] = ($event) => emit2("closed"))
               }, [
                 createVNode(_component_fa_icon, { icon: "fa-solid fa-xmark fa-2xl" })
@@ -24705,11 +24705,11 @@ const _sfc_main$9 = /* @__PURE__ */ defineComponent({
             ])) : createCommentVNode("", true),
             createBaseVNode("div", _hoisted_7$7, [
               createBaseVNode("button", {
-                class: "ma-btn ma-btn-light tw-border tw-border-gray-400",
+                class: "ma-btn ma-btn-light tw:border tw:border-gray-400",
                 onClick: _cache[1] || (_cache[1] = ($event) => emit2("closed"))
               }, toDisplayString(unref(t2).Cancel), 1),
               createBaseVNode("button", {
-                class: "tw-ml-2 ma-btn ma-btn-primary",
+                class: "tw:ml-2 ma-btn ma-btn-primary",
                 onClick: _cache[2] || (_cache[2] = ($event) => emit2("confirm", { action: __props.action, files: __props.files, targetFolder: _ctx.$props.targetFolder }))
               }, [
                 renderSlot(_ctx.$slots, "submit")
@@ -24731,12 +24731,12 @@ const useConfirmModal = () => {
       let defaultSlotMessage = "";
       if (modalFileEvent.action == FileAction.Delete) {
         if (modalFileEvent.files.length > 1) {
-          defaultSlotMessage += `<p class="tw-m-0">${t2.DeleteMultipleFilesMessage}</p>`;
+          defaultSlotMessage += `<p class="tw:m-0">${t2.DeleteMultipleFilesMessage}</p>`;
         } else {
-          defaultSlotMessage += `<p class="tw-m-0">${t2.DeleteSingleFileMessage}</p>`;
+          defaultSlotMessage += `<p class="tw:m-0">${t2.DeleteSingleFileMessage}</p>`;
         }
       } else if (modalFileEvent.action == FileAction.Move) {
-        defaultSlotMessage += `<p class="tw-m-0">${t2.MoveFileMessage}</p>`;
+        defaultSlotMessage += `<p class="tw:m-0">${t2.MoveFileMessage}</p>`;
       }
       const { open, destroy } = Go({
         defaultModelValue: false,
@@ -28132,12 +28132,12 @@ const _hoisted_1$e = {
   key: 1,
   class: "expand empty"
 };
-const _hoisted_2$d = { class: "folder-name tw-ms-2" };
-const _hoisted_3$c = { class: "tw-pr-2" };
+const _hoisted_2$d = { class: "folder-name tw:ms-2" };
+const _hoisted_3$c = { class: "tw:pr-2" };
 const _hoisted_4$7 = { class: "folder-actions" };
 const _hoisted_5$7 = ["title"];
-const _hoisted_6$6 = { class: "tw-font-bold tw-m-0" };
-const _hoisted_7$6 = { class: "tw-m-0" };
+const _hoisted_6$6 = { class: "tw:font-bold tw:m-0" };
+const _hoisted_7$6 = { class: "tw:m-0" };
 const _sfc_main$8 = /* @__PURE__ */ defineComponent({
   __name: "folderComponent",
   props: {
@@ -28325,7 +28325,7 @@ const _sfc_main$8 = /* @__PURE__ */ defineComponent({
             ])) : (openBlock(), createElementBlock("span", _hoisted_1$e, " ")),
             _cache[5] || (_cache[5] = createBaseVNode("span", null, [
               createBaseVNode("svg", {
-                class: "tw-ml-1",
+                class: "tw:ml-1",
                 width: "16",
                 height: "16",
                 viewBox: "0 0 16 16",
@@ -28394,20 +28394,20 @@ const _hoisted_1$d = { class: "upload-toast-container" };
 const _hoisted_2$c = { class: "upload-toast-title" };
 const _hoisted_3$b = {
   key: 0,
-  class: "tw-ms-1"
+  class: "tw:ms-1"
 };
 const _hoisted_4$6 = {
   key: 1,
-  class: "tw-text-red-500 tw-ms-1"
+  class: "tw:text-red-500 tw:ms-1"
 };
 const _hoisted_5$6 = { class: "upload-toast-actions" };
 const _hoisted_6$5 = { class: "upload-toast-body" };
-const _hoisted_7$5 = { class: "tw-flex tw-justify-between tw-items-center" };
+const _hoisted_7$5 = { class: "tw:flex tw:justify-between tw:items-center" };
 const _hoisted_8$4 = ["title"];
 const _hoisted_9$3 = ["onClick"];
 const _hoisted_10$3 = {
   key: 0,
-  class: "upload-toast-error tw-text-red-500"
+  class: "upload-toast-error tw:text-red-500"
 };
 const _hoisted_11$2 = {
   key: 1,
@@ -28476,11 +28476,11 @@ const _sfc_main$7 = /* @__PURE__ */ defineComponent({
           createBaseVNode("div", _hoisted_5$6, [
             errorCount.value > 0 ? (openBlock(), createElementBlock("button", {
               key: 0,
-              class: "ma-btn ma-btn-link ma-btn-sm tw-text-red-500 tw-p-0 tw-me-2",
+              class: "ma-btn ma-btn-link ma-btn-sm tw:text-red-500 tw:p-0 tw:me-2",
               onClick: withModifiers(clearErrors, ["stop"])
             }, toDisplayString(unref(t2).ClearErrors), 1)) : createCommentVNode("", true),
             createBaseVNode("button", {
-              class: "ma-btn ma-btn-link ma-btn-sm tw-p-0",
+              class: "ma-btn ma-btn-link ma-btn-sm tw:p-0",
               onClick: _cache[0] || (_cache[0] = withModifiers(($event) => expanded2.value = !expanded2.value, ["stop"]))
             }, [
               createVNode(_component_fa_icon, {
@@ -28489,7 +28489,7 @@ const _sfc_main$7 = /* @__PURE__ */ defineComponent({
             ]),
             pendingCount.value === 0 ? (openBlock(), createElementBlock("button", {
               key: 1,
-              class: "ma-btn ma-btn-link ma-btn-sm tw-p-0 tw-ms-2",
+              class: "ma-btn ma-btn-link ma-btn-sm tw:p-0 tw:ms-2",
               onClick: withModifiers(dismissAll, ["stop"])
             }, [
               createVNode(_component_fa_icon, { icon: "fa-solid fa-times" })
@@ -28509,14 +28509,14 @@ const _sfc_main$7 = /* @__PURE__ */ defineComponent({
                 }, toDisplayString(f2.name), 9, _hoisted_8$4),
                 f2.errorMessage ? (openBlock(), createElementBlock("button", {
                   key: 0,
-                  class: "ma-btn ma-btn-link ma-btn-sm tw-p-0 tw-text-red-500",
+                  class: "ma-btn ma-btn-link ma-btn-sm tw:p-0 tw:text-red-500",
                   onClick: ($event) => dismiss(f2)
                 }, [
                   createVNode(_component_fa_icon, { icon: "fa-solid fa-times" })
                 ], 8, _hoisted_9$3)) : f2.success ? (openBlock(), createBlock(_component_fa_icon, {
                   key: 1,
                   icon: "fa-solid fa-check",
-                  class: "tw-text-green-500"
+                  class: "tw:text-green-500"
                 })) : createCommentVNode("", true)
               ]),
               f2.errorMessage ? (openBlock(), createElementBlock("div", _hoisted_10$3, toDisplayString(f2.errorMessage), 1)) : !f2.success ? (openBlock(), createElementBlock("div", _hoisted_11$2, [
@@ -28734,7 +28734,7 @@ const _sfc_main$5 = /* @__PURE__ */ defineComponent({
       return openBlock(), createElementBlock("div", null, [
         createBaseVNode("nav", {
           id: "file-pager",
-          class: "tw-mb-3",
+          class: "tw:mb-3",
           "aria-label": "Pagination Navigation",
           role: "navigation",
           "data-computed-trigger": (_a2 = itemsInCurrentPage.value) == null ? void 0 : _a2.length
@@ -30151,8 +30151,8 @@ function createRouter(options2) {
     return error ? Promise.reject(error) : Promise.resolve();
   }
   function runWithContext(fn) {
-    const app2 = installedApps.values().next().value;
-    return app2 && typeof app2.runWithContext === "function" ? app2.runWithContext(fn) : fn();
+    const app = installedApps.values().next().value;
+    return app && typeof app.runWithContext === "function" ? app.runWithContext(fn) : fn();
   }
   function navigate(to, from) {
     let guards;
@@ -30300,11 +30300,11 @@ function createRouter(options2) {
     afterEach: afterGuards.add,
     onError: errorListeners.add,
     isReady,
-    install(app2) {
-      app2.component("RouterLink", RouterLink);
-      app2.component("RouterView", RouterView);
-      app2.config.globalProperties.$router = router2;
-      Object.defineProperty(app2.config.globalProperties, "$route", {
+    install(app) {
+      app.component("RouterLink", RouterLink);
+      app.component("RouterView", RouterView);
+      app.config.globalProperties.$router = router2;
+      Object.defineProperty(app.config.globalProperties, "$route", {
         enumerable: true,
         get: () => unref(currentRoute)
       });
@@ -30318,13 +30318,13 @@ function createRouter(options2) {
         get: () => currentRoute.value[key],
         enumerable: true
       });
-      app2.provide(routerKey, router2);
-      app2.provide(routeLocationKey, shallowReactive(reactiveRoute));
-      app2.provide(routerViewLocationKey, currentRoute);
-      const unmountApp = app2.unmount;
-      installedApps.add(app2);
-      app2.unmount = function() {
-        installedApps.delete(app2);
+      app.provide(routerKey, router2);
+      app.provide(routeLocationKey, shallowReactive(reactiveRoute));
+      app.provide(routerViewLocationKey, currentRoute);
+      const unmountApp = app.unmount;
+      installedApps.add(app);
+      app.unmount = function() {
+        installedApps.delete(app);
         if (installedApps.size < 1) {
           pendingLocation = START_LOCATION_NORMALIZED;
           removeHistoryListener && removeHistoryListener();
@@ -34809,9 +34809,6 @@ if (culture == "fr") {
   uppyLocale = es_ES;
 }
 const uppy = new Uppy$1({ logger: debugLogger, locale: uppyLocale });
-on$1("AfterDirSelected", () => {
-  setUppyUrl();
-});
 const setUppyUrl = () => {
   const result = uploadFilesUrl.value;
   const xhrUploadPlugin = uppy.getPlugin("XHRUpload");
@@ -34825,6 +34822,9 @@ const setUppyUrl = () => {
   return result;
 };
 const useFileUpload = (model) => {
+  on$1("AfterDirSelected", () => {
+    setUppyUrl();
+  });
   onMounted(() => {
     const fileInput = document.querySelector("#fileupload");
     uppy.on("restriction-failed", (_file, error) => {
@@ -34860,34 +34860,40 @@ const useFileUpload = (model) => {
         }
       }
     });
-    uppy.use(XHRUpload, {
-      endpoint: setUppyUrl(),
-      fieldName: "files",
-      bundle: true,
-      shouldRetry: () => false,
-      onAfterResponse(xhr) {
-        const statuses = [400, 401, 403, 500];
-        if (statuses.includes(xhr.status)) {
-          const jsonResponse = JSON.parse(xhr.response);
-          notify(
-            new NotificationMessage({
-              summary: jsonResponse.title ?? t$I.Error,
-              detail: jsonResponse.detail ?? xhr.response,
-              severity: SeverityLevel.Warn
-            })
-          );
-          fileInput.value = "";
+    if (!uppy.getPlugin("XHRUpload")) {
+      uppy.use(XHRUpload, {
+        endpoint: setUppyUrl(),
+        fieldName: "files",
+        bundle: true,
+        shouldRetry: () => false,
+        onAfterResponse(xhr) {
+          const statuses = [400, 401, 403, 500];
+          if (statuses.includes(xhr.status)) {
+            const jsonResponse = JSON.parse(xhr.response);
+            notify(
+              new NotificationMessage({
+                summary: jsonResponse.title ?? t$I.Error,
+                detail: jsonResponse.detail ?? xhr.response,
+                severity: SeverityLevel.Warn
+              })
+            );
+            fileInput.value = "";
+          }
         }
-      }
-    });
-    uppy.use(DropTarget, {
-      target: document.body,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      onDragLeave: (event) => {
-        uppy.clear();
-        event.stopPropagation();
-      }
-    });
+      });
+    } else {
+      setUppyUrl();
+    }
+    if (!uppy.getPlugin("DropTarget")) {
+      uppy.use(DropTarget, {
+        target: document.body,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        onDragLeave: (event) => {
+          uppy.clear();
+          event.stopPropagation();
+        }
+      });
+    }
     uppy.on("files-added", async (files) => {
       uppy.setMeta({ destinationPath: selectedDirectory$5.value.directoryPath });
       if (!permissionsService.canManage.value) {
@@ -39129,10 +39135,10 @@ const _sfc_main$4 = /* @__PURE__ */ defineComponent({
     return (_ctx, _cache) => {
       return isActive.value ? (openBlock(), createElementBlock("div", _hoisted_1$a, [
         __props.asc ? (openBlock(), createElementBlock("span", _hoisted_2$9, _cache[0] || (_cache[0] = [
-          createBaseVNode("i", { class: "tw-text-sm fa fa-chevron-up" }, null, -1)
+          createBaseVNode("i", { class: "tw:text-sm fa fa-chevron-up" }, null, -1)
         ]))) : createCommentVNode("", true),
         !__props.asc ? (openBlock(), createElementBlock("span", _hoisted_3$8, _cache[1] || (_cache[1] = [
-          createBaseVNode("i", { class: "tw-text-sm fa fa-chevron-down" }, null, -1)
+          createBaseVNode("i", { class: "tw:text-sm fa fa-chevron-down" }, null, -1)
         ]))) : createCommentVNode("", true)
       ])) : createCommentVNode("", true);
     };
@@ -39149,16 +39155,16 @@ const isValidFileExtension = (_directory, fileName) => {
   }
   return true;
 };
-const _hoisted_1$9 = { class: "tw-flex tw-justify-between" };
+const _hoisted_1$9 = { class: "tw:flex tw:justify-between" };
 const _hoisted_2$8 = { class: "modal__title" };
 const _hoisted_3$7 = { class: "file-wrapper" };
 const _hoisted_4$3 = { class: "img-wrapper" };
-const _hoisted_5$3 = { class: "tw-uppercase file-ext tw-text-white" };
-const _hoisted_6$2 = { class: "tw-font-bold tw-text-lg tw-ml-2" };
-const _hoisted_7$2 = { class: "tw-w-full" };
-const _hoisted_8$2 = { class: "tw-block tw-font-bold tw-text-lg tw-mb-2" };
-const _hoisted_9$2 = { class: "tw-text-red-500 tw-mt-2" };
-const _hoisted_10$2 = { class: "tw-mt-3 tw-flex tw-flex-row tw-justify-end" };
+const _hoisted_5$3 = { class: "tw:uppercase file-ext tw:text-white" };
+const _hoisted_6$2 = { class: "tw:font-bold tw:text-lg tw:ml-2" };
+const _hoisted_7$2 = { class: "tw:w-full" };
+const _hoisted_8$2 = { class: "tw:block tw:font-bold tw:text-lg tw:mb-2" };
+const _hoisted_9$2 = { class: "tw:text-red-500 tw:mt-2" };
+const _hoisted_10$2 = { class: "tw:mt-3 tw:flex tw:flex-row tw:justify-end" };
 const _sfc_main$3 = /* @__PURE__ */ defineComponent({
   __name: "ModalFileAction",
   props: {
@@ -39221,14 +39227,14 @@ const _sfc_main$3 = /* @__PURE__ */ defineComponent({
         "modal-id": __props.modalName,
         "esc-to-close": false,
         "click-to-close": false,
-        class: "tw-flex tw-justify-center tw-items-center",
-        "content-class": "tw-flex tw-flex-col tw-max-w-xl tw-mx-4 tw-p-4 tw-rounded-lg tw-space-y-4 action-modal"
+        class: "ma-vfm tw:flex tw:justify-center tw:items-center",
+        "content-class": "tw:flex tw:flex-col tw:max-w-xl tw:mx-4 tw:p-4 tw:rounded-lg tw:space-y-4 action-modal"
       }, {
         default: withCtx(() => [
           createBaseVNode("div", _hoisted_1$9, [
             createBaseVNode("span", _hoisted_2$8, toDisplayString(__props.title), 1),
             createBaseVNode("span", {
-              class: "tw-cursor-pointer",
+              class: "tw:cursor-pointer",
               onClick: _cache[0] || (_cache[0] = ($event) => emit2("closed"))
             }, [
               createVNode(_component_fa_icon, { icon: "fa-solid fa-xmark fa-2xl" })
@@ -39260,7 +39266,7 @@ const _sfc_main$3 = /* @__PURE__ */ defineComponent({
               createBaseVNode("label", _hoisted_8$2, toDisplayString(unref(t2).Filename), 1),
               withDirectives(createBaseVNode("input", {
                 onKeyup: withKeys(onPressEnter, ["enter"]),
-                class: "p-inputtext tw-w-full",
+                class: "p-inputtext tw:w-full",
                 type: "text",
                 name: "rename",
                 "onUpdate:modelValue": _cache[1] || (_cache[1] = ($event) => fileActionEntry.value.inputValue = $event)
@@ -39274,7 +39280,7 @@ const _sfc_main$3 = /* @__PURE__ */ defineComponent({
               "onUpdate:modelValue": _cache[2] || (_cache[2] = ($event) => fileActionEntry.value.inputValue = $event),
               options: unref(treeNode),
               placeholder: unref(t2).SelectFolder,
-              class: "tw-w-full"
+              class: "tw:w-full"
             }, null, 8, ["modelValue", "options", "placeholder"])) : createCommentVNode("", true),
             __props.action == unref(FileAction).Move ? (openBlock(), createBlock(_component_p_treeselect, {
               key: 2,
@@ -39282,18 +39288,18 @@ const _sfc_main$3 = /* @__PURE__ */ defineComponent({
               "onUpdate:modelValue": _cache[3] || (_cache[3] = ($event) => fileActionEntry.value.inputValue = $event),
               options: unref(treeNode),
               placeholder: unref(t2).SelectFolder,
-              class: "tw-w-full"
+              class: "tw:w-full"
             }, null, 8, ["modelValue", "options", "placeholder"])) : createCommentVNode("", true),
             createBaseVNode("div", _hoisted_9$2, toDisplayString(unref(errorMessage)), 1)
           ]),
           createBaseVNode("div", _hoisted_10$2, [
             createBaseVNode("button", {
-              class: "ma-btn ma-btn-light tw-border tw-border-gray-400",
+              class: "ma-btn ma-btn-light tw:border tw:border-gray-400",
               onClick: _cache[4] || (_cache[4] = ($event) => emit2("closed"))
             }, toDisplayString(unref(t2).Cancel), 1),
             createBaseVNode("button", {
               id: "btn-submit",
-              class: "tw-ml-2 ma-btn ma-btn-primary",
+              class: "tw:ml-2 ma-btn ma-btn-primary",
               onClick: _cache[5] || (_cache[5] = ($event) => validate({ action: __props.action, file: __props.fileItem, inputValue: fileActionEntry.value.inputValue }))
             }, [
               renderSlot(_ctx.$slots, "submit")
@@ -39495,7 +39501,7 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
         createBaseVNode("div", null, [
           createBaseVNode("a", {
             href: "javascript:void(0)",
-            class: "ma-btn ma-btn-link ma-btn-sm action-button tw-px-4 tw-py-3",
+            class: "ma-btn ma-btn-link ma-btn-sm action-button tw:px-4 tw:py-3",
             onClick: toggle3
           }, [
             createVNode(_component_fa_icon, {
@@ -39517,7 +39523,7 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const _hoisted_1$8 = { class: "file-items-table tw-m-0" };
+const _hoisted_1$8 = { class: "file-items-table tw:m-0" };
 const _hoisted_2$7 = { class: "table-head" };
 const _hoisted_3$6 = { class: "table-row header-row" };
 const _hoisted_4$2 = {
@@ -39533,17 +39539,17 @@ const _hoisted_10$1 = { class: "table-cell checkbox-column" };
 const _hoisted_11$1 = { class: "ma-check" };
 const _hoisted_12$1 = ["checked", "onClick"];
 const _hoisted_13$1 = { class: "table-cell" };
-const _hoisted_14$1 = { class: "tw-flex tw-items-center" };
+const _hoisted_14$1 = { class: "tw:flex tw:items-center" };
 const _hoisted_15$1 = { class: "thumbnail-column" };
 const _hoisted_16$1 = { class: "img-wrapper" };
-const _hoisted_17$1 = { class: "tw-uppercase file-ext tw-text-white" };
+const _hoisted_17$1 = { class: "tw:uppercase file-ext tw:text-white" };
 const _hoisted_18$1 = { class: "file-name-cell" };
 const _hoisted_19$1 = { class: "break-word" };
 const _hoisted_20$1 = { class: "table-cell last-modified" };
 const _hoisted_21$1 = { class: "text-col" };
 const _hoisted_22$1 = { class: "table-cell size" };
 const _hoisted_23$1 = { class: "text-col optional-col" };
-const _hoisted_24$1 = { class: "table-cell tw-text-right" };
+const _hoisted_24$1 = { class: "table-cell tw:text-right" };
 const _sfc_main$1 = /* @__PURE__ */ defineComponent({
   __name: "fileItemsComponent",
   props: {
@@ -39593,7 +39599,7 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
               createBaseVNode("div", _hoisted_5$2, [
                 createBaseVNode("input", {
                   checked: __props.isSelectedAll,
-                  class: "ma-check-input tw-cursor-pointer",
+                  class: "ma-check-input tw:cursor-pointer",
                   type: "checkbox",
                   value: "",
                   id: "select-all",
@@ -39657,7 +39663,7 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
                 createBaseVNode("div", _hoisted_11$1, [
                   createBaseVNode("input", {
                     checked: isFileSelected(file),
-                    class: "ma-check-input tw-cursor-pointer",
+                    class: "ma-check-input tw:cursor-pointer",
                     type: "checkbox",
                     value: "",
                     name: "select-file",
@@ -42771,12 +42777,12 @@ class SignalRApp {
 }
 const { getFileLibraryStoreAsync } = useFileLibraryManager();
 function useSignalR() {
-  const app2 = new SignalRApp("/hubs/media");
-  app2.init({
+  const app = new SignalRApp("/hubs/media");
+  app.init({
     url: "/hubs/media"
   });
-  if (app2.connection) {
-    app2.connection.on("MediaChanged", async (message) => {
+  if (app.connection) {
+    app.connection.on("MediaChanged", async (message) => {
       console.debug("MediaChanged event received", message);
       await getFileLibraryStoreAsync();
     });
@@ -42784,7 +42790,7 @@ function useSignalR() {
   signalRReceivedData.on((data9) => {
     console.debug("SignalR received data:", data9);
   });
-  app2.onConnect(
+  app.onConnect(
     () => {
       console.debug("SignalR connected to MediaHub");
     },
@@ -42839,37 +42845,37 @@ const _hoisted_1$7 = {
 const _hoisted_2$6 = { id: "customdropzone" };
 const _hoisted_3$5 = {
   id: "fileContainer",
-  class: "tw-items-stretch"
+  class: "tw:items-stretch"
 };
 const _hoisted_4$1 = {
   id: "navigationApp",
-  class: "file-container-navigation tw-m-0 tw-p-0"
+  class: "file-container-navigation tw:m-0 tw:p-0"
 };
 const _hoisted_5$1 = { id: "folder-tree" };
 const _hoisted_6 = { id: "fileContainerMain" };
 const _hoisted_7 = { class: "file-container-top-bar" };
 const _hoisted_8 = {
   id: "breadcrumb",
-  class: "tw-flex tw-justify-end tw-items-center"
+  class: "tw:flex tw:justify-end tw:items-center"
 };
-const _hoisted_9 = { class: "breadcrumb-path tw-px-3" };
+const _hoisted_9 = { class: "breadcrumb-path tw:px-3" };
 const _hoisted_10 = ["href", "onClick"];
-const _hoisted_11 = { class: "action-bar tw-py-3 tw-px-4 tw-flex" };
-const _hoisted_12 = { class: "tw-mr-auto" };
-const _hoisted_13 = { class: "tw-flex tw-items-center tw-flex-wrap" };
-const _hoisted_14 = { class: "ma-btn-group tw-mr-2" };
+const _hoisted_11 = { class: "action-bar tw:py-3 tw:px-4 tw:flex" };
+const _hoisted_12 = { class: "tw:mr-auto" };
+const _hoisted_13 = { class: "tw:flex tw:items-center tw:flex-wrap" };
+const _hoisted_14 = { class: "ma-btn-group tw:mr-2" };
 const _hoisted_15 = ["title"];
 const _hoisted_16 = ["title"];
 const _hoisted_17 = ["title"];
 const _hoisted_18 = ["title"];
-const _hoisted_19 = { class: "tw-mt-3 md:tw-mt-0" };
+const _hoisted_19 = { class: "tw:mt-3 tw:md:mt-0" };
 const _hoisted_20 = { class: "file-filter" };
 const _hoisted_21 = { class: "ma-input-group" };
 const _hoisted_22 = ["placeholder", "aria-label"];
 const _hoisted_23 = ["disabled"];
 const _hoisted_24 = {
   key: 0,
-  class: "file-container-middle tw-p-3"
+  class: "file-container-middle tw:p-3"
 };
 const _hoisted_25 = { class: "file-items-grid" };
 const _hoisted_26 = ["onDragstart", "onClick"];
@@ -42879,10 +42885,10 @@ const _hoisted_29 = {
   key: 1,
   class: "file-icon-placeholder"
 };
-const _hoisted_30 = { class: "tw-uppercase file-ext tw-text-white" };
+const _hoisted_30 = { class: "tw:uppercase file-ext tw:text-white" };
 const _hoisted_31 = { class: "card-footer" };
 const _hoisted_32 = ["title"];
-const _hoisted_33 = { class: "file-container-footer tw-p-3 tw-pb-0" };
+const _hoisted_33 = { class: "file-container-footer tw:p-3 tw:pb-0" };
 const _sfc_main = /* @__PURE__ */ defineComponent({
   __name: "App",
   props: {
@@ -42931,7 +42937,13 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
     setBasePath(props.basePath);
     setIsDownloading2(false);
     const { translations: translations2, setTranslations } = useLocalizations();
-    setTranslations(typeof props.translations === "string" ? JSON.parse(props.translations) : props.translations);
+    if (props.translations) {
+      try {
+        setTranslations(typeof props.translations === "string" ? JSON.parse(props.translations) : props.translations);
+      } catch (e2) {
+        console.warn("Failed to parse media-app translations:", e2);
+      }
+    }
     const t2 = translations2;
     const { on: on2, emit: emit2 } = useEventBus();
     setIsLoading(true);
@@ -43123,29 +43135,29 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
                     createBaseVNode("a", {
                       title: unref(t2).DeleteAll,
                       href: "javascript:void(0)",
-                      class: normalizeClass(["ma-btn ma-btn-light tw-mr-2", { "is-disabled": unref(selectedFiles2).length < 1 }]),
+                      class: normalizeClass(["ma-btn ma-btn-light tw:mr-2", { "is-disabled": unref(selectedFiles2).length < 1 }]),
                       onClick: _cache[0] || (_cache[0] = () => deleteSelectedFiles())
                     }, [
                       createVNode(_component_fa_icon, { icon: "fa-solid fa-trash" }),
-                      withDirectives(createBaseVNode("span", { class: "ma-badge tw-ml-1" }, toDisplayString(unref(selectedFiles2).length), 513), [
+                      withDirectives(createBaseVNode("span", { class: "ma-badge tw:ml-1" }, toDisplayString(unref(selectedFiles2).length), 513), [
                         [vShow, unref(selectedFiles2).length > 0]
                       ])
                     ], 10, _hoisted_16),
                     createBaseVNode("a", {
                       title: unref(t2).DownloadAll,
                       href: "javascript:void(0)",
-                      class: normalizeClass(["ma-btn ma-btn-light tw-mr-2", { "is-disabled": unref(selectedFiles2).length < 1 || unref(isDownloading2) }]),
+                      class: normalizeClass(["ma-btn ma-btn-light tw:mr-2", { "is-disabled": unref(selectedFiles2).length < 1 || unref(isDownloading2) }]),
                       onClick: _cache[1] || (_cache[1] = () => unref(downloadSelectedFiles)())
                     }, [
                       createVNode(_component_fa_icon, { icon: "fa-solid fa-download" }),
-                      withDirectives(createBaseVNode("span", { class: "ma-badge tw-ml-1" }, toDisplayString(unref(selectedFiles2).length), 513), [
+                      withDirectives(createBaseVNode("span", { class: "ma-badge tw:ml-1" }, toDisplayString(unref(selectedFiles2).length), 513), [
                         [vShow, unref(selectedFiles2).length > 0]
                       ])
                     ], 10, _hoisted_17),
                     createBaseVNode("a", {
                       title: unref(gridView2) ? unref(t2).TableView ?? "Table view" : unref(t2).GridView ?? "Grid view",
                       href: "javascript:void(0)",
-                      class: "ma-btn ma-btn-light tw-mr-2",
+                      class: "ma-btn ma-btn-light tw:mr-2",
                       onClick: _cache[2] || (_cache[2] = ($event) => gridView2.value = !unref(gridView2))
                     }, [
                       createVNode(_component_fa_icon, {
@@ -43227,7 +43239,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
                     ]),
                     createBaseVNode("div", _hoisted_31, [
                       createBaseVNode("span", {
-                        class: "tw-truncate tw-text-sm tw-grow",
+                        class: "tw:truncate tw:text-sm tw:grow",
                         title: file.name
                       }, toDisplayString(file.name), 9, _hoisted_32),
                       createVNode(_sfc_main$2, {
@@ -43241,10 +43253,10 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
               ], 512), [
                 [vShow, filteredFileItems.value.length > 0 && unref(gridView2)]
               ]),
-              withDirectives(createBaseVNode("div", { class: "alert-info-box tw-bg-blue-50 tw-border tw-border-blue-200 tw-text-blue-800 tw-rounded tw-px-4 tw-py-3 tw-text-sm" }, toDisplayString(unref(t2).FolderFilterEmpty), 513), [
+              withDirectives(createBaseVNode("div", { class: "alert-info-box tw:bg-blue-50 tw:border tw:border-blue-200 tw:text-blue-800 tw:rounded tw:px-4 tw:py-3 tw:text-sm" }, toDisplayString(unref(t2).FolderFilterEmpty), 513), [
                 [vShow, unref(assetsStore2).filter((x2) => x2.isDirectory == false && x2.directoryPath == unref(selectedDirectory2).directoryPath).length > 0 && filteredFileItems.value.length < 1]
               ]),
-              withDirectives(createBaseVNode("div", { class: "alert-info-box tw-bg-blue-50 tw-border tw-border-blue-200 tw-text-blue-800 tw-rounded tw-px-4 tw-py-3 tw-text-sm" }, toDisplayString(unref(t2).FolderEmpty), 513), [
+              withDirectives(createBaseVNode("div", { class: "alert-info-box tw:bg-blue-50 tw:border tw:border-blue-200 tw:text-blue-800 tw:rounded tw:px-4 tw:py-3 tw:text-sm" }, toDisplayString(unref(t2).FolderEmpty), 513), [
                 [vShow, unref(assetsStore2).filter((x2) => x2.isDirectory == false && x2.directoryPath == unref(selectedDirectory2).directoryPath).length < 1]
               ])
             ])) : createCommentVNode("", true),
@@ -55212,14 +55224,14 @@ var defaultOptions = {
   }
 };
 var PrimeVueSymbol = Symbol();
-function setup2(app2, options2) {
+function setup2(app, options2) {
   var PrimeVue2 = {
     config: reactive(options2)
   };
-  app2.config.globalProperties.$primevue = PrimeVue2;
-  app2.provide(PrimeVueSymbol, PrimeVue2);
+  app.config.globalProperties.$primevue = PrimeVue2;
+  app.provide(PrimeVueSymbol, PrimeVue2);
   clearConfig();
-  setupConfig(app2, PrimeVue2);
+  setupConfig(app, PrimeVue2);
   return PrimeVue2;
 }
 var stopWatchers = [];
@@ -55230,7 +55242,7 @@ function clearConfig() {
   });
   stopWatchers = [];
 }
-function setupConfig(app2, PrimeVue2) {
+function setupConfig(app, PrimeVue2) {
   var isThemeChanged = ref(false);
   var loadCommonTheme = function loadCommonTheme2() {
     var _PrimeVue$config;
@@ -55258,7 +55270,7 @@ function setupConfig(app2, PrimeVue2) {
   };
   N.on("theme:change", function(newTheme) {
     if (!isThemeChanged.value) {
-      app2.config.globalProperties.$primevue.config.theme = newTheme;
+      app.config.globalProperties.$primevue.config.theme = newTheme;
       isThemeChanged.value = true;
     }
   });
@@ -55320,9 +55332,9 @@ function setupConfig(app2, PrimeVue2) {
   stopWatchers.push(stopUnstyledWatcher);
 }
 var PrimeVue = {
-  install: function install(app2, options2) {
+  install: function install(app, options2) {
     var configOptions = H(defaultOptions, options2);
-    setup2(app2, configOptions);
+    setup2(app, configOptions);
   }
 };
 var o$1l = { transitionDuration: "{transition.duration}" }, r$1i = { borderWidth: "0 0 1px 0", borderColor: "{content.border.color}" }, t$D = { color: "{text.muted.color}", hoverColor: "{text.color}", activeColor: "{text.color}", activeHoverColor: "{text.color}", padding: "1.125rem", fontWeight: "600", borderRadius: "0", borderWidth: "0", borderColor: "{content.border.color}", background: "{content.background}", hoverBackground: "{content.background}", activeBackground: "{content.background}", activeHoverBackground: "{content.background}", focusRing: { width: "{focus.ring.width}", style: "{focus.ring.style}", color: "{focus.ring.color}", offset: "-1px", shadow: "{focus.ring.shadow}" }, toggleIcon: { color: "{text.muted.color}", hoverColor: "{text.color}", activeColor: "{text.color}", activeHoverColor: "{text.color}" }, first: { topBorderRadius: "{content.border.radius}", borderWidth: "0" }, last: { bottomBorderRadius: "{content.border.radius}", activeBottomBorderRadius: "0" } }, e$U = { borderWidth: "0", borderColor: "{content.border.color}", background: "{content.background}", color: "{text.color}", padding: "0 1.125rem 1.125rem 1.125rem" }, c$p = { root: o$1l, panel: r$1i, header: t$D, content: e$U };
@@ -61634,28 +61646,74 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
 }
 script.render = render;
 globalThis.__VUE_PROD_DEVTOOLS__ = false;
-const vfm = zo();
 library$1.add(icons$1);
 library$1.add(icons);
-const app = createApp({ name: "media-library" });
-app.component("media-app", _sfc_main);
-app.component("fa-icon", FontAwesomeIcon);
-app.component("p-menu", script$k);
-app.component("p-treeselect", script);
-registerNotificationBus();
-app.use(PrimeVue, {
-  theme: {
-    preset: index,
-    options: {
-      prefix: "p",
-      darkModeSelector: '[data-bs-theme="dark"]',
-      cssLayer: {
-        name: "primevue",
-        order: "tailwind-base, primevue, tailwind-utilities"
+function configureMediaApp(app) {
+  const vfm = zo();
+  app.component("fa-icon", FontAwesomeIcon);
+  app.component("p-menu", script$k);
+  app.component("p-treeselect", script);
+  app.use(PrimeVue, {
+    theme: {
+      preset: index,
+      options: {
+        prefix: "p",
+        darkModeSelector: '[data-bs-theme="dark"]',
+        cssLayer: {
+          name: "primevue",
+          order: "theme, base, primevue, utilities"
+        }
       }
     }
-  }
-});
-app.use(vfm);
-app.use(router);
-app.mount("#media-app");
+  });
+  app.use(vfm);
+  app.use(router);
+}
+const mediaAppEl = document.getElementById("media-app");
+if (mediaAppEl) {
+  const app = createApp({ name: "media-library" });
+  app.component("media-app", _sfc_main);
+  configureMediaApp(app);
+  registerNotificationBus();
+  app.mount("#media-app");
+}
+function mountMediaAppAsPicker(container, config2) {
+  const globals = useGlobals();
+  const emitter2 = useEventBus();
+  emitter2.all.clear();
+  globals.setSelectedFiles([]);
+  globals.setSelectedAll(false);
+  const app = createApp({
+    name: "media-picker",
+    render: () => h$6(_sfc_main, {
+      translations: config2.translations,
+      basePath: config2.basePath,
+      uploadFilesUrl: config2.uploadFilesUrl,
+      maxUploadChunkSize: config2.maxUploadChunkSize ?? 0
+    })
+  });
+  configureMediaApp(app);
+  registerNotificationBus();
+  app.mount(container);
+  const stopWatch = config2.onSelectionChange ? watch(
+    globals.selectedFiles,
+    (files) => config2.onSelectionChange(files.length),
+    { deep: true }
+  ) : null;
+  return {
+    getSelectedFiles() {
+      return [...globals.selectedFiles.value];
+    },
+    clearSelection() {
+      globals.setSelectedFiles([]);
+      globals.setSelectedAll(false);
+    },
+    unmount() {
+      if (stopWatch) stopWatch();
+      app.unmount();
+    }
+  };
+}
+export {
+  mountMediaAppAsPicker
+};

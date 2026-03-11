@@ -4,7 +4,7 @@
 <template>
   <div class="mf-gallery">
     <!-- Toolbar (only for multiple mode) -->
-    <div v-if="allowMultiple" class="mf-toolbar tw-flex tw-items-center tw-gap-2 tw-mb-2 tw-flex-wrap">
+    <div v-if="allowMultiple" class="mf-toolbar tw:flex tw:items-center tw:gap-2 tw:mb-2 tw:flex-wrap">
       <button
         type="button"
         class="mf-btn mf-btn-primary"
@@ -15,7 +15,7 @@
       </button>
 
       <!-- View toggles -->
-      <div class="mf-view-toggles tw-flex tw-items-center tw-gap-1 tw-ml-auto">
+      <div class="mf-view-toggles tw:flex tw:items-center tw:gap-1 tw:ml-auto">
         <button
           type="button"
           class="mf-btn-icon"
@@ -78,7 +78,7 @@
         class="mf-gallery-list-empty"
         @click="$emit('showPicker')"
       >
-        <i class="fa-solid fa-plus tw-mr-1" aria-hidden="true"></i>
+        <i class="fa-solid fa-plus tw:mr-1" aria-hidden="true"></i>
         {{ T.addMedia }}
       </li>
     </ol>
@@ -109,8 +109,8 @@
         <div class="mf-gallery-card mf-gallery-card-add">
           <div class="mf-gallery-card-preview">
             <div class="mf-gallery-card-icon">
-              <i class="fa-solid fa-plus fa-2x tw-opacity-50" aria-hidden="true"></i>
-              <span class="tw-text-xs tw-mt-1 tw-opacity-60">{{ T.addMedia }}</span>
+              <i class="fa-solid fa-plus fa-2x tw:opacity-50" aria-hidden="true"></i>
+              <span class="tw:text-xs tw:mt-1 tw:opacity-60">{{ T.addMedia }}</span>
             </div>
           </div>
         </div>

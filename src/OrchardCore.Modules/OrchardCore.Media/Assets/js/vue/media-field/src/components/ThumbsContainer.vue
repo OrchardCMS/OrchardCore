@@ -8,7 +8,7 @@
     <!-- Thumbnail grid -->
     <ol
       ref="gridRef"
-      class="mf-thumbs-grid tw-flex tw-flex-row tw-items-start tw-flex-wrap tw-gap-2 tw-p-0 tw-m-0"
+      class="mf-thumbs-grid tw:flex tw:flex-row tw:items-start tw:flex-wrap tw:gap-2 tw:p-0 tw:m-0"
     >
       <li
         v-for="media in visibleItems"
@@ -27,9 +27,9 @@
       >
         <!-- Transient error -->
         <div v-if="media.errorType === 'transient'">
-          <div class="mf-thumb-preview tw-flex tw-flex-col tw-items-center tw-justify-center" :style="{ height: thumbSize + 'px' }">
-            <i class="fa-solid fa-triangle-exclamation tw-text-yellow-500 tw-text-2xl tw-block" aria-hidden="true"></i>
-            <span class="tw-text-yellow-500 tw-text-xs tw-block tw-mt-1">{{ T.mediaTemporarilyUnavailable }}</span>
+          <div class="mf-thumb-preview tw:flex tw:flex-col tw:items-center tw:justify-center" :style="{ height: thumbSize + 'px' }">
+            <i class="fa-solid fa-triangle-exclamation tw:text-yellow-500 tw:text-2xl tw:block" aria-hidden="true"></i>
+            <span class="tw:text-yellow-500 tw:text-xs tw:block tw:mt-1">{{ T.mediaTemporarilyUnavailable }}</span>
           </div>
           <div class="mf-thumb-footer">
             <button
@@ -39,18 +39,18 @@
             >
               <i class="fa-solid fa-trash" aria-hidden="true"></i>
             </button>
-            <span class="mf-filename tw-text-yellow-500" :title="media.name">{{ media.name }}</span>
+            <span class="mf-filename tw:text-yellow-500" :title="media.name">{{ media.name }}</span>
           </div>
         </div>
 
         <!-- Normal item -->
         <div v-else-if="!media.errorType">
-          <div class="mf-thumb-preview tw-flex tw-items-center tw-justify-center" :style="{ height: thumbSize + 'px' }">
+          <div class="mf-thumb-preview tw:flex tw:items-center tw:justify-center" :style="{ height: thumbSize + 'px' }">
             <img
               v-if="media.mime && media.mime.startsWith('image')"
               :src="buildMediaUrl(media.url!, thumbSize)"
               :data-mime="media.mime"
-              class="tw-max-w-full tw-max-h-full tw-object-contain"
+              class="tw:max-w-full tw:max-h-full tw:object-contain"
             />
             <i
               v-else
@@ -82,9 +82,9 @@
 
         <!-- Not found error -->
         <div v-else>
-          <div class="mf-thumb-preview tw-flex tw-flex-col tw-items-center tw-justify-center" :style="{ height: thumbSize + 'px' }">
-            <i class="fa-solid fa-ban tw-text-red-500 tw-text-2xl tw-block" aria-hidden="true"></i>
-            <span class="tw-text-red-500 tw-text-xs tw-block tw-mt-1">{{ T.mediaNotFound }}</span>
+          <div class="mf-thumb-preview tw:flex tw:flex-col tw:items-center tw:justify-center" :style="{ height: thumbSize + 'px' }">
+            <i class="fa-solid fa-ban tw:text-red-500 tw:text-2xl tw:block" aria-hidden="true"></i>
+            <span class="tw:text-red-500 tw:text-xs tw:block tw:mt-1">{{ T.mediaNotFound }}</span>
           </div>
           <div class="mf-thumb-footer">
             <button
@@ -94,7 +94,7 @@
             >
               <i class="fa-solid fa-trash" aria-hidden="true"></i>
             </button>
-            <span class="mf-filename tw-text-red-500" :title="media.name">{{ media.name }}</span>
+            <span class="mf-filename tw:text-red-500" :title="media.name">{{ media.name }}</span>
           </div>
         </div>
       </li>

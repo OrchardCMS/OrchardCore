@@ -1,6 +1,6 @@
 <template>
   <div>
-    <nav id="file-pager" class="tw-mb-3" aria-label="Pagination Navigation" role="navigation"
+    <nav id="file-pager" class="tw:mb-3" aria-label="Pagination Navigation" role="navigation"
       :data-computed-trigger="itemsInCurrentPage?.length">
       <ul class="ma-pagination">
         <li class="ma-page-item file-first-button" :class="{ 'is-disabled': !canDoFirst }">

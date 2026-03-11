@@ -16,8 +16,12 @@
     var fieldId = Html.IdFor(m => m);
     string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), $"Content Fields{Constants.ContextSeparator}{Model.PartFieldDefinition.PartDefinition.Name}"];
     var jsLocalizations = Orchard.GetJSLocalizations("media-field");
+    var mediaAppLocalizations = Orchard.GetJSLocalizations("media-app");
+    var translationsJson = System.Text.Json.JsonSerializer.Serialize(jsLocalizations);
+    var mediaAppTranslationsJson = System.Text.Json.JsonSerializer.Serialize(mediaAppLocalizations);
 }
 
+<style asp-name="media" at="Head"></style>
 <style asp-name="media-field" at="Head"></style>
 
 <div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.Paths)_FieldWrapper">
@@ -41,7 +45,11 @@
              data-upload-action="@Url.Action("Upload", "Admin", new { area = "OrchardCore.Media" })"
              data-temp-upload-folder="@Model.TempUploadFolder"
              data-max-upload-chunk-size="@MediaOptions.Value.MaxUploadChunkSize"
-             data-translations="@Json.Serialize(jsLocalizations)">
+             data-media-app-url="@Url.Content("~/OrchardCore.Media/Scripts/media2.js")"
+             data-media-app-translations="@mediaAppTranslationsJson"
+             data-base-path="@Url.Content("~/")"
+             data-upload-files-url="@Url.Content("~/api/media-gen2/Upload")"
+             data-translations="@translationsJson">
         </div>
 
         <span asp-validation-for="Paths"></span>

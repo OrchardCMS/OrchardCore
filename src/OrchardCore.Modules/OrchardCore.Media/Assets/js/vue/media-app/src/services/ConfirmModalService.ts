@@ -15,12 +15,12 @@ export const useConfirmModal = () => {
 
       if (modalFileEvent.action == FileAction.Delete) {
         if (modalFileEvent.files.length > 1) {
-          defaultSlotMessage += `<p class="tw-m-0">${t.DeleteMultipleFilesMessage}</p>`;
+          defaultSlotMessage += `<p class="tw:m-0">${t.DeleteMultipleFilesMessage}</p>`;
         } else {
-          defaultSlotMessage += `<p class="tw-m-0">${t.DeleteSingleFileMessage}</p>`;
+          defaultSlotMessage += `<p class="tw:m-0">${t.DeleteSingleFileMessage}</p>`;
         }
       } else if (modalFileEvent.action == FileAction.Move) {
-        defaultSlotMessage += `<p class="tw-m-0">${t.MoveFileMessage}</p>`;
+        defaultSlotMessage += `<p class="tw:m-0">${t.MoveFileMessage}</p>`;
       }
 
       const { open, destroy } = useModal({

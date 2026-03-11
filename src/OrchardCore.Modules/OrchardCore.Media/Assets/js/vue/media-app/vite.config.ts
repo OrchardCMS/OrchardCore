@@ -1,5 +1,6 @@
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
+import tailwindcss from "@tailwindcss/vite";
 import path from "path";
 
 // https://vitejs.dev/config/
@@ -10,7 +11,7 @@ export default defineConfig({
             "@bloom": path.resolve(__dirname, "../../../../../../../.scripts/bloom"),
         },
     },
-    plugins: [vue()],
+    plugins: [tailwindcss(), vue()],
     define: {
         "process.env.NODE_ENV": JSON.stringify("production"),
     },

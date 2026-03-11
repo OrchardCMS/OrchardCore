@@ -21,16 +21,16 @@
         v-if="media.mime?.startsWith('image') && !media.errorType"
         :src="buildMediaUrl(media.url!, 32)"
         :data-mime="media.mime"
-        class="tw-w-full tw-h-full tw-object-cover"
+        class="tw:w-full tw:h-full tw:object-cover"
       />
       <i
         v-else-if="media.errorType === 'transient'"
-        class="fa-solid fa-triangle-exclamation tw-text-yellow-500"
+        class="fa-solid fa-triangle-exclamation tw:text-yellow-500"
         :title="media.name"
       ></i>
       <i
         v-else-if="media.errorType === 'not-found'"
-        class="fa-solid fa-triangle-exclamation tw-text-red-500"
+        class="fa-solid fa-triangle-exclamation tw:text-red-500"
         :title="media.name"
       ></i>
       <i
@@ -41,20 +41,20 @@
     </div>
 
     <!-- Name -->
-    <div class="mf-gallery-list-name tw-flex-1 tw-min-w-0">
-      <span v-if="media.errorType === 'transient'" class="tw-text-yellow-500 tw-text-sm">
+    <div class="mf-gallery-list-name tw:flex-1 tw:min-w-0">
+      <span v-if="media.errorType === 'transient'" class="tw:text-yellow-500 tw:text-sm">
         {{ T.mediaTemporarilyUnavailable }}
       </span>
-      <span v-else-if="media.errorType === 'not-found'" class="tw-text-red-500 tw-text-sm">
+      <span v-else-if="media.errorType === 'not-found'" class="tw:text-red-500 tw:text-sm">
         {{ T.mediaNotFound }}
       </span>
-      <span v-else class="tw-text-sm tw-truncate tw-block" :title="media.name">
+      <span v-else class="tw:text-sm tw:truncate tw:block" :title="media.name">
         {{ media.name }}
       </span>
     </div>
 
     <!-- Actions -->
-    <div class="mf-gallery-list-actions tw-flex tw-items-center tw-gap-1 tw-flex-shrink-0">
+    <div class="mf-gallery-list-actions tw:flex tw:items-center tw:gap-1 tw:flex-shrink-0">
       <button
         v-if="allowMediaText && !media.errorType"
         type="button"
