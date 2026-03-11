@@ -66,7 +66,7 @@ public sealed class ListPartSettingsDisplayDriver : ContentTypePartDefinitionDis
                 EnableOrdering = model.EnableOrdering,
                 ContainedContentTypes = model.ContainedContentTypes,
                 ShowHeader = model.ShowHeader,
-                UseTraditionalPager = model.UseTraditionalPager,  // Expose the ListPartSettings properties directly on the view model to make it easier to bind to them in the Razor view.
+                UseTraditionalPager = model.UseTraditionalPager,
             });
 
             // Update order of existing content if enable ordering has been turned on.
