@@ -36,6 +36,8 @@ jobs:
     - name: Install Playwright Browsers
       if: matrix.os == 'ubuntu-24.04'
       run: |
+        npm install -g corepack
+        corepack enable
         yarn install
         yarn workspace @orchardcore/tests-playwright exec playwright install --with-deps chromium
     - name: Functional Tests - CMS

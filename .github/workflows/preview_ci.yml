@@ -45,6 +45,8 @@ jobs:
     - name: Install Playwright Browsers
       if: steps.check-publish.outputs.should-publish == 'true'
       run: |
+        npm install -g corepack
+        corepack enable
         yarn install
         yarn workspace @orchardcore/tests-playwright exec playwright install --with-deps chromium
     - name: Functional Tests - CMS

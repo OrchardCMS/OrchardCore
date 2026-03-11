@@ -41,7 +41,8 @@ jobs:
         package-manager-cache: false
     - name: Functional Tests
       run: |
-        cd test/OrchardCore.Tests.Playwright
+        npm install -g corepack
+        corepack enable
         yarn install
         yarn workspace @orchardcore/tests-playwright exec playwright install chromium
         yarn workspace @orchardcore/tests-playwright test:mvc
@@ -70,7 +71,8 @@ jobs:
     - uses: ./.github/actions/setup-dotnet
     - name: Functional Tests
       run: |
-        cd test/OrchardCore.Tests.Playwright
+        npm install -g corepack
+        corepack enable
         yarn install
         yarn workspace @orchardcore/tests-playwright exec playwright install chromium
         yarn workspace @orchardcore/tests-playwright test:cms
@@ -115,7 +117,8 @@ jobs:
     - uses: ./.github/actions/setup-dotnet
     - name: Functional Tests
       run: |
-        cd test/OrchardCore.Tests.Playwright
+        npm install -g corepack
+        corepack enable
         yarn install
         yarn workspace @orchardcore/tests-playwright exec playwright install chromium
         yarn workspace @orchardcore/tests-playwright test:cms
@@ -156,7 +159,8 @@ jobs:
     - uses: ./.github/actions/setup-dotnet
     - name: Functional Tests
       run: |
-        cd test/OrchardCore.Tests.Playwright
+        npm install -g corepack
+        corepack enable
         yarn install
         yarn workspace @orchardcore/tests-playwright exec playwright install chromium
         yarn workspace @orchardcore/tests-playwright test:cms
@@ -196,7 +200,8 @@ jobs:
     - uses: ./.github/actions/setup-dotnet
     - name: Functional Tests
       run: |
-        cd test/OrchardCore.Tests.Playwright
+        npm install -g corepack
+        corepack enable
         yarn install
         yarn workspace @orchardcore/tests-playwright exec playwright install chromium
         yarn workspace @orchardcore/tests-playwright test:cms
