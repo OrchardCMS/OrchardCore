@@ -28659,7 +28659,7 @@ const _hoisted_6$3 = {
 const _hoisted_7$3 = ["tabindex"];
 const _hoisted_8$3 = ["tabindex"];
 const _sfc_main$5 = /* @__PURE__ */ defineComponent({
-  __name: "pagerComponent",
+  __name: "PagerComponent",
   props: {
     sourceItems: {
       type: Array,
@@ -39139,7 +39139,7 @@ const _hoisted_1$a = {
 const _hoisted_2$9 = { key: 0 };
 const _hoisted_3$8 = { key: 1 };
 const _sfc_main$4 = /* @__PURE__ */ defineComponent({
-  __name: "sortIndicatorComponent",
+  __name: "SortIndicatorComponent",
   props: {
     colname: {
       type: String,
@@ -39575,7 +39575,7 @@ const _hoisted_22$1 = { class: "table-cell size" };
 const _hoisted_23$1 = { class: "text-col optional-col" };
 const _hoisted_24$1 = { class: "table-cell tw:text-right" };
 const _sfc_main$1 = /* @__PURE__ */ defineComponent({
-  __name: "fileItemsComponent",
+  __name: "FileItemsComponent",
   props: {
     filteredFileItems: {
       type: Array,
