@@ -1,7 +1,6 @@
 import { type Page } from '@playwright/test';
 import { defaultOrchardConfig, type TenantInfo } from './utils';
 import { login } from './auth';
-import { btnCreateClick } from './buttons';
 
 export async function visitTenantSetupPage(page: Page, tenant: TenantInfo): Promise<void> {
     await page.goto('/Admin/Tenants');
@@ -12,18 +11,22 @@ export async function siteSetup(page: Page, tenant: TenantInfo): Promise<void> {
     const config = defaultOrchardConfig;
     await page.locator('#SiteName').fill(tenant.name);
 
-    // Set recipe if the field exists
+    // Set recipe value directly (hidden input or select depending on context)
     const recipeName = page.locator('#RecipeName');
     if (await recipeName.count() > 0) {
-        await recipeName.evaluate((el: HTMLInputElement, val: string) => { el.value = val; }, tenant.setupRecipe);
+        // Use evaluate like Cypress's .val() to set the value without requiring an option match
+        await recipeName.evaluate((el: HTMLElement, val: string) => {
+            (el as HTMLInputElement | HTMLSelectElement).value = val;
+            el.dispatchEvent(new Event('change', { bubbles: true }));
+        }, tenant.setupRecipe);
     }
 
     // Set database provider to Sqlite if not already set
     const dbProvider = page.locator('#DatabaseProvider');
     if (await dbProvider.count() > 0) {
         const currentValue = await dbProvider.inputValue();
-        if (currentValue === '') {
-            await dbProvider.evaluate((el: HTMLSelectElement) => { el.value = 'Sqlite'; });
+        if (!currentValue) {
+            await dbProvider.selectOption('Sqlite');
         }
     }
 
@@ -32,32 +35,35 @@ export async function siteSetup(page: Page, tenant: TenantInfo): Promise<void> {
     await page.locator('#Password').fill(config.password);
     await page.locator('#PasswordConfirmation').fill(config.password);
     await page.locator('#SubmitButton').click();
+    await page.waitForLoadState('networkidle');
 }
 
 export async function createTenant(page: Page, tenant: TenantInfo): Promise<void> {
     await page.goto('/Admin/Tenants');
-    await btnCreateClick(page);
+    await page.locator('.btn.create').first().click();
     await page.locator('#Name').fill(tenant.name);
     await page.locator('#Description').fill(`Recipe: ${tenant.setupRecipe}. ${tenant.description || ''}`);
     await page.locator('#RequestUrlPrefix').fill(tenant.prefix);
-    await page.locator('#RecipeName').selectOption(tenant.setupRecipe);
+
+    // Select recipe if available in the dropdown, otherwise skip (will be set during setup)
+    const recipeSelect = page.locator('#RecipeName');
+    const hasOption = await recipeSelect.locator(`option[value="${tenant.setupRecipe}"]`).count();
+    if (hasOption > 0) {
+        await recipeSelect.selectOption(tenant.setupRecipe);
+    }
 
     // Set database provider to Sqlite if not already set by environment variable
     const dbProvider = page.locator('#DatabaseProvider');
-    if (await dbProvider.count() > 0) {
-        const currentValue = await dbProvider.inputValue();
-        if (currentValue === '') {
-            await dbProvider.evaluate((el: HTMLSelectElement) => { el.value = 'Sqlite'; });
-        } else {
-            // If a provider is set (via env var), set the table prefix to the tenant name
-            const tablePrefix = page.locator('#TablePrefix');
-            if (await tablePrefix.count() > 0) {
-                await tablePrefix.evaluate((el: HTMLInputElement, val: string) => { el.value = val; }, tenant.name);
-            }
-        }
+    const currentValue = await dbProvider.inputValue();
+    if (!currentValue) {
+        await dbProvider.selectOption('Sqlite');
+    } else {
+        // If a provider is set (via env var), set the table prefix to the tenant name
+        await page.locator('#TablePrefix').fill(tenant.name);
     }
 
-    await btnCreateClick(page);
+    await page.locator('button.create[type="submit"]').click();
+    await page.waitForLoadState('networkidle');
 }
 
 export async function newTenant(page: Page, tenant: TenantInfo): Promise<void> {
