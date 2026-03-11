@@ -1,14 +1,3 @@
-using System;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.Environment.Shell;
-using OrchardCore.Modules;
-using OrchardCore.Navigation;
-using OrchardCore.Security.Permissions;
-using Scalar.AspNetCore;
-using Microsoft.OpenApi;
-using System.Collections.Generic;
 namespace OrchardCore.OpenApi;
 
 public sealed class Startup : StartupBase
@@ -20,7 +9,7 @@ public sealed class Startup : StartupBase
             options.ShouldInclude = operation => operation.HttpMethod != null; // Exclude operations without HTTP methods attributes, such as those generated for scalar types.
         });
 
-// Bearer token authentication is handled by BearerTokenMiddleware in the Configure method
+        // Bearer token authentication is handled by BearerTokenMiddleware in the Configure method
 
         // Register Swashbuckle Swagger generator to add OAuth2 / OpenID Connect security scheme
         services.AddSwaggerGen(c =>
@@ -31,23 +20,30 @@ public sealed class Startup : StartupBase
             // This prevents helper methods (e.g. CreateFileResult) from causing
             // "Ambiguous HTTP method" errors during document generation.
             // Also exclude the legacy api/media controller — the Gen2 controller supersedes it.
-            c.DocInclusionPredicate((docName, apiDesc) =>
-            {
-                if (apiDesc.HttpMethod == null)
+            c.DocInclusionPredicate(
+                (docName, apiDesc) =>
                 {
-                    return false;
-                }
+                    if (apiDesc.HttpMethod == null)
+                    {
+                        return false;
+                    }
 
-                // Exclude the legacy Media ApiController (api/media) to avoid
-                // duplicate operation names with MediaGen2ApiController.
-                if (apiDesc.RelativePath != null &&
-                    apiDesc.RelativePath.StartsWith("api/media/", StringComparison.OrdinalIgnoreCase))
-                {
-                    return false;
-                }
+                    // Exclude the legacy Media ApiController (api/media) to avoid
+                    // duplicate operation names with MediaGen2ApiController.
+                    if (
+                        apiDesc.RelativePath != null
+                        && apiDesc.RelativePath.StartsWith(
+                            "api/media/",
+                            StringComparison.OrdinalIgnoreCase
+                        )
+                    )
+                    {
+                        return false;
+                    }
 
-                return true;
-            });
+                    return true;
+                }
+            );
 
             // Configure OAuth2 / OpenID Connect Authorization Code flow
             var oauthScheme = new OpenApiSecurityScheme
@@ -57,19 +53,22 @@ public sealed class Startup : StartupBase
                 {
                     AuthorizationCode = new OpenApiOAuthFlow
                     {
-                        AuthorizationUrl = new Uri("/authserver/connect/authorize", UriKind.Relative),
+                        AuthorizationUrl = new Uri(
+                            "/authserver/connect/authorize",
+                            UriKind.Relative
+                        ),
                         TokenUrl = new Uri("/authserver/connect/token", UriKind.Relative),
                         Scopes = new Dictionary<string, string>
                         {
                             { "openid", "OpenID" },
                             { "profile", "Profile" },
-                            { "email", "Email" }
-                        }
-                    }
+                            { "email", "Email" },
+                        },
+                    },
                 },
                 Scheme = "oauth2",
                 Name = "Authorization",
-                In = ParameterLocation.Header
+                In = ParameterLocation.Header,
             };
 
             c.AddSecurityDefinition("oauth2", oauthScheme);
@@ -85,14 +84,6 @@ public sealed class Startup : StartupBase
         IServiceProvider serviceProvider
     )
     {
-        // Bearer token middleware disabled - relying on cookie auth for now.
-        // TODO: Re-enable once proper JWT signature validation is implemented.
-        // app.UseMiddleware<BearerTokenMiddleware>();
-        
-        // DIAGNOSTIC: AuthenticationDiagnosticsMiddleware logs authentication/authorization details for debugging
-        // To enable: uncomment the line below when troubleshooting bearer token issues
-        // app.UseMiddleware<AuthenticationDiagnosticsMiddleware>();
-
         var shellSettings = app.ApplicationServices.GetRequiredService<ShellSettings>();
         var prefix = shellSettings?.RequestUrlPrefix;
         var openApiPath = !string.IsNullOrEmpty(prefix)
