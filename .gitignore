@@ -224,3 +224,5 @@ src/Templates/**/content/**/.template.config/
 BenchmarkDotNet.Artifacts
 
 .playwright-cli
+test/OrchardCore.Tests.Playwright/test-results
+test/OrchardCore.Tests.Playwright/playwright-report

@@ -31,26 +31,29 @@ jobs:
         github.event.review.state == 'CHANGES_REQUESTED'
     runs-on: ubuntu-24.04
     container:
-      image: cypress/included:15.11.0
+      image: mcr.microsoft.com/playwright:v1.50.0-noble
     steps:
     - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
     - uses: ./.github/actions/setup-dotnet
     - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
       with:
-        node-version: "15"
+        node-version: "20"
         package-manager-cache: false
     - name: Functional Tests
       run: |
-        cd test/OrchardCore.Tests.Functional
-        npm install
-        npm run mvc:test
+        cd test/OrchardCore.Tests.Playwright
+        yarn install
+        yarn workspace @orchardcore/tests-playwright exec playwright install chromium
+        yarn workspace @orchardcore/tests-playwright test:mvc
     - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
       if: failure()
       with:
-        name: functional-mvc-screenshots
-        path: test/OrchardCore.Tests.Functional/mvc-tests/cypress/screenshots
+        name: functional-mvc-failure
+        path: |
+          test/OrchardCore.Tests.Playwright/playwright-report/
+          test/OrchardCore.Tests.Playwright/test-results/
         retention-days: 3
-  
+
   test_functional_cms_sqlite:
     name: Functional Tests - CMS Sqlite
     if: github.event_name == 'workflow_dispatch' ||
@@ -59,7 +62,7 @@ jobs:
         github.event.review.state == 'CHANGES_REQUESTED'
     runs-on: ubuntu-24.04
     container:
-      image: cypress/included:15.11.0
+      image: mcr.microsoft.com/playwright:v1.50.0-noble
     env:
       OrchardCore__OrchardCore_YesSql__EnableThreadSafetyChecks: true
     steps:
@@ -67,16 +70,18 @@ jobs:
     - uses: ./.github/actions/setup-dotnet
     - name: Functional Tests
       run: |
-        cd test/OrchardCore.Tests.Functional
-        npm install
-        npm run cms:test
+        cd test/OrchardCore.Tests.Playwright
+        yarn install
+        yarn workspace @orchardcore/tests-playwright exec playwright install chromium
+        yarn workspace @orchardcore/tests-playwright test:cms
     - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
       if: failure()
       with:
         name: functional-cms-sqlite-failure
         path: |
-          test/OrchardCore.Tests.Functional/cms-tests/cypress/screenshots
-          src/OrchardCore.Cms.Web/App_Data/logs
+          test/OrchardCore.Tests.Playwright/playwright-report/
+          test/OrchardCore.Tests.Playwright/test-results/
+          src/OrchardCore.Cms.Web/App_Data_Tests/logs
         retention-days: 3
 
   test_functional_cms_postgresql:
@@ -87,7 +92,7 @@ jobs:
         github.event.review.state == 'CHANGES_REQUESTED'
     runs-on: ubuntu-24.04
     container:
-      image: cypress/included:15.11.0
+      image: mcr.microsoft.com/playwright:v1.50.0-noble
     services:
       postgres:
         image: postgres:11
@@ -110,16 +115,18 @@ jobs:
     - uses: ./.github/actions/setup-dotnet
     - name: Functional Tests
       run: |
-        cd test/OrchardCore.Tests.Functional
-        npm install
-        npm run cms:test
+        cd test/OrchardCore.Tests.Playwright
+        yarn install
+        yarn workspace @orchardcore/tests-playwright exec playwright install chromium
+        yarn workspace @orchardcore/tests-playwright test:cms
     - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
       if: failure()
       with:
         name: functional-cms-postgresql-failure
         path: |
-          test/OrchardCore.Tests.Functional/cms-tests/cypress/screenshots
-          src/OrchardCore.Cms.Web/App_Data/logs
+          test/OrchardCore.Tests.Playwright/playwright-report/
+          test/OrchardCore.Tests.Playwright/test-results/
+          src/OrchardCore.Cms.Web/App_Data_Tests/logs
         retention-days: 3
 
   test_functional_cms_mysql:
@@ -130,7 +137,7 @@ jobs:
         github.event.review.state == 'CHANGES_REQUESTED'
     runs-on: ubuntu-24.04
     container:
-      image: cypress/included:15.11.0
+      image: mcr.microsoft.com/playwright:v1.50.0-noble
     services:
       mysql:
         image: mysql:8
@@ -149,16 +156,18 @@ jobs:
     - uses: ./.github/actions/setup-dotnet
     - name: Functional Tests
       run: |
-        cd test/OrchardCore.Tests.Functional
-        npm install
-        npm run cms:test
+        cd test/OrchardCore.Tests.Playwright
+        yarn install
+        yarn workspace @orchardcore/tests-playwright exec playwright install chromium
+        yarn workspace @orchardcore/tests-playwright test:cms
     - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
       if: failure()
       with:
         name: functional-cms-mysql-failure
         path: |
-          test/OrchardCore.Tests.Functional/cms-tests/cypress/screenshots
-          src/OrchardCore.Cms.Web/App_Data/logs
+          test/OrchardCore.Tests.Playwright/playwright-report/
+          test/OrchardCore.Tests.Playwright/test-results/
+          src/OrchardCore.Cms.Web/App_Data_Tests/logs
         retention-days: 3
 
   test_functional_cms_mssql:
@@ -169,7 +178,7 @@ jobs:
         github.event.review.state == 'CHANGES_REQUESTED'
     runs-on: ubuntu-24.04
     container:
-      image: cypress/included:15.11.0
+      image: mcr.microsoft.com/playwright:v1.50.0-noble
     services:
       mssql:
         image: mcr.microsoft.com/mssql/server:2019-latest
@@ -187,14 +196,16 @@ jobs:
     - uses: ./.github/actions/setup-dotnet
     - name: Functional Tests
       run: |
-        cd test/OrchardCore.Tests.Functional
-        npm install
-        npm run cms:test
+        cd test/OrchardCore.Tests.Playwright
+        yarn install
+        yarn workspace @orchardcore/tests-playwright exec playwright install chromium
+        yarn workspace @orchardcore/tests-playwright test:cms
     - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
       if: failure()
       with:
         name: functional-cms-mssql-failure
         path: |
-          test/OrchardCore.Tests.Functional/cms-tests/cypress/screenshots
-          src/OrchardCore.Cms.Web/App_Data/logs
+          test/OrchardCore.Tests.Playwright/playwright-report/
+          test/OrchardCore.Tests.Playwright/test-results/
+          src/OrchardCore.Cms.Web/App_Data_Tests/logs
         retention-days: 3
