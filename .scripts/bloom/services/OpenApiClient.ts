@@ -16,7 +16,7 @@ export interface ICreateEndpointClient {
      * @param body (optional) 
      * @return OK
      */
-    contentPOSTPOST(draft: boolean | undefined, body: ContentItem | undefined,  cancelToken?: CancelToken): Promise<void>;
+    contentPOST(draft: boolean | undefined, body: ContentItem | undefined,  cancelToken?: CancelToken): Promise<void>;
 }
 
 export class CreateEndpointClient implements ICreateEndpointClient {
@@ -37,7 +37,7 @@ export class CreateEndpointClient implements ICreateEndpointClient {
      * @param body (optional) 
      * @return OK
      */
-    contentPOSTPOST(draft: boolean | undefined, body: ContentItem | undefined, cancelToken?: CancelToken): Promise<void> {
+    contentPOST(draft: boolean | undefined, body: ContentItem | undefined, cancelToken?: CancelToken): Promise<void> {
         let url_ = this.baseUrl + "/api/content?";
         if (draft === null)
             throw new globalThis.Error("The parameter 'draft' cannot be null.");
@@ -64,11 +64,11 @@ export class CreateEndpointClient implements ICreateEndpointClient {
                 throw _error;
             }
         }).then((_response: AxiosResponse) => {
-            return this.processContentPOSTPOST(_response);
+            return this.processContentPOST(_response);
         });
     }
 
-    protected processContentPOSTPOST(response: AxiosResponse): Promise<void> {
+    protected processContentPOST(response: AxiosResponse): Promise<void> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -94,7 +94,7 @@ export interface IDeleteEndpointClient {
     /**
      * @return OK
      */
-    contentDELETEDELETE(contentItemId: string,  cancelToken?: CancelToken): Promise<void>;
+    contentDELETE(contentItemId: string,  cancelToken?: CancelToken): Promise<void>;
 }
 
 export class DeleteEndpointClient implements IDeleteEndpointClient {
@@ -113,7 +113,7 @@ export class DeleteEndpointClient implements IDeleteEndpointClient {
     /**
      * @return OK
      */
-    contentDELETEDELETE(contentItemId: string, cancelToken?: CancelToken): Promise<void> {
+    contentDELETE(contentItemId: string, cancelToken?: CancelToken): Promise<void> {
         let url_ = this.baseUrl + "/api/content/{contentItemId}";
         if (contentItemId === undefined || contentItemId === null)
             throw new globalThis.Error("The parameter 'contentItemId' must be defined.");
@@ -135,11 +135,11 @@ export class DeleteEndpointClient implements IDeleteEndpointClient {
                 throw _error;
             }
         }).then((_response: AxiosResponse) => {
-            return this.processContentDELETEDELETE(_response);
+            return this.processContentDELETE(_response);
         });
     }
 
-    protected processContentDELETEDELETE(response: AxiosResponse): Promise<void> {
+    protected processContentDELETE(response: AxiosResponse): Promise<void> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -165,7 +165,7 @@ export interface IGetEndpointClient {
     /**
      * @return OK
      */
-    contentGETGET(contentItemId: string,  cancelToken?: CancelToken): Promise<void>;
+    contentGET(contentItemId: string,  cancelToken?: CancelToken): Promise<void>;
 }
 
 export class GetEndpointClient implements IGetEndpointClient {
@@ -184,7 +184,7 @@ export class GetEndpointClient implements IGetEndpointClient {
     /**
      * @return OK
      */
-    contentGETGET(contentItemId: string, cancelToken?: CancelToken): Promise<void> {
+    contentGET(contentItemId: string, cancelToken?: CancelToken): Promise<void> {
         let url_ = this.baseUrl + "/api/content/{contentItemId}";
         if (contentItemId === undefined || contentItemId === null)
             throw new globalThis.Error("The parameter 'contentItemId' must be defined.");
@@ -206,11 +206,11 @@ export class GetEndpointClient implements IGetEndpointClient {
                 throw _error;
             }
         }).then((_response: AxiosResponse) => {
-            return this.processContentGETGET(_response);
+            return this.processContentGET(_response);
         });
     }
 
-    protected processContentGETGET(response: AxiosResponse): Promise<void> {
+    protected processContentGET(response: AxiosResponse): Promise<void> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {

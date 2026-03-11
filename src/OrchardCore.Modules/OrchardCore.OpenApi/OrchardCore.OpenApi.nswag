@@ -137,7 +137,7 @@
       "arrayBaseType": "System.Collections.ObjectModel.Collection",
       "dictionaryBaseType": "System.Collections.Generic.Dictionary",
       "classStyle": "Poco",
-      "jsonLibrary": "NewtonsoftJson",
+      "jsonLibrary": "SystemTextJson",
       "jsonPolymorphicSerializationStyle": "NJsonSchema",
       "jsonLibraryVersion": 8.0,
       "generateDefaultValues": true,

@@ -20,7 +20,6 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
-    <PackageReference Include="Newtonsoft.Json" />
     <PackageReference Include="Scalar.AspNetCore" />
     <PackageReference Include="Swashbuckle.AspNetCore.ReDoc" />
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" />
