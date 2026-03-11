@@ -26,7 +26,7 @@ export function deleteAppData(appDir: string, dataDir: string = 'App_Data_Tests'
 export function copyMigrationsRecipe(sourceDir: string, appDir: string): void {
     const recipeFileName = 'migrations.recipe.json';
     const sourcePath = path.join(sourceDir, recipeFileName);
-    const destDir = path.join(appDir, 'App_Data_Tests', 'Recipes');
+    const destDir = path.join(appDir, 'Recipes');
     const destPath = path.join(destDir, recipeFileName);
 
     if (!fs.existsSync(sourcePath) || fs.existsSync(destPath)) {
@@ -39,6 +39,21 @@ export function copyMigrationsRecipe(sourceDir: string, appDir: string): void {
 
     fs.copyFileSync(sourcePath, destPath);
     log(`Migrations recipe copied to ${destDir}`);
+}
+
+export function deleteMigrationsRecipe(appDir: string): void {
+    const destDir = path.join(appDir, 'Recipes');
+    const destPath = path.join(destDir, 'migrations.recipe.json');
+
+    if (fs.existsSync(destPath)) {
+        fs.unlinkSync(destPath);
+        log(`Migrations recipe deleted from ${destDir}`);
+    }
+
+    // Remove Recipes dir if empty.
+    if (fs.existsSync(destDir) && fs.readdirSync(destDir).length === 0) {
+        fs.rmdirSync(destDir);
+    }
 }
 
 export function hostApp(appDir: string, assembly: string): ChildProcess {

@@ -15,7 +15,7 @@ test.describe('Migrations Tests', () => {
 
     test('Displays the home page of the migrations recipe', async ({ page }) => {
         await page.goto(`/${tenant.prefix}`);
-        await expect(page.locator('.container')).toContainText('Testing features having database migrations');
+        await expect(page.getByText('Testing features having database migrations')).toBeVisible();
     });
 
     test('Migrations admin login should work', async ({ page }) => {
