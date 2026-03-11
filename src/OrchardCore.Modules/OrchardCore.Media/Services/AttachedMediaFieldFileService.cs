@@ -122,11 +122,6 @@ public class AttachedMediaFieldFileService
 
     }
 
-    private string GetContentItemFolder(ContentItem contentItem)
-    {
-        return _fileStore.Combine(MediaFieldsFolder, contentItem.ContentType, contentItem.ContentItemId);
-    }
-
     private async Task<string> GetFileHashAsync(string filePath)
     {
         using var fs = await _fileStore.GetFileStreamAsync(filePath);
@@ -153,4 +148,7 @@ public class AttachedMediaFieldFileService
             await _fileStore.TryDeleteDirectoryAsync(previousDirPath);
         }
     }
+
+    internal string GetContentItemFolder(ContentItem contentItem)
+        => _fileStore.Combine(MediaFieldsFolder, contentItem.ContentType, contentItem.ContentItemId);
 }
