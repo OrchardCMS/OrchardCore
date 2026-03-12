@@ -68,8 +68,12 @@ public static class TenantHelper
         }
         else
         {
-            // If a provider is set (via env var), set the table prefix to the tenant name.
-            await page.Locator("#TablePrefix").FillAsync(tenant.Name);
+            // If a provider is set (via env var), set the table prefix to the tenant name, if the field exists.
+            var tablePrefix = page.Locator("#TablePrefix");
+            if (await tablePrefix.CountAsync() > 0)
+            {
+                await tablePrefix.FillAsync(tenant.Name);
+            }
         }
 
         await page.Locator("button.create[type=\"submit\"]").ClickAsync();
