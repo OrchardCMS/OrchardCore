@@ -26,7 +26,7 @@ jobs:
     - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
     - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
       with:
-        node-version: "20"
+        node-version: "15"
         package-manager-cache: false
     - uses: ./.github/actions/setup-dotnet
     - name: Build
@@ -36,32 +36,23 @@ jobs:
     - name: Unit Tests
       run: |
         dotnet test --project ./test/OrchardCore.Tests/OrchardCore.Tests.csproj -c Release --no-build
-    - name: Cache Playwright Browsers
-      if: matrix.os == 'ubuntu-24.04'
-      uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
-      with:
-        path: ~/.cache/ms-playwright
-        key: playwright-${{ hashFiles('yarn.lock') }}
     - name: Install Playwright Browsers
       if: matrix.os == 'ubuntu-24.04'
       run: |
-        npm install -g corepack
-        corepack enable
-        yarn install
-        yarn workspace @orchardcore/tests-playwright exec playwright install --with-deps chromium
+        pwsh test/OrchardCore.Tests.Functional/bin/Release/net10.0/playwright.ps1 install --with-deps chromium
     - name: Functional Tests - CMS
       if: matrix.os == 'ubuntu-24.04'
       run: |
-        yarn workspace @orchardcore/tests-playwright test:cms
+        dotnet test test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj -c Release --no-build --filter-class "*Cms*"
     - name: Functional Tests - MVC
       if: matrix.os == 'ubuntu-24.04'
+      env:
+        ORCHARD_APP: mvc
       run: |
-        yarn workspace @orchardcore/tests-playwright test:mvc
+        dotnet test test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj -c Release --no-build --filter-class "*Mvc*"
     - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
       if: matrix.os == 'ubuntu-24.04' && failure()
       with:
         name: Functional Test failure
         path: |
-          test/OrchardCore.Tests.Playwright/playwright-report/
-          test/OrchardCore.Tests.Playwright/test-results/
           src/OrchardCore.Cms.Web/App_Data_Tests/logs

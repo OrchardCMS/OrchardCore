@@ -11,22 +11,14 @@
     "dry-run": "assets-manager dry-run",
     "clean": "assets-manager clean",
     "lint": "eslint .",
-    "check": "vue-tsc --noEmit",
-    "test": "yarn workspace @orchardcore/tests-playwright test",
-    "test:cms": "yarn workspace @orchardcore/tests-playwright test:cms",
-    "test:mvc": "yarn workspace @orchardcore/tests-playwright test:mvc",
-    "test:ui": "yarn workspace @orchardcore/tests-playwright test:ui",
-    "test:headed": "yarn workspace @orchardcore/tests-playwright test:headed",
-    "test:debug": "yarn workspace @orchardcore/tests-playwright test:debug",
-    "test:install": "yarn workspace @orchardcore/tests-playwright exec playwright install --with-deps chromium"
+    "check": "vue-tsc --noEmit"
   },
   "workspaces": [
     ".scripts/assets-manager",
     ".scripts/bloom",
     "src/Frontend/",
     "src/OrchardCore.Modules/*/Assets/**",
-    "src/OrchardCore.Themes/*/Assets/**",
-    "test/OrchardCore.Tests.Playwright"
+    "src/OrchardCore.Themes/*/Assets/**"
   ],
   "devDependencies": {
     "@babel/core": "^7.22.11",
