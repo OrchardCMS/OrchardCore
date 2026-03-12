@@ -23,6 +23,12 @@ class WorkflowViewer extends WorkflowCanvas {
 
                 const label: any = connection.getOverlay('label');
                 label.setLabel(outcome.displayName);
+
+                // Hide the outcome label on the source endpoint since it's now connected.
+                const sourceEndpoint: any = connInfo.sourceEndpoint;
+                if (sourceEndpoint && sourceEndpoint.hideOverlay) {
+                    sourceEndpoint.hideOverlay('outcome-label');
+                }
             });
 
             let activityElements = this.getActivityElements();
@@ -63,7 +69,8 @@ class WorkflowViewer extends WorkflowCanvas {
                     // Add source endpoints.
                     for (let outcome of activity.outcomes) {
                         const sourceEndpointOptions = this.getSourceEndpointOptions(activity, outcome);
-                        plumber.addEndpoint(activityElement, { connectorOverlays: [['Label', { label: outcome.displayName, cssClass: 'connection-label' }]] }, sourceEndpointOptions);
+                        const endpoint = plumber.addEndpoint(activityElement, { connectorOverlays: [['Label', { label: outcome.displayName, cssClass: 'connection-label' }]] }, sourceEndpointOptions);
+                        this.endpointMap.push({ endpoint, activityElement });
                     }
                 });
 
@@ -78,6 +85,8 @@ class WorkflowViewer extends WorkflowCanvas {
 
                 this.updateCanvasHeight();
             });
+
+            this.orientOutcomeLabels();
 
             this.jsPlumbInstance = plumber;
         });

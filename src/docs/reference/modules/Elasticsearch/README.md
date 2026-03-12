@@ -65,7 +65,7 @@ Here is a sample step:
       "Indices": [
         {
           "Search": {
-            "AnalyzerName": "standardanalyzer",
+            "AnalyzerName": "standard",
             "IndexLatest": false,
             "IndexedContentTypes": [
               "Article",

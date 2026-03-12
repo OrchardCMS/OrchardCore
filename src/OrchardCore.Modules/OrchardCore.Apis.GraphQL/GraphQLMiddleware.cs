@@ -17,6 +17,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Apis.GraphQL.Queries;
 using OrchardCore.Apis.GraphQL.ValidationRules;
+using OrchardCore.Infrastructure;
 using OrchardCore.Routing;
 
 namespace OrchardCore.Apis.GraphQL;
@@ -29,8 +30,8 @@ public class GraphQLMiddleware : IMiddleware
     private readonly IGraphQLSerializer _serializer;
     private readonly IDocumentExecuter _executer;
     internal static readonly Encoding _utf8Encoding = new UTF8Encoding(false);
-    private static readonly MediaType _jsonMediaType = new("application/json");
-    private static readonly MediaType _graphQlMediaType = new("application/graphql");
+    private static readonly MediaType _jsonMediaType = new(MediaTypeNames.Application.Json);
+    private static readonly MediaType _graphQlMediaType = new(MediaTypeNamesExtended.Application.GraphiQL);
 
     public GraphQLMiddleware(
         IOptions<GraphQLSettings> settingsOption,
