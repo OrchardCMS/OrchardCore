@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.Build.NoTargets/3.7.0">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="**/*.ts" />
+    <None Include="**/*.json" Exclude="node_modules/**" />
+  </ItemGroup>
+
+</Project>

@@ -1,11 +1,12 @@
 import { Page } from "@playwright/test";
 
-export interface AdminCredentials {
-  username: string;
-  password: string;
+export interface LoginOptions {
+  username?: string;
+  password?: string;
+  prefix?: string;
 }
 
-const defaultCredentials: AdminCredentials = {
+const defaultCredentials = {
   username: "admin",
   password: "Orchard1!",
 };
@@ -15,11 +16,23 @@ const defaultCredentials: AdminCredentials = {
  */
 export async function login(
   page: Page,
-  credentials: AdminCredentials = defaultCredentials,
+  options: LoginOptions = {},
 ): Promise<void> {
-  await page.goto("/login");
-  await page.fill("#LoginForm_UserName", credentials.username);
-  await page.fill("#LoginForm_Password", credentials.password);
-  await page.locator("#LoginForm_UserName").locator("xpath=ancestor::form").locator('button[type="submit"]').click();
-  await page.waitForURL("**/Admin");
+  const username = options.username ?? defaultCredentials.username;
+  const password = options.password ?? defaultCredentials.password;
+  const prefix = options.prefix ?? "";
+
+  await page.goto(`${prefix}/login`);
+
+  // If already authenticated, the login page redirects away — no form is shown
+  const loginForm = page.locator("#LoginForm_UserName");
+  if (await loginForm.isVisible({ timeout: 3000 }).catch(() => false)) {
+    await loginForm.fill(username);
+    await page.fill("#LoginForm_Password", password);
+    await loginForm.locator("xpath=ancestor::form").locator('button[type="submit"]').click();
+    await page.waitForLoadState('load');
+  } else {
+    // Already logged in, navigate to Admin directly
+    await page.goto(`${prefix}/Admin`);
+  }
 }

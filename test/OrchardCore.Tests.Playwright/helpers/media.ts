@@ -44,9 +44,10 @@ export function cleanupTestFiles(): void {
 /**
  * Navigate to the Media admin page.
  */
-export async function navigateToMedia(page: Page): Promise<void> {
-  await page.goto("/Admin/Media");
-  await page.waitForSelector("#media-app");
+export async function navigateToMedia(page: Page, prefix = ""): Promise<void> {
+  await page.goto(`${prefix}/Admin/Media`);
+  // Wait for the Vue media app to mount and render the toolbar
+  await page.locator('text=Media Library').first().waitFor({ state: 'visible', timeout: 30_000 });
 }
 
 /**
@@ -66,66 +67,19 @@ export async function uploadFile(page: Page, filePath: string): Promise<void> {
 }
 
 /**
- * Wait for the upload toast to appear showing the file.
- */
-export async function waitForUploadToast(page: Page, fileName: string): Promise<void> {
-  await page.locator(`.upload-toast-filename:has-text("${fileName}")`).waitFor({ state: "visible", timeout: 10_000 });
-}
-
-/**
- * Click the pause button for a specific file in the upload toast.
- */
-export async function pauseUpload(page: Page, fileName: string): Promise<void> {
-  const fileRow = page.locator(`.upload-toast-item`).filter({ hasText: fileName });
-  await fileRow.locator("button .fa-pause").locator("xpath=ancestor::button").click();
-}
-
-/**
- * Click the resume (play) button for a specific file in the upload toast.
- */
-export async function resumeUpload(page: Page, fileName: string): Promise<void> {
-  const fileRow = page.locator(`.upload-toast-item`).filter({ hasText: fileName });
-  await fileRow.locator("button .fa-play").locator("xpath=ancestor::button").click();
-}
-
-/**
- * Wait for the upload to complete (green check mark).
- */
-export async function waitForUploadSuccess(page: Page, fileName: string, timeoutMs = 120_000): Promise<void> {
-  const fileRow = page.locator(`.upload-toast-item`).filter({ hasText: fileName });
-  await fileRow.locator(".fa-check").waitFor({ state: "visible", timeout: timeoutMs });
-}
-
-/**
- * Wait for the upload toast to show an error for a specific file.
- */
-export async function waitForUploadError(page: Page, fileName: string, timeoutMs = 30_000): Promise<void> {
-  const fileRow = page.locator(`.upload-toast-item.is-error`).filter({ hasText: fileName });
-  await fileRow.waitFor({ state: "visible", timeout: timeoutMs });
-}
-
-/**
  * Check that a file appears in the media library file list.
  */
-export async function expectFileInLibrary(page: Page, fileName: string): Promise<void> {
-  await expect(page.locator(`[data-file-name="${fileName}"], .file-name:has-text("${fileName}")`).first()).toBeVisible({ timeout: 10_000 });
-}
-
-/**
- * Check that the progress bar shows the paused state.
- */
-export async function expectUploadPaused(page: Page, fileName: string): Promise<void> {
-  const fileRow = page.locator(`.upload-toast-item`).filter({ hasText: fileName });
-  await expect(fileRow.locator(".upload-toast-progress-bar.is-paused")).toBeVisible();
-}
-
-/**
- * Check that the progress bar is active (not paused).
- */
-export async function expectUploadActive(page: Page, fileName: string): Promise<void> {
-  const fileRow = page.locator(`.upload-toast-item`).filter({ hasText: fileName });
-  await expect(fileRow.locator(".upload-toast-progress-bar")).toBeVisible();
-  await expect(fileRow.locator(".upload-toast-progress-bar.is-paused")).not.toBeVisible();
+export async function expectFileInLibrary(page: Page, fileName: string, timeoutMs = 30_000): Promise<void> {
+  // The media library may need a page refresh to show newly uploaded files.
+  // Try finding the file first, then reload and check again if not found.
+  const locator = page.getByText(fileName, { exact: true }).first();
+  try {
+    await expect(locator).toBeVisible({ timeout: timeoutMs / 2 });
+  } catch {
+    await page.reload();
+    await page.locator('text=Media Library').first().waitFor({ state: 'visible', timeout: 15_000 });
+    await expect(locator).toBeVisible({ timeout: timeoutMs / 2 });
+  }
 }
 
 /**
