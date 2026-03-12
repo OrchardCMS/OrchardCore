@@ -65,14 +65,17 @@ public static class TenantHelper
         if (string.IsNullOrEmpty(currentValue))
         {
             await dbProvider.SelectOptionAsync("Sqlite");
-        }
-        else
+        if (await dbProvider.CountAsync() > 0)
         {
-            // If a provider is set (via env var), set the table prefix to the tenant name, if the field exists.
-            var tablePrefix = page.Locator("#TablePrefix");
-            if (await tablePrefix.CountAsync() > 0)
+            var currentValue = await dbProvider.InputValueAsync();
+            if (string.IsNullOrEmpty(currentValue))
             {
-                await tablePrefix.FillAsync(tenant.Name);
+                await dbProvider.SelectOptionAsync("Sqlite");
+            }
+            else
+            {
+                // If a provider is set (via env var), set the table prefix to the tenant name.
+                await page.Locator("#TablePrefix").FillAsync(tenant.Name);
             }
         }
 
