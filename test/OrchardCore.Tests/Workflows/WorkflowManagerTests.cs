@@ -71,8 +71,10 @@ public class WorkflowManagerTests
     }
 
     [Fact]
-    public async Task TriggerEventAsync_ShouldNotSuppressWorkflowAfterUnexpectedExecutionError()
+    public async Task TriggerEventAsync_ShouldAllowReexecutionAfterUnexpectedError()
     {
+        const string nonExistentActivityId = "missing";
+
         var serviceProvider = CreateServiceProvider();
         var executionCount = 0;
         var countingTask = new CountingTask(() => executionCount++);
@@ -91,14 +93,14 @@ public class WorkflowManagerTests
             ],
             Transitions =
             [
-                new() { SourceActivityId = "1", SourceOutcomeName = "Done", DestinationActivityId = "missing" },
+                new() { SourceActivityId = "1", SourceOutcomeName = "Done", DestinationActivityId = nonExistentActivityId },
             ],
         };
 
         var workflowManager = CreateWorkflowManager(serviceProvider, [countingTask], workflowType);
 
-        await Assert.ThrowsAnyAsync<Exception>(() => workflowManager.TriggerEventAsync(countingTask.Name));
-        await Assert.ThrowsAnyAsync<Exception>(() => workflowManager.TriggerEventAsync(countingTask.Name));
+        await Assert.ThrowsAsync<NullReferenceException>(() => workflowManager.TriggerEventAsync(countingTask.Name));
+        await Assert.ThrowsAsync<NullReferenceException>(() => workflowManager.TriggerEventAsync(countingTask.Name));
 
         Assert.Equal(2, executionCount);
     }
