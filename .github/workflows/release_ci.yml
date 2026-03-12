@@ -47,13 +47,13 @@ jobs:
     - name: Functional Tests - CMS
       if: matrix.os == 'ubuntu-24.04'
       run: |
-        dotnet test test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj -c Release --no-build --filter-class "*Cms*"
+        dotnet test --project test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj -c Release --no-build --filter-class "*Cms*"
     - name: Functional Tests - MVC
       if: matrix.os == 'ubuntu-24.04'
       env:
         ORCHARD_APP: mvc
       run: |
-        dotnet test test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj -c Release --no-build --filter-class "*Mvc*"
+        dotnet test --project test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj -c Release --no-build --filter-class "*Mvc*"
     - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
       if: matrix.os == 'ubuntu-24.04' && failure()
       with:
