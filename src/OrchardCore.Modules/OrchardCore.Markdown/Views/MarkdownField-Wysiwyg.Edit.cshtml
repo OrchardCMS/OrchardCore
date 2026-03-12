@@ -8,6 +8,7 @@
 @inject IDataLocalizer D
 @{
     var settings = Model.PartFieldDefinition.GetSettings<MarkdownFieldSettings>();
+    var wysiwygSettings = Model.PartFieldDefinition.GetSettings<MarkdownFieldWysiwygEditorSettings>();
     var culture = await Orchard.GetContentCultureAsync(Model.Field.ContentItem);
     string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), $"Content Fields{Constants.ContextSeparator}{Model.PartFieldDefinition.PartDefinition.Name}"];
 }
@@ -34,13 +35,44 @@
 
         // When field is rendered by a flow part only the elements scripts are rendered, so the html element will not exist.
         if (markdownElement) {
+@if (!string.IsNullOrWhiteSpace(wysiwygSettings.Options))
+{
+    <text>
+            var customOptions = @Html.Raw(wysiwygSettings.Options);
+            if (customOptions.toolbar) {
+                // Map custom button names to their full definitions from mdeToolbar.
+                var mdeToolbarMap = {};
+                mdeToolbar.forEach(function (btn) {
+                    if (btn.name) {
+                        mdeToolbarMap[btn.name] = btn;
+                    }
+                });
+                customOptions.toolbar = customOptions.toolbar.map(function (item) {
+                    if (typeof item === 'string') {
+                        return mdeToolbarMap[item] || item;
+                    }
+                    return item;
+                });
+            } else {
+                customOptions.toolbar = mdeToolbar;
+            }
+            customOptions.element = markdownElement;
+            customOptions.forceSync = true;
+            customOptions.autoDownloadFontAwesome = false;
+            var mde = new EasyMDE(customOptions);
+    </text>
+}
+else
+{
+    <text>
             var mde = new EasyMDE({
                 element: markdownElement,
                 forceSync: true,
                 toolbar: mdeToolbar,
                 autoDownloadFontAwesome: false
             });
-
+    </text>
+}
             initializeMdeShortcodeWrapper(mde);
 
             mde.codemirror.on('change', function () {
