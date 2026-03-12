@@ -1,27 +1,28 @@
-using Microsoft.Playwright;
 using OrchardCore.Tests.Functional.Helpers;
 using Xunit;
 
 namespace OrchardCore.Tests.Functional.Tests.Cms;
 
 [Collection(CmsTestCollection.Name)]
-public abstract class CmsTestBase : IAsyncDisposable
+public abstract class CmsTestBase : IAsyncLifetime
 {
     protected CmsSetupFixture Fixture { get; }
+
+    protected TenantInfo Tenant { get; private set; }
+
+    protected abstract string RecipeName { get; }
 
     protected CmsTestBase(CmsSetupFixture fixture)
     {
         Fixture = fixture;
     }
 
-    protected async Task<(IPage Page, TenantInfo Tenant)> SetupTenantAsync(string recipeName)
+    public async ValueTask InitializeAsync()
     {
-        var tenant = TestUtils.GenerateTenantInfo(recipeName);
+        Tenant = TestUtils.GenerateTenantInfo(RecipeName);
         var page = await Fixture.CreatePageAsync();
-        await TenantHelper.NewTenantAsync(page, tenant);
+        await TenantHelper.NewTenantAsync(page, Tenant);
         await page.CloseAsync();
-
-        return (await Fixture.CreatePageAsync(), tenant);
     }
 
     public virtual ValueTask DisposeAsync()
