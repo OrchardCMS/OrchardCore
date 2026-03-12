@@ -4,14 +4,10 @@ using AngleSharp.Html.Dom;
 using Fluid;
 using Fluid.Ast;
 using Fluid.Values;
-using Microsoft.AspNetCore.Html;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using OrchardCore.Liquid;
 using OrchardCore.ResourceManagement;
 using OrchardCore.Resources.Liquid;
+using ResourceLocation = OrchardCore.ResourceManagement.ResourceLocation;
 
 namespace OrchardCore.Tests.ResourceManagement;
 
@@ -319,9 +315,9 @@ public class StyleTagTests : IDisposable
     }
 
     [Fact]
-    public async Task NamedStyleWithNameAndSrc_NoAt_DoesNotRegisterOrRender()
+    public async Task NamedStyleWithNameAndSrc_NoAt_RendersAtHead()
     {
-        // Arrange — When at is Unspecified, the named+src path only defines, does not register/render.
+        // Arrange — When "name" and "src" path are provided, but no "at" is provided.
         var resourceManager = CreateResourceManager();
         var context = CreateLiquidContext(resourceManager);
         var writer = new StringWriter();
@@ -334,7 +330,8 @@ public class StyleTagTests : IDisposable
         // Act
         await StyleTag.WriteToAsync(arguments, writer, null, context);
 
-        // Assert — Defined in InlineManifest but NOT registered as required.
+        // Assert — Defined in InlineManifest, resource is required at Head (instead of Undefined), nothing is rendered
+        // in place of the style tag.
         var inlineDefinition = resourceManager.InlineManifest
             .GetResources("stylesheet")
             .FirstOrDefault(r => r.Key == "my-style")
@@ -342,8 +339,9 @@ public class StyleTagTests : IDisposable
 
         Assert.NotNull(inlineDefinition);
 
-        var requiredResources = resourceManager.GetRequiredResources("stylesheet");
-        Assert.Empty(requiredResources);
+        var requiredResources = resourceManager.GetRequiredResources("stylesheet").ToList();
+        Assert.Single(requiredResources);
+        Assert.Equal(ResourceLocation.Head, requiredResources[0].Settings.Location);
         Assert.Empty(writer.ToString());
     }
 
