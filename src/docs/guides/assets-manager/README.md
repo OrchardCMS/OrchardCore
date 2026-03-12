@@ -33,8 +33,8 @@ Alternatively, if you make a lot of changes during development that you want to 
 ## All features
 
 - Build all assets: `yarn build`
-- Build module by name: `yarn build -n asset-name`
-- Build assets by tag: `yarn build -t tagname`
+- Build module by name: `yarn build -n asset-name` (also supports `--name` / `--names`)
+- Build assets by tag: `yarn build -t tagname` (also supports `--tag` / `--tags`)
 - Watch module by name: `yarn watch -n asset-name`.
 - Host with bundler dev server: `yarn host -n asset-name`.
 - Action on multiple assets with `-n` filter: `yarn {build, watch or host} -n asset-name1, asset-name2`  
