@@ -20,11 +20,24 @@ public class DataLocalizationFilter : ILiquidFilter
 
         var context = arguments.At(0).ToStringValue();
 
-        if (arguments.At(0).IsNil())
+        if (string.IsNullOrEmpty(context))
         {
-            context = string.Empty;
+            ArgumentException.ThrowIfNullOrEmpty(context, nameof(context));
         }
 
-        return FluidValue.Create(D[name, context].Value, templateContext.Options);
+        if (arguments.Count > 1)
+        {
+            var parameters = new object[arguments.Count - 1];
+            for (var i = 0; i < arguments.Count - 1; i++)
+            {
+                parameters[i] = arguments.At(i + 1).ToObjectValue();
+            }
+
+            return ValueTask.FromResult<FluidValue>(new StringValue(D[name, context, parameters]));
+        }
+        else
+        {
+            return ValueTask.FromResult<FluidValue>(new StringValue(D[name, context]));
+        }
     }
 }
