@@ -9,6 +9,7 @@ public sealed class OrchardTestFixture : IAsyncDisposable
     private IPlaywright _playwright;
     private IBrowser _browser;
     private bool _disposed;
+    private bool _migrationsRecipeCopied;
 
     public string BaseUrl { get; private set; }
     public IBrowser Browser => _browser;
@@ -37,7 +38,7 @@ public sealed class OrchardTestFixture : IAsyncDisposable
 
             if (!IsMvc)
             {
-                AppLifecycleHelper.CopyMigrationsRecipe(AppDir);
+                _migrationsRecipeCopied = AppLifecycleHelper.CopyMigrationsRecipe(AppDir);
             }
 
             _serverProcess = AppLifecycleHelper.HostApp(AppDir, Assembly);
@@ -82,7 +83,7 @@ public sealed class OrchardTestFixture : IAsyncDisposable
             AppLifecycleHelper.KillApp(_serverProcess);
         }
 
-        if (!IsMvc)
+        if (!IsMvc && _migrationsRecipeCopied)
         {
             AppLifecycleHelper.DeleteMigrationsRecipe(
                 Path.Combine(ProjectRoot, "src", "OrchardCore.Cms.Web"));
