@@ -1,9 +1,9 @@
 using System.Text.Encodings.Web;
 using Fluid.Values;
 using Microsoft.Extensions.Localization;
-using OrchardCore.ContentFields.Fields;
-using OrchardCore.ContentFields.Settings;
-using OrchardCore.ContentFields.ViewModels;
+using OrchardCore.Html.Fields;
+using OrchardCore.Html.Settings;
+using OrchardCore.Html.ViewModels;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata.Models;
@@ -14,7 +14,7 @@ using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Shortcodes.Services;
 using Shortcodes;
 
-namespace OrchardCore.ContentFields.Drivers;
+namespace OrchardCore.Html.Drivers;
 
 public sealed class HtmlFieldDisplayDriver : ContentFieldDisplayDriver<HtmlField>
 {

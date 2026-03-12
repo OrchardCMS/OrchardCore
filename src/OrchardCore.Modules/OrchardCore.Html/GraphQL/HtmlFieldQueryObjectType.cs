@@ -6,16 +6,16 @@ using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Apis.GraphQL;
-using OrchardCore.ContentFields.Fields;
-using OrchardCore.ContentFields.Settings;
-using OrchardCore.ContentFields.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.Html.Fields;
+using OrchardCore.Html.Settings;
+using OrchardCore.Html.ViewModels;
 using OrchardCore.Liquid;
 using OrchardCore.Shortcodes.Services;
 using Shortcodes;
 
-namespace OrchardCore.ContentFields.GraphQL;
+namespace OrchardCore.Html.GraphQL;
 
 public class HtmlFieldQueryObjectType : ObjectGraphType<HtmlField>
 {

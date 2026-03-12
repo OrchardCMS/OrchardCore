@@ -1,11 +1,11 @@
-using OrchardCore.ContentFields.Fields;
-using OrchardCore.ContentFields.ViewModels;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Html.Fields;
+using OrchardCore.Html.ViewModels;
 
-namespace OrchardCore.ContentFields.Settings;
+namespace OrchardCore.Html.Settings;
 
 public sealed class HtmlFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<HtmlField>
 {

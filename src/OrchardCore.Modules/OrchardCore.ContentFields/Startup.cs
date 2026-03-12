@@ -29,8 +29,6 @@ public sealed class Startup : StartupBase
         {
             o.MemberAccessStrategy.Register<BooleanField>();
             o.MemberAccessStrategy.Register<DisplayBooleanFieldViewModel>();
-            o.MemberAccessStrategy.Register<HtmlField>();
-            o.MemberAccessStrategy.Register<DisplayHtmlFieldViewModel>();
             o.MemberAccessStrategy.Register<LinkField>();
             o.MemberAccessStrategy.Register<DisplayLinkFieldViewModel>();
             o.MemberAccessStrategy.Register<NumericField>();
@@ -66,14 +64,6 @@ public sealed class Startup : StartupBase
         services.AddScoped<IContentPartFieldDefinitionDisplayDriver, TextFieldPredefinedListEditorSettingsDriver>();
         services.AddScoped<IContentPartFieldDefinitionDisplayDriver, TextFieldMonacoEditorSettingsDriver>();
         services.AddScoped<IContentPartFieldDefinitionDisplayDriver, TextFieldHeaderDisplaySettingsDriver>();
-
-        // Html Field
-        services.AddContentField<HtmlField>()
-            .UseDisplayDriver<HtmlFieldDisplayDriver>();
-        services.AddScoped<IContentPartFieldDefinitionDisplayDriver, HtmlFieldSettingsDriver>();
-        services.AddScoped<IContentPartFieldDefinitionDisplayDriver, HtmlFieldTrumbowygEditorSettingsDriver>();
-        services.AddScoped<IContentPartFieldDefinitionDisplayDriver, HtmlFieldMonacoEditorSettingsDriver>();
-        services.AddScoped<IContentFieldIndexHandler, HtmlFieldIndexHandler>();
 
         // Link Field
         services.AddContentField<LinkField>()
@@ -173,7 +163,6 @@ public sealed class IndexingStartup : StartupBase
         services.AddScopedIndexProvider<ContentPickerFieldIndexProvider>();
         services.AddScopedIndexProvider<TimeFieldIndexProvider>();
         services.AddScopedIndexProvider<LinkFieldIndexProvider>();
-        services.AddScopedIndexProvider<HtmlFieldIndexProvider>();
         services.AddScopedIndexProvider<MultiTextFieldIndexProvider>();
     }
 }

@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Apis;
+using OrchardCore.Html.Fields;
 using OrchardCore.Html.Models;
 using OrchardCore.Modules;
 
@@ -10,6 +11,7 @@ public sealed class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.AddObjectGraphType<HtmlField, HtmlFieldQueryObjectType>();
         services.AddObjectGraphType<HtmlBodyPart, HtmlBodyQueryObjectType>();
     }
 }
