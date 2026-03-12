@@ -1,3 +1,4 @@
+using System.Net.Mime;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
@@ -157,17 +158,13 @@ public class StyleTagHelper : TagHelper
 
         PopulateResourceDefinition(_resourceManager.InlineManifest.DefineStyle(Name));
 
-        // If At is specified then we also render it.
-        if (At != ResourceLocation.Unspecified)
+        var setting = _resourceManager.RegisterResource("stylesheet", Name);
+
+        PopulateRequireSettings(setting, output, hasName: true);
+
+        if (At == ResourceLocation.Inline)
         {
-            var setting = _resourceManager.RegisterResource("stylesheet", Name);
-
-            PopulateRequireSettings(setting, output, hasName: true);
-
-            if (At == ResourceLocation.Inline)
-            {
-                RenderStyle(output, setting);
-            }
+            RenderStyle(output, setting);
         }
     }
 
@@ -211,7 +208,7 @@ public class StyleTagHelper : TagHelper
         // If no type was specified, define a default one.
         if (!builder.Attributes.ContainsKey("type"))
         {
-            builder.Attributes.Add("type", "text/css");
+            builder.Attributes.Add("type", MediaTypeNames.Text.Css);
         }
 
         if (At == ResourceLocation.Inline)
@@ -256,14 +253,7 @@ public class StyleTagHelper : TagHelper
 
     private void PopulateRequireSettings(RequireSettings setting, TagHelperOutput output, bool hasName)
     {
-        if (At != ResourceLocation.Unspecified)
-        {
-            setting.AtLocation(At);
-        }
-        else
-        {
-            setting.AtLocation(ResourceLocation.Head);
-        }
+        setting.AtLocation(At != ResourceLocation.Unspecified ? At : ResourceLocation.Head);
 
         if (hasName && UseCdn != null)
         {
