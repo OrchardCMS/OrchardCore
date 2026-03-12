@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.ObjectPool;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Modules;
@@ -405,7 +406,7 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
     {
         ThrowIfTerminating();
 
-        var item = new CallbackInvoker<TState>(callback, state);
+        var item = CallbackInvoker<TState>.Rent(callback, state);
 
         if (last)
         {
@@ -437,7 +438,7 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
     {
         ThrowIfTerminating();
 
-        _deferredTasks.Add(new CallbackInvoker<TState>(task, state));
+        _deferredTasks.Add(CallbackInvoker<TState>.Rent(task, state));
     }
 
     /// <summary>
@@ -509,11 +510,23 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
         for (var i = _beforeDispose.Count - 1; i >= 0; i--)
         {
             var item = _beforeDispose[i];
-            await item.InvokeAsync(this);
+            try
+            {
+                await item.InvokeAsync(this);
+            }
+            finally
+            {
+                item.Return();
+            }
         }
 
         if (_state.HasFlag(ShellScopeStates.ServiceScopeOnly))
         {
+            for (var i = _deferredTasks.Count - 1; i >= 0; i--)
+            {
+                _deferredTasks[i].Return();
+            }
+
             return;
         }
 
@@ -530,8 +543,10 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
         {
             var shellHost = ShellContext.ServiceProvider.GetRequiredService<IShellHost>();
 
-            foreach (var item in _deferredTasks)
+            for (var i = 0; i < _deferredTasks.Count; i++)
             {
+                var item = _deferredTasks[i];
+
                 // Create a new scope (maybe based on a new shell) for each task.
                 ShellScope scope;
                 try
@@ -564,6 +579,10 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
                             deferredItem.GetType().FullName, shellContext.Settings.Name);
 
                         await scope.HandleExceptionAsync(e);
+                    }
+                    finally
+                    {
+                        deferredItem.Return();
                     }
                 },
                 (ShellContext, item),
@@ -671,6 +690,8 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
     private interface ICallbackInvoker
     {
         Task InvokeAsync(ShellScope scope);
+
+        void Return();
     }
 
     /// <summary>
@@ -678,16 +699,35 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
     /// </summary>
     private sealed class CallbackInvoker<TState> : ICallbackInvoker
     {
-        private readonly Func<ShellScope, TState, Task> _callback;
-        private readonly TState _state;
+        private static readonly ObjectPool<CallbackInvoker<TState>> _pool =
+            new DefaultObjectPool<CallbackInvoker<TState>>(new CallbackInvokerPooledObjectPolicy<TState>(), 64);
 
-        public CallbackInvoker(Func<ShellScope, TState, Task> callback, TState state)
+        private Func<ShellScope, TState, Task> _callback;
+        private TState _state;
+
+        public static CallbackInvoker<TState> Rent(Func<ShellScope, TState, Task> callback, TState state)
         {
-            _callback = callback;
-            _state = state;
+            var invoker = _pool.Get();
+            invoker._callback = callback;
+            invoker._state = state;
+            return invoker;
         }
 
-        public Task InvokeAsync(ShellScope scope) => _callback(scope, _state);
+        public Task InvokeAsync(ShellScope scope) => _callback!(scope, _state);
+
+        public void Return()
+        {
+            _callback = null;
+            _state = default;
+            _pool.Return(this);
+        }
+    }
+
+    private sealed class CallbackInvokerPooledObjectPolicy<TState> : PooledObjectPolicy<CallbackInvoker<TState>>
+    {
+        public override CallbackInvoker<TState> Create() => new();
+
+        public override bool Return(CallbackInvoker<TState> obj) => true;
     }
 
     [Flags]
