@@ -207,8 +207,16 @@ public sealed class ProductController : Controller
 
         await _contentManager.UpdateAsync(product); //update will fire handlers which could alter the content item.
 
-        //validation will cancel changes if product is not valid. It's fired after update since handlers could change the object.
-        return await _contentManager.ValidateAsync(product);
+        //validate the content item after update since handlers could change the object.
+        var result = await _contentManager.ValidateAsync(product);
+
+        if (!result.Succeeded)
+        {
+            // Cancel the session to discard any pending changes.
+            await _session.CancelAsync();
+        }
+
+        return result;
     }
 }
 ```

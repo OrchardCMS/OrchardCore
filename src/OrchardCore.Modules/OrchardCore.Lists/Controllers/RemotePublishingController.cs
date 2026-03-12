@@ -1,3 +1,4 @@
+using System.Net.Mime;
 using System.Xml.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -63,6 +64,6 @@ public sealed class RemotePublishingController : Controller
                                     new XAttribute("version", "1.0"),
                                     options));
 
-        return Content(doc.ToString(), "text/xml");
+        return Content(doc.ToString(), MediaTypeNames.Text.Xml);
     }
 }
