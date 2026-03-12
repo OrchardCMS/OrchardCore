@@ -37,6 +37,12 @@ jobs:
       if: steps.check-publish.outputs.should-publish == 'true'
       run: |
         dotnet test --project ./test/OrchardCore.Tests/OrchardCore.Tests.csproj -c Release --no-build
+    - name: Cache Playwright Browsers
+      if: steps.check-publish.outputs.should-publish == 'true'
+      uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
+      with:
+        path: ~/.cache/ms-playwright
+        key: playwright-${{ hashFiles('Directory.Packages.props') }}
     - name: Install Playwright Browsers
       if: steps.check-publish.outputs.should-publish == 'true'
       run: |
