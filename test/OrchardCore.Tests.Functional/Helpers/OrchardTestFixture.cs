@@ -59,7 +59,21 @@ public sealed class OrchardTestFixture : IAsyncDisposable
             BaseURL = BaseUrl,
         });
 
-        return await context.NewPageAsync();
+        var page = await context.NewPageAsync();
+
+        page.Close += async (_, _) =>
+        {
+            try
+            {
+                await context.CloseAsync();
+            }
+            catch (Exception)
+            {
+                // Context may already be closed (e.g., when the browser is being disposed).
+            }
+        };
+
+        return page;
     }
 
     public async ValueTask DisposeAsync()
