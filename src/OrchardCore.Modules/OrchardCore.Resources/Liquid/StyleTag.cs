@@ -85,14 +85,7 @@ public class StyleTag
 
         void PopulateSettings(RequireSettings setting, bool hasName)
         {
-            if (at != ResourceLocation.Unspecified)
-            {
-                setting.AtLocation(at);
-            }
-            else
-            {
-                setting.AtLocation(ResourceLocation.Head);
-            }
+            setting.AtLocation(at != ResourceLocation.Unspecified ? at : ResourceLocation.Head);
 
             if (hasName && useCdn != null)
             {
@@ -190,17 +183,13 @@ public class StyleTag
 
             PopulateDefinition(resourceManager.InlineManifest.DefineStyle(name));
 
-            // If At is specified then we also render it.
-            if (at != ResourceLocation.Unspecified)
+            var setting = resourceManager.RegisterResource("stylesheet", name);
+
+            PopulateSettings(setting, hasName: true);
+
+            if (at == ResourceLocation.Inline)
             {
-                var setting = resourceManager.RegisterResource("stylesheet", name);
-
-                PopulateSettings(setting, hasName: true);
-
-                if (at == ResourceLocation.Inline)
-                {
-                    resourceManager.RenderLocalStyle(setting, writer);
-                }
+                resourceManager.RenderLocalStyle(setting, writer);
             }
         }
 

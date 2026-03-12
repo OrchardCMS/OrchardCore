@@ -1,3 +1,4 @@
+@using OrchardCore.Infrastructure
 @model OrchardCore.Queries.Sql.ViewModels.SqlQueryViewModel
 
 <style asp-name="codemirror"></style>
@@ -26,7 +27,7 @@
 <script at="Foot">
     $(function () {
         CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Query)'), {
-            mode: "text/x-pgsql",
+            mode: @MediaTypeNamesExtended.Text.PostgreSQL,
             indentWithTabs: true, smartIndent: true, matchBrackets: true, lineNumbers: true, styleActiveLine: true, viewportMargin: Infinity,
             extraKeys: { "Ctrl-Space": "autocomplete" },
             hintOptions: {
