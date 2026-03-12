@@ -39,7 +39,7 @@ public static class AppLifecycleHelper
         }
     }
 
-    public static void CopyMigrationsRecipe(string appDir)
+    public static bool CopyMigrationsRecipe(string appDir)
     {
         var recipeFileName = "migrations.recipe.json";
         var destDir = Path.Combine(appDir, "Recipes");
@@ -47,7 +47,7 @@ public static class AppLifecycleHelper
 
         if (File.Exists(destPath))
         {
-            return;
+            return false;
         }
 
         var assembly = Assembly.GetExecutingAssembly();
@@ -56,7 +56,7 @@ public static class AppLifecycleHelper
 
         if (resourceName is null)
         {
-            return;
+            return false;
         }
 
         if (!Directory.Exists(destDir))
@@ -69,6 +69,8 @@ public static class AppLifecycleHelper
         stream!.CopyTo(fileStream);
 
         Log($"Migrations recipe copied to {destDir}");
+
+        return true;
     }
 
     public static void DeleteMigrationsRecipe(string appDir)
