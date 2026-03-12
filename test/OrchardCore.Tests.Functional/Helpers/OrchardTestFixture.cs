@@ -13,18 +13,18 @@ public sealed class OrchardTestFixture : IAsyncDisposable
     public string BaseUrl { get; private set; }
     public IBrowser Browser => _browser;
 
-    private string ProjectRoot
+    private static string ProjectRoot
         => Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", ".."));
 
-    private bool IsMvc
+    private static bool IsMvc
         => Environment.GetEnvironmentVariable("ORCHARD_APP") == "mvc";
 
-    private string AppDir
+    private static string AppDir
         => IsMvc
             ? Path.Combine(ProjectRoot, "src", "OrchardCore.Mvc.Web")
             : Path.Combine(ProjectRoot, "src", "OrchardCore.Cms.Web");
 
-    private string Assembly
+    private static string Assembly
         => IsMvc ? "OrchardCore.Mvc.Web.dll" : "OrchardCore.Cms.Web.dll";
 
     public async Task InitializeAsync()

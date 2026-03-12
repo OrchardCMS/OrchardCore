@@ -23,7 +23,8 @@ public static class TestUtils
     {
         var now = DateTime.UtcNow;
         var today = now.Date;
-        var uniqueName = "t" + Convert.ToString((long)(now - today).TotalMilliseconds, 16);
+        var ms = (long)(now - today).TotalMilliseconds;
+        var uniqueName = "t" + ToBase32(ms);
 
         return new TenantInfo
         {
@@ -32,5 +33,24 @@ public static class TestUtils
             SetupRecipe = setupRecipeName,
             Description = description,
         };
+    }
+
+    private static string ToBase32(long value)
+    {
+        const string digits = "0123456789abcdefghijklmnopqrstuv";
+        if (value == 0)
+        {
+            return "0";
+        }
+
+        var result = new char[13];
+        var index = result.Length;
+        while (value > 0)
+        {
+            result[--index] = digits[(int)(value % 32)];
+            value /= 32;
+        }
+
+        return new string(result, index, result.Length - index);
     }
 }
