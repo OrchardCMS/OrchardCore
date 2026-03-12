@@ -1,3 +1,4 @@
+using System.Net.Mime;
 using System.Xml.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -48,6 +49,6 @@ public sealed class MetaWeblogController : Controller
                         XName.Get("manifest", ManifestUri),
                         options));
 
-        return Content(doc.ToString(), "text/xml");
+        return Content(doc.ToString(), MediaTypeNames.Text.Xml);
     }
 }
