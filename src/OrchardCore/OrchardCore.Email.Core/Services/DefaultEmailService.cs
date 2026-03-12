@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 using OrchardCore.Infrastructure;
 using OrchardCore.Modules;
 
-namespace OrchardCore.Email.Core.Services;
+namespace OrchardCore.Email.Services;
 
 public class DefaultEmailService : IEmailService
 {
