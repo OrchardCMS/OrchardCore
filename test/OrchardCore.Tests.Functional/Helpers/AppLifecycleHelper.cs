@@ -147,7 +147,11 @@ public static class AppLifecycleHelper
         var start = DateTime.UtcNow;
         Log($"Waiting for server at {baseUrl}...");
 
-        using var client = new HttpClient();
+        using var client = new HttpClient
+        {
+            // Use a short per-request timeout so the overall timeoutMs budget is respected.
+            Timeout = TimeSpan.FromSeconds(5),
+        };
 
         while ((DateTime.UtcNow - start).TotalMilliseconds < timeoutMs)
         {

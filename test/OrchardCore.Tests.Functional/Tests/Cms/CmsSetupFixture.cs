@@ -19,12 +19,18 @@ public sealed class CmsSetupFixture : IAsyncLifetime
         try
         {
             await page.GotoAsync("/");
-            await TenantHelper.SiteSetupAsync(page, new TenantInfo
+
+            // Only run setup if the setup page is present (skipped when using an externally hosted site).
+            if (await page.Locator("#SiteName").CountAsync() > 0)
             {
-                Name = "Testing SaaS",
-                Prefix = string.Empty,
-                SetupRecipe = "SaaS",
-            });
+                await TenantHelper.SiteSetupAsync(page, new TenantInfo
+                {
+                    Name = "Testing SaaS",
+                    Prefix = string.Empty,
+                    SetupRecipe = "SaaS",
+                });
+            }
+
             await AuthHelper.LoginAsync(page);
             await ConfigurationHelper.SetPageSizeAsync(page, string.Empty, "100");
         }
