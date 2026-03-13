@@ -291,3 +291,35 @@ To display translated dynamic strings in Razor views, inject `IDataLocalizer`:
 | Pluralization | Supported | Not supported |
 | Arguments | `T["Hello {0}", name]` | `D["Hello {0}", "Context", name]` |
 | Use case | Static UI strings | Dynamic data (content types, permissions) |
+
+## Liquid filters
+
+### `d`
+
+Localizes a dynamic data string using the current culture.
+
+Input
+
+```liquid
+{{ "Blog" | d: "Content Types" }}
+```
+
+Output
+
+For `fr`, `it`, `es` cultures, it will return:
+
+```text
+Blog
+```
+
+For `ar` culture, it will return:
+
+```text
+مدونة
+```
+
+For unsupported cultures or missing translations, it will return:
+
+```text
+Blog.Content Types
+```
