@@ -19,12 +19,12 @@
               fill="#2c84d8" />
           </svg>
         </span>
-        <div class="folder-name tw:ms-2">
-          <div class="tw:pr-2">{{ node.item.name }}</div>
+        <div class="folder-name tw:ms-2 tw:overflow-hidden">
+          <div class="tw:pr-2 tw:truncate">{{ node.item.name }}</div>
         </div>
-        <div class="folder-actions">
-          <a v-cloak href="javascript:void(0)" :title="t.ActionFolderTitle" class="action-button"
-            @click="() => openFolderModal('folder-action', node.item)" v-if="isSelected"><fa-icon
+        <div class="folder-actions tw:shrink-0">
+          <a href="javascript:void(0)" :title="t.ActionFolderTitle" class="action-button"
+            @click.stop="() => openFolderModal('folder-action', node.item)"><fa-icon
               icon="fas fa-ellipsis-v" size="xl"></fa-icon>
             <ModalFolderAction ref="modalAction" :show-modal-prop="showModal"
               :modal-name="getFolderModalName('folder-action', node.item)"
@@ -197,5 +197,15 @@ const confirmFolderModal = (modalName: string, confirmAction: IConfirmFolderActi
 
 @keyframes spin {
   to { transform: rotate(360deg); }
+}
+
+/* Show folder actions only on hover */
+.folder-actions {
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.folder:hover .folder-actions {
+  opacity: 1;
 }
 </style>

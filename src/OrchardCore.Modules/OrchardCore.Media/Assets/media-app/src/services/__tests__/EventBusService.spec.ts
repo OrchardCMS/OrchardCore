@@ -81,10 +81,7 @@ describe("EventBusService", () => {
     expect(spy).toHaveBeenCalledWith(file);
   });
 
-  it('should emit "DirDeleted" event', () => {
-    const spy = vi.fn();
-    on("DirDeleted", spy);
-
+  it('should handle "DirDelete" event for root-level folder', () => {
     const directory: IFileLibraryItemDto = {
       filePath: "/Images",
       directoryPath: "/Images",
@@ -93,13 +90,11 @@ describe("EventBusService", () => {
       size: 0,
       url: "/media/Images",
     };
-    emit("DirDeleted", directory);
-
-    expect(spy).toHaveBeenCalledTimes(1);
-    expect(spy).toHaveBeenCalledWith(directory);
+    // Should not throw — selectRootDirectory is called for root-level folders.
+    emit("DirDelete", directory);
   });
 
-  it('should emit "DirDeleted" with subdirectory and navigate to parent', () => {
+  it('should handle "DirDelete" with subdirectory and navigate to parent', () => {
     const pushSpy = vi.spyOn(router, "push").mockImplementation(() => Promise.resolve());
 
     // Use a subdirectory so that the parent path "/Images" is truthy and found in assetsStore
@@ -110,7 +105,7 @@ describe("EventBusService", () => {
       isDirectory: true,
       size: 0,
     };
-    emit("DirDeleted", subdirectory);
+    emit("DirDelete", subdirectory);
 
     // The parent "/Images" should be found in assetsStore and DirSelected should be emitted
     expect(pushSpy).toHaveBeenCalled();

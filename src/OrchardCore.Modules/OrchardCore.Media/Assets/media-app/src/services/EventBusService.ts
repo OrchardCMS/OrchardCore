@@ -113,7 +113,7 @@ export const useEventBusService = () => {
     emit("AfterDirSelected", directory);
   });
 
-  on("DirDeleted", (folder: IFileLibraryItemDto) => {
+  on("DirDelete", (folder: IFileLibraryItemDto) => {
     const directory = folder.directoryPath.substring(0, folder.directoryPath.lastIndexOf("/"));
 
     if (directory) {

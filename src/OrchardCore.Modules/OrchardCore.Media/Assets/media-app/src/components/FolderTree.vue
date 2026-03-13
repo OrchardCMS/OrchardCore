@@ -1,9 +1,16 @@
 <template>
   <div id="folder-tree" ref="scrollContainer">
+    <!-- Root folder pinned at top (not scrollable) -->
+    <FolderRow
+      v-if="rootNode"
+      :node="rootNode"
+      @select="onSelect"
+      @toggle="onToggle"
+    />
     <RecycleScroller
       v-if="scrollerHeight > 0"
       ref="scroller"
-      :items="visibleNodes"
+      :items="childNodes"
       :item-size="40"
       key-field="id"
       :buffer="200"
@@ -21,7 +28,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted, onBeforeUnmount, nextTick } from 'vue';
+import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue';
 import { RecycleScroller } from 'vue-virtual-scroller';
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css';
 import FolderRow from './FolderRow.vue';
@@ -36,6 +43,8 @@ const { visibleFolderNodes } = useHierarchicalTreeBuilder();
 const { selectedDirectory, expandedFolders, basePath, loadedFolders, hierarchicalDirectories, expandFolder, toggleFolder, setFolderLoading, setFolderLoaded } = useGlobals();
 const { on, emit } = useEventBus();
 const { loadMoreRootFolders, hasMoreRootFolders } = useFileLibraryManager();
+
+const ROOT_ROW_HEIGHT = 40;
 
 function findNodeByPath(root: IHFileLibraryItemDto, path: string): IHFileLibraryItemDto | null {
   if (root.directoryPath === path) return root;
@@ -64,7 +73,8 @@ onMounted(async () => {
   if (parent) {
     resizeObserver = new ResizeObserver((entries) => {
       for (const entry of entries) {
-        scrollerHeight.value = entry.contentRect.height;
+        // Subtract the pinned root row height from available space.
+        scrollerHeight.value = Math.max(0, entry.contentRect.height - ROOT_ROW_HEIGHT);
       }
     });
     resizeObserver.observe(parent);
@@ -96,7 +106,16 @@ watch(scrollerHeight, async (newVal) => {
   }
 });
 
-const visibleNodes = visibleFolderNodes;
+// Root node rendered separately (pinned).
+const rootNode = computed((): IFlatTreeNode | null => {
+  const nodes = visibleFolderNodes.value;
+  return nodes.length > 0 ? nodes[0] : null;
+});
+
+// All non-root nodes go into the scroller.
+const childNodes = computed((): IFlatTreeNode[] => {
+  return visibleFolderNodes.value.slice(1);
+});
 
 const onSelect = (node: IFlatTreeNode) => {
   const { children, ...folder } = node.item;

@@ -79,7 +79,7 @@ let folderActionElems = [
 ] as IFileActionElem[];
 
 // If we are on root folder we don't allow delete
-if (props.folder.directoryPath != "/") {
+if (props.folder.directoryPath && props.folder.directoryPath !== "/") {
   folderActionElems.push(
     {
       id: FolderAction.Delete,

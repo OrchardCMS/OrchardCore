@@ -23,10 +23,26 @@ const loadingFolders = ref(new Set<string>());
 const loadedFolders = ref(new Set<string>());
 const directoryIndex = computed(() => {
   const map = new Map<string, IFileLibraryItemDto>();
+  // Include assetsStore entries (root folders, flat fallback mode).
   for (const item of assetsStore.value) {
     if (item.isDirectory) {
       map.set(item.directoryPath, item);
     }
+  }
+  // Walk the hierarchical tree to index all loaded folders (including lazy-loaded subfolders).
+  const root = hierarchicalDirectories.value;
+  if (root && root.name) {
+    const walk = (node: IHFileLibraryItemDto) => {
+      if (!map.has(node.directoryPath)) {
+        map.set(node.directoryPath, node as IFileLibraryItemDto);
+      }
+      if (node.children) {
+        for (const child of node.children) {
+          walk(child);
+        }
+      }
+    };
+    walk(root);
   }
   return map;
 });

@@ -7,6 +7,10 @@ import { useEventBus } from "./UseEventBus";
 import { useHierarchicalTreeBuilder } from "./HierarchicalTreeBuilder";
 import { FileDataService, IFileDataService } from "@bloom/media/api/file-data-service";
 import { useLocalizations } from "@bloom/helpers/localizations";
+
+function isNotFoundError(error: unknown): boolean {
+  return typeof error === "object" && error !== null && "status" in error && (error as { status: number }).status === 404;
+}
 const { canManage } = usePermissions();
 const { setHierarchicalDirectories, setServerDirectoryTree } = useHierarchicalTreeBuilder();
 const { assetsStore, basePath, selectedDirectory, rootDirectory, selectedFiles, fileItems, hierarchicalDirectories, setAssetsStore, setSelectedFiles, setSelectedAll, setCapabilities, setFileItems, setHierarchicalData, setRootDirectory, setFolderLoaded, setIsLoadingFiles } = useGlobals();
@@ -170,7 +174,15 @@ export function useFileLibraryManager() {
             hasChildren: false,
             children: [],
           };
-          parentNode.children.push(newChild);
+          // Insert in sorted position (case-insensitive).
+          const insertIndex = parentNode.children.findIndex(
+            c => c.name.localeCompare(newChild.name, undefined, { sensitivity: 'base' }) > 0
+          );
+          if (insertIndex === -1) {
+            parentNode.children.push(newChild);
+          } else {
+            parentNode.children.splice(insertIndex, 0, newChild);
+          }
           parentNode.hasChildren = true;
           setHierarchicalData({ ...hierarchicalDirectories.value });
         }
@@ -297,6 +309,9 @@ export function useFileLibraryManager() {
           !(x.isDirectory && (x.directoryPath + "/").startsWith(directory.directoryPath + "/"))
         ));
 
+        // Invalidate cache for the deleted folder.
+        fileCache.delete(directory.directoryPath);
+
         emit("DirDelete", directory);
       } catch (error) {
         notify(error);
@@ -415,7 +430,10 @@ export function useFileLibraryManager() {
         return content.folders;
       } catch (error) {
         if (requestId !== loadRequestId) return null;
-        notify(error);
+        // Suppress 404s — the folder may have been deleted (e.g. SignalR race).
+        if (!isNotFoundError(error)) {
+          notify(error);
+        }
       }
       return null;
     }
@@ -431,7 +449,10 @@ export function useFileLibraryManager() {
       return content.folders;
     } catch (error) {
       if (requestId !== loadRequestId) return null;
-      notify(error);
+      // Suppress 404s — the folder may have been deleted (e.g. SignalR race).
+      if (!isNotFoundError(error)) {
+        notify(error);
+      }
     } finally {
       if (requestId === loadRequestId) {
         setIsLoadingFiles(false);
