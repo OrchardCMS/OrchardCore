@@ -30,6 +30,7 @@ public class AttachedMediaFieldFileService
     }
 
     public string MediaFieldsFolder { get; }
+
     public string MediaFieldsTempSubFolder { get; }
 
     /// <summary>
@@ -120,6 +121,23 @@ public class AttachedMediaFieldFileService
             await DeleteDirIfEmptyAsync(previousDirPath);
         }
 
+    }
+
+    internal async Task CopyNewFilesToContentItemDirAsync(string[] paths, ContentItem contentItem)
+    {
+        foreach (var path in paths)
+        {
+            var targetDir = GetContentItemFolder(contentItem);
+            var finalFileName = (await GetFileHashAsync(path)) + GetFileExtension(path);
+            var finalFilePath = _fileStore.Combine(targetDir, finalFileName);
+
+            await _fileStore.TryCreateDirectoryAsync(targetDir);
+
+            if (await _fileStore.GetFileInfoAsync(finalFilePath) is null)
+            {
+                await _fileStore.CopyFileAsync(path, finalFilePath);
+            }
+        }
     }
 
     private async Task<string> GetFileHashAsync(string filePath)
