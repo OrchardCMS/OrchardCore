@@ -43,7 +43,12 @@ public interface IShapeFactory
         Func<TState, ValueTask<IShape>> shapeFactory,
         Action<ShapeCreatingContext, TState> creating,
         Action<ShapeCreatedContext, TState> created,
-        TState state) => CreateAsync(shapeType, () => shapeFactory(state), (ctx) => creating(ctx, state), (ctx) => created(ctx, state));
+        TState state)
+        => CreateAsync(
+            shapeType,
+            () => shapeFactory(state),
+            creating is null ? null : (ctx) => creating(ctx, state),
+            created is null ? null : (ctx) => created(ctx, state));
 
     /// <summary>
     /// Gets a dynamic proxy object that provides a fluent API for creating shapes by name.
