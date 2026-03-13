@@ -1711,6 +1711,19 @@ ol.file-items-grid .file-icon-placeholder .file-ext {
   height: 40px;
 }
 
+.file-panel-loading .spinner {
+  font-size: 1rem;
+}
+
+.file-panel-loading .spinner .loader {
+  width: 40px;
+}
+
+.file-panel-loading .spinner .circular {
+  width: 40px;
+  height: 40px;
+}
+
 /* ============================================================
    Spinner / Progress
    ============================================================ */

@@ -1,9 +1,20 @@
+import { computed } from "vue";
 import { IHFileLibraryItemDto, TreeNode, IFileLibraryItemDto, IDirectoryTreeNode } from "@bloom/media/interfaces";
 import { useGlobals } from "./Globals";
 import { useLocalizations } from "@bloom/helpers/localizations";
 import { getFileExtension } from "@bloom/media/utils";
 
-const { assetsStore, selectedDirectory, hierarchicalDirectories, setHierarchicalData, setRootDirectory } = useGlobals();
+/**
+ * A flattened tree node for virtual scrolling.
+ * Contains the item data plus depth for indentation.
+ */
+export interface IFlatTreeNode {
+  item: IHFileLibraryItemDto;
+  depth: number;
+  id: string; // directoryPath used as unique key
+}
+
+const { assetsStore, selectedDirectory, hierarchicalDirectories, expandedFolders, setHierarchicalData, setRootDirectory } = useGlobals();
 const { translations } = useLocalizations();
 const t = translations;
 
@@ -238,6 +249,7 @@ export function useHierarchicalTreeBuilder() {
         filePath: "",
         isDirectory: true,
         selected: node.path === "",
+        hasChildren: node.hasChildren || node.children.length > 0,
         children: node.children.map(convertNode),
       };
 
@@ -262,5 +274,30 @@ export function useHierarchicalTreeBuilder() {
     return flatDirectories;
   };
 
-  return { getDirectoryTreeNode, setHierarchicalDirectories, setServerDirectoryTree, getFileTreeNode };
+  /**
+   * Flattens the hierarchical directory tree into a list of visible nodes
+   * based on which folders are currently expanded. Used for virtual scrolling.
+   */
+  const visibleFolderNodes = computed((): IFlatTreeNode[] => {
+    const root = hierarchicalDirectories.value;
+    if (!root || !root.name) return [];
+
+    const expanded = expandedFolders.value;
+    const result: IFlatTreeNode[] = [];
+
+    const walk = (node: IHFileLibraryItemDto, depth: number) => {
+      result.push({ item: node, depth, id: node.directoryPath });
+
+      if (expanded.has(node.directoryPath) && node.children) {
+        for (const child of node.children) {
+          walk(child, depth + 1);
+        }
+      }
+    };
+
+    walk(root, 0);
+    return result;
+  });
+
+  return { getDirectoryTreeNode, setHierarchicalDirectories, setServerDirectoryTree, getFileTreeNode, visibleFolderNodes };
 }

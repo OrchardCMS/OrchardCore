@@ -17,6 +17,10 @@ const sortAsc = ref(true);
 const itemsInPage = ref([] as IFileLibraryItemDto[]);
 const isLoading = ref(true);
 const isDownloading = ref(false);
+const isLoadingFiles = ref(false);
+const expandedFolders = ref(new Set<string>([""])); // root is always expanded
+const loadingFolders = ref(new Set<string>());
+const loadedFolders = ref(new Set<string>());
 const directoryIndex = computed(() => {
   const map = new Map<string, IFileLibraryItemDto>();
   for (const item of assetsStore.value) {
@@ -36,6 +40,10 @@ const uploadFilesUrl = computed(() => {
 export const useGlobals = () => {
   const setIsDownloading = (value: boolean) => {
     isDownloading.value = value;
+  };
+
+  const setIsLoadingFiles = (value: boolean) => {
+    isLoadingFiles.value = value;
   };
 
   const setUploadFilesUrl = (value: string) => {
@@ -102,6 +110,46 @@ export const useGlobals = () => {
     capabilities.value = value;
   };
 
+  const toggleFolder = (path: string) => {
+    const next = new Set(expandedFolders.value);
+    if (next.has(path)) {
+      next.delete(path);
+    } else {
+      next.add(path);
+    }
+    expandedFolders.value = next;
+  };
+
+  const expandFolder = (path: string) => {
+    if (!expandedFolders.value.has(path)) {
+      const next = new Set(expandedFolders.value);
+      next.add(path);
+      expandedFolders.value = next;
+    }
+  };
+
+  const setFolderLoading = (path: string, loading: boolean) => {
+    const next = new Set(loadingFolders.value);
+    if (loading) {
+      next.add(path);
+    } else {
+      next.delete(path);
+    }
+    loadingFolders.value = next;
+  };
+
+  const setFolderLoaded = (path: string) => {
+    const next = new Set(loadedFolders.value);
+    next.add(path);
+    loadedFolders.value = next;
+  };
+
+  const resetLazyState = () => {
+    expandedFolders.value = new Set([""]);
+    loadingFolders.value = new Set();
+    loadedFolders.value = new Set();
+  };
+
   return {
     errors,
     fileFilter,
@@ -109,6 +157,7 @@ export const useGlobals = () => {
     sortAsc,
     itemsInPage,
     isLoading,
+    isLoadingFiles,
     isDownloading,
     isSelectedAll,
     selectedFiles,
@@ -136,7 +185,16 @@ export const useGlobals = () => {
     setSortAsc,
     setItemsInPage,
     setIsLoading,
+    setIsLoadingFiles,
     setIsDownloading,
     setUploadFilesUrl,
+    expandedFolders,
+    loadingFolders,
+    loadedFolders,
+    toggleFolder,
+    expandFolder,
+    setFolderLoading,
+    setFolderLoaded,
+    resetLazyState,
   };
 };

@@ -138,6 +138,7 @@ public class MediaGen2ApiController : Controller
             children.Add(node);
 
             await BuildDirectoryTreeAsync(entry.Path, node.Children);
+            node.HasChildren = node.Children.Count > 0;
         }
     }
 
@@ -178,11 +179,29 @@ public class MediaGen2ApiController : Controller
             if (entry.IsDirectory
                 && await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaFolder, (object)entry.Path))
             {
-                allowed.Add(CreateFolderResult(entry));
+                var folderDto = CreateFolderResult(entry);
+
+                // Check if this folder has any subdirectories.
+                folderDto.HasChildren = await HasSubDirectoriesAsync(entry.Path);
+
+                allowed.Add(folderDto);
             }
         }
 
         return Ok(allowed);
+    }
+
+    private async Task<bool> HasSubDirectoriesAsync(string path)
+    {
+        await foreach (var child in _mediaFileStore.GetDirectoryContentAsync(path))
+        {
+            if (child.IsDirectory)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     [HttpGet]
@@ -821,6 +840,7 @@ public class FileStoreEntryDto
     public bool IsDirectory { get; set; }
     public string Url { get; set; }
     public string Mime { get; set; }
+    public bool? HasChildren { get; set; }
 }
 
 public class FileStoreCapabilitiesDto
@@ -833,5 +853,6 @@ public class DirectoryTreeNodeDto
 {
     public string Name { get; set; }
     public string Path { get; set; }
+    public bool HasChildren { get; set; }
     public List<DirectoryTreeNodeDto> Children { get; set; }
 }

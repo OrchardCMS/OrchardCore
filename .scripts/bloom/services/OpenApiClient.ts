@@ -1680,6 +1680,7 @@ export interface IContentItem {
 export class DirectoryTreeNodeDto implements IDirectoryTreeNodeDto {
     name?: string | undefined;
     path?: string | undefined;
+    hasChildren?: boolean;
     children?: DirectoryTreeNodeDto[] | undefined;
 
     constructor(data?: IDirectoryTreeNodeDto) {
@@ -1695,6 +1696,7 @@ export class DirectoryTreeNodeDto implements IDirectoryTreeNodeDto {
         if (_data) {
             this.name = _data["name"];
             this.path = _data["path"];
+            this.hasChildren = _data["hasChildren"];
             if (Array.isArray(_data["children"])) {
                 this.children = [] as any;
                 for (let item of _data["children"])
@@ -1714,6 +1716,7 @@ export class DirectoryTreeNodeDto implements IDirectoryTreeNodeDto {
         data = typeof data === 'object' ? data : {};
         data["name"] = this.name;
         data["path"] = this.path;
+        data["hasChildren"] = this.hasChildren;
         if (Array.isArray(this.children)) {
             data["children"] = [];
             for (let item of this.children)
@@ -1726,6 +1729,7 @@ export class DirectoryTreeNodeDto implements IDirectoryTreeNodeDto {
 export interface IDirectoryTreeNodeDto {
     name?: string | undefined;
     path?: string | undefined;
+    hasChildren?: boolean;
     children?: DirectoryTreeNodeDto[] | undefined;
 }
 
@@ -1778,6 +1782,7 @@ export class FileStoreEntryDto implements IFileStoreEntryDto {
     isDirectory?: boolean;
     url?: string | undefined;
     mime?: string | undefined;
+    hasChildren?: boolean | undefined;
 
     constructor(data?: IFileStoreEntryDto) {
         if (data) {
@@ -1798,6 +1803,7 @@ export class FileStoreEntryDto implements IFileStoreEntryDto {
             this.isDirectory = _data["isDirectory"];
             this.url = _data["url"];
             this.mime = _data["mime"];
+            this.hasChildren = _data["hasChildren"];
         }
     }
 
@@ -1818,6 +1824,7 @@ export class FileStoreEntryDto implements IFileStoreEntryDto {
         data["isDirectory"] = this.isDirectory;
         data["url"] = this.url;
         data["mime"] = this.mime;
+        data["hasChildren"] = this.hasChildren;
         return data;
     }
 }
@@ -1831,6 +1838,7 @@ export interface IFileStoreEntryDto {
     isDirectory?: boolean;
     url?: string | undefined;
     mime?: string | undefined;
+    hasChildren?: boolean | undefined;
 }
 
 export class MoveMedias implements IMoveMedias {

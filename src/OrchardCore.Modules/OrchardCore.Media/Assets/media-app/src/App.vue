@@ -21,9 +21,7 @@
     </div>
     <div v-show="!isLoading" id="fileContainer" class="tw:items-stretch">
       <div id="navigationApp" class="file-container-navigation tw:m-0 tw:p-0" v-cloak>
-        <ol id="folder-tree">
-          <folder :hierarchical-directories="hierarchicalDirectories" :level="1"></folder>
-        </ol>
+        <FolderTree />
       </div>
       <div id="fileContainerMain" v-cloak>
         <div class="file-container-top-bar">
@@ -86,9 +84,9 @@
         <div v-if="assetsStore.length > 0" class="file-container-middle tw:p-3">
           <router-view :key="selectedDirectory.directoryPath" :is-selected-all="isSelectedAll"
             :filtered-file-items="itemsInPage" :selected-files="selectedFiles"
-            v-show="filteredFileItems.length > 0 && !gridView">
+            v-show="!isLoadingFiles && filteredFileItems.length > 0 && !gridView">
           </router-view>
-          <ol class="file-items-grid" v-show="filteredFileItems.length > 0 && gridView">
+          <ol class="file-items-grid" v-show="!isLoadingFiles && filteredFileItems.length > 0 && gridView">
             <li v-for="file in itemsInPage" :key="file.filePath"
               :class="{ selected: isFileSelected(file) }"
               class="card" draggable="true"
@@ -115,7 +113,19 @@
             </li>
           </ol>
           <div
-            v-show="fileItems.length > 0 && filteredFileItems.length < 1"
+            v-show="isLoadingFiles"
+            class="empty-folder-state file-panel-loading">
+            <div class="spinner">
+              <div class="loader">
+                <svg class="circular" viewBox="25 25 50 50">
+                  <circle class="track" cx="50" cy="50" r="20" fill="none" stroke-width="4" />
+                  <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="4" />
+                </svg>
+              </div>
+            </div>
+          </div>
+          <div
+            v-show="!isLoadingFiles && fileItems.length > 0 && filteredFileItems.length < 1"
             class="empty-folder-state">
             <svg width="64" height="64" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M1.5 13.25V2.75C1.5 2.33579 1.83579 2 2.25 2H5.58579C5.78471 2 5.97547 2.07902 6.11612 2.21967L7.38388 3.48744C7.52453 3.62808 7.71529 3.70711 7.91421 3.70711H13.75C14.1642 3.70711 14.5 4.04289 14.5 4.45711V13.25C14.5 13.6642 14.1642 14 13.75 14H2.25C1.83579 14 1.5 13.6642 1.5 13.25Z" stroke="currentColor" stroke-width="0.8" fill="none"/>
@@ -123,7 +133,7 @@
             <span class="tw:mt-3">{{ t.FolderFilterEmpty }}</span>
           </div>
           <div
-            v-show="fileItems.length < 1"
+            v-show="!isLoadingFiles && fileItems.length < 1"
             class="empty-folder-state">
             <svg width="64" height="64" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M1.5 13.25V2.75C1.5 2.33579 1.83579 2 2.25 2H5.58579C5.78471 2 5.97547 2.07902 6.11612 2.21967L7.38388 3.48744C7.52453 3.62808 7.71529 3.70711 7.91421 3.70711H13.75C14.1642 3.70711 14.5 4.04289 14.5 4.45711V13.25C14.5 13.6642 14.1642 14 13.75 14H2.25C1.83579 14 1.5 13.6642 1.5 13.25Z" stroke="currentColor" stroke-width="0.8" fill="none"/>
@@ -148,7 +158,7 @@
 
 <script setup lang="ts">
 import { watch, computed, defineProps } from "vue";
-import folder from "./components/FolderComponent.vue";
+import FolderTree from "./components/FolderTree.vue";
 import UploadToast from "./components/UploadToast.vue";
 import NotificationToast from "./components/NotificationToast.vue";
 import pager from "./components/PagerComponent.vue";
@@ -219,6 +229,7 @@ const {
   hierarchicalDirectories,
   fileItems,
   isDownloading,
+  isLoadingFiles,
   capabilities,
   setFileItems,
   setIsLoading,

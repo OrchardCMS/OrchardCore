@@ -10,6 +10,7 @@ export interface IFileLibraryItemDto {
   isDirectory: boolean;
   url?: string;
   mime?: string;
+  hasChildren?: boolean;
 }
 
 /**
@@ -18,6 +19,7 @@ export interface IFileLibraryItemDto {
 export interface IHFileLibraryItemDto extends IFileLibraryItemDto {
   selected: boolean | undefined;
   children: IHFileLibraryItemDto[];
+  hasChildren?: boolean;
 }
 
 /**
@@ -149,5 +151,6 @@ export interface IFileStoreCapabilities {
 export interface IDirectoryTreeNode {
   name: string;
   path: string;
+  hasChildren: boolean;
   children: IDirectoryTreeNode[];
 }

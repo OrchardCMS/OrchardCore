@@ -17,20 +17,16 @@ const {
   sortAsc,
   selectedDirectory,
   rootDirectory,
-  assetsStore,
   directoryIndex,
   selectedFiles,
-  capabilities,
   setSortBy,
   setSortAsc,
   setFileFilter,
   setErrors,
   setSelectedFiles,
   setItemsInPage,
-  setFileItems,
   setSelectedDirectory,
   setSelectedAll,
-  setIsLoading,
 } = useGlobals();
 const { fileCopy, fileListMove, deleteFileItem, deleteFileList, renameFile, createDirectory, deleteDirectory, loadDirectoryFiles } = useFileLibraryManager();
 const { on, emit } = useEventBus();
@@ -63,16 +59,7 @@ export const useEventBusService = () => {
   };
 
   const setDirectoryFiles = async (directory: string) => {
-    if (capabilities.value.hasHierarchicalNamespace) {
-      // Hierarchical mode: load files from server on demand.
-      setIsLoading(true);
-      await loadDirectoryFiles(directory);
-      setIsLoading(false);
-    } else {
-      // Flat mode: filter from the preloaded assetsStore.
-      const foundfileItems = Object.values(assetsStore.value).filter((x) => x.directoryPath == directory && x.isDirectory == false);
-      setFileItems([...foundfileItems]);
-    }
+    await loadDirectoryFiles(directory);
   };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

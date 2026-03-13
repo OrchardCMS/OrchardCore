@@ -27,6 +27,7 @@ function toFileLibraryItem(dto: FileStoreEntryDto): IFileLibraryItemDto {
     isDirectory: dto.isDirectory ?? false,
     url: dto.url,
     mime: dto.mime,
+    hasChildren: dto.hasChildren ?? undefined,
   };
 }
 
@@ -34,6 +35,7 @@ function toDirectoryTreeNode(dto: DirectoryTreeNodeDto): IDirectoryTreeNode {
   return {
     name: dto.name ?? "",
     path: dto.path ?? "",
+    hasChildren: dto.hasChildren ?? (dto.children ?? []).length > 0,
     children: (dto.children ?? []).map(toDirectoryTreeNode),
   };
 }

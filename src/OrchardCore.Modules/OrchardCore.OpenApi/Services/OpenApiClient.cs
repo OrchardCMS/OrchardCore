@@ -3287,6 +3287,9 @@ namespace OrchardCore.OpenApi.Services
         [System.Text.Json.Serialization.JsonPropertyName("path")]
         public string Path { get; set; }
 
+        [System.Text.Json.Serialization.JsonPropertyName("hasChildren")]
+        public bool HasChildren { get; set; }
+
         [System.Text.Json.Serialization.JsonPropertyName("children")]
         public System.Collections.Generic.IList<DirectoryTreeNodeDto> Children { get; set; }
 
@@ -3363,6 +3366,9 @@ namespace OrchardCore.OpenApi.Services
 
         [System.Text.Json.Serialization.JsonPropertyName("mime")]
         public string Mime { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("hasChildren")]
+        public bool? HasChildren { get; set; }
 
         public string ToJson()
         {
