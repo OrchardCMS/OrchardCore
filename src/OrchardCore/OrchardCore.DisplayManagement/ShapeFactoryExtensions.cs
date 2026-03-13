@@ -87,7 +87,7 @@ public static class ShapeFactoryExtensions
     {
         ArgumentException.ThrowIfNullOrEmpty(shapeType);
 
-        if (parameters == null || parameters == Arguments.Empty)
+        if (parameters == null || parameters.Count == 0)
         {
             return factory.CreateAsync(shapeType);
         }
