@@ -1,8 +1,10 @@
 import SignalRApp from "@bloom/services/signalr/signalr-app";
 import { signalRReceivedData } from "@bloom/services/signalr/eventbus";
 import { useFileLibraryManager } from "./FileLibraryManager";
+import { useGlobals } from "./Globals";
 
-const { getFileLibraryStoreAsync } = useFileLibraryManager();
+const { loadDirectoryFiles } = useFileLibraryManager();
+const { selectedDirectory } = useGlobals();
 
 /**
  * Connects to the OrchardCore MediaHub and listens for MediaChanged events.
@@ -18,7 +20,7 @@ export function useSignalR() {
   if (app.connection) {
     app.connection.on("MediaChanged", async (message: unknown) => {
       console.debug("MediaChanged event received", message);
-      await getFileLibraryStoreAsync();
+      await loadDirectoryFiles(selectedDirectory.value?.directoryPath ?? "", true);
     });
   }
 

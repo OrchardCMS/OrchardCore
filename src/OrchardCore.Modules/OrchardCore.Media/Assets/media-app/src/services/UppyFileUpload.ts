@@ -20,7 +20,7 @@ import { OptionalPluralizeLocale } from "@uppy/utils/lib/Translator";
 import { useEventBus } from "./UseEventBus";
 
 const { on, emit } = useEventBus();
-const { selectedDirectory, fileItems, uploadFilesUrl, assetsStore, setAssetsStore } = useGlobals();
+const { selectedDirectory, fileItems, uploadFilesUrl, assetsStore, setAssetsStore, setFileItems } = useGlobals();
 const permissionsService = usePermissions();
 const { translations } = useLocalizations();
 const t = translations;
@@ -376,6 +376,21 @@ export const useFileUpload = (model: IFileUploadModel): void => {
                 ? { ...a, filePath: serverFile.filePath, size: serverFile.size, lastModifiedUtc: serverFile.lastModifiedUtc, url: serverFile.url, mime: serverFile.mime }
                 : a
             ));
+
+            // Add the uploaded file to the file panel immediately.
+            const uploadedItem: IFileLibraryItemDto = {
+              name: serverFile.name || file.name,
+              filePath: serverFile.filePath,
+              directoryPath: serverFile.directoryPath || selectedDirectory.value.directoryPath,
+              size: serverFile.size,
+              lastModifiedUtc: serverFile.lastModifiedUtc,
+              url: serverFile.url,
+              mime: serverFile.mime,
+              isDirectory: false,
+            };
+            if (!fileItems.value.some(f => f.filePath === uploadedItem.filePath)) {
+              setFileItems([...fileItems.value, uploadedItem]);
+            }
           }
         } catch (err) {
           console.debug("Failed to fetch TUS file info:", err);
@@ -420,6 +435,31 @@ export const useFileUpload = (model: IFileUploadModel): void => {
               }
               return a;
             }));
+
+            // Add the uploaded files to the file panel immediately.
+            const newFileItems: IFileLibraryItemDto[] = [];
+            updates.forEach((serverFile) => {
+              const item: IFileLibraryItemDto = {
+                name: serverFile.name as string,
+                filePath: serverFile.filePath as string,
+                directoryPath: serverFile.directoryPath as string,
+                size: serverFile.size as number,
+                lastModifiedUtc: serverFile.lastModifiedUtc as string,
+                url: serverFile.url as string,
+                mime: serverFile.mime as string,
+                isDirectory: false,
+              };
+              newFileItems.push(item);
+            });
+            if (newFileItems.length > 0) {
+              // Merge: replace existing items by filePath, add new ones.
+              const existingPaths = new Set(fileItems.value.map(f => f.filePath));
+              const merged = [
+                ...fileItems.value,
+                ...newFileItems.filter(f => !existingPaths.has(f.filePath)),
+              ];
+              setFileItems(merged);
+            }
           }
         }
 

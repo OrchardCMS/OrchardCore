@@ -379,14 +379,11 @@ watch(
   () => assetsStore.value,
   (newAssetsStore: IFileLibraryItemDto[]) => {
     if (capabilities.value.hasHierarchicalNamespace) {
-      // Hierarchical mode: tree comes from server, files load per-folder.
-      // No client-side tree rebuild needed.
       return;
     }
 
-    // Flat mode: rebuild file list and tree from the full assetsStore.
-    const foundFileItems = Object.values(newAssetsStore).filter(x => (x.directoryPath == selectedDirectory.value.directoryPath) && x.isDirectory == false);
-    setFileItems(foundFileItems);
+    // Flat fallback mode: rebuild the folder tree from the full assetsStore.
+    // File items are loaded via loadDirectoryFiles, not from assetsStore.
     setHierarchicalDirectories(newAssetsStore);
   },
 )

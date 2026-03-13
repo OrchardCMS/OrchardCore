@@ -146,6 +146,22 @@ export interface IFileStoreCapabilities {
 }
 
 /**
+ * Paginated result from the GetFolders endpoint.
+ */
+export interface IPaginatedFoldersResult {
+  items: IFileLibraryItemDto[];
+  hasMore: boolean;
+}
+
+/**
+ * Combined result from the GetDirectoryContent endpoint (folders + files in one request).
+ */
+export interface IDirectoryContentResult {
+  folders: IFileLibraryItemDto[];
+  files: IFileLibraryItemDto[];
+}
+
+/**
  * A node in the server-built directory tree returned by the GetDirectoryTree endpoint.
  */
 export interface IDirectoryTreeNode {

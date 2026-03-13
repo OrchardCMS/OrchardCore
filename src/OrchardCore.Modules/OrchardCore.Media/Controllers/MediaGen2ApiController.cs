@@ -71,10 +71,14 @@ public class MediaGen2ApiController : Controller
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
     public async Task<ActionResult<FileStoreCapabilitiesDto>> GetCapabilities()
     {
+        var sw = System.Diagnostics.Stopwatch.StartNew();
+
         if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMedia))
         {
             return this.ApiChallengeOrForbidForCookieAuth();
         }
+
+        _logger.LogWarning("GetCapabilities — total: {TotalMs}ms", sw.ElapsedMilliseconds);
 
         return Ok(new FileStoreCapabilitiesDto
         {
@@ -116,18 +120,8 @@ public class MediaGen2ApiController : Controller
 
     private async Task BuildDirectoryTreeAsync(string path, List<DirectoryTreeNodeDto> children)
     {
-        await foreach (var entry in _mediaFileStore.GetDirectoryContentAsync(path))
+        await foreach (var entry in _mediaFileStore.GetDirectoriesAsync(path))
         {
-            if (!entry.IsDirectory)
-            {
-                continue;
-            }
-
-            if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaFolder, (object)entry.Path))
-            {
-                continue;
-            }
-
             var node = new DirectoryTreeNodeDto
             {
                 Name = entry.Name,
@@ -144,12 +138,14 @@ public class MediaGen2ApiController : Controller
 
     [HttpGet]
     [Route("GetFolders")]
-    [ProducesResponseType(typeof(IEnumerable<FileStoreEntryDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(PaginatedFoldersDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<IEnumerable<FileStoreEntryDto>>> GetFolders(string path)
+    public async Task<ActionResult<PaginatedFoldersDto>> GetFolders(string path, int skip = 0, int take = 0)
     {
+        var sw = System.Diagnostics.Stopwatch.StartNew();
+
         if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMedia))
         {
             return this.ApiChallengeOrForbidForCookieAuth();
@@ -160,45 +156,72 @@ public class MediaGen2ApiController : Controller
             path = String.Empty;
         }
 
-        if (await _mediaFileStore.GetDirectoryInfoAsync(path) == null)
+        // Only check directory existence for non-root paths (root always exists).
+        if (path.Length > 0 && await _mediaFileStore.GetDirectoryInfoAsync(path) == null)
         {
             return this.ApiNotFoundProblem();
         }
 
-        // create default folders if not exist
-        if (await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageOwnMedia)
-            && await _mediaFileStore.GetDirectoryInfoAsync(_mediaFileStore.Combine(_mediaOptions.AssetsUsersFolder, _userAssetFolderNameProvider.GetUserAssetFolderName(User))) == null)
-        {
-            await _mediaFileStore.TryCreateDirectoryAsync(_mediaFileStore.Combine(_mediaOptions.AssetsUsersFolder, _userAssetFolderNameProvider.GetUserAssetFolderName(User)));
-        }
+        var authMs = sw.ElapsedMilliseconds;
+        sw.Restart();
 
-        var allowed = new List<FileStoreEntryDto>();
+        var isPaginated = take > 0;
+        var page = new List<FileStoreEntryDto>();
+        var hasMore = false;
+        var authorizedCount = 0;
 
-        await foreach (var entry in _mediaFileStore.GetDirectoryContentAsync(path))
+        await foreach (var entry in _mediaFileStore.GetDirectoriesAsync(path))
         {
-            if (entry.IsDirectory
-                && await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaFolder, (object)entry.Path))
+            authorizedCount++;
+
+            if (isPaginated)
             {
-                var folderDto = CreateFolderResult(entry);
+                // Skip entries before the requested offset.
+                if (authorizedCount <= skip)
+                {
+                    continue;
+                }
 
-                // Check if this folder has any subdirectories.
-                folderDto.HasChildren = await HasSubDirectoriesAsync(entry.Path);
-
-                allowed.Add(folderDto);
+                // Collect up to 'take' entries for the page.
+                if (page.Count < take)
+                {
+                    page.Add(CreateFolderResult(entry));
+                }
+                else
+                {
+                    // We found one more beyond the page — there are more folders.
+                    hasMore = true;
+                    break;
+                }
+            }
+            else
+            {
+                page.Add(CreateFolderResult(entry));
             }
         }
 
-        return Ok(allowed);
+        var listingMs = sw.ElapsedMilliseconds;
+        sw.Restart();
+
+        // Check HasChildren for the page only (not all folders).
+        var hasChildrenTasks = page.Select(async folder =>
+        {
+            folder.HasChildren = await HasSubDirectoriesAsync(folder.DirectoryPath);
+        });
+        await Task.WhenAll(hasChildrenTasks);
+
+        var hasChildrenMs = sw.ElapsedMilliseconds;
+        _logger.LogWarning("GetFolders path={Path} skip={Skip} take={Take} — auth: {AuthMs}ms, listing: {ListingMs}ms, hasChildren: {HasChildrenMs}ms, folders: {Count}",
+            path, skip, take, authMs, listingMs, hasChildrenMs, page.Count);
+
+        return Ok(new PaginatedFoldersDto { Items = page, HasMore = hasMore });
     }
 
     private async Task<bool> HasSubDirectoriesAsync(string path)
     {
-        await foreach (var child in _mediaFileStore.GetDirectoryContentAsync(path))
+        await foreach (var _ in _mediaFileStore.GetDirectoriesAsync(path))
         {
-            if (child.IsDirectory)
-            {
-                return true;
-            }
+            return true;
         }
 
         return false;
@@ -212,37 +235,131 @@ public class MediaGen2ApiController : Controller
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<IEnumerable<FileStoreEntryDto>>> GetMediaItems(string path, string extensions)
     {
+        var sw = System.Diagnostics.Stopwatch.StartNew();
+
         if (String.IsNullOrEmpty(path))
         {
             path = String.Empty;
         }
 
-        if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMedia)
-            || !await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaFolder, (object)path))
+        if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMedia))
         {
             return this.ApiChallengeOrForbidForCookieAuth();
         }
 
-        if (await _mediaFileStore.GetDirectoryInfoAsync(path) == null)
+        var authMs = sw.ElapsedMilliseconds;
+
+        // Only check directory existence for non-root paths (root always exists).
+        if (path.Length > 0 && await _mediaFileStore.GetDirectoryInfoAsync(path) == null)
         {
             return this.ApiNotFoundProblem();
         }
+
+        var dirCheckMs = sw.ElapsedMilliseconds - authMs;
+        sw.Restart();
 
         var allowedExtensions = GetRequestedExtensions(extensions, false);
 
         var allowed = new List<FileStoreEntryDto>();
 
-        await foreach (var entry in _mediaFileStore.GetDirectoryContentAsync(path))
+        await foreach (var entry in _mediaFileStore.GetFilesAsync(path))
         {
-            if (!entry.IsDirectory
-                && (allowedExtensions.Count == 0 || allowedExtensions.Contains(Path.GetExtension(entry.Path)))
-                && await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaFolder, (object)entry.Path))
+            if (allowedExtensions.Count == 0 || allowedExtensions.Contains(Path.GetExtension(entry.Path)))
             {
                 allowed.Add(CreateFileResult(entry));
             }
         }
 
+        _logger.LogWarning("GetMediaItems path={Path} — auth: {AuthMs}ms, dirCheck: {DirCheckMs}ms, listing: {ListingMs}ms, files: {Count}",
+            path, authMs, dirCheckMs, sw.ElapsedMilliseconds, allowed.Count);
+
         return Ok(allowed);
+    }
+
+    /// <summary>
+    /// Returns both subfolders and files for a directory in a single request,
+    /// avoiding duplicate pipeline overhead from separate GetFolders + GetMediaItems calls.
+    /// </summary>
+    [HttpGet]
+    [Route("GetDirectoryContent")]
+    [ProducesResponseType(typeof(DirectoryContentDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<DirectoryContentDto>> GetDirectoryContent(string path, string extensions)
+    {
+        var sw = System.Diagnostics.Stopwatch.StartNew();
+
+        if (String.IsNullOrEmpty(path))
+        {
+            path = String.Empty;
+        }
+
+        if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMedia))
+        {
+            return this.ApiChallengeOrForbidForCookieAuth();
+        }
+
+        // Only check directory existence for non-root paths (root always exists).
+        if (path.Length > 0 && await _mediaFileStore.GetDirectoryInfoAsync(path) == null)
+        {
+            return this.ApiNotFoundProblem();
+        }
+
+        var authMs = sw.ElapsedMilliseconds;
+        sw.Restart();
+
+        // Fetch folders and files concurrently.
+        var foldersTask = GetDirectoryFoldersAsync(path);
+        var filesTask = GetDirectoryFilesAsync(path, extensions);
+
+        await Task.WhenAll(foldersTask, filesTask);
+
+        var listingMs = sw.ElapsedMilliseconds;
+
+        _logger.LogWarning("GetDirectoryContent path={Path} — auth: {AuthMs}ms, listing: {ListingMs}ms, folders: {FolderCount}, files: {FileCount}",
+            path, authMs, listingMs, foldersTask.Result.Count, filesTask.Result.Count);
+
+        return Ok(new DirectoryContentDto
+        {
+            Folders = foldersTask.Result,
+            Files = filesTask.Result,
+        });
+    }
+
+    private async Task<List<FileStoreEntryDto>> GetDirectoryFoldersAsync(string path)
+    {
+        var folders = new List<FileStoreEntryDto>();
+
+        await foreach (var entry in _mediaFileStore.GetDirectoriesAsync(path))
+        {
+            folders.Add(CreateFolderResult(entry));
+        }
+
+        // Check HasChildren concurrently.
+        var hasChildrenTasks = folders.Select(async folder =>
+        {
+            folder.HasChildren = await HasSubDirectoriesAsync(folder.DirectoryPath);
+        });
+        await Task.WhenAll(hasChildrenTasks);
+
+        return folders;
+    }
+
+    private async Task<List<FileStoreEntryDto>> GetDirectoryFilesAsync(string path, string extensions)
+    {
+        var allowedExtensions = GetRequestedExtensions(extensions, false);
+        var files = new List<FileStoreEntryDto>();
+
+        await foreach (var entry in _mediaFileStore.GetFilesAsync(path))
+        {
+            if (allowedExtensions.Count == 0 || allowedExtensions.Contains(Path.GetExtension(entry.Path)))
+            {
+                files.Add(CreateFileResult(entry));
+            }
+        }
+
+        return files;
     }
 
     [HttpGet]
@@ -308,18 +425,12 @@ public class MediaGen2ApiController : Controller
         {
             if (entry.IsDirectory)
             {
-                if (await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaFolder, (object)entry.Path))
-                {
-                    allItems.Add(CreateFolderResult(entry));
-                    subFolders.Add(entry);
-                }
+                allItems.Add(CreateFolderResult(entry));
+                subFolders.Add(entry);
             }
             else if (allowedExtensions.Count == 0 || allowedExtensions.Contains(Path.GetExtension(entry.Path)))
             {
-                if (await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaFolder, (object)entry.Path))
-                {
-                    allItems.Add(CreateFileResult(entry));
-                }
+                allItems.Add(CreateFileResult(entry));
             }
         }
 
@@ -847,6 +958,18 @@ public class FileStoreCapabilitiesDto
 {
     public bool HasHierarchicalNamespace { get; set; }
     public bool SupportsAtomicMove { get; set; }
+}
+
+public class PaginatedFoldersDto
+{
+    public List<FileStoreEntryDto> Items { get; set; }
+    public bool HasMore { get; set; }
+}
+
+public class DirectoryContentDto
+{
+    public List<FileStoreEntryDto> Folders { get; set; }
+    public List<FileStoreEntryDto> Files { get; set; }
 }
 
 public class DirectoryTreeNodeDto

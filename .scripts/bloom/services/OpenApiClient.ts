@@ -39,15 +39,23 @@ export interface IClient {
     getDirectoryTree( cancelToken?: CancelToken): Promise<DirectoryTreeNodeDto>;
     /**
      * @param path (optional) 
+     * @param skip (optional) 
+     * @param take (optional) 
      * @return OK
      */
-    getFolders(path: string | undefined,  cancelToken?: CancelToken): Promise<FileStoreEntryDto[]>;
+    getFolders(path: string | undefined, skip: number | undefined, take: number | undefined,  cancelToken?: CancelToken): Promise<PaginatedFoldersDto>;
     /**
      * @param path (optional) 
      * @param extensions (optional) 
      * @return OK
      */
     getMediaItems(path: string | undefined, extensions: string | undefined,  cancelToken?: CancelToken): Promise<FileStoreEntryDto[]>;
+    /**
+     * @param path (optional) 
+     * @param extensions (optional) 
+     * @return OK
+     */
+    getDirectoryContent(path: string | undefined, extensions: string | undefined,  cancelToken?: CancelToken): Promise<DirectoryContentDto>;
     /**
      * @param path (optional) 
      * @return OK
@@ -467,14 +475,24 @@ export class Client implements IClient {
 
     /**
      * @param path (optional) 
+     * @param skip (optional) 
+     * @param take (optional) 
      * @return OK
      */
-    getFolders(path: string | undefined, cancelToken?: CancelToken): Promise<FileStoreEntryDto[]> {
+    getFolders(path: string | undefined, skip: number | undefined, take: number | undefined, cancelToken?: CancelToken): Promise<PaginatedFoldersDto> {
         let url_ = this.baseUrl + "/api/media-gen2/GetFolders?";
         if (path === null)
             throw new globalThis.Error("The parameter 'path' cannot be null.");
         else if (path !== undefined)
             url_ += "path=" + encodeURIComponent("" + path) + "&";
+        if (skip === null)
+            throw new globalThis.Error("The parameter 'skip' cannot be null.");
+        else if (skip !== undefined)
+            url_ += "skip=" + encodeURIComponent("" + skip) + "&";
+        if (take === null)
+            throw new globalThis.Error("The parameter 'take' cannot be null.");
+        else if (take !== undefined)
+            url_ += "take=" + encodeURIComponent("" + take) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: AxiosRequestConfig = {
@@ -497,7 +515,7 @@ export class Client implements IClient {
         });
     }
 
-    protected processGetFolders(response: AxiosResponse): Promise<FileStoreEntryDto[]> {
+    protected processGetFolders(response: AxiosResponse): Promise<PaginatedFoldersDto> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -511,15 +529,8 @@ export class Client implements IClient {
             const _responseText = response.data;
             let result200: any = null;
             let resultData200  = _responseText;
-            if (Array.isArray(resultData200)) {
-                result200 = [] as any;
-                for (let item of resultData200)
-                    result200!.push(FileStoreEntryDto.fromJS(item));
-            }
-            else {
-                result200 = null as any;
-            }
-            return Promise.resolve<FileStoreEntryDto[]>(result200);
+            result200 = PaginatedFoldersDto.fromJS(resultData200);
+            return Promise.resolve<PaginatedFoldersDto>(result200);
 
         } else if (status === 401) {
             const _responseText = response.data;
@@ -546,7 +557,7 @@ export class Client implements IClient {
             const _responseText = response.data;
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
         }
-        return Promise.resolve<FileStoreEntryDto[]>(null as any);
+        return Promise.resolve<PaginatedFoldersDto>(null as any);
     }
 
     /**
@@ -636,6 +647,88 @@ export class Client implements IClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
         }
         return Promise.resolve<FileStoreEntryDto[]>(null as any);
+    }
+
+    /**
+     * @param path (optional) 
+     * @param extensions (optional) 
+     * @return OK
+     */
+    getDirectoryContent(path: string | undefined, extensions: string | undefined, cancelToken?: CancelToken): Promise<DirectoryContentDto> {
+        let url_ = this.baseUrl + "/api/media-gen2/GetDirectoryContent?";
+        if (path === null)
+            throw new globalThis.Error("The parameter 'path' cannot be null.");
+        else if (path !== undefined)
+            url_ += "path=" + encodeURIComponent("" + path) + "&";
+        if (extensions === null)
+            throw new globalThis.Error("The parameter 'extensions' cannot be null.");
+        else if (extensions !== undefined)
+            url_ += "extensions=" + encodeURIComponent("" + extensions) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: AxiosRequestConfig = {
+            method: "GET",
+            url: url_,
+            headers: {
+                "Accept": "application/json"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processGetDirectoryContent(_response);
+        });
+    }
+
+    protected processGetDirectoryContent(response: AxiosResponse): Promise<DirectoryContentDto> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = DirectoryContentDto.fromJS(resultData200);
+            return Promise.resolve<DirectoryContentDto>(result200);
+
+        } else if (status === 401) {
+            const _responseText = response.data;
+            let result401: any = null;
+            let resultData401  = _responseText;
+            result401 = ProblemDetails.fromJS(resultData401);
+            return throwException("Unauthorized", status, _responseText, _headers, result401);
+
+        } else if (status === 403) {
+            const _responseText = response.data;
+            let result403: any = null;
+            let resultData403  = _responseText;
+            result403 = ProblemDetails.fromJS(resultData403);
+            return throwException("Forbidden", status, _responseText, _headers, result403);
+
+        } else if (status === 404) {
+            const _responseText = response.data;
+            let result404: any = null;
+            let resultData404  = _responseText;
+            result404 = ProblemDetails.fromJS(resultData404);
+            return throwException("Not Found", status, _responseText, _headers, result404);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<DirectoryContentDto>(null as any);
     }
 
     /**
@@ -1677,6 +1770,62 @@ export interface IContentItem {
     displayText?: string | undefined;
 }
 
+export class DirectoryContentDto implements IDirectoryContentDto {
+    folders?: FileStoreEntryDto[] | undefined;
+    files?: FileStoreEntryDto[] | undefined;
+
+    constructor(data?: IDirectoryContentDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["folders"])) {
+                this.folders = [] as any;
+                for (let item of _data["folders"])
+                    this.folders!.push(FileStoreEntryDto.fromJS(item));
+            }
+            if (Array.isArray(_data["files"])) {
+                this.files = [] as any;
+                for (let item of _data["files"])
+                    this.files!.push(FileStoreEntryDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): DirectoryContentDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new DirectoryContentDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.folders)) {
+            data["folders"] = [];
+            for (let item of this.folders)
+                data["folders"].push(item ? item.toJSON() : undefined as any);
+        }
+        if (Array.isArray(this.files)) {
+            data["files"] = [];
+            for (let item of this.files)
+                data["files"].push(item ? item.toJSON() : undefined as any);
+        }
+        return data;
+    }
+}
+
+export interface IDirectoryContentDto {
+    folders?: FileStoreEntryDto[] | undefined;
+    files?: FileStoreEntryDto[] | undefined;
+}
+
 export class DirectoryTreeNodeDto implements IDirectoryTreeNodeDto {
     name?: string | undefined;
     path?: string | undefined;
@@ -1891,6 +2040,54 @@ export interface IMoveMedias {
     mediaNames?: string[] | undefined;
     sourceFolder?: string | undefined;
     targetFolder?: string | undefined;
+}
+
+export class PaginatedFoldersDto implements IPaginatedFoldersDto {
+    items?: FileStoreEntryDto[] | undefined;
+    hasMore?: boolean;
+
+    constructor(data?: IPaginatedFoldersDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["items"])) {
+                this.items = [] as any;
+                for (let item of _data["items"])
+                    this.items!.push(FileStoreEntryDto.fromJS(item));
+            }
+            this.hasMore = _data["hasMore"];
+        }
+    }
+
+    static fromJS(data: any): PaginatedFoldersDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new PaginatedFoldersDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.items)) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item ? item.toJSON() : undefined as any);
+        }
+        data["hasMore"] = this.hasMore;
+        return data;
+    }
+}
+
+export interface IPaginatedFoldersDto {
+    items?: FileStoreEntryDto[] | undefined;
+    hasMore?: boolean;
 }
 
 export class ProblemDetails implements IProblemDetails {

@@ -12,6 +12,7 @@ export type MittEvents = {
     FileCopy: any; // eslint-disable-line @typescript-eslint/no-explicit-any
     FileCopied: any; // eslint-disable-line @typescript-eslint/no-explicit-any
     FileRenamed: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+    DirChildrenLoaded: any; // eslint-disable-line @typescript-eslint/no-explicit-any
     DirAddReq: any; // eslint-disable-line @typescript-eslint/no-explicit-any
     DirCreateReq: any; // eslint-disable-line @typescript-eslint/no-explicit-any
     DirDelete: any; // eslint-disable-line @typescript-eslint/no-explicit-any

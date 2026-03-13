@@ -59,7 +59,10 @@ export const useEventBusService = () => {
   };
 
   const setDirectoryFiles = async (directory: string) => {
-    await loadDirectoryFiles(directory);
+    const folders = await loadDirectoryFiles(directory);
+    if (folders !== null) {
+      emit("DirChildrenLoaded", { directoryPath: directory, folders });
+    }
   };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

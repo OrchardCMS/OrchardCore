@@ -57,6 +57,16 @@ public class DefaultMediaFileStore : IMediaFileStore
         return _fileStore.GetDirectoryContentAsync(path, includeSubDirectories);
     }
 
+    public virtual IAsyncEnumerable<IFileStoreEntry> GetFilesAsync(string path = null)
+    {
+        return _fileStore.GetFilesAsync(path);
+    }
+
+    public virtual IAsyncEnumerable<IFileStoreEntry> GetDirectoriesAsync(string path = null)
+    {
+        return _fileStore.GetDirectoriesAsync(path);
+    }
+
     public virtual async Task<bool> TryCreateDirectoryAsync(string path)
     {
         var creatingContext = new MediaCreatingContext

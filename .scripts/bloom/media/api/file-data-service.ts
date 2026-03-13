@@ -1,9 +1,9 @@
-import { IFileLibraryItemDto, IFileStoreCapabilities, IDirectoryTreeNode } from "../interfaces";
+import { IFileLibraryItemDto, IFileStoreCapabilities, IDirectoryTreeNode, IPaginatedFoldersResult, IDirectoryContentResult } from "../interfaces";
 import { Client, FileStoreEntryDto, MoveMedias, DirectoryTreeNodeDto } from "@bloom/services/OpenApiClient";
 
 export interface IFileDataService {
   getFileItem(path: string): Promise<IFileLibraryItemDto>;
-  getFolders(path: string): Promise<IFileLibraryItemDto[]>;
+  getFolders(path: string, skip?: number, take?: number): Promise<IPaginatedFoldersResult>;
   getMediaItems(path: string): Promise<IFileLibraryItemDto[]>;
   listAllItems(): Promise<IFileLibraryItemDto[]>;
   copyMedia(oldPath: string, newPath: string): Promise<IFileLibraryItemDto>;
@@ -15,6 +15,7 @@ export interface IFileDataService {
   createFolder(path: string, name: string): Promise<IFileLibraryItemDto>;
   getCapabilities(): Promise<IFileStoreCapabilities>;
   getDirectoryTree(): Promise<IDirectoryTreeNode>;
+  getDirectoryContent(path: string): Promise<IDirectoryContentResult>;
 }
 
 function toFileLibraryItem(dto: FileStoreEntryDto): IFileLibraryItemDto {
@@ -55,9 +56,12 @@ export class FileDataService implements IFileDataService {
     return toFileLibraryItem(dto);
   }
 
-  async getFolders(path: string): Promise<IFileLibraryItemDto[]> {
-    const dtos = await this.client.getFolders(path);
-    return dtos.map(toFileLibraryItem);
+  async getFolders(path: string, skip?: number, take?: number): Promise<IPaginatedFoldersResult> {
+    const dto = await this.client.getFolders(path, skip, take);
+    return {
+      items: (dto.items ?? []).map(toFileLibraryItem),
+      hasMore: dto.hasMore ?? false,
+    };
   }
 
   async getMediaItems(path: string): Promise<IFileLibraryItemDto[]> {
@@ -112,5 +116,13 @@ export class FileDataService implements IFileDataService {
   async getDirectoryTree(): Promise<IDirectoryTreeNode> {
     const dto = await this.client.getDirectoryTree();
     return toDirectoryTreeNode(dto);
+  }
+
+  async getDirectoryContent(path: string): Promise<IDirectoryContentResult> {
+    const dto = await this.client.getDirectoryContent(path, undefined);
+    return {
+      folders: (dto.folders ?? []).map(toFileLibraryItem),
+      files: (dto.files ?? []).map(toFileLibraryItem),
+    };
   }
 }

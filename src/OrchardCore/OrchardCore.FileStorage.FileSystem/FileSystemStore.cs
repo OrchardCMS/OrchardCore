@@ -105,6 +105,64 @@ public class FileSystemStore : IFileStore
         }
     }
 
+    public IAsyncEnumerable<IFileStoreEntry> GetFilesAsync(string path = null)
+    {
+        try
+        {
+            var physicalPath = GetPhysicalPath(path);
+
+            if (!Directory.Exists(physicalPath))
+            {
+                return Array.Empty<IFileStoreEntry>().ToAsyncEnumerable();
+            }
+
+            var results = Directory
+                .GetFiles(physicalPath, "*", SearchOption.TopDirectoryOnly)
+                .Select(f =>
+                {
+                    var fileSystemInfo = new PhysicalFileInfo(new FileInfo(f));
+                    var fileRelativePath = f[_fileSystemPath.Length..];
+                    var filePath = this.NormalizePath(fileRelativePath);
+                    return (IFileStoreEntry)new FileSystemStoreEntry(filePath, fileSystemInfo);
+                });
+
+            return results.ToAsyncEnumerable();
+        }
+        catch (Exception ex)
+        {
+            throw new FileStoreException($"Cannot get files with path '{path}'.", ex);
+        }
+    }
+
+    public IAsyncEnumerable<IFileStoreEntry> GetDirectoriesAsync(string path = null)
+    {
+        try
+        {
+            var physicalPath = GetPhysicalPath(path);
+
+            if (!Directory.Exists(physicalPath))
+            {
+                return Array.Empty<IFileStoreEntry>().ToAsyncEnumerable();
+            }
+
+            var results = Directory
+                .GetDirectories(physicalPath, "*", SearchOption.TopDirectoryOnly)
+                .Select(f =>
+                {
+                    var fileSystemInfo = new PhysicalDirectoryInfo(new DirectoryInfo(f));
+                    var fileRelativePath = f[_fileSystemPath.Length..];
+                    var filePath = this.NormalizePath(fileRelativePath);
+                    return (IFileStoreEntry)new FileSystemStoreEntry(filePath, fileSystemInfo);
+                });
+
+            return results.ToAsyncEnumerable();
+        }
+        catch (Exception ex)
+        {
+            throw new FileStoreException($"Cannot get directories with path '{path}'.", ex);
+        }
+    }
+
     public Task<bool> TryCreateDirectoryAsync(string path)
     {
         try

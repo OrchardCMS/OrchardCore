@@ -1284,15 +1284,15 @@ namespace OrchardCore.OpenApi.Services
 
         /// <returns>OK</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<System.Collections.ObjectModel.Collection<FileStoreEntryDto>> GetFoldersAsync(string path)
+        public virtual System.Threading.Tasks.Task<PaginatedFoldersDto> GetFoldersAsync(string path, int? skip, int? take)
         {
-            return GetFoldersAsync(path, System.Threading.CancellationToken.None);
+            return GetFoldersAsync(path, skip, take, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>OK</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<System.Collections.ObjectModel.Collection<FileStoreEntryDto>> GetFoldersAsync(string path, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<PaginatedFoldersDto> GetFoldersAsync(string path, int? skip, int? take, System.Threading.CancellationToken cancellationToken)
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -1311,6 +1311,14 @@ namespace OrchardCore.OpenApi.Services
                     if (path != null)
                     {
                         urlBuilder_.Append(System.Uri.EscapeDataString("path")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(path, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
+                    }
+                    if (skip != null)
+                    {
+                        urlBuilder_.Append(System.Uri.EscapeDataString("skip")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(skip, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
+                    }
+                    if (take != null)
+                    {
+                        urlBuilder_.Append(System.Uri.EscapeDataString("take")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(take, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
                     }
                     urlBuilder_.Length--;
 
@@ -1339,7 +1347,7 @@ namespace OrchardCore.OpenApi.Services
                         var status_ = (int)response_.StatusCode;
                         if (status_ == 200)
                         {
-                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.ObjectModel.Collection<FileStoreEntryDto>>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            var objectResponse_ = await ReadObjectResponseAsync<PaginatedFoldersDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
                                 throw new SwaggerException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
@@ -1458,6 +1466,124 @@ namespace OrchardCore.OpenApi.Services
                         if (status_ == 200)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<System.Collections.ObjectModel.Collection<FileStoreEntryDto>>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new SwaggerException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            return objectResponse_.Object;
+                        }
+                        else
+                        if (status_ == 401)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new SwaggerException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            throw new SwaggerException<ProblemDetails>("Unauthorized", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 403)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new SwaggerException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            throw new SwaggerException<ProblemDetails>("Forbidden", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 404)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new SwaggerException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            throw new SwaggerException<ProblemDetails>("Not Found", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        {
+                            var responseData_ = response_.Content == null ? null : await ReadAsStringAsync(response_.Content, cancellationToken).ConfigureAwait(false);
+                            throw new SwaggerException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                        }
+                    }
+                    finally
+                    {
+                        if (disposeResponse_)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+                if (disposeClient_)
+                    client_.Dispose();
+            }
+        }
+
+        /// <returns>OK</returns>
+        /// <exception cref="SwaggerException">A server side error occurred.</exception>
+        public virtual System.Threading.Tasks.Task<DirectoryContentDto> GetDirectoryContentAsync(string path, string extensions)
+        {
+            return GetDirectoryContentAsync(path, extensions, System.Threading.CancellationToken.None);
+        }
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>OK</returns>
+        /// <exception cref="SwaggerException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<DirectoryContentDto> GetDirectoryContentAsync(string path, string extensions, System.Threading.CancellationToken cancellationToken)
+        {
+            var client_ = _httpClient;
+            var disposeClient_ = false;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    request_.Method = new System.Net.Http.HttpMethod("GET");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
+
+                    var urlBuilder_ = new System.Text.StringBuilder();
+                    if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
+                    // Operation Path: "api/media-gen2/GetDirectoryContent"
+                    urlBuilder_.Append("api/media-gen2/GetDirectoryContent");
+                    urlBuilder_.Append('?');
+                    if (path != null)
+                    {
+                        urlBuilder_.Append(System.Uri.EscapeDataString("path")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(path, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
+                    }
+                    if (extensions != null)
+                    {
+                        urlBuilder_.Append(System.Uri.EscapeDataString("extensions")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(extensions, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
+                    }
+                    urlBuilder_.Length--;
+
+                    PrepareRequest(client_, request_, urlBuilder_);
+
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+
+                    PrepareRequest(client_, request_, url_);
+
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    var disposeResponse_ = true;
+                    try
+                    {
+                        var headers_ = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.IEnumerable<string>>();
+                        foreach (var item_ in response_.Headers)
+                            headers_[item_.Key] = item_.Value;
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+
+                        ProcessResponse(client_, response_);
+
+                        var status_ = (int)response_.StatusCode;
+                        if (status_ == 200)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<DirectoryContentDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
                                 throw new SwaggerException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
@@ -3278,6 +3404,34 @@ namespace OrchardCore.OpenApi.Services
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class DirectoryContentDto
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("folders")]
+        public System.Collections.Generic.IList<FileStoreEntryDto> Folders { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("files")]
+        public System.Collections.Generic.IList<FileStoreEntryDto> Files { get; set; }
+
+        public string ToJson()
+        {
+
+            var options = new System.Text.Json.JsonSerializerOptions();
+
+            return System.Text.Json.JsonSerializer.Serialize(this, options);
+
+        }
+        public static DirectoryContentDto FromJson(string data)
+        {
+
+            var options = new System.Text.Json.JsonSerializerOptions();
+
+            return System.Text.Json.JsonSerializer.Deserialize<DirectoryContentDto>(data, options);
+
+        }
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
     public partial class DirectoryTreeNodeDto
     {
 
@@ -3415,6 +3569,34 @@ namespace OrchardCore.OpenApi.Services
             var options = new System.Text.Json.JsonSerializerOptions();
 
             return System.Text.Json.JsonSerializer.Deserialize<MoveMedias>(data, options);
+
+        }
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class PaginatedFoldersDto
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("items")]
+        public System.Collections.Generic.IList<FileStoreEntryDto> Items { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("hasMore")]
+        public bool HasMore { get; set; }
+
+        public string ToJson()
+        {
+
+            var options = new System.Text.Json.JsonSerializerOptions();
+
+            return System.Text.Json.JsonSerializer.Serialize(this, options);
+
+        }
+        public static PaginatedFoldersDto FromJson(string data)
+        {
+
+            var options = new System.Text.Json.JsonSerializerOptions();
+
+            return System.Text.Json.JsonSerializer.Deserialize<PaginatedFoldersDto>(data, options);
 
         }
     }
