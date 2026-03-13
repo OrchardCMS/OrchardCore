@@ -3100,18 +3100,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@orchardcore/media@workspace:src/OrchardCore.Modules/OrchardCore.Media/Assets":
-  version: 0.0.0-use.local
-  resolution: "@orchardcore/media@workspace:src/OrchardCore.Modules/OrchardCore.Media/Assets"
-  dependencies:
-    "@popperjs/core": "npm:2.11.8"
-    blueimp-file-upload: "npm:10.32.0"
-    bootstrap: "npm:5.3.8"
-    jquery: "npm:3.7.1"
-    vue: "npm:2.6.14"
-  languageName: unknown
-  linkType: soft
-
 "@orchardcore/menu@workspace:src/OrchardCore.Modules/OrchardCore.Menu/Assets":
   version: 0.0.0-use.local
   resolution: "@orchardcore/menu@workspace:src/OrchardCore.Modules/OrchardCore.Menu/Assets"
@@ -7624,7 +7612,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"blueimp-file-upload@npm:10.32.0, blueimp-file-upload@npm:^10.32.0":
+"blueimp-file-upload@npm:^10.32.0":
   version: 10.32.0
   resolution: "blueimp-file-upload@npm:10.32.0"
   dependencies:
@@ -13479,9 +13467,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"orchardcore-media-app@workspace:src/OrchardCore.Modules/OrchardCore.Media/Assets/js/vue/media-app":
+"orchardcore-media-app@workspace:src/OrchardCore.Modules/OrchardCore.Media/Assets/media-app":
   version: 0.0.0-use.local
-  resolution: "orchardcore-media-app@workspace:src/OrchardCore.Modules/OrchardCore.Media/Assets/js/vue/media-app"
+  resolution: "orchardcore-media-app@workspace:src/OrchardCore.Modules/OrchardCore.Media/Assets/media-app"
   dependencies:
     "@fortawesome/fontawesome-svg-core": "npm:^6.4.2"
     "@fortawesome/free-regular-svg-icons": "npm:^6.4.2"
@@ -13507,6 +13495,7 @@ __metadata:
     eslint-plugin-vue: "npm:^9.22.0"
     jsdom: "npm:^28.1.0"
     mitt: "npm:^3.0.0"
+    postcss-rtlcss: "npm:^5.6.0"
     prettier: "npm:^3.4.2"
     primevue: "npm:^4.3.0"
     tailwindcss: "npm:^4.2.1"
@@ -13521,9 +13510,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"orchardcore-media-field@workspace:src/OrchardCore.Modules/OrchardCore.Media/Assets/js/vue/media-field":
+"orchardcore-media-field@workspace:src/OrchardCore.Modules/OrchardCore.Media/Assets/media-field":
   version: 0.0.0-use.local
-  resolution: "orchardcore-media-field@workspace:src/OrchardCore.Modules/OrchardCore.Media/Assets/js/vue/media-field"
+  resolution: "orchardcore-media-field@workspace:src/OrchardCore.Modules/OrchardCore.Media/Assets/media-field"
   dependencies:
     "@fortawesome/fontawesome-svg-core": "npm:^6.4.2"
     "@fortawesome/free-regular-svg-icons": "npm:^6.4.2"
@@ -13545,6 +13534,7 @@ __metadata:
     eslint-plugin-vue: "npm:^9.22.0"
     jsdom: "npm:^28.1.0"
     mitt: "npm:^3.0.0"
+    postcss-rtlcss: "npm:^5.6.0"
     prettier: "npm:^3.4.2"
     primevue: "npm:^4.3.0"
     tailwindcss: "npm:^4.2.1"
@@ -14026,6 +14016,17 @@ __metadata:
   peerDependencies:
     postcss: ^8.4.21
   checksum: 10/456227055c1bd6263e9c751cf6a143334b857dce3c52eaea27e233edc4abd69695bc47b858240151321451726a10c687d9f89d23b0b986f8e0fdf4f967ded715
+  languageName: node
+  linkType: hard
+
+"postcss-rtlcss@npm:^5.6.0":
+  version: 5.7.1
+  resolution: "postcss-rtlcss@npm:5.7.1"
+  dependencies:
+    rtlcss: "npm:4.3.0"
+  peerDependencies:
+    postcss: ^8.4.21
+  checksum: 10/1ba324c6e8f820dc3b90752cc8eab7038ea1b58754353486a2ca1b86736805499179c0bf1fa88d49734175e63ceefeef3bb885aec31d8c1a19f6f59f0bfe68de
   languageName: node
   linkType: hard
 

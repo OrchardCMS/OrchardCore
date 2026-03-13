@@ -318,7 +318,13 @@ public class MediaGen2ApiController : Controller
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> Upload(string path, string extensions)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMedia))
+        if (String.IsNullOrEmpty(path))
+        {
+            path = String.Empty;
+        }
+
+        if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMedia)
+            || !await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaFolder, (object)path))
         {
             return this.ApiChallengeOrForbidForCookieAuth();
         }
@@ -332,11 +338,6 @@ public class MediaGen2ApiController : Controller
             (_, _, _) => Task.FromResult<IActionResult>(Ok(new { })),
             async (files) =>
             {
-                if (String.IsNullOrEmpty(path))
-                {
-                    path = String.Empty;
-                }
-
                 var result = new List<object>();
 
                 // Loop through each file in the request.
@@ -541,7 +542,8 @@ public class MediaGen2ApiController : Controller
     public async Task<IActionResult> MoveMedia(string oldPath, string newPath)
     {
         if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMedia)
-            || !await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaFolder, (object)oldPath))
+            || !await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaFolder, (object)oldPath)
+            || !await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaFolder, (object)newPath))
         {
             return this.ApiChallengeOrForbidForCookieAuth();
         }
@@ -593,7 +595,7 @@ public class MediaGen2ApiController : Controller
 
         foreach (var path in paths)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageAttachedMediaFieldsFolder, (object)path))
+            if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaFolder, (object)path))
             {
                 return this.ApiChallengeOrForbidForCookieAuth();
             }
