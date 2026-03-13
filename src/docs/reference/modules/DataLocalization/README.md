@@ -298,6 +298,12 @@ To display translated dynamic strings in Razor views, inject `IDataLocalizer`:
 
 Localizes a dynamic data string using the current culture.
 
+### Parameters
+
+| Property | Example | Description |
+|----------|------------------------|----------------------|
+| Context | The context that the string belongs to | Content Types |
+
 Input
 
 ```liquid
