@@ -6,6 +6,8 @@ public sealed class SharedLocalizationDataProvider : ILocalizationDataProvider
 
     private readonly IEnumerable<ISharedLocalizationDataProvider> _sharedLocalizationDataProviders;
 
+    private IEnumerable<DataLocalizedString> _descriptors;
+
     public SharedLocalizationDataProvider(IEnumerable<ISharedLocalizationDataProvider> sharedLocalizationDataProviders)
     {
         _sharedLocalizationDataProviders = sharedLocalizationDataProviders;
@@ -13,18 +15,23 @@ public sealed class SharedLocalizationDataProvider : ILocalizationDataProvider
 
     public async Task<IEnumerable<DataLocalizedString>> GetDescriptorsAsync()
     {
-        var descriptors = new HashSet<string>();
-
-        foreach (var provider in _sharedLocalizationDataProviders)
+        if (_descriptors is null)
         {
-            var providerDscriptors = await provider.GetDescriptorsAsync();
+            var descriptors = new HashSet<string>();
 
-            foreach (var descriptor in providerDscriptors)
+            foreach (var provider in _sharedLocalizationDataProviders)
             {
-                descriptors.Add(descriptor);
+                var providerDscriptors = await provider.GetDescriptorsAsync();
+
+                foreach (var descriptor in providerDscriptors)
+                {
+                    descriptors.Add(descriptor);
+                }
             }
+
+            _descriptors = descriptors.Select(d => new DataLocalizedString(Context, d, string.Empty));
         }
 
-        return descriptors.Select(d => new DataLocalizedString(Context, d, string.Empty));
+        return _descriptors;
     }
 }
