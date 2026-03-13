@@ -18,8 +18,7 @@
     ".scripts/bloom",
     "src/Frontend/",
     "src/OrchardCore.Modules/*/Assets/**",
-    "src/OrchardCore.Themes/*/Assets/**",
-    "test/OrchardCore.Tests.Playwright"
+    "src/OrchardCore.Themes/*/Assets/**"
   ],
   "devDependencies": {
     "@babel/core": "^7.22.11",
