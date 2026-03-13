@@ -27,7 +27,7 @@ public class ShapeCreatingContext
         set => CreateAsync = () => ValueTask.FromResult(value());
     }
 
-    protected internal virtual ValueTask<IShape> CreateInternalAsync()
+    internal virtual ValueTask<IShape> CreateInternalAsync()
     {
         return _createAsync != null ? _createAsync() : ValueTask.FromResult<IShape>(null);
     }
@@ -39,7 +39,7 @@ internal class ShapeCreatingContext<TState> : ShapeCreatingContext
 
     public Func<TState, ValueTask<IShape>> CreateAsyncWithState { get; set; }
 
-    protected internal override ValueTask<IShape> CreateInternalAsync()
+    internal override ValueTask<IShape> CreateInternalAsync()
     {
         if (_createAsync == null && CreateAsyncWithState != null)
         {

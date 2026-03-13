@@ -106,7 +106,7 @@ public class DefaultShapeFactory : DynamicObject, IShapeFactory
         }
 
         // Create the new instance.
-        var shape = await creatingContext.CreateAsync()
+        var shape = await creatingContext.CreateInternalAsync()
             ?? throw new InvalidOperationException($"Shape creation failed for type '{shapeType}'. The shape factory returned null.");
 
         var createdContext = new ShapeCreatedContext
