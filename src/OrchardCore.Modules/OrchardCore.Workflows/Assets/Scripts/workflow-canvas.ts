@@ -54,6 +54,8 @@ abstract class WorkflowCanvas {
     protected getSourceEndpointOptions = (activity: Workflows.Activity, outcome: Workflows.Outcome): EndpointOptions => {
         // The definition of source endpoints.
         const paintColor = this.getEndpointColor(activity);
+        const displayName = outcome.displayName || '';
+        
         return {
             endpoint: 'Dot',
             anchor: 'ContinuousRight',
@@ -83,7 +85,7 @@ abstract class WorkflowCanvas {
                 outlineStroke: 'white'
             },
             connectorOverlays: [['Label', { location: [3, -1.5], cssClass: 'endpointSourceLabel' }]],
-            overlays: [['Label', { label: outcome.displayName, cssClass: 'outcome-label', id: 'outcome-label', location: [1.6, 0] }]],
+            overlays: displayName ? [['Label', { label: displayName, cssClass: 'outcome-label', id: 'outcome-label', location: [1.6, 0] }]] : [],
             dragOptions: {},
             uuid: `${activity.id}-${outcome.name}`,
             parameters: {
@@ -152,6 +154,13 @@ abstract class WorkflowCanvas {
             const overlayEl = overlay.getElement ? overlay.getElement() : overlay.canvas;
             if (!overlayEl) continue;
 
+            // Hide empty labels
+            const labelText = $(overlayEl).text().trim();
+            if (!labelText) {
+                $(overlayEl).hide();
+                continue;
+            }
+
             const epCanvas = endpoint.canvas;
             if (!epCanvas) continue;
 
@@ -176,6 +185,7 @@ abstract class WorkflowCanvas {
             }
 
             const $ol = $(overlayEl);
+            $ol.show();
 
             // Measure label width, temporarily showing if hidden.
             let halfWidth = $ol.outerWidth() / 2;
