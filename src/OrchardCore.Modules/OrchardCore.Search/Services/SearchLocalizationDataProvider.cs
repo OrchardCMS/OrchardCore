@@ -4,7 +4,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Search.Services;
 
-internal class SearchLocalizationDataProvider : ILocalizationDataProvider
+internal sealed class SearchLocalizationDataProvider : ILocalizationDataProvider
 {
     private readonly ISiteService _siteService;
 
