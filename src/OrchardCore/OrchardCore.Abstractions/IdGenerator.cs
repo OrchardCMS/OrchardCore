@@ -2,13 +2,8 @@ namespace OrchardCore;
 
 public static class IdGenerator
 {
-    // Some confusing chars are ignored: http://www.crockford.com/wrmg/base32.html
-    private static readonly char[] _encode32Chars = [
-        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-        'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'j', 'k',
-        'm', 'n', 'p', 'q', 'r', 's', 't', 'v', 'w', 'x',
-        'y', 'z',
-    ];
+    // Excludes visually ambiguous characters (i, l, o, u) per Crockford's Base32 encoding: https://www.crockford.com/base32.html
+    private static readonly char[] _encode32Chars = "0123456789abcdefghjkmnpqrstvwxyz".ToCharArray();
 
     public static string GenerateId()
     {
