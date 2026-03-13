@@ -5,7 +5,6 @@ import postcssRTLCSS from "postcss-rtlcss";
 import { Mode } from "postcss-rtlcss/options";
 import path from "path";
 
-// https://vitejs.dev/config/
 export default defineConfig({
     resolve: {
         alias: {
@@ -16,7 +15,7 @@ export default defineConfig({
     plugins: [tailwindcss(), vue()],
     css: {
         postcss: {
-            plugins: [postcssRTLCSS({ mode: Mode.combined })],
+            plugins: [postcssRTLCSS({ mode: Mode.combined }) as never],
         },
     },
     define: {
@@ -25,6 +24,7 @@ export default defineConfig({
     build: {
         outDir: path.resolve(__dirname, "../../wwwroot"),
         emptyOutDir: false,
+        // Minification is handled by the asset-manager pipeline (vite-plugin-minify).
         minify: false,
         lib: {
             entry: path.resolve(__dirname, "src/main.ts"),
@@ -33,7 +33,7 @@ export default defineConfig({
         },
         rollupOptions: {
             output: {
-                assetFileNames: `Styles/media2.[ext]`,
+                assetFileNames: "Styles/media2.[ext]",
             },
         },
     },
