@@ -61,10 +61,6 @@ public static class TenantHelper
 
         // Set database provider to Sqlite if not already set by environment variable.
         var dbProvider = page.Locator("#DatabaseProvider");
-        var currentValue = await dbProvider.InputValueAsync();
-        if (string.IsNullOrEmpty(currentValue))
-        {
-            await dbProvider.SelectOptionAsync("Sqlite");
         if (await dbProvider.CountAsync() > 0)
         {
             var currentValue = await dbProvider.InputValueAsync();
@@ -74,8 +70,12 @@ public static class TenantHelper
             }
             else
             {
-                // If a provider is set (via env var), set the table prefix to the tenant name.
-                await page.Locator("#TablePrefix").FillAsync(tenant.Name);
+                // If a provider is set (via env var), set the table prefix to the tenant name, if the field exists.
+                var tablePrefix = page.Locator("#TablePrefix");
+                if (await tablePrefix.CountAsync() > 0)
+                {
+                    await tablePrefix.FillAsync(tenant.Name);
+                }
             }
         }
 
