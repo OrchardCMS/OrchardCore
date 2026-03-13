@@ -10,7 +10,4 @@ public class AzureEmailSettingsViewModel
     public string DefaultSender { get; set; }
 
     public string ConnectionString { get; set; }
-
-    [BindNever]
-    public bool HasConnectionString { get; set; }
 }

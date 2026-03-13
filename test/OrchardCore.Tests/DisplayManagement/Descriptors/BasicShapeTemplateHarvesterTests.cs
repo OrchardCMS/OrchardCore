@@ -1,6 +1,6 @@
 using OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy;
 
-namespace OrchardCore.Tests.DisplayManagement.Decriptors;
+namespace OrchardCore.Tests.DisplayManagement.Descriptors;
 
 public class BasicShapeTemplateHarvesterTests
 {
