@@ -17,7 +17,7 @@ public static class ButtonHelper
         => page.Locator(".btn.cancel").ClickAsync();
 
     public static Task ClickPublishAsync(IPage page)
-        => page.Locator(".btn.public").ClickAsync();
+        => page.Locator(".btn.publish").ClickAsync();
 
     public static Task ClickPublishContinueAsync(IPage page)
         => page.Locator(".dropdown-item.publish-continue").ClickAsync();
