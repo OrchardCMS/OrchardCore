@@ -1,14 +1,26 @@
-import { IHFileLibraryItemDto, TreeNode, IFileLibraryItemDto } from "@bloom/media/interfaces";
-import { BASE_DIR } from "@bloom/media/constants";
+import { IHFileLibraryItemDto, TreeNode, IFileLibraryItemDto, IDirectoryTreeNode } from "@bloom/media/interfaces";
 import { useGlobals } from "./Globals";
 import { useLocalizations } from "@bloom/helpers/localizations";
 import { getFileExtension } from "@bloom/media/utils";
 
-const { assetsStore, selectedDirectory, hierarchicalDirectories, rootDirectory, setHierarchicalData, setRootDirectory } = useGlobals();
+const { assetsStore, selectedDirectory, hierarchicalDirectories, setHierarchicalData, setRootDirectory } = useGlobals();
 const { translations } = useLocalizations();
 const t = translations;
 
+/**
+ * Extracts the parent path from a given path.
+ * e.g. "Photos/2024/Summer" -> "Photos/2024", "Photos" -> ""
+ */
+function getParentPath(path: string): string {
+  const lastSlash = path.lastIndexOf("/");
+  return lastSlash > 0 ? path.substring(0, lastSlash) : "";
+}
+
 export function useHierarchicalTreeBuilder() {
+  /**
+   * Builds a TreeNode hierarchy from a flat list of directory items.
+   * Uses a Map for O(1) parent lookups instead of recursive .find() traversal.
+   */
   const convertToHierarchyTreeNode = (fileLibraryItems: IFileLibraryItemDto[]) => {
     const rootNode: TreeNode = {
       key: "",
@@ -19,33 +31,38 @@ export function useHierarchicalTreeBuilder() {
       children: [],
     };
 
-    for (const fileLibraryItem of fileLibraryItems) {
-      const folderPath = fileLibraryItem.directoryPath.replace(/^\//, "");
+    const nodeMap = new Map<string, TreeNode>();
+    nodeMap.set("", rootNode);
+
+    // Sort by depth so parents are created before children.
+    const sorted = [...fileLibraryItems].sort(
+      (a, b) => a.directoryPath.split("/").length - b.directoryPath.split("/").length,
+    );
+
+    for (const item of sorted) {
+      const folderPath = item.directoryPath.replace(/^\//, "");
       if (!folderPath) continue;
-      buildTreeNodeRecursive(rootNode, folderPath.split("/"), fileLibraryItem, 0);
+
+      // Skip if we've already created a node for this path.
+      if (nodeMap.has(folderPath)) continue;
+
+      const parentPath = getParentPath(folderPath);
+      const parent = nodeMap.get(parentPath) ?? rootNode;
+
+      const node: TreeNode = {
+        label: item.name,
+        key: item.directoryPath,
+        data: item,
+        icon: "fa-solid fa-folder",
+        selectable: selectedDirectory.value.directoryPath !== item.directoryPath,
+        children: [],
+      };
+
+      parent.children.push(node);
+      nodeMap.set(folderPath, node);
     }
 
     return rootNode;
-  };
-
-  const buildTreeNodeRecursive = (node: TreeNode, paths: string[], fileLibraryItem: IFileLibraryItemDto, idx: number) => {
-    if (idx < paths.length) {
-      const item = paths[idx];
-      let dir = node.children.find((child: TreeNode) => child.label == item);
-      if (!dir) {
-        node.children.push(
-          (dir = {
-            label: fileLibraryItem.name,
-            key: fileLibraryItem.directoryPath,
-            data: fileLibraryItem,
-            icon: "fa-solid fa-folder",
-            selectable: selectedDirectory.value.directoryPath == fileLibraryItem.directoryPath ? false : true,
-            children: [],
-          }),
-        );
-      }
-      buildTreeNodeRecursive(dir, paths, fileLibraryItem, idx + 1);
-    }
   };
 
   const getDirectoryTreeNode = (): TreeNode[] => {
@@ -54,37 +71,51 @@ export function useHierarchicalTreeBuilder() {
     return [result];
   };
 
+  /**
+   * Builds an IHFileLibraryItemDto hierarchy from a flat list of directory items.
+   * Uses a Map for O(1) parent lookups.
+   */
   const convertToHierarchy = (fileLibraryItems: IFileLibraryItemDto[]) => {
-    const rootNode: IHFileLibraryItemDto = { name: t.FileLibrary ?? "Media Library", directoryPath: "", filePath: "", isDirectory: true, selected: true, children: [] };
+    const rootNode: IHFileLibraryItemDto = {
+      name: t.FileLibrary ?? "Media Library",
+      directoryPath: "",
+      filePath: "",
+      isDirectory: true,
+      selected: true,
+      children: [],
+    };
     setRootDirectory({ ...rootNode });
 
-    for (const fileLibraryItem of fileLibraryItems) {
-      const folderPath = fileLibraryItem.directoryPath.replace(/^\//, "");
+    const nodeMap = new Map<string, IHFileLibraryItemDto>();
+    nodeMap.set("", rootNode);
+
+    const sorted = [...fileLibraryItems].sort(
+      (a, b) => a.directoryPath.split("/").length - b.directoryPath.split("/").length,
+    );
+
+    for (const item of sorted) {
+      const folderPath = item.directoryPath.replace(/^\//, "");
       if (!folderPath) continue;
-      buildNodeRecursive(rootNode, folderPath.split("/"), fileLibraryItem, 0);
+
+      if (nodeMap.has(folderPath)) continue;
+
+      const parentPath = getParentPath(folderPath);
+      const parent = nodeMap.get(parentPath) ?? rootNode;
+
+      const node: IHFileLibraryItemDto = {
+        name: item.name,
+        directoryPath: item.directoryPath,
+        filePath: item.filePath,
+        isDirectory: item.isDirectory,
+        selected: false,
+        children: [],
+      };
+
+      parent.children.push(node);
+      nodeMap.set(folderPath, node);
     }
 
     return rootNode;
-  };
-
-  const buildNodeRecursive = (node: IHFileLibraryItemDto, paths: string[], fileLibraryItem: IFileLibraryItemDto, idx: number) => {
-    if (idx < paths.length) {
-      const item = paths[idx];
-      let dir = node.children.find((child: IHFileLibraryItemDto) => child.name == item);
-      if (!dir) {
-        node.children.push(
-          (dir = {
-            name: fileLibraryItem.name,
-            directoryPath: fileLibraryItem.directoryPath,
-            filePath: fileLibraryItem.filePath,
-            isDirectory: fileLibraryItem.isDirectory,
-            selected: false,
-            children: [],
-          }),
-        );
-      }
-      buildNodeRecursive(dir, paths, fileLibraryItem, idx + 1);
-    }
   };
 
   const setHierarchicalDirectories = (elements: IFileLibraryItemDto[]) => {
@@ -94,6 +125,10 @@ export function useHierarchicalTreeBuilder() {
     setHierarchicalData(hierarchicalDirectories.value);
   };
 
+  /**
+   * Builds a TreeNode hierarchy including both files and directories.
+   * Uses a Map for O(1) parent lookups.
+   */
   const convertToFileHierarchyTreeNode = (fileLibraryItems: IFileLibraryItemDto[]) => {
     const rootNode: TreeNode = {
       key: "/",
@@ -104,32 +139,61 @@ export function useHierarchicalTreeBuilder() {
       children: [],
     };
 
-    for (const fileLibraryItem of fileLibraryItems) {
-      const itemPath = (fileLibraryItem.isDirectory ? fileLibraryItem.directoryPath : fileLibraryItem.filePath).replace(/^\//, "");
-      buildFileTreeNodeRecursive(rootNode, itemPath.split("/"), fileLibraryItem, 0);
+    const nodeMap = new Map<string, TreeNode>();
+    nodeMap.set("", rootNode);
+
+    // First pass: register all directory nodes in the map (sorted by depth so parents exist first).
+    const dirs = fileLibraryItems.filter((x) => x.isDirectory);
+    dirs.sort((a, b) => {
+      const aPath = a.directoryPath.replace(/^\//, "");
+      const bPath = b.directoryPath.replace(/^\//, "");
+      return aPath.split("/").length - bPath.split("/").length;
+    });
+
+    for (const item of dirs) {
+      // For directories in the file tree, the actual folder path comes from directoryPath
+      // but for top-level folders directoryPath is "/" (parent). Use name for the key segment.
+      const parentDir = item.directoryPath.replace(/^\//, "");
+      const folderKey = parentDir ? `${parentDir}/${item.name}` : item.name;
+      if (nodeMap.has(folderKey)) continue;
+
+      nodeMap.set(folderKey, {
+        label: item.name,
+        key: item.isDirectory ? item.directoryPath : item.filePath,
+        data: item,
+        icon: "fa-solid fa-folder",
+        selectable: false,
+        children: [],
+      });
+    }
+
+    // Second pass: attach all items to their parents in original order.
+    for (const item of fileLibraryItems) {
+      if (item.isDirectory) {
+        const parentDir = item.directoryPath.replace(/^\//, "");
+        const folderKey = parentDir ? `${parentDir}/${item.name}` : item.name;
+        const node = nodeMap.get(folderKey);
+        if (node) {
+          const parent = nodeMap.get(parentDir) ?? rootNode;
+          if (!parent.children.includes(node)) {
+            parent.children.push(node);
+          }
+        }
+      } else {
+        const dirPath = item.directoryPath.replace(/^\//, "");
+        const parent = nodeMap.get(dirPath) ?? rootNode;
+        parent.children.push({
+          label: item.name,
+          key: item.filePath,
+          data: item,
+          icon: "fa-solid fa-file",
+          selectable: true,
+          children: [],
+        });
+      }
     }
 
     return rootNode;
-  };
-
-  const buildFileTreeNodeRecursive = (node: TreeNode, paths: string[], fileLibraryItem: IFileLibraryItemDto, idx: number) => {
-    if (idx < paths.length) {
-      const item = paths[idx];
-      let dir = node.children.find((child: TreeNode) => child.label == item);
-      if (!dir) {
-        node.children.push(
-          (dir = {
-            label: fileLibraryItem.name,
-            key: fileLibraryItem.isDirectory ? fileLibraryItem.directoryPath : fileLibraryItem.filePath,
-            data: fileLibraryItem,
-            icon: fileLibraryItem.isDirectory ? "fa-solid fa-folder" : "fa-solid fa-file",
-            selectable: !fileLibraryItem.isDirectory,
-            children: [],
-          }),
-        );
-      }
-      buildFileTreeNodeRecursive(dir, paths, fileLibraryItem, idx + 1);
-    }
   };
 
   const getFileTreeNode = (storeItems: IFileLibraryItemDto[], allowedFileExtensions?: string[]): TreeNode[] => {
@@ -138,20 +202,16 @@ export function useHierarchicalTreeBuilder() {
     if (allowedFileExtensions) {
       assets = assets.filter((node) => {
         if (node.isDirectory) {
-          return node;
-        } else if (allowedFileExtensions.some((x: string) => x.replace(".", "") == getFileExtension(node.filePath))) {
-          return node;
+          return true;
         }
+        return allowedFileExtensions.some((x: string) => x.replace(".", "") == getFileExtension(node.filePath));
       });
 
       assets = assets.filter((node) => {
         if (node.isDirectory) {
-          if (assets.some((x) => !x.isDirectory && x.directoryPath == node.directoryPath)) {
-            return node;
-          }
-        } else {
-          return node;
+          return assets.some((x) => !x.isDirectory && x.directoryPath == node.directoryPath);
         }
+        return true;
       });
     }
 
@@ -163,5 +223,44 @@ export function useHierarchicalTreeBuilder() {
     }
   };
 
-  return { getDirectoryTreeNode, setHierarchicalDirectories, getFileTreeNode };
+  /**
+   * Converts a server-built directory tree (IDirectoryTreeNode) into the
+   * IHFileLibraryItemDto hierarchy used by FolderComponent.
+   * Also collects all directories as flat IFileLibraryItemDto entries for assetsStore.
+   */
+  const setServerDirectoryTree = (tree: IDirectoryTreeNode): IFileLibraryItemDto[] => {
+    const flatDirectories: IFileLibraryItemDto[] = [];
+
+    const convertNode = (node: IDirectoryTreeNode): IHFileLibraryItemDto => {
+      const hNode: IHFileLibraryItemDto = {
+        name: node.name || t.FileLibrary || "Media Library",
+        directoryPath: node.path,
+        filePath: "",
+        isDirectory: true,
+        selected: node.path === "",
+        children: node.children.map(convertNode),
+      };
+
+      // Collect non-root directories as flat entries for assetsStore/breadcrumbs.
+      if (node.path !== "") {
+        flatDirectories.push({
+          name: node.name,
+          directoryPath: node.path,
+          filePath: "",
+          isDirectory: true,
+        });
+      }
+
+      return hNode;
+    };
+
+    const rootNode = convertNode(tree);
+    setRootDirectory({ ...rootNode, children: [] } as unknown as IFileLibraryItemDto);
+    hierarchicalDirectories.value = rootNode;
+    setHierarchicalData(rootNode);
+
+    return flatDirectories;
+  };
+
+  return { getDirectoryTreeNode, setHierarchicalDirectories, setServerDirectoryTree, getFileTreeNode };
 }

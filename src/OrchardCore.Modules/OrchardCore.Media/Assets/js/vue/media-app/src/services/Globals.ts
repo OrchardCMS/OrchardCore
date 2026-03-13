@@ -1,11 +1,12 @@
 import { computed, ref } from "vue";
-import { IFileLibraryItemDto, IHFileLibraryItemDto } from "@bloom/media/interfaces";
+import { IFileLibraryItemDto, IHFileLibraryItemDto, IFileStoreCapabilities } from "@bloom/media/interfaces";
 
 const assetsStore = ref([] as IFileLibraryItemDto[]);
 const selectedDirectory = ref({} as IFileLibraryItemDto);
 const fileItems = ref([] as IFileLibraryItemDto[]);
 const rootDirectory = ref({} as IFileLibraryItemDto);
 const hierarchicalDirectories = ref({} as IHFileLibraryItemDto);
+const capabilities = ref<IFileStoreCapabilities>({ hasHierarchicalNamespace: false, supportsAtomicMove: false });
 const basePath = ref("");
 const selectedFiles = ref([] as IFileLibraryItemDto[]);
 const isSelectedAll = ref(false);
@@ -87,6 +88,10 @@ export const useGlobals = () => {
     hierarchicalDirectories.value = value;
   };
 
+  const setCapabilities = (value: IFileStoreCapabilities) => {
+    capabilities.value = value;
+  };
+
   return {
     errors,
     fileFilter,
@@ -103,12 +108,14 @@ export const useGlobals = () => {
     fileItems,
     rootDirectory,
     hierarchicalDirectories,
+    capabilities,
     uploadFilesUrl,
     setAssetsStore,
     setSelectedDirectory,
     setFileItems,
     setRootDirectory,
     setHierarchicalData,
+    setCapabilities,
     setBasePath,
     setSelectedFiles,
     setSelectedAll,

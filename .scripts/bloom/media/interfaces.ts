@@ -134,3 +134,20 @@ export interface IFileCopyDto {
   newPath: string;
   oldPath: string;
 }
+
+/**
+ * Storage backend capabilities returned by the GetCapabilities endpoint.
+ */
+export interface IFileStoreCapabilities {
+  hasHierarchicalNamespace: boolean;
+  supportsAtomicMove: boolean;
+}
+
+/**
+ * A node in the server-built directory tree returned by the GetDirectoryTree endpoint.
+ */
+export interface IDirectoryTreeNode {
+  name: string;
+  path: string;
+  children: IDirectoryTreeNode[];
+}

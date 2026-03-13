@@ -115,7 +115,7 @@
             </li>
           </ol>
           <div
-            v-show="assetsStore.filter(x => x.isDirectory == false && x.directoryPath == selectedDirectory.directoryPath).length > 0 && filteredFileItems.length < 1"
+            v-show="fileItems.length > 0 && filteredFileItems.length < 1"
             class="empty-folder-state">
             <svg width="64" height="64" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M1.5 13.25V2.75C1.5 2.33579 1.83579 2 2.25 2H5.58579C5.78471 2 5.97547 2.07902 6.11612 2.21967L7.38388 3.48744C7.52453 3.62808 7.71529 3.70711 7.91421 3.70711H13.75C14.1642 3.70711 14.5 4.04289 14.5 4.45711V13.25C14.5 13.6642 14.1642 14 13.75 14H2.25C1.83579 14 1.5 13.6642 1.5 13.25Z" stroke="currentColor" stroke-width="0.8" fill="none"/>
@@ -123,7 +123,7 @@
             <span class="tw:mt-3">{{ t.FolderFilterEmpty }}</span>
           </div>
           <div
-            v-show="assetsStore.filter(x => x.isDirectory == false && x.directoryPath == selectedDirectory.directoryPath).length < 1"
+            v-show="fileItems.length < 1"
             class="empty-folder-state">
             <svg width="64" height="64" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M1.5 13.25V2.75C1.5 2.33579 1.83579 2 2.25 2H5.58579C5.78471 2 5.97547 2.07902 6.11612 2.21967L7.38388 3.48744C7.52453 3.62808 7.71529 3.70711 7.91421 3.70711H13.75C14.1642 3.70711 14.5 4.04289 14.5 4.45711V13.25C14.5 13.6642 14.1642 14 13.75 14H2.25C1.83579 14 1.5 13.6642 1.5 13.25Z" stroke="currentColor" stroke-width="0.8" fill="none"/>
@@ -218,6 +218,7 @@ const {
   hierarchicalDirectories,
   fileItems,
   isDownloading,
+  capabilities,
   setFileItems,
   setIsLoading,
   setBasePath,
@@ -282,6 +283,7 @@ const isImage = (file: IFileLibraryItemDto): boolean => {
 };
 
 const isFileSelected = (file: IFileLibraryItemDto): boolean => {
+  if (!file.url) return false;
   return selectedFiles.value.some((el) => el.url?.toLowerCase() === file.url?.toLowerCase());
 };
 
@@ -365,11 +367,17 @@ const breadcrumbs = computed((): IFileLibraryItemDto[] => {
 watch(
   () => assetsStore.value,
   (newAssetsStore: IFileLibraryItemDto[]) => {
+    if (capabilities.value.hasHierarchicalNamespace) {
+      // Hierarchical mode: tree comes from server, files load per-folder.
+      // No client-side tree rebuild needed.
+      return;
+    }
+
+    // Flat mode: rebuild file list and tree from the full assetsStore.
     const foundFileItems = Object.values(newAssetsStore).filter(x => (x.directoryPath == selectedDirectory.value.directoryPath) && x.isDirectory == false);
     setFileItems(foundFileItems);
     setHierarchicalDirectories(newAssetsStore);
   },
-  { deep: true }
 )
 
 const clickBreadCrumb = (breadcrumb: IFileLibraryItemDto) => {

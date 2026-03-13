@@ -65,6 +65,83 @@ public class MediaGen2ApiController : Controller
     }
 
     [HttpGet]
+    [Route("GetCapabilities")]
+    [ProducesResponseType(typeof(FileStoreCapabilitiesDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+    public async Task<ActionResult<FileStoreCapabilitiesDto>> GetCapabilities()
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMedia))
+        {
+            return this.ApiChallengeOrForbidForCookieAuth();
+        }
+
+        return Ok(new FileStoreCapabilitiesDto
+        {
+            HasHierarchicalNamespace = _mediaFileStore.Capabilities.HasHierarchicalNamespace,
+            SupportsAtomicMove = _mediaFileStore.Capabilities.SupportsAtomicMove,
+        });
+    }
+
+    [HttpGet]
+    [Route("GetDirectoryTree")]
+    [ProducesResponseType(typeof(DirectoryTreeNodeDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+    public async Task<ActionResult<DirectoryTreeNodeDto>> GetDirectoryTree()
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMedia))
+        {
+            return this.ApiChallengeOrForbidForCookieAuth();
+        }
+
+        // Create default user folder if needed.
+        if (await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageOwnMedia)
+            && await _mediaFileStore.GetDirectoryInfoAsync(_mediaFileStore.Combine(_mediaOptions.AssetsUsersFolder, _userAssetFolderNameProvider.GetUserAssetFolderName(User))) == null)
+        {
+            await _mediaFileStore.TryCreateDirectoryAsync(_mediaFileStore.Combine(_mediaOptions.AssetsUsersFolder, _userAssetFolderNameProvider.GetUserAssetFolderName(User)));
+        }
+
+        var root = new DirectoryTreeNodeDto
+        {
+            Name = string.Empty,
+            Path = string.Empty,
+            Children = [],
+        };
+
+        await BuildDirectoryTreeAsync(string.Empty, root.Children);
+
+        return Ok(root);
+    }
+
+    private async Task BuildDirectoryTreeAsync(string path, List<DirectoryTreeNodeDto> children)
+    {
+        await foreach (var entry in _mediaFileStore.GetDirectoryContentAsync(path))
+        {
+            if (!entry.IsDirectory)
+            {
+                continue;
+            }
+
+            if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaFolder, (object)entry.Path))
+            {
+                continue;
+            }
+
+            var node = new DirectoryTreeNodeDto
+            {
+                Name = entry.Name,
+                Path = entry.Path,
+                Children = [],
+            };
+
+            children.Add(node);
+
+            await BuildDirectoryTreeAsync(entry.Path, node.Children);
+        }
+    }
+
+    [HttpGet]
     [Route("GetFolders")]
     [ProducesResponseType(typeof(IEnumerable<FileStoreEntryDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
@@ -742,4 +819,17 @@ public class FileStoreEntryDto
     public bool IsDirectory { get; set; }
     public string Url { get; set; }
     public string Mime { get; set; }
+}
+
+public class FileStoreCapabilitiesDto
+{
+    public bool HasHierarchicalNamespace { get; set; }
+    public bool SupportsAtomicMove { get; set; }
+}
+
+public class DirectoryTreeNodeDto
+{
+    public string Name { get; set; }
+    public string Path { get; set; }
+    public List<DirectoryTreeNodeDto> Children { get; set; }
 }

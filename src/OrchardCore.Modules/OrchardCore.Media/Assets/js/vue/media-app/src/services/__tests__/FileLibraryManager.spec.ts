@@ -41,6 +41,15 @@ vi.mock("@bloom/media/api/file-data-service", () => {
         isDirectory: true,
         size: 0,
       } as IFileLibraryItemDto),
+      getCapabilities: vi.fn().mockResolvedValue({
+        hasHierarchicalNamespace: false,
+        supportsAtomicMove: false,
+      }),
+      getDirectoryTree: vi.fn().mockResolvedValue({
+        name: "",
+        path: "",
+        children: [],
+      }),
     })),
   };
 });
@@ -224,10 +233,10 @@ describe("FileLibraryManager", () => {
   it("should notify error when getFileLibraryStoreAsync throws", async () => {
     const { getFileLibraryStoreAsync } = useFileLibraryManager();
 
-    // Override listAllItems to reject for this test
+    // Override getCapabilities to reject for this test
     const mockInstance = vi.mocked(FileDataService).mock.results[vi.mocked(FileDataService).mock.results.length - 1].value;
     const testError = new Error("Network error");
-    mockInstance.listAllItems.mockRejectedValueOnce(testError);
+    mockInstance.getCapabilities.mockRejectedValueOnce(testError);
 
     const result = await getFileLibraryStoreAsync();
 

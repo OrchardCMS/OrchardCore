@@ -113,6 +113,11 @@ public interface IFileStore
     /// </summary>
     /// <returns>The usable space in bytes, or <see langword="null"/> if the space is unlimited.</returns>
     Task<long?> GetPermittedStorageAsync() => Task.FromResult<long?>(null);
+
+    /// <summary>
+    /// Gets the capabilities supported by this file store.
+    /// </summary>
+    IFileStoreCapabilities Capabilities => FileStoreCapabilities.Default;
 }
 
 public static class IFileStoreExtensions

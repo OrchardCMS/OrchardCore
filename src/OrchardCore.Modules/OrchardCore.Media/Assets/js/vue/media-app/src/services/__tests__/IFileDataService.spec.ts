@@ -1,6 +1,14 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { FileDataService } from "@bloom/media/api/file-data-service";
 import { IFileLibraryItemDto } from "@bloom/media/interfaces";
+
+// Mock the NSwag-generated OpenApiClient so FileDataService can be constructed in tests.
+vi.mock("@bloom/services/OpenApiClient", () => ({
+  Client: vi.fn().mockImplementation(() => ({})),
+  MoveMedias: vi.fn().mockImplementation((data: any) => data), // eslint-disable-line @typescript-eslint/no-explicit-any
+  DirectoryTreeNodeDto: vi.fn(),
+}));
+
+import { FileDataService } from "@bloom/media/api/file-data-service";
 
 const mockFolder: IFileLibraryItemDto = {
   name: "Images",
@@ -136,6 +144,43 @@ describe("FileDataService", () => {
       vi.spyOn(service, "createFolder").mockResolvedValue(mockFolder);
       const result = await service.createFolder("/", "Images");
       expect(result.name).toBe("Images");
+    });
+  });
+
+  describe("getCapabilities", () => {
+    it("returns capabilities", async () => {
+      vi.spyOn(service, "getCapabilities").mockResolvedValue({
+        hasHierarchicalNamespace: true,
+        supportsAtomicMove: true,
+      });
+      const result = await service.getCapabilities();
+      expect(result.hasHierarchicalNamespace).toBe(true);
+      expect(result.supportsAtomicMove).toBe(true);
+    });
+
+    it("returns false defaults for flat storage", async () => {
+      vi.spyOn(service, "getCapabilities").mockResolvedValue({
+        hasHierarchicalNamespace: false,
+        supportsAtomicMove: false,
+      });
+      const result = await service.getCapabilities();
+      expect(result.hasHierarchicalNamespace).toBe(false);
+    });
+  });
+
+  describe("getDirectoryTree", () => {
+    it("returns directory tree", async () => {
+      vi.spyOn(service, "getDirectoryTree").mockResolvedValue({
+        name: "",
+        path: "",
+        children: [
+          { name: "Photos", path: "Photos", children: [] },
+          { name: "Docs", path: "Docs", children: [] },
+        ],
+      });
+      const result = await service.getDirectoryTree();
+      expect(result.children).toHaveLength(2);
+      expect(result.children[0].name).toBe("Photos");
     });
   });
 });

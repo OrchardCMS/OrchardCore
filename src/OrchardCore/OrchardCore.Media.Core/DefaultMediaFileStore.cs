@@ -238,6 +238,8 @@ public class DefaultMediaFileStore : IMediaFileStore
         return context.PermittedStorage;
     }
 
+    public IFileStoreCapabilities Capabilities => _fileStore.Capabilities;
+
     private void ValidateRequestBasePath(HttpContext httpContext)
     {
         var originalPathBase = httpContext.Features.Get<ShellContextFeature>()?.OriginalPathBase ?? PathString.Empty;

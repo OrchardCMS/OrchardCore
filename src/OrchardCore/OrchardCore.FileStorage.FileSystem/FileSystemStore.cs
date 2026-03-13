@@ -5,6 +5,9 @@ namespace OrchardCore.FileStorage.FileSystem;
 
 public class FileSystemStore : IFileStore
 {
+    private static readonly IFileStoreCapabilities _capabilities =
+        new FileStoreCapabilities(hasHierarchicalNamespace: true, supportsAtomicMove: true);
+
     private readonly ILogger<FileSystemStore> _logger;
     private readonly string _fileSystemPath;
 
@@ -13,6 +16,8 @@ public class FileSystemStore : IFileStore
         _logger = logger;
         _fileSystemPath = Path.GetFullPath(fileSystemPath);
     }
+
+    public IFileStoreCapabilities Capabilities => _capabilities;
 
     public Task<IFileStoreEntry> GetFileInfoAsync(string path)
     {

@@ -7,6 +7,14 @@ import {
   IRenameFileLibraryItemDto,
   IFileLibraryItemDto,
 } from "@bloom/media/interfaces";
+
+// Mock the NSwag-generated OpenApiClient so FileDataService can be constructed in tests.
+vi.mock("@bloom/services/OpenApiClient", () => ({
+  Client: vi.fn().mockImplementation(() => ({})),
+  MoveMedias: vi.fn().mockImplementation((data: any) => data), // eslint-disable-line @typescript-eslint/no-explicit-any
+  DirectoryTreeNodeDto: vi.fn(),
+}));
+
 import { useEventBusService } from "../EventBusService";
 import { useEventBus } from "../../services/UseEventBus";
 import { useGlobals } from "../Globals";

@@ -18,6 +18,7 @@ const {
   rootDirectory,
   assetsStore,
   selectedFiles,
+  capabilities,
   setSortBy,
   setSortAsc,
   setFileFilter,
@@ -27,8 +28,9 @@ const {
   setFileItems,
   setSelectedDirectory,
   setSelectedAll,
+  setIsLoading,
 } = useGlobals();
-const { fileCopy, fileListMove, deleteFileItem, deleteFileList, renameFile, createDirectory, deleteDirectory } = useFileLibraryManager();
+const { fileCopy, fileListMove, deleteFileItem, deleteFileList, renameFile, createDirectory, deleteDirectory, loadDirectoryFiles } = useFileLibraryManager();
 const { on, emit } = useEventBus();
 
 export const useEventBusService = () => {
@@ -58,14 +60,23 @@ export const useEventBusService = () => {
     setSelectedDirectory(rootDirectory.value);
   };
 
-  const setDirectoryFiles = (directory: string) => {
-    const foundfileItems = Object.values(assetsStore.value).filter((x) => x.directoryPath == directory && x.isDirectory == false);
-    setFileItems([...foundfileItems]);
+  const setDirectoryFiles = async (directory: string) => {
+    if (capabilities.value.hasHierarchicalNamespace) {
+      // Hierarchical mode: load files from server on demand.
+      setIsLoading(true);
+      await loadDirectoryFiles(directory);
+      setIsLoading(false);
+    } else {
+      // Flat mode: filter from the preloaded assetsStore.
+      const foundfileItems = Object.values(assetsStore.value).filter((x) => x.directoryPath == directory && x.isDirectory == false);
+      setFileItems([...foundfileItems]);
+    }
   };
 
   const isFileSelected = (file: IFileLibraryItemDto) => {
     return selectedFiles.value?.some((element) => {
-      return element.url?.toLowerCase() === file.url?.toLowerCase();
+      if (!element.url || !file.url) return false;
+      return element.url.toLowerCase() === file.url.toLowerCase();
     });
   };
 

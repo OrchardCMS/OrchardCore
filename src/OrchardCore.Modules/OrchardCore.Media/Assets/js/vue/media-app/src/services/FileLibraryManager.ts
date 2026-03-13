@@ -10,8 +10,8 @@ import { useLocalizations } from "@bloom/helpers/localizations";
 import { BASE_DIR } from "@bloom/media/constants";
 
 const { canManage } = usePermissions();
-const { setHierarchicalDirectories } = useHierarchicalTreeBuilder();
-const { assetsStore, fileItems, selectedDirectory, rootDirectory, selectedFiles, setAssetsStore, setSelectedFiles, setSelectedAll } = useGlobals();
+const { setHierarchicalDirectories, setServerDirectoryTree } = useHierarchicalTreeBuilder();
+const { assetsStore, fileItems, selectedDirectory, rootDirectory, selectedFiles, capabilities, setAssetsStore, setSelectedFiles, setSelectedAll, setCapabilities, setFileItems } = useGlobals();
 const { translations } = useLocalizations();
 const t = translations;
 const { emit } = useEventBus();
@@ -53,23 +53,27 @@ export function useFileLibraryManager() {
             elem.targetFolder || "root",
           );
 
-          for (let i = 0; i < elem.files.length; i++) {
-            const sourceFolder = elem.sourceFolder != "root" ? elem.sourceFolder : BASE_DIR;
-            const targetFolder = elem.targetFolder != "root" ? elem.targetFolder : BASE_DIR;
-            const file = assetsStore.value.find((x: IFileLibraryItemDto) => x.isDirectory == false && x.directoryPath == sourceFolder && x.name == elem.files[i].name);
+          if (capabilities.value.hasHierarchicalNamespace) {
+            await loadDirectoryFiles(selectedDirectory.value.directoryPath);
+          } else {
+            for (let i = 0; i < elem.files.length; i++) {
+              const sourceFolder = elem.sourceFolder != "root" ? elem.sourceFolder : BASE_DIR;
+              const targetFolder = elem.targetFolder != "root" ? elem.targetFolder : BASE_DIR;
+              const file = assetsStore.value.find((x: IFileLibraryItemDto) => x.isDirectory == false && x.directoryPath == sourceFolder && x.name == elem.files[i].name);
 
-            if (file) {
-              file.directoryPath = targetFolder != "" ? elem.targetFolder : BASE_DIR;
-              file.filePath = targetFolder != "" ? elem.targetFolder + "/" + elem.files[i].name : elem.files[i].name;
+              if (file) {
+                file.directoryPath = targetFolder != "" ? elem.targetFolder : BASE_DIR;
+                file.filePath = targetFolder != "" ? elem.targetFolder + "/" + elem.files[i].name : elem.files[i].name;
 
-              const index = fileItems && fileItems.value.indexOf(file);
-              if (index > -1) {
-                fileItems.value.splice(index, 1);
+                const index = fileItems && fileItems.value.indexOf(file);
+                if (index > -1) {
+                  fileItems.value.splice(index, 1);
+                }
               }
-            }
 
-            elem.files[i].directoryPath = targetFolder != "" ? elem.targetFolder : BASE_DIR;
-            elem.files[i].filePath = targetFolder != "" ? elem.targetFolder + "/" + elem.files[i].name : elem.files[i].name;
+              elem.files[i].directoryPath = targetFolder != "" ? elem.targetFolder : BASE_DIR;
+              elem.files[i].filePath = targetFolder != "" ? elem.targetFolder + "/" + elem.files[i].name : elem.files[i].name;
+            }
           }
 
           emit("FileListMoved", elem);
@@ -90,8 +94,12 @@ export function useFileLibraryManager() {
       if (elem) {
         try {
           const copiedFile = await fileDataService.copyMedia(elem.oldPath, elem.newPath);
-          assetsStore.value.push(copiedFile);
-          setAssetsStore(assetsStore.value);
+          if (capabilities.value.hasHierarchicalNamespace) {
+            await loadDirectoryFiles(selectedDirectory.value.directoryPath);
+          } else {
+            assetsStore.value.push(copiedFile);
+            setAssetsStore(assetsStore.value);
+          }
           emit("FileCopied", copiedFile);
           notify(new NotificationMessage({ summary: t.Success ?? "Success", detail: t.FileCopied ?? "File copied successfully.", severity: SeverityLevel.Success }));
         } catch (error) {
@@ -113,10 +121,16 @@ export function useFileLibraryManager() {
     if (canManage.value) {
       try {
         const response = await fileDataService.createFolder(selectedDirectory.value.directoryPath, directory.name);
-        assetsStore.value.push(response);
-        setAssetsStore(assetsStore.value);
-        assetsStore.value.sort((a, b) => (a.name > b.name ? 1 : -1));
-        setHierarchicalDirectories(assetsStore.value);
+        if (capabilities.value.hasHierarchicalNamespace) {
+          // Refresh the directory tree from the server.
+          const tree = await fileDataService.getDirectoryTree();
+          const flatDirs = setServerDirectoryTree(tree);
+          setAssetsStore(flatDirs);
+        } else {
+          assetsStore.value.push(response);
+          setAssetsStore(assetsStore.value);
+          assetsStore.value.sort((a, b) => (a.name > b.name ? 1 : -1));
+        }
         emit("DirAddReq", { selectedDirectory: selectedDirectory.value, data: response });
       } catch (error) {
         notify(error);
@@ -134,10 +148,15 @@ export function useFileLibraryManager() {
 
     if (canManage.value) {
       const oldPath = file.filePath;
-      const newPath = oldPath.replace(file.name, newName);
+      // Replace only the filename (last segment) to avoid replacing matching directory names.
+      const lastSlash = oldPath.lastIndexOf("/");
+      const newPath = lastSlash >= 0 ? oldPath.substring(0, lastSlash + 1) + newName : newName;
 
       try {
         await fileDataService.moveMedia(oldPath, newPath);
+        if (capabilities.value.hasHierarchicalNamespace) {
+          await loadDirectoryFiles(selectedDirectory.value.directoryPath);
+        }
         emit("FileRenamed", { newName: newName, newPath: newPath, oldPath: oldPath });
       } catch (error) {
         notify(error);
@@ -165,14 +184,17 @@ export function useFileLibraryManager() {
       try {
         await fileDataService.deleteMediaList(imagePaths);
 
-        for (let i = 0; i < selectedFiles.value.length; i++) {
-          const index = assetsStore.value && assetsStore.value.indexOf(selectedFiles.value[i]);
-          if (index > -1) {
-            assetsStore.value.splice(index, 1);
-            setAssetsStore(assetsStore.value);
+        if (capabilities.value.hasHierarchicalNamespace) {
+          await loadDirectoryFiles(selectedDirectory.value.directoryPath);
+        } else {
+          for (let i = 0; i < selectedFiles.value.length; i++) {
+            const index = assetsStore.value.indexOf(selectedFiles.value[i]);
+            if (index > -1) {
+              assetsStore.value.splice(index, 1);
+            }
+            emit("FileDeleted", selectedFiles.value[i]);
           }
-
-          emit("FileDeleted", selectedFiles.value[i]);
+          setAssetsStore(assetsStore.value);
         }
 
         setSelectedFiles([]);
@@ -196,16 +218,20 @@ export function useFileLibraryManager() {
       try {
         await fileDataService.deleteMedia(file.filePath);
 
-        const fileFound = assetsStore.value.find((x: IFileLibraryItemDto) => x.filePath == file.filePath);
-        if (fileFound) {
-          const index = assetsStore.value && assetsStore.value.indexOf(fileFound);
-          if (index > -1) {
-            assetsStore.value.splice(index, 1);
-            setAssetsStore(assetsStore.value);
-            emit("FileDeleted", file);
+        if (capabilities.value.hasHierarchicalNamespace) {
+          await loadDirectoryFiles(selectedDirectory.value.directoryPath);
+        } else {
+          const fileFound = assetsStore.value.find((x: IFileLibraryItemDto) => x.filePath == file.filePath);
+          if (fileFound) {
+            const index = assetsStore.value.indexOf(fileFound);
+            if (index > -1) {
+              assetsStore.value.splice(index, 1);
+              setAssetsStore(assetsStore.value);
+            }
           }
         }
 
+        emit("FileDeleted", file);
         setSelectedFiles([]);
         setSelectedAll(false);
       } catch (error) {
@@ -228,16 +254,22 @@ export function useFileLibraryManager() {
       try {
         await fileDataService.deleteFolder(directory.directoryPath);
 
-        const foundDirectories = assetsStore.value.filter((x: IFileLibraryItemDto) => x.isDirectory && (x.directoryPath + "/").startsWith(directory.directoryPath + "/"));
-        if (foundDirectories) {
-          foundDirectories.forEach((foundDirectory: IFileLibraryItemDto) => {
-            const index = assetsStore.value.indexOf(foundDirectory);
-            if (index > -1) {
-              assetsStore.value.splice(index, 1);
-              setAssetsStore(assetsStore.value);
-              setHierarchicalDirectories(assetsStore.value);
+        if (capabilities.value.hasHierarchicalNamespace) {
+          // Refresh the directory tree from the server.
+          const tree = await fileDataService.getDirectoryTree();
+          const flatDirs = setServerDirectoryTree(tree);
+          setAssetsStore(flatDirs);
+        } else {
+          const foundDirectories = assetsStore.value.filter((x: IFileLibraryItemDto) => x.isDirectory && (x.directoryPath + "/").startsWith(directory.directoryPath + "/"));
+          if (foundDirectories) {
+            for (const foundDirectory of foundDirectories) {
+              const index = assetsStore.value.indexOf(foundDirectory);
+              if (index > -1) {
+                assetsStore.value.splice(index, 1);
+              }
             }
-          });
+            setAssetsStore(assetsStore.value);
+          }
         }
 
         emit("DirDelete", directory);
@@ -255,20 +287,61 @@ export function useFileLibraryManager() {
     let result: IFileLibraryItemDto[] = [];
 
     try {
-      const response = await fileDataService.listAllItems();
-      setAssetsStore(response);
+      // Fetch storage capabilities first.
+      const caps = await fileDataService.getCapabilities();
+      setCapabilities(caps);
 
-      if (response) {
-        setHierarchicalDirectories(response);
-        result = response;
+      if (caps.hasHierarchicalNamespace) {
+        // Hierarchical backend: fetch the directory tree from the server and
+        // load files per-folder on demand instead of loading everything upfront.
+        try {
+          const tree = await fileDataService.getDirectoryTree();
+          const flatDirs = setServerDirectoryTree(tree);
+          setAssetsStore(flatDirs);
+
+          // Load files for the root directory.
+          const rootFiles = await fileDataService.getMediaItems("");
+          setFileItems(rootFiles.filter(f => !f.isDirectory));
+          result = flatDirs;
+        } catch {
+          // Tree endpoint failed — fall back to flat mode.
+          console.warn("Failed to fetch directory tree, falling back to flat mode.");
+          setCapabilities({ hasHierarchicalNamespace: false, supportsAtomicMove: caps.supportsAtomicMove });
+          const response = await fileDataService.listAllItems();
+          setAssetsStore(response);
+          setHierarchicalDirectories(response);
+          result = response;
+        }
       } else {
-        notify(new NotificationMessage({ summary: t.ErrorGetFolders, detail: t.ErrorGetFolders, severity: SeverityLevel.Error }));
+        // Flat backend: load all items and build tree client-side.
+        const response = await fileDataService.listAllItems();
+        setAssetsStore(response);
+
+        if (response) {
+          setHierarchicalDirectories(response);
+          result = response;
+        } else {
+          notify(new NotificationMessage({ summary: t.ErrorGetFolders, detail: t.ErrorGetFolders, severity: SeverityLevel.Error }));
+        }
       }
     } catch (error) {
       notify(error);
     }
 
     return result;
+  };
+
+  /**
+   * Loads files for a specific directory from the server.
+   * Used in hierarchical mode for per-folder loading.
+   */
+  const loadDirectoryFiles = async (directoryPath: string): Promise<void> => {
+    try {
+      const files = await fileDataService.getMediaItems(directoryPath);
+      setFileItems(files.filter(f => !f.isDirectory));
+    } catch (error) {
+      notify(error);
+    }
   };
 
   return {
@@ -281,5 +354,6 @@ export function useFileLibraryManager() {
     createDirectory,
     deleteDirectory,
     getFileLibraryStoreAsync,
+    loadDirectoryFiles,
   };
 }

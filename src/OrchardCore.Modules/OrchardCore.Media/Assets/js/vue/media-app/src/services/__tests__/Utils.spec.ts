@@ -105,35 +105,13 @@ describe("PrintDateTime", () => {
 });
 
 describe("downloadFile", () => {
-  let xhrMock: {
-    open: ReturnType<typeof vi.fn>;
-    send: ReturnType<typeof vi.fn>;
-    onload: (() => void) | null;
-    onerror: (() => void) | null;
-    status: number;
-  };
+  let anchorMock: { setAttribute: ReturnType<typeof vi.fn>; click: ReturnType<typeof vi.fn>; href: string };
 
   beforeEach(() => {
-    xhrMock = {
-      open: vi.fn(),
-      send: vi.fn(),
-      onload: null,
-      onerror: null,
-      status: 200,
-    };
+    anchorMock = { setAttribute: vi.fn(), click: vi.fn(), href: "" };
 
-    vi.spyOn(window, "XMLHttpRequest").mockImplementation(() => xhrMock as unknown as XMLHttpRequest);
-
-    // Mock document.createElement to intercept anchor creation
     vi.spyOn(document, "createElement").mockImplementation((tag: string) => {
-      if (tag === "a") {
-        const a = {
-          setAttribute: vi.fn(),
-          click: vi.fn(),
-          href: "",
-        } as unknown as HTMLAnchorElement;
-        return a;
-      }
+      if (tag === "a") return anchorMock as unknown as HTMLAnchorElement;
       return document.createElement(tag);
     });
   });
@@ -142,53 +120,44 @@ describe("downloadFile", () => {
     vi.restoreAllMocks();
   });
 
-  it("should do nothing when file has no url", () => {
+  it("should do nothing when file has no url", async () => {
+    global.fetch = vi.fn();
     const file = { name: "test.jpg", filePath: "/test.jpg", directoryPath: "/", isDirectory: false };
-    downloadFile(file);
-    expect(xhrMock.open).not.toHaveBeenCalled();
+    await downloadFile(file);
+    expect(global.fetch).not.toHaveBeenCalled();
   });
 
-  it("should do nothing when file is falsy", () => {
-    downloadFile(null as any); // eslint-disable-line @typescript-eslint/no-explicit-any
-    expect(xhrMock.open).not.toHaveBeenCalled();
+  it("should do nothing when file is falsy", async () => {
+    global.fetch = vi.fn();
+    await downloadFile(null as any); // eslint-disable-line @typescript-eslint/no-explicit-any
+    expect(global.fetch).not.toHaveBeenCalled();
   });
 
-  it("should open an XHR HEAD request when file has a url", () => {
+  it("should send a HEAD fetch request when file has a url", async () => {
+    global.fetch = vi.fn(() => Promise.resolve({ ok: true } as Response));
     const file = { name: "photo.jpg", filePath: "/photo.jpg", directoryPath: "/", isDirectory: false, url: "/media/photo.jpg" };
-    downloadFile(file);
-    expect(xhrMock.open).toHaveBeenCalledWith("HEAD", "/media/photo.jpg", false);
-    expect(xhrMock.send).toHaveBeenCalled();
+    await downloadFile(file);
+    expect(global.fetch).toHaveBeenCalledWith("/media/photo.jpg", { method: "HEAD" });
   });
 
-  it("should create and click anchor when XHR returns 200", () => {
+  it("should create and click anchor when fetch returns ok", async () => {
+    global.fetch = vi.fn(() => Promise.resolve({ ok: true } as Response));
     const file = { name: "photo.jpg", filePath: "/photo.jpg", directoryPath: "/", isDirectory: false, url: "/media/photo.jpg" };
-    xhrMock.status = 200;
-    downloadFile(file);
-
-    // Trigger the onload handler
-    if (xhrMock.onload) xhrMock.onload();
-
+    await downloadFile(file);
     expect(document.createElement).toHaveBeenCalledWith("a");
+    expect(anchorMock.click).toHaveBeenCalled();
   });
 
-  it("should handle XHR error without throwing", () => {
+  it("should handle fetch error without throwing", async () => {
+    global.fetch = vi.fn(() => Promise.reject(new Error("network error")));
     const file = { name: "photo.jpg", filePath: "/photo.jpg", directoryPath: "/", isDirectory: false, url: "/media/photo.jpg" };
-    downloadFile(file);
-
-    // Trigger onerror - should not throw
-    expect(() => {
-      if (xhrMock.onerror) xhrMock.onerror();
-    }).not.toThrow();
+    await expect(downloadFile(file)).resolves.toBeUndefined();
   });
 
-  it("should handle non-200 status without throwing", () => {
+  it("should handle non-ok response without throwing", async () => {
+    global.fetch = vi.fn(() => Promise.resolve({ ok: false, status: 404 } as Response));
     const file = { name: "photo.jpg", filePath: "/photo.jpg", directoryPath: "/", isDirectory: false, url: "/media/photo.jpg" };
-    xhrMock.status = 404;
-    downloadFile(file);
-
-    expect(() => {
-      if (xhrMock.onload) xhrMock.onload();
-    }).not.toThrow();
+    await expect(downloadFile(file)).resolves.toBeUndefined();
   });
 });
 

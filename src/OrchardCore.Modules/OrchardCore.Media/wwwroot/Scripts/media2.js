@@ -24791,6 +24791,7 @@ const selectedDirectory$6 = ref({});
 const fileItems$2 = ref([]);
 const rootDirectory$4 = ref({});
 const hierarchicalDirectories$1 = ref({});
+const capabilities$2 = ref({ hasHierarchicalNamespace: false, supportsAtomicMove: false });
 const basePath = ref("");
 const selectedFiles$3 = ref([]);
 const isSelectedAll = ref(false);
@@ -24813,7 +24814,7 @@ const useGlobals = () => {
   const setUploadFilesUrl = (value) => {
     uploadBaseUrl.value = value;
   };
-  const setIsLoading = (value) => {
+  const setIsLoading2 = (value) => {
     isLoading.value = value;
   };
   const setItemsInPage2 = (value) => {
@@ -24855,6 +24856,9 @@ const useGlobals = () => {
   const setHierarchicalData2 = (value) => {
     hierarchicalDirectories$1.value = value;
   };
+  const setCapabilities2 = (value) => {
+    capabilities$2.value = value;
+  };
   return {
     errors,
     fileFilter,
@@ -24871,12 +24875,14 @@ const useGlobals = () => {
     fileItems: fileItems$2,
     rootDirectory: rootDirectory$4,
     hierarchicalDirectories: hierarchicalDirectories$1,
+    capabilities: capabilities$2,
     uploadFilesUrl: uploadFilesUrl$1,
     setAssetsStore: setAssetsStore2,
     setSelectedDirectory: setSelectedDirectory2,
     setFileItems: setFileItems2,
     setRootDirectory: setRootDirectory2,
     setHierarchicalData: setHierarchicalData2,
+    setCapabilities: setCapabilities2,
     setBasePath,
     setSelectedFiles: setSelectedFiles2,
     setSelectedAll: setSelectedAll2,
@@ -24885,7 +24891,7 @@ const useGlobals = () => {
     setSortBy: setSortBy2,
     setSortAsc: setSortAsc2,
     setItemsInPage: setItemsInPage2,
-    setIsLoading,
+    setIsLoading: setIsLoading2,
     setIsDownloading: setIsDownloading2,
     setUploadFilesUrl
   };
@@ -31826,10 +31832,10 @@ let Uppy$1 = class Uppy2 {
   }
   clear() {
     const {
-      capabilities,
+      capabilities: capabilities2,
       currentUploads
     } = this.getState();
-    if (Object.keys(currentUploads).length > 0 && !capabilities.individualCancellation) {
+    if (Object.keys(currentUploads).length > 0 && !capabilities2.individualCancellation) {
       throw new Error("The installed uploader plugin does not allow removing files during an upload.");
     }
     this.setState({
@@ -32119,9 +32125,9 @@ let Uppy$1 = class Uppy2 {
         return;
       }
       const {
-        capabilities
+        capabilities: capabilities2
       } = this.getState();
-      if (newFileIDs.length !== currentUploads[uploadID].fileIDs.length && !capabilities.individualCancellation) {
+      if (newFileIDs.length !== currentUploads[uploadID].fileIDs.length && !capabilities2.individualCancellation) {
         throw new Error("The installed uploader plugin does not allow removing files during an upload.");
       }
       updatedUploads[uploadID] = {
@@ -34049,11 +34055,11 @@ class XHRUpload extends BasePlugin {
   install() {
     if (this.opts.bundle) {
       const {
-        capabilities
+        capabilities: capabilities2
       } = this.uppy.getState();
       this.uppy.setState({
         capabilities: {
-          ...capabilities,
+          ...capabilities2,
           individualCancellation: false
         }
       });
@@ -34063,11 +34069,11 @@ class XHRUpload extends BasePlugin {
   uninstall() {
     if (this.opts.bundle) {
       const {
-        capabilities
+        capabilities: capabilities2
       } = this.uppy.getState();
       this.uppy.setState({
         capabilities: {
-          ...capabilities,
+          ...capabilities2,
           individualCancellation: true
         }
       });
@@ -38637,6 +38643,10 @@ const useFileUpload = (model) => {
 const { assetsStore: assetsStore$3, selectedDirectory: selectedDirectory$4, hierarchicalDirectories, setHierarchicalData, setRootDirectory } = useGlobals();
 const { translations: translations$2 } = useLocalizations();
 const t$H = translations$2;
+function getParentPath(path) {
+  const lastSlash = path.lastIndexOf("/");
+  return lastSlash > 0 ? path.substring(0, lastSlash) : "";
+}
 function useHierarchicalTreeBuilder() {
   const convertToHierarchyTreeNode = (fileLibraryItems) => {
     const rootNode = {
@@ -38647,31 +38657,29 @@ function useHierarchicalTreeBuilder() {
       selectable: selectedDirectory$4.value.directoryPath != "",
       children: []
     };
-    for (const fileLibraryItem of fileLibraryItems) {
-      const folderPath = fileLibraryItem.directoryPath.replace(/^\//, "");
+    const nodeMap2 = /* @__PURE__ */ new Map();
+    nodeMap2.set("", rootNode);
+    const sorted = [...fileLibraryItems].sort(
+      (a2, b2) => a2.directoryPath.split("/").length - b2.directoryPath.split("/").length
+    );
+    for (const item2 of sorted) {
+      const folderPath = item2.directoryPath.replace(/^\//, "");
       if (!folderPath) continue;
-      buildTreeNodeRecursive(rootNode, folderPath.split("/"), fileLibraryItem, 0);
+      if (nodeMap2.has(folderPath)) continue;
+      const parentPath = getParentPath(folderPath);
+      const parent = nodeMap2.get(parentPath) ?? rootNode;
+      const node2 = {
+        label: item2.name,
+        key: item2.directoryPath,
+        data: item2,
+        icon: "fa-solid fa-folder",
+        selectable: selectedDirectory$4.value.directoryPath !== item2.directoryPath,
+        children: []
+      };
+      parent.children.push(node2);
+      nodeMap2.set(folderPath, node2);
     }
     return rootNode;
-  };
-  const buildTreeNodeRecursive = (node2, paths, fileLibraryItem, idx) => {
-    if (idx < paths.length) {
-      const item2 = paths[idx];
-      let dir = node2.children.find((child) => child.label == item2);
-      if (!dir) {
-        node2.children.push(
-          dir = {
-            label: fileLibraryItem.name,
-            key: fileLibraryItem.directoryPath,
-            data: fileLibraryItem,
-            icon: "fa-solid fa-folder",
-            selectable: selectedDirectory$4.value.directoryPath == fileLibraryItem.directoryPath ? false : true,
-            children: []
-          }
-        );
-      }
-      buildTreeNodeRecursive(dir, paths, fileLibraryItem, idx + 1);
-    }
   };
   const getDirectoryTreeNode = () => {
     const directories = assetsStore$3.value.filter((x2) => x2.isDirectory);
@@ -38679,33 +38687,38 @@ function useHierarchicalTreeBuilder() {
     return [result];
   };
   const convertToHierarchy = (fileLibraryItems) => {
-    const rootNode = { name: t$H.FileLibrary ?? "Media Library", directoryPath: "", filePath: "", isDirectory: true, selected: true, children: [] };
+    const rootNode = {
+      name: t$H.FileLibrary ?? "Media Library",
+      directoryPath: "",
+      filePath: "",
+      isDirectory: true,
+      selected: true,
+      children: []
+    };
     setRootDirectory({ ...rootNode });
-    for (const fileLibraryItem of fileLibraryItems) {
-      const folderPath = fileLibraryItem.directoryPath.replace(/^\//, "");
+    const nodeMap2 = /* @__PURE__ */ new Map();
+    nodeMap2.set("", rootNode);
+    const sorted = [...fileLibraryItems].sort(
+      (a2, b2) => a2.directoryPath.split("/").length - b2.directoryPath.split("/").length
+    );
+    for (const item2 of sorted) {
+      const folderPath = item2.directoryPath.replace(/^\//, "");
       if (!folderPath) continue;
-      buildNodeRecursive(rootNode, folderPath.split("/"), fileLibraryItem, 0);
+      if (nodeMap2.has(folderPath)) continue;
+      const parentPath = getParentPath(folderPath);
+      const parent = nodeMap2.get(parentPath) ?? rootNode;
+      const node2 = {
+        name: item2.name,
+        directoryPath: item2.directoryPath,
+        filePath: item2.filePath,
+        isDirectory: item2.isDirectory,
+        selected: false,
+        children: []
+      };
+      parent.children.push(node2);
+      nodeMap2.set(folderPath, node2);
     }
     return rootNode;
-  };
-  const buildNodeRecursive = (node2, paths, fileLibraryItem, idx) => {
-    if (idx < paths.length) {
-      const item2 = paths[idx];
-      let dir = node2.children.find((child) => child.name == item2);
-      if (!dir) {
-        node2.children.push(
-          dir = {
-            name: fileLibraryItem.name,
-            directoryPath: fileLibraryItem.directoryPath,
-            filePath: fileLibraryItem.filePath,
-            isDirectory: fileLibraryItem.isDirectory,
-            selected: false,
-            children: []
-          }
-        );
-      }
-      buildNodeRecursive(dir, paths, fileLibraryItem, idx + 1);
-    }
   };
   const setHierarchicalDirectories2 = (elements) => {
     const directories = elements.filter((x2) => x2.isDirectory);
@@ -38722,49 +38735,67 @@ function useHierarchicalTreeBuilder() {
       selectable: false,
       children: []
     };
-    for (const fileLibraryItem of fileLibraryItems) {
-      const itemPath = (fileLibraryItem.isDirectory ? fileLibraryItem.directoryPath : fileLibraryItem.filePath).replace(/^\//, "");
-      buildFileTreeNodeRecursive(rootNode, itemPath.split("/"), fileLibraryItem, 0);
+    const nodeMap2 = /* @__PURE__ */ new Map();
+    nodeMap2.set("", rootNode);
+    const dirs = fileLibraryItems.filter((x2) => x2.isDirectory);
+    dirs.sort((a2, b2) => {
+      const aPath = a2.directoryPath.replace(/^\//, "");
+      const bPath = b2.directoryPath.replace(/^\//, "");
+      return aPath.split("/").length - bPath.split("/").length;
+    });
+    for (const item2 of dirs) {
+      const parentDir = item2.directoryPath.replace(/^\//, "");
+      const folderKey = parentDir ? `${parentDir}/${item2.name}` : item2.name;
+      if (nodeMap2.has(folderKey)) continue;
+      nodeMap2.set(folderKey, {
+        label: item2.name,
+        key: item2.isDirectory ? item2.directoryPath : item2.filePath,
+        data: item2,
+        icon: "fa-solid fa-folder",
+        selectable: false,
+        children: []
+      });
+    }
+    for (const item2 of fileLibraryItems) {
+      if (item2.isDirectory) {
+        const parentDir = item2.directoryPath.replace(/^\//, "");
+        const folderKey = parentDir ? `${parentDir}/${item2.name}` : item2.name;
+        const node2 = nodeMap2.get(folderKey);
+        if (node2) {
+          const parent = nodeMap2.get(parentDir) ?? rootNode;
+          if (!parent.children.includes(node2)) {
+            parent.children.push(node2);
+          }
+        }
+      } else {
+        const dirPath = item2.directoryPath.replace(/^\//, "");
+        const parent = nodeMap2.get(dirPath) ?? rootNode;
+        parent.children.push({
+          label: item2.name,
+          key: item2.filePath,
+          data: item2,
+          icon: "fa-solid fa-file",
+          selectable: true,
+          children: []
+        });
+      }
     }
     return rootNode;
-  };
-  const buildFileTreeNodeRecursive = (node2, paths, fileLibraryItem, idx) => {
-    if (idx < paths.length) {
-      const item2 = paths[idx];
-      let dir = node2.children.find((child) => child.label == item2);
-      if (!dir) {
-        node2.children.push(
-          dir = {
-            label: fileLibraryItem.name,
-            key: fileLibraryItem.isDirectory ? fileLibraryItem.directoryPath : fileLibraryItem.filePath,
-            data: fileLibraryItem,
-            icon: fileLibraryItem.isDirectory ? "fa-solid fa-folder" : "fa-solid fa-file",
-            selectable: !fileLibraryItem.isDirectory,
-            children: []
-          }
-        );
-      }
-      buildFileTreeNodeRecursive(dir, paths, fileLibraryItem, idx + 1);
-    }
   };
   const getFileTreeNode = (storeItems, allowedFileExtensions) => {
     let assets = storeItems;
     if (allowedFileExtensions) {
       assets = assets.filter((node2) => {
         if (node2.isDirectory) {
-          return node2;
-        } else if (allowedFileExtensions.some((x2) => x2.replace(".", "") == getFileExtension(node2.filePath))) {
-          return node2;
+          return true;
         }
+        return allowedFileExtensions.some((x2) => x2.replace(".", "") == getFileExtension(node2.filePath));
       });
       assets = assets.filter((node2) => {
         if (node2.isDirectory) {
-          if (assets.some((x2) => !x2.isDirectory && x2.directoryPath == node2.directoryPath)) {
-            return node2;
-          }
-        } else {
-          return node2;
+          return assets.some((x2) => !x2.isDirectory && x2.directoryPath == node2.directoryPath);
         }
+        return true;
       });
     }
     if (assets.length > 1) {
@@ -38774,7 +38805,34 @@ function useHierarchicalTreeBuilder() {
       return [];
     }
   };
-  return { getDirectoryTreeNode, setHierarchicalDirectories: setHierarchicalDirectories2, getFileTreeNode };
+  const setServerDirectoryTree2 = (tree) => {
+    const flatDirectories = [];
+    const convertNode = (node2) => {
+      const hNode = {
+        name: node2.name || t$H.FileLibrary || "Media Library",
+        directoryPath: node2.path,
+        filePath: "",
+        isDirectory: true,
+        selected: node2.path === "",
+        children: node2.children.map(convertNode)
+      };
+      if (node2.path !== "") {
+        flatDirectories.push({
+          name: node2.name,
+          directoryPath: node2.path,
+          filePath: "",
+          isDirectory: true
+        });
+      }
+      return hNode;
+    };
+    const rootNode = convertNode(tree);
+    setRootDirectory({ ...rootNode, children: [] });
+    hierarchicalDirectories.value = rootNode;
+    setHierarchicalData(rootNode);
+    return flatDirectories;
+  };
+  return { getDirectoryTreeNode, setHierarchicalDirectories: setHierarchicalDirectories2, setServerDirectoryTree: setServerDirectoryTree2, getFileTreeNode };
 }
 const { selectedDirectory: selectedDirectory$3, rootDirectory: rootDirectory$3, setSelectedDirectory: setSelectedDirectory$2 } = useGlobals();
 const smallThumbs = ref(false);
@@ -41425,11 +41483,307 @@ const {
   getAdapter,
   mergeConfig
 } = axios;
-class MediaGen2ApiClient {
+class Client {
   constructor(baseUrl, instance) {
     this.jsonParseReviver = void 0;
     this.instance = instance || axios.create();
     this.baseUrl = baseUrl ?? "";
+  }
+  /**
+   * @param draft (optional) 
+   * @param body (optional) 
+   * @return OK
+   */
+  contentPOST(draft, body, cancelToken) {
+    let url_ = this.baseUrl + "/api/content?";
+    if (draft === null)
+      throw new globalThis.Error("The parameter 'draft' cannot be null.");
+    else if (draft !== void 0)
+      url_ += "draft=" + encodeURIComponent("" + draft) + "&";
+    url_ = url_.replace(/[?&]$/, "");
+    const content_ = JSON.stringify(body);
+    let options_ = {
+      data: content_,
+      method: "POST",
+      url: url_,
+      headers: {
+        "Content-Type": "application/json"
+      },
+      cancelToken
+    };
+    return this.instance.request(options_).catch((_error) => {
+      if (isAxiosError(_error) && _error.response) {
+        return _error.response;
+      } else {
+        throw _error;
+      }
+    }).then((_response) => {
+      return this.processContentPOST(_response);
+    });
+  }
+  processContentPOST(response) {
+    const status = response.status;
+    let _headers = {};
+    if (response.headers && typeof response.headers === "object") {
+      for (const k2 in response.headers) {
+        if (response.headers.hasOwnProperty(k2)) {
+          _headers[k2] = response.headers[k2];
+        }
+      }
+    }
+    if (status === 200) {
+      response.data;
+      return Promise.resolve(null);
+    } else if (status !== 200 && status !== 204) {
+      const _responseText = response.data;
+      return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+    }
+    return Promise.resolve(null);
+  }
+  /**
+   * @return OK
+   */
+  contentDELETE(contentItemId, cancelToken) {
+    let url_ = this.baseUrl + "/api/content/{contentItemId}";
+    if (contentItemId === void 0 || contentItemId === null)
+      throw new globalThis.Error("The parameter 'contentItemId' must be defined.");
+    url_ = url_.replace("{contentItemId}", encodeURIComponent("" + contentItemId));
+    url_ = url_.replace(/[?&]$/, "");
+    let options_ = {
+      method: "DELETE",
+      url: url_,
+      headers: {},
+      cancelToken
+    };
+    return this.instance.request(options_).catch((_error) => {
+      if (isAxiosError(_error) && _error.response) {
+        return _error.response;
+      } else {
+        throw _error;
+      }
+    }).then((_response) => {
+      return this.processContentDELETE(_response);
+    });
+  }
+  processContentDELETE(response) {
+    const status = response.status;
+    let _headers = {};
+    if (response.headers && typeof response.headers === "object") {
+      for (const k2 in response.headers) {
+        if (response.headers.hasOwnProperty(k2)) {
+          _headers[k2] = response.headers[k2];
+        }
+      }
+    }
+    if (status === 200) {
+      response.data;
+      return Promise.resolve(null);
+    } else if (status !== 200 && status !== 204) {
+      const _responseText = response.data;
+      return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+    }
+    return Promise.resolve(null);
+  }
+  /**
+   * @return OK
+   */
+  contentGET(contentItemId, cancelToken) {
+    let url_ = this.baseUrl + "/api/content/{contentItemId}";
+    if (contentItemId === void 0 || contentItemId === null)
+      throw new globalThis.Error("The parameter 'contentItemId' must be defined.");
+    url_ = url_.replace("{contentItemId}", encodeURIComponent("" + contentItemId));
+    url_ = url_.replace(/[?&]$/, "");
+    let options_ = {
+      method: "GET",
+      url: url_,
+      headers: {},
+      cancelToken
+    };
+    return this.instance.request(options_).catch((_error) => {
+      if (isAxiosError(_error) && _error.response) {
+        return _error.response;
+      } else {
+        throw _error;
+      }
+    }).then((_response) => {
+      return this.processContentGET(_response);
+    });
+  }
+  processContentGET(response) {
+    const status = response.status;
+    let _headers = {};
+    if (response.headers && typeof response.headers === "object") {
+      for (const k2 in response.headers) {
+        if (response.headers.hasOwnProperty(k2)) {
+          _headers[k2] = response.headers[k2];
+        }
+      }
+    }
+    if (status === 200) {
+      response.data;
+      return Promise.resolve(null);
+    } else if (status !== 200 && status !== 204) {
+      const _responseText = response.data;
+      return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+    }
+    return Promise.resolve(null);
+  }
+  /**
+   * @return OK
+   */
+  liquidIntellisense_js(cancelToken) {
+    let url_ = this.baseUrl + "/OrchardCore.Liquid/Scripts/liquid-intellisense.js";
+    url_ = url_.replace(/[?&]$/, "");
+    let options_ = {
+      method: "GET",
+      url: url_,
+      headers: {},
+      cancelToken
+    };
+    return this.instance.request(options_).catch((_error) => {
+      if (isAxiosError(_error) && _error.response) {
+        return _error.response;
+      } else {
+        throw _error;
+      }
+    }).then((_response) => {
+      return this.processLiquidIntellisense_js(_response);
+    });
+  }
+  processLiquidIntellisense_js(response) {
+    const status = response.status;
+    let _headers = {};
+    if (response.headers && typeof response.headers === "object") {
+      for (const k2 in response.headers) {
+        if (response.headers.hasOwnProperty(k2)) {
+          _headers[k2] = response.headers[k2];
+        }
+      }
+    }
+    if (status === 200) {
+      response.data;
+      return Promise.resolve(null);
+    } else if (status !== 200 && status !== 204) {
+      const _responseText = response.data;
+      return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+    }
+    return Promise.resolve(null);
+  }
+  /**
+   * @return OK
+   */
+  getCapabilities(cancelToken) {
+    let url_ = this.baseUrl + "/api/media-gen2/GetCapabilities";
+    url_ = url_.replace(/[?&]$/, "");
+    let options_ = {
+      method: "GET",
+      url: url_,
+      headers: {
+        "Accept": "application/json"
+      },
+      cancelToken
+    };
+    return this.instance.request(options_).catch((_error) => {
+      if (isAxiosError(_error) && _error.response) {
+        return _error.response;
+      } else {
+        throw _error;
+      }
+    }).then((_response) => {
+      return this.processGetCapabilities(_response);
+    });
+  }
+  processGetCapabilities(response) {
+    const status = response.status;
+    let _headers = {};
+    if (response.headers && typeof response.headers === "object") {
+      for (const k2 in response.headers) {
+        if (response.headers.hasOwnProperty(k2)) {
+          _headers[k2] = response.headers[k2];
+        }
+      }
+    }
+    if (status === 200) {
+      const _responseText = response.data;
+      let result200 = null;
+      let resultData200 = _responseText;
+      result200 = FileStoreCapabilitiesDto.fromJS(resultData200);
+      return Promise.resolve(result200);
+    } else if (status === 401) {
+      const _responseText = response.data;
+      let result401 = null;
+      let resultData401 = _responseText;
+      result401 = ProblemDetails.fromJS(resultData401);
+      return throwException("Unauthorized", status, _responseText, _headers, result401);
+    } else if (status === 403) {
+      const _responseText = response.data;
+      let result403 = null;
+      let resultData403 = _responseText;
+      result403 = ProblemDetails.fromJS(resultData403);
+      return throwException("Forbidden", status, _responseText, _headers, result403);
+    } else if (status !== 200 && status !== 204) {
+      const _responseText = response.data;
+      return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+    }
+    return Promise.resolve(null);
+  }
+  /**
+   * @return OK
+   */
+  getDirectoryTree(cancelToken) {
+    let url_ = this.baseUrl + "/api/media-gen2/GetDirectoryTree";
+    url_ = url_.replace(/[?&]$/, "");
+    let options_ = {
+      method: "GET",
+      url: url_,
+      headers: {
+        "Accept": "application/json"
+      },
+      cancelToken
+    };
+    return this.instance.request(options_).catch((_error) => {
+      if (isAxiosError(_error) && _error.response) {
+        return _error.response;
+      } else {
+        throw _error;
+      }
+    }).then((_response) => {
+      return this.processGetDirectoryTree(_response);
+    });
+  }
+  processGetDirectoryTree(response) {
+    const status = response.status;
+    let _headers = {};
+    if (response.headers && typeof response.headers === "object") {
+      for (const k2 in response.headers) {
+        if (response.headers.hasOwnProperty(k2)) {
+          _headers[k2] = response.headers[k2];
+        }
+      }
+    }
+    if (status === 200) {
+      const _responseText = response.data;
+      let result200 = null;
+      let resultData200 = _responseText;
+      result200 = DirectoryTreeNodeDto.fromJS(resultData200);
+      return Promise.resolve(result200);
+    } else if (status === 401) {
+      const _responseText = response.data;
+      let result401 = null;
+      let resultData401 = _responseText;
+      result401 = ProblemDetails.fromJS(resultData401);
+      return throwException("Unauthorized", status, _responseText, _headers, result401);
+    } else if (status === 403) {
+      const _responseText = response.data;
+      let result403 = null;
+      let resultData403 = _responseText;
+      result403 = ProblemDetails.fromJS(resultData403);
+      return throwException("Forbidden", status, _responseText, _headers, result403);
+    } else if (status !== 200 && status !== 204) {
+      const _responseText = response.data;
+      return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+    }
+    return Promise.resolve(null);
   }
   /**
    * @param path (optional) 
@@ -42278,6 +42632,231 @@ class MediaGen2ApiClient {
     }
     return Promise.resolve(null);
   }
+  /**
+   * @return OK
+   */
+  tusFileInfo(uploadId, cancelToken) {
+    let url_ = this.baseUrl + "/api/media-gen2/TusFileInfo/{uploadId}";
+    if (uploadId === void 0 || uploadId === null)
+      throw new globalThis.Error("The parameter 'uploadId' must be defined.");
+    url_ = url_.replace("{uploadId}", encodeURIComponent("" + uploadId));
+    url_ = url_.replace(/[?&]$/, "");
+    let options_ = {
+      method: "GET",
+      url: url_,
+      headers: {
+        "Accept": "application/json"
+      },
+      cancelToken
+    };
+    return this.instance.request(options_).catch((_error) => {
+      if (isAxiosError(_error) && _error.response) {
+        return _error.response;
+      } else {
+        throw _error;
+      }
+    }).then((_response) => {
+      return this.processTusFileInfo(_response);
+    });
+  }
+  processTusFileInfo(response) {
+    const status = response.status;
+    let _headers = {};
+    if (response.headers && typeof response.headers === "object") {
+      for (const k2 in response.headers) {
+        if (response.headers.hasOwnProperty(k2)) {
+          _headers[k2] = response.headers[k2];
+        }
+      }
+    }
+    if (status === 200) {
+      const _responseText = response.data;
+      let result200 = null;
+      let resultData200 = _responseText;
+      result200 = FileStoreEntryDto.fromJS(resultData200);
+      return Promise.resolve(result200);
+    } else if (status === 401) {
+      const _responseText = response.data;
+      let result401 = null;
+      let resultData401 = _responseText;
+      result401 = ProblemDetails.fromJS(resultData401);
+      return throwException("Unauthorized", status, _responseText, _headers, result401);
+    } else if (status === 404) {
+      const _responseText = response.data;
+      let result404 = null;
+      let resultData404 = _responseText;
+      result404 = ProblemDetails.fromJS(resultData404);
+      return throwException("Not Found", status, _responseText, _headers, result404);
+    } else if (status !== 200 && status !== 204) {
+      const _responseText = response.data;
+      return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+    }
+    return Promise.resolve(null);
+  }
+  /**
+   * @param parameters (optional) 
+   * @return OK
+   */
+  queriesPOST(name, parameters, cancelToken) {
+    let url_ = this.baseUrl + "/api/queries/{name}?";
+    if (name === void 0 || name === null)
+      throw new globalThis.Error("The parameter 'name' must be defined.");
+    url_ = url_.replace("{name}", encodeURIComponent("" + name));
+    if (parameters === null)
+      throw new globalThis.Error("The parameter 'parameters' cannot be null.");
+    else if (parameters !== void 0)
+      url_ += "parameters=" + encodeURIComponent("" + parameters) + "&";
+    url_ = url_.replace(/[?&]$/, "");
+    let options_ = {
+      method: "POST",
+      url: url_,
+      headers: {},
+      cancelToken
+    };
+    return this.instance.request(options_).catch((_error) => {
+      if (isAxiosError(_error) && _error.response) {
+        return _error.response;
+      } else {
+        throw _error;
+      }
+    }).then((_response) => {
+      return this.processQueriesPOST(_response);
+    });
+  }
+  processQueriesPOST(response) {
+    const status = response.status;
+    let _headers = {};
+    if (response.headers && typeof response.headers === "object") {
+      for (const k2 in response.headers) {
+        if (response.headers.hasOwnProperty(k2)) {
+          _headers[k2] = response.headers[k2];
+        }
+      }
+    }
+    if (status === 200) {
+      response.data;
+      return Promise.resolve(null);
+    } else if (status !== 200 && status !== 204) {
+      const _responseText = response.data;
+      return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+    }
+    return Promise.resolve(null);
+  }
+  /**
+   * @param parameters (optional) 
+   * @return OK
+   */
+  queriesGET(name, parameters, cancelToken) {
+    let url_ = this.baseUrl + "/api/queries/{name}?";
+    if (name === void 0 || name === null)
+      throw new globalThis.Error("The parameter 'name' must be defined.");
+    url_ = url_.replace("{name}", encodeURIComponent("" + name));
+    if (parameters === null)
+      throw new globalThis.Error("The parameter 'parameters' cannot be null.");
+    else if (parameters !== void 0)
+      url_ += "parameters=" + encodeURIComponent("" + parameters) + "&";
+    url_ = url_.replace(/[?&]$/, "");
+    let options_ = {
+      method: "GET",
+      url: url_,
+      headers: {},
+      cancelToken
+    };
+    return this.instance.request(options_).catch((_error) => {
+      if (isAxiosError(_error) && _error.response) {
+        return _error.response;
+      } else {
+        throw _error;
+      }
+    }).then((_response) => {
+      return this.processQueriesGET(_response);
+    });
+  }
+  processQueriesGET(response) {
+    const status = response.status;
+    let _headers = {};
+    if (response.headers && typeof response.headers === "object") {
+      for (const k2 in response.headers) {
+        if (response.headers.hasOwnProperty(k2)) {
+          _headers[k2] = response.headers[k2];
+        }
+      }
+    }
+    if (status === 200) {
+      response.data;
+      return Promise.resolve(null);
+    } else if (status !== 200 && status !== 204) {
+      const _responseText = response.data;
+      return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+    }
+    return Promise.resolve(null);
+  }
+}
+class DirectoryTreeNodeDto {
+  constructor(data9) {
+    if (data9) {
+      for (var property in data9) {
+        if (data9.hasOwnProperty(property))
+          this[property] = data9[property];
+      }
+    }
+  }
+  init(_data) {
+    if (_data) {
+      this.name = _data["name"];
+      this.path = _data["path"];
+      if (Array.isArray(_data["children"])) {
+        this.children = [];
+        for (let item2 of _data["children"])
+          this.children.push(DirectoryTreeNodeDto.fromJS(item2));
+      }
+    }
+  }
+  static fromJS(data9) {
+    data9 = typeof data9 === "object" ? data9 : {};
+    let result = new DirectoryTreeNodeDto();
+    result.init(data9);
+    return result;
+  }
+  toJSON(data9) {
+    data9 = typeof data9 === "object" ? data9 : {};
+    data9["name"] = this.name;
+    data9["path"] = this.path;
+    if (Array.isArray(this.children)) {
+      data9["children"] = [];
+      for (let item2 of this.children)
+        data9["children"].push(item2 ? item2.toJSON() : void 0);
+    }
+    return data9;
+  }
+}
+class FileStoreCapabilitiesDto {
+  constructor(data9) {
+    if (data9) {
+      for (var property in data9) {
+        if (data9.hasOwnProperty(property))
+          this[property] = data9[property];
+      }
+    }
+  }
+  init(_data) {
+    if (_data) {
+      this.hasHierarchicalNamespace = _data["hasHierarchicalNamespace"];
+      this.supportsAtomicMove = _data["supportsAtomicMove"];
+    }
+  }
+  static fromJS(data9) {
+    data9 = typeof data9 === "object" ? data9 : {};
+    let result = new FileStoreCapabilitiesDto();
+    result.init(data9);
+    return result;
+  }
+  toJSON(data9) {
+    data9 = typeof data9 === "object" ? data9 : {};
+    data9["hasHierarchicalNamespace"] = this.hasHierarchicalNamespace;
+    data9["supportsAtomicMove"] = this.supportsAtomicMove;
+    return data9;
+  }
 }
 class FileStoreEntryDto {
   constructor(data9) {
@@ -42491,9 +43070,16 @@ function toFileLibraryItem(dto) {
     mime: dto.mime
   };
 }
+function toDirectoryTreeNode(dto) {
+  return {
+    name: dto.name ?? "",
+    path: dto.path ?? "",
+    children: (dto.children ?? []).map(toDirectoryTreeNode)
+  };
+}
 class FileDataService {
   constructor(baseUrl = "") {
-    this.client = new MediaGen2ApiClient(baseUrl);
+    this.client = new Client(baseUrl);
   }
   async getFileItem(path) {
     const dto = await this.client.getMediaItem(path);
@@ -42535,10 +43121,21 @@ class FileDataService {
     const dto = await this.client.createFolder(path, name);
     return toFileLibraryItem(dto);
   }
+  async getCapabilities() {
+    const dto = await this.client.getCapabilities();
+    return {
+      hasHierarchicalNamespace: dto.hasHierarchicalNamespace ?? false,
+      supportsAtomicMove: dto.supportsAtomicMove ?? false
+    };
+  }
+  async getDirectoryTree() {
+    const dto = await this.client.getDirectoryTree();
+    return toDirectoryTreeNode(dto);
+  }
 }
 const { canManage } = usePermissions();
-const { setHierarchicalDirectories } = useHierarchicalTreeBuilder();
-const { assetsStore: assetsStore$2, fileItems, selectedDirectory: selectedDirectory$2, rootDirectory: rootDirectory$2, selectedFiles: selectedFiles$2, setAssetsStore, setSelectedFiles: setSelectedFiles$2, setSelectedAll: setSelectedAll$2 } = useGlobals();
+const { setHierarchicalDirectories, setServerDirectoryTree } = useHierarchicalTreeBuilder();
+const { assetsStore: assetsStore$2, fileItems, selectedDirectory: selectedDirectory$2, rootDirectory: rootDirectory$2, selectedFiles: selectedFiles$2, capabilities: capabilities$1, setAssetsStore, setSelectedFiles: setSelectedFiles$2, setSelectedAll: setSelectedAll$2, setCapabilities, setFileItems: setFileItems$1 } = useGlobals();
 const { translations: translations$1 } = useLocalizations();
 const t$G = translations$1;
 const { emit: emit$3 } = useEventBus();
@@ -42572,20 +43169,24 @@ function useFileLibraryManager() {
             elem.sourceFolder || "root",
             elem.targetFolder || "root"
           );
-          for (let i2 = 0; i2 < elem.files.length; i2++) {
-            const sourceFolder = elem.sourceFolder != "root" ? elem.sourceFolder : BASE_DIR;
-            const targetFolder = elem.targetFolder != "root" ? elem.targetFolder : BASE_DIR;
-            const file = assetsStore$2.value.find((x2) => x2.isDirectory == false && x2.directoryPath == sourceFolder && x2.name == elem.files[i2].name);
-            if (file) {
-              file.directoryPath = targetFolder != "" ? elem.targetFolder : BASE_DIR;
-              file.filePath = targetFolder != "" ? elem.targetFolder + "/" + elem.files[i2].name : elem.files[i2].name;
-              const index2 = fileItems && fileItems.value.indexOf(file);
-              if (index2 > -1) {
-                fileItems.value.splice(index2, 1);
+          if (capabilities$1.value.hasHierarchicalNamespace) {
+            await loadDirectoryFiles2(selectedDirectory$2.value.directoryPath);
+          } else {
+            for (let i2 = 0; i2 < elem.files.length; i2++) {
+              const sourceFolder = elem.sourceFolder != "root" ? elem.sourceFolder : BASE_DIR;
+              const targetFolder = elem.targetFolder != "root" ? elem.targetFolder : BASE_DIR;
+              const file = assetsStore$2.value.find((x2) => x2.isDirectory == false && x2.directoryPath == sourceFolder && x2.name == elem.files[i2].name);
+              if (file) {
+                file.directoryPath = targetFolder != "" ? elem.targetFolder : BASE_DIR;
+                file.filePath = targetFolder != "" ? elem.targetFolder + "/" + elem.files[i2].name : elem.files[i2].name;
+                const index2 = fileItems && fileItems.value.indexOf(file);
+                if (index2 > -1) {
+                  fileItems.value.splice(index2, 1);
+                }
               }
+              elem.files[i2].directoryPath = targetFolder != "" ? elem.targetFolder : BASE_DIR;
+              elem.files[i2].filePath = targetFolder != "" ? elem.targetFolder + "/" + elem.files[i2].name : elem.files[i2].name;
             }
-            elem.files[i2].directoryPath = targetFolder != "" ? elem.targetFolder : BASE_DIR;
-            elem.files[i2].filePath = targetFolder != "" ? elem.targetFolder + "/" + elem.files[i2].name : elem.files[i2].name;
           }
           emit$3("FileListMoved", elem);
           notify(new NotificationMessage({ summary: t$G.Success ?? "Success", detail: t$G.FilesMoved ?? "File(s) moved successfully.", severity: SeverityLevel.Success }));
@@ -42602,8 +43203,12 @@ function useFileLibraryManager() {
       if (elem) {
         try {
           const copiedFile = await fileDataService.copyMedia(elem.oldPath, elem.newPath);
-          assetsStore$2.value.push(copiedFile);
-          setAssetsStore(assetsStore$2.value);
+          if (capabilities$1.value.hasHierarchicalNamespace) {
+            await loadDirectoryFiles2(selectedDirectory$2.value.directoryPath);
+          } else {
+            assetsStore$2.value.push(copiedFile);
+            setAssetsStore(assetsStore$2.value);
+          }
           emit$3("FileCopied", copiedFile);
           notify(new NotificationMessage({ summary: t$G.Success ?? "Success", detail: t$G.FileCopied ?? "File copied successfully.", severity: SeverityLevel.Success }));
         } catch (error) {
@@ -42621,10 +43226,15 @@ function useFileLibraryManager() {
     if (canManage.value) {
       try {
         const response = await fileDataService.createFolder(selectedDirectory$2.value.directoryPath, directory.name);
-        assetsStore$2.value.push(response);
-        setAssetsStore(assetsStore$2.value);
-        assetsStore$2.value.sort((a2, b2) => a2.name > b2.name ? 1 : -1);
-        setHierarchicalDirectories(assetsStore$2.value);
+        if (capabilities$1.value.hasHierarchicalNamespace) {
+          const tree = await fileDataService.getDirectoryTree();
+          const flatDirs = setServerDirectoryTree(tree);
+          setAssetsStore(flatDirs);
+        } else {
+          assetsStore$2.value.push(response);
+          setAssetsStore(assetsStore$2.value);
+          assetsStore$2.value.sort((a2, b2) => a2.name > b2.name ? 1 : -1);
+        }
         emit$3("DirAddReq", { selectedDirectory: selectedDirectory$2.value, data: response });
       } catch (error) {
         notify(error);
@@ -42638,9 +43248,13 @@ function useFileLibraryManager() {
     const file = element;
     if (canManage.value) {
       const oldPath = file.filePath;
-      const newPath = oldPath.replace(file.name, newName);
+      const lastSlash = oldPath.lastIndexOf("/");
+      const newPath = lastSlash >= 0 ? oldPath.substring(0, lastSlash + 1) + newName : newName;
       try {
         await fileDataService.moveMedia(oldPath, newPath);
+        if (capabilities$1.value.hasHierarchicalNamespace) {
+          await loadDirectoryFiles2(selectedDirectory$2.value.directoryPath);
+        }
         emit$3("FileRenamed", { newName, newPath, oldPath });
       } catch (error) {
         notify(error);
@@ -42661,13 +43275,17 @@ function useFileLibraryManager() {
       }
       try {
         await fileDataService.deleteMediaList(imagePaths);
-        for (let i2 = 0; i2 < selectedFiles$2.value.length; i2++) {
-          const index2 = assetsStore$2.value && assetsStore$2.value.indexOf(selectedFiles$2.value[i2]);
-          if (index2 > -1) {
-            assetsStore$2.value.splice(index2, 1);
-            setAssetsStore(assetsStore$2.value);
+        if (capabilities$1.value.hasHierarchicalNamespace) {
+          await loadDirectoryFiles2(selectedDirectory$2.value.directoryPath);
+        } else {
+          for (let i2 = 0; i2 < selectedFiles$2.value.length; i2++) {
+            const index2 = assetsStore$2.value.indexOf(selectedFiles$2.value[i2]);
+            if (index2 > -1) {
+              assetsStore$2.value.splice(index2, 1);
+            }
+            emit$3("FileDeleted", selectedFiles$2.value[i2]);
           }
-          emit$3("FileDeleted", selectedFiles$2.value[i2]);
+          setAssetsStore(assetsStore$2.value);
         }
         setSelectedFiles$2([]);
         setSelectedAll$2(false);
@@ -42685,15 +43303,19 @@ function useFileLibraryManager() {
     if (canManage.value) {
       try {
         await fileDataService.deleteMedia(file.filePath);
-        const fileFound = assetsStore$2.value.find((x2) => x2.filePath == file.filePath);
-        if (fileFound) {
-          const index2 = assetsStore$2.value && assetsStore$2.value.indexOf(fileFound);
-          if (index2 > -1) {
-            assetsStore$2.value.splice(index2, 1);
-            setAssetsStore(assetsStore$2.value);
-            emit$3("FileDeleted", file);
+        if (capabilities$1.value.hasHierarchicalNamespace) {
+          await loadDirectoryFiles2(selectedDirectory$2.value.directoryPath);
+        } else {
+          const fileFound = assetsStore$2.value.find((x2) => x2.filePath == file.filePath);
+          if (fileFound) {
+            const index2 = assetsStore$2.value.indexOf(fileFound);
+            if (index2 > -1) {
+              assetsStore$2.value.splice(index2, 1);
+              setAssetsStore(assetsStore$2.value);
+            }
           }
         }
+        emit$3("FileDeleted", file);
         setSelectedFiles$2([]);
         setSelectedAll$2(false);
       } catch (error) {
@@ -42711,16 +43333,21 @@ function useFileLibraryManager() {
     if (canManage.value) {
       try {
         await fileDataService.deleteFolder(directory.directoryPath);
-        const foundDirectories = assetsStore$2.value.filter((x2) => x2.isDirectory && (x2.directoryPath + "/").startsWith(directory.directoryPath + "/"));
-        if (foundDirectories) {
-          foundDirectories.forEach((foundDirectory) => {
-            const index2 = assetsStore$2.value.indexOf(foundDirectory);
-            if (index2 > -1) {
-              assetsStore$2.value.splice(index2, 1);
-              setAssetsStore(assetsStore$2.value);
-              setHierarchicalDirectories(assetsStore$2.value);
+        if (capabilities$1.value.hasHierarchicalNamespace) {
+          const tree = await fileDataService.getDirectoryTree();
+          const flatDirs = setServerDirectoryTree(tree);
+          setAssetsStore(flatDirs);
+        } else {
+          const foundDirectories = assetsStore$2.value.filter((x2) => x2.isDirectory && (x2.directoryPath + "/").startsWith(directory.directoryPath + "/"));
+          if (foundDirectories) {
+            for (const foundDirectory of foundDirectories) {
+              const index2 = assetsStore$2.value.indexOf(foundDirectory);
+              if (index2 > -1) {
+                assetsStore$2.value.splice(index2, 1);
+              }
             }
-          });
+            setAssetsStore(assetsStore$2.value);
+          }
         }
         emit$3("DirDelete", directory);
       } catch (error) {
@@ -42733,18 +43360,46 @@ function useFileLibraryManager() {
   const getFileLibraryStoreAsync2 = async () => {
     let result = [];
     try {
-      const response = await fileDataService.listAllItems();
-      setAssetsStore(response);
-      if (response) {
-        setHierarchicalDirectories(response);
-        result = response;
+      const caps = await fileDataService.getCapabilities();
+      setCapabilities(caps);
+      if (caps.hasHierarchicalNamespace) {
+        try {
+          const tree = await fileDataService.getDirectoryTree();
+          const flatDirs = setServerDirectoryTree(tree);
+          setAssetsStore(flatDirs);
+          const rootFiles = await fileDataService.getMediaItems("");
+          setFileItems$1(rootFiles.filter((f2) => !f2.isDirectory));
+          result = flatDirs;
+        } catch {
+          console.warn("Failed to fetch directory tree, falling back to flat mode.");
+          setCapabilities({ hasHierarchicalNamespace: false, supportsAtomicMove: caps.supportsAtomicMove });
+          const response = await fileDataService.listAllItems();
+          setAssetsStore(response);
+          setHierarchicalDirectories(response);
+          result = response;
+        }
       } else {
-        notify(new NotificationMessage({ summary: t$G.ErrorGetFolders, detail: t$G.ErrorGetFolders, severity: SeverityLevel.Error }));
+        const response = await fileDataService.listAllItems();
+        setAssetsStore(response);
+        if (response) {
+          setHierarchicalDirectories(response);
+          result = response;
+        } else {
+          notify(new NotificationMessage({ summary: t$G.ErrorGetFolders, detail: t$G.ErrorGetFolders, severity: SeverityLevel.Error }));
+        }
       }
     } catch (error) {
       notify(error);
     }
     return result;
+  };
+  const loadDirectoryFiles2 = async (directoryPath) => {
+    try {
+      const files = await fileDataService.getMediaItems(directoryPath);
+      setFileItems$1(files.filter((f2) => !f2.isDirectory));
+    } catch (error) {
+      notify(error);
+    }
   };
   return {
     fileCopy: fileCopy2,
@@ -42755,7 +43410,8 @@ function useFileLibraryManager() {
     renameFile: renameFile2,
     createDirectory: createDirectory2,
     deleteDirectory: deleteDirectory2,
-    getFileLibraryStoreAsync: getFileLibraryStoreAsync2
+    getFileLibraryStoreAsync: getFileLibraryStoreAsync2,
+    loadDirectoryFiles: loadDirectoryFiles2
   };
 }
 const _hoisted_1$a = {
@@ -43018,27 +43674,22 @@ const useFileActionModal = () => {
 const { translations } = useLocalizations();
 const t$F = translations;
 const { setIsDownloading, selectedFiles: selectedFiles$1, setSelectedFiles: setSelectedFiles$1, setSelectedAll: setSelectedAll$1 } = useGlobals();
-function downloadFile(file) {
+async function downloadFile(file) {
   if (file && file.url) {
-    const xhr = new XMLHttpRequest();
-    xhr.open("HEAD", file.url, false);
-    xhr.onload = function() {
-      if (xhr.status === 200) {
+    try {
+      const response = await fetch(file.url, { method: "HEAD" });
+      if (response.ok) {
         const aElement = document.createElement("a");
-        if (aElement) {
-          aElement.setAttribute("download", file.name);
-          aElement.href = file.url ?? "";
-          aElement.setAttribute("target", "_blank");
-          aElement.click();
-        }
+        aElement.setAttribute("download", file.name);
+        aElement.href = file.url;
+        aElement.setAttribute("target", "_blank");
+        aElement.click();
       } else {
         notify(new NotificationMessage({ summary: t$F.Error, detail: t$F.FailedDownload, severity: SeverityLevel.Error }));
       }
-    };
-    xhr.onerror = function() {
+    } catch {
       notify(new NotificationMessage({ summary: t$F.Error, detail: t$F.FailedDownload, severity: SeverityLevel.Error }));
-    };
-    xhr.send();
+    }
   }
 }
 const downloadSelectedFiles = async () => {
@@ -43384,6 +44035,7 @@ const {
   rootDirectory: rootDirectory$1,
   assetsStore: assetsStore$1,
   selectedFiles,
+  capabilities,
   setSortBy,
   setSortAsc,
   setFileFilter,
@@ -43392,9 +44044,10 @@ const {
   setItemsInPage,
   setFileItems,
   setSelectedDirectory: setSelectedDirectory$1,
-  setSelectedAll
+  setSelectedAll,
+  setIsLoading
 } = useGlobals();
-const { fileCopy, fileListMove, deleteFileItem, deleteFileList, renameFile, createDirectory, deleteDirectory } = useFileLibraryManager();
+const { fileCopy, fileListMove, deleteFileItem, deleteFileList, renameFile, createDirectory, deleteDirectory, loadDirectoryFiles } = useFileLibraryManager();
 const { on, emit: emit$1 } = useEventBus();
 const useEventBusService = () => {
   const dragDropThumbnail = new Image();
@@ -43419,15 +44072,21 @@ const useEventBusService = () => {
   const selectRootDirectory = () => {
     setSelectedDirectory$1(rootDirectory$1.value);
   };
-  const setDirectoryFiles = (directory) => {
-    const foundfileItems = Object.values(assetsStore$1.value).filter((x2) => x2.directoryPath == directory && x2.isDirectory == false);
-    setFileItems([...foundfileItems]);
+  const setDirectoryFiles = async (directory) => {
+    if (capabilities.value.hasHierarchicalNamespace) {
+      setIsLoading(true);
+      await loadDirectoryFiles(directory);
+      setIsLoading(false);
+    } else {
+      const foundfileItems = Object.values(assetsStore$1.value).filter((x2) => x2.directoryPath == directory && x2.isDirectory == false);
+      setFileItems([...foundfileItems]);
+    }
   };
   const isFileSelected = (file) => {
     var _a2;
     return (_a2 = selectedFiles.value) == null ? void 0 : _a2.some((element) => {
-      var _a3, _b;
-      return ((_a3 = element.url) == null ? void 0 : _a3.toLowerCase()) === ((_b = file.url) == null ? void 0 : _b.toLowerCase());
+      if (!element.url || !file.url) return false;
+      return element.url.toLowerCase() === file.url.toLowerCase();
     });
   };
   const handleDragStart = (element) => {
@@ -46593,8 +47252,9 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       hierarchicalDirectories: hierarchicalDirectories2,
       fileItems: fileItems2,
       isDownloading: isDownloading2,
+      capabilities: capabilities2,
       setFileItems: setFileItems2,
-      setIsLoading,
+      setIsLoading: setIsLoading2,
       setBasePath,
       setSelectedFiles: setSelectedFiles2,
       setSelectedAll: setSelectedAll2,
@@ -46613,10 +47273,10 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
     }
     const t2 = translations2;
     const { on: on2, emit: emit2 } = useEventBus();
-    setIsLoading(true);
+    setIsLoading2(true);
     const { getFileLibraryStoreAsync: getFileLibraryStoreAsync2 } = useFileLibraryManager();
     getFileLibraryStoreAsync2().then(() => {
-      setIsLoading(false);
+      setIsLoading2(false);
       setLocalStorage();
       useEventBusService();
       useRouterService();
@@ -46644,6 +47304,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       return imageExtensions.has(ext);
     };
     const isFileSelected = (file) => {
+      if (!file.url) return false;
       return selectedFiles2.value.some((el) => {
         var _a2, _b;
         return ((_a2 = el.url) == null ? void 0 : _a2.toLowerCase()) === ((_b = file.url) == null ? void 0 : _b.toLowerCase());
@@ -46715,11 +47376,13 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
     watch(
       () => assetsStore2.value,
       (newAssetsStore) => {
+        if (capabilities2.value.hasHierarchicalNamespace) {
+          return;
+        }
         const foundFileItems = Object.values(newAssetsStore).filter((x2) => x2.directoryPath == selectedDirectory2.value.directoryPath && x2.isDirectory == false);
         setFileItems2(foundFileItems);
         setHierarchicalDirectories2(newAssetsStore);
-      },
-      { deep: true }
+      }
     );
     const clickBreadCrumb = (breadcrumb) => {
       emit2("DirSelected", breadcrumb);
@@ -46944,7 +47607,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
                 ], -1)),
                 createBaseVNode("span", _hoisted_35, toDisplayString(unref(t2).FolderFilterEmpty), 1)
               ], 512), [
-                [vShow, unref(assetsStore2).filter((x2) => x2.isDirectory == false && x2.directoryPath == unref(selectedDirectory2).directoryPath).length > 0 && filteredFileItems.value.length < 1]
+                [vShow, unref(fileItems2).length > 0 && filteredFileItems.value.length < 1]
               ]),
               withDirectives(createBaseVNode("div", _hoisted_36, [
                 _cache[10] || (_cache[10] = createBaseVNode("svg", {
@@ -46963,7 +47626,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
                 ], -1)),
                 createBaseVNode("span", _hoisted_37, toDisplayString(unref(t2).FolderEmpty), 1)
               ], 512), [
-                [vShow, unref(assetsStore2).filter((x2) => x2.isDirectory == false && x2.directoryPath == unref(selectedDirectory2).directoryPath).length < 1]
+                [vShow, unref(fileItems2).length < 1]
               ])
             ])) : createCommentVNode("", true),
             withDirectives(createBaseVNode("div", _hoisted_38, [

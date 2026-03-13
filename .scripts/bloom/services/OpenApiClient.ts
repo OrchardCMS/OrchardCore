@@ -10,16 +10,115 @@
 import axios, { AxiosError } from 'axios';
 import type { AxiosInstance, AxiosRequestConfig, AxiosResponse, CancelToken } from 'axios';
 
-export interface ICreateEndpointClient {
+export interface IClient {
     /**
      * @param draft (optional) 
      * @param body (optional) 
      * @return OK
      */
     contentPOST(draft: boolean | undefined, body: ContentItem | undefined,  cancelToken?: CancelToken): Promise<void>;
+    /**
+     * @return OK
+     */
+    contentDELETE(contentItemId: string,  cancelToken?: CancelToken): Promise<void>;
+    /**
+     * @return OK
+     */
+    contentGET(contentItemId: string,  cancelToken?: CancelToken): Promise<void>;
+    /**
+     * @return OK
+     */
+    liquidIntellisense_js( cancelToken?: CancelToken): Promise<void>;
+    /**
+     * @return OK
+     */
+    getCapabilities( cancelToken?: CancelToken): Promise<FileStoreCapabilitiesDto>;
+    /**
+     * @return OK
+     */
+    getDirectoryTree( cancelToken?: CancelToken): Promise<DirectoryTreeNodeDto>;
+    /**
+     * @param path (optional) 
+     * @return OK
+     */
+    getFolders(path: string | undefined,  cancelToken?: CancelToken): Promise<FileStoreEntryDto[]>;
+    /**
+     * @param path (optional) 
+     * @param extensions (optional) 
+     * @return OK
+     */
+    getMediaItems(path: string | undefined, extensions: string | undefined,  cancelToken?: CancelToken): Promise<FileStoreEntryDto[]>;
+    /**
+     * @param path (optional) 
+     * @return OK
+     */
+    getMediaItem(path: string | undefined,  cancelToken?: CancelToken): Promise<FileStoreEntryDto>;
+    /**
+     * @param extensions (optional) 
+     * @return OK
+     */
+    getAllMediaItems(extensions: string | undefined,  cancelToken?: CancelToken): Promise<FileStoreEntryDto[]>;
+    /**
+     * @param path (optional) 
+     * @param extensions (optional) 
+     * @return OK
+     */
+    upload(path: string | undefined, extensions: string | undefined,  cancelToken?: CancelToken): Promise<void>;
+    /**
+     * @param oldPath (optional) 
+     * @param newPath (optional) 
+     * @return OK
+     */
+    copyMedia(oldPath: string | undefined, newPath: string | undefined,  cancelToken?: CancelToken): Promise<FileStoreEntryDto>;
+    /**
+     * @param path (optional) 
+     * @return OK
+     */
+    deleteFolder(path: string | undefined,  cancelToken?: CancelToken): Promise<void>;
+    /**
+     * @param path (optional) 
+     * @return OK
+     */
+    deleteMedia(path: string | undefined,  cancelToken?: CancelToken): Promise<void>;
+    /**
+     * @param oldPath (optional) 
+     * @param newPath (optional) 
+     * @return OK
+     */
+    moveMedia(oldPath: string | undefined, newPath: string | undefined,  cancelToken?: CancelToken): Promise<void>;
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    deleteMediaList(body: string[] | undefined,  cancelToken?: CancelToken): Promise<void>;
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    moveMediaList(body: MoveMedias | undefined,  cancelToken?: CancelToken): Promise<void>;
+    /**
+     * @param path (optional) 
+     * @param name (optional) 
+     * @return OK
+     */
+    createFolder(path: string | undefined, name: string | undefined,  cancelToken?: CancelToken): Promise<FileStoreEntryDto>;
+    /**
+     * @return OK
+     */
+    tusFileInfo(uploadId: string,  cancelToken?: CancelToken): Promise<FileStoreEntryDto>;
+    /**
+     * @param parameters (optional) 
+     * @return OK
+     */
+    queriesPOST(name: string, parameters: string | undefined,  cancelToken?: CancelToken): Promise<void>;
+    /**
+     * @param parameters (optional) 
+     * @return OK
+     */
+    queriesGET(name: string, parameters: string | undefined,  cancelToken?: CancelToken): Promise<void>;
 }
 
-export class CreateEndpointClient implements ICreateEndpointClient {
+export class Client implements IClient {
     protected instance: AxiosInstance;
     protected baseUrl: string;
     protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
@@ -88,27 +187,6 @@ export class CreateEndpointClient implements ICreateEndpointClient {
         }
         return Promise.resolve<void>(null as any);
     }
-}
-
-export interface IDeleteEndpointClient {
-    /**
-     * @return OK
-     */
-    contentDELETE(contentItemId: string,  cancelToken?: CancelToken): Promise<void>;
-}
-
-export class DeleteEndpointClient implements IDeleteEndpointClient {
-    protected instance: AxiosInstance;
-    protected baseUrl: string;
-    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
-
-    constructor(baseUrl?: string, instance?: AxiosInstance) {
-
-        this.instance = instance || axios.create();
-
-        this.baseUrl = baseUrl ?? "";
-
-    }
 
     /**
      * @return OK
@@ -158,27 +236,6 @@ export class DeleteEndpointClient implements IDeleteEndpointClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
         }
         return Promise.resolve<void>(null as any);
-    }
-}
-
-export interface IGetEndpointClient {
-    /**
-     * @return OK
-     */
-    contentGET(contentItemId: string,  cancelToken?: CancelToken): Promise<void>;
-}
-
-export class GetEndpointClient implements IGetEndpointClient {
-    protected instance: AxiosInstance;
-    protected baseUrl: string;
-    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
-
-    constructor(baseUrl?: string, instance?: AxiosInstance) {
-
-        this.instance = instance || axios.create();
-
-        this.baseUrl = baseUrl ?? "";
-
     }
 
     /**
@@ -230,27 +287,6 @@ export class GetEndpointClient implements IGetEndpointClient {
         }
         return Promise.resolve<void>(null as any);
     }
-}
-
-export interface IGetIntellisenseEndpointClient {
-    /**
-     * @return OK
-     */
-    liquidIntellisense_js( cancelToken?: CancelToken): Promise<void>;
-}
-
-export class GetIntellisenseEndpointClient implements IGetIntellisenseEndpointClient {
-    protected instance: AxiosInstance;
-    protected baseUrl: string;
-    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
-
-    constructor(baseUrl?: string, instance?: AxiosInstance) {
-
-        this.instance = instance || axios.create();
-
-        this.baseUrl = baseUrl ?? "";
-
-    }
 
     /**
      * @return OK
@@ -298,87 +334,135 @@ export class GetIntellisenseEndpointClient implements IGetIntellisenseEndpointCl
         }
         return Promise.resolve<void>(null as any);
     }
-}
 
-export interface IMediaGen2ApiClient {
     /**
-     * @param path (optional) 
      * @return OK
      */
-    getFolders(path: string | undefined,  cancelToken?: CancelToken): Promise<FileStoreEntryDto[]>;
-    /**
-     * @param path (optional) 
-     * @param extensions (optional) 
-     * @return OK
-     */
-    getMediaItems(path: string | undefined, extensions: string | undefined,  cancelToken?: CancelToken): Promise<FileStoreEntryDto[]>;
-    /**
-     * @param path (optional) 
-     * @return OK
-     */
-    getMediaItem(path: string | undefined,  cancelToken?: CancelToken): Promise<FileStoreEntryDto>;
-    /**
-     * @param extensions (optional) 
-     * @return OK
-     */
-    getAllMediaItems(extensions: string | undefined,  cancelToken?: CancelToken): Promise<FileStoreEntryDto[]>;
-    /**
-     * @param path (optional) 
-     * @param extensions (optional) 
-     * @return OK
-     */
-    upload(path: string | undefined, extensions: string | undefined,  cancelToken?: CancelToken): Promise<void>;
-    /**
-     * @param oldPath (optional) 
-     * @param newPath (optional) 
-     * @return OK
-     */
-    copyMedia(oldPath: string | undefined, newPath: string | undefined,  cancelToken?: CancelToken): Promise<FileStoreEntryDto>;
-    /**
-     * @param path (optional) 
-     * @return OK
-     */
-    deleteFolder(path: string | undefined,  cancelToken?: CancelToken): Promise<void>;
-    /**
-     * @param path (optional) 
-     * @return OK
-     */
-    deleteMedia(path: string | undefined,  cancelToken?: CancelToken): Promise<void>;
-    /**
-     * @param oldPath (optional) 
-     * @param newPath (optional) 
-     * @return OK
-     */
-    moveMedia(oldPath: string | undefined, newPath: string | undefined,  cancelToken?: CancelToken): Promise<void>;
-    /**
-     * @param body (optional) 
-     * @return OK
-     */
-    deleteMediaList(body: string[] | undefined,  cancelToken?: CancelToken): Promise<void>;
-    /**
-     * @param body (optional) 
-     * @return OK
-     */
-    moveMediaList(body: MoveMedias | undefined,  cancelToken?: CancelToken): Promise<void>;
-    /**
-     * @param path (optional) 
-     * @param name (optional) 
-     * @return OK
-     */
-    createFolder(path: string | undefined, name: string | undefined,  cancelToken?: CancelToken): Promise<FileStoreEntryDto>;
-}
+    getCapabilities( cancelToken?: CancelToken): Promise<FileStoreCapabilitiesDto> {
+        let url_ = this.baseUrl + "/api/media-gen2/GetCapabilities";
+        url_ = url_.replace(/[?&]$/, "");
 
-export class MediaGen2ApiClient implements IMediaGen2ApiClient {
-    protected instance: AxiosInstance;
-    protected baseUrl: string;
-    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+        let options_: AxiosRequestConfig = {
+            method: "GET",
+            url: url_,
+            headers: {
+                "Accept": "application/json"
+            },
+            cancelToken
+        };
 
-    constructor(baseUrl?: string, instance?: AxiosInstance) {
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processGetCapabilities(_response);
+        });
+    }
 
-        this.instance = instance || axios.create();
+    protected processGetCapabilities(response: AxiosResponse): Promise<FileStoreCapabilitiesDto> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = FileStoreCapabilitiesDto.fromJS(resultData200);
+            return Promise.resolve<FileStoreCapabilitiesDto>(result200);
 
-        this.baseUrl = baseUrl ?? "";
+        } else if (status === 401) {
+            const _responseText = response.data;
+            let result401: any = null;
+            let resultData401  = _responseText;
+            result401 = ProblemDetails.fromJS(resultData401);
+            return throwException("Unauthorized", status, _responseText, _headers, result401);
 
+        } else if (status === 403) {
+            const _responseText = response.data;
+            let result403: any = null;
+            let resultData403  = _responseText;
+            result403 = ProblemDetails.fromJS(resultData403);
+            return throwException("Forbidden", status, _responseText, _headers, result403);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<FileStoreCapabilitiesDto>(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    getDirectoryTree( cancelToken?: CancelToken): Promise<DirectoryTreeNodeDto> {
+        let url_ = this.baseUrl + "/api/media-gen2/GetDirectoryTree";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: AxiosRequestConfig = {
+            method: "GET",
+            url: url_,
+            headers: {
+                "Accept": "application/json"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processGetDirectoryTree(_response);
+        });
+    }
+
+    protected processGetDirectoryTree(response: AxiosResponse): Promise<DirectoryTreeNodeDto> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = DirectoryTreeNodeDto.fromJS(resultData200);
+            return Promise.resolve<DirectoryTreeNodeDto>(result200);
+
+        } else if (status === 401) {
+            const _responseText = response.data;
+            let result401: any = null;
+            let resultData401  = _responseText;
+            result401 = ProblemDetails.fromJS(resultData401);
+            return throwException("Unauthorized", status, _responseText, _headers, result401);
+
+        } else if (status === 403) {
+            const _responseText = response.data;
+            let result403: any = null;
+            let resultData403  = _responseText;
+            result403 = ProblemDetails.fromJS(resultData403);
+            return throwException("Forbidden", status, _responseText, _headers, result403);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<DirectoryTreeNodeDto>(null as any);
     }
 
     /**
@@ -1333,39 +1417,80 @@ export class MediaGen2ApiClient implements IMediaGen2ApiClient {
         }
         return Promise.resolve<FileStoreEntryDto>(null as any);
     }
-}
 
-export interface IQueryApiClient {
     /**
-     * @param parameters (optional) 
      * @return OK
      */
-    queriesPOSTPOST(name: string, parameters: string | undefined,  cancelToken?: CancelToken): Promise<void>;
-    /**
-     * @param parameters (optional) 
-     * @return OK
-     */
-    queriesGETGET(name: string, parameters: string | undefined,  cancelToken?: CancelToken): Promise<void>;
-}
+    tusFileInfo(uploadId: string, cancelToken?: CancelToken): Promise<FileStoreEntryDto> {
+        let url_ = this.baseUrl + "/api/media-gen2/TusFileInfo/{uploadId}";
+        if (uploadId === undefined || uploadId === null)
+            throw new globalThis.Error("The parameter 'uploadId' must be defined.");
+        url_ = url_.replace("{uploadId}", encodeURIComponent("" + uploadId));
+        url_ = url_.replace(/[?&]$/, "");
 
-export class QueryApiClient implements IQueryApiClient {
-    protected instance: AxiosInstance;
-    protected baseUrl: string;
-    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+        let options_: AxiosRequestConfig = {
+            method: "GET",
+            url: url_,
+            headers: {
+                "Accept": "application/json"
+            },
+            cancelToken
+        };
 
-    constructor(baseUrl?: string, instance?: AxiosInstance) {
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processTusFileInfo(_response);
+        });
+    }
 
-        this.instance = instance || axios.create();
+    protected processTusFileInfo(response: AxiosResponse): Promise<FileStoreEntryDto> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = FileStoreEntryDto.fromJS(resultData200);
+            return Promise.resolve<FileStoreEntryDto>(result200);
 
-        this.baseUrl = baseUrl ?? "";
+        } else if (status === 401) {
+            const _responseText = response.data;
+            let result401: any = null;
+            let resultData401  = _responseText;
+            result401 = ProblemDetails.fromJS(resultData401);
+            return throwException("Unauthorized", status, _responseText, _headers, result401);
 
+        } else if (status === 404) {
+            const _responseText = response.data;
+            let result404: any = null;
+            let resultData404  = _responseText;
+            result404 = ProblemDetails.fromJS(resultData404);
+            return throwException("Not Found", status, _responseText, _headers, result404);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<FileStoreEntryDto>(null as any);
     }
 
     /**
      * @param parameters (optional) 
      * @return OK
      */
-    queriesPOSTPOST(name: string, parameters: string | undefined, cancelToken?: CancelToken): Promise<void> {
+    queriesPOST(name: string, parameters: string | undefined, cancelToken?: CancelToken): Promise<void> {
         let url_ = this.baseUrl + "/api/queries/{name}?";
         if (name === undefined || name === null)
             throw new globalThis.Error("The parameter 'name' must be defined.");
@@ -1391,11 +1516,11 @@ export class QueryApiClient implements IQueryApiClient {
                 throw _error;
             }
         }).then((_response: AxiosResponse) => {
-            return this.processQueriesPOSTPOST(_response);
+            return this.processQueriesPOST(_response);
         });
     }
 
-    protected processQueriesPOSTPOST(response: AxiosResponse): Promise<void> {
+    protected processQueriesPOST(response: AxiosResponse): Promise<void> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -1420,7 +1545,7 @@ export class QueryApiClient implements IQueryApiClient {
      * @param parameters (optional) 
      * @return OK
      */
-    queriesGETGET(name: string, parameters: string | undefined, cancelToken?: CancelToken): Promise<void> {
+    queriesGET(name: string, parameters: string | undefined, cancelToken?: CancelToken): Promise<void> {
         let url_ = this.baseUrl + "/api/queries/{name}?";
         if (name === undefined || name === null)
             throw new globalThis.Error("The parameter 'name' must be defined.");
@@ -1446,11 +1571,11 @@ export class QueryApiClient implements IQueryApiClient {
                 throw _error;
             }
         }).then((_response: AxiosResponse) => {
-            return this.processQueriesGETGET(_response);
+            return this.processQueriesGET(_response);
         });
     }
 
-    protected processQueriesGETGET(response: AxiosResponse): Promise<void> {
+    protected processQueriesGET(response: AxiosResponse): Promise<void> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -1550,6 +1675,98 @@ export interface IContentItem {
     owner?: string | undefined;
     author?: string | undefined;
     displayText?: string | undefined;
+}
+
+export class DirectoryTreeNodeDto implements IDirectoryTreeNodeDto {
+    name?: string | undefined;
+    path?: string | undefined;
+    children?: DirectoryTreeNodeDto[] | undefined;
+
+    constructor(data?: IDirectoryTreeNodeDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.name = _data["name"];
+            this.path = _data["path"];
+            if (Array.isArray(_data["children"])) {
+                this.children = [] as any;
+                for (let item of _data["children"])
+                    this.children!.push(DirectoryTreeNodeDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): DirectoryTreeNodeDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new DirectoryTreeNodeDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["name"] = this.name;
+        data["path"] = this.path;
+        if (Array.isArray(this.children)) {
+            data["children"] = [];
+            for (let item of this.children)
+                data["children"].push(item ? item.toJSON() : undefined as any);
+        }
+        return data;
+    }
+}
+
+export interface IDirectoryTreeNodeDto {
+    name?: string | undefined;
+    path?: string | undefined;
+    children?: DirectoryTreeNodeDto[] | undefined;
+}
+
+export class FileStoreCapabilitiesDto implements IFileStoreCapabilitiesDto {
+    hasHierarchicalNamespace?: boolean;
+    supportsAtomicMove?: boolean;
+
+    constructor(data?: IFileStoreCapabilitiesDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.hasHierarchicalNamespace = _data["hasHierarchicalNamespace"];
+            this.supportsAtomicMove = _data["supportsAtomicMove"];
+        }
+    }
+
+    static fromJS(data: any): FileStoreCapabilitiesDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new FileStoreCapabilitiesDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["hasHierarchicalNamespace"] = this.hasHierarchicalNamespace;
+        data["supportsAtomicMove"] = this.supportsAtomicMove;
+        return data;
+    }
+}
+
+export interface IFileStoreCapabilitiesDto {
+    hasHierarchicalNamespace?: boolean;
+    supportsAtomicMove?: boolean;
 }
 
 export class FileStoreEntryDto implements IFileStoreEntryDto {

@@ -1,5 +1,5 @@
-import { IFileLibraryItemDto } from "../interfaces";
-import { MediaGen2ApiClient, FileStoreEntryDto, MoveMedias } from "@bloom/services/OpenApiClient";
+import { IFileLibraryItemDto, IFileStoreCapabilities, IDirectoryTreeNode } from "../interfaces";
+import { Client, FileStoreEntryDto, MoveMedias, DirectoryTreeNodeDto } from "@bloom/services/OpenApiClient";
 
 export interface IFileDataService {
   getFileItem(path: string): Promise<IFileLibraryItemDto>;
@@ -13,6 +13,8 @@ export interface IFileDataService {
   deleteMediaList(paths: string[]): Promise<void>;
   deleteFolder(path: string): Promise<void>;
   createFolder(path: string, name: string): Promise<IFileLibraryItemDto>;
+  getCapabilities(): Promise<IFileStoreCapabilities>;
+  getDirectoryTree(): Promise<IDirectoryTreeNode>;
 }
 
 function toFileLibraryItem(dto: FileStoreEntryDto): IFileLibraryItemDto {
@@ -28,14 +30,22 @@ function toFileLibraryItem(dto: FileStoreEntryDto): IFileLibraryItemDto {
   };
 }
 
+function toDirectoryTreeNode(dto: DirectoryTreeNodeDto): IDirectoryTreeNode {
+  return {
+    name: dto.name ?? "",
+    path: dto.path ?? "",
+    children: (dto.children ?? []).map(toDirectoryTreeNode),
+  };
+}
+
 /**
- * Delegates to the NSwag-generated MediaGen2ApiClient.
+ * Delegates to the NSwag-generated Client.
  */
 export class FileDataService implements IFileDataService {
-  private client: MediaGen2ApiClient;
+  private client: Client;
 
   constructor(baseUrl: string = "") {
-    this.client = new MediaGen2ApiClient(baseUrl);
+    this.client = new Client(baseUrl);
   }
 
   async getFileItem(path: string): Promise<IFileLibraryItemDto> {
@@ -87,5 +97,18 @@ export class FileDataService implements IFileDataService {
   async createFolder(path: string, name: string): Promise<IFileLibraryItemDto> {
     const dto = await this.client.createFolder(path, name);
     return toFileLibraryItem(dto);
+  }
+
+  async getCapabilities(): Promise<IFileStoreCapabilities> {
+    const dto = await this.client.getCapabilities();
+    return {
+      hasHierarchicalNamespace: dto.hasHierarchicalNamespace ?? false,
+      supportsAtomicMove: dto.supportsAtomicMove ?? false,
+    };
+  }
+
+  async getDirectoryTree(): Promise<IDirectoryTreeNode> {
+    const dto = await this.client.getDirectoryTree();
+    return toDirectoryTreeNode(dto);
   }
 }

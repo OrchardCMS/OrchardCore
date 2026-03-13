@@ -10,30 +10,22 @@ const { translations } = useLocalizations();
 const t = translations;
 const { setIsDownloading, selectedFiles, setSelectedFiles, setSelectedAll } = useGlobals();
 
-export function downloadFile(file: IFileLibraryItemDto) {
+export async function downloadFile(file: IFileLibraryItemDto) {
   if (file && file.url) {
-    const xhr = new XMLHttpRequest();
-    xhr.open("HEAD", file.url, false);
-
-    xhr.onload = function () {
-      if (xhr.status === 200) {
+    try {
+      const response = await fetch(file.url, { method: "HEAD" });
+      if (response.ok) {
         const aElement = document.createElement("a");
-        if (aElement) {
-          aElement.setAttribute("download", file.name);
-          aElement.href = file.url ?? "";
-          aElement.setAttribute("target", "_blank");
-          aElement.click();
-        }
+        aElement.setAttribute("download", file.name);
+        aElement.href = file.url;
+        aElement.setAttribute("target", "_blank");
+        aElement.click();
       } else {
         notify(new NotificationMessage({ summary: t.Error, detail: t.FailedDownload, severity: SeverityLevel.Error }));
       }
-    };
-
-    xhr.onerror = function () {
+    } catch {
       notify(new NotificationMessage({ summary: t.Error, detail: t.FailedDownload, severity: SeverityLevel.Error }));
-    };
-
-    xhr.send();
+    }
   }
 }
 

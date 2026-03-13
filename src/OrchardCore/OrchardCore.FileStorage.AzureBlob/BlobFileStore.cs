@@ -43,6 +43,8 @@ public class BlobFileStore : IFileStore
 
     private readonly string _basePrefix;
 
+    public IFileStoreCapabilities Capabilities => FileStoreCapabilities.Default;
+
     public BlobFileStore(
         BlobStorageOptions options,
         IClock clock,
