@@ -23,7 +23,7 @@
         </svg>
         <span class="tw:uppercase file-ext tw:text-white">{{ getFileExtension(fileItem.filePath) }}</span>
       </div>
-      <div class="tw:font-bold tw:text-lg tw:ml-2">{{ fileItem.name }}</div>
+      <div class="tw:font-bold tw:text-lg tw:ml-2 tw:min-w-0 tw:break-all">{{ fileItem.name }}</div>
     </div>
     <div class="tw:w-full">
       <template v-if="action == FileAction.Rename">

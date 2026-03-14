@@ -62,8 +62,7 @@ namespace OrchardCore.Media;
 
 public sealed class Startup : StartupBase
 {
-    public override int Order
-        => OrchardCoreConstants.ConfigureOrder.Media;
+    public override int Order => OrchardCoreConstants.ConfigureOrder.Media;
 
     private const string ImageSharpCacheFolder = "is-cache";
 
@@ -71,7 +70,11 @@ public sealed class Startup : StartupBase
     private readonly IShellConfiguration _configuration;
     private readonly ILogger _logger;
 
-    public Startup(ShellSettings shellSettings, IShellConfiguration configuration, ILogger<Startup> logger)
+    public Startup(
+        ShellSettings shellSettings,
+        IShellConfiguration configuration,
+        ILogger<Startup> logger
+    )
     {
         _shellSettings = shellSettings;
         _configuration = configuration;
@@ -92,15 +95,16 @@ public sealed class Startup : StartupBase
         services.AddSingleton<IBackgroundTask, ResizedMediaCacheBackgroundTask>();
         services.AddSingleton<IBackgroundTask, RemoteMediaCacheBackgroundTask>();
 
-        services.Configure<TemplateOptions>(o =>
-        {
-            o.MemberAccessStrategy.Register<DisplayMediaFieldViewModel>();
-            o.MemberAccessStrategy.Register<Anchor>();
+        services
+            .Configure<TemplateOptions>(o =>
+            {
+                o.MemberAccessStrategy.Register<DisplayMediaFieldViewModel>();
+                o.MemberAccessStrategy.Register<Anchor>();
 
-            o.Filters.AddFilter("img_tag", MediaFilters.ImgTag);
-        })
-        .AddLiquidFilter<AssetUrlFilter>("asset_url")
-        .AddLiquidFilter<ResizeUrlFilter>("resize_url");
+                o.Filters.AddFilter("img_tag", MediaFilters.ImgTag);
+            })
+            .AddLiquidFilter<AssetUrlFilter>("asset_url")
+            .AddLiquidFilter<ResizeUrlFilter>("resize_url");
 
         services.AddResourceConfiguration<ResourceManagementOptionsConfiguration>();
 
@@ -132,25 +136,46 @@ public sealed class Startup : StartupBase
             var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
             var mediaOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>().Value;
             var mediaEventHandlers = serviceProvider.GetServices<IMediaEventHandler>();
-            var mediaCreatingEventHandlers = serviceProvider.GetServices<IMediaCreatingEventHandler>();
-            var fileSystemStoreLogger = serviceProvider.GetRequiredService<ILogger<FileSystemStore>>();
-            var defaultMediaFileStoreLogger = serviceProvider.GetRequiredService<ILogger<DefaultMediaFileStore>>();
+            var mediaCreatingEventHandlers =
+                serviceProvider.GetServices<IMediaCreatingEventHandler>();
+            var fileSystemStoreLogger = serviceProvider.GetRequiredService<
+                ILogger<FileSystemStore>
+            >();
+            var defaultMediaFileStoreLogger = serviceProvider.GetRequiredService<
+                ILogger<DefaultMediaFileStore>
+            >();
 
-            var mediaPath = GetMediaPath(shellOptions.Value, shellSettings, mediaOptions.AssetsPath);
+            var mediaPath = GetMediaPath(
+                shellOptions.Value,
+                shellSettings,
+                mediaOptions.AssetsPath
+            );
             var fileStore = new FileSystemStore(mediaPath, fileSystemStoreLogger);
 
-            var mediaUrlBase = "/" + fileStore.Combine(shellSettings.RequestUrlPrefix, mediaOptions.AssetsRequestPath);
+            var mediaUrlBase =
+                "/"
+                + fileStore.Combine(shellSettings.RequestUrlPrefix, mediaOptions.AssetsRequestPath);
 
-            var originalPathBase = serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext
-                ?.Features.Get<ShellContextFeature>()
-                ?.OriginalPathBase ?? PathString.Empty;
+            var originalPathBase =
+                serviceProvider
+                    .GetRequiredService<IHttpContextAccessor>()
+                    .HttpContext?.Features.Get<ShellContextFeature>()
+                    ?.OriginalPathBase
+                ?? PathString.Empty;
 
             if (originalPathBase.HasValue)
             {
                 mediaUrlBase = fileStore.Combine(originalPathBase.Value, mediaUrlBase);
             }
 
-            return new DefaultMediaFileStore(fileStore, mediaUrlBase, mediaOptions.CdnBaseUrl, mediaEventHandlers, mediaCreatingEventHandlers, defaultMediaFileStoreLogger);
+            return new DefaultMediaFileStore(
+                fileStore,
+                mediaUrlBase,
+                mediaOptions.CdnBaseUrl,
+                mediaEventHandlers,
+                mediaCreatingEventHandlers,
+                defaultMediaFileStoreLogger
+            );
         });
 
         services.AddPermissionProvider<PermissionProvider>();
@@ -160,7 +185,10 @@ public sealed class Startup : StartupBase
         // ImageSharp
 
         // Add ImageSharp Configuration first, to override ImageSharp defaults.
-        services.AddTransient<IConfigureOptions<ImageSharpMiddlewareOptions>, MediaImageSharpConfiguration>();
+        services.AddTransient<
+            IConfigureOptions<ImageSharpMiddlewareOptions>,
+            MediaImageSharpConfiguration
+        >();
 
         services
             .AddImageSharp()
@@ -178,13 +206,19 @@ public sealed class Startup : StartupBase
 
         services.AddScoped<MediaTokenSettingsUpdater>();
         services.AddSingleton<IMediaTokenService, MediaTokenService>();
-        services.AddTransient<IConfigureOptions<MediaTokenOptions>, MediaTokenOptionsConfiguration>();
-        services.AddScoped<IFeatureEventHandler>(sp => sp.GetRequiredService<MediaTokenSettingsUpdater>());
-        services.AddScoped<IModularTenantEvents>(sp => sp.GetRequiredService<MediaTokenSettingsUpdater>());
+        services.AddTransient<
+            IConfigureOptions<MediaTokenOptions>,
+            MediaTokenOptionsConfiguration
+        >();
+        services.AddScoped<IFeatureEventHandler>(sp =>
+            sp.GetRequiredService<MediaTokenSettingsUpdater>()
+        );
+        services.AddScoped<IModularTenantEvents>(sp =>
+            sp.GetRequiredService<MediaTokenSettingsUpdater>()
+        );
 
         // Media Field
-        services.AddContentField<MediaField>()
-            .UseDisplayDriver<MediaFieldDisplayDriver>();
+        services.AddContentField<MediaField>().UseDisplayDriver<MediaFieldDisplayDriver>();
         services.AddScoped<IContentPartFieldDefinitionDisplayDriver, MediaFieldSettingsDriver>();
         services.AddScoped<AttachedMediaFieldFileService, AttachedMediaFieldFileService>();
         services.AddScoped<IContentHandler, AttachedMediaFieldContentHandler>();
@@ -229,7 +263,11 @@ public sealed class Startup : StartupBase
         services.AddSingleton<IMediaEventHandler, MediaSignalREventHandler>();
     }
 
-    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+    public override void Configure(
+        IApplicationBuilder app,
+        IEndpointRouteBuilder routes,
+        IServiceProvider serviceProvider
+    )
     {
         var mediaFileProvider = serviceProvider.GetRequiredService<IMediaFileProvider>();
         var mediaOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>().Value;
@@ -262,9 +300,18 @@ public sealed class Startup : StartupBase
         routes.MapHub<MediaHub>("/hubs/media");
     }
 
-    private static string GetMediaPath(ShellOptions shellOptions, ShellSettings shellSettings, string assetsPath)
+    private static string GetMediaPath(
+        ShellOptions shellOptions,
+        ShellSettings shellSettings,
+        string assetsPath
+    )
     {
-        return PathExtensions.Combine(shellOptions.ShellsApplicationDataPath, shellOptions.ShellsContainerName, shellSettings.Name, assetsPath);
+        return PathExtensions.Combine(
+            shellOptions.ShellsApplicationDataPath,
+            shellOptions.ShellsContainerName,
+            shellSettings.Name,
+            assetsPath
+        );
     }
 }
 
@@ -293,8 +340,16 @@ public sealed class DeploymentStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddDeployment<MediaDeploymentSource, MediaDeploymentStep, MediaDeploymentStepDriver>();
-        services.AddDeployment<AllMediaProfilesDeploymentSource, AllMediaProfilesDeploymentStep, AllMediaProfilesDeploymentStepDriver>();
+        services.AddDeployment<
+            MediaDeploymentSource,
+            MediaDeploymentStep,
+            MediaDeploymentStepDriver
+        >();
+        services.AddDeployment<
+            AllMediaProfilesDeploymentSource,
+            AllMediaProfilesDeploymentStep,
+            AllMediaProfilesDeploymentStepDriver
+        >();
     }
 }
 
@@ -323,12 +378,14 @@ public sealed class ShortcodesStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         // Only add image as a descriptor as [media] is deprecated.
-        services.AddShortcode<ImageShortcodeProvider>("image", d =>
-        {
-            d.DefaultValue = "[image] [/image]";
-            d.Hint = "Add a image from the media library.";
-            d.Usage =
-@"[image]foo.jpg[/image]<br>
+        services.AddShortcode<ImageShortcodeProvider>(
+            "image",
+            d =>
+            {
+                d.DefaultValue = "[image] [/image]";
+                d.Hint = "Add a image from the media library.";
+                d.Usage =
+                    @"[image]foo.jpg[/image]<br>
 <table>
   <tr>
     <td>Args:</td>
@@ -339,23 +396,27 @@ public sealed class ShortcodesStartup : StartupBase
     <td>class, alt</td>
   </tr>
 </table>";
-            d.Categories = ["HTML Content", "Media"];
-        });
+                d.Categories = ["HTML Content", "Media"];
+            }
+        );
 
-        services.AddShortcode<AssetUrlShortcodeProvider>("asset_url", d =>
-        {
-            d.DefaultValue = "[asset_url] [/asset_url]";
-            d.Hint = "Return a url from the media library.";
-            d.Usage =
-@"[asset_url]foo.jpg[/asset_url]<br>
+        services.AddShortcode<AssetUrlShortcodeProvider>(
+            "asset_url",
+            d =>
+            {
+                d.DefaultValue = "[asset_url] [/asset_url]";
+                d.Hint = "Return a url from the media library.";
+                d.Usage =
+                    @"[asset_url]foo.jpg[/asset_url]<br>
 <table>
   <tr>
     <td>Args:</td>
     <td>width, height, mode</td>
   </tr>
 </table>";
-            d.Categories = ["HTML Content", "Media"];
-        });
+                d.Categories = ["HTML Content", "Media"];
+            }
+        );
     }
 }
 
@@ -384,163 +445,225 @@ public sealed class MediaTusStartup : StartupBase
     {
         // Marker service so views/controllers can detect TUS is enabled.
         services.AddSingleton<MediaTusMarker>();
-        services.AddSingleton<MediaTusStore>();
-        services.AddSingleton<TusUploadMetadataStore>();
+
+        // Default temp store (local disk). Cloud modules replace this via ITusTempStore.
+        services.TryAddSingleton<ITusTempStore, DiskTusTempStore>();
+
+        // Distributed store and metadata — works in-memory by default, Redis when available.
+        services.AddSingleton<DistributedMediaTusStore>();
+        services.AddSingleton<DistributedTusUploadMetadataStore>();
+        services.AddSingleton<DistributedFileLockProvider>();
     }
 
-    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+    public override void Configure(
+        IApplicationBuilder app,
+        IEndpointRouteBuilder routes,
+        IServiceProvider serviceProvider
+    )
     {
         // Disable Kestrel/IIS request body size limit AND ASP.NET Core form size
         // limit for TUS uploads. This MUST run as early middleware — before any
         // other middleware reads the request body — otherwise the server rejects
         // the request with "Request body too large".
         // tusdotnet enforces its own size limit via MaxAllowedUploadSizeInBytesLong.
-        app.Use(async (context, next) =>
-        {
-            if (context.Request.Path.StartsWithSegments("/api/media/tus"))
+        app.Use(
+            async (context, next) =>
             {
-                // Disable Kestrel's MaxRequestBodySize.
-                var maxRequestBodySizeFeature = context.Features.Get<IHttpMaxRequestBodySizeFeature>();
-                if (maxRequestBodySizeFeature != null && !maxRequestBodySizeFeature.IsReadOnly)
+                if (context.Request.Path.StartsWithSegments("/api/media/tus"))
                 {
-                    maxRequestBodySizeFeature.MaxRequestBodySize = null;
+                    // Disable Kestrel's MaxRequestBodySize.
+                    var maxRequestBodySizeFeature =
+                        context.Features.Get<IHttpMaxRequestBodySizeFeature>();
+                    if (maxRequestBodySizeFeature != null && !maxRequestBodySizeFeature.IsReadOnly)
+                    {
+                        maxRequestBodySizeFeature.MaxRequestBodySize = null;
+                    }
+
+                    // Override the form feature so that if anything downstream tries to
+                    // read the request as a form, the body length limit won't block it.
+                    var formFeature = context.Features.Get<IFormFeature>();
+                    if (formFeature == null || formFeature.Form == null)
+                    {
+                        context.Features.Set<IFormFeature>(
+                            new FormFeature(
+                                context.Request,
+                                new FormOptions { MultipartBodyLengthLimit = long.MaxValue }
+                            )
+                        );
+                    }
                 }
 
-                // Override the form feature so that if anything downstream tries to
-                // read the request as a form, the body length limit won't block it.
-                var formFeature = context.Features.Get<IFormFeature>();
-                if (formFeature == null || formFeature.Form == null)
+                await next();
+            }
+        );
+
+        routes.MapTus(
+            "/api/media/tus",
+            async httpContext =>
+            {
+                var authService =
+                    httpContext.RequestServices.GetRequiredService<IAuthorizationService>();
+                if (
+                    !await authService.AuthorizeAsync(
+                        httpContext.User,
+                        MediaPermissions.ManageMedia
+                    )
+                )
                 {
-                    context.Features.Set<IFormFeature>(new FormFeature(context.Request, new FormOptions
-                    {
-                        MultipartBodyLengthLimit = long.MaxValue,
-                    }));
+                    httpContext.Response.StatusCode = StatusCodes.Status403Forbidden;
+                    return null;
                 }
-            }
 
-            await next();
-        });
+                var store =
+                    httpContext.RequestServices.GetRequiredService<DistributedMediaTusStore>();
+                var mediaOptions = httpContext.RequestServices.GetRequiredService<
+                    IOptions<MediaOptions>
+                >();
+                var fileLockProvider =
+                    httpContext.RequestServices.GetRequiredService<DistributedFileLockProvider>();
 
-        routes.MapTus("/api/media/tus", async httpContext =>
-        {
-            var authService = httpContext.RequestServices.GetRequiredService<IAuthorizationService>();
-            if (!await authService.AuthorizeAsync(httpContext.User, MediaPermissions.ManageMedia))
-            {
-                httpContext.Response.StatusCode = StatusCodes.Status403Forbidden;
-                return null;
-            }
-
-            var store = httpContext.RequestServices.GetRequiredService<MediaTusStore>();
-            var mediaOptions = httpContext.RequestServices.GetRequiredService<IOptions<MediaOptions>>();
-
-            return new DefaultTusConfiguration
-            {
-                Store = store,
-                // Disable tusdotnet's in-memory file lock to allow immediate pause/resume.
-                // Without this, resuming after pause returns HTTP 423 while the aborted
-                // PATCH request is still being torn down. File-level contention is handled
-                // by OpenDataFileWithRetryAsync in MediaTusStore instead.
-                FileLockProvider = new NoOpFileLockProvider(),
-                MaxAllowedUploadSizeInBytesLong = mediaOptions.Value.MaxFileSize,
-                Expiration = new tusdotnet.Models.Expiration.SlidingExpiration(mediaOptions.Value.TemporaryFileLifetime),
-                Events = new tusdotnet.Models.Configuration.Events
+                return new DefaultTusConfiguration
                 {
-                    OnBeforeCreateAsync = async ctx =>
+                    Store = store,
+                    FileLockProvider = fileLockProvider,
+                    MaxAllowedUploadSizeInBytesLong = mediaOptions.Value.MaxFileSize,
+                    Expiration = new tusdotnet.Models.Expiration.SlidingExpiration(
+                        mediaOptions.Value.TemporaryFileLifetime
+                    ),
+                    Events = new tusdotnet.Models.Configuration.Events
                     {
-                        // Validate file extension and destination path from metadata.
-                        var metadata = ctx.Metadata;
-
-                        if (!metadata.TryGetValue("fileName", out var fileNameMeta))
+                        OnBeforeCreateAsync = async ctx =>
                         {
-                            ctx.FailRequest("Missing required metadata: fileName");
-                            return;
-                        }
+                            // Validate file extension and destination path from metadata.
+                            var metadata = ctx.Metadata;
 
-                        var fileName = fileNameMeta.GetString(System.Text.Encoding.UTF8);
-                        var extension = Path.GetExtension(fileName);
-
-                        if (!mediaOptions.Value.AllowedFileExtensions.Contains(extension, StringComparer.OrdinalIgnoreCase))
-                        {
-                            ctx.FailRequest($"File extension not allowed: {extension}");
-                            return;
-                        }
-
-                        // Validate folder permissions if destinationPath is provided.
-                        if (metadata.TryGetValue("destinationPath", out var destMeta))
-                        {
-                            var destinationPath = destMeta.GetString(System.Text.Encoding.UTF8);
-                            if (!await authService.AuthorizeAsync(
-                                httpContext.User,
-                                MediaPermissions.ManageMediaFolder,
-                                (object)destinationPath))
+                            if (!metadata.TryGetValue("fileName", out var fileNameMeta))
                             {
-                                ctx.FailRequest("You do not have permission to upload to this folder.");
+                                ctx.FailRequest("Missing required metadata: fileName");
                                 return;
                             }
-                        }
-                    },
 
-                    OnCreateCompleteAsync = async ctx =>
-                    {
-                        // Store upload metadata for later retrieval.
-                        var metadata = ctx.Metadata;
+                            var fileName = fileNameMeta.GetString(System.Text.Encoding.UTF8);
+                            var extension = Path.GetExtension(fileName);
 
-                        var fileName = metadata.TryGetValue("fileName", out var fileNameMeta)
-                            ? fileNameMeta.GetString(System.Text.Encoding.UTF8)
-                            : string.Empty;
-                        var destinationPath = metadata.TryGetValue("destinationPath", out var destMeta)
-                            ? destMeta.GetString(System.Text.Encoding.UTF8)
-                            : string.Empty;
-
-                        // Normalize file name if the service is available.
-                        var nameNormalizer = httpContext.RequestServices.GetService<IMediaNameNormalizerService>();
-                        if (nameNormalizer != null)
-                        {
-                            fileName = nameNormalizer.NormalizeFileName(fileName);
-                        }
-
-                        var metadataStore = httpContext.RequestServices.GetRequiredService<TusUploadMetadataStore>();
-                        metadataStore.Set(ctx.FileId, new TusUploadEntry
-                        {
-                            DestinationPath = destinationPath,
-                            FileName = fileName,
-                        });
-                    },
-
-                    OnFileCompleteAsync = async ctx =>
-                    {
-                        // Move completed file from temp to IMediaFileStore.
-                        var metadataStore = httpContext.RequestServices.GetRequiredService<TusUploadMetadataStore>();
-                        var entry = metadataStore.Get(ctx.FileId);
-
-                        if (entry == null)
-                        {
-                            return;
-                        }
-
-                        var mediaFileStore = httpContext.RequestServices.GetRequiredService<IMediaFileStore>();
-                        var mediaFilePath = mediaFileStore.Combine(entry.DestinationPath, entry.FileName);
-
-                        using var stream = store.OpenReadStream(ctx.FileId);
-                        var finalPath = await mediaFileStore.CreateFileFromStreamAsync(mediaFilePath, stream);
-                        entry.MediaFilePath = finalPath;
-
-                        // Clean up the temp file.
-                        await store.DeleteFileAsync(ctx.FileId, ctx.CancellationToken);
-
-                        // Broadcast via SignalR.
-                        var mediaHub = httpContext.RequestServices.GetService<IHubContext<MediaHub>>();
-                        if (mediaHub != null)
-                        {
-                            await mediaHub.Clients.All.SendAsync("MediaChanged", new
+                            if (
+                                !mediaOptions.Value.AllowedFileExtensions.Contains(
+                                    extension,
+                                    StringComparer.OrdinalIgnoreCase
+                                )
+                            )
                             {
-                                action = "fileUploaded",
-                                path = entry.DestinationPath,
-                            });
-                        }
+                                ctx.FailRequest($"File extension not allowed: {extension}");
+                                return;
+                            }
+
+                            // Validate folder permissions if destinationPath is provided.
+                            if (metadata.TryGetValue("destinationPath", out var destMeta))
+                            {
+                                var destinationPath = destMeta.GetString(System.Text.Encoding.UTF8);
+                                if (
+                                    !await authService.AuthorizeAsync(
+                                        httpContext.User,
+                                        MediaPermissions.ManageMediaFolder,
+                                        (object)destinationPath
+                                    )
+                                )
+                                {
+                                    ctx.FailRequest(
+                                        "You do not have permission to upload to this folder."
+                                    );
+                                    return;
+                                }
+                            }
+                        },
+
+                        OnCreateCompleteAsync = async ctx =>
+                        {
+                            // Store upload metadata for later retrieval.
+                            var metadata = ctx.Metadata;
+
+                            var fileName = metadata.TryGetValue("fileName", out var fileNameMeta)
+                                ? fileNameMeta.GetString(System.Text.Encoding.UTF8)
+                                : string.Empty;
+                            var destinationPath = metadata.TryGetValue(
+                                "destinationPath",
+                                out var destMeta
+                            )
+                                ? destMeta.GetString(System.Text.Encoding.UTF8)
+                                : string.Empty;
+
+                            // Normalize file name if the service is available.
+                            var nameNormalizer =
+                                httpContext.RequestServices.GetService<IMediaNameNormalizerService>();
+                            if (nameNormalizer != null)
+                            {
+                                fileName = nameNormalizer.NormalizeFileName(fileName);
+                            }
+
+                            var metadataStore =
+                                httpContext.RequestServices.GetRequiredService<DistributedTusUploadMetadataStore>();
+                            await metadataStore.SetAsync(
+                                ctx.FileId,
+                                new TusUploadEntry
+                                {
+                                    DestinationPath = destinationPath,
+                                    FileName = fileName,
+                                },
+                                ctx.CancellationToken
+                            );
+                        },
+
+                        OnFileCompleteAsync = async ctx =>
+                        {
+                            // Move completed file from temp to IMediaFileStore.
+                            var metadataStore =
+                                httpContext.RequestServices.GetRequiredService<DistributedTusUploadMetadataStore>();
+                            var entry = await metadataStore.GetAsync(
+                                ctx.FileId,
+                                ctx.CancellationToken
+                            );
+
+                            if (entry == null)
+                            {
+                                return;
+                            }
+
+                            var mediaFileStore =
+                                httpContext.RequestServices.GetRequiredService<IMediaFileStore>();
+                            var mediaFilePath = mediaFileStore.Combine(
+                                entry.DestinationPath,
+                                entry.FileName
+                            );
+
+                            using var stream = store.OpenReadStream(ctx.FileId);
+                            var finalPath = await mediaFileStore.CreateFileFromStreamAsync(
+                                mediaFilePath,
+                                stream
+                            );
+                            entry.MediaFilePath = finalPath;
+
+                            // Persist the updated entry (with MediaFilePath) back to the distributed cache
+                            // so GetTusFileInfo can retrieve it.
+                            await metadataStore.SetAsync(ctx.FileId, entry, ctx.CancellationToken);
+
+                            // Clean up the temp file.
+                            await store.DeleteFileAsync(ctx.FileId, ctx.CancellationToken);
+
+                            // Broadcast via SignalR.
+                            var mediaHub = httpContext.RequestServices.GetService<
+                                IHubContext<MediaHub>
+                            >();
+                            if (mediaHub != null)
+                            {
+                                await mediaHub.Clients.All.SendAsync(
+                                    "MediaChanged",
+                                    new { action = "fileUploaded", path = entry.DestinationPath }
+                                );
+                            }
+                        },
                     },
-                },
-            };
-        });
+                };
+            }
+        );
     }
 }

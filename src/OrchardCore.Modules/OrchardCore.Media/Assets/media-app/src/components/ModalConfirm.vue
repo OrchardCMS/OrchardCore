@@ -65,7 +65,7 @@ const emit = defineEmits<{
         </svg>
         <span class="tw:uppercase file-ext tw:text-white">{{ getFileExtension(fileItem?.filePath) }}</span>
       </div>
-      <div class="tw:font-bold tw:text-lg tw:ml-2">{{ fileItem?.name }}</div>
+      <div class="tw:font-bold tw:text-lg tw:ml-2 tw:min-w-0 tw:break-all">{{ fileItem?.name }}</div>
     </div>
     <div class="tw:mt-3 tw:flex tw:flex-row tw:justify-end">
       <button class="ma-btn ma-btn-light tw:border tw:border-gray-400" @click="emit('closed')">

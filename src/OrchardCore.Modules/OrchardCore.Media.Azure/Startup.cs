@@ -14,6 +14,7 @@ using OrchardCore.Media.Azure.Services;
 using OrchardCore.Media.Core;
 using OrchardCore.Media.Core.Events;
 using OrchardCore.Media.Events;
+using OrchardCore.Media.Services;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
@@ -202,5 +203,15 @@ public sealed class ImageSharpAzureBlobCacheStartup : Modules.StartupBase
         }
 
         return optionsAreValid;
+    }
+}
+
+[Feature("OrchardCore.Media.Azure.Storage")]
+[RequireFeatures("OrchardCore.Media.Tus")]
+public sealed class MediaAzureTusStartup : Modules.StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.Replace(ServiceDescriptor.Singleton<ITusTempStore, AzureBlobTusTempStore>());
     }
 }

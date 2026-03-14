@@ -930,14 +930,14 @@ public class MediaApiController : Controller
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<FileStoreEntryDto>> GetTusFileInfo(
         string uploadId,
-        [FromServices] TusUploadMetadataStore tusMetadataStore)
+        [FromServices] DistributedTusUploadMetadataStore tusMetadataStore)
     {
         if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMedia))
         {
             return this.ApiChallengeOrForbidForCookieAuth();
         }
 
-        var entry = tusMetadataStore.Get(uploadId);
+        var entry = await tusMetadataStore.GetAsync(uploadId);
 
         if (entry == null || string.IsNullOrEmpty(entry.MediaFilePath))
         {
@@ -952,7 +952,7 @@ public class MediaApiController : Controller
         }
 
         // Remove the entry now that the client has retrieved it.
-        tusMetadataStore.Remove(uploadId);
+        await tusMetadataStore.RemoveAsync(uploadId);
 
         return Ok(CreateFileResult(fileInfo));
     }
