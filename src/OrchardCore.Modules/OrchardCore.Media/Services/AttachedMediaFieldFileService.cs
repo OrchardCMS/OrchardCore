@@ -123,10 +123,16 @@ public class AttachedMediaFieldFileService
 
     }
 
-    internal async Task CopyNewFilesToContentItemDirAsync(string[] paths, ContentItem contentItem)
+    public async Task CopyNewFilesToContentItemDirAsync(string[] paths, ContentItem contentItem)
     {
-        foreach (var path in paths)
+        for (var i = 0; i < paths.Length; i++)
         {
+            var path = paths[i];
+            if (string.IsNullOrEmpty(path))
+            {
+                continue;
+            }
+
             var targetDir = GetContentItemFolder(contentItem);
             var finalFileName = (await GetFileHashAsync(path)) + GetFileExtension(path);
             var finalFilePath = _fileStore.Combine(targetDir, finalFileName);
@@ -136,6 +142,8 @@ public class AttachedMediaFieldFileService
             if (await _fileStore.GetFileInfoAsync(finalFilePath) is null)
             {
                 await _fileStore.CopyFileAsync(path, finalFilePath);
+
+                paths[i] = finalFilePath;
             }
         }
     }
