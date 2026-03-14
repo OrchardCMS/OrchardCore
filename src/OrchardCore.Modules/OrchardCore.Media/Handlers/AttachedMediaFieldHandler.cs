@@ -17,15 +17,13 @@ public class AttachedMediaFieldHandler : ContentFieldHandler<MediaField>
 
     public async override Task ClonedAsync(CloneContentFieldContext context, MediaField field)
     {
-        var paths = field.Paths;
-
-        await _attachedMediaFieldFileService.CopyNewFilesToContentItemDirAsync(paths, context.CloneContentItem);
+        var updatedPaths = await _attachedMediaFieldFileService.CopyFilesAsync(field.Paths, context.CloneContentItem);
 
         var mediaFieldNodePath = (field.Content.Node as JsonNode).GetNormalizedPath();
         var mediaFieldNode = (context.CloneContentItem.Content as JsonDynamicObject).SelectNode(mediaFieldNodePath);
 
         // Update the paths to the new ones.
-        mediaFieldNode[nameof(MediaField.Paths)] = ToJsonArray(paths);
+        mediaFieldNode[nameof(MediaField.Paths)] = ToJsonArray(updatedPaths);
     }
 
     private static JsonArray ToJsonArray(string[] paths)

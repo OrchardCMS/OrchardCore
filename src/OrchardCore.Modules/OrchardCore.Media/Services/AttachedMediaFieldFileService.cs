@@ -123,8 +123,15 @@ public class AttachedMediaFieldFileService
 
     }
 
-    public async Task CopyNewFilesToContentItemDirAsync(string[] paths, ContentItem contentItem)
+    /// <summary>
+    /// Copies the files to a folder specific for the content item.
+    /// </summary>
+    /// <param name="paths">The paths of the files to copy.</param>
+    /// <param name="contentItem">The content item to which the files belong.</param>
+    /// <returns>The updated paths of the copied files.</returns>
+    public async Task<string[]> CopyFilesAsync(string[] paths, ContentItem contentItem)
     {
+        var updatedPaths = paths;
         for (var i = 0; i < paths.Length; i++)
         {
             var path = paths[i];
@@ -143,9 +150,11 @@ public class AttachedMediaFieldFileService
             {
                 await _fileStore.CopyFileAsync(path, finalFilePath);
 
-                paths[i] = finalFilePath;
+                updatedPaths[i] = finalFilePath;
             }
         }
+
+        return updatedPaths;
     }
 
     private async Task<string> GetFileHashAsync(string filePath)
