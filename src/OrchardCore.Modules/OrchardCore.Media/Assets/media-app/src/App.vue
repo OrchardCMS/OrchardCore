@@ -114,9 +114,8 @@
             <li v-for="file in itemsInPage" :key="file.filePath"
               :class="{ selected: isFileSelected(file) }"
               class="card" draggable="true"
-              @dragstart="dragFileStart(file, $event)"
-              @click.stop="toggleFile(file)">
-              <div class="thumb-container">
+              @dragstart="dragFileStart(file, $event)">
+              <div class="thumb-container" @click.stop="toggleFile(file)">
                 <img v-if="isImage(file)" :src="file.url" :alt="file.name" loading="lazy" />
                 <div v-else class="file-icon-placeholder">
                   <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">

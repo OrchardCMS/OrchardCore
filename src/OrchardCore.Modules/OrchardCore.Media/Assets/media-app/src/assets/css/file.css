@@ -319,7 +319,7 @@
   font-size: 0.875rem;
   color: var(--media-primary, #0d6efd);
   text-decoration: none;
-  background-color: #fff;
+  background-color: var(--surface-0, #fff);
   border: 1px solid var(--gray-300, #dee2e6);
   transition: color 0.15s, background-color 0.15s, border-color 0.15s;
 }
@@ -438,10 +438,20 @@
 }
 
 .fileApp ::-webkit-scrollbar {
-  width: 4px;
+  width: 6px;
+  height: 6px;
+}
+
+.fileApp ::-webkit-scrollbar-track {
+  background: transparent;
 }
 
 .fileApp ::-webkit-scrollbar-thumb {
+  background-color: var(--gray-500);
+  border-radius: 3px;
+}
+
+.fileApp ::-webkit-scrollbar-thumb:hover {
   background-color: var(--gray-600);
 }
 
@@ -456,19 +466,32 @@
 
 .fileApp #fileContainer #navigationApp {
   flex-shrink: 0;
+  height: 240px;
+  overflow: hidden;
 }
+
+.fileApp #navigationApp .vue-recycle-scroller {
+  scrollbar-width: thin;
+  scrollbar-color: var(--gray-500) transparent;
+}
+
+
 
 .fileApp #fileContainer #fileContainerMain {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
+  min-height: 0;
 }
 
 .fileApp #fileContainer #fileContainerMain .file-container-middle {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
-  flex-shrink: 0;
+  flex-shrink: 1;
+  overflow: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--gray-500) transparent;
 }
 
 .fileApp #fileContainer #fileContainerMain .file-container-footer {
@@ -486,19 +509,11 @@
     justify-content: space-between;
   }
 
-  .fileApp #fileContainer #fileContainerMain .file-container-middle {
-    flex-shrink: 1;
-    overflow: auto;
-    scrollbar-width: thin;
-    scrollbar-color: #495057 #eaeaea;
-  }
-
-  .fileApp #navigationApp {
+  .fileApp #fileContainer #navigationApp {
     min-width: 240px;
+    height: auto;
     border-right: 1px solid var(--surface-border);
-    overflow: auto;
-    scrollbar-width: thin;
-    scrollbar-color: var(--gray-600) #eaeaea;
+    overflow: hidden;
   }
 }
 
@@ -883,7 +898,7 @@ ol.file-items-grid li .card-footer .action-button {
 }
 
 ol.file-items-grid li.selected {
-  border: 2px solid var(--media-primary);
+  border-color: var(--media-primary);
 }
 
 ol.file-items-grid li:hover {
@@ -898,6 +913,7 @@ ol.file-items-grid .thumb-container {
   justify-content: center;
   overflow: hidden;
   background: var(--gray-100);
+  cursor: pointer;
 }
 
 ol.file-items-grid .thumb-container img {
@@ -1077,6 +1093,10 @@ ol.file-items-grid .file-icon-placeholder .file-ext {
 }
 
 @media only screen and (max-width: 923px) {
+  .fileApp #fileContainer #fileContainerMain {
+    border-top: 1px solid var(--surface-border);
+  }
+
   .table-cell.last-modified,
   .table-cell.size {
     display: none;
@@ -1105,6 +1125,10 @@ ol.file-items-grid .file-icon-placeholder .file-ext {
 #overlay_menu .p-menu-item-link {
   color: var(--gray-700);
   text-decoration: none;
+}
+
+#overlay_menu .p-menu-item-link .p-menu-item-icon {
+  color: var(--bs-secondary-color, var(--gray-600));
 }
 
 #overlay_menu .p-menu-item-link:hover {
@@ -1954,11 +1978,22 @@ ol.file-items-grid .file-icon-placeholder .file-ext {
 
 [data-bs-theme="dark"] .fileApp #navigationApp {
   border-right-color: var(--bs-border-color);
-  scrollbar-color: var(--gray-600) transparent;
+}
+
+[data-bs-theme="dark"] .fileApp #navigationApp .vue-recycle-scroller {
+  scrollbar-color: #888 transparent;
 }
 
 [data-bs-theme="dark"] .fileApp #fileContainerMain .file-container-middle {
-  scrollbar-color: #495057 transparent;
+  scrollbar-color: #888 transparent;
+}
+
+[data-bs-theme="dark"] .fileApp ::-webkit-scrollbar-thumb {
+  background-color: #888;
+}
+
+[data-bs-theme="dark"] .fileApp ::-webkit-scrollbar-thumb:hover {
+  background-color: #555;
 }
 
 [data-bs-theme="dark"] .fileApp #folder-tree li.selected > div:not(.treeroot),
