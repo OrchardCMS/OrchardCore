@@ -3,7 +3,7 @@ import { FileAction, IModalFileEvent } from "@bloom/media/interfaces";
 import { useConfirmModal } from "../../services/ConfirmModalService";
 import { useModal } from "vue-final-modal";
 import ModalConfirm from "../../components/ModalConfirm.vue";
-import { useLocalizations } from "@bloom/helpers/localizations";
+import { useLocalizations } from "../../composables/useLocalizations";
 import { translationsData } from "../../__tests__/mockdata";
 
 const { showConfirmModal } = useConfirmModal();

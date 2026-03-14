@@ -60,7 +60,7 @@ import { FileAction, IConfirmFileActionViewModel, IConfirmFileEntry, IRenameFile
 import { getFileExtension } from '@bloom/media/utils'
 //import dbg from 'debug';
 import { useHierarchicalTreeBuilder } from '../services/HierarchicalTreeBuilder';
-import { useLocalizations } from '@bloom/helpers/localizations';
+import { useLocalizations } from '../composables/useLocalizations';
 import { isValidFileExtension } from '@bloom/media/file-extensions';
 
 //const debug = dbg("orchardcore:file-app");

@@ -124,7 +124,7 @@ import { ref, computed, watch, onMounted } from "vue";
 import GalleryListItem from "./GalleryListItem.vue";
 import GalleryCardItem from "./GalleryCardItem.vue";
 import type { IMediaFieldItem } from "../interfaces/MediaFieldTypes";
-import { useLocalizations } from "@bloom/helpers/localizations";
+import { useLocalizations } from "../composables/useLocalizations";
 
 const STORAGE_KEY_PREFIX = "mediaFieldGallery_";
 

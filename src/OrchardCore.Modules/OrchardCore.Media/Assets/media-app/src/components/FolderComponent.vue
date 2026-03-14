@@ -46,41 +46,34 @@
 </template>
 
 <script setup lang="ts">
-import { PropType, nextTick, ref, computed, onMounted, watch } from 'vue'
+import { PropType, ref, computed, onMounted, watch } from 'vue'
 import dbg from 'debug';
-import { useVfm } from 'vue-final-modal'
 import ModalFolderAction from './ModalFolderAction.vue'
 import { IFileLibraryItemDto } from "@bloom/media/interfaces";
-import { NotificationMessage, notify } from "@bloom/services/notifications/notifier";
-import { SeverityLevel } from "@bloom/services/notifications/interfaces";
 import Folder from "./FolderComponent.vue";
-import { v4 as uuidv4 } from 'uuid';
 import {
-  IConfirmFolderActionViewModel, FolderAction,
+  IConfirmFolderActionViewModel,
   IHFileLibraryItemDto,
-  FileAction,
-  IModalFileEvent
 } from '@bloom/media/interfaces';
 import {
   BASE_DIR
 } from "@bloom/media/constants"
 import { useEventBus } from '../services/UseEventBus'
-import { useConfirmModal } from '../services/ConfirmModalService';
 import { useGlobals } from '../services/Globals';
 import { FontAwesomeIcon as FaIcon } from '@fortawesome/vue-fontawesome';
-import { useLocalizations } from '@bloom/helpers/localizations';
-import { usePermissions } from '../services/Permissions';
+import { useLocalizations } from '../composables/useLocalizations';
+import { useFolderModal } from '../composables/useFolderModal';
+import { useFolderDragDrop } from '../composables/useFolderDragDrop';
 
 const debug = dbg("orchardcore:file-app");
 const modalAction = ref<InstanceType<typeof ModalFolderAction>>();
 
-const { showConfirmModal } = useConfirmModal();
 const { selectedDirectory } = useGlobals();
-const { canManageFolder } = usePermissions();
 
-const { translations } = useLocalizations();
-const t = translations
+const { translations: t } = useLocalizations();
 const { on, emit } = useEventBus();
+const { getFolderModalName, openFolderModal, confirmFolderModal: confirmModal } = useFolderModal();
+const { isHovered, handleDragOver, handleDragLeave, moveFileToFolder } = useFolderDragDrop();
 
 const props = defineProps({
   hierarchicalDirectories: { // This cannot use globals
@@ -98,8 +91,6 @@ const props = defineProps({
 })
 
 let open = ref(false);
-//let childrens = ref([] as IFileLibraryItemDto[]); // not initialized state (for lazy-loading)
-let isHovered = ref(false);
 let padding = ref(0);
 let showModal = ref(props.showModalProp);
 
@@ -182,147 +173,20 @@ const select = () => {
   emit("DirSelected", folder as IFileLibraryItemDto);
 }
 
-/**
- * Create a folder
- * @param folder the folder to create
- * @function
- */
-const createFolder = (folder: IFileLibraryItemDto) => {
-  debug("Create Folder", folder)
-  const { children, ...directory } = folder as IHFileLibraryItemDto;
-  emit("DirCreateReq", directory);
-}
-
-/**
- * Delete a folder
- * @param folder the folder to delete
- * @function
- */
-const deleteFolder = (folder: IFileLibraryItemDto) => {
-  const { children, ...directory } = folder as IHFileLibraryItemDto;
-  emit("DirDeleteReq", directory);
-}
-
-/**
- * Set isHovered to true when the user drags an item over the folder
- * This is used to change the style of the folder when it is being hovered
- * @function
- */
-const handleDragOver = () => {
-  isHovered.value = true;
-}
-
-/**
- * Set isHovered to false when the user drags an item out of the folder
- * This is used to change the style of the folder when it is no longer being hovered
- * @function
- */
-const handleDragLeave = () => {
-  isHovered.value = false;
-}
-
-/**
- * Move files to the given folder
- * @param {IFileLibraryItemDto} folder - The folder to move the files to
- * @param {DragEvent} e - The drag event to get the files from
- * @returns {void}
- * @description
- * This function is used to move files from one folder to another using drag and drop.
- * It gets the files from the drag event, and the target folder from the given folder.
- * If the source folder is the same as the target folder, it will show an error notification.
- * Otherwise it will show a confirmation modal to move the files.
- */
-const moveFileToFolder = (folder: IFileLibraryItemDto, e: DragEvent): void => {
-  debug("Move file to folder", folder, e);
-  isHovered.value = false;
-
-  let filesData = e.dataTransfer?.getData('files') ?? "";
-  let files = JSON.parse(filesData);
-
-  if (files.length < 1) {
-    return;
-  }
-
-  let sourceFolder = e.dataTransfer?.getData('sourceFolder') ?? "root";
-  let targetFolder = folder.directoryPath;
-
-  if (targetFolder === '' || targetFolder == "/") {
-    targetFolder = 'root';
-  }
-
-  if (sourceFolder === targetFolder) {
-    notify(new NotificationMessage({ summary: t.ErrorMovingFile, detail: t.SameFolderMessage, severity: SeverityLevel.Error }));
-    return;
-  }
-
-  const modal = { files: files, modalName: 'move', uuid: uuidv4(), isEdit: true, modalTitle: t.MoveFileTitle, action: FileAction.Move, targetFolder: targetFolder } as IModalFileEvent;
-  showConfirmModal(modal);
-}
-
-/**
- * Return a unique modal name for a folder action
- * @param {string} action - The action to perform on the folder
- * @param {IFileLibraryItemDto} folder - The folder to get the modal name for
- * @returns {string} A unique modal name
- * @description
- * This function is used to generate a unique modal name for a folder action.
- * It takes the action and folder as parameters, and returns a string
- * that is unique to the folder and action.
- */
-const getFolderModalName = (action: string, folder: IFileLibraryItemDto): string => {
-  debug("Get folder modal name", folder)
-  return action + "-folder-" + folder.name;
-}
-
-/**
- * Open a folder modal for a given action and folder
- * @param {string} action - The action to perform on the folder
- * @param {IFileLibraryItemDto} folder - The folder to open the modal for
- * @returns {Promise<void>}
- * @description
- * This function is used to open a modal for a folder action.
- * It takes the action and folder as parameters, and opens the modal
- * if the user has permission to manage the folder. Otherwise it shows
- * an error notification.
- */
-const openFolderModal = async (action: string, folder: IFileLibraryItemDto): Promise<void> => {
-  if (canManageFolder(folder.directoryPath)) {
-    const uVfm = useVfm();
-    const modalName = getFolderModalName(action, folder)
-    debug('OpenFolderModal', modalName)
-    uVfm.open(modalName);
-
-    await nextTick();
-
-    emit("ResetModalFolderAction", null);
-  }
-  /* v8 ignore next 3 -- canManageFolder always returns true; server enforces auth */
-  else {
-    notify(new NotificationMessage({ summary: t.Unauthorized, detail: t.UnauthorizedFolder, severity: SeverityLevel.Warn }));
-  }
-}
-
-/**
- * Confirm a folder action modal
- * @param {string} modalName - The name of the modal
- * @param {IConfirmFolderActionViewModel} confirmAction - The action to confirm
- * @description
- * This function is used to confirm a folder action modal.
- * If the action is create and the input value is not empty, it creates a new folder.
- * If the action is delete, it deletes the folder.
- * Otherwise it just closes the modal.
- */
 const confirmFolderModal = (modalName: string, confirmAction: IConfirmFolderActionViewModel) => {
-  const uVfm = useVfm();
-  debug('confirmFolderModal confirmAction', confirmAction)
-  uVfm.close(getFolderModalName(modalName, confirmAction.folder));
-
-  if (confirmAction.action == FolderAction.Create && confirmAction.inputValue) {
-    createFolder({ name: confirmAction.inputValue, directoryPath: confirmAction.inputValue, isDirectory: true, filePath: '' });
-  }
-  else if (confirmAction.action == FolderAction.Delete) {
-    deleteFolder(confirmAction.folder);
-  }
+  confirmModal(
+    modalName,
+    confirmAction,
+    (folder) => {
+      debug("Create Folder", folder);
+      const { children, ...directory } = folder as IHFileLibraryItemDto;
+      emit("DirCreateReq", directory);
+    },
+    (folder) => {
+      const { children, ...directory } = folder as IHFileLibraryItemDto;
+      emit("DirDeleteReq", directory);
+    },
+  );
 }
 
 // Open root folder when data becomes available (handles both v-if and v-show mounting).

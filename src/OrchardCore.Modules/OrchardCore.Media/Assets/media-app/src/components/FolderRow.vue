@@ -42,19 +42,15 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, nextTick } from 'vue';
-import { useVfm } from 'vue-final-modal';
+import { computed, ref } from 'vue';
 import ModalFolderAction from './ModalFolderAction.vue';
-import { IFileLibraryItemDto, IConfirmFolderActionViewModel, FolderAction, FileAction, IModalFileEvent, IHFileLibraryItemDto } from '@bloom/media/interfaces';
-import { NotificationMessage, notify } from "@bloom/services/notifications/notifier";
-import { SeverityLevel } from "@bloom/services/notifications/interfaces";
-import { v4 as uuidv4 } from 'uuid';
+import { IFileLibraryItemDto, IConfirmFolderActionViewModel, IHFileLibraryItemDto } from '@bloom/media/interfaces';
 import { useEventBus } from '../services/UseEventBus';
-import { useConfirmModal } from '../services/ConfirmModalService';
 import { useGlobals } from '../services/Globals';
 import { FontAwesomeIcon as FaIcon } from '@fortawesome/vue-fontawesome';
-import { useLocalizations } from '@bloom/helpers/localizations';
-import { usePermissions } from '../services/Permissions';
+import { useLocalizations } from '../composables/useLocalizations';
+import { useFolderModal } from '../composables/useFolderModal';
+import { useFolderDragDrop } from '../composables/useFolderDragDrop';
 import type { IFlatTreeNode } from '../services/HierarchicalTreeBuilder';
 import { BASE_DIR } from "@bloom/media/constants";
 
@@ -67,15 +63,13 @@ const emitComponent = defineEmits<{
   toggle: [node: IFlatTreeNode];
 }>();
 
-const { showConfirmModal } = useConfirmModal();
 const { selectedDirectory, expandedFolders, loadingFolders } = useGlobals();
-const { canManageFolder } = usePermissions();
-const { translations } = useLocalizations();
-const t = translations;
+const { translations: t } = useLocalizations();
 const { emit } = useEventBus();
+const { getFolderModalName, openFolderModal, confirmFolderModal: confirmModal } = useFolderModal();
+const { isHovered, handleDragOver, handleDragLeave, moveFileToFolder } = useFolderDragDrop();
 
 const modalAction = ref<InstanceType<typeof ModalFolderAction>>();
-const isHovered = ref(false);
 const showModal = ref(false);
 
 const isSelected = computed(() => {
@@ -115,71 +109,16 @@ const toggle = () => {
   emitComponent("toggle", props.node);
 };
 
-const handleDragOver = () => {
-  isHovered.value = true;
-};
-
-const handleDragLeave = () => {
-  isHovered.value = false;
-};
-
-const moveFileToFolder = (folder: IFileLibraryItemDto, e: DragEvent): void => {
-  isHovered.value = false;
-
-  let filesData = e.dataTransfer?.getData('files') ?? "";
-  let files = JSON.parse(filesData);
-
-  if (files.length < 1) {
-    return;
-  }
-
-  let sourceFolder = e.dataTransfer?.getData('sourceFolder') ?? "root";
-  let targetFolder = folder.directoryPath;
-
-  if (targetFolder === '' || targetFolder == "/") {
-    targetFolder = 'root';
-  }
-
-  if (sourceFolder === targetFolder) {
-    notify(new NotificationMessage({ summary: t.ErrorMovingFile, detail: t.SameFolderMessage, severity: SeverityLevel.Error }));
-    return;
-  }
-
-  const modal = { files: files, modalName: 'move', uuid: uuidv4(), isEdit: true, modalTitle: t.MoveFileTitle, action: FileAction.Move, targetFolder: targetFolder } as IModalFileEvent;
-  showConfirmModal(modal);
-};
-
-const getFolderModalName = (action: string, folder: IFileLibraryItemDto): string => {
-  return action + "-folder-" + (folder.directoryPath || folder.name);
-};
-
-const openFolderModal = async (action: string, folder: IFileLibraryItemDto): Promise<void> => {
-  if (canManageFolder(folder.directoryPath)) {
-    const uVfm = useVfm();
-    const modalName = getFolderModalName(action, folder);
-    uVfm.open(modalName);
-
-    await nextTick();
-
-    emit("ResetModalFolderAction", null);
-  }
-  /* v8 ignore next 3 -- canManageFolder always returns true; server enforces auth */
-  else {
-    notify(new NotificationMessage({ summary: t.Unauthorized, detail: t.UnauthorizedFolder, severity: SeverityLevel.Warn }));
-  }
-};
-
 const confirmFolderModal = (modalName: string, confirmAction: IConfirmFolderActionViewModel) => {
-  const uVfm = useVfm();
-  uVfm.close(getFolderModalName(modalName, confirmAction.folder));
-
-  if (confirmAction.action == FolderAction.Create && confirmAction.inputValue) {
-    const { children, ...directory } = props.node.item;
-    emit("DirCreateReq", { name: confirmAction.inputValue, directoryPath: confirmAction.inputValue, isDirectory: true, filePath: '' } as IFileLibraryItemDto);
-  } else if (confirmAction.action == FolderAction.Delete) {
-    const { children, ...directory } = confirmAction.folder as IHFileLibraryItemDto;
-    emit("DirDeleteReq", directory);
-  }
+  confirmModal(
+    modalName,
+    confirmAction,
+    (folder) => emit("DirCreateReq", folder),
+    (folder) => {
+      const { children, ...directory } = folder as IHFileLibraryItemDto;
+      emit("DirDeleteReq", directory);
+    },
+  );
 };
 </script>
 

@@ -49,7 +49,7 @@ import { ref, PropType } from 'vue'
 import { VueFinalModal } from 'vue-final-modal'
 import { IFileLibraryItemDto } from '@bloom/media/interfaces';
 import { getFileExtension } from '@bloom/media/utils'
-import { useLocalizations } from '@bloom/helpers/localizations';
+import { useLocalizations } from '../composables/useLocalizations';
 
 const { translations } = useLocalizations();
 const t = translations

@@ -34,27 +34,26 @@
 
 [dir="ltr"] .resize-observer[data-v-b329ee4c] object{left:0}
 
-[dir="rtl"] .resize-observer[data-v-b329ee4c] object{right:0}
-.folder-spinner[data-v-64d9f534] {
+[dir="rtl"] .resize-observer[data-v-b329ee4c] object{right:0}.folder-spinner[data-v-e571e650] {
   display: inline-block;
   width: 12px;
   height: 12px;
   border: 2px solid #ccc;
   border-top-color: #2c84d8;
   border-radius: 50%;
-  animation: spin-64d9f534 0.6s linear infinite;
+  animation: spin-e571e650 0.6s linear infinite;
 }
-@keyframes spin-64d9f534 {
+@keyframes spin-e571e650 {
 to { transform: rotate(360deg);
 }
 }
 
 /* Show folder actions only on hover */
-.folder-actions[data-v-64d9f534] {
+.folder-actions[data-v-e571e650] {
   opacity: 0;
   transition: opacity 0.15s ease;
 }
-.folder:hover .folder-actions[data-v-64d9f534] {
+.folder:hover .folder-actions[data-v-e571e650] {
   opacity: 1;
 }
 .uppy-is-drag-over::after {

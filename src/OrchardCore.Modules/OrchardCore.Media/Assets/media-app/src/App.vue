@@ -180,13 +180,12 @@
 </style>
 
 <script setup lang="ts">
-import { ref, watch, computed, defineProps, onMounted, onUnmounted } from "vue";
+import { ref, watch, computed, defineProps } from "vue";
 import FolderTree from "./components/FolderTree.vue";
 import UploadToast from "./components/UploadToast.vue";
 import NotificationToast from "./components/NotificationToast.vue";
 import pager from "./components/PagerComponent.vue";
-import { IFileLibraryItemDto, FileAction, IModalFileEvent, IPermittedStorageResult, IFileStoreCapabilities } from "@bloom/media/interfaces";
-import { FileDataService } from "@bloom/media/api/file-data-service";
+import { IFileLibraryItemDto, FileAction, IModalFileEvent } from "@bloom/media/interfaces";
 import { ModalsContainer } from 'vue-final-modal';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -201,7 +200,10 @@ import { useEventBusService } from "./services/EventBusService";
 import { useSignalR } from "./services/SignalR";
 import { useEventBus } from "./services/UseEventBus";
 import { useRouterService } from "./services/RouterService";
-import { useLocalizations } from "@bloom/helpers/localizations";
+import { useLocalizations } from "./composables/useLocalizations";
+import { useFileListFiltering } from "./composables/useFileListFiltering";
+import { useBreadcrumbs } from "./composables/useBreadcrumbs";
+import { useStoragePopover } from "./composables/useStoragePopover";
 import { downloadSelectedFiles, getFileExtension, isFileSelected } from "./services/Utils";
 import FileMenu from "./components/FileMenu.vue";
 
@@ -237,23 +239,17 @@ const props = defineProps({
 })
 
 const {
-  sortAsc,
-  sortBy,
   isSelectedAll,
   errors,
   isLoading,
   fileFilter,
   itemsInPage,
   assetsStore,
-  directoryIndex,
   selectedFiles,
   selectedDirectory,
-  rootDirectory,
-  hierarchicalDirectories,
   fileItems,
   isDownloading,
   isLoadingFiles,
-  setFileItems,
   setIsLoading,
   setBasePath,
   setSelectedFiles,
@@ -296,44 +292,7 @@ const { setLocalStorage, gridView } = useLocalStorage();
 const { canManage } = usePermissions();
 useSignalR();
 
-const storageInfo = ref<IPermittedStorageResult | null>(null);
-const storageCapabilities = ref<IFileStoreCapabilities | null>(null);
-const showStoragePopover = ref(false);
-const storageLoading = ref(false);
-
-const fetchStorageInfo = async () => {
-  storageLoading.value = true;
-  try {
-    const service = new FileDataService(props.basePath);
-    const [storage, caps] = await Promise.all([
-      service.getPermittedStorage(),
-      service.getCapabilities(),
-    ]);
-    storageInfo.value = storage;
-    storageCapabilities.value = caps;
-  } catch (e) {
-    console.error("Failed to fetch storage info", e);
-    storageInfo.value = null;
-    storageCapabilities.value = null;
-  } finally {
-    storageLoading.value = false;
-  }
-};
-
-const toggleStoragePopover = async () => {
-  showStoragePopover.value = !showStoragePopover.value;
-  if (showStoragePopover.value && !storageCapabilities.value) {
-    await fetchStorageInfo();
-  }
-};
-
-const handleClickOutside = (e: MouseEvent) => {
-  if (showStoragePopover.value && !(e.target as HTMLElement)?.closest('.storage-info-btn, .storage-popover')) {
-    showStoragePopover.value = false;
-  }
-};
-onMounted(() => document.addEventListener('click', handleClickOutside));
-onUnmounted(() => document.removeEventListener('click', handleClickOutside));
+const { storageInfo, storageCapabilities, showStoragePopover, storageLoading, toggleStoragePopover } = useStoragePopover(props.basePath);
 
 setUploadFilesUrl(props.uploadFilesUrl);
 
@@ -362,38 +321,7 @@ const dragFileStart = (file: IFileLibraryItemDto, e: DragEvent) => {
   emit("FileDragReq", { file, e });
 };
 
-const filteredFileItems = computed(() => {
-  const filter = fileFilter.value.toLowerCase();
-  let filtered = fileItems.value.filter((item: IFileLibraryItemDto) => {
-    return item.name.toLowerCase().indexOf(filter) > -1;
-  });
-
-  const asc = sortAsc.value;
-
-  switch (sortBy.value) {
-    case "size":
-      filtered.sort((a: IFileLibraryItemDto, b: IFileLibraryItemDto) => {
-        return asc ? (a.size ?? 0) - (b.size ?? 0) : (b.size ?? 0) - (a.size ?? 0);
-      });
-      break;
-    case "mime":
-      filtered.sort((a: IFileLibraryItemDto, b: IFileLibraryItemDto) => {
-        return asc ? (a.mime ?? "").toLowerCase().localeCompare((b.mime ?? "").toLowerCase()) : (b.mime ?? "").toLowerCase().localeCompare((a.mime ?? "").toLowerCase());
-      });
-      break;
-    case "lastModify":
-      filtered.sort((a: IFileLibraryItemDto, b: IFileLibraryItemDto) => {
-        return asc ? new Date(a.lastModifiedUtc ?? 0).getTime() - new Date(b.lastModifiedUtc ?? 0).getTime() : new Date(b.lastModifiedUtc ?? 0).getTime() - new Date(a.lastModifiedUtc ?? 0).getTime();
-      });
-      break;
-    default:
-      filtered.sort((a: IFileLibraryItemDto, b: IFileLibraryItemDto) => {
-        return asc ? a.name.toLowerCase().localeCompare(b.name.toLowerCase()) : b.name.toLowerCase().localeCompare(a.name.toLowerCase());
-      });
-  }
-
-  return filtered;
-});
+const { filteredFileItems } = useFileListFiltering();
 
 const selectAll = () => {
   if (isSelectedAll.value) {
@@ -410,31 +338,7 @@ const selectAll = () => {
   }
 };
 
-const breadcrumbs = computed((): IFileLibraryItemDto[] => {
-  const result: IFileLibraryItemDto[] = [];
-  const dirMap = directoryIndex.value;
-
-  if (dirMap.size > 0 && selectedDirectory.value) {
-    result.push(rootDirectory.value);
-
-    if (selectedDirectory.value.directoryPath) {
-      const segments = selectedDirectory.value.directoryPath.split("/");
-      let path = "";
-
-      segments.forEach((segment, index) => {
-        path = index > 0 ? path + "/" + segment : segment;
-        const dir = dirMap.get(path);
-
-        if (dir) {
-          result.push(dir);
-        }
-      });
-    }
-  }
-
-  return result;
-});
-
+const { breadcrumbs } = useBreadcrumbs();
 
 const clickBreadCrumb = (breadcrumb: IFileLibraryItemDto) => {
   emit("DirSelected", breadcrumb as IFileLibraryItemDto);

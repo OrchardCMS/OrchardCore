@@ -2,7 +2,7 @@ import { FileAction, IConfirmFileActionViewModel, IModalFileEvent, IRenameFileLi
 import { useEventBus } from "./UseEventBus";
 import { useModal } from "vue-final-modal";
 import ModalFileAction from "../components/ModalFileAction.vue";
-import { useLocalizations } from "@bloom/helpers/localizations";
+import { useLocalizations } from "../composables/useLocalizations";
 
 const { emit } = useEventBus();
 

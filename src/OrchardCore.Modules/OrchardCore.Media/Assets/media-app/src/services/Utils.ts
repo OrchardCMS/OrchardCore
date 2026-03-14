@@ -2,7 +2,7 @@ import { NotificationMessage, notify } from "@bloom/services/notifications/notif
 import { SeverityLevel } from "@bloom/services/notifications/interfaces";
 import { IFileLibraryItemDto } from "@bloom/media/interfaces";
 import { useGlobals } from "./Globals";
-import { useLocalizations } from "@bloom/helpers/localizations";
+import { useLocalizations } from "../composables/useLocalizations";
 
 export { humanFileSize, getFileExtension, printDateTime } from "@bloom/media/utils";
 

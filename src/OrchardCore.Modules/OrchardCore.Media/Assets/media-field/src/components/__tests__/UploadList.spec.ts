@@ -15,7 +15,7 @@ vi.mock("vue-final-modal", () => ({
   createVfm: vi.fn(() => ({ install: vi.fn() })),
 }));
 
-vi.mock("@bloom/helpers/localizations", () => {
+vi.mock("../../composables/useLocalizations", () => {
   const translations = ref<Record<string, string>>({});
   return {
     useLocalizations: () => ({

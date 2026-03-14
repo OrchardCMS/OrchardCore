@@ -53,7 +53,7 @@
 import { ref } from "vue";
 import { VueFinalModal } from "vue-final-modal";
 import type { IMediaFieldItem } from "../interfaces/MediaFieldTypes";
-import { useLocalizations } from "@bloom/helpers/localizations";
+import { useLocalizations } from "../composables/useLocalizations";
 import type { IMediaPickerHandle } from "@media-app";
 
 const props = defineProps<{

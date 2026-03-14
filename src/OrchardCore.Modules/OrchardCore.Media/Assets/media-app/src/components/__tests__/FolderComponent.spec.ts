@@ -7,7 +7,7 @@ import { useGlobals } from "../../services/Globals";
 import { createVfm, ModalsContainer } from "vue-final-modal";
 import { FolderAction, IConfirmFolderActionViewModel, IFileLibraryItemDto, IRenameFileLibraryItemDto } from "@bloom/media/interfaces";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { useLocalizations } from "@bloom/helpers/localizations";
+import { useLocalizations } from "../../composables/useLocalizations";
 import { useEventBus } from "../../services/UseEventBus";
 import { useEventBusService } from "../../services/EventBusService";
 

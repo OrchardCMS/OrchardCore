@@ -106,7 +106,7 @@
 import { computed, ref, toRaw } from "vue";
 import type { IMediaFieldItem } from "../interfaces/MediaFieldTypes";
 import { getIconClassForFilename } from "../services/FontAwesomeThumbnails";
-import { useLocalizations } from "@bloom/helpers/localizations";
+import { useLocalizations } from "../composables/useLocalizations";
 
 const props = defineProps<{
   mediaItems: IMediaFieldItem[];

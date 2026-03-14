@@ -16,7 +16,7 @@ import { useConfirmModal } from "../services/ConfirmModalService";
 import { useFileActionModal } from "../services/FileActionModalService";
 import { useGlobals } from "../services/Globals";
 import { useEventBus } from "../services/UseEventBus";
-import { useLocalizations } from "@bloom/helpers/localizations"
+import { useLocalizations } from "../composables/useLocalizations"
 import { downloadFile } from "../services/Utils";
 import { ModalsContainer } from 'vue-final-modal'
 import dbg from "debug";

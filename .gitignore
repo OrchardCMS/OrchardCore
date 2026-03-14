@@ -224,3 +224,4 @@ src/Templates/**/content/**/.template.config/
 BenchmarkDotNet.Artifacts
 
 .playwright-cli
+src/OrchardCore.Modules/OrchardCore.Media/Assets/media-field/testing

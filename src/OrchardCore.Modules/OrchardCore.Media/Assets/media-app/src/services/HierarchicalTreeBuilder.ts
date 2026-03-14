@@ -1,7 +1,7 @@
 import { computed } from "vue";
 import { IHFileLibraryItemDto, TreeNode, IFileLibraryItemDto, IDirectoryTreeNode } from "@bloom/media/interfaces";
 import { useGlobals } from "./Globals";
-import { useLocalizations } from "@bloom/helpers/localizations";
+import { useLocalizations } from "../composables/useLocalizations";
 import { getFileExtension } from "@bloom/media/utils";
 
 /**

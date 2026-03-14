@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { mount, flushPromises } from "@vue/test-utils";
 import { ref, nextTick } from "vue";
 
-vi.mock("@bloom/helpers/localizations", () => {
+vi.mock("../../composables/useLocalizations", () => {
   const translations = ref<Record<string, string>>({});
   return {
     useLocalizations: () => ({

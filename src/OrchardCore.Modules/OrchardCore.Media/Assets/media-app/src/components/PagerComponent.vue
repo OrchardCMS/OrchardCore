@@ -47,7 +47,7 @@
 import { IFileLibraryItemDto } from '@bloom/media/interfaces';
 import { computed, ref, watch } from 'vue'
 import { useEventBus } from '../services/UseEventBus'
-import { useLocalizations } from '@bloom/helpers/localizations';
+import { useLocalizations } from '../composables/useLocalizations';
 const { emit } = useEventBus();
 const { translations } = useLocalizations();
 const t = translations

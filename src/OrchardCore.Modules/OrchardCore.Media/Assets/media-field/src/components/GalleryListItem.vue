@@ -98,7 +98,7 @@
 <script setup lang="ts">
 import type { IMediaFieldItem } from "../interfaces/MediaFieldTypes";
 import { getIconClassForFilename } from "../services/FontAwesomeThumbnails";
-import { useLocalizations } from "@bloom/helpers/localizations";
+import { useLocalizations } from "../composables/useLocalizations";
 
 defineProps<{
   media: IMediaFieldItem;

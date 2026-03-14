@@ -3,7 +3,7 @@ import { mount, flushPromises } from "@vue/test-utils";
 import { ref, nextTick } from "vue";
 import type { VueWrapper } from "@vue/test-utils";
 
-vi.mock("@bloom/helpers/localizations", () => {
+vi.mock("../../composables/useLocalizations", () => {
   const translations = ref<Record<string, string>>({});
   return {
     useLocalizations: () => ({

@@ -1,0 +1,52 @@
+import { nextTick } from "vue";
+import { useVfm } from "vue-final-modal";
+import { IFileLibraryItemDto, IConfirmFolderActionViewModel, FolderAction, IHFileLibraryItemDto } from "@bloom/media/interfaces";
+import { NotificationMessage, notify } from "@bloom/services/notifications/notifier";
+import { SeverityLevel } from "@bloom/services/notifications/interfaces";
+import { useEventBus } from "../services/UseEventBus";
+import { useLocalizations } from "./useLocalizations";
+import { usePermissions } from "../services/Permissions";
+
+export function useFolderModal() {
+  const { translations: t } = useLocalizations();
+  const { canManageFolder } = usePermissions();
+  const { emit } = useEventBus();
+
+  const getFolderModalName = (action: string, folder: IFileLibraryItemDto): string => {
+    return action + "-folder-" + (folder.directoryPath || folder.name);
+  };
+
+  const openFolderModal = async (action: string, folder: IFileLibraryItemDto): Promise<void> => {
+    if (canManageFolder(folder.directoryPath)) {
+      const uVfm = useVfm();
+      const modalName = getFolderModalName(action, folder);
+      uVfm.open(modalName);
+
+      await nextTick();
+
+      emit("ResetModalFolderAction", null);
+    }
+    /* v8 ignore next 3 -- canManageFolder always returns true; server enforces auth */
+    else {
+      notify(new NotificationMessage({ summary: t.Unauthorized, detail: t.UnauthorizedFolder, severity: SeverityLevel.Warn }));
+    }
+  };
+
+  const confirmFolderModal = (
+    modalName: string,
+    confirmAction: IConfirmFolderActionViewModel,
+    onCreateFolder: (folder: IFileLibraryItemDto) => void,
+    onDeleteFolder: (folder: IFileLibraryItemDto) => void,
+  ) => {
+    const uVfm = useVfm();
+    uVfm.close(getFolderModalName(modalName, confirmAction.folder));
+
+    if (confirmAction.action === FolderAction.Create && confirmAction.inputValue) {
+      onCreateFolder({ name: confirmAction.inputValue, directoryPath: confirmAction.inputValue, isDirectory: true, filePath: "" } as IFileLibraryItemDto);
+    } else if (confirmAction.action === FolderAction.Delete) {
+      onDeleteFolder(confirmAction.folder);
+    }
+  };
+
+  return { getFolderModalName, openFolderModal, confirmFolderModal };
+}

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { translationsData } from "./mockdata";
-import { useLocalizations } from "@bloom/helpers/localizations";
+import { useLocalizations } from "../composables/useLocalizations";
 
 const { translations, setTranslations } = useLocalizations();
 

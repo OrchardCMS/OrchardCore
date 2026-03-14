@@ -111,7 +111,7 @@ vi.mock("@bloom/services/notifications/notifier", () => ({
 
 // ---------- Imports (run after mocks are set up) ----------
 import { useEventBus } from "../UseEventBus";
-import { useLocalizations } from "@bloom/helpers/localizations";
+import { useLocalizations } from "../../composables/useLocalizations";
 import { translationsData } from "../../__tests__/mockdata";
 import { updateUploadOptions, useFileUpload } from "../UppyFileUpload";
 import { useGlobals } from "../Globals";

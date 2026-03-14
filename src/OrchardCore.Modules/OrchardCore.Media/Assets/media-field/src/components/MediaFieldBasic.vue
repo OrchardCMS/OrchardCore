@@ -149,7 +149,7 @@ import type {
   IMediaFieldConfig,
   IMediaFieldPath,
 } from "../interfaces/MediaFieldTypes";
-import { useLocalizations } from "@bloom/helpers/localizations";
+import { useLocalizations } from "../composables/useLocalizations";
 
 const props = defineProps<{
   config: IMediaFieldConfig;

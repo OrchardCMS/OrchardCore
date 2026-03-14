@@ -1,5 +1,5 @@
 import { createVfm } from "vue-final-modal";
-import { useLocalizations } from "@bloom/helpers/localizations";
+import { useLocalizations } from "../composables/useLocalizations";
 import { mockTranslations } from "./mockdata";
 
 /**

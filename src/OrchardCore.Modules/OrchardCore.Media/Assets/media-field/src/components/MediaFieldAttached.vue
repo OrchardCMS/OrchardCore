@@ -167,7 +167,7 @@ import type {
   IMediaFieldItem,
   IMediaFieldPath,
 } from "../interfaces/MediaFieldTypes";
-import { useLocalizations } from "@bloom/helpers/localizations";
+import { useLocalizations } from "../composables/useLocalizations";
 import { useFieldUpload, type IFieldUploadConfig } from "../services/FieldUploadService";
 
 export interface IAttachedFieldConfig {

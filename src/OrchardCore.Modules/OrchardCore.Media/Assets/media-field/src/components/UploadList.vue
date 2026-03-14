@@ -72,7 +72,7 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import type { IUploadFileEntry } from "../services/FieldUploadService";
-import { useLocalizations } from "@bloom/helpers/localizations";
+import { useLocalizations } from "../composables/useLocalizations";
 
 const props = defineProps<{
   files: IUploadFileEntry[];

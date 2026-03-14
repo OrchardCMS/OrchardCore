@@ -30,7 +30,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue';
 import { SeverityLevel } from '@bloom/services/notifications/interfaces';
-import { useLocalizations } from '@bloom/helpers/localizations';
+import { useLocalizations } from '../composables/useLocalizations';
 
 const { translations } = useLocalizations();
 const t = translations;

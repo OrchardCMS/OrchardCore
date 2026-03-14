@@ -6,7 +6,7 @@ import { SeverityLevel } from "@bloom/services/notifications/interfaces";
 import { useEventBus } from "./UseEventBus";
 import { useHierarchicalTreeBuilder } from "./HierarchicalTreeBuilder";
 import { FileDataService, IFileDataService } from "@bloom/media/api/file-data-service";
-import { useLocalizations } from "@bloom/helpers/localizations";
+import { useLocalizations } from "../composables/useLocalizations";
 
 function isNotFoundError(error: unknown): boolean {
   return typeof error === "object" && error !== null && "status" in error && (error as { status: number }).status === 404;

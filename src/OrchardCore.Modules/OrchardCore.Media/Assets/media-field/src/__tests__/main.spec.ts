@@ -20,7 +20,7 @@ const mockSetTranslations = vi.fn((t: Record<string, string>) => {
   mockTranslationsRef.value = t;
 });
 
-vi.mock("@bloom/helpers/localizations", () => ({
+vi.mock("../composables/useLocalizations", () => ({
   useLocalizations: () => ({
     translations: mockTranslationsRef,
     setTranslations: mockSetTranslations,

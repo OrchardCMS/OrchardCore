@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import { mount, VueWrapper } from "@vue/test-utils";
 import ModalFileAction from "../ModalFileAction.vue";
 import { FileAction, IFileLibraryItemDto, IRenameFileLibraryItemDto } from "@bloom/media/interfaces";
-import { useLocalizations } from "@bloom/helpers/localizations";
+import { useLocalizations } from "../../composables/useLocalizations";
 import { useEventBusService } from "../../services/EventBusService";
 import { VueFinalModal, createVfm } from "vue-final-modal";
 

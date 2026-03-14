@@ -66,7 +66,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useEventBus } from '../services/UseEventBus'
-import { useLocalizations } from '@bloom/helpers/localizations'
+import { useLocalizations } from '../composables/useLocalizations'
 
 const { on, emit } = useEventBus();
 const { translations } = useLocalizations();

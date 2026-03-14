@@ -19393,7 +19393,11 @@ const emitter = mitt();
 function useEventBus() {
   return emitter;
 }
-const translations$4 = reactive({});
+const translations$5 = {};
+function getTranslations() {
+  return translations$5;
+}
+const translations$4 = reactive(getTranslations());
 function useLocalizations() {
   const setTranslations = (t2) => {
     Object.assign(translations$4, t2);
@@ -19537,798 +19541,6 @@ const _sfc_main$b = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var commonjsGlobal$1 = typeof globalThis !== "undefined" ? globalThis : typeof window !== "undefined" ? window : typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : {};
-function getDefaultExportFromCjs(x2) {
-  return x2 && x2.__esModule && Object.prototype.hasOwnProperty.call(x2, "default") ? x2["default"] : x2;
-}
-var browser = { exports: {} };
-var ms;
-var hasRequiredMs;
-function requireMs() {
-  if (hasRequiredMs) return ms;
-  hasRequiredMs = 1;
-  var s2 = 1e3;
-  var m2 = s2 * 60;
-  var h2 = m2 * 60;
-  var d2 = h2 * 24;
-  var w2 = d2 * 7;
-  var y2 = d2 * 365.25;
-  ms = function(val, options2) {
-    options2 = options2 || {};
-    var type = typeof val;
-    if (type === "string" && val.length > 0) {
-      return parse2(val);
-    } else if (type === "number" && isFinite(val)) {
-      return options2.long ? fmtLong(val) : fmtShort(val);
-    }
-    throw new Error(
-      "val is not a non-empty string or a valid number. val=" + JSON.stringify(val)
-    );
-  };
-  function parse2(str) {
-    str = String(str);
-    if (str.length > 100) {
-      return;
-    }
-    var match2 = /^(-?(?:\d+)?\.?\d+) *(milliseconds?|msecs?|ms|seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|weeks?|w|years?|yrs?|y)?$/i.exec(
-      str
-    );
-    if (!match2) {
-      return;
-    }
-    var n2 = parseFloat(match2[1]);
-    var type = (match2[2] || "ms").toLowerCase();
-    switch (type) {
-      case "years":
-      case "year":
-      case "yrs":
-      case "yr":
-      case "y":
-        return n2 * y2;
-      case "weeks":
-      case "week":
-      case "w":
-        return n2 * w2;
-      case "days":
-      case "day":
-      case "d":
-        return n2 * d2;
-      case "hours":
-      case "hour":
-      case "hrs":
-      case "hr":
-      case "h":
-        return n2 * h2;
-      case "minutes":
-      case "minute":
-      case "mins":
-      case "min":
-      case "m":
-        return n2 * m2;
-      case "seconds":
-      case "second":
-      case "secs":
-      case "sec":
-      case "s":
-        return n2 * s2;
-      case "milliseconds":
-      case "millisecond":
-      case "msecs":
-      case "msec":
-      case "ms":
-        return n2;
-      default:
-        return void 0;
-    }
-  }
-  function fmtShort(ms2) {
-    var msAbs = Math.abs(ms2);
-    if (msAbs >= d2) {
-      return Math.round(ms2 / d2) + "d";
-    }
-    if (msAbs >= h2) {
-      return Math.round(ms2 / h2) + "h";
-    }
-    if (msAbs >= m2) {
-      return Math.round(ms2 / m2) + "m";
-    }
-    if (msAbs >= s2) {
-      return Math.round(ms2 / s2) + "s";
-    }
-    return ms2 + "ms";
-  }
-  function fmtLong(ms2) {
-    var msAbs = Math.abs(ms2);
-    if (msAbs >= d2) {
-      return plural(ms2, msAbs, d2, "day");
-    }
-    if (msAbs >= h2) {
-      return plural(ms2, msAbs, h2, "hour");
-    }
-    if (msAbs >= m2) {
-      return plural(ms2, msAbs, m2, "minute");
-    }
-    if (msAbs >= s2) {
-      return plural(ms2, msAbs, s2, "second");
-    }
-    return ms2 + " ms";
-  }
-  function plural(ms2, msAbs, n2, name) {
-    var isPlural = msAbs >= n2 * 1.5;
-    return Math.round(ms2 / n2) + " " + name + (isPlural ? "s" : "");
-  }
-  return ms;
-}
-var common;
-var hasRequiredCommon;
-function requireCommon() {
-  if (hasRequiredCommon) return common;
-  hasRequiredCommon = 1;
-  function setup3(env) {
-    createDebug.debug = createDebug;
-    createDebug.default = createDebug;
-    createDebug.coerce = coerce2;
-    createDebug.disable = disable;
-    createDebug.enable = enable;
-    createDebug.enabled = enabled;
-    createDebug.humanize = requireMs();
-    createDebug.destroy = destroy;
-    Object.keys(env).forEach((key) => {
-      createDebug[key] = env[key];
-    });
-    createDebug.names = [];
-    createDebug.skips = [];
-    createDebug.formatters = {};
-    function selectColor(namespace2) {
-      let hash = 0;
-      for (let i2 = 0; i2 < namespace2.length; i2++) {
-        hash = (hash << 5) - hash + namespace2.charCodeAt(i2);
-        hash |= 0;
-      }
-      return createDebug.colors[Math.abs(hash) % createDebug.colors.length];
-    }
-    createDebug.selectColor = selectColor;
-    function createDebug(namespace2) {
-      let prevTime;
-      let enableOverride = null;
-      let namespacesCache;
-      let enabledCache;
-      function debug2(...args) {
-        if (!debug2.enabled) {
-          return;
-        }
-        const self2 = debug2;
-        const curr = Number(/* @__PURE__ */ new Date());
-        const ms2 = curr - (prevTime || curr);
-        self2.diff = ms2;
-        self2.prev = prevTime;
-        self2.curr = curr;
-        prevTime = curr;
-        args[0] = createDebug.coerce(args[0]);
-        if (typeof args[0] !== "string") {
-          args.unshift("%O");
-        }
-        let index2 = 0;
-        args[0] = args[0].replace(/%([a-zA-Z%])/g, (match2, format) => {
-          if (match2 === "%%") {
-            return "%";
-          }
-          index2++;
-          const formatter = createDebug.formatters[format];
-          if (typeof formatter === "function") {
-            const val = args[index2];
-            match2 = formatter.call(self2, val);
-            args.splice(index2, 1);
-            index2--;
-          }
-          return match2;
-        });
-        createDebug.formatArgs.call(self2, args);
-        const logFn = self2.log || createDebug.log;
-        logFn.apply(self2, args);
-      }
-      debug2.namespace = namespace2;
-      debug2.useColors = createDebug.useColors();
-      debug2.color = createDebug.selectColor(namespace2);
-      debug2.extend = extend4;
-      debug2.destroy = createDebug.destroy;
-      Object.defineProperty(debug2, "enabled", {
-        enumerable: true,
-        configurable: false,
-        get: () => {
-          if (enableOverride !== null) {
-            return enableOverride;
-          }
-          if (namespacesCache !== createDebug.namespaces) {
-            namespacesCache = createDebug.namespaces;
-            enabledCache = createDebug.enabled(namespace2);
-          }
-          return enabledCache;
-        },
-        set: (v2) => {
-          enableOverride = v2;
-        }
-      });
-      if (typeof createDebug.init === "function") {
-        createDebug.init(debug2);
-      }
-      return debug2;
-    }
-    function extend4(namespace2, delimiter) {
-      const newDebug = createDebug(this.namespace + (typeof delimiter === "undefined" ? ":" : delimiter) + namespace2);
-      newDebug.log = this.log;
-      return newDebug;
-    }
-    function enable(namespaces) {
-      createDebug.save(namespaces);
-      createDebug.namespaces = namespaces;
-      createDebug.names = [];
-      createDebug.skips = [];
-      const split = (typeof namespaces === "string" ? namespaces : "").trim().replace(/\s+/g, ",").split(",").filter(Boolean);
-      for (const ns of split) {
-        if (ns[0] === "-") {
-          createDebug.skips.push(ns.slice(1));
-        } else {
-          createDebug.names.push(ns);
-        }
-      }
-    }
-    function matchesTemplate(search, template) {
-      let searchIndex = 0;
-      let templateIndex = 0;
-      let starIndex = -1;
-      let matchIndex = 0;
-      while (searchIndex < search.length) {
-        if (templateIndex < template.length && (template[templateIndex] === search[searchIndex] || template[templateIndex] === "*")) {
-          if (template[templateIndex] === "*") {
-            starIndex = templateIndex;
-            matchIndex = searchIndex;
-            templateIndex++;
-          } else {
-            searchIndex++;
-            templateIndex++;
-          }
-        } else if (starIndex !== -1) {
-          templateIndex = starIndex + 1;
-          matchIndex++;
-          searchIndex = matchIndex;
-        } else {
-          return false;
-        }
-      }
-      while (templateIndex < template.length && template[templateIndex] === "*") {
-        templateIndex++;
-      }
-      return templateIndex === template.length;
-    }
-    function disable() {
-      const namespaces = [
-        ...createDebug.names,
-        ...createDebug.skips.map((namespace2) => "-" + namespace2)
-      ].join(",");
-      createDebug.enable("");
-      return namespaces;
-    }
-    function enabled(name) {
-      for (const skip of createDebug.skips) {
-        if (matchesTemplate(name, skip)) {
-          return false;
-        }
-      }
-      for (const ns of createDebug.names) {
-        if (matchesTemplate(name, ns)) {
-          return true;
-        }
-      }
-      return false;
-    }
-    function coerce2(val) {
-      if (val instanceof Error) {
-        return val.stack || val.message;
-      }
-      return val;
-    }
-    function destroy() {
-      console.warn("Instance method `debug.destroy()` is deprecated and no longer does anything. It will be removed in the next major version of `debug`.");
-    }
-    createDebug.enable(createDebug.load());
-    return createDebug;
-  }
-  common = setup3;
-  return common;
-}
-var hasRequiredBrowser;
-function requireBrowser() {
-  if (hasRequiredBrowser) return browser.exports;
-  hasRequiredBrowser = 1;
-  (function(module, exports$1) {
-    exports$1.formatArgs = formatArgs;
-    exports$1.save = save;
-    exports$1.load = load2;
-    exports$1.useColors = useColors;
-    exports$1.storage = localstorage();
-    exports$1.destroy = /* @__PURE__ */ (() => {
-      let warned = false;
-      return () => {
-        if (!warned) {
-          warned = true;
-          console.warn("Instance method `debug.destroy()` is deprecated and no longer does anything. It will be removed in the next major version of `debug`.");
-        }
-      };
-    })();
-    exports$1.colors = [
-      "#0000CC",
-      "#0000FF",
-      "#0033CC",
-      "#0033FF",
-      "#0066CC",
-      "#0066FF",
-      "#0099CC",
-      "#0099FF",
-      "#00CC00",
-      "#00CC33",
-      "#00CC66",
-      "#00CC99",
-      "#00CCCC",
-      "#00CCFF",
-      "#3300CC",
-      "#3300FF",
-      "#3333CC",
-      "#3333FF",
-      "#3366CC",
-      "#3366FF",
-      "#3399CC",
-      "#3399FF",
-      "#33CC00",
-      "#33CC33",
-      "#33CC66",
-      "#33CC99",
-      "#33CCCC",
-      "#33CCFF",
-      "#6600CC",
-      "#6600FF",
-      "#6633CC",
-      "#6633FF",
-      "#66CC00",
-      "#66CC33",
-      "#9900CC",
-      "#9900FF",
-      "#9933CC",
-      "#9933FF",
-      "#99CC00",
-      "#99CC33",
-      "#CC0000",
-      "#CC0033",
-      "#CC0066",
-      "#CC0099",
-      "#CC00CC",
-      "#CC00FF",
-      "#CC3300",
-      "#CC3333",
-      "#CC3366",
-      "#CC3399",
-      "#CC33CC",
-      "#CC33FF",
-      "#CC6600",
-      "#CC6633",
-      "#CC9900",
-      "#CC9933",
-      "#CCCC00",
-      "#CCCC33",
-      "#FF0000",
-      "#FF0033",
-      "#FF0066",
-      "#FF0099",
-      "#FF00CC",
-      "#FF00FF",
-      "#FF3300",
-      "#FF3333",
-      "#FF3366",
-      "#FF3399",
-      "#FF33CC",
-      "#FF33FF",
-      "#FF6600",
-      "#FF6633",
-      "#FF9900",
-      "#FF9933",
-      "#FFCC00",
-      "#FFCC33"
-    ];
-    function useColors() {
-      if (typeof window !== "undefined" && window.process && (window.process.type === "renderer" || window.process.__nwjs)) {
-        return true;
-      }
-      if (typeof navigator !== "undefined" && navigator.userAgent && navigator.userAgent.toLowerCase().match(/(edge|trident)\/(\d+)/)) {
-        return false;
-      }
-      let m2;
-      return typeof document !== "undefined" && document.documentElement && document.documentElement.style && document.documentElement.style.WebkitAppearance || // Is firebug? http://stackoverflow.com/a/398120/376773
-      typeof window !== "undefined" && window.console && (window.console.firebug || window.console.exception && window.console.table) || // Is firefox >= v31?
-      // https://developer.mozilla.org/en-US/docs/Tools/Web_Console#Styling_messages
-      typeof navigator !== "undefined" && navigator.userAgent && (m2 = navigator.userAgent.toLowerCase().match(/firefox\/(\d+)/)) && parseInt(m2[1], 10) >= 31 || // Double check webkit in userAgent just in case we are in a worker
-      typeof navigator !== "undefined" && navigator.userAgent && navigator.userAgent.toLowerCase().match(/applewebkit\/(\d+)/);
-    }
-    function formatArgs(args) {
-      args[0] = (this.useColors ? "%c" : "") + this.namespace + (this.useColors ? " %c" : " ") + args[0] + (this.useColors ? "%c " : " ") + "+" + module.exports.humanize(this.diff);
-      if (!this.useColors) {
-        return;
-      }
-      const c2 = "color: " + this.color;
-      args.splice(1, 0, c2, "color: inherit");
-      let index2 = 0;
-      let lastC = 0;
-      args[0].replace(/%[a-zA-Z%]/g, (match2) => {
-        if (match2 === "%%") {
-          return;
-        }
-        index2++;
-        if (match2 === "%c") {
-          lastC = index2;
-        }
-      });
-      args.splice(lastC, 0, c2);
-    }
-    exports$1.log = console.debug || console.log || (() => {
-    });
-    function save(namespaces) {
-      try {
-        if (namespaces) {
-          exports$1.storage.setItem("debug", namespaces);
-        } else {
-          exports$1.storage.removeItem("debug");
-        }
-      } catch (error) {
-      }
-    }
-    function load2() {
-      let r2;
-      try {
-        r2 = exports$1.storage.getItem("debug") || exports$1.storage.getItem("DEBUG");
-      } catch (error) {
-      }
-      if (!r2 && typeof process !== "undefined" && "env" in process) {
-        r2 = process.env.DEBUG;
-      }
-      return r2;
-    }
-    function localstorage() {
-      try {
-        return localStorage;
-      } catch (error) {
-      }
-    }
-    module.exports = requireCommon()(exports$1);
-    const { formatters } = module.exports;
-    formatters.j = function(v2) {
-      try {
-        return JSON.stringify(v2);
-      } catch (error) {
-        return "[UnexpectedJSONParseError]: " + error.message;
-      }
-    };
-  })(browser, browser.exports);
-  return browser.exports;
-}
-var browserExports = requireBrowser();
-const dbg = /* @__PURE__ */ getDefaultExportFromCjs(browserExports);
-var SeverityLevel = /* @__PURE__ */ ((SeverityLevel2) => {
-  SeverityLevel2["Success"] = "Success";
-  SeverityLevel2["Info"] = "Info";
-  SeverityLevel2["Warn"] = "Warn";
-  SeverityLevel2["Error"] = "Error";
-  return SeverityLevel2;
-})(SeverityLevel || {});
-const debug$1 = dbg("orchardcore:bloom:notifier");
-function registerNotificationBus() {
-  if (window.notificationBus === void 0) {
-    window.notificationBus = mitt();
-  }
-  return window.notificationBus;
-}
-class NotificationMessage {
-  constructor(data9) {
-    if (!data9) {
-      return;
-    }
-    Object.getOwnPropertyNames(data9).forEach((property) => {
-      this[property] = data9[property];
-    });
-  }
-}
-function notifyMessage(message) {
-  if (!message) {
-    debug$1("Notification message is null or undefined");
-    return;
-  }
-  if (window.notificationBus !== void 0) {
-    try {
-      window.notificationBus.emit("notify", message);
-    } catch (error) {
-      debug$1("Notification bus not registered", error);
-    }
-  }
-}
-function notify(message, severityLevel) {
-  if (!message) {
-    notifyMessage({
-      summary: "Error",
-      detail: "Unknown error occured",
-      severity: SeverityLevel.Error
-    });
-    return;
-  }
-  const notificationMessage = getNotificationMessageFromObject(message);
-  if (notificationMessage) {
-    notifyMessage(notificationMessage);
-  }
-}
-function getNotificationMessageFromObject(message, severityLevel) {
-  if (isNotificationMessage(message)) {
-    return message;
-  }
-  if (isValidationProblemDetailsLike(message)) {
-    const detail = message.errors && Object.values(message.errors).length > 0 ? Object.values(message.errors).flat().join("\r\n") : message.detail ?? "";
-    return {
-      summary: message.title ?? "",
-      detail,
-      severity: SeverityLevel.Error
-    };
-  }
-  if (isProblemDetailsLike(message)) {
-    return {
-      summary: message.title ?? "",
-      detail: message.detail ?? "",
-      severity: SeverityLevel.Error
-    };
-  }
-  if (message instanceof Error) {
-    return {
-      summary: "Server Error",
-      detail: message.message,
-      severity: SeverityLevel.Error
-    };
-  }
-  return void 0;
-}
-function isNotificationMessage(message) {
-  return message instanceof NotificationMessage;
-}
-function isProblemDetailsLike(message) {
-  return !!message && typeof message === "object" && ("title" in message || "detail" in message);
-}
-function isValidationProblemDetailsLike(message) {
-  return isProblemDetailsLike(message) && "errors" in message;
-}
-let getRandomValues;
-const rnds8 = new Uint8Array(16);
-function rng() {
-  if (!getRandomValues) {
-    getRandomValues = typeof crypto !== "undefined" && crypto.getRandomValues && crypto.getRandomValues.bind(crypto);
-    if (!getRandomValues) {
-      throw new Error("crypto.getRandomValues() not supported. See https://github.com/uuidjs/uuid#getrandomvalues-not-supported");
-    }
-  }
-  return getRandomValues(rnds8);
-}
-const byteToHex = [];
-for (let i2 = 0; i2 < 256; ++i2) {
-  byteToHex.push((i2 + 256).toString(16).slice(1));
-}
-function unsafeStringify(arr, offset = 0) {
-  return byteToHex[arr[offset + 0]] + byteToHex[arr[offset + 1]] + byteToHex[arr[offset + 2]] + byteToHex[arr[offset + 3]] + "-" + byteToHex[arr[offset + 4]] + byteToHex[arr[offset + 5]] + "-" + byteToHex[arr[offset + 6]] + byteToHex[arr[offset + 7]] + "-" + byteToHex[arr[offset + 8]] + byteToHex[arr[offset + 9]] + "-" + byteToHex[arr[offset + 10]] + byteToHex[arr[offset + 11]] + byteToHex[arr[offset + 12]] + byteToHex[arr[offset + 13]] + byteToHex[arr[offset + 14]] + byteToHex[arr[offset + 15]];
-}
-const randomUUID = typeof crypto !== "undefined" && crypto.randomUUID && crypto.randomUUID.bind(crypto);
-const native = {
-  randomUUID
-};
-function v4(options2, buf, offset) {
-  if (native.randomUUID && true && !options2) {
-    return native.randomUUID();
-  }
-  options2 = options2 || {};
-  const rnds = options2.random || (options2.rng || rng)();
-  rnds[6] = rnds[6] & 15 | 64;
-  rnds[8] = rnds[8] & 63 | 128;
-  return unsafeStringify(rnds);
-}
-function humanFileSize(bytes, si = false, dp = 1) {
-  if (bytes === null || bytes === void 0) {
-    throw new Error("humanFileSize: bytes is null or undefined");
-  }
-  const thresh = si ? 1e3 : 1024;
-  if (Math.abs(bytes) < thresh) {
-    return bytes + " B";
-  }
-  const units = si ? ["kB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"] : ["KiB", "MiB", "GiB", "TiB", "PiB", "EiB", "ZiB", "YiB"];
-  let u2 = -1;
-  const r2 = 10 ** dp;
-  do {
-    bytes /= thresh;
-    ++u2;
-  } while (Math.round(Math.abs(bytes) * r2) / r2 >= thresh && u2 < units.length - 1);
-  return bytes.toFixed(dp) + " " + units[u2];
-}
-function getFileExtension(fileName) {
-  if (fileName && fileName.includes(".")) {
-    return fileName.split(".").pop();
-  }
-  return "";
-}
-function printDateTime(datemillis) {
-  if (datemillis != "" && datemillis != null && datemillis != void 0) {
-    const d2 = new Date(datemillis);
-    return d2.toLocaleString();
-  } else {
-    return "";
-  }
-}
-const _hoisted_1$f = { class: "tw:flex tw:justify-between" };
-const _hoisted_2$e = { class: "modal__title" };
-const _hoisted_3$d = {
-  key: 0,
-  class: "file-wrapper"
-};
-const _hoisted_4$8 = { class: "img-wrapper" };
-const _hoisted_5$8 = { class: "tw:uppercase file-ext tw:text-white" };
-const _hoisted_6$7 = { class: "tw:font-bold tw:text-lg tw:ml-2 tw:min-w-0 tw:break-all" };
-const _hoisted_7$7 = { class: "tw:mt-3 tw:flex tw:flex-row tw:justify-end" };
-const _sfc_main$a = /* @__PURE__ */ defineComponent({
-  __name: "ModalConfirm",
-  props: {
-    title: String,
-    modalName: {
-      type: String,
-      required: true
-    },
-    action: {
-      type: Number
-    },
-    files: {
-      type: Object
-    },
-    targetFolder: {
-      type: String
-    },
-    showModalProp: {
-      type: Boolean,
-      default: false
-    }
-  },
-  emits: ["confirm", "closed"],
-  setup(__props, { emit: __emit }) {
-    var _a2;
-    const { translations: translations2 } = useLocalizations();
-    const t2 = translations2;
-    const props2 = __props;
-    let showModal = ref(props2.showModalProp);
-    const fileItem = (_a2 = props2.files) == null ? void 0 : _a2.at(0);
-    const emit2 = __emit;
-    return (_ctx, _cache) => {
-      const _component_fa_icon = resolveComponent("fa-icon");
-      return openBlock(), createBlock(unref(Ro), {
-        "focus-trap": false,
-        modelValue: unref(showModal),
-        "onUpdate:modelValue": _cache[3] || (_cache[3] = ($event) => isRef$1(showModal) ? showModal.value = $event : showModal = $event),
-        "modal-id": __props.modalName,
-        class: "ma-vfm tw:flex tw:justify-center tw:items-center",
-        "content-class": "tw:flex tw:flex-col tw:max-w-xl tw:mx-4 tw:p-4 tw:rounded-lg tw:space-y-3 action-modal"
-      }, {
-        default: withCtx(() => {
-          var _a3, _b, _c;
-          return [
-            createBaseVNode("div", _hoisted_1$f, [
-              createBaseVNode("span", _hoisted_2$e, toDisplayString(__props.title), 1),
-              createBaseVNode("span", {
-                class: "tw:cursor-pointer",
-                onClick: _cache[0] || (_cache[0] = ($event) => emit2("closed"))
-              }, [
-                createVNode(_component_fa_icon, { icon: "fa-solid fa-xmark fa-2xl" })
-              ])
-            ]),
-            renderSlot(_ctx.$slots, "default"),
-            ((_a3 = props2.files) == null ? void 0 : _a3.length) == 1 ? (openBlock(), createElementBlock("div", _hoisted_3$d, [
-              createBaseVNode("div", _hoisted_4$8, [
-                _cache[4] || (_cache[4] = createBaseVNode("svg", {
-                  viewBox: "0 0 16 16",
-                  fill: "none",
-                  xmlns: "http://www.w3.org/2000/svg"
-                }, [
-                  createBaseVNode("path", {
-                    d: "M10.28 4.46553H13.4658C13.4889 4.4658 13.5118 4.46145 13.5332 4.45274C13.5545 4.44402 13.574 4.43113 13.5903 4.4148C13.6066 4.39848 13.6195 4.37906 13.6282 4.35768C13.6369 4.3363 13.6413 4.3134 13.641 4.29031C13.6417 4.13738 13.6084 3.9862 13.5437 3.84764C13.479 3.70907 13.3844 3.58656 13.2667 3.48889L10.5946 1.26233C10.3921 1.09433 10.137 1.00273 9.87384 1.00348C9.83983 1.00342 9.80614 1.01007 9.7747 1.02305C9.74327 1.03604 9.71471 1.0551 9.69066 1.07915C9.66661 1.1032 9.64755 1.13176 9.63456 1.1632C9.62158 1.19463 9.61493 1.22832 9.61499 1.26233V3.801C9.61499 3.88831 9.6322 3.97476 9.66562 4.05542C9.69905 4.13607 9.74804 4.20935 9.8098 4.27107C9.87156 4.33278 9.94488 4.38172 10.0256 4.41509C10.1062 4.44845 10.1927 4.46559 10.28 4.46553Z",
-                    fill: "#2D2D2D"
-                  }),
-                  createBaseVNode("path", {
-                    d: "M8.70453 3.8V1H4.12C3.82324 1.00092 3.5389 1.11921 3.32906 1.32906C3.11921 1.5389 3.00092 1.82324 3 2.12V13.88C3.00092 14.1768 3.11921 14.4611 3.32906 14.6709C3.5389 14.8808 3.82324 14.9991 4.12 15H12.52C12.8168 14.9991 13.1011 14.8808 13.3109 14.6709C13.5208 14.4611 13.6391 14.1768 13.64 13.88V5.37497H10.28C9.86241 5.37444 9.46206 5.20836 9.16673 4.91312C8.87141 4.61788 8.70519 4.21759 8.70453 3.8Z",
-                    fill: "#2D2D2D"
-                  })
-                ], -1)),
-                createBaseVNode("span", _hoisted_5$8, toDisplayString(unref(getFileExtension)((_b = unref(fileItem)) == null ? void 0 : _b.filePath)), 1)
-              ]),
-              createBaseVNode("div", _hoisted_6$7, toDisplayString((_c = unref(fileItem)) == null ? void 0 : _c.name), 1)
-            ])) : createCommentVNode("", true),
-            createBaseVNode("div", _hoisted_7$7, [
-              createBaseVNode("button", {
-                class: "ma-btn ma-btn-light tw:border tw:border-gray-400",
-                onClick: _cache[1] || (_cache[1] = ($event) => emit2("closed"))
-              }, toDisplayString(unref(t2).Cancel), 1),
-              createBaseVNode("button", {
-                class: "tw:ml-2 ma-btn ma-btn-primary",
-                onClick: _cache[2] || (_cache[2] = ($event) => emit2("confirm", { action: __props.action, files: __props.files, targetFolder: _ctx.$props.targetFolder }))
-              }, [
-                renderSlot(_ctx.$slots, "submit")
-              ])
-            ])
-          ];
-        }),
-        _: 3
-      }, 8, ["modelValue", "modal-id"]);
-    };
-  }
-});
-const { emit: emit$5 } = useEventBus();
-const useConfirmModal = () => {
-  const showConfirmModal = (modalFileEvent) => {
-    if (modalFileEvent.files.length > 0) {
-      const { translations: translations2 } = useLocalizations();
-      const t2 = translations2;
-      let defaultSlotMessage = "";
-      if (modalFileEvent.action == FileAction.Delete) {
-        if (modalFileEvent.files.length > 1) {
-          defaultSlotMessage += `<p class="tw:m-0">${t2.DeleteMultipleFilesMessage}</p>`;
-        } else {
-          defaultSlotMessage += `<p class="tw:m-0">${t2.DeleteSingleFileMessage}</p>`;
-        }
-      } else if (modalFileEvent.action == FileAction.Move) {
-        defaultSlotMessage += `<p class="tw:m-0">${t2.MoveFileMessage}</p>`;
-      }
-      const { open, destroy } = Go({
-        defaultModelValue: false,
-        keepAlive: false,
-        component: _sfc_main$a,
-        slots: {
-          default: defaultSlotMessage,
-          submit: t2.Ok
-        },
-        attrs: {
-          title: modalFileEvent.modalTitle,
-          modalName: modalFileEvent.uuid,
-          files: modalFileEvent.files,
-          action: modalFileEvent.action ?? FileAction.Rename,
-          targetFolder: modalFileEvent.targetFolder,
-          onConfirm(action) {
-            confirmModal(action);
-            destroy();
-          },
-          onClosed() {
-            destroy();
-          }
-        }
-      });
-      open();
-    }
-  };
-  const confirmModal = (confirmAction) => {
-    if (confirmAction.action == FileAction.Delete) {
-      if (confirmAction.files && confirmAction.files.length > 0) {
-        if (confirmAction.files.length > 1) {
-          emit$5("FilesDeleteReq");
-        } else {
-          emit$5("FileDeleteReq", confirmAction.files[0]);
-        }
-      }
-    } else if (confirmAction.action == FileAction.Move) {
-      if (confirmAction.files && confirmAction.files.length > 0) {
-        const moveAssetsState = {
-          files: confirmAction.files,
-          sourceFolder: confirmAction.files[0].directoryPath,
-          targetFolder: confirmAction.targetFolder
-        };
-        emit$5("FileListMove", moveAssetsState);
-      }
-    }
-  };
-  return { showConfirmModal, confirmModal };
-};
 const assetsStore$3 = shallowRef([]);
 const selectedDirectory$7 = ref({});
 const fileItems$2 = shallowRef([]);
@@ -23386,7 +22598,7 @@ function classList(props2) {
     return key;
   });
 }
-var commonjsGlobal = typeof globalThis !== "undefined" ? globalThis : typeof window !== "undefined" ? window : typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : {};
+var commonjsGlobal$1 = typeof globalThis !== "undefined" ? globalThis : typeof window !== "undefined" ? window : typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : {};
 var humps$1 = { exports: {} };
 (function(module) {
   (function(global2) {
@@ -23487,7 +22699,7 @@ var humps$1 = { exports: {} };
     } else {
       global2.humps = humps2;
     }
-  })(commonjsGlobal);
+  })(commonjsGlobal$1);
 })(humps$1);
 var humps = humps$1.exports;
 var _excluded = ["class", "style"];
@@ -23750,6 +22962,568 @@ var FontAwesomeIcon = /* @__PURE__ */ defineComponent({
     };
   }
 });
+var commonjsGlobal = typeof globalThis !== "undefined" ? globalThis : typeof window !== "undefined" ? window : typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : {};
+function getDefaultExportFromCjs(x2) {
+  return x2 && x2.__esModule && Object.prototype.hasOwnProperty.call(x2, "default") ? x2["default"] : x2;
+}
+var browser = { exports: {} };
+var ms;
+var hasRequiredMs;
+function requireMs() {
+  if (hasRequiredMs) return ms;
+  hasRequiredMs = 1;
+  var s2 = 1e3;
+  var m2 = s2 * 60;
+  var h2 = m2 * 60;
+  var d2 = h2 * 24;
+  var w2 = d2 * 7;
+  var y2 = d2 * 365.25;
+  ms = function(val, options2) {
+    options2 = options2 || {};
+    var type = typeof val;
+    if (type === "string" && val.length > 0) {
+      return parse2(val);
+    } else if (type === "number" && isFinite(val)) {
+      return options2.long ? fmtLong(val) : fmtShort(val);
+    }
+    throw new Error(
+      "val is not a non-empty string or a valid number. val=" + JSON.stringify(val)
+    );
+  };
+  function parse2(str) {
+    str = String(str);
+    if (str.length > 100) {
+      return;
+    }
+    var match2 = /^(-?(?:\d+)?\.?\d+) *(milliseconds?|msecs?|ms|seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|weeks?|w|years?|yrs?|y)?$/i.exec(
+      str
+    );
+    if (!match2) {
+      return;
+    }
+    var n2 = parseFloat(match2[1]);
+    var type = (match2[2] || "ms").toLowerCase();
+    switch (type) {
+      case "years":
+      case "year":
+      case "yrs":
+      case "yr":
+      case "y":
+        return n2 * y2;
+      case "weeks":
+      case "week":
+      case "w":
+        return n2 * w2;
+      case "days":
+      case "day":
+      case "d":
+        return n2 * d2;
+      case "hours":
+      case "hour":
+      case "hrs":
+      case "hr":
+      case "h":
+        return n2 * h2;
+      case "minutes":
+      case "minute":
+      case "mins":
+      case "min":
+      case "m":
+        return n2 * m2;
+      case "seconds":
+      case "second":
+      case "secs":
+      case "sec":
+      case "s":
+        return n2 * s2;
+      case "milliseconds":
+      case "millisecond":
+      case "msecs":
+      case "msec":
+      case "ms":
+        return n2;
+      default:
+        return void 0;
+    }
+  }
+  function fmtShort(ms2) {
+    var msAbs = Math.abs(ms2);
+    if (msAbs >= d2) {
+      return Math.round(ms2 / d2) + "d";
+    }
+    if (msAbs >= h2) {
+      return Math.round(ms2 / h2) + "h";
+    }
+    if (msAbs >= m2) {
+      return Math.round(ms2 / m2) + "m";
+    }
+    if (msAbs >= s2) {
+      return Math.round(ms2 / s2) + "s";
+    }
+    return ms2 + "ms";
+  }
+  function fmtLong(ms2) {
+    var msAbs = Math.abs(ms2);
+    if (msAbs >= d2) {
+      return plural(ms2, msAbs, d2, "day");
+    }
+    if (msAbs >= h2) {
+      return plural(ms2, msAbs, h2, "hour");
+    }
+    if (msAbs >= m2) {
+      return plural(ms2, msAbs, m2, "minute");
+    }
+    if (msAbs >= s2) {
+      return plural(ms2, msAbs, s2, "second");
+    }
+    return ms2 + " ms";
+  }
+  function plural(ms2, msAbs, n2, name) {
+    var isPlural = msAbs >= n2 * 1.5;
+    return Math.round(ms2 / n2) + " " + name + (isPlural ? "s" : "");
+  }
+  return ms;
+}
+var common;
+var hasRequiredCommon;
+function requireCommon() {
+  if (hasRequiredCommon) return common;
+  hasRequiredCommon = 1;
+  function setup3(env) {
+    createDebug.debug = createDebug;
+    createDebug.default = createDebug;
+    createDebug.coerce = coerce2;
+    createDebug.disable = disable;
+    createDebug.enable = enable;
+    createDebug.enabled = enabled;
+    createDebug.humanize = requireMs();
+    createDebug.destroy = destroy;
+    Object.keys(env).forEach((key) => {
+      createDebug[key] = env[key];
+    });
+    createDebug.names = [];
+    createDebug.skips = [];
+    createDebug.formatters = {};
+    function selectColor(namespace2) {
+      let hash = 0;
+      for (let i2 = 0; i2 < namespace2.length; i2++) {
+        hash = (hash << 5) - hash + namespace2.charCodeAt(i2);
+        hash |= 0;
+      }
+      return createDebug.colors[Math.abs(hash) % createDebug.colors.length];
+    }
+    createDebug.selectColor = selectColor;
+    function createDebug(namespace2) {
+      let prevTime;
+      let enableOverride = null;
+      let namespacesCache;
+      let enabledCache;
+      function debug2(...args) {
+        if (!debug2.enabled) {
+          return;
+        }
+        const self2 = debug2;
+        const curr = Number(/* @__PURE__ */ new Date());
+        const ms2 = curr - (prevTime || curr);
+        self2.diff = ms2;
+        self2.prev = prevTime;
+        self2.curr = curr;
+        prevTime = curr;
+        args[0] = createDebug.coerce(args[0]);
+        if (typeof args[0] !== "string") {
+          args.unshift("%O");
+        }
+        let index2 = 0;
+        args[0] = args[0].replace(/%([a-zA-Z%])/g, (match2, format) => {
+          if (match2 === "%%") {
+            return "%";
+          }
+          index2++;
+          const formatter = createDebug.formatters[format];
+          if (typeof formatter === "function") {
+            const val = args[index2];
+            match2 = formatter.call(self2, val);
+            args.splice(index2, 1);
+            index2--;
+          }
+          return match2;
+        });
+        createDebug.formatArgs.call(self2, args);
+        const logFn = self2.log || createDebug.log;
+        logFn.apply(self2, args);
+      }
+      debug2.namespace = namespace2;
+      debug2.useColors = createDebug.useColors();
+      debug2.color = createDebug.selectColor(namespace2);
+      debug2.extend = extend4;
+      debug2.destroy = createDebug.destroy;
+      Object.defineProperty(debug2, "enabled", {
+        enumerable: true,
+        configurable: false,
+        get: () => {
+          if (enableOverride !== null) {
+            return enableOverride;
+          }
+          if (namespacesCache !== createDebug.namespaces) {
+            namespacesCache = createDebug.namespaces;
+            enabledCache = createDebug.enabled(namespace2);
+          }
+          return enabledCache;
+        },
+        set: (v2) => {
+          enableOverride = v2;
+        }
+      });
+      if (typeof createDebug.init === "function") {
+        createDebug.init(debug2);
+      }
+      return debug2;
+    }
+    function extend4(namespace2, delimiter) {
+      const newDebug = createDebug(this.namespace + (typeof delimiter === "undefined" ? ":" : delimiter) + namespace2);
+      newDebug.log = this.log;
+      return newDebug;
+    }
+    function enable(namespaces) {
+      createDebug.save(namespaces);
+      createDebug.namespaces = namespaces;
+      createDebug.names = [];
+      createDebug.skips = [];
+      const split = (typeof namespaces === "string" ? namespaces : "").trim().replace(/\s+/g, ",").split(",").filter(Boolean);
+      for (const ns of split) {
+        if (ns[0] === "-") {
+          createDebug.skips.push(ns.slice(1));
+        } else {
+          createDebug.names.push(ns);
+        }
+      }
+    }
+    function matchesTemplate(search, template) {
+      let searchIndex = 0;
+      let templateIndex = 0;
+      let starIndex = -1;
+      let matchIndex = 0;
+      while (searchIndex < search.length) {
+        if (templateIndex < template.length && (template[templateIndex] === search[searchIndex] || template[templateIndex] === "*")) {
+          if (template[templateIndex] === "*") {
+            starIndex = templateIndex;
+            matchIndex = searchIndex;
+            templateIndex++;
+          } else {
+            searchIndex++;
+            templateIndex++;
+          }
+        } else if (starIndex !== -1) {
+          templateIndex = starIndex + 1;
+          matchIndex++;
+          searchIndex = matchIndex;
+        } else {
+          return false;
+        }
+      }
+      while (templateIndex < template.length && template[templateIndex] === "*") {
+        templateIndex++;
+      }
+      return templateIndex === template.length;
+    }
+    function disable() {
+      const namespaces = [
+        ...createDebug.names,
+        ...createDebug.skips.map((namespace2) => "-" + namespace2)
+      ].join(",");
+      createDebug.enable("");
+      return namespaces;
+    }
+    function enabled(name) {
+      for (const skip of createDebug.skips) {
+        if (matchesTemplate(name, skip)) {
+          return false;
+        }
+      }
+      for (const ns of createDebug.names) {
+        if (matchesTemplate(name, ns)) {
+          return true;
+        }
+      }
+      return false;
+    }
+    function coerce2(val) {
+      if (val instanceof Error) {
+        return val.stack || val.message;
+      }
+      return val;
+    }
+    function destroy() {
+      console.warn("Instance method `debug.destroy()` is deprecated and no longer does anything. It will be removed in the next major version of `debug`.");
+    }
+    createDebug.enable(createDebug.load());
+    return createDebug;
+  }
+  common = setup3;
+  return common;
+}
+var hasRequiredBrowser;
+function requireBrowser() {
+  if (hasRequiredBrowser) return browser.exports;
+  hasRequiredBrowser = 1;
+  (function(module, exports$1) {
+    exports$1.formatArgs = formatArgs;
+    exports$1.save = save;
+    exports$1.load = load2;
+    exports$1.useColors = useColors;
+    exports$1.storage = localstorage();
+    exports$1.destroy = /* @__PURE__ */ (() => {
+      let warned = false;
+      return () => {
+        if (!warned) {
+          warned = true;
+          console.warn("Instance method `debug.destroy()` is deprecated and no longer does anything. It will be removed in the next major version of `debug`.");
+        }
+      };
+    })();
+    exports$1.colors = [
+      "#0000CC",
+      "#0000FF",
+      "#0033CC",
+      "#0033FF",
+      "#0066CC",
+      "#0066FF",
+      "#0099CC",
+      "#0099FF",
+      "#00CC00",
+      "#00CC33",
+      "#00CC66",
+      "#00CC99",
+      "#00CCCC",
+      "#00CCFF",
+      "#3300CC",
+      "#3300FF",
+      "#3333CC",
+      "#3333FF",
+      "#3366CC",
+      "#3366FF",
+      "#3399CC",
+      "#3399FF",
+      "#33CC00",
+      "#33CC33",
+      "#33CC66",
+      "#33CC99",
+      "#33CCCC",
+      "#33CCFF",
+      "#6600CC",
+      "#6600FF",
+      "#6633CC",
+      "#6633FF",
+      "#66CC00",
+      "#66CC33",
+      "#9900CC",
+      "#9900FF",
+      "#9933CC",
+      "#9933FF",
+      "#99CC00",
+      "#99CC33",
+      "#CC0000",
+      "#CC0033",
+      "#CC0066",
+      "#CC0099",
+      "#CC00CC",
+      "#CC00FF",
+      "#CC3300",
+      "#CC3333",
+      "#CC3366",
+      "#CC3399",
+      "#CC33CC",
+      "#CC33FF",
+      "#CC6600",
+      "#CC6633",
+      "#CC9900",
+      "#CC9933",
+      "#CCCC00",
+      "#CCCC33",
+      "#FF0000",
+      "#FF0033",
+      "#FF0066",
+      "#FF0099",
+      "#FF00CC",
+      "#FF00FF",
+      "#FF3300",
+      "#FF3333",
+      "#FF3366",
+      "#FF3399",
+      "#FF33CC",
+      "#FF33FF",
+      "#FF6600",
+      "#FF6633",
+      "#FF9900",
+      "#FF9933",
+      "#FFCC00",
+      "#FFCC33"
+    ];
+    function useColors() {
+      if (typeof window !== "undefined" && window.process && (window.process.type === "renderer" || window.process.__nwjs)) {
+        return true;
+      }
+      if (typeof navigator !== "undefined" && navigator.userAgent && navigator.userAgent.toLowerCase().match(/(edge|trident)\/(\d+)/)) {
+        return false;
+      }
+      let m2;
+      return typeof document !== "undefined" && document.documentElement && document.documentElement.style && document.documentElement.style.WebkitAppearance || // Is firebug? http://stackoverflow.com/a/398120/376773
+      typeof window !== "undefined" && window.console && (window.console.firebug || window.console.exception && window.console.table) || // Is firefox >= v31?
+      // https://developer.mozilla.org/en-US/docs/Tools/Web_Console#Styling_messages
+      typeof navigator !== "undefined" && navigator.userAgent && (m2 = navigator.userAgent.toLowerCase().match(/firefox\/(\d+)/)) && parseInt(m2[1], 10) >= 31 || // Double check webkit in userAgent just in case we are in a worker
+      typeof navigator !== "undefined" && navigator.userAgent && navigator.userAgent.toLowerCase().match(/applewebkit\/(\d+)/);
+    }
+    function formatArgs(args) {
+      args[0] = (this.useColors ? "%c" : "") + this.namespace + (this.useColors ? " %c" : " ") + args[0] + (this.useColors ? "%c " : " ") + "+" + module.exports.humanize(this.diff);
+      if (!this.useColors) {
+        return;
+      }
+      const c2 = "color: " + this.color;
+      args.splice(1, 0, c2, "color: inherit");
+      let index2 = 0;
+      let lastC = 0;
+      args[0].replace(/%[a-zA-Z%]/g, (match2) => {
+        if (match2 === "%%") {
+          return;
+        }
+        index2++;
+        if (match2 === "%c") {
+          lastC = index2;
+        }
+      });
+      args.splice(lastC, 0, c2);
+    }
+    exports$1.log = console.debug || console.log || (() => {
+    });
+    function save(namespaces) {
+      try {
+        if (namespaces) {
+          exports$1.storage.setItem("debug", namespaces);
+        } else {
+          exports$1.storage.removeItem("debug");
+        }
+      } catch (error) {
+      }
+    }
+    function load2() {
+      let r2;
+      try {
+        r2 = exports$1.storage.getItem("debug") || exports$1.storage.getItem("DEBUG");
+      } catch (error) {
+      }
+      if (!r2 && typeof process !== "undefined" && "env" in process) {
+        r2 = process.env.DEBUG;
+      }
+      return r2;
+    }
+    function localstorage() {
+      try {
+        return localStorage;
+      } catch (error) {
+      }
+    }
+    module.exports = requireCommon()(exports$1);
+    const { formatters } = module.exports;
+    formatters.j = function(v2) {
+      try {
+        return JSON.stringify(v2);
+      } catch (error) {
+        return "[UnexpectedJSONParseError]: " + error.message;
+      }
+    };
+  })(browser, browser.exports);
+  return browser.exports;
+}
+var browserExports = requireBrowser();
+const dbg = /* @__PURE__ */ getDefaultExportFromCjs(browserExports);
+var SeverityLevel = /* @__PURE__ */ ((SeverityLevel2) => {
+  SeverityLevel2["Success"] = "Success";
+  SeverityLevel2["Info"] = "Info";
+  SeverityLevel2["Warn"] = "Warn";
+  SeverityLevel2["Error"] = "Error";
+  return SeverityLevel2;
+})(SeverityLevel || {});
+const debug$1 = dbg("orchardcore:bloom:notifier");
+function registerNotificationBus() {
+  if (window.notificationBus === void 0) {
+    window.notificationBus = mitt();
+  }
+  return window.notificationBus;
+}
+class NotificationMessage {
+  constructor(data9) {
+    if (!data9) {
+      return;
+    }
+    Object.getOwnPropertyNames(data9).forEach((property) => {
+      this[property] = data9[property];
+    });
+  }
+}
+function notifyMessage(message) {
+  if (!message) {
+    debug$1("Notification message is null or undefined");
+    return;
+  }
+  if (window.notificationBus !== void 0) {
+    try {
+      window.notificationBus.emit("notify", message);
+    } catch (error) {
+      debug$1("Notification bus not registered", error);
+    }
+  }
+}
+function notify(message, severityLevel) {
+  if (!message) {
+    notifyMessage({
+      summary: "Error",
+      detail: "Unknown error occured",
+      severity: SeverityLevel.Error
+    });
+    return;
+  }
+  const notificationMessage = getNotificationMessageFromObject(message);
+  if (notificationMessage) {
+    notifyMessage(notificationMessage);
+  }
+}
+function getNotificationMessageFromObject(message, severityLevel) {
+  if (isNotificationMessage(message)) {
+    return message;
+  }
+  if (isValidationProblemDetailsLike(message)) {
+    const detail = message.errors && Object.values(message.errors).length > 0 ? Object.values(message.errors).flat().join("\r\n") : message.detail ?? "";
+    return {
+      summary: message.title ?? "",
+      detail,
+      severity: SeverityLevel.Error
+    };
+  }
+  if (isProblemDetailsLike(message)) {
+    return {
+      summary: message.title ?? "",
+      detail: message.detail ?? "",
+      severity: SeverityLevel.Error
+    };
+  }
+  if (message instanceof Error) {
+    return {
+      summary: "Server Error",
+      detail: message.message,
+      severity: SeverityLevel.Error
+    };
+  }
+  return void 0;
+}
+function isNotificationMessage(message) {
+  return message instanceof NotificationMessage;
+}
+function isProblemDetailsLike(message) {
+  return !!message && typeof message === "object" && ("title" in message || "detail" in message);
+}
+function isValidationProblemDetailsLike(message) {
+  return isProblemDetailsLike(message) && "errors" in message;
+}
 function usePermissions() {
   const canManage2 = computed(() => {
     return true;
@@ -23758,6 +23532,294 @@ function usePermissions() {
     return true;
   };
   return { canManage: canManage2, canManageFolder };
+}
+function useFolderModal() {
+  const { canManageFolder } = usePermissions();
+  const { emit: emit2 } = useEventBus();
+  const getFolderModalName = (action, folder) => {
+    return action + "-folder-" + (folder.directoryPath || folder.name);
+  };
+  const openFolderModal = async (action, folder) => {
+    if (canManageFolder(folder.directoryPath)) {
+      const uVfm = K$2();
+      const modalName = getFolderModalName(action, folder);
+      uVfm.open(modalName);
+      await nextTick();
+      emit2("ResetModalFolderAction", null);
+    }
+  };
+  const confirmFolderModal = (modalName, confirmAction, onCreateFolder, onDeleteFolder) => {
+    const uVfm = K$2();
+    uVfm.close(getFolderModalName(modalName, confirmAction.folder));
+    if (confirmAction.action === FolderAction.Create && confirmAction.inputValue) {
+      onCreateFolder({ name: confirmAction.inputValue, directoryPath: confirmAction.inputValue, isDirectory: true, filePath: "" });
+    } else if (confirmAction.action === FolderAction.Delete) {
+      onDeleteFolder(confirmAction.folder);
+    }
+  };
+  return { getFolderModalName, openFolderModal, confirmFolderModal };
+}
+let getRandomValues;
+const rnds8 = new Uint8Array(16);
+function rng() {
+  if (!getRandomValues) {
+    getRandomValues = typeof crypto !== "undefined" && crypto.getRandomValues && crypto.getRandomValues.bind(crypto);
+    if (!getRandomValues) {
+      throw new Error("crypto.getRandomValues() not supported. See https://github.com/uuidjs/uuid#getrandomvalues-not-supported");
+    }
+  }
+  return getRandomValues(rnds8);
+}
+const byteToHex = [];
+for (let i2 = 0; i2 < 256; ++i2) {
+  byteToHex.push((i2 + 256).toString(16).slice(1));
+}
+function unsafeStringify(arr, offset = 0) {
+  return byteToHex[arr[offset + 0]] + byteToHex[arr[offset + 1]] + byteToHex[arr[offset + 2]] + byteToHex[arr[offset + 3]] + "-" + byteToHex[arr[offset + 4]] + byteToHex[arr[offset + 5]] + "-" + byteToHex[arr[offset + 6]] + byteToHex[arr[offset + 7]] + "-" + byteToHex[arr[offset + 8]] + byteToHex[arr[offset + 9]] + "-" + byteToHex[arr[offset + 10]] + byteToHex[arr[offset + 11]] + byteToHex[arr[offset + 12]] + byteToHex[arr[offset + 13]] + byteToHex[arr[offset + 14]] + byteToHex[arr[offset + 15]];
+}
+const randomUUID = typeof crypto !== "undefined" && crypto.randomUUID && crypto.randomUUID.bind(crypto);
+const native = {
+  randomUUID
+};
+function v4(options2, buf, offset) {
+  if (native.randomUUID && true && !options2) {
+    return native.randomUUID();
+  }
+  options2 = options2 || {};
+  const rnds = options2.random || (options2.rng || rng)();
+  rnds[6] = rnds[6] & 15 | 64;
+  rnds[8] = rnds[8] & 63 | 128;
+  return unsafeStringify(rnds);
+}
+function humanFileSize(bytes, si = false, dp = 1) {
+  if (bytes === null || bytes === void 0) {
+    throw new Error("humanFileSize: bytes is null or undefined");
+  }
+  const thresh = si ? 1e3 : 1024;
+  if (Math.abs(bytes) < thresh) {
+    return bytes + " B";
+  }
+  const units = si ? ["kB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"] : ["KiB", "MiB", "GiB", "TiB", "PiB", "EiB", "ZiB", "YiB"];
+  let u2 = -1;
+  const r2 = 10 ** dp;
+  do {
+    bytes /= thresh;
+    ++u2;
+  } while (Math.round(Math.abs(bytes) * r2) / r2 >= thresh && u2 < units.length - 1);
+  return bytes.toFixed(dp) + " " + units[u2];
+}
+function getFileExtension(fileName) {
+  if (fileName && fileName.includes(".")) {
+    return fileName.split(".").pop();
+  }
+  return "";
+}
+function printDateTime(datemillis) {
+  if (datemillis != "" && datemillis != null && datemillis != void 0) {
+    const d2 = new Date(datemillis);
+    return d2.toLocaleString();
+  } else {
+    return "";
+  }
+}
+const _hoisted_1$f = { class: "tw:flex tw:justify-between" };
+const _hoisted_2$e = { class: "modal__title" };
+const _hoisted_3$d = {
+  key: 0,
+  class: "file-wrapper"
+};
+const _hoisted_4$8 = { class: "img-wrapper" };
+const _hoisted_5$8 = { class: "tw:uppercase file-ext tw:text-white" };
+const _hoisted_6$7 = { class: "tw:font-bold tw:text-lg tw:ml-2 tw:min-w-0 tw:break-all" };
+const _hoisted_7$7 = { class: "tw:mt-3 tw:flex tw:flex-row tw:justify-end" };
+const _sfc_main$a = /* @__PURE__ */ defineComponent({
+  __name: "ModalConfirm",
+  props: {
+    title: String,
+    modalName: {
+      type: String,
+      required: true
+    },
+    action: {
+      type: Number
+    },
+    files: {
+      type: Object
+    },
+    targetFolder: {
+      type: String
+    },
+    showModalProp: {
+      type: Boolean,
+      default: false
+    }
+  },
+  emits: ["confirm", "closed"],
+  setup(__props, { emit: __emit }) {
+    var _a2;
+    const { translations: translations2 } = useLocalizations();
+    const t2 = translations2;
+    const props2 = __props;
+    let showModal = ref(props2.showModalProp);
+    const fileItem = (_a2 = props2.files) == null ? void 0 : _a2.at(0);
+    const emit2 = __emit;
+    return (_ctx, _cache) => {
+      const _component_fa_icon = resolveComponent("fa-icon");
+      return openBlock(), createBlock(unref(Ro), {
+        "focus-trap": false,
+        modelValue: unref(showModal),
+        "onUpdate:modelValue": _cache[3] || (_cache[3] = ($event) => isRef$1(showModal) ? showModal.value = $event : showModal = $event),
+        "modal-id": __props.modalName,
+        class: "ma-vfm tw:flex tw:justify-center tw:items-center",
+        "content-class": "tw:flex tw:flex-col tw:max-w-xl tw:mx-4 tw:p-4 tw:rounded-lg tw:space-y-3 action-modal"
+      }, {
+        default: withCtx(() => {
+          var _a3, _b, _c;
+          return [
+            createBaseVNode("div", _hoisted_1$f, [
+              createBaseVNode("span", _hoisted_2$e, toDisplayString(__props.title), 1),
+              createBaseVNode("span", {
+                class: "tw:cursor-pointer",
+                onClick: _cache[0] || (_cache[0] = ($event) => emit2("closed"))
+              }, [
+                createVNode(_component_fa_icon, { icon: "fa-solid fa-xmark fa-2xl" })
+              ])
+            ]),
+            renderSlot(_ctx.$slots, "default"),
+            ((_a3 = props2.files) == null ? void 0 : _a3.length) == 1 ? (openBlock(), createElementBlock("div", _hoisted_3$d, [
+              createBaseVNode("div", _hoisted_4$8, [
+                _cache[4] || (_cache[4] = createBaseVNode("svg", {
+                  viewBox: "0 0 16 16",
+                  fill: "none",
+                  xmlns: "http://www.w3.org/2000/svg"
+                }, [
+                  createBaseVNode("path", {
+                    d: "M10.28 4.46553H13.4658C13.4889 4.4658 13.5118 4.46145 13.5332 4.45274C13.5545 4.44402 13.574 4.43113 13.5903 4.4148C13.6066 4.39848 13.6195 4.37906 13.6282 4.35768C13.6369 4.3363 13.6413 4.3134 13.641 4.29031C13.6417 4.13738 13.6084 3.9862 13.5437 3.84764C13.479 3.70907 13.3844 3.58656 13.2667 3.48889L10.5946 1.26233C10.3921 1.09433 10.137 1.00273 9.87384 1.00348C9.83983 1.00342 9.80614 1.01007 9.7747 1.02305C9.74327 1.03604 9.71471 1.0551 9.69066 1.07915C9.66661 1.1032 9.64755 1.13176 9.63456 1.1632C9.62158 1.19463 9.61493 1.22832 9.61499 1.26233V3.801C9.61499 3.88831 9.6322 3.97476 9.66562 4.05542C9.69905 4.13607 9.74804 4.20935 9.8098 4.27107C9.87156 4.33278 9.94488 4.38172 10.0256 4.41509C10.1062 4.44845 10.1927 4.46559 10.28 4.46553Z",
+                    fill: "#2D2D2D"
+                  }),
+                  createBaseVNode("path", {
+                    d: "M8.70453 3.8V1H4.12C3.82324 1.00092 3.5389 1.11921 3.32906 1.32906C3.11921 1.5389 3.00092 1.82324 3 2.12V13.88C3.00092 14.1768 3.11921 14.4611 3.32906 14.6709C3.5389 14.8808 3.82324 14.9991 4.12 15H12.52C12.8168 14.9991 13.1011 14.8808 13.3109 14.6709C13.5208 14.4611 13.6391 14.1768 13.64 13.88V5.37497H10.28C9.86241 5.37444 9.46206 5.20836 9.16673 4.91312C8.87141 4.61788 8.70519 4.21759 8.70453 3.8Z",
+                    fill: "#2D2D2D"
+                  })
+                ], -1)),
+                createBaseVNode("span", _hoisted_5$8, toDisplayString(unref(getFileExtension)((_b = unref(fileItem)) == null ? void 0 : _b.filePath)), 1)
+              ]),
+              createBaseVNode("div", _hoisted_6$7, toDisplayString((_c = unref(fileItem)) == null ? void 0 : _c.name), 1)
+            ])) : createCommentVNode("", true),
+            createBaseVNode("div", _hoisted_7$7, [
+              createBaseVNode("button", {
+                class: "ma-btn ma-btn-light tw:border tw:border-gray-400",
+                onClick: _cache[1] || (_cache[1] = ($event) => emit2("closed"))
+              }, toDisplayString(unref(t2).Cancel), 1),
+              createBaseVNode("button", {
+                class: "tw:ml-2 ma-btn ma-btn-primary",
+                onClick: _cache[2] || (_cache[2] = ($event) => emit2("confirm", { action: __props.action, files: __props.files, targetFolder: _ctx.$props.targetFolder }))
+              }, [
+                renderSlot(_ctx.$slots, "submit")
+              ])
+            ])
+          ];
+        }),
+        _: 3
+      }, 8, ["modelValue", "modal-id"]);
+    };
+  }
+});
+const { emit: emit$5 } = useEventBus();
+const useConfirmModal = () => {
+  const showConfirmModal = (modalFileEvent) => {
+    if (modalFileEvent.files.length > 0) {
+      const { translations: translations2 } = useLocalizations();
+      const t2 = translations2;
+      let defaultSlotMessage = "";
+      if (modalFileEvent.action == FileAction.Delete) {
+        if (modalFileEvent.files.length > 1) {
+          defaultSlotMessage += `<p class="tw:m-0">${t2.DeleteMultipleFilesMessage}</p>`;
+        } else {
+          defaultSlotMessage += `<p class="tw:m-0">${t2.DeleteSingleFileMessage}</p>`;
+        }
+      } else if (modalFileEvent.action == FileAction.Move) {
+        defaultSlotMessage += `<p class="tw:m-0">${t2.MoveFileMessage}</p>`;
+      }
+      const { open, destroy } = Go({
+        defaultModelValue: false,
+        keepAlive: false,
+        component: _sfc_main$a,
+        slots: {
+          default: defaultSlotMessage,
+          submit: t2.Ok
+        },
+        attrs: {
+          title: modalFileEvent.modalTitle,
+          modalName: modalFileEvent.uuid,
+          files: modalFileEvent.files,
+          action: modalFileEvent.action ?? FileAction.Rename,
+          targetFolder: modalFileEvent.targetFolder,
+          onConfirm(action) {
+            confirmModal(action);
+            destroy();
+          },
+          onClosed() {
+            destroy();
+          }
+        }
+      });
+      open();
+    }
+  };
+  const confirmModal = (confirmAction) => {
+    if (confirmAction.action == FileAction.Delete) {
+      if (confirmAction.files && confirmAction.files.length > 0) {
+        if (confirmAction.files.length > 1) {
+          emit$5("FilesDeleteReq");
+        } else {
+          emit$5("FileDeleteReq", confirmAction.files[0]);
+        }
+      }
+    } else if (confirmAction.action == FileAction.Move) {
+      if (confirmAction.files && confirmAction.files.length > 0) {
+        const moveAssetsState = {
+          files: confirmAction.files,
+          sourceFolder: confirmAction.files[0].directoryPath,
+          targetFolder: confirmAction.targetFolder
+        };
+        emit$5("FileListMove", moveAssetsState);
+      }
+    }
+  };
+  return { showConfirmModal, confirmModal };
+};
+function useFolderDragDrop() {
+  const { translations: t2 } = useLocalizations();
+  const { showConfirmModal } = useConfirmModal();
+  const isHovered = ref(false);
+  const handleDragOver = () => {
+    isHovered.value = true;
+  };
+  const handleDragLeave = () => {
+    isHovered.value = false;
+  };
+  const moveFileToFolder = (folder, e2) => {
+    var _a2, _b;
+    isHovered.value = false;
+    const filesData = ((_a2 = e2.dataTransfer) == null ? void 0 : _a2.getData("files")) ?? "";
+    const files = JSON.parse(filesData);
+    if (files.length < 1) {
+      return;
+    }
+    let sourceFolder = ((_b = e2.dataTransfer) == null ? void 0 : _b.getData("sourceFolder")) ?? "root";
+    let targetFolder = folder.directoryPath;
+    if (targetFolder === "" || targetFolder === "/") {
+      targetFolder = "root";
+    }
+    if (sourceFolder === targetFolder) {
+      notify(new NotificationMessage({ summary: t2.ErrorMovingFile, detail: t2.SameFolderMessage, severity: SeverityLevel.Error }));
+      return;
+    }
+    const modal = { files, modalName: "move", uuid: v4(), isEdit: true, modalTitle: t2.MoveFileTitle, action: FileAction.Move, targetFolder };
+    showConfirmModal(modal);
+  };
+  return { isHovered, handleDragOver, handleDragLeave, moveFileToFolder };
 }
 const BASE_DIR = "";
 const LS_ID = "MediaLibraryPrefsV1";
@@ -23784,14 +23846,12 @@ const _sfc_main$9 = /* @__PURE__ */ defineComponent({
   setup(__props, { emit: __emit }) {
     const props2 = __props;
     const emitComponent = __emit;
-    const { showConfirmModal } = useConfirmModal();
     const { selectedDirectory: selectedDirectory2, expandedFolders: expandedFolders2, loadingFolders: loadingFolders2 } = useGlobals();
-    const { canManageFolder } = usePermissions();
-    const { translations: translations2 } = useLocalizations();
-    const t2 = translations2;
+    const { translations: t2 } = useLocalizations();
     const { emit: emit2 } = useEventBus();
+    const { getFolderModalName, openFolderModal, confirmFolderModal: confirmModal } = useFolderModal();
+    const { isHovered, handleDragOver, handleDragLeave, moveFileToFolder } = useFolderDragDrop();
     const modalAction = ref();
-    const isHovered = ref(false);
     const showModal = ref(false);
     const isSelected2 = computed(() => {
       return selectedDirectory2.value.name === props2.node.item.name && selectedDirectory2.value.directoryPath === props2.node.item.directoryPath;
@@ -23821,64 +23881,34 @@ const _sfc_main$9 = /* @__PURE__ */ defineComponent({
     const toggle3 = () => {
       emitComponent("toggle", props2.node);
     };
-    const handleDragOver = () => {
-      isHovered.value = true;
-    };
-    const handleDragLeave = () => {
-      isHovered.value = false;
-    };
-    const moveFileToFolder = (folder, e2) => {
-      var _a2, _b;
-      isHovered.value = false;
-      let filesData = ((_a2 = e2.dataTransfer) == null ? void 0 : _a2.getData("files")) ?? "";
-      let files = JSON.parse(filesData);
-      if (files.length < 1) {
-        return;
-      }
-      let sourceFolder = ((_b = e2.dataTransfer) == null ? void 0 : _b.getData("sourceFolder")) ?? "root";
-      let targetFolder = folder.directoryPath;
-      if (targetFolder === "" || targetFolder == "/") {
-        targetFolder = "root";
-      }
-      if (sourceFolder === targetFolder) {
-        notify(new NotificationMessage({ summary: t2.ErrorMovingFile, detail: t2.SameFolderMessage, severity: SeverityLevel.Error }));
-        return;
-      }
-      const modal = { files, modalName: "move", uuid: v4(), isEdit: true, modalTitle: t2.MoveFileTitle, action: FileAction.Move, targetFolder };
-      showConfirmModal(modal);
-    };
-    const getFolderModalName = (action, folder) => {
-      return action + "-folder-" + (folder.directoryPath || folder.name);
-    };
-    const openFolderModal = async (action, folder) => {
-      if (canManageFolder(folder.directoryPath)) {
-        const uVfm = K$2();
-        const modalName = getFolderModalName(action, folder);
-        uVfm.open(modalName);
-        await nextTick();
-        emit2("ResetModalFolderAction", null);
-      }
-    };
     const confirmFolderModal = (modalName, confirmAction) => {
-      const uVfm = K$2();
-      uVfm.close(getFolderModalName(modalName, confirmAction.folder));
-      if (confirmAction.action == FolderAction.Create && confirmAction.inputValue) {
-        const { children, ...directory } = props2.node.item;
-        emit2("DirCreateReq", { name: confirmAction.inputValue, directoryPath: confirmAction.inputValue, isDirectory: true, filePath: "" });
-      } else if (confirmAction.action == FolderAction.Delete) {
-        const { children, ...directory } = confirmAction.folder;
-        emit2("DirDeleteReq", directory);
-      }
+      confirmModal(
+        modalName,
+        confirmAction,
+        (folder) => emit2("DirCreateReq", folder),
+        (folder) => {
+          const { children, ...directory } = folder;
+          emit2("DirDeleteReq", directory);
+        }
+      );
     };
     return (_ctx, _cache) => {
       return openBlock(), createElementBlock("li", {
         class: normalizeClass(["folder", { selected: isSelected2.value }]),
-        onDragleave: withModifiers(handleDragLeave, ["prevent"]),
-        onDragover: withModifiers(handleDragOver, ["prevent", "stop"]),
-        onDrop: _cache[2] || (_cache[2] = withModifiers(($event) => moveFileToFolder(_ctx.node.item, $event), ["prevent", "stop"]))
+        onDragleave: _cache[2] || (_cache[2] = withModifiers(
+          //@ts-ignore
+          (...args) => unref(handleDragLeave) && unref(handleDragLeave)(...args),
+          ["prevent"]
+        )),
+        onDragover: _cache[3] || (_cache[3] = withModifiers(
+          //@ts-ignore
+          (...args) => unref(handleDragOver) && unref(handleDragOver)(...args),
+          ["prevent", "stop"]
+        )),
+        onDrop: _cache[4] || (_cache[4] = withModifiers(($event) => unref(moveFileToFolder)(_ctx.node.item, $event), ["prevent", "stop"]))
       }, [
         createBaseVNode("div", {
-          class: normalizeClass({ folderhovered: isHovered.value, treeroot: isRoot.value })
+          class: normalizeClass({ folderhovered: unref(isHovered), treeroot: isRoot.value })
         }, [
           createBaseVNode("a", {
             href: "javascript:void(0)",
@@ -23897,7 +23927,7 @@ const _sfc_main$9 = /* @__PURE__ */ defineComponent({
                 icon: isExpanded.value ? "fas fa-chevron-down" : "fas fa-chevron-right"
               }, null, 8, ["icon"]))
             ])) : !isRoot.value ? (openBlock(), createElementBlock("span", _hoisted_2$d, " ")) : createCommentVNode("", true),
-            _cache[3] || (_cache[3] = createBaseVNode("span", null, [
+            _cache[5] || (_cache[5] = createBaseVNode("span", null, [
               createBaseVNode("svg", {
                 class: "tw:ml-1",
                 width: "16",
@@ -23920,7 +23950,7 @@ const _sfc_main$9 = /* @__PURE__ */ defineComponent({
                 href: "javascript:void(0)",
                 title: unref(t2).ActionFolderTitle,
                 class: "action-button",
-                onClick: _cache[1] || (_cache[1] = withModifiers(() => openFolderModal("folder-action", _ctx.node.item), ["stop"]))
+                onClick: _cache[1] || (_cache[1] = withModifiers(() => unref(openFolderModal)("folder-action", _ctx.node.item), ["stop"]))
               }, [
                 createVNode(unref(FontAwesomeIcon), {
                   icon: "fas fa-ellipsis-v",
@@ -23930,7 +23960,7 @@ const _sfc_main$9 = /* @__PURE__ */ defineComponent({
                   ref_key: "modalAction",
                   ref: modalAction,
                   "show-modal-prop": showModal.value,
-                  "modal-name": getFolderModalName("folder-action", _ctx.node.item),
+                  "modal-name": unref(getFolderModalName)("folder-action", _ctx.node.item),
                   folder: _ctx.node.item,
                   title: unref(t2).ActionFolderTitle,
                   onConfirm: _cache[0] || (_cache[0] = (viewModel) => confirmFolderModal("folder-action", viewModel))
@@ -23959,7 +23989,7 @@ const _export_sfc = (sfc, props2) => {
   }
   return target;
 };
-const FolderRow = /* @__PURE__ */ _export_sfc(_sfc_main$9, [["__scopeId", "data-v-64d9f534"]]);
+const FolderRow = /* @__PURE__ */ _export_sfc(_sfc_main$9, [["__scopeId", "data-v-e571e650"]]);
 const { assetsStore: assetsStore$2, selectedDirectory: selectedDirectory$6, hierarchicalDirectories: hierarchicalDirectories$1, expandedFolders, setHierarchicalData: setHierarchicalData$1, setRootDirectory } = useGlobals();
 const { translations: translations$3 } = useLocalizations();
 const t$I = translations$3;
@@ -31118,7 +31148,7 @@ var hasRequired_freeGlobal;
 function require_freeGlobal() {
   if (hasRequired_freeGlobal) return _freeGlobal;
   hasRequired_freeGlobal = 1;
-  var freeGlobal = typeof commonjsGlobal$1 == "object" && commonjsGlobal$1 && commonjsGlobal$1.Object === Object && commonjsGlobal$1;
+  var freeGlobal = typeof commonjsGlobal == "object" && commonjsGlobal && commonjsGlobal.Object === Object && commonjsGlobal;
   _freeGlobal = freeGlobal;
   return _freeGlobal;
 }
@@ -35092,7 +35122,7 @@ function requireUrlParse() {
   function lolcation(loc) {
     var globalVar;
     if (typeof window !== "undefined") globalVar = window;
-    else if (typeof commonjsGlobal$1 !== "undefined") globalVar = commonjsGlobal$1;
+    else if (typeof commonjsGlobal !== "undefined") globalVar = commonjsGlobal;
     else if (typeof self !== "undefined") globalVar = self;
     else globalVar = {};
     var location2 = globalVar.location || {};
@@ -43174,6 +43204,101 @@ const useRouterService = () => {
     emit("DirSelected", selectedDirectory.value);
   }
 };
+function useFileListFiltering() {
+  const { fileFilter: fileFilter2, fileItems: fileItems2, sortBy: sortBy2, sortAsc: sortAsc2 } = useGlobals();
+  const filteredFileItems = computed(() => {
+    const filter2 = fileFilter2.value.toLowerCase();
+    let filtered = fileItems2.value.filter((item2) => {
+      return item2.name.toLowerCase().indexOf(filter2) > -1;
+    });
+    const asc = sortAsc2.value;
+    switch (sortBy2.value) {
+      case "size":
+        filtered.sort((a2, b2) => {
+          return asc ? (a2.size ?? 0) - (b2.size ?? 0) : (b2.size ?? 0) - (a2.size ?? 0);
+        });
+        break;
+      case "mime":
+        filtered.sort((a2, b2) => {
+          return asc ? (a2.mime ?? "").toLowerCase().localeCompare((b2.mime ?? "").toLowerCase()) : (b2.mime ?? "").toLowerCase().localeCompare((a2.mime ?? "").toLowerCase());
+        });
+        break;
+      case "lastModify":
+        filtered.sort((a2, b2) => {
+          return asc ? new Date(a2.lastModifiedUtc ?? 0).getTime() - new Date(b2.lastModifiedUtc ?? 0).getTime() : new Date(b2.lastModifiedUtc ?? 0).getTime() - new Date(a2.lastModifiedUtc ?? 0).getTime();
+        });
+        break;
+      default:
+        filtered.sort((a2, b2) => {
+          return asc ? a2.name.toLowerCase().localeCompare(b2.name.toLowerCase()) : b2.name.toLowerCase().localeCompare(a2.name.toLowerCase());
+        });
+    }
+    return filtered;
+  });
+  return { filteredFileItems };
+}
+function useBreadcrumbs() {
+  const { directoryIndex: directoryIndex2, selectedDirectory: selectedDirectory2, rootDirectory: rootDirectory2 } = useGlobals();
+  const breadcrumbs = computed(() => {
+    const result = [];
+    const dirMap = directoryIndex2.value;
+    if (dirMap.size > 0 && selectedDirectory2.value) {
+      result.push(rootDirectory2.value);
+      if (selectedDirectory2.value.directoryPath) {
+        const segments = selectedDirectory2.value.directoryPath.split("/");
+        let path = "";
+        segments.forEach((segment, index2) => {
+          path = index2 > 0 ? path + "/" + segment : segment;
+          const dir = dirMap.get(path);
+          if (dir) {
+            result.push(dir);
+          }
+        });
+      }
+    }
+    return result;
+  });
+  return { breadcrumbs };
+}
+function useStoragePopover(basePath2) {
+  const storageInfo = ref(null);
+  const storageCapabilities = ref(null);
+  const showStoragePopover = ref(false);
+  const storageLoading = ref(false);
+  const fetchStorageInfo = async () => {
+    storageLoading.value = true;
+    try {
+      const service = new FileDataService(basePath2);
+      const [storage, caps] = await Promise.all([
+        service.getPermittedStorage(),
+        service.getCapabilities()
+      ]);
+      storageInfo.value = storage;
+      storageCapabilities.value = caps;
+    } catch (e2) {
+      console.error("Failed to fetch storage info", e2);
+      storageInfo.value = null;
+      storageCapabilities.value = null;
+    } finally {
+      storageLoading.value = false;
+    }
+  };
+  const toggleStoragePopover = async () => {
+    showStoragePopover.value = !showStoragePopover.value;
+    if (showStoragePopover.value && !storageCapabilities.value) {
+      await fetchStorageInfo();
+    }
+  };
+  const handleClickOutside = (e2) => {
+    var _a2;
+    if (showStoragePopover.value && !((_a2 = e2.target) == null ? void 0 : _a2.closest(".storage-info-btn, .storage-popover"))) {
+      showStoragePopover.value = false;
+    }
+  };
+  onMounted(() => document.addEventListener("click", handleClickOutside));
+  onUnmounted(() => document.removeEventListener("click", handleClickOutside));
+  return { storageInfo, storageCapabilities, showStoragePopover, storageLoading, toggleStoragePopover };
+}
 const _hoisted_1$7 = {
   key: 0,
   class: "ma-alert ma-alert-danger message-warning"
@@ -43293,18 +43418,14 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
   setup(__props) {
     const props2 = __props;
     const {
-      sortAsc: sortAsc2,
-      sortBy: sortBy2,
       isSelectedAll: isSelectedAll2,
       errors: errors2,
       isLoading: isLoading2,
       fileFilter: fileFilter2,
       itemsInPage: itemsInPage2,
       assetsStore: assetsStore2,
-      directoryIndex: directoryIndex2,
       selectedFiles: selectedFiles2,
       selectedDirectory: selectedDirectory2,
-      rootDirectory: rootDirectory2,
       fileItems: fileItems2,
       isDownloading: isDownloading2,
       isLoadingFiles: isLoadingFiles2,
@@ -43341,42 +43462,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
     const { setLocalStorage, gridView: gridView2 } = useLocalStorage();
     const { canManage: canManage2 } = usePermissions();
     useSignalR();
-    const storageInfo = ref(null);
-    const storageCapabilities = ref(null);
-    const showStoragePopover = ref(false);
-    const storageLoading = ref(false);
-    const fetchStorageInfo = async () => {
-      storageLoading.value = true;
-      try {
-        const service = new FileDataService(props2.basePath);
-        const [storage, caps] = await Promise.all([
-          service.getPermittedStorage(),
-          service.getCapabilities()
-        ]);
-        storageInfo.value = storage;
-        storageCapabilities.value = caps;
-      } catch (e2) {
-        console.error("Failed to fetch storage info", e2);
-        storageInfo.value = null;
-        storageCapabilities.value = null;
-      } finally {
-        storageLoading.value = false;
-      }
-    };
-    const toggleStoragePopover = async () => {
-      showStoragePopover.value = !showStoragePopover.value;
-      if (showStoragePopover.value && !storageCapabilities.value) {
-        await fetchStorageInfo();
-      }
-    };
-    const handleClickOutside = (e2) => {
-      var _a2;
-      if (showStoragePopover.value && !((_a2 = e2.target) == null ? void 0 : _a2.closest(".storage-info-btn, .storage-popover"))) {
-        showStoragePopover.value = false;
-      }
-    };
-    onMounted(() => document.addEventListener("click", handleClickOutside));
-    onUnmounted(() => document.removeEventListener("click", handleClickOutside));
+    const { storageInfo, storageCapabilities, showStoragePopover, storageLoading, toggleStoragePopover } = useStoragePopover(props2.basePath);
     setUploadFilesUrl(props2.uploadFilesUrl);
     const { showConfirmModal } = useConfirmModal();
     useFileUpload({
@@ -43398,35 +43484,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
     const dragFileStart = (file, e2) => {
       emit2("FileDragReq", { file, e: e2 });
     };
-    const filteredFileItems = computed(() => {
-      const filter2 = fileFilter2.value.toLowerCase();
-      let filtered = fileItems2.value.filter((item2) => {
-        return item2.name.toLowerCase().indexOf(filter2) > -1;
-      });
-      const asc = sortAsc2.value;
-      switch (sortBy2.value) {
-        case "size":
-          filtered.sort((a2, b2) => {
-            return asc ? (a2.size ?? 0) - (b2.size ?? 0) : (b2.size ?? 0) - (a2.size ?? 0);
-          });
-          break;
-        case "mime":
-          filtered.sort((a2, b2) => {
-            return asc ? (a2.mime ?? "").toLowerCase().localeCompare((b2.mime ?? "").toLowerCase()) : (b2.mime ?? "").toLowerCase().localeCompare((a2.mime ?? "").toLowerCase());
-          });
-          break;
-        case "lastModify":
-          filtered.sort((a2, b2) => {
-            return asc ? new Date(a2.lastModifiedUtc ?? 0).getTime() - new Date(b2.lastModifiedUtc ?? 0).getTime() : new Date(b2.lastModifiedUtc ?? 0).getTime() - new Date(a2.lastModifiedUtc ?? 0).getTime();
-          });
-          break;
-        default:
-          filtered.sort((a2, b2) => {
-            return asc ? a2.name.toLowerCase().localeCompare(b2.name.toLowerCase()) : b2.name.toLowerCase().localeCompare(a2.name.toLowerCase());
-          });
-      }
-      return filtered;
-    });
+    const { filteredFileItems } = useFileListFiltering();
     const selectAll = () => {
       if (isSelectedAll2.value) {
         setSelectedFiles2([]);
@@ -43439,25 +43497,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
         setSelectedAll2(true);
       }
     };
-    const breadcrumbs = computed(() => {
-      const result = [];
-      const dirMap = directoryIndex2.value;
-      if (dirMap.size > 0 && selectedDirectory2.value) {
-        result.push(rootDirectory2.value);
-        if (selectedDirectory2.value.directoryPath) {
-          const segments = selectedDirectory2.value.directoryPath.split("/");
-          let path = "";
-          segments.forEach((segment, index2) => {
-            path = index2 > 0 ? path + "/" + segment : segment;
-            const dir = dirMap.get(path);
-            if (dir) {
-              result.push(dir);
-            }
-          });
-        }
-      }
-      return result;
-    });
+    const { breadcrumbs } = useBreadcrumbs();
     const clickBreadCrumb = (breadcrumb) => {
       emit2("DirSelected", breadcrumb);
     };
@@ -43493,7 +43533,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
           createBaseVNode("h3", null, toDisplayString(unref(t2).DropHere), 1),
           createBaseVNode("p", null, toDisplayString(unref(t2).DropTitle), 1)
         ]),
-        withDirectives(createBaseVNode("div", _hoisted_3$5, _cache[6] || (_cache[6] = [
+        withDirectives(createBaseVNode("div", _hoisted_3$5, _cache[7] || (_cache[7] = [
           createStaticVNode('<div class="spinner"><div class="loader"><svg class="circular" viewBox="25 25 50 50"><circle class="track" cx="50" cy="50" r="20" fill="none" stroke-width="4"></circle><circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="4"></circle></svg></div></div>', 1)
         ]), 512), [
           [vShow, unref(isLoading2)]
@@ -43506,13 +43546,13 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
             createBaseVNode("div", _hoisted_7, [
               createBaseVNode("nav", _hoisted_8, [
                 createBaseVNode("div", _hoisted_9, [
-                  (openBlock(true), createElementBlock(Fragment, null, renderList(breadcrumbs.value, (breadcrumb, i2) => {
+                  (openBlock(true), createElementBlock(Fragment, null, renderList(unref(breadcrumbs), (breadcrumb, i2) => {
                     return openBlock(), createElementBlock("span", {
                       key: breadcrumb.directoryPath,
                       class: "breadcrumb-item"
                     }, [
                       createBaseVNode("a", {
-                        href: breadcrumbs.value.length - i2 == 1 ? "javascript:void(0)" : "#",
+                        href: unref(breadcrumbs).length - i2 == 1 ? "javascript:void(0)" : "#",
                         onClick: ($event) => clickBreadCrumb(breadcrumb)
                       }, toDisplayString(breadcrumb.name), 9, _hoisted_10)
                     ]);
@@ -43523,21 +43563,22 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
                     href: "javascript:void(0)",
                     class: "storage-info-btn",
                     title: unref(t2).StorageInfo || "Storage Info",
-                    onClick: toggleStoragePopover
+                    onClick: _cache[0] || (_cache[0] = //@ts-ignore
+                    (...args) => unref(toggleStoragePopover) && unref(toggleStoragePopover)(...args))
                   }, [
                     createVNode(_component_fa_icon, { icon: "fa-solid fa-hard-drive" })
                   ], 8, _hoisted_12),
-                  showStoragePopover.value ? (openBlock(), createElementBlock("div", _hoisted_13, [
-                    storageLoading.value ? (openBlock(), createElementBlock("div", _hoisted_14, [
+                  unref(showStoragePopover) ? (openBlock(), createElementBlock("div", _hoisted_13, [
+                    unref(storageLoading) ? (openBlock(), createElementBlock("div", _hoisted_14, [
                       createBaseVNode("span", null, toDisplayString(unref(t2).Loading || "Loading..."), 1)
-                    ])) : storageCapabilities.value || storageInfo.value ? (openBlock(), createElementBlock("div", _hoisted_15, [
-                      storageCapabilities.value ? (openBlock(), createElementBlock("div", _hoisted_16, [
+                    ])) : unref(storageCapabilities) || unref(storageInfo) ? (openBlock(), createElementBlock("div", _hoisted_15, [
+                      unref(storageCapabilities) ? (openBlock(), createElementBlock("div", _hoisted_16, [
                         createBaseVNode("span", _hoisted_17, toDisplayString(unref(t2).StorageProvider || "Storage Provider"), 1),
-                        createBaseVNode("span", null, toDisplayString(storageCapabilities.value.storageProvider), 1)
+                        createBaseVNode("span", null, toDisplayString(unref(storageCapabilities).storageProvider), 1)
                       ])) : createCommentVNode("", true),
-                      storageInfo.value ? (openBlock(), createElementBlock("div", _hoisted_18, [
+                      unref(storageInfo) ? (openBlock(), createElementBlock("div", _hoisted_18, [
                         createBaseVNode("span", _hoisted_19, toDisplayString(unref(t2).AvailableStorage || "Available Storage"), 1),
-                        createBaseVNode("span", null, toDisplayString(storageInfo.value.text), 1)
+                        createBaseVNode("span", null, toDisplayString(unref(storageInfo).text), 1)
                       ])) : createCommentVNode("", true)
                     ])) : (openBlock(), createElementBlock("div", _hoisted_20, [
                       createBaseVNode("span", null, toDisplayString(unref(t2).Unavailable || "Unavailable"), 1)
@@ -43554,7 +43595,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
                         for: "fileupload",
                         class: "ma-btn ma-btn-primary fileinput-button upload-button"
                       }, [
-                        _cache[7] || (_cache[7] = createBaseVNode("input", {
+                        _cache[8] || (_cache[8] = createBaseVNode("input", {
                           id: "fileupload",
                           type: "file",
                           name: "files",
@@ -43568,7 +43609,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
                       title: unref(t2).DeleteAll,
                       href: "javascript:void(0)",
                       class: normalizeClass(["ma-btn ma-btn-light tw:mr-2", { "is-disabled": unref(selectedFiles2).length < 1 }]),
-                      onClick: _cache[0] || (_cache[0] = () => deleteSelectedFiles())
+                      onClick: _cache[1] || (_cache[1] = () => deleteSelectedFiles())
                     }, [
                       createVNode(_component_fa_icon, { icon: "fa-solid fa-trash" }),
                       withDirectives(createBaseVNode("span", { class: "ma-badge tw:ml-1" }, toDisplayString(unref(selectedFiles2).length), 513), [
@@ -43579,7 +43620,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
                       title: unref(t2).DownloadAll,
                       href: "javascript:void(0)",
                       class: normalizeClass(["ma-btn ma-btn-light tw:mr-2", { "is-disabled": unref(selectedFiles2).length < 1 || unref(isDownloading2) }]),
-                      onClick: _cache[1] || (_cache[1] = () => unref(downloadSelectedFiles)())
+                      onClick: _cache[2] || (_cache[2] = () => unref(downloadSelectedFiles)())
                     }, [
                       createVNode(_component_fa_icon, { icon: "fa-solid fa-download" }),
                       withDirectives(createBaseVNode("span", { class: "ma-badge tw:ml-1" }, toDisplayString(unref(selectedFiles2).length), 513), [
@@ -43590,7 +43631,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
                       title: unref(gridView2) ? unref(t2).TableView ?? "Table view" : unref(t2).GridView ?? "Grid view",
                       href: "javascript:void(0)",
                       class: "ma-btn ma-btn-light tw:mr-2",
-                      onClick: _cache[2] || (_cache[2] = ($event) => gridView2.value = !unref(gridView2))
+                      onClick: _cache[3] || (_cache[3] = ($event) => gridView2.value = !unref(gridView2))
                     }, [
                       createVNode(_component_fa_icon, {
                         icon: unref(gridView2) ? "fa-solid fa-list" : "fa-solid fa-grip"
@@ -43607,7 +43648,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
                       withDirectives(createBaseVNode("input", {
                         type: "text",
                         id: "file-filter-input",
-                        "onUpdate:modelValue": _cache[3] || (_cache[3] = ($event) => isRef$1(fileFilter2) ? fileFilter2.value = $event : null),
+                        "onUpdate:modelValue": _cache[4] || (_cache[4] = ($event) => isRef$1(fileFilter2) ? fileFilter2.value = $event : null),
                         class: "ma-input input-filter",
                         placeholder: unref(t2).Filter,
                         "aria-label": unref(t2).Filter
@@ -43618,7 +43659,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
                         id: "clear-file-filter-button",
                         class: "ma-btn ma-btn-outline",
                         disabled: unref(fileFilter2) == "",
-                        onClick: _cache[4] || (_cache[4] = ($event) => fileFilter2.value = "")
+                        onClick: _cache[5] || (_cache[5] = ($event) => fileFilter2.value = "")
                       }, [
                         createVNode(_component_fa_icon, { icon: "fa-solid fa-times" })
                       ], 8, _hoisted_33)
@@ -43634,7 +43675,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
                 "filtered-file-items": unref(itemsInPage2),
                 "selected-files": unref(selectedFiles2)
               }, null, 8, ["is-selected-all", "filtered-file-items", "selected-files"])), [
-                [vShow, !unref(isLoadingFiles2) && filteredFileItems.value.length > 0 && !unref(gridView2)]
+                [vShow, !unref(isLoadingFiles2) && unref(filteredFileItems).length > 0 && !unref(gridView2)]
               ]),
               withDirectives(createBaseVNode("ol", _hoisted_35, [
                 (openBlock(true), createElementBlock(Fragment, null, renderList(unref(itemsInPage2), (file) => {
@@ -43654,7 +43695,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
                         alt: file.name,
                         loading: "lazy"
                       }, null, 8, _hoisted_38)) : (openBlock(), createElementBlock("div", _hoisted_39, [
-                        _cache[8] || (_cache[8] = createBaseVNode("svg", {
+                        _cache[9] || (_cache[9] = createBaseVNode("svg", {
                           viewBox: "0 0 16 16",
                           fill: "none",
                           xmlns: "http://www.w3.org/2000/svg"
@@ -43678,22 +43719,22 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
                       }, toDisplayString(file.name), 9, _hoisted_42),
                       createVNode(_sfc_main$2, {
                         "file-item": file,
-                        onClick: _cache[5] || (_cache[5] = withModifiers(() => {
+                        onClick: _cache[6] || (_cache[6] = withModifiers(() => {
                         }, ["stop"]))
                       }, null, 8, ["file-item"])
                     ])
                   ], 42, _hoisted_36);
                 }), 128))
               ], 512), [
-                [vShow, !unref(isLoadingFiles2) && filteredFileItems.value.length > 0 && unref(gridView2)]
+                [vShow, !unref(isLoadingFiles2) && unref(filteredFileItems).length > 0 && unref(gridView2)]
               ]),
-              withDirectives(createBaseVNode("div", _hoisted_43, _cache[9] || (_cache[9] = [
+              withDirectives(createBaseVNode("div", _hoisted_43, _cache[10] || (_cache[10] = [
                 createStaticVNode('<div class="spinner"><div class="loader"><svg class="circular" viewBox="25 25 50 50"><circle class="track" cx="50" cy="50" r="20" fill="none" stroke-width="4"></circle><circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="4"></circle></svg></div></div>', 1)
               ]), 512), [
                 [vShow, unref(isLoadingFiles2)]
               ]),
               withDirectives(createBaseVNode("div", _hoisted_44, [
-                _cache[10] || (_cache[10] = createBaseVNode("svg", {
+                _cache[11] || (_cache[11] = createBaseVNode("svg", {
                   width: "64",
                   height: "64",
                   viewBox: "0 0 16 16",
@@ -43709,10 +43750,10 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
                 ], -1)),
                 createBaseVNode("span", _hoisted_45, toDisplayString(unref(t2).FolderFilterEmpty), 1)
               ], 512), [
-                [vShow, !unref(isLoadingFiles2) && unref(fileItems2).length > 0 && filteredFileItems.value.length < 1]
+                [vShow, !unref(isLoadingFiles2) && unref(fileItems2).length > 0 && unref(filteredFileItems).length < 1]
               ]),
               withDirectives(createBaseVNode("div", _hoisted_46, [
-                _cache[11] || (_cache[11] = createBaseVNode("svg", {
+                _cache[12] || (_cache[12] = createBaseVNode("svg", {
                   width: "64",
                   height: "64",
                   viewBox: "0 0 16 16",
@@ -43733,11 +43774,11 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
             ])) : createCommentVNode("", true),
             withDirectives(createBaseVNode("div", _hoisted_48, [
               (openBlock(), createBlock(_sfc_main$5, {
-                "source-items": filteredFileItems.value,
+                "source-items": unref(filteredFileItems),
                 key: unref(selectedDirectory2).directoryPath
               }, null, 8, ["source-items"]))
             ], 512), [
-              [vShow, filteredFileItems.value.length > 0]
+              [vShow, unref(filteredFileItems).length > 0]
             ])
           ])
         ], 512), [

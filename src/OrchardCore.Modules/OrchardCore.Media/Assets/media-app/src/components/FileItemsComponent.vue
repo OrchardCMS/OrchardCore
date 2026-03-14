@@ -83,7 +83,7 @@ import { useEventBus } from '../services/UseEventBus'
 //import dbg from "debug";
 import { useGlobals } from '../services/Globals';
 import { printDateTime } from '@bloom/media/utils'
-import { useLocalizations } from '@bloom/helpers/localizations';
+import { useLocalizations } from '../composables/useLocalizations';
 import { isFileSelected } from '../services/Utils';
 //const debug = dbg("orchardcore:file-app");
 

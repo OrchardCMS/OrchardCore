@@ -14,7 +14,7 @@ import { NotificationMessage, notify } from "@bloom/services/notifications/notif
 import { SeverityLevel } from "@bloom/services/notifications/interfaces";
 import { usePermissions } from "./Permissions";
 import { MinimalRequiredUppyFile } from "@uppy/utils/lib/UppyFile";
-import { useLocalizations } from "@bloom/helpers/localizations";
+import { useLocalizations } from "../composables/useLocalizations";
 import { Restrictions } from "@uppy/core/lib/Restricter";
 import { OptionalPluralizeLocale } from "@uppy/utils/lib/Translator";
 import { useEventBus } from "./UseEventBus";

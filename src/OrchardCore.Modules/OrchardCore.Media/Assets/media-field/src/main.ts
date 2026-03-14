@@ -15,7 +15,7 @@ import Aura from "@primevue/themes/aura";
 import MediaFieldBasic from "./components/MediaFieldBasic.vue";
 import MediaFieldAttached from "./components/MediaFieldAttached.vue";
 import MediaFieldGallery from "./components/MediaFieldGallery.vue";
-import { useLocalizations } from "@bloom/helpers/localizations";
+import { useLocalizations } from "./composables/useLocalizations";
 import type { IMediaFieldConfig, IMediaFieldPath } from "./interfaces/MediaFieldTypes";
 import type { IAttachedFieldConfig } from "./components/MediaFieldAttached.vue";
 

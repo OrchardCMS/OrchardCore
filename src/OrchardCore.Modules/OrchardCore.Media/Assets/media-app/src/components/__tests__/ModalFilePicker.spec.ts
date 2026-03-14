@@ -4,7 +4,7 @@ import ModalFilePicker from "../ModalFilePicker.vue";
 import { TreeNode } from "@bloom/media/interfaces";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { createVfm } from "vue-final-modal";
-import { useLocalizations } from "@bloom/helpers/localizations";
+import { useLocalizations } from "../../composables/useLocalizations";
 
 const translationsData = {
   Ok: "Ok",
