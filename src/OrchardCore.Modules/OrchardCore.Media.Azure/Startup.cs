@@ -97,8 +97,8 @@ public sealed class Startup : Modules.StartupBase
                 var mediaCreatingEventHandlers = serviceProvider.GetServices<IMediaCreatingEventHandler>();
                 var logger = serviceProvider.GetRequiredService<ILogger<DefaultMediaFileStore>>();
 
-                var gen2Logger = serviceProvider.GetRequiredService<ILogger<Gen2BlobFileStore>>();
-                var fileStore = new Gen2BlobFileStore(blobStorageOptions, clock, contentTypeProvider, gen2Logger);
+                var blobLogger = serviceProvider.GetRequiredService<ILogger<BlobFileStore>>();
+                var fileStore = new BlobFileStore(blobStorageOptions, clock, contentTypeProvider, blobLogger);
                 fileStore.EnsureCapabilitiesAsync().GetAwaiter().GetResult();
                 var mediaUrlBase = "/" + fileStore.Combine(shellSettings.RequestUrlPrefix, mediaOptions.AssetsRequestPath);
 

@@ -16,6 +16,11 @@ public interface IFileStoreCapabilities
     /// that does not require a copy-then-delete round-trip.
     /// </summary>
     bool SupportsAtomicMove { get; }
+
+    /// <summary>
+    /// Gets a human-readable name identifying the storage provider (e.g. "Local", "Azure Blob").
+    /// </summary>
+    string StorageProvider => "Unknown";
 }
 
 /// <summary>
@@ -32,13 +37,16 @@ public sealed class FileStoreCapabilities : IFileStoreCapabilities
     {
     }
 
-    public FileStoreCapabilities(bool hasHierarchicalNamespace, bool supportsAtomicMove)
+    public FileStoreCapabilities(bool hasHierarchicalNamespace, bool supportsAtomicMove, string storageProvider = "Unknown")
     {
         HasHierarchicalNamespace = hasHierarchicalNamespace;
         SupportsAtomicMove = supportsAtomicMove;
+        StorageProvider = storageProvider;
     }
 
     public bool HasHierarchicalNamespace { get; }
 
     public bool SupportsAtomicMove { get; }
+
+    public string StorageProvider { get; } = "Unknown";
 }

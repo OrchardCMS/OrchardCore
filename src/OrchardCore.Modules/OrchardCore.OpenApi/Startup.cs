@@ -29,29 +29,10 @@ public sealed class Startup : StartupBase
             // Only include actions that have an explicit HTTP method attribute.
             // This prevents helper methods (e.g. CreateFileResult) from causing
             // "Ambiguous HTTP method" errors during document generation.
-            // Also exclude the legacy api/media controller — the Gen2 controller supersedes it.
             c.DocInclusionPredicate(
                 (docName, apiDesc) =>
                 {
-                    if (apiDesc.HttpMethod == null)
-                    {
-                        return false;
-                    }
-
-                    // Exclude the legacy Media ApiController (api/media) to avoid
-                    // duplicate operation names with MediaGen2ApiController.
-                    if (
-                        apiDesc.RelativePath != null
-                        && apiDesc.RelativePath.StartsWith(
-                            "api/media/",
-                            StringComparison.OrdinalIgnoreCase
-                        )
-                    )
-                    {
-                        return false;
-                    }
-
-                    return true;
+                    return apiDesc.HttpMethod != null;
                 }
             );
 

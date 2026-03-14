@@ -1,12 +1,11 @@
 import { computed, ref, shallowRef } from "vue";
-import { IFileLibraryItemDto, IHFileLibraryItemDto, IFileStoreCapabilities } from "@bloom/media/interfaces";
+import { IFileLibraryItemDto, IHFileLibraryItemDto } from "@bloom/media/interfaces";
 
 const assetsStore = shallowRef([] as IFileLibraryItemDto[]);
 const selectedDirectory = ref({} as IFileLibraryItemDto);
 const fileItems = shallowRef([] as IFileLibraryItemDto[]);
 const rootDirectory = ref({} as IFileLibraryItemDto);
 const hierarchicalDirectories = ref({} as IHFileLibraryItemDto);
-const capabilities = ref<IFileStoreCapabilities>({ hasHierarchicalNamespace: false, supportsAtomicMove: false });
 const basePath = ref("");
 const selectedFiles = ref([] as IFileLibraryItemDto[]);
 const isSelectedAll = ref(false);
@@ -23,7 +22,7 @@ const loadingFolders = ref(new Set<string>());
 const loadedFolders = ref(new Set<string>());
 const directoryIndex = computed(() => {
   const map = new Map<string, IFileLibraryItemDto>();
-  // Include assetsStore entries (root folders, flat fallback mode).
+  // Include assetsStore entries (flat directory list from server tree).
   for (const item of assetsStore.value) {
     if (item.isDirectory) {
       map.set(item.directoryPath, item);
@@ -122,10 +121,6 @@ export const useGlobals = () => {
     hierarchicalDirectories.value = value;
   };
 
-  const setCapabilities = (value: IFileStoreCapabilities) => {
-    capabilities.value = value;
-  };
-
   const toggleFolder = (path: string) => {
     const next = new Set(expandedFolders.value);
     if (next.has(path)) {
@@ -160,6 +155,18 @@ export const useGlobals = () => {
     loadedFolders.value = next;
   };
 
+  const markAllFoldersLoaded = (root: IHFileLibraryItemDto) => {
+    const paths = new Set<string>();
+    const walk = (node: IHFileLibraryItemDto) => {
+      paths.add(node.directoryPath);
+      if (node.children) {
+        for (const child of node.children) walk(child);
+      }
+    };
+    walk(root);
+    loadedFolders.value = paths;
+  };
+
   const resetLazyState = () => {
     expandedFolders.value = new Set([""]);
     loadingFolders.value = new Set();
@@ -184,14 +191,12 @@ export const useGlobals = () => {
     fileItems,
     rootDirectory,
     hierarchicalDirectories,
-    capabilities,
     uploadFilesUrl,
     setAssetsStore,
     setSelectedDirectory,
     setFileItems,
     setRootDirectory,
     setHierarchicalData,
-    setCapabilities,
     setBasePath,
     setSelectedFiles,
     setSelectedAll,
@@ -211,6 +216,7 @@ export const useGlobals = () => {
     expandFolder,
     setFolderLoading,
     setFolderLoaded,
+    markAllFoldersLoaded,
     resetLazyState,
   };
 };

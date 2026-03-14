@@ -28,21 +28,19 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue';
+import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue';
 import { RecycleScroller } from 'vue-virtual-scroller';
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css';
 import FolderRow from './FolderRow.vue';
 import { useHierarchicalTreeBuilder, type IFlatTreeNode } from '../services/HierarchicalTreeBuilder';
 import { useGlobals } from '../services/Globals';
 import { useEventBus } from '../services/UseEventBus';
-import { useFileLibraryManager } from '../services/FileLibraryManager';
 import { IFileLibraryItemDto, IHFileLibraryItemDto } from '@bloom/media/interfaces';
 import { FileDataService } from '@bloom/media/api/file-data-service';
 
 const { visibleFolderNodes } = useHierarchicalTreeBuilder();
 const { selectedDirectory, expandedFolders, basePath, loadedFolders, hierarchicalDirectories, expandFolder, toggleFolder, setFolderLoading, setFolderLoaded } = useGlobals();
 const { on, emit } = useEventBus();
-const { loadMoreRootFolders, hasMoreRootFolders } = useFileLibraryManager();
 
 const ROOT_ROW_HEIGHT = 40;
 
@@ -59,16 +57,8 @@ const scrollContainer = ref<HTMLElement>();
 const scroller = ref<InstanceType<typeof RecycleScroller>>();
 const scrollerHeight = ref(0);
 let resizeObserver: ResizeObserver | null = null;
-let scrollEl: HTMLElement | null = null;
 
-const onScroll = () => {
-  if (!hasMoreRootFolders() || !scrollEl) return;
-  if (scrollEl.scrollTop + scrollEl.clientHeight >= scrollEl.scrollHeight - 200) {
-    loadMoreRootFolders();
-  }
-};
-
-onMounted(async () => {
+onMounted(() => {
   const parent = scrollContainer.value?.parentElement;
   if (parent) {
     resizeObserver = new ResizeObserver((entries) => {
@@ -79,31 +69,10 @@ onMounted(async () => {
     });
     resizeObserver.observe(parent);
   }
-
-  // Wait for RecycleScroller to render, then attach scroll listener to its internal element.
-  await nextTick();
-  if (scroller.value) {
-    scrollEl = (scroller.value as any).$el as HTMLElement;
-    scrollEl.addEventListener('scroll', onScroll, { passive: true });
-  }
 });
 
 onBeforeUnmount(() => {
   resizeObserver?.disconnect();
-  if (scrollEl) {
-    scrollEl.removeEventListener('scroll', onScroll);
-  }
-});
-
-// If the scroller mounts later (after scrollerHeight becomes > 0), attach listener.
-watch(scrollerHeight, async (newVal) => {
-  if (newVal > 0 && !scrollEl) {
-    await nextTick();
-    if (scroller.value) {
-      scrollEl = (scroller.value as any).$el as HTMLElement;
-      scrollEl.addEventListener('scroll', onScroll, { passive: true });
-    }
-  }
 });
 
 // Root node rendered separately (pinned).

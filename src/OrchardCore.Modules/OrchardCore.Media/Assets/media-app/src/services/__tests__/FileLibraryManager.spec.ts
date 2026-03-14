@@ -18,7 +18,10 @@ vi.mock("@bloom/media/api/file-data-service", () => {
         size: 896,
         url: "/media/Images/photo1.jpg",
       } as IFileLibraryItemDto),
-      getFolders: vi.fn().mockResolvedValue([]),
+      getFolders: vi.fn().mockResolvedValue({
+        items: assetsStoreData.filter(x => x.isDirectory),
+        hasMore: false,
+      }),
       getMediaItems: vi.fn().mockResolvedValue([]),
       listAllItems: vi.fn().mockResolvedValue(assetsStoreData),
       moveMedia: vi.fn().mockResolvedValue(undefined),
@@ -41,14 +44,14 @@ vi.mock("@bloom/media/api/file-data-service", () => {
         isDirectory: true,
         size: 0,
       } as IFileLibraryItemDto),
-      getCapabilities: vi.fn().mockResolvedValue({
-        hasHierarchicalNamespace: false,
-        supportsAtomicMove: false,
-      }),
       getDirectoryTree: vi.fn().mockResolvedValue({
         name: "",
         path: "",
-        children: [],
+        hasChildren: true,
+        children: [
+          { name: "Images", path: "/Images", hasChildren: false, children: [] },
+          { name: "Documents", path: "/Documents", hasChildren: false, children: [] },
+        ],
       }),
     })),
   };
@@ -60,13 +63,28 @@ vi.mock("@bloom/services/notifications/notifier", () => ({
   NotificationMessage: vi.fn().mockImplementation((data: any) => data), // eslint-disable-line @typescript-eslint/no-explicit-any
 }));
 
-const { setAssetsStore, setSelectedFiles, setSelectedDirectory, assetsStore, setRootDirectory } = useGlobals();
+const { setAssetsStore, setSelectedFiles, setSelectedDirectory, setFileItems, assetsStore, fileItems, setRootDirectory, setHierarchicalData } = useGlobals();
 
 describe("FileLibraryManager", () => {
   beforeEach(() => {
-    setAssetsStore(JSON.parse(JSON.stringify(assetsStoreData)));
+    const data = JSON.parse(JSON.stringify(assetsStoreData));
+    setAssetsStore(data);
+    setFileItems(data.filter((x: IFileLibraryItemDto) => !x.isDirectory));
     setRootDirectory({ filePath: "", directoryPath: "", name: "Media Library", isDirectory: true });
     setSelectedDirectory({ filePath: "/Images", directoryPath: "/Images", name: "Images", isDirectory: true });
+    // Set up a minimal hierarchical tree so findNodeByPath works.
+    setHierarchicalData({
+      name: "Media Library",
+      directoryPath: "",
+      filePath: "",
+      isDirectory: true,
+      selected: true,
+      hasChildren: true,
+      children: [
+        { name: "Images", directoryPath: "/Images", filePath: "", isDirectory: true, selected: false, hasChildren: false, children: [] },
+        { name: "Documents", directoryPath: "/Documents", filePath: "", isDirectory: true, selected: false, hasChildren: false, children: [] },
+      ],
+    });
   });
 
   it("should get a file item", async () => {
@@ -80,7 +98,7 @@ describe("FileLibraryManager", () => {
 
   it("should move a list of files", async () => {
     const { fileListMove } = useFileLibraryManager();
-    const files = assetsStore.value.filter((x) => !x.isDirectory && x.directoryPath === "/Images");
+    const files = fileItems.value.filter((x) => x.directoryPath === "/Images");
 
     await fileListMove({
       files: files,
@@ -88,22 +106,22 @@ describe("FileLibraryManager", () => {
       targetFolder: "/Documents",
     });
 
-    // Files should have updated paths
-    files.forEach((file) => {
-      expect(file.directoryPath).toBe("/Documents");
-      expect(file.filePath).toContain("/Documents/");
-    });
+    // Moved files should be removed from fileItems.
+    const movedNames = files.map(f => f.name);
+    for (const name of movedNames) {
+      expect(fileItems.value.find(f => f.name === name)).toBeUndefined();
+    }
   });
 
   it("should delete a file item", async () => {
     const { deleteFileItem } = useFileLibraryManager();
-    const file = assetsStore.value.find((x) => x.filePath === "/Images/photo1.jpg") as IFileLibraryItemDto;
-    const initialLength = assetsStore.value.length;
+    const file = fileItems.value.find((x) => x.filePath === "/Images/photo1.jpg") as IFileLibraryItemDto;
+    const initialLength = fileItems.value.length;
 
     await deleteFileItem(file);
 
-    expect(assetsStore.value.length).toBe(initialLength - 1);
-    expect(assetsStore.value.find((x) => x.filePath === "/Images/photo1.jpg")).toBeUndefined();
+    expect(fileItems.value.length).toBe(initialLength - 1);
+    expect(fileItems.value.find((x) => x.filePath === "/Images/photo1.jpg")).toBeUndefined();
   });
 
   it("should not delete a null file item", async () => {
@@ -117,24 +135,24 @@ describe("FileLibraryManager", () => {
 
   it("should delete a file item list", async () => {
     const { deleteFileList } = useFileLibraryManager();
-    const files = assetsStore.value.filter((x) => !x.isDirectory && x.directoryPath === "/Images");
+    const files = fileItems.value.filter((x) => x.directoryPath === "/Images");
     setSelectedFiles(files);
 
     await deleteFileList();
 
     files.forEach((file) => {
-      expect(assetsStore.value.find((x) => x.filePath === file.filePath)).toBeUndefined();
+      expect(fileItems.value.find((x) => x.filePath === file.filePath)).toBeUndefined();
     });
   });
 
   it("should not delete an empty file list", async () => {
     const { deleteFileList } = useFileLibraryManager();
     setSelectedFiles([]);
-    const initialLength = assetsStore.value.length;
+    const initialLength = fileItems.value.length;
 
     await deleteFileList();
 
-    expect(assetsStore.value.length).toBe(initialLength);
+    expect(fileItems.value.length).toBe(initialLength);
   });
 
   it("should rename a file", async () => {
@@ -217,12 +235,12 @@ describe("FileLibraryManager", () => {
     // Should not throw - just shows notification
   });
 
-  it("should notify error when getFileLibraryStoreAsync returns falsy response", async () => {
+  it("should notify error when getDirectoryTree rejects in getFileLibraryStoreAsync", async () => {
     const { getFileLibraryStoreAsync } = useFileLibraryManager();
 
-    // Override listAllItems to return null for this test
+    // Override getDirectoryTree to reject for this test, triggering the catch block.
     const mockInstance = vi.mocked(FileDataService).mock.results[vi.mocked(FileDataService).mock.results.length - 1].value;
-    mockInstance.listAllItems.mockResolvedValueOnce(null);
+    mockInstance.getDirectoryTree.mockRejectedValueOnce(new Error("Network error"));
 
     const result = await getFileLibraryStoreAsync();
 
@@ -233,10 +251,10 @@ describe("FileLibraryManager", () => {
   it("should notify error when getFileLibraryStoreAsync throws", async () => {
     const { getFileLibraryStoreAsync } = useFileLibraryManager();
 
-    // Override getCapabilities to reject for this test
+    // Override getDirectoryTree to reject for this test
     const mockInstance = vi.mocked(FileDataService).mock.results[vi.mocked(FileDataService).mock.results.length - 1].value;
     const testError = new Error("Network error");
-    mockInstance.getCapabilities.mockRejectedValueOnce(testError);
+    mockInstance.getDirectoryTree.mockRejectedValueOnce(testError);
 
     const result = await getFileLibraryStoreAsync();
 

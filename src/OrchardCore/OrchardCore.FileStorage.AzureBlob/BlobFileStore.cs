@@ -3,7 +3,9 @@ using System.Net.Mime;
 using Azure;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
+using Azure.Storage.Files.DataLake;
 using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.Extensions.Logging;
 using OrchardCore.Modules;
 
 namespace OrchardCore.FileStorage.AzureBlob;
@@ -12,24 +14,25 @@ namespace OrchardCore.FileStorage.AzureBlob;
 /// Provides an <see cref="IFileStore"/> implementation that targets an underlying Azure Blob Storage account.
 /// </summary>
 /// <remarks>
-/// Azure Blob Storage has very different semantics for directories compared to a local file system, and
-/// some special consideration is required for make this provider conform to the semantics of the
-/// <see cref="IFileStore"/> interface and behave in an expected way.
+/// This store supports both flat-namespace (Gen1) and hierarchical-namespace / ADLS Gen2 storage accounts.
+/// When HNS is detected (or forced via configuration), operations use native DataLake APIs for
+/// atomic moves, real directories, and efficient listing. Otherwise, standard blob operations are used
+/// with virtual directory semantics.
 ///
-/// Directories have no physical manifestation in blob storage; we can obtain a reference to them, but
+/// Directories have no physical manifestation in flat blob storage; we can obtain a reference to them, but
 /// that reference can be created regardless of whether the directory exists, and it can only be used
 /// as a scoping container to operate on blobs within that directory namespace.
 ///
-/// As a consequence, this provider generally behaves as if any given directory always exists. To
-/// simulate "creating" a directory (which cannot technically be done in blob storage) this provider creates
-/// a marker file inside the directory, which makes the directory "exist" and appear when listing contents
-/// subsequently. This marker file is ignored (excluded) when listing directory contents.
+/// As a consequence, in flat-namespace mode this provider generally behaves as if any given directory always
+/// exists. To simulate "creating" a directory this provider creates a marker file inside the directory,
+/// which makes the directory "exist" and appear when listing contents subsequently. This marker file is
+/// ignored (excluded) when listing directory contents.
 ///
 /// Note that the Blob Container is not created automatically, and existence of the Container is not verified.
 ///
 /// Create the Blob Container before enabling a Blob File Store.
 ///
-/// Azure Blog Storage will create the BasePath inside the container during the upload of the first file.
+/// Azure Blob Storage will create the BasePath inside the container during the upload of the first file.
 /// </remarks>
 public class BlobFileStore : IFileStore
 {
@@ -39,25 +42,95 @@ public class BlobFileStore : IFileStore
     private readonly BlobStorageOptions _options;
     private readonly IClock _clock;
     private readonly BlobContainerClient _blobContainer;
+    private readonly BlobServiceClient _blobServiceClient;
+    private readonly DataLakeFileSystemClient _dataLakeFileSystemClient;
     private readonly IContentTypeProvider _contentTypeProvider;
+    private readonly ILogger _logger;
+    private readonly bool? _useHierarchicalNamespaceOverride;
+    private readonly SemaphoreSlim _capabilitiesLock = new(1, 1);
+    private IFileStoreCapabilities _capabilities;
 
     private readonly string _basePrefix;
 
-    public IFileStoreCapabilities Capabilities => FileStoreCapabilities.Default;
+    public IFileStoreCapabilities Capabilities => _capabilities ?? FileStoreCapabilities.Default;
 
     public BlobFileStore(
         BlobStorageOptions options,
         IClock clock,
-        IContentTypeProvider contentTypeProvider)
+        IContentTypeProvider contentTypeProvider,
+        ILogger logger = null)
     {
         _options = options;
         _clock = clock;
         _contentTypeProvider = contentTypeProvider;
+        _logger = logger;
         _blobContainer = new BlobContainerClient(_options.ConnectionString, _options.ContainerName);
+        _blobServiceClient = new BlobServiceClient(_options.ConnectionString);
+        _useHierarchicalNamespaceOverride = options.UseHierarchicalNamespace;
+
+        var serviceClient = new DataLakeServiceClient(_options.ConnectionString);
+        _dataLakeFileSystemClient = serviceClient.GetFileSystemClient(_options.ContainerName);
 
         if (!string.IsNullOrEmpty(_options.BasePath))
         {
             _basePrefix = NormalizePrefix(_options.BasePath);
+        }
+    }
+
+    /// <summary>
+    /// Probes the storage account to determine whether Hierarchical Namespace (HNS) is enabled.
+    /// Must be called once at startup; after completion <see cref="Capabilities"/> returns the detected values.
+    /// </summary>
+    public async Task EnsureCapabilitiesAsync()
+    {
+        if (_capabilities is not null)
+        {
+            return;
+        }
+
+        await _capabilitiesLock.WaitAsync();
+        try
+        {
+            if (_capabilities is not null)
+            {
+                return;
+            }
+
+            var hnsEnabled = _useHierarchicalNamespaceOverride;
+
+            if (!hnsEnabled.HasValue)
+            {
+                try
+                {
+                    var accountInfo = await _blobServiceClient.GetAccountInfoAsync();
+                    hnsEnabled = accountInfo.Value.IsHierarchicalNamespaceEnabled;
+                }
+                catch (Exception ex)
+                {
+                    // If we cannot determine HNS status (e.g., insufficient permissions on SAS token),
+                    // default to false (flat namespace behavior).
+                    _logger?.LogWarning(ex, "Unable to detect Azure Blob Storage Hierarchical Namespace status. Falling back to flat namespace behavior.");
+                    hnsEnabled = false;
+                }
+            }
+
+            _capabilities = new FileStoreCapabilities(
+                hasHierarchicalNamespace: hnsEnabled.Value,
+                supportsAtomicMove: hnsEnabled.Value,
+                storageProvider: hnsEnabled.Value ? "Azure Blob (Gen2)" : "Azure Blob (Gen1)");
+
+            if (hnsEnabled.Value)
+            {
+                _logger?.LogInformation("Azure Blob Storage Hierarchical Namespace (ADLS Gen2) detected. Using native directory and atomic move operations.");
+            }
+            else
+            {
+                _logger?.LogInformation("Azure Blob Storage flat namespace detected. Using standard blob operations with virtual directories.");
+            }
+        }
+        finally
+        {
+            _capabilitiesLock.Release();
         }
     }
 
@@ -84,6 +157,31 @@ public class BlobFileStore : IFileStore
 
     public async Task<IFileStoreEntry> GetDirectoryInfoAsync(string path)
     {
+        if (Capabilities.HasHierarchicalNamespace)
+        {
+            try
+            {
+                if (path == string.Empty)
+                {
+                    return new BlobDirectory(path, _clock.UtcNow);
+                }
+
+                var prefix = this.Combine(_basePrefix, path);
+                var directoryClient = _dataLakeFileSystemClient.GetDirectoryClient(prefix);
+
+                if (await directoryClient.ExistsAsync())
+                {
+                    return new BlobDirectory(path, _clock.UtcNow);
+                }
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+                throw new FileStoreException($"Cannot get directory info with path '{path}'.", ex);
+            }
+        }
+
         try
         {
             if (path == string.Empty)
@@ -145,18 +243,30 @@ public class BlobFileStore : IFileStore
                 }
 
                 folderPath = folderPath.Trim('/');
-                yield return new BlobDirectory(folderPath, _clock.UtcNow);
-            }
-            else
-            {
-                var itemName = Path.GetFileName(WebUtility.UrlDecode(blob.Blob.Name)).Trim('/');
 
-                // Ignore directory marker files.
-                if (itemName != DirectoryMarkerFileName)
+                if (blob.Blob is not null && blob.Blob.Properties is not null)
                 {
-                    var itemPath = this.Combine(path?.Trim('/'), itemName);
-                    yield return new BlobFile(itemPath, blob.Blob.Properties.ContentLength, blob.Blob.Properties.LastModified);
+                    yield return new BlobDirectory(
+                        folderPath,
+                        blob.Blob.Properties.LastModified.HasValue
+                            ? blob.Blob.Properties.LastModified.Value.DateTime
+                            : _clock.UtcNow);
                 }
+                else
+                {
+                    yield return new BlobDirectory(folderPath, _clock.UtcNow);
+                }
+
+                continue;
+            }
+
+            var itemName = Path.GetFileName(WebUtility.UrlDecode(blob.Blob.Name)).Trim('/');
+
+            // Ignore directory marker files.
+            if (!string.Equals(itemName, DirectoryMarkerFileName, StringComparison.Ordinal))
+            {
+                var itemPath = this.Combine(path?.Trim('/'), itemName);
+                yield return new BlobFile(itemPath, blob.Blob.Properties.ContentLength, blob.Blob.Properties.LastModified);
             }
         }
     }
@@ -165,14 +275,62 @@ public class BlobFileStore : IFileStore
     {
         path = this.NormalizePath(path);
 
-        // Folders are considered case sensitive in blob storage.
-        var directories = new HashSet<string>();
-
         var prefix = this.Combine(_basePrefix, path);
         prefix = NormalizePrefix(prefix);
 
-        var page = _blobContainer.GetBlobsAsync(BlobTraits.Metadata, BlobStates.None, prefix, CancellationToken.None);
-        await foreach (var blob in page)
+        if (Capabilities.HasHierarchicalNamespace)
+        {
+            var page = _blobContainer.GetBlobsAsync(BlobTraits.Metadata, BlobStates.None, prefix, CancellationToken.None);
+            await foreach (var blob in page)
+            {
+                var name = blob.Name;
+
+                if (blob.Metadata.TryGetValue("hdi_isfolder", out var value) &&
+                    value.Equals("true", StringComparison.OrdinalIgnoreCase))
+                {
+                    var directoryName = name;
+                    if (!string.IsNullOrEmpty(_basePrefix))
+                    {
+                        directoryName = directoryName[(_basePrefix.Length - 1)..];
+                    }
+
+                    if (blob.Properties is not null)
+                    {
+                        yield return new BlobDirectory(
+                            directoryName,
+                            blob.Properties.LastModified.HasValue
+                                ? blob.Properties.LastModified.Value.DateTime
+                                : _clock.UtcNow);
+                    }
+                    else
+                    {
+                        yield return new BlobDirectory(directoryName, _clock.UtcNow);
+                    }
+
+                    continue;
+                }
+
+                if (name.EndsWith(DirectoryMarkerFileName, StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
+                if (!string.IsNullOrEmpty(_basePrefix))
+                {
+                    name = name[(_basePrefix.Length - 1)..];
+                }
+
+                yield return new BlobFile(name, blob.Properties.ContentLength, blob.Properties.LastModified);
+            }
+
+            yield break;
+        }
+
+        // Flat namespace: infer directory hierarchy from blob paths.
+        var directories = new HashSet<string>();
+
+        var flatPage = _blobContainer.GetBlobsAsync(BlobTraits.Metadata, BlobStates.None, prefix, CancellationToken.None);
+        await foreach (var blob in flatPage)
         {
             var name = WebUtility.UrlDecode(blob.Name);
 
@@ -211,6 +369,23 @@ public class BlobFileStore : IFileStore
 
     public async Task<bool> TryCreateDirectoryAsync(string path)
     {
+        if (Capabilities.HasHierarchicalNamespace)
+        {
+            try
+            {
+                var prefix = this.Combine(_basePrefix, path);
+                var directoryClient = _dataLakeFileSystemClient.GetDirectoryClient(prefix);
+                var response = await directoryClient.CreateIfNotExistsAsync();
+
+                // CreateIfNotExistsAsync returns null if it already existed.
+                return response is not null;
+            }
+            catch (Exception ex)
+            {
+                throw new FileStoreException($"Cannot create directory '{path}'.", ex);
+            }
+        }
+
         // Since directories are only created implicitly when creating blobs, we
         // simply pretend like we created the directory, unless there is already
         // a blob with the same path.
@@ -257,6 +432,36 @@ public class BlobFileStore : IFileStore
 
     public async Task<bool> TryDeleteDirectoryAsync(string path)
     {
+        if (Capabilities.HasHierarchicalNamespace)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(path))
+                {
+                    throw new FileStoreException("Cannot delete the root directory.");
+                }
+
+                var prefix = this.Combine(_basePrefix, path);
+                var directoryClient = _dataLakeFileSystemClient.GetDirectoryClient(prefix);
+
+                if (!await directoryClient.ExistsAsync())
+                {
+                    return false;
+                }
+
+                await directoryClient.DeleteAsync(recursive: true);
+                return true;
+            }
+            catch (FileStoreException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new FileStoreException($"Cannot delete directory '{path}'.", ex);
+            }
+        }
+
         try
         {
             if (string.IsNullOrEmpty(path))
@@ -290,6 +495,24 @@ public class BlobFileStore : IFileStore
 
     public async Task MoveFileAsync(string oldPath, string newPath)
     {
+        if (Capabilities.SupportsAtomicMove)
+        {
+            try
+            {
+                var oldFullPath = this.Combine(_basePrefix, oldPath);
+                var newFullPath = this.Combine(_basePrefix, newPath);
+
+                var fileClient = _dataLakeFileSystemClient.GetFileClient(oldFullPath);
+                await fileClient.RenameAsync(newFullPath);
+            }
+            catch (Exception ex)
+            {
+                throw new FileStoreException($"Cannot move file '{oldPath}' to '{newPath}'.", ex);
+            }
+
+            return;
+        }
+
         try
         {
             await CopyFileAsync(oldPath, newPath);

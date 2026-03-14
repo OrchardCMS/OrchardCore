@@ -1,5 +1,5 @@
 /**
- * Maps to OrchardCore's FileStoreEntryDto returned by the MediaGen2ApiController.
+ * Maps to OrchardCore's FileStoreEntryDto returned by the MediaApiController.
  */
 export interface IFileLibraryItemDto {
   name: string;
@@ -143,6 +143,7 @@ export interface IFileCopyDto {
 export interface IFileStoreCapabilities {
   hasHierarchicalNamespace: boolean;
   supportsAtomicMove: boolean;
+  storageProvider: string;
 }
 
 /**
@@ -159,6 +160,14 @@ export interface IPaginatedFoldersResult {
 export interface IDirectoryContentResult {
   folders: IFileLibraryItemDto[];
   files: IFileLibraryItemDto[];
+}
+
+/**
+ * Permitted storage quota returned by the GetPermittedStorage endpoint.
+ */
+export interface IPermittedStorageResult {
+  bytes: number | null;
+  text: string;
 }
 
 /**

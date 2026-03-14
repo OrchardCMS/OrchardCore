@@ -54,10 +54,6 @@ export const useEventBusService = () => {
     }
   };
 
-  const selectRootDirectory = () => {
-    setSelectedDirectory(rootDirectory.value);
-  };
-
   const setDirectoryFiles = async (directory: string) => {
     const folders = await loadDirectoryFiles(directory);
     if (folders !== null) {
@@ -114,14 +110,12 @@ export const useEventBusService = () => {
   });
 
   on("DirDelete", (folder: IFileLibraryItemDto) => {
-    const directory = folder.directoryPath.substring(0, folder.directoryPath.lastIndexOf("/"));
+    const lastSlash = folder.directoryPath.lastIndexOf("/");
+    const parentPath = lastSlash > 0 ? folder.directoryPath.substring(0, lastSlash) : "";
+    const parentDirectory = parentPath ? directoryIndex.value.get(parentPath) : null;
 
-    if (directory) {
-      const parentDirectory = directoryIndex.value.get(directory);
-      emit("DirSelected", parentDirectory as IFileLibraryItemDto);
-    } else {
-      selectRootDirectory();
-    }
+    // Always emit DirSelected so the route, file list, and selection state update correctly.
+    emit("DirSelected", parentDirectory ?? rootDirectory.value);
   });
 
   on("DirAdded", (directory: IHFileLibraryItemDto) => {

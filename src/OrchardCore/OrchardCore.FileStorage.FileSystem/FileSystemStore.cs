@@ -6,7 +6,7 @@ namespace OrchardCore.FileStorage.FileSystem;
 public class FileSystemStore : IFileStore
 {
     private static readonly IFileStoreCapabilities _capabilities =
-        new FileStoreCapabilities(hasHierarchicalNamespace: true, supportsAtomicMove: true);
+        new FileStoreCapabilities(hasHierarchicalNamespace: true, supportsAtomicMove: true, storageProvider: "Local");
 
     private readonly ILogger<FileSystemStore> _logger;
     private readonly string _fileSystemPath;

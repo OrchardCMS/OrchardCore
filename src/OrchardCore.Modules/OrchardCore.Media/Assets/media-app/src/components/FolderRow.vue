@@ -150,7 +150,7 @@ const moveFileToFolder = (folder: IFileLibraryItemDto, e: DragEvent): void => {
 };
 
 const getFolderModalName = (action: string, folder: IFileLibraryItemDto): string => {
-  return action + "-folder-" + folder.name;
+  return action + "-folder-" + (folder.directoryPath || folder.name);
 };
 
 const openFolderModal = async (action: string, folder: IFileLibraryItemDto): Promise<void> => {

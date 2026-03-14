@@ -15,7 +15,10 @@ public class AwsFileStore : IFileStore
     private readonly string _basePrefix;
     private readonly IAmazonS3 _amazonS3Client;
 
-    public IFileStoreCapabilities Capabilities => FileStoreCapabilities.Default;
+    private static readonly IFileStoreCapabilities _capabilities =
+        new FileStoreCapabilities(hasHierarchicalNamespace: false, supportsAtomicMove: false, storageProvider: "Amazon S3");
+
+    public IFileStoreCapabilities Capabilities => _capabilities;
 
     public AwsFileStore(IClock clock, AwsStorageOptions options, IAmazonS3 amazonS3Client)
     {

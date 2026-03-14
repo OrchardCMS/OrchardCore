@@ -1039,7 +1039,7 @@ namespace OrchardCore.OpenApi.Services
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NSwag", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class MediaGen2ApiClient 
+    public partial class MediaApiClient 
     {
         #pragma warning disable 8618
         private string _baseUrl;
@@ -1050,7 +1050,7 @@ namespace OrchardCore.OpenApi.Services
         private System.Text.Json.JsonSerializerOptions _instanceSettings;
 
     #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-        public MediaGen2ApiClient(string baseUrl, System.Net.Http.HttpClient httpClient)
+        public MediaApiClient(string baseUrl, System.Net.Http.HttpClient httpClient)
     #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         {
             BaseUrl = baseUrl;
@@ -1109,8 +1109,8 @@ namespace OrchardCore.OpenApi.Services
 
                     var urlBuilder_ = new System.Text.StringBuilder();
                     if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
-                    // Operation Path: "api/media-gen2/GetCapabilities"
-                    urlBuilder_.Append("api/media-gen2/GetCapabilities");
+                    // Operation Path: "api/media/GetCapabilities"
+                    urlBuilder_.Append("api/media/GetCapabilities");
 
                     PrepareRequest(client_, request_, urlBuilder_);
 
@@ -1186,6 +1186,104 @@ namespace OrchardCore.OpenApi.Services
 
         /// <returns>OK</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
+        public virtual System.Threading.Tasks.Task<PermittedStorageDto> GetPermittedStorageAsync()
+        {
+            return GetPermittedStorageAsync(System.Threading.CancellationToken.None);
+        }
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>OK</returns>
+        /// <exception cref="SwaggerException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<PermittedStorageDto> GetPermittedStorageAsync(System.Threading.CancellationToken cancellationToken)
+        {
+            var client_ = _httpClient;
+            var disposeClient_ = false;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    request_.Method = new System.Net.Http.HttpMethod("GET");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
+
+                    var urlBuilder_ = new System.Text.StringBuilder();
+                    if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
+                    // Operation Path: "api/media/GetPermittedStorage"
+                    urlBuilder_.Append("api/media/GetPermittedStorage");
+
+                    PrepareRequest(client_, request_, urlBuilder_);
+
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+
+                    PrepareRequest(client_, request_, url_);
+
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    var disposeResponse_ = true;
+                    try
+                    {
+                        var headers_ = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.IEnumerable<string>>();
+                        foreach (var item_ in response_.Headers)
+                            headers_[item_.Key] = item_.Value;
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+
+                        ProcessResponse(client_, response_);
+
+                        var status_ = (int)response_.StatusCode;
+                        if (status_ == 200)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<PermittedStorageDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new SwaggerException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            return objectResponse_.Object;
+                        }
+                        else
+                        if (status_ == 401)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new SwaggerException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            throw new SwaggerException<ProblemDetails>("Unauthorized", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 403)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new SwaggerException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            throw new SwaggerException<ProblemDetails>("Forbidden", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        {
+                            var responseData_ = response_.Content == null ? null : await ReadAsStringAsync(response_.Content, cancellationToken).ConfigureAwait(false);
+                            throw new SwaggerException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                        }
+                    }
+                    finally
+                    {
+                        if (disposeResponse_)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+                if (disposeClient_)
+                    client_.Dispose();
+            }
+        }
+
+        /// <returns>OK</returns>
+        /// <exception cref="SwaggerException">A server side error occurred.</exception>
         public virtual System.Threading.Tasks.Task<DirectoryTreeNodeDto> GetDirectoryTreeAsync()
         {
             return GetDirectoryTreeAsync(System.Threading.CancellationToken.None);
@@ -1207,8 +1305,8 @@ namespace OrchardCore.OpenApi.Services
 
                     var urlBuilder_ = new System.Text.StringBuilder();
                     if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
-                    // Operation Path: "api/media-gen2/GetDirectoryTree"
-                    urlBuilder_.Append("api/media-gen2/GetDirectoryTree");
+                    // Operation Path: "api/media/GetDirectoryTree"
+                    urlBuilder_.Append("api/media/GetDirectoryTree");
 
                     PrepareRequest(client_, request_, urlBuilder_);
 
@@ -1305,8 +1403,8 @@ namespace OrchardCore.OpenApi.Services
 
                     var urlBuilder_ = new System.Text.StringBuilder();
                     if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
-                    // Operation Path: "api/media-gen2/GetFolders"
-                    urlBuilder_.Append("api/media-gen2/GetFolders");
+                    // Operation Path: "api/media/GetFolders"
+                    urlBuilder_.Append("api/media/GetFolders");
                     urlBuilder_.Append('?');
                     if (path != null)
                     {
@@ -1427,8 +1525,8 @@ namespace OrchardCore.OpenApi.Services
 
                     var urlBuilder_ = new System.Text.StringBuilder();
                     if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
-                    // Operation Path: "api/media-gen2/GetMediaItems"
-                    urlBuilder_.Append("api/media-gen2/GetMediaItems");
+                    // Operation Path: "api/media/GetMediaItems"
+                    urlBuilder_.Append("api/media/GetMediaItems");
                     urlBuilder_.Append('?');
                     if (path != null)
                     {
@@ -1545,8 +1643,8 @@ namespace OrchardCore.OpenApi.Services
 
                     var urlBuilder_ = new System.Text.StringBuilder();
                     if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
-                    // Operation Path: "api/media-gen2/GetDirectoryContent"
-                    urlBuilder_.Append("api/media-gen2/GetDirectoryContent");
+                    // Operation Path: "api/media/GetDirectoryContent"
+                    urlBuilder_.Append("api/media/GetDirectoryContent");
                     urlBuilder_.Append('?');
                     if (path != null)
                     {
@@ -1663,8 +1761,8 @@ namespace OrchardCore.OpenApi.Services
 
                     var urlBuilder_ = new System.Text.StringBuilder();
                     if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
-                    // Operation Path: "api/media-gen2/GetMediaItem"
-                    urlBuilder_.Append("api/media-gen2/GetMediaItem");
+                    // Operation Path: "api/media/GetMediaItem"
+                    urlBuilder_.Append("api/media/GetMediaItem");
                     urlBuilder_.Append('?');
                     if (path != null)
                     {
@@ -1777,8 +1875,8 @@ namespace OrchardCore.OpenApi.Services
 
                     var urlBuilder_ = new System.Text.StringBuilder();
                     if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
-                    // Operation Path: "api/media-gen2/GetAllMediaItems"
-                    urlBuilder_.Append("api/media-gen2/GetAllMediaItems");
+                    // Operation Path: "api/media/GetAllMediaItems"
+                    urlBuilder_.Append("api/media/GetAllMediaItems");
                     urlBuilder_.Append('?');
                     if (extensions != null)
                     {
@@ -1881,8 +1979,8 @@ namespace OrchardCore.OpenApi.Services
 
                     var urlBuilder_ = new System.Text.StringBuilder();
                     if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
-                    // Operation Path: "api/media-gen2/Upload"
-                    urlBuilder_.Append("api/media-gen2/Upload");
+                    // Operation Path: "api/media/Upload"
+                    urlBuilder_.Append("api/media/Upload");
                     urlBuilder_.Append('?');
                     if (path != null)
                     {
@@ -1985,8 +2083,8 @@ namespace OrchardCore.OpenApi.Services
 
                     var urlBuilder_ = new System.Text.StringBuilder();
                     if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
-                    // Operation Path: "api/media-gen2/CopyMedia"
-                    urlBuilder_.Append("api/media-gen2/CopyMedia");
+                    // Operation Path: "api/media/CopyMedia"
+                    urlBuilder_.Append("api/media/CopyMedia");
                     urlBuilder_.Append('?');
                     if (oldPath != null)
                     {
@@ -2113,8 +2211,8 @@ namespace OrchardCore.OpenApi.Services
 
                     var urlBuilder_ = new System.Text.StringBuilder();
                     if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
-                    // Operation Path: "api/media-gen2/DeleteFolder"
-                    urlBuilder_.Append("api/media-gen2/DeleteFolder");
+                    // Operation Path: "api/media/DeleteFolder"
+                    urlBuilder_.Append("api/media/DeleteFolder");
                     urlBuilder_.Append('?');
                     if (path != null)
                     {
@@ -2222,8 +2320,8 @@ namespace OrchardCore.OpenApi.Services
 
                     var urlBuilder_ = new System.Text.StringBuilder();
                     if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
-                    // Operation Path: "api/media-gen2/DeleteMedia"
-                    urlBuilder_.Append("api/media-gen2/DeleteMedia");
+                    // Operation Path: "api/media/DeleteMedia"
+                    urlBuilder_.Append("api/media/DeleteMedia");
                     urlBuilder_.Append('?');
                     if (path != null)
                     {
@@ -2331,8 +2429,8 @@ namespace OrchardCore.OpenApi.Services
 
                     var urlBuilder_ = new System.Text.StringBuilder();
                     if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
-                    // Operation Path: "api/media-gen2/MoveMedia"
-                    urlBuilder_.Append("api/media-gen2/MoveMedia");
+                    // Operation Path: "api/media/MoveMedia"
+                    urlBuilder_.Append("api/media/MoveMedia");
                     urlBuilder_.Append('?');
                     if (oldPath != null)
                     {
@@ -2457,8 +2555,8 @@ namespace OrchardCore.OpenApi.Services
 
                     var urlBuilder_ = new System.Text.StringBuilder();
                     if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
-                    // Operation Path: "api/media-gen2/DeleteMediaList"
-                    urlBuilder_.Append("api/media-gen2/DeleteMediaList");
+                    // Operation Path: "api/media/DeleteMediaList"
+                    urlBuilder_.Append("api/media/DeleteMediaList");
 
                     PrepareRequest(client_, request_, urlBuilder_);
 
@@ -2563,8 +2661,8 @@ namespace OrchardCore.OpenApi.Services
 
                     var urlBuilder_ = new System.Text.StringBuilder();
                     if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
-                    // Operation Path: "api/media-gen2/MoveMediaList"
-                    urlBuilder_.Append("api/media-gen2/MoveMediaList");
+                    // Operation Path: "api/media/MoveMediaList"
+                    urlBuilder_.Append("api/media/MoveMediaList");
 
                     PrepareRequest(client_, request_, urlBuilder_);
 
@@ -2677,8 +2775,8 @@ namespace OrchardCore.OpenApi.Services
 
                     var urlBuilder_ = new System.Text.StringBuilder();
                     if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
-                    // Operation Path: "api/media-gen2/CreateFolder"
-                    urlBuilder_.Append("api/media-gen2/CreateFolder");
+                    // Operation Path: "api/media/CreateFolder"
+                    urlBuilder_.Append("api/media/CreateFolder");
                     urlBuilder_.Append('?');
                     if (path != null)
                     {
@@ -2798,8 +2896,8 @@ namespace OrchardCore.OpenApi.Services
 
                     var urlBuilder_ = new System.Text.StringBuilder();
                     if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
-                    // Operation Path: "api/media-gen2/TusFileInfo/{uploadId}"
-                    urlBuilder_.Append("api/media-gen2/TusFileInfo/");
+                    // Operation Path: "api/media/TusFileInfo/{uploadId}"
+                    urlBuilder_.Append("api/media/TusFileInfo/");
                     urlBuilder_.Append(System.Uri.EscapeDataString(ConvertToString(uploadId, System.Globalization.CultureInfo.InvariantCulture)));
 
                     PrepareRequest(client_, request_, urlBuilder_);
@@ -3475,6 +3573,9 @@ namespace OrchardCore.OpenApi.Services
         [System.Text.Json.Serialization.JsonPropertyName("supportsAtomicMove")]
         public bool SupportsAtomicMove { get; set; }
 
+        [System.Text.Json.Serialization.JsonPropertyName("storageProvider")]
+        public string StorageProvider { get; set; }
+
         public string ToJson()
         {
 
@@ -3597,6 +3698,34 @@ namespace OrchardCore.OpenApi.Services
             var options = new System.Text.Json.JsonSerializerOptions();
 
             return System.Text.Json.JsonSerializer.Deserialize<PaginatedFoldersDto>(data, options);
+
+        }
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.3.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class PermittedStorageDto
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("bytes")]
+        public long? Bytes { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("text")]
+        public string Text { get; set; }
+
+        public string ToJson()
+        {
+
+            var options = new System.Text.Json.JsonSerializerOptions();
+
+            return System.Text.Json.JsonSerializer.Serialize(this, options);
+
+        }
+        public static PermittedStorageDto FromJson(string data)
+        {
+
+            var options = new System.Text.Json.JsonSerializerOptions();
+
+            return System.Text.Json.JsonSerializer.Deserialize<PermittedStorageDto>(data, options);
 
         }
     }

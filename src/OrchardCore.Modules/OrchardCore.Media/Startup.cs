@@ -85,6 +85,9 @@ public sealed class Startup : StartupBase
         services.AddSingleton<IJSLocalizer, NullJSLocalizer>();
         services.AddSingleton<IAnchorTag, MediaAnchorTag>();
 
+        // In-memory directory tree cache (built lazily, invalidated on folder mutations).
+        services.AddSingleton<MediaDirectoryTreeCache>();
+
         // Resized media and remote media caches cleanups.
         services.AddSingleton<IBackgroundTask, ResizedMediaCacheBackgroundTask>();
         services.AddSingleton<IBackgroundTask, RemoteMediaCacheBackgroundTask>();

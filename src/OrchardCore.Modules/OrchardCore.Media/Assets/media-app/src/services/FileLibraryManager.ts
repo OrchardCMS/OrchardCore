@@ -12,8 +12,8 @@ function isNotFoundError(error: unknown): boolean {
   return typeof error === "object" && error !== null && "status" in error && (error as { status: number }).status === 404;
 }
 const { canManage } = usePermissions();
-const { setHierarchicalDirectories, setServerDirectoryTree } = useHierarchicalTreeBuilder();
-const { assetsStore, basePath, selectedDirectory, rootDirectory, selectedFiles, fileItems, hierarchicalDirectories, setAssetsStore, setSelectedFiles, setSelectedAll, setCapabilities, setFileItems, setHierarchicalData, setRootDirectory, setFolderLoaded, setIsLoadingFiles } = useGlobals();
+const { setServerDirectoryTree } = useHierarchicalTreeBuilder();
+const { assetsStore, basePath, selectedDirectory, rootDirectory, selectedFiles, fileItems, hierarchicalDirectories, setAssetsStore, setSelectedFiles, setSelectedAll, setFileItems, setHierarchicalData, setRootDirectory, markAllFoldersLoaded, setIsLoadingFiles } = useGlobals();
 const { translations } = useLocalizations();
 const t = translations;
 const { emit } = useEventBus();
@@ -22,6 +22,7 @@ const { emit } = useEventBus();
  * Finds a node in the hierarchical tree by its directoryPath.
  */
 function findNodeByPath(root: IHFileLibraryItemDto, path: string): IHFileLibraryItemDto | null {
+  if (!root || !root.children) return null;
   if (root.directoryPath === path) return root;
   for (const child of root.children) {
     const found = findNodeByPath(child, path);
@@ -30,49 +31,19 @@ function findNodeByPath(root: IHFileLibraryItemDto, path: string): IHFileLibrary
   return null;
 }
 
-/**
- * Converts a flat folder DTO into a hierarchical tree child node.
- */
-function toHierarchicalChild(f: IFileLibraryItemDto): IHFileLibraryItemDto {
-  return {
-    name: f.name,
-    directoryPath: f.directoryPath,
-    filePath: "",
-    isDirectory: true,
-    selected: false,
-    hasChildren: f.hasChildren ?? false,
-    children: [],
-  };
-}
-
-/**
- * Builds the root IHFileLibraryItemDto node from a flat list of root-level folders.
- * Used for lazy loading — children of these folders are loaded on demand.
- */
-function buildLazyRootNode(rootFolders: IFileLibraryItemDto[], hasChildren: boolean): IHFileLibraryItemDto {
-  const { translations } = useLocalizations();
-  const t = translations;
-
-  return {
-    name: t.FileLibrary ?? "Media Library",
-    directoryPath: "",
-    filePath: "",
-    isDirectory: true,
-    selected: true,
-    hasChildren,
-    children: rootFolders
-      .filter(f => f.isDirectory)
-      .map(toHierarchicalChild),
-  };
-}
-
 // Module-level state shared across all useFileLibraryManager() callers.
-const ROOT_FOLDER_PAGE_SIZE = 50;
-let rootFoldersLoaded = 0;
-let moreRootFoldersAvailable = false;
-let isLoadingMoreRoots = false;
 let loadRequestId = 0;
 const fileCache = new Map<string, IFileLibraryItemDto[]>();
+// Tracks directories currently being deleted so that SignalR-triggered loads
+// skip them instead of firing a request that will 404.
+const pendingDeletes = new Set<string>();
+
+function isBeingDeleted(path: string): boolean {
+  for (const p of pendingDeletes) {
+    if (path === p || path.startsWith(p + "/")) return true;
+  }
+  return false;
+}
 
 export function useFileLibraryManager() {
   const fileDataService: IFileDataService = new FileDataService(basePath.value);
@@ -294,8 +265,21 @@ export function useFileLibraryManager() {
     }
 
     if (canManage.value) {
+      // Mark the directory as pending-delete so SignalR-triggered loads skip it.
+      pendingDeletes.add(directory.directoryPath);
       try {
         await fileDataService.deleteFolder(directory.directoryPath);
+
+        // Navigate to parent immediately.
+        emit("DirDelete", directory);
+
+        // Invalidate cache for the deleted folder and all descendants.
+        const deletedPrefix = directory.directoryPath + "/";
+        for (const key of fileCache.keys()) {
+          if (key === directory.directoryPath || key.startsWith(deletedPrefix)) {
+            fileCache.delete(key);
+          }
+        }
 
         // Remove the folder from the tree in-place.
         const parentPath = directory.directoryPath.substring(0, directory.directoryPath.lastIndexOf("/"));
@@ -308,13 +292,10 @@ export function useFileLibraryManager() {
         setAssetsStore(assetsStore.value.filter(x =>
           !(x.isDirectory && (x.directoryPath + "/").startsWith(directory.directoryPath + "/"))
         ));
-
-        // Invalidate cache for the deleted folder.
-        fileCache.delete(directory.directoryPath);
-
-        emit("DirDelete", directory);
       } catch (error) {
         notify(error);
+      } finally {
+        pendingDeletes.delete(directory.directoryPath);
       }
     }
     /* v8 ignore next 3 -- canManage is always true; server enforces auth */
@@ -327,82 +308,25 @@ export function useFileLibraryManager() {
     let result: IFileLibraryItemDto[] = [];
 
     try {
-      // Fetch capabilities, root folders, and root files all in parallel.
+      // Fetch directory tree and current files in parallel.
       const currentDir = selectedDirectory.value?.directoryPath ?? "";
-      const [caps, foldersResult, currentFiles] = await Promise.all([
-        fileDataService.getCapabilities(),
-        fileDataService.getFolders("", 0, ROOT_FOLDER_PAGE_SIZE).catch(() => null),
+      const [tree, currentFiles] = await Promise.all([
+        fileDataService.getDirectoryTree(),
         fileDataService.getMediaItems(currentDir),
       ]);
 
-      setCapabilities(caps);
       setFileItems(currentFiles.filter(f => !f.isDirectory));
 
-      if (foldersResult) {
-        moreRootFoldersAvailable = foldersResult.hasMore;
-        rootFoldersLoaded = foldersResult.items.length;
-
-        const rootHNode = buildLazyRootNode(foldersResult.items, foldersResult.items.length > 0 || foldersResult.hasMore);
-        setRootDirectory({ ...rootHNode, children: [] } as unknown as IFileLibraryItemDto);
-        setHierarchicalData(rootHNode);
-        setFolderLoaded("");
-
-        // Register root folders in assetsStore for breadcrumb lookups.
-        const flatDirs = foldersResult.items.filter(f => f.isDirectory);
-        setAssetsStore(flatDirs);
-        result = flatDirs;
-      } else {
-        // Lazy endpoint failed — fall back to loading all items.
-        console.warn("Failed to fetch root folders, falling back to flat mode.");
-        const response = await fileDataService.listAllItems();
-        setAssetsStore(response);
-        setHierarchicalDirectories(response);
-        result = response;
-      }
+      // Convert the server-cached tree into the client hierarchy.
+      const flatDirs = setServerDirectoryTree(tree);
+      setAssetsStore(flatDirs);
+      markAllFoldersLoaded(hierarchicalDirectories.value);
+      result = flatDirs;
     } catch (error) {
       notify(error);
     }
 
     return result;
-  };
-
-  /**
-   * Loads the next page of root-level folders and appends them to the tree.
-   */
-  const loadMoreRootFolders = async (): Promise<void> => {
-    if (isLoadingMoreRoots || !moreRootFoldersAvailable) {
-      return;
-    }
-
-    isLoadingMoreRoots = true;
-    try {
-      const result = await fileDataService.getFolders("", rootFoldersLoaded, ROOT_FOLDER_PAGE_SIZE);
-      const newFolders = result.items.filter(f => f.isDirectory);
-      rootFoldersLoaded += result.items.length;
-      moreRootFoldersAvailable = result.hasMore;
-
-      // Append new children to the root node in the tree.
-      const root = hierarchicalDirectories.value;
-      for (const f of newFolders) {
-        root.children.push(toHierarchicalChild(f));
-      }
-      root.hasChildren = root.children.length > 0;
-      setHierarchicalData({ ...root });
-
-      // Also register in assetsStore for breadcrumb lookups.
-      setAssetsStore([...assetsStore.value, ...newFolders]);
-    } catch (error) {
-      notify(error);
-    } finally {
-      isLoadingMoreRoots = false;
-    }
-  };
-
-  /**
-   * Returns true if there are more root folders available to load.
-   */
-  const hasMoreRootFolders = (): boolean => {
-    return moreRootFoldersAvailable;
   };
 
   /**
@@ -414,6 +338,9 @@ export function useFileLibraryManager() {
    * populate children without a second request.
    */
   const loadDirectoryFiles = async (directoryPath: string, silent = false): Promise<IFileLibraryItemDto[] | null> => {
+    // Skip directories that are mid-deletion to avoid a 404 from the SignalR race.
+    if (isBeingDeleted(directoryPath)) return null;
+
     const requestId = ++loadRequestId;
 
     const cached = fileCache.get(directoryPath);
@@ -479,7 +406,5 @@ export function useFileLibraryManager() {
     deleteDirectory,
     getFileLibraryStoreAsync,
     loadDirectoryFiles,
-    loadMoreRootFolders,
-    hasMoreRootFolders,
   };
 }

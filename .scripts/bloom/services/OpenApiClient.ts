@@ -36,6 +36,10 @@ export interface IClient {
     /**
      * @return OK
      */
+    getPermittedStorage( cancelToken?: CancelToken): Promise<PermittedStorageDto>;
+    /**
+     * @return OK
+     */
     getDirectoryTree( cancelToken?: CancelToken): Promise<DirectoryTreeNodeDto>;
     /**
      * @param path (optional) 
@@ -347,7 +351,7 @@ export class Client implements IClient {
      * @return OK
      */
     getCapabilities( cancelToken?: CancelToken): Promise<FileStoreCapabilitiesDto> {
-        let url_ = this.baseUrl + "/api/media-gen2/GetCapabilities";
+        let url_ = this.baseUrl + "/api/media/GetCapabilities";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: AxiosRequestConfig = {
@@ -411,8 +415,73 @@ export class Client implements IClient {
     /**
      * @return OK
      */
+    getPermittedStorage( cancelToken?: CancelToken): Promise<PermittedStorageDto> {
+        let url_ = this.baseUrl + "/api/media/GetPermittedStorage";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: AxiosRequestConfig = {
+            method: "GET",
+            url: url_,
+            headers: {
+                "Accept": "application/json"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processGetPermittedStorage(_response);
+        });
+    }
+
+    protected processGetPermittedStorage(response: AxiosResponse): Promise<PermittedStorageDto> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = PermittedStorageDto.fromJS(resultData200);
+            return Promise.resolve<PermittedStorageDto>(result200);
+
+        } else if (status === 401) {
+            const _responseText = response.data;
+            let result401: any = null;
+            let resultData401  = _responseText;
+            result401 = ProblemDetails.fromJS(resultData401);
+            return throwException("Unauthorized", status, _responseText, _headers, result401);
+
+        } else if (status === 403) {
+            const _responseText = response.data;
+            let result403: any = null;
+            let resultData403  = _responseText;
+            result403 = ProblemDetails.fromJS(resultData403);
+            return throwException("Forbidden", status, _responseText, _headers, result403);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<PermittedStorageDto>(null as any);
+    }
+
+    /**
+     * @return OK
+     */
     getDirectoryTree( cancelToken?: CancelToken): Promise<DirectoryTreeNodeDto> {
-        let url_ = this.baseUrl + "/api/media-gen2/GetDirectoryTree";
+        let url_ = this.baseUrl + "/api/media/GetDirectoryTree";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: AxiosRequestConfig = {
@@ -480,7 +549,7 @@ export class Client implements IClient {
      * @return OK
      */
     getFolders(path: string | undefined, skip: number | undefined, take: number | undefined, cancelToken?: CancelToken): Promise<PaginatedFoldersDto> {
-        let url_ = this.baseUrl + "/api/media-gen2/GetFolders?";
+        let url_ = this.baseUrl + "/api/media/GetFolders?";
         if (path === null)
             throw new globalThis.Error("The parameter 'path' cannot be null.");
         else if (path !== undefined)
@@ -566,7 +635,7 @@ export class Client implements IClient {
      * @return OK
      */
     getMediaItems(path: string | undefined, extensions: string | undefined, cancelToken?: CancelToken): Promise<FileStoreEntryDto[]> {
-        let url_ = this.baseUrl + "/api/media-gen2/GetMediaItems?";
+        let url_ = this.baseUrl + "/api/media/GetMediaItems?";
         if (path === null)
             throw new globalThis.Error("The parameter 'path' cannot be null.");
         else if (path !== undefined)
@@ -655,7 +724,7 @@ export class Client implements IClient {
      * @return OK
      */
     getDirectoryContent(path: string | undefined, extensions: string | undefined, cancelToken?: CancelToken): Promise<DirectoryContentDto> {
-        let url_ = this.baseUrl + "/api/media-gen2/GetDirectoryContent?";
+        let url_ = this.baseUrl + "/api/media/GetDirectoryContent?";
         if (path === null)
             throw new globalThis.Error("The parameter 'path' cannot be null.");
         else if (path !== undefined)
@@ -736,7 +805,7 @@ export class Client implements IClient {
      * @return OK
      */
     getMediaItem(path: string | undefined, cancelToken?: CancelToken): Promise<FileStoreEntryDto> {
-        let url_ = this.baseUrl + "/api/media-gen2/GetMediaItem?";
+        let url_ = this.baseUrl + "/api/media/GetMediaItem?";
         if (path === null)
             throw new globalThis.Error("The parameter 'path' cannot be null.");
         else if (path !== undefined)
@@ -813,7 +882,7 @@ export class Client implements IClient {
      * @return OK
      */
     getAllMediaItems(extensions: string | undefined, cancelToken?: CancelToken): Promise<FileStoreEntryDto[]> {
-        let url_ = this.baseUrl + "/api/media-gen2/GetAllMediaItems?";
+        let url_ = this.baseUrl + "/api/media/GetAllMediaItems?";
         if (extensions === null)
             throw new globalThis.Error("The parameter 'extensions' cannot be null.");
         else if (extensions !== undefined)
@@ -891,7 +960,7 @@ export class Client implements IClient {
      * @return OK
      */
     upload(path: string | undefined, extensions: string | undefined, cancelToken?: CancelToken): Promise<void> {
-        let url_ = this.baseUrl + "/api/media-gen2/Upload?";
+        let url_ = this.baseUrl + "/api/media/Upload?";
         if (path === null)
             throw new globalThis.Error("The parameter 'path' cannot be null.");
         else if (path !== undefined)
@@ -962,7 +1031,7 @@ export class Client implements IClient {
      * @return OK
      */
     copyMedia(oldPath: string | undefined, newPath: string | undefined, cancelToken?: CancelToken): Promise<FileStoreEntryDto> {
-        let url_ = this.baseUrl + "/api/media-gen2/CopyMedia?";
+        let url_ = this.baseUrl + "/api/media/CopyMedia?";
         if (oldPath === null)
             throw new globalThis.Error("The parameter 'oldPath' cannot be null.");
         else if (oldPath !== undefined)
@@ -1050,7 +1119,7 @@ export class Client implements IClient {
      * @return OK
      */
     deleteFolder(path: string | undefined, cancelToken?: CancelToken): Promise<void> {
-        let url_ = this.baseUrl + "/api/media-gen2/DeleteFolder?";
+        let url_ = this.baseUrl + "/api/media/DeleteFolder?";
         if (path === null)
             throw new globalThis.Error("The parameter 'path' cannot be null.");
         else if (path !== undefined)
@@ -1123,7 +1192,7 @@ export class Client implements IClient {
      * @return OK
      */
     deleteMedia(path: string | undefined, cancelToken?: CancelToken): Promise<void> {
-        let url_ = this.baseUrl + "/api/media-gen2/DeleteMedia?";
+        let url_ = this.baseUrl + "/api/media/DeleteMedia?";
         if (path === null)
             throw new globalThis.Error("The parameter 'path' cannot be null.");
         else if (path !== undefined)
@@ -1197,7 +1266,7 @@ export class Client implements IClient {
      * @return OK
      */
     moveMedia(oldPath: string | undefined, newPath: string | undefined, cancelToken?: CancelToken): Promise<void> {
-        let url_ = this.baseUrl + "/api/media-gen2/MoveMedia?";
+        let url_ = this.baseUrl + "/api/media/MoveMedia?";
         if (oldPath === null)
             throw new globalThis.Error("The parameter 'oldPath' cannot be null.");
         else if (oldPath !== undefined)
@@ -1281,7 +1350,7 @@ export class Client implements IClient {
      * @return OK
      */
     deleteMediaList(body: string[] | undefined, cancelToken?: CancelToken): Promise<void> {
-        let url_ = this.baseUrl + "/api/media-gen2/DeleteMediaList";
+        let url_ = this.baseUrl + "/api/media/DeleteMediaList";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(body);
@@ -1354,7 +1423,7 @@ export class Client implements IClient {
      * @return OK
      */
     moveMediaList(body: MoveMedias | undefined, cancelToken?: CancelToken): Promise<void> {
-        let url_ = this.baseUrl + "/api/media-gen2/MoveMediaList";
+        let url_ = this.baseUrl + "/api/media/MoveMediaList";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(body);
@@ -1435,7 +1504,7 @@ export class Client implements IClient {
      * @return OK
      */
     createFolder(path: string | undefined, name: string | undefined, cancelToken?: CancelToken): Promise<FileStoreEntryDto> {
-        let url_ = this.baseUrl + "/api/media-gen2/CreateFolder?";
+        let url_ = this.baseUrl + "/api/media/CreateFolder?";
         if (path === null)
             throw new globalThis.Error("The parameter 'path' cannot be null.");
         else if (path !== undefined)
@@ -1515,7 +1584,7 @@ export class Client implements IClient {
      * @return OK
      */
     tusFileInfo(uploadId: string, cancelToken?: CancelToken): Promise<FileStoreEntryDto> {
-        let url_ = this.baseUrl + "/api/media-gen2/TusFileInfo/{uploadId}";
+        let url_ = this.baseUrl + "/api/media/TusFileInfo/{uploadId}";
         if (uploadId === undefined || uploadId === null)
             throw new globalThis.Error("The parameter 'uploadId' must be defined.");
         url_ = url_.replace("{uploadId}", encodeURIComponent("" + uploadId));
@@ -1885,6 +1954,7 @@ export interface IDirectoryTreeNodeDto {
 export class FileStoreCapabilitiesDto implements IFileStoreCapabilitiesDto {
     hasHierarchicalNamespace?: boolean;
     supportsAtomicMove?: boolean;
+    storageProvider?: string | undefined;
 
     constructor(data?: IFileStoreCapabilitiesDto) {
         if (data) {
@@ -1899,6 +1969,7 @@ export class FileStoreCapabilitiesDto implements IFileStoreCapabilitiesDto {
         if (_data) {
             this.hasHierarchicalNamespace = _data["hasHierarchicalNamespace"];
             this.supportsAtomicMove = _data["supportsAtomicMove"];
+            this.storageProvider = _data["storageProvider"];
         }
     }
 
@@ -1913,6 +1984,7 @@ export class FileStoreCapabilitiesDto implements IFileStoreCapabilitiesDto {
         data = typeof data === 'object' ? data : {};
         data["hasHierarchicalNamespace"] = this.hasHierarchicalNamespace;
         data["supportsAtomicMove"] = this.supportsAtomicMove;
+        data["storageProvider"] = this.storageProvider;
         return data;
     }
 }
@@ -1920,6 +1992,7 @@ export class FileStoreCapabilitiesDto implements IFileStoreCapabilitiesDto {
 export interface IFileStoreCapabilitiesDto {
     hasHierarchicalNamespace?: boolean;
     supportsAtomicMove?: boolean;
+    storageProvider?: string | undefined;
 }
 
 export class FileStoreEntryDto implements IFileStoreEntryDto {
@@ -2088,6 +2161,46 @@ export class PaginatedFoldersDto implements IPaginatedFoldersDto {
 export interface IPaginatedFoldersDto {
     items?: FileStoreEntryDto[] | undefined;
     hasMore?: boolean;
+}
+
+export class PermittedStorageDto implements IPermittedStorageDto {
+    bytes?: number | undefined;
+    text?: string | undefined;
+
+    constructor(data?: IPermittedStorageDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.bytes = _data["bytes"];
+            this.text = _data["text"];
+        }
+    }
+
+    static fromJS(data: any): PermittedStorageDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new PermittedStorageDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["bytes"] = this.bytes;
+        data["text"] = this.text;
+        return data;
+    }
+}
+
+export interface IPermittedStorageDto {
+    bytes?: number | undefined;
+    text?: string | undefined;
 }
 
 export class ProblemDetails implements IProblemDetails {

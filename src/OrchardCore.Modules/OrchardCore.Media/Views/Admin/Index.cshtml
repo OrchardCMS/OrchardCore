@@ -18,11 +18,11 @@
         site-id="@siteId"
         translations="@Json.Serialize(jsLocalizations).ToString()"
         base-path="@Href("~")"
-        upload-files-url="@Href("~/api/media-gen2/Upload")"
+        upload-files-url="@Href("~/api/media/Upload")"
         :max-upload-chunk-size="0"
         tus-enabled="@(tusEnabled ? "true" : "false")"
         tus-endpoint-url="@Href("~/api/media/tus")"
-        tus-file-info-url="@Href("~/api/media-gen2/TusFileInfo")"
+        tus-file-info-url="@Href("~/api/media/TusFileInfo")"
     >
     </media-app>
 </div>

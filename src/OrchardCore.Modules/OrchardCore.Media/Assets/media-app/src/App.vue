@@ -35,6 +35,30 @@
                 </a>
               </span>
             </div>
+            <div class="tw:relative tw:px-3">
+              <a href="javascript:void(0)" class="storage-info-btn" :title="t.StorageInfo || 'Storage Info'"
+                @click="toggleStoragePopover">
+                <fa-icon icon="fa-solid fa-hard-drive"></fa-icon>
+              </a>
+              <div v-if="showStoragePopover" class="storage-popover">
+                <div class="storage-popover-content" v-if="storageLoading">
+                  <span>{{ t.Loading || 'Loading...' }}</span>
+                </div>
+                <div class="storage-popover-content" v-else-if="storageCapabilities || storageInfo">
+                  <div class="storage-popover-row" v-if="storageCapabilities">
+                    <span class="storage-popover-label">{{ t.StorageProvider || 'Storage Provider' }}</span>
+                    <span>{{ storageCapabilities.storageProvider }}</span>
+                  </div>
+                  <div class="storage-popover-row" v-if="storageInfo">
+                    <span class="storage-popover-label">{{ t.AvailableStorage || 'Available Storage' }}</span>
+                    <span>{{ storageInfo.text }}</span>
+                  </div>
+                </div>
+                <div class="storage-popover-content" v-else>
+                  <span>{{ t.Unavailable || 'Unavailable' }}</span>
+                </div>
+              </div>
+            </div>
           </nav>
           <div class="action-bar tw:py-3 tw:px-4 tw:flex tw:flex-wrap">
             <div class="tw:mr-auto">
@@ -157,12 +181,13 @@
 </style>
 
 <script setup lang="ts">
-import { watch, computed, defineProps } from "vue";
+import { ref, watch, computed, defineProps, onMounted, onUnmounted } from "vue";
 import FolderTree from "./components/FolderTree.vue";
 import UploadToast from "./components/UploadToast.vue";
 import NotificationToast from "./components/NotificationToast.vue";
 import pager from "./components/PagerComponent.vue";
-import { IFileLibraryItemDto, FileAction, IModalFileEvent } from "@bloom/media/interfaces";
+import { IFileLibraryItemDto, FileAction, IModalFileEvent, IPermittedStorageResult, IFileStoreCapabilities } from "@bloom/media/interfaces";
+import { FileDataService } from "@bloom/media/api/file-data-service";
 import { ModalsContainer } from 'vue-final-modal';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -171,7 +196,6 @@ import { useFileUpload } from "./services/UppyFileUpload";
 import { useConfirmModal } from "./services/ConfirmModalService";
 import { useGlobals } from "./services/Globals";
 import { usePermissions } from "./services/Permissions";
-import { useHierarchicalTreeBuilder } from "./services/HierarchicalTreeBuilder";
 import { useLocalStorage } from "./services/LocalStorage";
 import { useFileLibraryManager } from "./services/FileLibraryManager";
 import { useEventBusService } from "./services/EventBusService";
@@ -230,7 +254,6 @@ const {
   fileItems,
   isDownloading,
   isLoadingFiles,
-  capabilities,
   setFileItems,
   setIsLoading,
   setBasePath,
@@ -270,10 +293,48 @@ getFileLibraryStoreAsync().then(() => {
   });
 });
 
-const { setHierarchicalDirectories } = useHierarchicalTreeBuilder();
 const { setLocalStorage, gridView } = useLocalStorage();
 const { canManage } = usePermissions();
 useSignalR();
+
+const storageInfo = ref<IPermittedStorageResult | null>(null);
+const storageCapabilities = ref<IFileStoreCapabilities | null>(null);
+const showStoragePopover = ref(false);
+const storageLoading = ref(false);
+
+const fetchStorageInfo = async () => {
+  storageLoading.value = true;
+  try {
+    const service = new FileDataService(props.basePath);
+    const [storage, caps] = await Promise.all([
+      service.getPermittedStorage(),
+      service.getCapabilities(),
+    ]);
+    storageInfo.value = storage;
+    storageCapabilities.value = caps;
+  } catch (e) {
+    console.error("Failed to fetch storage info", e);
+    storageInfo.value = null;
+    storageCapabilities.value = null;
+  } finally {
+    storageLoading.value = false;
+  }
+};
+
+const toggleStoragePopover = async () => {
+  showStoragePopover.value = !showStoragePopover.value;
+  if (showStoragePopover.value && !storageCapabilities.value) {
+    await fetchStorageInfo();
+  }
+};
+
+const handleClickOutside = (e: MouseEvent) => {
+  if (showStoragePopover.value && !(e.target as HTMLElement)?.closest('.storage-info-btn, .storage-popover')) {
+    showStoragePopover.value = false;
+  }
+};
+onMounted(() => document.addEventListener('click', handleClickOutside));
+onUnmounted(() => document.removeEventListener('click', handleClickOutside));
 
 setUploadFilesUrl(props.uploadFilesUrl);
 
@@ -375,18 +436,6 @@ const breadcrumbs = computed((): IFileLibraryItemDto[] => {
   return result;
 });
 
-watch(
-  () => assetsStore.value,
-  (newAssetsStore: IFileLibraryItemDto[]) => {
-    if (capabilities.value.hasHierarchicalNamespace) {
-      return;
-    }
-
-    // Flat fallback mode: rebuild the folder tree from the full assetsStore.
-    // File items are loaded via loadDirectoryFiles, not from assetsStore.
-    setHierarchicalDirectories(newAssetsStore);
-  },
-)
 
 const clickBreadCrumb = (breadcrumb: IFileLibraryItemDto) => {
   emit("DirSelected", breadcrumb as IFileLibraryItemDto);

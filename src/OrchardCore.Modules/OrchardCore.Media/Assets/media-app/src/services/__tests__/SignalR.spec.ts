@@ -7,6 +7,7 @@ let mediaChangedCb: ((message: unknown) => Promise<void>) | null = null;
 let signalRReceivedDataCb: ((data: unknown) => void) | null = null;
 
 const mockGetFileLibraryStoreAsync = vi.fn(() => Promise.resolve([]));
+const mockLoadDirectoryFiles = vi.fn(() => Promise.resolve(null));
 
 const mockConnection = {
   on: vi.fn((event: string, cb: (...args: any[]) => any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -41,6 +42,7 @@ vi.mock("@bloom/services/signalr/eventbus", () => ({
 vi.mock("../FileLibraryManager", () => ({
   useFileLibraryManager: () => ({
     getFileLibraryStoreAsync: mockGetFileLibraryStoreAsync,
+    loadDirectoryFiles: mockLoadDirectoryFiles,
   }),
 }));
 
@@ -71,7 +73,7 @@ describe("SignalR", () => {
     expect(mockConnection.on).toHaveBeenCalledWith("MediaChanged", expect.any(Function));
   });
 
-  it("MediaChanged callback calls getFileLibraryStoreAsync", async () => {
+  it("MediaChanged callback calls loadDirectoryFiles", async () => {
     const { useSignalR } = await import("../SignalR");
     useSignalR();
 
@@ -80,7 +82,7 @@ describe("SignalR", () => {
       await mediaChangedCb("test-message");
     }
 
-    expect(mockGetFileLibraryStoreAsync).toHaveBeenCalled();
+    expect(mockLoadDirectoryFiles).toHaveBeenCalled();
   });
 
   it("registers a handler for signalRReceivedData", async () => {
