@@ -34,6 +34,40 @@ public class AttachedMediaFieldFileService
     public string MediaFieldsTempSubFolder { get; }
 
     /// <summary>
+    /// Copies the files to a folder specific for the content item.
+    /// </summary>
+    /// <param name="paths">The paths of the files to copy.</param>
+    /// <param name="contentItem">The content item to which the files belong.</param>
+    /// <returns>The updated paths of the copied files.</returns>
+    public async Task<string[]> CopyFilesAsync(string[] paths, ContentItem contentItem)
+    {
+        var updatedPaths = paths;
+        for (var i = 0; i < paths.Length; i++)
+        {
+            var path = paths[i];
+            if (string.IsNullOrEmpty(path))
+            {
+                continue;
+            }
+
+            var targetDir = GetContentItemFolder(contentItem);
+            var finalFileName = (await GetFileHashAsync(path)) + GetFileExtension(path);
+            var finalFilePath = _fileStore.Combine(targetDir, finalFileName);
+
+            await _fileStore.TryCreateDirectoryAsync(targetDir);
+
+            if (await _fileStore.GetFileInfoAsync(finalFilePath) is null)
+            {
+                await _fileStore.CopyFileAsync(path, finalFilePath);
+
+                updatedPaths[i] = finalFilePath;
+            }
+        }
+
+        return updatedPaths;
+    }
+
+    /// <summary>
     /// Removes the assets attached to a content item through an attached media field.
     /// </summary>
     /// <remarks>
@@ -121,40 +155,6 @@ public class AttachedMediaFieldFileService
             await DeleteDirIfEmptyAsync(previousDirPath);
         }
 
-    }
-
-    /// <summary>
-    /// Copies the files to a folder specific for the content item.
-    /// </summary>
-    /// <param name="paths">The paths of the files to copy.</param>
-    /// <param name="contentItem">The content item to which the files belong.</param>
-    /// <returns>The updated paths of the copied files.</returns>
-    public async Task<string[]> CopyFilesAsync(string[] paths, ContentItem contentItem)
-    {
-        var updatedPaths = paths;
-        for (var i = 0; i < paths.Length; i++)
-        {
-            var path = paths[i];
-            if (string.IsNullOrEmpty(path))
-            {
-                continue;
-            }
-
-            var targetDir = GetContentItemFolder(contentItem);
-            var finalFileName = (await GetFileHashAsync(path)) + GetFileExtension(path);
-            var finalFilePath = _fileStore.Combine(targetDir, finalFileName);
-
-            await _fileStore.TryCreateDirectoryAsync(targetDir);
-
-            if (await _fileStore.GetFileInfoAsync(finalFilePath) is null)
-            {
-                await _fileStore.CopyFileAsync(path, finalFilePath);
-
-                updatedPaths[i] = finalFilePath;
-            }
-        }
-
-        return updatedPaths;
     }
 
     private async Task<string> GetFileHashAsync(string filePath)
