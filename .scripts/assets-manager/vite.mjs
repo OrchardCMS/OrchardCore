@@ -2,18 +2,15 @@ import { build, createServer } from "vite";
 import JSON5 from "json5";
 import { Buffer } from "buffer";
 import process from "node:process";
-import { minifyPlugin } from "./plugins/vite-plugin-minify.mjs";
 
 async function runVite(command, assetConfig) {
     if (command === "build") {
         await build({
             root: assetConfig.source,
-            plugins: [minifyPlugin()],
         });
     } else if (command === "watch") {
         await build({
             root: assetConfig.source,
-            plugins: [minifyPlugin()],
             build: { watch: {} },
         });
     } else if (command === "host") {

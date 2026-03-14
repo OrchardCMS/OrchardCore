@@ -1,0 +1,119 @@
+.action-bar {
+    border-bottom: var(--oc-media-border-content);
+
+    .ms-2 {
+        margin-right: 0.5rem !important;
+        margin-left: 0 !important;
+    }
+
+    [dir="rtl"] .ms-2 {
+        margin-right: 0 !important;
+        margin-left: 0.5rem !important;
+    }
+
+    .media-filter {
+        margin-top: 3px;
+
+        .input-filter {
+            border-color: var(--bs-border-color, #ccc);
+            border-right: none;
+            max-width: 80px;
+            padding-left: 32px;
+
+            &:focus, &:focus + .input-group-append > button {
+                border-color: var(--bs-border-color);
+            }
+        }
+
+        .input-group-append button {
+            border-color: var(--bs-border-color, #ccc);
+            opacity: 1;
+            border-left: none;
+        }
+
+        .input-group-append button[disabled] {
+            color: transparent;
+        }
+
+        .icon-inside-input {
+            position: absolute;
+            top: 8px;
+            left: 10px;
+            z-index: var(--bs-zindex-fixed, 1030);
+            pointer-events: none;
+            color: var(--bs-gray-600, #ddd);
+        }
+    }
+    /* Upload button */
+    .fileinput-button {
+        cursor: pointer;
+        margin: 0;
+        padding: 4px 12px 4px 8px;
+        border: 0;
+
+        svg {
+            margin-right: 6px;
+        }
+
+        input {
+            width: 0.1px;
+            height: 0.1px;
+            opacity: 0;
+            overflow: hidden;
+            position: absolute;
+            z-index: -1;
+        }
+    }
+    // hide glow on filter input
+    input[type="text"] {
+        outline: none;
+        box-shadow: none !important;
+    }
+}
+
+#breadcrumb {
+    background-color: transparent;
+    border-bottom: var(--oc-media-border-content);
+    border-radius: 0px;
+    min-height: 50px;
+    font-size: 0.875rem;
+
+    .breadcrumb-path {
+        flex-grow: 1;
+
+        .breadcrumb-item {
+            display: inline-block;
+
+            a {
+                color: var(--oc-media-color);
+            }
+        }
+    }
+
+
+    .breadcrumb-buttons {
+        justify-content: flex-start;
+        flex-grow: 1;
+        margin-top: -5px;
+
+        a {
+            border-radius: 0px !important;
+            color: var(--oc-media-color);
+        }
+    }
+}
+
+.visibility-buttons {
+    justify-content: flex-end;
+    flex-grow: 0;
+    margin-top: -5px;
+
+    button {
+        border-radius: 0px !important;
+        color: var(--oc-media-color);
+    }
+
+    .selected {
+        color: var(--bs-primary, blue);
+    }
+}

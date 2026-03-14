@@ -27,6 +27,5 @@ internal sealed class MediaBlobStorageOptionsConfiguration : BlobStorageOptionsC
     {
         options.RemoveContainer = rawOptions.RemoveContainer;
         options.RemoveFilesFromBasePath = rawOptions.RemoveFilesFromBasePath;
-        options.UseHierarchicalNamespace = rawOptions.UseHierarchicalNamespace;
     }
 }

@@ -73,14 +73,3 @@ using OrchardCore.Modules.Manifest;
     ],
     Category = "Content Management"
 )]
-
-[assembly: Feature(
-    Id = "OrchardCore.Media.Tus",
-    Name = "Media TUS Uploads",
-    Description = "Enables resumable file uploads using the TUS protocol. When enabled, replaces the default chunked upload mechanism with the TUS standard, allowing uploads to be paused and resumed.",
-    Dependencies =
-    [
-        "OrchardCore.Media"
-    ],
-    Category = "Content Management"
-)]

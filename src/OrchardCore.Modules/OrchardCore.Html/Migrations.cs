@@ -34,7 +34,7 @@ public sealed class Migrations : DataMigration
             .WithDescription("Provides an HTML Body for your content item."));
 
         // Shortcut other migration steps on new content definition schemas.
-        return 5;
+        return 6;
     }
 
     // This code can be removed in a later version.
@@ -128,24 +128,27 @@ public sealed class Migrations : DataMigration
             return changed;
         }
 
-        return 4;
+        return 5; // Returning 5 instead of 4, because UpdateFrom5 is no longer needed, see below why.
     }
 
-    // This code can be removed in a later version.
-    public async Task<int> UpdateFrom4Async()
+    // Previously, Liquid rendering was enabled by not having Html sanitization enabled and UpdateFrom5Async disabled
+    // sanitization to ensure that HtmlBodyParts kept Liquid rendering enabled. Since Liquid rendering is now controlled
+    // by a separate setting, disabling sanitization is no longer necessary.
+
+    public async Task<int> UpdateFrom5Async()
     {
-        // For backwards compatibility with liquid filters we disable html sanitization on existing field definitions.
+        // To keep the same behavior as before, RenderLiquid is initialized to the opposite of SanitizeHtml.
         foreach (var contentType in await _contentDefinitionManager.LoadTypeDefinitionsAsync())
         {
-            if (contentType.Parts.Any(x => x.PartDefinition.Name == "HtmlBodyPart"))
+            if (contentType.Parts.Any(p => p.PartDefinition.Name == "HtmlBodyPart"))
             {
-                await _contentDefinitionManager.AlterTypeDefinitionAsync(contentType.Name, x => x.WithPart("HtmlBodyPart", part =>
+                await _contentDefinitionManager.AlterTypeDefinitionAsync(contentType.Name, t => t.WithPart("HtmlBodyPart", part =>
                 {
-                    part.MergeSettings<HtmlBodyPartSettings>(x => x.SanitizeHtml = false);
+                    part.MergeSettings<HtmlBodyPartSettings>(s => s.RenderLiquid = !s.SanitizeHtml);
                 }));
             }
         }
 
-        return 5;
+        return 6;
     }
 }

@@ -53,7 +53,7 @@ public sealed class MediaOptionsConfiguration : IConfigureOptions<MediaOptions>
     private const int DefaultMaxBrowserCacheDays = 30;
     private const int DefaultSecureFilesMaxBrowserCacheDays = 0;
     private const int DefaultMaxCacheDays = 365;
-    private const long DefaultMaxFileSize = 30_000_000;
+    private const int DefaultMaxFileSize = 30_000_000;
 
     private const string DefaultAssetsPath = "Media";
     private const string DefaultAssetsUsersFolder = "_Users";

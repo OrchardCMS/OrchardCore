@@ -1,0 +1,53 @@
+.upload {
+    background-color: var(--bs-body-bg, #ccc);
+    border-radius: 2px;
+    border: 1px solid #ccc;
+    height: 60px;
+    font-size: 0.875rem;
+    user-select: none;
+    min-width: 300px;
+    flex-grow: 1;
+
+    @media only screen and ( min-width: 768px ) {
+        width: 300px;
+    }
+
+    .close-warning {
+        display: block;
+        float: right;
+        margin-top: -8px;
+        margin-right: -8px;
+        cursor: pointer;
+        padding: 2px 8px;
+    }
+
+    .upload-name {
+        padding-top: 0;
+        margin-bottom: 0;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        margin-right: 50px;
+    }
+
+    .progress-bar {
+        display: block;
+        margin-top: 15px;
+        height: 3px;
+        background-color: var(--bs-progress-bar-bg, #007bff);
+    }
+
+    .error-message {
+        display: block;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        margin-right: 50px;
+    }
+}
+
+.upload-warning {
+    color: var(--bs-warning-text-emphasis);
+    background-color: var(--bs-warning-bg-subtle);
+    border-color: var(--bs-warning-border-subtle);
+}

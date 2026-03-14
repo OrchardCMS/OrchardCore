@@ -1,0 +1,20 @@
+.upload-list {
+    margin-bottom: 8px;
+
+    .header {
+        height: 40px;
+        padding: 6px 20px;
+        background-color: var(--bs-body-bg, #e9ecef);
+        border: var(--bs-border-width, 1px) solid var(--bs-border-color, #e9ecef);
+        border-radius: 2px;
+        cursor: pointer;
+        font-size: 0.875rem;
+        color: var(--bs-body-color, #666);
+    }
+
+    .toggle-button {
+        padding: 5px 8px;
+        margin-top: -3px;
+        float: right;
+    }
+}
