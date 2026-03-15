@@ -19,10 +19,10 @@
     <PackageVersion Include="DocumentFormat.OpenXml" Version="3.4.1" />
     <PackageVersion Include="Elastic.Clients.Elasticsearch" Version="8.19.16" />
     <PackageVersion Include="Fluid.Core" Version="2.31.0" />
-    <PackageVersion Include="GraphQL" Version="8.8.3" />
-    <PackageVersion Include="GraphQL.DataLoader" Version="8.8.3" />
-    <PackageVersion Include="GraphQL.MicrosoftDI" Version="8.8.3" />
-    <PackageVersion Include="GraphQL.SystemTextJson" Version="8.8.3" />
+    <PackageVersion Include="GraphQL" Version="8.8.4" />
+    <PackageVersion Include="GraphQL.DataLoader" Version="8.8.4" />
+    <PackageVersion Include="GraphQL.MicrosoftDI" Version="8.8.4" />
+    <PackageVersion Include="GraphQL.SystemTextJson" Version="8.8.4" />
     <PackageVersion Include="Jint" Version="4.6.2" />
     <PackageVersion Include="JsonPath.Net" Version="2.2.0" />
     <PackageVersion Include="HtmlSanitizer" Version="9.1.893-beta" />
