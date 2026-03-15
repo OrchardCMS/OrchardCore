@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Nodes;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
@@ -17,7 +18,7 @@ public sealed class ContentStep : NamedRecipeStepHandler
     {
     }
 
-    protected override Task HandleAsync(RecipeExecutionContext context)
+    protected override async Task HandleAsync(RecipeExecutionContext context)
     {
         var model = context.Step.ToObject<ContentStepModel>();
         var contentItems = model.Data.ToObject<ContentItem[]>();
@@ -27,19 +28,33 @@ public sealed class ContentStep : NamedRecipeStepHandler
         {
             var contentManager = ShellScope.Services.GetRequiredService<IContentManager>();
 
-            return contentManager.ImportAsync(contentItems);
+            try
+            {
+                await contentManager.ImportAsync(contentItems);
+            }
+            catch (ValidationException e)
+            {
+                context.Errors.Add(e.Message);
+            }
+
+            return;
         }
 
         // Otherwise, the import of content items is deferred after all migrations are completed,
         // this prevents e.g. a content handler to trigger a workflow before workflows migrations.
-        ShellScope.AddDeferredTask(scope =>
+        ShellScope.AddDeferredTask(async scope =>
         {
             var contentManager = scope.ServiceProvider.GetRequiredService<IContentManager>();
 
-            return contentManager.ImportAsync(contentItems);
+            try
+            {
+                await contentManager.ImportAsync(contentItems);
+            }
+            catch (ValidationException e)
+            {
+                context.Errors.Add(e.Message);
+            }
         });
-
-        return Task.CompletedTask;
     }
 }
 
