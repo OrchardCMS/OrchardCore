@@ -32,6 +32,7 @@ public class DefaultContentManager : IContentManager
     private readonly IContentItemIdGenerator _idGenerator;
     private readonly IClock _clock;
     private readonly IUpdateModelAccessor _updateModelAccessor;
+    private readonly IEnumerable<IContentImportErrorProvider> _importErrorProviders;
 
     protected readonly IStringLocalizer S;
 
@@ -44,7 +45,8 @@ public class DefaultContentManager : IContentManager
         ILogger<DefaultContentManager> logger,
         IClock clock,
         IUpdateModelAccessor updateModelAccessor,
-        IStringLocalizer<DefaultContentManager> localizer)
+        IStringLocalizer<DefaultContentManager> localizer,
+        IEnumerable<IContentImportErrorProvider> importErrorProviders)
     {
         _contentDefinitionManager = contentDefinitionManager;
         Handlers = handlers;
@@ -55,6 +57,7 @@ public class DefaultContentManager : IContentManager
         _clock = clock;
         _updateModelAccessor = updateModelAccessor;
         S = localizer;
+        _importErrorProviders = importErrorProviders ?? [];
     }
 
     public IEnumerable<IContentHandler> Handlers { get; private set; }
@@ -737,12 +740,10 @@ public class DefaultContentManager : IContentManager
                     var result = await CreateContentItemVersionAsync(importingItem, evictionVersions);
                     if (!result.Succeeded)
                     {
-                        if (_logger.IsEnabled(LogLevel.Error))
-                        {
-                            _logger.LogError("Error importing content item version id '{ContentItemVersionId}' : '{Errors}'", importingItem?.ContentItemVersionId, string.Join(", ", result.Errors));
-                        }
+                        var importErrorMessage = await BuildImportErrorMessageAsync(importingItem, result.Errors);
+                        _logger.LogError("{ImportError}", importErrorMessage);
 
-                        throw new ValidationException(string.Join(", ", result.Errors));
+                        throw new ValidationException(importErrorMessage);
                     }
 
                     // Imported handlers will only be fired if the validation has been successful.
@@ -795,12 +796,10 @@ public class DefaultContentManager : IContentManager
                     var result = await UpdateContentItemVersionAsync(originalVersion, importingItem, evictionVersions);
                     if (!result.Succeeded)
                     {
-                        if (_logger.IsEnabled(LogLevel.Error))
-                        {
-                            _logger.LogError("Error importing content item version id '{ContentItemVersionId}' : '{Errors}'", importingItem.ContentItemVersionId, string.Join(", ", result.Errors));
-                        }
+                        var importErrorMessage = await BuildImportErrorMessageAsync(importingItem, result.Errors);
+                        _logger.LogError("{ImportError}", importErrorMessage);
 
-                        throw new ValidationException(string.Join(", ", result.Errors));
+                        throw new ValidationException(importErrorMessage);
                     }
 
                     // Imported handlers will only be fired if the validation has been successful.
@@ -814,6 +813,104 @@ public class DefaultContentManager : IContentManager
             skip += _importBatchSize;
             batchedContentItems = contentItems.Skip(skip).Take(_importBatchSize);
         }
+    }
+
+    private async Task<string> BuildImportErrorMessageAsync(ContentItem importingItem, IReadOnlyList<ValidationResult> errors)
+    {
+        var errorMessages = errors is { Count: > 0 }
+            ? errors.Select(error => error.ErrorMessage).Where(message => !string.IsNullOrWhiteSpace(message))
+            : [];
+
+        var errorText = errorMessages.Any()
+            ? NormalizeErrorText(string.Join(", ", errorMessages))
+            : S["Unknown validation error."].Value;
+
+        var sourceInfo = BuildImportSourceInfo(importingItem);
+        var details = await GetImportErrorDetailsAsync(importingItem, errors);
+
+        var message = string.IsNullOrWhiteSpace(sourceInfo)
+            ? S["Error importing content item. Validation errors: {0}.", errorText].Value
+            : S["Error importing content item ({0}). Validation errors: {1}.", sourceInfo, errorText].Value;
+
+        if (!string.IsNullOrWhiteSpace(details))
+        {
+            message = $"{message} {details}";
+        }
+
+        return message;
+    }
+
+    private static string NormalizeErrorText(string errorText)
+    {
+        if (string.IsNullOrWhiteSpace(errorText))
+        {
+            return errorText;
+        }
+
+        errorText = errorText.Trim();
+
+        while (errorText.EndsWith(".", StringComparison.Ordinal)
+            || errorText.EndsWith("!", StringComparison.Ordinal)
+            || errorText.EndsWith("?", StringComparison.Ordinal))
+        {
+            errorText = errorText[..^1].TrimEnd();
+        }
+
+        return errorText;
+    }
+
+    private string BuildImportSourceInfo(ContentItem importingItem)
+    {
+        if (importingItem == null)
+        {
+            return string.Empty;
+        }
+
+        var details = new List<string>();
+
+        if (!string.IsNullOrWhiteSpace(importingItem.ContentItemId))
+        {
+            details.Add(S["ContentItemId: '{0}'", importingItem.ContentItemId].Value);
+        }
+
+        if (!string.IsNullOrWhiteSpace(importingItem.DisplayText))
+        {
+            details.Add(S["DisplayText: '{0}'", importingItem.DisplayText].Value);
+        }
+
+        if (!string.IsNullOrWhiteSpace(importingItem.ContentType))
+        {
+            details.Add(S["ContentType: '{0}'", importingItem.ContentType].Value);
+        }
+
+        if (!string.IsNullOrWhiteSpace(importingItem.ContentItemVersionId))
+        {
+            details.Add(S["ContentItemVersionId: '{0}'", importingItem.ContentItemVersionId].Value);
+        }
+
+        return string.Join(", ", details);
+    }
+
+    private async Task<string> GetImportErrorDetailsAsync(ContentItem importingItem, IReadOnlyList<ValidationResult> errors)
+    {
+        if (_importErrorProviders is null)
+        {
+            return string.Empty;
+        }
+
+        List<string> details = null;
+
+        foreach (var provider in _importErrorProviders)
+        {
+            var detail = await provider.GetDetailsAsync(importingItem, errors);
+            if (!string.IsNullOrWhiteSpace(detail))
+            {
+                details ??= [];
+                details.Add(detail);
+            }
+        }
+
+        return details == null ? string.Empty : string.Join(" ", details);
     }
 
     public async Task UpdateAsync(ContentItem contentItem)
