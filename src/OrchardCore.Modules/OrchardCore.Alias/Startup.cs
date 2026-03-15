@@ -63,6 +63,7 @@ public sealed class Startup : StartupBase
 
         services.AddDataMigration<Migrations>();
         services.AddScoped<IContentHandleProvider, AliasPartContentHandleProvider>();
+        services.AddScoped<IContentImportErrorProvider, AliasImportErrorProvider>();
 
         // Identity Part
         services.AddContentPart<AliasPart>()
