@@ -3,14 +3,13 @@ import { signalRReceivedData } from "@bloom/services/signalr/eventbus";
 import { useFileLibraryManager } from "./FileLibraryManager";
 import { useGlobals } from "./Globals";
 
-const { loadDirectoryFiles } = useFileLibraryManager();
-const { selectedDirectory } = useGlobals();
-
 /**
  * Connects to the OrchardCore MediaHub and listens for MediaChanged events.
  * When a media change is detected, it refreshes the store.
  */
 export function useSignalR() {
+  const { loadDirectoryFiles } = useFileLibraryManager();
+  const { selectedDirectory } = useGlobals();
   const app = new SignalRApp("/hubs/media");
 
   app.init({

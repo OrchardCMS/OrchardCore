@@ -10,7 +10,11 @@ public sealed class OrchardTestFixture : IAsyncDisposable
     private IBrowser _browser;
     private bool _disposed;
     private bool _migrationsRecipeCopied;
+    private bool _mediaRecipeCopied;
     private bool _mediaTusRecipeCopied;
+    private bool _mediaTusRedisRecipeCopied;
+    private bool _mediaTusAzureRecipeCopied;
+    private bool _mediaTusRedisAzureRecipeCopied;
 
     public string BaseUrl { get; private set; }
     public IBrowser Browser => _browser;
@@ -40,7 +44,11 @@ public sealed class OrchardTestFixture : IAsyncDisposable
             if (!IsMvc)
             {
                 _migrationsRecipeCopied = AppLifecycleHelper.CopyMigrationsRecipe(AppDir);
+                _mediaRecipeCopied = AppLifecycleHelper.CopyRecipe(AppDir, "media.recipe.json");
                 _mediaTusRecipeCopied = AppLifecycleHelper.CopyRecipe(AppDir, "media-tus.recipe.json");
+                _mediaTusRedisRecipeCopied = AppLifecycleHelper.CopyRecipe(AppDir, "media-tus-redis.recipe.json");
+                _mediaTusAzureRecipeCopied = AppLifecycleHelper.CopyRecipe(AppDir, "media-tus-azure.recipe.json");
+                _mediaTusRedisAzureRecipeCopied = AppLifecycleHelper.CopyRecipe(AppDir, "media-tus-redis-azure.recipe.json");
             }
 
             _serverProcess = AppLifecycleHelper.HostApp(AppDir, Assembly);
@@ -106,9 +114,29 @@ public sealed class OrchardTestFixture : IAsyncDisposable
             AppLifecycleHelper.DeleteMigrationsRecipe(cmsAppDir);
         }
 
+        if (!IsMvc && _mediaRecipeCopied)
+        {
+            AppLifecycleHelper.DeleteRecipe(cmsAppDir, "media.recipe.json");
+        }
+
         if (!IsMvc && _mediaTusRecipeCopied)
         {
             AppLifecycleHelper.DeleteRecipe(cmsAppDir, "media-tus.recipe.json");
+        }
+
+        if (!IsMvc && _mediaTusRedisRecipeCopied)
+        {
+            AppLifecycleHelper.DeleteRecipe(cmsAppDir, "media-tus-redis.recipe.json");
+        }
+
+        if (!IsMvc && _mediaTusAzureRecipeCopied)
+        {
+            AppLifecycleHelper.DeleteRecipe(cmsAppDir, "media-tus-azure.recipe.json");
+        }
+
+        if (!IsMvc && _mediaTusRedisAzureRecipeCopied)
+        {
+            AppLifecycleHelper.DeleteRecipe(cmsAppDir, "media-tus-redis-azure.recipe.json");
         }
     }
 }

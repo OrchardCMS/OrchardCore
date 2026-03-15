@@ -338,6 +338,8 @@ export function useFileLibraryManager() {
    * populate children without a second request.
    */
   const loadDirectoryFiles = async (directoryPath: string, silent = false): Promise<IFileLibraryItemDto[] | null> => {
+    if (directoryPath == null) return null;
+
     // Skip directories that are mid-deletion to avoid a 404 from the SignalR race.
     if (isBeingDeleted(directoryPath)) return null;
 

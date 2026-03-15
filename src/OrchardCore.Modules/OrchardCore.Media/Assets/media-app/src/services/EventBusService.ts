@@ -12,26 +12,25 @@ import { isFileSelected } from "./Utils";
 import router from "../router";
 import DragDropThumbnail from "../assets/drag-thumbnail.png";
 
-const {
-  sortBy,
-  sortAsc,
-  selectedDirectory,
-  rootDirectory,
-  directoryIndex,
-  selectedFiles,
-  setSortBy,
-  setSortAsc,
-  setFileFilter,
-  setErrors,
-  setSelectedFiles,
-  setItemsInPage,
-  setSelectedDirectory,
-  setSelectedAll,
-} = useGlobals();
-const { fileCopy, fileListMove, deleteFileItem, deleteFileList, renameFile, createDirectory, deleteDirectory, loadDirectoryFiles } = useFileLibraryManager();
-const { on, emit } = useEventBus();
-
 export const useEventBusService = () => {
+  const {
+    sortBy,
+    sortAsc,
+    selectedDirectory,
+    rootDirectory,
+    directoryIndex,
+    selectedFiles,
+    setSortBy,
+    setSortAsc,
+    setFileFilter,
+    setErrors,
+    setSelectedFiles,
+    setItemsInPage,
+    setSelectedDirectory,
+    setSelectedAll,
+  } = useGlobals();
+  const { fileCopy, fileListMove, deleteFileItem, deleteFileList, renameFile, createDirectory, deleteDirectory, loadDirectoryFiles } = useFileLibraryManager();
+  const { on, emit } = useEventBus();
   const dragDropThumbnail: HTMLImageElement = new Image();
   dragDropThumbnail.src = DragDropThumbnail;
 

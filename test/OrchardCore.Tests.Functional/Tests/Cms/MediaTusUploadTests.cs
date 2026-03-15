@@ -39,9 +39,9 @@ public sealed class MediaTusUploadTests : IAsyncLifetime
         await AuthHelper.LoginAsync(page, $"/{_tenant.Prefix}");
         await MediaHelper.NavigateToMediaAsync(page, $"/{_tenant.Prefix}");
 
-        var filePath = MediaHelper.GenerateTestFile("tus-upload-test.dat", SmallFileSize);
+        var filePath = MediaHelper.GenerateTestFile("tus-upload-test.jpg", SmallFileSize);
         await MediaHelper.UploadFileAsync(page, filePath);
-        await MediaHelper.ExpectFileInLibraryAsync(page, "tus-upload-test.dat");
+        await MediaHelper.ExpectFileInLibraryAsync(page, "tus-upload-test.jpg");
 
         await page.CloseAsync();
     }
@@ -54,13 +54,13 @@ public sealed class MediaTusUploadTests : IAsyncLifetime
         await MediaHelper.NavigateToMediaAsync(page, $"/{_tenant.Prefix}");
 
         await ThrottleTusUploadsAsync(page);
-        var filePath = MediaHelper.GenerateTestFile("pause-resume-test.dat", LargeFileSize);
+        var filePath = MediaHelper.GenerateTestFile("pause-resume-test.jpg", LargeFileSize);
         await MediaHelper.UploadFileAsync(page, filePath);
 
         // Wait for the upload toast to show the file in-progress.
         var container = page.Locator(".upload-toast-container");
         await container.WaitForAsync(new() { State = WaitForSelectorState.Visible, Timeout = 15_000 });
-        var fileRow = container.Locator(".upload-toast-item").Filter(new() { HasText = "pause-resume-test.dat" });
+        var fileRow = container.Locator(".upload-toast-item").Filter(new() { HasText = "pause-resume-test.jpg" });
         await fileRow.WaitForAsync(new() { State = WaitForSelectorState.Visible, Timeout = 10_000 });
 
         // Verify the pause button is visible (upload is active).
@@ -76,11 +76,11 @@ public sealed class MediaTusUploadTests : IAsyncLifetime
         await Assertions.Expect(fileRow.Locator("svg[data-icon=\"pause\"]")).ToBeVisibleAsync();
 
         // Remove throttle and verify a fresh upload completes.
-        await page.UnrouteAsync("**/api/media/tus/**");
+        await page.UnrouteAllAsync(new() { Behavior = UnrouteBehavior.Wait });
         await MediaHelper.NavigateToMediaAsync(page, $"/{_tenant.Prefix}");
-        var filePath2 = MediaHelper.GenerateTestFile("pause-resume-verify.dat", SmallFileSize);
+        var filePath2 = MediaHelper.GenerateTestFile("pause-resume-verify.jpg", SmallFileSize);
         await MediaHelper.UploadFileAsync(page, filePath2);
-        await MediaHelper.ExpectFileInLibraryAsync(page, "pause-resume-verify.dat");
+        await MediaHelper.ExpectFileInLibraryAsync(page, "pause-resume-verify.jpg");
 
         await page.CloseAsync();
     }
@@ -93,16 +93,16 @@ public sealed class MediaTusUploadTests : IAsyncLifetime
         await MediaHelper.NavigateToMediaAsync(page, $"/{_tenant.Prefix}");
 
         await ThrottleTusUploadsAsync(page);
-        var filePath1 = MediaHelper.GenerateTestFile("multi-pause-1.dat", LargeFileSize);
-        var filePath2 = MediaHelper.GenerateTestFile("multi-pause-2.dat", LargeFileSize);
+        var filePath1 = MediaHelper.GenerateTestFile("multi-pause-1.jpg", LargeFileSize);
+        var filePath2 = MediaHelper.GenerateTestFile("multi-pause-2.jpg", LargeFileSize);
 
         var fileInput = page.Locator("#fileupload");
         await fileInput.SetInputFilesAsync(new[] { filePath1, filePath2 });
 
         var container = page.Locator(".upload-toast-container");
         await container.WaitForAsync(new() { State = WaitForSelectorState.Visible, Timeout = 15_000 });
-        var row1 = container.Locator(".upload-toast-item").Filter(new() { HasText = "multi-pause-1.dat" });
-        var row2 = container.Locator(".upload-toast-item").Filter(new() { HasText = "multi-pause-2.dat" });
+        var row1 = container.Locator(".upload-toast-item").Filter(new() { HasText = "multi-pause-1.jpg" });
+        var row2 = container.Locator(".upload-toast-item").Filter(new() { HasText = "multi-pause-2.jpg" });
         await row1.WaitForAsync(new() { State = WaitForSelectorState.Visible, Timeout = 10_000 });
         await row2.WaitForAsync(new() { State = WaitForSelectorState.Visible, Timeout = 10_000 });
 
@@ -119,11 +119,11 @@ public sealed class MediaTusUploadTests : IAsyncLifetime
         await Assertions.Expect(row2.Locator("svg[data-icon=\"pause\"]")).ToBeVisibleAsync();
 
         // Remove throttle and verify a fresh upload completes.
-        await page.UnrouteAsync("**/api/media/tus/**");
+        await page.UnrouteAllAsync(new() { Behavior = UnrouteBehavior.Wait });
         await MediaHelper.NavigateToMediaAsync(page, $"/{_tenant.Prefix}");
-        var verifyFile = MediaHelper.GenerateTestFile("multi-verify.dat", SmallFileSize);
+        var verifyFile = MediaHelper.GenerateTestFile("multi-verify.jpg", SmallFileSize);
         await MediaHelper.UploadFileAsync(page, verifyFile);
-        await MediaHelper.ExpectFileInLibraryAsync(page, "multi-verify.dat");
+        await MediaHelper.ExpectFileInLibraryAsync(page, "multi-verify.jpg");
 
         await page.CloseAsync();
     }
@@ -134,18 +134,15 @@ public sealed class MediaTusUploadTests : IAsyncLifetime
     /// </summary>
     private static async Task ThrottleTusUploadsAsync(IPage page, int delayMs = 3000)
     {
-        await page.RouteAsync("**/api/media/tus/**", async route =>
+        // Intercept all requests; filter for TUS PATCH uploads in the handler.
+        await page.RouteAsync("**/*", async route =>
         {
-            if (route.Request.Method == "PATCH")
+            if (route.Request.Url.Contains("/api/media/tus") && route.Request.Method == "PATCH")
             {
-                var response = await route.FetchAsync();
                 await Task.Delay(delayMs);
-                await route.FulfillAsync(new() { Response = response });
             }
-            else
-            {
-                await route.ContinueAsync();
-            }
+
+            await route.ContinueAsync();
         });
     }
 }
