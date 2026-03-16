@@ -214,7 +214,7 @@ msgid "Delete"
 msgstr "Supprimer"
 ```
 
-See [Install localization files](../../guides/install-localization-files/README.md) for full PO file placement rules.
+See [Install localization files](../../../guides/install-localization-files/README.md) for full PO file placement rules.
 
 ## Multiple implementations
 
