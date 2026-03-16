@@ -114,7 +114,13 @@ If you serialize translations to a global variable, initialize the store in your
 // main.ts
 import { setTranslations } from "@orchardcore/bloom/helpers/localizations";
 
-setTranslations((window as any).__localizations ?? {});
+declare global {
+    interface Window {
+        __localizations?: Record<string, string>;
+    }
+}
+
+setTranslations(window.__localizations ?? {});
 ```
 
 ### Reading translations in modules, services, or components
