@@ -101,7 +101,11 @@ of each filter.
 End-to-end tests are located in `test/OrchardCore.Tests.Functional/`.
 
 ```bash
-dotnet test --project test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj
+# Run CMS functional tests
+dotnet test test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj --filter-class "*Cms*"
+
+# Run MVC functional tests
+ORCHARD_APP=mvc dotnet test test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj --filter-class "*Mvc*"
 ```
 
 ### Automated Browser Testing (Playwright MCP)
@@ -126,7 +130,7 @@ For AI agents, the Playwright MCP (Model Context Protocol) provides automated br
 
 - `test/OrchardCore.Tests/` - Main unit test project
 - `test/OrchardCore.Abstractions.Tests/` - Tests for abstractions
-- `test/OrchardCore.Tests.Functional/` - Playwright E2E tests (C#)
+- `test/OrchardCore.Tests.Functional/` - Playwright E2E functional tests
 - `test/OrchardCore.Tests.Modules/` - Test modules used by tests
 
 ## Project Structure
@@ -373,12 +377,16 @@ Stop-Process -Id (Get-Content .orchardcore-pid) -Force; Remove-Item .orchardcore
 
 ### Functional Testing with Playwright
 
-Create new functional tests under `test/OrchardCore.Tests.Functional/Tests/` following the existing C# test patterns.
+Create new functional tests under `test/OrchardCore.Tests.Functional/Tests/` following the existing C# test class patterns.
 
 Run the Playwright functional tests:
 
 ```bash
-dotnet test --project test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj
+# Run CMS functional tests
+dotnet test test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj --filter-class "*Cms*"
+
+# Run MVC functional tests
+ORCHARD_APP=mvc dotnet test test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj --filter-class "*Mvc*"
 ```
 
 ## Common Extension Points
