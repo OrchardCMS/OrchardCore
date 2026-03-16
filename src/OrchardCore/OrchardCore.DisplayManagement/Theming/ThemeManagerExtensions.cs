@@ -47,7 +47,7 @@ public static class ThemeManagerExtensions
         {
             var theme = themeTask.Result;
 
-            if(theme == null)
+            if (theme == null)
             {
                 return Task.FromResult<ShapeTable>(null);
             }
