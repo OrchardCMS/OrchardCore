@@ -22,7 +22,7 @@ public sealed class Migrations : DataMigration
             .WithDescription("Provides a Markdown formatted body for your content item."));
 
         // Shortcut other migration steps on new content definition schemas.
-        return 4;
+        return 5;
     }
 
     // Migrate FieldSettings. This only needs to run on old content definition schemas.
@@ -31,31 +31,28 @@ public sealed class Migrations : DataMigration
     {
         await _contentDefinitionManager.MigrateFieldSettingsAsync<MarkdownField, MarkdownFieldSettings>();
 
-        return 2;
+        return 4; // Returning 4 instead of 2 to skip the next 2 migration steps, see below why.
     }
 
-    // This code can be removed in a later version.
-    public async Task<int> UpdateFrom2Async()
+    // Previously, Liquid rendering was enabled by not having Html sanitization enabled and UpdateFrom2Async and
+    // UpdateFrom3Async disabled sanitization to ensure that MarkdownBodyParts and MarkdownFields kept Liquid rendering
+    // enabled. Since Liquid rendering is now controlled by a separate setting, disabling sanitization is no longer
+    // necessary.
+
+    public async Task<int> UpdateFrom4Async()
     {
-        // For backwards compatibility with liquid filters we disable html sanitization on existing field definitions.
+        // To keep the same behavior as before, RenderLiquid is initialized to the opposite of SanitizeHtml.
         foreach (var contentType in await _contentDefinitionManager.LoadTypeDefinitionsAsync())
         {
             if (contentType.Parts.Any(x => x.PartDefinition.Name == "MarkdownBodyPart"))
             {
                 await _contentDefinitionManager.AlterTypeDefinitionAsync(contentType.Name, x => x.WithPart("MarkdownBodyPart", part =>
                 {
-                    part.MergeSettings<MarkdownBodyPartSettings>(x => x.SanitizeHtml = false);
+                    part.MergeSettings<MarkdownBodyPartSettings>(s => s.RenderLiquid = !s.SanitizeHtml);
                 }));
             }
         }
 
-        return 3;
-    }
-
-    // This code can be removed in a later version.
-    public async Task<int> UpdateFrom3Async()
-    {
-        // For backwards compatibility with liquid filters we disable html sanitization on existing field definitions.
         var partDefinitions = await _contentDefinitionManager.LoadPartDefinitionsAsync();
         foreach (var partDefinition in partDefinitions)
         {
@@ -67,13 +64,13 @@ public sealed class Migrations : DataMigration
                     {
                         partBuilder.WithField(fieldDefinition.Name, fieldBuilder =>
                         {
-                            fieldBuilder.MergeSettings<MarkdownFieldSettings>(s => s.SanitizeHtml = false);
+                            fieldBuilder.MergeSettings<MarkdownFieldSettings>(s => s.RenderLiquid = !s.SanitizeHtml);
                         });
                     }
                 });
             }
         }
 
-        return 4;
+        return 5;
     }
 }
