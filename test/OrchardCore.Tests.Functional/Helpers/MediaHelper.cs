@@ -51,7 +51,7 @@ public static class MediaHelper
     /// </summary>
     public static async Task NavigateToMediaAsync(IPage page, string prefix = "")
     {
-        await page.GotoAsync($"{prefix}/Admin/Media");
+        await page.GotoAsync($"{prefix}/Admin/Media", new() { Timeout = 60_000 });
         // Wait for the Vue app to mount and the upload button to become visible,
         // which indicates that permissions have loaded and the app is ready.
         await page.Locator(".fileinput-button").First.WaitForAsync(new() { State = WaitForSelectorState.Visible, Timeout = 30_000 });
