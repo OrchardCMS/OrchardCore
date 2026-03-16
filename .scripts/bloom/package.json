@@ -1,13 +1,5 @@
 {
     "name": "@orchardcore/bloom",
     "version": "1.0.0",
-    "type": "module",
-    "peerDependencies": {
-        "vue": ">=3.0.0"
-    },
-    "peerDependenciesMeta": {
-        "vue": {
-            "optional": true
-        }
-    }
+    "type": "module"
 }
