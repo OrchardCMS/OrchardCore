@@ -1,14 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { mount, flushPromises } from "@vue/test-utils";
-import { ref, nextTick } from "vue";
+import { nextTick } from "vue";
 
-vi.mock("../../composables/useLocalizations", () => {
-  const translations = ref<Record<string, string>>({});
+vi.mock("@bloom/helpers/localizations", () => {
+  const store: Record<string, string> = {};
   return {
-    useLocalizations: () => ({
-      translations,
-      setTranslations: (t: Record<string, string>) => { translations.value = t; },
-    }),
+    getTranslations: () => store,
+    setTranslations: (t: Record<string, string>) => Object.assign(store, t),
   };
 });
 

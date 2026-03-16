@@ -1,5 +1,5 @@
 import { createVfm } from "vue-final-modal";
-import { useLocalizations } from "../composables/useLocalizations";
+import { setTranslations } from "@bloom/helpers/localizations";
 import { mockTranslations } from "./mockdata";
 
 /**
@@ -20,6 +20,5 @@ export function getGlobalMountOptions(stubs: Record<string, unknown> = {}) {
  * Set up mock translations before component tests.
  */
 export function setupTranslations() {
-  const { setTranslations } = useLocalizations();
   setTranslations(mockTranslations);
 }

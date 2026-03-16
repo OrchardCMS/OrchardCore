@@ -1,5 +1,4 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { ref } from "vue";
 
 // ── Mocks (must be declared before any import that triggers main.ts) ────────
 
@@ -15,16 +14,14 @@ vi.mock("vue-final-modal", () => ({
 vi.mock("vue-final-modal/style.css", () => ({}));
 vi.mock("../assets/css/field.css", () => ({}));
 
-const mockTranslationsRef = ref<Record<string, string>>({});
+const mockStore: Record<string, string> = {};
 const mockSetTranslations = vi.fn((t: Record<string, string>) => {
-  mockTranslationsRef.value = t;
+  Object.assign(mockStore, t);
 });
 
-vi.mock("../composables/useLocalizations", () => ({
-  useLocalizations: () => ({
-    translations: mockTranslationsRef,
-    setTranslations: mockSetTranslations,
-  }),
+vi.mock("@bloom/helpers/localizations", () => ({
+  getTranslations: () => mockStore,
+  setTranslations: mockSetTranslations,
 }));
 
 vi.mock("@media-app", () => ({

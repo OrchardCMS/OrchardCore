@@ -43,10 +43,10 @@
     <!-- Name -->
     <div class="mf-gallery-list-name tw:flex-1 tw:min-w-0">
       <span v-if="media.errorType === 'transient'" class="tw:text-yellow-500 tw:text-sm">
-        {{ T.mediaTemporarilyUnavailable }}
+        {{ t.mediaTemporarilyUnavailable }}
       </span>
       <span v-else-if="media.errorType === 'not-found'" class="tw:text-red-500 tw:text-sm">
-        {{ T.mediaNotFound }}
+        {{ t.mediaNotFound }}
       </span>
       <span v-else class="tw:text-sm tw:truncate tw:block" :title="media.name">
         {{ media.name }}
@@ -98,7 +98,7 @@
 <script setup lang="ts">
 import type { IMediaFieldItem } from "../interfaces/MediaFieldTypes";
 import { getIconClassForFilename } from "../services/FontAwesomeThumbnails";
-import { useLocalizations } from "../composables/useLocalizations";
+import { getTranslations } from "@bloom/helpers/localizations";
 
 defineProps<{
   media: IMediaFieldItem;
@@ -116,7 +116,7 @@ defineEmits<{
   dragend: [];
 }>();
 
-const { translations: T } = useLocalizations();
+const t = getTranslations();
 
 function buildMediaUrl(url: string, size: number): string {
   const sep = url.indexOf("?") === -1 ? "?" : "&";

@@ -6,10 +6,10 @@
   <div v-show="files.length > 0" class="mf-upload-toast">
     <div class="mf-upload-toast-header" @click="expanded = !expanded">
       <div class="mf-upload-toast-title">
-        <span>{{ T.uploads }}</span>
+        <span>{{ t.uploads }}</span>
         <span v-if="pendingCount > 0" class="tw:ms-1">({{ pendingCount }})</span>
         <span v-if="errorCount > 0" class="tw:text-red-500 tw:ms-1">
-          {{ T.errors }}: {{ errorCount }}
+          {{ t.errors }}: {{ errorCount }}
         </span>
       </div>
       <div class="mf-upload-toast-actions">
@@ -18,7 +18,7 @@
           type="button"
           class="mf-btn-icon tw:text-red-500 tw:me-1"
           @click.stop="$emit('clearErrors')"
-          :title="T.clearErrors"
+          :title="t.clearErrors"
         >
           <i class="fa-solid fa-broom" aria-hidden="true"></i>
         </button>
@@ -72,7 +72,7 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import type { IUploadFileEntry } from "../services/FieldUploadService";
-import { useLocalizations } from "../composables/useLocalizations";
+import { getTranslations } from "@bloom/helpers/localizations";
 
 const props = defineProps<{
   files: IUploadFileEntry[];
@@ -84,7 +84,7 @@ const emit = defineEmits<{
   dismissAll: [];
 }>();
 
-const { translations: T } = useLocalizations();
+const t = getTranslations();
 const expanded = ref(true);
 
 const pendingCount = computed(

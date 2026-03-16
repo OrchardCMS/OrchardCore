@@ -11,7 +11,7 @@
     @closed="onClosed"
   >
     <div class="mf-modal-header tw:flex tw:items-center tw:justify-between">
-      <h5>{{ T.selectMedia }}</h5>
+      <h5>{{ t.selectMedia }}</h5>
       <button type="button" class="mf-btn-icon" @click="cancel">
         <i class="fa-solid fa-xmark" aria-hidden="true"></i>
       </button>
@@ -20,7 +20,7 @@
       <!-- Loading state while media-app module is being imported -->
       <div v-if="loading" class="tw:flex tw:items-center tw:justify-center tw:py-12">
         <i class="fa-solid fa-spinner fa-spin tw:mr-2" aria-hidden="true"></i>
-        {{ T.loadingMediaBrowser }}
+        {{ t.loadingMediaBrowser }}
       </div>
       <!-- Error state -->
       <div v-else-if="error" class="tw:text-center tw:py-12" style="color: #dc3545;">
@@ -35,14 +35,14 @@
         {{ selectedCount > 0 ? `${selectedCount} selected` : '' }}
       </span>
       <div class="tw:flex tw:gap-2">
-        <button type="button" class="mf-btn" @click="cancel">{{ T.cancel }}</button>
+        <button type="button" class="mf-btn" @click="cancel">{{ t.cancel }}</button>
         <button
           type="button"
           class="mf-btn mf-btn-primary"
           :disabled="selectedCount === 0"
           @click="confirm"
         >
-          {{ T.ok }}
+          {{ t.ok }}
         </button>
       </div>
     </div>
@@ -53,7 +53,7 @@
 import { ref } from "vue";
 import { VueFinalModal } from "vue-final-modal";
 import type { IMediaFieldItem } from "../interfaces/MediaFieldTypes";
-import { useLocalizations } from "../composables/useLocalizations";
+import { getTranslations } from "@bloom/helpers/localizations";
 import type { IMediaPickerHandle } from "@media-app";
 
 const props = defineProps<{
@@ -72,7 +72,7 @@ const emit = defineEmits<{
   select: [files: IMediaFieldItem[]];
 }>();
 
-const { translations: T } = useLocalizations();
+const t = getTranslations();
 
 const visible = ref(false);
 const loading = ref(false);

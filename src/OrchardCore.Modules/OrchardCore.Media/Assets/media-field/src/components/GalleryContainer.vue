@@ -11,7 +11,7 @@
         @click="$emit('showPicker')"
       >
         <i class="fa-solid fa-plus" aria-hidden="true"></i>
-        {{ T.addMedia }}
+        {{ t.addMedia }}
       </button>
 
       <!-- View toggles -->
@@ -79,7 +79,7 @@
         @click="$emit('showPicker')"
       >
         <i class="fa-solid fa-plus tw:mr-1" aria-hidden="true"></i>
-        {{ T.addMedia }}
+        {{ t.addMedia }}
       </li>
     </ol>
 
@@ -110,7 +110,7 @@
           <div class="mf-gallery-card-preview">
             <div class="mf-gallery-card-icon">
               <i class="fa-solid fa-plus fa-2x tw:opacity-50" aria-hidden="true"></i>
-              <span class="tw:text-xs tw:mt-1 tw:opacity-60">{{ T.addMedia }}</span>
+              <span class="tw:text-xs tw:mt-1 tw:opacity-60">{{ t.addMedia }}</span>
             </div>
           </div>
         </div>
@@ -124,7 +124,7 @@ import { ref, computed, watch, onMounted } from "vue";
 import GalleryListItem from "./GalleryListItem.vue";
 import GalleryCardItem from "./GalleryCardItem.vue";
 import type { IMediaFieldItem } from "../interfaces/MediaFieldTypes";
-import { useLocalizations } from "../composables/useLocalizations";
+import { getTranslations } from "@bloom/helpers/localizations";
 
 const STORAGE_KEY_PREFIX = "mediaFieldGallery_";
 
@@ -144,7 +144,7 @@ const emit = defineEmits<{
   showPicker: [];
 }>();
 
-const { translations: T } = useLocalizations();
+const t = getTranslations();
 
 const gridView = ref(true);
 const size = ref<"sm" | "lg">("lg");

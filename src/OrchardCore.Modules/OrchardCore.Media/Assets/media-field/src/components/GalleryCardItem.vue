@@ -35,14 +35,14 @@
           class="mf-gallery-card-icon tw:text-yellow-500"
         >
           <i class="fa-solid fa-triangle-exclamation fa-2x"></i>
-          <span class="tw:text-xs tw:mt-1">{{ T.mediaTemporarilyUnavailable }}</span>
+          <span class="tw:text-xs tw:mt-1">{{ t.mediaTemporarilyUnavailable }}</span>
         </div>
         <div
           v-else-if="media.errorType === 'not-found'"
           class="mf-gallery-card-icon tw:text-red-500"
         >
           <i class="fa-solid fa-triangle-exclamation fa-2x"></i>
-          <span class="tw:text-xs tw:mt-1">{{ T.mediaNotFound }}</span>
+          <span class="tw:text-xs tw:mt-1">{{ t.mediaNotFound }}</span>
         </div>
         <div v-else class="mf-gallery-card-icon">
           <i :class="getIconClassForFilename(media.name, 'fa-3x')" :data-mime="media.mime"></i>
@@ -98,7 +98,7 @@
 <script setup lang="ts">
 import type { IMediaFieldItem } from "../interfaces/MediaFieldTypes";
 import { getIconClassForFilename } from "../services/FontAwesomeThumbnails";
-import { useLocalizations } from "../composables/useLocalizations";
+import { getTranslations } from "@bloom/helpers/localizations";
 
 const props = defineProps<{
   media: IMediaFieldItem;
@@ -117,7 +117,7 @@ defineEmits<{
   dragend: [];
 }>();
 
-const { translations: T } = useLocalizations();
+const t = getTranslations();
 
 const thumbSize = props.size === "sm" ? 120 : 240;
 

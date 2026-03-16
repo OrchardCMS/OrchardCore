@@ -2,7 +2,7 @@
   <div class="mf-thumbs-container">
     <!-- Empty state -->
     <div v-if="visibleItems.length === 0" class="mf-empty-card">
-      <span class="mf-hint">{{ T.noImages }}</span>
+      <span class="mf-hint">{{ t.noImages }}</span>
     </div>
 
     <!-- Thumbnail grid -->
@@ -29,7 +29,7 @@
         <div v-if="media.errorType === 'transient'">
           <div class="mf-thumb-preview tw:flex tw:flex-col tw:items-center tw:justify-center" :style="{ height: thumbSize + 'px' }">
             <i class="fa-solid fa-triangle-exclamation tw:text-yellow-500 tw:text-2xl tw:block" aria-hidden="true"></i>
-            <span class="tw:text-yellow-500 tw:text-xs tw:block tw:mt-1">{{ T.mediaTemporarilyUnavailable }}</span>
+            <span class="tw:text-yellow-500 tw:text-xs tw:block tw:mt-1">{{ t.mediaTemporarilyUnavailable }}</span>
           </div>
           <div class="mf-thumb-footer">
             <button
@@ -84,7 +84,7 @@
         <div v-else>
           <div class="mf-thumb-preview tw:flex tw:flex-col tw:items-center tw:justify-center" :style="{ height: thumbSize + 'px' }">
             <i class="fa-solid fa-ban tw:text-red-500 tw:text-2xl tw:block" aria-hidden="true"></i>
-            <span class="tw:text-red-500 tw:text-xs tw:block tw:mt-1">{{ T.mediaNotFound }}</span>
+            <span class="tw:text-red-500 tw:text-xs tw:block tw:mt-1">{{ t.mediaNotFound }}</span>
           </div>
           <div class="mf-thumb-footer">
             <button
@@ -106,7 +106,7 @@
 import { computed, ref, toRaw } from "vue";
 import type { IMediaFieldItem } from "../interfaces/MediaFieldTypes";
 import { getIconClassForFilename } from "../services/FontAwesomeThumbnails";
-import { useLocalizations } from "../composables/useLocalizations";
+import { getTranslations } from "@bloom/helpers/localizations";
 
 const props = defineProps<{
   mediaItems: IMediaFieldItem[];
@@ -121,7 +121,7 @@ const emit = defineEmits<{
   reorder: [items: IMediaFieldItem[]];
 }>();
 
-const { translations: T } = useLocalizations();
+const t = getTranslations();
 
 const visibleItems = computed(() =>
   props.mediaItems.filter((m) => !m.isRemoved)

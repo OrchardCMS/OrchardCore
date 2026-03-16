@@ -13,7 +13,7 @@
         @click="showPicker"
       >
         <i class="fa-solid fa-plus" aria-hidden="true"></i>
-        {{ T.addMedia }}
+        {{ t.addMedia }}
       </button>
 
       <button
@@ -23,7 +23,7 @@
         @click="removeSelected"
       >
         <i class="fa-solid fa-trash" aria-hidden="true"></i>
-        {{ T.removeMedia }}
+        {{ t.removeMedia }}
       </button>
 
       <button
@@ -33,7 +33,7 @@
         @click="showMediaTextModal"
       >
         <i class="fa-solid fa-comment" aria-hidden="true"></i>
-        {{ T.mediaText }}
+        {{ t.mediaText }}
       </button>
 
       <button
@@ -43,14 +43,14 @@
         @click="showAnchorModal"
       >
         <i class="fa-solid fa-crosshairs" aria-hidden="true"></i>
-        {{ T.anchor }}
+        {{ t.anchor }}
       </button>
 
       <!-- Thumb size toggle -->
       <button
         type="button"
         class="mf-btn mf-btn-icon tw:ml-auto"
-        :title="smallThumbs ? T.largeThumbsTitle : T.smallThumbsTitle"
+        :title="smallThumbs ? t.largeThumbsTitle : t.smallThumbsTitle"
         @click="smallThumbs = !smallThumbs"
       >
         <i :class="smallThumbs ? 'fa-solid fa-up-right-and-down-left-from-center' : 'fa-solid fa-down-left-and-up-right-to-center'" aria-hidden="true"></i>
@@ -87,10 +87,10 @@
       content-class="mf-modal-content"
     >
       <div class="mf-modal-header">
-        <h5>{{ T.editMediaText }}</h5>
+        <h5>{{ t.editMediaText }}</h5>
       </div>
       <div class="mf-modal-body" v-if="selectedMedia">
-        <label class="tw:block tw:text-sm tw:font-medium tw:mb-1">{{ T.mediaText }}</label>
+        <label class="tw:block tw:text-sm tw:font-medium tw:mb-1">{{ t.mediaText }}</label>
         <textarea
           v-model="editingMediaText"
           class="mf-input tw:w-full"
@@ -98,8 +98,8 @@
         ></textarea>
       </div>
       <div class="mf-modal-footer tw:flex tw:justify-end tw:gap-2">
-        <button type="button" class="mf-btn" @click="cancelMediaText">{{ T.cancel }}</button>
-        <button type="button" class="mf-btn mf-btn-primary" @click="saveMediaText">{{ T.ok }}</button>
+        <button type="button" class="mf-btn" @click="cancelMediaText">{{ t.cancel }}</button>
+        <button type="button" class="mf-btn mf-btn-primary" @click="saveMediaText">{{ t.ok }}</button>
       </div>
     </VueFinalModal>
 
@@ -110,7 +110,7 @@
       content-class="mf-modal-content mf-modal-anchor"
     >
       <div class="mf-modal-header">
-        <h5>{{ T.editAnchor }}</h5>
+        <h5>{{ t.editAnchor }}</h5>
       </div>
       <div class="mf-modal-body tw:relative" v-if="selectedMedia" ref="anchorModalBody">
         <div class="mf-anchor-image-container tw:relative tw:inline-block tw:cursor-crosshair" @click="setAnchor">
@@ -131,9 +131,9 @@
         </div>
       </div>
       <div class="mf-modal-footer tw:flex tw:justify-end tw:gap-2">
-        <button type="button" class="mf-btn" @click="resetAnchor">{{ T.resetAnchor }}</button>
-        <button type="button" class="mf-btn" @click="cancelAnchor">{{ T.cancel }}</button>
-        <button type="button" class="mf-btn mf-btn-primary" @click="saveAnchor">{{ T.ok }}</button>
+        <button type="button" class="mf-btn" @click="resetAnchor">{{ t.resetAnchor }}</button>
+        <button type="button" class="mf-btn" @click="cancelAnchor">{{ t.cancel }}</button>
+        <button type="button" class="mf-btn mf-btn-primary" @click="saveAnchor">{{ t.ok }}</button>
       </div>
     </VueFinalModal>
   </div>
@@ -149,14 +149,14 @@ import type {
   IMediaFieldConfig,
   IMediaFieldPath,
 } from "../interfaces/MediaFieldTypes";
-import { useLocalizations } from "../composables/useLocalizations";
+import { getTranslations } from "@bloom/helpers/localizations";
 
 const props = defineProps<{
   config: IMediaFieldConfig;
   inputName: string;
 }>();
 
-const { translations: T } = useLocalizations();
+const t = getTranslations();
 
 // --- State ---
 const mediaItems = ref<IMediaFieldItem[]>([]);

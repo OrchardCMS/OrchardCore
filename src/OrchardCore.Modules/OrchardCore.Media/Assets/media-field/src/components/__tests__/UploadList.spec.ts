@@ -1,4 +1,3 @@
-import { ref } from "vue";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { mount } from "@vue/test-utils";
 import UploadList from "../UploadList.vue";
@@ -15,13 +14,11 @@ vi.mock("vue-final-modal", () => ({
   createVfm: vi.fn(() => ({ install: vi.fn() })),
 }));
 
-vi.mock("../../composables/useLocalizations", () => {
-  const translations = ref<Record<string, string>>({});
+vi.mock("@bloom/helpers/localizations", () => {
+  const store: Record<string, string> = {};
   return {
-    useLocalizations: () => ({
-      translations,
-      setTranslations: (t: Record<string, string>) => { translations.value = t; },
-    }),
+    getTranslations: () => store,
+    setTranslations: (t: Record<string, string>) => Object.assign(store, t),
   };
 });
 

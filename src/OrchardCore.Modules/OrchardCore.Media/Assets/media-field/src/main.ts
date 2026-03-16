@@ -15,7 +15,7 @@ import Aura from "@primevue/themes/aura";
 import MediaFieldBasic from "./components/MediaFieldBasic.vue";
 import MediaFieldAttached from "./components/MediaFieldAttached.vue";
 import MediaFieldGallery from "./components/MediaFieldGallery.vue";
-import { useLocalizations } from "./composables/useLocalizations";
+import { setTranslations } from "@bloom/helpers/localizations";
 import type { IMediaFieldConfig, IMediaFieldPath } from "./interfaces/MediaFieldTypes";
 import type { IAttachedFieldConfig } from "./components/MediaFieldAttached.vue";
 
@@ -155,8 +155,6 @@ export function mountMediaField(el: HTMLElement) {
   const inputName = el.dataset.inputName || el.id || "MediaField";
   const translations = readTranslations(el);
 
-  // Set translations via composable
-  const { setTranslations } = useLocalizations();
   setTranslations(translations);
 
   const app = createFieldApp(MediaFieldBasic, { config, inputName });
@@ -174,7 +172,6 @@ export function mountAttachedMediaField(el: HTMLElement) {
   const inputName = el.dataset.inputName || el.id || "MediaField";
   const translations = readTranslations(el);
 
-  const { setTranslations } = useLocalizations();
   setTranslations(translations);
 
   const app = createFieldApp(MediaFieldAttached, { config, inputName });
@@ -192,7 +189,6 @@ export function mountGalleryMediaField(el: HTMLElement) {
   const inputName = el.dataset.inputName || el.id || "MediaField";
   const translations = readTranslations(el);
 
-  const { setTranslations } = useLocalizations();
   setTranslations(translations);
 
   const app = createFieldApp(MediaFieldGallery, { config, inputName });
