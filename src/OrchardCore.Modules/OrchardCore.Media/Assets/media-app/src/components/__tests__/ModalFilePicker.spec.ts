@@ -4,7 +4,7 @@ import ModalFilePicker from "../ModalFilePicker.vue";
 import { TreeNode } from "@bloom/media/interfaces";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { createVfm } from "vue-final-modal";
-import { useLocalizations } from "../../composables/useLocalizations";
+import { getTranslations, setTranslations } from "@bloom/helpers/localizations";
 
 const translationsData = {
   Ok: "Ok",
@@ -14,9 +14,8 @@ const translationsData = {
   ValidationFileExtensionRequired: "File extension is not allowed",
 };
 
-const { setTranslations, translations } = useLocalizations();
 setTranslations(translationsData);
-const t = translations;
+const t = getTranslations();
 
 describe("ModalFilePicker", () => {
   let wrapper: VueWrapper | null = null;

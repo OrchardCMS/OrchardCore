@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { translationsData } from "./mockdata";
-import { useLocalizations } from "../composables/useLocalizations";
+import { getTranslations, setTranslations } from "@bloom/helpers/localizations";
 
-const { translations, setTranslations } = useLocalizations();
+const translations = getTranslations();
 
 describe("translations", () => {
   it("should set and retrieve translations", () => {

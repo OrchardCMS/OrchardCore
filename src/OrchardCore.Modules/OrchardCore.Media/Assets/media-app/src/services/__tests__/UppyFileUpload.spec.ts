@@ -111,7 +111,7 @@ vi.mock("@bloom/services/notifications/notifier", () => ({
 
 // ---------- Imports (run after mocks are set up) ----------
 import { useEventBus } from "../UseEventBus";
-import { useLocalizations } from "../../composables/useLocalizations";
+import { setTranslations } from "@bloom/helpers/localizations";
 import { translationsData } from "../../__tests__/mockdata";
 import { updateUploadOptions, useFileUpload } from "../UppyFileUpload";
 import { useGlobals } from "../Globals";
@@ -121,7 +121,6 @@ import Tus from "@uppy/tus";
 import DropTarget from "@uppy/drop-target";
 
 // Set up localizations
-const { setTranslations } = useLocalizations();
 setTranslations({
   ...translationsData,
   ValidationError: "Validation Error",

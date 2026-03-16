@@ -83,13 +83,12 @@ import { useEventBus } from '../services/UseEventBus'
 //import dbg from "debug";
 import { useGlobals } from '../services/Globals';
 import { printDateTime } from '@bloom/media/utils'
-import { useLocalizations } from '../composables/useLocalizations';
+import { getTranslations } from '@bloom/helpers/localizations';
 import { isFileSelected } from '../services/Utils';
 //const debug = dbg("orchardcore:file-app");
 
 const { sortAsc, sortBy, selectedDirectory } = useGlobals();
-const { translations } = useLocalizations();
-const t = translations;
+const t = getTranslations();
 const { emit } = useEventBus();
 
 const props = defineProps({

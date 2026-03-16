@@ -49,10 +49,9 @@ import { ref, PropType } from 'vue'
 import { VueFinalModal } from 'vue-final-modal'
 import { IFileLibraryItemDto } from '@bloom/media/interfaces';
 import { getFileExtension } from '@bloom/media/utils'
-import { useLocalizations } from '../composables/useLocalizations';
+import { getTranslations } from '@bloom/helpers/localizations';
 
-const { translations } = useLocalizations();
-const t = translations
+const t = getTranslations();
 
 interface IFileProcessEntry {
   file: IFileLibraryItemDto;

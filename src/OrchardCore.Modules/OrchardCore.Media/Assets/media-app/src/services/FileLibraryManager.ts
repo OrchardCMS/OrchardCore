@@ -6,7 +6,7 @@ import { SeverityLevel } from "@bloom/services/notifications/interfaces";
 import { useEventBus } from "./UseEventBus";
 import { useHierarchicalTreeBuilder } from "./HierarchicalTreeBuilder";
 import { FileDataService, IFileDataService } from "@bloom/media/api/file-data-service";
-import { useLocalizations } from "../composables/useLocalizations";
+import { getTranslations } from "@bloom/helpers/localizations";
 
 function isNotFoundError(error: unknown): boolean {
   return typeof error === "object" && error !== null && "status" in error && (error as { status: number }).status === 404;
@@ -14,8 +14,7 @@ function isNotFoundError(error: unknown): boolean {
 const { canManage } = usePermissions();
 const { setServerDirectoryTree } = useHierarchicalTreeBuilder();
 const { assetsStore, basePath, selectedDirectory, rootDirectory, selectedFiles, fileItems, hierarchicalDirectories, setAssetsStore, setSelectedFiles, setSelectedAll, setFileItems, setHierarchicalData, setRootDirectory, markAllFoldersLoaded, setIsLoadingFiles } = useGlobals();
-const { translations } = useLocalizations();
-const t = translations;
+const t = getTranslations();
 const { emit } = useEventBus();
 
 /**

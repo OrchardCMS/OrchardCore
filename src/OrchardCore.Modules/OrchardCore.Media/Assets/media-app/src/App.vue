@@ -200,7 +200,7 @@ import { useEventBusService } from "./services/EventBusService";
 import { useSignalR } from "./services/SignalR";
 import { useEventBus } from "./services/UseEventBus";
 import { useRouterService } from "./services/RouterService";
-import { useLocalizations } from "./composables/useLocalizations";
+import { getTranslations, setTranslations } from "@bloom/helpers/localizations";
 import { useFileListFiltering } from "./composables/useFileListFiltering";
 import { useBreadcrumbs } from "./composables/useBreadcrumbs";
 import { useStoragePopover } from "./composables/useStoragePopover";
@@ -261,7 +261,7 @@ const {
 setBasePath(props.basePath);
 setIsDownloading(false);
 
-const { translations, setTranslations } = useLocalizations();
+const translations = getTranslations();
 if (props.translations) {
   try {
     setTranslations(typeof props.translations === "string" ? JSON.parse(props.translations) : props.translations);

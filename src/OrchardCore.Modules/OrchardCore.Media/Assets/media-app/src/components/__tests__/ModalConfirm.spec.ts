@@ -3,11 +3,10 @@ import { FileAction, IModalFileEvent } from "@bloom/media/interfaces";
 import { useConfirmModal } from "../../services/ConfirmModalService";
 import { useModal } from "vue-final-modal";
 import ModalConfirm from "../../components/ModalConfirm.vue";
-import { useLocalizations } from "../../composables/useLocalizations";
+import { setTranslations } from "@bloom/helpers/localizations";
 import { translationsData } from "../../__tests__/mockdata";
 
 const { showConfirmModal } = useConfirmModal();
-const { setTranslations } = useLocalizations();
 setTranslations(translationsData);
 
 vi.mock("vue-final-modal", () => ({

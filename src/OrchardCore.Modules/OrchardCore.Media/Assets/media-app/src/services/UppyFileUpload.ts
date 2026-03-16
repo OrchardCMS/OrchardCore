@@ -14,7 +14,7 @@ import { NotificationMessage, notify } from "@bloom/services/notifications/notif
 import { SeverityLevel } from "@bloom/services/notifications/interfaces";
 import { usePermissions } from "./Permissions";
 import { MinimalRequiredUppyFile } from "@uppy/utils/lib/UppyFile";
-import { useLocalizations } from "../composables/useLocalizations";
+import { getTranslations } from "@bloom/helpers/localizations";
 import { Restrictions } from "@uppy/core/lib/Restricter";
 import { OptionalPluralizeLocale } from "@uppy/utils/lib/Translator";
 import { useEventBus } from "./UseEventBus";
@@ -22,8 +22,7 @@ import { useEventBus } from "./UseEventBus";
 const { on, emit } = useEventBus();
 const { selectedDirectory, fileItems, uploadFilesUrl, assetsStore, setAssetsStore, setFileItems } = useGlobals();
 const permissionsService = usePermissions();
-const { translations } = useLocalizations();
-const t = translations;
+const t = getTranslations();
 const culture = document.querySelector("html")?.getAttribute("lang");
 let uppyLocale = English;
 

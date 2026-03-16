@@ -3,12 +3,11 @@ import { useConfirmModal } from "../ConfirmModalService";
 import { useModal } from "vue-final-modal";
 import { FileAction, IConfirmViewModel, IModalFileEvent } from "@bloom/media/interfaces";
 import ModalConfirm from "../../components/ModalConfirm.vue";
-import { useLocalizations } from "../../composables/useLocalizations";
+import { setTranslations } from "@bloom/helpers/localizations";
 import { translationsData } from "../../__tests__/mockdata";
 import { useEventBus } from "../UseEventBus";
 
 const { showConfirmModal } = useConfirmModal();
-const { setTranslations } = useLocalizations();
 setTranslations(translationsData);
 
 let onConfirmCallback: ((action: IConfirmViewModel) => void) | null = null;

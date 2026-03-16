@@ -34,10 +34,9 @@ import { VueFinalModal } from 'vue-final-modal'
 import { type IConfirmFilePickerViewModel, TreeNode } from '@bloom/media/interfaces';
 import dbg from 'debug';
 import { getFileExtension } from '@bloom/media/utils';
-import { useLocalizations } from '../composables/useLocalizations';
+import { getTranslations } from '@bloom/helpers/localizations';
 
-const { translations } = useLocalizations();
-const t = translations
+const t = getTranslations();
 
 const debug = dbg("orchardcore:file-app");
 

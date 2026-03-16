@@ -2,15 +2,14 @@ import { FileAction, IConfirmViewModel, IModalFileEvent } from "@bloom/media/int
 import { useEventBus } from "./UseEventBus";
 import { useModal } from "vue-final-modal";
 import ModalConfirm from "../components/ModalConfirm.vue";
-import { useLocalizations } from "../composables/useLocalizations";
+import { getTranslations } from "@bloom/helpers/localizations";
 
 const { emit } = useEventBus();
 
 export const useConfirmModal = () => {
   const showConfirmModal = (modalFileEvent: IModalFileEvent) => {
     if (modalFileEvent.files.length > 0) {
-      const { translations } = useLocalizations();
-      const t = translations;
+      const t = getTranslations();
       let defaultSlotMessage = "";
 
       if (modalFileEvent.action == FileAction.Delete) {

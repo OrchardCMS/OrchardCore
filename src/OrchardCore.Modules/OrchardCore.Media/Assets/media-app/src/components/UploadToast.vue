@@ -66,11 +66,10 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useEventBus } from '../services/UseEventBus'
-import { useLocalizations } from '../composables/useLocalizations'
+import { getTranslations } from '@bloom/helpers/localizations'
 
 const { on, emit } = useEventBus();
-const { translations } = useLocalizations();
-const t = translations;
+const t = getTranslations();
 
 interface UploadFile {
   name: string;

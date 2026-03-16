@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import { mount, VueWrapper } from "@vue/test-utils";
 import ModalFileAction from "../ModalFileAction.vue";
 import { FileAction, IFileLibraryItemDto, IRenameFileLibraryItemDto } from "@bloom/media/interfaces";
-import { useLocalizations } from "../../composables/useLocalizations";
+import { setTranslations } from "@bloom/helpers/localizations";
 import { useEventBusService } from "../../services/EventBusService";
 import { VueFinalModal, createVfm } from "vue-final-modal";
 
@@ -30,7 +30,6 @@ vi.mock("@bloom/services/notifications/notifier", () => ({
 
 useEventBusService();
 
-const { setTranslations } = useLocalizations();
 setTranslations({
   Filename: "Filename",
   SelectFolder: "Select a folder",

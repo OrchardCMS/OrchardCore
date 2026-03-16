@@ -1,7 +1,7 @@
 import { computed } from "vue";
 import { IHFileLibraryItemDto, TreeNode, IFileLibraryItemDto, IDirectoryTreeNode } from "@bloom/media/interfaces";
 import { useGlobals } from "./Globals";
-import { useLocalizations } from "../composables/useLocalizations";
+import { getTranslations } from "@bloom/helpers/localizations";
 import { getFileExtension } from "@bloom/media/utils";
 
 /**
@@ -15,8 +15,7 @@ export interface IFlatTreeNode {
 }
 
 const { assetsStore, selectedDirectory, hierarchicalDirectories, expandedFolders, setHierarchicalData, setRootDirectory } = useGlobals();
-const { translations } = useLocalizations();
-const t = translations;
+const t = getTranslations();
 
 /**
  * Extracts the parent path from a given path.

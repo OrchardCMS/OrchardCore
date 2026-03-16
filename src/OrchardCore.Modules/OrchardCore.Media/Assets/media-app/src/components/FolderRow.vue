@@ -48,7 +48,7 @@ import { IFileLibraryItemDto, IConfirmFolderActionViewModel, IHFileLibraryItemDt
 import { useEventBus } from '../services/UseEventBus';
 import { useGlobals } from '../services/Globals';
 import { FontAwesomeIcon as FaIcon } from '@fortawesome/vue-fontawesome';
-import { useLocalizations } from '../composables/useLocalizations';
+import { getTranslations } from '@bloom/helpers/localizations';
 import { useFolderModal } from '../composables/useFolderModal';
 import { useFolderDragDrop } from '../composables/useFolderDragDrop';
 import type { IFlatTreeNode } from '../services/HierarchicalTreeBuilder';
@@ -64,7 +64,7 @@ const emitComponent = defineEmits<{
 }>();
 
 const { selectedDirectory, expandedFolders, loadingFolders } = useGlobals();
-const { translations: t } = useLocalizations();
+const t = getTranslations();
 const { emit } = useEventBus();
 const { getFolderModalName, openFolderModal, confirmFolderModal: confirmModal } = useFolderModal();
 const { isHovered, handleDragOver, handleDragLeave, moveFileToFolder } = useFolderDragDrop();

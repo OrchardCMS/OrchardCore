@@ -7,7 +7,7 @@ import { useGlobals } from "../../services/Globals";
 import { createVfm, ModalsContainer } from "vue-final-modal";
 import { FolderAction, IConfirmFolderActionViewModel, IFileLibraryItemDto, IRenameFileLibraryItemDto } from "@bloom/media/interfaces";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { useLocalizations } from "../../composables/useLocalizations";
+import { setTranslations } from "@bloom/helpers/localizations";
 import { useEventBus } from "../../services/UseEventBus";
 import { useEventBusService } from "../../services/EventBusService";
 
@@ -52,7 +52,6 @@ vi.mock("../../services/Permissions", () => ({
 const { setHierarchicalDirectories } = useHierarchicalTreeBuilder();
 const { setSelectedDirectory, hierarchicalDirectories, setAssetsStore } = useGlobals();
 
-const { setTranslations } = useLocalizations();
 const translationsData = { Ok: "Ok", MoveFileTitle: "Move file(s)", Unauthorized: "Unauthorized", UnauthorizedFolder: "You are not authorized", ErrorMovingFile: "Error moving file", SameFolderMessage: "Cannot move to the same folder" };
 setTranslations(translationsData);
 const { on, emit } = useEventBus();

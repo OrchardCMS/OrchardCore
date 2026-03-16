@@ -46,12 +46,11 @@ import { IConfirmFolderActionViewModel, FolderAction } from '@bloom/media/interf
 type IFileActionElem = { id: FolderAction; displayName: string; allowedDirectory: string };
 import { useEventBus } from '../services/UseEventBus'
 //import dbg from 'debug';
-import { useLocalizations } from '../composables/useLocalizations';
+import { getTranslations } from '@bloom/helpers/localizations';
 
 //const debug = dbg("orchardcore:file-app");
 
-const { translations } = useLocalizations();
-const t = translations
+const t = getTranslations();
 const { on } = useEventBus();
 
 const props = defineProps({

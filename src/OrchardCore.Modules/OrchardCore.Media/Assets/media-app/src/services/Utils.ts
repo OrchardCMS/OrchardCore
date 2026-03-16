@@ -2,12 +2,11 @@ import { NotificationMessage, notify } from "@bloom/services/notifications/notif
 import { SeverityLevel } from "@bloom/services/notifications/interfaces";
 import { IFileLibraryItemDto } from "@bloom/media/interfaces";
 import { useGlobals } from "./Globals";
-import { useLocalizations } from "../composables/useLocalizations";
+import { getTranslations } from "@bloom/helpers/localizations";
 
 export { humanFileSize, getFileExtension, printDateTime } from "@bloom/media/utils";
 
-const { translations } = useLocalizations();
-const t = translations;
+const t = getTranslations();
 const { setIsDownloading, selectedFiles, setSelectedFiles, setSelectedAll } = useGlobals();
 
 export const isFileSelected = (file: IFileLibraryItemDto): boolean => {

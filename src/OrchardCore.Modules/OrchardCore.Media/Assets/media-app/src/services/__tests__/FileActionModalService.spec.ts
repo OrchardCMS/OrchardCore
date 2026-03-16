@@ -2,11 +2,10 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useFileActionModal } from "../FileActionModalService";
 import { useModal } from "vue-final-modal";
 import { FileAction, IConfirmFileActionViewModel, IModalFileEvent } from "@bloom/media/interfaces";
-import { useLocalizations } from "../../composables/useLocalizations";
+import { setTranslations } from "@bloom/helpers/localizations";
 import { translationsData } from "../../__tests__/mockdata";
 import { useEventBus } from "../UseEventBus";
 
-const { setTranslations } = useLocalizations();
 setTranslations(translationsData);
 
 let onConfirmCallback: ((action: IConfirmFileActionViewModel) => void) | null = null;

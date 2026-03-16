@@ -30,10 +30,9 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue';
 import { SeverityLevel } from '@bloom/services/notifications/interfaces';
-import { useLocalizations } from '../composables/useLocalizations';
+import { getTranslations } from '@bloom/helpers/localizations';
 
-const { translations } = useLocalizations();
-const t = translations;
+const t = getTranslations();
 
 interface ToastNotification {
   id: number;

@@ -6,7 +6,7 @@ import PrimeVue from "primevue/config";
 import Menu from "primevue/menu";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { useGlobals } from "../../services/Globals";
-import { useLocalizations } from "../../composables/useLocalizations";
+import { setTranslations } from "@bloom/helpers/localizations";
 import { useEventBusService } from "../../services/EventBusService";
 import { useEventBus } from "../../services/UseEventBus";
 import { createVfm } from "vue-final-modal";
@@ -37,7 +37,6 @@ const vfm = createVfm();
 useEventBusService();
 const { setAssetsStore } = useGlobals();
 
-const { setTranslations } = useLocalizations();
 setTranslations({
   Ok: "Ok",
   Copy: "Copy",

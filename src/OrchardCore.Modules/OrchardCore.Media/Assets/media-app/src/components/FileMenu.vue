@@ -16,7 +16,7 @@ import { useConfirmModal } from "../services/ConfirmModalService";
 import { useFileActionModal } from "../services/FileActionModalService";
 import { useGlobals } from "../services/Globals";
 import { useEventBus } from "../services/UseEventBus";
-import { useLocalizations } from "../composables/useLocalizations"
+import { getTranslations } from "@bloom/helpers/localizations"
 import { downloadFile } from "../services/Utils";
 import { ModalsContainer } from 'vue-final-modal'
 import dbg from "debug";
@@ -35,8 +35,7 @@ const props = defineProps({
 })
 
 const { emit } = useEventBus();
-const { translations } = useLocalizations();
-const t = translations
+const t = getTranslations();
 const { showConfirmModal } = useConfirmModal();
 const { showFileActionModal } = useFileActionModal();
 

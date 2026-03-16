@@ -2,9 +2,8 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { getFileExtension, humanFileSize, printDateTime, downloadFile, downloadSelectedFiles } from "../Utils";
 import { useGlobals } from "../Globals";
 import { translationsData } from "../../__tests__/mockdata";
-import { useLocalizations } from "../../composables/useLocalizations";
+import { setTranslations } from "@bloom/helpers/localizations";
 
-const { setTranslations } = useLocalizations();
 setTranslations(translationsData);
 
 describe("GetFileExtension", () => {

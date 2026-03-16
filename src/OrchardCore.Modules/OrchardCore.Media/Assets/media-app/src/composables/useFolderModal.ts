@@ -4,11 +4,11 @@ import { IFileLibraryItemDto, IConfirmFolderActionViewModel, FolderAction, IHFil
 import { NotificationMessage, notify } from "@bloom/services/notifications/notifier";
 import { SeverityLevel } from "@bloom/services/notifications/interfaces";
 import { useEventBus } from "../services/UseEventBus";
-import { useLocalizations } from "./useLocalizations";
+import { getTranslations } from "@bloom/helpers/localizations";
 import { usePermissions } from "../services/Permissions";
 
 export function useFolderModal() {
-  const { translations: t } = useLocalizations();
+  const t = getTranslations();
   const { canManageFolder } = usePermissions();
   const { emit } = useEventBus();
 

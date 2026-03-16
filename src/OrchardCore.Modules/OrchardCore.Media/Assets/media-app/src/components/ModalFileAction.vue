@@ -60,12 +60,11 @@ import { FileAction, IConfirmFileActionViewModel, IConfirmFileEntry, IRenameFile
 import { getFileExtension } from '@bloom/media/utils'
 //import dbg from 'debug';
 import { useHierarchicalTreeBuilder } from '../services/HierarchicalTreeBuilder';
-import { useLocalizations } from '../composables/useLocalizations';
+import { getTranslations } from '@bloom/helpers/localizations';
 import { isValidFileExtension } from '@bloom/media/file-extensions';
 
 //const debug = dbg("orchardcore:file-app");
-const { translations } = useLocalizations();
-const t = translations
+const t = getTranslations();
 const { getDirectoryTreeNode } = useHierarchicalTreeBuilder();
 
 const props = defineProps({

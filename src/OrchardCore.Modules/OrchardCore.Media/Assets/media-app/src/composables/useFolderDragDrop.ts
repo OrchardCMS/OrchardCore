@@ -4,10 +4,10 @@ import { IFileLibraryItemDto, FileAction, IModalFileEvent } from "@bloom/media/i
 import { NotificationMessage, notify } from "@bloom/services/notifications/notifier";
 import { SeverityLevel } from "@bloom/services/notifications/interfaces";
 import { useConfirmModal } from "../services/ConfirmModalService";
-import { useLocalizations } from "./useLocalizations";
+import { getTranslations } from "@bloom/helpers/localizations";
 
 export function useFolderDragDrop() {
-  const { translations: t } = useLocalizations();
+  const t = getTranslations();
   const { showConfirmModal } = useConfirmModal();
 
   const isHovered = ref(false);

@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import { mount, VueWrapper } from "@vue/test-utils";
 import ModalFolderAction from "../ModalFolderAction.vue";
 import { IFileLibraryItemDto } from "@bloom/media/interfaces";
-import { useLocalizations } from "../../composables/useLocalizations";
+import { setTranslations } from "@bloom/helpers/localizations";
 import { useEventBusService } from "../../services/EventBusService";
 import { createVfm } from "vue-final-modal";
 
@@ -30,7 +30,6 @@ vi.mock("@bloom/services/notifications/notifier", () => ({
 
 useEventBusService();
 
-const { setTranslations } = useLocalizations();
 setTranslations({
   Cancel: "Cancel",
   CreateSubFolder: "Create sub-folder",
