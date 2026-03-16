@@ -51,7 +51,14 @@ public class AttachedMediaFieldFileService
             }
 
             var targetDir = GetContentItemFolder(contentItem);
-            var finalFileName = (await GetFileHashAsync(path)) + GetFileExtension(path);
+            var sourceFileInfo = await _fileStore.GetFileInfoAsync(path);
+            if (sourceFileInfo == null)
+            {
+                // File not found — keep the reference so the user can see which files are missing.
+                continue;
+            }
+
+            var finalFileName = sourceFileInfo.Name;
             var finalFilePath = _fileStore.Combine(targetDir, finalFileName);
 
             await _fileStore.TryCreateDirectoryAsync(targetDir);
