@@ -1,23 +1,15 @@
-import { reactive } from "vue";
-
-const translations = reactive<Record<string, string>>({});
+const translations: Record<string, string> = {};
 
 /**
- * Composable for managing translations passed from the server-side Razor view.
- *
- * @example
- * // In your root component or app entry point, seed the translations once:
- * const { setTranslations } = useLocalizations();
- * setTranslations(window.__localizations ?? {});
- *
- * // In any child component:
- * const { translations: t } = useLocalizations();
- * console.log(t["Save"]); // → localized value
+ * Returns the current translations record.
  */
-export function useLocalizations() {
-    const setTranslations = (t: Record<string, string>) => {
-        Object.assign(translations, t);
-    };
+export function getTranslations(): Record<string, string> {
+    return translations;
+}
 
-    return { translations, setTranslations };
+/**
+ * Merges the given translations into the store.
+ */
+export function setTranslations(t: Record<string, string>): void {
+    Object.assign(translations, t);
 }

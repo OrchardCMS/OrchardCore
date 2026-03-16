@@ -14,7 +14,7 @@ When a Vue, TypeScript, or plain JavaScript component needs translated strings, 
 | `IJSLocalizer` | `OrchardCore.Localization.Abstractions` | Contract that returns a `Dictionary<string, string>` for requested groups. |
 | `NullJSLocalizer` | `OrchardCore.Localization.Abstractions` | Default no-op implementation that always returns an empty dictionary. |
 | `LocalizationOrchardHelperExtensions` | `OrchardCore.Localization.Abstractions` | Razor / Liquid helper (`Orchard.GetJSLocalizations(…)`) that aggregates all registered `IJSLocalizer` implementations. |
-| `useLocalizations()` | `.scripts/bloom/helpers/localizations.ts` | Vue 3 composable that wraps translations in a reactive object so components update automatically when the locale changes. |
+| `getTranslations()` / `setTranslations()` | `.scripts/bloom/helpers/localizations.ts` | Framework-agnostic helpers for seeding and reading a shared translations record in JavaScript or TypeScript. |
 
 ## Registering a custom implementation
 
@@ -86,122 +86,103 @@ You can request translations from multiple groups in a single call. The dictiona
 
 ---
 
-## Using localizations in a Vue 3 app
+## Using localizations in JavaScript or TypeScript
 
-Orchard Core ships a ready-made Vue 3 composable at `.scripts/bloom/helpers/localizations.ts`.
+Orchard Core ships framework-agnostic helpers at `.scripts/bloom/helpers/localizations.ts`.
 
-### The `useLocalizations()` composable
+### The shared translations store
 
 ```typescript
-import { reactive } from "vue";
+const translations: Record<string, string> = {};
 
-const translations = reactive<Record<string, string>>({});
+export function getTranslations(): Record<string, string> {
+    return translations;
+}
 
-export function useLocalizations() {
-    const setTranslations = (t: Record<string, string>) => {
-        Object.assign(translations, t);
-    };
-
-    return { translations, setTranslations };
+export function setTranslations(t: Record<string, string>): void {
+    Object.assign(translations, t);
 }
 ```
 
-The singleton `translations` object is **reactive** — any component that reads from it will automatically re-render if the translations are swapped at runtime.
+The module keeps a single shared object alive for the lifetime of the page. Seed it once, then read it anywhere in your front-end code.
 
 ### Seeding translations in the app entry point
 
-Call `setTranslations` once in the root component (or in `main.ts`) using the variable serialized by the Razor view:
+If you serialize translations to a global variable, initialize the store in your app entry point:
 
 ```typescript
 // main.ts
-import { createApp } from "vue";
-import App from "./App.vue";
-import { useLocalizations } from "@orchardcore/bloom/helpers/localizations";
+import { setTranslations } from "@orchardcore/bloom/helpers/localizations";
 
-const app = createApp(App);
-
-const { setTranslations } = useLocalizations();
 setTranslations((window as any).__localizations ?? {});
-
-app.mount("#app");
 ```
 
-### Reading translations inside a component
+### Reading translations in modules, services, or components
 
-```vue
-<script setup lang="ts">
-import { useLocalizations } from "@orchardcore/bloom/helpers/localizations";
+```typescript
+import { getTranslations } from "@orchardcore/bloom/helpers/localizations";
 
-const { translations: t } = useLocalizations();
-</script>
+const t = getTranslations();
 
-<template>
-  <button>{{ t["Save"] }}</button>
-  <button>{{ t["Cancel"] }}</button>
-</template>
+console.log(t["Save"]);
 ```
 
-Because `translations` is a Vue reactive object, the template updates automatically if `setTranslations` is called again (e.g. after a locale change via an API call).
+If your UI framework needs reactivity, wrap `getTranslations()` in framework-specific state inside your app. The shared Orchard helper stays framework agnostic.
 
----
+### Media App pattern
 
-## Using localizations in a React app
+The Vue 3 Media App on `skrypt/vue-3` uses the helper in a framework-agnostic way:
 
-React does not use Vue's reactive system. The simplest approach is to pass the plain `window.__localizations` object through **React Context**, or access it directly since page-level translations are typically set once before the bundle runs.
+1. Razor serializes translations and passes them to the root component.
+2. The root component parses and stores them with `setTranslations(...)`.
+3. Components and services read them through `getTranslations()`.
 
-### Minimal direct access
+#### Razor
 
-```tsx
-// localizations.ts (React project)
-export const t = (window as any).__localizations as Record<string, string> ?? {};
-```
-
-```tsx
-// SaveButton.tsx
-import { t } from "./localizations";
-
-export function SaveButton() {
-    return <button>{t["Save"]}</button>;
+```cshtml
+@{
+    var jsLocalizations = Orchard.GetJSLocalizations("media-app");
 }
+
+<div id="media-app">
+    <media-app
+        translations="@Json.Serialize(jsLocalizations).ToString()"
+        base-path="@Href("~")">
+    </media-app>
+</div>
 ```
 
-### Context-based approach (recommended for larger apps)
+#### Root component
 
-```tsx
-// LocalizationsContext.tsx
-import { createContext, useContext } from "react";
+```typescript
+import { getTranslations, setTranslations } from "@orchardcore/bloom/helpers/localizations";
 
-export const LocalizationsContext = createContext<Record<string, string>>({});
+const props = defineProps({
+    translations: {
+        type: String,
+        required: true,
+    },
+});
 
-export function useT() {
-    return useContext(LocalizationsContext);
+const translations = getTranslations();
+
+if (props.translations) {
+    try {
+        setTranslations(typeof props.translations === "string" ? JSON.parse(props.translations) : props.translations);
+    } catch (e) {
+        console.warn("Failed to parse translations:", e);
+    }
 }
+
+const t = translations;
 ```
 
-```tsx
-// main.tsx
-import React from "react";
-import ReactDOM from "react-dom/client";
-import App from "./App";
-import { LocalizationsContext } from "./LocalizationsContext";
+#### Anywhere else in the app
 
-const localizations = (window as any).__localizations ?? {};
+```typescript
+import { getTranslations } from "@orchardcore/bloom/helpers/localizations";
 
-ReactDOM.createRoot(document.getElementById("app")!).render(
-    <LocalizationsContext.Provider value={localizations}>
-        <App />
-    </LocalizationsContext.Provider>
-);
-```
-
-```tsx
-// SaveButton.tsx
-import { useT } from "./LocalizationsContext";
-
-export function SaveButton() {
-    const t = useT();
-    return <button>{t["Save"]}</button>;
-}
+const t = getTranslations();
 ```
 
 ---
