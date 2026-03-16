@@ -148,7 +148,7 @@ public sealed class ListPartDisplayDriver : ContentPartDisplayDriver<ListPart>
             model.Context = context;
             model.EnableOrdering = settings.EnableOrdering;
 
-            if (settings.UseTraditionalPager)
+            if (settings.ShowPageNumbers)
             {
                 var pager = await GetPagerAsync(context);
 
@@ -191,7 +191,7 @@ public sealed class ListPartDisplayDriver : ContentPartDisplayDriver<ListPart>
             model.Context = context;
             model.ListPart = listPart;
 
-            if (settings.UseTraditionalPager)
+            if (settings.ShowPageNumbers)
             {
                 var pager = await GetPagerAsync(context);
 

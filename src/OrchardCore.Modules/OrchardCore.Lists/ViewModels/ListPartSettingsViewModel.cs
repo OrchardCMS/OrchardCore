@@ -12,5 +12,5 @@ public class ListPartSettingsViewModel
     public bool EnableOrdering { get; set; }
     public bool ShowHeader { get; set; }
 
-    public bool UseTraditionalPager { get; set; }
+    public bool ShowPageNumbers { get; set; }
 }

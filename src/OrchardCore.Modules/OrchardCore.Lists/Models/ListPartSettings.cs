@@ -7,5 +7,5 @@ public class ListPartSettings
     public bool EnableOrdering { get; set; }
     public bool ShowHeader { get; set; }
 
-    public bool UseTraditionalPager { get; set; }  // True if the traditional Pager should be used, false if the PagerSlim pager should be used.
+    public bool ShowPageNumbers { get; set; } 
 }
