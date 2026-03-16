@@ -156,6 +156,8 @@ public class DefaultMediaFileStore : IMediaFileStore
         }
 
         await _fileStore.CopyFileAsync(srcPath, dstPath);
+
+        await _mediaEventHandlers.InvokeAsync((handler, ctx) => handler.MediaCopiedFileAsync(ctx), new MediaMoveContext { OldPath = srcPath, NewPath = dstPath }, _logger);
     }
 
     public virtual Task<Stream> GetFileStreamAsync(string path)
@@ -204,7 +206,11 @@ public class DefaultMediaFileStore : IMediaFileStore
 
                 await ValidateAvailableStorageAsync(outputStream.Length);
 
-                return await _fileStore.CreateFileFromStreamAsync(context.Path, outputStream, overwrite);
+                var result = await _fileStore.CreateFileFromStreamAsync(context.Path, outputStream, overwrite);
+
+                await _mediaEventHandlers.InvokeAsync((handler, ctx) => handler.MediaCreatedFileAsync(ctx), new MediaCreatedContext { Path = result }, _logger);
+
+                return result;
             }
             finally
             {
@@ -216,7 +222,11 @@ public class DefaultMediaFileStore : IMediaFileStore
         {
             await ValidateAvailableStorageAsync(inputStream.Length);
 
-            return await _fileStore.CreateFileFromStreamAsync(path, inputStream, overwrite);
+            var result = await _fileStore.CreateFileFromStreamAsync(path, inputStream, overwrite);
+
+            await _mediaEventHandlers.InvokeAsync((handler, ctx) => handler.MediaCreatedFileAsync(ctx), new MediaCreatedContext { Path = result }, _logger);
+
+            return result;
         }
     }
 

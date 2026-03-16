@@ -5,7 +5,7 @@ namespace OrchardCore.Tests.Functional;
 
 public sealed class MvcSetupFixture : IAsyncLifetime
 {
-    private readonly OrchardTestFixture _testFixture = new();
+    private readonly OrchardTestFixture _testFixture = new(isMvc: true, port: 5001);
 
     public IBrowser Browser => _testFixture.Browser;
     public string BaseUrl => _testFixture.BaseUrl;

@@ -48,4 +48,23 @@ public class MediaSignalREventHandler : IMediaEventHandler
             path = context.Path,
         });
     }
+
+    public async Task MediaCreatedFileAsync(MediaCreatedContext context)
+    {
+        await _hubContext.Clients.All.SendAsync("MediaChanged", new
+        {
+            action = "fileUploaded",
+            path = context.Path,
+        });
+    }
+
+    public async Task MediaCopiedFileAsync(MediaMoveContext context)
+    {
+        await _hubContext.Clients.All.SendAsync("MediaChanged", new
+        {
+            action = "fileCopied",
+            path = context.OldPath,
+            newPath = context.NewPath,
+        });
+    }
 }

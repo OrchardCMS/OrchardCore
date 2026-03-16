@@ -67,18 +67,10 @@ public sealed class Startup : StartupBase
     private const string ImageSharpCacheFolder = "is-cache";
 
     private readonly ShellSettings _shellSettings;
-    private readonly IShellConfiguration _configuration;
-    private readonly ILogger _logger;
 
-    public Startup(
-        ShellSettings shellSettings,
-        IShellConfiguration configuration,
-        ILogger<Startup> logger
-    )
+    public Startup(ShellSettings shellSettings)
     {
         _shellSettings = shellSettings;
-        _configuration = configuration;
-        _logger = logger;
     }
 
     public override void ConfigureServices(IServiceCollection services)
@@ -245,22 +237,6 @@ public sealed class Startup : StartupBase
         services.AddSingleton<IChunkFileUploadService, ChunkFileUploadService>();
         services.AddSingleton<IBackgroundTask, ChunkFileUploadBackgroundTask>();
 
-        // SignalR for real-time media updates.
-        var signalRConnectionString = _configuration
-            .GetSection("OrchardCore_Media_SignalR")
-            .GetValue<string>("ConnectionString");
-
-        if (!string.IsNullOrEmpty(signalRConnectionString))
-        {
-            _logger.LogInformation("Azure SignalR Service is enabled for media real-time updates.");
-            services.AddSignalR().AddAzureSignalR(signalRConnectionString);
-        }
-        else
-        {
-            services.AddSignalR();
-        }
-
-        services.AddSingleton<IMediaEventHandler, MediaSignalREventHandler>();
     }
 
     public override void Configure(
@@ -296,8 +272,6 @@ public sealed class Startup : StartupBase
         // Use services.PostConfigure<MediaOptions>() to alter the media static file options event handlers.
         app.UseStaticFiles(mediaOptions.StaticFileOptions);
 
-        // SignalR hub for real-time media updates.
-        routes.MapHub<MediaHub>("/hubs/media");
     }
 
     private static string GetMediaPath(
@@ -648,22 +622,94 @@ public sealed class MediaTusStartup : StartupBase
 
                             // Clean up the temp file.
                             await store.DeleteFileAsync(ctx.FileId, ctx.CancellationToken);
-
-                            // Broadcast via SignalR.
-                            var mediaHub = httpContext.RequestServices.GetService<
-                                IHubContext<MediaHub>
-                            >();
-                            if (mediaHub != null)
-                            {
-                                await mediaHub.Clients.All.SendAsync(
-                                    "MediaChanged",
-                                    new { action = "fileUploaded", path = entry.DestinationPath }
-                                );
-                            }
                         },
                     },
                 };
             }
         );
+    }
+}
+
+[Feature("OrchardCore.Media.SignalR")]
+public sealed class MediaSignalRStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddSignalR();
+        services.AddSingleton<IMediaEventHandler, MediaSignalREventHandler>();
+    }
+
+    public override void Configure(
+        IApplicationBuilder app,
+        IEndpointRouteBuilder routes,
+        IServiceProvider serviceProvider)
+    {
+        routes.MapHub<MediaHub>("/hubs/media");
+    }
+}
+
+[Feature("OrchardCore.Media.SignalR.Azure")]
+public sealed class MediaSignalRAzureStartup : StartupBase
+{
+    private readonly IShellConfiguration _configuration;
+    private readonly ILogger _logger;
+
+    public MediaSignalRAzureStartup(
+        IShellConfiguration configuration,
+        ILogger<MediaSignalRAzureStartup> logger)
+    {
+        _configuration = configuration;
+        _logger = logger;
+    }
+
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        var connectionString = _configuration
+            .GetSection("OrchardCore_Media_SignalR")
+            .GetValue<string>("ConnectionString");
+
+        if (!string.IsNullOrEmpty(connectionString))
+        {
+            _logger.LogInformation("Azure SignalR Service is enabled for media real-time updates.");
+            services.AddSignalR().AddAzureSignalR(connectionString);
+        }
+        else
+        {
+            _logger.LogWarning(
+                "OrchardCore.Media.SignalR.Azure feature is enabled but 'OrchardCore_Media_SignalR:ConnectionString' is not configured.");
+        }
+    }
+}
+
+[Feature("OrchardCore.Media.SignalR.Redis")]
+public sealed class MediaSignalRRedisStartup : StartupBase
+{
+    private readonly IShellConfiguration _configuration;
+    private readonly ILogger _logger;
+
+    public MediaSignalRRedisStartup(
+        IShellConfiguration configuration,
+        ILogger<MediaSignalRRedisStartup> logger)
+    {
+        _configuration = configuration;
+        _logger = logger;
+    }
+
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        var connectionString = _configuration
+            .GetSection("OrchardCore_Redis")
+            .GetValue<string>("Configuration");
+
+        if (!string.IsNullOrEmpty(connectionString))
+        {
+            _logger.LogInformation("Redis backplane is enabled for media SignalR.");
+            services.AddSignalR().AddStackExchangeRedis(connectionString);
+        }
+        else
+        {
+            _logger.LogWarning(
+                "OrchardCore.Media.SignalR.Redis feature is enabled but 'OrchardCore_Redis:Configuration' is not configured.");
+        }
     }
 }

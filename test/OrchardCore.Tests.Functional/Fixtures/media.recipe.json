@@ -28,6 +28,7 @@
         "OrchardCore.Contents",
         "OrchardCore.ContentTypes",
         "OrchardCore.Media",
+        "OrchardCore.Media.SignalR",
         "TheAdmin",
         "SafeMode"
       ]

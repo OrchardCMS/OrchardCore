@@ -1,6 +1,3 @@
-using System.Diagnostics;
-using System.Reflection;
-
 namespace OrchardCore.Tests.Functional.Helpers;
 
 public static class AppLifecycleHelper
@@ -11,19 +8,23 @@ public static class AppLifecycleHelper
     {
         Log("Building application...");
 
-        var process = Process.Start(new ProcessStartInfo
-        {
-            FileName = "dotnet",
-            Arguments = $"build -c Release -f {_dotnetVersion}",
-            WorkingDirectory = appDir,
-            UseShellExecute = false,
-        });
+        var process = Process.Start(
+            new ProcessStartInfo
+            {
+                FileName = "dotnet",
+                Arguments = $"build -c Release -f {_dotnetVersion}",
+                WorkingDirectory = appDir,
+                UseShellExecute = false,
+            }
+        );
 
         process?.WaitForExit();
 
         if (process?.ExitCode != 0)
         {
-            throw new InvalidOperationException($"dotnet build failed with exit code {process?.ExitCode}.");
+            throw new InvalidOperationException(
+                $"dotnet build failed with exit code {process?.ExitCode}."
+            );
         }
 
         Log("Build complete.");
@@ -39,8 +40,8 @@ public static class AppLifecycleHelper
         }
     }
 
-    public static bool CopyMigrationsRecipe(string appDir)
-        => CopyRecipe(appDir, "migrations.recipe.json");
+    public static bool CopyMigrationsRecipe(string appDir) =>
+        CopyRecipe(appDir, "migrations.recipe.json");
 
     public static bool CopyRecipe(string appDir, string recipeFileName)
     {
@@ -53,7 +54,8 @@ public static class AppLifecycleHelper
         }
 
         var assembly = Assembly.GetExecutingAssembly();
-        var resourceName = assembly.GetManifestResourceNames()
+        var resourceName = assembly
+            .GetManifestResourceNames()
             .FirstOrDefault(n => n.EndsWith(recipeFileName, StringComparison.OrdinalIgnoreCase));
 
         if (resourceName is null)
@@ -75,8 +77,8 @@ public static class AppLifecycleHelper
         return true;
     }
 
-    public static void DeleteMigrationsRecipe(string appDir)
-        => DeleteRecipe(appDir, "migrations.recipe.json");
+    public static void DeleteMigrationsRecipe(string appDir) =>
+        DeleteRecipe(appDir, "migrations.recipe.json");
 
     public static void DeleteRecipe(string appDir, string recipeFileName)
     {
@@ -96,7 +98,7 @@ public static class AppLifecycleHelper
         }
     }
 
-    public static Process HostApp(string appDir, string assembly)
+    public static Process HostApp(string appDir, string assembly, string url = null)
     {
         var binPath = Path.Combine("bin", "Release", _dotnetVersion, assembly);
         var fullBinPath = Path.Combine(appDir, binPath);
@@ -123,10 +125,20 @@ public static class AppLifecycleHelper
 
         process.StartInfo.EnvironmentVariables["ORCHARD_APP_DATA"] = "./App_Data_Tests";
 
+        if (!string.IsNullOrEmpty(url))
+        {
+            process.StartInfo.EnvironmentVariables["ASPNETCORE_URLS"] = url;
+        }
+
         process.OutputDataReceived += (_, e) =>
         {
-            if (!string.IsNullOrEmpty(e.Data) &&
-                (e.Data.Contains("Exception") || e.Data.StartsWith("fail:", StringComparison.Ordinal)))
+            if (
+                !string.IsNullOrEmpty(e.Data)
+                && (
+                    e.Data.Contains("Exception")
+                    || e.Data.StartsWith("fail:", StringComparison.Ordinal)
+                )
+            )
             {
                 Console.Error.WriteLine($"[Server Error] {e.Data}");
             }
@@ -174,7 +186,9 @@ public static class AppLifecycleHelper
             await Task.Delay(1000);
         }
 
-        throw new TimeoutException($"Server at {baseUrl} did not become ready within {timeoutMs}ms.");
+        throw new TimeoutException(
+            $"Server at {baseUrl} did not become ready within {timeoutMs}ms."
+        );
     }
 
     public static void KillApp(Process process)
@@ -191,9 +205,9 @@ public static class AppLifecycleHelper
     private const string _redisContainerName = "oc-test-redis";
     private const string _azuriteContainerName = "oc-test-azurite";
     private const string _azuriteConnectionString =
-        "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;" +
-        "AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;" +
-        "BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;";
+        "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;"
+        + "AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;"
+        + "BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;";
 
     private static bool _dockerStarted;
 
@@ -221,20 +235,38 @@ public static class AppLifecycleHelper
         }
 
         // Redis
-        if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("OrchardCore__OrchardCore_Redis__Configuration")))
+        if (
+            string.IsNullOrEmpty(
+                Environment.GetEnvironmentVariable("OrchardCore__OrchardCore_Redis__Configuration")
+            )
+        )
         {
             RemoveContainer(_redisContainerName);
             RunDocker($"run -d --name {_redisContainerName} -p 6379:6379 redis:7");
-            Environment.SetEnvironmentVariable("OrchardCore__OrchardCore_Redis__Configuration", "localhost:6379");
+            Environment.SetEnvironmentVariable(
+                "OrchardCore__OrchardCore_Redis__Configuration",
+                "localhost:6379"
+            );
             Log($"Started Docker container '{_redisContainerName}' (Redis).");
         }
 
         // Azurite
-        if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("OrchardCore__OrchardCore_Media_Azure__ConnectionString")))
+        if (
+            string.IsNullOrEmpty(
+                Environment.GetEnvironmentVariable(
+                    "OrchardCore__OrchardCore_Media_Azure__ConnectionString"
+                )
+            )
+        )
         {
             RemoveContainer(_azuriteContainerName);
-            RunDocker($"run -d --name {_azuriteContainerName} -p 10000:10000 -p 10001:10001 -p 10002:10002 mcr.microsoft.com/azure-storage/azurite");
-            Environment.SetEnvironmentVariable("OrchardCore__OrchardCore_Media_Azure__ConnectionString", _azuriteConnectionString);
+            RunDocker(
+                $"run -d --name {_azuriteContainerName} -p 10000:10000 -p 10001:10001 -p 10002:10002 mcr.microsoft.com/azure-storage/azurite"
+            );
+            Environment.SetEnvironmentVariable(
+                "OrchardCore__OrchardCore_Media_Azure__ConnectionString",
+                _azuriteConnectionString
+            );
             Log($"Started Docker container '{_azuriteContainerName}' (Azurite).");
         }
 
@@ -276,7 +308,10 @@ public static class AppLifecycleHelper
         RunDocker($"rm -f {name}", ignoreErrors: true);
     }
 
-    private static (int ExitCode, string StdOut, string StdErr) RunDocker(string arguments, bool ignoreErrors = false)
+    private static (int ExitCode, string StdOut, string StdErr) RunDocker(
+        string arguments,
+        bool ignoreErrors = false
+    )
     {
         var psi = new ProcessStartInfo
         {

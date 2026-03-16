@@ -1,73 +1,99 @@
-using System.Diagnostics;
+using System.Collections.Generic;
+using System.Threading;
 using Microsoft.Playwright;
 
 namespace OrchardCore.Tests.Functional.Helpers;
 
 public sealed class OrchardTestFixture : IAsyncDisposable
 {
-    private Process _serverProcess;
+    // Shared server state keyed by app type (CMS vs MVC) to prevent parallel init races
+    // while allowing different app types to run their own servers.
+    private static readonly SemaphoreSlim _serverLock = new(1, 1);
+    private static readonly Dictionary<string, SharedServerState> _servers = [];
+
+    private readonly bool _isMvc;
+    private readonly int _port;
+
     private IPlaywright _playwright;
     private IBrowser _browser;
     private bool _disposed;
-    private bool _migrationsRecipeCopied;
-    private bool _mediaRecipeCopied;
-    private bool _mediaTusRecipeCopied;
-    private bool _mediaTusRedisRecipeCopied;
-    private bool _mediaTusAzureRecipeCopied;
-    private bool _mediaTusRedisAzureRecipeCopied;
 
     public string BaseUrl { get; private set; }
     public IBrowser Browser => _browser;
 
-    private static string ProjectRoot
-        => Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", ".."));
+    public OrchardTestFixture(bool isMvc = false, int port = 5000)
+    {
+        _isMvc = isMvc;
+        _port = port;
+    }
 
-    private static bool IsMvc
-        => Environment.GetEnvironmentVariable("ORCHARD_APP") == "mvc";
+    private static string ProjectRoot =>
+        Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", ".."));
 
-    private static string AppDir
-        => IsMvc
+    private string AppDir =>
+        _isMvc
             ? Path.Combine(ProjectRoot, "src", "OrchardCore.Mvc.Web")
             : Path.Combine(ProjectRoot, "src", "OrchardCore.Cms.Web");
 
-    private static string Assembly
-        => IsMvc ? "OrchardCore.Mvc.Web.dll" : "OrchardCore.Cms.Web.dll";
+    private string Assembly => _isMvc ? "OrchardCore.Mvc.Web.dll" : "OrchardCore.Cms.Web.dll";
+
+    private string ServerKey => _isMvc ? "mvc" : "cms";
 
     public async Task InitializeAsync()
     {
-        BaseUrl = Environment.GetEnvironmentVariable("ORCHARD_URL") ?? "http://localhost:5000";
-
-        if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("ORCHARD_EXTERNAL")))
+        await _serverLock.WaitAsync();
+        try
         {
-            AppLifecycleHelper.DeleteAppData(AppDir);
-
-            if (!IsMvc)
+            if (!_servers.TryGetValue(ServerKey, out var state))
             {
-                _migrationsRecipeCopied = AppLifecycleHelper.CopyMigrationsRecipe(AppDir);
-                _mediaRecipeCopied = AppLifecycleHelper.CopyRecipe(AppDir, "media.recipe.json");
-                _mediaTusRecipeCopied = AppLifecycleHelper.CopyRecipe(AppDir, "media-tus.recipe.json");
-                _mediaTusRedisRecipeCopied = AppLifecycleHelper.CopyRecipe(AppDir, "media-tus-redis.recipe.json");
-                _mediaTusAzureRecipeCopied = AppLifecycleHelper.CopyRecipe(AppDir, "media-tus-azure.recipe.json");
-                _mediaTusRedisAzureRecipeCopied = AppLifecycleHelper.CopyRecipe(AppDir, "media-tus-redis-azure.recipe.json");
+                state = new SharedServerState();
+                _servers[ServerKey] = state;
             }
 
-            _serverProcess = AppLifecycleHelper.HostApp(AppDir, Assembly);
-            await AppLifecycleHelper.WaitForReadyAsync(BaseUrl, 30_000);
+            state.RefCount++;
+
+            if (state.BaseUrl == null)
+            {
+                state.BaseUrl = Environment.GetEnvironmentVariable("ORCHARD_URL")
+                    ?? $"http://localhost:{_port}";
+
+                if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("ORCHARD_EXTERNAL")))
+                {
+                    AppLifecycleHelper.DeleteAppData(AppDir);
+
+                    if (!_isMvc)
+                    {
+                        CopyRecipeIfNeeded(state, "migrations.recipe.json");
+                        CopyRecipeIfNeeded(state, "media.recipe.json");
+                        CopyRecipeIfNeeded(state, "media-tus.recipe.json");
+                        CopyRecipeIfNeeded(state, "media-tus-redis.recipe.json");
+                        CopyRecipeIfNeeded(state, "media-tus-azure.recipe.json");
+                        CopyRecipeIfNeeded(state, "media-tus-redis-azure.recipe.json");
+                    }
+
+                    state.ServerProcess = AppLifecycleHelper.HostApp(AppDir, Assembly, state.BaseUrl);
+                    await AppLifecycleHelper.WaitForReadyAsync(state.BaseUrl, 30_000);
+                }
+            }
+
+            BaseUrl = state.BaseUrl;
+        }
+        finally
+        {
+            _serverLock.Release();
         }
 
         _playwright = await Playwright.CreateAsync();
-        _browser = await _playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
-        {
-            Headless = true,
-        });
+        _browser = await _playwright.Chromium.LaunchAsync(
+            new BrowserTypeLaunchOptions { Headless = true }
+        );
     }
 
     public async Task<IPage> CreatePageAsync()
     {
-        var context = await _browser.NewContextAsync(new BrowserNewContextOptions
-        {
-            BaseURL = BaseUrl,
-        });
+        var context = await _browser.NewContextAsync(
+            new BrowserNewContextOptions { BaseURL = BaseUrl }
+        );
 
         var page = await context.NewPageAsync();
 
@@ -102,41 +128,55 @@ public sealed class OrchardTestFixture : IAsyncDisposable
 
         _playwright?.Dispose();
 
-        if (_serverProcess is not null)
+        await _serverLock.WaitAsync();
+        try
         {
-            AppLifecycleHelper.KillApp(_serverProcess);
+            if (!_servers.TryGetValue(ServerKey, out var state))
+            {
+                return;
+            }
+
+            state.RefCount--;
+
+            if (state.RefCount > 0)
+            {
+                return;
+            }
+
+            if (state.ServerProcess is not null)
+            {
+                AppLifecycleHelper.KillApp(state.ServerProcess);
+            }
+
+            if (!_isMvc)
+            {
+                foreach (var recipe in state.CopiedRecipes)
+                {
+                    AppLifecycleHelper.DeleteRecipe(AppDir, recipe);
+                }
+            }
+
+            _servers.Remove(ServerKey);
         }
-
-        var cmsAppDir = Path.Combine(ProjectRoot, "src", "OrchardCore.Cms.Web");
-
-        if (!IsMvc && _migrationsRecipeCopied)
+        finally
         {
-            AppLifecycleHelper.DeleteMigrationsRecipe(cmsAppDir);
+            _serverLock.Release();
         }
+    }
 
-        if (!IsMvc && _mediaRecipeCopied)
+    private void CopyRecipeIfNeeded(SharedServerState state, string recipeFileName)
+    {
+        if (AppLifecycleHelper.CopyRecipe(AppDir, recipeFileName))
         {
-            AppLifecycleHelper.DeleteRecipe(cmsAppDir, "media.recipe.json");
+            state.CopiedRecipes.Add(recipeFileName);
         }
+    }
 
-        if (!IsMvc && _mediaTusRecipeCopied)
-        {
-            AppLifecycleHelper.DeleteRecipe(cmsAppDir, "media-tus.recipe.json");
-        }
-
-        if (!IsMvc && _mediaTusRedisRecipeCopied)
-        {
-            AppLifecycleHelper.DeleteRecipe(cmsAppDir, "media-tus-redis.recipe.json");
-        }
-
-        if (!IsMvc && _mediaTusAzureRecipeCopied)
-        {
-            AppLifecycleHelper.DeleteRecipe(cmsAppDir, "media-tus-azure.recipe.json");
-        }
-
-        if (!IsMvc && _mediaTusRedisAzureRecipeCopied)
-        {
-            AppLifecycleHelper.DeleteRecipe(cmsAppDir, "media-tus-redis-azure.recipe.json");
-        }
+    private sealed class SharedServerState
+    {
+        public Process ServerProcess;
+        public string BaseUrl;
+        public int RefCount;
+        public readonly List<string> CopiedRecipes = [];
     }
 }

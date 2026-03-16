@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Localization;
@@ -17,7 +16,6 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.FileStorage;
 using OrchardCore.Media.Core;
 using OrchardCore.Media.Core.Helpers;
-using OrchardCore.Media.Hubs;
 using OrchardCore.Media.Services;
 using OrchardCore.Media.ViewModels;
 
@@ -41,7 +39,6 @@ public class MediaApiController : Controller
     private readonly MediaOptions _mediaOptions;
     private readonly IUserAssetFolderNameProvider _userAssetFolderNameProvider;
     private readonly IChunkFileUploadService _chunkFileUploadService;
-    private readonly IHubContext<MediaHub> _mediaHub;
     private readonly MediaDirectoryTreeCache _directoryTreeCache;
     private readonly IServiceProvider _serviceProvider;
     private readonly AttachedMediaFieldFileService _attachedMediaFieldFileService;
@@ -57,7 +54,6 @@ public class MediaApiController : Controller
         IStringLocalizer<MediaApiController> stringLocalizer,
         IUserAssetFolderNameProvider userAssetFolderNameProvider,
         IChunkFileUploadService chunkFileUploadService,
-        IHubContext<MediaHub> mediaHub,
         MediaDirectoryTreeCache directoryTreeCache,
         IServiceProvider serviceProvider,
         AttachedMediaFieldFileService attachedMediaFieldFileService,
@@ -73,7 +69,6 @@ public class MediaApiController : Controller
         S = stringLocalizer;
         _userAssetFolderNameProvider = userAssetFolderNameProvider;
         _chunkFileUploadService = chunkFileUploadService;
-        _mediaHub = mediaHub;
         _directoryTreeCache = directoryTreeCache;
         _serviceProvider = serviceProvider;
         _attachedMediaFieldFileService = attachedMediaFieldFileService;
@@ -561,13 +556,6 @@ public class MediaApiController : Controller
                     }
                 }
 
-                // Broadcast file upload event via SignalR (no IMediaEventHandler for file creation).
-                await _mediaHub.Clients.All.SendAsync("MediaChanged", new
-                {
-                    action = "fileUploaded",
-                    path,
-                });
-
                 return Ok(new { files = result.ToArray() });
             });
     }
@@ -613,14 +601,6 @@ public class MediaApiController : Controller
         await _mediaFileStore.CopyFileAsync(oldPath, newPath);
 
         var copiedFile = await _mediaFileStore.GetFileInfoAsync(newPath);
-
-        // Broadcast file copy event via SignalR (no IMediaEventHandler for file copy).
-        await _mediaHub.Clients.All.SendAsync("MediaChanged", new
-        {
-            action = "fileCopied",
-            path = oldPath,
-            newPath,
-        });
 
         return Ok(CreateFileResult(copiedFile));
     }
