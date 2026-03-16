@@ -1,6 +1,3 @@
-using System.Diagnostics;
-using System.Reflection;
-
 namespace OrchardCore.Tests.Functional.Helpers;
 
 public static class AppLifecycleHelper
@@ -11,19 +8,23 @@ public static class AppLifecycleHelper
     {
         Log("Building application...");
 
-        var process = Process.Start(new ProcessStartInfo
-        {
-            FileName = "dotnet",
-            Arguments = $"build -c Release -f {_dotnetVersion}",
-            WorkingDirectory = appDir,
-            UseShellExecute = false,
-        });
+        var process = Process.Start(
+            new ProcessStartInfo
+            {
+                FileName = "dotnet",
+                Arguments = $"build -c Release -f {_dotnetVersion}",
+                WorkingDirectory = appDir,
+                UseShellExecute = false,
+            }
+        );
 
         process?.WaitForExit();
 
         if (process?.ExitCode != 0)
         {
-            throw new InvalidOperationException($"dotnet build failed with exit code {process?.ExitCode}.");
+            throw new InvalidOperationException(
+                $"dotnet build failed with exit code {process?.ExitCode}."
+            );
         }
 
         Log("Build complete.");
@@ -39,9 +40,11 @@ public static class AppLifecycleHelper
         }
     }
 
-    public static bool CopyMigrationsRecipe(string appDir)
+    public static bool CopyMigrationsRecipe(string appDir) =>
+        CopyRecipe(appDir, "migrations.recipe.json");
+
+    public static bool CopyRecipe(string appDir, string recipeFileName)
     {
-        var recipeFileName = "migrations.recipe.json";
         var destDir = Path.Combine(appDir, "Recipes");
         var destPath = Path.Combine(destDir, recipeFileName);
 
@@ -51,7 +54,8 @@ public static class AppLifecycleHelper
         }
 
         var assembly = Assembly.GetExecutingAssembly();
-        var resourceName = assembly.GetManifestResourceNames()
+        var resourceName = assembly
+            .GetManifestResourceNames()
             .FirstOrDefault(n => n.EndsWith(recipeFileName, StringComparison.OrdinalIgnoreCase));
 
         if (resourceName is null)
@@ -68,20 +72,23 @@ public static class AppLifecycleHelper
         using var fileStream = File.Create(destPath);
         stream!.CopyTo(fileStream);
 
-        Log($"Migrations recipe copied to {destDir}");
+        Log($"{recipeFileName} copied to {destDir}");
 
         return true;
     }
 
-    public static void DeleteMigrationsRecipe(string appDir)
+    public static void DeleteMigrationsRecipe(string appDir) =>
+        DeleteRecipe(appDir, "migrations.recipe.json");
+
+    public static void DeleteRecipe(string appDir, string recipeFileName)
     {
         var destDir = Path.Combine(appDir, "Recipes");
-        var destPath = Path.Combine(destDir, "migrations.recipe.json");
+        var destPath = Path.Combine(destDir, recipeFileName);
 
         if (File.Exists(destPath))
         {
             File.Delete(destPath);
-            Log($"Migrations recipe deleted from {destDir}");
+            Log($"{recipeFileName} deleted from {destDir}");
         }
 
         // Remove Recipes dir if empty.
@@ -91,7 +98,7 @@ public static class AppLifecycleHelper
         }
     }
 
-    public static Process HostApp(string appDir, string assembly)
+    public static Process HostApp(string appDir, string assembly, string url = null)
     {
         var binPath = Path.Combine("bin", "Release", _dotnetVersion, assembly);
         var fullBinPath = Path.Combine(appDir, binPath);
@@ -118,10 +125,20 @@ public static class AppLifecycleHelper
 
         process.StartInfo.EnvironmentVariables["ORCHARD_APP_DATA"] = "./App_Data_Tests";
 
+        if (!string.IsNullOrEmpty(url))
+        {
+            process.StartInfo.EnvironmentVariables["ASPNETCORE_URLS"] = url;
+        }
+
         process.OutputDataReceived += (_, e) =>
         {
-            if (!string.IsNullOrEmpty(e.Data) &&
-                (e.Data.Contains("Exception") || e.Data.StartsWith("fail:", StringComparison.Ordinal)))
+            if (
+                !string.IsNullOrEmpty(e.Data)
+                && (
+                    e.Data.Contains("Exception")
+                    || e.Data.StartsWith("fail:", StringComparison.Ordinal)
+                )
+            )
             {
                 Console.Error.WriteLine($"[Server Error] {e.Data}");
             }
@@ -147,11 +164,7 @@ public static class AppLifecycleHelper
         var start = DateTime.UtcNow;
         Log($"Waiting for server at {baseUrl}...");
 
-        using var client = new HttpClient
-        {
-            // Use a short per-request timeout so the overall timeoutMs budget is respected.
-            Timeout = TimeSpan.FromSeconds(5),
-        };
+        using var client = new HttpClient { Timeout = TimeSpan.FromSeconds(5) };
 
         while ((DateTime.UtcNow - start).TotalMilliseconds < timeoutMs)
         {
@@ -173,7 +186,9 @@ public static class AppLifecycleHelper
             await Task.Delay(1000);
         }
 
-        throw new TimeoutException($"Server at {baseUrl} did not become ready within {timeoutMs}ms.");
+        throw new TimeoutException(
+            $"Server at {baseUrl} did not become ready within {timeoutMs}ms."
+        );
     }
 
     public static void KillApp(Process process)
