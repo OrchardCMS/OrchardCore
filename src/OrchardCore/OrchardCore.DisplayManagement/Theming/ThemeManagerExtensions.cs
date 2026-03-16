@@ -52,7 +52,7 @@ public static class ThemeManagerExtensions
                 return Task.FromResult<ShapeTable>(null);
             }
 
-            return shapeTableManager.GetShapeTableAsync(theme?.Id);
+            return shapeTableManager.GetShapeTableAsync(theme.Id);
         }
 
         return GetShapeTableAwaitedAsync(themeTask, shapeTableManager);
@@ -66,7 +66,7 @@ public static class ThemeManagerExtensions
                 return null;
             }
 
-            return await shapeTableManager.GetShapeTableAsync(theme?.Id);
+            return await shapeTableManager.GetShapeTableAsync(theme.Id);
         }
     }
 }
