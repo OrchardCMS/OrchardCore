@@ -32,7 +32,7 @@ public class AttachedMediaFieldHandler : ContentFieldHandler<MediaField>
 
         if (partFieldDefinition.Editor() == "Attached")
         {
-            var updatedPaths = await _attachedMediaFieldFileService.CopyFilesAsync((string[])field.Paths.Clone(), context.CloneContentItem);
+            var updatedPaths = await _attachedMediaFieldFileService.CopyFilesAsync(field.Paths, context.CloneContentItem);
 
             var mediaFieldNode = (context.CloneContentItem.Content as JsonDynamicObject).SelectNode(mediaFieldNodePath);
 

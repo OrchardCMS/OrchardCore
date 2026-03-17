@@ -41,7 +41,7 @@ public class AttachedMediaFieldFileService
     /// <returns>The updated paths of the copied files.</returns>
     public async Task<string[]> CopyFilesAsync(string[] paths, ContentItem contentItem)
     {
-        var updatedPaths = paths;
+        var updatedPaths = (string[])paths.Clone();
         for (var i = 0; i < paths.Length; i++)
         {
             var path = paths[i];
@@ -50,7 +50,6 @@ public class AttachedMediaFieldFileService
                 continue;
             }
 
-            var targetDir = GetContentItemFolder(contentItem);
             var sourceFileInfo = await _fileStore.GetFileInfoAsync(path);
             if (sourceFileInfo == null)
             {
@@ -58,6 +57,7 @@ public class AttachedMediaFieldFileService
                 continue;
             }
 
+            var targetDir = GetContentItemFolder(contentItem);
             var finalFileName = sourceFileInfo.Name;
             var finalFilePath = _fileStore.Combine(targetDir, finalFileName);
 
