@@ -296,6 +296,7 @@ ol.media-items-grid .thumb-container {
   align-items: center;
   justify-content: center;
   background: var(--bs-body-bg, white);
+  overflow: hidden;
 }
 
 ol.media-items-grid .thumb-container img {

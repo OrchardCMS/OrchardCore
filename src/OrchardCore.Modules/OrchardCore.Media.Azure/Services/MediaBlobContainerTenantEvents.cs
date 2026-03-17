@@ -39,14 +39,20 @@ public sealed class MediaBlobContainerTenantEvents : ModularTenantEvents
             return;
         }
 
-        _logger.LogDebug("Testing Azure Media Storage container {ContainerName} existence", _options.ContainerName);
+        if (_logger.IsEnabled(LogLevel.Debug))
+        {
+            _logger.LogDebug("Testing Azure Media Storage container {ContainerName} existence", _options.ContainerName);
+        }
 
         try
         {
             var blobContainer = new BlobContainerClient(_options.ConnectionString, _options.ContainerName);
             var response = await blobContainer.CreateIfNotExistsAsync(PublicAccessType.None);
 
-            _logger.LogDebug("Azure Media Storage container {ContainerName} created.", _options.ContainerName);
+            if (_logger.IsEnabled(LogLevel.Debug))
+            {
+                _logger.LogDebug("Azure Media Storage container {ContainerName} created.", _options.ContainerName);
+            }
         }
         catch (RequestFailedException ex)
         {

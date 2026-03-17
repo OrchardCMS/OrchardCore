@@ -1,12 +1,15 @@
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DataLocalization.Deployment;
+using OrchardCore.DataLocalization.Liquid;
 using OrchardCore.DataLocalization.Recipes;
 using OrchardCore.DataLocalization.Services;
 using OrchardCore.Deployment;
-using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Liquid;
 using OrchardCore.Localization.Data;
 using OrchardCore.Modules;
+using OrchardCore.Navigation;
 using OrchardCore.Recipes;
+using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.DataLocalization;
 
@@ -20,16 +23,18 @@ public class Startup : StartupBase
     /// <inheritdocs />
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.AddLiquidFilter<DataLocalizationFilter>("d");
+
         services.AddScoped<TranslationsManager>();
         services.AddRecipeExecutionStep<TranslationsStep>();
 
-        services.AddTransient<IDeploymentSource, AllDataTranslationsDeploymentSource>();
-        services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllDataTranslationsDeploymentStep>());
-        services.AddScoped<IDisplayDriver<DeploymentStep>, AllDataTranslationsDeploymentStepDriver>();
+        services.AddDeployment<TranslationsDeploymentSource, TranslationsDeploymentStep, TranslationsDeploymentStepDriver>();
+        services.AddDeployment<AllDataTranslationsDeploymentSource, AllDataTranslationsDeploymentStep, AllDataTranslationsDeploymentStepDriver>();
 
-        services.AddScoped<ILocalizationDataProvider, ContentTypeDataLocalizationProvider>();
-        services.AddScoped<ILocalizationDataProvider, ContentFieldDataLocalizationProvider>();
+        services.AddScoped<IPermissionProvider, Permissions>();
+        services.AddScoped<INavigationProvider, AdminMenu>();
 
         services.AddDataLocalization();
+        services.AddSingleton<IDataTranslationProvider, DataTranslationProvider>();
     }
 }

@@ -848,6 +848,10 @@ html[dir="rtl"][dir=rtl] .bootstrap-select .bs-ok-default:after {
   padding-left: 0px;
 }
 
+.card.collapsed .card-header {
+  border-bottom: 0;
+}
+
 :root {
   --oc-mde-zindex: var(--oc-editor-fullscreen) !important;
 }

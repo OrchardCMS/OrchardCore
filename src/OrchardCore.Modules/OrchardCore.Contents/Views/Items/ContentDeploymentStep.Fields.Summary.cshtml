@@ -1,5 +1,7 @@
 @model ShapeViewModel<ContentDeploymentStep>
+@using OrchardCore.Localization.Data
 @inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
+@inject IDataLocalizer D
 
 @{
     var contentTypes = Model.Value.ContentTypes;
@@ -12,7 +14,7 @@
     {
         if (contentTypes.Contains(contentTypeDefinition.Name))
         {
-            <span class="badge ta-badge">@contentTypeDefinition.DisplayName</span>
+            <span class="badge ta-badge">@D[contentTypeDefinition.DisplayName, "Content Types"]</span>
         }
     }
 }

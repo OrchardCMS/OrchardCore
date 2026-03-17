@@ -4,12 +4,14 @@
 @using OrchardCore.Mvc.Utilities
 @using OrchardCore.Widgets.Models
 @using OrchardCore.Widgets.ViewModels
+@using OrchardCore.Localization.Data
 
 @model WidgetsListPartEditViewModel
 
 @inject IContentManager ContentManager
 @inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
 @inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
+@inject IDataLocalizer D
 
 @{
     var htmlFieldPrefix = ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix;
@@ -150,7 +152,7 @@
                                    data-parent-content-type="@parentContentType"
                                    data-part-name="@partName"
                                    data-zone="@zone"
-                                   href="javascript:;">@type.DisplayName</a>
+                                   href="javascript:;">@D[type.DisplayName, "Content Types"]</a>
                                         }
                                     </div>
                                 </div>

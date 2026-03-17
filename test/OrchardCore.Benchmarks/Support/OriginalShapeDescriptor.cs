@@ -22,10 +22,7 @@ public class OriginalShapeDescriptor
             return null;
         }
 
-        return new PlacementInfo
-        {
-            Location = DefaultPlacement,
-        };
+        return new PlacementInfo(DefaultPlacement);
     }
 
     public string ShapeType { get; set; }
