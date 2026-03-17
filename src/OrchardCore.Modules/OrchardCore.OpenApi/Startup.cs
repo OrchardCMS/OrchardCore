@@ -1,12 +1,21 @@
+using System.Linq;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
+using OrchardCore.OpenApi.Drivers;
+using OrchardCore.OpenApi.Settings;
 using OrchardCore.Security.Permissions;
+using OrchardCore.Settings;
 using Scalar.AspNetCore;
+using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace OrchardCore.OpenApi;
 
@@ -16,57 +25,26 @@ public sealed class Startup : StartupBase
     {
         services.AddOpenApi(options =>
         {
-            options.ShouldInclude = operation => operation.HttpMethod != null; // Exclude operations without HTTP methods attributes, such as those generated for scalar types.
+            options.ShouldInclude = operation => operation.HttpMethod != null;
         });
 
-        // Bearer token authentication is handled by BearerTokenMiddleware in the Configure method
-
-        // Register Swashbuckle Swagger generator to add OAuth2 / OpenID Connect security scheme
+        // Register Swashbuckle Swagger generator. The OAuth2 security scheme is added
+        // at Configure time when settings are available.
         services.AddSwaggerGen(c =>
         {
             c.SwaggerDoc("v1", new OpenApiInfo { Title = "OpenApi V1", Version = "v1" });
 
-            // Only include actions that have an explicit HTTP method attribute.
-            // This prevents helper methods (e.g. CreateFileResult) from causing
-            // "Ambiguous HTTP method" errors during document generation.
             c.DocInclusionPredicate(
                 (docName, apiDesc) =>
                 {
                     return apiDesc.HttpMethod != null;
                 }
             );
-
-            // Configure OAuth2 / OpenID Connect Authorization Code flow
-            var oauthScheme = new OpenApiSecurityScheme
-            {
-                Type = SecuritySchemeType.OAuth2,
-                Flows = new OpenApiOAuthFlows
-                {
-                    AuthorizationCode = new OpenApiOAuthFlow
-                    {
-                        AuthorizationUrl = new Uri(
-                            "/authserver/connect/authorize",
-                            UriKind.Relative
-                        ),
-                        TokenUrl = new Uri("/authserver/connect/token", UriKind.Relative),
-                        Scopes = new Dictionary<string, string>
-                        {
-                            { "openid", "OpenID" },
-                            { "profile", "Profile" },
-                            { "email", "Email" },
-                        },
-                    },
-                },
-                Scheme = "oauth2",
-                Name = "Authorization",
-                In = ParameterLocation.Header,
-            };
-
-            c.AddSecurityDefinition("oauth2", oauthScheme);
         });
 
         services.AddPermissionProvider<Permissions>();
         services.AddNavigationProvider<AdminMenu>();
+        services.AddSiteDisplayDriver<OpenApiSettingsDisplayDriver>();
     }
 
     public override void Configure(
@@ -77,42 +55,171 @@ public sealed class Startup : StartupBase
     {
         var shellSettings = app.ApplicationServices.GetRequiredService<ShellSettings>();
         var prefix = shellSettings?.RequestUrlPrefix;
-        var openApiPath = !string.IsNullOrEmpty(prefix)
-            ? $"/{prefix}/openapi/v1.json"
-            : "/openapi/v1.json";
 
         // Build the tenant-aware Swagger JSON path once and reuse it.
         var swaggerJson = !string.IsNullOrEmpty(prefix)
             ? $"/{prefix}/swagger/v1/swagger.json"
             : "/swagger/v1/swagger.json";
 
-        routes.MapOpenApi();
+        // Read settings to determine which UIs are enabled.
+        var siteService = app.ApplicationServices.GetRequiredService<ISiteService>();
+        var settings = siteService.GetSettingsAsync<OpenApiSettings>()
+            .GetAwaiter()
+            .GetResult();
 
-        // Serve the Swashbuckle-generated Swagger JSON at /swagger/v1/swagger.json
+        var hasOAuth = !string.IsNullOrEmpty(settings.AuthorizationUrl)
+            && !string.IsNullOrEmpty(settings.TokenUrl)
+            && !string.IsNullOrEmpty(settings.OAuthClientId);
+
+        // Add the OAuth2 security scheme to the Swagger document when configured.
+        if (hasOAuth)
+        {
+            var scopes = ParseScopes(settings.OAuthScopes);
+
+            var swaggerGenOptions = app.ApplicationServices.GetRequiredService<IOptions<SwaggerGenOptions>>();
+            swaggerGenOptions.Value.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+            {
+                Type = SecuritySchemeType.OAuth2,
+                Flows = new OpenApiOAuthFlows
+                {
+                    AuthorizationCode = new OpenApiOAuthFlow
+                    {
+                        AuthorizationUrl = new Uri(settings.AuthorizationUrl, UriKind.RelativeOrAbsolute),
+                        TokenUrl = new Uri(settings.TokenUrl, UriKind.RelativeOrAbsolute),
+                        Scopes = scopes,
+                    },
+                },
+                Scheme = "oauth2",
+                Name = "Authorization",
+                In = ParameterLocation.Header,
+            });
+        }
+
+        // Protect all OpenAPI documentation UI endpoints with the ApiViewContent permission.
+        // Also block requests to disabled UIs.
+        app.Use(
+            async (context, next) =>
+            {
+                var path = context.Request.Path.Value;
+
+                if (path != null)
+                {
+                    // Always allow the Swagger JSON spec through — ReDoc and Scalar depend on it.
+                    var isSwaggerJson = path.StartsWith("/swagger/", StringComparison.OrdinalIgnoreCase)
+                        && path.EndsWith(".json", StringComparison.OrdinalIgnoreCase);
+
+                    var isSwaggerUI = !isSwaggerJson
+                        && path.StartsWith("/swagger", StringComparison.OrdinalIgnoreCase);
+                    var isReDoc = path.StartsWith("/redoc", StringComparison.OrdinalIgnoreCase);
+                    var isScalar = path.StartsWith("/scalar", StringComparison.OrdinalIgnoreCase);
+                    var isOpenApi = path.StartsWith("/openapi", StringComparison.OrdinalIgnoreCase);
+
+                    if (isSwaggerJson || isSwaggerUI || isReDoc || isScalar || isOpenApi)
+                    {
+                        // Return 404 for disabled UIs (but never block the JSON spec).
+                        if ((isSwaggerUI && !settings.EnableSwaggerUI)
+                            || (isReDoc && !settings.EnableReDocUI)
+                            || (isScalar && !settings.EnableScalarUI))
+                        {
+                            context.Response.StatusCode = StatusCodes.Status404NotFound;
+                            return;
+                        }
+
+                        var authorizationService =
+                            context.RequestServices.GetRequiredService<IAuthorizationService>();
+                        var user = context.User;
+
+                        if (user?.Identity?.IsAuthenticated != true)
+                        {
+                            context.Response.Redirect("/admin");
+                            return;
+                        }
+
+                        if (
+                            !await authorizationService.AuthorizeAsync(
+                                user,
+                                OpenApiPermissions.ApiViewContent
+                            )
+                        )
+                        {
+                            context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                            return;
+                        }
+                    }
+                }
+
+                await next();
+            }
+        );
+
+        // The OpenAPI JSON and Swagger generator are always registered.
+        routes.MapOpenApi();
         app.UseSwagger();
 
-        app.UseSwaggerUI(options =>
+        // Conditionally enable each UI based on settings.
+        if (settings.EnableSwaggerUI)
         {
-            // Point Swagger UI to the Swashbuckle JSON (includes security definitions)
-            options.SwaggerEndpoint(swaggerJson, "OpenApi V1");
-            options.DocumentTitle = "OrchardCore OpenAPI Documentation";
-            options.ConfigObject.AdditionalItems["withCredentials"] = true;
+            app.UseSwaggerUI(options =>
+            {
+                options.SwaggerEndpoint(swaggerJson, "OpenApi V1");
+                options.DocumentTitle = "OrchardCore OpenAPI Documentation";
+                options.ConfigObject.AdditionalItems["withCredentials"] = true;
 
-            // Configure OAuth settings for the Swagger UI 'Authorize' dialog.
-            options.OAuthClientId("swagger-ui");
-            options.OAuthAppName("OrchardCore Swagger UI");
-            // Public client: use PKCE instead of client secret
-            options.OAuthUsePkce();
-            // Explicitly set empty client secret for public clients (prevents prompt in UI)
-            options.OAuthClientSecret("");
-        });
+                if (hasOAuth)
+                {
+                    options.OAuthClientId(settings.OAuthClientId);
+                    options.OAuthAppName("OrchardCore Swagger UI");
+                    options.OAuthUsePkce();
+                    options.OAuthClientSecret("");
+                }
+            });
+        }
 
-        app.UseReDoc(options =>
+        if (settings.EnableReDocUI)
         {
-            options.SpecUrl = swaggerJson;
-            options.DocumentTitle = "OrchardCore OpenAPI Documentation";
-        });
+            app.UseReDoc(options =>
+            {
+                options.RoutePrefix = "redoc";
+                options.SpecUrl = swaggerJson;
+                options.DocumentTitle = "OrchardCore OpenAPI Documentation";
+            });
+        }
 
-        routes.MapScalarApiReference();
+        if (settings.EnableScalarUI)
+        {
+            routes.MapScalarApiReference(options =>
+            {
+                options
+                    .WithOpenApiRoutePattern(swaggerJson)
+                    .WithTitle("OrchardCore OpenAPI Documentation")
+                    .AddHeadContent("<script>const __originalFetch = window.fetch; window.fetch = (input, init) => __originalFetch(input, { ...init, credentials: 'include' });</script>");
+
+                if (hasOAuth)
+                {
+                    var scopeList = ParseScopes(settings.OAuthScopes).Keys.ToArray();
+
+                    options.WithOAuth2Authentication(oauth =>
+                    {
+                        oauth.ClientId = settings.OAuthClientId;
+                        oauth.Scopes = scopeList;
+                    });
+                }
+            });
+        }
+    }
+
+    private static Dictionary<string, string> ParseScopes(string scopes)
+    {
+        if (string.IsNullOrWhiteSpace(scopes))
+        {
+            return [];
+        }
+
+        return scopes
+            .Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .ToDictionary(
+                scope => scope,
+                scope => scope[0..1].ToUpperInvariant() + scope[1..]
+            );
     }
 }

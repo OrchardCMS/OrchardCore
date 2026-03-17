@@ -1,5 +1,5 @@
-using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.OpenApi;
@@ -15,11 +15,6 @@ public sealed class Permissions : IPermissionProvider
             new PermissionStereotype
             {
                 Name = OrchardCoreConstants.Roles.Administrator,
-                Permissions = [OpenApiPermissions.ApiViewContent],
-            },
-            new PermissionStereotype
-            {
-                Name = "ShopManager",
                 Permissions = [OpenApiPermissions.ApiViewContent],
             },
         ];

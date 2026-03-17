@@ -1,0 +1,58 @@
+@using OrchardCore.OpenApi.ViewModels
+@model OpenApiSettingsViewModel
+
+<h5>@T["API Documentation UIs"]</h5>
+
+<div class="mb-3">
+    <div class="form-check">
+        <input asp-for="EnableSwaggerUI" class="form-check-input" type="checkbox" />
+        <label asp-for="EnableSwaggerUI" class="form-check-label">@T["Enable Swagger UI"]</label>
+        <span class="hint dashed">@T["Interactive API explorer available at"] <a href="~/swagger" target="_blank">~/swagger</a></span>
+    </div>
+</div>
+
+<div class="mb-3">
+    <div class="form-check">
+        <input asp-for="EnableReDocUI" class="form-check-input" type="checkbox" />
+        <label asp-for="EnableReDocUI" class="form-check-label">@T["Enable ReDoc UI"]</label>
+        <span class="hint dashed">@T["Read-only API documentation available at"] <a href="~/redoc" target="_blank">~/redoc</a></span>
+    </div>
+</div>
+
+<div class="mb-3">
+    <div class="form-check">
+        <input asp-for="EnableScalarUI" class="form-check-input" type="checkbox" />
+        <label asp-for="EnableScalarUI" class="form-check-label">@T["Enable Scalar UI"]</label>
+        <span class="hint dashed">@T["Modern API reference available at"] <a href="~/scalar/v1" target="_blank">~/scalar/v1</a></span>
+    </div>
+</div>
+
+<h5 class="mt-4">@T["OAuth2 / OpenID Connect"]</h5>
+
+<div class="alert alert-info mb-3" role="alert">
+    @T["Without OAuth2 configured, the API documentation UIs use cookie authentication — if you are already logged in, the \"Try it out\" buttons will work using your session cookie. To enable the \"Authorize\" button, configure the OAuth2 endpoints below. These can point to the local OpenID Connect server, a different tenant, or an external OAuth2 provider."]
+</div>
+
+<div class="mb-3">
+    <label asp-for="AuthorizationUrl" class="form-label">@T["Authorization URL"]</label>
+    <input asp-for="AuthorizationUrl" class="form-control" placeholder="/connect/authorize" />
+    <span class="hint">@T["The OAuth2 authorization endpoint. Relative URLs are resolved against the current tenant."]</span>
+</div>
+
+<div class="mb-3">
+    <label asp-for="TokenUrl" class="form-label">@T["Token URL"]</label>
+    <input asp-for="TokenUrl" class="form-control" placeholder="/connect/token" />
+    <span class="hint">@T["The OAuth2 token endpoint. Relative URLs are resolved against the current tenant."]</span>
+</div>
+
+<div class="mb-3">
+    <label asp-for="OAuthClientId" class="form-label">@T["Client ID"]</label>
+    <input asp-for="OAuthClientId" class="form-control" placeholder="swagger-ui" />
+    <span class="hint">@T["The OAuth2 client ID registered in the OpenId module for the API documentation UIs."]</span>
+</div>
+
+<div class="mb-3">
+    <label asp-for="OAuthScopes" class="form-label">@T["Scopes"]</label>
+    <input asp-for="OAuthScopes" class="form-control" placeholder="openid profile email" />
+    <span class="hint">@T["A space-separated list of OAuth2 scopes to request."]</span>
+</div>
