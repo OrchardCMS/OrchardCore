@@ -37,6 +37,9 @@ public sealed class AwsFileStoreTests : IAsyncLifetime
                 ServiceURL = serviceUrl,
                 ForcePathStyle = true,
                 AuthenticationRegion = "us-east-1",
+                // AWSSDK v4 enables checksums by default which LocalStack may not fully support.
+                RequestChecksumCalculation = RequestChecksumCalculation.WHEN_REQUIRED,
+                ResponseChecksumValidation = ResponseChecksumValidation.WHEN_REQUIRED,
             });
 
         await _s3Client.PutBucketAsync(new PutBucketRequest { BucketName = _bucketName });
