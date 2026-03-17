@@ -1,5 +1,13 @@
+@using OrchardCore.OpenApi.Settings
 @using OrchardCore.OpenApi.ViewModels
 @model OpenApiSettingsViewModel
+
+@{
+    var isNone = Model.AuthenticationType == OpenApiAuthenticationType.None;
+    var isPkce = Model.AuthenticationType == OpenApiAuthenticationType.AuthorizationCodePkce;
+    var isClientCreds = Model.AuthenticationType == OpenApiAuthenticationType.ClientCredentials;
+    var isOAuth = isPkce || isClientCreds;
+}
 
 <h5>@T["API Documentation UIs"]</h5>
 
@@ -27,32 +35,110 @@
     </div>
 </div>
 
-<h5 class="mt-4">@T["OAuth2 / OpenID Connect"]</h5>
-
-<div class="alert alert-info mb-3" role="alert">
-    @T["Without OAuth2 configured, the API documentation UIs use cookie authentication — if you are already logged in, the \"Try it out\" buttons will work using your session cookie. To enable the \"Authorize\" button, configure the OAuth2 endpoints below. These can point to the local OpenID Connect server, a different tenant, or an external OAuth2 provider."]
-</div>
+<h5 class="mt-4">@T["API Authentication"]</h5>
 
 <div class="mb-3">
-    <label asp-for="AuthorizationUrl" class="form-label">@T["Authorization URL"]</label>
-    <input asp-for="AuthorizationUrl" class="form-control" placeholder="/connect/authorize" />
-    <span class="hint">@T["The OAuth2 authorization endpoint. Relative URLs are resolved against the current tenant."]</span>
+    <label asp-for="AuthenticationType" class="form-label">@T["Authentication Type"]</label>
+    <select asp-for="AuthenticationType" class="form-select" id="@Html.IdFor(m => m.AuthenticationType)">
+        <option value="@((int)OpenApiAuthenticationType.None)">@T["Cookie (default)"]</option>
+        <option value="@((int)OpenApiAuthenticationType.AuthorizationCodePkce)">@T["OAuth2 Authorization Code + PKCE"]</option>
+        <option value="@((int)OpenApiAuthenticationType.ClientCredentials)">@T["OAuth2 Client Credentials"]</option>
+    </select>
+    <span class="hint">@T["Select the authentication method used by the \"Try it out\" buttons in the API documentation UIs."]</span>
 </div>
 
-<div class="mb-3">
-    <label asp-for="TokenUrl" class="form-label">@T["Token URL"]</label>
-    <input asp-for="TokenUrl" class="form-control" placeholder="/connect/token" />
-    <span class="hint">@T["The OAuth2 token endpoint. Relative URLs are resolved against the current tenant."]</span>
+<!-- Cookie info -->
+<div id="@Html.IdFor(m => m.AuthenticationType)_None" class="collapse @(isNone ? "show" : "")">
+    <div class="alert alert-info mb-3" role="alert">
+        @T["The API documentation UIs will use cookie authentication. If you are logged in, the \"Try it out\" buttons will automatically use your session cookie. No additional configuration is needed."]
+    </div>
 </div>
 
-<div class="mb-3">
-    <label asp-for="OAuthClientId" class="form-label">@T["Client ID"]</label>
-    <input asp-for="OAuthClientId" class="form-control" placeholder="swagger-ui" />
-    <span class="hint">@T["The OAuth2 client ID registered in the OpenId module for the API documentation UIs."]</span>
+<!-- PKCE info -->
+<div id="@Html.IdFor(m => m.AuthenticationType)_AuthorizationCodePkce" class="collapse @(isPkce ? "show" : "")">
+    <div class="alert alert-info mb-3" role="alert">
+        @T["For interactive authentication. The \"Authorize\" button will redirect users to the authorization server to sign in, then exchange the code for a token using PKCE. Suitable for SPAs and browser-based API access."]
+        <hr />
+        @T["Ensure your OpenID Connect application has <strong>Allow Authorization Code Flow</strong> enabled and a redirect URI configured for the Swagger UI callback."]
+        <hr />
+        @T["The <strong>OpenID Token Validation</strong> feature must be enabled for Bearer token authentication to work on API endpoints."]
+        <hr />
+        @T["Hint: If you are logged in, the \"Try it out\" buttons will still work using your session cookie even without clicking \"Authorize\". Use the \"Authorize\" button to test token-based authentication explicitly."]
+    </div>
 </div>
 
-<div class="mb-3">
-    <label asp-for="OAuthScopes" class="form-label">@T["Scopes"]</label>
-    <input asp-for="OAuthScopes" class="form-control" placeholder="openid profile email" />
-    <span class="hint">@T["A space-separated list of OAuth2 scopes to request."]</span>
+<!-- Client Credentials info -->
+<div id="@Html.IdFor(m => m.AuthenticationType)_ClientCredentials" class="collapse @(isClientCreds ? "show" : "")">
+    <div class="alert alert-info mb-3" role="alert">
+        @T["For machine-to-machine authentication. The \"Authorize\" dialog will prompt for client ID and client secret, then exchange them for a bearer token. Suitable for API keys and service accounts via the OpenID Connect server."]
+        <hr />
+        @T["Ensure your OpenID Connect application has <strong>Allow Client Credentials Flow</strong> enabled and is configured as a <strong>Confidential client</strong>. Assign the appropriate <strong>Client Credentials Roles</strong> (e.g., Administrator) so the token has permissions to access API endpoints."]
+        <hr />
+        @T["The <strong>OpenID Token Validation</strong> feature must be enabled for Bearer token authentication to work on API endpoints."]
+        <hr />
+        @T["Hint: If you are logged in, the \"Try it out\" buttons will still work using your session cookie even without clicking \"Authorize\". Use the \"Authorize\" button to test token-based authentication explicitly."]
+    </div>
 </div>
+
+<!-- Authorization URL (PKCE only) -->
+<div id="@Html.IdFor(m => m.AuthenticationType)_AuthorizationUrl" class="collapse @(isPkce ? "show" : "")">
+    <div class="mb-3">
+        <label asp-for="AuthorizationUrl" class="form-label">@T["Authorization URL"]</label>
+        <input asp-for="AuthorizationUrl" class="form-control" placeholder="/connect/authorize" />
+        <span class="hint">@T["The OAuth2 authorization endpoint. Relative URLs are resolved against the current tenant."]</span>
+    </div>
+</div>
+
+<!-- Shared OAuth2 fields (both PKCE and Client Credentials) -->
+<div id="@Html.IdFor(m => m.AuthenticationType)_OAuthFields" class="collapse @(isOAuth ? "show" : "")">
+    <div class="mb-3">
+        <label asp-for="TokenUrl" class="form-label">@T["Token URL"]</label>
+        <input asp-for="TokenUrl" class="form-control" placeholder="/connect/token" />
+        <span class="hint">@T["The OAuth2 token endpoint. Relative URLs are resolved against the current tenant."]</span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="OAuthClientId" class="form-label">@T["Client ID"]</label>
+        <input asp-for="OAuthClientId" class="form-control" placeholder="swagger-ui" />
+        <span class="hint">@T["The OAuth2 client ID registered for the API documentation UIs."]</span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="OAuthScopes" class="form-label">@T["Scopes"]</label>
+        <input asp-for="OAuthScopes" class="form-control" placeholder="openid profile email" />
+        <span class="hint">@T["A space-separated list of OAuth2 scopes to request."]</span>
+    </div>
+</div>
+
+<script at="Foot">
+    (function () {
+        var select = document.getElementById('@Html.IdFor(m => m.AuthenticationType)');
+        var none = '@((int)OpenApiAuthenticationType.None)';
+        var pkce = '@((int)OpenApiAuthenticationType.AuthorizationCodePkce)';
+        var clientCreds = '@((int)OpenApiAuthenticationType.ClientCredentials)';
+
+        var sections = {
+            '@Html.IdFor(m => m.AuthenticationType)_None': function (v) { return v === none; },
+            '@Html.IdFor(m => m.AuthenticationType)_AuthorizationCodePkce': function (v) { return v === pkce; },
+            '@Html.IdFor(m => m.AuthenticationType)_ClientCredentials': function (v) { return v === clientCreds; },
+            '@Html.IdFor(m => m.AuthenticationType)_AuthorizationUrl': function (v) { return v === pkce; },
+            '@Html.IdFor(m => m.AuthenticationType)_OAuthFields': function (v) { return v === pkce || v === clientCreds; }
+        };
+
+        function toggle() {
+            var value = select.value;
+            for (var id in sections) {
+                var el = document.getElementById(id);
+                if (el) {
+                    if (sections[id](value)) {
+                        el.classList.add('show');
+                    } else {
+                        el.classList.remove('show');
+                    }
+                }
+            }
+        }
+
+        select.addEventListener('change', toggle);
+    })();
+</script>

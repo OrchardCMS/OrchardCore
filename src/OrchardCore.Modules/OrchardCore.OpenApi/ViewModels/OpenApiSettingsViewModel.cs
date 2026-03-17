@@ -1,4 +1,4 @@
-using System.ComponentModel.DataAnnotations;
+using OrchardCore.OpenApi.Settings;
 
 namespace OrchardCore.OpenApi.ViewModels;
 
@@ -9,6 +9,8 @@ public class OpenApiSettingsViewModel
     public bool EnableReDocUI { get; set; }
 
     public bool EnableScalarUI { get; set; }
+
+    public OpenApiAuthenticationType AuthenticationType { get; set; }
 
     public string AuthorizationUrl { get; set; }
 

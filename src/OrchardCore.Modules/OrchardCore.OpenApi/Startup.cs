@@ -15,6 +15,7 @@ using OrchardCore.OpenApi.Settings;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 using Scalar.AspNetCore;
+using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace OrchardCore.OpenApi;
@@ -42,6 +43,7 @@ public sealed class Startup : StartupBase
             );
         });
 
+        services.AddHttpClient();
         services.AddPermissionProvider<Permissions>();
         services.AddNavigationProvider<AdminMenu>();
         services.AddSiteDisplayDriver<OpenApiSettingsDisplayDriver>();
@@ -67,33 +69,13 @@ public sealed class Startup : StartupBase
             .GetAwaiter()
             .GetResult();
 
-        var hasOAuth = !string.IsNullOrEmpty(settings.AuthorizationUrl)
-            && !string.IsNullOrEmpty(settings.TokenUrl)
-            && !string.IsNullOrEmpty(settings.OAuthClientId);
+        // Add the server URL to the Swagger document so Scalar knows where to send requests.
+        var swaggerGenOptions = app.ApplicationServices.GetRequiredService<IOptions<SwaggerGenOptions>>();
+        var basePath = !string.IsNullOrEmpty(prefix) ? $"/{prefix}" : "/";
+        swaggerGenOptions.Value.AddServer(new OpenApiServer { Url = basePath });
 
-        // Add the OAuth2 security scheme to the Swagger document when configured.
-        if (hasOAuth)
-        {
-            var scopes = ParseScopes(settings.OAuthScopes);
-
-            var swaggerGenOptions = app.ApplicationServices.GetRequiredService<IOptions<SwaggerGenOptions>>();
-            swaggerGenOptions.Value.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
-            {
-                Type = SecuritySchemeType.OAuth2,
-                Flows = new OpenApiOAuthFlows
-                {
-                    AuthorizationCode = new OpenApiOAuthFlow
-                    {
-                        AuthorizationUrl = new Uri(settings.AuthorizationUrl, UriKind.RelativeOrAbsolute),
-                        TokenUrl = new Uri(settings.TokenUrl, UriKind.RelativeOrAbsolute),
-                        Scopes = scopes,
-                    },
-                },
-                Scheme = "oauth2",
-                Name = "Authorization",
-                In = ParameterLocation.Header,
-            });
-        }
+        // Add security schemes to the Swagger document based on the selected authentication type.
+        ConfigureSecurityScheme(app, settings);
 
         // Protect all OpenAPI documentation UI endpoints with the ApiViewContent permission.
         // Also block requests to disabled UIs.
@@ -156,6 +138,9 @@ public sealed class Startup : StartupBase
         routes.MapOpenApi();
         app.UseSwagger();
 
+        var hasOAuth = settings.AuthenticationType != OpenApiAuthenticationType.None
+            && !string.IsNullOrEmpty(settings.TokenUrl);
+
         // Conditionally enable each UI based on settings.
         if (settings.EnableSwaggerUI)
         {
@@ -163,13 +148,23 @@ public sealed class Startup : StartupBase
             {
                 options.SwaggerEndpoint(swaggerJson, "OpenApi V1");
                 options.DocumentTitle = "OrchardCore OpenAPI Documentation";
-                options.ConfigObject.AdditionalItems["withCredentials"] = true;
 
-                if (hasOAuth)
+                if (!hasOAuth)
+                {
+                    // Cookie auth: send credentials with API requests so the session cookie is included.
+                    options.ConfigObject.AdditionalItems["withCredentials"] = true;
+                }
+
+                if (hasOAuth && !string.IsNullOrEmpty(settings.OAuthClientId))
                 {
                     options.OAuthClientId(settings.OAuthClientId);
                     options.OAuthAppName("OrchardCore Swagger UI");
-                    options.OAuthUsePkce();
+
+                    if (settings.AuthenticationType == OpenApiAuthenticationType.AuthorizationCodePkce)
+                    {
+                        options.OAuthUsePkce();
+                    }
+
                     options.OAuthClientSecret("");
                 }
             });
@@ -192,7 +187,15 @@ public sealed class Startup : StartupBase
                 options
                     .WithOpenApiRoutePattern(swaggerJson)
                     .WithTitle("OrchardCore OpenAPI Documentation")
-                    .AddHeadContent("<script>const __originalFetch = window.fetch; window.fetch = (input, init) => __originalFetch(input, { ...init, credentials: 'include' });</script>");
+                    // Disable Scalar's default external proxy so all requests (token + API)
+                    // go directly from the browser to this server.
+                    .WithProxyUrl("");
+
+                if (!hasOAuth)
+                {
+                    // Cookie auth: override fetch to include credentials so the session cookie is sent.
+                    options.AddHeadContent("<script>const __originalFetch = window.fetch; window.fetch = (input, init) => __originalFetch(input, { ...init, credentials: 'include' });</script>");
+                }
 
                 if (hasOAuth)
                 {
@@ -203,9 +206,70 @@ public sealed class Startup : StartupBase
                         oauth.ClientId = settings.OAuthClientId;
                         oauth.Scopes = scopeList;
                     });
+
                 }
             });
         }
+    }
+
+    private static void ConfigureSecurityScheme(IApplicationBuilder app, OpenApiSettings settings)
+    {
+        if (settings.AuthenticationType == OpenApiAuthenticationType.None
+            || string.IsNullOrEmpty(settings.TokenUrl))
+        {
+            return;
+        }
+
+        var scopes = ParseScopes(settings.OAuthScopes);
+        var swaggerGenOptions = app.ApplicationServices.GetRequiredService<IOptions<SwaggerGenOptions>>();
+        var tokenUrl = new Uri(settings.TokenUrl, UriKind.RelativeOrAbsolute);
+
+        var flows = new OpenApiOAuthFlows();
+
+        switch (settings.AuthenticationType)
+        {
+            case OpenApiAuthenticationType.AuthorizationCodePkce:
+                if (string.IsNullOrEmpty(settings.AuthorizationUrl))
+                {
+                    return;
+                }
+
+                flows.AuthorizationCode = new OpenApiOAuthFlow
+                {
+                    AuthorizationUrl = new Uri(settings.AuthorizationUrl, UriKind.RelativeOrAbsolute),
+                    TokenUrl = tokenUrl,
+                    Scopes = scopes,
+                };
+                break;
+
+            case OpenApiAuthenticationType.ClientCredentials:
+                flows.ClientCredentials = new OpenApiOAuthFlow
+                {
+                    TokenUrl = tokenUrl,
+                    Scopes = scopes,
+                };
+                break;
+        }
+
+        swaggerGenOptions.Value.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+        {
+            Type = SecuritySchemeType.OAuth2,
+            Flows = flows,
+            Scheme = "oauth2",
+            Name = "Authorization",
+            In = ParameterLocation.Header,
+        });
+
+        // Apply the security scheme globally so that Scalar (and Swagger) automatically
+        // attach the Bearer token to every API request after authorization.
+        var scopeKeys = scopes.Keys.ToList();
+        swaggerGenOptions.Value.AddSecurityRequirement(doc => new OpenApiSecurityRequirement
+        {
+            {
+                new OpenApiSecuritySchemeReference("oauth2", doc),
+                scopeKeys
+            },
+        });
     }
 
     private static Dictionary<string, string> ParseScopes(string scopes)
@@ -221,5 +285,44 @@ public sealed class Startup : StartupBase
                 scope => scope,
                 scope => scope[0..1].ToUpperInvariant() + scope[1..]
             );
+    }
+}
+
+/// <summary>
+/// Runs before <c>UseAuthentication()</c> to strip duplicate client credentials
+/// from token requests. Scalar sends credentials in both the request body and the
+/// Authorization header, which OpenIddict rejects per RFC 6749 §2.3.
+/// </summary>
+public sealed class TokenRequestStartup : StartupBase
+{
+    public override int ConfigureOrder => OrchardCoreConstants.ConfigureOrder.Authentication - 10;
+
+    public override void Configure(
+        IApplicationBuilder app,
+        IEndpointRouteBuilder routes,
+        IServiceProvider serviceProvider)
+    {
+        app.Use(async (context, next) =>
+        {
+            var path = context.Request.Path.Value;
+            if (path != null
+                && path.EndsWith("/connect/token", StringComparison.OrdinalIgnoreCase)
+                && HttpMethods.IsPost(context.Request.Method)
+                && context.Request.HasFormContentType
+                && !string.IsNullOrEmpty(context.Request.Headers.Authorization))
+            {
+                // Only strip the Authorization header when client credentials are also
+                // present in the form body (Scalar sends both, causing OpenIddict to
+                // reject with "Multiple client credentials"). Swagger sends credentials
+                // only in the header, so we must not strip it in that case.
+                var form = await context.Request.ReadFormAsync();
+                if (form.ContainsKey("client_id"))
+                {
+                    context.Request.Headers.Remove("Authorization");
+                }
+            }
+
+            await next();
+        });
     }
 }

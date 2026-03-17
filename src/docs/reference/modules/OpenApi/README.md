@@ -16,9 +16,45 @@ It also ships UI explorers — Swagger UI, ReDoc, and Scalar — so developers c
 
 1. Enable the **OrchardCore.OpenApi** feature from the admin dashboard (Configuration → Features).
 2. Log in with an account that has the **ApiViewContent** permission (granted to Administrators by default).
-3. Navigate to one of the explorer URLs listed above.
+3. Navigate to **Configuration → Settings → OpenApi** to enable the desired UI(s) and configure authentication.
+4. Navigate to one of the explorer URLs listed above.
 
 > **Note:** All OpenAPI documentation endpoints (`/swagger`, `/redoc`, `/scalar`, `/openapi`) require authentication and the `ApiViewContent` permission. Unauthenticated users are redirected to the admin login page. Authenticated users without the permission receive a `403 Forbidden` response.
+
+## Configuration
+
+The OpenAPI settings page (**Configuration → Settings → OpenApi**) allows you to:
+
+- **Enable/disable each UI** independently (Swagger UI, ReDoc, Scalar). Disabled UIs return `404 Not Found`.
+- **Choose the authentication method** used by the "Try it out" / "Send" buttons in the documentation UIs.
+
+### Authentication Types
+
+| Type | Description |
+|------|-------------|
+| **Cookie (default)** | No additional configuration needed. If you are logged in, the UIs automatically use your session cookie. |
+| **OAuth2 Authorization Code + PKCE** | Interactive login. The "Authorize" button redirects to the authorization server. Suitable for browser-based API access. |
+| **OAuth2 Client Credentials** | Machine-to-machine authentication. The "Authorize" dialog prompts for a client ID and secret, then exchanges them for a Bearer token. |
+
+### Cookie Authentication
+
+This is the simplest option. The API documentation UIs include the session cookie with every request, so if you are logged into the admin panel, API calls work automatically.
+
+### OAuth2 Setup
+
+For OAuth2 authentication (either PKCE or Client Credentials), you need to:
+
+1. **Enable the OpenID Server** feature (Configuration → Features → OpenID Authorization Server).
+2. **Enable the OpenID Token Validation** feature — this is required for the API to validate Bearer tokens. Without it, API requests will return `401 Unauthorized` even with a valid token.
+3. **Create an OpenID application** (Security → OpenID Connect → Applications):
+   - For **Client Credentials**: set the type to **Confidential client**, enable **Allow Client Credentials Flow**, and assign the appropriate **Client Credentials Roles** (e.g., Administrator) so the token has permissions to access API endpoints.
+   - For **PKCE**: enable **Allow Authorization Code Flow** and configure a redirect URI for the Swagger UI callback.
+4. **Configure the OpenAPI settings** (Configuration → Settings → OpenApi):
+   - Select the authentication type.
+   - Enter the **Token URL** (e.g., `/connect/token`).
+   - Enter the **Authorization URL** (PKCE only, e.g., `/connect/authorize`).
+   - Enter the **Client ID** from the OpenID application.
+   - Enter the **Scopes** (e.g., `api`).
 
 ## OpenAPI Client Generation
 
@@ -303,6 +339,12 @@ The `SeverityLevel` enum (`@bloom/services/notifications/interfaces`) defines fo
 | `Error` | API errors, validation failures, unexpected exceptions. |
 
 ## Troubleshooting
+
+### OAuth2 "Failed to authorize" or `401 Unauthorized` on API Requests
+
+- **Enable OpenID Token Validation**: The most common cause. Go to Configuration → Features and enable the **OpenID Token Validation** feature. Without it, the API cannot validate Bearer tokens.
+- **Assign Client Credentials Roles**: For the Client Credentials flow, the OpenID application must have roles assigned (e.g., Administrator) under "Client Credentials Roles". Without roles, the token has no permissions.
+- **Restart after settings changes**: OAuth2 settings are applied at startup. After changing authentication settings, the tenant must be reloaded.
 
 ### Endpoints Not Appearing in Swagger
 
