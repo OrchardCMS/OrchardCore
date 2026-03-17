@@ -1,6 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
+
   <PropertyGroup>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+  </PropertyGroup>
+
+  <PropertyGroup>
     <!-- NuGet properties-->
     <Title>OrchardCore OpenApi</Title>
     <Description>$(OCCMSDescription)
@@ -9,20 +13,25 @@
     </Description>
     <PackageTags>$(PackageTags) OrchardCoreCMS Api</PackageTags>
   </PropertyGroup>
+
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
-    <PackageReference Include="Newtonsoft.Json" />
     <PackageReference Include="Scalar.AspNetCore" />
     <PackageReference Include="Swashbuckle.AspNetCore.ReDoc" />
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" />
+    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" />
   </ItemGroup>
+
   <ItemGroup>
-    <ProjectReference Include="..\..\OrchardCore\OrchardCore.DisplayManagement\OrchardCore.DisplayManagement.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.DisplayManagement\OrchardCore.DisplayManagement.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.ContentManagement\OrchardCore.ContentManagement.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Navigation.Core\OrchardCore.Navigation.Core.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.ResourceManagement\OrchardCore.ResourceManagement.csproj" />
+    <ProjectReference Include="..\OrchardCore.Contents\OrchardCore.Contents.csproj" />
   </ItemGroup>
 </Project>
