@@ -37,7 +37,6 @@ public sealed class AwsFileStoreTests : IAsyncLifetime
                 ServiceURL = serviceUrl,
                 ForcePathStyle = true,
                 AuthenticationRegion = "us-east-1",
-                // AWSSDK v4 enables checksums by default which LocalStack may not fully support.
                 RequestChecksumCalculation = RequestChecksumCalculation.WHEN_REQUIRED,
                 ResponseChecksumValidation = ResponseChecksumValidation.WHEN_REQUIRED,
             });
@@ -84,6 +83,7 @@ public sealed class AwsFileStoreTests : IAsyncLifetime
 
             _s3Client.Dispose();
         }
+
     }
 
     private async Task<string> CreateTestFileAsync(string path, string content = "test content")
