@@ -1,5 +1,4 @@
 using Amazon;
-using Amazon.Extensions.NETCore.Setup;
 using Amazon.Runtime;
 using Amazon.S3;
 using Amazon.S3.Model;
@@ -31,13 +30,15 @@ public sealed class AwsFileStoreTests : IAsyncLifetime
         var serviceUrl = GetServiceUrl();
         _bucketName = $"test-{Guid.NewGuid():N}";
 
-        var config = new AmazonS3Config
-        {
-            ServiceURL = serviceUrl,
-            ForcePathStyle = true,
-        };
+        _s3Client = new AmazonS3Client(
+            new BasicAWSCredentials("test", "test"),
+            new AmazonS3Config
+            {
+                ServiceURL = serviceUrl,
+                ForcePathStyle = true,
+                AuthenticationRegion = "us-east-1",
+            });
 
-        _s3Client = new AmazonS3Client(new BasicAWSCredentials("test", "test"), config);
         await _s3Client.PutBucketAsync(new PutBucketRequest { BucketName = _bucketName });
 
         var options = new AwsStorageOptions
