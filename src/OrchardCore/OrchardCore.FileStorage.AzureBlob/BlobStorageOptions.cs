@@ -25,6 +25,14 @@ public abstract class BlobStorageOptions
     public bool? UseHierarchicalNamespace { get; set; }
 
     /// <summary>
+    /// Optional DFS (Data Lake Storage) endpoint URL for Gen2 operations.
+    /// When set, the <see cref="Azure.Storage.Files.DataLake.DataLakeServiceClient"/> uses this
+    /// endpoint instead of deriving one from the connection string.
+    /// Required for local emulators (e.g. Azurite) where the DFS endpoint runs on a separate port.
+    /// </summary>
+    public string DfsEndpoint { get; set; }
+
+    /// <summary>
     /// Returns a value indicating whether the basic state of the configuration is valid.
     /// </summary>
     public virtual bool IsConfigured()

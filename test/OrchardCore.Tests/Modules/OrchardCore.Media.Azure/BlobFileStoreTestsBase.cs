@@ -15,6 +15,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media.Azure;
 public abstract class BlobFileStoreTestsBase : IAsyncLifetime
 {
     private const string EnvVar = "AZURITE_CONNECTION_STRING";
+    private const string DfsEnvVar = "AZURITE_DFS_ENDPOINT";
 
     protected abstract bool IsHnsEnabled { get; }
 
@@ -36,6 +37,7 @@ public abstract class BlobFileStoreTestsBase : IAsyncLifetime
             ContainerName = _containerName,
             BasePath = "",
             UseHierarchicalNamespace = IsHnsEnabled,
+            DfsEndpoint = System.Environment.GetEnvironmentVariable(DfsEnvVar),
         };
 
         _containerClient = new BlobContainerClient(connectionString, _containerName);
