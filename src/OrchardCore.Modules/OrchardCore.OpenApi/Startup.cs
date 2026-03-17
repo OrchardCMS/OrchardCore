@@ -154,8 +154,7 @@ public sealed class Startup : StartupBase
                     // Cookie auth: send credentials with API requests so the session cookie is included.
                     options.ConfigObject.AdditionalItems["withCredentials"] = true;
                 }
-
-                if (hasOAuth && !string.IsNullOrEmpty(settings.OAuthClientId))
+                else
                 {
                     options.OAuthClientId(settings.OAuthClientId);
                     options.OAuthAppName("OrchardCore Swagger UI");
@@ -165,7 +164,11 @@ public sealed class Startup : StartupBase
                         options.OAuthUsePkce();
                     }
 
-                    options.OAuthClientSecret("");
+                    // Strip cookies from API requests so that OAuth is enforced and
+                    // users must click "Authorize" instead of silently falling back
+                    // to cookie-based authentication. Keep cookies for spec/UI fetches
+                    // so the auth middleware doesn't redirect those to /admin.
+                    options.UseRequestInterceptor("(req) => { if (req.url && !req.url.includes('/swagger/')) { req.credentials = 'omit'; } return req; }");
                 }
             });
         }
