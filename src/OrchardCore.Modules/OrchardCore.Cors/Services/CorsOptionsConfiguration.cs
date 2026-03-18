@@ -48,7 +48,7 @@ public sealed class CorsOptionsConfiguration : IConfigureOptions<CorsOptions>
               {
                   configurePolicy.WithHeaders(corsPolicy.AllowedHeaders);
               }
-
+        
               if (corsPolicy.AllowAnyMethod)
               {
                   configurePolicy.AllowAnyMethod();
@@ -57,7 +57,7 @@ public sealed class CorsOptionsConfiguration : IConfigureOptions<CorsOptions>
               {
                   configurePolicy.WithMethods(corsPolicy.AllowedMethods);
               }
-
+        
               if (allowAnyOrigin)
               {
                   configurePolicy.AllowAnyOrigin();
@@ -66,7 +66,7 @@ public sealed class CorsOptionsConfiguration : IConfigureOptions<CorsOptions>
               {
                   configurePolicy.WithOrigins(corsPolicy.AllowedOrigins);
               }
-
+        
               if (corsPolicy.AllowCredentials)
               {
                   configurePolicy.AllowCredentials();
@@ -75,13 +75,13 @@ public sealed class CorsOptionsConfiguration : IConfigureOptions<CorsOptions>
               {
                   configurePolicy.DisallowCredentials();
               }
-
+        
               if (corsPolicy.ExposedHeaders?.Length > 0)
               {
                   configurePolicy.WithExposedHeaders(corsPolicy.ExposedHeaders);
               }
           });
-
+          
           if (corsPolicy.IsDefaultPolicy)
           {
               options.DefaultPolicyName = corsPolicy.Name;
