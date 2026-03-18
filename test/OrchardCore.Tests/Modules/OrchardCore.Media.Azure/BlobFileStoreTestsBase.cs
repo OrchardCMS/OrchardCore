@@ -58,18 +58,38 @@ public abstract class BlobFileStoreTestsBase : IAsyncLifetime
         }
     }
 
-    private async Task<string> CreateTestFileAsync(string path, string content = "test content")
+    protected IFileStoreCapabilities Capabilities => _store.Capabilities;
+
+    protected async Task<string> CreateTestFileAsync(string path, string content = "test content")
     {
         using var stream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(content));
         return await _store.CreateFileFromStreamAsync(path, stream);
     }
 
-    private async Task<string> ReadFileContentAsync(string path)
+    protected async Task<string> ReadFileContentAsync(string path)
     {
         using var stream = await _store.GetFileStreamAsync(path);
         using var reader = new StreamReader(stream);
         return await reader.ReadToEndAsync();
     }
+
+    protected Task<bool> TryCreateDirectoryAsync(string path)
+        => _store.TryCreateDirectoryAsync(path);
+
+    protected Task<bool> TryDeleteDirectoryAsync(string path)
+        => _store.TryDeleteDirectoryAsync(path);
+
+    protected Task<IFileStoreEntry> GetDirectoryInfoAsync(string path)
+        => _store.GetDirectoryInfoAsync(path);
+
+    protected Task<IFileStoreEntry> GetFileInfoAsync(string path)
+        => _store.GetFileInfoAsync(path);
+
+    protected IAsyncEnumerable<IFileStoreEntry> GetDirectoryContentAsync(string path = null, bool includeSubDirectories = false)
+        => _store.GetDirectoryContentAsync(path, includeSubDirectories);
+
+    protected Task MoveFileAsync(string oldPath, string newPath)
+        => _store.MoveFileAsync(oldPath, newPath);
 
     // -- Capabilities --
 
@@ -350,6 +370,81 @@ public abstract class BlobFileStoreTestsBase : IAsyncLifetime
 
         Assert.Contains(entries, e => !e.IsDirectory && e.Name == "a.txt");
         Assert.Contains(entries, e => !e.IsDirectory && e.Name == "b.txt");
+    }
+
+    [AzuriteFact]
+    public async Task CreateDirectory_AlreadyExists_ReturnsFalse()
+    {
+        await _store.TryCreateDirectoryAsync("existing-dir");
+
+        // Creating the same directory again should indicate it already existed.
+        var result = await _store.TryCreateDirectoryAsync("existing-dir");
+
+        // Gen1 always returns true (no real directory to check).
+        // Gen2 returns false because the directory already exists.
+        if (IsHnsEnabled)
+        {
+            Assert.False(result);
+        }
+        else
+        {
+            Assert.True(result);
+        }
+    }
+
+    [AzuriteFact]
+    public async Task MoveFile_NonExistent_Throws()
+    {
+        await Assert.ThrowsAsync<FileStoreException>(
+            () => _store.MoveFileAsync("no-such-file.txt", "destination.txt"));
+    }
+
+    [AzuriteFact]
+    public async Task DeleteDirectory_WithNestedSubdirectories_DeletesAll()
+    {
+        await _store.TryCreateDirectoryAsync("parent");
+        await _store.TryCreateDirectoryAsync("parent/child");
+        await CreateTestFileAsync("parent/top.txt");
+        await CreateTestFileAsync("parent/child/deep.txt");
+
+        var result = await _store.TryDeleteDirectoryAsync("parent");
+
+        Assert.True(result);
+        Assert.Null(await _store.GetFileInfoAsync("parent/top.txt"));
+        Assert.Null(await _store.GetFileInfoAsync("parent/child/deep.txt"));
+        Assert.Null(await _store.GetDirectoryInfoAsync("parent"));
+    }
+
+    [AzuriteFact]
+    public async Task GetDirectoryContent_Subdirectory_ListsOnlyDirectChildren()
+    {
+        await _store.TryCreateDirectoryAsync("listing");
+        await CreateTestFileAsync("listing/file-a.txt");
+        await _store.TryCreateDirectoryAsync("listing/inner");
+        await CreateTestFileAsync("listing/inner/file-b.txt");
+
+        var entries = new List<IFileStoreEntry>();
+        await foreach (var entry in _store.GetDirectoryContentAsync("listing"))
+        {
+            entries.Add(entry);
+        }
+
+        Assert.Contains(entries, e => e.Name == "file-a.txt" && !e.IsDirectory);
+        Assert.Contains(entries, e => e.Name == "inner" && e.IsDirectory);
+        // file-b.txt is nested inside "inner", should not appear at this level.
+        Assert.DoesNotContain(entries, e => e.Name == "file-b.txt");
+    }
+
+    [AzuriteFact]
+    public async Task MoveFile_PreservesContent()
+    {
+        var content = "preserve this content across move";
+        await CreateTestFileAsync("move-preserve.txt", content);
+
+        await _store.MoveFileAsync("move-preserve.txt", "moved-preserve.txt");
+
+        var actual = await ReadFileContentAsync("moved-preserve.txt");
+        Assert.Equal(content, actual);
     }
 }
 
