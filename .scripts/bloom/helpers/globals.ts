@@ -30,4 +30,11 @@ const isNumber = (str: string) => {
     return str.length === 1 && str.match(/[0-9]/i);
 };
 
-export { getTenantName, getTechnicalName, isLetter, isNumber };
+const getAntiForgeryToken = (): string | null => {
+    const input = document.querySelector<HTMLInputElement>(
+        'input[name="__RequestVerificationToken"]'
+    );
+    return input?.value ?? null;
+};
+
+export { getAntiForgeryToken, getTenantName, getTechnicalName, isLetter, isNumber };

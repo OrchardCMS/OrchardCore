@@ -122,6 +122,126 @@ The generation is configured via `OrchardCore.OpenApi.nswag`:
 - **TypeScript template**: Axios
 - **C# HTTP layer**: `System.Net.Http.HttpClient`
 
+## ApiService (`api-service.ts`)
+
+The `ApiService` class (`.scripts/bloom/services/api-service.ts`) is a reusable HTTP service that wraps Axios with authentication handling. It supports both cookie and Bearer token authentication and provides the configured Axios instance to NSwag-generated clients.
+
+### Authentication Types
+
+| Type | Behavior |
+|------|----------|
+| `"cookie"` (default) | Sets `withCredentials: true` and attaches the anti-forgery token from the page. |
+| `"bearer"` | Sets `withCredentials: false` and attaches an `Authorization: Bearer <token>` header. |
+
+### Basic Usage
+
+```typescript
+import { ApiService, createApiService } from "@bloom/services/api-service";
+
+// Cookie auth (default) — for admin pages where the user is logged in.
+const api = new ApiService();
+const response = await api.get("/api/content/my-item-id");
+
+// Bearer auth — for machine-to-machine or external consumers.
+const api = new ApiService({ authType: "bearer", token: "eyJ..." });
+await api.post("/api/content", { contentType: "Article" });
+
+// Update the token later (e.g., after refresh).
+api.setToken("newToken...");
+```
+
+### Using with the NSwag-Generated Client
+
+The `ApiService` exposes its underlying Axios instance via `getAxiosInstance()`, which can be passed directly to the NSwag-generated `Client` constructor:
+
+```typescript
+import { ApiService } from "@bloom/services/api-service";
+import { Client } from "@bloom/services/OpenApiClient";
+
+// Cookie auth — admin pages.
+const apiService = new ApiService();
+const client = new Client("", apiService.getAxiosInstance());
+await client.contentGET("my-content-item-id");
+
+// Bearer auth — external consumers.
+const apiService = new ApiService({ authType: "bearer", token: accessToken });
+const client = new Client("", apiService.getAxiosInstance());
+await client.contentGET("my-content-item-id");
+```
+
+This gives the NSwag-generated client all the authentication handling (cookies + anti-forgery token, or Bearer token) without any additional configuration.
+
+### Automatic Token Acquisition (Client Credentials)
+
+For machine-to-machine access, pass a `clientCredentials` config and the service acquires the Bearer token automatically on the first request:
+
+```typescript
+import { ApiService } from "@bloom/services/api-service";
+import { Client } from "@bloom/services/OpenApiClient";
+
+const apiService = new ApiService({
+    clientCredentials: {
+        tokenUrl: "/connect/token",
+        clientId: "your-client-id",
+        clientSecret: "your-client-secret",
+        scopes: "api",
+    },
+});
+
+const client = new Client("", apiService.getAxiosInstance());
+
+// The token is acquired automatically on the first call.
+const content = await client.contentGET("my-content-item-id");
+```
+
+The token is acquired lazily on the first request and cached for subsequent calls. Concurrent requests are deduplicated so the token endpoint is called only once.
+
+### Manual Token Management
+
+If you already have a token (e.g., from a different auth flow), pass it directly:
+
+```typescript
+const apiService = new ApiService({ authType: "bearer", token: "eyJ..." });
+const client = new Client("", apiService.getAxiosInstance());
+
+// Update the token later (e.g., after refresh).
+apiService.setToken("newToken...");
+```
+
+### Using cURL
+
+You can also obtain a token from the command line:
+
+```bash
+curl -X POST https://localhost:5001/connect/token \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "grant_type=client_credentials&client_id=your-client-id&client_secret=your-client-secret&scope=api"
+```
+
+The response contains the access token:
+
+```json
+{
+  "access_token": "eyJ...",
+  "token_type": "Bearer",
+  "expires_in": 3600
+}
+```
+
+> **Prerequisites:** The OpenID Server and OpenID Token Validation features must be enabled, and the OpenID application must be configured with the Client Credentials flow and appropriate roles. See the [OAuth2 Setup](#oauth2-setup) section for details.
+
+### Available Methods
+
+| Method | Description |
+|--------|-------------|
+| `get<T>(url, config?)` | Perform a GET request. |
+| `post<T>(url, data?, config?)` | Perform a POST request. |
+| `put<T>(url, data?, config?)` | Perform a PUT request. |
+| `patch<T>(url, data?, config?)` | Perform a PATCH request. |
+| `delete<T>(url, config?)` | Perform a DELETE request. |
+| `setToken(token)` | Update the Bearer token for subsequent requests. |
+| `getAxiosInstance()` | Returns the underlying Axios instance for use with generated clients. |
+
 ## Adding New API Endpoints
 
 To add a new API endpoint that is auto-discovered by the OpenAPI specification:

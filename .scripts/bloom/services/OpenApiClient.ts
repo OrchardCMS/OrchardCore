@@ -30,6 +30,11 @@ export interface IClient {
      */
     liquidIntellisense_js( cancelToken?: CancelToken): Promise<void>;
     /**
+     * @param body (optional) 
+     * @return OK
+     */
+    testConnection(body: TestConnectionRequest | undefined,  cancelToken?: CancelToken): Promise<TestConnectionResult>;
+    /**
      * @param parameters (optional) 
      * @return OK
      */
@@ -50,7 +55,7 @@ export class Client implements IClient {
 
         this.instance = instance || axios.create();
 
-        this.baseUrl = baseUrl ?? "";
+        this.baseUrl = baseUrl ?? "/";
 
     }
 
@@ -259,6 +264,83 @@ export class Client implements IClient {
     }
 
     /**
+     * @param body (optional) 
+     * @return OK
+     */
+    testConnection(body: TestConnectionRequest | undefined, cancelToken?: CancelToken): Promise<TestConnectionResult> {
+        let url_ = this.baseUrl + "/api/openapi/test-connection";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processTestConnection(_response);
+        });
+    }
+
+    protected processTestConnection(response: AxiosResponse): Promise<TestConnectionResult> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = TestConnectionResult.fromJS(resultData200);
+            return Promise.resolve<TestConnectionResult>(result200);
+
+        } else if (status === 400) {
+            const _responseText = response.data;
+            let result400: any = null;
+            let resultData400  = _responseText;
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("Bad Request", status, _responseText, _headers, result400);
+
+        } else if (status === 401) {
+            const _responseText = response.data;
+            let result401: any = null;
+            let resultData401  = _responseText;
+            result401 = ProblemDetails.fromJS(resultData401);
+            return throwException("Unauthorized", status, _responseText, _headers, result401);
+
+        } else if (status === 403) {
+            const _responseText = response.data;
+            let result403: any = null;
+            let resultData403  = _responseText;
+            result403 = ProblemDetails.fromJS(resultData403);
+            return throwException("Forbidden", status, _responseText, _headers, result403);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<TestConnectionResult>(null as any);
+    }
+
+    /**
      * @param parameters (optional) 
      * @return OK
      */
@@ -447,6 +529,168 @@ export interface IContentItem {
     owner?: string | undefined;
     author?: string | undefined;
     displayText?: string | undefined;
+}
+
+export enum OpenApiAuthenticationType {
+    _0 = 0,
+    _1 = 1,
+    _2 = 2,
+}
+
+export class ProblemDetails implements IProblemDetails {
+    type?: string | undefined;
+    title?: string | undefined;
+    status?: number | undefined;
+    detail?: string | undefined;
+    instance?: string | undefined;
+
+    [key: string]: any;
+
+    constructor(data?: IProblemDetails) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.type = _data["type"];
+            this.title = _data["title"];
+            this.status = _data["status"];
+            this.detail = _data["detail"];
+            this.instance = _data["instance"];
+        }
+    }
+
+    static fromJS(data: any): ProblemDetails {
+        data = typeof data === 'object' ? data : {};
+        let result = new ProblemDetails();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["type"] = this.type;
+        data["title"] = this.title;
+        data["status"] = this.status;
+        data["detail"] = this.detail;
+        data["instance"] = this.instance;
+        return data;
+    }
+}
+
+export interface IProblemDetails {
+    type?: string | undefined;
+    title?: string | undefined;
+    status?: number | undefined;
+    detail?: string | undefined;
+    instance?: string | undefined;
+
+    [key: string]: any;
+}
+
+export class TestConnectionRequest implements ITestConnectionRequest {
+    authenticationType?: OpenApiAuthenticationType;
+    tokenUrl?: string | undefined;
+    authorizationUrl?: string | undefined;
+    clientId?: string | undefined;
+    clientSecret?: string | undefined;
+    scopes?: string | undefined;
+
+    constructor(data?: ITestConnectionRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.authenticationType = _data["authenticationType"];
+            this.tokenUrl = _data["tokenUrl"];
+            this.authorizationUrl = _data["authorizationUrl"];
+            this.clientId = _data["clientId"];
+            this.clientSecret = _data["clientSecret"];
+            this.scopes = _data["scopes"];
+        }
+    }
+
+    static fromJS(data: any): TestConnectionRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new TestConnectionRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["authenticationType"] = this.authenticationType;
+        data["tokenUrl"] = this.tokenUrl;
+        data["authorizationUrl"] = this.authorizationUrl;
+        data["clientId"] = this.clientId;
+        data["clientSecret"] = this.clientSecret;
+        data["scopes"] = this.scopes;
+        return data;
+    }
+}
+
+export interface ITestConnectionRequest {
+    authenticationType?: OpenApiAuthenticationType;
+    tokenUrl?: string | undefined;
+    authorizationUrl?: string | undefined;
+    clientId?: string | undefined;
+    clientSecret?: string | undefined;
+    scopes?: string | undefined;
+}
+
+export class TestConnectionResult implements ITestConnectionResult {
+    message?: string | undefined;
+
+    constructor(data?: ITestConnectionResult) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.message = _data["message"];
+        }
+    }
+
+    static fromJS(data: any): TestConnectionResult {
+        data = typeof data === 'object' ? data : {};
+        let result = new TestConnectionResult();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["message"] = this.message;
+        return data;
+    }
+}
+
+export interface ITestConnectionResult {
+    message?: string | undefined;
 }
 
 export class ApiException extends Error {
