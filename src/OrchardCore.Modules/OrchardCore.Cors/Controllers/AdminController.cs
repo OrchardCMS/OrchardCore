@@ -147,5 +147,7 @@ public sealed class AdminController : Controller
     }
 
     private static bool IsAnyOriginAllowed(CorsPolicyViewModel corsPolicyViewModel)
-        => corsPolicyViewModel.AllowAnyOrigin || corsPolicyViewModel.AllowedOrigins.Any(origin => origin == CorsConstants.AnyOrigin);
+      => corsPolicyViewModel.AllowAnyOrigin
+          || corsPolicyViewModel.AllowedOrigins?.Any(origin =>
+              string.Equals(origin?.Trim(), CorsConstants.AnyOrigin, StringComparison.Ordinal)) == true;
 }
