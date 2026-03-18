@@ -181,7 +181,7 @@ internal static class HttpRequestExtensions
         var content = new StringContent(
             json,
             Encoding.UTF8,
-            MediaTypeNamesExtended.Application.JsonVendeorPrefix);
+            MediaTypeNamesExtended.Application.JsonVendorPrefix);
 
         var request = new HttpRequestMessage(HttpMethod.Post, requestUri)
         {
@@ -190,7 +190,7 @@ internal static class HttpRequestExtensions
 
         request.Headers
             .Accept
-            .Add(new MediaTypeWithQualityHeaderValue(MediaTypeNamesExtended.Application.JsonVendeorPrefix));
+            .Add(new MediaTypeWithQualityHeaderValue(MediaTypeNamesExtended.Application.JsonVendorPrefix));
 
         return client.SendAsync(request);
     }
