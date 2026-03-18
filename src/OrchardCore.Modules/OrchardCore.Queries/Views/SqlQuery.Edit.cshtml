@@ -19,6 +19,17 @@
 </div>
 
 <div class="mb-3">
+    <div class="alert alert-warning" role="alert">
+        @T["SQL queries are Liquid templates. Never inject user input with Liquid output expressions like '{{ input }}'. Use SQL parameters (for example '@name' or '@name:default') for user-provided values."]
+    </div>
+
+    @if (Model.HasLiquidOutputExpressions)
+    {
+        <div class="alert alert-warning" role="alert">
+            @T["Potentially unsafe Liquid output expressions ('{{ ... }}') were detected in this query template. This can lead to SQL injection if untrusted input is rendered directly into SQL."]
+        </div>
+    }
+
     <label asp-for="Query" class="form-label">@T["Query"]</label>
     <textarea asp-for="Query" rows="12" class="form-control"></textarea>
     <span class="hint">@T["The SQL query to execute."]</span>

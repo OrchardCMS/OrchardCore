@@ -1,5 +1,7 @@
 using Microsoft.Extensions.Localization;
+using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Entities;
 using OrchardCore.Mvc.ModelBinding;
@@ -10,10 +12,15 @@ namespace OrchardCore.Queries.Sql.Drivers;
 
 public sealed class SqlQueryDisplayDriver : DisplayDriver<Query>
 {
+    private readonly INotifier _notifier;
+
     internal readonly IStringLocalizer S;
 
-    public SqlQueryDisplayDriver(IStringLocalizer<SqlQueryDisplayDriver> stringLocalizer)
+    public SqlQueryDisplayDriver(
+        INotifier notifier,
+        IStringLocalizer<SqlQueryDisplayDriver> stringLocalizer)
     {
+        _notifier = notifier;
         S = stringLocalizer;
     }
 
@@ -49,11 +56,13 @@ public sealed class SqlQueryDisplayDriver : DisplayDriver<Query>
 
             var metadata = query.As<SqlQueryMetadata>();
             model.Query = metadata.Template;
+            model.HasLiquidOutputExpressions = ContainsLiquidOutputExpressions(model.Query);
 
             // Extract query from the query string if we come from the main query editor.
             if (string.IsNullOrEmpty(metadata.Template))
             {
                 await context.Updater.TryUpdateModelAsync(model, string.Empty, m => m.Query);
+                model.HasLiquidOutputExpressions = ContainsLiquidOutputExpressions(model.Query);
             }
         }).Location("Content:5");
     }
@@ -75,6 +84,17 @@ public sealed class SqlQueryDisplayDriver : DisplayDriver<Query>
             context.Updater.ModelState.AddModelError(Prefix, nameof(viewModel.Query), S["The query field is required"]);
         }
 
+        viewModel.HasLiquidOutputExpressions = ContainsLiquidOutputExpressions(viewModel.Query);
+
+        if (viewModel.HasLiquidOutputExpressions)
+        {
+            await _notifier.AddAsync(
+                NotifyType.Warning,
+                new LocalizedHtmlString(
+                    nameof(SqlQueryDisplayDriver),
+                    S["Potentially unsafe Liquid output expressions ('{{ ... }}') were detected in this SQL query. Avoid injecting user input with Liquid output and use SQL parameters instead."].Value));
+        }
+
         query.ReturnContentItems = viewModel.ReturnDocuments;
         query.Put(new SqlQueryMetadata()
         {
@@ -83,4 +103,9 @@ public sealed class SqlQueryDisplayDriver : DisplayDriver<Query>
 
         return Edit(query, context);
     }
+
+    private static bool ContainsLiquidOutputExpressions(string query)
+        => !string.IsNullOrWhiteSpace(query)
+        && query.Contains("{{", StringComparison.Ordinal)
+        && query.Contains("}}", StringComparison.Ordinal);
 }
