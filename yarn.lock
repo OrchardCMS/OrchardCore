@@ -2475,9 +2475,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@orchardcore/openapi-settings@workspace:src/OrchardCore.Modules/OrchardCore.OpenApi/Assets/vite-app":
+"@orchardcore/openapi-settings@workspace:src/OrchardCore.Modules/OrchardCore.OpenApi/Assets/openapi-settings":
   version: 0.0.0-use.local
-  resolution: "@orchardcore/openapi-settings@workspace:src/OrchardCore.Modules/OrchardCore.OpenApi/Assets/vite-app"
+  resolution: "@orchardcore/openapi-settings@workspace:src/OrchardCore.Modules/OrchardCore.OpenApi/Assets/openapi-settings"
   dependencies:
     "@vitejs/plugin-vue": "npm:^5.2.1"
     axios: "npm:^1.7.9"
