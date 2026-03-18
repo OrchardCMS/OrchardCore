@@ -1,6 +1,6 @@
 using OrchardCore.DisplayManagement.Descriptors;
 
-namespace OrchardCore.Tests.DisplayManagement.Decriptors;
+namespace OrchardCore.Tests.DisplayManagement.Descriptors;
 
 public class GroupingMetadataTests
 {
