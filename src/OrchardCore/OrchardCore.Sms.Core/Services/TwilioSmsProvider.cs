@@ -5,6 +5,7 @@ using System.Text.Json;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Infrastructure;
 using OrchardCore.Settings;
 using OrchardCore.Sms.Models;
 
@@ -44,7 +45,7 @@ public class TwilioSmsProvider : ISmsProvider
         S = stringLocalizer;
     }
 
-    public async Task<SmsResult> SendAsync(SmsMessage message)
+    public async Task<Result> SendAsync(SmsMessage message)
     {
         ArgumentNullException.ThrowIfNull(message);
 
@@ -86,19 +87,19 @@ public class TwilioSmsProvider : ISmsProvider
                 if (string.Equals(result.Status, "sent", StringComparison.OrdinalIgnoreCase) ||
                     string.Equals(result.Status, "queued", StringComparison.OrdinalIgnoreCase))
                 {
-                    return SmsResult.Success;
+                    return Result.Success();
                 }
 
                 _logger.LogError("Twilio service was unable to send SMS messages. Error, code: {ErrorCode}, message: {ErrorMessage}", result.ErrorCode, result.ErrorMessage);
             }
 
-            return SmsResult.Failed(S["The SMS message has not been sent."]);
+            return Result.Failed(S["The SMS message has not been sent."]);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Twilio service was unable to send SMS messages.");
 
-            return SmsResult.Failed(S["The SMS message has not been sent. Error: {0}", ex.Message]);
+            return Result.Failed(S["The SMS message has not been sent. Error: {0}", ex.Message]);
         }
     }
 

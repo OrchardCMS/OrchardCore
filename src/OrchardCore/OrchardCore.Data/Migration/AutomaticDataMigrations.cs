@@ -35,7 +35,10 @@ public sealed class AutomaticDataMigrations : ModularTenantEvents
     {
         if (!_shellSettings.IsUninitialized())
         {
-            _logger.LogDebug("Executing data migrations for shell '{Name}'", _shellSettings.Name);
+            if (_logger.IsEnabled(LogLevel.Debug))
+            {
+                _logger.LogDebug("Executing data migrations for shell '{Name}'", _shellSettings.Name);
+            }
 
             var dataMigrationManager = _serviceProvider.GetService<IDataMigrationManager>();
             return dataMigrationManager.UpdateAllFeaturesAsync();

@@ -1,6 +1,8 @@
 using System.Text.Json.Nodes;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.Contents.Services;
+using OrchardCore.Localization.Data;
 
 namespace OrchardCore.DataLocalization.Services.Tests;
 

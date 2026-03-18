@@ -24,7 +24,7 @@
     var vueElementId = $"MultiTextField-Picker_{partName}_{fieldName}_{Guid.NewGuid().ToString("n")}";
 
     var valuesKey = Html.NameFor(x => x.Values);
-    string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), $"Content Fields;{Model.PartFieldDefinition.PartDefinition.Name}"];
+    string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), $"Content Fields{Constants.ContextSeparator}{Model.PartFieldDefinition.PartDefinition.Name}"];
 }
 
 <script asp-src="~/OrchardCore.ContentFields/Scripts/vue-multiselect-multitextfieldpicker.min.js" debug-src="~/OrchardCore.ContentFields/Scripts/vue-multiselect-multitextfieldpicker.js" asp-name="multitextfieldpicker" at="Foot" depends-on="vuejs:2,vue-multiselect:2"></script>

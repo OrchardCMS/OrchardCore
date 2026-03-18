@@ -1,5 +1,4 @@
-using System.Text.Json.Nodes;
-using Elastic.Clients.Elasticsearch;
+using Json.Path;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
 using OrchardCore.Indexing.Models;

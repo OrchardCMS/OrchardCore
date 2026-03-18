@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentTypes.ViewModels;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -13,6 +14,7 @@ public sealed class ContentTypeSettingsDisplayDriver : ContentTypeDefinitionDisp
 {
     private static readonly ContentTypeDefinitionDriverOptions _defaultOptions = new();
     private readonly IStereotypeService _stereotypeService;
+    private readonly IContentDefinitionManager _contentDefinitionManager;
     private readonly ContentTypeDefinitionOptions _options;
 
     internal readonly IStringLocalizer S;
@@ -20,11 +22,13 @@ public sealed class ContentTypeSettingsDisplayDriver : ContentTypeDefinitionDisp
     public ContentTypeSettingsDisplayDriver(
         IStringLocalizer<ContentTypeSettingsDisplayDriver> stringLocalizer,
         IOptions<ContentTypeDefinitionOptions> options,
-        IStereotypeService stereotypeService)
+        IStereotypeService stereotypeService,
+        IContentDefinitionManager contentDefinitionManager)
     {
         S = stringLocalizer;
         _options = options.Value;
         _stereotypeService = stereotypeService;
+        _contentDefinitionManager = contentDefinitionManager;
     }
 
     public override IDisplayResult Edit(ContentTypeDefinition contentTypeDefinition, BuildEditorContext context)
@@ -39,6 +43,8 @@ public sealed class ContentTypeSettingsDisplayDriver : ContentTypeDefinitionDisp
             model.Securable = settings.Securable;
             model.Stereotype = settings.Stereotype;
             model.Description = settings.Description;
+            model.Category = settings.Category;
+            model.ThumbnailPath = settings.ThumbnailPath;
             model.Options = await GetOptionsAsync(contentTypeDefinition, settings.Stereotype);
         }).Location("Content:5");
     }
@@ -52,6 +58,8 @@ public sealed class ContentTypeSettingsDisplayDriver : ContentTypeDefinitionDisp
         var stereotype = model.Stereotype?.Trim();
         context.Builder.WithDescription(model.Description);
         context.Builder.Stereotype(stereotype);
+        context.Builder.WithCategory(model.Category);
+        context.Builder.WithThumbnailPath(model.ThumbnailPath);
 
         if (!IsAlphaNumericOrEmpty(stereotype))
         {
@@ -110,6 +118,12 @@ public sealed class ContentTypeSettingsDisplayDriver : ContentTypeDefinitionDisp
         }
 
         options.Stereotypes = await _stereotypeService.GetStereotypesAsync();
+
+        options.Categories = (await _contentDefinitionManager.ListTypeDefinitionsAsync())
+            .Select(t => t.GetSettings<ContentTypeSettings>()?.Category)
+            .Where(c => !string.IsNullOrEmpty(c))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .OrderBy(c => c);
 
         return options;
     }

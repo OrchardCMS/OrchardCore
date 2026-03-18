@@ -58,6 +58,7 @@ validation:
 not_in_nav: |
   samples/
   releases/3.0.0.md
+  llms.txt
 
 # Extensions
 markdown_extensions:
@@ -155,6 +156,7 @@ nav:
       - Microsoft Entra ID (Azure AD) integration: guides/microsoft-entra-id-integration/README.md
       - Create a Liquid Widget: guides/create-liquid-widget/README.md
       - Query Content Items Based on Taxonomy: guides/query-content-items-based-on-taxonomy/README.md
+      - Data Protection: guides/data-protection/README.md
       - Manage Assets and NPM dependencies:
         - Assets manager: guides/assets-manager/README.md
         - Using NPM aliases: guides/assets-manager/NPM_ALIASING_GUIDE.md
@@ -175,6 +177,7 @@ nav:
       - Using Docker: topics/docker/README.md
       - Using local NuGet packages: topics/local-nuget-packages/README.md
       - Managing the Orchard Core Red Hat Ecosystem Catalog certification: topics/red-hat-ecosystem-catalog-certification/README.md
+      - Source Generators: topics/source-generators/README.md
   - Reference:
       - Modules:
           - Overview: reference/README.md

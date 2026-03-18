@@ -8,7 +8,7 @@
     var settings = Model.PartFieldDefinition.GetSettings<HtmlFieldSettings>();
     var trumbowygSettings = Model.PartFieldDefinition.GetSettings<HtmlFieldTrumbowygEditorSettings>();
     var culture = await Orchard.GetContentCultureAsync(Model.Field.ContentItem);
-    string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), $"Content Fields;{Model.PartFieldDefinition.PartDefinition.Name}"];
+    string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), $"Content Fields{Constants.ContextSeparator}{Model.PartFieldDefinition.PartDefinition.Name}"];
 }
 
 <script asp-name="trumbowyg-plugins" version="2" at="Foot"></script>

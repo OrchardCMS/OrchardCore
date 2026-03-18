@@ -13,7 +13,7 @@
 @{
     var settings = Model.PartFieldDefinition.GetSettings<MediaFieldSettings>();
     var mediaFieldId = Html.IdFor(m => m);
-    string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), $"Content Fields;{Model.PartFieldDefinition.PartDefinition.Name}"];
+    string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), $"Content Fields{Constants.ContextSeparator}{Model.PartFieldDefinition.PartDefinition.Name}"];
 }
 
 <style asp-name="media" at="Head"></style>

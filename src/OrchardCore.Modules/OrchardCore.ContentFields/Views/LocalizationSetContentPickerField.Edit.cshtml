@@ -16,7 +16,7 @@
     var searchUrl = Url.RouteUrl(new { area = "OrchardCore.ContentFields", controller = "LocalizationSetContentPickerAdmin", action = "SearchLocalizationSets", part = partName, field = fieldName });
     var vueElementId = $"LocalizedContentPicker_{partName}_{fieldName}_{Guid.NewGuid().ToString("n")}";
     var multiple = settings.Multiple.ToString().ToLowerInvariant();
-    string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), $"Content Fields;{Model.PartFieldDefinition.PartDefinition.Name}"];
+    string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), $"Content Fields{Constants.ContextSeparator}{Model.PartFieldDefinition.PartDefinition.Name}"];
 }
 
 <script asp-name="vue-multiselect-wrapper" at="Foot"></script>

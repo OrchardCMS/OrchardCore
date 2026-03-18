@@ -15,8 +15,8 @@ This module provides a database-backed localization system for translating dynam
 
 ## Getting Started
 
-1. Enable the **Data Localization** feature in the admin under **Configuration → Features**
-2. Navigate to **Configuration → Localization → Translations** in the admin menu
+1. Enable the **Data Localization** feature in the admin under **Tools → Features**
+2. Navigate to **Settings → Localization → Dynamic Translations** in the admin menu
 3. Select a culture from the dropdown
 4. Edit translations for each category (Permissions, Content Types, etc.)
 5. Use the **Statistics** page to track translation progress
@@ -80,7 +80,7 @@ ManageTranslations                    (Full edit access - implies ViewTranslatio
 
 To allow a user to only edit translations for a specific culture:
 
-1. Go to **Security → Roles**
+1. Go to **Access Control → Roles**
 2. Edit the desired role
 3. Under **Data Localization**, check the culture-specific permission (e.g., "Manage fr-FR translations")
 
@@ -291,3 +291,41 @@ To display translated dynamic strings in Razor views, inject `IDataLocalizer`:
 | Pluralization | Supported | Not supported |
 | Arguments | `T["Hello {0}", name]` | `D["Hello {0}", "Context", name]` |
 | Use case | Static UI strings | Dynamic data (content types, permissions) |
+
+## Liquid filters
+
+### `d`
+
+Localizes a dynamic data string using the current culture.
+
+### Parameters
+
+| Property | Example | Description |
+|----------|------------------------|----------------------|
+| Context | The context that the string belongs to | Content Types |
+
+Input
+
+```liquid
+{{ "Blog" | d: "Content Types" }}
+```
+
+Output
+
+For `fr`, `it`, `es` cultures, it will return:
+
+```text
+Blog
+```
+
+For `ar` culture, it will return:
+
+```text
+مدونة
+```
+
+For unsupported cultures or missing translations, it will return:
+
+```text
+Blog.Content Types
+```

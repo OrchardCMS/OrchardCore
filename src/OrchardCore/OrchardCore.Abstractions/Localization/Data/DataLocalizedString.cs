@@ -21,7 +21,7 @@ public class DataLocalizedString
     public static implicit operator string(DataLocalizedString dataLocalizedString) => dataLocalizedString?.Value;
 
     /// <summary>
-    /// The context string for categorization (e.g., "Content Types", "Content Fields;BlogPost").
+    /// The context string for categorization (e.g., "Content Types", "Content Fields:BlogPost").
     /// </summary>
     public string Context { get; }
 

@@ -45,7 +45,6 @@ public class ViewBufferTextWriterContent : TextWriter, IHtmlContent
                     pooledBuilder.Dispose();
                 }
 
-                _previousPooledBuilders.Clear();
                 _previousPooledBuilders = null;
             }
         }
