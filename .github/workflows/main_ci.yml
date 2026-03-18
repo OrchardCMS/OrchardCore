@@ -22,12 +22,6 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-24.04, windows-2022]
-    services:
-      azurite:
-        image: ${{ matrix.os == 'ubuntu-24.04' && 'ghcr.io/skrypt/azurite-adls-gen2:latest' || '' }}
-        ports:
-          - 10000:10000
-          - 10004:10004
     steps:
     - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
     - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
@@ -39,6 +33,10 @@ jobs:
       # See pr_ci.yml for the reason why we disable NuGet audit warnings.
       run: |
         dotnet build -c Release /p:TreatWarningsAsErrors=true /p:RunAnalyzers=true /p:NuGetAudit=false
+    - name: Start Azurite
+      if: matrix.os == 'ubuntu-24.04'
+      run: |
+        docker run -d --name azurite -p 10000:10000 -p 10004:10004 ghcr.io/skrypt/azurite-adls-gen2:latest azurite --blobHost 0.0.0.0 --dfsHost 0.0.0.0 --queueHost 0.0.0.0 --tableHost 0.0.0.0 --skipApiVersionCheck
     - name: Unit Tests
       env:
         AZURITE_CONNECTION_STRING: ${{ matrix.os == 'ubuntu-24.04' && 'DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;' || '' }}
