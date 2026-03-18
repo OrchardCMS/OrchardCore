@@ -842,21 +842,21 @@ public class DefaultContentManager : IContentManager
 
     private static string NormalizeErrorText(string errorText)
     {
-        if (string.IsNullOrWhiteSpace(errorText))
-        {
-            return errorText;
-        }
-
-        errorText = errorText.Trim();
-
-        while (errorText.EndsWith(".", StringComparison.Ordinal)
-            || errorText.EndsWith("!", StringComparison.Ordinal)
-            || errorText.EndsWith("?", StringComparison.Ordinal))
-        {
-            errorText = errorText[..^1].TrimEnd();
-        }
-
-        return errorText;
+      if (string.IsNullOrWhiteSpace(errorText))
+      {
+    	  return errorText;
+      }
+    
+      errorText = errorText.Trim();
+    
+      while (errorText.EndsWith('.')
+    	  || errorText.EndsWith('!')
+    	  || errorText.EndsWith('?'))
+      {
+    	  errorText = errorText[..^1].TrimEnd();
+      }
+    
+      return errorText;
     }
 
     private string BuildImportSourceInfo(ContentItem importingItem)
