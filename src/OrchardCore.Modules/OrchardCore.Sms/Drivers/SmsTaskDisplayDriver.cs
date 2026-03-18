@@ -45,6 +45,10 @@ public sealed class SmsTaskDisplayDriver : ActivityDisplayDriver<SmsTask, SmsTas
         {
             context.Updater.ModelState.AddModelError(Prefix, nameof(viewModel.PhoneNumber), S["Phone number requires a value."]);
         }
+        else if (!_liquidTemplateManager.Validate(viewModel.PhoneNumber, out var phoneErrors))
+        {
+            context.Updater.ModelState.AddModelError(Prefix, nameof(viewModel.PhoneNumber), string.Join(' ', phoneErrors));
+        }
         else if (!_phoneFormatValidator.IsValid(viewModel.PhoneNumber))
         {
             context.Updater.ModelState.AddModelError(Prefix, nameof(viewModel.PhoneNumber), S["Invalid phone number used."]);
