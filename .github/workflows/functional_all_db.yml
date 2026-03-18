@@ -30,27 +30,33 @@ jobs:
         github.event.review.state == 'APPROVED' ||
         github.event.review.state == 'CHANGES_REQUESTED'
     runs-on: ubuntu-24.04
-    container:
-      image: cypress/included:15.12.0
     steps:
     - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
     - uses: ./.github/actions/setup-dotnet
-    - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
-      with:
-        node-version: "15"
-        package-manager-cache: false
-    - name: Functional Tests
+    - name: Build
       run: |
-        cd test/OrchardCore.Tests.Functional
-        npm install
-        npm run mvc:test
+        dotnet build -c Release test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj
+    - name: Cache Playwright Browsers
+      uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
+      with:
+        path: ~/.cache/ms-playwright
+        key: playwright-${{ hashFiles('Directory.Packages.props') }}
+    - name: Install Playwright Browsers
+      run: |
+        pwsh test/OrchardCore.Tests.Functional/bin/Release/net10.0/playwright.ps1 install --with-deps chromium
+    - name: Functional Tests
+      env:
+        ORCHARD_APP: mvc
+      run: |
+        dotnet test --project test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj -c Release --no-build --filter-class "*Mvc*"
     - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
       if: failure()
       with:
-        name: functional-mvc-screenshots
-        path: test/OrchardCore.Tests.Functional/mvc-tests/cypress/screenshots
+        name: functional-mvc-failure
+        path: |
+          src/OrchardCore.Mvc.Web/App_Data_Tests/logs
         retention-days: 3
-  
+
   test_functional_cms_sqlite:
     name: Functional Tests - CMS Sqlite
     if: github.event_name == 'workflow_dispatch' ||
@@ -58,25 +64,31 @@ jobs:
         github.event.review.state == 'APPROVED' ||
         github.event.review.state == 'CHANGES_REQUESTED'
     runs-on: ubuntu-24.04
-    container:
-      image: cypress/included:15.12.0
     env:
       OrchardCore__OrchardCore_YesSql__EnableThreadSafetyChecks: true
     steps:
     - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
     - uses: ./.github/actions/setup-dotnet
+    - name: Build
+      run: |
+        dotnet build -c Release test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj
+    - name: Cache Playwright Browsers
+      uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
+      with:
+        path: ~/.cache/ms-playwright
+        key: playwright-${{ hashFiles('Directory.Packages.props') }}
+    - name: Install Playwright Browsers
+      run: |
+        pwsh test/OrchardCore.Tests.Functional/bin/Release/net10.0/playwright.ps1 install --with-deps chromium
     - name: Functional Tests
       run: |
-        cd test/OrchardCore.Tests.Functional
-        npm install
-        npm run cms:test
+        dotnet test --project test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj -c Release --no-build --filter-class "*Cms*"
     - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
       if: failure()
       with:
         name: functional-cms-sqlite-failure
         path: |
-          test/OrchardCore.Tests.Functional/cms-tests/cypress/screenshots
-          src/OrchardCore.Cms.Web/App_Data/logs
+          src/OrchardCore.Cms.Web/App_Data_Tests/logs
         retention-days: 3
 
   test_functional_cms_postgresql:
@@ -86,11 +98,11 @@ jobs:
         github.event.review.state == 'APPROVED' ||
         github.event.review.state == 'CHANGES_REQUESTED'
     runs-on: ubuntu-24.04
-    container:
-      image: cypress/included:15.12.0
     services:
       postgres:
         image: postgres:11
+        ports:
+          - 5432:5432
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: admin
@@ -102,24 +114,32 @@ jobs:
           --health-timeout 5s
           --health-retries 5
     env:
-      OrchardCore__ConnectionString: "User ID=postgres;Password=admin;Host=postgres;Port=5432;Database=app;"
+      OrchardCore__ConnectionString: "User ID=postgres;Password=admin;Host=localhost;Port=5432;Database=app;"
       OrchardCore__DatabaseProvider: "Postgres"
       OrchardCore__OrchardCore_YesSql__EnableThreadSafetyChecks: true
     steps:
     - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
     - uses: ./.github/actions/setup-dotnet
+    - name: Build
+      run: |
+        dotnet build -c Release test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj
+    - name: Cache Playwright Browsers
+      uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
+      with:
+        path: ~/.cache/ms-playwright
+        key: playwright-${{ hashFiles('Directory.Packages.props') }}
+    - name: Install Playwright Browsers
+      run: |
+        pwsh test/OrchardCore.Tests.Functional/bin/Release/net10.0/playwright.ps1 install --with-deps chromium
     - name: Functional Tests
       run: |
-        cd test/OrchardCore.Tests.Functional
-        npm install
-        npm run cms:test
+        dotnet test --project test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj -c Release --no-build --filter-class "*Cms*"
     - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
       if: failure()
       with:
         name: functional-cms-postgresql-failure
         path: |
-          test/OrchardCore.Tests.Functional/cms-tests/cypress/screenshots
-          src/OrchardCore.Cms.Web/App_Data/logs
+          src/OrchardCore.Cms.Web/App_Data_Tests/logs
         retention-days: 3
 
   test_functional_cms_mysql:
@@ -129,36 +149,42 @@ jobs:
         github.event.review.state == 'APPROVED' ||
         github.event.review.state == 'CHANGES_REQUESTED'
     runs-on: ubuntu-24.04
-    container:
-      image: cypress/included:15.12.0
     services:
       mysql:
         image: mysql:8
         ports:
-          - 3306
+          - 3306:3306
         env:
           MYSQL_DATABASE: test
           MYSQL_ROOT_PASSWORD: test123
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
     env:
-      OrchardCore__ConnectionString: "server=mysql;uid=root;pwd=test123;database=test"
+      OrchardCore__ConnectionString: "server=localhost;uid=root;pwd=test123;database=test"
       OrchardCore__DatabaseProvider: "MySql"
       OrchardCore__OrchardCore_YesSql__EnableThreadSafetyChecks: true
     steps:
     - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
     - uses: ./.github/actions/setup-dotnet
+    - name: Build
+      run: |
+        dotnet build -c Release test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj
+    - name: Cache Playwright Browsers
+      uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
+      with:
+        path: ~/.cache/ms-playwright
+        key: playwright-${{ hashFiles('Directory.Packages.props') }}
+    - name: Install Playwright Browsers
+      run: |
+        pwsh test/OrchardCore.Tests.Functional/bin/Release/net10.0/playwright.ps1 install --with-deps chromium
     - name: Functional Tests
       run: |
-        cd test/OrchardCore.Tests.Functional
-        npm install
-        npm run cms:test
+        dotnet test --project test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj -c Release --no-build --filter-class "*Cms*"
     - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
       if: failure()
       with:
         name: functional-cms-mysql-failure
         path: |
-          test/OrchardCore.Tests.Functional/cms-tests/cypress/screenshots
-          src/OrchardCore.Cms.Web/App_Data/logs
+          src/OrchardCore.Cms.Web/App_Data_Tests/logs
         retention-days: 3
 
   test_functional_cms_mssql:
@@ -168,33 +194,39 @@ jobs:
         github.event.review.state == 'APPROVED' ||
         github.event.review.state == 'CHANGES_REQUESTED'
     runs-on: ubuntu-24.04
-    container:
-      image: cypress/included:15.12.0
     services:
       mssql:
         image: mcr.microsoft.com/mssql/server:2019-latest
         ports:
-          - 1433
+          - 1433:1433
         env:
           ACCEPT_EULA: Y
           MSSQL_SA_PASSWORD: Password12!
     env:
-      OrchardCore__ConnectionString: "Server=mssql;Database=tempdb;User Id=sa;Password=Password12!;Encrypt=False"
+      OrchardCore__ConnectionString: "Server=localhost;Database=tempdb;User Id=sa;Password=Password12!;Encrypt=False"
       OrchardCore__DatabaseProvider: "SqlConnection"
       OrchardCore__OrchardCore_YesSql__EnableThreadSafetyChecks: true
     steps:
     - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
     - uses: ./.github/actions/setup-dotnet
+    - name: Build
+      run: |
+        dotnet build -c Release test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj
+    - name: Cache Playwright Browsers
+      uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
+      with:
+        path: ~/.cache/ms-playwright
+        key: playwright-${{ hashFiles('Directory.Packages.props') }}
+    - name: Install Playwright Browsers
+      run: |
+        pwsh test/OrchardCore.Tests.Functional/bin/Release/net10.0/playwright.ps1 install --with-deps chromium
     - name: Functional Tests
       run: |
-        cd test/OrchardCore.Tests.Functional
-        npm install
-        npm run cms:test
+        dotnet test --project test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj -c Release --no-build --filter-class "*Cms*"
     - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
       if: failure()
       with:
         name: functional-cms-mssql-failure
         path: |
-          test/OrchardCore.Tests.Functional/cms-tests/cypress/screenshots
-          src/OrchardCore.Cms.Web/App_Data/logs
+          src/OrchardCore.Cms.Web/App_Data_Tests/logs
         retention-days: 3
