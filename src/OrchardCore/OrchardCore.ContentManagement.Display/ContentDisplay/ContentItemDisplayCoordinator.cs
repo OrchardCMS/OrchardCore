@@ -180,7 +180,7 @@ public class ContentItemDisplayCoordinator : IContentDisplayHandler
 
         var contentShape = context.Shape as IZoneHolding;
         var partsShape = await context.ShapeFactory.CreateAsync("ContentZone",
-            Arguments.From(new
+            Arguments.From(new ContentZoneArguments
             {
                 Identifier = contentItem.ContentItemId,
             }));
@@ -271,7 +271,7 @@ public class ContentItemDisplayCoordinator : IContentDisplayHandler
 
         var contentShape = context.Shape as IZoneHolding;
         var partsShape = await context.ShapeFactory.CreateAsync("ContentZone",
-            Arguments.From(new
+            Arguments.From(new ContentZoneArguments
             {
                 Identifier = contentItem.ContentItemId,
             }));
@@ -375,4 +375,10 @@ public class ContentItemDisplayCoordinator : IContentDisplayHandler
 
         return typePartShapeResult;
     }
+}
+
+[GenerateArguments]
+internal sealed partial class ContentZoneArguments
+{
+    public string Identifier { get; set; }
 }
