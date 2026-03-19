@@ -9,6 +9,11 @@
     <NoWarn>$(NoWarn);CS1591</NoWarn> <!-- Disable XML comment warning on single file Program -->
   </PropertyGroup>
 
+  <!-- For Functional Tests -->
+  <ItemGroup>
+    <InternalsVisibleTo Include="OrchardCore.Tests.Functional" />
+  </ItemGroup>
+
   <ItemGroup>
     <Folder Include="wwwroot\" />
   </ItemGroup>

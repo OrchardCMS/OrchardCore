@@ -4,7 +4,7 @@ namespace OrchardCore.Tests.Functional.Helpers;
 
 public static class AuthHelper
 {
-    public static async Task LoginAsync(IPage page, string prefix = "", OrchardConfig config = null)
+    public static async Task LoginAsync(this IPage page, string prefix = "", OrchardConfig config = null)
     {
         config ??= TestUtils.DefaultConfig;
         await page.GotoAsync($"{prefix}/login");

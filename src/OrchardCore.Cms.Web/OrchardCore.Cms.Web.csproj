@@ -20,6 +20,7 @@
   <!-- For Unit Tests-->
   <ItemGroup>
     <InternalsVisibleTo Include="OrchardCore.Tests" />
+    <InternalsVisibleTo Include="OrchardCore.Tests.Functional" />
   </ItemGroup>
 
   <!-- Watcher include and excludes -->

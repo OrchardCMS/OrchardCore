@@ -3,8 +3,7 @@ using Xunit;
 
 namespace OrchardCore.Tests.Functional.Tests.Mvc;
 
-[Collection(MvcTestCollection.Name)]
-public sealed class MvcTests
+public sealed class MvcTests : IClassFixture<MvcSetupFixture>
 {
     private readonly MvcSetupFixture _fixture;
 

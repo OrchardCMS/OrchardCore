@@ -4,13 +4,13 @@ namespace OrchardCore.Tests.Functional.Helpers;
 
 public static class TenantHelper
 {
-    public static async Task VisitTenantSetupPageAsync(IPage page, TenantInfo tenant)
+    public static async Task VisitTenantSetupPageAsync(this IPage page, TenantInfo tenant)
     {
         await page.GotoAsync("/Admin/Tenants");
         await page.Locator($"#btn-setup-{tenant.Name}").ClickAsync();
     }
 
-    public static async Task SiteSetupAsync(IPage page, TenantInfo tenant)
+    public static async Task SiteSetupAsync(this IPage page, TenantInfo tenant)
     {
         var config = TestUtils.DefaultConfig;
         await page.Locator("#SiteName").FillAsync(tenant.Name);
@@ -43,7 +43,7 @@ public static class TenantHelper
         await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
     }
 
-    public static async Task CreateTenantAsync(IPage page, TenantInfo tenant)
+    public static async Task CreateTenantAsync(this IPage page, TenantInfo tenant)
     {
         await page.GotoAsync("/Admin/Tenants");
         await page.Locator(".btn.create").First.ClickAsync();
@@ -83,11 +83,11 @@ public static class TenantHelper
         await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
     }
 
-    public static async Task NewTenantAsync(IPage page, TenantInfo tenant)
+    public static async Task NewTenantAsync(this IPage page, TenantInfo tenant)
     {
-        await AuthHelper.LoginAsync(page);
-        await CreateTenantAsync(page, tenant);
-        await VisitTenantSetupPageAsync(page, tenant);
-        await SiteSetupAsync(page, tenant);
+        await page.LoginAsync();
+        await page.CreateTenantAsync(tenant);
+        await page.VisitTenantSetupPageAsync(tenant);
+        await page.SiteSetupAsync(tenant);
     }
 }

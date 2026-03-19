@@ -1,11 +1,11 @@
 using Microsoft.Playwright;
 using OrchardCore.Tests.Functional.Helpers;
 
-namespace OrchardCore.Tests.Functional;
+namespace OrchardCore.Tests.Functional.Tests.Mvc;
 
 public sealed class MvcSetupFixture : IAsyncLifetime
 {
-    private readonly OrchardTestFixture _testFixture = new(isMvc: true, port: 5001);
+    private readonly OrchardTestFixture _testFixture = new(isMvc: true);
 
     public IBrowser Browser => _testFixture.Browser;
     public string BaseUrl => _testFixture.BaseUrl;

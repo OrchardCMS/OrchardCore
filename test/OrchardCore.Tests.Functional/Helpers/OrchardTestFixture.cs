@@ -1,17 +1,24 @@
+extern alias CmsWeb;
+extern alias MvcWeb;
+
 using Microsoft.Playwright;
 
 namespace OrchardCore.Tests.Functional.Helpers;
 
 public sealed class OrchardTestFixture : IAsyncDisposable
 {
-    // Shared server state keyed by app type (CMS vs MVC) to prevent parallel init races
-    // while allowing different app types to run their own servers.
-    private static readonly SemaphoreSlim _serverLock = new(1, 1);
-    private static readonly Dictionary<string, SharedServerState> _servers = [];
+    private static int _traceCounter;
+
+    private static readonly bool _tracingEnabled =
+        !string.IsNullOrEmpty(System.Environment.GetEnvironmentVariable("PLAYWRIGHT_TRACING"));
+
+    private static readonly string _traceDir =
+        Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "traces");
 
     private readonly bool _isMvc;
-    private readonly int _port;
 
+    private IDisposable _factory;
+    private Action _assertNoLoggedErrors;
     private IPlaywright _playwright;
     private IBrowser _browser;
     private bool _disposed;
@@ -19,10 +26,12 @@ public sealed class OrchardTestFixture : IAsyncDisposable
     public string BaseUrl { get; private set; }
     public IBrowser Browser => _browser;
 
-    public OrchardTestFixture(bool isMvc = false, int port = 5000)
+    private readonly string _instanceId;
+
+    public OrchardTestFixture(bool isMvc = false, string instanceId = null)
     {
         _isMvc = isMvc;
-        _port = port;
+        _instanceId = instanceId;
     }
 
     private static string ProjectRoot =>
@@ -33,47 +42,48 @@ public sealed class OrchardTestFixture : IAsyncDisposable
             ? Path.Combine(ProjectRoot, "src", "OrchardCore.Mvc.Web")
             : Path.Combine(ProjectRoot, "src", "OrchardCore.Cms.Web");
 
-    private string Assembly => _isMvc ? "OrchardCore.Mvc.Web.dll" : "OrchardCore.Cms.Web.dll";
-
-    private string ServerKey => _isMvc ? "mvc" : "cms";
+    private string AppDataPath =>
+        string.IsNullOrEmpty(_instanceId)
+            ? Path.Combine(AppDir, "App_Data_Tests")
+            : Path.Combine(AppDir, $"App_Data_Tests_{_instanceId}");
 
     public async Task InitializeAsync()
     {
-        await _serverLock.WaitAsync();
-        try
+        // Clean previous test data.
+        if (Directory.Exists(AppDataPath))
         {
-            if (!_servers.TryGetValue(ServerKey, out var state))
-            {
-                state = new SharedServerState();
-                _servers[ServerKey] = state;
-            }
-
-            state.RefCount++;
-
-            if (state.BaseUrl == null)
-            {
-                state.BaseUrl = Environment.GetEnvironmentVariable("ORCHARD_URL")
-                    ?? $"http://localhost:{_port}";
-
-                if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("ORCHARD_EXTERNAL")))
-                {
-                    AppLifecycleHelper.DeleteAppData(AppDir);
-
-                    if (!_isMvc)
-                    {
-                        CopyRecipeIfNeeded(state, "migrations.recipe.json");
-                    }
-
-                    state.ServerProcess = AppLifecycleHelper.HostApp(AppDir, Assembly, state.BaseUrl);
-                    await AppLifecycleHelper.WaitForReadyAsync(state.BaseUrl, 30_000);
-                }
-            }
-
-            BaseUrl = state.BaseUrl;
+            Directory.Delete(AppDataPath, recursive: true);
         }
-        finally
+
+        // Copy test recipes if needed.
+        if (!_isMvc)
         {
-            _serverLock.Release();
+            AppLifecycleHelper.CopyRecipe(AppDir, "migrations.recipe.json");
+        }
+
+        if (string.IsNullOrEmpty(System.Environment.GetEnvironmentVariable("ORCHARD_EXTERNAL")))
+        {
+            if (_isMvc)
+            {
+                var factory = new OrchardWebApplicationFactory<MvcWeb::Program>(AppDataPath);
+                _ = factory.Services;
+                BaseUrl = factory.ServerAddress;
+                _factory = factory;
+                _assertNoLoggedErrors = factory.AssertNoLoggedErrors;
+            }
+            else
+            {
+                var factory = new OrchardWebApplicationFactory<CmsWeb::Program>(AppDataPath);
+                _ = factory.Services;
+                BaseUrl = factory.ServerAddress;
+                _factory = factory;
+                _assertNoLoggedErrors = factory.AssertNoLoggedErrors;
+            }
+        }
+        else
+        {
+            BaseUrl = System.Environment.GetEnvironmentVariable("ORCHARD_URL")
+                ?? "http://localhost:5000";
         }
 
         _playwright = await Playwright.CreateAsync();
@@ -82,11 +92,21 @@ public sealed class OrchardTestFixture : IAsyncDisposable
         );
     }
 
-    public async Task<IPage> CreatePageAsync()
+    public async Task<IPage> CreatePageAsync(string traceName = null)
     {
         var context = await _browser.NewContextAsync(
             new BrowserNewContextOptions { BaseURL = BaseUrl }
         );
+
+        if (_tracingEnabled)
+        {
+            await context.Tracing.StartAsync(new TracingStartOptions
+            {
+                Screenshots = true,
+                Snapshots = true,
+                Sources = true,
+            });
+        }
 
         var page = await context.NewPageAsync();
 
@@ -94,6 +114,21 @@ public sealed class OrchardTestFixture : IAsyncDisposable
         {
             try
             {
+                if (_tracingEnabled)
+                {
+                    var traceIndex = Interlocked.Increment(ref _traceCounter);
+                    var fileName = string.IsNullOrEmpty(traceName)
+                        ? $"trace-{traceIndex}.zip"
+                        : $"trace-{traceName}-{traceIndex}.zip";
+
+                    Directory.CreateDirectory(_traceDir);
+
+                    await context.Tracing.StopAsync(new TracingStopOptions
+                    {
+                        Path = Path.Combine(_traceDir, fileName),
+                    });
+                }
+
                 await context.CloseAsync();
             }
             catch (Exception)
@@ -104,6 +139,8 @@ public sealed class OrchardTestFixture : IAsyncDisposable
 
         return page;
     }
+
+    public void AssertNoLoggedErrors() => _assertNoLoggedErrors?.Invoke();
 
     public async ValueTask DisposeAsync()
     {
@@ -120,56 +157,12 @@ public sealed class OrchardTestFixture : IAsyncDisposable
         }
 
         _playwright?.Dispose();
+        _factory?.Dispose();
 
-        await _serverLock.WaitAsync();
-        try
+        // Clean up copied recipes.
+        if (!_isMvc)
         {
-            if (!_servers.TryGetValue(ServerKey, out var state))
-            {
-                return;
-            }
-
-            state.RefCount--;
-
-            if (state.RefCount > 0)
-            {
-                return;
-            }
-
-            if (state.ServerProcess is not null)
-            {
-                AppLifecycleHelper.KillApp(state.ServerProcess);
-            }
-
-            if (!_isMvc)
-            {
-                foreach (var recipe in state.CopiedRecipes)
-                {
-                    AppLifecycleHelper.DeleteRecipe(AppDir, recipe);
-                }
-            }
-
-            _servers.Remove(ServerKey);
+            AppLifecycleHelper.DeleteRecipe(AppDir, "migrations.recipe.json");
         }
-        finally
-        {
-            _serverLock.Release();
-        }
-    }
-
-    private void CopyRecipeIfNeeded(SharedServerState state, string recipeFileName)
-    {
-        if (AppLifecycleHelper.CopyRecipe(AppDir, recipeFileName))
-        {
-            state.CopiedRecipes.Add(recipeFileName);
-        }
-    }
-
-    private sealed class SharedServerState
-    {
-        public Process ServerProcess;
-        public string BaseUrl;
-        public int RefCount;
-        public readonly List<string> CopiedRecipes = [];
     }
 }

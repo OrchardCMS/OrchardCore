@@ -17,6 +17,7 @@ on:
 env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   DOTNET_CLI_TELEMETRY_OPTOUT: true
+  PLAYWRIGHT_TRACING: true
 
 jobs:
   test_functional_mvc:
@@ -55,6 +56,7 @@ jobs:
         name: functional-mvc-failure
         path: |
           src/OrchardCore.Mvc.Web/App_Data_Tests/logs
+          test/OrchardCore.Tests.Functional/traces
         retention-days: 3
 
   test_functional_cms_sqlite:
@@ -89,6 +91,7 @@ jobs:
         name: functional-cms-sqlite-failure
         path: |
           src/OrchardCore.Cms.Web/App_Data_Tests/logs
+          test/OrchardCore.Tests.Functional/traces
         retention-days: 3
 
   test_functional_cms_postgresql:
@@ -140,6 +143,7 @@ jobs:
         name: functional-cms-postgresql-failure
         path: |
           src/OrchardCore.Cms.Web/App_Data_Tests/logs
+          test/OrchardCore.Tests.Functional/traces
         retention-days: 3
 
   test_functional_cms_mysql:
@@ -185,6 +189,7 @@ jobs:
         name: functional-cms-mysql-failure
         path: |
           src/OrchardCore.Cms.Web/App_Data_Tests/logs
+          test/OrchardCore.Tests.Functional/traces
         retention-days: 3
 
   test_functional_cms_mssql:
@@ -229,4 +234,5 @@ jobs:
         name: functional-cms-mssql-failure
         path: |
           src/OrchardCore.Cms.Web/App_Data_Tests/logs
+          test/OrchardCore.Tests.Functional/traces
         retention-days: 3
