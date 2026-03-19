@@ -279,7 +279,7 @@ FROM UserIndex
 WHERE UserName LIKE @pattern
 ```
 
-Where the caller provides `pattern` as a parameter value (for example `%alice%`).
+Where the caller provides `pattern` as a parameter value (for example `%alice%`). See [Parameters](#parameters).
 
 This example checks that a `limit` parameter is provided and if so uses it:
 
