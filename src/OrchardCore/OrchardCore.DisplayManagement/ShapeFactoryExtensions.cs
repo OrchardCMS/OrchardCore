@@ -141,7 +141,7 @@ public static class ShapeFactoryExtensions
     /// <returns></returns>
     public static ValueTask<IShape> CreateAsync<TModel>(this IShapeFactory factory, string shapeType, Func<TModel, ValueTask> initializeAsync)
         where TModel : class
-        => factory.CreateAsync<TModel, Func<TModel, ValueTask>>(shapeType, static (model, initializeAsync) => initializeAsync(model), initializeAsync);
+        => factory.CreateAsync<TModel, Func<TModel, ValueTask>>(shapeType, static (model, initializeAsync) => initializeAsync is null ? ValueTask.CompletedTask : initializeAsync(model), initializeAsync);
 
     public static ValueTask<IShape> CreateAsync<TModel, TState>(this IShapeFactory factory, string shapeType, Func<TModel, TState, ValueTask> initializeAsync, TState state)
         where TModel : class
