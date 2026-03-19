@@ -69,7 +69,7 @@ In a Razor view or layout, call `Orchard.GetJSLocalizations(…)` and pass the s
 <my-module-app localizations="@Json.Serialize(localizations)"></my-module-app>
 ```
 
-In this example, `<my-module-app>` is the custom element tag for your root Vue component in Razor markup. Razor HTML-encodes the attribute value, and the component parses the JSON string once before seeding the shared translations store.
+In this example, `<my-module-app>` is the tag your app renders for its root Vue component in Razor markup. Razor HTML-encodes the attribute value, and the component parses the JSON string once before seeding the shared translations store.
 
 ### Multiple groups at once
 
@@ -117,7 +117,11 @@ const props = defineProps({
     },
 });
 
-setTranslations(JSON.parse(props.localizations));
+try {
+    setTranslations(JSON.parse(props.localizations));
+} catch (error) {
+    console.warn("Failed to parse localizations:", error);
+}
 ```
 
 ### Reading translations in modules, services, or components
