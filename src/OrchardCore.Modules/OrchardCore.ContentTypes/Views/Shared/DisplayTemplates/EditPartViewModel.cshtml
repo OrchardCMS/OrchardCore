@@ -1,3 +1,4 @@
+@using OrchardCore
 @using OrchardCore.ContentManagement.Metadata.Settings
 @using OrchardCore.Localization.Data
 @model EditPartViewModel
@@ -7,7 +8,7 @@
         <a id="btn-edit-@Model.Name" class="btn btn-primary btn-sm edit-button" asp-route-action="EditPart" asp-route-id="@Model.Name">@T["Edit"]</a>
         <a class="btn btn-danger btn-sm delete-button" asp-action="DeletePart" asp-route-id="@Model.Name" asp-route-returnUrl="@FullRequestPath" data-url-af="RemoveUrl UnsafeUrl" data-title="@T["Delete"]" data-message="@T["Are you sure you want to delete this content part?"]" data-ok-text="@T["Ok"]" data-cancel-text="@T["Cancel"]">@T["Delete"]</a>
     </div>
-    <div>@D[Model.PartDefinition.DisplayName(), "Content Types"]</div>
+    <div>@D[Model.PartDefinition.DisplayName(), OrchardCoreConstants.DataLocalizationContext.ContentTypes]</div>
     @if (!string.IsNullOrWhiteSpace(Model.Description))
     {
         <span class="hint">@Model.Description</span>

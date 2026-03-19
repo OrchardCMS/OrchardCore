@@ -15,8 +15,6 @@ public class PermissionsLocalizationDataProvider : ILocalizationDataProvider
     private readonly ITypeFeatureProvider _typeFeatureProvider;
     private readonly IShellFeaturesManager _shellFeaturesManager;
 
-    private const string PermissionsContext = "Permissions";
-
     public PermissionsLocalizationDataProvider(
         IEnumerable<IPermissionProvider> permissionProviders,
         ITypeFeatureProvider typeFeatureProvider,
@@ -64,8 +62,8 @@ public class PermissionsLocalizationDataProvider : ILocalizationDataProvider
                 }
 
                 var context = string.IsNullOrWhiteSpace(groupName)
-                    ? PermissionsContext
-                    : PermissionsContext + Constants.ContextSeparator + groupName;
+                    ? OrchardCoreConstants.DataLocalizationContext.Permissions
+                    : OrchardCoreConstants.DataLocalizationContext.Permissions + Constants.ContextSeparator + groupName;
 
                 descriptors.Add(new DataLocalizedString(context, permission.Description, string.Empty));
 

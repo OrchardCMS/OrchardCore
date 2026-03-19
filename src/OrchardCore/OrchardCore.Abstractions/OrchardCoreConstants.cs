@@ -92,4 +92,13 @@ public static class OrchardCoreConstants
 
         public const string SummaryAdmin = "SummaryAdmin";
     }
+
+    public static class DataLocalizationContext
+    {
+        public const string ContentTypes = "Content Types";
+
+        public const string ContentFields = "Content Fields:";
+
+        public const string Permissions = "Permissions";
+    }
 }

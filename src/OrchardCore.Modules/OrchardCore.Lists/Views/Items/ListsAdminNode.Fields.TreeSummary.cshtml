@@ -1,4 +1,5 @@
 @model ShapeViewModel<ListsAdminNode>
+@using OrchardCore
 @using OrchardCore.Localization.Data
 @inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
 @inject IDataLocalizer D
@@ -12,7 +13,7 @@
 
         if (definition != null)
         {
-            displayName = D[definition.DisplayName, "Content Types"];
+            displayName = D[definition.DisplayName, OrchardCoreConstants.DataLocalizationContext.ContentTypes];
         }
     }
 }
