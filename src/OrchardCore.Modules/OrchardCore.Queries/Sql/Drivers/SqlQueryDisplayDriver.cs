@@ -13,14 +13,17 @@ namespace OrchardCore.Queries.Sql.Drivers;
 public sealed class SqlQueryDisplayDriver : DisplayDriver<Query>
 {
     private readonly INotifier _notifier;
+    private readonly SqlLiquidOutputExpressionDetector _outputExpressionDetector;
 
     internal readonly IStringLocalizer S;
 
     public SqlQueryDisplayDriver(
         INotifier notifier,
+        SqlLiquidOutputExpressionDetector outputExpressionDetector,
         IStringLocalizer<SqlQueryDisplayDriver> stringLocalizer)
     {
         _notifier = notifier;
+        _outputExpressionDetector = outputExpressionDetector;
         S = stringLocalizer;
     }
 
@@ -56,13 +59,13 @@ public sealed class SqlQueryDisplayDriver : DisplayDriver<Query>
 
             var metadata = query.As<SqlQueryMetadata>();
             model.Query = metadata.Template;
-            model.HasLiquidOutputExpressions = SqlLiquidOutputExpressionDetector.ContainsOutputStatement(model.Query);
+            model.HasLiquidOutputExpressions = _outputExpressionDetector.ContainsOutputStatement(model.Query);
 
             // Extract query from the query string if we come from the main query editor.
             if (string.IsNullOrEmpty(metadata.Template))
             {
                 await context.Updater.TryUpdateModelAsync(model, string.Empty, m => m.Query);
-                model.HasLiquidOutputExpressions = SqlLiquidOutputExpressionDetector.ContainsOutputStatement(model.Query);
+                model.HasLiquidOutputExpressions = _outputExpressionDetector.ContainsOutputStatement(model.Query);
             }
         }).Location("Content:5");
     }
@@ -84,7 +87,7 @@ public sealed class SqlQueryDisplayDriver : DisplayDriver<Query>
             context.Updater.ModelState.AddModelError(Prefix, nameof(viewModel.Query), S["The query field is required"]);
         }
 
-        viewModel.HasLiquidOutputExpressions = SqlLiquidOutputExpressionDetector.ContainsOutputStatement(viewModel.Query);
+        viewModel.HasLiquidOutputExpressions = _outputExpressionDetector.ContainsOutputStatement(viewModel.Query);
 
         if (viewModel.HasLiquidOutputExpressions)
         {

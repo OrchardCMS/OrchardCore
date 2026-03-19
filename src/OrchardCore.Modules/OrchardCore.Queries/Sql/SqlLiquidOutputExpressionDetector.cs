@@ -1,13 +1,24 @@
 using Fluid;
 using Fluid.Ast;
+using OrchardCore.DisplayManagement.Liquid;
 
 namespace OrchardCore.Queries.Sql;
 
-internal static class SqlLiquidOutputExpressionDetector
+public sealed class SqlLiquidOutputExpressionDetector
 {
-    private static readonly FluidParser _parser = new();
+    private readonly FluidParser _parser;
 
-    public static bool ContainsOutputStatement(string query)
+    public SqlLiquidOutputExpressionDetector(LiquidViewParser parser)
+        : this((FluidParser)parser)
+    {
+    }
+
+    internal SqlLiquidOutputExpressionDetector(FluidParser parser)
+    {
+        _parser = parser ?? throw new ArgumentNullException(nameof(parser));
+    }
+
+    public bool ContainsOutputStatement(string query)
     {
         if (string.IsNullOrWhiteSpace(query))
         {
