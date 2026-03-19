@@ -5,14 +5,13 @@ The `IJSLocalizer` infrastructure allows modules to expose PO-file-backed transl
 ## Overview
 
 When a Vue, TypeScript, or plain JavaScript component needs translated strings, it cannot call `IStringLocalizer` directly.  
-`IJSLocalizer` bridges this gap: each module registers one implementation that knows how to map a **group name** to a dictionary of localized strings, which a Razor layout then serializes into the page (e.g. as a JSON variable) before the script runs.
+`IJSLocalizer` bridges this gap: each module registers one implementation that knows how to map a **group name** to a dictionary of localized strings, which a Razor view or layout can serialize and pass into a scoped module entry point before the script runs.
 
 ## Interfaces and classes
 
 | Type | Location | Description |
 |------|----------|-------------|
-| `IJSLocalizer` | `OrchardCore.Localization.Abstractions` | Contract that returns a `Dictionary<string, string>` for requested groups. |
-| `NullJSLocalizer` | `OrchardCore.Localization.Abstractions` | Default no-op implementation that always returns an empty dictionary. |
+| `IJSLocalizer` | `OrchardCore.Localization.Abstractions` | Contract that returns an `IDictionary<string, string>` for a requested group. |
 | `LocalizationOrchardHelperExtensions` | `OrchardCore.Localization.Abstractions` | Razor / Liquid helper (`Orchard.GetJSLocalizations(…)`) that aggregates all registered `IJSLocalizer` implementations. |
 | `getTranslations()` / `setTranslations()` | `.scripts/bloom/helpers/localizations.ts` | Framework-agnostic helpers for seeding and reading a shared translations record in JavaScript or TypeScript. |
 
@@ -23,7 +22,6 @@ Create a class that implements `IJSLocalizer` and inject `IStringLocalizer<T>` t
 ```csharp
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Localization;
 
@@ -31,9 +29,9 @@ namespace MyModule.Services;
 
 public sealed class MyModuleJSLocalizer(IStringLocalizer<MyModuleJSLocalizer> S) : IJSLocalizer
 {
-    public Dictionary<string, string> GetLocalizations(string[] groups)
+    public IDictionary<string, string> GetLocalizations(string group)
     {
-        if (groups.Contains("my-module", StringComparer.OrdinalIgnoreCase))
+        if (string.Equals(group, "my-module", StringComparison.OrdinalIgnoreCase))
         {
             return new Dictionary<string, string>
             {
@@ -61,17 +59,17 @@ public override void ConfigureServices(IServiceCollection services)
 
 ## Passing localizations to the browser
 
-In a Razor view or layout, call `Orchard.GetJSLocalizations(…)` and serialize the result as a JavaScript variable so your front-end code can consume it without extra HTTP requests.
+In a Razor view or layout, call `Orchard.GetJSLocalizations(…)` and pass the serialized result directly into a scoped ES module entry point so your front-end code can consume it without extra HTTP requests.
 
 ```cshtml
-@using System.Text.Json
-
 @{
     var localizations = Orchard.GetJSLocalizations("my-module");
 }
 
-<script>
-    window.__localizations = @Html.Raw(JsonSerializer.Serialize(localizations));
+<script type="module">
+    import { bootMyModule } from "/MyModule/module.js";
+
+    bootMyModule(@Json.Serialize(localizations));
 </script>
 ```
 
@@ -105,23 +103,18 @@ export function setTranslations(t: Record<string, string>): void {
 }
 ```
 
-The module keeps a single shared object alive for the lifetime of the page. Seed it once, then read it anywhere in your front-end code.
+The module keeps a single shared object alive for the lifetime of the JavaScript module. Seed it once in your app bootstrap, then read it anywhere in your front-end code.
 
 ### Seeding translations in the app entry point
 
-If you serialize translations to a global variable, initialize the store in your app entry point:
+Initialize the store in your app entry point with the serialized localizations passed from Razor:
 
 ```typescript
-// main.ts
 import { setTranslations } from "@orchardcore/bloom/helpers/localizations";
 
-declare global {
-    interface Window {
-        __localizations?: Record<string, string>;
-    }
+export function bootMyModule(localizations: Record<string, string>): void {
+    setTranslations(localizations);
 }
-
-setTranslations(window.__localizations ?? {});
 ```
 
 ### Reading translations in modules, services, or components
@@ -219,7 +212,7 @@ See [Install localization files](../../../guides/install-localization-files/READ
 
 ## Multiple implementations
 
-More than one `IJSLocalizer` can be registered at the same time. `GetJSLocalizations` calls each of them in registration order, and merges their results. Each implementation returns `null` (or an empty dictionary) for groups it does not own — this is how `NullJSLocalizer` behaves.
+More than one `IJSLocalizer` can be registered at the same time. `GetJSLocalizations` calls each registered implementation once per requested group, in the same order the groups were passed, and merges the results. Each implementation returns `null` (or an empty dictionary) for groups it does not own.
 
 This allows a host application to combine translations from multiple independent modules without any coupling between them:
 

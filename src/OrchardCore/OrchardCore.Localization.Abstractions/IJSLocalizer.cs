@@ -3,7 +3,7 @@ using System.Collections.Generic;
 namespace OrchardCore.Localization;
 
 /// <summary>
-/// Provides JavaScript localizations for a specific set of groups.
+/// Provides JavaScript localizations for a specific group.
 /// </summary>
 /// <remarks>
 /// Implement this interface and register it with <c>services.AddScoped&lt;IJSLocalizer, YourJSLocalizer&gt;()</c>
@@ -13,15 +13,13 @@ namespace OrchardCore.Localization;
 public interface IJSLocalizer
 {
     /// <summary>
-    /// Returns a dictionary of localized strings for the specified groups, or <see langword="null"/> if this
-    /// implementation does not handle any of the requested groups.
+    /// Returns a dictionary of localized strings for the specified group, or <see langword="null"/> if this
+    /// implementation does not handle the requested group.
     /// </summary>
-    /// <param name="groups">
-    /// One or more group identifiers that scope the set of keys to return (e.g., <c>"media-app"</c>).
-    /// </param>
+    /// <param name="group">The group identifier that scopes the set of keys to return (e.g., <c>"media-app"</c>).</param>
     /// <returns>
     /// A dictionary mapping translation keys to their localized values, or <see langword="null"/> when this
-    /// implementation has no localizations for the given groups.
+    /// implementation has no localizations for the given group.
     /// </returns>
-    Dictionary<string, string> GetLocalizations(string[] groups);
+    IDictionary<string, string> GetLocalizations(string group);
 }

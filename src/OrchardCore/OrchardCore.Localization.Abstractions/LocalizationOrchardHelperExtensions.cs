@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore;
@@ -20,7 +21,7 @@ public static class LocalizationOrchardHelperExtensions
     /// Each <see cref="IJSLocalizer"/> implementation decides which groups it handles.
     /// </param>
     /// <returns>
-    /// A merged <see cref="Dictionary{TKey,TValue}"/> of translation keys and their localized values.
+    /// A merged dictionary of translation keys and their localized values.
     /// If multiple <see cref="IJSLocalizer"/> implementations provide a value for the same key, the last
     /// registered implementation wins.
     /// </returns>
@@ -30,24 +31,29 @@ public static class LocalizationOrchardHelperExtensions
     /// var localizations = Orchard.GetJSLocalizations("media-app");
     /// </code>
     /// </example>
-    public static Dictionary<string, string> GetJSLocalizations(this IOrchardHelper orchardHelper, params string[] groups)
+    public static IDictionary<string, string> GetJSLocalizations(this IOrchardHelper orchardHelper, params string[] groups)
     {
+        ArgumentNullException.ThrowIfNull(groups);
+
         var jsLocalizerServices = orchardHelper.HttpContext.RequestServices.GetServices<IJSLocalizer>();
 
         var result = new Dictionary<string, string>();
 
-        foreach (var jsLocalizerService in jsLocalizerServices)
+        foreach (var group in groups)
         {
-            var jsLocDict = jsLocalizerService.GetLocalizations(groups);
-
-            if (jsLocDict is null)
+            foreach (var jsLocalizerService in jsLocalizerServices)
             {
-                continue;
-            }
+                var jsLocDict = jsLocalizerService.GetLocalizations(group);
 
-            foreach (var kvp in jsLocDict)
-            {
-                result[kvp.Key] = kvp.Value;
+                if (jsLocDict is null)
+                {
+                    continue;
+                }
+
+                foreach (var kvp in jsLocDict)
+                {
+                    result[kvp.Key] = kvp.Value;
+                }
             }
         }
 
