@@ -56,13 +56,13 @@ public sealed class SqlQueryDisplayDriver : DisplayDriver<Query>
 
             var metadata = query.As<SqlQueryMetadata>();
             model.Query = metadata.Template;
-            model.HasLiquidOutputExpressions = ContainsLiquidOutputExpressions(model.Query);
+            model.HasLiquidOutputExpressions = SqlLiquidOutputExpressionDetector.ContainsOutputStatement(model.Query);
 
             // Extract query from the query string if we come from the main query editor.
             if (string.IsNullOrEmpty(metadata.Template))
             {
                 await context.Updater.TryUpdateModelAsync(model, string.Empty, m => m.Query);
-                model.HasLiquidOutputExpressions = ContainsLiquidOutputExpressions(model.Query);
+                model.HasLiquidOutputExpressions = SqlLiquidOutputExpressionDetector.ContainsOutputStatement(model.Query);
             }
         }).Location("Content:5");
     }
@@ -84,7 +84,7 @@ public sealed class SqlQueryDisplayDriver : DisplayDriver<Query>
             context.Updater.ModelState.AddModelError(Prefix, nameof(viewModel.Query), S["The query field is required"]);
         }
 
-        viewModel.HasLiquidOutputExpressions = ContainsLiquidOutputExpressions(viewModel.Query);
+        viewModel.HasLiquidOutputExpressions = SqlLiquidOutputExpressionDetector.ContainsOutputStatement(viewModel.Query);
 
         if (viewModel.HasLiquidOutputExpressions)
         {
@@ -103,9 +103,4 @@ public sealed class SqlQueryDisplayDriver : DisplayDriver<Query>
 
         return Edit(query, context);
     }
-
-    private static bool ContainsLiquidOutputExpressions(string query)
-        => !string.IsNullOrWhiteSpace(query)
-        && query.Contains("{{", StringComparison.Ordinal)
-        && query.Contains("}}", StringComparison.Ordinal);
 }
