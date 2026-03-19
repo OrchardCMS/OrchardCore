@@ -22,7 +22,27 @@ public sealed class RazorCompilationOptionsSetup : IConfigureOptions<Microsoft.A
     public void Configure(Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation.MvcRazorRuntimeCompilationOptions options)
     {
         // In dev mode or if there is no 'refs' folder, we don't register razor runtime compilation services.
-        var refsFolderExists = Directory.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "refs"));
+        var refsFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "refs");
+        var refsFolderExists = Directory.Exists(refsFolder);
+
+        // Add reference assemblies so the runtime Razor compiler can resolve all types.
+        // This is needed because the RuntimeCompilation package's build targets are excluded
+        // (ExcludeAssets="build;buildTransitive") in OrchardCore.Mvc.Core.csproj.
+        if (refsFolderExists)
+        {
+            // Framework reference assemblies (System.*, Microsoft.AspNetCore.*, etc.)
+            foreach (var referenceFile in Directory.GetFiles(refsFolder, "*.dll"))
+            {
+                options.AdditionalReferencePaths.Add(referenceFile);
+            }
+        }
+
+        // Application assemblies (OrchardCore.*, etc.) from the output directory.
+        var baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+        foreach (var referenceFile in Directory.GetFiles(baseDirectory, "*.dll"))
+        {
+            options.AdditionalReferencePaths.Add(referenceFile);
+        }
 
         // But in some view location expanders we always use the file providers that we enlist here, so
         // we still need to add 'ContentRootFileProvider' that includes our 'ModuleEmbeddedFileProvider'.

@@ -8,6 +8,7 @@
     <WarningsNotAsErrors>612,618</WarningsNotAsErrors>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
     <RazorRuntimeCompilation>false</RazorRuntimeCompilation>
+    <PreserveCompilationReferences>true</PreserveCompilationReferences>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <!-- With this GUID, user secrets can be added with "dotnet user-secrets set key value" without further changes in

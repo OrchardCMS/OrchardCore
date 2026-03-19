@@ -40,7 +40,14 @@
         "cwd": "${workspaceRoot}/src/OrchardCore.Cms.Web"
       },
       "isBackground": true,
-      "problemMatcher": "$msCompile"
+      "problemMatcher": {
+        "base": "$msCompile",
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "^dotnet watch",
+          "endsPattern": "^\\s*Now listening on:"
+        }
+      }
     },
     {
       "label": "dotnet run",
