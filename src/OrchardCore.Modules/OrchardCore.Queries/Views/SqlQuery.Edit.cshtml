@@ -20,7 +20,7 @@
 
 <div class="mb-3">
     <div class="alert alert-warning" role="alert">
-        @T["SQL queries are Liquid templates. Never inject user input with Liquid output expressions like '{{ input }}'. Use SQL parameters (for example '@name' or '@name:default') for user-provided values."]
+        @T["SQL queries are Liquid templates. Never inject user input with Liquid output expressions like '{{ input }}'. Use SQL parameters (for example '@name' or '@name:default') passed in by the caller for user-provided values."]
     </div>
 
     @if (Model.HasLiquidOutputExpressions)
