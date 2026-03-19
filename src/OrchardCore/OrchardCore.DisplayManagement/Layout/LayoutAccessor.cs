@@ -4,8 +4,10 @@ namespace OrchardCore.DisplayManagement.Layout;
 
 public class LayoutAccessor : ILayoutAccessor
 {
-    private Task<IZoneHolding> _layout;
     private readonly IShapeFactory _shapeFactory;
+    private readonly object _syncLock = new();
+
+    private Task<IZoneHolding> _layout;
 
     public LayoutAccessor(IShapeFactory shapeFactory)
     {
@@ -19,7 +21,38 @@ public class LayoutAccessor : ILayoutAccessor
             return _layout;
         }
 
-        return GetLayoutInternalAsync();
+        lock (_syncLock)
+        {
+            return _layout ??= CreateLayoutTask();
+        }
+    }
+
+    private Task<IZoneHolding> CreateLayoutTask()
+    {
+        var completionSource = new TaskCompletionSource<IZoneHolding>(TaskCreationOptions.RunContinuationsAsynchronously);
+        _ = GetLayoutAwaitedAsync(completionSource);
+
+        return completionSource.Task;
+
+        async Task GetLayoutAwaitedAsync(TaskCompletionSource<IZoneHolding> completionSource)
+        {
+            try
+            {
+                completionSource.SetResult(await GetLayoutInternalAsync());
+            }
+            catch (Exception exception)
+            {
+                lock (_syncLock)
+                {
+                    if (_layout == completionSource.Task)
+                    {
+                        _layout = null;
+                    }
+                }
+
+                completionSource.SetException(exception);
+            }
+        }
     }
 
     private async Task<IZoneHolding> GetLayoutInternalAsync()
@@ -35,7 +68,6 @@ public class LayoutAccessor : ILayoutAccessor
             throw new ApplicationException("Fatal error, a Layout couldn't be created.");
         }
 
-        _layout = Task.FromResult(layout);
         return layout;
     }
 }
