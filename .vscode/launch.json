@@ -51,21 +51,10 @@
     },
     {
       "name": ".NET Core Launch (web debug) - dotnet watch - net10.0",
-      "type": "dotnetwatchattach",
-      "request": "launch",
-      "task": "dotnet watch - net10.0",
-      "program": "OrchardCore.Cms.Web.exe",
-      "args": {
-        "env": {
-          "ASPNETCORE_ENVIRONMENT": "Development"
-        }
-      },
-      "cwd": "${workspaceRoot}/src/OrchardCore.Cms.Web",
-      "stopAtEntry": false,
-      "serverReadyAction": {
-        "action": "openExternally",
-        "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
-      }
+      "type": "coreclr",
+      "request": "attach",
+      "preLaunchTask": "dotnet watch - net10.0",
+      "processName": "OrchardCore.Cms.Web.exe",
     },
     {
       "name": ".NET Core Attach",

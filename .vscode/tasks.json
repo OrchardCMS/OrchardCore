@@ -32,11 +32,14 @@
         "run",
         "${workspaceRoot}/src/OrchardCore.Cms.Web",
         "-f",
-        "net10.0"
+        "net10.0",
+        "--property:GenerateFullPaths=true",
+        "/consoleloggerparameters:NoSummary"
       ],
       "options": {
         "cwd": "${workspaceRoot}/src/OrchardCore.Cms.Web"
       },
+      "isBackground": true,
       "problemMatcher": "$msCompile"
     },
     {
