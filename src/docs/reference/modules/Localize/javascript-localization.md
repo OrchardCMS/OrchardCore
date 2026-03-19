@@ -66,7 +66,7 @@ In a Razor view or layout, call `Orchard.GetJSLocalizations(…)` and pass the s
     var localizations = Orchard.GetJSLocalizations("my-module");
 }
 
-<my-module-app localizations="@Json.Serialize(localizations).ToString()"></my-module-app>
+<my-module-app localizations="@Json.Serialize(localizations)"></my-module-app>
 ```
 
 ### Multiple groups at once
@@ -115,9 +115,7 @@ const props = defineProps({
     },
 });
 
-if (props.localizations) {
-    setTranslations(JSON.parse(props.localizations));
-}
+setTranslations(JSON.parse(props.localizations));
 ```
 
 ### Reading translations in modules, services, or components
