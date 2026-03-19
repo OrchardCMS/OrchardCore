@@ -28,39 +28,30 @@ public class ThemeManager : IThemeManager
             return _theme;
         }
 
+        TaskCompletionSource<IExtensionInfo> completionSource;
+
         lock (_syncLock)
         {
-            return _theme ??= CreateThemeTask();
+            if (_theme != null)
+            {
+                return _theme;
+            }
+
+            completionSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
+            _theme = completionSource.Task;
         }
+
+        _ = GetThemeAwaitedAsync(completionSource);
+        return completionSource.Task;
     }
 
-    private Task<IExtensionInfo> CreateThemeTask()
+    private async Task GetThemeAwaitedAsync(TaskCompletionSource<IExtensionInfo> completionSource)
     {
-        var completionSource = new TaskCompletionSource<IExtensionInfo>(TaskCreationOptions.RunContinuationsAsynchronously);
-        _ = GetThemeAwaitedAsync(completionSource);
-
-        return completionSource.Task;
-
-        async Task GetThemeAwaitedAsync(TaskCompletionSource<IExtensionInfo> completionSource)
+        try
         {
-            try
-            {
-                var theme = await GetThemeInternalAsync();
+            var theme = await GetThemeInternalAsync();
 
-                if (theme == null)
-                {
-                    lock (_syncLock)
-                    {
-                        if (_theme == completionSource.Task)
-                        {
-                            _theme = null;
-                        }
-                    }
-                }
-
-                completionSource.SetResult(theme);
-            }
-            catch (Exception exception)
+            if (theme == null)
             {
                 lock (_syncLock)
                 {
@@ -69,9 +60,21 @@ public class ThemeManager : IThemeManager
                         _theme = null;
                     }
                 }
-
-                completionSource.SetException(exception);
             }
+
+            completionSource.SetResult(theme);
+        }
+        catch (Exception exception)
+        {
+            lock (_syncLock)
+            {
+                if (_theme == completionSource.Task)
+                {
+                    _theme = null;
+                }
+            }
+
+            completionSource.SetException(exception);
         }
     }
 

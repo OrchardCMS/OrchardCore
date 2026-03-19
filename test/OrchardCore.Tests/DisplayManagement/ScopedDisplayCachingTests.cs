@@ -1,14 +1,16 @@
 using Microsoft.Extensions.FileProviders;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.Layout;
+using OrchardCore.DisplayManagement.Manifest;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.DisplayManagement.Zones;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Extensions.Manifests;
-using OrchardCore.Modules.Manifest;
 using OrchardCore.Tests.Stubs;
 
 namespace OrchardCore.Tests.DisplayManagement;
@@ -119,14 +121,14 @@ public class ScopedDisplayCachingTests
             return _resultSource.Task;
         }
 
-        public Task WaitUntilCalledAsync() => _calledSource.Task;
+        public Task<bool> WaitUntilCalledAsync() => _calledSource.Task;
 
         public void SetResult(ThemeSelectorResult result) => _resultSource.TrySetResult(result);
     }
 
-    private sealed class SequenceThemeSelector(IEnumerable<ThemeSelectorResult?> results) : IThemeSelector
+    private sealed class SequenceThemeSelector(IEnumerable<ThemeSelectorResult> results) : IThemeSelector
     {
-        private readonly Queue<ThemeSelectorResult?> _results = new(results);
+        private readonly Queue<ThemeSelectorResult> _results = new(results);
         private int _callCount;
 
         public int CallCount => _callCount;
@@ -164,7 +166,7 @@ public class ScopedDisplayCachingTests
             return await _shapeSource.Task;
         }
 
-        public Task WaitUntilCalledAsync() => _calledSource.Task;
+        public Task<bool> WaitUntilCalledAsync() => _calledSource.Task;
 
         public void SetResult(IShape shape) => _shapeSource.TrySetResult(shape);
     }

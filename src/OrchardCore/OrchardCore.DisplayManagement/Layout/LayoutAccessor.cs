@@ -21,37 +21,40 @@ public class LayoutAccessor : ILayoutAccessor
             return _layout;
         }
 
+        TaskCompletionSource<IZoneHolding> completionSource;
+
         lock (_syncLock)
         {
-            return _layout ??= CreateLayoutTask();
+            if (_layout != null)
+            {
+                return _layout;
+            }
+
+            completionSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
+            _layout = completionSource.Task;
         }
+
+        _ = GetLayoutAwaitedAsync(completionSource);
+        return completionSource.Task;
     }
 
-    private Task<IZoneHolding> CreateLayoutTask()
+    private async Task GetLayoutAwaitedAsync(TaskCompletionSource<IZoneHolding> completionSource)
     {
-        var completionSource = new TaskCompletionSource<IZoneHolding>(TaskCreationOptions.RunContinuationsAsynchronously);
-        _ = GetLayoutAwaitedAsync(completionSource);
-
-        return completionSource.Task;
-
-        async Task GetLayoutAwaitedAsync(TaskCompletionSource<IZoneHolding> completionSource)
+        try
         {
-            try
+            completionSource.SetResult(await GetLayoutInternalAsync());
+        }
+        catch (Exception exception)
+        {
+            lock (_syncLock)
             {
-                completionSource.SetResult(await GetLayoutInternalAsync());
-            }
-            catch (Exception exception)
-            {
-                lock (_syncLock)
+                if (_layout == completionSource.Task)
                 {
-                    if (_layout == completionSource.Task)
-                    {
-                        _layout = null;
-                    }
+                    _layout = null;
                 }
-
-                completionSource.SetException(exception);
             }
+
+            completionSource.SetException(exception);
         }
     }
 
