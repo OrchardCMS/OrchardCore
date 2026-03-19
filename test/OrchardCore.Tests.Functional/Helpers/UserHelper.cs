@@ -19,10 +19,10 @@ public static class UserHelper
         await page.GotoAsync($"{prefix}/Admin/Users/Create");
         await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
 
-        await page.Locator("input[name='UserInformation.UserName']").FillAsync(userName);
-        await page.Locator("input[name='UserInformation.Email']").FillAsync(email);
-        await page.Locator("input[name='UserFields.Password']").FillAsync(password);
-        await page.Locator("input[name='UserFields.PasswordConfirmation']").FillAsync(password);
+        await page.Locator("input[name='User.UserName']").FillAsync(userName);
+        await page.Locator("input[name='User.Email']").FillAsync(email);
+        await page.Locator("input[name='User.Password']").FillAsync(password);
+        await page.Locator("input[name='User.PasswordConfirmation']").FillAsync(password);
 
         if (!string.IsNullOrEmpty(roleName))
         {
@@ -32,7 +32,7 @@ public static class UserHelper
             await roleLabel.ClickAsync();
         }
 
-        await ButtonHelper.ClickCreateAsync(page);
+        await ButtonHelper.ClickSaveAsync(page);
         await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
     }
 
