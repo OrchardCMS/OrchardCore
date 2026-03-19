@@ -235,7 +235,9 @@ public sealed class OpenApiTests : CmsTestBase
     /// <summary>
     /// Creates an OpenID Connect application on the auth server tenant.
     /// </summary>
+#pragma warning disable IDE0051 // Remove unused private members — will be used in upcoming OAuth tests
     private static async Task CreateOpenIdApplicationAsync(IPage page, string authPrefix, string clientId, string clientSecret)
+#pragma warning restore IDE0051
     {
         await page.GotoAsync($"/{authPrefix}/Admin/OpenId/Application/Create");
         await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
