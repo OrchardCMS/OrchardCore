@@ -59,7 +59,7 @@ public override void ConfigureServices(IServiceCollection services)
 
 ## Passing localizations to the browser
 
-In a Razor view or layout, call `Orchard.GetJSLocalizations(…)` and pass the serialized result as data to your root component. This keeps the localizations scoped to that app instance instead of documenting an inline script bootstrap.
+In a Razor view or layout, call `Orchard.GetJSLocalizations(…)` and pass the serialized result as data to your root component. This keeps the localizations scoped to that app instance instead of using an inline script bootstrap.
 
 ```cshtml
 @{
@@ -69,7 +69,7 @@ In a Razor view or layout, call `Orchard.GetJSLocalizations(…)` and pass the s
 <my-module-app localizations="@Json.Serialize(localizations)"></my-module-app>
 ```
 
-In this example, `<my-module-app>` represents your root Vue component in Razor markup.
+In this example, `<my-module-app>` is the custom element tag for your root Vue component in Razor markup. Razor HTML-encodes the attribute value, and the component parses the JSON string once before seeding the shared translations store.
 
 ### Multiple groups at once
 
