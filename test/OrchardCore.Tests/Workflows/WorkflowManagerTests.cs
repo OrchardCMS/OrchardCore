@@ -105,6 +105,47 @@ public class WorkflowManagerTests
         Assert.Equal(2, executionCount);
     }
 
+    [Fact]
+    public async Task TriggerEventAsync_ShouldAllowFaultHandlerToTriggerWorkflowAfterActivityError()
+    {
+        var serviceProvider = CreateServiceProvider();
+        var executionCount = 0;
+        var faultTriggerCount = 0;
+        var throwingTask = new ThrowingTask(() => executionCount++);
+        var workflowType = new WorkflowType
+        {
+            Id = 1,
+            WorkflowTypeId = IdGenerator.GenerateId(),
+            Activities =
+            [
+                new()
+                {
+                    ActivityId = "1",
+                    IsStart = true,
+                    Name = throwingTask.Name,
+                },
+            ],
+        };
+
+        var workflowManager = CreateWorkflowManager(serviceProvider, [throwingTask], workflowType, (workflowFaultHandler, manager) =>
+        {
+            workflowFaultHandler
+                .Setup(x => x.OnWorkflowFaultAsync(It.IsAny<IWorkflowManager>(), It.IsAny<WorkflowExecutionContext>(), It.IsAny<ActivityContext>(), It.IsAny<Exception>()))
+                .Returns(async () =>
+                {
+                    if (faultTriggerCount++ == 0)
+                    {
+                        await manager.TriggerEventAsync(throwingTask.Name);
+                    }
+                });
+        });
+
+        await workflowManager.TriggerEventAsync(throwingTask.Name);
+
+        Assert.Equal(2, executionCount);
+        Assert.Equal(2, faultTriggerCount);
+    }
+
     private static ServiceProvider CreateServiceProvider()
     {
         var services = new ServiceCollection();
@@ -134,7 +175,8 @@ public class WorkflowManagerTests
     private static WorkflowManager CreateWorkflowManager(
         IServiceProvider serviceProvider,
         IEnumerable<IActivity> activities,
-        WorkflowType workflowType
+        WorkflowType workflowType,
+        Action<Mock<IWorkflowFaultHandler>, WorkflowManager> configureWorkflowFaultHandler = null
     )
     {
         var workflowValueSerializers = new Resolver<IEnumerable<IWorkflowValueSerializer>>(serviceProvider);
@@ -168,6 +210,8 @@ public class WorkflowManagerTests
             jsonOptionsMock.Object,
             clock.Object
             );
+
+        configureWorkflowFaultHandler?.Invoke(workflowFaultHandler, workflowManager);
 
         foreach (var activity in activities)
         {
@@ -211,6 +255,27 @@ public class WorkflowManagerTests
             _onExecute();
 
             return Task.FromResult(Outcomes("Done"));
+        }
+    }
+
+    private sealed class ThrowingTask : TaskActivity<ThrowingTask>
+    {
+        private readonly Action _onExecute;
+
+        public ThrowingTask(Action onExecute)
+        {
+            _onExecute = onExecute;
+        }
+
+        public override LocalizedString DisplayText => new(Name, Name);
+
+        public override LocalizedString Category => new("Test", "Test");
+
+        public override Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+        {
+            _onExecute();
+
+            throw new InvalidOperationException("Simulated activity failure");
         }
     }
 }

@@ -394,6 +394,7 @@ public class WorkflowManager : IWorkflowManager
     {
         // Prevent scope recursion per workflow.
         IncrementRecursion(workflowContext.Workflow);
+        var recursionDecremented = false;
         try
         {
             var workflowType = workflowContext.WorkflowType;
@@ -470,6 +471,9 @@ public class WorkflowManager : IWorkflowManager
                     _logger.LogError(ex, "An unhandled error occurred while executing an activity. Workflow ID: '{WorkflowTypeId}'. Activity: '{ActivityId}', '{ActivityName}'. Putting the workflow in the faulted state.", workflowType.Id, activityContext.ActivityRecord.ActivityId, activityContext.ActivityRecord.Name);
                     workflowContext.Fault(ex, activityContext);
 
+                    DecrementRecursion(workflowContext.Workflow);
+                    recursionDecremented = true;
+
                     await _workflowFaultHandler.OnWorkflowFaultAsync(this, workflowContext, activityContext, ex);
 
                     return blocking.Distinct();
@@ -516,8 +520,11 @@ public class WorkflowManager : IWorkflowManager
         }
         finally
         {
-            // Decrement the workflow scope recursion.
-            DecrementRecursion(workflowContext.Workflow);
+            if (!recursionDecremented)
+            {
+                // Decrement the workflow scope recursion.
+                DecrementRecursion(workflowContext.Workflow);
+            }
         }
     }
 
