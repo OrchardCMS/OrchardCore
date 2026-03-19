@@ -77,7 +77,7 @@ public sealed class Startup : StartupBase
         // Add security schemes to the Swagger document based on the selected authentication type.
         ConfigureSecurityScheme(app, settings);
 
-        // Protect OpenAPI documentation UI endpoints with the ApiViewContent permission.
+        // Protect OpenAPI documentation UI endpoints with the ApiManage permission.
         // The JSON spec endpoints are left open so that NSwag and other code generators
         // can fetch the spec without authentication.
         app.Use(
@@ -123,7 +123,7 @@ public sealed class Startup : StartupBase
                             if (
                                 !await authorizationService.AuthorizeAsync(
                                     user,
-                                    OpenApiPermissions.ApiViewContent
+                                    OpenApiPermissions.ApiManage
                                 )
                             )
                             {

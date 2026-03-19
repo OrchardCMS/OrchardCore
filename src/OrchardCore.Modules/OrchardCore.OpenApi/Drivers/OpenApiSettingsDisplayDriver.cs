@@ -43,7 +43,7 @@ public sealed class OpenApiSettingsDisplayDriver : SiteDisplayDriver<OpenApiSett
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!await _authorizationService.AuthorizeAsync(user, OpenApiPermissions.ApiViewContent))
+        if (!await _authorizationService.AuthorizeAsync(user, OpenApiPermissions.ApiManage))
         {
             return null;
         }
@@ -68,7 +68,7 @@ public sealed class OpenApiSettingsDisplayDriver : SiteDisplayDriver<OpenApiSett
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!await _authorizationService.AuthorizeAsync(user, OpenApiPermissions.ApiViewContent))
+        if (!await _authorizationService.AuthorizeAsync(user, OpenApiPermissions.ApiManage))
         {
             return null;
         }

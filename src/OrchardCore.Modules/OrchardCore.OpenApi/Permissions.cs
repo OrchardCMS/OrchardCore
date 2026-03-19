@@ -6,7 +6,11 @@ namespace OrchardCore.OpenApi;
 
 public sealed class Permissions : IPermissionProvider
 {
-    private readonly IEnumerable<Permission> _allPermissions = [OpenApiPermissions.ApiViewContent];
+    private readonly IEnumerable<Permission> _allPermissions =
+    [
+        OpenApiPermissions.ApiManage,
+        OpenApiPermissions.ApiViewContent,
+    ];
 
     public Task<IEnumerable<Permission>> GetPermissionsAsync() => Task.FromResult(_allPermissions);
 
@@ -15,7 +19,7 @@ public sealed class Permissions : IPermissionProvider
             new PermissionStereotype
             {
                 Name = OrchardCoreConstants.Roles.Administrator,
-                Permissions = [OpenApiPermissions.ApiViewContent],
+                Permissions = [OpenApiPermissions.ApiManage],
             },
         ];
 }

@@ -84,6 +84,42 @@ public sealed class OpenApiTests : CmsTestBase
     }
 
     [Fact]
+    public async Task UserWithoutApiManageCannotAccessSwaggerUI()
+    {
+        var page = await Fixture.CreatePageAsync();
+        await EnableOpenApiAsync(page);
+
+        // Create a user with the Editor role (no OpenAPI permissions).
+        await UserHelper.CreateUserAsync(page, $"/{Tenant.Prefix}", "editor1", "editor1@test.com", "Orchard1!", "Editor");
+
+        // Login as the editor.
+        await UserHelper.LoginAsAsync(page, $"/{Tenant.Prefix}", "editor1", "Orchard1!");
+
+        var response = await page.GotoAsync($"/{Tenant.Prefix}/swagger");
+        Assert.Equal(403, response.Status);
+        await page.CloseAsync();
+    }
+
+    [Fact]
+    public async Task UserWithoutApiManageCannotAccessSettings()
+    {
+        var page = await Fixture.CreatePageAsync();
+        await EnableOpenApiAsync(page);
+
+        // Create a user with the Editor role (no OpenAPI permissions).
+        await UserHelper.CreateUserAsync(page, $"/{Tenant.Prefix}", "editor2", "editor2@test.com", "Orchard1!", "Editor");
+
+        // Login as the editor.
+        await UserHelper.LoginAsAsync(page, $"/{Tenant.Prefix}", "editor2", "Orchard1!");
+
+        await page.GotoAsync($"/{Tenant.Prefix}/Admin/Settings/openapi");
+
+        // The settings page should not render the OpenApi settings fields.
+        await Assertions.Expect(page.Locator("#vue-EnableSwaggerUI")).Not.ToBeAttachedAsync();
+        await page.CloseAsync();
+    }
+
+    [Fact]
     public async Task OpenApiSettingsPageIsAccessible()
     {
         var page = await Fixture.CreatePageAsync();

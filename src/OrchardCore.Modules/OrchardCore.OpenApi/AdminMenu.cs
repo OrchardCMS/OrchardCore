@@ -25,7 +25,7 @@ public sealed class AdminMenu : AdminNavigationProvider
         builder
             .Add(S["Settings"], settings => settings
                 .Add(S["OpenApi"], S["OpenApi"].PrefixPosition(), openApi => openApi
-                    .Permission(OpenApiPermissions.ApiViewContent)
+                    .Permission(OpenApiPermissions.ApiManage)
                     .Action("Index", "Admin", _routeValues)
                     .LocalNav()
                 )

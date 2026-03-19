@@ -43,7 +43,7 @@ public sealed class OpenApiApiController : ControllerBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> TestConnection([FromBody] TestConnectionRequest model)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, OpenApiPermissions.ApiViewContent))
+        if (!await _authorizationService.AuthorizeAsync(User, OpenApiPermissions.ApiManage))
         {
             return this.ChallengeOrForbid("Api");
         }
