@@ -59,18 +59,14 @@ public override void ConfigureServices(IServiceCollection services)
 
 ## Passing localizations to the browser
 
-In a Razor view or layout, call `Orchard.GetJSLocalizations(…)` and pass the serialized result directly into a scoped ES module entry point so your front-end code can consume it without extra HTTP requests.
+In a Razor view or layout, call `Orchard.GetJSLocalizations(…)` and pass the serialized result as data to your root component. This keeps the localizations scoped to that app instance instead of documenting an inline script bootstrap.
 
 ```cshtml
 @{
     var localizations = Orchard.GetJSLocalizations("my-module");
 }
 
-<script type="module">
-    import { bootMyModule } from "/MyModule/module.js";
-
-    bootMyModule(@Json.Serialize(localizations));
-</script>
+<my-module-app localizations="@Json.Serialize(localizations).ToString()"></my-module-app>
 ```
 
 ### Multiple groups at once
@@ -103,17 +99,24 @@ export function setTranslations(t: Record<string, string>): void {
 }
 ```
 
-The module keeps a single shared object alive for the lifetime of the JavaScript module. Seed it once in your app bootstrap, then read it anywhere in your front-end code.
+The module keeps a single shared object alive for the lifetime of the JavaScript module. Seed it once near the root of your app, then read it anywhere in your front-end code.
 
-### Seeding translations in the app entry point
+### Seeding translations in the root component
 
-Initialize the store in your app entry point with the serialized localizations passed from Razor:
+Initialize the store in your root component with the serialized localizations passed from Razor:
 
 ```typescript
 import { setTranslations } from "@orchardcore/bloom/helpers/localizations";
 
-export function bootMyModule(localizations: Record<string, string>): void {
-    setTranslations(localizations);
+const props = defineProps({
+    localizations: {
+        type: String,
+        required: true,
+    },
+});
+
+if (props.localizations) {
+    setTranslations(JSON.parse(props.localizations));
 }
 ```
 
