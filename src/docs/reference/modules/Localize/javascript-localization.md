@@ -23,6 +23,7 @@ Create a class that implements `IJSLocalizer` and inject `IStringLocalizer<T>` t
 ```csharp
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Localization;
 
