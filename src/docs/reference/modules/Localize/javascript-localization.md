@@ -69,6 +69,8 @@ In a Razor view or layout, call `Orchard.GetJSLocalizations(…)` and pass the s
 <my-module-app localizations="@Json.Serialize(localizations)"></my-module-app>
 ```
 
+In this example, `<my-module-app>` represents your root Vue component in Razor markup.
+
 ### Multiple groups at once
 
 You can request translations from multiple groups in a single call. The dictionaries are merged — later registrations win on key conflicts.
@@ -103,7 +105,7 @@ The module keeps a single shared object alive for the lifetime of the JavaScript
 
 ### Seeding translations in the root component
 
-Initialize the store in your root component with the serialized localizations passed from Razor:
+Initialize the store in your root component with the serialized localizations passed from Razor. Because the value is passed through an HTML attribute, the component receives it as a string and parses it once before seeding the shared store:
 
 ```typescript
 import { setTranslations } from "@orchardcore/bloom/helpers/localizations";
