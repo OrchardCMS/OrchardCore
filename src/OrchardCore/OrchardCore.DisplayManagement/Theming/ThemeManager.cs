@@ -3,11 +3,17 @@ using OrchardCore.Environment.Extensions;
 
 namespace OrchardCore.DisplayManagement.Theming;
 
+/// <summary>
+/// Resolves the current theme for the active scope.
+/// </summary>
+/// <remarks>
+/// This implementation is scoped per request and intentionally not thread-safe.
+/// It is designed for Orchard Core's sequential display pipeline and must not be registered as a singleton.
+/// </remarks>
 public class ThemeManager : IThemeManager
 {
     private readonly IEnumerable<IThemeSelector> _themeSelectors;
     private readonly IExtensionManager _extensionManager;
-    private readonly object _syncLock = new();
 
     private Task<IExtensionInfo> _theme;
 
@@ -28,54 +34,7 @@ public class ThemeManager : IThemeManager
             return _theme;
         }
 
-        TaskCompletionSource<IExtensionInfo> completionSource;
-
-        lock (_syncLock)
-        {
-            if (_theme != null)
-            {
-                return _theme;
-            }
-
-            completionSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
-            _theme = completionSource.Task;
-        }
-
-        _ = GetThemeAwaitedAsync(completionSource);
-        return completionSource.Task;
-    }
-
-    private async Task GetThemeAwaitedAsync(TaskCompletionSource<IExtensionInfo> completionSource)
-    {
-        try
-        {
-            var theme = await GetThemeInternalAsync();
-
-            if (theme == null)
-            {
-                lock (_syncLock)
-                {
-                    if (_theme == completionSource.Task)
-                    {
-                        _theme = null;
-                    }
-                }
-            }
-
-            completionSource.SetResult(theme);
-        }
-        catch (Exception exception)
-        {
-            lock (_syncLock)
-            {
-                if (_theme == completionSource.Task)
-                {
-                    _theme = null;
-                }
-            }
-
-            completionSource.SetException(exception);
-        }
+        return GetThemeInternalAsync();
     }
 
     private async Task<IExtensionInfo> GetThemeInternalAsync()
@@ -104,7 +63,10 @@ public class ThemeManager : IThemeManager
 
             if (t.Exists)
             {
-                return new ThemeExtensionInfo(t);
+                var themeResult = new ThemeExtensionInfo(t);
+                _theme = Task.FromResult<IExtensionInfo>(themeResult);
+
+                return themeResult;
             }
         }
 

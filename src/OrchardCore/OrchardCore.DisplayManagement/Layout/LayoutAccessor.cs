@@ -2,12 +2,17 @@ using OrchardCore.DisplayManagement.Zones;
 
 namespace OrchardCore.DisplayManagement.Layout;
 
+/// <summary>
+/// Provides access to the current layout shape for the active scope.
+/// </summary>
+/// <remarks>
+/// This implementation is scoped per request and intentionally not thread-safe.
+/// It is used by Orchard Core's sequential display pipeline and must not be registered as a singleton.
+/// </remarks>
 public class LayoutAccessor : ILayoutAccessor
 {
-    private readonly IShapeFactory _shapeFactory;
-    private readonly object _syncLock = new();
-
     private Task<IZoneHolding> _layout;
+    private readonly IShapeFactory _shapeFactory;
 
     public LayoutAccessor(IShapeFactory shapeFactory)
     {
@@ -21,41 +26,7 @@ public class LayoutAccessor : ILayoutAccessor
             return _layout;
         }
 
-        TaskCompletionSource<IZoneHolding> completionSource;
-
-        lock (_syncLock)
-        {
-            if (_layout != null)
-            {
-                return _layout;
-            }
-
-            completionSource = new(TaskCreationOptions.RunContinuationsAsynchronously);
-            _layout = completionSource.Task;
-        }
-
-        _ = GetLayoutAwaitedAsync(completionSource);
-        return completionSource.Task;
-    }
-
-    private async Task GetLayoutAwaitedAsync(TaskCompletionSource<IZoneHolding> completionSource)
-    {
-        try
-        {
-            completionSource.SetResult(await GetLayoutInternalAsync());
-        }
-        catch (Exception exception)
-        {
-            lock (_syncLock)
-            {
-                if (_layout == completionSource.Task)
-                {
-                    _layout = null;
-                }
-            }
-
-            completionSource.SetException(exception);
-        }
+        return GetLayoutInternalAsync();
     }
 
     private async Task<IZoneHolding> GetLayoutInternalAsync()
@@ -71,6 +42,7 @@ public class LayoutAccessor : ILayoutAccessor
             throw new ApplicationException("Fatal error, a Layout couldn't be created.");
         }
 
+        _layout = Task.FromResult(layout);
         return layout;
     }
 }
