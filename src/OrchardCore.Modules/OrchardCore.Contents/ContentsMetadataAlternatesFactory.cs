@@ -8,67 +8,44 @@ namespace OrchardCore.Contents;
 /// </summary>
 internal static class ContentsMetadataAlternatesFactory
 {
-    private static readonly ConcurrentDictionary<MetadataAlternatesCacheKey, MetadataAlternatesCollection> _cache = new();
+    private static readonly ConcurrentDictionary<MetadataAlternatesCacheKey, string[]> _cache = new();
 
     /// <summary>
     /// Gets or creates cached alternates for a ContentsMetadata shape configuration.
     /// </summary>
-    public static MetadataAlternatesCollection GetAlternates(string contentType, string stereotype)
+    public static string[] GetAlternates(string stereotype, string displayType)
     {
-        var key = new MetadataAlternatesCacheKey(contentType, stereotype ?? string.Empty);
-        return _cache.GetOrAdd(key, static k => new MetadataAlternatesCollection(k));
+        var key = new MetadataAlternatesCacheKey(stereotype ?? string.Empty, displayType ?? string.Empty);
+        return _cache.GetOrAdd(key, BuildAlternates);
     }
 
     internal readonly record struct MetadataAlternatesCacheKey(
-        string ContentType,
-        string Stereotype);
+        string Stereotype,
+        string DisplayType);
 
-    /// <summary>
-    /// Pre-computed alternates collection for a ContentsMetadata shape configuration.
-    /// </summary>
-    internal sealed class MetadataAlternatesCollection
+    private static string[] BuildAlternates(MetadataAlternatesCacheKey key)
     {
-        private readonly MetadataAlternatesCacheKey _key;
-        private readonly ConcurrentDictionary<string, string[]> _alternatesByDisplayType = new(StringComparer.OrdinalIgnoreCase);
-        private readonly bool _hasStereotype;
+        var alternates = new List<string>();
+        var hasStereotype = !string.IsNullOrEmpty(key.Stereotype) && !string.Equals("Content", key.Stereotype, StringComparison.OrdinalIgnoreCase);
 
-        internal MetadataAlternatesCollection(MetadataAlternatesCacheKey key)
+        if (hasStereotype)
         {
-            _key = key;
-            _hasStereotype = !string.IsNullOrEmpty(key.Stereotype) && !string.Equals("Content", key.Stereotype, StringComparison.OrdinalIgnoreCase);
+            // [Stereotype]__ContentsMetadata
+            alternates.Add($"{key.Stereotype}__ContentsMetadata");
         }
 
-        /// <summary>
-        /// Gets the cached alternates for a specific display type.
-        /// </summary>
-        public string[] GetAlternates(string displayType)
+        if (!string.IsNullOrEmpty(key.DisplayType) && key.DisplayType != "Detail")
         {
-            return _alternatesByDisplayType.GetOrAdd(displayType, BuildAlternates);
-        }
+            // ContentsMetadata_[DisplayType] e.g. ContentsMetadata_Summary
+            alternates.Add($"ContentsMetadata_{key.DisplayType}");
 
-        private string[] BuildAlternates(string displayType)
-        {
-            var alternates = new List<string>();
-
-            if (_hasStereotype)
+            if (hasStereotype)
             {
-                // [Stereotype]__ContentsMetadata
-                alternates.Add($"{_key.Stereotype}__ContentsMetadata");
+                // [Stereotype]_[DisplayType]__ContentsMetadata e.g. Widget_Summary__ContentsMetadata
+                alternates.Add($"{key.Stereotype}_{key.DisplayType}__ContentsMetadata");
             }
-
-            if (!string.IsNullOrEmpty(displayType) && displayType != "Detail")
-            {
-                // ContentsMetadata_[DisplayType] e.g. ContentsMetadata_Summary
-                alternates.Add($"ContentsMetadata_{displayType}");
-
-                if (_hasStereotype)
-                {
-                    // [Stereotype]_[DisplayType]__ContentsMetadata e.g. Widget_Summary__ContentsMetadata
-                    alternates.Add($"{_key.Stereotype}_{displayType}__ContentsMetadata");
-                }
-            }
-
-            return alternates.ToArray();
         }
+
+        return alternates.ToArray();
     }
 }

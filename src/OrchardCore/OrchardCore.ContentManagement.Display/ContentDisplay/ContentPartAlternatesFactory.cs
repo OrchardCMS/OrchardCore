@@ -11,15 +11,15 @@ public static class ContentPartAlternatesFactory
 {
     private const string DisplayToken = "_Display";
 
-    private static readonly ConcurrentDictionary<PartAlternatesCacheKey, PartAlternatesCollection> _cache = new();
+    private static readonly ConcurrentDictionary<PartAlternatesCacheKey, string[]> _cache = new();
 
     /// <summary>
     /// Gets or creates cached alternates for a content part configuration.
     /// </summary>
     /// <param name="definition">The content type part definition.</param>
     /// <param name="shapeType">The shape type being rendered.</param>
-    /// <returns>A cached collection of alternates.</returns>
-    public static PartAlternatesCollection GetOrCreate(ContentTypePartDefinition definition, string shapeType)
+    /// <returns>A cached array of alternates.</returns>
+    public static string[] GetAlternates(ContentTypePartDefinition definition, string shapeType, string displayType)
     {
         var key = new PartAlternatesCacheKey(
             definition.ContentTypeDefinition.Name,
@@ -28,9 +28,10 @@ public static class ContentPartAlternatesFactory
             definition.Editor() ?? string.Empty,
             definition.DisplayMode() ?? string.Empty,
             definition.ContentTypeDefinition.GetStereotype() ?? string.Empty,
-            shapeType);
+            shapeType,
+            displayType ?? string.Empty);
 
-        return _cache.GetOrAdd(key, static k => new PartAlternatesCollection(k));
+        return _cache.GetOrAdd(key, BuildAlternates);
     }
 
     /// <summary>
@@ -43,203 +44,129 @@ public static class ContentPartAlternatesFactory
         string Editor,
         string DisplayMode,
         string Stereotype,
-        string ShapeType);
+        string ShapeType,
+        string DisplayType);
 
-    /// <summary>
-    /// Pre-computed alternates collection for a part configuration.
-    /// </summary>
-    public sealed class PartAlternatesCollection
+    private static string[] BuildAlternates(PartAlternatesCacheKey key)
     {
-        private readonly PartAlternatesCacheKey _key;
-        private readonly ConcurrentDictionary<string, string[]> _alternatesByDisplayType = new(StringComparer.OrdinalIgnoreCase);
+        var alternates = new List<string>();
+        var editorPartType = !string.IsNullOrEmpty(key.Editor)
+            ? key.PartType + "_Edit__" + key.Editor
+            : key.PartType + "_Edit";
+        var hasDisplayMode = !string.IsNullOrEmpty(key.DisplayMode);
+        var isDisplayModeShapeType = key.ShapeType == key.PartType + "_Display__" + key.DisplayMode;
+        var isPartTypeShape = key.ShapeType == key.PartType;
+        var isEditorShape = key.ShapeType == editorPartType;
+        var hasStereotype = !string.IsNullOrEmpty(key.Stereotype);
+        var partTypeEqualsPartName = key.PartType == key.PartName;
 
-        // Pre-computed values
-        private readonly string _editorPartType;
-        private readonly bool _hasDisplayMode;
-        private readonly bool _isDisplayModeShapeType;
-        private readonly bool _isPartTypeShape;
-        private readonly bool _isEditorShape;
-        private readonly bool _hasStereotype;
-        private readonly bool _partTypeEqualsPartName;
+        string[] displayTypes;
 
-        internal PartAlternatesCollection(PartAlternatesCacheKey key)
+        if (isEditorShape)
         {
-            _key = key;
-
-            _editorPartType = !string.IsNullOrEmpty(key.Editor)
-                ? key.PartType + "_Edit__" + key.Editor
-                : key.PartType + "_Edit";
-
-            _hasDisplayMode = !string.IsNullOrEmpty(key.DisplayMode);
-            _isDisplayModeShapeType = key.ShapeType == key.PartType + "_Display__" + key.DisplayMode;
-            _isPartTypeShape = key.ShapeType == key.PartType;
-            _isEditorShape = key.ShapeType == _editorPartType;
-            _hasStereotype = !string.IsNullOrEmpty(key.Stereotype);
-            _partTypeEqualsPartName = key.PartType == key.PartName;
+            displayTypes = ["_" + key.DisplayType];
         }
-
-        /// <summary>
-        /// Gets whether the shape type is a display mode shape type.
-        /// </summary>
-        public bool IsDisplayModeShapeType => _isDisplayModeShapeType;
-
-        /// <summary>
-        /// Gets whether the shape has a display mode configured.
-        /// </summary>
-        public bool HasDisplayMode => _hasDisplayMode;
-
-        /// <summary>
-        /// Gets the display mode for this part configuration.
-        /// </summary>
-        public string DisplayMode => _key.DisplayMode;
-
-        /// <summary>
-        /// Gets the part name.
-        /// </summary>
-        public string PartName => _key.PartName;
-
-        /// <summary>
-        /// Gets the part type.
-        /// </summary>
-        public string PartType => _key.PartType;
-
-        /// <summary>
-        /// Gets the content type.
-        /// </summary>
-        public string ContentType => _key.ContentType;
-
-        /// <summary>
-        /// Gets the editor part type.
-        /// </summary>
-        public string EditorPartType => _editorPartType;
-
-        /// <summary>
-        /// Gets whether this is an editor shape.
-        /// </summary>
-        public bool IsEditorShape => _isEditorShape;
-
-        /// <summary>
-        /// Gets the cached alternates for a specific display type.
-        /// </summary>
-        /// <param name="displayType">The display type (e.g., "Summary", "Detail").</param>
-        /// <returns>An array of alternates.</returns>
-        public string[] GetAlternates(string displayType)
+        else
         {
-            return _alternatesByDisplayType.GetOrAdd(displayType, BuildAlternates);
-        }
+            displayTypes = ["", "_" + key.DisplayType];
 
-        private string[] BuildAlternates(string displayType)
-        {
-            var alternates = new List<string>();
-
-            string[] displayTypes;
-
-            if (_isEditorShape)
+            if (!isDisplayModeShapeType)
             {
-                displayTypes = ["_" + displayType];
+                // [ShapeType]_[DisplayType], e.g. HtmlBodyPart.Summary, BagPart.Summary, ListPartFeed.Summary
+                alternates.Add($"{key.ShapeType}_{key.DisplayType}");
             }
-            else
-            {
-                displayTypes = ["", "_" + displayType];
+        }
 
-                if (!_isDisplayModeShapeType)
+        if (isPartTypeShape || isEditorShape)
+        {
+            foreach (var dt in displayTypes)
+            {
+                // [ContentType]_[DisplayType]__[PartType], e.g. Blog-HtmlBodyPart, LandingPage-BagPart
+                alternates.Add($"{key.ContentType}{dt}__{key.PartType}");
+
+                if (hasStereotype)
                 {
-                    // [ShapeType]_[DisplayType], e.g. HtmlBodyPart.Summary, BagPart.Summary, ListPartFeed.Summary
-                    alternates.Add($"{_key.ShapeType}_{displayType}");
+                    // [Stereotype]__[DisplayType]__[PartType], e.g. Widget-ContentsMetadata
+                    alternates.Add($"{key.Stereotype}{dt}__{key.PartType}");
                 }
             }
 
-            if (_isPartTypeShape || _isEditorShape)
+            if (!partTypeEqualsPartName)
             {
                 foreach (var dt in displayTypes)
                 {
-                    // [ContentType]_[DisplayType]__[PartType], e.g. Blog-HtmlBodyPart, LandingPage-BagPart
-                    alternates.Add($"{_key.ContentType}{dt}__{_key.PartType}");
+                    // [ContentType]_[DisplayType]__[PartName], e.g. LandingPage-Services
+                    alternates.Add($"{key.ContentType}{dt}__{key.PartName}");
 
-                    if (_hasStereotype)
+                    if (hasStereotype)
                     {
-                        // [Stereotype]__[DisplayType]__[PartType], e.g. Widget-ContentsMetadata
-                        alternates.Add($"{_key.Stereotype}{dt}__{_key.PartType}");
-                    }
-                }
-
-                if (!_partTypeEqualsPartName)
-                {
-                    foreach (var dt in displayTypes)
-                    {
-                        // [ContentType]_[DisplayType]__[PartName], e.g. LandingPage-Services
-                        alternates.Add($"{_key.ContentType}{dt}__{_key.PartName}");
-
-                        if (_hasStereotype)
-                        {
-                            // [Stereotype]_[DisplayType]__[PartType]__[PartName], e.g. Widget-ServicePart-Services
-                            alternates.Add($"{_key.Stereotype}{dt}__{_key.PartType}__{_key.PartName}");
-                        }
+                        // [Stereotype]_[DisplayType]__[PartType]__[PartName], e.g. Widget-ServicePart-Services
+                        alternates.Add($"{key.Stereotype}{dt}__{key.PartType}__{key.PartName}");
                     }
                 }
             }
-            else
-            {
-                if (_hasDisplayMode)
-                {
-                    // [PartType]_[DisplayType]__[DisplayMode]_Display, e.g. HtmlBodyPart-MyDisplayMode.Display.Summary
-                    alternates.Add($"{_key.PartType}_{displayType}__{_key.DisplayMode}{DisplayToken}");
-                }
-
-                var lastAlternatesOfNamedPart = new List<string>();
-
-                foreach (var dt in displayTypes)
-                {
-                    var shapeTypeSuffix = _key.ShapeType;
-                    var displayTypeDisplayToken = dt;
-
-                    if (_hasDisplayMode)
-                    {
-                        if (_isDisplayModeShapeType)
-                        {
-                            shapeTypeSuffix = _key.DisplayMode;
-                        }
-                        else
-                        {
-                            shapeTypeSuffix = $"{shapeTypeSuffix}__{_key.DisplayMode}";
-                        }
-
-                        if (dt == "")
-                        {
-                            displayTypeDisplayToken = DisplayToken;
-                        }
-                        else
-                        {
-                            shapeTypeSuffix = $"{shapeTypeSuffix}{DisplayToken}";
-                        }
-                    }
-
-                    // [ContentType]_[DisplayType]__[PartType]__[ShapeType], e.g. Blog-ListPart-ListPartFeed
-                    alternates.Add($"{_key.ContentType}{displayTypeDisplayToken}__{_key.PartType}__{shapeTypeSuffix}");
-
-                    if (_hasStereotype)
-                    {
-                        // [Stereotype]_[DisplayType]__[PartType]__[ShapeType], e.g. Blog-ListPart-ListPartFeed
-                        alternates.Add($"{_key.Stereotype}{displayTypeDisplayToken}__{_key.PartType}__{shapeTypeSuffix}");
-                    }
-
-                    if (!_partTypeEqualsPartName)
-                    {
-                        // [ContentType]_[DisplayType]__[PartName]__[ShapeType], e.g. LandingPage-Services-BagPartSummary
-                        lastAlternatesOfNamedPart.Add($"{_key.ContentType}{displayTypeDisplayToken}__{_key.PartName}__{shapeTypeSuffix}");
-
-                        if (_hasStereotype)
-                        {
-                            // [Stereotype]_[DisplayType]__[PartType]__[PartName]__[ShapeType], e.g. Widget-ServicePart-Services-BagPartSummary
-                            lastAlternatesOfNamedPart.Add($"{_key.Stereotype}{displayTypeDisplayToken}__{_key.PartType}__{_key.PartName}__{shapeTypeSuffix}");
-                        }
-                    }
-                }
-
-                alternates.AddRange(lastAlternatesOfNamedPart);
-            }
-
-            return alternates.ToArray();
         }
+        else
+        {
+            if (hasDisplayMode)
+            {
+                // [PartType]_[DisplayType]__[DisplayMode]_Display, e.g. HtmlBodyPart-MyDisplayMode.Display.Summary
+                alternates.Add($"{key.PartType}_{key.DisplayType}__{key.DisplayMode}{DisplayToken}");
+            }
+
+            var lastAlternatesOfNamedPart = new List<string>();
+
+            foreach (var dt in displayTypes)
+            {
+                var shapeTypeSuffix = key.ShapeType;
+                var displayTypeDisplayToken = dt;
+
+                if (hasDisplayMode)
+                {
+                    if (isDisplayModeShapeType)
+                    {
+                        shapeTypeSuffix = key.DisplayMode;
+                    }
+                    else
+                    {
+                        shapeTypeSuffix = $"{shapeTypeSuffix}__{key.DisplayMode}";
+                    }
+
+                    if (dt == "")
+                    {
+                        displayTypeDisplayToken = DisplayToken;
+                    }
+                    else
+                    {
+                        shapeTypeSuffix = $"{shapeTypeSuffix}{DisplayToken}";
+                    }
+                }
+
+                // [ContentType]_[DisplayType]__[PartType]__[ShapeType], e.g. Blog-ListPart-ListPartFeed
+                alternates.Add($"{key.ContentType}{displayTypeDisplayToken}__{key.PartType}__{shapeTypeSuffix}");
+
+                if (hasStereotype)
+                {
+                    // [Stereotype]_[DisplayType]__[PartType]__[ShapeType], e.g. Blog-ListPart-ListPartFeed
+                    alternates.Add($"{key.Stereotype}{displayTypeDisplayToken}__{key.PartType}__{shapeTypeSuffix}");
+                }
+
+                if (!partTypeEqualsPartName)
+                {
+                    // [ContentType]_[DisplayType]__[PartName]__[ShapeType], e.g. LandingPage-Services-BagPartSummary
+                    lastAlternatesOfNamedPart.Add($"{key.ContentType}{displayTypeDisplayToken}__{key.PartName}__{shapeTypeSuffix}");
+
+                    if (hasStereotype)
+                    {
+                        // [Stereotype]_[DisplayType]__[PartType]__[PartName]__[ShapeType], e.g. Widget-ServicePart-Services-BagPartSummary
+                        lastAlternatesOfNamedPart.Add($"{key.Stereotype}{displayTypeDisplayToken}__{key.PartType}__{key.PartName}__{shapeTypeSuffix}");
+                    }
+                }
+            }
+
+            alternates.AddRange(lastAlternatesOfNamedPart);
+        }
+
+        return alternates.ToArray();
     }
 }

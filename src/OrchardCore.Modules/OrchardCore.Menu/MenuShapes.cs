@@ -143,12 +143,12 @@ public class MenuShapes : ShapeTableProvider
                 }
 
                 // Get cached alternates and add them efficiently
-                var cachedAlternates = MenuItemAlternatesFactory.GetAlternates(
+                var cachedAlternates = MenuItemAlternatesFactory.GetMenuItemAlternates(
                     menuContentItem.ContentItem.ContentType,
                     differentiator,
                     level);
 
-                menuItem.Metadata.Alternates.AddRange(cachedAlternates.MenuItemAlternates);
+                menuItem.Metadata.Alternates.AddRange(cachedAlternates);
             });
 
         builder.Describe("MenuItemLink")
@@ -161,12 +161,12 @@ public class MenuShapes : ShapeTableProvider
                 var menuContentItem = menuItem.GetProperty<ContentItem>("ContentItem");
 
                 // Get cached alternates and add them efficiently
-                var cachedAlternates = MenuItemAlternatesFactory.GetAlternates(
+                var cachedAlternates = MenuItemAlternatesFactory.GetMenuItemLinkAlternates(
                     menuContentItem.ContentItem.ContentType,
                     differentiator,
                     level);
 
-                menuItem.Metadata.Alternates.AddRange(cachedAlternates.MenuItemLinkAlternates);
+                menuItem.Metadata.Alternates.AddRange(cachedAlternates);
             });
 
         return ValueTask.CompletedTask;

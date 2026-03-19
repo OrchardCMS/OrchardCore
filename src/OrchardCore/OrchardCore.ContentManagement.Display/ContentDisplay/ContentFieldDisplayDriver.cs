@@ -22,14 +22,13 @@ public abstract class ContentFieldDisplayDriver<TField> : DisplayDriverBase, ICo
 
         if (_typePartDefinition != null && _partFieldDefinition != null)
         {
-            // Get or create cached alternates for this field configuration
-            var alternatesCollection = ContentFieldAlternatesFactory.GetOrCreate(_typePartDefinition, _partFieldDefinition, shapeType);
+            var partName = _typePartDefinition.Name;
+            var fieldType = _partFieldDefinition.FieldDefinition.Name;
+            var fieldName = _partFieldDefinition.Name;
+            var displayMode = _partFieldDefinition.DisplayMode();
+            var editorShapeType = GetEditorShapeType(_partFieldDefinition);
 
-            var partName = alternatesCollection.PartName;
-            var fieldType = alternatesCollection.FieldType;
-            var fieldName = alternatesCollection.FieldName;
-
-            if (alternatesCollection.IsEditorShape)
+            if (editorShapeType == shapeType)
             {
                 // HtmlBodyPart-Description, Services-Description
                 result.Differentiator($"{partName}-{fieldName}");
@@ -39,7 +38,7 @@ public abstract class ContentFieldDisplayDriver<TField> : DisplayDriverBase, ICo
             }
 
             // If the shape type and the field type only differ by the display mode
-            if (alternatesCollection.HasDisplayMode && shapeType == fieldType + DisplaySeparator + alternatesCollection.DisplayMode)
+            if (!string.IsNullOrEmpty(displayMode) && shapeType == fieldType + DisplaySeparator + displayMode)
             {
                 // Preserve the shape name regardless its differentiator
                 result.Name($"{partName}-{fieldName}");
@@ -61,7 +60,7 @@ public abstract class ContentFieldDisplayDriver<TField> : DisplayDriverBase, ICo
                 var displayType = ctx.Shape.Metadata.DisplayType;
 
                 // Get cached alternates for this display type and add them efficiently
-                var cachedAlternates = alternatesCollection.GetAlternates(displayType);
+                var cachedAlternates = ContentFieldAlternatesFactory.GetAlternates(_typePartDefinition, _partFieldDefinition, shapeType, displayType);
                 ctx.Shape.Metadata.Alternates.AddRange(cachedAlternates);
             });
         }

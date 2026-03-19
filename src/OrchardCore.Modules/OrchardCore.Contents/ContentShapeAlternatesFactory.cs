@@ -9,63 +9,42 @@ namespace OrchardCore.Contents;
 /// </summary>
 internal static class ContentShapeAlternatesFactory
 {
-    private static readonly ConcurrentDictionary<ContentAlternatesCacheKey, ContentAlternatesCollection> _cache = new();
+    private static readonly ConcurrentDictionary<ContentAlternatesCacheKey, string[]> _cache = new();
 
     /// <summary>
     /// Gets or creates cached alternates for a Content shape configuration.
     /// </summary>
-    public static ContentAlternatesCollection GetAlternates(string contentType, string contentItemId)
+    public static string[] GetAlternates(string contentType, string contentItemId, string displayType)
     {
-        var key = new ContentAlternatesCacheKey(contentType, contentItemId);
-        return _cache.GetOrAdd(key, static k => new ContentAlternatesCollection(k));
+        var key = new ContentAlternatesCacheKey(contentType, contentItemId, displayType ?? string.Empty);
+        return _cache.GetOrAdd(key, BuildAlternates);
     }
 
     internal readonly record struct ContentAlternatesCacheKey(
         string ContentType,
-        string ContentItemId);
+        string ContentItemId,
+        string DisplayType);
 
-    /// <summary>
-    /// Pre-computed alternates collection for a Content shape configuration.
-    /// </summary>
-    internal sealed class ContentAlternatesCollection
+    private static string[] BuildAlternates(ContentAlternatesCacheKey key)
     {
-        private readonly ContentAlternatesCacheKey _key;
-        private readonly ConcurrentDictionary<string, string[]> _alternatesByDisplayType = new(StringComparer.OrdinalIgnoreCase);
+        var alternates = new List<string>();
+        var encodedContentType = key.ContentType.EncodeAlternateElement();
 
-        internal ContentAlternatesCollection(ContentAlternatesCacheKey key)
-        {
-            _key = key;
-        }
+        // Content__[DisplayType] e.g. Content-Summary
+        alternates.Add("Content_" + key.DisplayType.EncodeAlternateElement());
 
-        /// <summary>
-        /// Gets the cached alternates for a specific display type.
-        /// </summary>
-        public string[] GetAlternates(string displayType)
-        {
-            return _alternatesByDisplayType.GetOrAdd(displayType, BuildAlternates);
-        }
+        // Content__[ContentType] e.g. Content-BlogPost
+        alternates.Add("Content__" + encodedContentType);
 
-        private string[] BuildAlternates(string displayType)
-        {
-            var alternates = new List<string>();
-            var encodedContentType = _key.ContentType.EncodeAlternateElement();
+        // Content__[Id] e.g. Content-42
+        alternates.Add("Content__" + key.ContentItemId);
 
-            // Content__[DisplayType] e.g. Content-Summary
-            alternates.Add("Content_" + displayType.EncodeAlternateElement());
+        // Content_[DisplayType]__[ContentType] e.g. Content-BlogPost.Summary
+        alternates.Add("Content_" + key.DisplayType + "__" + encodedContentType);
 
-            // Content__[ContentType] e.g. Content-BlogPost
-            alternates.Add("Content__" + encodedContentType);
+        // Content_[DisplayType]__[Id] e.g. Content-42.Summary
+        alternates.Add("Content_" + key.DisplayType + "__" + key.ContentItemId);
 
-            // Content__[Id] e.g. Content-42
-            alternates.Add("Content__" + _key.ContentItemId);
-
-            // Content_[DisplayType]__[ContentType] e.g. Content-BlogPost.Summary
-            alternates.Add("Content_" + displayType + "__" + encodedContentType);
-
-            // Content_[DisplayType]__[Id] e.g. Content-42.Summary
-            alternates.Add("Content_" + displayType + "__" + _key.ContentItemId);
-
-            return alternates.ToArray();
-        }
+        return alternates.ToArray();
     }
 }

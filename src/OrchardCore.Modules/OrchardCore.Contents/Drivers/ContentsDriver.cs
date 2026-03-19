@@ -49,11 +49,10 @@ public sealed class ContentsDriver : ContentDisplayDriver
                 var displayType = ctx.Shape.Metadata.DisplayType;
 
                 // Get cached alternates and add them efficiently
-                var cachedAlternates = ContentsMetadataAlternatesFactory.GetAlternates(
-                    contentTypeDefinition.Name,
-                    contentTypeDefinition.GetStereotype());
+                var alternates = ContentsMetadataAlternatesFactory.GetAlternates(
+                    contentTypeDefinition.GetStereotype(),
+                    displayType);
 
-                var alternates = cachedAlternates.GetAlternates(displayType);
                 ctx.Shape.Metadata.Alternates.AddRange(alternates);
             });
 

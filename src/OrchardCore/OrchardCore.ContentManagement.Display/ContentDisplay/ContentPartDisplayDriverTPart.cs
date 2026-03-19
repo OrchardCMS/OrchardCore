@@ -25,20 +25,21 @@ public abstract class ContentPartDisplayDriver<TPart> : DisplayDriverBase, ICont
 
         if (_typePartDefinition != null)
         {
-            // Get or create cached alternates for this part configuration
-            var alternatesCollection = ContentPartAlternatesFactory.GetOrCreate(_typePartDefinition, shapeType);
-
-            var partName = alternatesCollection.PartName;
-            var partType = alternatesCollection.PartType;
+            var partName = _typePartDefinition.Name;
+            var partType = _typePartDefinition.PartDefinition.Name;
+            var displayMode = _typePartDefinition.DisplayMode();
+            var hasDisplayMode = !string.IsNullOrEmpty(displayMode);
+            var isDisplayModeShapeType = shapeType == partType + DisplaySeparator + displayMode;
+            var editorPartType = GetEditorShapeType(_typePartDefinition);
 
             // If the shape type and the field type only differ by the display mode
-            if (alternatesCollection.HasDisplayMode && alternatesCollection.IsDisplayModeShapeType)
+            if (hasDisplayMode && isDisplayModeShapeType)
             {
                 // Preserve the shape name regardless its differentiator
                 result.Name(partName);
             }
 
-            if (partType == shapeType || alternatesCollection.EditorPartType == shapeType || alternatesCollection.IsDisplayModeShapeType)
+            if (partType == shapeType || editorPartType == shapeType || isDisplayModeShapeType)
             {
                 // HtmlBodyPart, Services
                 result.Differentiator(partName);
@@ -54,7 +55,7 @@ public abstract class ContentPartDisplayDriver<TPart> : DisplayDriverBase, ICont
                 var displayType = ctx.Shape.Metadata.DisplayType;
 
                 // Get cached alternates for this display type and add them efficiently
-                var cachedAlternates = alternatesCollection.GetAlternates(displayType);
+                var cachedAlternates = ContentPartAlternatesFactory.GetAlternates(_typePartDefinition, shapeType, displayType);
                 ctx.Shape.Metadata.Alternates.AddRange(cachedAlternates);
             });
         }

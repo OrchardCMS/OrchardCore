@@ -9,15 +9,22 @@ namespace OrchardCore.Taxonomies;
 /// </summary>
 internal static class TermItemAlternatesFactory
 {
-    private static readonly ConcurrentDictionary<TermItemAlternatesCacheKey, TermItemAlternatesCollection> _cache = new();
+    private static readonly ConcurrentDictionary<TermItemAlternatesCacheKey, string[]> _termItemCache = new();
+    private static readonly ConcurrentDictionary<TermItemAlternatesCacheKey, string[]> _termContentItemCache = new();
 
     /// <summary>
     /// Gets or creates cached alternates for a TermItem/TermContentItem shape configuration.
     /// </summary>
-    public static TermItemAlternatesCollection GetAlternates(string contentType, string differentiator, int level)
+    public static string[] GetTermItemAlternates(string contentType, string differentiator, int level)
     {
-        var key = new TermItemAlternatesCacheKey(contentType, differentiator ?? string.Empty, level);
-        return _cache.GetOrAdd(key, static k => new TermItemAlternatesCollection(k));
+        var key = new TermItemAlternatesCacheKey(contentType ?? string.Empty, differentiator ?? string.Empty, level);
+        return _termItemCache.GetOrAdd(key, BuildTermItemAlternates);
+    }
+
+    public static string[] GetTermContentItemAlternates(string contentType, string differentiator, int level)
+    {
+        var key = new TermItemAlternatesCacheKey(contentType ?? string.Empty, differentiator ?? string.Empty, level);
+        return _termContentItemCache.GetOrAdd(key, BuildTermContentItemAlternates);
     }
 
     internal readonly record struct TermItemAlternatesCacheKey(
@@ -25,85 +32,60 @@ internal static class TermItemAlternatesFactory
         string Differentiator,
         int Level);
 
-    /// <summary>
-    /// Pre-computed alternates collection for a TermItem/TermContentItem configuration.
-    /// </summary>
-    internal sealed class TermItemAlternatesCollection
+    private static string[] BuildTermItemAlternates(TermItemAlternatesCacheKey key)
     {
-        private readonly TermItemAlternatesCacheKey _key;
-        private string[] _termItemAlternates;
-        private string[] _termContentItemAlternates;
+        var alternates = new List<string>();
+        var encodedContentType = key.ContentType.EncodeAlternateElement();
 
-        internal TermItemAlternatesCollection(TermItemAlternatesCacheKey key)
+        // TermItem__level__[level] e.g. TermItem-level-2
+        alternates.Add("TermItem__level__" + key.Level);
+
+        // TermItem__[ContentType] e.g. TermItem-Category
+        // TermItem__[ContentType]__level__[level] e.g. TermItem-Category-level-2
+        alternates.Add("TermItem__" + encodedContentType);
+        alternates.Add("TermItem__" + encodedContentType + "__level__" + key.Level);
+
+        if (!string.IsNullOrEmpty(key.Differentiator))
         {
-            _key = key;
+            // TermItem__[Differentiator] e.g. TermItem-Categories, TermItem-Travel
+            // TermItem__[Differentiator]__level__[level] e.g. TermItem-Categories-level-2
+            alternates.Add("TermItem__" + key.Differentiator);
+            alternates.Add("TermItem__" + key.Differentiator + "__level__" + key.Level);
+
+            // TermItem__[Differentiator]__[ContentType] e.g. TermItem-Categories-Category
+            // TermItem__[Differentiator]__[ContentType]__level__[level] e.g. TermItem-Categories-Category-level-2
+            alternates.Add("TermItem__" + key.Differentiator + "__" + encodedContentType);
+            alternates.Add("TermItem__" + key.Differentiator + "__" + encodedContentType + "__level__" + key.Level);
         }
 
-        /// <summary>
-        /// Gets the cached alternates for TermItem shapes.
-        /// </summary>
-        public string[] TermItemAlternates => _termItemAlternates ??= BuildTermItemAlternates();
+        return alternates.ToArray();
+    }
 
-        /// <summary>
-        /// Gets the cached alternates for TermContentItem shapes.
-        /// </summary>
-        public string[] TermContentItemAlternates => _termContentItemAlternates ??= BuildTermContentItemAlternates();
+    private static string[] BuildTermContentItemAlternates(TermItemAlternatesCacheKey key)
+    {
+        var alternates = new List<string>();
+        var encodedContentType = key.ContentType.EncodeAlternateElement();
 
-        private string[] BuildTermItemAlternates()
+        alternates.Add("TermContentItem__level__" + key.Level);
+
+        // TermContentItem__[ContentType] e.g. TermContentItem-Category
+        // TermContentItem__[ContentType]__level__[level] e.g. TermContentItem-Category-level-2
+        alternates.Add("TermContentItem__" + encodedContentType);
+        alternates.Add("TermContentItem__" + encodedContentType + "__level__" + key.Level);
+
+        if (!string.IsNullOrEmpty(key.Differentiator))
         {
-            var alternates = new List<string>();
-            var encodedContentType = _key.ContentType.EncodeAlternateElement();
+            // TermContentItem__[Differentiator] e.g. TermContentItem-Categories
+            alternates.Add("TermContentItem__" + key.Differentiator);
+            // TermContentItem__[Differentiator]__level__[level] e.g. TermContentItem-Categories-level-2
+            alternates.Add("TermContentItem__" + key.Differentiator + "__level__" + key.Level);
 
-            // TermItem__level__[level] e.g. TermItem-level-2
-            alternates.Add("TermItem__level__" + _key.Level);
-
-            // TermItem__[ContentType] e.g. TermItem-Category
-            // TermItem__[ContentType]__level__[level] e.g. TermItem-Category-level-2
-            alternates.Add("TermItem__" + encodedContentType);
-            alternates.Add("TermItem__" + encodedContentType + "__level__" + _key.Level);
-
-            if (!string.IsNullOrEmpty(_key.Differentiator))
-            {
-                // TermItem__[Differentiator] e.g. TermItem-Categories, TermItem-Travel
-                // TermItem__[Differentiator]__level__[level] e.g. TermItem-Categories-level-2
-                alternates.Add("TermItem__" + _key.Differentiator);
-                alternates.Add("TermItem__" + _key.Differentiator + "__level__" + _key.Level);
-
-                // TermItem__[Differentiator]__[ContentType] e.g. TermItem-Categories-Category
-                // TermItem__[Differentiator]__[ContentType]__level__[level] e.g. TermItem-Categories-Category-level-2
-                alternates.Add("TermItem__" + _key.Differentiator + "__" + encodedContentType);
-                alternates.Add("TermItem__" + _key.Differentiator + "__" + encodedContentType + "__level__" + _key.Level);
-            }
-
-            return alternates.ToArray();
+            // TermContentItem__[Differentiator]__[ContentType] e.g. TermContentItem-Categories-Category
+            // TermContentItem__[Differentiator]__[ContentType]__level__[level] e.g. TermContentItem-Categories-Category-level-2
+            alternates.Add("TermContentItem__" + key.Differentiator + "__" + encodedContentType);
+            alternates.Add("TermContentItem__" + key.Differentiator + "__" + encodedContentType + "__level__" + key.Level);
         }
 
-        private string[] BuildTermContentItemAlternates()
-        {
-            var alternates = new List<string>();
-            var encodedContentType = _key.ContentType.EncodeAlternateElement();
-
-            alternates.Add("TermContentItem__level__" + _key.Level);
-
-            // TermContentItem__[ContentType] e.g. TermContentItem-Category
-            // TermContentItem__[ContentType]__level__[level] e.g. TermContentItem-Category-level-2
-            alternates.Add("TermContentItem__" + encodedContentType);
-            alternates.Add("TermContentItem__" + encodedContentType + "__level__" + _key.Level);
-
-            if (!string.IsNullOrEmpty(_key.Differentiator))
-            {
-                // TermContentItem__[Differentiator] e.g. TermContentItem-Categories
-                alternates.Add("TermContentItem__" + _key.Differentiator);
-                // TermContentItem__[Differentiator]__level__[level] e.g. TermContentItem-Categories-level-2
-                alternates.Add("TermContentItem__" + _key.Differentiator + "__level__" + _key.Level);
-
-                // TermContentItem__[Differentiator]__[ContentType] e.g. TermContentItem-Categories-Category
-                // TermContentItem__[Differentiator]__[ContentType]__level__[level] e.g. TermContentItem-Categories-Category-level-2
-                alternates.Add("TermContentItem__" + _key.Differentiator + "__" + encodedContentType);
-                alternates.Add("TermContentItem__" + _key.Differentiator + "__" + encodedContentType + "__level__" + _key.Level);
-            }
-
-            return alternates.ToArray();
-        }
+        return alternates.ToArray();
     }
 }

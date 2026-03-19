@@ -9,15 +9,22 @@ namespace OrchardCore.Menu;
 /// </summary>
 internal static class MenuItemAlternatesFactory
 {
-    private static readonly ConcurrentDictionary<MenuItemAlternatesCacheKey, MenuItemAlternatesCollection> _cache = new();
+    private static readonly ConcurrentDictionary<MenuItemAlternatesCacheKey, string[]> _menuItemCache = new();
+    private static readonly ConcurrentDictionary<MenuItemAlternatesCacheKey, string[]> _menuItemLinkCache = new();
 
     /// <summary>
     /// Gets or creates cached alternates for a MenuItem shape configuration.
     /// </summary>
-    public static MenuItemAlternatesCollection GetAlternates(string contentType, string differentiator, int level)
+    public static string[] GetMenuItemAlternates(string contentType, string differentiator, int level)
     {
-        var key = new MenuItemAlternatesCacheKey(contentType, differentiator ?? string.Empty, level);
-        return _cache.GetOrAdd(key, static k => new MenuItemAlternatesCollection(k));
+        var key = new MenuItemAlternatesCacheKey(contentType ?? string.Empty, differentiator ?? string.Empty, level);
+        return _menuItemCache.GetOrAdd(key, BuildMenuItemAlternates);
+    }
+
+    public static string[] GetMenuItemLinkAlternates(string contentType, string differentiator, int level)
+    {
+        var key = new MenuItemAlternatesCacheKey(contentType ?? string.Empty, differentiator ?? string.Empty, level);
+        return _menuItemLinkCache.GetOrAdd(key, BuildMenuItemLinkAlternates);
     }
 
     internal readonly record struct MenuItemAlternatesCacheKey(
@@ -25,85 +32,60 @@ internal static class MenuItemAlternatesFactory
         string Differentiator,
         int Level);
 
-    /// <summary>
-    /// Pre-computed alternates collection for a MenuItem configuration.
-    /// </summary>
-    internal sealed class MenuItemAlternatesCollection
+    private static string[] BuildMenuItemAlternates(MenuItemAlternatesCacheKey key)
     {
-        private readonly MenuItemAlternatesCacheKey _key;
-        private string[] _menuItemAlternates;
-        private string[] _menuItemLinkAlternates;
+        var alternates = new List<string>();
+        var encodedContentType = key.ContentType.EncodeAlternateElement();
 
-        internal MenuItemAlternatesCollection(MenuItemAlternatesCacheKey key)
+        // MenuItem__level__[level] e.g. MenuItem-level-2
+        alternates.Add("MenuItem__level__" + key.Level);
+
+        // MenuItem__[ContentType] e.g. MenuItem-HtmlMenuItem
+        // MenuItem__[ContentType]__level__[level] e.g. MenuItem-HtmlMenuItem-level-2
+        alternates.Add("MenuItem__" + encodedContentType);
+        alternates.Add("MenuItem__" + encodedContentType + "__level__" + key.Level);
+
+        if (!string.IsNullOrEmpty(key.Differentiator))
         {
-            _key = key;
+            // MenuItem__[MenuName] e.g. MenuItem-MainMenu
+            // MenuItem__[MenuName]__level__[level] e.g. MenuItem-MainMenu-level-2
+            alternates.Add("MenuItem__" + key.Differentiator);
+            alternates.Add("MenuItem__" + key.Differentiator + "__level__" + key.Level);
+
+            // MenuItem__[MenuName]__[ContentType] e.g. MenuItem-MainMenu-HtmlMenuItem
+            // MenuItem__[MenuName]__[ContentType]__level__[level] e.g. MenuItem-MainMenu-HtmlMenuItem-level-2
+            alternates.Add("MenuItem__" + key.Differentiator + "__" + encodedContentType);
+            alternates.Add("MenuItem__" + key.Differentiator + "__" + encodedContentType + "__level__" + key.Level);
         }
 
-        /// <summary>
-        /// Gets the cached alternates for MenuItem shapes.
-        /// </summary>
-        public string[] MenuItemAlternates => _menuItemAlternates ??= BuildMenuItemAlternates();
+        return alternates.ToArray();
+    }
 
-        /// <summary>
-        /// Gets the cached alternates for MenuItemLink shapes.
-        /// </summary>
-        public string[] MenuItemLinkAlternates => _menuItemLinkAlternates ??= BuildMenuItemLinkAlternates();
+    private static string[] BuildMenuItemLinkAlternates(MenuItemAlternatesCacheKey key)
+    {
+        var alternates = new List<string>();
+        var encodedContentType = key.ContentType.EncodeAlternateElement();
 
-        private string[] BuildMenuItemAlternates()
+        alternates.Add("MenuItemLink__level__" + key.Level);
+
+        // MenuItemLink__[ContentType] e.g. MenuItemLink-HtmlMenuItem
+        // MenuItemLink__[ContentType]__level__[level] e.g. MenuItemLink-HtmlMenuItem-level-2
+        alternates.Add("MenuItemLink__" + encodedContentType);
+        alternates.Add("MenuItemLink__" + encodedContentType + "__level__" + key.Level);
+
+        if (!string.IsNullOrEmpty(key.Differentiator))
         {
-            var alternates = new List<string>();
-            var encodedContentType = _key.ContentType.EncodeAlternateElement();
+            // MenuItemLink__[MenuName] e.g. MenuItemLink-MainMenu
+            // MenuItemLink__[MenuName]__level__[level] e.g. MenuItemLink-MainMenu-level-2
+            alternates.Add("MenuItemLink__" + key.Differentiator);
+            alternates.Add("MenuItemLink__" + key.Differentiator + "__level__" + key.Level);
 
-            // MenuItem__level__[level] e.g. MenuItem-level-2
-            alternates.Add("MenuItem__level__" + _key.Level);
-
-            // MenuItem__[ContentType] e.g. MenuItem-HtmlMenuItem
-            // MenuItem__[ContentType]__level__[level] e.g. MenuItem-HtmlMenuItem-level-2
-            alternates.Add("MenuItem__" + encodedContentType);
-            alternates.Add("MenuItem__" + encodedContentType + "__level__" + _key.Level);
-
-            if (!string.IsNullOrEmpty(_key.Differentiator))
-            {
-                // MenuItem__[MenuName] e.g. MenuItem-MainMenu
-                // MenuItem__[MenuName]__level__[level] e.g. MenuItem-MainMenu-level-2
-                alternates.Add("MenuItem__" + _key.Differentiator);
-                alternates.Add("MenuItem__" + _key.Differentiator + "__level__" + _key.Level);
-
-                // MenuItem__[MenuName]__[ContentType] e.g. MenuItem-MainMenu-HtmlMenuItem
-                // MenuItem__[MenuName]__[ContentType]__level__[level] e.g. MenuItem-MainMenu-HtmlMenuItem-level-2
-                alternates.Add("MenuItem__" + _key.Differentiator + "__" + encodedContentType);
-                alternates.Add("MenuItem__" + _key.Differentiator + "__" + encodedContentType + "__level__" + _key.Level);
-            }
-
-            return alternates.ToArray();
+            // MenuItemLink__[MenuName]__[ContentType] e.g. MenuItemLink-MainMenu-HtmlMenuItem
+            // MenuItemLink__[MenuName]__[ContentType]__level__[level] e.g. MenuItemLink-MainMenu-HtmlMenuItem-level-2
+            alternates.Add("MenuItemLink__" + key.Differentiator + "__" + encodedContentType);
+            alternates.Add("MenuItemLink__" + key.Differentiator + "__" + encodedContentType + "__level__" + key.Level);
         }
 
-        private string[] BuildMenuItemLinkAlternates()
-        {
-            var alternates = new List<string>();
-            var encodedContentType = _key.ContentType.EncodeAlternateElement();
-
-            alternates.Add("MenuItemLink__level__" + _key.Level);
-
-            // MenuItemLink__[ContentType] e.g. MenuItemLink-HtmlMenuItem
-            // MenuItemLink__[ContentType]__level__[level] e.g. MenuItemLink-HtmlMenuItem-level-2
-            alternates.Add("MenuItemLink__" + encodedContentType);
-            alternates.Add("MenuItemLink__" + encodedContentType + "__level__" + _key.Level);
-
-            if (!string.IsNullOrEmpty(_key.Differentiator))
-            {
-                // MenuItemLink__[MenuName] e.g. MenuItemLink-MainMenu
-                // MenuItemLink__[MenuName]__level__[level] e.g. MenuItemLink-MainMenu-level-2
-                alternates.Add("MenuItemLink__" + _key.Differentiator);
-                alternates.Add("MenuItemLink__" + _key.Differentiator + "__level__" + _key.Level);
-
-                // MenuItemLink__[MenuName]__[ContentType] e.g. MenuItemLink-MainMenu-HtmlMenuItem
-                // MenuItemLink__[MenuName]__[ContentType]__level__[level] e.g. MenuItemLink-MainMenu-HtmlMenuItem-level-2
-                alternates.Add("MenuItemLink__" + _key.Differentiator + "__" + encodedContentType);
-                alternates.Add("MenuItemLink__" + _key.Differentiator + "__" + encodedContentType + "__level__" + _key.Level);
-            }
-
-            return alternates.ToArray();
-        }
+        return alternates.ToArray();
     }
 }

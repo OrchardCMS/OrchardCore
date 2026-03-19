@@ -176,12 +176,12 @@ public class TermShapes : ShapeTableProvider
                 }
 
                 // Use cached alternates and add them efficiently
-                var cachedAlternates = TermItemAlternatesFactory.GetAlternates(
+                var cachedAlternates = TermItemAlternatesFactory.GetTermItemAlternates(
                     taxonomyPart.TermContentType,
                     differentiator,
                     level);
 
-                termItem.Metadata.Alternates.AddRange(cachedAlternates.TermItemAlternates);
+                termItem.Metadata.Alternates.AddRange(cachedAlternates);
             });
 
         builder.Describe("TermContentItem")
@@ -194,12 +194,12 @@ public class TermShapes : ShapeTableProvider
                 var termContentItem = termItem.GetProperty<ContentItem>("TermContentItem");
 
                 // Use cached alternates and add them efficiently
-                var cachedAlternates = TermItemAlternatesFactory.GetAlternates(
+                var cachedAlternates = TermItemAlternatesFactory.GetTermContentItemAlternates(
                     termContentItem.ContentItem.ContentType,
                     differentiator,
                     level);
 
-                termItem.Metadata.Alternates.AddRange(cachedAlternates.TermContentItemAlternates);
+                termItem.Metadata.Alternates.AddRange(cachedAlternates);
             });
 
         return ValueTask.CompletedTask;
