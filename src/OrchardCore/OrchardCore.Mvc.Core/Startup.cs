@@ -1,15 +1,17 @@
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Razor;
-using Microsoft.AspNetCore.Mvc.Razor.Compilation;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.LocationExpander;
@@ -20,7 +22,7 @@ using OrchardCore.Routing;
 
 namespace OrchardCore.Mvc;
 
-public sealed class Startup : StartupBase
+public sealed class Startup : Modules.StartupBase
 {
     public override int Order => -1000;
     public override int ConfigureOrder => 1000;
@@ -34,6 +36,24 @@ public sealed class Startup : StartupBase
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
     {
+        var env = serviceProvider.GetRequiredService<IHostEnvironment>();
+
+        if (env.IsDevelopment())
+        {
+            var appContext = serviceProvider.GetRequiredService<IApplicationContext>();
+
+            // In development, add file providers for module project source directories
+            // so that Hot Reload can detect and apply changes to .cshtml files.
+            env.ContentRootFileProvider = new CompositeFileProvider(
+                new ModuleProjectRazorFileProvider(appContext),
+                new ApplicationViewFileProvider(appContext),
+                env.ContentRootFileProvider);
+
+            // Also update the web host's content root file provider.
+            serviceProvider.GetRequiredService<IWebHostEnvironment>()
+                .ContentRootFileProvider = env.ContentRootFileProvider;
+        }
+
         var descriptors = serviceProvider.GetRequiredService<IActionDescriptorCollectionProvider>()
             .ActionDescriptors.Items
             .OfType<ControllerActionDescriptor>()
@@ -91,17 +111,7 @@ public sealed class Startup : StartupBase
 
         services.AddTransient<IConfigureOptions<RazorViewEngineOptions>, ModularRazorViewEngineOptionsSetup>();
 
-        // Share across tenants a static compiler even if there is no runtime compilation
-        // because the compiler still uses its internal cache to retrieve compiled items.
-        services.AddSingleton<IViewCompilerProvider, SharedViewCompilerProvider>();
-
-        // Note: MvcRazorRuntimeCompilationOptions is deprecated in .NET 10
-        // This configuration is kept for backward compatibility but will be removed in future versions
-#pragma warning disable ASPDEPR003 // Razor runtime compilation is obsolete
-        services.AddTransient<IConfigureOptions<Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation.MvcRazorRuntimeCompilationOptions>, RazorCompilationOptionsSetup>();
-#pragma warning restore ASPDEPR003
-
-        services.AddSingleton<RazorCompilationFileProviderAccessor>();
+        services.AddSingleton<ViewFileProviderAccessor>();
 
         // Note: IActionContextAccessor is deprecated in .NET 10 and will be removed
         // ActionContext should be created when needed instead of using a global accessor
