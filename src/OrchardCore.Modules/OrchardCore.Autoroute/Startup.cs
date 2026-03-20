@@ -88,7 +88,6 @@ public sealed class Startup : StartupBase
         services.AddDataMigration<Migrations>();
         services.AddSingleton<IAutorouteEntries, AutorouteEntries>();
         services.AddScoped<IContentHandleProvider, AutorouteHandleProvider>();
-        services.AddScoped<IContentImportErrorProvider, AutorouteImportErrorProvider>();
 
         services.Configure<GraphQLContentOptions>(options =>
         {

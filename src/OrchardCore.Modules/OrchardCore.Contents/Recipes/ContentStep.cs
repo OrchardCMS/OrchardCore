@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Nodes;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
@@ -27,15 +26,7 @@ public sealed class ContentStep : NamedRecipeStepHandler
         if (ShellScope.Context.IsActivated)
         {
             var contentManager = ShellScope.Services.GetRequiredService<IContentManager>();
-
-            try
-            {
-                await contentManager.ImportAsync(contentItems);
-            }
-            catch (ValidationException e)
-            {
-                context.Errors.Add(e.Message);
-            }
+            await contentManager.ImportAsync(contentItems);
 
             return;
         }
@@ -45,15 +36,7 @@ public sealed class ContentStep : NamedRecipeStepHandler
         ShellScope.AddDeferredTask(async scope =>
         {
             var contentManager = scope.ServiceProvider.GetRequiredService<IContentManager>();
-
-            try
-            {
-                await contentManager.ImportAsync(contentItems);
-            }
-            catch (ValidationException e)
-            {
-                context.Errors.Add(e.Message);
-            }
+            await contentManager.ImportAsync(contentItems);
         });
     }
 }
