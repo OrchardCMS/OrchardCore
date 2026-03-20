@@ -178,6 +178,11 @@ public sealed class OrchardTestServer : IAsyncDisposable
             options.ShellsApplicationDataPath = resolvedAppDataPath;
         });
 
+        // Disable YesSql concurrency checks during setup. Each recipe step runs in a new
+        // scope with a new session, but the document cache can serve stale versions, causing
+        // ConcurrencyException on SiteSettings with external databases.
+        builder.Configuration["OrchardCore_Documents:CheckConcurrency"] = "false";
+
         builder.Logging.AddProvider(new InMemoryLoggerProvider(logEntries));
     }
 
