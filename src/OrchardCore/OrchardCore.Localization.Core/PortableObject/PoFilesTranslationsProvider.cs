@@ -33,11 +33,7 @@ public class PoFilesTranslationsProvider : ITranslationProvider
         {
             using var stream = fileInfo.CreateReadStream();
             using var reader = new StreamReader(stream);
-            var culureDictionaryRecords = PoParser.ParseAsync(reader)
-                .ToListAsync()
-                .AsTask()
-                .GetAwaiter()
-                .GetResult();
+            var culureDictionaryRecords = PoParser.Parse(reader);
 
             dictionary.MergeTranslations(culureDictionaryRecords);
         }

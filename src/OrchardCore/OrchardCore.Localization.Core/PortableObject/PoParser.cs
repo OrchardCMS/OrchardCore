@@ -56,6 +56,41 @@ public class PoParser
         }
     }
 
+    /// <summary>
+    /// Parses a .po file.
+    /// </summary>
+    /// <param name="reader">The <see cref="TextReader"/>.</param>
+    /// <returns>A list of culture records.</returns>
+#pragma warning disable CA1822 // Mark members as static
+    public static IEnumerable<CultureDictionaryRecord> Parse(TextReader reader)
+#pragma warning restore CA1822 // Mark members as static
+    {
+        var entryBuilder = new DictionaryRecordBuilder();
+        string line;
+        while ((line = reader.ReadLine()) != null)
+        {
+            (var context, var content) = ParseLine(line);
+
+            if (context == PoContext.Other)
+            {
+                continue;
+            }
+
+            // msgid or msgctxt are first lines of the entry. If builder contains valid entry return it and start building a new one.
+            if ((context == PoContext.MessageId || context == PoContext.MessageContext) && entryBuilder.ShouldFlushRecord)
+            {
+                yield return entryBuilder.BuildRecordAndReset();
+            }
+
+            entryBuilder.Set(context, content);
+        }
+
+        if (entryBuilder.ShouldFlushRecord)
+        {
+            yield return entryBuilder.BuildRecordAndReset();
+        }
+    }
+
     private static string Unescape(string str)
     {
         if (!str.Contains('\\'))
