@@ -13,6 +13,10 @@ namespace OrchardCore.Tests.Functional.Helpers;
 
 public sealed class OrchardTestServer : IAsyncDisposable
 {
+    // Serializes builder creation because env vars (ORCHARD_APP_DATA, OrchardCore__ConnectionString)
+    // are process-wide and must not race between parallel fixtures.
+    private static readonly SemaphoreSlim _builderLock = new(1, 1);
+
     private readonly WebApplication _app;
     private readonly ConcurrentBag<LogEntry> _logEntries;
 
@@ -25,25 +29,38 @@ public sealed class OrchardTestServer : IAsyncDisposable
         _logEntries = logEntries;
     }
 
-    public static async Task<OrchardTestServer> StartCmsAsync(string contentRoot, string appDataPath, string tablePrefix = null)
+    public static async Task<OrchardTestServer> StartCmsAsync(string contentRoot, string appDataPath, string instanceId = null)
     {
         var logEntries = new ConcurrentBag<LogEntry>();
 
-        var builder = WebApplication.CreateBuilder(new WebApplicationOptions
+        // Lock around builder creation to safely set process-wide env vars.
+        await _builderLock.WaitAsync();
+        WebApplication app;
+        try
         {
-            ApplicationName = "OrchardCore.Cms.Web",
-            ContentRootPath = contentRoot,
-        });
+            SetupEnvironment(appDataPath, instanceId);
 
-        builder.Host.UseNLogHost();
+            var builder = WebApplication.CreateBuilder(new WebApplicationOptions
+            {
+                ApplicationName = "OrchardCore.Cms.Web",
+                ContentRootPath = contentRoot,
+            });
 
-        builder.Services
-            .AddOrchardCms()
-            .AddSetupFeatures("OrchardCore.AutoSetup");
+            builder.Host.UseNLogHost();
 
-        ConfigureCommon(builder, appDataPath, tablePrefix, logEntries);
+            builder.Services
+                .AddOrchardCms()
+                .AddSetupFeatures("OrchardCore.AutoSetup");
 
-        var app = builder.Build();
+            ConfigureServices(builder, appDataPath, logEntries);
+
+            app = builder.Build();
+        }
+        finally
+        {
+            _builderLock.Release();
+        }
+
         app.UseStaticFiles();
         app.UseOrchardCore();
 
@@ -56,19 +73,31 @@ public sealed class OrchardTestServer : IAsyncDisposable
     {
         var logEntries = new ConcurrentBag<LogEntry>();
 
-        var builder = WebApplication.CreateBuilder(new WebApplicationOptions
+        await _builderLock.WaitAsync();
+        WebApplication app;
+        try
         {
-            ApplicationName = "OrchardCore.Mvc.Web",
-            ContentRootPath = contentRoot,
-        });
+            SetupEnvironment(appDataPath, null);
 
-        builder.Services
-            .AddOrchardCore()
-            .AddMvc();
+            var builder = WebApplication.CreateBuilder(new WebApplicationOptions
+            {
+                ApplicationName = "OrchardCore.Mvc.Web",
+                ContentRootPath = contentRoot,
+            });
 
-        ConfigureCommon(builder, appDataPath, null, logEntries);
+            builder.Services
+                .AddOrchardCore()
+                .AddMvc();
 
-        var app = builder.Build();
+            ConfigureServices(builder, appDataPath, logEntries);
+
+            app = builder.Build();
+        }
+        finally
+        {
+            _builderLock.Release();
+        }
+
         app.UseStaticFiles();
         app.UseOrchardCore();
 
@@ -103,16 +132,36 @@ public sealed class OrchardTestServer : IAsyncDisposable
         }
     }
 
-    private static void ConfigureCommon(WebApplicationBuilder builder, string appDataPath, string tablePrefix, ConcurrentBag<LogEntry> logEntries)
+    /// <summary>
+    /// Sets process-wide environment variables before the builder captures them.
+    /// Must be called under <see cref="_builderLock"/>.
+    /// </summary>
+    private static void SetupEnvironment(string appDataPath, string instanceId)
+    {
+        System.Environment.SetEnvironmentVariable("ORCHARD_APP_DATA", appDataPath);
+
+        // When a shared database server is configured, give each fixture its own database.
+        var connectionString = System.Environment.GetEnvironmentVariable("OrchardCore__ConnectionString");
+        var databaseProvider = System.Environment.GetEnvironmentVariable("OrchardCore__DatabaseProvider");
+
+        if (!string.IsNullOrEmpty(connectionString) && !string.IsNullOrEmpty(databaseProvider) && !string.IsNullOrEmpty(instanceId))
+        {
+            var fixtureConnectionString = AppendDatabaseSuffix(connectionString, $"_{instanceId}");
+            EnsureDatabaseExists(fixtureConnectionString, databaseProvider);
+
+            // ShellSettingsManager gives env vars highest priority, so we must set
+            // the env var itself — builder.Configuration overrides get ignored.
+            System.Environment.SetEnvironmentVariable("OrchardCore__ConnectionString", fixtureConnectionString);
+        }
+    }
+
+    private static void ConfigureServices(WebApplicationBuilder builder, string appDataPath, ConcurrentBag<LogEntry> logEntries)
     {
         builder.WebHost.UseUrls("http://127.0.0.1:0");
         builder.WebHost.UseSetting("suppressHostingStartup", "true");
 
-        // OrchardCore reads ORCHARD_APP_DATA from System.Environment for NLog path setup.
-        System.Environment.SetEnvironmentVariable("ORCHARD_APP_DATA", appDataPath);
-
-        // ShellOptionsSetup also reads the env var, but it's process-wide and races under parallel execution.
-        // PostConfigure overrides whatever ShellOptionsSetup set, ensuring each instance uses its own path.
+        // PostConfigure overrides whatever ShellOptionsSetup set from the env var,
+        // ensuring each instance uses its own app data path.
         var resolvedAppDataPath = Path.IsPathRooted(appDataPath)
             ? appDataPath
             : Path.Combine(builder.Environment.ContentRootPath, appDataPath);
@@ -122,72 +171,32 @@ public sealed class OrchardTestServer : IAsyncDisposable
             options.ShellsApplicationDataPath = resolvedAppDataPath;
         });
 
-        // Forward database configuration from environment variables if present.
-        var connectionString = System.Environment.GetEnvironmentVariable("OrchardCore__ConnectionString");
-        var databaseProvider = System.Environment.GetEnvironmentVariable("OrchardCore__DatabaseProvider");
-
-        if (!string.IsNullOrEmpty(connectionString) && !string.IsNullOrEmpty(databaseProvider))
-        {
-            // Give each fixture its own database to enable parallel execution.
-            if (!string.IsNullOrEmpty(tablePrefix))
-            {
-                connectionString = AppendDatabaseSuffix(connectionString, $"_{tablePrefix}");
-                EnsureDatabaseExists(connectionString, databaseProvider);
-            }
-
-            builder.Configuration["OrchardCore:ConnectionString"] = connectionString;
-            builder.Configuration["OrchardCore:DatabaseProvider"] = databaseProvider;
-        }
-
         builder.Logging.AddProvider(new InMemoryLoggerProvider(logEntries));
     }
 
     private static void EnsureDatabaseExists(string connectionString, string databaseProvider)
     {
-        var pattern = @"((?:Database|database)\s*=\s*)([^;]+)";
-        var match = System.Text.RegularExpressions.Regex.Match(connectionString, pattern);
-
-        if (!match.Success)
+        var dbName = ExtractDatabaseName(connectionString);
+        if (dbName is null)
         {
             return;
         }
 
-        var dbName = match.Groups[2].Value.Trim();
-
-        // Build a connection string pointing to the server's default database.
-        var serverConnectionString = databaseProvider switch
+        // Connect to the server's default/admin database.
+        var serverConnectionString = ReplaceDatabaseName(connectionString, databaseProvider switch
         {
-            "Postgres" => System.Text.RegularExpressions.Regex.Replace(connectionString, pattern, "${1}postgres"),
-            "MySql" => System.Text.RegularExpressions.Regex.Replace(connectionString, pattern, "${1}mysql"),
-            "SqlConnection" => System.Text.RegularExpressions.Regex.Replace(connectionString, pattern, "${1}master"),
+            "Postgres" => "postgres",
+            "MySql" => "mysql",
+            "SqlConnection" => "master",
             _ => null,
-        };
+        });
 
         if (serverConnectionString is null)
         {
             return;
         }
 
-        var createSql = databaseProvider switch
-        {
-            "SqlConnection" => $"IF NOT EXISTS (SELECT * FROM sys.databases WHERE name = '{dbName}') CREATE DATABASE [{dbName}]",
-            _ => $"CREATE DATABASE IF NOT EXISTS \"{dbName}\"",
-        };
-
-        // MySQL uses backticks, not double quotes.
-        if (databaseProvider == "MySql")
-        {
-            createSql = $"CREATE DATABASE IF NOT EXISTS `{dbName}`";
-        }
-
-        using var connection = databaseProvider switch
-        {
-            "Postgres" => (System.Data.Common.DbConnection)new Npgsql.NpgsqlConnection(serverConnectionString),
-            "MySql" => new MySqlConnector.MySqlConnection(serverConnectionString),
-            "SqlConnection" => new global::Microsoft.Data.SqlClient.SqlConnection(serverConnectionString),
-            _ => null,
-        };
-
+        using var connection = CreateConnection(serverConnectionString, databaseProvider);
         if (connection is null)
         {
             return;
@@ -195,23 +204,70 @@ public sealed class OrchardTestServer : IAsyncDisposable
 
         connection.Open();
         using var command = connection.CreateCommand();
-        command.CommandText = createSql;
-        command.ExecuteNonQuery();
+
+        command.CommandText = databaseProvider switch
+        {
+            "Postgres" => $"SELECT 1 FROM pg_database WHERE datname = '{dbName}'",
+            "MySql" => $"SELECT 1 FROM information_schema.schemata WHERE schema_name = '{dbName}'",
+            "SqlConnection" => $"SELECT 1 FROM sys.databases WHERE name = '{dbName}'",
+            _ => null,
+        };
+
+        if (command.CommandText is null)
+        {
+            return;
+        }
+
+        var exists = command.ExecuteScalar() is not null;
+        if (!exists)
+        {
+            using var createCommand = connection.CreateCommand();
+            createCommand.CommandText = databaseProvider switch
+            {
+                "Postgres" => $"CREATE DATABASE \"{dbName}\"",
+                "MySql" => $"CREATE DATABASE `{dbName}`",
+                "SqlConnection" => $"CREATE DATABASE [{dbName}]",
+                _ => null,
+            };
+
+            createCommand.ExecuteNonQuery();
+        }
+    }
+
+    private static System.Data.Common.DbConnection CreateConnection(string connectionString, string databaseProvider)
+    {
+        return databaseProvider switch
+        {
+            "Postgres" => new Npgsql.NpgsqlConnection(connectionString),
+            "MySql" => new MySqlConnector.MySqlConnection(connectionString),
+            "SqlConnection" => new global::Microsoft.Data.SqlClient.SqlConnection(connectionString),
+            _ => null,
+        };
+    }
+
+    private static string ExtractDatabaseName(string connectionString)
+    {
+        var match = System.Text.RegularExpressions.Regex.Match(
+            connectionString, @"(?:Database|database)\s*=\s*([^;]+)", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+        return match.Success ? match.Groups[1].Value.Trim() : null;
+    }
+
+    private static string ReplaceDatabaseName(string connectionString, string newDbName)
+    {
+        if (newDbName is null)
+        {
+            return null;
+        }
+
+        return System.Text.RegularExpressions.Regex.Replace(
+            connectionString, @"((?:Database|database)\s*=\s*)[^;]+", $"${{1}}{newDbName}",
+            System.Text.RegularExpressions.RegexOptions.IgnoreCase);
     }
 
     private static string AppendDatabaseSuffix(string connectionString, string suffix)
     {
-        // Matches "Database=xxx" or "database=xxx" in connection strings (Postgres, MySQL, SQL Server).
-        var pattern = @"((?:Database|database)\s*=\s*)([^;]+)";
-        var match = System.Text.RegularExpressions.Regex.Match(connectionString, pattern);
-
-        if (match.Success)
-        {
-            var dbName = match.Groups[2].Value.Trim() + suffix;
-            return connectionString[..match.Groups[2].Index] + dbName + connectionString[(match.Groups[2].Index + match.Groups[2].Length)..];
-        }
-
-        return connectionString;
+        var dbName = ExtractDatabaseName(connectionString);
+        return dbName is not null ? ReplaceDatabaseName(connectionString, dbName + suffix) : connectionString;
     }
 
     private static string GetListeningAddress(WebApplication app)
