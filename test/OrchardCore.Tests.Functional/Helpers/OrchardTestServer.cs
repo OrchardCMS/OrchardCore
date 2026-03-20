@@ -17,6 +17,13 @@ public sealed class OrchardTestServer : IAsyncDisposable
     // are process-wide and must not race between parallel fixtures.
     private static readonly SemaphoreSlim _builderLock = new(1, 1);
 
+    // Capture the original connection string before any fixture modifies the env var.
+    private static readonly string _originalConnectionString =
+        System.Environment.GetEnvironmentVariable("OrchardCore__ConnectionString");
+
+    private static readonly string _originalDatabaseProvider =
+        System.Environment.GetEnvironmentVariable("OrchardCore__DatabaseProvider");
+
     private readonly WebApplication _app;
     private readonly ConcurrentBag<LogEntry> _logEntries;
 
@@ -141,17 +148,21 @@ public sealed class OrchardTestServer : IAsyncDisposable
         System.Environment.SetEnvironmentVariable("ORCHARD_APP_DATA", appDataPath);
 
         // When a shared database server is configured, give each fixture its own database.
-        var connectionString = System.Environment.GetEnvironmentVariable("OrchardCore__ConnectionString");
-        var databaseProvider = System.Environment.GetEnvironmentVariable("OrchardCore__DatabaseProvider");
-
-        if (!string.IsNullOrEmpty(connectionString) && !string.IsNullOrEmpty(databaseProvider) && !string.IsNullOrEmpty(instanceId))
+        // Always compute from the original connection string, not the current env var
+        // (which may have been modified by a previous fixture).
+        if (!string.IsNullOrEmpty(_originalConnectionString) && !string.IsNullOrEmpty(_originalDatabaseProvider) && !string.IsNullOrEmpty(instanceId))
         {
-            var fixtureConnectionString = AppendDatabaseSuffix(connectionString, $"_{instanceId}");
-            EnsureDatabaseExists(fixtureConnectionString, databaseProvider);
+            var fixtureConnectionString = AppendDatabaseSuffix(_originalConnectionString, $"_{instanceId}");
+            EnsureDatabaseExists(fixtureConnectionString, _originalDatabaseProvider);
 
             // ShellSettingsManager gives env vars highest priority, so we must set
             // the env var itself — builder.Configuration overrides get ignored.
             System.Environment.SetEnvironmentVariable("OrchardCore__ConnectionString", fixtureConnectionString);
+        }
+        else
+        {
+            // Restore the original connection string for fixtures without an instanceId.
+            System.Environment.SetEnvironmentVariable("OrchardCore__ConnectionString", _originalConnectionString);
         }
     }
 
