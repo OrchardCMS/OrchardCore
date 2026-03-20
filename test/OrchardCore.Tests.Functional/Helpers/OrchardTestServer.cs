@@ -124,24 +124,94 @@ public sealed class OrchardTestServer : IAsyncDisposable
 
         // Forward database configuration from environment variables if present.
         var connectionString = System.Environment.GetEnvironmentVariable("OrchardCore__ConnectionString");
-        if (!string.IsNullOrEmpty(connectionString))
-        {
-            builder.Configuration["OrchardCore:ConnectionString"] = connectionString;
-        }
-
         var databaseProvider = System.Environment.GetEnvironmentVariable("OrchardCore__DatabaseProvider");
-        if (!string.IsNullOrEmpty(databaseProvider))
-        {
-            builder.Configuration["OrchardCore:DatabaseProvider"] = databaseProvider;
 
-            // When using a shared database, set a unique table prefix per fixture to isolate data.
+        if (!string.IsNullOrEmpty(connectionString) && !string.IsNullOrEmpty(databaseProvider))
+        {
+            // Give each fixture its own database to enable parallel execution.
             if (!string.IsNullOrEmpty(tablePrefix))
             {
-                builder.Configuration["OrchardCore:TablePrefix"] = tablePrefix;
+                connectionString = AppendDatabaseSuffix(connectionString, $"_{tablePrefix}");
+                EnsureDatabaseExists(connectionString, databaseProvider);
             }
+
+            builder.Configuration["OrchardCore:ConnectionString"] = connectionString;
+            builder.Configuration["OrchardCore:DatabaseProvider"] = databaseProvider;
         }
 
         builder.Logging.AddProvider(new InMemoryLoggerProvider(logEntries));
+    }
+
+    private static void EnsureDatabaseExists(string connectionString, string databaseProvider)
+    {
+        var pattern = @"((?:Database|database)\s*=\s*)([^;]+)";
+        var match = System.Text.RegularExpressions.Regex.Match(connectionString, pattern);
+
+        if (!match.Success)
+        {
+            return;
+        }
+
+        var dbName = match.Groups[2].Value.Trim();
+
+        // Build a connection string pointing to the server's default database.
+        var serverConnectionString = databaseProvider switch
+        {
+            "Postgres" => System.Text.RegularExpressions.Regex.Replace(connectionString, pattern, "${1}postgres"),
+            "MySql" => System.Text.RegularExpressions.Regex.Replace(connectionString, pattern, "${1}mysql"),
+            "SqlConnection" => System.Text.RegularExpressions.Regex.Replace(connectionString, pattern, "${1}master"),
+            _ => null,
+        };
+
+        if (serverConnectionString is null)
+        {
+            return;
+        }
+
+        var createSql = databaseProvider switch
+        {
+            "SqlConnection" => $"IF NOT EXISTS (SELECT * FROM sys.databases WHERE name = '{dbName}') CREATE DATABASE [{dbName}]",
+            _ => $"CREATE DATABASE IF NOT EXISTS \"{dbName}\"",
+        };
+
+        // MySQL uses backticks, not double quotes.
+        if (databaseProvider == "MySql")
+        {
+            createSql = $"CREATE DATABASE IF NOT EXISTS `{dbName}`";
+        }
+
+        using var connection = databaseProvider switch
+        {
+            "Postgres" => (System.Data.Common.DbConnection)new Npgsql.NpgsqlConnection(serverConnectionString),
+            "MySql" => new MySqlConnector.MySqlConnection(serverConnectionString),
+            "SqlConnection" => new global::Microsoft.Data.SqlClient.SqlConnection(serverConnectionString),
+            _ => null,
+        };
+
+        if (connection is null)
+        {
+            return;
+        }
+
+        connection.Open();
+        using var command = connection.CreateCommand();
+        command.CommandText = createSql;
+        command.ExecuteNonQuery();
+    }
+
+    private static string AppendDatabaseSuffix(string connectionString, string suffix)
+    {
+        // Matches "Database=xxx" or "database=xxx" in connection strings (Postgres, MySQL, SQL Server).
+        var pattern = @"((?:Database|database)\s*=\s*)([^;]+)";
+        var match = System.Text.RegularExpressions.Regex.Match(connectionString, pattern);
+
+        if (match.Success)
+        {
+            var dbName = match.Groups[2].Value.Trim() + suffix;
+            return connectionString[..match.Groups[2].Index] + dbName + connectionString[(match.Groups[2].Index + match.Groups[2].Length)..];
+        }
+
+        return connectionString;
     }
 
     private static string GetListeningAddress(WebApplication app)
