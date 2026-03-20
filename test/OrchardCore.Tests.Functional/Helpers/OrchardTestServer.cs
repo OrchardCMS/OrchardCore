@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Text.Json;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Server;
@@ -36,7 +37,7 @@ public sealed class OrchardTestServer : IAsyncDisposable
     {
         var logEntries = new ConcurrentBag<LogEntry>();
 
-        SetupEnvironment(appDataPath, instanceId);
+        SetupAppData(appDataPath, instanceId);
 
         var builder = WebApplication.CreateBuilder(new WebApplicationOptions
         {
@@ -65,7 +66,7 @@ public sealed class OrchardTestServer : IAsyncDisposable
     {
         var logEntries = new ConcurrentBag<LogEntry>();
 
-        SetupEnvironment(appDataPath, null);
+        SetupAppData(appDataPath, null);
 
         var builder = WebApplication.CreateBuilder(new WebApplicationOptions
         {
@@ -115,32 +116,45 @@ public sealed class OrchardTestServer : IAsyncDisposable
     }
 
     /// <summary>
-    /// Sets process-wide environment variables before the builder captures them.
-    /// Safe because tests run serially (maxParallelThreads: 1).
+    /// Prepares the app data directory and writes a tenants.json file with a fixture-specific
+    /// database when a shared database server is configured via environment variables.
+    /// The tenants.json file is read by ShellSettingsManager with highest priority, bypassing
+    /// the env var override issue in ShellSettingsManager.
     /// </summary>
-    private static void SetupEnvironment(string appDataPath, string instanceId)
+    private static void SetupAppData(string appDataPath, string instanceId)
     {
         System.Environment.SetEnvironmentVariable("ORCHARD_APP_DATA", appDataPath);
 
-        // When a shared database server is configured, give each fixture its own database.
-        // Always compute from the original connection string to avoid cascading suffixes.
-        if (!string.IsNullOrEmpty(_originalConnectionString) && !string.IsNullOrEmpty(_originalDatabaseProvider) && !string.IsNullOrEmpty(instanceId))
+        if (string.IsNullOrEmpty(_originalConnectionString) || string.IsNullOrEmpty(_originalDatabaseProvider) || string.IsNullOrEmpty(instanceId))
         {
-            var fixtureConnectionString = ReplaceDatabaseName(
-                _originalConnectionString,
-                ExtractDatabaseName(_originalConnectionString) + "_" + instanceId);
-
-            EnsureDatabaseExists(fixtureConnectionString, _originalDatabaseProvider);
-
-            // ShellSettingsManager gives env vars highest priority, so we must set
-            // the env var itself — builder.Configuration overrides get ignored.
-            System.Environment.SetEnvironmentVariable("OrchardCore__ConnectionString", fixtureConnectionString);
+            return;
         }
-        else
+
+        var dbName = ExtractDatabaseName(_originalConnectionString);
+        if (dbName is null)
         {
-            // Restore the original connection string for fixtures without an instanceId (e.g., MVC).
-            System.Environment.SetEnvironmentVariable("OrchardCore__ConnectionString", _originalConnectionString);
+            return;
         }
+
+        var fixtureDbName = $"{dbName}_{instanceId}";
+        var fixtureConnectionString = ReplaceDatabaseName(_originalConnectionString, fixtureDbName);
+
+        EnsureDatabaseExists(fixtureConnectionString, _originalDatabaseProvider);
+
+        // Write tenants.json so the Default tenant uses the fixture-specific database.
+        // ShellSettingsManager reads this AFTER env vars, so it takes precedence.
+        Directory.CreateDirectory(appDataPath);
+        var tenantsJsonPath = Path.Combine(appDataPath, "tenants.json");
+        var tenantsJson = JsonSerializer.Serialize(new Dictionary<string, object>
+        {
+            ["Default"] = new Dictionary<string, string>
+            {
+                ["DatabaseProvider"] = _originalDatabaseProvider,
+                ["ConnectionString"] = fixtureConnectionString,
+            },
+        });
+
+        File.WriteAllText(tenantsJsonPath, tenantsJson);
     }
 
     private static void ConfigureServices(WebApplicationBuilder builder, string appDataPath, ConcurrentBag<LogEntry> logEntries)
@@ -192,7 +206,6 @@ public sealed class OrchardTestServer : IAsyncDisposable
 
         connection.Open();
 
-        // Check if database exists.
         using var checkCommand = connection.CreateCommand();
         checkCommand.CommandText = databaseProvider switch
         {
@@ -207,7 +220,6 @@ public sealed class OrchardTestServer : IAsyncDisposable
             return;
         }
 
-        // Create the database.
         using var createCommand = connection.CreateCommand();
         createCommand.CommandText = databaseProvider switch
         {
