@@ -9,7 +9,7 @@
 @{
     ContentItem contentItem = Model.ContentItem;
     var contentTypeDefinition = await ContentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
-    var contentTypeDisplayText = D[contentTypeDefinition.DisplayName, "Content Types"];
+    var contentTypeDisplayText = D[contentTypeDefinition.DisplayName, "Content Types"].Value;
     var contentItemDisplayText = contentItem.ContentItem.DisplayText;
     var widgetContentTypes = (IEnumerable<ContentTypeDefinition>)Model.ContainedContentTypes;
 
