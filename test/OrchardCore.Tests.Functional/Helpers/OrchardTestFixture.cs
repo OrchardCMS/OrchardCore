@@ -141,12 +141,24 @@ public sealed class OrchardTestFixture : IAsyncDisposable
         }
 
         _playwright?.Dispose();
-        _server?.Dispose();
+
+        if (_server is not null)
+        {
+            await _server.DisposeAsync();
+        }
 
         // Clean up copied recipes.
         if (!_isMvc)
         {
             AppLifecycleHelper.DeleteRecipe(AppDir, "migrations.recipe.json");
+        }
+
+        // Clear SQLite connection pool to release file locks, then clean up test data.
+        global::Microsoft.Data.Sqlite.SqliteConnection.ClearAllPools();
+
+        if (Directory.Exists(AppDataPath))
+        {
+            Directory.Delete(AppDataPath, recursive: true);
         }
     }
 }

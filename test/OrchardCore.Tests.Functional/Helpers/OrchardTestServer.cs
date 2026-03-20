@@ -11,7 +11,7 @@ using OrchardCore.Logging;
 
 namespace OrchardCore.Tests.Functional.Helpers;
 
-public sealed class OrchardTestServer : IDisposable
+public sealed class OrchardTestServer : IAsyncDisposable
 {
     private readonly WebApplication _app;
     private readonly ConcurrentBag<LogEntry> _logEntries;
@@ -94,9 +94,13 @@ public sealed class OrchardTestServer : IDisposable
         }
     }
 
-    public void Dispose()
+    public async ValueTask DisposeAsync()
     {
-        _app?.DisposeAsync().AsTask().GetAwaiter().GetResult();
+        if (_app is not null)
+        {
+            await _app.StopAsync();
+            await _app.DisposeAsync();
+        }
     }
 
     private static void ConfigureCommon(WebApplicationBuilder builder, string appDataPath, ConcurrentBag<LogEntry> logEntries)
