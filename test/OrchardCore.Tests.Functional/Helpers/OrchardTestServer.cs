@@ -127,6 +127,8 @@ public sealed class OrchardTestServer : IAsyncDisposable
 
         if (string.IsNullOrEmpty(_originalConnectionString) || string.IsNullOrEmpty(_originalDatabaseProvider) || string.IsNullOrEmpty(instanceId))
         {
+            // Restore original connection string for fixtures without an instanceId.
+            System.Environment.SetEnvironmentVariable("OrchardCore__ConnectionString", _originalConnectionString);
             return;
         }
 
@@ -140,6 +142,9 @@ public sealed class OrchardTestServer : IAsyncDisposable
         var fixtureConnectionString = ReplaceDatabaseName(_originalConnectionString, fixtureDbName);
 
         EnsureDatabaseExists(fixtureConnectionString, _originalDatabaseProvider);
+
+        // Also set the env var so the builder's EnvironmentVariablesConfigurationProvider captures it.
+        System.Environment.SetEnvironmentVariable("OrchardCore__ConnectionString", fixtureConnectionString);
 
         // Write tenants.json so the Default tenant uses the fixture-specific database.
         // ShellSettingsManager reads this AFTER env vars, so it takes precedence.
