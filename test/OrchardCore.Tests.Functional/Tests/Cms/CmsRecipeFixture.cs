@@ -33,6 +33,7 @@ public abstract class CmsRecipeFixture : IAsyncLifetime
                     Name = $"Testing {RecipeName}",
                     Prefix = string.Empty,
                     SetupRecipe = RecipeName,
+                    TablePrefix = GetType().Name,
                 });
             }
         }

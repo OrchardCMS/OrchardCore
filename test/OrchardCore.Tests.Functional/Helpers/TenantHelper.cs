@@ -33,6 +33,15 @@ public static class TenantHelper
             {
                 await dbProvider.SelectOptionAsync("Sqlite");
             }
+            else if (!string.IsNullOrEmpty(tenant.TablePrefix))
+            {
+                // When using a shared database (non-SQLite), set the table prefix to isolate data.
+                var tablePrefix = page.Locator("#TablePrefix");
+                if (await tablePrefix.CountAsync() > 0 && await tablePrefix.IsVisibleAsync())
+                {
+                    await tablePrefix.FillAsync(tenant.TablePrefix);
+                }
+            }
         }
 
         await page.Locator("#UserName").FillAsync(config.Username);
