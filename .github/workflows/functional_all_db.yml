@@ -38,7 +38,7 @@ jobs:
       run: |
         dotnet build -c Release test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj
     - name: Cache Playwright Browsers
-      uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
+      uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
       with:
         path: ~/.cache/ms-playwright
         key: playwright-${{ hashFiles('Directory.Packages.props') }}
@@ -75,7 +75,7 @@ jobs:
       run: |
         dotnet build -c Release test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj
     - name: Cache Playwright Browsers
-      uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
+      uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
       with:
         path: ~/.cache/ms-playwright
         key: playwright-${{ hashFiles('Directory.Packages.props') }}
@@ -90,7 +90,7 @@ jobs:
       with:
         name: functional-cms-sqlite-failure
         path: |
-          src/OrchardCore.Cms.Web/App_Data_Tests/logs
+          src/OrchardCore.Cms.Web/App_Data_Tests_*/logs
           test/OrchardCore.Tests.Functional/traces
         retention-days: 3
 
@@ -127,7 +127,7 @@ jobs:
       run: |
         dotnet build -c Release test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj
     - name: Cache Playwright Browsers
-      uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
+      uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
       with:
         path: ~/.cache/ms-playwright
         key: playwright-${{ hashFiles('Directory.Packages.props') }}
@@ -142,7 +142,7 @@ jobs:
       with:
         name: functional-cms-postgresql-failure
         path: |
-          src/OrchardCore.Cms.Web/App_Data_Tests/logs
+          src/OrchardCore.Cms.Web/App_Data_Tests_*/logs
           test/OrchardCore.Tests.Functional/traces
         retention-days: 3
 
@@ -173,7 +173,7 @@ jobs:
       run: |
         dotnet build -c Release test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj
     - name: Cache Playwright Browsers
-      uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
+      uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
       with:
         path: ~/.cache/ms-playwright
         key: playwright-${{ hashFiles('Directory.Packages.props') }}
@@ -188,7 +188,7 @@ jobs:
       with:
         name: functional-cms-mysql-failure
         path: |
-          src/OrchardCore.Cms.Web/App_Data_Tests/logs
+          src/OrchardCore.Cms.Web/App_Data_Tests_*/logs
           test/OrchardCore.Tests.Functional/traces
         retention-days: 3
 
@@ -218,7 +218,7 @@ jobs:
       run: |
         dotnet build -c Release test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj
     - name: Cache Playwright Browsers
-      uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
+      uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
       with:
         path: ~/.cache/ms-playwright
         key: playwright-${{ hashFiles('Directory.Packages.props') }}
@@ -233,6 +233,6 @@ jobs:
       with:
         name: functional-cms-mssql-failure
         path: |
-          src/OrchardCore.Cms.Web/App_Data_Tests/logs
+          src/OrchardCore.Cms.Web/App_Data_Tests_*/logs
           test/OrchardCore.Tests.Functional/traces
         retention-days: 3
