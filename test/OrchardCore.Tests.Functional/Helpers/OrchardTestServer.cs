@@ -116,50 +116,50 @@ public sealed class OrchardTestServer : IAsyncDisposable
     }
 
     /// <summary>
-    /// Prepares the app data directory and writes a tenants.json file with a fixture-specific
-    /// database when a shared database server is configured via environment variables.
-    /// The tenants.json file is read by ShellSettingsManager with highest priority, bypassing
-    /// the env var override issue in ShellSettingsManager.
+    /// Prepares the app data directory. When a shared database server is configured via
+    /// environment variables, creates a fixture-specific database and REMOVES the env vars
+    /// so ShellSettingsManager can't override our per-fixture configuration.
+    /// The connection string is written to tenants.json instead.
+    /// Safe because tests run serially (maxParallelThreads: 1).
     /// </summary>
     private static void SetupAppData(string appDataPath, string instanceId)
     {
         System.Environment.SetEnvironmentVariable("ORCHARD_APP_DATA", appDataPath);
 
-        if (string.IsNullOrEmpty(_originalConnectionString) || string.IsNullOrEmpty(_originalDatabaseProvider) || string.IsNullOrEmpty(instanceId))
-        {
-            // Restore original connection string for fixtures without an instanceId.
-            System.Environment.SetEnvironmentVariable("OrchardCore__ConnectionString", _originalConnectionString);
-            return;
-        }
-
-        var dbName = ExtractDatabaseName(_originalConnectionString);
-        if (dbName is null)
+        if (string.IsNullOrEmpty(_originalConnectionString) || string.IsNullOrEmpty(_originalDatabaseProvider))
         {
             return;
         }
 
-        var fixtureDbName = $"{dbName}_{instanceId}";
-        var fixtureConnectionString = ReplaceDatabaseName(_originalConnectionString, fixtureDbName);
+        // Remove the env vars so ShellSettingsManager can't re-add them with highest priority.
+        System.Environment.SetEnvironmentVariable("OrchardCore__ConnectionString", null);
+        System.Environment.SetEnvironmentVariable("OrchardCore__DatabaseProvider", null);
 
-        EnsureDatabaseExists(fixtureConnectionString, _originalDatabaseProvider);
+        var connectionString = _originalConnectionString;
 
-        // Also set the env var so the builder's EnvironmentVariablesConfigurationProvider captures it.
-        System.Environment.SetEnvironmentVariable("OrchardCore__ConnectionString", fixtureConnectionString);
-
-        // Write tenants.json so the Default tenant uses the fixture-specific database.
-        // ShellSettingsManager reads this AFTER env vars, so it takes precedence.
-        Directory.CreateDirectory(appDataPath);
-        var tenantsJsonPath = Path.Combine(appDataPath, "tenants.json");
-        var tenantsJson = JsonSerializer.Serialize(new Dictionary<string, object>
+        if (!string.IsNullOrEmpty(instanceId))
         {
-            ["Default"] = new Dictionary<string, string>
+            var dbName = ExtractDatabaseName(_originalConnectionString);
+            if (dbName is not null)
             {
-                ["DatabaseProvider"] = _originalDatabaseProvider,
-                ["ConnectionString"] = fixtureConnectionString,
-            },
-        });
+                connectionString = ReplaceDatabaseName(_originalConnectionString, $"{dbName}_{instanceId}");
+                EnsureDatabaseExists(connectionString, _originalDatabaseProvider);
+            }
+        }
 
-        File.WriteAllText(tenantsJsonPath, tenantsJson);
+        // Write tenants.json with the fixture-specific connection string.
+        // With env vars removed, this is the sole source of database configuration.
+        Directory.CreateDirectory(appDataPath);
+        File.WriteAllText(
+            Path.Combine(appDataPath, "tenants.json"),
+            JsonSerializer.Serialize(new Dictionary<string, object>
+            {
+                ["Default"] = new Dictionary<string, string>
+                {
+                    ["DatabaseProvider"] = _originalDatabaseProvider,
+                    ["ConnectionString"] = connectionString,
+                },
+            }));
     }
 
     private static void ConfigureServices(WebApplicationBuilder builder, string appDataPath, ConcurrentBag<LogEntry> logEntries)
