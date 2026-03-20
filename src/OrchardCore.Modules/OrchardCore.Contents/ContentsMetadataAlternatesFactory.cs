@@ -26,7 +26,7 @@ internal static class ContentsMetadataAlternatesFactory
     private static string[] BuildAlternates(MetadataAlternatesCacheKey key)
     {
         var alternates = new List<string>();
-        var hasStereotype = !string.IsNullOrEmpty(key.Stereotype) && !string.Equals("Content", key.Stereotype, StringComparison.OrdinalIgnoreCase);
+        var hasStereotype = !string.IsNullOrWhiteSpace(key.Stereotype) && !string.Equals("Content", key.Stereotype, StringComparison.OrdinalIgnoreCase);
 
         if (hasStereotype)
         {

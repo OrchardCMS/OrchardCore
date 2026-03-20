@@ -8,7 +8,7 @@ namespace OrchardCore.Menu;
 /// </summary>
 internal static class MenuAlternatesFactory
 {
-    private static readonly ConcurrentDictionary<string, string[]> _cache = new(StringComparer.OrdinalIgnoreCase);
+    private static readonly ConcurrentDictionary<string, string[]> _cache = new(StringComparer.Ordinal);
 
     /// <summary>
     /// Gets or creates cached alternate for a Menu shape.
