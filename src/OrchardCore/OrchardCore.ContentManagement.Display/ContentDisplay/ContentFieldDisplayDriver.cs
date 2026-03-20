@@ -55,12 +55,16 @@ public abstract class ContentFieldDisplayDriver<TField> : DisplayDriverBase, ICo
                 result.Differentiator($"{partName}-{fieldName}-{shapeType}");
             }
 
+            // The definitions will be cleared before the displaying event is raised, so
+            // we need to cache it here for use in the displaying event to add alternates.
+            var typePartDefinition = _typePartDefinition;
+            var partFieldDefinition = _partFieldDefinition;
             result.Displaying(ctx =>
             {
                 var displayType = ctx.Shape.Metadata.DisplayType;
 
                 // Get cached alternates for this display type and add them efficiently
-                var cachedAlternates = ContentFieldAlternatesFactory.GetAlternates(_typePartDefinition, _partFieldDefinition, shapeType, displayType);
+                var cachedAlternates = ContentFieldAlternatesFactory.GetAlternates(typePartDefinition, partFieldDefinition, shapeType, displayType);
                 ctx.Shape.Metadata.Alternates.AddRange(cachedAlternates);
             });
         }

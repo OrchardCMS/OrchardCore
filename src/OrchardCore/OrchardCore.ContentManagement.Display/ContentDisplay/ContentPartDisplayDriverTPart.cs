@@ -50,12 +50,15 @@ public abstract class ContentPartDisplayDriver<TPart> : DisplayDriverBase, ICont
                 result.Differentiator($"{partName}-{shapeType}");
             }
 
+            // The type part definition will be cleared before the displaying event is raised, so
+            // we need to cache it here for use in the displaying event to add alternates.
+            var typePartDefinition = _typePartDefinition;
             result.Displaying(ctx =>
             {
                 var displayType = ctx.Shape.Metadata.DisplayType;
 
                 // Get cached alternates for this display type and add them efficiently
-                var cachedAlternates = ContentPartAlternatesFactory.GetAlternates(_typePartDefinition, shapeType, displayType);
+                var cachedAlternates = ContentPartAlternatesFactory.GetAlternates(typePartDefinition, shapeType, displayType);
                 ctx.Shape.Metadata.Alternates.AddRange(cachedAlternates);
             });
         }
