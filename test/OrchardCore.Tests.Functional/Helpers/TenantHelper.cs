@@ -36,10 +36,11 @@ public static class TenantHelper
             else if (!string.IsNullOrEmpty(tenant.TablePrefix))
             {
                 // When using a shared database (non-SQLite), set the table prefix to isolate data.
-                // The field may be hidden when the provider is pre-configured, so set via JS.
-                await page.EvaluateAsync(
-                    "(prefix) => { var el = document.getElementById('TablePrefix'); if (el) { el.value = prefix; el.dispatchEvent(new Event('change', { bubbles: true })); } }",
-                    tenant.TablePrefix);
+                var tablePrefix = page.Locator("#TablePrefix");
+                if (await tablePrefix.CountAsync() > 0 && await tablePrefix.IsVisibleAsync())
+                {
+                    await tablePrefix.FillAsync(tenant.TablePrefix);
+                }
             }
         }
 

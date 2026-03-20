@@ -27,7 +27,6 @@ public sealed class SaasFixture : IAsyncLifetime
                     Name = "Testing SaaS",
                     Prefix = string.Empty,
                     SetupRecipe = "SaaS",
-                    TablePrefix = nameof(SaasFixture),
                 });
             }
 

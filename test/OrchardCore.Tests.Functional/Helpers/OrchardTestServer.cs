@@ -25,7 +25,7 @@ public sealed class OrchardTestServer : IAsyncDisposable
         _logEntries = logEntries;
     }
 
-    public static async Task<OrchardTestServer> StartCmsAsync(string contentRoot, string appDataPath)
+    public static async Task<OrchardTestServer> StartCmsAsync(string contentRoot, string appDataPath, string tablePrefix = null)
     {
         var logEntries = new ConcurrentBag<LogEntry>();
 
@@ -41,7 +41,7 @@ public sealed class OrchardTestServer : IAsyncDisposable
             .AddOrchardCms()
             .AddSetupFeatures("OrchardCore.AutoSetup");
 
-        ConfigureCommon(builder, appDataPath, logEntries);
+        ConfigureCommon(builder, appDataPath, tablePrefix, logEntries);
 
         var app = builder.Build();
         app.UseStaticFiles();
@@ -66,7 +66,7 @@ public sealed class OrchardTestServer : IAsyncDisposable
             .AddOrchardCore()
             .AddMvc();
 
-        ConfigureCommon(builder, appDataPath, logEntries);
+        ConfigureCommon(builder, appDataPath, null, logEntries);
 
         var app = builder.Build();
         app.UseStaticFiles();
@@ -103,7 +103,7 @@ public sealed class OrchardTestServer : IAsyncDisposable
         }
     }
 
-    private static void ConfigureCommon(WebApplicationBuilder builder, string appDataPath, ConcurrentBag<LogEntry> logEntries)
+    private static void ConfigureCommon(WebApplicationBuilder builder, string appDataPath, string tablePrefix, ConcurrentBag<LogEntry> logEntries)
     {
         builder.WebHost.UseUrls("http://127.0.0.1:0");
         builder.WebHost.UseSetting("suppressHostingStartup", "true");
@@ -133,6 +133,12 @@ public sealed class OrchardTestServer : IAsyncDisposable
         if (!string.IsNullOrEmpty(databaseProvider))
         {
             builder.Configuration["OrchardCore:DatabaseProvider"] = databaseProvider;
+
+            // When using a shared database, set a unique table prefix per fixture to isolate data.
+            if (!string.IsNullOrEmpty(tablePrefix))
+            {
+                builder.Configuration["OrchardCore:TablePrefix"] = tablePrefix;
+            }
         }
 
         builder.Logging.AddProvider(new InMemoryLoggerProvider(logEntries));

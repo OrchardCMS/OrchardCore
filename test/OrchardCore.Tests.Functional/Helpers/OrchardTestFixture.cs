@@ -60,7 +60,7 @@ public sealed class OrchardTestFixture : IAsyncDisposable
         {
             _server = _isMvc
                 ? await OrchardTestServer.StartMvcAsync(AppDir, AppDataPath)
-                : await OrchardTestServer.StartCmsAsync(AppDir, AppDataPath);
+                : await OrchardTestServer.StartCmsAsync(AppDir, AppDataPath, _instanceId);
 
             BaseUrl = _server.ServerAddress;
         }
