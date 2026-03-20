@@ -13,18 +13,17 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.Playwright" />
     <PackageReference Include="xunit.v3.mtp-v2" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\OrchardCore.Cms.Web\OrchardCore.Cms.Web.csproj">
-      <Aliases>CmsWeb</Aliases>
-    </ProjectReference>
-    <ProjectReference Include="..\..\src\OrchardCore.Mvc.Web\OrchardCore.Mvc.Web.csproj">
-      <Aliases>MvcWeb</Aliases>
-    </ProjectReference>
+    <ProjectReference Include="..\..\src\OrchardCore.Cms.Web\OrchardCore.Cms.Web.csproj" />
+    <ProjectReference Include="..\..\src\OrchardCore.Mvc.Web\OrchardCore.Mvc.Web.csproj" />
   </ItemGroup>
 
   <Import Project="..\..\src\OrchardCore.Build\OrchardCore.Commons.targets" />

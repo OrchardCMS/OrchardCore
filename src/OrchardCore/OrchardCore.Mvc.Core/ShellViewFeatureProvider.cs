@@ -53,28 +53,6 @@ public class ShellViewFeatureProvider : IApplicationFeatureProvider<ViewsFeature
 
     public void PopulateFeature(IEnumerable<ApplicationPart> parts, DevelopmentViewsFeature developmentViewsFeature)
     {
-        EnsureScopedServices();
-
-        // Module compiled views are only served if not in dev mode or if the 'refs' folder doesn't exists.
-        var refsFolderExists = Directory.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "refs"));
-
-        // But in dev mode we still provide all view descriptors.
-        if (_hostingEnvironment.IsDevelopment() && refsFolderExists)
-        {
-            var viewsFeature = new ViewsFeature();
-            PopulateFeatureInternal(viewsFeature);
-
-            // Apply views feature providers registered at the tenant level.
-            foreach (var provider in _featureProviders)
-            {
-                provider.PopulateFeature(parts, viewsFeature);
-            }
-
-            foreach (var descriptor in viewsFeature.ViewDescriptors)
-            {
-                developmentViewsFeature.ViewDescriptors.Add(descriptor);
-            }
-        }
     }
 
     private void PopulateFeatureInternal(ViewsFeature feature)
@@ -87,21 +65,8 @@ public class ShellViewFeatureProvider : IApplicationFeatureProvider<ViewsFeature
         var modules = _applicationContext.Application.Modules;
         var moduleFeature = new ViewsFeature();
 
-        var refsFolderExists = Directory.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "refs"));
-
         foreach (var module in modules)
         {
-            // If the module and the application assemblies are at the same location, the module is referenced as a project not as a package.
-            if (Path.GetDirectoryName(module.Assembly.Location) == Path.GetDirectoryName(_applicationContext.Application.Assembly.Location))
-            {
-                // If the module is referenced as a project, view descriptors are not provided if in dev mode and if the 'refs' folder exists.
-                if (_hostingEnvironment.IsDevelopment() && refsFolderExists)
-                {
-                    continue;
-                }
-            }
-
-            // If the module is referenced as a package, view descriptors are always provided.
 
             var assembliesWithViews = new List<Assembly>();
 

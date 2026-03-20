@@ -1,4 +1,3 @@
-using OrchardCore.Tests.Functional.Helpers;
 using Xunit;
 
 namespace OrchardCore.Tests.Functional.Tests.Cms;
@@ -13,10 +12,7 @@ public abstract class CmsTestBase<TFixture> : IAsyncLifetime
         Fixture = fixture;
     }
 
-    public ValueTask InitializeAsync()
-    {
-        return ValueTask.CompletedTask;
-    }
+    public ValueTask InitializeAsync() => ValueTask.CompletedTask;
 
     public virtual ValueTask DisposeAsync()
     {

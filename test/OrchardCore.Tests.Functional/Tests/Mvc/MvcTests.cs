@@ -3,13 +3,21 @@ using Xunit;
 
 namespace OrchardCore.Tests.Functional.Tests.Mvc;
 
-public sealed class MvcTests : IClassFixture<MvcSetupFixture>
+public sealed class MvcTests : IClassFixture<MvcSetupFixture>, IAsyncLifetime
 {
     private readonly MvcSetupFixture _fixture;
 
     public MvcTests(MvcSetupFixture fixture)
     {
         _fixture = fixture;
+    }
+
+    public ValueTask InitializeAsync() => ValueTask.CompletedTask;
+
+    public ValueTask DisposeAsync()
+    {
+        _fixture.AssertNoLoggedErrors();
+        return ValueTask.CompletedTask;
     }
 
     [Fact]

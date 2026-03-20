@@ -1,6 +1,3 @@
-extern alias CmsWeb;
-extern alias MvcWeb;
-
 using Microsoft.Playwright;
 
 namespace OrchardCore.Tests.Functional.Helpers;
@@ -16,17 +13,15 @@ public sealed class OrchardTestFixture : IAsyncDisposable
         Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "traces");
 
     private readonly bool _isMvc;
+    private readonly string _instanceId;
 
-    private IDisposable _factory;
-    private Action _assertNoLoggedErrors;
+    private OrchardTestServer _server;
     private IPlaywright _playwright;
     private IBrowser _browser;
     private bool _disposed;
 
     public string BaseUrl { get; private set; }
     public IBrowser Browser => _browser;
-
-    private readonly string _instanceId;
 
     public OrchardTestFixture(bool isMvc = false, string instanceId = null)
     {
@@ -63,22 +58,11 @@ public sealed class OrchardTestFixture : IAsyncDisposable
 
         if (string.IsNullOrEmpty(System.Environment.GetEnvironmentVariable("ORCHARD_EXTERNAL")))
         {
-            if (_isMvc)
-            {
-                var factory = new OrchardWebApplicationFactory<MvcWeb::Program>(AppDataPath);
-                _ = factory.Services;
-                BaseUrl = factory.ServerAddress;
-                _factory = factory;
-                _assertNoLoggedErrors = factory.AssertNoLoggedErrors;
-            }
-            else
-            {
-                var factory = new OrchardWebApplicationFactory<CmsWeb::Program>(AppDataPath);
-                _ = factory.Services;
-                BaseUrl = factory.ServerAddress;
-                _factory = factory;
-                _assertNoLoggedErrors = factory.AssertNoLoggedErrors;
-            }
+            _server = _isMvc
+                ? await OrchardTestServer.StartMvcAsync(AppDir, AppDataPath)
+                : await OrchardTestServer.StartCmsAsync(AppDir, AppDataPath);
+
+            BaseUrl = _server.ServerAddress;
         }
         else
         {
@@ -140,7 +124,7 @@ public sealed class OrchardTestFixture : IAsyncDisposable
         return page;
     }
 
-    public void AssertNoLoggedErrors() => _assertNoLoggedErrors?.Invoke();
+    public void AssertNoLoggedErrors() => _server?.AssertNoLoggedErrors();
 
     public async ValueTask DisposeAsync()
     {
@@ -157,7 +141,7 @@ public sealed class OrchardTestFixture : IAsyncDisposable
         }
 
         _playwright?.Dispose();
-        _factory?.Dispose();
+        _server?.Dispose();
 
         // Clean up copied recipes.
         if (!_isMvc)

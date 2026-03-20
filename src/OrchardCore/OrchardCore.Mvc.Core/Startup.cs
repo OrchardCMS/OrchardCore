@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.LocationExpander;
@@ -26,12 +25,10 @@ public sealed class Startup : StartupBase
     public override int Order => -1000;
     public override int ConfigureOrder => 1000;
 
-    private readonly IHostEnvironment _hostingEnvironment;
     private readonly IServiceProvider _serviceProvider;
 
-    public Startup(IHostEnvironment hostingEnvironment, IServiceProvider serviceProvider)
+    public Startup(IServiceProvider serviceProvider)
     {
-        _hostingEnvironment = hostingEnvironment;
         _serviceProvider = serviceProvider;
     }
 
@@ -94,28 +91,9 @@ public sealed class Startup : StartupBase
 
         services.AddTransient<IConfigureOptions<RazorViewEngineOptions>, ModularRazorViewEngineOptionsSetup>();
 
-        if (_hostingEnvironment.IsDevelopment())
-        {
-            // Support razor runtime compilation only if in dev mode and if the 'refs' folder exists.
-            var refsFolderExists = Directory.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "refs"));
-
-            if (refsFolderExists)
-            {
-                // Note: Razor runtime compilation is deprecated in .NET 10
-                // For development scenarios, use Hot Reload instead
-                // This is kept for backward compatibility but will be removed in future versions
-#pragma warning disable ASPDEPR003 // Razor runtime compilation is obsolete
-                builder.AddRazorRuntimeCompilation();
-#pragma warning restore ASPDEPR003
-            }
-        }
-        else
-        {
-            // Share across tenants a static compiler even if there is no runtime compilation
-            // because the compiler still uses its internal cache to retrieve compiled items.
-            // Register this provider only in production mode, as it may cause hot reload to fail in development mode.
-            services.AddSingleton<IViewCompilerProvider, SharedViewCompilerProvider>();
-        }
+        // Share across tenants a static compiler even if there is no runtime compilation
+        // because the compiler still uses its internal cache to retrieve compiled items.
+        services.AddSingleton<IViewCompilerProvider, SharedViewCompilerProvider>();
 
         // Note: MvcRazorRuntimeCompilationOptions is deprecated in .NET 10
         // This configuration is kept for backward compatibility but will be removed in future versions
