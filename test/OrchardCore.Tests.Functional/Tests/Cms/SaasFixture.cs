@@ -44,7 +44,7 @@ public sealed class SaasFixture : IAsyncLifetime
         }
     }
 
-    public void AssertNoLoggedErrors() => _testFixture.AssertNoLoggedErrors();
+    public void AssertNoLoggedIssues() => _testFixture.AssertNoLoggedIssues();
 
     public async Task<IPage> CreatePageAsync()
     {

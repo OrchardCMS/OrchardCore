@@ -88,20 +88,20 @@ public sealed class OrchardTestServer : IAsyncDisposable
         return new OrchardTestServer(app, GetListeningAddress(app), loggerProvider.Collector);
     }
 
-    public void AssertNoLoggedErrors()
+    public void AssertNoLoggedIssues()
     {
-        var errors = _logCollector.GetSnapshot()
-            .Where(e => e.Level >= LogLevel.Error)
+        var issues = _logCollector.GetSnapshot()
+            .Where(e => e.Level >= LogLevel.Warning)
             .ToList();
 
-        if (errors.Count > 0)
+        if (issues.Count > 0)
         {
             var messages = string.Join(
                 System.Environment.NewLine,
-                errors.Select(e => $"[{e.Level}] {e.Category}: {e.Message}{(e.Exception is not null ? $" -> {e.Exception}" : string.Empty)}"));
+                issues.Select(e => $"[{e.Level}] {e.Category}: {e.Message}{(e.Exception is not null ? $" -> {e.Exception}" : string.Empty)}"));
 
             throw new Xunit.Sdk.XunitException(
-                $"Expected no logged errors, but found {errors.Count}:{System.Environment.NewLine}{messages}");
+                $"Expected no logged warnings or errors, but found {issues.Count}:{System.Environment.NewLine}{messages}");
         }
     }
 
@@ -186,6 +186,11 @@ public sealed class OrchardTestServer : IAsyncDisposable
         builder.Logging.AddProvider(loggerProvider);
     }
 
+    /// <summary>
+    /// Creates a fixture-specific database if it doesn't already exist. The CI workflow
+    /// creates a single shared service database (e.g., "app"), but each test fixture uses
+    /// its own database (e.g., "app_cmssetupfixture") to avoid cross-fixture interference.
+    /// </summary>
     private static void EnsureDatabaseExists(string connectionString, string databaseProvider)
     {
         var dbName = ExtractDatabaseName(connectionString);
