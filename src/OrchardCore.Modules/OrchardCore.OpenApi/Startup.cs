@@ -63,7 +63,7 @@ public sealed class Startup : StartupBase
             ? $"/{prefix}/swagger/v1/swagger.json"
             : "/swagger/v1/swagger.json";
 
-        // Read settings to determine which UIs are enabled.
+        // Read settings to determine authentication configuration.
         var siteService = app.ApplicationServices.GetRequiredService<ISiteService>();
         var settings = siteService.GetSettingsAsync<OpenApiSettings>()
             .GetAwaiter()
@@ -101,15 +101,6 @@ public sealed class Startup : StartupBase
 
                         if (isSwaggerUI || isReDoc || isScalar)
                         {
-                            // Return 404 for disabled UIs.
-                            if ((isSwaggerUI && !settings.EnableSwaggerUI)
-                                || (isReDoc && !settings.EnableReDocUI)
-                                || (isScalar && !settings.EnableScalarUI))
-                            {
-                                context.Response.StatusCode = StatusCodes.Status404NotFound;
-                                return;
-                            }
-
                             var authorizationService =
                                 context.RequestServices.GetRequiredService<IAuthorizationService>();
                             var user = context.User;
@@ -141,82 +132,6 @@ public sealed class Startup : StartupBase
         // The OpenAPI JSON and Swagger generator are always registered.
         routes.MapOpenApi();
         app.UseSwagger();
-
-        var hasOAuth = settings.AuthenticationType != OpenApiAuthenticationType.None
-            && !string.IsNullOrEmpty(settings.TokenUrl);
-
-        // Conditionally enable each UI based on settings.
-        if (settings.EnableSwaggerUI)
-        {
-            app.UseSwaggerUI(options =>
-            {
-                options.SwaggerEndpoint(swaggerJson, "OpenApi V1");
-                options.DocumentTitle = "OrchardCore OpenAPI Documentation";
-
-                if (!hasOAuth)
-                {
-                    // Cookie auth: send credentials with API requests so the session cookie is included.
-                    options.ConfigObject.AdditionalItems["withCredentials"] = true;
-                }
-                else
-                {
-                    options.OAuthClientId(settings.OAuthClientId);
-                    options.OAuthAppName("OrchardCore Swagger UI");
-
-                    if (settings.AuthenticationType == OpenApiAuthenticationType.AuthorizationCodePkce)
-                    {
-                        options.OAuthUsePkce();
-                    }
-
-                    // Strip cookies from API requests so that OAuth is enforced and
-                    // users must click "Authorize" instead of silently falling back
-                    // to cookie-based authentication. Keep cookies for spec/UI fetches
-                    // so the auth middleware doesn't redirect those to /admin.
-                    options.UseRequestInterceptor("(req) => { if (req.url && !req.url.includes('/swagger/')) { req.credentials = 'omit'; } return req; }");
-                }
-            });
-        }
-
-        if (settings.EnableReDocUI)
-        {
-            app.UseReDoc(options =>
-            {
-                options.RoutePrefix = "redoc";
-                options.SpecUrl = swaggerJson;
-                options.DocumentTitle = "OrchardCore OpenAPI Documentation";
-            });
-        }
-
-        if (settings.EnableScalarUI)
-        {
-            routes.MapScalarApiReference(options =>
-            {
-                options
-                    .WithOpenApiRoutePattern(swaggerJson)
-                    .WithTitle("OrchardCore OpenAPI Documentation")
-                    // Disable Scalar's default external proxy so all requests (token + API)
-                    // go directly from the browser to this server.
-                    .WithProxyUrl("");
-
-                if (!hasOAuth)
-                {
-                    // Cookie auth: override fetch to include credentials so the session cookie is sent.
-                    options.AddHeadContent("<script>const __originalFetch = window.fetch; window.fetch = (input, init) => __originalFetch(input, { ...init, credentials: 'include' });</script>");
-                }
-
-                if (hasOAuth)
-                {
-                    var scopeList = ParseScopes(settings.OAuthScopes).Keys.ToArray();
-
-                    options.WithOAuth2Authentication(oauth =>
-                    {
-                        oauth.ClientId = settings.OAuthClientId;
-                        oauth.Scopes = scopeList;
-                    });
-
-                }
-            });
-        }
     }
 
     private static void ConfigureSecurityScheme(IApplicationBuilder app, OpenApiSettings settings)
@@ -279,7 +194,7 @@ public sealed class Startup : StartupBase
         });
     }
 
-    private static Dictionary<string, string> ParseScopes(string scopes)
+    internal static Dictionary<string, string> ParseScopes(string scopes)
     {
         if (string.IsNullOrWhiteSpace(scopes))
         {
@@ -292,6 +207,135 @@ public sealed class Startup : StartupBase
                 scope => scope,
                 scope => scope[0..1].ToUpperInvariant() + scope[1..]
             );
+    }
+}
+
+[Feature("OrchardCore.OpenApi.SwaggerUI")]
+public sealed class SwaggerUIStartup : StartupBase
+{
+    public override void Configure(
+        IApplicationBuilder app,
+        IEndpointRouteBuilder routes,
+        IServiceProvider serviceProvider)
+    {
+        var shellSettings = app.ApplicationServices.GetRequiredService<ShellSettings>();
+        var prefix = shellSettings?.RequestUrlPrefix;
+
+        var swaggerJson = !string.IsNullOrEmpty(prefix)
+            ? $"/{prefix}/swagger/v1/swagger.json"
+            : "/swagger/v1/swagger.json";
+
+        var siteService = app.ApplicationServices.GetRequiredService<ISiteService>();
+        var settings = siteService.GetSettingsAsync<OpenApiSettings>()
+            .GetAwaiter()
+            .GetResult();
+
+        var hasOAuth = settings.AuthenticationType != OpenApiAuthenticationType.None
+            && !string.IsNullOrEmpty(settings.TokenUrl);
+
+        app.UseSwaggerUI(options =>
+        {
+            options.SwaggerEndpoint(swaggerJson, "OpenApi V1");
+            options.DocumentTitle = "OrchardCore OpenAPI Documentation";
+
+            if (!hasOAuth)
+            {
+                // Cookie auth: send credentials with API requests so the session cookie is included.
+                options.ConfigObject.AdditionalItems["withCredentials"] = true;
+            }
+            else
+            {
+                options.OAuthClientId(settings.OAuthClientId);
+                options.OAuthAppName("OrchardCore Swagger UI");
+
+                if (settings.AuthenticationType == OpenApiAuthenticationType.AuthorizationCodePkce)
+                {
+                    options.OAuthUsePkce();
+                }
+
+                // Strip cookies from API requests so that OAuth is enforced and
+                // users must click "Authorize" instead of silently falling back
+                // to cookie-based authentication. Keep cookies for spec/UI fetches
+                // so the auth middleware doesn't redirect those to /admin.
+                options.UseRequestInterceptor("(req) => { if (req.url && !req.url.includes('/swagger/')) { req.credentials = 'omit'; } return req; }");
+            }
+        });
+    }
+}
+
+[Feature("OrchardCore.OpenApi.ReDocUI")]
+public sealed class ReDocUIStartup : StartupBase
+{
+    public override void Configure(
+        IApplicationBuilder app,
+        IEndpointRouteBuilder routes,
+        IServiceProvider serviceProvider)
+    {
+        var shellSettings = app.ApplicationServices.GetRequiredService<ShellSettings>();
+        var prefix = shellSettings?.RequestUrlPrefix;
+
+        var swaggerJson = !string.IsNullOrEmpty(prefix)
+            ? $"/{prefix}/swagger/v1/swagger.json"
+            : "/swagger/v1/swagger.json";
+
+        app.UseReDoc(options =>
+        {
+            options.RoutePrefix = "redoc";
+            options.SpecUrl = swaggerJson;
+            options.DocumentTitle = "OrchardCore OpenAPI Documentation";
+        });
+    }
+}
+
+[Feature("OrchardCore.OpenApi.ScalarUI")]
+public sealed class ScalarUIStartup : StartupBase
+{
+    public override void Configure(
+        IApplicationBuilder app,
+        IEndpointRouteBuilder routes,
+        IServiceProvider serviceProvider)
+    {
+        var shellSettings = app.ApplicationServices.GetRequiredService<ShellSettings>();
+        var prefix = shellSettings?.RequestUrlPrefix;
+
+        var swaggerJson = !string.IsNullOrEmpty(prefix)
+            ? $"/{prefix}/swagger/v1/swagger.json"
+            : "/swagger/v1/swagger.json";
+
+        var siteService = app.ApplicationServices.GetRequiredService<ISiteService>();
+        var settings = siteService.GetSettingsAsync<OpenApiSettings>()
+            .GetAwaiter()
+            .GetResult();
+
+        var hasOAuth = settings.AuthenticationType != OpenApiAuthenticationType.None
+            && !string.IsNullOrEmpty(settings.TokenUrl);
+
+        routes.MapScalarApiReference(options =>
+        {
+            options
+                .WithOpenApiRoutePattern(swaggerJson)
+                .WithTitle("OrchardCore OpenAPI Documentation")
+                // Disable Scalar's default external proxy so all requests (token + API)
+                // go directly from the browser to this server.
+                .WithProxyUrl("");
+
+            if (!hasOAuth)
+            {
+                // Cookie auth: override fetch to include credentials so the session cookie is sent.
+                options.AddHeadContent("<script>const __originalFetch = window.fetch; window.fetch = (input, init) => __originalFetch(input, { ...init, credentials: 'include' });</script>");
+            }
+
+            if (hasOAuth)
+            {
+                var scopeList = Startup.ParseScopes(settings.OAuthScopes).Keys.ToArray();
+
+                options.WithOAuth2Authentication(oauth =>
+                {
+                    oauth.ClientId = settings.OAuthClientId;
+                    oauth.Scopes = scopeList;
+                });
+            }
+        });
     }
 }
 

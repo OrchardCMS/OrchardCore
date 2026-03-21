@@ -15,6 +15,7 @@ public sealed class OpenApiSettingsDisplayDriver : SiteDisplayDriver<OpenApiSett
 {
     public const string GroupId = "openapi";
 
+    private readonly IShellFeaturesManager _shellFeaturesManager;
     private readonly IShellReleaseManager _shellReleaseManager;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
@@ -23,12 +24,14 @@ public sealed class OpenApiSettingsDisplayDriver : SiteDisplayDriver<OpenApiSett
     internal readonly IStringLocalizer S;
 
     public OpenApiSettingsDisplayDriver(
+        IShellFeaturesManager shellFeaturesManager,
         IShellReleaseManager shellReleaseManager,
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
         IHttpClientFactory httpClientFactory,
         IStringLocalizer<OpenApiSettingsDisplayDriver> stringLocalizer)
     {
+        _shellFeaturesManager = shellFeaturesManager;
         _shellReleaseManager = shellReleaseManager;
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
@@ -50,11 +53,14 @@ public sealed class OpenApiSettingsDisplayDriver : SiteDisplayDriver<OpenApiSett
 
         context.AddTenantReloadWarningWrapper();
 
+        var enabledFeatures = await _shellFeaturesManager.GetEnabledFeaturesAsync();
+        var enabledFeatureIds = enabledFeatures.Select(f => f.Id).ToHashSet();
+
         return Initialize<OpenApiSettingsViewModel>("OpenApiSettings_Edit", model =>
         {
-            model.EnableSwaggerUI = settings.EnableSwaggerUI;
-            model.EnableReDocUI = settings.EnableReDocUI;
-            model.EnableScalarUI = settings.EnableScalarUI;
+            model.IsSwaggerUIEnabled = enabledFeatureIds.Contains("OrchardCore.OpenApi.SwaggerUI");
+            model.IsReDocUIEnabled = enabledFeatureIds.Contains("OrchardCore.OpenApi.ReDocUI");
+            model.IsScalarUIEnabled = enabledFeatureIds.Contains("OrchardCore.OpenApi.ScalarUI");
             model.AuthenticationType = settings.AuthenticationType;
             model.AuthorizationUrl = settings.AuthorizationUrl;
             model.TokenUrl = settings.TokenUrl;
@@ -115,9 +121,6 @@ public sealed class OpenApiSettingsDisplayDriver : SiteDisplayDriver<OpenApiSett
             return await EditAsync(site, settings, context);
         }
 
-        settings.EnableSwaggerUI = model.EnableSwaggerUI;
-        settings.EnableReDocUI = model.EnableReDocUI;
-        settings.EnableScalarUI = model.EnableScalarUI;
         settings.AuthenticationType = model.AuthenticationType;
         settings.AuthorizationUrl = model.AuthorizationUrl;
         settings.TokenUrl = model.TokenUrl;

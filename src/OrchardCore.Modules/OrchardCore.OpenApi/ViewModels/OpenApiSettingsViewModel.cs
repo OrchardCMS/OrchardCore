@@ -4,11 +4,11 @@ namespace OrchardCore.OpenApi.ViewModels;
 
 public class OpenApiSettingsViewModel
 {
-    public bool EnableSwaggerUI { get; set; }
+    public bool IsSwaggerUIEnabled { get; set; }
 
-    public bool EnableReDocUI { get; set; }
+    public bool IsReDocUIEnabled { get; set; }
 
-    public bool EnableScalarUI { get; set; }
+    public bool IsScalarUIEnabled { get; set; }
 
     public OpenApiAuthenticationType AuthenticationType { get; set; }
 

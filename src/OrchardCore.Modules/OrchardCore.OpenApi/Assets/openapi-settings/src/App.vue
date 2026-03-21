@@ -4,21 +4,18 @@ import AuthSettings from './components/AuthSettings.vue'
 import ConnectionTester from './components/ConnectionTester.vue'
 
 interface OpenApiSettingsData {
-    enableSwaggerUI: boolean
-    enableReDocUI: boolean
-    enableScalarUI: boolean
     authenticationType: number
     authorizationUrl: string
     tokenUrl: string
     oAuthClientId: string
     oAuthScopes: string
     pathBase?: string
+    isSwaggerUIEnabled?: boolean
+    isReDocUIEnabled?: boolean
+    isScalarUIEnabled?: boolean
 }
 
 const settings = reactive<OpenApiSettingsData>({
-    enableSwaggerUI: true,
-    enableReDocUI: false,
-    enableScalarUI: false,
     authenticationType: 0,
     authorizationUrl: '',
     tokenUrl: '',
@@ -28,6 +25,12 @@ const settings = reactive<OpenApiSettingsData>({
 
 const pathBase = ref('')
 
+const featureStatus = reactive({
+    swaggerUI: false,
+    reDocUI: false,
+    scalarUI: false,
+})
+
 // Load initial data from the JSON blob injected by Razor.
 onMounted(() => {
     const dataEl = document.getElementById('openapi-settings-data')
@@ -35,7 +38,13 @@ onMounted(() => {
         try {
             const data = JSON.parse(dataEl.textContent) as OpenApiSettingsData
             pathBase.value = data.pathBase ?? ''
+            featureStatus.swaggerUI = data.isSwaggerUIEnabled ?? false
+            featureStatus.reDocUI = data.isReDocUIEnabled ?? false
+            featureStatus.scalarUI = data.isScalarUIEnabled ?? false
             delete data.pathBase
+            delete data.isSwaggerUIEnabled
+            delete data.isReDocUIEnabled
+            delete data.isScalarUIEnabled
             Object.assign(settings, data)
         }
         catch {
@@ -59,9 +68,6 @@ function syncToHiddenInput(name: string, value: unknown) {
     }
 }
 
-watch(() => settings.enableSwaggerUI, (v) => syncToHiddenInput('EnableSwaggerUI', v))
-watch(() => settings.enableReDocUI, (v) => syncToHiddenInput('EnableReDocUI', v))
-watch(() => settings.enableScalarUI, (v) => syncToHiddenInput('EnableScalarUI', v))
 watch(() => settings.authenticationType, (v) => syncToHiddenInput('AuthenticationType', v))
 watch(() => settings.authorizationUrl, (v) => syncToHiddenInput('AuthorizationUrl', v))
 watch(() => settings.tokenUrl, (v) => syncToHiddenInput('TokenUrl', v))
@@ -72,7 +78,7 @@ const isOAuth = () => settings.authenticationType === 1 || settings.authenticati
 </script>
 
 <template>
-    <AuthSettings :settings="settings" :path-base="pathBase" @update:settings="Object.assign(settings, $event)" />
+    <AuthSettings :settings="settings" :feature-status="featureStatus" :path-base="pathBase" @update:settings="Object.assign(settings, $event)" />
     <ConnectionTester
         v-if="isOAuth()"
         :authentication-type="settings.authenticationType"

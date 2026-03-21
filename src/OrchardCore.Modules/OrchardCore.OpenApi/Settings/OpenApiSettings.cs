@@ -5,12 +5,6 @@ namespace OrchardCore.OpenApi.Settings;
 
 public class OpenApiSettings
 {
-    public bool EnableSwaggerUI { get; set; } = true;
-
-    public bool EnableReDocUI { get; set; }
-
-    public bool EnableScalarUI { get; set; }
-
     /// <summary>
     /// The authentication type used by the API documentation UIs.
     /// </summary>

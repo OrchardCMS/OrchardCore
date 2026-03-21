@@ -1,8 +1,5 @@
 <script setup lang="ts">
 interface Settings {
-    enableSwaggerUI: boolean
-    enableReDocUI: boolean
-    enableScalarUI: boolean
     authenticationType: number
     authorizationUrl: string
     tokenUrl: string
@@ -10,8 +7,15 @@ interface Settings {
     oAuthScopes: string
 }
 
+interface FeatureStatus {
+    swaggerUI: boolean
+    reDocUI: boolean
+    scalarUI: boolean
+}
+
 const props = defineProps<{
     settings: Settings
+    featureStatus: FeatureStatus
     pathBase: string
 }>()
 
@@ -32,45 +36,37 @@ const isOAuth = () => isPkce() || isClientCreds()
     <h5>API Documentation UIs</h5>
 
     <div class="mb-3">
-        <div class="form-check">
-            <input
-                type="checkbox"
-                class="form-check-input"
-                id="vue-EnableSwaggerUI"
-                :checked="settings.enableSwaggerUI"
-                @change="update('enableSwaggerUI', ($event.target as HTMLInputElement).checked)"
-            />
-            <label class="form-check-label" for="vue-EnableSwaggerUI">Enable Swagger UI</label>
-            <span class="hint dashed">Interactive API explorer available at <a :href="`${pathBase}/swagger`" target="_blank">~/swagger</a></span>
+        <div class="d-flex align-items-center mb-2">
+            <span class="badge me-2" :class="featureStatus.swaggerUI ? 'bg-success' : 'bg-secondary'">
+                {{ featureStatus.swaggerUI ? 'Enabled' : 'Disabled' }}
+            </span>
+            <strong>Swagger UI</strong>
+            <span v-if="featureStatus.swaggerUI" class="hint dashed ms-2">
+                Interactive API explorer at <a :href="`${pathBase}/swagger`" target="_blank">~/swagger</a>
+            </span>
         </div>
-    </div>
 
-    <div class="mb-3">
-        <div class="form-check">
-            <input
-                type="checkbox"
-                class="form-check-input"
-                id="vue-EnableReDocUI"
-                :checked="settings.enableReDocUI"
-                @change="update('enableReDocUI', ($event.target as HTMLInputElement).checked)"
-            />
-            <label class="form-check-label" for="vue-EnableReDocUI">Enable ReDoc UI</label>
-            <span class="hint dashed">Read-only API documentation available at <a :href="`${pathBase}/redoc`" target="_blank">~/redoc</a></span>
+        <div class="d-flex align-items-center mb-2">
+            <span class="badge me-2" :class="featureStatus.reDocUI ? 'bg-success' : 'bg-secondary'">
+                {{ featureStatus.reDocUI ? 'Enabled' : 'Disabled' }}
+            </span>
+            <strong>ReDoc UI</strong>
+            <span v-if="featureStatus.reDocUI" class="hint dashed ms-2">
+                Read-only API documentation at <a :href="`${pathBase}/redoc`" target="_blank">~/redoc</a>
+            </span>
         </div>
-    </div>
 
-    <div class="mb-3">
-        <div class="form-check">
-            <input
-                type="checkbox"
-                class="form-check-input"
-                id="vue-EnableScalarUI"
-                :checked="settings.enableScalarUI"
-                @change="update('enableScalarUI', ($event.target as HTMLInputElement).checked)"
-            />
-            <label class="form-check-label" for="vue-EnableScalarUI">Enable Scalar UI</label>
-            <span class="hint dashed">Modern API reference available at <a :href="`${pathBase}/scalar/v1`" target="_blank">~/scalar/v1</a></span>
+        <div class="d-flex align-items-center mb-2">
+            <span class="badge me-2" :class="featureStatus.scalarUI ? 'bg-success' : 'bg-secondary'">
+                {{ featureStatus.scalarUI ? 'Enabled' : 'Disabled' }}
+            </span>
+            <strong>Scalar UI</strong>
+            <span v-if="featureStatus.scalarUI" class="hint dashed ms-2">
+                Modern API reference at <a :href="`${pathBase}/scalar/v1`" target="_blank">~/scalar/v1</a>
+            </span>
         </div>
+
+        <span class="hint">Enable or disable API documentation UIs via the <a href="/admin/features">Features</a> page.</span>
     </div>
 
     <h5 class="mt-4">API Authentication</h5>
