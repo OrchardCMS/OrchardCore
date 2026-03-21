@@ -1,5 +1,3 @@
-using Xunit;
-
 namespace OrchardCore.Tests.Functional.Tests.Cms;
 
 public abstract class CmsTestBase<TFixture> : IAsyncLifetime

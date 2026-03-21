@@ -1,6 +1,5 @@
 using Microsoft.Playwright;
 using OrchardCore.Tests.Functional.Helpers;
-using Xunit;
 
 namespace OrchardCore.Tests.Functional.Tests.Cms;
 

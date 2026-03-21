@@ -1,5 +1,4 @@
 using Microsoft.Playwright;
-using Xunit;
 
 namespace OrchardCore.Tests.Functional.Tests.Mvc;
 

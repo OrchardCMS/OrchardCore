@@ -6,9 +6,6 @@ using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using OrchardCore.Environment.Shell;
-using OrchardCore.Logging;
 
 namespace OrchardCore.Tests.Functional.Helpers;
 
