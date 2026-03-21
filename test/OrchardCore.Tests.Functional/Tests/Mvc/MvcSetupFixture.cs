@@ -15,7 +15,7 @@ public sealed class MvcSetupFixture : IAsyncLifetime
         await _testFixture.InitializeAsync();
     }
 
-    public void AssertNoLoggedErrors() => _testFixture.AssertNoLoggedErrors();
+    public void AssertNoLoggedIssues() => _testFixture.AssertNoLoggedIssues();
 
     public async Task<IPage> CreatePageAsync()
     {

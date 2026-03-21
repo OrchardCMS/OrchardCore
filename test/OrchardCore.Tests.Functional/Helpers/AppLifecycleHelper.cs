@@ -2,7 +2,7 @@ namespace OrchardCore.Tests.Functional.Helpers;
 
 public static class AppLifecycleHelper
 {
-    private static readonly object _recipeLock = new();
+    private static readonly Lock _recipeLock = new();
 
     public static bool CopyRecipe(string appDir, string recipeFileName)
     {

@@ -16,7 +16,7 @@ public sealed class SaasTests : IClassFixture<SaasFixture>, IAsyncLifetime
 
     public ValueTask DisposeAsync()
     {
-        _fixture.AssertNoLoggedErrors();
+        _fixture.AssertNoLoggedIssues();
         return ValueTask.CompletedTask;
     }
 
