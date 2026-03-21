@@ -17,6 +17,12 @@ public sealed class OpenApiTests : CmsTestBase
         await FeatureHelper.EnableFeatureAsync(page, $"/{Tenant.Prefix}", "OrchardCore.OpenApi");
     }
 
+    private async Task EnableOpenApiWithSwaggerUIAsync(IPage page)
+    {
+        await EnableOpenApiAsync(page);
+        await FeatureHelper.EnableFeatureAsync(page, $"/{Tenant.Prefix}", "OrchardCore.OpenApi.SwaggerUI");
+    }
+
     [Fact]
     public async Task CanEnableOpenApiFeature()
     {
@@ -30,7 +36,7 @@ public sealed class OpenApiTests : CmsTestBase
     public async Task SwaggerUIIsAccessibleWhenEnabled()
     {
         var page = await Fixture.CreatePageAsync();
-        await EnableOpenApiAsync(page);
+        await EnableOpenApiWithSwaggerUIAsync(page);
         await page.GotoAsync($"/{Tenant.Prefix}/swagger");
         await Assertions.Expect(page).ToHaveTitleAsync(new Regex("OrchardCore OpenAPI Documentation"));
         await page.CloseAsync();
@@ -53,18 +59,12 @@ public sealed class OpenApiTests : CmsTestBase
     }
 
     [Fact]
-    public async Task DisabledSwaggerUIReturns404()
+    public async Task SwaggerUIReturns404WhenFeatureDisabled()
     {
         var page = await Fixture.CreatePageAsync();
         await EnableOpenApiAsync(page);
 
-        await page.GotoAsync($"/{Tenant.Prefix}/Admin/Settings/openapi");
-        var swaggerCheckbox = page.Locator("#vue-EnableSwaggerUI");
-        await swaggerCheckbox.WaitForAsync(new() { State = WaitForSelectorState.Visible });
-        await swaggerCheckbox.ClickAsync();
-        await ButtonHelper.ClickSaveAsync(page);
-        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
-
+        // SwaggerUI feature is not enabled — should return 404.
         var response = await page.GotoAsync($"/{Tenant.Prefix}/swagger");
         Assert.Equal(404, response.Status);
         await page.CloseAsync();
@@ -74,7 +74,7 @@ public sealed class OpenApiTests : CmsTestBase
     public async Task UnauthenticatedAccessRedirectsToAdmin()
     {
         var page = await Fixture.CreatePageAsync();
-        await EnableOpenApiAsync(page);
+        await EnableOpenApiWithSwaggerUIAsync(page);
         await page.CloseAsync();
 
         var anonPage = await Fixture.CreatePageAsync();
@@ -87,7 +87,7 @@ public sealed class OpenApiTests : CmsTestBase
     public async Task UserWithoutApiManageCannotAccessSwaggerUI()
     {
         var page = await Fixture.CreatePageAsync();
-        await EnableOpenApiAsync(page);
+        await EnableOpenApiWithSwaggerUIAsync(page);
 
         // Create a user with the Editor role (no OpenAPI permissions).
         await UserHelper.CreateUserAsync(page, $"/{Tenant.Prefix}", "editor1", "editor1@test.com", "Orchard1!", "Editor");
@@ -115,7 +115,7 @@ public sealed class OpenApiTests : CmsTestBase
         await page.GotoAsync($"/{Tenant.Prefix}/Admin/Settings/openapi");
 
         // The settings page should not render the OpenApi settings fields.
-        await Assertions.Expect(page.Locator("#vue-EnableSwaggerUI")).Not.ToBeAttachedAsync();
+        await Assertions.Expect(page.Locator("#vue-AllowAnonymousSchemaAccess")).Not.ToBeAttachedAsync();
         await page.CloseAsync();
     }
 
@@ -126,9 +126,7 @@ public sealed class OpenApiTests : CmsTestBase
         await EnableOpenApiAsync(page);
 
         await page.GotoAsync($"/{Tenant.Prefix}/Admin/Settings/openapi");
-        await Assertions.Expect(page.Locator("#vue-EnableSwaggerUI")).ToBeVisibleAsync();
-        await Assertions.Expect(page.Locator("#vue-EnableReDocUI")).ToBeVisibleAsync();
-        await Assertions.Expect(page.Locator("#vue-EnableScalarUI")).ToBeVisibleAsync();
+        await Assertions.Expect(page.Locator("#vue-AllowAnonymousSchemaAccess")).ToBeVisibleAsync();
         await Assertions.Expect(page.Locator("#vue-AuthenticationType")).ToBeVisibleAsync();
         await page.CloseAsync();
     }
@@ -138,13 +136,7 @@ public sealed class OpenApiTests : CmsTestBase
     {
         var page = await Fixture.CreatePageAsync();
         await EnableOpenApiAsync(page);
-
-        await page.GotoAsync($"/{Tenant.Prefix}/Admin/Settings/openapi");
-        var redocCheckbox = page.Locator("#vue-EnableReDocUI");
-        await redocCheckbox.WaitForAsync(new() { State = WaitForSelectorState.Visible });
-        await redocCheckbox.ClickAsync();
-        await ButtonHelper.ClickSaveAsync(page);
-        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+        await FeatureHelper.EnableFeatureAsync(page, $"/{Tenant.Prefix}", "OrchardCore.OpenApi.ReDocUI");
 
         await page.GotoAsync($"/{Tenant.Prefix}/redoc");
         await Assertions.Expect(page).ToHaveTitleAsync(new Regex("OrchardCore OpenAPI Documentation"));
@@ -156,13 +148,7 @@ public sealed class OpenApiTests : CmsTestBase
     {
         var page = await Fixture.CreatePageAsync();
         await EnableOpenApiAsync(page);
-
-        await page.GotoAsync($"/{Tenant.Prefix}/Admin/Settings/openapi");
-        var scalarCheckbox = page.Locator("#vue-EnableScalarUI");
-        await scalarCheckbox.WaitForAsync(new() { State = WaitForSelectorState.Visible });
-        await scalarCheckbox.ClickAsync();
-        await ButtonHelper.ClickSaveAsync(page);
-        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+        await FeatureHelper.EnableFeatureAsync(page, $"/{Tenant.Prefix}", "OrchardCore.OpenApi.ScalarUI");
 
         await page.GotoAsync($"/{Tenant.Prefix}/scalar/v1");
         await Assertions.Expect(page).ToHaveTitleAsync(new Regex("OrchardCore OpenAPI Documentation"));
@@ -175,6 +161,7 @@ public sealed class OpenApiTests : CmsTestBase
         var page = await Fixture.CreatePageAsync();
         await EnableOpenApiAsync(page);
 
+        // ReDocUI feature is not enabled — should return 404.
         var response = await page.GotoAsync($"/{Tenant.Prefix}/redoc");
         Assert.Equal(404, response.Status);
         await page.CloseAsync();
