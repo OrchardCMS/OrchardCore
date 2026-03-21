@@ -4,6 +4,7 @@ import AuthSettings from './components/AuthSettings.vue'
 import ConnectionTester from './components/ConnectionTester.vue'
 
 interface OpenApiSettingsData {
+    allowAnonymousSchemaAccess: boolean
     authenticationType: number
     authorizationUrl: string
     tokenUrl: string
@@ -16,6 +17,7 @@ interface OpenApiSettingsData {
 }
 
 const settings = reactive<OpenApiSettingsData>({
+    allowAnonymousSchemaAccess: true,
     authenticationType: 0,
     authorizationUrl: '',
     tokenUrl: '',
@@ -68,6 +70,7 @@ function syncToHiddenInput(name: string, value: unknown) {
     }
 }
 
+watch(() => settings.allowAnonymousSchemaAccess, (v) => syncToHiddenInput('AllowAnonymousSchemaAccess', v))
 watch(() => settings.authenticationType, (v) => syncToHiddenInput('AuthenticationType', v))
 watch(() => settings.authorizationUrl, (v) => syncToHiddenInput('AuthorizationUrl', v))
 watch(() => settings.tokenUrl, (v) => syncToHiddenInput('TokenUrl', v))

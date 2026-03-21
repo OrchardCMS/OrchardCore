@@ -10,6 +10,8 @@ public class OpenApiSettingsViewModel
 
     public bool IsScalarUIEnabled { get; set; }
 
+    public bool AllowAnonymousSchemaAccess { get; set; }
+
     public OpenApiAuthenticationType AuthenticationType { get; set; }
 
     public string AuthorizationUrl { get; set; }

@@ -61,6 +61,7 @@ public sealed class OpenApiSettingsDisplayDriver : SiteDisplayDriver<OpenApiSett
             model.IsSwaggerUIEnabled = enabledFeatureIds.Contains("OrchardCore.OpenApi.SwaggerUI");
             model.IsReDocUIEnabled = enabledFeatureIds.Contains("OrchardCore.OpenApi.ReDocUI");
             model.IsScalarUIEnabled = enabledFeatureIds.Contains("OrchardCore.OpenApi.ScalarUI");
+            model.AllowAnonymousSchemaAccess = settings.AllowAnonymousSchemaAccess;
             model.AuthenticationType = settings.AuthenticationType;
             model.AuthorizationUrl = settings.AuthorizationUrl;
             model.TokenUrl = settings.TokenUrl;
@@ -121,6 +122,7 @@ public sealed class OpenApiSettingsDisplayDriver : SiteDisplayDriver<OpenApiSett
             return await EditAsync(site, settings, context);
         }
 
+        settings.AllowAnonymousSchemaAccess = model.AllowAnonymousSchemaAccess;
         settings.AuthenticationType = model.AuthenticationType;
         settings.AuthorizationUrl = model.AuthorizationUrl;
         settings.TokenUrl = model.TokenUrl;

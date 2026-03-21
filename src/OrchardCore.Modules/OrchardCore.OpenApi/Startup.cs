@@ -77,9 +77,9 @@ public sealed class Startup : StartupBase
         // Add security schemes to the Swagger document based on the selected authentication type.
         ConfigureSecurityScheme(app, settings);
 
-        // Protect OpenAPI documentation UI endpoints with the ApiManage permission.
-        // The JSON spec endpoints are left open so that NSwag and other code generators
-        // can fetch the spec without authentication.
+        // Protect OpenAPI documentation endpoints with the ApiManage permission.
+        // JSON spec endpoints can optionally be left open for NSwag / code generators
+        // via the AllowAnonymousSchemaAccess setting.
         app.Use(
             async (context, next) =>
             {
@@ -87,13 +87,39 @@ public sealed class Startup : StartupBase
 
                 if (path != null)
                 {
-                    // JSON spec endpoints — always allow through for NSwag / code generators.
                     var isSwaggerJson = path.StartsWith("/swagger/", StringComparison.OrdinalIgnoreCase)
                         && path.EndsWith(".json", StringComparison.OrdinalIgnoreCase);
                     var isOpenApiJson = path.StartsWith("/openapi", StringComparison.OrdinalIgnoreCase)
                         && path.EndsWith(".json", StringComparison.OrdinalIgnoreCase);
 
-                    if (!isSwaggerJson && !isOpenApiJson)
+                    if (isSwaggerJson || isOpenApiJson)
+                    {
+                        // JSON spec endpoints — skip auth when anonymous access is allowed.
+                        if (!settings.AllowAnonymousSchemaAccess)
+                        {
+                            var authorizationService =
+                                context.RequestServices.GetRequiredService<IAuthorizationService>();
+                            var user = context.User;
+
+                            if (user?.Identity?.IsAuthenticated != true)
+                            {
+                                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                                return;
+                            }
+
+                            if (
+                                !await authorizationService.AuthorizeAsync(
+                                    user,
+                                    OpenApiPermissions.ApiManage
+                                )
+                            )
+                            {
+                                context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                                return;
+                            }
+                        }
+                    }
+                    else
                     {
                         var isSwaggerUI = path.StartsWith("/swagger", StringComparison.OrdinalIgnoreCase);
                         var isReDoc = path.StartsWith("/redoc", StringComparison.OrdinalIgnoreCase);

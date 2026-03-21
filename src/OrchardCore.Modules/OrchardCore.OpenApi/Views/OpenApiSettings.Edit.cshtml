@@ -3,6 +3,7 @@
 @model OpenApiSettingsViewModel
 
 @* Hidden inputs for ASP.NET model binding - Vue syncs values to these. *@
+<input asp-for="AllowAnonymousSchemaAccess" type="hidden" />
 <input asp-for="AuthenticationType" type="hidden" />
 <input asp-for="AuthorizationUrl" type="hidden" />
 <input asp-for="TokenUrl" type="hidden" />
@@ -16,6 +17,7 @@
         isSwaggerUIEnabled = Model.IsSwaggerUIEnabled,
         isReDocUIEnabled = Model.IsReDocUIEnabled,
         isScalarUIEnabled = Model.IsScalarUIEnabled,
+        allowAnonymousSchemaAccess = Model.AllowAnonymousSchemaAccess,
         authenticationType = (int)Model.AuthenticationType,
         authorizationUrl = Model.AuthorizationUrl ?? "",
         tokenUrl = Model.TokenUrl ?? "",

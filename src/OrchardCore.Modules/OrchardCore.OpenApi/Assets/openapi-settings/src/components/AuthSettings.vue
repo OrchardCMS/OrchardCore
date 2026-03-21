@@ -1,5 +1,6 @@
 <script setup lang="ts">
 interface Settings {
+    allowAnonymousSchemaAccess: boolean
     authenticationType: number
     authorizationUrl: string
     tokenUrl: string
@@ -67,6 +68,22 @@ const isOAuth = () => isPkce() || isClientCreds()
         </div>
 
         <span class="hint">Enable or disable API documentation UIs via the <a href="/admin/features">Features</a> page.</span>
+    </div>
+
+    <h5 class="mt-4">API Schema Access</h5>
+
+    <div class="mb-3">
+        <div class="form-check">
+            <input
+                type="checkbox"
+                class="form-check-input"
+                id="vue-AllowAnonymousSchemaAccess"
+                :checked="settings.allowAnonymousSchemaAccess"
+                @change="update('allowAnonymousSchemaAccess', ($event.target as HTMLInputElement).checked)"
+            />
+            <label class="form-check-label" for="vue-AllowAnonymousSchemaAccess">Allow anonymous access to the API schema</label>
+            <span class="hint dashed">When enabled, the JSON schema endpoints (<code>~/swagger/v1/swagger.json</code>, <code>~/openapi/v1.json</code>) can be accessed without authentication. Disable this to require the <strong>Manage API</strong> permission. External tools like NSwag will need to provide authentication when disabled.</span>
+        </div>
     </div>
 
     <h5 class="mt-4">API Authentication</h5>
