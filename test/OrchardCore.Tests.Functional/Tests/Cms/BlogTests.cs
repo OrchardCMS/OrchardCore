@@ -1,6 +1,5 @@
 using Microsoft.Playwright;
 using OrchardCore.Tests.Functional.Helpers;
-using Xunit;
 
 namespace OrchardCore.Tests.Functional.Tests.Cms;
 
@@ -13,7 +12,7 @@ public sealed class BlogTests : CmsTestBase<BlogFixture>, IClassFixture<BlogFixt
     {
         var page = await Fixture.CreatePageAsync();
         await page.GotoAsync("/");
-        await Assertions.Expect(page.Locator(".subheading")).ToContainTextAsync("This is the description of your blog");
+        await Assertions.Expect(page.Locator(".subheading")).ToContainTextAsync("This is the desasdfasdfcription of your blog");
         await page.CloseAsync();
     }
 
