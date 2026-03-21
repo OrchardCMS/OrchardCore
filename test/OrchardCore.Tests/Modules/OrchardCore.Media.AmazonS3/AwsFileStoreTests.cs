@@ -12,15 +12,18 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media.AmazonS3;
 
 /// <summary>
 /// Integration tests for <see cref="AwsFileStore"/> that run against LocalStack's S3 emulator.
-/// Set the <c>LOCALSTACK_CONNECTION_STRING</c> environment variable (e.g. <c>http://127.0.0.1:4566</c>) to run these tests.
+/// Set the <c>LOCALSTACK_SERVICE_URL</c> environment variable (e.g. <c>http://127.0.0.1:4566</c>) to run these tests.
 /// </summary>
 public sealed class AwsFileStoreTests : IAsyncLifetime
 {
-    private const string EnvVar = "LOCALSTACK_CONNECTION_STRING";
+    private const string EnvVar = "LOCALSTACK_SERVICE_URL";
 
+    private readonly ITestOutputHelper _output;
     private AwsFileStore _store;
     private AmazonS3Client _s3Client;
     private string _bucketName;
+
+    public AwsFileStoreTests(ITestOutputHelper output) => _output = output;
 
     private static string GetServiceUrl()
         => System.Environment.GetEnvironmentVariable(EnvVar);
@@ -76,9 +79,9 @@ public sealed class AwsFileStoreTests : IAsyncLifetime
 
                 await _s3Client.DeleteBucketAsync(_bucketName);
             }
-            catch
+            catch (Exception ex)
             {
-                // Best effort cleanup.
+                _output.WriteLine($"Best effort cleanup failed: {ex.Message}");
             }
 
             _s3Client.Dispose();
@@ -311,8 +314,8 @@ public sealed class AwsFileStoreTests : IAsyncLifetime
 }
 
 /// <summary>
-/// Skips the test when the LocalStack connection string is not configured.
-/// Set the <c>LOCALSTACK_CONNECTION_STRING</c> environment variable to run these tests.
+/// Skips the test when the LocalStack service URL is not configured.
+/// Set the <c>LOCALSTACK_SERVICE_URL</c> environment variable to run these tests.
 /// </summary>
 [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
 internal sealed class LocalStackFactAttribute : FactAttribute
@@ -322,9 +325,9 @@ internal sealed class LocalStackFactAttribute : FactAttribute
         [System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = -1)
         : base(sourceFilePath, sourceLineNumber)
     {
-        if (string.IsNullOrEmpty(System.Environment.GetEnvironmentVariable("LOCALSTACK_CONNECTION_STRING")))
+        if (string.IsNullOrEmpty(System.Environment.GetEnvironmentVariable("LOCALSTACK_SERVICE_URL")))
         {
-            Skip = "LocalStack is not configured. Set LOCALSTACK_CONNECTION_STRING to run this test.";
+            Skip = "LocalStack is not configured. Set LOCALSTACK_SERVICE_URL to run this test.";
         }
     }
 }
