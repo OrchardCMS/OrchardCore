@@ -56,6 +56,7 @@ public class AliasPartHandler : ContentPartHandler<AliasPart>
         }
 
         var conflictId = await _contentHandleManager.GetContentItemIdAsync(AliasConstants.AliasPrefix + part.Alias);
+        
         if (!string.IsNullOrEmpty(conflictId) && !string.Equals(conflictId, part.ContentItem.ContentItemId, StringComparison.Ordinal))
         {
             var targetItem = await _contentManager.GetAsync(conflictId, VersionOptions.Latest);
