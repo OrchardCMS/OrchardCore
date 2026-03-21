@@ -82,7 +82,7 @@ const isOAuth = () => isPkce() || isClientCreds()
                 @change="update('allowAnonymousSchemaAccess', ($event.target as HTMLInputElement).checked)"
             />
             <label class="form-check-label" for="vue-AllowAnonymousSchemaAccess">Allow anonymous access to the API schema</label>
-            <span class="hint dashed">When enabled, the JSON schema endpoints (<code>~/swagger/v1/swagger.json</code>, <code>~/openapi/v1.json</code>) can be accessed without authentication. Disable this to require the <strong>Manage API</strong> permission. External tools like NSwag will need to provide authentication when disabled.</span>
+            <span class="hint dashed">When enabled, the JSON schema endpoints (<a :href="`${pathBase}/swagger/v1/swagger.json`" target="_blank">~/swagger/v1/swagger.json</a>, <a :href="`${pathBase}/openapi/v1.json`" target="_blank">~/openapi/v1.json</a>) can be accessed without authentication. Disable this to require the <strong>Manage API</strong> permission. External tools like NSwag will need to provide authentication when disabled.</span>
         </div>
     </div>
 
