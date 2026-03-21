@@ -21,6 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Diagnostics.Testing" />
     <PackageReference Include="Microsoft.Playwright" />
     <PackageReference Include="xunit.v3.mtp-v2" />
   </ItemGroup>
