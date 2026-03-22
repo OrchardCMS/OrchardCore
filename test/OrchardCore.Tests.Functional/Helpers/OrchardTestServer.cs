@@ -1,4 +1,3 @@
-using System.Collections.Concurrent;
 using System.Text.Json;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -6,7 +5,7 @@ using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Logging.Testing;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Logging;
 
@@ -22,20 +21,20 @@ public sealed class OrchardTestServer : IAsyncDisposable
         System.Environment.GetEnvironmentVariable("OrchardCore__DatabaseProvider");
 
     private readonly WebApplication _app;
-    private readonly ConcurrentBag<LogEntry> _logEntries;
+    private readonly FakeLogCollector _logCollector;
 
     public string ServerAddress { get; }
 
-    private OrchardTestServer(WebApplication app, string serverAddress, ConcurrentBag<LogEntry> logEntries)
+    private OrchardTestServer(WebApplication app, string serverAddress, FakeLogCollector logCollector)
     {
         _app = app;
         ServerAddress = serverAddress;
-        _logEntries = logEntries;
+        _logCollector = logCollector;
     }
 
     public static async Task<OrchardTestServer> StartCmsAsync(string contentRoot, string appDataPath, string instanceId = null)
     {
-        var logEntries = new ConcurrentBag<LogEntry>();
+        var loggerProvider = new FakeLoggerProvider();
 
         SetupAppData(appDataPath, instanceId);
 
@@ -51,7 +50,7 @@ public sealed class OrchardTestServer : IAsyncDisposable
             .AddOrchardCms()
             .AddSetupFeatures("OrchardCore.AutoSetup");
 
-        ConfigureServices(builder, appDataPath, logEntries);
+        ConfigureServices(builder, appDataPath, loggerProvider);
 
         var app = builder.Build();
         app.UseStaticFiles();
@@ -59,12 +58,12 @@ public sealed class OrchardTestServer : IAsyncDisposable
 
         await app.StartAsync();
 
-        return new OrchardTestServer(app, GetListeningAddress(app), logEntries);
+        return new OrchardTestServer(app, GetListeningAddress(app), loggerProvider.Collector);
     }
 
     public static async Task<OrchardTestServer> StartMvcAsync(string contentRoot, string appDataPath)
     {
-        var logEntries = new ConcurrentBag<LogEntry>();
+        var loggerProvider = new FakeLoggerProvider();
 
         SetupAppData(appDataPath, null);
 
@@ -78,7 +77,7 @@ public sealed class OrchardTestServer : IAsyncDisposable
             .AddOrchardCore()
             .AddMvc();
 
-        ConfigureServices(builder, appDataPath, logEntries);
+        ConfigureServices(builder, appDataPath, loggerProvider);
 
         var app = builder.Build();
         app.UseStaticFiles();
@@ -86,23 +85,23 @@ public sealed class OrchardTestServer : IAsyncDisposable
 
         await app.StartAsync();
 
-        return new OrchardTestServer(app, GetListeningAddress(app), logEntries);
+        return new OrchardTestServer(app, GetListeningAddress(app), loggerProvider.Collector);
     }
 
-    public void AssertNoLoggedErrors()
+    public void AssertNoLoggedIssues()
     {
-        var errors = _logEntries
-            .Where(e => e.LogLevel >= LogLevel.Error)
+        var issues = _logCollector.GetSnapshot()
+            .Where(e => e.Level >= LogLevel.Warning)
             .ToList();
 
-        if (errors.Count > 0)
+        if (issues.Count > 0)
         {
             var messages = string.Join(
                 System.Environment.NewLine,
-                errors.Select(e => $"[{e.LogLevel}] {e.Category}: {e.Message}{(e.Exception is not null ? $" -> {e.Exception}" : string.Empty)}"));
+                issues.Select(e => $"[{e.Level}] {e.Category}: {e.Message}{(e.Exception is not null ? $" -> {e.Exception}" : string.Empty)}"));
 
             throw new Xunit.Sdk.XunitException(
-                $"Expected no logged errors, but found {errors.Count}:{System.Environment.NewLine}{messages}");
+                $"Expected no logged warnings or errors, but found {issues.Count}:{System.Environment.NewLine}{messages}");
         }
     }
 
@@ -162,7 +161,7 @@ public sealed class OrchardTestServer : IAsyncDisposable
             }));
     }
 
-    private static void ConfigureServices(WebApplicationBuilder builder, string appDataPath, ConcurrentBag<LogEntry> logEntries)
+    private static void ConfigureServices(WebApplicationBuilder builder, string appDataPath, FakeLoggerProvider loggerProvider)
     {
         builder.WebHost.UseUrls("http://127.0.0.1:0");
         builder.WebHost.UseSetting("suppressHostingStartup", "true");
@@ -183,9 +182,15 @@ public sealed class OrchardTestServer : IAsyncDisposable
         // ConcurrencyException on SiteSettings with external databases.
         builder.Configuration["OrchardCore:OrchardCore_Documents:CheckConcurrency"] = "false";
 
-        builder.Logging.AddProvider(new InMemoryLoggerProvider(logEntries));
+        builder.Logging.AddFilter<FakeLoggerProvider>(level => level >= LogLevel.Warning);
+        builder.Logging.AddProvider(loggerProvider);
     }
 
+    /// <summary>
+    /// Creates a fixture-specific database if it doesn't already exist. The CI workflow
+    /// creates a single shared service database (e.g., "app"), but each test fixture uses
+    /// its own database (e.g., "app_cmssetupfixture") to avoid cross-fixture interference.
+    /// </summary>
     private static void EnsureDatabaseExists(string connectionString, string databaseProvider)
     {
         var dbName = ExtractDatabaseName(connectionString);

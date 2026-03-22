@@ -78,6 +78,10 @@ public sealed class OrchardTestFixture : IAsyncDisposable
 
     public async Task<IPage> CreatePageAsync(string traceName = null)
     {
+        // Capture the test display name at call time (inside the test) so it can be used
+        // when the page close event fires (potentially after the test has completed).
+        var capturedTraceName = traceName ?? SanitizeFileName(TestContext.Current?.Test?.TestDisplayName);
+
         var context = await _browser.NewContextAsync(
             new BrowserNewContextOptions { BaseURL = BaseUrl }
         );
@@ -103,9 +107,9 @@ public sealed class OrchardTestFixture : IAsyncDisposable
                 if (_tracingEnabled)
                 {
                     var traceIndex = Interlocked.Increment(ref _traceCounter);
-                    var fileName = string.IsNullOrEmpty(traceName)
+                    var fileName = string.IsNullOrEmpty(capturedTraceName)
                         ? $"trace-{traceIndex}.zip"
-                        : $"trace-{traceName}-{traceIndex}.zip";
+                        : $"trace-{capturedTraceName}-{traceIndex}.zip";
 
                     Directory.CreateDirectory(_traceDir);
 
@@ -126,7 +130,18 @@ public sealed class OrchardTestFixture : IAsyncDisposable
         return page;
     }
 
-    public void AssertNoLoggedErrors() => _server?.AssertNoLoggedErrors();
+    private static string SanitizeFileName(string name)
+    {
+        if (string.IsNullOrEmpty(name))
+        {
+            return null;
+        }
+
+        var invalidChars = Path.GetInvalidFileNameChars();
+        return string.Concat(name.Select(c => Array.IndexOf(invalidChars, c) >= 0 ? '_' : c));
+    }
+
+    public void AssertNoLoggedIssues() => _server?.AssertNoLoggedIssues();
 
     public async ValueTask DisposeAsync()
     {

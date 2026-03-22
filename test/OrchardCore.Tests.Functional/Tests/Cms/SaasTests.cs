@@ -1,6 +1,5 @@
 using Microsoft.Playwright;
 using OrchardCore.Tests.Functional.Helpers;
-using Xunit;
 
 namespace OrchardCore.Tests.Functional.Tests.Cms;
 
@@ -17,7 +16,7 @@ public sealed class SaasTests : IClassFixture<SaasFixture>, IAsyncLifetime
 
     public ValueTask DisposeAsync()
     {
-        _fixture.AssertNoLoggedErrors();
+        _fixture.AssertNoLoggedIssues();
         return ValueTask.CompletedTask;
     }
 

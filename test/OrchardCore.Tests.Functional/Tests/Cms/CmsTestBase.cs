@@ -1,5 +1,3 @@
-using Xunit;
-
 namespace OrchardCore.Tests.Functional.Tests.Cms;
 
 public abstract class CmsTestBase<TFixture> : IAsyncLifetime
@@ -16,7 +14,7 @@ public abstract class CmsTestBase<TFixture> : IAsyncLifetime
 
     public virtual ValueTask DisposeAsync()
     {
-        Fixture.AssertNoLoggedErrors();
+        Fixture.AssertNoLoggedIssues();
         return ValueTask.CompletedTask;
     }
 }
