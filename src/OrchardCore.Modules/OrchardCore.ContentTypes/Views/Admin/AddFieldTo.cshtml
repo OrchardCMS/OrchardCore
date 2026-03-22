@@ -1,14 +1,17 @@
 @using OrchardCore.Mvc.Utilities
 @using OrchardCore.ContentManagement.Metadata.Settings
+@using OrchardCore.Localization.Data
 
 @model AddFieldViewModel
+@inject IDataLocalizer D
 
 @{
     var returnUrl = ViewData["returnUrl"]?.ToString();
+    string localizedPartName = D[Model.Part.DisplayName(), "Content Types"];
 }
 
 <script asp-src="~/OrchardCore.ContentTypes/Scripts/autocomplete/autocomplete.js" at="Foot" depends-on="jQuery"></script>
-<zone Name="Title"><h1>@RenderTitleSegments(T["Add New Field To \"{0}\"", Model.Part.DisplayName()])</h1></zone>
+<zone Name="Title"><h1>@RenderTitleSegments(T["Add New Field To \"{0}\"", localizedPartName])</h1></zone>
 
 <form asp-action="AddFieldTo" asp-route-returnUrl="@ViewData["returnUrl"]">
     @Html.ValidationSummary()

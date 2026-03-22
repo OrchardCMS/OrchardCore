@@ -1,3 +1,4 @@
+using System.Net.Mime;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Feeds.Models;
@@ -77,6 +78,6 @@ public sealed class FeedController : Controller
             }
         });
 
-        return Content(document.ToString(), "text/xml");
+        return Content(document.ToString(), MediaTypeNames.Text.Xml);
     }
 }

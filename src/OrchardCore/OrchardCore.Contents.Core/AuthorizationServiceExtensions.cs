@@ -50,7 +50,7 @@ public static class AuthorizationServiceExtensions
         {
             var dynamicPermission = ContentTypePermissionsHelper.CreateDynamicPermission(contentTypePermission, contentTypeDefinition);
 
-            if (await service.AuthorizeContentTypeAsync(user, dynamicPermission, contentTypeDefinition.Name, user.Identity.Name))
+            if (await service.AuthorizeContentTypeAsync(user, dynamicPermission, contentTypeDefinition.Name, user.FindFirstValue(ClaimTypes.NameIdentifier)))
             {
                 return true;
             }

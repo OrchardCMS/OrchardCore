@@ -27,7 +27,7 @@ public sealed class CustomSettingsDisplayDriver : DisplayDriver<ISite>
 
     public override async Task<IDisplayResult> EditAsync(ISite site, BuildEditorContext context)
     {
-        var contentTypeDefinition = _customSettingsService.GetSettingsType(context.GroupId);
+        var contentTypeDefinition = await _customSettingsService.GetSettingsTypeAsync(context.GroupId);
         if (contentTypeDefinition == null)
         {
             return null;
@@ -51,7 +51,7 @@ public sealed class CustomSettingsDisplayDriver : DisplayDriver<ISite>
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, UpdateEditorContext context)
     {
-        var contentTypeDefinition = _customSettingsService.GetSettingsType(context.GroupId);
+        var contentTypeDefinition = await _customSettingsService.GetSettingsTypeAsync(context.GroupId);
         if (contentTypeDefinition == null)
         {
             return null;

@@ -1,0 +1,181 @@
+@model OrchardCore.DataLocalization.ViewModels.TranslationStatisticsViewModel
+@using System.Text.Json
+
+@{
+    var statisticsJson = JConvert.SerializeObject(Model, JOptions.CamelCase);
+}
+
+<zone Name="Title">
+    <h1>@RenderTitleSegments(T["Dynamic Translation Statistics"])</h1>
+</zone>
+
+<div id="translation-statistics">
+    <!-- Overall Progress -->
+    <fieldset class="mb-3">
+        <legend>@T["Overall Progress"]</legend>
+        <div class="d-flex align-items-center">
+            <div class="flex-grow-1 me-3">
+                <div class="progress" style="height: 20px;">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" :class="getProgressClass(stats.overall.percentage)"
+                         role="progressbar"
+                         :style="{ width: stats.overall.percentage + '%' }"
+                         :aria-valuenow="stats.overall.percentage"
+                         aria-valuemin="0" aria-valuemax="100">
+                        {{ stats.overall.percentage }}%
+                    </div>
+                </div>
+            </div>
+            <div>
+                <strong>{{ stats.overall.translated }}</strong> / {{ stats.overall.total }} @T["strings"]
+            </div>
+        </div>
+    </fieldset>
+
+    <!-- Progress by Culture -->
+    <fieldset class="mb-3">
+        <legend>@T["Progress by Culture"]</legend>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th class="col-3">@T["Culture"]</th>
+                    <th class="col-6">@T["Progress"]</th>
+                    <th class="col-3 text-end">@T["Completion"]</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="culture in stats.byCulture" :key="culture.culture">
+                    <td>
+                        <strong class="me-1">{{ culture.displayName }}</strong>
+                        <span class="hint">({{ culture.culture }})</span>
+                    </td>
+                    <td>
+                        <div class="progress" style="height: 20px;">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated" :class="getProgressClass(culture.percentage)"
+                                 role="progressbar"
+                                 :style="{ width: culture.percentage + '%' }"
+                                 :aria-valuenow="culture.percentage"
+                                 aria-valuemin="0" aria-valuemax="100">
+                                {{ culture.percentage }}%
+                            </div>
+                        </div>
+                    </td>
+                    <td class="text-end">
+                        <span class="badge" :class="getBadgeClass(culture.percentage)">
+                            {{ culture.translated }} / {{ culture.total }}
+                        </span>
+                        <a :href="getEditorUrl(culture.culture)" class="btn btn-sm btn-secondary ms-2" title="@T["Edit translations"]">
+                            <i class="fa-solid fa-pen" aria-hidden="true"></i>
+                        </a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </fieldset>
+
+    <!-- Progress by Category -->
+    <fieldset class="mb-3">
+        <legend>
+            @T["Progress by Category"]
+            <select class="form-select form-select-sm d-inline-block ms-2" style="width: auto;" v-model="selectedCulture">
+                <option v-for="culture in stats.byCulture" :key="culture.culture" :value="culture.culture">
+                    {{ culture.displayName }}
+                </option>
+            </select>
+        </legend>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th class="col-3">@T["Category"]</th>
+                    <th class="col-6">@T["Progress"]</th>
+                    <th class="col-3 text-end">@T["Completion"]</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="category in selectedCultureCategories" :key="category.category">
+                    <td>
+                        <strong>{{ category.category }}</strong>
+                    </td>
+                    <td>
+                        <div class="progress" style="height: 20px;">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated" :class="getProgressClass(category.percentage)"
+                                 role="progressbar"
+                                 :style="{ width: category.percentage + '%' }"
+                                 :aria-valuenow="category.percentage"
+                                 aria-valuemin="0" aria-valuemax="100">
+                                {{ category.percentage }}%
+                            </div>
+                        </div>
+                    </td>
+                    <td class="text-end">
+                        <span class="badge" :class="getBadgeClass(category.percentage)">
+                            {{ category.translated }} / {{ category.total }}
+                        </span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div v-if="selectedCultureCategories.length === 0" class="alert alert-info">
+            @T["No categories found for this culture."]
+        </div>
+    </fieldset>
+
+    <!-- Action buttons -->
+    <div class="mb-3">
+        <a class="btn btn-primary" role="button" href="@Url.Action("Index", "Admin", new { area = "OrchardCore.DataLocalization" })">@T["Edit Translations"]</a>
+    </div>
+</div>
+
+<script asp-name="vuejs" at="Foot"></script>
+<script at="Foot">
+document.addEventListener('DOMContentLoaded', function () {
+    const statsEl = document.getElementById('translation-statistics');
+    if (!statsEl) return;
+
+    // Data passed from server
+    const serverData = @Html.Raw(statisticsJson);
+
+    const { createApp } = Vue;
+
+    const app = createApp({
+        data() {
+            return {
+                stats: serverData,
+                selectedCulture: '',
+                editorBaseUrl: '@Url.Action("Index", "Admin", new { area = "OrchardCore.DataLocalization" })'
+            };
+        },
+        computed: {
+            selectedCultureCategories() {
+                if (!this.selectedCulture || !this.stats.byCategory) {
+                    return [];
+                }
+                return this.stats.byCategory[this.selectedCulture] || [];
+            }
+        },
+        methods: {
+            getProgressClass(percentage) {
+                if (percentage >= 75) return 'bg-success';
+                if (percentage >= 25) return 'bg-warning';
+                return 'bg-danger';
+            },
+            getBadgeClass(percentage) {
+                if (percentage >= 75) return 'text-bg-success';
+                if (percentage >= 25) return 'text-bg-warning';
+                return 'text-bg-danger';
+            },
+            getEditorUrl(culture) {
+                return `${this.editorBaseUrl}?culture=${encodeURIComponent(culture)}`;
+            }
+        },
+        mounted() {
+            // Default to first culture
+            if (this.stats.byCulture && this.stats.byCulture.length > 0) {
+                this.selectedCulture = this.stats.byCulture[0].culture;
+            }
+        }
+    });
+
+    app.mount('#translation-statistics');
+});
+</script>

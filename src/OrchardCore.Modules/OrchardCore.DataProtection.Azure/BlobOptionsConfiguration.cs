@@ -72,10 +72,16 @@ internal sealed class BlobOptionsConfiguration : IConfigureOptions<BlobOptions>
         {
             try
             {
-                _logger.LogDebug("Testing data protection container {ContainerName} existence", options.ContainerName);
+                if (_logger.IsEnabled(LogLevel.Debug))
+                {
+                    _logger.LogDebug("Testing data protection container {ContainerName} existence", options.ContainerName);
+                }
                 var blobContainer = new BlobContainerClient(options.ConnectionString, options.ContainerName);
                 var response = blobContainer.CreateIfNotExistsAsync(PublicAccessType.None).GetAwaiter().GetResult();
-                _logger.LogDebug("Data protection container {ContainerName} created.", options.ContainerName);
+                if (_logger.IsEnabled(LogLevel.Debug))
+                {
+                    _logger.LogDebug("Data protection container {ContainerName} created.", options.ContainerName);
+                }
             }
             catch (Exception e)
             {

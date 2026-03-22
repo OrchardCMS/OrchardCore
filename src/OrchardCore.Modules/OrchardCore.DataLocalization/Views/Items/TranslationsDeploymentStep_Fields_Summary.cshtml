@@ -1,0 +1,23 @@
+@using OrchardCore.DataLocalization.Deployment
+@using OrchardCore.DisplayManagement.Views
+@model ShapeViewModel<TranslationsDeploymentStep>
+
+<p class="mb-0">@T["Adds translations to the deployment plan."]</p>
+
+@if (Model.Value.IncludeAll)
+{
+    <span class="badge text-bg-info">@T["All cultures"]</span>
+}
+else if (Model.Value.Cultures.Length > 0)
+{
+    <span class="hint">@T["Cultures:"]:@Model.Value.Cultures.Length</span>
+    @foreach (var culture in Model.Value.Cultures)
+    {
+        <span class="badge text-bg-secondary">@culture</span>
+    }
+}
+
+@if (Model.Value.Categories.Length > 0)
+{
+    <span class="hint ms-2">@T["Categories:"] @Model.Value.Categories.Length</span>
+}

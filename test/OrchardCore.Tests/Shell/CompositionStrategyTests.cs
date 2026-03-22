@@ -195,18 +195,13 @@ public class CompositionStrategyTests
         await strategy.ComposeAsync(settings, descriptor);
 
         // Assert
-        logger.Verify(l => l.Log(
-            LogLevel.Debug,
-            It.IsAny<EventId>(),
-            It.Is<It.IsAnyType>((v, t) => v.ToString().Contains("Composing blueprint")),
-            null,
-            It.IsAny<Func<It.IsAnyType, Exception, string>>()), Times.Once);
-        logger.Verify(l => l.Log(
-            LogLevel.Debug,
-            It.IsAny<EventId>(),
-            It.Is<It.IsAnyType>((v, t) => v.ToString().Contains("Done composing blueprint")),
-            null,
-            It.IsAny<Func<It.IsAnyType, Exception, string>>()), Times.Once);
+        var logMessages = logger.Invocations
+            .Where(i => i.Method.Name == nameof(ILogger.Log))
+            .Select(i => new { Level = (LogLevel)i.Arguments[0], Message = i.Arguments[2]?.ToString() })
+            .ToList();
+
+        Assert.Single(logMessages, m => m.Level == LogLevel.Debug && m.Message.Contains("Composing blueprint"));
+        Assert.Single(logMessages, m => m.Level == LogLevel.Debug && m.Message.Contains("Done composing blueprint"));
     }
 
     [Fact]

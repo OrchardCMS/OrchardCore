@@ -46,24 +46,14 @@ public sealed class ContentsDriver : ContentDisplayDriver
 
             contentsMetadataShape.Displaying(ctx =>
             {
-                var hasStereotype = contentTypeDefinition.TryGetStereotype(out var stereotype);
-
-                if (hasStereotype && !string.Equals("Content", stereotype, StringComparison.OrdinalIgnoreCase))
-                {
-                    ctx.Shape.Metadata.Alternates.Add($"{stereotype}__ContentsMetadata");
-                }
-
                 var displayType = ctx.Shape.Metadata.DisplayType;
 
-                if (!string.IsNullOrEmpty(displayType) && displayType != "Detail")
-                {
-                    ctx.Shape.Metadata.Alternates.Add($"ContentsMetadata_{ctx.Shape.Metadata.DisplayType}");
+                // Get cached alternates and add them efficiently
+                var alternates = ContentsMetadataAlternatesFactory.GetAlternates(
+                    contentTypeDefinition.GetStereotype(),
+                    displayType);
 
-                    if (hasStereotype && !string.Equals("Content", stereotype, StringComparison.OrdinalIgnoreCase))
-                    {
-                        ctx.Shape.Metadata.Alternates.Add($"{stereotype}_{displayType}__ContentsMetadata");
-                    }
-                }
+                ctx.Shape.Metadata.Alternates.AddRange(alternates);
             });
 
             var user = _httpContextAccessor.HttpContext.User;

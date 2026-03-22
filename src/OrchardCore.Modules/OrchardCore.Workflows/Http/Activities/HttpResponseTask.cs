@@ -1,3 +1,4 @@
+using System.Net.Mime;
 using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
@@ -55,7 +56,7 @@ public class HttpResponseTask : TaskActivity<HttpResponseTask>
 
     public WorkflowExpression<string> ContentType
     {
-        get => GetProperty(() => new WorkflowExpression<string>("application/json"));
+        get => GetProperty(() => new WorkflowExpression<string>(MediaTypeNames.Application.Json));
         set => SetProperty(value);
     }
 

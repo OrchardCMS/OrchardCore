@@ -1,8 +1,10 @@
 mkdocs>=1.6.1
-mkdocs-material>=9.7.0
+mkdocs-material>=9.7.5
 mkdocs-git-authors-plugin>=0.10.0
-mkdocs-git-revision-date-localized-plugin>=1.4.7
-pymdown-extensions>=10.20.0
+mkdocs-git-revision-date-localized-plugin>=1.5.1
+pymdown-extensions>=10.21.0
 mkdocs-exclude>=1.0.2
 mkdocs-redirects>=1.2.1
 mdx_truly_sane_lists>=1.2
+# Pinning click because higher versions break file watching and auto-reload, see https://github.com/mkdocs/mkdocs/issues/4032. When removing this, also remove the disabling config from the root renovate.json5.
+click<8.3

@@ -1,4 +1,6 @@
 @model SelectContentTypesViewModel
+@using OrchardCore.Localization.Data
+@inject IDataLocalizer D
 
 <script asp-src="~/OrchardCore.Contents/Scripts/content-type-check-all.min.js" debug-src="~/OrchardCore.Contents/Scripts/content-type-check-all.js" at="Foot"></script>
 <div class="check-all content-types row">
@@ -18,7 +20,7 @@
                     name="@Model.HtmlName" checked="@contentType.IsSelected"
                     value="@contentType.ContentTypeDefinition.Name">
                 <label class="form-check-label"
-                    for="@Html.IdFor(m => m.ContentTypeSelections[i])">@contentType.ContentTypeDefinition.DisplayName</label>
+                    for="@Html.IdFor(m => m.ContentTypeSelections[i])">@D[contentType.ContentTypeDefinition.DisplayName, "Content Types"]</label>
             </div>
         </div>
     }

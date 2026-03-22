@@ -27,4 +27,10 @@ public class BagPartEditViewModel
 
     [BindNever]
     public ContentTypePartDefinition TypePartDefinition { get; set; }
+
+    [BindNever]
+    public string AddButtonText { get; set; }
+
+    [BindNever]
+    public string ModalTitleText { get; set; }
 }

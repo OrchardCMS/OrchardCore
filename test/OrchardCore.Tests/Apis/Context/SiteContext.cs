@@ -107,7 +107,7 @@ public class SiteContext : IDisposable
 
     // Waits up to 60 seconds for all outstanding deferred tasks to complete by making sure no shell scope is
     // currently executing.
-    public Task WaitForOutstandingDeferredTasksAsync(CancellationToken cancellationToken)
+    public Task WaitForDeferredTasksAsync(CancellationToken cancellationToken)
     {
         return UsingTenantScopeAsync(async scope =>
         {
@@ -128,6 +128,7 @@ public class SiteContext : IDisposable
     }
 
     // Waits up to 90 seconds for all outstanding HTTP background jobs.
+    // This also handles nested jobs where completing one job may spawn another.
     public Task WaitForHttpBackgroundJobsAsync(CancellationToken cancellationToken)
     {
         return UsingTenantScopeAsync(async scope =>

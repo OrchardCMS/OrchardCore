@@ -31,7 +31,7 @@ public sealed class AdminController : Controller
         _updateModelAccessor = updateModelAccessor;
     }
 
-    public async Task<IActionResult> BuildEditor(string id, string prefix, string prefixesName, string contentTypesName, string contentItemsName, string targetId, bool flowMetadata, string parentContentType, string partName)
+    public async Task<IActionResult> BuildEditor(string id, string prefix, string prefixesName, string contentTypesName, string contentItemsName, string targetId, bool flowMetadata, string parentContentType, string partName, string cardCollectionType = null)
     {
         if (string.IsNullOrWhiteSpace(id))
         {
@@ -41,7 +41,6 @@ public sealed class AdminController : Controller
         var contentItem = await _contentManager.NewAsync(id);
 
         // Does this editor need the flow metadata editor?
-        string cardCollectionType = null;
         var colSize = 12;
         IEnumerable<ContentTypeDefinition> containedContentTypes = null;
 
@@ -54,11 +53,12 @@ public sealed class AdminController : Controller
             containedContentTypes = await GetContainedContentTypesAsync(settings);
             metadata.Alignment = GetDefaultAlignment(settings);
 
-            cardCollectionType = nameof(FlowPart);
+            // Use provided cardCollectionType or default to FlowPart
+            cardCollectionType ??= nameof(FlowPart);
         }
         else
         {
-            cardCollectionType = nameof(BagPart);
+            cardCollectionType ??= nameof(BagPart);
         }
 
         // Create a Card Shape

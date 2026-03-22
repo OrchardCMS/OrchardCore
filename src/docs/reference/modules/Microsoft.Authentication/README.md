@@ -45,7 +45,7 @@ First, you need to create an Microsoft Entra ID app on the [Azure Portal](https:
 5. Configure the rest of the authentication settings of the app under its "Authentication" menu. There, under "Implicit grant and hybrid flows", enable both "Access tokens (used for implicit flows)" and "ID tokens (used for implicit and hybrid flows)". Without these, login will fail with errors.
 6. Configure the `email` claim under the "Token configuration" menu. Click "Add optional claim", as "Token type" select "ID", then select "email" and click "Add". Without this, Orchard can't match logins based on the user's email, and thus existing users won't be able to log in.
 
-You are now ready to configure Microsoft Entra ID login in Orchard too. After enabling the "Microsoft Entra ID (Azure Active Directory) Authentication" feature, you will see the "Security" → "Microsoft Entra ID" menu in the admin. We recommend to configure at least the following settings:
+You are now ready to configure Microsoft Entra ID login in Orchard too. After enabling the "Microsoft Entra ID (Azure Active Directory) Authentication" feature, you will see the "Settings" → "Security" → "Authentication" → "Microsoft Entra ID" menu in the admin. We recommend to configure at least the following settings:
 
 - Display Name: The text that will be displayed on the Orchard login screen. We recommend something like "My Company Microsoft account".
 - AppId: Use the above-mentioned "Application (client) ID" from the Azure Portal.

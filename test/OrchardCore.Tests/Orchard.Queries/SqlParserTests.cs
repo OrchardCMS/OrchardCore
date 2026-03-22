@@ -228,6 +228,8 @@ public class SqlParserTests
     [InlineData("with cte as (select a from t union all select b from t) select * from cte", "WITH cte AS (SELECT [a] FROM [tp_t] UNION ALL SELECT [b] FROM [tp_t]) SELECT * FROM [cte];")]
     [InlineData("with cte1(abc, def) as (select id as abc, id as def from t), cte2(ghi,jkl) as (select abc as ghi, def as jkl from cte1) select ghi, jkl from cte2", "WITH cte1(abc, def) AS (SELECT [id] AS abc, [id] AS def FROM [tp_t]), cte2(ghi, jkl) AS (SELECT [abc] AS ghi, [def] AS jkl FROM [cte1]) SELECT [ghi], [jkl] FROM [cte2];")]
     [InlineData("with test(test) as (select a as test from t) select test from test", "WITH test(test) AS (SELECT [a] AS test FROM [tp_t]) SELECT [test] FROM [test];")]
+    [InlineData("with cte as (select t.a from SomeTable t where t.b = 1) select * from cte", "WITH cte AS (SELECT t.[a] FROM [tp_SomeTable] AS t WHERE t.[b] = 1) SELECT * FROM [cte];")]
+    [InlineData("with cte as (select ci.DocumentId, ROW_NUMBER() over (order by ci.CreatedUtc desc) as RowNum from ContentItemIndex ci where ci.ContentType = 'BlogPost') select DocumentId from cte where RowNum <= 6", "WITH cte AS (SELECT ci.[DocumentId], ROW_NUMBER() OVER (ORDER BY ci.[CreatedUtc] DESC) AS RowNum FROM [tp_ContentItemIndex] AS ci WHERE ci.[ContentType] = N'BlogPost') SELECT [DocumentId] FROM [cte] WHERE [RowNum] <= 6;")]
     public void ShouldParseCte(string sql, string expectedSql)
     {
         var result = SqlParser.TryParse(sql, _schema, _defaultDialect, _defaultTablePrefix, null, out var rawQuery, out _);
@@ -282,6 +284,22 @@ public class SqlParserTests
     [InlineData("SELECT DocumentId FROM ContentItemIndex WHERE ContentType='BlogPost' ORDER BY CreatedUtc DESC", "SELECT [DocumentId] FROM [tp_ContentItemIndex] WHERE [ContentType] = N'BlogPost' ORDER BY [CreatedUtc] DESC;")]
     [InlineData("SELECT DocumentId FROM ContentItemIndex WHERE ContentType='BlogPost' ORDER BY CreatedUtc DESC LIMIT 3", "SELECT TOP (3) [DocumentId] FROM [tp_ContentItemIndex] WHERE [ContentType] = N'BlogPost' ORDER BY [CreatedUtc] DESC;")]
     public void ShouldParseWhereWithOrderBy(string sql, string expectedSql)
+    {
+        var result = SqlParser.TryParse(sql, _schema, _defaultDialect, _defaultTablePrefix, null, out var rawQuery, out var messages);
+        
+        Assert.True(result, messages?.FirstOrDefault() ?? "Parse failed");
+        Assert.Equal(expectedSql, FormatSql(rawQuery));
+    }
+
+    [Theory]
+    [InlineData("select now()", "SELECT getUtcDate();")]
+    [InlineData("select NOW()", "SELECT getUtcDate();")]
+    [InlineData("select getdate()", "SELECT getdate();")]
+    [InlineData("select a where b > now()", "SELECT [a] WHERE [b] > getUtcDate();")]
+    [InlineData("SELECT * FROM ContentItemIndex WHERE CreatedUtc > now()", "SELECT * FROM [tp_ContentItemIndex] WHERE [CreatedUtc] > getUtcDate();")]
+    [InlineData("select now() as CurrentTime", "SELECT getUtcDate() AS CurrentTime;")]
+    [InlineData("select count(*), now()", "SELECT count(*), getUtcDate();")]
+    public void ShouldParseParameterlessFunctions(string sql, string expectedSql)
     {
         var result = SqlParser.TryParse(sql, _schema, _defaultDialect, _defaultTablePrefix, null, out var rawQuery, out var messages);
         

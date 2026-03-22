@@ -5,7 +5,7 @@ namespace OrchardCore.ContentManagement;
 
 /// <summary>
 /// Implements <see cref="ITypeActivatorFactory{ContentField}"/> by resolving all registered <see cref="ContentField"/> types
-/// and memoizing a statically typed <see cref="ITypeActivator{ContentField}"/>.
+/// and memorizing a statically typed <see cref="ITypeActivator{ContentField}"/>.
 /// </summary>
 public class ContentFieldFactory : ITypeActivatorFactory<ContentField>
 {
@@ -22,7 +22,7 @@ public class ContentFieldFactory : ITypeActivatorFactory<ContentField>
         {
             if (_contentFieldActivators.ContainsKey(fieldOption.Type.Name))
             {
-                logger.LogWarning("The ContentField 'Name' was registered more than once. Content Fields should only be registered once using .AddContentField<{Name}>().", fieldOption.Type.Name);
+                logger.LogWarning("The ContentField '{Name}' was registered more than once. Content Fields should only be registered once using .AddContentField<{Name}>().", fieldOption.Type.Name, fieldOption.Type.Name);
 
                 continue;
             }

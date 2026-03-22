@@ -1,4 +1,6 @@
 @model ListContentTypesViewModel
+@using OrchardCore.Localization.Data
+@inject IDataLocalizer D
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Content Types"])</h1></zone>
 
@@ -21,7 +23,7 @@
 <ul id="list-items" class="list-group">
     @foreach (var type in Model.Types)
     {
-        <li class="list-group-item" data-filter-value="@type.DisplayName" data-type-name="@type.Name">
+        <li class="list-group-item" data-filter-value="@D[type.DisplayName, "Content Types"]" data-type-name="@type.Name">
             @Html.DisplayFor(m => type)
         </li>
     }

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Routing;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Layout;
 using OrchardCore.DisplayManagement.Shapes;
@@ -55,10 +56,10 @@ public sealed class AdminMenuFilter : IAsyncResultFilter
 
         // Populate main nav
         var menuShape = await _shapeFactory.CreateAsync("Navigation",
-            Arguments.From(new
+            Arguments.From(new NavigationArguments
             {
                 MenuName = NavigationConstants.AdminId,
-                filterContext.RouteData,
+                RouteData = filterContext.RouteData,
             }));
 
         var layout = await _layoutAccessor.GetLayoutAsync();
@@ -72,4 +73,11 @@ public sealed class AdminMenuFilter : IAsyncResultFilter
 
         await next();
     }
+}
+
+[GenerateArguments]
+internal sealed partial class NavigationArguments
+{
+    public string MenuName { get;set; }
+    public RouteData RouteData { get; set; }
 }

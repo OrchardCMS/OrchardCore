@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using System.Net.Mime;
 using System.Security.Claims;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
@@ -383,7 +384,7 @@ public sealed class AccessController : Controller
 
     [AllowAnonymous, HttpPost]
     [IgnoreAntiforgeryToken]
-    [Produces("application/json")]
+    [Produces(MediaTypeNames.Application.Json)]
     public Task<IActionResult> Token()
     {
         // Warning: this action is decorated with IgnoreAntiforgeryTokenAttribute to override

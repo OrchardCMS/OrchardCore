@@ -17,6 +17,40 @@ An example of this can be found in TheAgencyTheme where four Named BagParts are 
 - About
 - Team
 
+## Blocks Editor
+
+The blocks editor provides an alternative editor for BagPart that uses a modal-based content type picker instead of the standard dropdown menu. Content types displayed in the picker can be organised with categories and thumbnails. See [Content Type Settings for Block Pickers](../ContentTypes/README.md#content-type-settings-for-block-pickers) for configuration details.
+
+### Enabling the Blocks Editor
+
+To enable the blocks editor for a BagPart, set the **Editor** option to `Blocks` in the content type definition.
+
+This can be done in the admin UI:
+
+1. Navigate to **Content Definition** → **Content Types**
+2. Edit the content type containing the BagPart
+3. Click **Edit** on the BagPart
+4. Set the **Editor** field to `Blocks`
+
+Or programmatically using a migration:
+
+```csharp
+_contentDefinitionManager.AlterTypeDefinition("MyContentType", type => type
+    .WithPart("BagPart", part => part
+        .WithEditor("Blocks")
+    )
+);
+```
+
+### Blocks Editor Settings
+
+When the blocks editor is enabled for a BagPart, additional settings become available in the part editor options:
+
+| Setting          | Description                                                                 |
+| ---------------- | --------------------------------------------------------------------------- |
+| Add Button Text  | Custom text for the "Add" button. Defaults to "Add Block".                  |
+| Modal Title Text | Custom title for the content type picker modal. Defaults to "Select Block". |
+
 ## Templating in a decoupled manner
 
 When templating in a decoupled manner the content items are accessed directly through the name of the BagPart.
@@ -48,7 +82,7 @@ When templating with Liquid the `shape_build_display` filter is used on the cont
 the display shapes for the content items, then the `shape_render` filter is used to render these shapes.
 
 When templating with Razor the `IContentItemDisplayManager` is used on the contained items to call `BuildDisplayAsync`
-to build the display shapes for the  content items, then `DisplayAsync` is used to render these shapes.
+to build the display shapes for the content items, then `DisplayAsync` is used to render these shapes.
 
 === "Liquid"
 
@@ -93,7 +127,7 @@ In the second example we have an alternate for the Content Type `MyBag`, and the
 The templates and alternate names for the Content Items contained in a BagPart are the same as standard Content Items.
 
 !!! note
-    More alternates are available. You can examine these using the `ConsoleLog` Razor Helper or `console_log` liquid filter.
+More alternates are available. You can examine these using the `ConsoleLog` Razor Helper or `console_log` liquid filter.
 
 ## Placement Differentiator
 
@@ -101,11 +135,11 @@ The name of a BagPart is used as the differentiator in `placement.json`
 
 ```json
 {
-  "BagPart": [
-    {
-      "differentiator": "MyNamedBagPart"
-    }
-  ]
+    "BagPart": [
+        {
+            "differentiator": "MyNamedBagPart"
+        }
+    ]
 }
 ```
 

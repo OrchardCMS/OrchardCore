@@ -22,7 +22,7 @@
 
 <div class="mb-3" asp-validation-class-for="AppSecret">
     <label asp-for="AppSecret" class="form-label">@T["Secret Key"]</label>
-    <input asp-for="AppSecret" class="form-control" type="password" value="@Model.AppSecret" />
+    <input asp-for="AppSecret" class="form-control" type="password" value="@Model.AppSecret" autocomplete="off" />
     <span asp-validation-for="AppSecret"></span>
     <span class="hint">@T["The Application secret key found on the Microsoft developer portal parameters."]</span>
 </div>

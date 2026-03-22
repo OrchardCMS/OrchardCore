@@ -8,6 +8,7 @@ public sealed class Permissions : IPermissionProvider
     private readonly IEnumerable<Permission> _allPermissions =
     [
         SearchPermissions.ManageSearchSettings,
+        IndexingPermissions.QuerySearchIndex,
     ];
 
     [Obsolete("This will be removed in a future release. Instead use 'IndexingPermissions.QuerySearchIndex'.")]

@@ -1,4 +1,9 @@
+@using OrchardCore.Localization.Data
+
 @model ContentOptionsViewModel
+
+@inject IDataLocalizer D
+
 @if (Model.CreatableTypes.Count == 0)
 {
     return;
@@ -14,10 +19,10 @@ else
         <button class="btn btn-secondary dropdown-toggle" type="button" id="new-dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             @T["New"]
         </button>
-        <ul class="dropdown-menu dropdown-menu-end scrollable" aria-labelledby="bulk-action-menu-button">
+        <ul class="dropdown-menu dropdown-menu-end scrollable">
             @foreach (var item in Model.CreatableTypes)
             {
-                <li><a class="dropdown-item" href="@Url.RouteUrl(new { area = "OrchardCore.Contents", controller = "Admin", action = "Create", id = @item.Value, returnUrl = FullRequestPath })">@T[Html.Encode(item.Text)]</a></li>
+                <li><a class="dropdown-item" href="@Url.RouteUrl(new { area = "OrchardCore.Contents", controller = "Admin", action = "Create", id = @item.Value, returnUrl = FullRequestPath })">@D[item.Text, "Content Types"]</a></li>
             }
         </ul>
     </div>

@@ -21,7 +21,7 @@
 
     <div class="mb-3" asp-validation-class-for="ConnectionString">
         <label asp-for="ConnectionString" class="form-label">@T["Connection String"]</label>
-        <input type="text" asp-for="ConnectionString" class="form-control" placeholder="@(Model.HasConnectionString ? T["Connection string is securely stored. Leave blank for current connection string or enter a new one"] : T["Azure connection string"])" />
+        <input type="password" asp-for="ConnectionString" class="form-control" placeholder="@T["Azure connection string"]" autocomplete="off" />
         <span asp-validation-for="ConnectionString"></span>
     </div>
 

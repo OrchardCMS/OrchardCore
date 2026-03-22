@@ -46,27 +46,27 @@ public class MarkdownBodyPartHandler : ContentPartHandler<MarkdownBodyPart>
             try
             {
                 var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(part.ContentItem.ContentType);
-                var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, "MarkdownBodyPart", StringComparison.Ordinal));
+                var contentTypePartDefinition = contentTypeDefinition.Parts
+                    .FirstOrDefault(x => string.Equals(x.PartDefinition.Name, "MarkdownBodyPart", StringComparison.Ordinal));
                 var settings = contentTypePartDefinition.GetSettings<MarkdownBodyPartSettings>();
 
-                // The default Markdown option is to entity escape html
-                // so filters must be run after the markdown has been processed.
-                var html = _markdownService.ToHtml(part.Markdown ?? string.Empty);
-
-                // The liquid rendering is for backwards compatibility and can be removed in a future version.
-                if (!settings.SanitizeHtml)
+                var markdown = part.Markdown ?? string.Empty;
+                if (settings.RenderLiquid)
                 {
                     var model = new MarkdownBodyPartViewModel()
                     {
-                        Markdown = part.Markdown,
-                        Html = html,
+                        Markdown = markdown,
                         MarkdownBodyPart = part,
                         ContentItem = part.ContentItem,
                     };
 
-                    html = await _liquidTemplateManager.RenderStringAsync(html, _htmlEncoder, model,
+                    markdown = await _liquidTemplateManager.RenderStringAsync(model.Markdown, _htmlEncoder, model,
                         new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(model.ContentItem) });
                 }
+
+                // The default Markdown option is to entity escape html so filters must be run after the markdown has
+                // been processed.
+                var html = _markdownService.ToHtml(part.Markdown ?? string.Empty);
 
                 html = await _shortcodeService.ProcessAsync(html,
                     new Context

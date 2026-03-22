@@ -1,0 +1,5 @@
+.card {
+    &.collapsed .card-header{
+        border-bottom: 0;
+    }
+}

@@ -2,11 +2,13 @@
 @using OrchardCore.Flows.Models
 @using OrchardCore.Flows.ViewModels
 @using OrchardCore.Mvc.Utilities
+@using OrchardCore.Localization.Data
 
 @model FlowPartEditViewModel
 
 @inject IContentManager ContentManager
 @inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
+@inject IDataLocalizer D
 
 @{
     var widgetContentTypes = Model.ContainedContentTypeDefinitions;
@@ -85,7 +87,7 @@
                             data-flowmetadata="true"
                             data-parent-content-type="@parentContentType"
                             data-part-name="@partName"
-                            href="javascript:;">@type.DisplayName</a>
+                            href="javascript:;">@D[type.DisplayName, "Content Types"]</a>
                         }
                     }
                 </div>

@@ -4,7 +4,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement;
 using OrchardCore.Entities;
-using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Indexing.Core.Models;
 using OrchardCore.Indexing.Models;
 using OrchardCore.Infrastructure.Entities;
@@ -14,16 +13,18 @@ namespace OrchardCore.Indexing.Core.Handlers;
 public sealed class ContentIndexProfileHandler : IndexProfileHandlerBase
 {
     private readonly IServiceProvider _serviceProvider;
-
+    private readonly ContentIndexingService _indexingService;
     private readonly HashSet<string> _resetIndexIds = [];
 
     internal readonly IStringLocalizer S;
 
     public ContentIndexProfileHandler(
         IServiceProvider serviceProvider,
+        ContentIndexingService indexingService,
         IStringLocalizer<ContentIndexProfileHandler> stringLocalizer)
     {
         _serviceProvider = serviceProvider;
+        _indexingService = indexingService;
         S = stringLocalizer;
     }
 
@@ -58,14 +59,7 @@ public sealed class ContentIndexProfileHandler : IndexProfileHandlerBase
             return Task.CompletedTask;
         }
 
-        ShellScope.AddDeferredTask(scope =>
-        {
-            var indexingService = scope.ServiceProvider.GetRequiredService<ContentIndexingService>();
-
-            return indexingService.ProcessRecordsAsync([context.IndexProfile.Id]);
-        });
-
-        return Task.CompletedTask;
+        return _indexingService.ProcessRecordsAsync([context.IndexProfile.Id]);
     }
 
     public override Task ExportingAsync(IndexProfileExportingContext context)

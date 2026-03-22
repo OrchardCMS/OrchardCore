@@ -12,7 +12,7 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.Indexing.Core.Handlers;
 
-public class IndexingContentHandler : ContentHandlerBase
+public sealed class IndexingContentHandler : ContentHandlerBase
 {
     private readonly Dictionary<string, ContentItem> _contentItems = [];
 

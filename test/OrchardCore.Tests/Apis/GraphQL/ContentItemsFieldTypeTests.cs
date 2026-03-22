@@ -127,6 +127,10 @@ public class ContentItemsFieldTypeTests : IAsyncLifetime
                 .Column<bool>(nameof(AnimalTraitsIndex.IsScary))
             );
 
+            await builder.CreateMapIndexTableAsync<AnimalLocalizationIndex>(table => table
+                .Column<string>(nameof(AnimalLocalizationIndex.Culture))
+            );
+
             await session.SaveChangesAsync();
         }
 
@@ -372,6 +376,83 @@ public class ContentItemsFieldTypeTests : IAsyncLifetime
     }
 
     [Fact]
+    public async Task ShouldFilterNestedPartInputWhenPartNameHasNoPrefix()
+    {
+        _store.RegisterIndexes<AnimalLocalizationIndexProvider>();
+
+        using var services = new FakeServiceCollection();
+        services.Populate(new ServiceCollection());
+        services.Services.AddScoped(x => _store.CreateSession());
+        services.Services.AddScoped(x => new ShellSettings());
+        services.Services.AddIndexProvider<ContentItemIndexProvider>();
+        services.Services.AddIndexProvider<AnimalLocalizationIndexProvider>();
+        services.Services.AddScoped<IIndexAliasProvider, AnimalLocalizationAliasProvider>();
+        services.Services.AddSingleton<IIndexPropertyProvider, IndexPropertyProvider<AnimalLocalizationIndex>>();
+        services.Services.AddLocalization();
+        services.Services.AddSingleton<IStringLocalizerFactory, NullStringLocalizerFactory>();
+        services.Build();
+
+        var context = CreateAnimalNestedFieldContext(services);
+
+        var ci = new ContentItem { ContentType = "Animal", Published = true, ContentItemId = "1", ContentItemVersionId = "1" };
+        ci.Weld(new AnimalPart { Name = "doug", Culture = "cs-CZ" });
+
+        var ci1 = new ContentItem { ContentType = "Animal", Published = true, ContentItemId = "2", ContentItemVersionId = "2" };
+        ci1.Weld(new AnimalPart { Name = "doug", Culture = "en-US" });
+
+        var session = context.RequestServices.GetService<ISession>();
+        await session.SaveAsync(ci, cancellationToken: TestContext.Current.CancellationToken);
+        await session.SaveAsync(ci1, cancellationToken: TestContext.Current.CancellationToken);
+        await session.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var type = new ContentItemsFieldType("Animal", new Schema(), Options.Create(new GraphQLContentOptions()), Options.Create(new GraphQLSettings { DefaultNumberOfResults = 10 }), context.RequestServices);
+
+        context.Arguments["where"] = new ArgumentValue(JObject.Parse("{ \"animal\": { \"culture\": \"cs-CZ\" } }"), ArgumentSource.Variable);
+        var animals = await ResolveContentItems(type, context);
+
+        Assert.Single(animals);
+        Assert.Equal("cs-CZ", animals.First().As<AnimalPart>().Culture);
+    }
+
+    [Theory]
+    [InlineData("animal")]
+    [InlineData("ANIMAL")]
+    [InlineData("Animal")]
+    public async Task ShouldFilterNestedPartInputRegardlessOfInputFieldCase(string fieldName)
+    {
+        _store.RegisterIndexes<AnimalLocalizationIndexProvider>();
+
+        using var services = new FakeServiceCollection();
+        services.Populate(new ServiceCollection());
+        services.Services.AddScoped(x => _store.CreateSession());
+        services.Services.AddScoped(x => new ShellSettings());
+        services.Services.AddIndexProvider<ContentItemIndexProvider>();
+        services.Services.AddIndexProvider<AnimalLocalizationIndexProvider>();
+        services.Services.AddScoped<IIndexAliasProvider, AnimalLocalizationAliasProvider>();
+        services.Services.AddSingleton<IIndexPropertyProvider, IndexPropertyProvider<AnimalLocalizationIndex>>();
+        services.Services.AddLocalization();
+        services.Services.AddSingleton<IStringLocalizerFactory, NullStringLocalizerFactory>();
+        services.Build();
+
+        var context = CreateAnimalNestedFieldContext(services, fieldName);
+
+        var ci = new ContentItem { ContentType = "Animal", Published = true, ContentItemId = "1", ContentItemVersionId = "1" };
+        ci.Weld(new AnimalPart { Name = "doug", Culture = "cs-CZ" });
+
+        var session = context.RequestServices.GetService<ISession>();
+        await session.SaveAsync(ci, cancellationToken: TestContext.Current.CancellationToken);
+        await session.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var type = new ContentItemsFieldType("Animal", new Schema(), Options.Create(new GraphQLContentOptions()), Options.Create(new GraphQLSettings { DefaultNumberOfResults = 10 }), context.RequestServices);
+
+        context.Arguments["where"] = new ArgumentValue(JObject.Parse($"{{ \"{fieldName}\": {{ \"culture\": \"cs-CZ\" }} }}"), ArgumentSource.Variable);
+        var animals = await ResolveContentItems(type, context);
+
+        Assert.Single(animals);
+        Assert.Equal("cs-CZ", animals.First().As<AnimalPart>().Culture);
+    }
+
+    [Fact]
     public async Task ShouldFilterByCollapsedWhereInputForCollapsedParts()
     {
         _store.RegisterIndexes<AnimalIndexProvider>();
@@ -411,18 +492,19 @@ public class ContentItemsFieldTypeTests : IAsyncLifetime
         return (await ((LockedAsyncFieldResolver<IEnumerable<ContentItem>>)type.Resolver).ResolveAsync(context)) as IEnumerable<ContentItem>;
     }
 
-    private static ResolveFieldContext CreateAnimalFieldContext(IServiceProvider services, string fieldName = null, bool collapsed = false)
-    {
-        IGraphType where;
+    private static ResolveFieldContext CreateAnimalNestedFieldContext(IServiceProvider services, string fieldName = null)
+        => CreateAnimalFieldContext(
+            services,
+            where: new AnimalNestedPartWhereInput(
+                fieldName ?? "Animal",
+                MockStringLocalizer<AnimalNestedPartWhereInput>(),
+                MockStringLocalizer<AnimalNestedPartInput>()));
 
-        if (!collapsed)
-        {
-            where = new AnimalPartWhereInput(fieldName ?? "Animal", MockStringLocalizer<AnimalPartWhereInput>());
-        }
-        else
-        {
-            where = new AnimalPartCollapsedWhereInput(MockStringLocalizer<AnimalPartCollapsedWhereInput>());
-        }
+    private static ResolveFieldContext CreateAnimalFieldContext(IServiceProvider services, string fieldName = null, bool collapsed = false, IGraphType where = null)
+    {
+        where ??= !collapsed
+            ? new AnimalPartWhereInput(fieldName ?? "Animal", MockStringLocalizer<AnimalPartWhereInput>())
+            : new AnimalPartCollapsedWhereInput(MockStringLocalizer<AnimalPartCollapsedWhereInput>());
 
         return new ResolveFieldContext
         {
@@ -495,9 +577,40 @@ public class AnimalPartCollapsedWhereInput : WhereInputObjectGraphType
     }
 }
 
+public class AnimalNestedPartWhereInput : WhereInputObjectGraphType
+{
+    public AnimalNestedPartWhereInput(string fieldName, IStringLocalizer<AnimalNestedPartWhereInput> stringLocalizer, IStringLocalizer<AnimalNestedPartInput> nestedStringLocalizer)
+        : base(stringLocalizer)
+    {
+        Name = "Test";
+        Description = "Foo";
+        var fieldType = new FieldType
+        {
+            Name = fieldName,
+            Type = typeof(AnimalNestedPartInput),
+            ResolvedType = new AnimalNestedPartInput(nestedStringLocalizer),
+        };
+        fieldType.Metadata["PartName"] = "AnimalPart";
+        AddField(fieldType);
+    }
+}
+
+public class AnimalNestedPartInput : WhereInputObjectGraphType
+{
+    public AnimalNestedPartInput(IStringLocalizer<AnimalNestedPartInput> stringLocalizer)
+        : base(stringLocalizer)
+    {
+        Name = "AnimalNestedPartInput";
+        Description = "Foo";
+        AddScalarFilterFields<StringGraphType>("culture", S["culture"]);
+    }
+}
+
 public class Animal : ContentPart
 {
     public string Name { get; set; }
+
+    public string Culture { get; set; }
 
     public bool IsHappy { get; set; }
 
@@ -563,6 +676,28 @@ public class AnimalTraitsIndexProvider : IndexProvider<ContentItem>
     }
 }
 
+public class AnimalLocalizationIndex : MapIndex
+{
+    public string Culture { get; set; }
+}
+
+public class AnimalLocalizationIndexProvider : IndexProvider<ContentItem>
+{
+    public override void Describe(DescribeContext<ContentItem> context)
+    {
+        context.For<AnimalLocalizationIndex>()
+            .Map(contentItem =>
+            {
+                var animal = contentItem.As<Animal>();
+
+                return new AnimalLocalizationIndex
+                {
+                    Culture = animal?.Culture ?? contentItem.As<AnimalPart>().Culture,
+                };
+            });
+    }
+}
+
 public class MultipleAliasIndexProvider : IIndexAliasProvider
 {
     private static readonly IndexAlias[] _aliases =
@@ -584,6 +719,24 @@ public class MultipleAliasIndexProvider : IIndexAliasProvider
             Alias = nameof(AnimalPart),
             Index = nameof(AnimalIndex),
             IndexType = typeof(AnimalIndex),
+        }
+    ];
+
+    public ValueTask<IEnumerable<IndexAlias>> GetAliasesAsync()
+    {
+        return ValueTask.FromResult<IEnumerable<IndexAlias>>(_aliases);
+    }
+}
+
+public class AnimalLocalizationAliasProvider : IIndexAliasProvider
+{
+    private static readonly IndexAlias[] _aliases =
+    [
+        new IndexAlias
+        {
+            Alias = "animalPart",
+            Index = nameof(AnimalLocalizationIndex),
+            IndexType = typeof(AnimalLocalizationIndex),
         }
     ];
 

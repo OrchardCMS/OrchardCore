@@ -225,7 +225,10 @@ public class RoleUpdater : FeatureEventHandler, IRoleCreatedEventHandler, IRoleR
 
         foreach (var permission in additionalPermissions)
         {
-            _logger.LogDebug("Default role '{RoleName}' granted permission '{PermissionName}'.", role.RoleName, permission);
+            if (_logger.IsEnabled(LogLevel.Debug))
+            {
+                _logger.LogDebug("Default role '{RoleName}' granted permission '{PermissionName}'.", role.RoleName, permission);
+            }
 
             role.RoleClaims.Add(RoleClaim.Create(permission));
         }

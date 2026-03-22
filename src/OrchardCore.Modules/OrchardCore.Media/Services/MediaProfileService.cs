@@ -1,6 +1,5 @@
+using OrchardCore.Media.Core.Processing;
 using OrchardCore.Media.Models;
-using Format = OrchardCore.Media.Processing.Format;
-using ResizeMode = OrchardCore.Media.Processing.ResizeMode;
 
 namespace OrchardCore.Media.Services;
 

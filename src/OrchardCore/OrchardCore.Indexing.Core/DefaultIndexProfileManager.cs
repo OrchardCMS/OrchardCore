@@ -1,6 +1,9 @@
 using System.Text.Json.Nodes;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Abstractions.Indexing;
+using OrchardCore.BackgroundJobs;
+using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Indexing.Models;
 using OrchardCore.Infrastructure.Entities;
 using OrchardCore.Modules;
@@ -206,8 +209,23 @@ public sealed class DefaultIndexProfileManager : IIndexProfileManager
     {
         ArgumentNullException.ThrowIfNull(index);
 
-        var synchronizedContext = new IndexProfileSynchronizedContext(index);
-        await _handlers.InvokeAsync((handler, ctx) => handler.SynchronizedAsync(ctx), synchronizedContext, _logger);
+        await HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("IndexProfileManager_Synchronize", async scope =>
+        {
+            // Resolve services from the new scope to avoid using disposed services.
+            var handlers = scope.ServiceProvider.GetServices<IIndexProfileHandler>();
+            var logger = scope.ServiceProvider.GetRequiredService<ILogger<DefaultIndexProfileManager>>();
+
+            try
+            {
+                var synchronizedContext = new IndexProfileSynchronizedContext(index);
+                await handlers.InvokeAsync((handler, ctx) => handler.SynchronizedAsync(ctx), synchronizedContext, logger);
+            }
+            catch (Exception ex)
+            {
+                // Log synchronization errors without failing the entire background job
+                logger.LogError(ex, "Error synchronizing index profile {IndexName}. The synchronization will be retried on the next background task run.", index.Name);
+            }
+        });
     }
 
     public async ValueTask ResetAsync(IndexProfile index)

@@ -8,6 +8,7 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Title;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Infrastructure;
 using OrchardCore.ResourceManagement;
 using OrchardCore.Seo.Models;
 using OrchardCore.Shortcodes.Services;
@@ -289,7 +290,7 @@ public sealed class SeoContentDriver : ContentDisplayDriver
                 json = "{ \"error\": \"Invalid JSON content in SEO settings\" }";
             }
 
-            _resourceManager.RegisterHeadScript(new HtmlString($"<script type=\"application/ld+json\">\n{json}\n</script>"));
+            _resourceManager.RegisterHeadScript(new HtmlString($"<script type=\"{MediaTypeNamesExtended.Application.JsonLinkedData}\">\n{json}\n</script>"));
 
         }
 

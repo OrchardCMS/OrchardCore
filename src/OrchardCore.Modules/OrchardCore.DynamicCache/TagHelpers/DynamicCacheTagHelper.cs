@@ -17,7 +17,6 @@ public class DynamicCacheTagHelper : TagHelper
     private const string ExpiresOnAttributeName = "expires-on";
     private const string ExpiresAfterAttributeName = "expires-after";
     private const string ExpiresSlidingAttributeName = "expires-sliding";
-    private const string EnabledAttributeName = "enabled";
 
     private static readonly char[] _splitChars = [',', ' '];
 
@@ -70,12 +69,6 @@ public class DynamicCacheTagHelper : TagHelper
     public TimeSpan? ExpiresSliding { get; set; }
 
     /// <summary>
-    /// Gets or sets the value which determines if the tag helper is enabled or not.
-    /// </summary>
-    [HtmlAttributeName(EnabledAttributeName)]
-    public bool Enabled { get; set; } = true;
-
-    /// <summary>
     /// Prefix used by <see cref="DynamicCacheTagHelper"/> instances when creating entries in <see cref="IDynamicCacheService"/>.
     /// </summary>
     public const string CacheKeyPrefix = nameof(DynamicCacheTagHelper);
@@ -107,60 +100,52 @@ public class DynamicCacheTagHelper : TagHelper
         ArgumentNullException.ThrowIfNull(output);
 
         IHtmlContent content;
+        var cacheContext = new CacheContext(CacheId);
 
-        if (Enabled)
+        if (!string.IsNullOrEmpty(VaryBy))
         {
-            var cacheContext = new CacheContext(CacheId);
-
-            if (!string.IsNullOrEmpty(VaryBy))
-            {
-                cacheContext.AddContext(VaryBy.Split(_splitChars, StringSplitOptions.RemoveEmptyEntries));
-            }
-
-            if (!string.IsNullOrEmpty(Dependencies))
-            {
-                cacheContext.AddTag(Dependencies.Split(_splitChars, StringSplitOptions.RemoveEmptyEntries));
-            }
-
-            var hasEvictionCriteria = false;
-
-            if (ExpiresOn.HasValue)
-            {
-                hasEvictionCriteria = true;
-                cacheContext.WithExpiryOn(ExpiresOn.Value);
-            }
-
-            if (ExpiresAfter.HasValue)
-            {
-                hasEvictionCriteria = true;
-                cacheContext.WithExpiryAfter(ExpiresAfter.Value);
-            }
-
-            if (ExpiresSliding.HasValue)
-            {
-                hasEvictionCriteria = true;
-                cacheContext.WithExpirySliding(ExpiresSliding.Value);
-            }
-
-            if (!hasEvictionCriteria)
-            {
-                cacheContext.WithExpirySliding(DefaultExpiration);
-            }
-
-            _cacheScopeManager.EnterScope(cacheContext);
-
-            try
-            {
-                content = await ProcessContentAsync(output, cacheContext);
-            }
-            finally
-            {
-                _cacheScopeManager.ExitScope();
-            }
+            cacheContext.AddContext(VaryBy.Split(_splitChars, StringSplitOptions.RemoveEmptyEntries));
         }
-        else
+
+        if (!string.IsNullOrEmpty(Dependencies))
         {
-            content = await output.GetChildContentAsync();
+            cacheContext.AddTag(Dependencies.Split(_splitChars, StringSplitOptions.RemoveEmptyEntries));
+        }
+
+        var hasEvictionCriteria = false;
+
+        if (ExpiresOn.HasValue)
+        {
+            hasEvictionCriteria = true;
+            cacheContext.WithExpiryOn(ExpiresOn.Value);
+        }
+
+        if (ExpiresAfter.HasValue)
+        {
+            hasEvictionCriteria = true;
+            cacheContext.WithExpiryAfter(ExpiresAfter.Value);
+        }
+
+        if (ExpiresSliding.HasValue)
+        {
+            hasEvictionCriteria = true;
+            cacheContext.WithExpirySliding(ExpiresSliding.Value);
+        }
+
+        if (!hasEvictionCriteria)
+        {
+            cacheContext.WithExpirySliding(DefaultExpiration);
+        }
+
+        _cacheScopeManager.EnterScope(cacheContext);
+
+        try
+        {
+            content = await ProcessContentAsync(output, cacheContext);
+        }
+        finally
+        {
+            _cacheScopeManager.ExitScope();
         }
 
         // Clear the contents of the "cache" element since we don't want to render it.

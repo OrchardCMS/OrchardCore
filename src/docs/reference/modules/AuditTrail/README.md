@@ -28,7 +28,7 @@ Events provide various details on their line:
 
 ## Audit Trail Settings
 
-If you navigate to Configuration -> Settings -> Audit Trail, you will see various configuration options, depending on the enabled Audit Trail features:
+If you navigate to Settings -> Audit Trail, you will see various configuration options, depending on the enabled Audit Trail features:
 
 - A list that contains every event that you can record using the Audit Trail module. Here you can enable or disable the recording of the given events.
 - You can enable client IP address logging. When you enable this, the client IP address will be recorded in Audit Trail events. Note that depending on the legislation your site operates in, you need to take special care to collect and store such Personal Identifiable Information.

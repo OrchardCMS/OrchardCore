@@ -1,0 +1,119 @@
+@using OrchardCore.ContentManagement.Metadata.Models
+@using OrchardCore.ContentManagement.Metadata.Settings
+@using OrchardCore.Localization
+@using OrchardCore.Flows.Models
+@using OrchardCore.Flows.Extensions
+@using System.Text.Json
+
+@inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
+
+@{
+    ContentItem contentItem = Model.ContentItem;
+    var contentTypeDefinition = await ContentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
+    var contentTypeDisplayText = contentTypeDefinition.DisplayName;
+    var contentItemDisplayText = contentItem.ContentItem.DisplayText;
+    var widgetContentTypes = (IEnumerable<ContentTypeDefinition>)Model.ContainedContentTypes;
+
+    var parentTypeDefinition = await ContentDefinitionManager.GetTypeDefinitionAsync((string)Model.ParentContentType);
+    var collectionDefinition = parentTypeDefinition?.Parts?.FirstOrDefault(x => x.Name == (string)Model.CollectionPartName);
+    var flowPartSettings = collectionDefinition?.GetSettings<FlowPartSettings>();
+
+    var collapsed = !Model.Inline && flowPartSettings?.CollapseContainedItems == true;
+
+    if (!ViewContext.ModelState.IsValid && ViewContext.ModelState.Keys.Any(key => key.StartsWith(Model.PrefixValue, StringComparison.OrdinalIgnoreCase)))
+    {
+        collapsed = false;
+    }
+
+    var insertButtonId = "insertWidget_" + ((string)Model.PrefixValue).Replace("-", "_");
+}
+
+<div class="widget widget-editor card my-1@(collapsed ? " collapsed" : string.Empty)" data-content-type="@Model.ContentItem.ContentType" data-card-template="FlowPartBlocks">
+
+    <div class="widget-editor-header card-header text-muted py-1 ps-2 pe-1">
+        @if (Model.CanMove != false)
+        {
+            <div class="widget-editor-handle"><i class="fa-solid fa-up-down-left-right" aria-hidden="true"></i></div>
+        }
+        <button type="button" class="btn btn-outline-secondary btn-sm widget-editor-btn-toggle widget-editor-btn-collapse"><i class="fa-solid fa-angle-down" aria-hidden="true"></i></button>
+        <button type="button" class="btn btn-outline-secondary btn-sm widget-editor-btn-toggle widget-editor-btn-expand"><i class="fa-solid fa-angle-@(Orchard.CultureDir() == LanguageDirection.LTR ? "right" : "left")" aria-hidden="true"></i></button>
+        <span data-content-type-display-text="@contentTypeDisplayText" class="widget-editor-header-text">@T["{0} {1}", contentItemDisplayText, contentTypeDisplayText]</span>
+        <div class="btn-widget-metadata border border-info w-100">
+            <div class="btn-group">
+                @if (Model.Footer != null)
+                {
+                    @await DisplayAsync(Model.Footer)
+                }
+                @if (Model.CanInsert != false && widgetContentTypes.Any())
+                {
+                    <div class="btn-group">
+                        <button type="button" class="toggleAll btn btn-secondary btn-sm" onclick="toggleWidgets();" title="@T["Toggle all widgets"]">
+                            <i class="fa-solid fa-angles-up dot" aria-hidden="true"></i>
+                        </button>
+                        <button type="button"
+                                id="@insertButtonId"
+                                class="btn btn-primary btn-sm"
+                                title="@T["Insert Widget"]">
+                            <i class="fa-solid fa-plus" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="btn-group btn-group-sm float-end" role="group">
+            @if (Model.CanDelete != false)
+            {
+                <button type="button" class="btn btn-danger widget-delete" data-title="@T["Delete"]" data-message="@T["Are you sure you want to remove this item?"]"><i class="fa-solid fa-trash" aria-hidden="true"></i></button>
+            }
+        </div>
+    </div>
+    <div class="widget-editor-body card-body">
+        <div class="w-100">
+            @if (Model.ContentEditor != null)
+            {
+                @await DisplayAsync(Model.ContentEditor)
+            }
+        </div>
+    </div>
+</div>
+
+@if (Model.CanInsert != false && widgetContentTypes.Any())
+{
+    var insertContentTypes = widgetContentTypes.Select(t => new {
+        name = t.Name,
+        displayName = t.DisplayName,
+        description = t.GetSettings<ContentTypeSettings>()?.Description ?? "",
+        category = t.GetCategory(),
+        thumbnail = t.GetThumbnail()
+    });
+
+    <script at="Foot">
+    (function() {
+        var button = document.getElementById('@insertButtonId');
+        if (!button) return;
+
+        var contentTypes = @Html.Raw(JsonSerializer.Serialize(insertContentTypes,
+            new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }));
+
+        button.addEventListener('click', function() {
+            var widgetTemplate = this.closest('.widget-template');
+
+            showContentTypePicker({
+                targetId: '@Model.TargetId',
+                htmlFieldPrefix: '@Model.HtmlFieldPrefix',
+                prefixesName: '@Model.PrefixesName',
+                contentTypesName: '@Model.ContentTypesName',
+                contentItemsName: '@Model.ContentItemsName',
+                parentContentType: '@Model.ParentContentType',
+                partName: '@Model.CollectionPartName',
+                contentTypes: contentTypes,
+                flowmetadata: true,
+                cardCollectionType: 'FlowPartBlocks',
+                insertBefore: widgetTemplate,
+                modalTitle: '@T["Insert Widget"].Value',
+                onContentTypeSelected: contentTypePickerSelectContentType
+            });
+        });
+    })();
+    </script>
+}

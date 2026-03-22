@@ -18,7 +18,27 @@ const startTime = performance.now();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-let parsedArgs = parseArgs(process.argv.slice(2));
+let parsedArgs = parseArgs(process.argv.slice(2), {
+    string: ["n", "t", "b", "name", "names", "tag", "tags", "bundle"],
+    alias: {
+        n: ["name", "names"],
+        t: ["tag", "tags"],
+        b: ["bundle"],
+    },
+});
+
+const parseFilterValues = (value) => {
+    if (value == undefined) {
+        return [];
+    }
+
+    const rawValues = Array.isArray(value) ? value : [value];
+
+    return rawValues
+        .flatMap((entry) => entry.toString().split(/[\s,]+/))
+        .map((entry) => entry.trim())
+        .filter((entry) => entry.length > 0);
+};
 
 let task = parsedArgs._[0];
 
@@ -29,55 +49,49 @@ console.log(chalk.green("Task: ", task));
 
 let groups = getAllAssetGroups();
 
-// Filter the packages if the user passes the -n cli flag
-let packagesStr = parsedArgs.n;
-if (packagesStr != undefined) {
-    const packages = packagesStr.split(" ");
-    if (packages.length > 0) {
-        console.log(chalk.yellow("Filtering groups based on packages: "), packages.join(", "));
-        groups = groups.filter((g) => packages.includes(g.name));
-    }
+// Filter the packages if the user passes the -n/--name/--names cli flag
+const packageNames = parseFilterValues(parsedArgs.n);
+if (packageNames.length > 0) {
+    console.log(chalk.yellow("Filtering groups based on packages: "), packageNames.join(", "));
+    groups = groups.filter((g) => packageNames.includes(g.name));
 }
 
-// Filter the tags if the user passes the -t cli flag
-let tagsStr = parsedArgs.t;
-if (tagsStr != undefined) {
-    const tags = tagsStr.split(" ");
-    if (tags.length > 0) {
-        console.log(chalk.yellow("Filtering groups based on tag: "), tags.join(", "));
-        groups = groups.filter((g) => {
-            if (Array.isArray(g.tags)) {
-                return _.intersection(tags, g.tags)?.length > 0;
-            } else {
-                return tags.includes(g.tags);
-            }
-        });
-    }
+// Filter the tags if the user passes the -t/--tag/--tags cli flag
+const tags = parseFilterValues(parsedArgs.t);
+if (tags.length > 0) {
+    console.log(chalk.yellow("Filtering groups based on tag: "), tags.join(", "));
+    groups = groups.filter((g) => {
+        if (Array.isArray(g.tags)) {
+            return _.intersection(tags, g.tags)?.length > 0;
+        } else {
+            return tags.includes(g.tags);
+        }
+    });
 }
 
-if (task === "watch" && tagsStr != undefined) {
+if (task === "watch" && tags.length > 0) {
     console.log(chalk.yellow("Cannot watch based on tags, Specify packages to watch with -n cli flag"));
     process.exit(0);
 }
 
-if (task === "watch" && packagesStr == undefined) {
+if (task === "watch" && packageNames.length === 0) {
     console.log(chalk.yellow("Specify packages to watch with -n cli flag"));
     process.exit(0);
 }
 
-if (task === "host" && tagsStr != undefined) {
+if (task === "host" && tags.length > 0) {
     console.log(chalk.yellow("Cannot host based on tags, Specify packages to host with -n cli flag"));
     process.exit(0);
 }
 
-if (task === "host" && packagesStr == undefined) {
+if (task === "host" && packageNames.length === 0) {
     console.log(chalk.yellow("Specify packages to host with -n cli flag"));
     process.exit(0);
 }
 
-// Filter the tags if the user passes the -b cli flag
-let bundleStr = parsedArgs.b;
-if (bundleStr != undefined) {
+// Filter for bundling if the user passes the -b/--bundle cli flag
+const shouldBuildBundle = parsedArgs.b != undefined;
+if (shouldBuildBundle) {
     console.log(chalk.yellow("Filtering groups for orchardcore-bundle"));
     groups = groups.filter((g) => g.bundleEntrypoint);
 }

@@ -52,6 +52,7 @@ ol.media-items-grid {
         align-items: center;
         justify-content: center;
         background: var(--bs-body-bg, white);
+        overflow: hidden;
 
         img {
             background: repeating-conic-gradient(var(--bs-gray-200, #ccc) 0% 25%, transparent 0% 50%) 50% / 10px 10px;

@@ -1,5 +1,6 @@
 @using OrchardCore.Forms.ViewModels
 @using OrchardCore
+@using System.Net.Mime
 @model FormPartEditViewModel
 
 <div class="@Orchard.GetWrapperClasses()">
@@ -25,9 +26,9 @@
     <label asp-for="EncType" class="@Orchard.GetLabelClasses()">@T["EncType"]</label>
     <div class="@Orchard.GetEndClasses()">
         <select asp-for="EncType" class="form-select content-preview-select">
-            <option value="application/x-www-form-urlencoded">application/x-www-form-urlencoded </option>
-            <option value="multipart/form-data">multipart/form-data</option>
-            <option value="text/plain">text/plain</option>
+            <option value="@MediaTypeNames.Application.FormUrlEncoded">@MediaTypeNames.Application.FormUrlEncoded</option>
+            <option value="@MediaTypeNames.Multipart.FormData">@MediaTypeNames.Multipart.FormData</option>
+            <option value="@MediaTypeNames.Text.Plain">@MediaTypeNames.Text.Plain</option>
         </select>
         <span class="hint">@T["The enctype to use when submitting the form using POST method."]</span>
     </div>

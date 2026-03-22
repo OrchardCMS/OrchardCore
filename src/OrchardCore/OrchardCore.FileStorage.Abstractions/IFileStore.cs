@@ -107,6 +107,12 @@ public interface IFileStore
     /// created if they do not already exist.
     /// </remarks>
     Task<string> CreateFileFromStreamAsync(string path, Stream inputStream, bool overwrite = false);
+
+    /// <summary>
+    /// Calculates the free space available in this file store. 
+    /// </summary>
+    /// <returns>The usable space in bytes, or <see langword="null"/> if the space is unlimited.</returns>
+    Task<long?> GetPermittedStorageAsync() => Task.FromResult<long?>(null);
 }
 
 public static class IFileStoreExtensions

@@ -1,4 +1,5 @@
 using System.Net;
+using System.Net.Mime;
 using Azure;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
@@ -393,7 +394,7 @@ public class BlobFileStore : IFileStore
 
             var headers = new BlobHttpHeaders
             {
-                ContentType = contentType ?? "application/octet-stream",
+                ContentType = contentType ?? MediaTypeNames.Application.Octet,
             };
 
             await blob.UploadAsync(inputStream, headers);

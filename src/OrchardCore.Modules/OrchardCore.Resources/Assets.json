@@ -497,6 +497,12 @@
     "tags": [ "resources", "js", "css" ]
   },
   {
+    "action": "min",
+    "name": "jquery-ui-widgets",
+    "source": "node_modules/jquery.ui.widget/jquery.ui.widget.js",
+    "tags": [ "resources", "js" ]
+  },
+  {
     "action": "copy",
     "name": "popper-1.16.1",
     "source": "node_modules/popper.js/dist/umd/**",

@@ -20,13 +20,14 @@ public sealed class ContentAliasShapeTableProvider : ShapeTableProvider
 
                 if (aliasPart != null)
                 {
-                    var encodedAlias = aliasPart.Alias.EncodeAlternateElement();
+                    var displayType = displaying.Shape.Metadata.DisplayType;
 
-                    // Content__Alias__[Alias] e.g. Content-Alias-example, Content-Alias-my-page
-                    displaying.Shape.Metadata.Alternates.Add("Content__Alias__" + encodedAlias);
+                    // Get cached alternates and add them efficiently
+                    var cachedAlternates = AliasAlternatesFactory.GetAlternates(
+                        aliasPart.Alias,
+                        displayType);
 
-                    // Content_[DisplayType]__Alias__[Alias] e.g. Content-Alias-example.Summary, Content-Alias-my-page.Summary
-                    displaying.Shape.Metadata.Alternates.Add("Content_" + displaying.Shape.Metadata.DisplayType + "__Alias__" + encodedAlias);
+                    displaying.Shape.Metadata.Alternates.AddRange(cachedAlternates);
                 }
             });
 

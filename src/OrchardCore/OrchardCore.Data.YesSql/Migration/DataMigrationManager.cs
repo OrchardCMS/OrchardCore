@@ -90,7 +90,10 @@ public class DataMigrationManager : IDataMigrationManager
 
     public async Task Uninstall(string feature)
     {
-        _logger.LogInformation("Uninstalling feature '{FeatureName}'.", feature);
+        if (_logger.IsEnabled(LogLevel.Information))
+        {
+            _logger.LogInformation("Uninstalling feature '{FeatureName}'.", feature);
+        }
 
         var migrations = GetDataMigrations(feature);
 
@@ -167,7 +170,10 @@ public class DataMigrationManager : IDataMigrationManager
 
         _processedFeatures.Add(featureId);
 
-        _logger.LogInformation("Updating feature '{FeatureName}'", featureId);
+        if (_logger.IsEnabled(LogLevel.Information))
+        {
+            _logger.LogInformation("Updating feature '{FeatureName}'", featureId);
+        }
 
         // proceed with dependent features first, whatever the module it's in
         var dependencies = _extensionManager
@@ -227,7 +233,10 @@ public class DataMigrationManager : IDataMigrationManager
 
                 while (lookupTable.TryGetValue(current, out var methodInfo))
                 {
-                    _logger.LogInformation("Applying migration for '{Migration}' in '{FeatureId}' from version {Version}.", migration.GetType().FullName, featureId, current);
+                    if (_logger.IsEnabled(LogLevel.Information))
+                    {
+                        _logger.LogInformation("Applying migration for '{Migration}' in '{FeatureId}' from version {Version}.", migration.GetType().FullName, featureId, current);
+                    }
 
                     current = await InvokeCreateOrUpdateMethodAsync(methodInfo, migration);
                 }

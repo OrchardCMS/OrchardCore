@@ -42,14 +42,12 @@ public sealed class AdminMenu : AdminNavigationProvider
 
         builder
             .Add(S["Settings"], settings => settings
-                .Add(S["Security"], S["Security"].PrefixPosition(), security => security
-                    .Add(S["Reverse Proxy"], S["Reverse Proxy"].PrefixPosition(), proxy => proxy
-                        .AddClass("reverseproxy")
-                        .Id("reverseproxy")
-                        .Action("Index", "Admin", _routeValues)
-                        .Permission(Permissions.ManageReverseProxySettings)
-                        .LocalNav()
-                    )
+                .Add(S["Reverse Proxy"], S["Reverse Proxy"].PrefixPosition(), proxy => proxy
+                    .AddClass("reverseproxy")
+                    .Id("reverseproxy")
+                    .Action("Index", "Admin", _routeValues)
+                    .Permission(Permissions.ManageReverseProxySettings)
+                    .LocalNav()
                 )
             );
 

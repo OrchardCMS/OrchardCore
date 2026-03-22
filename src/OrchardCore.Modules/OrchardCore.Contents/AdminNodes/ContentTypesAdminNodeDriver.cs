@@ -43,9 +43,10 @@ public sealed class ContentTypesAdminNodeDriver : DisplayDriver<MenuItem, Conten
                 model.IconClass = treeNode.IconClass;
                 model.ContentTypes = listable.Select(x => new ContentTypeEntryViewModel
                 {
-                    ContentTypeId = x.Name,
-                    IsChecked = treeNode.ContentTypes.Any(selected => string.Equals(selected.ContentTypeId, x.Name, StringComparison.OrdinalIgnoreCase)),
-                    IconClass = treeNode.ContentTypes.FirstOrDefault(selected => selected.ContentTypeId == x.Name)?.IconClass ?? string.Empty,
+                    ContentTypeName = x.Name,
+                    ContentTypeDisplayName = x.DisplayName,
+                    IsChecked = treeNode.ContentTypes.Any(selected => string.Equals(selected.ContentTypeName, x.Name, StringComparison.OrdinalIgnoreCase)),
+                    IconClass = treeNode.ContentTypes.FirstOrDefault(selected => selected.ContentTypeName == x.Name)?.IconClass ?? string.Empty,
                 }).ToArray();
             }).Location("Content");
     }
@@ -66,7 +67,8 @@ public sealed class ContentTypesAdminNodeDriver : DisplayDriver<MenuItem, Conten
             .Select(x =>
             new ContentTypeEntry
             {
-                ContentTypeId = x.ContentTypeId,
+                ContentTypeName = x.ContentTypeName,
+                ContentTypeDisplayName = x.ContentTypeDisplayName,
                 IconClass = x.IconClass,
             })
             .ToArray();
