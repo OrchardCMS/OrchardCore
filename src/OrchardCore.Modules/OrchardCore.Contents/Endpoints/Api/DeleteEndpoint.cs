@@ -14,6 +14,7 @@ public static class DeleteEndpoint
     public static IEndpointRouteBuilder AddDeleteContentEndpoint(this IEndpointRouteBuilder builder)
     {
         builder.MapDelete("api/content/{contentItemId}", HandleAsync)
+            .WithName("ApiDeleteContentItem")
             .AllowAnonymous()
             .DisableAntiforgery();
 

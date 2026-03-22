@@ -3,6 +3,7 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.OpenApi.Settings;
 
@@ -37,6 +38,7 @@ public sealed class OpenApiApiController : ControllerBase
     /// document and optionally performing a token exchange for Client Credentials.
     /// </summary>
     [HttpPost("test-connection")]
+    [EndpointName("ApiTestOpenApiConnection")]
     [ProducesResponseType(typeof(TestConnectionResult), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]

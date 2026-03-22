@@ -14,6 +14,7 @@ public static class GetEndpoint
     public static IEndpointRouteBuilder AddGetContentEndpoint(this IEndpointRouteBuilder builder)
     {
         builder.MapGet("api/content/{contentItemId}", HandleAsync)
+            .WithName("ApiGetContentItem")
             .AllowAnonymous()
             .DisableAntiforgery();
 
