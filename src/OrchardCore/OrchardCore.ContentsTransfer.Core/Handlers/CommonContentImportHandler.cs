@@ -17,7 +17,7 @@ public class CommonContentImportHandler : ContentImportHandlerBase, IContentImpo
         IContentItemIdGenerator contentItemIdGenerator)
     {
         _contentItemIdGenerator = contentItemIdGenerator;
-        S = stringLocalizer; ;
+        S = stringLocalizer;
     }
 
     public IReadOnlyCollection<ImportColumn> GetColumns(ImportContentContext context)
@@ -80,7 +80,6 @@ public class CommonContentImportHandler : ContentImportHandlerBase, IContentImpo
         ArgumentNullException.ThrowIfNull(context.ContentItem, nameof(context.ContentItem));
         ArgumentNullException.ThrowIfNull(context.Row, nameof(context.Row));
 
-        // TODO, add settings to allow exporting the following columns.
         context.Row[nameof(ContentItem.ContentItemId)] = context.ContentItem.ContentItemId;
         context.Row[nameof(ContentItem.CreatedUtc)] = context.ContentItem.CreatedUtc;
         context.Row[nameof(ContentItem.ModifiedUtc)] = context.ContentItem.ModifiedUtc;

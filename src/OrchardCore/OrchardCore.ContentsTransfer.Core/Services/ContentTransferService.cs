@@ -26,10 +26,7 @@ public class ContentTransferService
     }
     public async Task<DataTableImportResult> ImportAsync(string contentTypeId, DataTable dataTable)
     {
-        if (dataTable == null)
-        {
-            throw new ArgumentNullException(nameof(dataTable));
-        }
+        ArgumentNullException.ThrowIfNull(dataTable);
 
         var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentTypeId);
 
@@ -40,7 +37,7 @@ public class ContentTransferService
 
         var settings = contentTypeDefinition.GetSettings<ContentTypeTransferSettings>();
 
-        if (settings.AllowBulkImport)
+        if (!settings.AllowBulkImport)
         {
             return DataTableImportResult.Fail(S["The content type '{0}' does not allow bulk import.", contentTypeId]);
         }

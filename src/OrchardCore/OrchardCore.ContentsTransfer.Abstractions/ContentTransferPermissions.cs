@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.ContentsTransfer;
@@ -20,10 +17,7 @@ public class ContentTransferPermissions
 
     public static Permission CreateDynamicPermission(Permission template, string contentType)
     {
-        if (template == null)
-        {
-            throw new ArgumentNullException(nameof(template));
-        }
+        ArgumentNullException.ThrowIfNull(template);
 
         var key = new ValueTuple<string, string>(template.Name, contentType);
 
@@ -35,13 +29,13 @@ public class ContentTransferPermissions
         permission = new Permission(
             string.Format(template.Name, contentType),
             string.Format(template.Description, contentType),
-            (template.ImpliedBy ?? Array.Empty<Permission>()).Select(t => CreateDynamicPermission(t, contentType)
+            (template.ImpliedBy ?? []).Select(t => CreateDynamicPermission(t, contentType)
             )
         );
 
         var localPermissions = new Dictionary<ValueTuple<string, string>, Permission>(_permissionsByType)
         {
-            [key] = permission
+            [key] = permission,
         };
         _permissionsByType = localPermissions;
 

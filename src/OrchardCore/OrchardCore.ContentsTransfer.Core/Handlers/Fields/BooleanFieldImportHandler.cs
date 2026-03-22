@@ -47,7 +47,7 @@ public class BooleanFieldImportHandler : StandardFieldImportHandler
     protected override bool IsRequired(ImportContentFieldContext context)
         => false;
 
-    protected override string BindingPropertyName => nameof(NumericField.Value);
+    protected override string BindingPropertyName => nameof(BooleanField.Value);
 
     protected override string[] GetValidValues(ImportContentFieldContext context)
     {

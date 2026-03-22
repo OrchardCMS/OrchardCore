@@ -1,6 +1,16 @@
 # Content Transfer (`OrchardCore.ContentTransfer`)
 
-This feature provides you a way to bulk import and export content using Excel files. One the feature is enabled, you can navigate to `Content` > `Bulk Import` to import data. To bulk export data using Excel, navigate to `Content` > `Bulk Export`.
+This feature provides you a way to bulk import and export content using Excel files (`.xlsx` format). Once the feature is enabled, you can navigate to `Content` > `Bulk Import` to import data. To bulk export data using Excel, navigate to `Content` > `Bulk Export`.
+
+## Supported File Format
+
+The Content Transfer feature supports only **Excel Workbook (`.xlsx`)** files. This format is based on the Office Open XML standard and provides:
+
+- Better compatibility across different systems
+- Structured data handling with proper data types
+- Support for large datasets
+
+> **Note:** Older Excel formats (`.xls`) and CSV files are not supported.
 
 ## Adding a Custom Part Importer
 
