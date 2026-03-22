@@ -15,5 +15,9 @@
     <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" PrivateAssets="all" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="_._" Pack="true" PackagePath="lib/netstandard2.0" />
+  </ItemGroup>
+
 
 </Project>
