@@ -9,7 +9,7 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.Mvc;
 
-public class ShellViewFeatureProvider : IApplicationFeatureProvider<ViewsFeature>, IApplicationFeatureProvider<DevelopmentViewsFeature>
+public class ShellViewFeatureProvider : IApplicationFeatureProvider<ViewsFeature>
 {
     private readonly IHostEnvironment _hostingEnvironment;
     private readonly IApplicationContext _applicationContext;
@@ -49,10 +49,6 @@ public class ShellViewFeatureProvider : IApplicationFeatureProvider<ViewsFeature
         {
             provider.PopulateFeature(parts, feature);
         }
-    }
-
-    public void PopulateFeature(IEnumerable<ApplicationPart> parts, DevelopmentViewsFeature developmentViewsFeature)
-    {
     }
 
     private void PopulateFeatureInternal(ViewsFeature feature)
