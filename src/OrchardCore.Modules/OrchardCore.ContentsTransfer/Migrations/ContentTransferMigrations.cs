@@ -1,4 +1,3 @@
-using System;
 using OrchardCore.ContentsTransfer.Indexes;
 using OrchardCore.Data.Migration;
 using YesSql.Sql;
@@ -7,9 +6,9 @@ namespace OrchardCore.ContentsTransfer.Migrations;
 
 public class ContentTransferMigrations : DataMigration
 {
-    public int Create()
+    public async Task<int> CreateAsync()
     {
-        SchemaBuilder.CreateMapIndexTable<ContentTransferEntryIndex>(table => table
+        await SchemaBuilder.CreateMapIndexTableAsync<ContentTransferEntryIndex>(table => table
             .Column<string>("EntryId", column => column.WithLength(26))
             .Column<string>("Status", column => column.NotNull().WithLength(25))
             .Column<DateTime>("CreatedUtc", column => column.NotNull())
@@ -17,7 +16,7 @@ public class ContentTransferMigrations : DataMigration
             .Column<string>("Owner", column => column.WithLength(26))
         );
 
-        SchemaBuilder.AlterIndexTable<ContentTransferEntryIndex>(table => table
+        await SchemaBuilder.AlterIndexTableAsync<ContentTransferEntryIndex>(table => table
             .CreateIndex("IDX_ContentTransferEntryIndex_DocumentId",
                 "DocumentId",
                 "EntryId",
@@ -27,7 +26,7 @@ public class ContentTransferMigrations : DataMigration
                 "Owner")
         );
 
-        SchemaBuilder.AlterIndexTable<ContentTransferEntryIndex>(table => table
+        await SchemaBuilder.AlterIndexTableAsync<ContentTransferEntryIndex>(table => table
             .CreateIndex("IDX_ContentTransferEntryIndex_Status",
                 "Status",
                 "CreatedUtc",

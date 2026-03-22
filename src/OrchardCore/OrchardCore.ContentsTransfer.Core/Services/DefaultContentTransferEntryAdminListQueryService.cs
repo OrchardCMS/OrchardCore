@@ -4,7 +4,7 @@ using OrchardCore.ContentsTransfer.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using YesSql;
 
-namespace OrchardCore.ContentsTransfer;
+namespace OrchardCore.ContentsTransfer.Services;
 
 public class DefaultContentTransferEntryAdminListQueryService : IContentTransferEntryAdminListQueryService
 {
