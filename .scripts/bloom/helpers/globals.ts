@@ -37,4 +37,33 @@ const getAntiForgeryToken = (): string | null => {
     return input?.value ?? null;
 };
 
-export { getAntiForgeryToken, getTenantName, getTechnicalName, isLetter, isNumber };
+/**
+ * Returns the tenant path base (e.g. "/authserver", "/tenant") from the current page.
+ * Reads from a `<script type="application/json">` element whose id ends with `-data`
+ * and contains a `pathBase` property, or falls back to an empty string (root tenant).
+ */
+const getTenantPathBase = (dataElementId?: string): string => {
+    if (dataElementId) {
+        const el = document.getElementById(dataElementId);
+        if (el) {
+            try { return JSON.parse(el.textContent || "{}").pathBase || ""; }
+            catch { return ""; }
+        }
+    }
+
+    // Fallback: scan for any script[type="application/json"][id$="-data"] with a pathBase.
+    const scripts = document.querySelectorAll<HTMLScriptElement>('script[type="application/json"][id$="-data"]');
+    for (const script of scripts) {
+        try {
+            const data = JSON.parse(script.textContent || "{}");
+            if (typeof data.pathBase === "string") {
+                return data.pathBase;
+            }
+        }
+        catch { /* skip malformed JSON */ }
+    }
+
+    return "";
+};
+
+export { getAntiForgeryToken, getTenantName, getTenantPathBase, getTechnicalName, isLetter, isNumber };

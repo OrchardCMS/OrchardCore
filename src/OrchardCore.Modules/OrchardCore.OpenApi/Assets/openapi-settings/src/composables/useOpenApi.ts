@@ -4,9 +4,10 @@ import { ApiService } from '@bloom/services/api-service'
 import { Client, TestConnectionRequest, TestConnectionResult, OpenApiAuthenticationType } from '@bloom/services/OpenApiClient'
 import { notify } from '@bloom/services/notifications/notifier'
 import { SeverityLevel } from '@bloom/services/notifications/interfaces'
+import { getTenantPathBase } from '@bloom/helpers/globals'
 
 const apiService = new ApiService()
-const client = new Client('', apiService.getAxiosInstance())
+const client = new Client(getTenantPathBase(), apiService.getAxiosInstance())
 
 export function useOpenApi() {
     const testing = ref(false)
