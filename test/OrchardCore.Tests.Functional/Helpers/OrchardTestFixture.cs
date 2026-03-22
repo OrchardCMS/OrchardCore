@@ -86,8 +86,6 @@ public sealed class OrchardTestFixture : IAsyncDisposable
             new BrowserNewContextOptions { BaseURL = BaseUrl }
         );
 
-        context.SetDefaultTimeout(60_000);
-
         if (_tracingEnabled)
         {
             await context.Tracing.StartAsync(new TracingStartOptions
