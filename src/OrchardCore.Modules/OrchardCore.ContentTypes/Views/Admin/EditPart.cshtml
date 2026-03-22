@@ -1,9 +1,13 @@
 @model EditPartViewModel
+@using OrchardCore.ContentManagement
 @using OrchardCore.ContentManagement.Metadata.Models
 @using OrchardCore.ContentManagement.Metadata.Settings
 @using OrchardCore.Mvc.Utilities
+@using OrchardCore.Localization.Data
+@using Microsoft.Extensions.Options
 
-@inject OrchardCore.ContentTypes.Services.IContentDefinitionService ContentDefinitionService
+@inject IOptions<ContentOptions> ContentOptions
+@inject IDataLocalizer D
 
 @{
     var orderedFields = Model.PartDefinition.Fields
@@ -12,9 +16,10 @@
         .Select(x => x.Field)
         .ToList();
 
-    var fields = (await ContentDefinitionService.GetFieldsAsync()).ToList();
+    var fields = ContentOptions.Value.ContentFieldOptions.Select(cfo => cfo.Type).ToList();
+    string localizedPartName = D[Model.DisplayName, "Content Types"];
 }
-<zone Name="Title"><h1>@RenderTitleSegments(T["Edit Content Part - {0}", Model.DisplayName])</h1></zone>
+<zone Name="Title"><h1>@RenderTitleSegments(T["Edit Content Part - {0}", localizedPartName])</h1></zone>
 
 <form asp-action="EditPart">
     @Html.ValidationSummary()
@@ -60,7 +65,7 @@
                                         <a asp-route-action="RemoveFieldFrom" asp-route-id="@Model.PartDefinition.Name" asp-route-name="@field.Name" class="btn btn-danger btn-sm" role="button" data-url-af="UnsafeUrl RemoveUrl">@T["Remove"]</a>
                                     }
                                 </div>
-                                @field.DisplayName() <span class="hint dashed">@field.FieldDefinition.Name.CamelFriendly()</span>
+                                @D[field.DisplayName(), $"{Model.PartDefinition.Name}.{field.DisplayName()}"] <span class="hint dashed">@field.FieldDefinition.Name.CamelFriendly()</span>
                             </div>
                             <input type="hidden" name="OrderedFieldNames" value="@field.Name" />
                         </li>

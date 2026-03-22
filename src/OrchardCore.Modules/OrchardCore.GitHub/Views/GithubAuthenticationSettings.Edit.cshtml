@@ -25,7 +25,7 @@
 <div class="mb-3 row" asp-validation-class-for="ClientSecret">
     <div class="col-large col-12 col-sm-12 col-md-12 col-lg-12 col-xl-9">
         <label asp-for="ClientSecret" class="form-label">@T["Client secret"]</label>
-        <input asp-for="ClientSecret" class="form-control" type="password" value="@Model.ClientSecret" />
+        <input asp-for="ClientSecret" class="form-control" type="password" value="@Model.ClientSecret" autocomplete="off" />
         <span asp-validation-for="ClientSecret"></span>
         <span class="hint">@T["The secret for your app."]</span>
     </div>

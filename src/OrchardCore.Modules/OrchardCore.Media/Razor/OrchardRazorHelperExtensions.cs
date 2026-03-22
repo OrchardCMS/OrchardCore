@@ -3,11 +3,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore;
 using OrchardCore.Media;
+using OrchardCore.Media.Core.Processing;
 using OrchardCore.Media.Fields;
 using OrchardCore.Media.Processing;
 using OrchardCore.Media.Services;
-using Format = OrchardCore.Media.Processing.Format;
-using ResizeMode = OrchardCore.Media.Processing.ResizeMode;
 
 #pragma warning disable CA1050 // Declare types in namespaces
 public static class MediaOrchardRazorHelperExtensions

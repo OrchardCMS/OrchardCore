@@ -18,7 +18,7 @@
     <label asp-for="DefaultQuery" class="form-label">@T["Query"]</label>
     <textarea asp-for="DefaultQuery" class="form-control" rows="10"></textarea>
     <span asp-validation-for="DefaultQuery"></span>
-    <span class="hint">@T["Create a custom Elasticsearch query to be utilized for each search request. Liquid is supported, so use <code>{0}</code> template as a substitute for the user-provided search term.", "{{ term }}"]</span>
+    <span class="hint">@T["Create a custom Elasticsearch query to be utilized for each search request. Liquid is supported, so use the <code>{0}</code> template as a substitute for the user-provided search term.", "{{ term }}"]</span>
 </div>
 
 <div class="mb-3" asp-validation-class-for="DefaultSearchFields" id="DefaultQueryFields">

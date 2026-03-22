@@ -62,6 +62,12 @@ public class SqlTranslator
                     {
                         _ctes ??= new HashSet<string>();
                         _ctes.Add(cte.Name);
+
+                        // Collect table aliases from within CTE query bodies
+                        foreach (var cteUnionStatement in cte.Query)
+                        {
+                            CollectTableAliases(cteUnionStatement.Statement.SelectStatement);
+                        }
                     }
                 }
 
@@ -695,6 +701,7 @@ public class SqlTranslator
     {
         return arguments switch
         {
+            EmptyArguments => [],
             StarArgument => new string[] { "*" },
             SelectStatementArgument selectArg => new string[] { TranslateSelectStatementToString(selectArg.SelectStatement) },
             ExpressionListArguments exprList => TranslateExpressionListToArray(exprList.Expressions),

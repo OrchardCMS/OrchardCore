@@ -33,6 +33,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Jint" />
     <PackageReference Include="Markdig" />
   </ItemGroup>
 

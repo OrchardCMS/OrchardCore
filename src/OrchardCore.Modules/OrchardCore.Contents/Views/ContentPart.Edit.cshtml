@@ -2,6 +2,9 @@
 @using OrchardCore.ContentManagement.Metadata.Settings
 @using OrchardCore.ContentManagement
 @using OrchardCore
+@using OrchardCore.Localization.Data
+
+@inject IDataLocalizer D
 
 @{
     ContentPart contentPart = Model.ContentPart;
@@ -14,7 +17,7 @@
     @if (typePartDefinition.IsNamedPart())
     {
         <div class="@Orchard.GetLabelClasses()">
-            @typePartDefinition.DisplayName()
+            @D[typePartDefinition.DisplayName(), "Content Types"]
 
             @if (!string.IsNullOrEmpty(description))
             {

@@ -11,23 +11,25 @@ public sealed class HtmlFieldSettingsDriver : ContentPartFieldDefinitionDisplayD
 {
     public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
     {
-        return Initialize<HtmlSettingsViewModel>("HtmlFieldSettings_Edit", model =>
+        return Initialize<HtmlFieldSettingsViewModel>("HtmlFieldSettings_Edit", model =>
         {
             var settings = partFieldDefinition.GetSettings<HtmlFieldSettings>();
 
             model.SanitizeHtml = settings.SanitizeHtml;
+            model.RenderLiquid = settings.RenderLiquid;
             model.Hint = settings.Hint;
         }).Location("Content:20");
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
     {
-        var model = new HtmlSettingsViewModel();
+        var model = new HtmlFieldSettingsViewModel();
         var settings = new HtmlFieldSettings();
 
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
         settings.SanitizeHtml = model.SanitizeHtml;
+        settings.RenderLiquid = model.RenderLiquid;
         settings.Hint = model.Hint;
 
         context.Builder.WithSettings(settings);

@@ -228,7 +228,10 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
 
             if (identityResult.Succeeded)
             {
-                _logger.LogInformation(3, "User account linked to {LoginProvider} provider.", info.LoginProvider);
+                if (_logger.IsEnabled(LogLevel.Information))
+                {
+                    _logger.LogInformation(3, "User account linked to {LoginProvider} provider.", info.LoginProvider);
+                }
 
                 // The login info must be linked before we consider a redirect, or the login info is lost.
                 if (iUser is User user)
@@ -317,7 +320,10 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
 
                 if (identityResult.Succeeded)
                 {
-                    _logger.LogInformation(3, "User account linked to {LoginProvider} provider.", info.LoginProvider);
+                    if (_logger.IsEnabled(LogLevel.Information))
+                    {
+                        _logger.LogInformation(3, "User account linked to {LoginProvider} provider.", info.LoginProvider);
+                    }
 
                     foreach (var loginFormEvent in _loginFormEvents)
                     {
@@ -386,7 +392,10 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
 
                 if (identityResult.Succeeded)
                 {
-                    _logger.LogInformation(3, "User account linked to {LoginProvider} provider.", info.LoginProvider);
+                    if (_logger.IsEnabled(LogLevel.Information))
+                    {
+                        _logger.LogInformation(3, "User account linked to {LoginProvider} provider.", info.LoginProvider);
+                    }
                     // we have created/linked to the local user, so we must verify the login. If it does not succeed,
                     // the user is not allowed to login.
                     if ((await ExternalSignInAsync(user, info)).Succeeded)

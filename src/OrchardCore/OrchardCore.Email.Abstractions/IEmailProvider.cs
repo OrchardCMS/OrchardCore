@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Localization;
+using OrchardCore.Infrastructure;
 
 namespace OrchardCore.Email;
 
@@ -14,5 +15,5 @@ public interface IEmailProvider
     /// </summary>
     /// <param name="message">The email message to send.</param>
     /// <returns>EmailResult object.</returns>
-    Task<EmailResult> SendAsync(MailMessage message);
+    Task<Result> SendAsync(MailMessage message);
 }

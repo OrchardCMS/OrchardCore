@@ -1,4 +1,5 @@
 using System.Net.Http.Headers;
+using System.Net.Mime;
 using Microsoft.Extensions.Logging;
 
 namespace OrchardCore.Twitter.Services;
@@ -13,7 +14,7 @@ public class TwitterClient
         _client = client;
         _client.BaseAddress = new Uri("https://api.twitter.com");
         _client.DefaultRequestHeaders.Accept.Clear();
-        _client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+        _client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
         _logger = logger;
     }
 

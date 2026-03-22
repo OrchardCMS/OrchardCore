@@ -53,33 +53,34 @@ public class MarkdownFieldQueryObjectType : ObjectGraphType<MarkdownField>
         var partName = paths[0];
         var fieldName = paths[1];
         var contentTypeDefinition = await contentDefinitionManager.GetTypeDefinitionAsync(ctx.Source.ContentItem.ContentType);
-        var contentPartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.Name, partName, StringComparison.Ordinal));
-        var contentPartFieldDefinition = contentPartDefinition.PartDefinition.Fields.FirstOrDefault(x => string.Equals(x.Name, fieldName, StringComparison.Ordinal));
+        var contentPartDefinition = contentTypeDefinition.Parts
+            .FirstOrDefault(x => string.Equals(x.Name, partName, StringComparison.Ordinal));
+        var contentPartFieldDefinition = contentPartDefinition.PartDefinition.Fields
+            .FirstOrDefault(x => string.Equals(x.Name, fieldName, StringComparison.Ordinal));
 
         var settings = contentPartFieldDefinition.GetSettings<MarkdownFieldSettings>();
 
-        // The default Markdown option is to entity escape html
-        // so filters must be run after the markdown has been processed.
-        var html = markdownService.ToHtml(ctx.Source.Markdown ?? string.Empty);
-
-        // The liquid rendering is for backwards compatibility and can be removed in a future version.
-        if (!settings.SanitizeHtml)
+        var markdown = ctx.Source.Markdown ?? string.Empty;
+        if (settings.RenderLiquid)
         {
             var liquidTemplateManager = serviceProvider.GetService<ILiquidTemplateManager>();
             var htmlEncoder = serviceProvider.GetService<HtmlEncoder>();
 
             var model = new MarkdownFieldViewModel()
             {
-                Markdown = ctx.Source.Markdown,
-                Html = html,
+                Markdown = markdown,
                 Field = ctx.Source,
                 Part = ctx.Source.ContentItem.Get<ContentPart>(partName),
                 PartFieldDefinition = contentPartFieldDefinition,
             };
 
-            html = await liquidTemplateManager.RenderStringAsync(html, htmlEncoder, model,
+            markdown = await liquidTemplateManager.RenderStringAsync(model.Markdown, htmlEncoder, model,
                 new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(ctx.Source.ContentItem) });
         }
+
+        // The default Markdown option is to entity escape html so filters must be run after the markdown has been
+        // processed.
+        var html = markdownService.ToHtml(markdown ?? string.Empty);
 
         html = await shortcodeService.ProcessAsync(html,
             new Context

@@ -127,9 +127,6 @@ public sealed class RedisDataProtectionStartup : StartupBase
     {
         if (services.Any(d => d.ServiceType == typeof(IRedisService)))
         {
-            // Remove any previously registered options setups.
-            services.RemoveAll<IConfigureOptions<KeyManagementOptions>>();
-
             services.AddTransient<IConfigureOptions<KeyManagementOptions>, RedisKeyManagementOptionsSetup>();
         }
     }
