@@ -1,4 +1,5 @@
 using OrchardCore.ContentsTransfer.Models;
+using OrchardCore.ContentsTransfer.Indexes;
 using OrchardCore.DisplayManagement.ModelBinding;
 using YesSql;
 
@@ -19,7 +20,14 @@ public sealed class DefaultContentTransferEntryAdminListQueryService : IContentT
 
     public async Task<ContentTransferEntryQueryResult> QueryAsync(int page, int pageSize, ListContentTransferEntryOptions options, IUpdateModel updater)
     {
-        var query = _session.Query<ContentTransferEntry>();
+        var indexedQuery = _session.Query<ContentTransferEntry, ContentTransferEntryIndex>(x => x.Direction == options.Direction);
+
+        if (!string.IsNullOrWhiteSpace(options.Owner))
+        {
+            indexedQuery = indexedQuery.Where(x => x.Owner == options.Owner);
+        }
+
+        IQuery<ContentTransferEntry> query = indexedQuery;
 
         query = await options.FilterResult.ExecuteAsync(new ContentTransferEntryQueryContext(_serviceProvider, query));
 

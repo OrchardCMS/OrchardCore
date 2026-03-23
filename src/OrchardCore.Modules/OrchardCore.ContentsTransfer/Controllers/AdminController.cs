@@ -109,85 +109,9 @@ public sealed class AdminController : Controller, IUpdateModel
         }
 
         options.FilterResult = queryFilterResult;
+        await PopulateListOptionsAsync(options, ContentTransferDirection.Import);
 
-        // The search text is provided back to the UI.
-        options.SearchText = options.FilterResult.ToString();
-        options.OriginalSearchText = options.SearchText;
-
-        // Populate route values to maintain previous route data when generating page links.
-        options.RouteValues.TryAdd("q", options.FilterResult.ToString());
-
-        options.Statuses =
-        [
-            new(S["New"], nameof(ContentTransferEntryStatus.New)),
-            new(S["Processing"], nameof(ContentTransferEntryStatus.Processing)),
-            new(S["Completed"], nameof(ContentTransferEntryStatus.Completed)),
-            new(S["Completed With Errors"], nameof(ContentTransferEntryStatus.CompletedWithErrors)),
-            new(S["Canceled"], nameof(ContentTransferEntryStatus.Canceled)),
-            new(S["Canceled With Imported Records"], nameof(ContentTransferEntryStatus.CanceledWithImportedRecords)),
-            new(S["Failed"], nameof(ContentTransferEntryStatus.Failed)),
-        ];
-
-        options.Sorts =
-        [
-            new(S["Recently created"], nameof(ContentTransferEntryOrder.Latest)),
-            new(S["Previously created"], nameof(ContentTransferEntryOrder.Oldest)),
-        ];
-
-        options.BulkActions =
-        [
-            new(S["Remove"], nameof(ContentTransferEntryBulkAction.Remove)),
-        ];
-
-        options.ImportableTypes = [];
-
-        foreach (var contentTypeDefinition in await _contentDefinitionManager.ListTypeDefinitionsAsync())
-        {
-            var settings = contentTypeDefinition.GetSettings<ContentTypeTransferSettings>();
-
-            if (!settings.AllowBulkImport ||
-                !await _authorizationService.AuthorizeAsync(HttpContext.User, ContentTransferPermissions.ImportContentFromFile, (object)contentTypeDefinition.Name))
-            {
-                continue;
-            }
-
-            options.ImportableTypes.Add(new SelectListItem(contentTypeDefinition.DisplayName, contentTypeDefinition.Name));
-        }
-
-        var routeData = new RouteData(options.RouteValues);
-        var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
-
-        var queryResult = await _entriesAdminListQueryService.QueryAsync(pager.Page, pager.PageSize, options, this);
-
-        var pagerShape = await _shapeFactory.PagerAsync(pager, queryResult.TotalCount, routeData);
-
-        var summaries = new List<dynamic>();
-
-        foreach (var entry in queryResult.Entries)
-        {
-            dynamic shape = await _entryDisplayManager.BuildDisplayAsync(entry, this, "SummaryAdmin");
-            shape.ContentTransferEntry = entry;
-
-            summaries.Add(shape);
-        }
-
-        var startIndex = (pager.Page - 1) * pager.PageSize + 1;
-        options.StartIndex = startIndex;
-        options.EndIndex = startIndex + summaries.Count - 1;
-        options.EntriesCount = summaries.Count;
-        options.TotalItemCount = queryResult.TotalCount;
-
-        var header = await _entryOptionsDisplayManager.BuildEditorAsync(options, this, false, string.Empty, string.Empty);
-
-        var shapeViewModel = await _shapeFactory.CreateAsync<ListContentTransferEntriesViewModel>("ContentTransferEntriesAdminList", viewModel =>
-        {
-            viewModel.Options = options;
-            viewModel.Header = header;
-            viewModel.Entries = summaries;
-            viewModel.Pager = pagerShape;
-        });
-
-        return View(shapeViewModel);
+        return View(await BuildListViewModelAsync(options, pagerParameters));
     }
 
     [HttpPost]
@@ -195,22 +119,7 @@ public sealed class AdminController : Controller, IUpdateModel
     [FormValueRequired("submit.Filter")]
     public async Task<ActionResult> ListFilterPOST(ListContentTransferEntryOptions options)
     {
-        // When the user has typed something into the search input, no further evaluation of the form post is required.
-        if (!string.Equals(options.SearchText, options.OriginalSearchText, StringComparison.OrdinalIgnoreCase))
-        {
-            return RedirectToAction(nameof(List), new RouteValueDictionary
-            {
-                { "q", options.SearchText },
-            });
-        }
-
-        // Evaluate the values provided in the form post and map them to the filter result and route values.
-        await _entryOptionsDisplayManager.UpdateEditorAsync(options, this, false, string.Empty, string.Empty);
-
-        // The route value must always be added after the editors have updated the models.
-        options.RouteValues.TryAdd("q", options.FilterResult.ToString());
-
-        return RedirectToAction(nameof(List), options.RouteValues);
+        return await FilterListAsync(nameof(List), options);
     }
 
     [HttpPost]
@@ -223,29 +132,7 @@ public sealed class AdminController : Controller, IUpdateModel
             return Forbid();
         }
 
-        if (itemIds?.Count() > 0)
-        {
-            var notifications = await _session.Query<ContentTransferEntry, ContentTransferEntryIndex>(x => x.EntryId.IsIn(itemIds)).ListAsync();
-            var utcNow = _clock.UtcNow;
-            var counter = 0;
-
-            switch (options.BulkAction)
-            {
-                case ContentTransferEntryBulkAction.Remove:
-                    foreach (var notification in notifications)
-                    {
-                        _session.Delete(notification);
-                        counter++;
-                    }
-                    if (counter > 0)
-                    {
-                        await _notifier.SuccessAsync(H["{0} {1} removed successfully.", counter, H.Plural(counter, "entry", "entries")]);
-                    }
-                    break;
-                default:
-                    break;
-            }
-        }
+        await ExecuteBulkActionAsync(itemIds, options.BulkAction, ContentTransferDirection.Import);
 
         return RedirectToAction(nameof(List));
     }
@@ -263,7 +150,13 @@ public sealed class AdminController : Controller, IUpdateModel
 
             if (entry != null)
             {
-                _session.Delete(entry);
+                if (!await DeleteEntryAsync(entry))
+                {
+                    await _notifier.ErrorAsync(H["The file for this transfer entry could not be deleted."]);
+                    return RedirectTo(returnUrl);
+                }
+
+                await _session.SaveChangesAsync();
             }
         }
 
@@ -492,32 +385,48 @@ public sealed class AdminController : Controller, IUpdateModel
     }
 
     [Admin("export/contents", "ExportContentToFile")]
-    public async Task<IActionResult> Export()
+    public async Task<IActionResult> Export(
+        [ModelBinder(BinderType = typeof(ContentTransferEntryFilterEngineModelBinder), Name = "q")] QueryFilterResult<ContentTransferEntry> queryFilterResult,
+        PagerParameters pagerParameters,
+        ListContentTransferEntryOptions options)
     {
-        var viewModel = new ContentExporterViewModel()
+        if (!await _authorizationService.AuthorizeAsync(HttpContext.User, ContentTransferPermissions.ExportContentFromFile))
         {
-            ContentTypes = new List<SelectListItem>(),
-            Extensions = new List<SelectListItem>()
-            {
-                new (S["Excel Workbook"], ".xlsx"),
-            },
-            Extension = ".xlsx",
-        };
-
-        foreach (var contentTypeDefinition in await _contentDefinitionManager.LoadTypeDefinitionsAsync())
-        {
-            var settings = contentTypeDefinition.GetSettings<ContentTypeTransferSettings>();
-
-            if (!settings.AllowBulkExport
-                || !await _authorizationService.AuthorizeAsync(User, ContentTransferPermissions.ExportContentFromFile, (object)contentTypeDefinition.Name))
-            {
-                continue;
-            }
-
-            viewModel.ContentTypes.Add(new SelectListItem(contentTypeDefinition.DisplayName, contentTypeDefinition.Name));
+            return Forbid();
         }
 
-        return View(viewModel);
+        options.FilterResult = queryFilterResult;
+        await PopulateListOptionsAsync(options, ContentTransferDirection.Export, CurrentUserId());
+
+        return View(await BuildBulkExportViewModelAsync(options, pagerParameters));
+    }
+
+    [HttpPost]
+    [ActionName(nameof(Export))]
+    [FormValueRequired("submit.Filter")]
+    public async Task<ActionResult> ExportFilterPOST(ListContentTransferEntryOptions options)
+    {
+        if (!await _authorizationService.AuthorizeAsync(HttpContext.User, ContentTransferPermissions.ExportContentFromFile))
+        {
+            return Forbid();
+        }
+
+        return await FilterListAsync(nameof(Export), options);
+    }
+
+    [HttpPost]
+    [ActionName(nameof(Export))]
+    [FormValueRequired("submit.BulkAction")]
+    public async Task<ActionResult> ExportPOST(ListContentTransferEntryOptions options, IEnumerable<string> itemIds)
+    {
+        if (!await _authorizationService.AuthorizeAsync(HttpContext.User, ContentTransferPermissions.ExportContentFromFile))
+        {
+            return Forbid();
+        }
+
+        await ExecuteBulkActionAsync(itemIds, options.BulkAction, ContentTransferDirection.Export, CurrentUserId());
+
+        return RedirectToAction(nameof(Export));
     }
 
     [Admin("export/contents/download-file", "ExportContentDownloadFile")]
@@ -606,9 +515,9 @@ public sealed class AdminController : Controller, IUpdateModel
             await _session.SaveChangesAsync();
             await TriggerExportProcessingAsync(entry.EntryId);
 
-            await _notifier.InformationAsync(H["The export contains {0} records and has been queued for background processing. You can download it from the Export Dashboard when it is ready.", totalCount]);
+            await _notifier.InformationAsync(H["The export contains {0} records and has been queued for background processing. You can download it from Bulk Export when it is ready.", totalCount]);
 
-            return RedirectToAction(nameof(ExportDashboard));
+            return RedirectToAction(nameof(Export));
         }
 
         // Immediate export: write directly to a temp file stream using pagination.
@@ -745,50 +654,12 @@ public sealed class AdminController : Controller, IUpdateModel
     }
 
     [Admin("export/dashboard", "ExportDashboard")]
-    public async Task<IActionResult> ExportDashboard(
+    public Task<IActionResult> ExportDashboard(
         [ModelBinder(BinderType = typeof(ContentTransferEntryFilterEngineModelBinder), Name = "q")] QueryFilterResult<ContentTransferEntry> queryFilterResult,
-        PagerParameters pagerParameters)
+        PagerParameters pagerParameters,
+        ListContentTransferEntryOptions options)
     {
-        if (!await _authorizationService.AuthorizeAsync(HttpContext.User, ContentTransferPermissions.ExportContentFromFile))
-        {
-            return Forbid();
-        }
-
-        var currentUserId = CurrentUserId();
-
-        var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
-
-        var query = _session.Query<ContentTransferEntry, ContentTransferEntryIndex>(x =>
-            x.Direction == ContentTransferDirection.Export && x.Owner == currentUserId);
-
-        var totalCount = await query.CountAsync();
-
-        var entries = await query
-            .OrderByDescending(x => x.CreatedUtc)
-            .Skip(pager.GetStartIndex())
-            .Take(pager.PageSize)
-            .ListAsync();
-
-        var pagerShape = await _shapeFactory.PagerAsync(pager, (int)totalCount, new RouteData());
-
-        var summaries = new List<dynamic>();
-
-        foreach (var entry in entries)
-        {
-            dynamic shape = await _entryDisplayManager.BuildDisplayAsync(entry, this, "SummaryAdmin");
-            shape.ContentTransferEntry = entry;
-
-            summaries.Add(shape);
-        }
-
-        var viewModel = new ListContentTransferEntriesViewModel()
-        {
-            Entries = summaries,
-            Pager = pagerShape,
-            Options = new ListContentTransferEntryOptions(),
-        };
-
-        return View("ExportDashboard", viewModel);
+        return Export(queryFilterResult, pagerParameters, options);
     }
 
     [Admin("import/entries/{entryId}/process", "ProcessImport")]
@@ -905,7 +776,7 @@ public sealed class AdminController : Controller, IUpdateModel
         if (fileInfo == null || fileInfo.Length == 0)
         {
             await _notifier.ErrorAsync(H["The export file is no longer available."]);
-            return RedirectToAction(nameof(ExportDashboard));
+            return RedirectToAction(nameof(Export));
         }
 
         var stream = await _contentTransferFileStore.GetFileStreamAsync(fileInfo);
@@ -1025,13 +896,212 @@ public sealed class AdminController : Controller, IUpdateModel
         };
     }
 
-    private Task TriggerImportProcessingAsync(string entryId)
+    private async Task PopulateListOptionsAsync(ListContentTransferEntryOptions options, ContentTransferDirection direction, string owner = null)
+    {
+        options.SearchText = options.FilterResult.ToString();
+        options.OriginalSearchText = options.SearchText;
+        options.Direction = direction;
+        options.Owner = owner;
+        options.RouteValues.TryAdd("q", options.FilterResult.ToString());
+
+        options.Statuses =
+        [
+            new(S["New"], nameof(ContentTransferEntryStatus.New)),
+            new(S["Processing"], nameof(ContentTransferEntryStatus.Processing)),
+            new(S["Completed"], nameof(ContentTransferEntryStatus.Completed)),
+            new(S["Completed With Errors"], nameof(ContentTransferEntryStatus.CompletedWithErrors)),
+            new(S["Canceled"], nameof(ContentTransferEntryStatus.Canceled)),
+            new(S["Canceled With Imported Records"], nameof(ContentTransferEntryStatus.CanceledWithImportedRecords)),
+            new(S["Failed"], nameof(ContentTransferEntryStatus.Failed)),
+        ];
+
+        options.Sorts =
+        [
+            new(S["Recently created"], nameof(ContentTransferEntryOrder.Latest)),
+            new(S["Previously created"], nameof(ContentTransferEntryOrder.Oldest)),
+        ];
+
+        options.BulkActions =
+        [
+            new(S["Remove"], nameof(ContentTransferEntryBulkAction.Remove)),
+        ];
+
+        options.ImportableTypes = direction == ContentTransferDirection.Import
+            ? await GetTransferableContentTypesAsync(ContentTransferDirection.Import)
+            : [];
+        options.ExportableTypes = direction == ContentTransferDirection.Export
+            ? await GetTransferableContentTypesAsync(ContentTransferDirection.Export)
+            : [];
+    }
+
+    private async Task<IList<SelectListItem>> GetTransferableContentTypesAsync(ContentTransferDirection direction)
+    {
+        var contentTypes = new List<SelectListItem>();
+
+        foreach (var contentTypeDefinition in await _contentDefinitionManager.ListTypeDefinitionsAsync())
+        {
+            var settings = contentTypeDefinition.GetSettings<ContentTypeTransferSettings>();
+            var isAllowed = direction == ContentTransferDirection.Import
+                ? settings.AllowBulkImport
+                : settings.AllowBulkExport;
+            var permission = direction == ContentTransferDirection.Import
+                ? ContentTransferPermissions.ImportContentFromFile
+                : ContentTransferPermissions.ExportContentFromFile;
+
+            if (!isAllowed || !await _authorizationService.AuthorizeAsync(HttpContext.User, permission, (object)contentTypeDefinition.Name))
+            {
+                continue;
+            }
+
+            contentTypes.Add(new SelectListItem(contentTypeDefinition.DisplayName, contentTypeDefinition.Name));
+        }
+
+        return contentTypes;
+    }
+
+    private async Task<IShape> BuildListViewModelAsync(ListContentTransferEntryOptions options, PagerParameters pagerParameters)
+    {
+        var routeData = new RouteData(options.RouteValues);
+        var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
+
+        var queryResult = await _entriesAdminListQueryService.QueryAsync(pager.Page, pager.PageSize, options, this);
+        var pagerShape = await _shapeFactory.PagerAsync(pager, queryResult.TotalCount, routeData);
+
+        var summaries = new List<dynamic>();
+
+        foreach (var entry in queryResult.Entries)
+        {
+            dynamic shape = await _entryDisplayManager.BuildDisplayAsync(entry, this, "SummaryAdmin");
+            shape.ContentTransferEntry = entry;
+            summaries.Add(shape);
+        }
+
+        var startIndex = (pager.Page - 1) * pager.PageSize + 1;
+        options.StartIndex = queryResult.TotalCount == 0 ? 0 : startIndex;
+        options.EndIndex = queryResult.TotalCount == 0 ? 0 : startIndex + summaries.Count - 1;
+        options.EntriesCount = summaries.Count;
+        options.TotalItemCount = queryResult.TotalCount;
+
+        var header = await _entryOptionsDisplayManager.BuildEditorAsync(options, this, false, string.Empty, string.Empty);
+
+        return await _shapeFactory.CreateAsync<ListContentTransferEntriesViewModel>("ContentTransferEntriesAdminList", viewModel =>
+        {
+            viewModel.Options = options;
+            viewModel.Header = header;
+            viewModel.Entries = summaries;
+            viewModel.Pager = pagerShape;
+        });
+    }
+
+    private ContentExporterViewModel BuildContentExporterViewModel(IList<SelectListItem> exportableTypes)
+        => new()
+        {
+            ContentTypes = exportableTypes,
+            Extensions =
+            [
+                new(S["Excel Workbook"], ".xlsx"),
+            ],
+            Extension = ".xlsx",
+        };
+
+    private async Task<BulkExportViewModel> BuildBulkExportViewModelAsync(ListContentTransferEntryOptions options, PagerParameters pagerParameters)
+    {
+        return new BulkExportViewModel()
+        {
+            Exporter = BuildContentExporterViewModel(options.ExportableTypes),
+            List = await BuildListViewModelAsync(options, pagerParameters),
+        };
+    }
+
+    private async Task<ActionResult> FilterListAsync(string actionName, ListContentTransferEntryOptions options)
+    {
+        if (!string.Equals(options.SearchText, options.OriginalSearchText, StringComparison.OrdinalIgnoreCase))
+        {
+            return RedirectToAction(actionName, new RouteValueDictionary
+            {
+                { "q", options.SearchText },
+            });
+        }
+
+        await _entryOptionsDisplayManager.UpdateEditorAsync(options, this, false, string.Empty, string.Empty);
+        options.RouteValues.TryAdd("q", options.FilterResult.ToString());
+
+        return RedirectToAction(actionName, options.RouteValues);
+    }
+
+    private async Task ExecuteBulkActionAsync(IEnumerable<string> itemIds, ContentTransferEntryBulkAction? bulkAction, ContentTransferDirection direction, string owner = null)
+    {
+        if (itemIds?.Any() != true)
+        {
+            return;
+        }
+
+        var query = _session.Query<ContentTransferEntry, ContentTransferEntryIndex>(x =>
+            x.EntryId.IsIn(itemIds) && x.Direction == direction);
+
+        if (!string.IsNullOrWhiteSpace(owner))
+        {
+            query = query.Where(x => x.Owner == owner);
+        }
+
+        var entries = await query.ListAsync();
+
+        var deletedCount = 0;
+        var failedCount = 0;
+
+        switch (bulkAction)
+        {
+            case ContentTransferEntryBulkAction.Remove:
+                foreach (var entry in entries)
+                {
+                    if (await DeleteEntryAsync(entry))
+                    {
+                        deletedCount++;
+                    }
+                    else
+                    {
+                        failedCount++;
+                    }
+                }
+
+                if (deletedCount > 0)
+                {
+                    await _session.SaveChangesAsync();
+                    await _notifier.SuccessAsync(H["{0} {1} removed successfully.", deletedCount, H.Plural(deletedCount, "entry", "entries")]);
+                }
+
+                if (failedCount > 0)
+                {
+                    await _notifier.WarningAsync(H["{0} {1} could not be removed because the stored file could not be deleted.", failedCount, H.Plural(failedCount, "entry", "entries")]);
+                }
+                break;
+        }
+    }
+
+    private async Task<bool> DeleteEntryAsync(ContentTransferEntry entry)
+    {
+        if (!string.IsNullOrWhiteSpace(entry.StoredFileName))
+        {
+            var fileInfo = await _contentTransferFileStore.GetFileInfoAsync(entry.StoredFileName);
+
+            if (fileInfo != null && !await _contentTransferFileStore.TryDeleteFileAsync(entry.StoredFileName))
+            {
+                return false;
+            }
+        }
+
+        _session.Delete(entry);
+
+        return true;
+    }
+
+    private static Task TriggerImportProcessingAsync(string entryId)
         => HttpBackgroundJob.ExecuteAfterEndOfRequestAsync(
             $"content-transfer-import-{entryId}",
             entryId,
             static (scope, id) => BackgroundTasks.ImportFilesBackgroundTask.ProcessEntriesAsync(scope.ServiceProvider, CancellationToken.None, id));
 
-    private Task TriggerExportProcessingAsync(string entryId)
+    private static Task TriggerExportProcessingAsync(string entryId)
         => HttpBackgroundJob.ExecuteAfterEndOfRequestAsync(
             $"content-transfer-export-{entryId}",
             entryId,

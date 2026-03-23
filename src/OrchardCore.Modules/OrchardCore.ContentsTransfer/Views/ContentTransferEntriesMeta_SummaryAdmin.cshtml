@@ -69,10 +69,7 @@
 
 @if (!string.IsNullOrEmpty(entry.Author))
 {
-    <span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@T["Author"]">
-        <i class="fa-regular fa-user text-secondary" aria-hidden="true"></i>
-        <user-display-name user-name="@(entry.Author)" display-type="SummaryAdmin" cache-id="user-display-name-author" />
-    </span>
+    <user-display-name user-name="@(entry.Author)" title="@T["Author"].Value" display-type="SummaryAdmin" cache-id="user-display-name-author" />
 }
 
 @if (statsPart?.TotalProcessed > 0)

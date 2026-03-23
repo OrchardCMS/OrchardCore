@@ -1,10 +1,9 @@
-@using OrchardCore.ContentsTransfer
 @model ListContentTransferEntryOptions
+@using OrchardCore.ContentsTransfer
 
-@if (Model.TotalItemCount > 0)
+@if (Model.Direction == ContentTransferDirection.Export && Model.ExportableTypes?.Count > 0)
 {
-    <a class="btn btn-secondary"
-       asp-action="ReadAll" asp-controller="Admin" asp-area="@ContentTransferConstants.Feature.ModuleId" asp-route-returnUrl="@FullRequestPath"
-       data-url-af="RemoveUrl UnsafeUrl" data-title="@T["Delete"]" data-message="@T["Are you sure you to mark all notifications as read?"]"
-       data-ok-text="@T["Ok"]" data-cancel-text="@T["Cancel"]">@T["Mark All as Read"]</a>
+    <button type="button" class="btn btn-secondary" data-bs-toggle="collapse" data-bs-target="#export-request-panel" aria-expanded="false" aria-controls="export-request-panel">
+        @T["Export"]
+    </button>
 }

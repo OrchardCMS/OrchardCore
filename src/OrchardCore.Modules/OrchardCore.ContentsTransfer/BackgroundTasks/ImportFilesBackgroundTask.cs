@@ -8,6 +8,7 @@ using OrchardCore.BackgroundTasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentsTransfer.Indexes;
 using OrchardCore.ContentsTransfer.Models;
 using OrchardCore.Entities;
@@ -236,7 +237,9 @@ public sealed class ImportFilesBackgroundTask : IBackgroundTask
         progressPart.TotalRecords = Math.Max(sheetData.Elements<Row>().Count() - 1, 0);
 
         var indexOfKeyColumn = dataTable.Columns.IndexOf(nameof(ContentItem.ContentItemId));
+        var indexOfVersionKeyColumn = dataTable.Columns.IndexOf(nameof(ContentItem.ContentItemVersionId));
         var newRecords = new Dictionary<int, DataRow>();
+        var existingVersionRows = new Dictionary<string, KeyValuePair<int, DataRow>>(StringComparer.OrdinalIgnoreCase);
         var existingRows = new Dictionary<string, KeyValuePair<int, DataRow>>(StringComparer.OrdinalIgnoreCase);
 
         var rowIndex = 1;
@@ -283,7 +286,33 @@ public sealed class ImportFilesBackgroundTask : IBackgroundTask
 
             if (!isEmpty)
             {
-                if (indexOfKeyColumn > -1)
+                if (contentTypeDefinition.IsVersionable() && indexOfVersionKeyColumn > -1)
+                {
+                    var contentItemVersionId = dataRow[indexOfVersionKeyColumn]?.ToString()?.Trim();
+
+                    if (!string.IsNullOrEmpty(contentItemVersionId))
+                    {
+                        existingVersionRows[contentItemVersionId] = new KeyValuePair<int, DataRow>(rowIndex, dataRow);
+                    }
+                    else if (indexOfKeyColumn > -1)
+                    {
+                        var contentItemId = dataRow[indexOfKeyColumn]?.ToString()?.Trim();
+
+                        if (!string.IsNullOrEmpty(contentItemId))
+                        {
+                            existingRows[contentItemId] = new KeyValuePair<int, DataRow>(rowIndex, dataRow);
+                        }
+                        else
+                        {
+                            newRecords[rowIndex] = dataRow;
+                        }
+                    }
+                    else
+                    {
+                        newRecords[rowIndex] = dataRow;
+                    }
+                }
+                else if (indexOfKeyColumn > -1)
                 {
                     var contentItemId = dataRow[indexOfKeyColumn]?.ToString()?.Trim();
 
@@ -302,13 +331,14 @@ public sealed class ImportFilesBackgroundTask : IBackgroundTask
                 }
             }
 
-            if (newRecords.Count + existingRows.Count >= batchSize)
+            if (newRecords.Count + existingRows.Count + existingVersionRows.Count >= batchSize)
             {
                 await ProcessBatchAsync(
                     serviceProvider,
                     entry,
                     dataTable,
                     newRecords,
+                    existingVersionRows,
                     existingRows,
                     contentTypeDefinition,
                     contentManager,
@@ -319,6 +349,7 @@ public sealed class ImportFilesBackgroundTask : IBackgroundTask
                     cancellationToken);
 
                 newRecords.Clear();
+                existingVersionRows.Clear();
                 existingRows.Clear();
                 dataTable.Rows.Clear();
             }
@@ -326,13 +357,14 @@ public sealed class ImportFilesBackgroundTask : IBackgroundTask
             rowIndex++;
         }
 
-        if (newRecords.Count + existingRows.Count > 0)
+        if (newRecords.Count + existingRows.Count + existingVersionRows.Count > 0)
         {
             await ProcessBatchAsync(
                 serviceProvider,
                 entry,
                 dataTable,
                 newRecords,
+                existingVersionRows,
                 existingRows,
                 contentTypeDefinition,
                 contentManager,
@@ -351,6 +383,7 @@ public sealed class ImportFilesBackgroundTask : IBackgroundTask
         ContentTransferEntry entry,
         DataTable dataTable,
         Dictionary<int, DataRow> newRecords,
+        Dictionary<string, KeyValuePair<int, DataRow>> existingVersionRows,
         Dictionary<string, KeyValuePair<int, DataRow>> existingRows,
         ContentManagement.Metadata.Models.ContentTypeDefinition contentTypeDefinition,
         IContentManager contentManager,
@@ -360,6 +393,37 @@ public sealed class ImportFilesBackgroundTask : IBackgroundTask
         IClock clock,
         CancellationToken cancellationToken)
     {
+        if (existingVersionRows.Count > 0)
+        {
+            foreach (var existingVersionRow in existingVersionRows)
+            {
+                if (await IsImportCanceledAsync(serviceProvider, entry.EntryId, cancellationToken))
+                {
+                    return;
+                }
+
+                var contentItem = await contentManager.GetVersionAsync(existingVersionRow.Key);
+                var isNew = contentItem == null;
+
+                if (isNew)
+                {
+                    contentItem = await contentManager.NewAsync(entry.ContentType);
+                }
+
+                await ProcessRowAsync(
+                    entry,
+                    contentItem,
+                    existingVersionRow.Value.Key,
+                    existingVersionRow.Value.Value,
+                    dataTable.Columns,
+                    contentTypeDefinition,
+                    contentManager,
+                    contentImportManager,
+                    progressPart,
+                    isNew);
+            }
+        }
+
         if (existingRows.Count > 0)
         {
             var existingContentItems = (await contentManager.GetAsync(existingRows.Keys, VersionOptions.DraftRequired))

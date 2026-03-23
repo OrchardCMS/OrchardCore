@@ -1,6 +1,7 @@
 using System.Data;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Metadata.Models;
 
 namespace OrchardCore.ContentsTransfer.Handlers;
 
@@ -20,7 +21,7 @@ public sealed class CommonContentImportHandler : ContentImportHandlerBase, ICont
 
     public IReadOnlyCollection<ImportColumn> GetColumns(ImportContentContext context)
     {
-        return new[]
+        var columns = new List<ImportColumn>
         {
             new ImportColumn()
             {
@@ -40,6 +41,17 @@ public sealed class CommonContentImportHandler : ContentImportHandlerBase, ICont
                 Type = ImportColumnType.ExportOnly,
             },
         };
+
+        if (context.ContentTypeDefinition.IsVersionable())
+        {
+            columns.Insert(1, new ImportColumn()
+            {
+                Name = nameof(ContentItem.ContentItemVersionId),
+                Description = S["The version id for the {0}", context.ContentTypeDefinition.DisplayName],
+            });
+        }
+
+        return columns;
     }
 
     public Task ImportAsync(ContentImportContext context)
@@ -67,6 +79,20 @@ public sealed class CommonContentImportHandler : ContentImportHandlerBase, ICont
                     context.ContentItem.ContentItemId = contentItemId;
                 }
             }
+            else if (context.ContentTypeDefinition.IsVersionable() && Is(column.ColumnName, nameof(ContentItem.ContentItemVersionId)))
+            {
+                var contentItemVersionId = context.Row[column]?.ToString();
+
+                if (!string.IsNullOrWhiteSpace(contentItemVersionId))
+                {
+                    var fakeId = _contentItemIdGenerator.GenerateUniqueId(new ContentItem());
+
+                    if (fakeId.Length == contentItemVersionId.Length)
+                    {
+                        context.ContentItem.ContentItemVersionId = contentItemVersionId;
+                    }
+                }
+            }
         }
 
         return Task.CompletedTask;
@@ -79,6 +105,10 @@ public sealed class CommonContentImportHandler : ContentImportHandlerBase, ICont
         ArgumentNullException.ThrowIfNull(context.Row, nameof(context.Row));
 
         context.Row[nameof(ContentItem.ContentItemId)] = context.ContentItem.ContentItemId;
+        if (context.ContentTypeDefinition.IsVersionable())
+        {
+            context.Row[nameof(ContentItem.ContentItemVersionId)] = context.ContentItem.ContentItemVersionId;
+        }
         context.Row[nameof(ContentItem.CreatedUtc)] = context.ContentItem.CreatedUtc;
         context.Row[nameof(ContentItem.ModifiedUtc)] = context.ContentItem.ModifiedUtc;
 

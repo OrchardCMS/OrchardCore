@@ -1,6 +1,7 @@
-@model ListContentTransferEntriesViewModel
+@using OrchardCore.DisplayManagement
+@model IShape
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Bulk Transfers"])</h1></zone>
+<zone Name="Title"><h1>@RenderTitleSegments(T["Bulk Import"])</h1></zone>
 
 <form asp-action="List" asp-controller="Admin" method="post" id="items-form" autocomplete="off">
     @await DisplayAsync(Model)
