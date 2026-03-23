@@ -36,14 +36,6 @@ public sealed class AdminMenu : AdminNavigationProvider
                     .Permission(ContentTransferPermissions.ExportContentFromFile)
                     .LocalNav()
                 )
-                .Add(S["Export Dashboard"], S["Export Dashboard"].PrefixPosition(), transfer => transfer
-                    .Action(nameof(AdminController.ExportDashboard), adminControllerName, new
-                    {
-                        area = ContentTransferConstants.Feature.ModuleId,
-                    })
-                    .Permission(ContentTransferPermissions.ExportContentFromFile)
-                    .LocalNav()
-                )
             );
 
         return ValueTask.CompletedTask;

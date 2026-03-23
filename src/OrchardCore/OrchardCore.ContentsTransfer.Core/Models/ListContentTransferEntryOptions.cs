@@ -46,4 +46,13 @@ public class ListContentTransferEntryOptions
 
     [BindNever]
     public IList<SelectListItem> ImportableTypes { get; set; }
+
+    [BindNever]
+    public IList<SelectListItem> ExportableTypes { get; set; }
+
+    [BindNever]
+    public ContentTransferDirection Direction { get; set; }
+
+    [BindNever]
+    public string Owner { get; set; }
 }

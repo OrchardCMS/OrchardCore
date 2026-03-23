@@ -40,7 +40,7 @@ public sealed class ContentTransferNotificationHandler : IContentTransferNotific
         {
             Subject = S["Content Export Completed"],
             Summary = S["Your export of '{0}' content items is ready for download.", contentTypeName],
-            TextBody = S["The export file '{0}' for content type '{1}' has been completed and is ready for download from the Export Dashboard.", entry.UploadedFileName, contentTypeName],
+            TextBody = S["The export file '{0}' for content type '{1}' has been completed and is ready for download from Bulk Export.", entry.UploadedFileName, contentTypeName],
         };
 
         await _notificationService.SendAsync(user, message);

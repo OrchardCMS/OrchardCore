@@ -33,8 +33,11 @@ public sealed class ListContentTransferEntryOptionsDisplayDriver : DisplayDriver
                 .Location("BulkActions", "Content:10"),
             Initialize<ListContentTransferEntryOptions>("ListContentTransferEntriesAdminListSearch", m => BuildOptionsViewModel(m, model))
                 .Location("Search:10"),
-            Initialize<ListContentTransferEntryOptions>("ContentTransferEntriesAdminListImport", m => BuildOptionsViewModel(m, model))
-                .Location("Create:10"),
+            model.Direction == ContentTransferDirection.Export
+                ? Initialize<ListContentTransferEntryOptions>("ContentTransferEntriesAdminListExport", m => BuildOptionsViewModel(m, model))
+                    .Location("Create:10")
+                : Initialize<ListContentTransferEntryOptions>("ContentTransferEntriesAdminListImport", m => BuildOptionsViewModel(m, model))
+                    .Location("Create:10"),
             Initialize<ListContentTransferEntryOptions>("ListContentTransferEntriesAdminListActionBarButtons", m => BuildOptionsViewModel(m, model))
                 .Location("ActionBarButtons:10"),
             Initialize<ListContentTransferEntryOptions>("ListContentTransferEntriesAdminListSummary", m => BuildOptionsViewModel(m, model))
@@ -64,9 +67,12 @@ public sealed class ListContentTransferEntryOptionsDisplayDriver : DisplayDriver
         m.Statuses = model.Statuses;
         m.BulkActions = model.BulkActions;
         m.ImportableTypes = model.ImportableTypes;
+        m.ExportableTypes = model.ExportableTypes;
         m.StartIndex = model.StartIndex;
         m.EndIndex = model.EndIndex;
         m.TotalItemCount = model.TotalItemCount;
         m.OrderBy = model.OrderBy;
+        m.Direction = model.Direction;
+        m.Owner = model.Owner;
     }
 }
