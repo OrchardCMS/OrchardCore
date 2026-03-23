@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
@@ -5,6 +6,7 @@ using OrchardCore.ContentManagement.Display.ViewModels;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Records;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Lists.Indexes;
@@ -13,8 +15,6 @@ using OrchardCore.Lists.Services;
 using OrchardCore.Lists.ViewModels;
 using OrchardCore.Navigation;
 using YesSql;
-using Microsoft.AspNetCore.Http;
-
 using ISession = YesSql.ISession;
 
 namespace OrchardCore.Lists.Drivers;
@@ -25,6 +25,7 @@ public sealed class ListPartDisplayDriver : ContentPartDisplayDriver<ListPart>
     private readonly IContainerService _containerService;
     private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly ISession _session;
+    private readonly IShapeFactory _shapeFactory;
     private readonly IHttpContextAccessor _httpContextAccessor;
 
     public ListPartDisplayDriver(
@@ -32,12 +33,14 @@ public sealed class ListPartDisplayDriver : ContentPartDisplayDriver<ListPart>
         IContainerService containerService,
         IUpdateModelAccessor updateModelAccessor,
         ISession session,
+        IShapeFactory shapeFactory,
         IHttpContextAccessor httpContextAccessor)
     {
         _contentDefinitionManager = contentDefinitionManager;
         _containerService = containerService;
         _updateModelAccessor = updateModelAccessor;
         _session = session;
+        _shapeFactory = shapeFactory;
         _httpContextAccessor = httpContextAccessor;
     }
 
@@ -148,7 +151,7 @@ public sealed class ListPartDisplayDriver : ContentPartDisplayDriver<ListPart>
             model.Context = context;
             model.EnableOrdering = settings.EnableOrdering;
 
-            if (settings.ShowPageNumbers)
+            if (settings.ShowFullPager)
             {
                 var pager = await GetPagerAsync(context);
 
@@ -162,7 +165,7 @@ public sealed class ListPartDisplayDriver : ContentPartDisplayDriver<ListPart>
 
                 var totalItemCount = await query.CountAsync();
 
-                model.Pager = (await context.New.Pager(pager)).TotalItemCount(totalItemCount);
+                model.Pager = await _shapeFactory.PagerAsync(pager, totalItemCount);
             }
             else
             {
@@ -174,7 +177,7 @@ public sealed class ListPartDisplayDriver : ContentPartDisplayDriver<ListPart>
                     pagerSlim,
                     containedItemOptions)).ToArray();
 
-                model.Pager = await context.New.PagerSlim(pagerSlim);
+                model.Pager = await _shapeFactory.PagerSlimAsync(pagerSlim);
             }
         }))
         .Location(OrchardCoreConstants.DisplayType.DetailAdmin, "Content:10");
@@ -185,39 +188,39 @@ public sealed class ListPartDisplayDriver : ContentPartDisplayDriver<ListPart>
         return Initialize<ListPartViewModel>(GetDisplayShapeType(context), async model =>
         {
             var settings = context.TypePartDefinition.GetSettings<ListPartSettings>();
-            var containedItemOptions = new ContainedItemOptions(); 
+            var containedItemOptions = new ContainedItemOptions();
 
             model.ContainedContentTypeDefinitions = await GetContainedContentTypesAsync(settings);
             model.Context = context;
             model.ListPart = listPart;
 
-            if (settings.ShowPageNumbers)
+            if (settings.ShowFullPager)
             {
                 var pager = await GetPagerAsync(context);
 
-                model.ContentItems = (await _containerService.QueryContainedItemsAsync(
+                model.ContentItems = await _containerService.QueryContainedItemsAsync(
                     listPart.ContentItem.ContentItemId,
                     settings.EnableOrdering,
                     pager,
-                    containedItemOptions)).ToArray();
+                    containedItemOptions);
 
                 containedItemOptions.Status = ContentsStatus.Published;
                 var query = BuildTotalItemCountQuery(listPart.ContentItem.ContentItemId, containedItemOptions);
                 var totalItemCount = await query.CountAsync();
 
-                model.Pager = (await context.New.Pager(pager)).TotalItemCount(totalItemCount);
+                model.Pager = await _shapeFactory.PagerAsync(pager, totalItemCount);
             }
             else
             {
                 var pagerSlim = await GetPagerSlimAsync(context);
 
-                model.ContentItems = (await _containerService.QueryContainedItemsAsync(
+                model.ContentItems = await _containerService.QueryContainedItemsAsync(
                     listPart.ContentItem.ContentItemId,
                     settings.EnableOrdering,
                     pagerSlim,
-                    containedItemOptions)).ToArray();
+                    containedItemOptions);
 
-                model.Pager = await context.New.PagerSlim(pagerSlim);
+                model.Pager = await _shapeFactory.PagerSlimAsync(pagerSlim);
             }
         })
         .Location(OrchardCoreConstants.DisplayType.Detail, "Content:10");
