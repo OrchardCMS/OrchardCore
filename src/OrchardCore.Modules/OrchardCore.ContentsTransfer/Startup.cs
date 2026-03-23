@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Alias.Models;
+using OrchardCore.ArchiveLater.Models;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.Autoroute.Models;
 using OrchardCore.ContentFields.Fields;
@@ -20,9 +22,15 @@ using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.FileStorage.FileSystem;
 using OrchardCore.Html.Models;
+using OrchardCore.Liquid.Models;
+using OrchardCore.Markdown.Fields;
+using OrchardCore.Markdown.Models;
+using OrchardCore.Media.Fields;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
+using OrchardCore.PublishLater.Models;
 using OrchardCore.Security.Permissions;
+using OrchardCore.Taxonomies.Fields;
 using OrchardCore.Title.Models;
 using YesSql.Filters.Query;
 
@@ -102,6 +110,34 @@ public sealed class HtmlBodyStartup : StartupBase
     }
 }
 
+[RequireFeatures("OrchardCore.Markdown")]
+public sealed class MarkdownStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddContentPartImportHandler<MarkdownBodyPart, MarkdownBodyPartContentImportHandler>();
+        services.AddContentFieldImportHandler<MarkdownField, MarkdownFieldImportHandler>();
+    }
+}
+
+[RequireFeatures("OrchardCore.Alias")]
+public sealed class AliasStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddContentPartImportHandler<AliasPart, AliasPartContentImportHandler>();
+    }
+}
+
+[RequireFeatures("OrchardCore.ArchiveLater")]
+public sealed class ArchiveLaterStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddContentPartImportHandler<ArchiveLaterPart, ArchiveLaterPartContentImportHandler>();
+    }
+}
+
 [RequireFeatures("OrchardCore.Autoroute")]
 public sealed class AutorouteStartup : StartupBase
 {
@@ -123,6 +159,56 @@ public sealed class ContentFieldsStartup : StartupBase
         services.AddContentFieldImportHandler<TimeField, TimeFieldImportHandler>();
         services.AddContentFieldImportHandler<ContentPickerField, ContentPickerFieldImportHandler>();
         services.AddContentFieldImportHandler<BooleanField, BooleanFieldImportHandler>();
+        services.AddContentFieldImportHandler<HtmlField, HtmlFieldImportHandler>();
+        services.AddContentFieldImportHandler<MultiTextField, MultiTextFieldImportHandler>();
+        services.AddContentFieldImportHandler<LinkField, LinkFieldImportHandler>();
+        services.AddContentFieldImportHandler<YoutubeField, YoutubeFieldImportHandler>();
+        services.AddContentFieldImportHandler<UserPickerField, UserPickerFieldImportHandler>();
+    }
+}
+
+[RequireFeatures("OrchardCore.Liquid")]
+public sealed class LiquidStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddContentPartImportHandler<LiquidPart, LiquidPartContentImportHandler>();
+    }
+}
+
+[RequireFeatures("OrchardCore.Media")]
+public sealed class MediaStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddContentFieldImportHandler<MediaField, MediaFieldImportHandler>();
+    }
+}
+
+[RequireFeatures("OrchardCore.PublishLater")]
+public sealed class PublishLaterStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddContentPartImportHandler<PublishLaterPart, PublishLaterPartContentImportHandler>();
+    }
+}
+
+[RequireFeatures("OrchardCore.Taxonomies")]
+public sealed class TaxonomiesStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddContentFieldImportHandler<TaxonomyField, TaxonomyFieldImportHandler>();
+    }
+}
+
+[RequireFeatures("OrchardCore.ContentLocalization")]
+public sealed class ContentLocalizationStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddContentFieldImportHandler<LocalizationSetContentPickerField, LocalizationSetContentPickerFieldImportHandler>();
     }
 }
 
