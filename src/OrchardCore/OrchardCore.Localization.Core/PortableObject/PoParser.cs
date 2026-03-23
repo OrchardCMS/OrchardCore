@@ -7,7 +7,7 @@ namespace OrchardCore.Localization.PortableObject;
 /// <summary>
 /// Represents a parser for portable objects.
 /// </summary>
-public class PoParser
+public static class PoParser
 {
     private static readonly FrozenDictionary<char, char> _escapeTranslations;
 
