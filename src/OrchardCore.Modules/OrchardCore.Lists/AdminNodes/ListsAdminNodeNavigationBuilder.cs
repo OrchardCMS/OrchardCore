@@ -1,4 +1,3 @@
-using Json.Path;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.AdminMenu.Services;
@@ -9,7 +8,6 @@ using OrchardCore.ContentManagement.Records;
 using OrchardCore.Contents;
 using OrchardCore.Contents.Security;
 using OrchardCore.Navigation;
-using Parlot.Fluent;
 using YesSql;
 
 namespace OrchardCore.Lists.AdminNodes;

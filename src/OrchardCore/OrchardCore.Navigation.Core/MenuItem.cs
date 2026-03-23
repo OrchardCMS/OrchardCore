@@ -29,6 +29,9 @@ public class MenuItem
     /// </summary>
     public string Id { get; set; }
 
+    /// <summary>
+    /// Gets or sets the menu name to which this menu item belongs.
+    /// </summary>
     public string MenuName { get; set; }
 
     /// <summary>

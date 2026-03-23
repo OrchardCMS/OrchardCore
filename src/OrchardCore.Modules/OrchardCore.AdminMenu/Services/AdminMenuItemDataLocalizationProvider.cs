@@ -40,10 +40,10 @@ public class AdminMenuItemDataLocalizationProvider : ILocalizationDataProvider
 
         foreach (var item in menuItem.Items)
         {
-            if (item is LinkAdminNode)
+            if (item is LinkAdminNode linkAdminNode)
             {
                 var context = string.Concat(_adminMenuNodeContext, Constants.ContextSeparator, item.GetType().Name);
-                localizedStrings.Add(new DataLocalizedString(context, ((LinkAdminNode)item).LinkText, string.Empty));
+                localizedStrings.Add(new DataLocalizedString(context, linkAdminNode.LinkText, string.Empty));
             }
 
             GetAdminMenuNodes(item, localizedStrings);
