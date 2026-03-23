@@ -1,6 +1,6 @@
 namespace OrchardCore.ContentsTransfer;
 
-public class ContentTransferConstants
+public static class ContentTransferConstants
 {
     public static class Feature
     {

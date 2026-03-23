@@ -3,7 +3,7 @@ using OrchardCore.ContentManagement;
 
 namespace OrchardCore.ContentsTransfer;
 
-public class ContentFieldExportMapContext : ImportContentFieldContext
+public sealed class ContentFieldExportMapContext : ImportContentFieldContext
 {
     public ContentField ContentField { get; set; }
 

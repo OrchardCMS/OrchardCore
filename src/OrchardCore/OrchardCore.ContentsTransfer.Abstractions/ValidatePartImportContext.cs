@@ -4,7 +4,7 @@ using OrchardCore.ContentManagement.Handlers;
 
 namespace OrchardCore.ContentsTransfer;
 
-public class ValidatePartImportContext : ImportContentPartContext
+public sealed class ValidatePartImportContext : ImportContentPartContext
 {
     public ContentItem ContentItem { get; set; }
 

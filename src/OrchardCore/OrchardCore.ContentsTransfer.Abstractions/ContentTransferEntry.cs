@@ -1,9 +1,8 @@
-using System;
 using OrchardCore.Entities;
 
 namespace OrchardCore.ContentsTransfer;
 
-public class ContentTransferEntry : Entity
+public sealed class ContentTransferEntry : Entity
 {
     /// <summary>
     /// The primary key in the database.
@@ -58,6 +57,11 @@ public class ContentTransferEntry : Entity
     public ContentTransferEntryStatus Status { get; set; }
 
     /// <summary>
+    /// The direction of the transfer (Import or Export).
+    /// </summary>
+    public ContentTransferDirection Direction { get; set; }
+
+    /// <summary>
     /// Error message if the file failed processing.
     /// </summary>
     public string Error { get; set; }
@@ -65,9 +69,17 @@ public class ContentTransferEntry : Entity
 
 public enum ContentTransferEntryStatus
 {
-    New = 1,
-    Processing = 2,
-    Completed = 3,
-    CompletedWithErrors = 4,
-    Failed = 5,
+    New,
+    Processing,
+    Completed,
+    CompletedWithErrors,
+    Canceled,
+    CanceledWithImportedRecords,
+    Failed,
+}
+
+public enum ContentTransferDirection
+{
+    Import,
+    Export,
 }

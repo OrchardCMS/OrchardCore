@@ -7,7 +7,7 @@ using OrchardCore.ContentManagement.Metadata.Models;
 
 namespace OrchardCore.ContentsTransfer.Handlers.Fields;
 
-public class NumberFieldImportHandler : StandardFieldImportHandler
+public sealed class NumberFieldImportHandler : StandardFieldImportHandler
 {
     private readonly IStringLocalizer S;
 

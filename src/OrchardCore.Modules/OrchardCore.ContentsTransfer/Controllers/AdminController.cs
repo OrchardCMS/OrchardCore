@@ -8,9 +8,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
+using OrchardCore.BackgroundJobs;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Metadata;
@@ -22,6 +24,7 @@ using OrchardCore.ContentsTransfer.ViewModels;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Entities;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
@@ -31,7 +34,7 @@ using YesSql.Services;
 
 namespace OrchardCore.ContentsTransfer.Controllers;
 
-public class AdminController : Controller, IUpdateModel
+public sealed class AdminController : Controller, IUpdateModel
 {
     private readonly IAuthorizationService _authorizationService;
     private readonly ISession _session;
@@ -51,8 +54,8 @@ public class AdminController : Controller, IUpdateModel
     private readonly IContentItemDisplayManager _contentItemDisplayManager;
     private readonly IContentDefinitionManager _contentDefinitionManager;
 
-    protected readonly IStringLocalizer S;
-    protected readonly IHtmlLocalizer H;
+    private readonly IStringLocalizer S;
+    private readonly IHtmlLocalizer H;
 
     public AdminController(
         IAuthorizationService authorizationService,
@@ -120,6 +123,8 @@ public class AdminController : Controller, IUpdateModel
             new(S["Processing"], nameof(ContentTransferEntryStatus.Processing)),
             new(S["Completed"], nameof(ContentTransferEntryStatus.Completed)),
             new(S["Completed With Errors"], nameof(ContentTransferEntryStatus.CompletedWithErrors)),
+            new(S["Canceled"], nameof(ContentTransferEntryStatus.Canceled)),
+            new(S["Canceled With Imported Records"], nameof(ContentTransferEntryStatus.CanceledWithImportedRecords)),
             new(S["Failed"], nameof(ContentTransferEntryStatus.Failed)),
         ];
 
@@ -140,7 +145,8 @@ public class AdminController : Controller, IUpdateModel
         {
             var settings = contentTypeDefinition.GetSettings<ContentTypeTransferSettings>();
 
-            if (!settings.AllowBulkImport || !await _authorizationService.AuthorizeAsync(HttpContext.User, ContentTransferPermissions.ImportContentFromFile, (object)contentTypeDefinition.Name))
+            if (!settings.AllowBulkImport ||
+                !await _authorizationService.AuthorizeAsync(HttpContext.User, ContentTransferPermissions.ImportContentFromFile, (object)contentTypeDefinition.Name))
             {
                 continue;
             }
@@ -192,7 +198,10 @@ public class AdminController : Controller, IUpdateModel
         // When the user has typed something into the search input, no further evaluation of the form post is required.
         if (!string.Equals(options.SearchText, options.OriginalSearchText, StringComparison.OrdinalIgnoreCase))
         {
-            return RedirectToAction(nameof(List), new RouteValueDictionary { { "q", options.SearchText } });
+            return RedirectToAction(nameof(List), new RouteValueDictionary
+            {
+                { "q", options.SearchText },
+            });
         }
 
         // Evaluate the values provided in the form post and map them to the filter result and route values.
@@ -363,12 +372,15 @@ public class AdminController : Controller, IUpdateModel
                 UploadedFileName = importContent.File.FileName,
                 StoredFileName = storedFileName,
                 Status = ContentTransferEntryStatus.New,
+                Direction = ContentTransferDirection.Import,
                 CreatedUtc = _clock.UtcNow,
             };
 
             _session.Save(entry);
+            await _session.SaveChangesAsync();
+            await TriggerImportProcessingAsync(entry.EntryId);
 
-            await _notifier.SuccessAsync(H["The file was successfully added to the queue for processing."]);
+            await _notifier.SuccessAsync(H["The file was successfully added to the queue and will start processing shortly."]);
 
             return RedirectToAction(nameof(List));
         }
@@ -505,16 +517,21 @@ public class AdminController : Controller, IUpdateModel
             viewModel.ContentTypes.Add(new SelectListItem(contentTypeDefinition.DisplayName, contentTypeDefinition.Name));
         }
 
-        if (viewModel.ContentTypes.Count == 0)
-        {
-            return BadRequest();
-        }
-
         return View(viewModel);
     }
 
-    [Admin("export/contents/{contentTypeId}/download-file", "ExportContentDownloadFile")]
-    public async Task<IActionResult> DownloadExport(string contentTypeId)
+    [Admin("export/contents/download-file", "ExportContentDownloadFile")]
+    public async Task<IActionResult> DownloadExport(
+        string contentTypeId,
+        bool partialExport = false,
+        DateTime? createdFrom = null,
+        DateTime? createdTo = null,
+        DateTime? modifiedFrom = null,
+        DateTime? modifiedTo = null,
+        string owners = null,
+        bool publishedOnly = true,
+        bool latestOnly = false,
+        bool allVersions = false)
     {
         var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentTypeId);
 
@@ -542,109 +559,505 @@ public class AdminController : Controller, IUpdateModel
         };
 
         var columns = await _contentImportManager.GetColumnsAsync(context);
+        var exportColumns = columns.Where(x => x.Type != ImportColumnType.ImportOnly).ToList();
 
-        var dataTable = new DataTable();
+        // Build a filtered query for counting.
+        var countQuery = BuildExportQuery(contentTypeId, partialExport, publishedOnly, latestOnly, allVersions, createdFrom, createdTo, modifiedFrom, modifiedTo, owners);
+        var totalCount = await countQuery.CountAsync();
 
-        foreach (var column in columns)
+        var contentImportOptions = HttpContext.RequestServices.GetRequiredService<IOptions<ContentImportOptions>>().Value;
+        var threshold = contentImportOptions.ExportQueueThreshold;
+
+        if (totalCount > threshold)
         {
-            if (column.Type == ImportColumnType.ImportOnly)
+            // Queue the export for background processing.
+            var fileName = $"{contentTypeDefinition.Name}_Export_{Guid.NewGuid():N}.xlsx";
+
+            var entry = new ContentTransferEntry()
             {
-                continue;
+                EntryId = IdGenerator.GenerateId(),
+                ContentType = contentTypeId,
+                Owner = CurrentUserId(),
+                Author = User.Identity.Name,
+                UploadedFileName = $"{contentTypeDefinition.Name}_Export.xlsx",
+                StoredFileName = fileName,
+                Status = ContentTransferEntryStatus.New,
+                Direction = ContentTransferDirection.Export,
+                CreatedUtc = _clock.UtcNow,
+            };
+
+            // Store the filters so the background task can apply them.
+            if (partialExport)
+            {
+                entry.Put(new ExportFilterPart
+                {
+                    PublishedOnly = publishedOnly,
+                    LatestOnly = latestOnly,
+                    AllVersions = allVersions,
+                    CreatedFrom = createdFrom,
+                    CreatedTo = createdTo,
+                    ModifiedFrom = modifiedFrom,
+                    ModifiedTo = modifiedTo,
+                    Owners = owners,
+                });
             }
 
-            dataTable.Columns.Add(column.Name);
+            _session.Save(entry);
+            await _session.SaveChangesAsync();
+            await TriggerExportProcessingAsync(entry.EntryId);
+
+            await _notifier.InformationAsync(H["The export contains {0} records and has been queued for background processing. You can download it from the Export Dashboard when it is ready.", totalCount]);
+
+            return RedirectToAction(nameof(ExportDashboard));
         }
 
-        var contentItems = await _session.Query<ContentItem, ContentItemIndex>(x => x.ContentType == contentTypeId && x.Published)
-            .OrderBy(x => x.PublishedUtc)
-            .ListAsync();
+        // Immediate export: write directly to a temp file stream using pagination.
+        var batchSize = contentImportOptions.ExportBatchSize < 1 ? 200 : contentImportOptions.ExportBatchSize;
 
-        foreach (var contentItem in contentItems)
+        var tempFilePath = Path.GetTempFileName();
+        try
         {
-            var mapContext = new ContentExportContext()
+            using (var fileStream = new FileStream(tempFilePath, FileMode.Create, FileAccess.ReadWrite, FileShare.None))
+            using (var spreadsheetDocument = SpreadsheetDocument.Create(fileStream, SpreadsheetDocumentType.Workbook))
             {
-                ContentItem = contentItem,
-                ContentTypeDefinition = contentTypeDefinition,
-                Row = dataTable.NewRow(),
-            };
+                var workbookPart = spreadsheetDocument.AddWorkbookPart();
+                workbookPart.Workbook = new Workbook();
 
-            await _contentImportManager.ExportAsync(mapContext);
+                var worksheetPart = workbookPart.AddNewPart<WorksheetPart>();
+                worksheetPart.Worksheet = new Worksheet(new SheetData());
 
-            dataTable.Rows.Add(mapContext.Row);
-        }
-
-        var content = new MemoryStream();
-        using (var spreadsheetDocument = SpreadsheetDocument.Create(content, SpreadsheetDocumentType.Workbook))
-        {
-            var workbookPart = spreadsheetDocument.AddWorkbookPart();
-            workbookPart.Workbook = new Workbook();
-
-            var worksheetPart = workbookPart.AddNewPart<WorksheetPart>();
-            worksheetPart.Worksheet = new Worksheet(new SheetData());
-
-            var sheets = workbookPart.Workbook.AppendChild(new Sheets());
-            var sheet = new Sheet()
-            {
-                Id = workbookPart.GetIdOfPart(worksheetPart),
-                SheetId = 1,
-                Name = contentTypeDefinition.DisplayName?.Length > 31
-                    ? contentTypeDefinition.DisplayName[..31]
-                    : contentTypeDefinition.DisplayName,
-            };
-            sheets.Append(sheet);
-
-            var sheetData = worksheetPart.Worksheet.GetFirstChild<SheetData>();
-
-            // Add header row
-            var headerRow = new Row() { RowIndex = 1 };
-            sheetData.Append(headerRow);
-
-            uint columnIndex = 1;
-            foreach (DataColumn dataColumn in dataTable.Columns)
-            {
-                var cell = new Cell()
+                var sheets = workbookPart.Workbook.AppendChild(new Sheets());
+                var sheet = new Sheet()
                 {
-                    CellReference = GetCellReference(columnIndex, 1),
-                    DataType = CellValues.String,
-                    CellValue = new CellValue(dataColumn.ColumnName),
+                    Id = workbookPart.GetIdOfPart(worksheetPart),
+                    SheetId = 1,
+                    Name = contentTypeDefinition.DisplayName?.Length > 31
+                        ? contentTypeDefinition.DisplayName[..31]
+                        : contentTypeDefinition.DisplayName,
                 };
-                headerRow.Append(cell);
-                columnIndex++;
-            }
+                sheets.Append(sheet);
 
-            // Add data rows
-            uint rowIndex = 2;
-            foreach (DataRow dataRow in dataTable.Rows)
-            {
-                var row = new Row() { RowIndex = rowIndex };
-                sheetData.Append(row);
+                var sheetData = worksheetPart.Worksheet.GetFirstChild<SheetData>();
 
-                columnIndex = 1;
-                foreach (DataColumn dataColumn in dataTable.Columns)
+                // Write header row.
+                var headerRow = new Row() { RowIndex = 1 };
+                sheetData.Append(headerRow);
+
+                uint columnIndex = 1;
+                var columnNames = new List<string>();
+
+                foreach (var column in exportColumns)
                 {
-                    var cellValue = dataRow[dataColumn]?.ToString() ?? string.Empty;
                     var cell = new Cell()
                     {
-                        CellReference = GetCellReference(columnIndex, rowIndex),
+                        CellReference = GetCellReference(columnIndex, 1),
                         DataType = CellValues.String,
-                        CellValue = new CellValue(cellValue),
+                        CellValue = new CellValue(column.Name),
                     };
-                    row.Append(cell);
+                    headerRow.Append(cell);
+                    columnNames.Add(column.Name);
                     columnIndex++;
                 }
 
-                rowIndex++;
+                // Paginate content items and write each page directly.
+                uint rowIndex = 2;
+                var page = 0;
+
+                while (true)
+                {
+                    var pageQuery = BuildExportQuery(contentTypeId, partialExport, publishedOnly, latestOnly, allVersions, createdFrom, createdTo, modifiedFrom, modifiedTo, owners);
+
+                    var contentItems = await pageQuery
+                        .Skip(page * batchSize)
+                        .Take(batchSize)
+                        .ListAsync();
+
+                    var items = contentItems.ToList();
+
+                    if (items.Count == 0)
+                    {
+                        break;
+                    }
+
+                    // Create a temporary DataTable for this batch only.
+                    using var dataTable = new DataTable();
+
+                    foreach (var colName in columnNames)
+                    {
+                        dataTable.Columns.Add(colName);
+                    }
+
+                    foreach (var contentItem in items)
+                    {
+                        var mapContext = new ContentExportContext()
+                        {
+                            ContentItem = contentItem,
+                            ContentTypeDefinition = contentTypeDefinition,
+                            Row = dataTable.NewRow(),
+                        };
+
+                        await _contentImportManager.ExportAsync(mapContext);
+
+                        var row = new Row() { RowIndex = rowIndex };
+                        sheetData.Append(row);
+
+                        columnIndex = 1;
+
+                        foreach (var colName in columnNames)
+                        {
+                            var cellValue = mapContext.Row[colName]?.ToString() ?? string.Empty;
+                            var cell = new Cell()
+                            {
+                                CellReference = GetCellReference(columnIndex, rowIndex),
+                                DataType = CellValues.String,
+                                CellValue = new CellValue(cellValue),
+                            };
+                            row.Append(cell);
+                            columnIndex++;
+                        }
+
+                        rowIndex++;
+                    }
+
+                    page++;
+                }
+
+                workbookPart.Workbook.Save();
             }
 
-            workbookPart.Workbook.Save();
+            // Read back from temp file for download (file-based, not memory-based).
+            var downloadStream = new FileStream(tempFilePath, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize: 4096, options: FileOptions.DeleteOnClose);
+
+            return new FileStreamResult(downloadStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+            {
+                FileDownloadName = $"{contentTypeDefinition.Name}_Export.xlsx",
+            };
+        }
+        catch
+        {
+            if (System.IO.File.Exists(tempFilePath))
+            {
+                System.IO.File.Delete(tempFilePath);
+            }
+
+            throw;
+        }
+    }
+
+    [Admin("export/dashboard", "ExportDashboard")]
+    public async Task<IActionResult> ExportDashboard(
+        [ModelBinder(BinderType = typeof(ContentTransferEntryFilterEngineModelBinder), Name = "q")] QueryFilterResult<ContentTransferEntry> queryFilterResult,
+        PagerParameters pagerParameters)
+    {
+        if (!await _authorizationService.AuthorizeAsync(HttpContext.User, ContentTransferPermissions.ExportContentFromFile))
+        {
+            return Forbid();
         }
 
-        content.Seek(0, SeekOrigin.Begin);
+        var currentUserId = CurrentUserId();
 
-        return new FileStreamResult(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+        var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
+
+        var query = _session.Query<ContentTransferEntry, ContentTransferEntryIndex>(x =>
+            x.Direction == ContentTransferDirection.Export && x.Owner == currentUserId);
+
+        var totalCount = await query.CountAsync();
+
+        var entries = await query
+            .OrderByDescending(x => x.CreatedUtc)
+            .Skip(pager.GetStartIndex())
+            .Take(pager.PageSize)
+            .ListAsync();
+
+        var pagerShape = await _shapeFactory.PagerAsync(pager, (int)totalCount, new RouteData());
+
+        var summaries = new List<dynamic>();
+
+        foreach (var entry in entries)
         {
-            FileDownloadName = $"{contentTypeDefinition.Name}_Export.xlsx",
+            dynamic shape = await _entryDisplayManager.BuildDisplayAsync(entry, this, "SummaryAdmin");
+            shape.ContentTransferEntry = entry;
+
+            summaries.Add(shape);
+        }
+
+        var viewModel = new ListContentTransferEntriesViewModel()
+        {
+            Entries = summaries,
+            Pager = pagerShape,
+            Options = new ListContentTransferEntryOptions(),
         };
+
+        return View("ExportDashboard", viewModel);
+    }
+
+    [Admin("import/entries/{entryId}/process", "ProcessImport")]
+    public async Task<IActionResult> ProcessImport(string entryId, string returnUrl)
+    {
+        if (string.IsNullOrEmpty(entryId))
+        {
+            return NotFound();
+        }
+
+        var entry = await _session.Query<ContentTransferEntry, ContentTransferEntryIndex>(x =>
+                x.EntryId == entryId
+                && x.Direction == ContentTransferDirection.Import
+                && x.Owner == CurrentUserId())
+            .FirstOrDefaultAsync();
+
+        if (entry == null)
+        {
+            return NotFound();
+        }
+
+        if (!await _authorizationService.AuthorizeAsync(User, ContentTransferPermissions.ImportContentFromFile, (object)entry.ContentType))
+        {
+            return Forbid();
+        }
+
+        if (entry.Status != ContentTransferEntryStatus.New && entry.Status != ContentTransferEntryStatus.Processing)
+        {
+            await _notifier.WarningAsync(H["Only new or processing import files can be processed again."]);
+            return RedirectTo(returnUrl);
+        }
+
+        await TriggerImportProcessingAsync(entry.EntryId);
+        await _notifier.SuccessAsync(H["The import file will be processed in the background shortly."]);
+
+        return RedirectTo(returnUrl);
+    }
+
+    [Admin("import/entries/{entryId}/cancel", "CancelImport")]
+    public async Task<IActionResult> CancelImport(string entryId, string returnUrl)
+    {
+        if (string.IsNullOrEmpty(entryId))
+        {
+            return NotFound();
+        }
+
+        var entry = await _session.Query<ContentTransferEntry, ContentTransferEntryIndex>(x =>
+                x.EntryId == entryId
+                && x.Direction == ContentTransferDirection.Import
+                && x.Owner == CurrentUserId())
+            .FirstOrDefaultAsync();
+
+        if (entry == null)
+        {
+            return NotFound();
+        }
+
+        if (!await _authorizationService.AuthorizeAsync(User, ContentTransferPermissions.ImportContentFromFile, (object)entry.ContentType))
+        {
+            return Forbid();
+        }
+
+        if (entry.Status != ContentTransferEntryStatus.New && entry.Status != ContentTransferEntryStatus.Processing)
+        {
+            await _notifier.WarningAsync(H["Only new or processing import files can be canceled."]);
+            return RedirectTo(returnUrl);
+        }
+
+        var progressPart = entry.As<ImportFileProcessStatsPart>();
+        var importedCount = progressPart?.ImportedCount ?? 0;
+
+        entry.Status = importedCount > 0
+            ? ContentTransferEntryStatus.CanceledWithImportedRecords
+            : ContentTransferEntryStatus.Canceled;
+        entry.ProcessSaveUtc = _clock.UtcNow;
+        entry.CompletedUtc = _clock.UtcNow;
+
+        _session.Save(entry);
+        await _session.SaveChangesAsync();
+
+        await _notifier.SuccessAsync(importedCount > 0
+            ? H["The import was canceled after some records had already been imported."]
+            : H["The import was canceled before any records were imported."]);
+
+        return RedirectTo(returnUrl);
+    }
+
+    [Admin("export/dashboard/{entryId}/download", "DownloadExportFile")]
+    public async Task<IActionResult> DownloadExportFile(string entryId)
+    {
+        if (string.IsNullOrEmpty(entryId))
+        {
+            return NotFound();
+        }
+
+        if (!await _authorizationService.AuthorizeAsync(HttpContext.User, ContentTransferPermissions.ExportContentFromFile))
+        {
+            return Forbid();
+        }
+
+        var entry = await _session.Query<ContentTransferEntry, ContentTransferEntryIndex>(x =>
+            x.EntryId == entryId
+            && x.Direction == ContentTransferDirection.Export
+            && x.Owner == CurrentUserId())
+            .FirstOrDefaultAsync();
+
+        if (entry == null || entry.Status != ContentTransferEntryStatus.Completed)
+        {
+            return NotFound();
+        }
+
+        var fileInfo = await _contentTransferFileStore.GetFileInfoAsync(entry.StoredFileName);
+
+        if (fileInfo == null || fileInfo.Length == 0)
+        {
+            await _notifier.ErrorAsync(H["The export file is no longer available."]);
+            return RedirectToAction(nameof(ExportDashboard));
+        }
+
+        var stream = await _contentTransferFileStore.GetFileStreamAsync(fileInfo);
+
+        return new FileStreamResult(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+        {
+            FileDownloadName = entry.UploadedFileName ?? $"{entry.ContentType}_Export.xlsx",
+        };
+    }
+
+    [Admin("import/entries/{entryId}/download-errors", "DownloadErrors")]
+    public async Task<IActionResult> DownloadErrors(string entryId)
+    {
+        if (string.IsNullOrEmpty(entryId))
+        {
+            return NotFound();
+        }
+
+        if (!await _authorizationService.AuthorizeAsync(HttpContext.User, ContentTransferPermissions.ImportContentFromFile))
+        {
+            return Forbid();
+        }
+
+        var entry = await _session.Query<ContentTransferEntry, ContentTransferEntryIndex>(x =>
+            x.EntryId == entryId
+            && x.Direction == ContentTransferDirection.Import
+            && x.Owner == CurrentUserId())
+            .FirstOrDefaultAsync();
+
+        if (entry == null)
+        {
+            return NotFound();
+        }
+
+        var statsPart = entry.As<ImportFileProcessStatsPart>();
+
+        if (statsPart == null || statsPart.Errors == null || statsPart.Errors.Count == 0)
+        {
+            await _notifier.WarningAsync(H["No error records found for this entry."]);
+            return RedirectToAction(nameof(List));
+        }
+
+        var fileInfo = await _contentTransferFileStore.GetFileInfoAsync(entry.StoredFileName);
+
+        if (fileInfo == null || fileInfo.Length == 0)
+        {
+            await _notifier.ErrorAsync(H["The original import file is no longer available."]);
+            return RedirectToAction(nameof(List));
+        }
+
+        await using var sourceStream = await _contentTransferFileStore.GetFileStreamAsync(fileInfo);
+
+        using var sourceDoc = SpreadsheetDocument.Open(sourceStream, false);
+        var sourceWorkbookPart = sourceDoc.WorkbookPart;
+        var sourceSheet = sourceWorkbookPart.WorksheetParts.First().Worksheet;
+        var sourceSheetData = sourceSheet.GetFirstChild<SheetData>();
+        var sharedStringTable = sourceWorkbookPart.GetPartsOfType<SharedStringTablePart>().FirstOrDefault();
+
+        var tempFilePath = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.xlsx");
+        var outputStream = new FileStream(tempFilePath, FileMode.Create, FileAccess.ReadWrite, FileShare.None, 4096, FileOptions.DeleteOnClose | FileOptions.SequentialScan);
+        using (var destDoc = SpreadsheetDocument.Create(outputStream, SpreadsheetDocumentType.Workbook))
+        {
+            var destWorkbookPart = destDoc.AddWorkbookPart();
+            destWorkbookPart.Workbook = new Workbook();
+
+            if (sharedStringTable != null)
+            {
+                var destSharedStringPart = destWorkbookPart.AddNewPart<SharedStringTablePart>();
+                sharedStringTable.SharedStringTable.Save(destSharedStringPart);
+            }
+
+            var destWorksheetPart = destWorkbookPart.AddNewPart<WorksheetPart>();
+            destWorksheetPart.Worksheet = new Worksheet(new SheetData());
+
+            var sheets = destDoc.WorkbookPart.Workbook.AppendChild(new Sheets());
+            sheets.Append(new Sheet()
+            {
+                Id = destDoc.WorkbookPart.GetIdOfPart(destWorksheetPart),
+                SheetId = 1,
+                Name = "Errors",
+            });
+
+            var destSheetData = destWorksheetPart.Worksheet.GetFirstChild<SheetData>();
+            statsPart.ErrorMessages ??= [];
+
+            var sourceRowIndex = 0;
+            uint destRowIndex = 1;
+
+            foreach (var sourceRow in sourceSheetData.Elements<Row>())
+            {
+                if (sourceRowIndex == 0)
+                {
+                    destSheetData.Append(CloneRowWithErrorMessage(sourceRow, destRowIndex, S["Errors"]));
+                    destRowIndex++;
+                    sourceRowIndex++;
+                    continue;
+                }
+
+                if (statsPart.Errors.Contains(sourceRowIndex))
+                {
+                    statsPart.ErrorMessages.TryGetValue(sourceRowIndex, out var errorMessage);
+                    destSheetData.Append(CloneRowWithErrorMessage(sourceRow, destRowIndex, errorMessage));
+                    destRowIndex++;
+                }
+
+                sourceRowIndex++;
+            }
+
+            destWorkbookPart.Workbook.Save();
+        }
+
+        outputStream.Position = 0;
+
+        return new FileStreamResult(outputStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+        {
+            FileDownloadName = $"{entry.ContentType}_Errors.xlsx",
+        };
+    }
+
+    private Task TriggerImportProcessingAsync(string entryId)
+        => HttpBackgroundJob.ExecuteAfterEndOfRequestAsync(
+            $"content-transfer-import-{entryId}",
+            entryId,
+            static (scope, id) => BackgroundTasks.ImportFilesBackgroundTask.ProcessEntriesAsync(scope.ServiceProvider, CancellationToken.None, id));
+
+    private Task TriggerExportProcessingAsync(string entryId)
+        => HttpBackgroundJob.ExecuteAfterEndOfRequestAsync(
+            $"content-transfer-export-{entryId}",
+            entryId,
+            static (scope, id) => BackgroundTasks.ExportFilesBackgroundTask.ProcessEntriesAsync(scope.ServiceProvider, CancellationToken.None, id));
+
+    private static Row CloneRowWithErrorMessage(Row sourceRow, uint destinationRowIndex, string errorMessage)
+    {
+        var destinationRow = new Row() { RowIndex = destinationRowIndex };
+        uint columnIndex = 1;
+
+        foreach (var sourceCell in sourceRow.Elements<Cell>())
+        {
+            var clonedCell = (Cell)sourceCell.CloneNode(true);
+            clonedCell.CellReference = GetCellReference(columnIndex, destinationRowIndex);
+            destinationRow.Append(clonedCell);
+            columnIndex++;
+        }
+
+        destinationRow.Append(new Cell()
+        {
+            CellReference = GetCellReference(columnIndex, destinationRowIndex),
+            DataType = CellValues.String,
+            CellValue = new CellValue(errorMessage ?? string.Empty),
+        });
+
+        return destinationRow;
     }
 
     private static string GetCellReference(uint columnIndex, uint rowIndex)
@@ -660,6 +1073,84 @@ public class AdminController : Controller, IUpdateModel
         }
 
         return columnName + rowIndex;
+    }
+
+    private IQuery<ContentItem> BuildExportQuery(
+        string contentTypeId,
+        bool partialExport,
+        bool publishedOnly,
+        bool latestOnly,
+        bool allVersions,
+        DateTime? createdFrom,
+        DateTime? createdTo,
+        DateTime? modifiedFrom,
+        DateTime? modifiedTo,
+        string owners)
+    {
+        IQuery<ContentItem, ContentItemIndex> query;
+
+        if (allVersions)
+        {
+            query = _session.Query<ContentItem, ContentItemIndex>(x => x.ContentType == contentTypeId);
+        }
+        else if (latestOnly)
+        {
+            query = _session.Query<ContentItem, ContentItemIndex>(x => x.ContentType == contentTypeId && x.Latest);
+        }
+        else
+        {
+            // Default: published only.
+            query = _session.Query<ContentItem, ContentItemIndex>(x => x.ContentType == contentTypeId && x.Published);
+        }
+
+        if (partialExport)
+        {
+            if (createdFrom.HasValue)
+            {
+                query = query.Where(x => x.CreatedUtc >= createdFrom.Value);
+            }
+
+            if (createdTo.HasValue)
+            {
+                query = query.Where(x => x.CreatedUtc <= createdTo.Value);
+            }
+
+            if (modifiedFrom.HasValue)
+            {
+                query = query.Where(x => x.ModifiedUtc >= modifiedFrom.Value);
+            }
+
+            if (modifiedTo.HasValue)
+            {
+                query = query.Where(x => x.ModifiedUtc <= modifiedTo.Value);
+            }
+
+            if (!string.IsNullOrWhiteSpace(owners))
+            {
+                var ownerList = owners.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
+                if (ownerList.Length == 1)
+                {
+                    var owner = ownerList[0];
+                    query = query.Where(x => x.Owner == owner);
+                }
+                else if (ownerList.Length > 1)
+                {
+                    // Capture into locals (safe for expression trees, supports up to 5 owners).
+                    var o0 = ownerList[0];
+                    var o1 = ownerList.ElementAtOrDefault(1) ?? o0;
+                    var o2 = ownerList.ElementAtOrDefault(2) ?? o0;
+                    var o3 = ownerList.ElementAtOrDefault(3) ?? o0;
+                    var o4 = ownerList.ElementAtOrDefault(4) ?? o0;
+
+                    query = query.Where(x =>
+                        x.Owner == o0 || x.Owner == o1 || x.Owner == o2 ||
+                        x.Owner == o3 || x.Owner == o4);
+                }
+            }
+        }
+
+        return query.OrderBy(x => x.CreatedUtc);
     }
 
     private string CurrentUserId()

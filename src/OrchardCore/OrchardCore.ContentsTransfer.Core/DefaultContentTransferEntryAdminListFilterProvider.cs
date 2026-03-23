@@ -1,5 +1,3 @@
-using System;
-using System.Threading.Tasks;
 using OrchardCore.ContentsTransfer.Indexes;
 using OrchardCore.ContentsTransfer.Models;
 using YesSql;
@@ -7,7 +5,7 @@ using YesSql.Filters.Query;
 
 namespace OrchardCore.ContentsTransfer;
 
-public class DefaultContentTransferEntryAdminListFilterProvider : IContentTransferEntryAdminListFilterProvider
+public sealed class DefaultContentTransferEntryAdminListFilterProvider : IContentTransferEntryAdminListFilterProvider
 {
     public void Build(QueryEngineBuilder<ContentTransferEntry> builder)
     {

@@ -1,3 +1,14 @@
-@model ContentTransferEntryViewModel
+@model OrchardCore.DisplayManagement.Views.ShapeViewModel<ContentTransferEntryViewModel>
 @using OrchardCore.ContentsTransfer
 @using OrchardCore.Entities
+
+@{
+    var entry = Model.Value.ContentTransferEntry;
+}
+
+@if (entry.Direction == ContentTransferDirection.Export && entry.Status == ContentTransferEntryStatus.Completed)
+{
+    <a asp-action="DownloadExportFile" asp-controller="Admin" asp-route-area="@ContentTransferConstants.Feature.ModuleId" asp-route-entryId="@entry.EntryId" class="btn btn-sm btn-success">
+        <i class="fa-solid fa-download" aria-hidden="true"></i> @T["Download"]
+    </a>
+}

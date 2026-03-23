@@ -1,10 +1,8 @@
-using System;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace OrchardCore.ContentsTransfer;
 
-public class ContentTransferEntryFilterEngineModelBinder : IModelBinder
+public sealed class ContentTransferEntryFilterEngineModelBinder : IModelBinder
 {
     private readonly IContentTransferEntryAdminListFilterParser _parser;
 

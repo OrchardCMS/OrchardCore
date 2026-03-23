@@ -8,7 +8,7 @@ using OrchardCore.ContentManagement.Metadata.Models;
 
 namespace OrchardCore.ContentsTransfer.Handlers.Fields;
 
-public class DateFieldImportHandler : StandardFieldImportHandler
+public sealed class DateFieldImportHandler : StandardFieldImportHandler
 {
     protected readonly IStringLocalizer S;
 

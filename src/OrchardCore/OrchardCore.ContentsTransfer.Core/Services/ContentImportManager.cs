@@ -1,15 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
 using OrchardCore.Modules;
-using YesSql.Services;
 
 namespace OrchardCore.ContentsTransfer.Services;
 
-public class ContentImportManager : IContentImportManager
+public sealed class ContentImportManager : IContentImportManager
 {
     private readonly IContentImportHandlerResolver _contentImportHandlerResolver;
     private readonly ITypeActivatorFactory<ContentPart> _contentPartFactory;
@@ -37,7 +32,7 @@ public class ContentImportManager : IContentImportManager
 
     public async Task<IReadOnlyCollection<ImportColumn>> GetColumnsAsync(ImportContentContext context)
     {
-        ArgumentNullException.ThrowIfNull(context, nameof(context));
+        ArgumentNullException.ThrowIfNull(context);
 
         var contentItem = await _contentManager.NewAsync(context.ContentTypeDefinition.Name);
 

@@ -2,7 +2,7 @@ using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.ContentsTransfer;
 
-public class ContentTransferPermissions
+public sealed class ContentTransferPermissions
 {
     public static readonly Permission ListContentTransferEntries = new("ListContentTransferEntries", "List content transfer entries");
     public static readonly Permission DeleteContentTransferEntries = new("DeleteContentTransferEntries", "Delete content transfer entries", new[] { ListContentTransferEntries });

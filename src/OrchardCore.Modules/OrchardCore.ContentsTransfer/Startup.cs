@@ -1,7 +1,10 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using OrchardCore.BackgroundTasks;
+using OrchardCore.Autoroute.Models;
 using OrchardCore.ContentFields.Fields;
+using OrchardCore.ContentsTransfer.BackgroundTasks;
 using OrchardCore.ContentsTransfer.Drivers;
 using OrchardCore.ContentsTransfer.Handlers;
 using OrchardCore.ContentsTransfer.Handlers.Fields;
@@ -16,6 +19,7 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.FileStorage.FileSystem;
+using OrchardCore.Html.Models;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
@@ -24,7 +28,7 @@ using YesSql.Filters.Query;
 
 namespace OrchardCore.ContentsTransfer;
 
-public class Startup : StartupBase
+public sealed class Startup : StartupBase
 {
     private readonly IShellConfiguration _configuration;
 
@@ -38,8 +42,9 @@ public class Startup : StartupBase
         services.AddSingleton<IContentTransferFileStore>(serviceProvider =>
         {
             var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
+            var logger = serviceProvider.GetRequiredService<ILogger<FileSystemStore>>();
             var path = Path.Combine(ShellOptionConstants.DefaultAppDataPath, ShellOptionConstants.DefaultSitesPath, shellSettings.Name, "Temp");
-            var fileStore = new FileSystemStore(path);
+            var fileStore = new FileSystemStore(path, logger);
 
             return new ContentTransferFileStore(fileStore);
         });
@@ -57,6 +62,7 @@ public class Startup : StartupBase
         services.AddScoped<INavigationProvider, AdminMenu>();
         services.Configure<ContentImportOptions>(_configuration.GetSection("OrchardCore_ContentsTransfer"));
         services.AddSingleton<IBackgroundTask, ImportFilesBackgroundTask>();
+        services.AddSingleton<IBackgroundTask, ExportFilesBackgroundTask>();
 
         services.AddScoped<IContentTransferEntryAdminListQueryService, DefaultContentTransferEntryAdminListQueryService>();
         services.AddScoped<IDisplayDriver<ListContentTransferEntryOptions>, ListContentTransferEntryOptionsDisplayDriver>();
@@ -79,7 +85,7 @@ public class Startup : StartupBase
 }
 
 [RequireFeatures("OrchardCore.Title")]
-public class TitleStartup : StartupBase
+public sealed class TitleStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
@@ -87,8 +93,26 @@ public class TitleStartup : StartupBase
     }
 }
 
+[RequireFeatures("OrchardCore.Html")]
+public sealed class HtmlBodyStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddContentPartImportHandler<HtmlBodyPart, HtmlBodyPartContentImportHandler>();
+    }
+}
+
+[RequireFeatures("OrchardCore.Autoroute")]
+public sealed class AutorouteStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddContentPartImportHandler<AutoroutePart, AutoroutePartContentImportHandler>();
+    }
+}
+
 [RequireFeatures("OrchardCore.ContentFields")]
-public class ContentFieldsStartup : StartupBase
+public sealed class ContentFieldsStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
@@ -99,5 +123,14 @@ public class ContentFieldsStartup : StartupBase
         services.AddContentFieldImportHandler<TimeField, TimeFieldImportHandler>();
         services.AddContentFieldImportHandler<ContentPickerField, ContentPickerFieldImportHandler>();
         services.AddContentFieldImportHandler<BooleanField, BooleanFieldImportHandler>();
+    }
+}
+
+[RequireFeatures("OrchardCore.Notifications")]
+public sealed class NotificationsStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddScoped<IContentTransferNotificationHandler, ContentTransferNotificationHandler>();
     }
 }
