@@ -245,6 +245,8 @@ public sealed class MediaSlugifyStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.AddTransient<IConfigureOptions<MediaSlugifyOptions>, MediaSlugifyOptionsConfiguration>();
+
         // Media Name Normalizer
         services.AddScoped<IMediaNameNormalizerService, SlugifyMediaNameNormalizerService>();
     }
