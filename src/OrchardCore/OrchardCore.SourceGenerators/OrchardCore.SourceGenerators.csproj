@@ -19,5 +19,4 @@
     <None Include="_._" Pack="true" PackagePath="lib/netstandard2.0" />
   </ItemGroup>
 
-
 </Project>
