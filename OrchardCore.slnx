@@ -78,7 +78,7 @@
     <Project Path="src/OrchardCore.Modules/OrchardCore.ContentLocalization/OrchardCore.ContentLocalization.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.ContentPreview/OrchardCore.ContentPreview.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Contents/OrchardCore.Contents.csproj" />
-    <Project Path="src/OrchardCore.Modules/OrchardCore.ContentsTransfer/OrchardCore.ContentsTransfer.csproj" />
+    <Project Path="src/OrchardCore.Modules/OrchardCore.ContentTransfer/OrchardCore.ContentTransfer.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.ContentTypes/OrchardCore.ContentTypes.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.CustomSettings/OrchardCore.CustomSettings.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Demo/OrchardCore.Demo.csproj" />
@@ -198,8 +198,8 @@
     <Project Path="src/OrchardCore/OrchardCore.ContentPreview.Abstractions/OrchardCore.ContentPreview.Abstractions.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Contents.Core/OrchardCore.Contents.Core.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Contents.TagHelpers/OrchardCore.Contents.TagHelpers.csproj" />
-    <Project Path="src/OrchardCore/OrchardCore.ContentsTransfer.Abstractions/OrchardCore.ContentsTransfer.Abstractions.csproj" />
-    <Project Path="src/OrchardCore/OrchardCore.ContentsTransfer.Core/OrchardCore.ContentsTransfer.Core.csproj" />
+    <Project Path="src/OrchardCore/OrchardCore.ContentTransfer.Abstractions/OrchardCore.ContentTransfer.Abstractions.csproj" />
+    <Project Path="src/OrchardCore/OrchardCore.ContentTransfer.Core/OrchardCore.ContentTransfer.Core.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.ContentTypes.Abstractions/OrchardCore.ContentTypes.Abstractions.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Data.Abstractions/OrchardCore.Data.Abstractions.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Data.YesSql.Abstractions/OrchardCore.Data.YesSql.Abstractions.csproj" />

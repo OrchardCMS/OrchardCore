@@ -249,7 +249,8 @@ nav:
               - Audit Trail: reference/modules/AuditTrail/README.md
               - Auto Setup: reference/modules/AutoSetup/README.md
               - Features: reference/modules/Features/README.md
-              - Contents: reference/modules/Contents/README.md
+              - Content: reference/modules/Content/README.md
+              - Content Transfer: reference/modules/ContentTransfer/README.md
               - Configuration: reference/modules/Configuration/README.md
               - Cors: reference/modules/Cors/README.md
               - Custom Settings: reference/modules/CustomSettings/README.md
