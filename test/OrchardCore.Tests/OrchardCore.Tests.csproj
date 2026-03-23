@@ -56,8 +56,6 @@
     <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Apis.GraphQL.Abstractions\OrchardCore.Apis.GraphQL.Abstractions.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Apis.GraphQL.Client\OrchardCore.Apis.GraphQL.Client.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.SourceGenerators\OrchardCore.SourceGenerators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
-    <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.ContentsTransfer.Abstractions\OrchardCore.ContentsTransfer.Abstractions.csproj" />
-    <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.ContentsTransfer.Core\OrchardCore.ContentsTransfer.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>

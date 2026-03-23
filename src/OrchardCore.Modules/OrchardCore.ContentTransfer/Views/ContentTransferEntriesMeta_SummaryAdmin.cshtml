@@ -1,0 +1,94 @@
+@model OrchardCore.DisplayManagement.Views.ShapeViewModel<ContentTransferEntryViewModel>
+
+@using OrchardCore.ContentManagement
+@using System.Globalization
+@using OrchardCore.Entities
+
+@{
+    var entry = Model.Value.ContentTransferEntry;
+    var statsPart = entry.As<ImportFileProcessStatsPart>();
+    var errorCount = statsPart?.Errors?.Count ?? 0;
+    var successCount = statsPart?.ImportedCount ?? 0;
+}
+
+<span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@T["Content Type"]">
+    <i class="fa-regular fa-file text-secondary" aria-hidden="true"></i> @entry.ContentType
+</span>
+
+<span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@await DisplayAsync(await New.DateTime(Utc: entry.CreatedUtc, Format: "g"))">
+    <i class="fa-solid fa-calendar text-secondary" aria-hidden="true"></i>
+    <time datetime="@entry.CreatedUtc.ToString("yyyy-MM-ddTHH:mm:sszzz", CultureInfo.InvariantCulture)">
+        @await DisplayAsync(await New.Timespan(Utc: entry.CreatedUtc))
+    </time>
+</span>
+
+@{
+    var statusClasses = entry.Status switch
+    {
+        ContentTransferEntryStatus.New => "text-secondary-emphasis",
+        ContentTransferEntryStatus.Processing => "text-primary",
+        ContentTransferEntryStatus.Completed => "text-success",
+        ContentTransferEntryStatus.CompletedWithErrors => "text-warning-emphasis",
+        ContentTransferEntryStatus.Canceled => "text-secondary",
+        ContentTransferEntryStatus.CanceledWithImportedRecords => "text-warning",
+        ContentTransferEntryStatus.Failed => "text-danger",
+        _ => "text-body",
+    };
+}
+
+<span class="badge ta-badge font-weight-normal @statusClasses" data-bs-toggle="tooltip" title="@T["Status"]">
+    <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+    @switch (entry.Status)
+    {
+        case ContentTransferEntryStatus.New:
+            @T["New"]
+            break;
+        case ContentTransferEntryStatus.Processing:
+            @T["Processing"]
+            break;
+        case ContentTransferEntryStatus.Completed:
+            @T["Completed"]
+            break;
+        case ContentTransferEntryStatus.CompletedWithErrors:
+            @T["Completed with errors"]
+            break;
+        case ContentTransferEntryStatus.Canceled:
+            @T["Canceled"]
+            break;
+        case ContentTransferEntryStatus.CanceledWithImportedRecords:
+            @T["Canceled with imported records"]
+            break;
+        case ContentTransferEntryStatus.Failed:
+            @T["Failed"]
+            break;
+    }
+</span>
+
+@if (!string.IsNullOrEmpty(entry.Author))
+{
+    <user-display-name user-name="@(entry.Author)" title="@T["Author"].Value" display-type="SummaryAdmin" cache-id="user-display-name-author" />
+}
+
+@if (statsPart?.TotalProcessed > 0)
+{
+    <span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@T["Records imported successfully"]">
+        <i class="fa-solid fa-check text-success" aria-hidden="true"></i> @successCount
+    </span>
+
+    @if (errorCount > 0)
+    {
+        <span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@T["Records with errors"]">
+            <i class="fa-solid fa-xmark text-danger" aria-hidden="true"></i> @errorCount
+        </span>
+    }
+}
+
+@if (entry.ProcessSaveUtc.HasValue)
+{
+    <span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@T["Last processed at"]">
+        <i class="fa-solid fa-clock text-secondary" aria-hidden="true"></i>
+        <time datetime="@entry.ProcessSaveUtc.Value.ToString("yyyy-MM-ddTHH:mm:sszzz", CultureInfo.InvariantCulture)">
+            @await DisplayAsync(await New.Timespan(Utc: entry.ProcessSaveUtc.Value))
+        </time>
+    </span>
+}

@@ -1,0 +1,191 @@
+@using OrchardCore
+@using OrchardCore.ContentTransfer
+
+@model BulkExportViewModel
+
+<zone Name="Title"><h1>@RenderTitleSegments(T["Bulk Export"])</h1></zone>
+
+<div id="export-request-panel" class="collapse mb-3 @(Model.Exporter.ContentTypes.Count == 0 ? "show" : string.Empty)">
+    <div class="card text-bg-theme">
+        <div class="card-header fw-bold">@T["Export contents"]</div>
+        <div class="card-body">
+            @if (Model.Exporter.ContentTypes.Count == 0)
+            {
+                <div class="alert alert-info mb-0">
+                    @T["No content types are configured for bulk export. Enable bulk export in the content type settings."]
+                </div>
+            }
+            else
+            {
+                <form id="export-form" asp-action="DownloadExport" asp-controller="Admin" method="get">
+                    <div class="@Orchard.GetWrapperClasses()">
+                        <label for="Extension" class="@Orchard.GetLabelClasses()">@T["File type"]</label>
+                        <div class="@Orchard.GetEndClasses()">
+                            <select id="Extension" name="Extension" asp-items="Model.Exporter.Extensions" class="form-select">
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="@Orchard.GetWrapperClasses()">
+                        <label for="contentTypeId" class="@Orchard.GetLabelClasses()">@T["Content type"]</label>
+                        <div class="@Orchard.GetEndClasses()">
+                            <select id="contentTypeId" name="contentTypeId" asp-items="Model.Exporter.ContentTypes" class="form-select">
+                                <option value="">@T["Select type to export"]</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="@Orchard.GetWrapperClasses()">
+                        <label class="@Orchard.GetLabelClasses()">@T["Export scope"]</label>
+                        <div class="@Orchard.GetEndClasses()">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" id="exportAll" name="partialExport" type="radio" value="false" checked="@(!Model.Exporter.PartialExport ? "checked" : null)" />
+                                <label class="form-check-label" for="exportAll">@T["Export all published"]</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" id="exportPartial" name="partialExport" type="radio" value="true" checked="@(Model.Exporter.PartialExport ? "checked" : null)" />
+                                <label class="form-check-label" for="exportPartial">@T["Partial Export"]</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="partial-export-filters" style="display: @(Model.Exporter.PartialExport ? "block" : "none");">
+                        <hr />
+                        <h6 class="text-muted mb-3">@T["Filter Options"]</h6>
+
+                        <div class="@Orchard.GetWrapperClasses()">
+                            <label for="createdFrom" class="@Orchard.GetLabelClasses()">@T["Created from"]</label>
+                            <div class="@Orchard.GetEndClasses()">
+                                <input id="createdFrom" name="createdFrom" type="date" class="form-control" value="@Model.Exporter.CreatedFrom?.ToString("yyyy-MM-dd")" />
+                            </div>
+                        </div>
+                        <div class="@Orchard.GetWrapperClasses()">
+                            <label for="createdTo" class="@Orchard.GetLabelClasses()">@T["Created to"]</label>
+                            <div class="@Orchard.GetEndClasses()">
+                                <input id="createdTo" name="createdTo" type="date" class="form-control" value="@Model.Exporter.CreatedTo?.ToString("yyyy-MM-dd")" />
+                            </div>
+                        </div>
+
+                        <div class="@Orchard.GetWrapperClasses()">
+                            <label for="modifiedFrom" class="@Orchard.GetLabelClasses()">@T["Modified from"]</label>
+                            <div class="@Orchard.GetEndClasses()">
+                                <input id="modifiedFrom" name="modifiedFrom" type="date" class="form-control" value="@Model.Exporter.ModifiedFrom?.ToString("yyyy-MM-dd")" />
+                            </div>
+                        </div>
+                        <div class="@Orchard.GetWrapperClasses()">
+                            <label for="modifiedTo" class="@Orchard.GetLabelClasses()">@T["Modified to"]</label>
+                            <div class="@Orchard.GetEndClasses()">
+                                <input id="modifiedTo" name="modifiedTo" type="date" class="form-control" value="@Model.Exporter.ModifiedTo?.ToString("yyyy-MM-dd")" />
+                            </div>
+                        </div>
+
+                        <div class="@Orchard.GetWrapperClasses()">
+                            <label for="owners" class="@Orchard.GetLabelClasses()">@T["Owners"]</label>
+                            <div class="@Orchard.GetEndClasses()">
+                                <input id="owners" name="owners" type="text" class="form-control" value="@Model.Exporter.Owners" placeholder="@T["Comma-separated usernames"]" />
+                            </div>
+                        </div>
+
+                        <div class="@Orchard.GetWrapperClasses()">
+                            <div class="@Orchard.GetEndClasses(true)">
+                                <div class="form-check">
+                                    <input id="publishedOnly" name="publishedOnly" class="form-check-input" type="checkbox" checked="@(Model.Exporter.PublishedOnly ? "checked" : null)" />
+                                    <label for="publishedOnly" class="form-check-label">@T["Published only"]</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="@Orchard.GetWrapperClasses()">
+                            <div class="@Orchard.GetEndClasses(true)">
+                                <div class="form-check">
+                                    <input id="latestOnly" name="latestOnly" class="form-check-input" type="checkbox" checked="@(Model.Exporter.LatestOnly ? "checked" : null)" />
+                                    <label for="latestOnly" class="form-check-label">@T["Latest only"]</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="@Orchard.GetWrapperClasses()">
+                            <div class="@Orchard.GetEndClasses(true)">
+                                <div class="form-check">
+                                    <input id="allVersions" name="allVersions" class="form-check-input" type="checkbox" checked="@(Model.Exporter.AllVersions ? "checked" : null)" />
+                                    <label for="allVersions" class="form-check-label">@T["All versions"]</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="@Orchard.GetWrapperClasses()">
+                        <div class="@Orchard.GetEndClasses(true)">
+                            <button type="submit" id="export_contents_button" class="btn btn-primary" disabled>@T["Export Data"]</button>
+                        </div>
+                    </div>
+                </form>
+            }
+        </div>
+    </div>
+</div>
+
+<form asp-action="Export" asp-controller="Admin" method="post" id="items-form" autocomplete="off">
+    @await DisplayAsync(Model.List)
+</form>
+
+@if (Model.Exporter.ContentTypes.Count > 0)
+{
+    <script at="Foot">
+        document.addEventListener('DOMContentLoaded', function () {
+            var exportRequestPanel = document.getElementById('export-request-panel');
+            var actionBar = document.querySelector('#items-form .action-bar');
+            var contentTypeMenu = document.getElementById('contentTypeId');
+            var button = document.getElementById('export_contents_button');
+            var exportAllRadio = document.getElementById('exportAll');
+            var exportPartialRadio = document.getElementById('exportPartial');
+            var filtersPanel = document.getElementById('partial-export-filters');
+            var allVersionsCheck = document.getElementById('allVersions');
+            var publishedCheck = document.getElementById('publishedOnly');
+            var latestCheck = document.getElementById('latestOnly');
+
+            if (exportRequestPanel && actionBar) {
+                actionBar.insertAdjacentElement('afterend', exportRequestPanel);
+            }
+
+            contentTypeMenu.addEventListener('change', updateButton);
+            exportAllRadio.addEventListener('change', toggleFilters);
+            exportPartialRadio.addEventListener('change', toggleFilters);
+
+            allVersionsCheck.addEventListener('change', function () {
+                if (this.checked) {
+                    publishedCheck.checked = false;
+                    latestCheck.checked = false;
+                }
+            });
+
+            publishedCheck.addEventListener('change', function () {
+                if (this.checked) {
+                    allVersionsCheck.checked = false;
+                }
+            });
+
+            latestCheck.addEventListener('change', function () {
+                if (this.checked) {
+                    allVersionsCheck.checked = false;
+                }
+            });
+
+            function toggleFilters() {
+                filtersPanel.style.display = exportPartialRadio.checked ? '' : 'none';
+            }
+
+            function updateButton() {
+                if (!contentTypeMenu.value) {
+                    button.setAttribute('disabled', 'disabled');
+                }
+                else {
+                    button.removeAttribute('disabled');
+                }
+            }
+
+            updateButton();
+            toggleFilters();
+        }, false);
+    </script>
+}

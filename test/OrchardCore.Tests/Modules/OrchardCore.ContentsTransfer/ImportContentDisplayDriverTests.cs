@@ -3,7 +3,7 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
 
-namespace OrchardCore.Tests.Modules.OrchardCore.ContentsTransfer;
+namespace OrchardCore.Tests.Modules.OrchardCore.ContentTransfer;
 
 public class ExcelFileValidationTests
 {

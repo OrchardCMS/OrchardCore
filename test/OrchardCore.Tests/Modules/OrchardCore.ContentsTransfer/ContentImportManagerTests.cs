@@ -9,10 +9,10 @@ using OrchardCore.Autoroute.Models;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata.Models;
-using OrchardCore.ContentsTransfer;
-using OrchardCore.ContentsTransfer.Handlers;
-using OrchardCore.ContentsTransfer.Handlers.Fields;
-using OrchardCore.ContentsTransfer.Services;
+using OrchardCore.ContentTransfer;
+using OrchardCore.ContentTransfer.Handlers;
+using OrchardCore.ContentTransfer.Handlers.Fields;
+using OrchardCore.ContentTransfer.Services;
 using OrchardCore.Html.Models;
 using OrchardCore.Liquid.Models;
 using OrchardCore.Markdown.Fields;
@@ -21,7 +21,7 @@ using OrchardCore.Media.Fields;
 using OrchardCore.PublishLater.Models;
 using OrchardCore.Taxonomies.Fields;
 
-namespace OrchardCore.Tests.Modules.OrchardCore.ContentsTransfer;
+namespace OrchardCore.Tests.Modules.OrchardCore.ContentTransfer;
 
 public class ContentImportManagerTests
 {
