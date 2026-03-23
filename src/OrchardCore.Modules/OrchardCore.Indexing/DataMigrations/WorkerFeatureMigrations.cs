@@ -8,9 +8,7 @@ namespace OrchardCore.Indexing.DataMigrations;
 
 internal sealed class WorkerFeatureMigrations : DataMigration
 {
-#pragma warning disable CA1822 // Member can be static
-    public int Create()
-#pragma warning restore CA1822
+    public static int Create()
     {
         ShellScope.AddDeferredTask(async scope =>
         {
