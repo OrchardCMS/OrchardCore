@@ -3,6 +3,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.Title.Models;
 
 namespace OrchardCore.Tests.ContentManagement;
+
 public class ContentElementTests
 {
     [Fact]

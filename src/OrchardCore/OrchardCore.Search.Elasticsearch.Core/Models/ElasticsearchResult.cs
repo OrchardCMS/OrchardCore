@@ -1,6 +1,5 @@
 using System.Text.Json.Nodes;
 using Elastic.Clients.Elasticsearch;
-using Elastic.Clients.Elasticsearch.Aggregations;
 
 namespace OrchardCore.Search.Elasticsearch;
 

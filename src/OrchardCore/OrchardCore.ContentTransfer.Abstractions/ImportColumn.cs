@@ -1,5 +1,3 @@
-using System;
-
 namespace OrchardCore.ContentTransfer;
 
 public sealed class ImportColumn

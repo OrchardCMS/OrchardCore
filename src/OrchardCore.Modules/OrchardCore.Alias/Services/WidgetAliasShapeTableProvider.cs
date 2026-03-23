@@ -2,7 +2,6 @@ using OrchardCore.Alias.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
-using OrchardCore.DisplayManagement.Utilities;
 
 namespace OrchardCore.Alias.Services;
 

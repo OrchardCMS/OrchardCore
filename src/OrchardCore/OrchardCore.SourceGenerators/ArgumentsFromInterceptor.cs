@@ -1,9 +1,9 @@
+using System.Collections.Immutable;
+using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
-using System.Collections.Immutable;
-using System.Text;
 
 #nullable enable
 
@@ -78,7 +78,7 @@ public class ArgumentsFromInterceptor : IIncrementalGenerator
         }
 
         // Skip nested anonymous types for simplicity
-        if(typeArgument.GetMembers()
+        if (typeArgument.GetMembers()
             .OfType<IPropertySymbol>()
             .Where(p => p.DeclaredAccessibility == Accessibility.Public && !p.IsStatic && p.Type.IsAnonymousType)
             .Any())
@@ -169,10 +169,10 @@ public class ArgumentsFromInterceptor : IIncrementalGenerator
     private static void GenerateInterceptor(StringBuilder sb, InvocationInfo info)
     {
         var uniqueId = Guid.NewGuid().ToString("N");
-        
+
         sb.AppendLine($"    file static class Interceptor_{uniqueId}");
         sb.AppendLine("    {");
-        
+
         // Generate the static property names array
         sb.AppendLine($"        private static readonly string[] s_names =");
         sb.AppendLine("        [");
@@ -189,7 +189,7 @@ public class ArgumentsFromInterceptor : IIncrementalGenerator
         sb.AppendLine("        {");
 
         // To cast the anonymous object to the correct type, we can use a new instance of the anonymous type and rely on type inference
-        sb.AppendLine($"            var typedObject = InterceptorsHelper.Cast(anonymousObject, new {{ {string.Join(", ", info.Properties.Select(p => $"{p.Name} = ({p.TypeName})default")) } }});");
+        sb.AppendLine($"            var typedObject = InterceptorsHelper.Cast(anonymousObject, new {{ {string.Join(", ", info.Properties.Select(p => $"{p.Name} = ({p.TypeName})default"))} }});");
 
         // Create the values array - using direct initialization with typed property access
         sb.AppendLine($"            return global::OrchardCore.DisplayManagement.Arguments.From(");

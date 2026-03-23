@@ -37,7 +37,7 @@ internal sealed class PermissionMigrations : DataMigration
         var indexProfileManager = shellScope.ServiceProvider.GetRequiredService<IIndexProfileManager>();
         var roleService = shellScope.ServiceProvider.GetRequiredService<IRoleService>();
         var roleStore = shellScope.ServiceProvider.GetRequiredService<IRoleStore<IRole>>();
-        
+
         var allRoles = await roleService.GetRolesAsync();
         var rolesToUpdate = allRoles
             .Where(role => role is Role)
@@ -59,7 +59,7 @@ internal sealed class PermissionMigrations : DataMigration
                     claim.ClaimValue = IndexingPermissions.CreateDynamicPermission(indexProfile).Name;
                 }
             }
-            
+
             await roleStore.UpdateAsync(role, CancellationToken.None);
         }
     }

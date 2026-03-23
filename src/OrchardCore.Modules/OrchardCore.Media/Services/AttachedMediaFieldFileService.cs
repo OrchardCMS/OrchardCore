@@ -67,7 +67,7 @@ public class AttachedMediaFieldFileService
             {
                 await _fileStore.CopyFileAsync(path, finalFilePath);
             }
-            
+
             updatedPaths[i] = finalFilePath;
         }
 

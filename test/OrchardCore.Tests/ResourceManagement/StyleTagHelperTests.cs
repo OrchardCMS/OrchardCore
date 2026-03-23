@@ -1,11 +1,7 @@
 using AngleSharp;
 using AngleSharp.Dom;
 using AngleSharp.Html.Dom;
-using Microsoft.AspNetCore.Html;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using Microsoft.Extensions.Options;
 using OrchardCore.ResourceManagement;
 using OrchardCore.ResourceManagement.TagHelpers;
 using ResourceLocation = OrchardCore.ResourceManagement.ResourceLocation;

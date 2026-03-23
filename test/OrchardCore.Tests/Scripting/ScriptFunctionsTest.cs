@@ -3,6 +3,7 @@ using OrchardCore.Scripting;
 using OrchardCore.Tests.Apis.Context;
 
 namespace OrchardCore.Tests.Scripting;
+
 public class ScriptFunctionsTest
 {
     [Fact]

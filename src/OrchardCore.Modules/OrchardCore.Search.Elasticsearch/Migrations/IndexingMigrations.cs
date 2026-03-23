@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Nodes;
 using Dapper;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,7 +17,6 @@ using OrchardCore.Search.Elasticsearch.Core.Models;
 using OrchardCore.Search.Elasticsearch.Core.Services;
 using OrchardCore.Search.Elasticsearch.Models;
 using OrchardCore.Settings;
-using System.Diagnostics.CodeAnalysis;
 using YesSql;
 using YesSql.Sql;
 
@@ -224,7 +224,7 @@ internal sealed class IndexingMigrations : DataMigration
 
         return stepNumber;
     }
-    
+
     [SuppressMessage("Performance", "CA1822:Mark members as static")]
     public int UpdateFrom1()
     {
@@ -299,10 +299,10 @@ internal sealed class IndexingMigrations : DataMigration
             searchSettings = [];
             site.Properties[SearchSettings] = searchSettings;
         }
-        
+
         // If the site.Properties.SearchSettings.DefaultIndexProfileName setting is missing or empty, and there is at
         // least one Elasticsearch index in store, set it to the first index.
-        if (string.IsNullOrWhiteSpace((searchSettings[DefaultIndexProfileName] as JsonValue)?.GetValue<string>()) && 
+        if (string.IsNullOrWhiteSpace((searchSettings[DefaultIndexProfileName] as JsonValue)?.GetValue<string>()) &&
             (await GetElasticsearchIndexesAsync(indexProfileManager))?.OrderBy(index => index.CreatedUtc).FirstOrDefault() is { } indexProfile)
         {
             searchSettings[DefaultIndexProfileName] = indexProfile.Name;
