@@ -23,7 +23,7 @@ public sealed class ContentTransferSizeLimitAttribute : Attribute, IFilterFactor
         return new InternalContentTransferSizeFilter(options.Value.GetMaxAllowedSize());
     }
 
-    private class InternalContentTransferSizeFilter : IAuthorizationFilter, IRequestFormLimitsPolicy
+    private sealed class InternalContentTransferSizeFilter : IAuthorizationFilter, IRequestFormLimitsPolicy
     {
         private readonly long _maxFileSize;
 
@@ -55,7 +55,7 @@ public sealed class ContentTransferSizeLimitAttribute : Attribute, IFilterFactor
             }
 
             var effectiveRequestSizePolicy = context.FindEffectivePolicy<IRequestSizePolicy>();
-            if (effectiveRequestSizePolicy == null || effectiveRequestSizePolicy == this)
+            if (effectiveRequestSizePolicy == null)
             {
                 //  Will only be available when running OutOfProcess with Kestrel
                 var maxRequestBodySizeFeature = context.HttpContext.Features.Get<IHttpMaxRequestBodySizeFeature>();

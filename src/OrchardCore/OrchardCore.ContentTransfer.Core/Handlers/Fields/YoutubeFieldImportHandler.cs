@@ -8,7 +8,7 @@ namespace OrchardCore.ContentTransfer.Handlers.Fields;
 
 public sealed class YoutubeFieldImportHandler : ContentImportHandlerBase, IContentFieldImportHandler
 {
-    private readonly IStringLocalizer S;
+    internal readonly IStringLocalizer S;
 
     public YoutubeFieldImportHandler(IStringLocalizer<YoutubeFieldImportHandler> stringLocalizer)
     {

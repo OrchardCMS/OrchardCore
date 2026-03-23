@@ -7,7 +7,7 @@ namespace OrchardCore.ContentTransfer.Handlers.Fields;
 
 public sealed class MarkdownFieldImportHandler : StandardFieldImportHandler
 {
-    protected readonly IStringLocalizer S;
+    internal readonly IStringLocalizer S;
 
     public MarkdownFieldImportHandler(IStringLocalizer<MarkdownFieldImportHandler> stringLocalizer)
     {

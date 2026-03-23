@@ -8,7 +8,7 @@ namespace OrchardCore.ContentTransfer.Handlers.Fields;
 
 public sealed class MultiTextFieldImportHandler : StandardFieldImportHandler
 {
-    protected readonly IStringLocalizer S;
+    internal readonly IStringLocalizer S;
 
     public MultiTextFieldImportHandler(IStringLocalizer<MultiTextFieldImportHandler> stringLocalizer)
     {
