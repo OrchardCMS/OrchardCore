@@ -3,6 +3,7 @@ using GraphQL.Types;
 using OrchardCore.Spatial.Fields;
 
 namespace OrchardCore.Spatial.GraphQL;
+
 public class GeoPointGraphType : ScalarGraphType
 {
     public GeoPointGraphType()

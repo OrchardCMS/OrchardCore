@@ -17,17 +17,15 @@ public interface IContentImportHandler
 
     /// <summary>
     /// Imports data from a spreadsheet row into the content item.
-    /// Maps values from <see cref="ContentImportContext.Row"/> to <see cref="ContentImportContext.ContentItem"/>.
+    /// Maps values from <see cref="ContentImportContext.Row"/> to <see cref="ContentImportContext.Row"/>.
     /// </summary>
     /// <param name="content">The import context containing the data row and target content item.</param>
     Task ImportAsync(ContentImportContext content);
 
     /// <summary>
     /// Exports data from the content item into a spreadsheet row.
-    /// Maps values from <see cref="ContentExportContext.ContentItem"/> to <see cref="ContentExportContext.Row"/>.
+    /// Maps values from <see cref="ContentExportContext.Row"/> to <see cref="ContentExportContext.Row"/>.
     /// </summary>
     /// <param name="content">The export context containing the content item and target data row.</param>
     Task ExportAsync(ContentExportContext content);
-
-    // Task ValidateAsync(ValidateImportContext context);
 }
