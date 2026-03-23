@@ -70,6 +70,26 @@ Blog
 
 ## String Filters
 
+### `transliterate`
+Convert Unicode text (e.g. Greek, Cyrillic, Arabic, Chinese, etc.) into its closest ASCII/Latin representation using the <https://github.com/anyascii/anyascii> library.
+
+Input
+
+```liquid
+{{ "Ελληνικά" | transliterate }}
+```
+
+Output
+
+```text
+Ellinika
+```
+
+A common use case is chaining for non-Latin content — transliterate first, then slugify:
+```liquid
+{{ "This is some unicode text" | transliterate | slugify }}
+```
+
 ### `slugify`
 
 Convert a text into a string that can be used in a URL.
@@ -85,6 +105,23 @@ Output
 ```text
 this-is-some-text
 ```
+
+There is an option transliterate (by default true) which first translitera and slugify afterwards:
+
+```liquid
+{{ "Ελληνικά" | slugify }}
+```
+or 
+```liquid
+{{ "Ελληνικά" | slugify: transliterate: true}}
+```
+
+Output
+
+```text
+ellinika
+```
+
 
 ### `local`
 
