@@ -8,7 +8,7 @@ using OrchardCore.ContentsTransfer.Models;
 namespace OrchardCore.ContentsTransfer.Services;
 
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
-public class ContentTransferSizeLimitAttribute : Attribute, IFilterFactory, IOrderedFilter
+public sealed class ContentTransferSizeLimitAttribute : Attribute, IFilterFactory, IOrderedFilter
 {
     public int Order { get; set; } = 900;
 

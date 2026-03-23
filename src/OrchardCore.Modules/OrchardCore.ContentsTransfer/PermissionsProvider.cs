@@ -4,7 +4,7 @@ using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.ContentsTransfer;
 
-public class PermissionsProvider : IPermissionProvider
+public sealed class PermissionsProvider : IPermissionProvider
 {
     private readonly IContentDefinitionManager _contentDefinitionManager;
 

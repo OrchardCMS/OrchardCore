@@ -4,7 +4,7 @@ using OrchardCore.Entities;
 
 namespace OrchardCore.ContentsTransfer.Models;
 
-public class ImportContent : Entity
+public sealed class ImportContent : Entity
 {
     public string ContentTypeName { get; set; }
 

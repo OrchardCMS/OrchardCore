@@ -4,7 +4,7 @@ using YesSql.Sql;
 
 namespace OrchardCore.ContentsTransfer.Migrations;
 
-public class ContentTransferMigrations : DataMigration
+public sealed class ContentTransferMigrations : DataMigration
 {
     public async Task<int> CreateAsync()
     {
@@ -36,5 +36,22 @@ public class ContentTransferMigrations : DataMigration
         );
 
         return 1;
+    }
+
+    public async Task<int> UpdateFrom1Async()
+    {
+        await SchemaBuilder.AlterIndexTableAsync<ContentTransferEntryIndex>(table => table
+            .AddColumn<int>("Direction", column => column.NotNull().WithDefault(0))
+        );
+
+        await SchemaBuilder.AlterIndexTableAsync<ContentTransferEntryIndex>(table => table
+            .CreateIndex("IDX_ContentTransferEntryIndex_Direction",
+                "Direction",
+                "Status",
+                "CreatedUtc",
+                "DocumentId")
+        );
+
+        return 2;
     }
 }

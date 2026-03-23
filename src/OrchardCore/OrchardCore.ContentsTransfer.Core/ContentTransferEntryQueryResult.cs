@@ -1,8 +1,6 @@
-using System.Collections.Generic;
-
 namespace OrchardCore.ContentsTransfer;
 
-public class ContentTransferEntryQueryResult
+public sealed class ContentTransferEntryQueryResult
 {
     public IEnumerable<ContentTransferEntry> Entries { get; set; }
 

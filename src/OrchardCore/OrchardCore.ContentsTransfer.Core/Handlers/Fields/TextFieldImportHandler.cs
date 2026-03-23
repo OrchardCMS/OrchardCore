@@ -1,6 +1,4 @@
 using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.Settings;
@@ -9,7 +7,7 @@ using OrchardCore.ContentManagement.Metadata.Models;
 
 namespace OrchardCore.ContentsTransfer.Handlers.Fields;
 
-public class TextFieldImportHandler : StandardFieldImportHandler
+public sealed class TextFieldImportHandler : StandardFieldImportHandler
 {
     protected readonly IStringLocalizer S;
 

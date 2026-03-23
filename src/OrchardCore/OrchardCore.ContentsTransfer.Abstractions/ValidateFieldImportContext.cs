@@ -3,7 +3,7 @@ using OrchardCore.ContentManagement.Handlers;
 
 namespace OrchardCore.ContentsTransfer;
 
-public class ValidateFieldImportContext : ImportContentFieldContext
+public sealed class ValidateFieldImportContext : ImportContentFieldContext
 {
     public DataColumnCollection Columns { get; set; }
 

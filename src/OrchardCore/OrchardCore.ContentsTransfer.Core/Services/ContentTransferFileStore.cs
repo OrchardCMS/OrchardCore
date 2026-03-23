@@ -1,11 +1,8 @@
-using System.Collections.Generic;
-using System.IO;
-using System.Threading.Tasks;
 using OrchardCore.FileStorage;
 
 namespace OrchardCore.ContentsTransfer.Services;
 
-public class ContentTransferFileStore : IContentTransferFileStore
+public sealed class ContentTransferFileStore : IContentTransferFileStore
 {
     private readonly IFileStore _fileStore;
 

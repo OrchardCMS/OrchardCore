@@ -1,12 +1,10 @@
-using System;
-using System.Threading.Tasks;
 using OrchardCore.ContentsTransfer.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using YesSql;
 
 namespace OrchardCore.ContentsTransfer.Services;
 
-public class DefaultContentTransferEntryAdminListQueryService : IContentTransferEntryAdminListQueryService
+public sealed class DefaultContentTransferEntryAdminListQueryService : IContentTransferEntryAdminListQueryService
 {
     private readonly ISession _session;
     private readonly IServiceProvider _serviceProvider;

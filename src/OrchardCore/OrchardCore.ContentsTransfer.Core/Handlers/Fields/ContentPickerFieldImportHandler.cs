@@ -10,7 +10,7 @@ using YesSql.Services;
 
 namespace OrchardCore.ContentsTransfer.Handlers.Fields;
 
-public class ContentPickerFieldImportHandler : StandardFieldImportHandler
+public sealed class ContentPickerFieldImportHandler : StandardFieldImportHandler
 {
     private readonly Dictionary<string, IEnumerable<ContentItemIndex>> _data = new(StringComparer.OrdinalIgnoreCase);
     private readonly IContentDefinitionManager _contentDefinitionManager;

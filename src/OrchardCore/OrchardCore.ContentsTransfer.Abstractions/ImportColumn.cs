@@ -2,7 +2,7 @@ using System;
 
 namespace OrchardCore.ContentsTransfer;
 
-public class ImportColumn
+public sealed class ImportColumn
 {
     public string Name { get; set; }
 

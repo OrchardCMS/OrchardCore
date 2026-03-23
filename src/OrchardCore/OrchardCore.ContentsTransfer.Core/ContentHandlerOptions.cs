@@ -1,10 +1,8 @@
-using System;
-using System.Collections.Generic;
 using OrchardCore.ContentManagement;
 
 namespace OrchardCore.ContentsTransfer;
 
-public class ContentHandlerOptions
+public sealed class ContentHandlerOptions
 {
     public readonly Dictionary<Type, List<Type>> ContentParts = [];
 

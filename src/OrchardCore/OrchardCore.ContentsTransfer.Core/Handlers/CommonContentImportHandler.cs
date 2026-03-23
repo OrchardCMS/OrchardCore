@@ -1,16 +1,14 @@
-using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement;
 
 namespace OrchardCore.ContentsTransfer.Handlers;
 
-public class CommonContentImportHandler : ContentImportHandlerBase, IContentImportHandler
+public sealed class CommonContentImportHandler : ContentImportHandlerBase, IContentImportHandler
 {
     private readonly IContentItemIdGenerator _contentItemIdGenerator;
-    protected readonly IStringLocalizer S;
+
+    internal readonly IStringLocalizer S;
 
     public CommonContentImportHandler(
         IStringLocalizer<TitlePartContentImportHandler> stringLocalizer,

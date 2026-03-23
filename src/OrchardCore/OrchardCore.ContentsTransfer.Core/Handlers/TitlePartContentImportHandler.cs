@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement;
 using OrchardCore.Entities;
@@ -10,11 +6,16 @@ using OrchardCore.Title.Models;
 
 namespace OrchardCore.ContentsTransfer.Handlers;
 
-public class TitlePartContentImportHandler(IStringLocalizer<TitlePartContentImportHandler> stringLocalizer)
-    : ContentImportHandlerBase, IContentPartImportHandler
+public sealed class TitlePartContentImportHandler : ContentImportHandlerBase, IContentPartImportHandler
 {
-    protected readonly IStringLocalizer S = stringLocalizer;
+    internal readonly IStringLocalizer S;
+
     private ImportColumn _column;
+
+    public TitlePartContentImportHandler(IStringLocalizer<TitlePartContentImportHandler> stringLocalizer)
+    {
+        S = stringLocalizer;
+    }
 
     public IReadOnlyCollection<ImportColumn> GetColumns(ImportContentPartContext context)
     {

@@ -2,7 +2,7 @@ using YesSql.Filters.Query;
 
 namespace OrchardCore.ContentsTransfer.Services;
 
-public class DefaultContentTypeEntryAdminListFilterParser : IContentTransferEntryAdminListFilterParser
+public sealed class DefaultContentTypeEntryAdminListFilterParser : IContentTransferEntryAdminListFilterParser
 {
     private readonly IQueryParser<ContentTransferEntry> _parser;
 

@@ -1,9 +1,8 @@
-using System;
 using YesSql.Indexes;
 
 namespace OrchardCore.ContentsTransfer.Indexes;
 
-public class ContentTransferEntryIndex : MapIndex
+public sealed class ContentTransferEntryIndex : MapIndex
 {
     /// <summary>
     /// The logical identifier of the entry.
@@ -26,9 +25,14 @@ public class ContentTransferEntryIndex : MapIndex
     /// The user id of the user who created this entry.
     /// </summary>
     public string Owner { get; set; }
+
+    /// <summary>
+    /// The direction of the transfer (Import or Export).
+    /// </summary>
+    public ContentTransferDirection Direction { get; set; }
 }
 
-public class ContentTransferEntryIndexProvider : IndexProvider<ContentTransferEntry>
+public sealed class ContentTransferEntryIndexProvider : IndexProvider<ContentTransferEntry>
 {
     public override void Describe(DescribeContext<ContentTransferEntry> context)
     {
@@ -40,6 +44,7 @@ public class ContentTransferEntryIndexProvider : IndexProvider<ContentTransferEn
                 CreatedUtc = entry.CreatedUtc,
                 Owner = entry.Owner,
                 Status = entry.Status,
+                Direction = entry.Direction,
             });
     }
 }

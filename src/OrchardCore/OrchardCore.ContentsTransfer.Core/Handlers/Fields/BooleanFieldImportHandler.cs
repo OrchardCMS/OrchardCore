@@ -8,7 +8,7 @@ using OrchardCore.ContentManagement.Metadata.Models;
 
 namespace OrchardCore.ContentsTransfer.Handlers.Fields;
 
-public class BooleanFieldImportHandler : StandardFieldImportHandler
+public sealed class BooleanFieldImportHandler : StandardFieldImportHandler
 {
     protected readonly IStringLocalizer S;
 
