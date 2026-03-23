@@ -22,7 +22,7 @@
          BuildOutputTargetFolder would add a netstandard2.0/ subfolder, so we include the DLL explicitly. -->
     <None Include="$(BaseOutputPath)$(Configuration)/netstandard2.0/$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" />
     <!-- Empty placeholder required to suppress NuGet warning NU5128 (missing lib/<tfm> entry). -->
-    <None Include="_._" Pack="true" PackagePath="lib/netstandard2.0" />
+    <None Include="_._" Pack="true" PackagePath="lib/netstandard2.0" Visible="false" />
   </ItemGroup>
 
 </Project>
