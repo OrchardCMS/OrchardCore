@@ -7,7 +7,7 @@ namespace OrchardCore.ContentTransfer.Handlers.Fields;
 
 public sealed class TaxonomyFieldImportHandler : ContentImportHandlerBase, IContentFieldImportHandler
 {
-    private readonly IStringLocalizer S;
+    internal readonly IStringLocalizer S;
 
     public TaxonomyFieldImportHandler(IStringLocalizer<TaxonomyFieldImportHandler> stringLocalizer)
     {

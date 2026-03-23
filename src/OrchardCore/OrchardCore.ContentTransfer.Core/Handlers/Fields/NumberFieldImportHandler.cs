@@ -8,7 +8,7 @@ namespace OrchardCore.ContentTransfer.Handlers.Fields;
 
 public sealed class NumberFieldImportHandler : StandardFieldImportHandler
 {
-    private readonly IStringLocalizer S;
+    internal readonly IStringLocalizer S;
 
     public NumberFieldImportHandler(IStringLocalizer<NumberFieldImportHandler> stringLocalizer)
     {

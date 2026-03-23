@@ -7,7 +7,7 @@ namespace OrchardCore.ContentTransfer.Handlers.Fields;
 
 public sealed class HtmlFieldImportHandler : StandardFieldImportHandler
 {
-    protected readonly IStringLocalizer S;
+    internal readonly IStringLocalizer S;
 
     public HtmlFieldImportHandler(IStringLocalizer<HtmlFieldImportHandler> stringLocalizer)
     {

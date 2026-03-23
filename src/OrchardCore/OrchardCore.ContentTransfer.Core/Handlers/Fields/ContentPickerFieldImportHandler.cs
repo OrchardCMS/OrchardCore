@@ -15,7 +15,7 @@ public sealed class ContentPickerFieldImportHandler : StandardFieldImportHandler
     private readonly Dictionary<string, IEnumerable<ContentItemIndex>> _data = new(StringComparer.OrdinalIgnoreCase);
     private readonly IContentDefinitionManager _contentDefinitionManager;
     private readonly ISession _session;
-    protected readonly IStringLocalizer S;
+    internal readonly IStringLocalizer S;
 
     public ContentPickerFieldImportHandler(
         IStringLocalizer<ContentPickerFieldImportHandler> stringLocalizer,

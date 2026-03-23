@@ -7,7 +7,7 @@ namespace OrchardCore.ContentTransfer.Handlers.Fields;
 
 public sealed class MediaFieldImportHandler : ContentImportHandlerBase, IContentFieldImportHandler
 {
-    protected readonly IStringLocalizer S;
+    internal readonly IStringLocalizer S;
 
     public MediaFieldImportHandler(IStringLocalizer<MediaFieldImportHandler> stringLocalizer)
     {

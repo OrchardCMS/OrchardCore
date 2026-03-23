@@ -8,7 +8,7 @@ namespace OrchardCore.ContentTransfer.Handlers.Fields;
 
 public sealed class TimeFieldImportHandler : StandardFieldImportHandler
 {
-    protected readonly IStringLocalizer S;
+    internal readonly IStringLocalizer S;
 
     public TimeFieldImportHandler(IStringLocalizer<TimeFieldImportHandler> stringLocalizer)
     {

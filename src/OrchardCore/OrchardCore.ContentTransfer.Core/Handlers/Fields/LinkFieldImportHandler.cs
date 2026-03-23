@@ -9,7 +9,7 @@ namespace OrchardCore.ContentTransfer.Handlers.Fields;
 
 public sealed class LinkFieldImportHandler : ContentImportHandlerBase, IContentFieldImportHandler
 {
-    private readonly IStringLocalizer S;
+    internal readonly IStringLocalizer S;
 
     public LinkFieldImportHandler(IStringLocalizer<LinkFieldImportHandler> stringLocalizer)
     {

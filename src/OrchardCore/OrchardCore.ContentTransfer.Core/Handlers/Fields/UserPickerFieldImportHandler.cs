@@ -7,7 +7,7 @@ namespace OrchardCore.ContentTransfer.Handlers.Fields;
 
 public sealed class UserPickerFieldImportHandler : ContentImportHandlerBase, IContentFieldImportHandler
 {
-    private readonly IStringLocalizer S;
+    internal readonly IStringLocalizer S;
 
     public UserPickerFieldImportHandler(IStringLocalizer<UserPickerFieldImportHandler> stringLocalizer)
     {
