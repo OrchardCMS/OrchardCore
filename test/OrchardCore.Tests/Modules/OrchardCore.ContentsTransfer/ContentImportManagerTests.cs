@@ -3,6 +3,8 @@ using System.Text.Json.Nodes;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Moq;
+using OrchardCore.Alias.Models;
+using OrchardCore.ArchiveLater.Models;
 using OrchardCore.Autoroute.Models;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
@@ -12,6 +14,12 @@ using OrchardCore.ContentsTransfer.Handlers;
 using OrchardCore.ContentsTransfer.Handlers.Fields;
 using OrchardCore.ContentsTransfer.Services;
 using OrchardCore.Html.Models;
+using OrchardCore.Liquid.Models;
+using OrchardCore.Markdown.Fields;
+using OrchardCore.Markdown.Models;
+using OrchardCore.Media.Fields;
+using OrchardCore.PublishLater.Models;
+using OrchardCore.Taxonomies.Fields;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.ContentsTransfer;
 
@@ -1132,5 +1140,888 @@ public class AutoroutePartContentImportHandlerTests
         {
             ContentTypeDefinition = contentTypeDefinition,
         };
+    }
+}
+
+public class MarkdownBodyPartContentImportHandlerTests
+{
+    private readonly MarkdownBodyPartContentImportHandler _handler;
+
+    public MarkdownBodyPartContentImportHandlerTests()
+    {
+        _handler = new MarkdownBodyPartContentImportHandler(Mock.Of<IStringLocalizer<MarkdownBodyPartContentImportHandler>>());
+    }
+
+    [Fact]
+    public void GetColumns_ReturnsSingleMarkdownColumn()
+    {
+        var context = CreatePartContext("MarkdownBodyPart");
+
+        var columns = _handler.GetColumns(context);
+
+        var column = Assert.Single(columns);
+        Assert.Equal("MarkdownBodyPart_Markdown", column.Name);
+    }
+
+    [Fact]
+    public async Task ImportAsync_SetsMarkdownOnPart()
+    {
+        var contentItem = new ContentItem { ContentType = "Article" };
+        var dataTable = new DataTable();
+        dataTable.Columns.Add("MarkdownBodyPart_Markdown");
+        var row = dataTable.NewRow();
+        row["MarkdownBodyPart_Markdown"] = "## Hello World";
+        dataTable.Rows.Add(row);
+
+        var context = new ContentPartImportMapContext
+        {
+            ContentTypePartDefinition = CreateTypePartDefinition("MarkdownBodyPart"),
+            ContentItem = contentItem,
+            Columns = dataTable.Columns,
+            Row = row,
+        };
+
+        await _handler.ImportAsync(context);
+
+        var part = contentItem.As<MarkdownBodyPart>();
+        Assert.NotNull(part);
+        Assert.Equal("## Hello World", part.Markdown);
+    }
+
+    [Fact]
+    public async Task ExportAsync_WritesMarkdownToRow()
+    {
+        var contentItem = new ContentItem { ContentType = "Article" };
+        contentItem.Alter<MarkdownBodyPart>(p => p.Markdown = "## Exported");
+
+        _handler.GetColumns(CreatePartContext("MarkdownBodyPart"));
+
+        var dataTable = new DataTable();
+        dataTable.Columns.Add("MarkdownBodyPart_Markdown");
+        var row = dataTable.NewRow();
+
+        var exportContext = new ContentPartExportMapContext
+        {
+            ContentTypePartDefinition = CreateTypePartDefinition("MarkdownBodyPart"),
+            ContentPart = contentItem.As<MarkdownBodyPart>(),
+            ContentItem = contentItem,
+            Row = row,
+        };
+
+        await _handler.ExportAsync(exportContext);
+
+        Assert.Equal("## Exported", row["MarkdownBodyPart_Markdown"]?.ToString());
+    }
+
+    private static ImportContentPartContext CreatePartContext(string partName)
+        => new()
+        {
+            ContentTypePartDefinition = CreateTypePartDefinition(partName),
+        };
+
+    private static ContentTypePartDefinition CreateTypePartDefinition(string partName)
+    {
+        var contentTypeDefinition = new ContentTypeDefinition("Article", "Article");
+        var contentPartDefinition = new ContentPartDefinition(partName);
+
+        return new ContentTypePartDefinition(partName, contentPartDefinition, [])
+        {
+            ContentTypeDefinition = contentTypeDefinition,
+        };
+    }
+}
+
+public class AliasPartContentImportHandlerTests
+{
+    private readonly AliasPartContentImportHandler _handler;
+
+    public AliasPartContentImportHandlerTests()
+    {
+        _handler = new AliasPartContentImportHandler(Mock.Of<IStringLocalizer<AliasPartContentImportHandler>>());
+    }
+
+    [Fact]
+    public async Task ImportAsync_SetsAliasOnPart()
+    {
+        var contentItem = new ContentItem { ContentType = "Article" };
+        var dataTable = new DataTable();
+        dataTable.Columns.Add("AliasPart_Alias");
+        var row = dataTable.NewRow();
+        row["AliasPart_Alias"] = "my-alias";
+        dataTable.Rows.Add(row);
+
+        var context = new ContentPartImportMapContext
+        {
+            ContentTypePartDefinition = CreateTypePartDefinition("AliasPart"),
+            ContentItem = contentItem,
+            Columns = dataTable.Columns,
+            Row = row,
+        };
+
+        await _handler.ImportAsync(context);
+
+        var part = contentItem.As<AliasPart>();
+        Assert.NotNull(part);
+        Assert.Equal("my-alias", part.Alias);
+    }
+
+    [Fact]
+    public async Task ExportAsync_WritesAliasToRow()
+    {
+        var contentItem = new ContentItem { ContentType = "Article" };
+        contentItem.Alter<AliasPart>(p => p.Alias = "exported-alias");
+
+        _handler.GetColumns(CreatePartContext("AliasPart"));
+
+        var dataTable = new DataTable();
+        dataTable.Columns.Add("AliasPart_Alias");
+        var row = dataTable.NewRow();
+
+        var exportContext = new ContentPartExportMapContext
+        {
+            ContentTypePartDefinition = CreateTypePartDefinition("AliasPart"),
+            ContentPart = contentItem.As<AliasPart>(),
+            ContentItem = contentItem,
+            Row = row,
+        };
+
+        await _handler.ExportAsync(exportContext);
+
+        Assert.Equal("exported-alias", row["AliasPart_Alias"]?.ToString());
+    }
+
+    private static ImportContentPartContext CreatePartContext(string partName)
+        => new()
+        {
+            ContentTypePartDefinition = CreateTypePartDefinition(partName),
+        };
+
+    private static ContentTypePartDefinition CreateTypePartDefinition(string partName)
+    {
+        var contentTypeDefinition = new ContentTypeDefinition("Article", "Article");
+        var contentPartDefinition = new ContentPartDefinition(partName);
+
+        return new ContentTypePartDefinition(partName, contentPartDefinition, [])
+        {
+            ContentTypeDefinition = contentTypeDefinition,
+        };
+    }
+}
+
+public class PublishLaterPartContentImportHandlerTests
+{
+    private readonly PublishLaterPartContentImportHandler _handler;
+
+    public PublishLaterPartContentImportHandlerTests()
+    {
+        _handler = new PublishLaterPartContentImportHandler(Mock.Of<IStringLocalizer<PublishLaterPartContentImportHandler>>());
+    }
+
+    [Fact]
+    public async Task ImportAsync_SetsScheduledPublishUtcOnPart()
+    {
+        var contentItem = new ContentItem { ContentType = "Article" };
+        var dataTable = new DataTable();
+        dataTable.Columns.Add("PublishLaterPart_ScheduledPublishUtc");
+        var row = dataTable.NewRow();
+        row["PublishLaterPart_ScheduledPublishUtc"] = "2026-03-23T10:30:00Z";
+        dataTable.Rows.Add(row);
+
+        var context = new ContentPartImportMapContext
+        {
+            ContentTypePartDefinition = CreateTypePartDefinition("PublishLaterPart"),
+            ContentItem = contentItem,
+            Columns = dataTable.Columns,
+            Row = row,
+        };
+
+        await _handler.ImportAsync(context);
+
+        var part = contentItem.As<PublishLaterPart>();
+        Assert.NotNull(part);
+        Assert.NotNull(part.ScheduledPublishUtc);
+    }
+
+    [Fact]
+    public async Task ExportAsync_WritesScheduledPublishUtcToRow()
+    {
+        var contentItem = new ContentItem { ContentType = "Article" };
+        var value = new DateTime(2026, 3, 23, 10, 30, 0, DateTimeKind.Utc);
+        contentItem.Alter<PublishLaterPart>(p => p.ScheduledPublishUtc = value);
+
+        _handler.GetColumns(CreatePartContext("PublishLaterPart"));
+
+        var dataTable = new DataTable();
+        dataTable.Columns.Add("PublishLaterPart_ScheduledPublishUtc");
+        var row = dataTable.NewRow();
+
+        var exportContext = new ContentPartExportMapContext
+        {
+            ContentTypePartDefinition = CreateTypePartDefinition("PublishLaterPart"),
+            ContentPart = contentItem.As<PublishLaterPart>(),
+            ContentItem = contentItem,
+            Row = row,
+        };
+
+        await _handler.ExportAsync(exportContext);
+
+        Assert.Equal(value.ToString(), row["PublishLaterPart_ScheduledPublishUtc"]?.ToString());
+    }
+
+    private static ImportContentPartContext CreatePartContext(string partName)
+        => new()
+        {
+            ContentTypePartDefinition = CreateTypePartDefinition(partName),
+        };
+
+    private static ContentTypePartDefinition CreateTypePartDefinition(string partName)
+    {
+        var contentTypeDefinition = new ContentTypeDefinition("Article", "Article");
+        var contentPartDefinition = new ContentPartDefinition(partName);
+
+        return new ContentTypePartDefinition(partName, contentPartDefinition, [])
+        {
+            ContentTypeDefinition = contentTypeDefinition,
+        };
+    }
+}
+
+public class MarkdownFieldImportHandlerTests
+{
+    private readonly MarkdownFieldImportHandler _handler;
+
+    public MarkdownFieldImportHandlerTests()
+    {
+        _handler = new MarkdownFieldImportHandler(Mock.Of<IStringLocalizer<MarkdownFieldImportHandler>>());
+    }
+
+    [Fact]
+    public async Task ImportAsync_SetsMarkdownFieldValue()
+    {
+        var part = new ContentPart();
+        var dataTable = new DataTable();
+        dataTable.Columns.Add("MyPart_MyField_Markdown");
+        var row = dataTable.NewRow();
+        row["MyPart_MyField_Markdown"] = "## Markdown";
+        dataTable.Rows.Add(row);
+
+        await _handler.ImportAsync(CreateFieldImportContext("MyPart", "MyField", part, dataTable, row));
+
+        var field = part.Get<MarkdownField>("MyField");
+        Assert.NotNull(field);
+        Assert.Equal("## Markdown", field.Markdown);
+    }
+
+    [Fact]
+    public async Task ExportAsync_ReturnsMarkdownFieldValue()
+    {
+        var part = new ContentPart();
+        part.Alter<MarkdownField>("MyField", f => f.Markdown = "## Exported Markdown");
+
+        var dataTable = new DataTable();
+        dataTable.Columns.Add("MyPart_MyField_Markdown");
+        var row = dataTable.NewRow();
+
+        await _handler.ExportAsync(CreateFieldExportContext("MyPart", "MyField", part, row));
+
+        Assert.Equal("## Exported Markdown", row["MyPart_MyField_Markdown"]?.ToString());
+    }
+
+    private static ContentFieldImportMapContext CreateFieldImportContext(string partName, string fieldName, ContentPart part, DataTable dataTable, DataRow row)
+        => new()
+        {
+            PartName = partName,
+            ContentPartFieldDefinition = new ContentPartFieldDefinition(new ContentFieldDefinition(nameof(MarkdownField)), fieldName, []),
+            ContentPart = part,
+            ContentItem = new ContentItem(),
+            Columns = dataTable.Columns,
+            Row = row,
+        };
+
+    private static ContentFieldExportMapContext CreateFieldExportContext(string partName, string fieldName, ContentPart part, DataRow row)
+        => new()
+        {
+            PartName = partName,
+            ContentPartFieldDefinition = new ContentPartFieldDefinition(new ContentFieldDefinition(nameof(MarkdownField)), fieldName, []),
+            ContentPart = part,
+            ContentField = part.Get<MarkdownField>(fieldName) ?? new MarkdownField(),
+            ContentItem = new ContentItem(),
+            Row = row,
+        };
+}
+
+public class HtmlFieldImportHandlerTests
+{
+    private readonly HtmlFieldImportHandler _handler;
+
+    public HtmlFieldImportHandlerTests()
+    {
+        _handler = new HtmlFieldImportHandler(Mock.Of<IStringLocalizer<HtmlFieldImportHandler>>());
+    }
+
+    [Fact]
+    public async Task ImportAsync_SetsHtmlFieldValue()
+    {
+        var part = new ContentPart();
+        var dataTable = new DataTable();
+        dataTable.Columns.Add("MyPart_MyField_Html");
+        var row = dataTable.NewRow();
+        row["MyPart_MyField_Html"] = "<p>Hello</p>";
+        dataTable.Rows.Add(row);
+
+        await _handler.ImportAsync(CreateFieldImportContext("MyPart", "MyField", part, dataTable, row));
+
+        var field = part.Get<HtmlField>("MyField");
+        Assert.NotNull(field);
+        Assert.Equal("<p>Hello</p>", field.Html);
+    }
+
+    [Fact]
+    public async Task ExportAsync_ReturnsHtmlFieldValue()
+    {
+        var part = new ContentPart();
+        part.Alter<HtmlField>("MyField", f => f.Html = "<p>Exported</p>");
+
+        var dataTable = new DataTable();
+        dataTable.Columns.Add("MyPart_MyField_Html");
+        var row = dataTable.NewRow();
+
+        await _handler.ExportAsync(CreateFieldExportContext("MyPart", "MyField", part, row));
+
+        Assert.Equal("<p>Exported</p>", row["MyPart_MyField_Html"]?.ToString());
+    }
+
+    private static ContentFieldImportMapContext CreateFieldImportContext(string partName, string fieldName, ContentPart part, DataTable dataTable, DataRow row)
+        => new()
+        {
+            PartName = partName,
+            ContentPartFieldDefinition = new ContentPartFieldDefinition(new ContentFieldDefinition(nameof(HtmlField)), fieldName, []),
+            ContentPart = part,
+            ContentItem = new ContentItem(),
+            Columns = dataTable.Columns,
+            Row = row,
+        };
+
+    private static ContentFieldExportMapContext CreateFieldExportContext(string partName, string fieldName, ContentPart part, DataRow row)
+        => new()
+        {
+            PartName = partName,
+            ContentPartFieldDefinition = new ContentPartFieldDefinition(new ContentFieldDefinition(nameof(HtmlField)), fieldName, []),
+            ContentPart = part,
+            ContentField = part.Get<HtmlField>(fieldName) ?? new HtmlField(),
+            ContentItem = new ContentItem(),
+            Row = row,
+        };
+}
+
+public class MultiTextFieldImportHandlerTests
+{
+    private readonly MultiTextFieldImportHandler _handler;
+
+    public MultiTextFieldImportHandlerTests()
+    {
+        _handler = new MultiTextFieldImportHandler(Mock.Of<IStringLocalizer<MultiTextFieldImportHandler>>());
+    }
+
+    [Fact]
+    public async Task ImportAsync_SplitsPipeSeparatedValues()
+    {
+        var part = new ContentPart();
+        var dataTable = new DataTable();
+        dataTable.Columns.Add("MyPart_MyField_Values");
+        var row = dataTable.NewRow();
+        row["MyPart_MyField_Values"] = "One|Two|Three";
+        dataTable.Rows.Add(row);
+
+        await _handler.ImportAsync(CreateFieldImportContext("MyPart", "MyField", part, dataTable, row));
+
+        var field = part.Get<MultiTextField>("MyField");
+        Assert.NotNull(field);
+        Assert.Equal(["One", "Two", "Three"], field.Values);
+    }
+
+    [Fact]
+    public async Task ExportAsync_JoinsValuesWithPipe()
+    {
+        var part = new ContentPart();
+        part.Alter<MultiTextField>("MyField", f => f.Values = ["One", "Two"]);
+
+        var dataTable = new DataTable();
+        dataTable.Columns.Add("MyPart_MyField_Values");
+        var row = dataTable.NewRow();
+
+        await _handler.ExportAsync(CreateFieldExportContext("MyPart", "MyField", part, row));
+
+        Assert.Equal("One|Two", row["MyPart_MyField_Values"]?.ToString());
+    }
+
+    private static ContentFieldImportMapContext CreateFieldImportContext(string partName, string fieldName, ContentPart part, DataTable dataTable, DataRow row)
+        => new()
+        {
+            PartName = partName,
+            ContentPartFieldDefinition = new ContentPartFieldDefinition(new ContentFieldDefinition(nameof(MultiTextField)), fieldName, []),
+            ContentPart = part,
+            ContentItem = new ContentItem(),
+            Columns = dataTable.Columns,
+            Row = row,
+        };
+
+    private static ContentFieldExportMapContext CreateFieldExportContext(string partName, string fieldName, ContentPart part, DataRow row)
+        => new()
+        {
+            PartName = partName,
+            ContentPartFieldDefinition = new ContentPartFieldDefinition(new ContentFieldDefinition(nameof(MultiTextField)), fieldName, []),
+            ContentPart = part,
+            ContentField = part.Get<MultiTextField>(fieldName) ?? new MultiTextField(),
+            ContentItem = new ContentItem(),
+            Row = row,
+        };
+}
+
+public class MediaFieldImportHandlerTests
+{
+    private readonly MediaFieldImportHandler _handler;
+
+    public MediaFieldImportHandlerTests()
+    {
+        _handler = new MediaFieldImportHandler(Mock.Of<IStringLocalizer<MediaFieldImportHandler>>());
+    }
+
+    [Fact]
+    public void GetColumns_ReturnsExportOnlyPathsColumn()
+    {
+        var context = new ImportContentFieldContext
+        {
+            PartName = "GalleryPart",
+            ContentPartFieldDefinition = new ContentPartFieldDefinition(new ContentFieldDefinition(nameof(MediaField)), "Images", []),
+            ContentPart = new ContentPart(),
+            ContentItem = new ContentItem(),
+        };
+
+        var column = Assert.Single(_handler.GetColumns(context));
+        Assert.Equal("GalleryPart_Images_Paths", column.Name);
+        Assert.Equal(ImportColumnType.ExportOnly, column.Type);
+    }
+
+    [Fact]
+    public async Task ImportAsync_DoesNothing()
+    {
+        var part = new ContentPart();
+        var dataTable = new DataTable();
+        dataTable.Columns.Add("GalleryPart_Images_Paths");
+        var row = dataTable.NewRow();
+        row["GalleryPart_Images_Paths"] = "media/a.jpg,media/b.jpg";
+        dataTable.Rows.Add(row);
+
+        await _handler.ImportAsync(new ContentFieldImportMapContext
+        {
+            PartName = "GalleryPart",
+            ContentPartFieldDefinition = new ContentPartFieldDefinition(new ContentFieldDefinition(nameof(MediaField)), "Images", []),
+            ContentPart = part,
+            ContentItem = new ContentItem(),
+            Columns = dataTable.Columns,
+            Row = row,
+        });
+
+        Assert.Null(part.Get<MediaField>("Images"));
+    }
+
+    [Fact]
+    public async Task ExportAsync_JoinsMediaPathsWithComma()
+    {
+        var part = new ContentPart();
+        part.Alter<MediaField>("Images", field => field.Paths = ["media/a.jpg", "media/b.jpg"]);
+
+        var dataTable = new DataTable();
+        dataTable.Columns.Add("GalleryPart_Images_Paths");
+        var row = dataTable.NewRow();
+
+        await _handler.ExportAsync(new ContentFieldExportMapContext
+        {
+            PartName = "GalleryPart",
+            ContentPartFieldDefinition = new ContentPartFieldDefinition(new ContentFieldDefinition(nameof(MediaField)), "Images", []),
+            ContentPart = part,
+            ContentField = part.Get<MediaField>("Images"),
+            ContentItem = new ContentItem(),
+            Row = row,
+        });
+
+        Assert.Equal("media/a.jpg,media/b.jpg", row["GalleryPart_Images_Paths"]?.ToString());
+    }
+}
+
+public class ArchiveLaterPartContentImportHandlerTests
+{
+    private readonly ArchiveLaterPartContentImportHandler _handler;
+
+    public ArchiveLaterPartContentImportHandlerTests()
+    {
+        _handler = new ArchiveLaterPartContentImportHandler(Mock.Of<IStringLocalizer<ArchiveLaterPartContentImportHandler>>());
+    }
+
+    [Fact]
+    public async Task ImportAsync_SetsScheduledArchiveUtcOnPart()
+    {
+        var contentItem = new ContentItem { ContentType = "Article" };
+        var dataTable = new DataTable();
+        dataTable.Columns.Add("ArchiveLaterPart_ScheduledArchiveUtc");
+        var row = dataTable.NewRow();
+        row["ArchiveLaterPart_ScheduledArchiveUtc"] = "2026-03-24T10:30:00Z";
+        dataTable.Rows.Add(row);
+
+        await _handler.ImportAsync(new ContentPartImportMapContext
+        {
+            ContentTypePartDefinition = CreateTypePartDefinition("ArchiveLaterPart"),
+            ContentItem = contentItem,
+            Columns = dataTable.Columns,
+            Row = row,
+        });
+
+        Assert.NotNull(contentItem.As<ArchiveLaterPart>()?.ScheduledArchiveUtc);
+    }
+
+    [Fact]
+    public async Task ExportAsync_WritesScheduledArchiveUtcToRow()
+    {
+        var value = new DateTime(2026, 3, 24, 10, 30, 0, DateTimeKind.Utc);
+        var contentItem = new ContentItem { ContentType = "Article" };
+        contentItem.Alter<ArchiveLaterPart>(p => p.ScheduledArchiveUtc = value);
+
+        _handler.GetColumns(new ImportContentPartContext { ContentTypePartDefinition = CreateTypePartDefinition("ArchiveLaterPart") });
+
+        var dataTable = new DataTable();
+        dataTable.Columns.Add("ArchiveLaterPart_ScheduledArchiveUtc");
+        var row = dataTable.NewRow();
+
+        await _handler.ExportAsync(new ContentPartExportMapContext
+        {
+            ContentTypePartDefinition = CreateTypePartDefinition("ArchiveLaterPart"),
+            ContentPart = contentItem.As<ArchiveLaterPart>(),
+            ContentItem = contentItem,
+            Row = row,
+        });
+
+        Assert.Equal(value.ToString(), row["ArchiveLaterPart_ScheduledArchiveUtc"]?.ToString());
+    }
+
+    private static ContentTypePartDefinition CreateTypePartDefinition(string partName)
+    {
+        var contentTypeDefinition = new ContentTypeDefinition("Article", "Article");
+        var contentPartDefinition = new ContentPartDefinition(partName);
+
+        return new ContentTypePartDefinition(partName, contentPartDefinition, [])
+        {
+            ContentTypeDefinition = contentTypeDefinition,
+        };
+    }
+}
+
+public class LiquidPartContentImportHandlerTests
+{
+    private readonly LiquidPartContentImportHandler _handler;
+
+    public LiquidPartContentImportHandlerTests()
+    {
+        _handler = new LiquidPartContentImportHandler(Mock.Of<IStringLocalizer<LiquidPartContentImportHandler>>());
+    }
+
+    [Fact]
+    public async Task ImportAsync_SetsLiquidOnPart()
+    {
+        var contentItem = new ContentItem { ContentType = "Widget" };
+        var dataTable = new DataTable();
+        dataTable.Columns.Add("LiquidPart_Liquid");
+        var row = dataTable.NewRow();
+        row["LiquidPart_Liquid"] = "{{ Model.ContentItem.DisplayText }}";
+        dataTable.Rows.Add(row);
+
+        await _handler.ImportAsync(new ContentPartImportMapContext
+        {
+            ContentTypePartDefinition = CreateTypePartDefinition("LiquidPart"),
+            ContentItem = contentItem,
+            Columns = dataTable.Columns,
+            Row = row,
+        });
+
+        Assert.Equal("{{ Model.ContentItem.DisplayText }}", contentItem.As<LiquidPart>()?.Liquid);
+    }
+
+    [Fact]
+    public async Task ExportAsync_WritesLiquidToRow()
+    {
+        var contentItem = new ContentItem { ContentType = "Widget" };
+        contentItem.Alter<LiquidPart>(p => p.Liquid = "{{ Model.ContentItem.DisplayText }}");
+
+        _handler.GetColumns(new ImportContentPartContext { ContentTypePartDefinition = CreateTypePartDefinition("LiquidPart") });
+
+        var dataTable = new DataTable();
+        dataTable.Columns.Add("LiquidPart_Liquid");
+        var row = dataTable.NewRow();
+
+        await _handler.ExportAsync(new ContentPartExportMapContext
+        {
+            ContentTypePartDefinition = CreateTypePartDefinition("LiquidPart"),
+            ContentPart = contentItem.As<LiquidPart>(),
+            ContentItem = contentItem,
+            Row = row,
+        });
+
+        Assert.Equal("{{ Model.ContentItem.DisplayText }}", row["LiquidPart_Liquid"]?.ToString());
+    }
+
+    private static ContentTypePartDefinition CreateTypePartDefinition(string partName)
+    {
+        var contentTypeDefinition = new ContentTypeDefinition("Widget", "Widget");
+        var contentPartDefinition = new ContentPartDefinition(partName);
+
+        return new ContentTypePartDefinition(partName, contentPartDefinition, [])
+        {
+            ContentTypeDefinition = contentTypeDefinition,
+        };
+    }
+}
+
+public class LinkFieldImportHandlerTests
+{
+    private readonly LinkFieldImportHandler _handler;
+
+    public LinkFieldImportHandlerTests()
+    {
+        _handler = new LinkFieldImportHandler(Mock.Of<IStringLocalizer<LinkFieldImportHandler>>());
+    }
+
+    [Fact]
+    public async Task ImportAsync_SetsAllLinkProperties()
+    {
+        var part = new ContentPart();
+        var dataTable = new DataTable();
+        dataTable.Columns.Add("MyPart_MyField_Url");
+        dataTable.Columns.Add("MyPart_MyField_Text");
+        dataTable.Columns.Add("MyPart_MyField_Target");
+        var row = dataTable.NewRow();
+        row["MyPart_MyField_Url"] = "https://example.com";
+        row["MyPart_MyField_Text"] = "Example";
+        row["MyPart_MyField_Target"] = "_blank";
+        dataTable.Rows.Add(row);
+
+        await _handler.ImportAsync(new ContentFieldImportMapContext
+        {
+            PartName = "MyPart",
+            ContentPartFieldDefinition = new ContentPartFieldDefinition(new ContentFieldDefinition(nameof(LinkField)), "MyField", []),
+            ContentPart = part,
+            ContentItem = new ContentItem(),
+            Columns = dataTable.Columns,
+            Row = row,
+        });
+
+        var field = part.Get<LinkField>("MyField");
+        Assert.NotNull(field);
+        Assert.Equal("https://example.com", field.Url);
+        Assert.Equal("Example", field.Text);
+        Assert.Equal("_blank", field.Target);
+    }
+
+    [Fact]
+    public async Task ExportAsync_WritesAllLinkProperties()
+    {
+        var part = new ContentPart();
+        part.Alter<LinkField>("MyField", field =>
+        {
+            field.Url = "https://example.com";
+            field.Text = "Example";
+            field.Target = "_blank";
+        });
+
+        var dataTable = new DataTable();
+        dataTable.Columns.Add("MyPart_MyField_Url");
+        dataTable.Columns.Add("MyPart_MyField_Text");
+        dataTable.Columns.Add("MyPart_MyField_Target");
+        var row = dataTable.NewRow();
+
+        await _handler.ExportAsync(new ContentFieldExportMapContext
+        {
+            PartName = "MyPart",
+            ContentPartFieldDefinition = new ContentPartFieldDefinition(new ContentFieldDefinition(nameof(LinkField)), "MyField", []),
+            ContentPart = part,
+            ContentField = part.Get<LinkField>("MyField"),
+            ContentItem = new ContentItem(),
+            Row = row,
+        });
+
+        Assert.Equal("https://example.com", row["MyPart_MyField_Url"]?.ToString());
+        Assert.Equal("Example", row["MyPart_MyField_Text"]?.ToString());
+        Assert.Equal("_blank", row["MyPart_MyField_Target"]?.ToString());
+    }
+}
+
+public class YoutubeFieldImportHandlerTests
+{
+    private readonly YoutubeFieldImportHandler _handler;
+
+    public YoutubeFieldImportHandlerTests()
+    {
+        _handler = new YoutubeFieldImportHandler(Mock.Of<IStringLocalizer<YoutubeFieldImportHandler>>());
+    }
+
+    [Fact]
+    public async Task ImportAsync_SetsYoutubeAddresses()
+    {
+        var part = new ContentPart();
+        var dataTable = new DataTable();
+        dataTable.Columns.Add("MyPart_Video_RawAddress");
+        dataTable.Columns.Add("MyPart_Video_EmbeddedAddress");
+        var row = dataTable.NewRow();
+        row["MyPart_Video_RawAddress"] = "https://youtu.be/test";
+        row["MyPart_Video_EmbeddedAddress"] = "https://www.youtube.com/embed/test";
+        dataTable.Rows.Add(row);
+
+        await _handler.ImportAsync(new ContentFieldImportMapContext
+        {
+            PartName = "MyPart",
+            ContentPartFieldDefinition = new ContentPartFieldDefinition(new ContentFieldDefinition(nameof(YoutubeField)), "Video", []),
+            ContentPart = part,
+            ContentItem = new ContentItem(),
+            Columns = dataTable.Columns,
+            Row = row,
+        });
+
+        var field = part.Get<YoutubeField>("Video");
+        Assert.NotNull(field);
+        Assert.Equal("https://youtu.be/test", field.RawAddress);
+        Assert.Equal("https://www.youtube.com/embed/test", field.EmbeddedAddress);
+    }
+
+    [Fact]
+    public async Task ExportAsync_WritesYoutubeAddresses()
+    {
+        var part = new ContentPart();
+        part.Alter<YoutubeField>("Video", field =>
+        {
+            field.RawAddress = "https://youtu.be/test";
+            field.EmbeddedAddress = "https://www.youtube.com/embed/test";
+        });
+
+        var dataTable = new DataTable();
+        dataTable.Columns.Add("MyPart_Video_RawAddress");
+        dataTable.Columns.Add("MyPart_Video_EmbeddedAddress");
+        var row = dataTable.NewRow();
+
+        await _handler.ExportAsync(new ContentFieldExportMapContext
+        {
+            PartName = "MyPart",
+            ContentPartFieldDefinition = new ContentPartFieldDefinition(new ContentFieldDefinition(nameof(YoutubeField)), "Video", []),
+            ContentPart = part,
+            ContentField = part.Get<YoutubeField>("Video"),
+            ContentItem = new ContentItem(),
+            Row = row,
+        });
+
+        Assert.Equal("https://youtu.be/test", row["MyPart_Video_RawAddress"]?.ToString());
+        Assert.Equal("https://www.youtube.com/embed/test", row["MyPart_Video_EmbeddedAddress"]?.ToString());
+    }
+}
+
+public class UserPickerFieldImportHandlerTests
+{
+    private readonly UserPickerFieldImportHandler _handler;
+
+    public UserPickerFieldImportHandlerTests()
+    {
+        _handler = new UserPickerFieldImportHandler(Mock.Of<IStringLocalizer<UserPickerFieldImportHandler>>());
+    }
+
+    [Fact]
+    public async Task ExportAsync_JoinsUserIdsWithComma()
+    {
+        var part = new ContentPart();
+        part.Alter<UserPickerField>("Authors", field => field.UserIds = ["user1", "user2"]);
+
+        var dataTable = new DataTable();
+        dataTable.Columns.Add("MyPart_Authors_UserIds");
+        var row = dataTable.NewRow();
+
+        await _handler.ExportAsync(new ContentFieldExportMapContext
+        {
+            PartName = "MyPart",
+            ContentPartFieldDefinition = new ContentPartFieldDefinition(new ContentFieldDefinition(nameof(UserPickerField)), "Authors", []),
+            ContentPart = part,
+            ContentField = part.Get<UserPickerField>("Authors"),
+            ContentItem = new ContentItem(),
+            Row = row,
+        });
+
+        Assert.Equal("user1,user2", row["MyPart_Authors_UserIds"]?.ToString());
+    }
+}
+
+public class TaxonomyFieldImportHandlerTests
+{
+    private readonly TaxonomyFieldImportHandler _handler;
+
+    public TaxonomyFieldImportHandlerTests()
+    {
+        _handler = new TaxonomyFieldImportHandler(Mock.Of<IStringLocalizer<TaxonomyFieldImportHandler>>());
+    }
+
+    [Fact]
+    public async Task ExportAsync_WritesTaxonomyAndTermIds()
+    {
+        var part = new ContentPart();
+        part.Alter<TaxonomyField>("Categories", field =>
+        {
+            field.TaxonomyContentItemId = "taxonomy-id";
+            field.TermContentItemIds = ["term1", "term2"];
+        });
+
+        var dataTable = new DataTable();
+        dataTable.Columns.Add("MyPart_Categories_TaxonomyContentItemId");
+        dataTable.Columns.Add("MyPart_Categories_TermContentItemIds");
+        var row = dataTable.NewRow();
+
+        await _handler.ExportAsync(new ContentFieldExportMapContext
+        {
+            PartName = "MyPart",
+            ContentPartFieldDefinition = new ContentPartFieldDefinition(new ContentFieldDefinition(nameof(TaxonomyField)), "Categories", []),
+            ContentPart = part,
+            ContentField = part.Get<TaxonomyField>("Categories"),
+            ContentItem = new ContentItem(),
+            Row = row,
+        });
+
+        Assert.Equal("taxonomy-id", row["MyPart_Categories_TaxonomyContentItemId"]?.ToString());
+        Assert.Equal("term1,term2", row["MyPart_Categories_TermContentItemIds"]?.ToString());
+    }
+}
+
+public class LocalizationSetContentPickerFieldImportHandlerTests
+{
+    private readonly LocalizationSetContentPickerFieldImportHandler _handler;
+
+    public LocalizationSetContentPickerFieldImportHandlerTests()
+    {
+        _handler = new LocalizationSetContentPickerFieldImportHandler(Mock.Of<IStringLocalizer<LocalizationSetContentPickerFieldImportHandler>>());
+    }
+
+    [Fact]
+    public async Task ExportAsync_JoinsLocalizationSetsWithComma()
+    {
+        var part = new ContentPart();
+        part.Alter<LocalizationSetContentPickerField>("LocalizedItems", field => field.LocalizationSets = ["set1", "set2"]);
+
+        var dataTable = new DataTable();
+        dataTable.Columns.Add("MyPart_LocalizedItems_LocalizationSets");
+        var row = dataTable.NewRow();
+
+        await _handler.ExportAsync(new ContentFieldExportMapContext
+        {
+            PartName = "MyPart",
+            ContentPartFieldDefinition = new ContentPartFieldDefinition(new ContentFieldDefinition(nameof(LocalizationSetContentPickerField)), "LocalizedItems", []),
+            ContentPart = part,
+            ContentField = part.Get<LocalizationSetContentPickerField>("LocalizedItems"),
+            ContentItem = new ContentItem(),
+            Row = row,
+        });
+
+        Assert.Equal("set1,set2", row["MyPart_LocalizedItems_LocalizationSets"]?.ToString());
     }
 }
