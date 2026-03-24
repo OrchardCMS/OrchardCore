@@ -5,7 +5,7 @@
 @{
     var name = (Model.PartFieldDefinition.PartDefinition.Name + "-" + Model.PartFieldDefinition.Name).HtmlClassify();
     var users = await @Orchard.GetUsersByIdsAsync(Model.UserIds);
-    string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), OrchardCoreConstants.DataLocalizationContext.ContentFields +Model.PartFieldDefinition.PartDefinition.Name];
+    string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), DataLocalizationContext.ContentFields(Model.PartFieldDefinition.PartDefinition.Name)];
 }
 
 <div class="field field-type-userpickerfield field-name-@name">

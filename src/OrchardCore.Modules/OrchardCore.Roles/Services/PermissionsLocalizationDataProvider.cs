@@ -62,8 +62,8 @@ public class PermissionsLocalizationDataProvider : ILocalizationDataProvider
                 }
 
                 var context = string.IsNullOrWhiteSpace(groupName)
-                    ? OrchardCoreConstants.DataLocalizationContext.Permissions
-                    : OrchardCoreConstants.DataLocalizationContext.Permissions + Constants.ContextSeparator + groupName;
+                    ? DataLocalizationContext.Permission()
+                    : DataLocalizationContext.Permission(groupName);
 
                 descriptors.Add(new DataLocalizedString(context, permission.Description, string.Empty));
 

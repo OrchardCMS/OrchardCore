@@ -82,7 +82,7 @@ public sealed class ListsAdminNodeDriver : DisplayDriver<MenuItem, ListsAdminNod
         return contentTypeDefinitions
             .Where(ctd => ctd.Parts.Any(p => p.PartDefinition.Name.Equals(nameof(ListPart), StringComparison.OrdinalIgnoreCase)))
             .OrderBy(ctd => ctd.DisplayName)
-            .Select(ctd => new SelectListItem(D[ctd.DisplayName, OrchardCoreConstants.DataLocalizationContext.ContentTypes], ctd.Name))
+            .Select(ctd => new SelectListItem(D[ctd.DisplayName, DataLocalizationContext.ContentTypes], ctd.Name))
             .ToList();
     }
 

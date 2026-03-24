@@ -5,7 +5,7 @@
 @inject IDataLocalizer D
 @{
     var name = (Model.PartFieldDefinition.PartDefinition.Name + "-" + Model.PartFieldDefinition.Name).HtmlClassify();
-    string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), OrchardCoreConstants.DataLocalizationContext.ContentFields + Model.PartFieldDefinition.PartDefinition.Name];
+    string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), DataLocalizationContext.ContentFields(Model.PartFieldDefinition.PartDefinition.Name)];
 }
 
 @if (Model.Values.Any())

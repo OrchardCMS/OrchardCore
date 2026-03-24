@@ -13,7 +13,7 @@
 
 <div class="@Orchard.GetPartWrapperClasses(typePartDefinition)">
     <div class="@Orchard.GetLabelClasses()">
-        @D[typePartDefinition.DisplayName(), OrchardCoreConstants.DataLocalizationContext.ContentTypes]
+        @D[typePartDefinition.DisplayName(), DataLocalizationContext.ContentTypes]
 
         @if (!string.IsNullOrEmpty(description))
         {

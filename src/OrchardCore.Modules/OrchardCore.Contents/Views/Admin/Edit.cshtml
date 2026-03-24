@@ -11,7 +11,7 @@
     ContentItem contentItem = Model.ContentItem;
     var contentTypeDefinition = await ContentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
     var typeDisplayName = contentTypeDefinition?.DisplayName ?? contentItem.ContentType.CamelFriendly();
-    string localizedTypeDisplayName = D[typeDisplayName, OrchardCoreConstants.DataLocalizationContext.ContentTypes];
+    string localizedTypeDisplayName = D[typeDisplayName, DataLocalizationContext.ContentTypes];
 }
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Edit {0}", localizedTypeDisplayName])</h1></zone>

@@ -72,7 +72,7 @@
        data-flowmetadata="false"
        data-parent-content-type="@parentContentType"
        data-part-name="@partName"
-           href="javascript:;">@T["Add {0}", D[type.DisplayName, OrchardCoreConstants.DataLocalizationContext.ContentTypes].Value]</a>
+           href="javascript:;">@T["Add {0}", D[type.DisplayName, DataLocalizationContext.ContentTypes].Value]</a>
     }
     else if (totalItems > 1)
     {
@@ -93,7 +93,7 @@
                data-flowmetadata="false"
                data-parent-content-type="@parentContentType"
                data-part-name="@partName"
-                       href="javascript:;">@D[type.DisplayName, OrchardCoreConstants.DataLocalizationContext.ContentTypes]</a>
+                       href="javascript:;">@D[type.DisplayName, DataLocalizationContext.ContentTypes]</a>
                 }
             </div>
         </div>
