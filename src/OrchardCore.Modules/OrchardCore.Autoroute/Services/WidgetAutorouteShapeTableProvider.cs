@@ -20,13 +20,14 @@ public sealed class WidgetAutorouteShapeTableProvider : ShapeTableProvider
 
                 if (autoroutePart != null)
                 {
-                    var encodedSlug = autoroutePart.Path.EncodeAlternateElement().Replace("/", "__");
+                    var displayType = displaying.Shape.Metadata.DisplayType;
 
-                    // Widget__Slug__[Slug] e.g. Widget-Slug-example, Widget-Slug-blog-my-post
-                    displaying.Shape.Metadata.Alternates.Add("Widget__Slug__" + encodedSlug);
+                    // Get cached alternates and add them efficiently
+                    var cachedAlternates = WidgetAutorouteAlternatesFactory.GetAlternates(
+                        autoroutePart.Path,
+                        displayType);
 
-                    // Widget_[DisplayType]__Slug__[Slug] e.g. Widget-Slug-example.Summary, Widget-Slug-blog-my-post.Summary
-                    displaying.Shape.Metadata.Alternates.Add("Widget_" + displaying.Shape.Metadata.DisplayType + "__Slug__" + encodedSlug);
+                    displaying.Shape.Metadata.Alternates.AddRange(cachedAlternates);
                 }
             });
 
