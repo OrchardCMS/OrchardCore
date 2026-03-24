@@ -6,19 +6,10 @@
 @inject IDataLocalizer D
 
 @{
-    var allContentTypes = await ContentDefinitionManager.ListTypeDefinitionsAsync();
+    var contentTypes = await ContentDefinitionManager.ListTypeDefinitionsAsync();
 
-    var selectedContentTypes = Model.Value.ContentTypes;
-
-    var selectedDisplayNames = allContentTypes
-        .Where(x => isSelected(x, selectedContentTypes))
-        .Select(x => D[x.DisplayName, "Content Types"])
-        .ToList();
-
-    bool isSelected(ContentTypeDefinition ctd, ContentTypeEntry[] selectedList)
-    {
-        return selectedList.Any(selected => string.Equals(ctd.Name, selected.ContentTypeName, StringComparison.OrdinalIgnoreCase));
-    }
+    var selectedContentTypes = contentTypes.Where(t => Model.Value.ContentTypes
+        .Any(e => string.Equals(t.Name, e.ContentTypeName, StringComparison.OrdinalIgnoreCase)));
 }
 
 <div class="@(Model.Value.Enabled ? "" : "disabled")">
@@ -29,11 +20,11 @@
     }
     else
     {
-        @if (selectedDisplayNames.Count > 0)
+        @if (selectedContentTypes.Any())
         {
-            foreach (var displayName in selectedDisplayNames)
+            foreach (var contentType in selectedContentTypes)
             {
-                <span class="badge ta-badge">@displayName</span>
+                <span class="badge ta-badge">@D[contentType.Name, "Content Types"]</span>
             }
         }
         else
