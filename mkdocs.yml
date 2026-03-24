@@ -174,6 +174,7 @@ nav:
       - Using Docker: topics/docker/README.md
       - Using local NuGet packages: topics/local-nuget-packages/README.md
       - Managing the Orchard Core Red Hat Ecosystem Catalog certification: topics/red-hat-ecosystem-catalog-certification/README.md
+      - Source Generators: topics/source-generators/README.md
   - Reference:
       - Modules:
           - Overview: reference/README.md
@@ -267,6 +268,7 @@ nav:
               - HTTPS: reference/modules/Https/README.md
               - Key Vault (Azure): reference/modules/KeyVault.Azure/README.md
               - Localization: reference/modules/Localize/README.md
+              - JavaScript Localization: reference/modules/Localize/javascript-localization.md
               - Data Localization: reference/modules/DataLocalization/README.md
               - Logging Serilog: reference/modules/Logging.Serilog/README.md
               - Mini Profiler: reference/modules/MiniProfiler/README.md

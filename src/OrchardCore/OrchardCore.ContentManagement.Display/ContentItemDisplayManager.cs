@@ -72,28 +72,15 @@ public class ContentItemDisplayManager : BaseDisplayManager, IContentItemDisplay
         var metadata = itemShape.Metadata;
         metadata.DisplayType = actualDisplayType;
 
-        if (hasStereotype)
-        {
-            if (actualDisplayType != OrchardCoreConstants.DisplayType.Detail)
-            {
-                // Add fallback/default alternate Stereotype_[DisplayType] e.g. Content.Summary
-                metadata.Alternates.Add($"Stereotype_{actualDisplayType}");
+        // Get cached alternates and add them efficiently
+        var cachedAlternates = ContentItemAlternatesFactory.GetDisplayAlternates(
+            stereotype,
+            hasStereotype,
+            actualDisplayType,
+            actualShapeType,
+            contentItem.ContentType);
 
-                // [Stereotype]_[DisplayType] e.g. Menu.Summary
-                metadata.Alternates.Add($"{stereotype}_{actualDisplayType}");
-            }
-            else
-            {
-                // Add fallback/default alternate i.e. Content 
-                metadata.Alternates.Add("Stereotype");
-
-                // Add alternate to make the type [Stereotype] e.g. Menu
-                metadata.Alternates.Add(stereotype);
-            }
-        }
-
-        // Add alternate for [Stereotype]_[DisplayType]__[ContentType] e.g. Content-BlogPost.Summary
-        metadata.Alternates.Add($"{actualShapeType}__{contentItem.ContentType}");
+        metadata.Alternates.AddRange(cachedAlternates);
 
         var context = new BuildDisplayContext(
             itemShape,
@@ -130,17 +117,14 @@ public class ContentItemDisplayManager : BaseDisplayManager, IContentItemDisplay
         itemShape.Properties["ContentItem"] = contentItem;
         itemShape.Properties["Stereotype"] = stereotype;
 
-        if (hasStereotype)
-        {
-            // Add fallback/default alternate for Stereotype_Edit e.g. Stereotype.Edit
-            itemShape.Metadata.Alternates.Add("Stereotype_Edit");
+        // Get cached alternates and add them efficiently
+        var cachedAlternates = ContentItemAlternatesFactory.GetEditorAlternates(
+            stereotype,
+            hasStereotype,
+            actualShapeType,
+            contentItem.ContentType);
 
-            // add [Stereotype]_Edit e.g. Menu.Edit
-            itemShape.Metadata.Alternates.Add(actualShapeType);
-        }
-
-        // Add an alternate for [Stereotype]_Edit__[ContentType] e.g. Content-Menu.Edit
-        itemShape.Metadata.Alternates.Add(actualShapeType + "__" + contentItem.ContentType);
+        itemShape.Metadata.Alternates.AddRange(cachedAlternates);
 
         var context = new BuildEditorContext(
             itemShape,
@@ -178,17 +162,14 @@ public class ContentItemDisplayManager : BaseDisplayManager, IContentItemDisplay
         itemShape.Properties["ContentItem"] = contentItem;
         itemShape.Properties["Stereotype"] = stereotype;
 
-        if (hasStereotype)
-        {
-            // Add fallback/default alternate for Stereotype_Edit e.g. Stereotype.Edit
-            itemShape.Metadata.Alternates.Add("Stereotype_Edit");
+        // Get cached alternates and add them efficiently
+        var cachedAlternates = ContentItemAlternatesFactory.GetEditorAlternates(
+            stereotype,
+            hasStereotype,
+            actualShapeType,
+            contentItem.ContentType);
 
-            // add [Stereotype]_Edit e.g. Menu.Edit
-            itemShape.Metadata.Alternates.Add(actualShapeType);
-        }
-
-        // Add an alternate for [Stereotype]_Edit__[ContentType] e.g. Content-Menu.Edit
-        itemShape.Metadata.Alternates.Add(actualShapeType + "__" + contentItem.ContentType);
+        itemShape.Metadata.Alternates.AddRange(cachedAlternates);
 
         var context = new UpdateEditorContext(
             itemShape,
