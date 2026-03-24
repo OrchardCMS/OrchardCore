@@ -12,7 +12,7 @@ Folders and files can be _slugified_ automatically by enabling the Media Slugify
 
 Different files can have the same slug, making it impossible to upload both without renaming one (e.g. `The team (2020).jpg` and `The Team 2020.jpg`).
 
-By default, transliteration happens when fetaure is enabled. The following configuration values are used by default and can be customized:
+By default, transliteration happens when the feature is enabled. The following configuration values are used by default and can be customized:
 
 ```json
 {
