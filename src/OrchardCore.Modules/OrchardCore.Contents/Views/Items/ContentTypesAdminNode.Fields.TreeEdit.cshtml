@@ -76,7 +76,7 @@
                                         <input type="hidden" name="@Html.NameFor(m => m.ContentTypes[i].ContentTypeDisplayName)" value="@Model.ContentTypes[i].ContentTypeDisplayName" />
                                         <div class="form-check">
                                             <input asp-for="ContentTypes[i].IsChecked" class="form-check-input content-type-checkbox" />
-                                            <label class="form-check-label" for="@Html.IdFor(m => m.ContentTypes[i].IsChecked)">@D[displayName, DataLocalizationContext.ContentTypes]</label>
+                                            <label class="form-check-label" for="@Html.IdFor(m => m.ContentTypes[i].IsChecked)">@D[displayName, DataLocalizationContext.ContentType]</label>
                                         </div>
                                     </div>
 

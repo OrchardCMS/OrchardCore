@@ -23,7 +23,7 @@ public class ContentFieldDataLocalizationProvider : ILocalizationDataProvider
             .SelectMany(t => t.Parts)
             .SelectMany(p => p.PartDefinition.Fields.Select(f =>
                 new DataLocalizedString(
-                    DataLocalizationContext.ContentFields(p.PartDefinition.Name),
+                    DataLocalizationContext.ContentField(p.PartDefinition.Name),
                     f.DisplayName(),
                     string.Empty)))
             .DistinctBy(d => $"{d.Context}|{d.Name}");

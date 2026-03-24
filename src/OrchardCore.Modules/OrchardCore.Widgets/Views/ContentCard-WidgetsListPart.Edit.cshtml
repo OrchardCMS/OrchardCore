@@ -7,7 +7,7 @@
 
 @{
     var contentTypeDefinition = await ContentDefinitionManager.GetTypeDefinitionAsync((string)Model.ContentItem.ContentType);
-    var contentType = D[contentTypeDefinition?.DisplayName, DataLocalizationContext.ContentTypes];
+    var contentType = D[contentTypeDefinition?.DisplayName, DataLocalizationContext.ContentType];
     var widgetContentTypes = (await ContentDefinitionManager.ListTypeDefinitionsAsync()).Where(t => t.GetStereotype() == "Widget");
 }
 
@@ -42,7 +42,7 @@
                                    data-parent-content-type="@Model.ParentContentType"
                                    data-part-name="@Model.CollectionPartName"
                                    data-zone="@Model.ZoneValue"
-                                   href="javascript:;">@D[type.DisplayName, DataLocalizationContext.ContentTypes]</a>
+                                   href="javascript:;">@D[type.DisplayName, DataLocalizationContext.ContentType]</a>
                             </li>
                         }
                     </ul>

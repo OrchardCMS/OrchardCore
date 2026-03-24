@@ -55,7 +55,7 @@
     }
 
     var fields = ContentOptions.Value.ContentFieldOptions.Select(cfo => cfo.Type).ToList();
-    string localizedTypeName = D[Model.TypeDefinition.DisplayName, DataLocalizationContext.ContentTypes];
+    string localizedTypeName = D[Model.TypeDefinition.DisplayName, DataLocalizationContext.ContentType];
 }
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Edit Content Type - {0}", localizedTypeName])</h1></zone>
@@ -138,7 +138,7 @@
 
                 <li class="list-group-item@(partDefinition == typePart ? " bg-faded" : string.Empty)" style="cursor: move;">
                     <div class="w-100">
-                        @D[partDefinition.DisplayName(), DataLocalizationContext.ContentTypes]
+                        @D[partDefinition.DisplayName(), DataLocalizationContext.ContentType]
 
                         @if (partDefinition != typePart)
                         {

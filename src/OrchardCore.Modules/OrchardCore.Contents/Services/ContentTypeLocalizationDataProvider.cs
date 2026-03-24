@@ -14,5 +14,5 @@ public class ContentTypeDataLocalizationProvider : ILocalizationDataProvider
 
     public async Task<IEnumerable<DataLocalizedString>> GetDescriptorsAsync()
         => (await _contentDefinitionManager.ListTypeDefinitionsAsync())
-            .Select(t => new DataLocalizedString(DataLocalizationContext.ContentTypes, t.DisplayName, string.Empty));
+            .Select(t => new DataLocalizedString(DataLocalizationContext.ContentType, t.DisplayName, string.Empty));
 }

@@ -10,7 +10,7 @@
     var settings = Model.PartFieldDefinition.GetSettings<MarkdownFieldSettings>();
     var wysiwygSettings = Model.PartFieldDefinition.GetSettings<MarkdownFieldWysiwygEditorSettings>();
     var culture = await Orchard.GetContentCultureAsync(Model.Field.ContentItem);
-    string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), DataLocalizationContext.ContentFields(Model.PartFieldDefinition.PartDefinition.Name)];
+    string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), DataLocalizationContext.ContentField(Model.PartFieldDefinition.PartDefinition.Name)];
 }
 
 <style asp-name="codemirror"></style>

@@ -13,7 +13,7 @@
                     .Where(c => c.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
                     .Select(c => c.Substring(prefix.Length));
 
-    var context = DataLocalizationContext.AdminMenus(Model.Item.MenuName);
+    var context = DataLocalizationContext.AdminMenu(Model.Item.MenuName);
 }
 
 @if (iconClasses.Any())

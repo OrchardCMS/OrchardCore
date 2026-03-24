@@ -17,7 +17,7 @@
     @if (typePartDefinition.IsNamedPart())
     {
         <div class="@Orchard.GetLabelClasses()">
-            @D[typePartDefinition.DisplayName(), DataLocalizationContext.ContentTypes]
+            @D[typePartDefinition.DisplayName(), DataLocalizationContext.ContentType]
 
             @if (!string.IsNullOrEmpty(description))
             {

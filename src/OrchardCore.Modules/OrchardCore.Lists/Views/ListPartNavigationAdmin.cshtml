@@ -31,7 +31,7 @@
             @if (await AuthorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, Model.Container))
             {
                 <a class="btn btn-primary me-1" asp-action="Edit" asp-controller="Admin" asp-route-contentItemId="@Model.Container.ContentItemId" asp-route-area="OrchardCore.Contents">
-                    @T["Edit {0}", D[Model.ContainerContentTypeDefinition?.DisplayName, DataLocalizationContext.ContentTypes]]
+                    @T["Edit {0}", D[Model.ContainerContentTypeDefinition?.DisplayName, DataLocalizationContext.ContentType]]
                 </a>
             }
 
@@ -40,7 +40,7 @@
                 var contentTypeDefinition = authorizedContentTypeDefinitions.FirstOrDefault();
 
                 <a class="btn btn-secondary" asp-action="Create" asp-controller="Admin" asp-route-id="@contentTypeDefinition.Name" asp-route-area="OrchardCore.Contents" asp-route-ListPart.ContainerId="@Model.Container.ContentItemId" asp-route-ListPart.ContainerContentType="@Model.ContainerContentTypeDefinition?.Name" asp-route-ListPart.ContentType="@contentTypeDefinition.Name" asp-route-ListPart.EnableOrdering="@Model.EnableOrdering" asp-route-returnUrl="@FullRequestPath">
-                    @T["Create {0}", D[contentTypeDefinition.DisplayName, DataLocalizationContext.ContentTypes]]
+                    @T["Create {0}", D[contentTypeDefinition.DisplayName, DataLocalizationContext.ContentType]]
                 </a>
             }
             else if (authorizedContentTypeDefinitions.Count > 1)

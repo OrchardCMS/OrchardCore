@@ -23,7 +23,7 @@
 <ul id="list-items" class="list-group">
     @foreach (var type in Model.Types)
     {
-        <li class="list-group-item" data-filter-value="@D[type.DisplayName, DataLocalizationContext.ContentTypes]" data-type-name="@type.Name">
+        <li class="list-group-item" data-filter-value="@D[type.DisplayName, DataLocalizationContext.ContentType]" data-type-name="@type.Name">
             @Html.DisplayFor(m => type)
         </li>
     }

@@ -15,6 +15,6 @@ public class AdminMenuDataLocalizationProvider : ILocalizationDataProvider
     {
         var adminMenuList = await _adminMenuService.GetAdminMenuListAsync();
 
-        return adminMenuList.AdminMenu.Select(item => new DataLocalizedString(DataLocalizationContext.AdminMenus(), item.Name, string.Empty));
+        return adminMenuList.AdminMenu.Select(item => new DataLocalizedString(DataLocalizationContext.AdminMenu(), item.Name, string.Empty));
     }
 }

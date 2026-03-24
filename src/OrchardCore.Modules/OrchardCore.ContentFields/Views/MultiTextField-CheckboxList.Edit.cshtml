@@ -12,7 +12,7 @@
                     Value = option.Value,
                     Selected = Model.Values.Contains(option.Value)
                 }).ToList();
-    string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), DataLocalizationContext.ContentFields(Model.PartFieldDefinition.PartDefinition.Name)];
+    string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), DataLocalizationContext.ContentField(Model.PartFieldDefinition.PartDefinition.Name)];
 }
 
 <div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.Values)_FieldWrapper">
