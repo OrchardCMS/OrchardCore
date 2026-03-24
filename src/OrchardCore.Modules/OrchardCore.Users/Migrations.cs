@@ -125,9 +125,7 @@ public sealed class Migrations : DataMigration
     // The UserName property rather than the NormalizedUserName is used as the ContentItem.Owner property matches the UserName.
     // New users will be created with a generated Id.
     // This code can be removed in a later version.
-#pragma warning disable CA1822 // Mark members as static
-    public int UpdateFrom5()
-#pragma warning restore CA1822 // Mark members as static
+    public static int UpdateFrom5()
     {
         // Defer this until after the subsequent migrations have succeeded as the schema has changed.
         ShellScope.AddDeferredTask(async scope =>
@@ -146,18 +144,14 @@ public sealed class Migrations : DataMigration
 
     // This buggy migration has been removed.
     // This code can be removed in a later version.
-#pragma warning disable CA1822 // Mark members as static
-    public int UpdateFrom6()
-#pragma warning restore CA1822 // Mark members as static
+    public static int UpdateFrom6()
     {
         return 7;
     }
 
     // Migrate any user names replacing '@' with '+' as user names can no longer be an email address.
     // This code can be removed in a later version.
-#pragma warning disable CA1822 // Mark members as static
-    public int UpdateFrom7()
-#pragma warning restore CA1822 // Mark members as static
+    public static int UpdateFrom7()
     {
         // Defer this until after the subsequent migrations have succeeded as the schema has changed.
         ShellScope.AddDeferredTask(async scope =>
@@ -243,9 +237,7 @@ public sealed class Migrations : DataMigration
         return 12;
     }
 
-#pragma warning disable CA1822 // Mark members as static
-    public int UpdateFrom12()
-#pragma warning restore CA1822 // Mark members as static
+    public static int UpdateFrom12()
     {
         ShellScope.AddDeferredTask(async scope =>
         {

@@ -3,16 +3,16 @@
 @using OrchardCore.ContentManagement.Metadata.Models
 @using OrchardCore.DisplayManagement
 @using OrchardCore.Localization.Data
+@using OrchardCore.DisplayManagement.Theming
 
 @model EditFieldViewModel
 
-@inject OrchardCore.DisplayManagement.Theming.IThemeManager ThemeManager
+@inject IThemeManager ThemeManager
 @inject OrchardCore.DisplayManagement.Descriptors.IShapeTableManager ShapeTableManager
 @inject IDataLocalizer D
 
 @{
-    var theme = await ThemeManager.GetThemeAsync();
-    var shapeTable = await ShapeTableManager.GetShapeTableAsync(theme?.Id);
+    var shapeTable = await ThemeManager.GetShapeTableAsync(ShapeTableManager);
     var editorShapes = shapeTable.Bindings.Keys.Where(x => x.StartsWith(Model.PartFieldDefinition.FieldDefinition.Name + "_Option__", StringComparison.OrdinalIgnoreCase) || x.Equals(Model.PartFieldDefinition.FieldDefinition.Name + "_Option", StringComparison.OrdinalIgnoreCase));
     var displayShapes = shapeTable.Bindings.Keys.Where(x => x.StartsWith(Model.PartFieldDefinition.FieldDefinition.Name + "_DisplayOption__", StringComparison.OrdinalIgnoreCase) || x.Equals(Model.PartFieldDefinition.FieldDefinition.Name + "_DisplayOption", StringComparison.OrdinalIgnoreCase));
     var returnUrl = ViewData["returnUrl"]?.ToString();

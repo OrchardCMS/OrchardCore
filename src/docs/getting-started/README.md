@@ -13,6 +13,9 @@ In this article, we are going to see how easy it is to create a CMS Web applicat
 In Visual Studio (or [any other .NET IDE](../getting-started/development-tools.md)), create a new empty .NET web application, e.g. `Cms.Web`. Do not check "Place solution and project in the same directory", because later when you create modules and themes you will want them to live alongside the web application within the solution.
 
 !!! note
+    Ensure the web application contains a `wwwroot` folder when publishing. If needed, keep a placeholder file (for example `wwwroot/.placeholder`) so the folder is included in publish output.
+
+!!! note
     If you want to use the `preview` packages, [configure the OrchardCore Preview url in your Package sources](preview-package-source.md).
 
 To add a reference to the package, right-click on the project and click on `Manage NuGet packages...`, check `Include prerelease` if required. If you added the preview source above, select this from the `Package Source` selection in the top right.  In the `Browse` tab, search for `OrchardCore.Application.Cms.Targets` and `Install` the package.

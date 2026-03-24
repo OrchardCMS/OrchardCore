@@ -48,9 +48,9 @@ public class ContentTypesAdminNodeNavigationBuilder : IAdminNodeNavigationBuilde
         var typesToShow = await GetListableContentTypeDefinitionsAsync(node);
         foreach (var ctd in typesToShow)
         {
-            builder.Add(new LocalizedString(ctd.DisplayName, ctd.DisplayName), cTypeMenu =>
+            builder.Add(new LocalizedString(ctd.DisplayName, ctd.DisplayName), itemBuilder =>
             {
-                cTypeMenu.Url(_linkGenerator.GetPathByRouteValues(_httpContextAccessor.HttpContext, string.Empty, new
+                itemBuilder.Url(_linkGenerator.GetPathByRouteValues(_httpContextAccessor.HttpContext, string.Empty, new
                 {
                     area = "OrchardCore.Contents",
                     controller = "Admin",
@@ -58,12 +58,13 @@ public class ContentTypesAdminNodeNavigationBuilder : IAdminNodeNavigationBuilde
                     contentTypeId = ctd.Name,
                 }));
 
-                cTypeMenu.Priority(node.Priority);
-                cTypeMenu.Position(node.Position);
-                cTypeMenu.Permission(
+                itemBuilder.MenuName(node.MenuName);
+                itemBuilder.Priority(node.Priority);
+                itemBuilder.Position(node.Position);
+                itemBuilder.Permission(
                     ContentTypePermissionsHelper.CreateDynamicPermission(ContentTypePermissionsHelper.PermissionTemplates[CommonPermissions.ViewContent.Name], ctd));
 
-                GetIconClasses(ctd, node).ToList().ForEach(c => cTypeMenu.AddClass(c));
+                GetIconClasses(ctd, node).ToList().ForEach(c => itemBuilder.AddClass(c));
             });
         }
 
