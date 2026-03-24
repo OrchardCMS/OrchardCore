@@ -92,4 +92,13 @@ public static class OrchardCoreConstants
 
         public const string SummaryAdmin = "SummaryAdmin";
     }
+
+    public static class Cookies
+    {
+        public const string AdminCulture = ".OrchardCore.AdminCulture";
+
+        public const string Authentication = ".OrchardCore.Authentication";
+
+        public const string Notification = ".OrchardCore.Notifications";
+    }
 }
