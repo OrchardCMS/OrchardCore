@@ -11,7 +11,7 @@ public class PlaceholderAdminNodeDataLocalizationProvider : AdminNodeDataLocaliz
 
     public override async Task<IEnumerable<DataLocalizedString>> GetDescriptorsAsync()
     {
-        var adminMenuList = await GetAdminMenuAsync();
+        var adminMenuList = await GetAdminMenusAsync();
 
         return adminMenuList.SelectMany(m =>
         {

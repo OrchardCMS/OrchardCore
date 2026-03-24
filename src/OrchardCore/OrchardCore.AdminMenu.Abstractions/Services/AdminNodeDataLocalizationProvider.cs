@@ -13,6 +13,6 @@ public abstract class AdminNodeDataLocalizationProvider : ILocalizationDataProvi
 
     public abstract Task<IEnumerable<DataLocalizedString>> GetDescriptorsAsync();
 
-    protected async Task<IEnumerable<Models.AdminMenu>> GetAdminMenuAsync()
+    protected async Task<IEnumerable<Models.AdminMenu>> GetAdminMenusAsync()
         => await _adminMenuRetrieval.GetAdminMenusAsync();
 }
