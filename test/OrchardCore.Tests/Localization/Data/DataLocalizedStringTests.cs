@@ -29,6 +29,19 @@ public class DataLocalizedStringTests
     }
 
     [Fact]
+    public void DataLocalizedString_ReturnsValue_WithToString()
+    {
+        // Arrange
+        var dataLocalizedString = new DataLocalizedString("Content Types", "Blog", "Translated Blog");
+
+        // Act
+        var value = dataLocalizedString.ToString();
+
+        // Assert
+        Assert.Equal("Translated Blog", value);
+    }
+
+    [Fact]
     public void DataLocalizedString_ReturnsValue_WithLocalizer()
     {
         // Arrange
