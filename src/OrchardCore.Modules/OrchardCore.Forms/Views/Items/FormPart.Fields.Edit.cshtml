@@ -26,9 +26,9 @@
     <label asp-for="EncType" class="@Orchard.GetLabelClasses()">@T["EncType"]</label>
     <div class="@Orchard.GetEndClasses()">
         <select asp-for="EncType" class="form-select content-preview-select">
-            <option>@MediaTypeNames.Application.FormUrlEncoded</option>
-            <option>@MediaTypeNames.Multipart.FormData</option>
-            <option>@MediaTypeNames.Text.Plain</option>
+            <option value="@MediaTypeNames.Application.FormUrlEncoded">@MediaTypeNames.Application.FormUrlEncoded</option>
+            <option value="@MediaTypeNames.Multipart.FormData">@MediaTypeNames.Multipart.FormData</option>
+            <option value="@MediaTypeNames.Text.Plain">@MediaTypeNames.Text.Plain</option>
         </select>
         <span class="hint">@T["The enctype to use when submitting the form using POST method."]</span>
     </div>
