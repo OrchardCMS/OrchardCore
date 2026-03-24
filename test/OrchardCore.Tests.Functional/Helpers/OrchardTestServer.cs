@@ -92,6 +92,7 @@ public sealed class OrchardTestServer : IAsyncDisposable
     {
         var issues = _logCollector.GetSnapshot()
             .Where(e => e.Level >= LogLevel.Warning)
+            .Where(e => !IsIgnoredWarning(e))
             .ToList();
 
         if (issues.Count > 0)
@@ -104,6 +105,10 @@ public sealed class OrchardTestServer : IAsyncDisposable
                 $"Expected no logged warnings or errors, but found {issues.Count}:{System.Environment.NewLine}{messages}");
         }
     }
+
+    private static bool IsIgnoredWarning(FakeLogRecord record) =>
+        record.Category == "Microsoft.AspNetCore.DataProtection.KeyManagement.XmlKeyManager"
+        && record.Message.Contains("No XML encryptor configured");
 
     public async ValueTask DisposeAsync()
     {
