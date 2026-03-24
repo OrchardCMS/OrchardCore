@@ -106,7 +106,7 @@ Output
 this-is-some-text
 ```
 
-There is an option transliterate (by default true) which first translitera and slugify afterwards:
+There is an option to transliterate (by default `true`) which first transliterates and slugifies afterwards:
 
 ```liquid
 {{ "Ελληνικά" | slugify }}
