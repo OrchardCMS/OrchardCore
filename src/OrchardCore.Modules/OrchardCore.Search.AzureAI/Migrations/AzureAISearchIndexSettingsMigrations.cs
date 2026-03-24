@@ -33,9 +33,7 @@ internal sealed class AzureAISearchIndexSettingsMigrations : DataMigration
         _shellSettings = shellSettings;
     }
 
-#pragma warning disable CA1822 // Mark members as static
-    public int Create()
-#pragma warning restore CA1822 // Mark members as static
+    public static int Create()
     {
         return 2;
     }

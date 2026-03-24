@@ -86,6 +86,32 @@
             matchFileNames: ['global.json'],
             enabled: false,
         },
+        // These are database engines referenced in .github/workflows/functional_all_db.yml. They should match the
+        // minimum versions supported by YesSql, see:
+        // https://github.com/sebastienros/yessql/blob/main/.github/workflows/build.yml.
+        {
+            matchPackageNames: [
+                'postgres',
+                'mysql',
+                'mcr.microsoft.com/mssql/server',
+            ],
+            enabled: false,
+        },
+        // These are updated manually during a .NET SDK upgrade.
+        {
+            matchPackageNames: [
+                'mcr.microsoft.com/dotnet/aspnet',
+                'mcr.microsoft.com/dotnet/sdk',
+            ],
+            enabled: false,
+        },
+        // See the comment in src/docs/requirements.txt.
+        {
+            matchPackageNames: [
+                'click',
+            ],
+            enabled: false,
+        },
 
         // Groups of packages that we want to update together.
         {
@@ -143,25 +169,6 @@
             matchPackageNames: [
                 '/^YesSql.*$/',
             ],
-        },
-        // These are database engines referenced in .github/workflows/functional_all_db.yml. They should match the
-        // minimum versions supported by YesSql, see:
-        // https://github.com/sebastienros/yessql/blob/main/.github/workflows/build.yml.
-        {
-            matchPackageNames: [
-                'postgres',
-                'mysql',
-                'mcr.microsoft.com/mssql/server',
-            ],
-            enabled: false,
-        },
-        // These are updated manually during a .NET SDK upgrade.
-        {
-            matchPackageNames: [
-                'mcr.microsoft.com/dotnet/aspnet',
-                'mcr.microsoft.com/dotnet/sdk',
-            ],
-            enabled: false,
         },
     ],
     // With GitHub Actions, concurrency is not really an issue.

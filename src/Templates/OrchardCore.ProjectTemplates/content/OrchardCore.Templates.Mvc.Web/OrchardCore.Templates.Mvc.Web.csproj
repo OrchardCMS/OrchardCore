@@ -12,6 +12,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Update="wwwroot\.placeholder">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="OrchardCore.Application.Mvc.Targets" Version="$(TemplateOrchardPackageVersion)" />
   </ItemGroup>
 
