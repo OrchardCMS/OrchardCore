@@ -6,8 +6,8 @@
 
 @{
     var placeholder = string.IsNullOrWhiteSpace(Model.Placeholder)
-        ? T["Enter your search term(s)"]
-        : D[Model.Placeholder, "Search"];
+        ? T["Enter your search term(s)"].Value
+        : D[Model.Placeholder, "Search"].Value;
 }
 <form asp-action="Search" asp-controller="Search" asp-area="OrchardCore.Search" asp-route-index="@Model.Index" method="get">
     <div class="input-group mb-3 mt-5">
