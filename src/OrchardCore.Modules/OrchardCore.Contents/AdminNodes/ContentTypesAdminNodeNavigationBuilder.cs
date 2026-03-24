@@ -48,7 +48,14 @@ public class ContentTypesAdminNodeNavigationBuilder : IAdminNodeNavigationBuilde
         var typesToShow = await GetListableContentTypeDefinitionsAsync(node);
         foreach (var ctd in typesToShow)
         {
-            builder.Add(new LocalizedString(ctd.DisplayName, ctd.DisplayName), cTypeMenu =>
+            var contentTypeEntry = node.ContentTypes.FirstOrDefault(x =>
+            string.Equals(x.ContentTypeId, ctd.Name, StringComparison.OrdinalIgnoreCase));
+
+            var displayName = contentTypeEntry != null && !string.IsNullOrWhiteSpace(contentTypeEntry.CustomName)
+                ? contentTypeEntry.CustomName
+                : ctd.DisplayName;
+
+            builder.Add(new LocalizedString(displayName, displayName), cTypeMenu =>
             {
                 cTypeMenu.Url(_linkGenerator.GetPathByRouteValues(_httpContextAccessor.HttpContext, string.Empty, new
                 {

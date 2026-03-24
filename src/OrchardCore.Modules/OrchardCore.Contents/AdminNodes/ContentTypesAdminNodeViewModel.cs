@@ -18,4 +18,5 @@ public class ContentTypeEntryViewModel
     public string ContentTypeDisplayName { get; set; }
 
     public string IconClass { get; set; }
+    public string CustomName { get; set; }
 }

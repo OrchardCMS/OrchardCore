@@ -9,6 +9,7 @@ public class AdminNodeEditViewModel
     public string AdminNodeId { get; set; }
     public string AdminNodeType { get; set; }
 
+    public string CustomAdminMenuName { get; set; }
     public int Priority { get; set; }
     public string Position { get; set; }
 

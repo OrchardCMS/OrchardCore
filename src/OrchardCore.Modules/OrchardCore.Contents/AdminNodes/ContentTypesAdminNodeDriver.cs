@@ -70,6 +70,7 @@ public sealed class ContentTypesAdminNodeDriver : DisplayDriver<MenuItem, Conten
                 ContentTypeName = x.ContentTypeName,
                 ContentTypeDisplayName = x.ContentTypeDisplayName,
                 IconClass = x.IconClass,
+                CustomName = x.CustomName,
             })
             .ToArray();
 
