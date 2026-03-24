@@ -85,10 +85,6 @@ Output
 Ellinika
 ```
 
-A common use case is chaining for non-Latin content — transliterate first, then slugify:
-```liquid
-{{ "This is some unicode text" | transliterate | slugify }}
-```
 
 ### `slugify`
 
@@ -106,7 +102,7 @@ Output
 this-is-some-text
 ```
 
-There is an option transliterate (by default true) which first translitera and slugify afterwards:
+There is an option to transliterate (by default `true`) which first transliterates and slugifies afterwards:
 
 ```liquid
 {{ "Ελληνικά" | slugify }}
