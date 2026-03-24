@@ -3,7 +3,7 @@ namespace OrchardCore.Localization.Data;
 public static class DataLocalizationContext
 {
     public const char Separator = ':';
-    public const string ContentTypes = "ContentTypes";
+    public const string ContentTypes = "Content Types";
 
     public static string ContentFields(string fieldName)
         => $"Content Fields{Separator}{fieldName}";
