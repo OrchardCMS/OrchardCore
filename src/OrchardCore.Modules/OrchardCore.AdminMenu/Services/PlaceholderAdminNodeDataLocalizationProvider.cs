@@ -13,12 +13,8 @@ public class PlaceholderAdminNodeDataLocalizationProvider : AdminNodeDataLocaliz
     {
         var adminMenuList = await GetAdminMenuListAsync();
 
-        return adminMenuList.SelectMany(m =>
-        {
-            var context = string.Concat(OrchardCoreConstants.DataLocalizationContext.AdminMenu, Constants.ContextSeparator, m.Name);
-
-            return m.MenuItems.OfType<PlaceholderAdminNode>()
-                .Select(n => new DataLocalizedString(context, n.LinkText, string.Empty));
-        });
+        return adminMenuList.SelectMany(m => m.MenuItems.OfType<PlaceholderAdminNode>()
+            .Select(n => new DataLocalizedString(DataLocalizationContext.AdminMenus(m.Name), n.LinkText, string.Empty))
+        );
     }
 }

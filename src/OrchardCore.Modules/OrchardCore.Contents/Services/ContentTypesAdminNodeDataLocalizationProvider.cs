@@ -14,13 +14,9 @@ public class ContentTypesAdminNodeDataLocalizationProvider : AdminNodeDataLocali
     {
         var adminMenuList = await GetAdminMenuListAsync();
 
-        return adminMenuList.SelectMany(m =>
-        {
-            var context = string.Concat(OrchardCoreConstants.DataLocalizationContext.AdminMenu, Constants.ContextSeparator, m.Name);
-
-            return m.MenuItems.OfType<ContentTypesAdminNode>()
-                .SelectMany(n => n.ContentTypes)
-                .Select(e => new DataLocalizedString(context, e.ContentTypeDisplayName, string.Empty));
-        });
+        return adminMenuList.SelectMany(m => m.MenuItems.OfType<ContentTypesAdminNode>()
+            .SelectMany(n => n.ContentTypes)
+            .Select(e => new DataLocalizedString(DataLocalizationContext.AdminMenus(m.Name), e.ContentTypeDisplayName, string.Empty))
+        );
     }
 }

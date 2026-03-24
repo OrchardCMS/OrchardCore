@@ -5,6 +5,10 @@ public static class DataLocalizationContext
     public const char Separator = ':';
     public const string ContentTypes = "Content Types";
 
+    public static string AdminMenus(string menuName = null) => menuName is null
+        ? "Admin Menus"
+        : $"Admin Menus{Separator}{menuName}";
+
     public static string ContentFields(string fieldName)
         => $"Content Fields{Separator}{fieldName}";
 
