@@ -4,7 +4,7 @@
 @model ShapeViewModel<PlaceholderAdminNode>
 @inject IDataLocalizer D
 @{
-    string localizedAdminMenuItemLinkText = D[Model.Value.LinkText, DataLocalizationContext.AdminMenus(Model.Value.MenuName)];
+    string localizedAdminMenuItemLinkText = D[Model.Value.LinkText, DataLocalizationContext.AdminMenu(Model.Value.MenuName)];
 }
 <div class="@(Model.Value.Enabled ? "" : "disabled")">
     <span>@localizedAdminMenuItemLinkText <span class="text-muted dashed">@T["Placeholder"]</span></span>
