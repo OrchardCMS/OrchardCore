@@ -5,7 +5,11 @@
 {% assign path = '~/search/' | append: index %}
 {% endif %}
 
-{% assign placeholder = Model.Placeholder | default: 'Enter your search term(s)' %}
+{% if Model.Placeholder == blank %}
+{% assign placeholder = "Enter your search term(s)" | t %}
+{% else %}
+{% assign placeholder = Model.Placeholder | d: "Search" %}
+{% endif %}
 
 <form action="{{ path | href }}" method="get">
     <div class="input-group mb-3 mt-5">
