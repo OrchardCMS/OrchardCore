@@ -3,6 +3,8 @@ using OrchardCore.DisplayManagement.Utilities;
 
 namespace OrchardCore.Contents;
 
+#nullable enable
+
 /// <summary>
 /// Provides cached alternate patterns for Content shapes.
 /// Alternates are computed once per unique content type / display type combination and cached for reuse.
