@@ -4,19 +4,15 @@ namespace OrchardCore.AdminMenu.Services;
 
 public abstract class AdminNodeDataLocalizationProvider : ILocalizationDataProvider
 {
-    private readonly IAdminMenuService _adminMenuService;
+    private readonly IAdminMenuAccessor _adminMenuRetrieval;
 
-    public AdminNodeDataLocalizationProvider(IAdminMenuService adminMenuService)
+    public AdminNodeDataLocalizationProvider(IAdminMenuAccessor adminMenuRetrieval)
     {
-        _adminMenuService = adminMenuService;
+        _adminMenuRetrieval = adminMenuRetrieval;
     }
 
     public abstract Task<IEnumerable<DataLocalizedString>> GetDescriptorsAsync();
 
-    protected async Task<IEnumerable<Models.AdminMenu>> GetAdminMenuListAsync()
-    {
-        var adminMenuList = await _adminMenuService.GetAdminMenuListAsync();
-
-        return adminMenuList.AdminMenu;
-    }
+    protected async Task<IEnumerable<Models.AdminMenu>> GetAdminMenusAsync()
+        => await _adminMenuRetrieval.GetAdminMenusAsync();
 }

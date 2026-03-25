@@ -5,13 +5,13 @@ namespace OrchardCore.AdminMenu.Services;
 
 public class ListsAdminNodeDataLocalizationProvider : AdminNodeDataLocalizationProvider
 {
-    public ListsAdminNodeDataLocalizationProvider(IAdminMenuService adminMenuService) : base(adminMenuService)
+    public ListsAdminNodeDataLocalizationProvider(IAdminMenuAccessor adminMenuRetrieval) : base(adminMenuRetrieval)
     {
     }
 
     public override async Task<IEnumerable<DataLocalizedString>> GetDescriptorsAsync()
     {
-        var adminMenuList = await GetAdminMenuListAsync();
+        var adminMenuList = await GetAdminMenusAsync();
 
         return adminMenuList.SelectMany(m =>
         {
