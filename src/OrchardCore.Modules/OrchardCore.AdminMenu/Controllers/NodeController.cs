@@ -135,6 +135,8 @@ public sealed class NodeController : Controller
             return NotFound();
         }
 
+        treeNode.MenuName = adminMenu.Name;
+
         var editor = await _displayManager.UpdateEditorAsync(treeNode, updater: _updateModelAccessor.ModelUpdater, isNew: true, "", "");
         editor.Properties["TreeNode"] = treeNode;
 
@@ -214,6 +216,8 @@ public sealed class NodeController : Controller
         {
             return NotFound();
         }
+
+        treeNode.MenuName = adminMenu.Name;
 
         var editor = await _displayManager.UpdateEditorAsync(treeNode, updater: _updateModelAccessor.ModelUpdater, isNew: false, "", "");
 
