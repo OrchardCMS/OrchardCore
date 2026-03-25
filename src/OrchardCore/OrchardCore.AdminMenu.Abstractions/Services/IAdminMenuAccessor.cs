@@ -1,6 +1,6 @@
 namespace OrchardCore.AdminMenu.Services;
 
-public interface IAdminMenuRetrieval
+public interface IAdminMenuAccessor
 {
     Task<IEnumerable<Models.AdminMenu>> GetAdminMenusAsync();
 }

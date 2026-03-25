@@ -4,9 +4,9 @@ namespace OrchardCore.AdminMenu.Services;
 
 public abstract class AdminNodeDataLocalizationProvider : ILocalizationDataProvider
 {
-    private readonly IAdminMenuRetrieval _adminMenuRetrieval;
+    private readonly IAdminMenuAccessor _adminMenuRetrieval;
 
-    public AdminNodeDataLocalizationProvider(IAdminMenuRetrieval adminMenuRetrieval)
+    public AdminNodeDataLocalizationProvider(IAdminMenuAccessor adminMenuRetrieval)
     {
         _adminMenuRetrieval = adminMenuRetrieval;
     }

@@ -6,7 +6,7 @@ namespace OrchardCore.Contents.Services;
 
 public class ContentTypesAdminNodeDataLocalizationProvider : AdminNodeDataLocalizationProvider
 {
-    public ContentTypesAdminNodeDataLocalizationProvider(IAdminMenuRetrieval adminMenuRetrieval) : base(adminMenuRetrieval)
+    public ContentTypesAdminNodeDataLocalizationProvider(IAdminMenuAccessor adminMenuRetrieval) : base(adminMenuRetrieval)
     {
     }
 

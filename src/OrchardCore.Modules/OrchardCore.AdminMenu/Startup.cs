@@ -20,7 +20,7 @@ public sealed class Startup : StartupBase
         services.AddNavigationProvider<AdminMenu>();
 
         services.AddScoped<IAdminMenuService, AdminMenuService>();
-        services.AddScoped<IAdminMenuRetrieval, AdminMenuRetrieval>();
+        services.AddScoped<IAdminMenuAccessor, AdminMenuAccessor>();
         services.AddScoped<AdminMenuNavigationProvidersCoordinator>();
 
         services.AddRecipeExecutionStep<AdminMenuStep>();

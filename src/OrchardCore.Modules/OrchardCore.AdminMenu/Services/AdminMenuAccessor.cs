@@ -3,11 +3,11 @@ using OrchardCore.Documents;
 
 namespace OrchardCore.AdminMenu.Services;
 
-public class AdminMenuRetrieval : IAdminMenuRetrieval
+internal sealed class AdminMenuAccessor : IAdminMenuAccessor
 {
     private readonly IDocumentManager<AdminMenuList> _documentManager;
 
-    public AdminMenuRetrieval(IDocumentManager<AdminMenuList> documentManager) => _documentManager = documentManager;
+    public AdminMenuAccessor(IDocumentManager<AdminMenuList> documentManager) => _documentManager = documentManager;
 
     public async Task<IEnumerable<Models.AdminMenu>> GetAdminMenusAsync()
     {

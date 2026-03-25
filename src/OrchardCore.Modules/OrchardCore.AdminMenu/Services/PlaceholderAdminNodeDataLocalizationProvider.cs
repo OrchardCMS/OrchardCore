@@ -5,7 +5,7 @@ namespace OrchardCore.AdminMenu.Services;
 
 public class PlaceholderAdminNodeDataLocalizationProvider : AdminNodeDataLocalizationProvider
 {
-    public PlaceholderAdminNodeDataLocalizationProvider(IAdminMenuRetrieval adminMenuRetrieval) : base(adminMenuRetrieval)
+    public PlaceholderAdminNodeDataLocalizationProvider(IAdminMenuAccessor adminMenuRetrieval) : base(adminMenuRetrieval)
     {
     }
 
