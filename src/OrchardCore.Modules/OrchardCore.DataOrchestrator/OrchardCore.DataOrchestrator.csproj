@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+    <Title>OrchardCore ETL</Title>
+    <Description>$(OCCMSDescription)
+
+    Provides a flexible ETL (Extract, Transform, Load) pipeline system with visual editor.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreCMS ETL</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="DocumentFormat.OpenXml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Admin.Abstractions\OrchardCore.Admin.Abstractions.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.ContentManagement\OrchardCore.ContentManagement.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.ContentTypes.Abstractions\OrchardCore.ContentTypes.Abstractions.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Data.YesSql\OrchardCore.Data.YesSql.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.DisplayManagement\OrchardCore.DisplayManagement.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.DataOrchestrator.Core\OrchardCore.DataOrchestrator.Core.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.FileStorage.FileSystem\OrchardCore.FileStorage.FileSystem.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Media.Abstractions\OrchardCore.Media.Abstractions.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Mvc.Core\OrchardCore.Mvc.Core.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Navigation.Core\OrchardCore.Navigation.Core.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.ResourceManagement\OrchardCore.ResourceManagement.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.ResourceManagement.Abstractions\OrchardCore.ResourceManagement.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>

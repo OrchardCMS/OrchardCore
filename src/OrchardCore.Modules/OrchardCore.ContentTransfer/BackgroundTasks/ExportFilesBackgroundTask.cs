@@ -102,7 +102,8 @@ public sealed class ExportFilesBackgroundTask : IBackgroundTask
 
                 var totalCountQuery = BuildExportQuery(
                     session, entry.ContentType, hasFilters,
-                    filters?.PublishedOnly ?? true, filters?.LatestOnly ?? false, filters?.AllVersions ?? false,
+                    filters?.LatestOnly ?? false,
+                    filters?.AllVersions ?? false,
                     filters?.CreatedFrom, filters?.CreatedTo,
                     filters?.ModifiedFrom, filters?.ModifiedTo,
                     filters?.Owners);
@@ -171,7 +172,8 @@ public sealed class ExportFilesBackgroundTask : IBackgroundTask
 
                         var pageQuery = BuildExportQuery(
                             session, entry.ContentType, hasFilters,
-                            filters?.PublishedOnly ?? true, filters?.LatestOnly ?? false, filters?.AllVersions ?? false,
+                            filters?.LatestOnly ?? false,
+                            filters?.AllVersions ?? false,
                             filters?.CreatedFrom, filters?.CreatedTo,
                             filters?.ModifiedFrom, filters?.ModifiedTo,
                             filters?.Owners);
@@ -313,7 +315,6 @@ public sealed class ExportFilesBackgroundTask : IBackgroundTask
         ISession session,
         string contentTypeId,
         bool hasFilters,
-        bool publishedOnly,
         bool latestOnly,
         bool allVersions,
         DateTime? createdFrom,

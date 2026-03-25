@@ -1,0 +1,13 @@
+@model EtlActivityViewModel<ExcelExportLoad>
+
+<header>
+    <h4><i class="fa-solid fa-file-export"></i> @T["Excel Workbook Export"]</h4>
+</header>
+@if (!string.IsNullOrWhiteSpace(Model.Activity.FileName))
+{
+    <div>@T["File:"] @Model.Activity.FileName</div>
+}
+@if (!string.IsNullOrWhiteSpace(Model.Activity.WorksheetName))
+{
+    <div>@T["Sheet:"] @Model.Activity.WorksheetName</div>
+}

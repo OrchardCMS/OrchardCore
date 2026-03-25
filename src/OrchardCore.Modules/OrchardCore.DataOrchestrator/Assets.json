@@ -1,0 +1,15 @@
+[
+  {
+    "action": "sass",
+    "name": "etl-pipeline-editor-css",
+    "source": "Assets/Styles/etl-pipeline-editor.scss",
+    "tags": ["etl", "css"]
+  },
+  {
+    "action": "parcel",
+    "name": "etl-pipeline-editor-js",
+    "source": "Assets/Scripts/etl-pipeline-editor.ts",
+    "dest": "wwwroot/Scripts/",
+    "tags": ["etl", "js"]
+  }
+]

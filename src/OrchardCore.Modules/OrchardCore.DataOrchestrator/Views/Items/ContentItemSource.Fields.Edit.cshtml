@@ -1,0 +1,35 @@
+@model ContentItemSourceViewModel
+
+<div class="mb-3">
+    <label asp-for="ContentType" class="form-label">@T["Content Type"]</label>
+    <select asp-for="ContentType" asp-items="Model.AvailableContentTypes" class="form-select">
+        <option value="">@T["Select a content type"]</option>
+    </select>
+    <span class="hint">@T["Choose which content type to extract."]</span>
+</div>
+
+<div class="mb-3">
+    <label asp-for="VersionScope" class="form-label">@T["Version Scope"]</label>
+    <select asp-for="VersionScope" class="form-select">
+        <option value="@ContentItemSource.PublishedVersionScope">@T["Published"]</option>
+        <option value="@ContentItemSource.LatestVersionScope">@T["Latest"]</option>
+        <option value="@ContentItemSource.AllVersionsScope">@T["All Versions"]</option>
+    </select>
+</div>
+
+<div class="mb-3">
+    <label asp-for="Owner" class="form-label">@T["Owner"]</label>
+    <input asp-for="Owner" class="form-control" />
+    <span class="hint">@T["Optional owner filter. Leave empty to include all owners."]</span>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-3">
+        <label asp-for="CreatedUtcFrom" class="form-label">@T["Created From (UTC)"]</label>
+        <input asp-for="CreatedUtcFrom" type="datetime-local" class="form-control" />
+    </div>
+    <div class="col-md-6 mb-3">
+        <label asp-for="CreatedUtcTo" class="form-label">@T["Created To (UTC)"]</label>
+        <input asp-for="CreatedUtcTo" type="datetime-local" class="form-control" />
+    </div>
+</div>

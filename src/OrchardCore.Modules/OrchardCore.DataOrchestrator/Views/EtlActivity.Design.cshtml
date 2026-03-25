@@ -1,0 +1,40 @@
+@using OrchardCore.DataOrchestrator.Activities
+@using OrchardCore.DataOrchestrator.Models
+@{
+    var activity = (IEtlActivity)Model.Activity;
+    var activityRecord = (EtlActivityRecord)Model.ActivityRecord;
+    var isStart = activityRecord.IsStart;
+    var activityCssClass = activity switch
+    {
+        EtlSourceActivity => "activity-source",
+        EtlTransformActivity => "activity-transform",
+        EtlLoadActivity => "activity-load",
+        _ => string.Empty,
+    };
+    var xPosition = activityRecord.X <= 0 ? 0 : activityRecord.X;
+    var yPosition = activityRecord.Y <= 0 ? 0 : activityRecord.Y;
+}
+<div class="activity @activityCssClass @(isStart ? "activity-start" : string.Empty)"
+     style="left:@(xPosition)px; top:@(yPosition)px;"
+     id="@($"activity-{Model.PipelineId}-{activityRecord.ActivityId}")"
+     data-activity-id="@activityRecord.ActivityId"
+     data-activity-start="@(isStart.ToString().ToLowerInvariant())">
+    @await DisplayAsync(Model.Content)
+    <div class="activity-commands d-none">
+        @if (activity.HasEditor)
+        {
+            <a class="btn btn-sm btn-primary activity-edit-action"
+               asp-action="EditActivity"
+               asp-controller="Admin"
+               asp-route-pipelineId="@Model.PipelineId"
+               asp-route-activityId="@activityRecord.ActivityId"
+               asp-route-returnUrl="@Model.ReturnUrl"
+               title="@T["Edit"]">
+                <i class="fa-solid fa-pencil" aria-hidden="true"></i>
+            </a>
+        }
+        <a class="btn btn-sm btn-danger activity-delete-action" href="#" title="@T["Delete"]">
+            <i class="fa-solid fa-trash" aria-hidden="true"></i>
+        </a>
+    </div>
+</div>

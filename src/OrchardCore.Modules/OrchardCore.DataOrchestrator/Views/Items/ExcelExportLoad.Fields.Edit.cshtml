@@ -1,0 +1,17 @@
+@model ExcelExportLoadViewModel
+
+<div class="mb-3">
+    <label asp-for="FileName" class="form-label">@T["Excel File Name"]</label>
+    <input asp-for="FileName" class="form-control" />
+    <span class="hint">@T["The workbook is written to Orchard Media using this path, for example `exports/report.xlsx`."]</span>
+</div>
+
+<div class="mb-3">
+    <label asp-for="WorksheetName" class="form-label">@T["Worksheet Name"]</label>
+    <input asp-for="WorksheetName" class="form-control" />
+    <span class="hint">@T["The worksheet name to create inside the workbook."]</span>
+</div>
+
+<div class="alert alert-info">
+    @T["Exports are currently written directly to the Media Library. Large exports are not queued yet."]
+</div>

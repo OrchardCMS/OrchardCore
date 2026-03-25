@@ -1,0 +1,98 @@
+@model FieldMappingTransformViewModel
+
+<div class="mb-3">
+    <label asp-for="MappingsJson" class="form-label">@T["Mappings"]</label>
+    <input asp-for="MappingsJson" type="hidden" />
+    @if (Model.AvailableSourceFields.Count > 0)
+    {
+        <div class="mb-2">
+            <span class="hint">@T["Detected source fields:"]</span>
+            <div class="d-flex flex-wrap gap-1 mt-1">
+                @foreach (var field in Model.AvailableSourceFields)
+                {
+                    <span class="badge text-bg-light border">@field</span>
+                }
+            </div>
+        </div>
+    }
+    <div class="table-responsive">
+        <table class="table table-sm" id="field-mapping-table">
+            <thead>
+                <tr>
+                    <th>@T["Source Field"]</th>
+                    <th>@T["Output Field"]</th>
+                    <th class="w-1"></th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+    <button type="button" class="btn btn-sm btn-secondary" id="add-field-mapping-row">@T["Add Mapping"]</button>
+    <span class="hint d-block mt-2">@T["Use dot-notation such as `DisplayText` or `Author.UserName`."]</span>
+</div>
+
+<datalist id="field-mapping-source-options">
+    @foreach (var field in Model.AvailableSourceFields)
+    {
+        <option value="@field"></option>
+    }
+</datalist>
+
+<template id="field-mapping-row-template">
+    <tr>
+        <td><input type="text" class="form-control mapping-source" list="field-mapping-source-options" /></td>
+        <td><input type="text" class="form-control mapping-target" /></td>
+        <td><button type="button" class="btn btn-sm btn-danger remove-mapping-row">@T["Remove"]</button></td>
+    </tr>
+</template>
+
+<script at="Foot">
+document.addEventListener('DOMContentLoaded', () => {
+    const tableBody = document.querySelector('#field-mapping-table tbody');
+    const template = document.getElementById('field-mapping-row-template');
+    const addButton = document.getElementById('add-field-mapping-row');
+    const hiddenInput = document.getElementById('@Html.IdFor(x => x.MappingsJson)');
+
+    if (!tableBody || !template || !addButton || !hiddenInput) {
+        return;
+    }
+
+    const sync = () => {
+        const rows = Array.from(tableBody.querySelectorAll('tr'));
+        const mappings = rows
+            .map((row) => ({
+                source: row.querySelector('.mapping-source')?.value?.trim(),
+                target: row.querySelector('.mapping-target')?.value?.trim()
+            }))
+            .filter((mapping) => mapping.source && mapping.target);
+
+        hiddenInput.value = JSON.stringify(mappings);
+    };
+
+    const addRow = (source = '', target = '') => {
+        const clone = template.content.firstElementChild.cloneNode(true);
+        clone.querySelector('.mapping-source').value = source;
+        clone.querySelector('.mapping-target').value = target;
+        clone.querySelector('.remove-mapping-row').addEventListener('click', () => {
+            clone.remove();
+            sync();
+        });
+        clone.querySelectorAll('input').forEach((input) => input.addEventListener('input', sync));
+        tableBody.appendChild(clone);
+        sync();
+    };
+
+    try {
+        const existingMappings = hiddenInput.value ? JSON.parse(hiddenInput.value) : [];
+        if (Array.isArray(existingMappings) && existingMappings.length > 0) {
+            existingMappings.forEach((mapping) => addRow(mapping.source || '', mapping.target || ''));
+        } else {
+            addRow();
+        }
+    } catch {
+        addRow();
+    }
+
+    addButton.addEventListener('click', () => addRow());
+});
+</script>

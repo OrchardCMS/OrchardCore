@@ -1,0 +1,29 @@
+@using OrchardCore.DataOrchestrator.Activities
+@model dynamic
+@{
+    var activity = (IEtlActivity)Model.Activity;
+    var category = activity.Category;
+}
+<div class="col activity-card" data-category="@category" data-activity-type="@category">
+    <div class="card h-100 shadow-sm">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+                <span class="badge text-bg-light border">@T[category switch
+                    {
+                        "Transforms" => "Transformation",
+                        _ => category.TrimEnd('s'),
+                    }]</span>
+            </div>
+            <h5 class="card-title">@activity.DisplayText</h5>
+            @await DisplayAsync(Model.Content)
+        </div>
+        <div class="card-footer text-muted text-sm-end">
+            <a class="btn btn-primary btn-sm activity-add-action"
+               asp-action="CreateActivity"
+               asp-controller="Admin"
+                asp-route-pipelineId="@Model.PipelineId"
+               asp-route-activityName="@activity.Name"
+               asp-route-returnUrl="@Model.ReturnUrl">@T["Add"]</a>
+        </div>
+    </div>
+</div>
