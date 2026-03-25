@@ -125,7 +125,7 @@ public sealed class AdminController : Controller
     }
     private static FlowAlignment GetDefaultAlignment(FlowPartSettings settings)
     {
-        
+
         if (settings?.DefaultAlignment == null)
         {
             return FlowAlignment.Justify;
