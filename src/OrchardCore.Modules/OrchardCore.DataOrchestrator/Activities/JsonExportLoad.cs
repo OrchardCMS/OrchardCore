@@ -63,14 +63,23 @@ public sealed class JsonExportLoad : EtlLoadActivity
             using var stream = new MemoryStream(bytes);
             await mediaFileStore.CreateFileFromStreamAsync(fileName, stream, overwrite: true);
 
-            logger.LogInformation("ETL JSON export wrote {Count} records to '{FileName}'.", loaded, fileName);
+            if (logger.IsEnabled(LogLevel.Information))
+            {
+                logger.LogInformation("ETL JSON export wrote {Count} records to '{FileName}'.", loaded, fileName);
+            }
 
             return Outcomes("Done");
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "ETL JSON export failed for '{FileName}'.", FileName);
-            return EtlActivityResult.Failure($"JSON export failed for '{FileName}': {ex.Message}");
+            var fileName = FileName;
+
+            if (logger.IsEnabled(LogLevel.Error))
+            {
+                logger.LogError(ex, "ETL JSON export failed for '{FileName}'.", fileName);
+            }
+
+            return EtlActivityResult.Failure($"JSON export failed for '{fileName}': {ex.Message}");
         }
     }
 }

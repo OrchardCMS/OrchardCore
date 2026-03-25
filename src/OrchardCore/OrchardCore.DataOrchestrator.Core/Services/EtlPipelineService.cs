@@ -52,7 +52,10 @@ public sealed class EtlPipelineService : IEtlPipelineService
 
         await _session.SaveAsync(pipeline);
 
-        _logger.LogDebug("Saved ETL pipeline '{PipelineName}' ({PipelineId}).", pipeline.Name, pipeline.PipelineId);
+        if (_logger.IsEnabled(LogLevel.Debug))
+        {
+            _logger.LogDebug("Saved ETL pipeline '{PipelineName}' ({PipelineId}).", pipeline.Name, pipeline.PipelineId);
+        }
     }
 
     /// <inheritdoc />
@@ -64,7 +67,10 @@ public sealed class EtlPipelineService : IEtlPipelineService
         {
             _session.Delete(pipeline);
 
-            _logger.LogInformation("Deleted ETL pipeline '{PipelineName}' ({PipelineId}).", pipeline.Name, pipeline.PipelineId);
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation("Deleted ETL pipeline '{PipelineName}' ({PipelineId}).", pipeline.Name, pipeline.PipelineId);
+            }
         }
     }
 

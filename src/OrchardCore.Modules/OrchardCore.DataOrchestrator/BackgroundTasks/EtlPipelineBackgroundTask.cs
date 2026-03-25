@@ -38,7 +38,10 @@ public sealed class EtlPipelineBackgroundTask : IBackgroundTask
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Error executing ETL pipeline '{PipelineName}'.", pipeline.Name);
+                if (logger.IsEnabled(LogLevel.Error))
+                {
+                    logger.LogError(ex, "Error executing ETL pipeline '{PipelineName}'.", pipeline.Name);
+                }
             }
         }
     }
