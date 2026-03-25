@@ -96,7 +96,10 @@ public sealed class ContentItemLoad : EtlLoadActivity
             }
         }
 
-        logger.LogInformation("ETL ContentItem load completed: {Loaded} loaded, {Failed} failed.", loaded, failed);
+        if (logger.IsEnabled(LogLevel.Information))
+        {
+            logger.LogInformation("ETL ContentItem load completed: {Loaded} loaded, {Failed} failed.", loaded, failed);
+        }
 
         return failed > 0
             ? EtlActivityResult.Failure($"{failed} record(s) failed to load.")

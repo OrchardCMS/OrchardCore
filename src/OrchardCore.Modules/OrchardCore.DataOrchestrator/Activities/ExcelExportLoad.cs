@@ -114,14 +114,23 @@ public sealed class ExcelExportLoad : EtlLoadActivity
             var fileName = mediaFileStore.NormalizePath(FileName);
             await mediaFileStore.CreateFileFromStreamAsync(fileName, stream, overwrite: true);
 
-            logger.LogInformation("ETL Excel export wrote {Count} records to '{FileName}'.", rows.Count, fileName);
+            if (logger.IsEnabled(LogLevel.Information))
+            {
+                logger.LogInformation("ETL Excel export wrote {Count} records to '{FileName}'.", rows.Count, fileName);
+            }
 
             return Outcomes("Done");
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "ETL Excel export failed for '{FileName}'.", FileName);
-            return EtlActivityResult.Failure($"Excel export failed for '{FileName}': {ex.Message}");
+            var fileName = FileName;
+
+            if (logger.IsEnabled(LogLevel.Error))
+            {
+                logger.LogError(ex, "ETL Excel export failed for '{FileName}'.", fileName);
+            }
+
+            return EtlActivityResult.Failure($"Excel export failed for '{fileName}': {ex.Message}");
         }
     }
 

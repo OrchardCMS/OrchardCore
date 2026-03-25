@@ -43,7 +43,10 @@ public sealed class EtlPipelineExecutor : IEtlPipelineExecutor
 
         try
         {
-            _logger.LogInformation("Starting ETL pipeline '{PipelineName}' ({PipelineId}).", pipeline.Name, pipeline.PipelineId);
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation("Starting ETL pipeline '{PipelineName}' ({PipelineId}).", pipeline.Name, pipeline.PipelineId);
+            }
 
             var context = new EtlExecutionContext(pipeline, _activityLibrary, _serviceProvider, _logger, cancellationToken);
 
@@ -114,21 +117,30 @@ public sealed class EtlPipelineExecutor : IEtlPipelineExecutor
             log.Status = cancellationToken.IsCancellationRequested ? "Cancelled" :
                          log.ErrorCount > 0 ? "Failed" : "Success";
 
-            _logger.LogInformation(
-                "ETL pipeline '{PipelineName}' completed with status {Status}.",
-                pipeline.Name, log.Status);
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation(
+                    "ETL pipeline '{PipelineName}' completed with status {Status}.",
+                    pipeline.Name, log.Status);
+            }
         }
         catch (OperationCanceledException)
         {
             log.Status = "Cancelled";
-            _logger.LogWarning("ETL pipeline '{PipelineName}' was cancelled.", pipeline.Name);
+            if (_logger.IsEnabled(LogLevel.Warning))
+            {
+                _logger.LogWarning("ETL pipeline '{PipelineName}' was cancelled.", pipeline.Name);
+            }
         }
         catch (Exception ex)
         {
             log.Status = "Failed";
             log.Errors.Add(ex.Message);
             log.ErrorCount++;
-            _logger.LogError(ex, "ETL pipeline '{PipelineName}' failed with an unhandled error.", pipeline.Name);
+            if (_logger.IsEnabled(LogLevel.Error))
+            {
+                _logger.LogError(ex, "ETL pipeline '{PipelineName}' failed with an unhandled error.", pipeline.Name);
+            }
         }
         finally
         {

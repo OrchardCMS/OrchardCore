@@ -68,7 +68,11 @@ public sealed class EtlActivityLibrary : IEtlActivityLibrary
 
         if (activityType == null)
         {
-            _logger.LogWarning("Requested ETL activity '{ActivityName}' does not exist in the library.", name);
+            if (_logger.IsEnabled(LogLevel.Warning))
+            {
+                _logger.LogWarning("Requested ETL activity '{ActivityName}' does not exist in the library.", name);
+            }
+
             return null;
         }
 
