@@ -81,6 +81,7 @@
     <Project Path="src/OrchardCore.Modules/OrchardCore.ContentTransfer/OrchardCore.ContentTransfer.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.ContentTypes/OrchardCore.ContentTypes.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.CustomSettings/OrchardCore.CustomSettings.csproj" />
+    <Project Path="src/OrchardCore.Modules/OrchardCore.DataOrchestrator/OrchardCore.DataOrchestrator.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Demo/OrchardCore.Demo.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Feeds/OrchardCore.Feeds.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Flows/OrchardCore.Flows.csproj" />
@@ -200,6 +201,8 @@
     <Project Path="src/OrchardCore/OrchardCore.Contents.TagHelpers/OrchardCore.Contents.TagHelpers.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.ContentTransfer.Abstractions/OrchardCore.ContentTransfer.Abstractions.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.ContentTransfer.Core/OrchardCore.ContentTransfer.Core.csproj" />
+    <Project Path="src/OrchardCore/OrchardCore.DataOrchestrator.Abstractions/OrchardCore.DataOrchestrator.Abstractions.csproj" />
+    <Project Path="src/OrchardCore/OrchardCore.DataOrchestrator.Core/OrchardCore.DataOrchestrator.Core.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.ContentTypes.Abstractions/OrchardCore.ContentTypes.Abstractions.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Data.Abstractions/OrchardCore.Data.Abstractions.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Data.YesSql.Abstractions/OrchardCore.Data.YesSql.Abstractions.csproj" />

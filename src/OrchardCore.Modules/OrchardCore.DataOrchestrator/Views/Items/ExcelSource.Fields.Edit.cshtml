@@ -1,0 +1,18 @@
+@model ExcelSourceViewModel
+
+<div class="mb-3">
+    <label asp-for="FilePath" class="form-label">@T["Excel File Path"]</label>
+    <input asp-for="FilePath" class="form-control" />
+    <span class="hint">@T["Enter the media library path to an .xlsx file, for example `imports/products.xlsx`."]</span>
+</div>
+
+<div class="mb-3">
+    <label asp-for="WorksheetName" class="form-label">@T["Worksheet Name"]</label>
+    <input asp-for="WorksheetName" class="form-control" />
+    <span class="hint">@T["Leave empty to read the first worksheet."]</span>
+</div>
+
+<div class="form-check">
+    <input asp-for="HasHeaderRow" class="form-check-input" />
+    <label asp-for="HasHeaderRow" class="form-check-label">@T["First row contains column headers"]</label>
+</div>

@@ -471,7 +471,7 @@ public sealed class AdminController : Controller, IUpdateModel
         var exportColumns = columns.Where(x => x.Type != ImportColumnType.ImportOnly).ToList();
 
         // Build a filtered query for counting.
-        var countQuery = BuildExportQuery(contentTypeId, partialExport, publishedOnly, latestOnly, allVersions, createdFrom, createdTo, modifiedFrom, modifiedTo, owners);
+        var countQuery = BuildExportQuery(contentTypeId, partialExport, latestOnly, allVersions, createdFrom, createdTo, modifiedFrom, modifiedTo, owners);
         var totalCount = await countQuery.CountAsync();
 
         var contentImportOptions = HttpContext.RequestServices.GetRequiredService<IOptions<ContentImportOptions>>().Value;
@@ -574,7 +574,7 @@ public sealed class AdminController : Controller, IUpdateModel
 
                 while (true)
                 {
-                    var pageQuery = BuildExportQuery(contentTypeId, partialExport, publishedOnly, latestOnly, allVersions, createdFrom, createdTo, modifiedFrom, modifiedTo, owners);
+                    var pageQuery = BuildExportQuery(contentTypeId, partialExport, latestOnly, allVersions, createdFrom, createdTo, modifiedFrom, modifiedTo, owners);
 
                     var contentItems = await pageQuery
                         .Skip(page * batchSize)
@@ -1148,7 +1148,6 @@ public sealed class AdminController : Controller, IUpdateModel
     private IQuery<ContentItem> BuildExportQuery(
         string contentTypeId,
         bool partialExport,
-        bool publishedOnly,
         bool latestOnly,
         bool allVersions,
         DateTime? createdFrom,
