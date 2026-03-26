@@ -273,7 +273,7 @@ public class SqlParserTests
     public void ShouldParseOrderByWithLimit(string sql, string expectedSql)
     {
         var result = SqlParser.TryParse(sql, _schema, _defaultDialect, _defaultTablePrefix, null, out var rawQuery, out var messages);
-        
+
         Assert.True(result, messages?.FirstOrDefault() ?? "Parse failed");
         Assert.Equal(expectedSql, FormatSql(rawQuery));
     }
@@ -286,7 +286,7 @@ public class SqlParserTests
     public void ShouldParseWhereWithOrderBy(string sql, string expectedSql)
     {
         var result = SqlParser.TryParse(sql, _schema, _defaultDialect, _defaultTablePrefix, null, out var rawQuery, out var messages);
-        
+
         Assert.True(result, messages?.FirstOrDefault() ?? "Parse failed");
         Assert.Equal(expectedSql, FormatSql(rawQuery));
     }
@@ -302,7 +302,7 @@ public class SqlParserTests
     public void ShouldParseParameterlessFunctions(string sql, string expectedSql)
     {
         var result = SqlParser.TryParse(sql, _schema, _defaultDialect, _defaultTablePrefix, null, out var rawQuery, out var messages);
-        
+
         Assert.True(result, messages?.FirstOrDefault() ?? "Parse failed");
         Assert.Equal(expectedSql, FormatSql(rawQuery));
     }

@@ -1,5 +1,3 @@
-using OrchardCore.DisplayManagement;
-using Xunit;
 using DisplayManagementArguments = OrchardCore.DisplayManagement.Arguments;
 
 #nullable enable
@@ -98,7 +96,7 @@ public partial class ArgumentsInterceptorTests
 
         Assert.Equal(2, result.Named.Count);
         Assert.Equal("Product", result.Named["Name"]);
-        
+
         var metadata = result.Named["Metadata"];
         Assert.NotNull(metadata);
     }
@@ -111,7 +109,7 @@ public partial class ArgumentsInterceptorTests
         // Without interceptors: reflection with caching
 
         const int iterations = 1000;
-        
+
         for (int i = 0; i < iterations; i++)
         {
             var result = DisplayManagementArguments.From(new { Index = i, Name = $"Item{i}" });
