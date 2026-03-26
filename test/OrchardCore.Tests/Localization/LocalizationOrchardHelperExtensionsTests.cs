@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
-using OrchardCore;
 using OrchardCore.Localization;
 
 namespace OrchardCore.Tests.Localization;
