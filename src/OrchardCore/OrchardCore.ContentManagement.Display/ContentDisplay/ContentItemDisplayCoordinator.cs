@@ -104,7 +104,17 @@ public class ContentItemDisplayCoordinator : IContentDisplayHandler
             {
                 var shapeType = context.DisplayType != OrchardCoreConstants.DisplayType.Detail ? "ContentPart_" + context.DisplayType : "ContentPart";
 
-                var shapeResult = new ShapeResult(shapeType, ctx => ctx.ShapeFactory.CreateAsync(shapeType, shapeContext => ValueTask.FromResult<IShape>(new ZoneHolding(() => shapeContext.ShapeFactory.CreateAsync("Zone"))), ctx));
+                var shapeResult = new ShapeResult(
+                    shapeType,
+                    ctx => ctx.ShapeFactory.CreateAsync(
+                        shapeType,
+                        static shapeContext =>
+                            ValueTask.FromResult<IShape>(
+                                new ZoneHolding<IShapeFactory>(
+                                    static factory => factory.CreateAsync("Zone"),
+                                    shapeContext.ShapeFactory)),
+                        ctx));
+
                 shapeResult.Differentiator(partName);
                 shapeResult.Name(partName);
                 shapeResult.Location("Content");
