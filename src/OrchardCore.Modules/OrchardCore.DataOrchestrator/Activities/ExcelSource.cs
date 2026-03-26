@@ -124,7 +124,7 @@ public sealed class ExcelSource : EtlSourceActivity
         }
     }
 
-    private static List<string> BuildColumnNames(IReadOnlyList<string> headerValues, bool hasHeaderRow)
+    private static List<string> BuildColumnNames(List<string> headerValues, bool hasHeaderRow)
     {
         if (!hasHeaderRow)
         {

@@ -121,7 +121,7 @@ public sealed class FieldMappingTransformDisplayDriver : EtlActivityDisplayDrive
         return fields;
     }
 
-    private static IEnumerable<string> GetJsonFields(JsonObject properties)
+    private static List<string> GetJsonFields(JsonObject properties)
     {
         var data = properties?["Data"]?.GetValue<string>();
         if (string.IsNullOrWhiteSpace(data))
