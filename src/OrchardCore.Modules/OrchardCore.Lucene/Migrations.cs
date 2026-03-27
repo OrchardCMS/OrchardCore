@@ -39,7 +39,7 @@ public sealed class Migrations : DataMigration
         return 1;
     }
 
-    public int UpdateFrom1()
+    public static int UpdateFrom1()
     {
         ShellScope.AddDeferredTask(async scope =>
         {
