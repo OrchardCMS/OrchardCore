@@ -224,6 +224,3 @@ src/Templates/**/content/**/.template.config/
 BenchmarkDotNet.Artifacts
 
 .playwright-cli
-
-# Functional test artifacts
-src/OrchardCore.Cms.Web/Recipes/
