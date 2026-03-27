@@ -103,6 +103,9 @@ jobs:
     services:
       postgres:
         image: postgres:11
+        credentials:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
         ports:
           - 5432:5432
         env:
@@ -155,6 +158,9 @@ jobs:
     services:
       mysql:
         image: mysql:8
+        credentials:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
         ports:
           - 3306:3306
         env:
