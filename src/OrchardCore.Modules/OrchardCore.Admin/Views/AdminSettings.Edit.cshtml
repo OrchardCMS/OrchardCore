@@ -31,3 +31,11 @@
     </div>
     <span class="hint">@T["Whether the titles are displayed in the top bar."]</span>
 </fieldset>
+
+<fieldset class="mb-3" asp-validation-class-for="DisplayStickyButtons">
+    <div class="form-check">
+        <input asp-for="DisplayStickyButtons" class="form-check-input" type="checkbox" />
+        <label asp-for="DisplayStickyButtons" class="form-check-label">@T["Display buttons at the top"]</label>
+    </div>
+    <span class="hint">@T["Whether the buttons are displayed at the top."]</span>
+</fieldset>

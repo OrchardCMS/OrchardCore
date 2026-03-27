@@ -98,6 +98,18 @@ public sealed class ContentsDriver : ContentDisplayDriver
                     && await _authorizationService.AuthorizeAsync(user, CommonPermissions.EditContent, contentItem)),
             Dynamic("Content_DeleteButton").Location("Actions:40")
                 .RenderWhen(async () => contentItem.Id != 0
+                    && await _authorizationService.AuthorizeAsync(user, CommonPermissions.DeleteContent, contentItem)),
+
+            Dynamic("Content_PublishButton").Location("MobileActions:10")
+                .RenderWhen(() => _authorizationService.AuthorizeAsync(user, CommonPermissions.PublishContent, contentItem)),
+            Dynamic("Content_UnpublishButton").Location("MobileActions:20")
+                .RenderWhen(async () => contentItem.Published
+                    && await _authorizationService.AuthorizeAsync(user, CommonPermissions.PublishContent, contentItem)),
+            Dynamic("Content_SaveDraftButton").Location("MobileActions:30")
+                .RenderWhen(async () => contentTypeDefinition.IsDraftable()
+                    && await _authorizationService.AuthorizeAsync(user, CommonPermissions.EditContent, contentItem)),
+            Dynamic("Content_DeleteButton").Location("MobileActions:40")
+                .RenderWhen(async () => contentItem.Id != 0
                     && await _authorizationService.AuthorizeAsync(user, CommonPermissions.DeleteContent, contentItem))
             );
     }

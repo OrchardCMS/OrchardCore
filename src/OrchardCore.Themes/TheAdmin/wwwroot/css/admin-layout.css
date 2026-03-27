@@ -27,6 +27,7 @@
   /* Action bar should always be less than dropdown menu */
   --oc-action-bar-zindex: 980;
   --oc-second-action-bar-zindex: 983;
+  --oc-action-bar-mobile-height: 5rem;
   /* Undefined Bootstrap variables */
   --bs-dropdown-zindex: 1000;
   --bs-zindex-fixed: 1030;

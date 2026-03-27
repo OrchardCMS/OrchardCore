@@ -6,3 +6,31 @@
 .second-action-bar {
     z-index: var(--oc-second-action-bar-zindex);
 }
+
+.action-bar-mobile {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    z-index: var(--oc-action-bar-zindex);
+    border-radius: 0 !important;
+    border-left: none !important;
+    border-right: none !important;
+    border-bottom: none !important;
+    margin-left: calc(var(--bs-border-width) * -1);
+    margin-right: calc(var(--bs-border-width) * -1);
+}
+
+.action-bar-mobile .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+
+@include media-breakpoint-down(md) {
+    .action-bar-mobile {
+        display: block;
+    }
+
+    .action-bar-mobile-content {
+        padding-bottom: var(--oc-action-bar-mobile-height);
+    }
+}

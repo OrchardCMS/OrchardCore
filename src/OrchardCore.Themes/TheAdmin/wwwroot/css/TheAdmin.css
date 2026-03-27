@@ -28,6 +28,7 @@
   /* Action bar should always be less than dropdown menu */
   --oc-action-bar-zindex: 980;
   --oc-second-action-bar-zindex: 983;
+  --oc-action-bar-mobile-height: 5rem;
   /* Undefined Bootstrap variables */
   --bs-dropdown-zindex: 1000;
   --bs-zindex-fixed: 1030;
@@ -169,6 +170,34 @@ a:hover {
 
 .second-action-bar {
   z-index: var(--oc-second-action-bar-zindex);
+}
+
+.action-bar-mobile {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  z-index: var(--oc-action-bar-zindex);
+  border-radius: 0 !important;
+  border-left: none !important;
+  border-right: none !important;
+  border-bottom: none !important;
+  margin-left: calc(var(--bs-border-width) * -1);
+  margin-right: calc(var(--bs-border-width) * -1);
+}
+
+.action-bar-mobile .btn, .action-bar-mobile .button {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+}
+
+@media (max-width: 767.98px) {
+  .action-bar-mobile {
+    display: block;
+  }
+
+  .action-bar-mobile-content {
+    padding-bottom: var(--oc-action-bar-mobile-height);
+  }
 }
 
 .ta-badge {

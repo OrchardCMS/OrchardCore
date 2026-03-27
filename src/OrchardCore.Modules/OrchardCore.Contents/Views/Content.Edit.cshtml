@@ -1,9 +1,32 @@
+@using Microsoft.AspNetCore.Html
+@using OrchardCore.Admin.Models
 @using OrchardCore.DisplayManagement.Zones
 @using OrchardCore
 
+@{
+    var adminSettings = Site.As<AdminSettings>();
+    var returnUrl = (string)Context.Request.Query["returnUrl"];
+    var hasReturnUrl = !string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl);
+}
+
 <style asp-src="~/OrchardCore.Contents/Styles/Contents.min.css" debug-src="~/OrchardCore.Contents/Styles/Contents.css"></style>
 
-<div class="edit-container @(Model.Sidebar != null ? "sidebar" : "")">
+@if (adminSettings.DisplayStickyButtons && Model.Actions != null)
+{
+    <div class="card text-bg-theme mb-3 position-sticky action-bar d-none d-md-block">
+        <div class="card-body p-3 text-end">
+            @await DisplayAsync(Model.Actions)
+
+            @if (hasReturnUrl)
+            {
+                <a class="btn btn-secondary cancel mb-1" role="button" href="@returnUrl">@T["Cancel"]</a>
+            }
+
+        </div>
+    </div>
+}
+
+<div class="edit-container action-bar-mobile-content @(Model.Sidebar != null ? "sidebar" : "")">
     <div class="edit-body">
         <div class="edit-item-primary">
             @if (Model.Content != null)
@@ -20,17 +43,13 @@
             }
         </div>
 
-        @if (Model.Actions != null)
+        @if (!adminSettings.DisplayStickyButtons && Model.Actions)
         {
-            <div class="@Orchard.GetWrapperClasses("edit-item-secondary","group")">
+            <div class="@Orchard.GetWrapperClasses("edit-item-secondary", "group") d-none d-md-block">
                 <div class="@Orchard.GetEndClasses(true, "edit-item-actions")">
                     @await DisplayAsync(Model.Actions)
 
-                    @{
-                        var returnUrl = Context.Request.Query["returnUrl"];
-                    }
-
-                    @if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
+                    @if (hasReturnUrl)
                     {
                         <a class="btn btn-secondary cancel mb-1" role="button" href="@returnUrl">@T["Cancel"]</a>
                     }
@@ -47,10 +66,16 @@
     }
 </div>
 
-@if (Model.Actions != null)
+@if (Model.MobileActions != null)
 {
-    @if (!string.IsNullOrWhiteSpace(Context.Request.Query["returnUrl"]))
-    {
-        @Html.Hidden("returnUrl", Context.Request.Query["returnUrl"])
-    }
+    <div class="card text-bg-theme action-bar-mobile">
+        <div class="card-body p-2">
+            @await DisplayAsync(Model.MobileActions)
+
+            @if (hasReturnUrl)
+            {
+                <a class="btn btn-secondary cancel mb-1" role="button" href="@returnUrl">@T["Cancel"]</a>
+            }
+        </div>
+    </div>
 }
