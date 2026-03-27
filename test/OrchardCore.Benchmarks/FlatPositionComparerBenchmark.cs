@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using BenchmarkDotNet.Attributes;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Zones;
@@ -18,7 +17,7 @@ public class FlatPositionComparerBenchmark
     public FlatPositionComparerBenchmark()
     {
         // Create a variety of test cases that represent real-world usage
-        _positions = 
+        _positions =
         [
             "1", "2", "10", "1.1", "1.2", "1.10", "2.5", "before", "after",
             "BEFORE", "AFTER", "1.before", "1.after", "before.1", "after.1",
@@ -73,7 +72,7 @@ public class FlatPositionComparerBenchmark
     public void OriginalCompareWithTrimming()
     {
         var positions = new[] { "test:", "test", "test.", "test..", ":test", "::test:" };
-        
+
         for (var i = 0; i < positions.Length; i++)
         {
             for (var j = 0; j < positions.Length; j++)
@@ -87,7 +86,7 @@ public class FlatPositionComparerBenchmark
     public void OptimizedCompareWithTrimming()
     {
         var positions = new[] { "test:", "test", "test.", "test..", ":test", "::test:" };
-        
+
         for (var i = 0; i < positions.Length; i++)
         {
             for (var j = 0; j < positions.Length; j++)

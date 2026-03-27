@@ -78,6 +78,6 @@ public sealed class AdminMenuFilter : IAsyncResultFilter
 [GenerateArguments]
 internal sealed partial class NavigationArguments
 {
-    public string MenuName { get;set; }
+    public string MenuName { get; set; }
     public RouteData RouteData { get; set; }
 }
