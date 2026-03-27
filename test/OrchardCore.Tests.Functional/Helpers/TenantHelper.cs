@@ -79,11 +79,12 @@ public static class TenantHelper
             }
             else
             {
-                // If a provider is set (via env var), set the table prefix to the tenant name, if the field exists.
+                // If a provider is set (via env var), set the table prefix (prefer TenantInfo.TablePrefix, fall back to tenant name) if the field exists.
                 var tablePrefix = page.Locator("#TablePrefix");
                 if (await tablePrefix.CountAsync() > 0)
                 {
-                    await tablePrefix.FillAsync(tenant.Name);
+                    var tablePrefixValue = string.IsNullOrEmpty(tenant.TablePrefix) ? tenant.Name : tenant.TablePrefix;
+                    await tablePrefix.FillAsync(tablePrefixValue);
                 }
             }
         }
