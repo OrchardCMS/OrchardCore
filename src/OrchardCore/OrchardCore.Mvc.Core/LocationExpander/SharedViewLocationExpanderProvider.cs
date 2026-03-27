@@ -23,7 +23,7 @@ public class SharedViewLocationExpanderProvider : IViewLocationExpanderProvider
     private readonly IMemoryCache _memoryCache;
 
     public SharedViewLocationExpanderProvider(
-        ViewFileProviderAccessor fileProviderAccessor,
+        RazorCompilationFileProviderAccessor fileProviderAccessor,
         IExtensionManager extensionManager,
         ShellDescriptor shellDescriptor,
         IMemoryCache memoryCache)

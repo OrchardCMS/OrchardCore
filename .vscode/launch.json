@@ -1,25 +1,28 @@
 {
   "version": "0.2.0",
-  "inputs": [
-    {
-      "id": "targetFramework",
-      "type": "pickString",
-      "description": "Select target framework",
-      "options": [
-        "net10.0"
-      ],
-      "default": "net10.0"
-    }
-  ],
   "configurations": [
     {
-      "name": "Launch (debug)",
+      "name": ".NET Core Launch (console debug) - net10.0",
       "type": "coreclr",
       "request": "launch",
-      "preLaunchTask": "dotnet build (debug)",
-      "program": "${workspaceFolder}/src/OrchardCore.Cms.Web/bin/Debug/${input:targetFramework}/OrchardCore.Cms.Web.dll",
+      "preLaunchTask": "dotnet build (debug) - net10.0",
+      "program": "${workspaceRoot}/src/OrchardCore.Cms.Web/bin/Debug/net10.0/OrchardCore.Cms.Web.dll",
       "args": [],
-      "cwd": "${workspaceFolder}/src/OrchardCore.Cms.Web",
+      "cwd": "${workspaceRoot}/src/OrchardCore.Cms.Web",
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "stopAtEntry": false
+    },
+    {
+      "name": ".NET Core Launch (web debug) - net10.0",
+      "type": "coreclr",
+      "request": "launch",
+      "internalConsoleOptions": "openOnSessionStart",
+      "preLaunchTask": "dotnet build (debug) - net10.0",
+      "program": "${workspaceRoot}/src/OrchardCore.Cms.Web/bin/Debug/net10.0/OrchardCore.Cms.Web.dll",
+      "args": [],
+      "cwd": "${workspaceRoot}/src/OrchardCore.Cms.Web",
       "env": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
@@ -30,13 +33,13 @@
       }
     },
     {
-      "name": "Launch (release)",
+      "name": ".NET Core Launch (web release) - net10.0",
       "type": "coreclr",
       "request": "launch",
-      "preLaunchTask": "dotnet build (release)",
-      "program": "${workspaceFolder}/src/OrchardCore.Cms.Web/bin/Release/${input:targetFramework}/OrchardCore.Cms.Web.dll",
+      "preLaunchTask": "dotnet build (release) - net10.0",
+      "program": "${workspaceRoot}/src/OrchardCore.Cms.Web/bin/Release/net10.0/OrchardCore.Cms.Web.dll",
       "args": [],
-      "cwd": "${workspaceFolder}/src/OrchardCore.Cms.Web",
+      "cwd": "${workspaceRoot}/src/OrchardCore.Cms.Web",
       "env": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
@@ -47,22 +50,25 @@
       }
     },
     {
-      "name": "Launch with Hot Reload (dotnet watch)",
-      "type": "node-terminal",
+      "name": ".NET Core Launch (web debug) - dotnet watch - net10.0",
+      "type": "dotnetwatchattach",
       "request": "launch",
-      "command": "dotnet watch --project src/OrchardCore.Cms.Web/OrchardCore.Cms.Web.csproj -f ${input:targetFramework}",
-      "cwd": "${workspaceFolder}",
-      "env": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        "DOTNET_WATCH_SUPPRESS_LAUNCH_BROWSER": "true"
+      "task": "dotnet watch - net10.0",
+      "program": "OrchardCore.Cms.Web.exe",
+      "args": {
+        "env": {
+          "ASPNETCORE_ENVIRONMENT": "Development"
+        }
       },
+      "cwd": "${workspaceRoot}/src/OrchardCore.Cms.Web",
+      "stopAtEntry": false,
       "serverReadyAction": {
         "action": "openExternally",
         "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
       }
     },
     {
-      "name": "Attach to Process",
+      "name": ".NET Core Attach",
       "type": "coreclr",
       "request": "attach",
       "processId": "${command:pickProcess}"

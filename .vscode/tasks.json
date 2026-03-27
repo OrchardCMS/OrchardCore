@@ -1,69 +1,42 @@
 {
   "version": "2.0.0",
-  "inputs": [
-    {
-      "id": "targetFramework",
-      "type": "pickString",
-      "description": "Select target framework",
-      "options": [
-        "net10.0"
-      ],
-      "default": "net10.0"
+  "linux": {
+    "command": "sh",
+    "args": [
+      "-c"
+    ]
+  },
+  "osx": {
+    "command": "sh",
+    "args": [
+      "-c"
+    ]
+  },
+  "windows": {
+    "options": {
+      "shell": {
+        "executable": "cmd.exe",
+        "args": [
+          "/C"
+        ]
+      }
     }
-  ],
+  },
   "tasks": [
     {
-      "label": "dotnet watch",
+      "label": "dotnet watch - net10.0",
       "type": "process",
       "command": "dotnet",
       "args": [
         "watch",
-        "--project",
-        "${workspaceFolder}/src/OrchardCore.Cms.Web/OrchardCore.Cms.Web.csproj",
+        "run",
+        "${workspaceRoot}/src/OrchardCore.Cms.Web",
         "-f",
-        "${input:targetFramework}"
+        "net10.0"
       ],
       "options": {
-        "env": {
-          "ASPNETCORE_ENVIRONMENT": "Development"
-        }
+        "cwd": "${workspaceRoot}/src/OrchardCore.Cms.Web"
       },
-      "isBackground": true,
-      "problemMatcher": {
-        "base": "$msCompile",
-        "background": {
-          "activeOnStart": true,
-          "beginsPattern": "dotnet watch",
-          "endsPattern": "\\bNow listening on:\\s+(https?://\\S+)"
-        }
-      }
-    },
-    {
-      "label": "dotnet build (debug)",
-      "type": "shell",
-      "command": "dotnet",
-      "args": [
-        "build",
-        "${workspaceFolder}/src/OrchardCore.Cms.Web",
-        "-c",
-        "Debug",
-        "-f",
-        "${input:targetFramework}"
-      ],
-      "problemMatcher": "$msCompile"
-    },
-    {
-      "label": "dotnet build (release)",
-      "type": "shell",
-      "command": "dotnet",
-      "args": [
-        "build",
-        "${workspaceFolder}/src/OrchardCore.Cms.Web",
-        "-c",
-        "Release",
-        "-f",
-        "${input:targetFramework}"
-      ],
       "problemMatcher": "$msCompile"
     },
     {
@@ -73,9 +46,9 @@
       "args": [
         "run",
         "--project",
-        "${workspaceFolder}/src/OrchardCore.Cms.Web/OrchardCore.Cms.Web.csproj",
+        "${workspaceRoot}\\src\\OrchardCore.Cms.Web\\OrchardCore.Cms.Web.csproj",
         "-f",
-        "${input:targetFramework}"
+        "net10.0"
       ]
     },
     {
@@ -116,32 +89,60 @@
       ]
     },
     {
-      "label": "dotnet rebuild (debug)",
+      "label": "dotnet build (debug) - net10.0",
       "type": "shell",
       "command": "dotnet",
       "args": [
         "build",
-        "${workspaceFolder}/src/OrchardCore.Cms.Web",
-        "--no-incremental",
+        "${workspaceRoot}/src/OrchardCore.Cms.Web",
         "-c",
         "Debug",
         "-f",
-        "${input:targetFramework}"
+        "net10.0"
       ],
       "problemMatcher": "$msCompile"
     },
     {
-      "label": "dotnet rebuild (release)",
+      "label": "dotnet build (release) - net10.0",
       "type": "shell",
       "command": "dotnet",
       "args": [
         "build",
-        "${workspaceFolder}/src/OrchardCore.Cms.Web",
+        "${workspaceRoot}/src/OrchardCore.Cms.Web",
+        "-c",
+        "Release",
+        "-f",
+        "net10.0"
+      ],
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "dotnet rebuild (debug) - net10.0",
+      "type": "shell",
+      "command": "dotnet",
+      "args": [
+        "build",
+        "${workspaceRoot}/src/OrchardCore.Cms.Web",
+        "--no-incremental",
+        "-c",
+        "Debug",
+        "-f",
+        "net10.0"
+      ],
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "dotnet rebuild (release) - net10.0",
+      "type": "shell",
+      "command": "dotnet",
+      "args": [
+        "build",
+        "${workspaceRoot}/src/OrchardCore.Cms.Web",
         "--no-incremental",
         "-c",
         "Release",
         "-f",
-        "${input:targetFramework}"
+        "net10.0"
       ],
       "problemMatcher": "$msCompile"
     },
@@ -152,59 +153,59 @@
       "windows": {
         "command": "Remove-Item",
         "args": [
-          "${workspaceFolder}\\.build\\release\\*",
+          "${workspaceRoot}\\.build\\release\\*",
           "-recurse"
         ]
       },
       "args": [
         "-rfv",
-        "${workspaceFolder}/.build/release/*"
+        "${workspaceRoot}/.build/release/*"
       ]
     },
     {
-      "label": "dotnet publish (self-contained) - release",
+      "label": "dotnet publish (self-contained) - release - net10.0",
       "type": "shell",
       "command": "dotnet",
       "windows": {
         "command": "dotnet",
         "args": [
           "publish",
-          "${workspaceFolder}\\src\\OrchardCore.Cms.Web",
+          "${workspaceRoot}\\src\\OrchardCore.Cms.Web",
           "--configuration",
           "release",
           "--runtime",
           "win-x64",
           "--self-contained",
           "--framework",
-          "${input:targetFramework}",
+          "net10.0",
           "--output",
           ".\\.build\\release"
         ]
       },
       "args": [
         "publish",
-        "${workspaceFolder}/src/OrchardCore.Cms.Web",
+        "${workspaceRoot}/src/OrchardCore.Cms.Web",
         "--configuration",
         "release",
         "--runtime",
         "linux-x64",
         "--self-contained",
         "--framework",
-        "${input:targetFramework}",
+        "net10.0",
         "--output",
         "./.build/release"
       ],
       "problemMatcher": "$msCompile"
     },
     {
-      "label": "dotnet publish (framework dependent) - release",
+      "label": "dotnet publish (framework dependent) - release - net10.0",
       "type": "shell",
       "command": "dotnet",
       "windows": {
         "command": "dotnet",
         "args": [
           "publish",
-          "${workspaceFolder}\\src\\OrchardCore.Cms.Web",
+          "${workspaceRoot}\\src\\OrchardCore.Cms.Web",
           "--configuration",
           "release",
           "--runtime",
@@ -212,14 +213,14 @@
           "--self-contained",
           "false",
           "--framework",
-          "${input:targetFramework}",
+          "net10.0",
           "--output",
           ".\\.build\\release"
         ]
       },
       "args": [
         "publish",
-        "${workspaceFolder}/src/OrchardCore.Cms.Web",
+        "${workspaceRoot}/src/OrchardCore.Cms.Web",
         "--configuration",
         "release",
         "--runtime",
@@ -227,24 +228,24 @@
         "--self-contained",
         "false",
         "--framework",
-        "${input:targetFramework}",
+        "net10.0",
         "--output",
         "./.build/release"
       ],
       "problemMatcher": "$msCompile"
     },
     {
-      "label": "tasks: dotnet publish release (self-contained)",
+      "label": "tasks: dotnet publish release (self-contained) - net10.0",
       "dependsOn": [
         "cleanup publish folder",
-        "dotnet publish (self-contained) - release"
+        "dotnet publish (self-contained) - net10.0"
       ]
     },
     {
-      "label": "tasks: dotnet publish release (framework dependent)",
+      "label": "tasks: dotnet publish release (framework dependent) - net10.0",
       "dependsOn": [
         "cleanup publish folder",
-        "dotnet publish (framework dependent) - release"
+        "dotnet publish (framework dependent) - net10.0"
       ]
     },
     {
