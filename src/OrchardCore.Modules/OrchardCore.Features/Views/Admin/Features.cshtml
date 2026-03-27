@@ -110,18 +110,32 @@
                                         @if (feature.FeatureDependencies != null && feature.FeatureDependencies.Any())
                                         {
                                             <div class="mb-1">
-                                                @foreach (var d in dependencies)
-                                                {
-                                                    <span class="badge ta-badge">
-                                                        @(string.IsNullOrEmpty(d.Descriptor.Name) ? d.Descriptor.Id : d.Descriptor.Name)
-                                                    </span>
-                                                }
-                                                @foreach (var d in missingDependencies)
-                                                {
-                                                    <span class="badge text-bg-warning">
-                                                        @d
-                                                    </span>
-                                                }
+                                                <div id="direct-dependencies" class="d-inline">
+                                                    @foreach (var dependencyId in feature.Descriptor.Dependencies)
+                                                    {
+                                                        var dependencyName = Model.Features.Where(f => f.Descriptor.Id == dependencyId)
+                                                            .OrderBy(f => f.Descriptor.Name)
+                                                            .First().Descriptor.Name;
+                                                        <span class="badge ta-badge">
+                                                            @dependencyName
+                                                        </span>
+                                                    }
+                                                </div>
+                                                <div id="transitive-dependencies" class="d-none d-inline">
+                                                    @foreach (var d in dependencies)
+                                                    {
+                                                        <span class="badge ta-badge">
+                                                            @(string.IsNullOrEmpty(d.Descriptor.Name) ? d.Descriptor.Id : d.Descriptor.Name)
+                                                        </span>
+                                                    }
+                                                    @foreach (var d in missingDependencies)
+                                                    {
+                                                        <span class="badge text-bg-warning">
+                                                            @d
+                                                        </span>
+                                                    }
+                                                </div>
+                                                <a href="#" class="dependencies-toggle ms-1 link-primary small" data-show="@T["Show more"]" data-hide="@T["Show less"]">@T["Show more"]</a>
                                             </div>
                                         }
 
@@ -245,6 +259,20 @@
         }).on('click', function () {
             $("[name='BulkAction']").val($(this).data('action'));
             $("[name='submit.BulkAction']").click();
+        });
+
+        $('.dependencies-toggle').on('click', function (e) {
+            e.preventDefault();
+
+            var $toggle = $(this);
+            var $direct_dependencies = $toggle.siblings('#direct-dependencies');
+            var $transitive_dependencies = $toggle.prev('#transitive-dependencies')
+
+            $transitive_dependencies.toggleClass('d-none');
+            $direct_dependencies.toggleClass('d-none', !$transitive_dependencies.hasClass('d-none'));
+            $toggle.text($transitive_dependencies.hasClass('d-none')
+                ? $toggle.data('show')
+                : $toggle.data('hide'));
         });
     });
 </script>
