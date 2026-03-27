@@ -23,11 +23,36 @@ public sealed class EmbeddedRecipeHarvester : IRecipeHarvester
     {
         var recipes = new List<RecipeDescriptor>();
         var assembly = typeof(EmbeddedRecipeHarvester).Assembly;
+        var assemblyPrefix = assembly.GetName().Name + ".";
 
         foreach (var resourceName in assembly.GetManifestResourceNames()
             .Where(n => n.EndsWith(".recipe.json", StringComparison.OrdinalIgnoreCase)))
         {
-            var fileInfo = _fileProvider.GetFileInfo(resourceName);
+            string subpath;
+            if (resourceName.StartsWith(assemblyPrefix, StringComparison.Ordinal))
+            {
+                // Trim the assembly name prefix to get a name relative to the provider base namespace.
+                var trimmed = resourceName.Substring(assemblyPrefix.Length);
+
+                // Convert the first namespace separator to a path separator (e.g. "Recipes.Foo.recipe.json" -> "Recipes/Foo.recipe.json"),
+                // which matches the subpath format expected by EmbeddedFileProvider.
+                var firstDotIndex = trimmed.IndexOf('.');
+                if (firstDotIndex >= 0)
+                {
+                    subpath = trimmed.Substring(0, firstDotIndex) + "/" + trimmed.Substring(firstDotIndex + 1);
+                }
+                else
+                {
+                    subpath = trimmed;
+                }
+            }
+            else
+            {
+                // Fallback: use the resource name as-is if it does not start with the assembly prefix.
+                subpath = resourceName;
+            }
+
+            var fileInfo = _fileProvider.GetFileInfo(subpath);
             if (!fileInfo.Exists)
             {
                 continue;
