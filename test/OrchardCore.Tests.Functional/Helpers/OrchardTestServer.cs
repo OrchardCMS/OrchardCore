@@ -14,12 +14,22 @@ namespace OrchardCore.Tests.Functional.Helpers;
 
 public sealed class OrchardTestServer : IAsyncDisposable
 {
-    // Capture the original values once at process start, before any fixture runs.
-    private static readonly string _originalConnectionString =
-        System.Environment.GetEnvironmentVariable("OrchardCore__ConnectionString");
+    // Capture the original values once at process start, then clear the env vars so
+    // ShellSettingsManager can't re-apply them with highest priority — each host gets
+    // its per-fixture connection string via tenants.json and builder.Configuration instead.
+    private static readonly string _originalConnectionString = CaptureAndClear("OrchardCore__ConnectionString");
+    private static readonly string _originalDatabaseProvider = CaptureAndClear("OrchardCore__DatabaseProvider");
 
-    private static readonly string _originalDatabaseProvider =
-        System.Environment.GetEnvironmentVariable("OrchardCore__DatabaseProvider");
+    private static string CaptureAndClear(string variable)
+    {
+        var value = System.Environment.GetEnvironmentVariable(variable);
+        if (!string.IsNullOrEmpty(value))
+        {
+            System.Environment.SetEnvironmentVariable(variable, null);
+        }
+
+        return value;
+    }
 
     private readonly WebApplication _app;
     private readonly FakeLogCollector _logCollector;
