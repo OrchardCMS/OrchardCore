@@ -106,7 +106,7 @@ await page.CloseAsync();
 
 ### Log assertions
 
-A `FakeLoggerProvider` (from `Microsoft.Extensions.Diagnostics.Testing`) captures all Warning+ log entries during the test. After each test, `AssertNoLoggedIssues()` verifies no Error or Critical messages were logged, catching server-side issues that may be invisible in the browser. Known benign warnings (e.g., DataProtection key configuration) are filtered out.
+A `FakeLoggerProvider` (from `Microsoft.Extensions.Diagnostics.Testing`) captures all Warning+ log entries during the test. After each test, `AssertNoLoggedIssues()` fails if any Warning or higher message was logged, catching server-side issues that may be invisible in the browser. A specific known benign DataProtection warning is filtered out.
 
 ## Environment variables
 
