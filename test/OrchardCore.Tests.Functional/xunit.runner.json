@@ -1,4 +1,3 @@
 {
-  "$schema": "https://xunit.net/schema/current/xunit.runner.schema.json",
-  "maxParallelThreads": 4
+  "$schema": "https://xunit.net/schema/current/xunit.runner.schema.json"
 }
