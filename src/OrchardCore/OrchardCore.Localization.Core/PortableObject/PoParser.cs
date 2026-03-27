@@ -61,9 +61,7 @@ public static class PoParser
     /// </summary>
     /// <param name="reader">The <see cref="TextReader"/>.</param>
     /// <returns>A list of culture records.</returns>
-#pragma warning disable CA1822 // Mark members as static
     public static IEnumerable<CultureDictionaryRecord> Parse(TextReader reader)
-#pragma warning restore CA1822 // Mark members as static
     {
         var entryBuilder = new DictionaryRecordBuilder();
         string line;

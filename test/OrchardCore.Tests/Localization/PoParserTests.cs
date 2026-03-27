@@ -202,7 +202,7 @@ public class PoParserTests
     }
 
     [Fact]
-    public void Parse_RetursSimpleEntry()
+    public void Parse_ReturnsSimpleEntry()
     {
         // msgid "Unknown system error"
         // msgstr "Error desconegut del sistema"
@@ -397,7 +397,7 @@ public class PoParserTests
         Assert.Equal("Složka {0} neexistuje", entries[1].Translations[0]);
     }
 
-    private async static Task<CultureDictionaryRecord[]> ParseTextAsync(string resourceName)
+    private static async Task<CultureDictionaryRecord[]> ParseTextAsync(string resourceName)
     {
         var testAssembly = typeof(PoParserTests).Assembly;
         using var resource = testAssembly.GetManifestResourceStream("OrchardCore.Tests.Localization.PoFiles." + resourceName + ".po");
