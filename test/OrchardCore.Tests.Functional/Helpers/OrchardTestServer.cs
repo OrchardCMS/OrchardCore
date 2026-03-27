@@ -204,6 +204,8 @@ public sealed class OrchardTestServer : IAsyncDisposable
             return;
         }
 
+        ValidateDatabaseName(dbName);
+
         var adminDb = databaseProvider switch
         {
             "Postgres" => "postgres",
@@ -227,11 +229,16 @@ public sealed class OrchardTestServer : IAsyncDisposable
         connection.Open();
 
         using var checkCommand = connection.CreateCommand();
+        var param = checkCommand.CreateParameter();
+        param.ParameterName = "@dbName";
+        param.Value = dbName;
+        checkCommand.Parameters.Add(param);
+
         checkCommand.CommandText = databaseProvider switch
         {
-            "Postgres" => $"SELECT 1 FROM pg_database WHERE datname = '{dbName}'",
-            "MySql" => $"SELECT 1 FROM information_schema.schemata WHERE schema_name = '{dbName}'",
-            "SqlConnection" => $"SELECT 1 FROM sys.databases WHERE name = '{dbName}'",
+            "Postgres" => "SELECT 1 FROM pg_database WHERE datname = @dbName",
+            "MySql" => "SELECT 1 FROM information_schema.schemata WHERE schema_name = @dbName",
+            "SqlConnection" => "SELECT 1 FROM sys.databases WHERE name = @dbName",
             _ => null,
         };
 
@@ -240,16 +247,26 @@ public sealed class OrchardTestServer : IAsyncDisposable
             return;
         }
 
+        // CREATE DATABASE is DDL and cannot be parameterized; quote per provider.
         using var createCommand = connection.CreateCommand();
         createCommand.CommandText = databaseProvider switch
         {
-            "Postgres" => $"CREATE DATABASE \"{dbName}\"",
-            "MySql" => $"CREATE DATABASE `{dbName}`",
-            "SqlConnection" => $"CREATE DATABASE [{dbName}]",
+            "Postgres" => $"CREATE DATABASE \"{dbName.Replace("\"", "\"\"")}\"",
+            "MySql" => $"CREATE DATABASE `{dbName.Replace("`", "``")}`",
+            "SqlConnection" => $"CREATE DATABASE [{dbName.Replace("]", "]]")}]",
             _ => null,
         };
 
         createCommand.ExecuteNonQuery();
+    }
+
+    private static void ValidateDatabaseName(string dbName)
+    {
+        if (!System.Text.RegularExpressions.Regex.IsMatch(dbName, @"^[a-zA-Z0-9_\-]+$"))
+        {
+            throw new ArgumentException(
+                $"Database name '{dbName}' contains invalid characters. Only alphanumeric, underscore, and hyphen are allowed.");
+        }
     }
 
     private static System.Data.Common.DbConnection CreateConnection(string connectionString, string databaseProvider)

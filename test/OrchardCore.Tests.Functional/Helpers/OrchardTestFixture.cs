@@ -19,6 +19,7 @@ public sealed class OrchardTestFixture : IAsyncDisposable
     private IPlaywright _playwright;
     private IBrowser _browser;
     private bool _disposed;
+    private bool _recipeCopied;
 
     public string BaseUrl { get; private set; }
     public IBrowser Browser => _browser;
@@ -53,7 +54,7 @@ public sealed class OrchardTestFixture : IAsyncDisposable
         // Copy test recipes if needed.
         if (!_isMvc)
         {
-            AppLifecycleHelper.CopyRecipe(AppDir, "migrations.recipe.json");
+            _recipeCopied = AppLifecycleHelper.CopyRecipe(AppDir, "migrations.recipe.json");
         }
 
         if (string.IsNullOrEmpty(System.Environment.GetEnvironmentVariable("ORCHARD_EXTERNAL")))
@@ -162,8 +163,8 @@ public sealed class OrchardTestFixture : IAsyncDisposable
             await _server.DisposeAsync();
         }
 
-        // Clean up copied recipes.
-        if (!_isMvc)
+        // Only delete the recipe if this fixture created it.
+        if (_recipeCopied)
         {
             AppLifecycleHelper.DeleteRecipe(AppDir, "migrations.recipe.json");
         }

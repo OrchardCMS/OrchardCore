@@ -35,9 +35,9 @@ dotnet test --project test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functi
 
 Tests use `OrchardTestServer`, which builds and starts OrchardCore in-process using `WebApplication.CreateBuilder` with the same configuration as the actual `Program.cs` entry points. Each test class fixture gets its own server instance on a dynamic port, with an isolated `App_Data_Tests_{FixtureName}` directory.
 
-### Parallel execution
+### Serial execution
 
-Each CMS recipe test class has its own `IClassFixture<T>` (e.g., `AgencyFixture`, `BlogFixture`) that starts an independent OrchardCore instance with an isolated `App_Data_Tests_{FixtureName}` directory. Test classes run serially (`maxParallelThreads: 1` in `xunit.runner.json`) to avoid database conflicts when using shared database servers (MySQL, PostgreSQL, SQL Server) in CI.
+Tests run serially (`maxParallelThreads: 1` in `xunit.runner.json`) to avoid database conflicts when using shared database servers (MySQL, PostgreSQL, SQL Server) in CI. Each CMS recipe test class has its own `IClassFixture<T>` (e.g., `AgencyFixture`, `BlogFixture`) that starts an independent OrchardCore instance with an isolated app data directory and fixture-specific database name.
 
 ### Test structure
 
@@ -46,26 +46,40 @@ test/OrchardCore.Tests.Functional/
   Helpers/
     OrchardTestServer.cs       # Builds and runs OrchardCore in-process
     OrchardTestFixture.cs      # Manages Playwright browser + server lifecycle
-    InMemoryLoggerProvider.cs  # Captures log entries for assertion
+    AppLifecycleHelper.cs      # Copies/deletes embedded recipe files (thread-safe)
     AuthHelper.cs              # IPage.LoginAsync() extension
     TenantHelper.cs            # IPage.SiteSetupAsync(), CreateTenantAsync() extensions
     ButtonHelper.cs            # IPage.ClickSaveAsync() etc. extensions
-    ...
+    ConfigurationHelper.cs     # IPage.SetPageSizeAsync() extension
+    FeatureHelper.cs           # IPage.EnableFeatureAsync() / DisableFeatureAsync()
+    SelectorHelper.cs          # IPage.GetByCy() / FindByCy() for data-cy attributes
+    TestUtils.cs               # OrchardConfig, TenantInfo, GenerateTenantInfo()
   Tests/
     Cms/
       CmsRecipeFixture.cs      # Base fixture: starts app, runs setup with a recipe
       CmsTestBase.cs           # Base test class with log assertion in teardown
       AgencyTests.cs           # Tests for the Agency recipe
       BlogTests.cs             # Tests for the Blog recipe
+      ComingSoonTests.cs       # Tests for the ComingSoon recipe
+      HeadlessTests.cs         # Tests for the Headless recipe
+      MigrationsTests.cs       # Tests for database migrations via custom recipe
       SaasFixture.cs           # Fixture for SaaS multi-tenancy tests
       SaasTests.cs             # Tests tenant creation and isolation
-      ...
     Mvc/
       MvcSetupFixture.cs       # Fixture for the MVC HelloWorld app
       MvcTests.cs              # Smoke test for MVC module
   Fixtures/
-    migrations.recipe.json     # Custom recipe for testing database migrations
+    migrations.recipe.json     # Embedded recipe for testing database migrations
 ```
+
+### Fixture hierarchy
+
+Tests follow a layered fixture pattern:
+
+1. **`OrchardTestServer`** - Builds and starts the host, manages database isolation, captures logs via `FakeLoggerProvider`.
+2. **`OrchardTestFixture`** - Wraps `OrchardTestServer` with Playwright browser/context lifecycle, tracing, and app data cleanup.
+3. **`CmsRecipeFixture`** - Abstract base that runs site setup with a specific recipe during initialization. Concrete fixtures: `AgencyFixture`, `BlogFixture`, `ComingSoonFixture`, `HeadlessFixture`, `MigrationsFixture`.
+4. **`CmsTestBase<TFixture>`** - Generic base test class that calls `AssertNoLoggedIssues()` in teardown.
 
 ### Helper extensions
 
@@ -81,16 +95,16 @@ await page.CloseAsync();
 
 ### Log assertions
 
-An `InMemoryLoggerProvider` captures all Warning+ log entries during the test. After each test, `AssertNoLoggedErrors()` verifies no Error or Critical messages were logged, catching server-side issues that may be invisible in the browser.
+A `FakeLoggerProvider` (from `Microsoft.Extensions.Diagnostics.Testing`) captures all Warning+ log entries during the test. After each test, `AssertNoLoggedIssues()` verifies no Error or Critical messages were logged, catching server-side issues that may be invisible in the browser. Known benign warnings (e.g., DataProtection key configuration) are filtered out.
 
 ## Environment variables
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `ASPNETCORE_ENVIRONMENT` | App environment (`Development` or `Production`) | `Production` |
 | `PLAYWRIGHT_TRACING` | Enable Playwright tracing (set to any value) | Disabled |
 | `ORCHARD_EXTERNAL` | Skip in-process hosting, use an externally running app | Not set |
 | `ORCHARD_URL` | Base URL when using `ORCHARD_EXTERNAL` | `http://localhost:5000` |
+| `ORCHARD_APP_DATA` | App data directory path | Not set |
 | `OrchardCore__DatabaseProvider` | Database provider (`Postgres`, `MySql`, `SqlConnection`) | SQLite |
 | `OrchardCore__ConnectionString` | Connection string for the database provider | Not set |
 
