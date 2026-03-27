@@ -101,9 +101,9 @@
     <Project Path="src/OrchardCore.Modules/OrchardCore.PublishLater/OrchardCore.PublishLater.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Queries/OrchardCore.Queries.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Rules/OrchardCore.Rules.csproj" />
-    <Project Path="src/OrchardCore.Modules/OrchardCore.Search.AzureAI/OrchardCore.Search.AzureAI.csproj" />
-    <Project Path="src/OrchardCore.Modules/OrchardCore.Search.Elasticsearch/OrchardCore.Search.Elasticsearch.csproj" />
-    <Project Path="src/OrchardCore.Modules/OrchardCore.Search.Lucene/OrchardCore.Search.Lucene.csproj" />
+    <Project Path="src/OrchardCore.Modules/OrchardCore.AzureAI/OrchardCore.AzureAI.csproj" />
+    <Project Path="src/OrchardCore.Modules/OrchardCore.Elasticsearch/OrchardCore.Elasticsearch.csproj" />
+    <Project Path="src/OrchardCore.Modules/OrchardCore.Lucene/OrchardCore.Lucene.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Search/OrchardCore.Search.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Seo/OrchardCore.Seo.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Shortcodes/OrchardCore.Shortcodes.csproj" />
@@ -251,10 +251,10 @@
     <Project Path="src/OrchardCore/OrchardCore.Rules.Core/OrchardCore.Rules.Core.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Scripting.JavaScript/OrchardCore.Scripting.JavaScript.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Search.Abstractions/OrchardCore.Search.Abstractions.csproj" />
-    <Project Path="src/OrchardCore/OrchardCore.Search.AzureAI.Core/OrchardCore.Search.AzureAI.Core.csproj" />
-    <Project Path="src/OrchardCore/OrchardCore.Search.Elasticsearch.Core/OrchardCore.Search.Elasticsearch.Core.csproj" />
+    <Project Path="src/OrchardCore/OrchardCore.AzureAI.Core/OrchardCore.AzureAI.Core.csproj" />
+    <Project Path="src/OrchardCore/OrchardCore.Elasticsearch.Core/OrchardCore.Elasticsearch.Core.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Search.Lucene.Abstractions/OrchardCore.Search.Lucene.Abstractions.csproj" />
-    <Project Path="src/OrchardCore/OrchardCore.Search.Lucene.Core/OrchardCore.Search.Lucene.Core.csproj" />
+    <Project Path="src/OrchardCore/OrchardCore.Lucene.Core/OrchardCore.Lucene.Core.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Seo.Abstractions/OrchardCore.Seo.Abstractions.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Settings.Core/OrchardCore.Settings.Core.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Setup.Abstractions/OrchardCore.Setup.Abstractions.csproj" />

@@ -36,13 +36,13 @@ You can register for example a custom analyzer with the DI using this example fr
 
 ```csharp
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.Search.Lucene.Model;
-using OrchardCore.Search.Lucene.Services;
+using OrchardCore.Lucene.Model;
+using OrchardCore.Lucene.Services;
 using OrchardCore.Modules;
 
-namespace OrchardCore.Search.Lucene.FrenchAnalyzer
+namespace OrchardCore.Lucene.FrenchAnalyzer
 {
-    [Feature("OrchardCore.Search.Lucene.FrenchAnalyzer")]
+    [Feature("OrchardCore.Lucene.FrenchAnalyzer")]
     public sealed class Startup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
@@ -75,7 +75,7 @@ By enabling the `Lucene` module, we also added a new route mapping to `/search` 
 
 ![Anonymous user role settings](images/5.jpg)
 
-By default, each indexes are permission protected so that no one can query them if you don't set which ones should be public. To make the "Search" `Lucene` index available for *Anonymous* users on your website, you will require to go and edit this user role and add the permission to it. Each index will be listed here in that `OrchardCore.Search.Lucene Feature` section.
+By default, each indexes are permission protected so that no one can query them if you don't set which ones should be public. To make the "Search" `Lucene` index available for *Anonymous* users on your website, you will require to go and edit this user role and add the permission to it. Each index will be listed here in that `OrchardCore.Lucene Feature` section.
 
 ## 5th step : Set your search provider
 

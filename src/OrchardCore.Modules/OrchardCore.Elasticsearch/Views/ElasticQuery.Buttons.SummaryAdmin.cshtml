@@ -1,0 +1,21 @@
+@using OrchardCore.Queries
+@using OrchardCore.Elasticsearch.Models
+@using OrchardCore.Entities
+@{
+    var query = Model.Query as Query;
+    var metadata = query.As<ElasticsearchQueryMetadata>();
+
+    string base64Query = null;
+
+    if (!string.IsNullOrEmpty(metadata.Template))
+    {
+        base64Query = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(metadata.Template));
+    }
+}
+
+<a asp-action="QueryIndex"
+   asp-controller="Admin"
+   asp-area="OrchardCore.Elasticsearch"
+   asp-route-query="@base64Query"
+   asp-route-indexName="@metadata.Index"
+   class="btn btn-success btn-sm">@T["Run"]</a>
