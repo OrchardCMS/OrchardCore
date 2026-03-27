@@ -1,5 +1,8 @@
+using System.Net;
+using System.Net.Mime;
 using System.Text;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Features;
 using OrchardCore.Modules.FileProviders;
 
 namespace OrchardCore.Seo.Services;
@@ -28,7 +31,7 @@ public class RobotsMiddleware
 
             if (file.Exists)
             {
-                // At this point we know that the a robots.txt file exists as a static file.
+                // At this point we know that a robots.txt file exists as a static file.
                 // Let the static file provider handle it.
                 await _next(httpContext);
 
@@ -49,13 +52,28 @@ public class RobotsMiddleware
                 content.AppendLine(item);
             }
 
-            httpContext.Response.Clear();
-            httpContext.Response.ContentType = "text/plain";
+            ClearResponse(httpContext.Response);
+            httpContext.Response.ContentType = MediaTypeNames.Text.Plain;
             await httpContext.Response.WriteAsync(content.ToString());
 
             return;
         }
 
         await _next(httpContext);
+    }
+
+    /// <summary>
+    /// Resets the <paramref name="response"/> status and body. Similar to <see cref="ResponseExtensions.Clear"/>, but
+    /// doesn't clear <see cref="HttpResponse.Headers"/> so headers added by other middlewares can persist.
+    /// </summary>
+    private static void ClearResponse(HttpResponse response)
+    {
+        response.StatusCode = (int)HttpStatusCode.OK;
+        response.HttpContext.Features.GetRequiredFeature<IHttpResponseFeature>().ReasonPhrase = null;
+
+        if (response.Body.CanSeek)
+        {
+            response.Body.SetLength(0);
+        }
     }
 }

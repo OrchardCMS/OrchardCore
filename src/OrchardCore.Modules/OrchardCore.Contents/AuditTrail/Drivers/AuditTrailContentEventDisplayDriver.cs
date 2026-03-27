@@ -45,11 +45,11 @@ public sealed class AuditTrailContentEventDisplayDriver : AuditTrailEventSection
 
         return Combine(
             Initialize<AuditTrailContentEventViewModel>("AuditTrailContentEventData_SummaryAdmin", m => BuildSummaryViewModel(m, auditTrailEvent, contentEvent, descriptor, latestVersionId))
-                .Location("SummaryAdmin", "EventData:10"),
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "EventData:10"),
             Initialize<AuditTrailContentEventViewModel>("AuditTrailContentEventContent_SummaryAdmin", m => BuildSummaryViewModel(m, auditTrailEvent, contentEvent, descriptor, latestVersionId))
-                .Location("SummaryAdmin", "Content:10"),
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Content:10"),
             Initialize<AuditTrailContentEventViewModel>("AuditTrailContentEventActions_SummaryAdmin", m => BuildSummaryViewModel(m, auditTrailEvent, contentEvent, descriptor, latestVersionId))
-                .Location("SummaryAdmin", "Actions:5"),
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Actions:5"),
             Initialize<AuditTrailContentEventDetailViewModel>("AuditTrailContentEventDetail_DetailAdmin", async m =>
             {
                 BuildSummaryViewModel(m, auditTrailEvent, contentEvent, descriptor, latestVersionId);
@@ -76,7 +76,7 @@ public sealed class AuditTrailContentEventDisplayDriver : AuditTrailEventSection
                     m.Previous = previous.ToString();
                     m.Current = current.ToString();
                 }
-            }).Location("DetailAdmin", "Content:5"),
+            }).Location(OrchardCoreConstants.DisplayType.DetailAdmin, "Content:5"),
             Initialize<AuditTrailContentEventDetailViewModel>("AuditTrailContentEventDiff_DetailAdmin", async m =>
             {
                 BuildSummaryViewModel(m, auditTrailEvent, contentEvent, descriptor, latestVersionId);
@@ -103,7 +103,7 @@ public sealed class AuditTrailContentEventDisplayDriver : AuditTrailEventSection
                     m.Previous = previous.ToString();
                     m.Current = current.ToString();
                 }
-            }).Location("DetailAdmin", "Content:5#Diff")
+            }).Location(OrchardCoreConstants.DisplayType.DetailAdmin, "Content:5#Diff")
         );
     }
 

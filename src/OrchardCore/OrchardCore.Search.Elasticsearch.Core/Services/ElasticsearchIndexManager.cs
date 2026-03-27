@@ -12,6 +12,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.Entities;
 using OrchardCore.Indexing;
 using OrchardCore.Indexing.Models;
+using OrchardCore.Locking.Distributed;
 using OrchardCore.Modules;
 using OrchardCore.Search.Elasticsearch.Core.Models;
 
@@ -86,6 +87,7 @@ public sealed class ElasticsearchIndexManager : IIndexManager
     private readonly IClock _clock;
     private readonly ILogger _logger;
     private readonly ElasticsearchOptions _elasticSearchOptions;
+    private readonly IDistributedLock _distributedLock;
     private readonly ConcurrentDictionary<string, DateTime> _timestamps = new(StringComparer.OrdinalIgnoreCase);
 
     public ElasticsearchIndexManager(
@@ -93,7 +95,8 @@ public sealed class ElasticsearchIndexManager : IIndexManager
         IOptions<ElasticsearchOptions> elasticsearchOptions,
         IEnumerable<IIndexEvents> indexEvents,
         IClock clock,
-        ILogger<ElasticsearchIndexManager> logger
+        ILogger<ElasticsearchIndexManager> logger,
+        IDistributedLock distributedLock
         )
     {
         _elasticClient = elasticClient;
@@ -101,6 +104,7 @@ public sealed class ElasticsearchIndexManager : IIndexManager
         _indexEvents = indexEvents;
         _clock = clock;
         _logger = logger;
+        _distributedLock = distributedLock;
     }
 
     /// <summary>
@@ -234,50 +238,70 @@ public sealed class ElasticsearchIndexManager : IIndexManager
     {
         ArgumentNullException.ThrowIfNull(index);
 
-        var context = new IndexRebuildContext(index);
+        // Acquire a distributed lock to prevent concurrent rebuild operations that could cause
+        // the index to be temporarily unavailable during the delete and create window.
+        (var locker, var isLocked) = await _distributedLock.TryAcquireLockAsync(
+            $"ElasticsearchRebuild-{index.Id}",
+            TimeSpan.FromSeconds(3),
+            TimeSpan.FromMinutes(15));
 
-        await _indexEvents.InvokeAsync((handler, ctx) => handler.RebuildingAsync(ctx), context, _logger);
-
-        if (await ExistsAsync(index.IndexFullName))
+        if (!isLocked)
         {
-            var deleteRequest = new DeleteIndexRequest(index.IndexFullName);
-
-            var deleteResponse = await _elasticClient.Indices.DeleteAsync(deleteRequest);
-
-            if (!deleteResponse.IsValidResponse)
-            {
-                if (deleteResponse.TryGetOriginalException(out var ex))
-                {
-                    _logger.LogError(ex, "There were issues removing an index in Elasticsearch");
-                }
-                else
-                {
-                    _logger.LogWarning("There were issues removing an index in Elasticsearch");
-                }
-            }
-        }
-
-        var createIndexRequest = GetCreateIndexRequest(index);
-
-        var response = await _elasticClient.Indices.CreateAsync(createIndexRequest);
-
-        if (!response.IsValidResponse)
-        {
-            if (response.TryGetOriginalException(out var ex))
-            {
-                _logger.LogError(ex, "There were issues creating an index in Elasticsearch");
-            }
-            else
-            {
-                _logger.LogWarning("There were issues creating an index in Elasticsearch");
-            }
-
+            _logger.LogWarning("Unable to acquire lock for rebuilding index {IndexName}. Another rebuild may be in progress.", index.Name);
             return false;
         }
 
-        await _indexEvents.InvokeAsync((handler, ctx) => handler.RebuiltAsync(ctx), context, _logger);
+        try
+        {
+            var context = new IndexRebuildContext(index);
 
-        return response.Acknowledged;
+            await _indexEvents.InvokeAsync((handler, ctx) => handler.RebuildingAsync(ctx), context, _logger);
+
+            if (await ExistsAsync(index.IndexFullName))
+            {
+                var deleteRequest = new DeleteIndexRequest(index.IndexFullName);
+
+                var deleteResponse = await _elasticClient.Indices.DeleteAsync(deleteRequest);
+
+                if (!deleteResponse.IsValidResponse)
+                {
+                    if (deleteResponse.TryGetOriginalException(out var ex))
+                    {
+                        _logger.LogError(ex, "There were issues removing an index in Elasticsearch");
+                    }
+                    else
+                    {
+                        _logger.LogWarning("There were issues removing an index in Elasticsearch");
+                    }
+                }
+            }
+
+            var createIndexRequest = GetCreateIndexRequest(index);
+
+            var response = await _elasticClient.Indices.CreateAsync(createIndexRequest);
+
+            if (!response.IsValidResponse)
+            {
+                if (response.TryGetOriginalException(out var ex))
+                {
+                    _logger.LogError(ex, "There were issues creating an index in Elasticsearch");
+                }
+                else
+                {
+                    _logger.LogWarning("There were issues creating an index in Elasticsearch");
+                }
+
+                return false;
+            }
+
+            await _indexEvents.InvokeAsync((handler, ctx) => handler.RebuiltAsync(ctx), context, _logger);
+
+            return response.Acknowledged;
+        }
+        finally
+        {
+            await locker.DisposeAsync();
+        }
     }
 
     /// <summary>
@@ -492,7 +516,7 @@ public sealed class ElasticsearchIndexManager : IIndexManager
     private static void ProcessSuccessfulSearchResponse(IndexProfile indexProfile, ElasticsearchResult elasticTopDocs, SearchResponse<JsonObject> searchResponse)
     {
         elasticTopDocs.Count = searchResponse.Hits.Count;
-        elasticTopDocs.TotalCount = searchResponse.HitsMetadata?.Total?.Value2 ?? 0;
+        elasticTopDocs.TotalCount = searchResponse.HitsMetadata?.Total?.Value1?.Value ?? 0;
         elasticTopDocs.SearchResponse = searchResponse;
 
         var metadata = indexProfile.As<ElasticsearchIndexMetadata>();

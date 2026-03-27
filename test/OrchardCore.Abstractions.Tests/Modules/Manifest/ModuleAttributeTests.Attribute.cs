@@ -9,21 +9,6 @@ public abstract class ModuleAttributeTests<TAttribute> : FeatureAttributeTests<T
     where TAttribute : ModuleAttribute
 {
     /// <summary>
-    /// Gets the <see cref="ModuleAttribute.DefaultAuthor"/>.
-    /// </summary>
-    protected static string DefaultAuthor => ModuleAttribute.DefaultAuthor;
-
-    /// <summary>
-    /// Gets the <see cref="ModuleAttribute.DefaultVersionZero"/>.
-    /// </summary>
-    protected static string DefaultVersionZero => ModuleAttribute.DefaultVersionZero;
-
-    /// <summary>
-    /// Gets the <see cref="ModuleAttribute.DefaultWebsiteUrl"/>.
-    /// </summary>
-    protected static string DefaultWebsiteUrl => ModuleAttribute.DefaultWebsiteUrl;
-
-    /// <summary>
     /// &quot;lorem://assyattrib.ipsum&quot;
     /// </summary>
     protected const string LoremAssyAttribIpsumUrl = "lorem://assyattrib.ipsum";
@@ -57,9 +42,9 @@ public abstract class ModuleAttributeTests<TAttribute> : FeatureAttributeTests<T
     {
         base.VerifyDefault(module);
 
-        Assert.Equal(DefaultAuthor, module.Author);
-        Assert.Equal(DefaultVersionZero, module.Version);
-        Assert.Equal(DefaultWebsiteUrl, module.Website);
+        Assert.Empty(module.Author);
+        Assert.Equal("0.0", module.Version);
+        Assert.Empty(module.Website);
 
         Assert.NotNull(module.Tags);
         Assert.Empty(module.Tags);

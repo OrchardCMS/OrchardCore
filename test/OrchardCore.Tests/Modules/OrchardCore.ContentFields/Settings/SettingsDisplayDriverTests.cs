@@ -196,16 +196,21 @@ public class SettingsDisplayDriverTests
 
         var contentDefinition = DisplayDriverTestHelper.GetContentPartDefinition<TextField>(field => field.WithSettings(settings));
 
-        var mock = new Mock<ILiquidTemplateManager>();
+        var liquidTemplateManagerMock = new Mock<ILiquidTemplateManager>();
 
-        mock.Setup(m => m.Validate(It.IsAny<string>(), out It.Ref<IEnumerable<string>>.IsAny))
+        liquidTemplateManagerMock.Setup(m => m.Validate(It.IsAny<string>(), out It.Ref<IEnumerable<string>>.IsAny))
             .Returns(true)
             .Callback((string template, out IEnumerable<string> errors) =>
             {
                 errors = new List<string>(); // set to empty errors
             });
+
+        var shapeResult = await DisplayDriverTestHelper.GetShapeResultAsync(
+            new TextFieldSettingsDriver(liquidTemplateManagerMock.Object, Mock.Of<IStringLocalizer<TextFieldSettingsDriver>>()),
+            _shapeFactory,
+            contentDefinition);
+
         var stringLocalizer = Mock.Of<IStringLocalizer<TextFieldSettingsDriver>>();
-        var shapeResult = await DisplayDriverTestHelper.GetShapeResultAsync(_shapeFactory, contentDefinition, new TextFieldSettingsDriver(mock.Object, stringLocalizer));
 
         var shape = (TextFieldSettingsViewModel)shapeResult.Shape;
 

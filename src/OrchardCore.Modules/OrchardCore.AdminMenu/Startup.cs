@@ -4,6 +4,7 @@ using OrchardCore.AdminMenu.Deployment;
 using OrchardCore.AdminMenu.Recipes;
 using OrchardCore.AdminMenu.Services;
 using OrchardCore.Deployment;
+using OrchardCore.Localization.Data;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
@@ -18,11 +19,8 @@ public sealed class Startup : StartupBase
         services.AddPermissionProvider<Permissions>();
         services.AddNavigationProvider<AdminMenu>();
 
-#pragma warning disable CS0618 // Type or member is obsolete
-        services.AddScoped<IAdminMenuPermissionService, AdminMenuPermissionService>();
-#pragma warning restore CS0618 // Type or member is obsolete
-
         services.AddScoped<IAdminMenuService, AdminMenuService>();
+        services.AddScoped<IAdminMenuAccessor, AdminMenuAccessor>();
         services.AddScoped<AdminMenuNavigationProvidersCoordinator>();
 
         services.AddRecipeExecutionStep<AdminMenuStep>();
@@ -34,5 +32,16 @@ public sealed class Startup : StartupBase
 
         // link treeNode
         services.AddAdminNode<LinkAdminNode, LinkAdminNodeNavigationBuilder, LinkAdminNodeDriver>();
+    }
+}
+
+[RequireFeatures("OrchardCore.DataLocalization")]
+public sealed class DataLocalizationStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddScoped<ILocalizationDataProvider, AdminMenuDataLocalizationProvider>();
+        services.AddScoped<ILocalizationDataProvider, ListsAdminNodeDataLocalizationProvider>();
+        services.AddScoped<ILocalizationDataProvider, PlaceholderAdminNodeDataLocalizationProvider>();
     }
 }

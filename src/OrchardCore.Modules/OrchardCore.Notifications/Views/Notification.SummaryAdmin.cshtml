@@ -33,10 +33,10 @@
             <div class="summary d-flex flex-column flex-md-row">
                 <div class="contentitem me-2 mark-notification-as-read" data-message-id="@notification.NotificationId" data-is-read="@readInfo.IsRead.ToString().ToLowerInvariant()">
 
-                    <h5 class="mb-2">@notification.Subject</h5>
+                    <p class="m-0 f6 flex-auto @(readInfo.IsRead ? string.Empty : "fw-bold")">@notification.Subject</p>
 
-                    <p class="mb-0">
-                        @Html.Raw(notification.Summary)
+                    <p class="m-0 text-normal pr-2 pr-md-0">
+                        <small>@Html.Raw(notification.Summary)</small>
                     </p>
 
                 </div>

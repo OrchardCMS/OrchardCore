@@ -18,7 +18,27 @@ const startTime = performance.now();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-let parsedArgs = parseArgs(process.argv.slice(2));
+let parsedArgs = parseArgs(process.argv.slice(2), {
+    string: ["n", "t", "b", "name", "names", "tag", "tags", "bundle"],
+    alias: {
+        n: ["name", "names"],
+        t: ["tag", "tags"],
+        b: ["bundle"],
+    },
+});
+
+const parseFilterValues = (value) => {
+    if (value == undefined) {
+        return [];
+    }
+
+    const rawValues = Array.isArray(value) ? value : [value];
+
+    return rawValues
+        .flatMap((entry) => entry.toString().split(/[\s,]+/))
+        .map((entry) => entry.trim())
+        .filter((entry) => entry.length > 0);
+};
 
 let task = parsedArgs._[0];
 
@@ -29,55 +49,49 @@ console.log(chalk.green("Task: ", task));
 
 let groups = getAllAssetGroups();
 
-// Filter the packages if the user passes the -n cli flag
-let packagesStr = parsedArgs.n;
-if (packagesStr != undefined) {
-    const packages = packagesStr.split(" ");
-    if (packages.length > 0) {
-        console.log(chalk.yellow("Filtering groups based on packages: "), packages.join(", "));
-        groups = groups.filter((g) => packages.includes(g.name));
-    }
+// Filter the packages if the user passes the -n/--name/--names cli flag
+const packageNames = parseFilterValues(parsedArgs.n);
+if (packageNames.length > 0) {
+    console.log(chalk.yellow("Filtering groups based on packages: "), packageNames.join(", "));
+    groups = groups.filter((g) => packageNames.includes(g.name));
 }
 
-// Filter the tags if the user passes the -t cli flag
-let tagsStr = parsedArgs.t;
-if (tagsStr != undefined) {
-    const tags = tagsStr.split(" ");
-    if (tags.length > 0) {
-        console.log(chalk.yellow("Filtering groups based on tag: "), tags.join(", "));
-        groups = groups.filter((g) => {
-            if (Array.isArray(g.tags)) {
-                return _.intersection(tags, g.tags)?.length > 0;
-            } else {
-                return tags.includes(g.tags);
-            }
-        });
-    }
+// Filter the tags if the user passes the -t/--tag/--tags cli flag
+const tags = parseFilterValues(parsedArgs.t);
+if (tags.length > 0) {
+    console.log(chalk.yellow("Filtering groups based on tag: "), tags.join(", "));
+    groups = groups.filter((g) => {
+        if (Array.isArray(g.tags)) {
+            return _.intersection(tags, g.tags)?.length > 0;
+        } else {
+            return tags.includes(g.tags);
+        }
+    });
 }
 
-if (task === "watch" && tagsStr != undefined) {
+if (task === "watch" && tags.length > 0) {
     console.log(chalk.yellow("Cannot watch based on tags, Specify packages to watch with -n cli flag"));
     process.exit(0);
 }
 
-if (task === "watch" && packagesStr == undefined) {
+if (task === "watch" && packageNames.length === 0) {
     console.log(chalk.yellow("Specify packages to watch with -n cli flag"));
     process.exit(0);
 }
 
-if (task === "host" && tagsStr != undefined) {
+if (task === "host" && tags.length > 0) {
     console.log(chalk.yellow("Cannot host based on tags, Specify packages to host with -n cli flag"));
     process.exit(0);
 }
 
-if (task === "host" && packagesStr == undefined) {
+if (task === "host" && packageNames.length === 0) {
     console.log(chalk.yellow("Specify packages to host with -n cli flag"));
     process.exit(0);
 }
 
-// Filter the tags if the user passes the -b cli flag
-let bundleStr = parsedArgs.b;
-if (bundleStr != undefined) {
+// Filter for bundling if the user passes the -b/--bundle cli flag
+const shouldBuildBundle = parsedArgs.b != undefined;
+if (shouldBuildBundle) {
     console.log(chalk.yellow("Filtering groups for orchardcore-bundle"));
     groups = groups.filter((g) => g.bundleEntrypoint);
 }
@@ -138,7 +152,8 @@ const buildProcesses = groups
                 return {
                     order: group.order,
                     name: group.name ?? "PARCEL",
-                    command: `node ${path.join(__dirname, "parcel.mjs")} ${task} ${encodedGroup}`,
+                    command: `node ${path.join(__dirname, "parcel.mjs")} ${task}`,
+                    env: { ASSETS_MANAGER_ENCODED_GROUP: encodedGroup },
                 };
             case "webpack":
                 // parcel only handles build and watch
@@ -149,7 +164,8 @@ const buildProcesses = groups
                 return {
                     order: group.order,
                     name: group.name ?? "WEBPACK",
-                    command: `node ${path.join(__dirname, "webpack.mjs")} ${task} ${encodedGroup}`,
+                    command: `node ${path.join(__dirname, "webpack.mjs")} ${task}`,
+                    env: { ASSETS_MANAGER_ENCODED_GROUP: encodedGroup },
                 };
             case "vite":
                 // parcel only handles build and watch
@@ -160,7 +176,8 @@ const buildProcesses = groups
                 return {
                     order: group.order,
                     name: group.name ?? "VITE",
-                    command: `node ${path.join(__dirname, "vite.mjs")} ${task} ${encodedGroup}`,
+                    command: `node ${path.join(__dirname, "vite.mjs")} ${task}`,
+                    env: { ASSETS_MANAGER_ENCODED_GROUP: encodedGroup },
                 };
             case "run":
                 script = group?.scripts[task]; //get's the script that matches the current type of command (build/watch or others)
@@ -181,7 +198,8 @@ const buildProcesses = groups
                     return {
                         order: group.order,
                         name: group.name ?? "COPY",
-                        command: `node ${path.join(__dirname, "copy.mjs")} ${task} ${encodedGroup}`,
+                        command: `node ${path.join(__dirname, "copy.mjs")} ${task}`,
+                        env: { ASSETS_MANAGER_ENCODED_GROUP: encodedGroup },
                     };
                 }
                 console.log(chalk.yellow("Use copy or build type to copy files from group: ", group.name));
@@ -191,7 +209,8 @@ const buildProcesses = groups
                     return {
                         order: group.order,
                         name: group.name ?? "MIN",
-                        command: `node ${path.join(__dirname, "min.mjs")} ${task} ${encodedGroup}`,
+                        command: `node ${path.join(__dirname, "min.mjs")} ${task}`,
+                        env: { ASSETS_MANAGER_ENCODED_GROUP: encodedGroup },
                     };
                 }
                 console.log(chalk.yellow("Use min or build type to minify files from group: ", group.name));
@@ -201,10 +220,22 @@ const buildProcesses = groups
                     return {
                         order: group.order,
                         name: group.name ?? "SASS",
-                        command: `node ${path.join(__dirname, "sass.mjs")} ${task} ${encodedGroup}`,
+                        command: `node ${path.join(__dirname, "sass.mjs")} ${task}`,
+                        env: { ASSETS_MANAGER_ENCODED_GROUP: encodedGroup },
                     };
                 }
                 console.log(chalk.yellow("Use sass or build type to transpile/minify files from group: ", group.name));
+                break;
+            case "concat":
+                if (task === "build" || task === "dry-run") {
+                    return {
+                        order: group.order,
+                        name: group.name ?? "CONCAT",
+                        command: `node ${path.join(__dirname, "concat.mjs")} ${task}`,
+                        env: { ASSETS_MANAGER_ENCODED_GROUP: encodedGroup },
+                    };
+                }
+                console.log(chalk.yellow("Use concat or build type to concatenate files from group: ", group.name));
                 break;
             default:
                 console.log(chalk.yellow("The following group was not handled by our build process"), group.name);
@@ -212,24 +243,6 @@ const buildProcesses = groups
         }
     })
     .filter((el) => el != undefined); // remove undefined entries
-
-// Add the gulp build process if the user passes the -g cli flag
-let gulpBuildStr = parsedArgs["g"];
-let gulpRebuildStr = parsedArgs["r"];
-
-if (gulpBuildStr != undefined && gulpRebuildStr == undefined) {
-    buildProcesses.push({
-        order: 0,
-        name: "gulp build",
-        command: `gulp build`,
-    });
-} else if (gulpBuildStr != undefined && gulpRebuildStr != undefined) {
-    buildProcesses.push({
-        order: 0,
-        name: "gulp rebuild",
-        command: `gulp rebuild`,
-    });
-}
 
 if (buildProcesses.length <= 0) {
     console.log(chalk.yellow("Nothing to build, exiting..."));

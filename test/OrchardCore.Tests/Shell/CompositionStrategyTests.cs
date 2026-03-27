@@ -195,18 +195,123 @@ public class CompositionStrategyTests
         await strategy.ComposeAsync(settings, descriptor);
 
         // Assert
-        logger.Verify(l => l.Log(
-            LogLevel.Debug,
-            It.IsAny<EventId>(),
-            It.Is<It.IsAnyType>((v, t) => v.ToString().Contains("Composing blueprint")),
-            null,
-            It.IsAny<Func<It.IsAnyType, Exception, string>>()), Times.Once);
-        logger.Verify(l => l.Log(
-            LogLevel.Debug,
-            It.IsAny<EventId>(),
-            It.Is<It.IsAnyType>((v, t) => v.ToString().Contains("Done composing blueprint")),
-            null,
-            It.IsAny<Func<It.IsAnyType, Exception, string>>()), Times.Once);
+        var logMessages = logger.Invocations
+            .Where(i => i.Method.Name == nameof(ILogger.Log))
+            .Select(i => new { Level = (LogLevel)i.Arguments[0], Message = i.Arguments[2]?.ToString() })
+            .ToList();
+
+        Assert.Single(logMessages, m => m.Level == LogLevel.Debug && m.Message.Contains("Composing blueprint"));
+        Assert.Single(logMessages, m => m.Level == LogLevel.Debug && m.Message.Contains("Done composing blueprint"));
+    }
+
+    [Fact]
+    public async Task ComposeAsync_SkipsType_WhenFeatureIsDefaultTenantOnly_AndTenantIsNotDefault()
+    {
+        // Arrange - Bug #18244: DefaultTenantOnly feature types should be skipped on non-default tenants
+        var featureId = "FeatureA";
+        var featureMock = new Mock<IFeatureInfo>();
+        featureMock.Setup(f => f.Id).Returns(featureId);
+        featureMock.Setup(f => f.DefaultTenantOnly).Returns(true); // Feature is marked as DefaultTenantOnly
+        var feature = featureMock.Object;
+
+        var extensionManager = new Mock<IExtensionManager>();
+        extensionManager.Setup(m => m.LoadFeaturesAsync(It.IsAny<IEnumerable<string>>()))
+            .ReturnsAsync(new List<IFeatureInfo> { feature });
+
+        var exportedType = typeof(DummyType);
+        var typeFeatureProvider = new Mock<ITypeFeatureProvider>();
+        typeFeatureProvider.Setup(p => p.GetTypesForFeature(feature))
+            .Returns(new[] { exportedType });
+
+        var logger = new Mock<ILogger<CompositionStrategy>>();
+        var strategy = new CompositionStrategy(extensionManager.Object, typeFeatureProvider.Object, logger.Object);
+
+        var settings = new ShellSettings { Name = "Tenant1" }; // Non-default tenant
+        var descriptor = new ShellDescriptor
+        {
+            Features = new List<ShellFeature> { new ShellFeature { Id = featureId } },
+        };
+
+        // Act
+        var blueprint = await strategy.ComposeAsync(settings, descriptor);
+
+        // Assert
+        Assert.NotNull(blueprint);
+        Assert.Empty(blueprint.Dependencies); // Should skip the type from DefaultTenantOnly feature
+    }
+
+    [Fact]
+    public async Task ComposeAsync_IncludesType_WhenFeatureIsDefaultTenantOnly_AndTenantIsDefault()
+    {
+        // Arrange
+        var featureId = "FeatureA";
+        var featureMock = new Mock<IFeatureInfo>();
+        featureMock.Setup(f => f.Id).Returns(featureId);
+        featureMock.Setup(f => f.DefaultTenantOnly).Returns(true); // Feature is marked as DefaultTenantOnly
+        var feature = featureMock.Object;
+
+        var extensionManager = new Mock<IExtensionManager>();
+        extensionManager.Setup(m => m.LoadFeaturesAsync(It.IsAny<IEnumerable<string>>()))
+            .ReturnsAsync(new List<IFeatureInfo> { feature });
+
+        var exportedType = typeof(DummyType);
+        var typeFeatureProvider = new Mock<ITypeFeatureProvider>();
+        typeFeatureProvider.Setup(p => p.GetTypesForFeature(feature))
+            .Returns(new[] { exportedType });
+
+        var logger = new Mock<ILogger<CompositionStrategy>>();
+        var strategy = new CompositionStrategy(extensionManager.Object, typeFeatureProvider.Object, logger.Object);
+
+        var settings = new ShellSettings { Name = ShellSettings.DefaultShellName }; // Default tenant
+        var descriptor = new ShellDescriptor
+        {
+            Features = new List<ShellFeature> { new ShellFeature { Id = featureId } },
+        };
+
+        // Act
+        var blueprint = await strategy.ComposeAsync(settings, descriptor);
+
+        // Assert
+        Assert.NotNull(blueprint);
+        Assert.True(blueprint.Dependencies.ContainsKey(exportedType)); // Should include the type for default tenant
+        Assert.Contains(feature, blueprint.Dependencies[exportedType]);
+    }
+
+    [Fact]
+    public async Task ComposeAsync_IncludesType_WhenFeatureIsNotDefaultTenantOnly_AndTenantIsNotDefault()
+    {
+        // Arrange
+        var featureId = "FeatureA";
+        var featureMock = new Mock<IFeatureInfo>();
+        featureMock.Setup(f => f.Id).Returns(featureId);
+        featureMock.Setup(f => f.DefaultTenantOnly).Returns(false); // Feature is NOT marked as DefaultTenantOnly
+        var feature = featureMock.Object;
+
+        var extensionManager = new Mock<IExtensionManager>();
+        extensionManager.Setup(m => m.LoadFeaturesAsync(It.IsAny<IEnumerable<string>>()))
+            .ReturnsAsync(new List<IFeatureInfo> { feature });
+
+        var exportedType = typeof(DummyType);
+        var typeFeatureProvider = new Mock<ITypeFeatureProvider>();
+        typeFeatureProvider.Setup(p => p.GetTypesForFeature(feature))
+            .Returns(new[] { exportedType });
+
+        var logger = new Mock<ILogger<CompositionStrategy>>();
+        var strategy = new CompositionStrategy(extensionManager.Object, typeFeatureProvider.Object, logger.Object);
+
+        var settings = new ShellSettings { Name = "Tenant1" }; // Non-default tenant
+        var descriptor = new ShellDescriptor
+        {
+            Features = new List<ShellFeature> { new ShellFeature { Id = featureId } },
+        };
+
+        // Act
+        var blueprint = await strategy.ComposeAsync(settings, descriptor);
+
+        // Assert
+        Assert.NotNull(blueprint);
+        Assert.True(blueprint.Dependencies.ContainsKey(exportedType)); // Should include the type on non-default tenant
+        Assert.Contains(feature, blueprint.Dependencies[exportedType]);
     }
 
     public class DummyType;

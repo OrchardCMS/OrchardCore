@@ -11,7 +11,6 @@ namespace OrchardCore.DisplayManagement.Shapes;
 [Feature(Application.DefaultFeatureId)]
 public class DateTimeShapes : IShapeAttributeProvider
 {
-    private const string LongDateTimeFormat = "dddd, MMMM d, yyyy h:mm:ss tt";
     private readonly IClock _clock;
     private readonly ILocalClock _localClock;
     protected readonly IStringLocalizer S;
@@ -118,7 +117,7 @@ public class DateTimeShapes : IShapeAttributeProvider
     {
         Utc ??= _clock.UtcNow;
         var zonedTime = await _localClock.ConvertToLocalAsync(Utc.Value);
-        Format ??= S[LongDateTimeFormat].Value;
+        Format ??= S["dddd, MMMM d, yyyy h:mm:ss tt"].Value;
 
         return Html.Raw(Html.Encode(zonedTime.ToString(Format, CultureInfo.CurrentUICulture)));
     }

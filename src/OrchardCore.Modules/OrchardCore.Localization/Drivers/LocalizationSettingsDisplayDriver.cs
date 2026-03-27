@@ -22,6 +22,7 @@ public sealed class LocalizationSettingsDisplayDriver : SiteDisplayDriver<Locali
 {
     public const string GroupId = "localization";
 
+    private readonly ILocalizationService _localizationService;
     private readonly IShellReleaseManager _shellReleaseManager;
     private readonly INotifier _notifier;
     private readonly IHttpContextAccessor _httpContextAccessor;
@@ -35,6 +36,7 @@ public sealed class LocalizationSettingsDisplayDriver : SiteDisplayDriver<Locali
         => GroupId;
 
     public LocalizationSettingsDisplayDriver(
+        ILocalizationService localizationService,
         IShellReleaseManager shellReleaseManager,
         INotifier notifier,
         IHttpContextAccessor httpContextAccessor,
@@ -44,6 +46,7 @@ public sealed class LocalizationSettingsDisplayDriver : SiteDisplayDriver<Locali
         IStringLocalizer<LocalizationSettingsDisplayDriver> stringLocalizer
     )
     {
+        _localizationService = localizationService;
         _shellReleaseManager = shellReleaseManager;
         _notifier = notifier;
         _httpContextAccessor = httpContextAccessor;
@@ -67,7 +70,7 @@ public sealed class LocalizationSettingsDisplayDriver : SiteDisplayDriver<Locali
 
         return Initialize<LocalizationSettingsViewModel>("LocalizationSettings_Edit", model =>
         {
-            model.Cultures = ILocalizationService.GetAllCulturesAndAliases()
+            model.Cultures = _localizationService.GetAllCulturesAndAliases()
                 .Select(cultureInfo =>
                 {
                     return new CultureEntry

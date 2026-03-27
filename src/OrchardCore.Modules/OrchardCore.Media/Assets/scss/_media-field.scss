@@ -61,9 +61,10 @@
   border: 2px dashed #ccc;
 }
 
-.sortable-selected {
-  border: 2px solid #2196f3;
-  box-shadow: 0 0 8px rgba(33, 150, 243, 0.5);
+.sortable-selected,
+.media-thumb-item-active {
+    border: 2px solid #2196f3;
+    box-shadow: 0 0 8px rgba(33, 150, 243, 0.5);
 }
 
 .media-thumb-item.selected.sortable-selected {

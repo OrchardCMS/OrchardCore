@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using System.Text.Json.Settings;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -38,6 +37,7 @@ public static class CreateEndpoint
         IAuthorizationService authorizationService,
         IContentDefinitionManager contentDefinitionManager,
         IUpdateModelAccessor updateModelAccessor,
+        YesSql.ISession session,
         HttpContext httpContext,
         IOptions<DocumentJsonSerializerOptions> options,
         bool draft = false)
@@ -63,7 +63,6 @@ public static class CreateEndpoint
             }
 
             contentItem = await contentManager.NewAsync(model.ContentType);
-            contentItem.Owner = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (!await authorizationService.AuthorizeAsync(httpContext.User, CommonPermissions.PublishContent, contentItem))
             {
@@ -81,6 +80,7 @@ public static class CreateEndpoint
             {
                 // Add the validation results to the ModelState to present the errors as part of the response.
                 AddValidationErrorsToModelState(result, modelState);
+                await session.CancelAsync();
             }
 
             // We check the model state after calling all handlers because they trigger WF content events so, even they are not
@@ -108,6 +108,7 @@ public static class CreateEndpoint
             {
                 // Add the validation results to the ModelState to present the errors as part of the response.
                 AddValidationErrorsToModelState(result, modelState);
+                await session.CancelAsync();
             }
 
             // We check the model state after calling all handlers because they trigger WF content events so, even they are not

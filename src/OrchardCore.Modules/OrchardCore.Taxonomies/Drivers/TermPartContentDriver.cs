@@ -71,11 +71,13 @@ public sealed class TermPartContentDriver : ContentDisplayDriver
     {
         var query = await _contentsTaxonomyListQueryService.QueryAsync(termPart, pager);
 
+        var totalItems = await query.CountAsync();
+
         var containedItems = await query.ListAsync();
 
         await _contentManager.LoadAsync(containedItems);
 
-        return (await query.CountAsync(), containedItems);
+        return (totalItems, containedItems);
     }
 
     private static async Task<Pager> GetPagerAsync(IUpdateModel updater, int pageSize)

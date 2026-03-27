@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
 using OrchardCore.Liquid;
 using OrchardCore.Media.Fields;
+using OrchardCore.Media.Models;
 using OrchardCore.Media.Services;
 
 namespace OrchardCore.Media.Filters;
@@ -30,43 +31,29 @@ public class ResizeUrlFilter : ILiquidFilter
         // Profile is a named argument only.
         var profile = arguments["profile"];
 
-        IDictionary<string, string> queryStringParams;
+        var mediaCommands = new MediaCommands();
+        FluidValue width, height, mode, quality, format, anchor, bgcolor;
+
+        // Never mix named and indexed arguments as this leads to unpredictable results.
+        // Additional commands to a profile must be named as well.
+        var useNamed = !profile.IsNil() || arguments.Names.Any();
 
         if (!profile.IsNil())
         {
-            queryStringParams = await _mediaProfileService.GetMediaProfileCommands(profile.ToStringValue());
-
-            // Additional commands to a profile must be named.
-            var width = arguments["width"];
-            var height = arguments["height"];
-            var mode = arguments["mode"];
-            var quality = arguments["quality"];
-            var format = arguments["format"];
-            var anchor = arguments["anchor"];
-            var bgcolor = arguments["bgcolor"];
-
-            ApplyQueryStringParams(queryStringParams, width, height, mode, quality, format, anchor, bgcolor);
-        }
-        else
-        {
-            queryStringParams = new Dictionary<string, string>();
-
-            // Never mix named and indexed arguments as this leads to unpredictable results.
-            var useNamed = arguments.Names.Any();
-
-            var width = useNamed ? arguments["width"] : arguments.At(0);
-            var height = useNamed ? arguments["height"] : arguments.At(1);
-            var mode = useNamed ? arguments["mode"] : arguments.At(2);
-            var quality = useNamed ? arguments["quality"] : arguments.At(3);
-            var format = useNamed ? arguments["format"] : arguments.At(4);
-            var anchor = useNamed ? arguments["anchor"] : arguments.At(5);
-            var bgcolor = useNamed ? arguments["bgcolor"] : arguments.At(6);
-
-            ApplyQueryStringParams(queryStringParams, width, height, mode, quality, format, anchor, bgcolor);
+            mediaCommands.SetCommands(await _mediaProfileService.GetMediaProfileCommands(profile.ToStringValue()));
         }
 
-        var resizedUrl = QueryHelpers.AddQueryString(url, queryStringParams);
+        width = useNamed ? arguments["width"] : arguments.At(0);
+        height = useNamed ? arguments["height"] : arguments.At(1);
+        mode = useNamed ? arguments["mode"] : arguments.At(2);
+        quality = useNamed ? arguments["quality"] : arguments.At(3);
+        format = useNamed ? arguments["format"] : arguments.At(4);
+        anchor = useNamed ? arguments["anchor"] : arguments.At(5);
+        bgcolor = useNamed ? arguments["bgcolor"] : arguments.At(6);
 
+        ApplyMediaCommands(mediaCommands, width, height, mode, quality, format, anchor, bgcolor);
+
+        var resizedUrl = QueryHelpers.AddQueryString(url, mediaCommands.GetValues());
 
         if (_options.UseTokenizedQueryString)
         {
@@ -76,31 +63,31 @@ public class ResizeUrlFilter : ILiquidFilter
         return new StringValue(resizedUrl);
     }
 
-    private static void ApplyQueryStringParams(IDictionary<string, string> queryStringParams, FluidValue width, FluidValue height, FluidValue mode, FluidValue quality, FluidValue format, FluidValue anchorValue, FluidValue bgcolor)
+    private static void ApplyMediaCommands(MediaCommands mediaCommands, FluidValue width, FluidValue height, FluidValue mode, FluidValue quality, FluidValue format, FluidValue anchorValue, FluidValue bgcolor)
     {
         if (!width.IsNil())
         {
-            queryStringParams["width"] = width.ToStringValue();
+            mediaCommands.Width = width.ToStringValue();
         }
 
         if (!height.IsNil())
         {
-            queryStringParams["height"] = height.ToStringValue();
+            mediaCommands.Height = height.ToStringValue();
         }
 
         if (!mode.IsNil())
         {
-            queryStringParams["rmode"] = mode.ToStringValue();
-        }
-
-        if (!quality.IsNil())
-        {
-            queryStringParams["quality"] = quality.ToStringValue();
+            mediaCommands.ResizeMode = mode.ToStringValue();
         }
 
         if (!format.IsNil())
         {
-            queryStringParams["format"] = format.ToStringValue();
+            mediaCommands.Format = format.ToStringValue();
+        }
+
+        if (!quality.IsNil())
+        {
+            mediaCommands.Quality = quality.ToStringValue();
         }
 
         if (!anchorValue.IsNil())
@@ -118,13 +105,13 @@ public class ResizeUrlFilter : ILiquidFilter
             }
             if (anchor != null)
             {
-                queryStringParams["rxy"] = anchor.X.ToString(CultureInfo.InvariantCulture) + ',' + anchor.Y.ToString(CultureInfo.InvariantCulture);
+                mediaCommands.ResizeFocalPoint = anchor.X.ToString(CultureInfo.InvariantCulture) + ',' + anchor.Y.ToString(CultureInfo.InvariantCulture);
             }
         }
 
         if (!bgcolor.IsNil())
         {
-            queryStringParams["bgcolor"] = bgcolor.ToStringValue();
+            mediaCommands.BackgroundColor = bgcolor.ToStringValue();
         }
     }
 }

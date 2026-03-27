@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -9,31 +8,27 @@ namespace OrchardCore.DisplayManagement.Extensions;
 
 public static class HttpContextExtensions
 {
-    public static Task<ActionContext> GetActionContextAsync(this IHttpContextAccessor httpContextAccessor)
+    public static async ValueTask<ActionContext> GetActionContextAsync(this HttpContext httpContext)
     {
-        var httpContext = httpContextAccessor.HttpContext;
-        var actionContext = httpContext.RequestServices.GetService<IActionContextAccessor>()?.ActionContext;
-
-        if (actionContext != null)
+        if (httpContext.Items.TryGetValue("OrchardCore:ActionContext", out var currentActionContext))
         {
-            return Task.FromResult(actionContext);
+            return (ActionContext)currentActionContext;
         }
 
-        return GetActionContextAsync(httpContext);
-    }
+        var endpoint = httpContext.GetEndpoint();
+        var routeData = httpContext.GetRouteData();
 
-    public static async Task<ActionContext> GetActionContextAsync(this HttpContext httpContext)
-    {
-        var routeData = new RouteData();
-        routeData.Routers.Add(new RouteCollection());
+        var actionDescriptor = endpoint?.Metadata.GetMetadata<ActionDescriptor>() ?? new ActionDescriptor();
 
-        var actionContext = new ActionContext(httpContext, routeData, new ActionDescriptor());
+        var actionContext = new ActionContext(httpContext, routeData, actionDescriptor);
         var filters = httpContext.RequestServices.GetServices<IAsyncViewActionFilter>();
 
         foreach (var filter in filters)
         {
             await filter.OnActionExecutionAsync(actionContext);
         }
+
+        httpContext.Items["OrchardCore:ActionContext"] = actionContext;
 
         return actionContext;
     }

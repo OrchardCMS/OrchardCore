@@ -27,8 +27,8 @@ public sealed class TimeFieldDisplayDriver : ContentFieldDisplayDriver<TimeField
             model.Part = context.ContentPart;
             model.PartFieldDefinition = context.PartFieldDefinition;
         })
-        .Location("Detail", "Content")
-        .Location("Summary", "Content");
+        .Location(OrchardCoreConstants.DisplayType.Detail, "Content")
+        .Location(OrchardCoreConstants.DisplayType.Summary, "Content");
     }
 
     public override IDisplayResult Edit(TimeField field, BuildFieldEditorContext context)

@@ -39,7 +39,7 @@ dotnet sln add ./BlazorCms
         - MarkdownBodyPart.
 - Create a new content item and publish it.
 - Alternatively, you can import the following recipe to create the content definition and content item that we are using for this guide.
-- To import the recipe, log in to administration, and go to `Configuration` > `Import/Export` > `JSON Import`
+- To import the recipe, log in to administration, and go to `Tools` > `Deployments` > `JSON Import`
 
 ```json
 {
@@ -157,7 +157,7 @@ In this section, we will create a .NET Blazor application, as Razor Class librar
 - You can run the following commands to create a new Razor class library project.
 
 ```dotnetcli
-dotnet new razorclasslib -f net9.0 -o OCBlazorLib
+dotnet new razorclasslib -f net10.0 -o OCBlazorLib
 dotnet sln add ./OCBlazorLib
 dotnet add ./BlazorCms/BlazorCms.csproj reference ./OCBlazorLib/OCBlazorLib.csproj
 ```
@@ -632,7 +632,7 @@ In our `OCBlazorLib` blazor Library project, Let's enrich our `/content` page to
 - In `OCBlazorLib.csproj` Add a NuGet package reference to `OrchardCore.ContentManagement`
 
 ```dotnetcli
-dotnet add ./OCBlazorLib/OCBlazorLib.csproj package OrchardCore.ContentManagement --version 2.2.0
+dotnet add ./OCBlazorLib/OCBlazorLib.csproj package OrchardCore.ContentManagement --version 2.2.1
 ```
 
 - Add the following `using` statements in `_Imports.razor`
@@ -776,13 +776,13 @@ One of the key features of Orchard Core is its multi-tenancy support. In this se
     
 ## Enable the tenant feature.
 
-In orchard core admin, go to `Configuration` -> `Features` and enable the `Tenants` feature.
+In orchard core admin, go to `Tools` -> `Features` and enable the `Tenants` feature.
 
 ![Enable tenants feature](./images/enable-tenants.jpg)
 
 ## Add the first tenant
 
-Navigate to `Multi tenancy` -> `Tenants` and add a new tenant with the following settings.
+Navigate to `Multi-Tenancy` -> `Tenants` and add a new tenant with the following settings.
 
 ![Create first tenant](./images/create-tenant.png)
 
@@ -878,7 +878,7 @@ Now make sure the tenant 01 also imports the content type and content item, so w
 
 Import the following:
 
-Log in to administration, and go to `Configuration` > `Import/Export` > `JSON Import`
+Log in to administration, and go to `Tools` > `Deployments` > `JSON Import`
 
 ```json
 {

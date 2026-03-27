@@ -1,3 +1,6 @@
 * text=auto
 *.map text eol=lf
 **/wwwroot/Scripts/* linguist-vendored
+# Force LF line endings for all built/vendored JavaScript and CSS files
+**/wwwroot/Scripts/*.js text eol=lf
+**/wwwroot/Styles/*.css text eol=lf

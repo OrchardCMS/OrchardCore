@@ -1,5 +1,7 @@
 @model EditRoleViewModel
 @using OrchardCore.Roles.ViewModels
+@using OrchardCore.Localization.Data
+@inject IDataLocalizer D
 
 <zone Name="Title">
     <h1>
@@ -70,9 +72,10 @@
 
             @foreach (var group in Model.RoleCategoryPermissions.OrderBy(x => x.Key.Title).ThenBy(x => x.Key.Source))
             {
+                var permissionsContext = $"Permissions{Constants.ContextSeparator}{group.Key.Title}";
                 <fieldset class="permissions-list">
                     <legend>
-                        <span>@group.Key.Title</span>
+                        <span>@D[group.Key.Title, permissionsContext]</span>
                         @if (!string.IsNullOrEmpty(group.Key.Source))
                         {
                             <span class="hint">(@group.Key.Source)</span>
@@ -90,9 +93,12 @@
                         <tbody>
                             @foreach (var permission in group.Value.OrderBy(x => x.Description))
                             {
-                                <tr data-text="@permission.Description">
+                                var description = string.IsNullOrEmpty(permission.Description)
+                                    ? permission.Name
+                                    : permission.Description;
+                                <tr data-text="@D[description, permissionsContext]">
                                     <td class="col-10">
-                                        @permission.Description
+                                        @D[description, permissionsContext]
                                         @if (permission.IsSecurityCritical)
                                         {
                                             <div class="float-end">
@@ -134,7 +140,7 @@
             var search = $(this).val().toLowerCase();
 
             // On ESC, clear the search box and display all roles
-            if (e.keyCode == 27 || search == '') {
+            if (e.key === "Escape" || search == '') {
                 searchBox.val('');
                 $('.permissions-list').toggle(true);
                 $('.permissions-list > table > tbody > tr').toggle(true);

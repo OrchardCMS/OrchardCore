@@ -50,7 +50,10 @@ public sealed class ScheduledArchivingBackgroundTask : IBackgroundTask
                 part.Apply();
             }
 
-            _logger.LogDebug("Archiving scheduled content item {ContentItemId}.", contentItem.ContentItemId);
+            if (_logger.IsEnabled(LogLevel.Debug))
+            {
+                _logger.LogDebug("Archiving scheduled content item {ContentItemId}.", contentItem.ContentItemId);
+            }
 
             await contentManager.UnpublishAsync(contentItem);
         }

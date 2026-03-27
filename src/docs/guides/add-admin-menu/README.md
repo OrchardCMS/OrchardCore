@@ -19,7 +19,7 @@ There are different ways to create sites and modules for Orchard Core. You can l
 
 You can install the latest released templates using this command:
 
-```dotnet new install OrchardCore.ProjectTemplates::2.2.0-*```
+```dotnet new install OrchardCore.ProjectTemplates::2.2.1-*```
 
 !!! note
     To use the development branch of the template add `--nuget-source https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json`
@@ -40,10 +40,10 @@ The next step is to reference the module from the application, by adding a proje
 
 We also need a reference to the `OrchardCore.Admin` package in order to be able to implement the required interfaces:
 
-```dotnet add .\MyModule\MyModule.csproj package OrchardCore.Admin --version 2.2.0-*```
+```dotnet add .\MyModule\MyModule.csproj package OrchardCore.Admin --version 2.2.1-*```
 
 !!! note
-    To use the development branch of the template add ` --source https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json --version 2.2.0-*`
+    To use the development branch of the template add ` --source https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json --version 2.2.1-*`
 
 ## Adding our controller and views
 
@@ -187,7 +187,7 @@ Once your site is ready, you should see a __The page could not be found.__ messa
 
 Enter the Admin section by opening <https://localhost:5001/admin> and logging in.
 
-Using the left menu go to __Configuration: Features__, search for your module, __MyModule__, and enable it.
+Using the left menu go to __Tools: Features__, search for your module, __MyModule__, and enable it.
 
 Now your module is enabled and you should see a new entry on the admin.  
 Click on the new menu items to render the Views we created earlier.

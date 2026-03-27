@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
+using OrchardCore.Media.Models;
 using OrchardCore.ResourceManagement;
 using Shortcodes;
 
@@ -59,7 +60,7 @@ public class AssetUrlShortcodeProvider : IShortcodeProvider
 
         if (arguments.Any())
         {
-            var queryStringParams = new Dictionary<string, string>();
+            var mediaCommands = new MediaCommands();
 
             var width = arguments.Named("width");
             var height = arguments.Named("height");
@@ -69,30 +70,30 @@ public class AssetUrlShortcodeProvider : IShortcodeProvider
 
             if (width != null)
             {
-                queryStringParams.Add("width", width);
+                mediaCommands.Width = width;
             }
 
             if (height != null)
             {
-                queryStringParams.Add("height", height);
+                mediaCommands.Height = height;
             }
 
             if (mode != null)
             {
-                queryStringParams.Add("rmode", mode);
+                mediaCommands.ResizeMode = mode;
             }
 
             if (quality != null)
             {
-                queryStringParams.Add("quality", quality);
+                mediaCommands.Quality = quality;
             }
 
             if (format != null)
             {
-                queryStringParams.Add("format", format);
+                mediaCommands.Format = format;
             }
 
-            content = QueryHelpers.AddQueryString(content, queryStringParams);
+            content = QueryHelpers.AddQueryString(content, mediaCommands.GetValues());
         }
 
         // This does not produce a tag, so sanitization is performed by the consumer (html body or markdown).

@@ -30,6 +30,10 @@
     text-align: justify;
 }
 
+.widget-align-inherit {
+    text-align: inherit;
+}
+
 .widget-size-100 {
     @include make-col-ready;
     @include make-col(12);

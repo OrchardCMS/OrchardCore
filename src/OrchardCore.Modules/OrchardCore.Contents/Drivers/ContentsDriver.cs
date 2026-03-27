@@ -33,8 +33,8 @@ public sealed class ContentsDriver : ContentDisplayDriver
 
         var results = new List<IDisplayResult>()
         {
-            Shape("ContentsTags_SummaryAdmin", new ContentItemViewModel(contentItem)).Location("SummaryAdmin", "Tags:10"),
-            Shape("ContentsMeta_SummaryAdmin", new ContentItemViewModel(contentItem)).Location("SummaryAdmin", "Meta:20"),
+            Shape("ContentsTags_SummaryAdmin", new ContentItemViewModel(contentItem)).Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Tags:10"),
+            Shape("ContentsMeta_SummaryAdmin", new ContentItemViewModel(contentItem)).Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Meta:20"),
         };
 
         var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
@@ -42,35 +42,25 @@ public sealed class ContentsDriver : ContentDisplayDriver
         if (contentTypeDefinition != null)
         {
             var contentsMetadataShape = Shape("ContentsMetadata", new ContentItemViewModel(contentItem))
-                .Location("Detail", "Content:before");
+                .Location(OrchardCoreConstants.DisplayType.Detail, "Content:before");
 
             contentsMetadataShape.Displaying(ctx =>
             {
-                var hasStereotype = contentTypeDefinition.TryGetStereotype(out var stereotype);
-
-                if (hasStereotype && !string.Equals("Content", stereotype, StringComparison.OrdinalIgnoreCase))
-                {
-                    ctx.Shape.Metadata.Alternates.Add($"{stereotype}__ContentsMetadata");
-                }
-
                 var displayType = ctx.Shape.Metadata.DisplayType;
 
-                if (!string.IsNullOrEmpty(displayType) && displayType != "Detail")
-                {
-                    ctx.Shape.Metadata.Alternates.Add($"ContentsMetadata_{ctx.Shape.Metadata.DisplayType}");
+                // Get cached alternates and add them efficiently
+                var alternates = ContentsMetadataAlternatesFactory.GetAlternates(
+                    contentTypeDefinition.GetStereotype(),
+                    displayType);
 
-                    if (hasStereotype && !string.Equals("Content", stereotype, StringComparison.OrdinalIgnoreCase))
-                    {
-                        ctx.Shape.Metadata.Alternates.Add($"{stereotype}_{displayType}__ContentsMetadata");
-                    }
-                }
+                ctx.Shape.Metadata.Alternates.AddRange(alternates);
             });
 
             var user = _httpContextAccessor.HttpContext.User;
 
             results.Add(contentsMetadataShape);
-            results.Add(Shape("ContentsButtonEdit_SummaryAdmin", new ContentItemViewModel(contentItem)).Location("SummaryAdmin", "Actions:10"));
-            results.Add(Shape("ContentsButtonActions_SummaryAdmin", new ContentItemViewModel(contentItem)).Location("SummaryAdmin", "ActionsMenu:10")
+            results.Add(Shape("ContentsButtonEdit_SummaryAdmin", new ContentItemViewModel(contentItem)).Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Actions:10"));
+            results.Add(Shape("ContentsButtonActions_SummaryAdmin", new ContentItemViewModel(contentItem)).Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "ActionsMenu:10")
                 .RenderWhen(async () =>
                 {
                     var hasPublishPermission = await _authorizationService.AuthorizeAsync(user, CommonPermissions.PublishContent, contentItem);
@@ -100,12 +90,15 @@ public sealed class ContentsDriver : ContentDisplayDriver
         return Combine(
             Dynamic("Content_PublishButton").Location("Actions:10")
                 .RenderWhen(() => _authorizationService.AuthorizeAsync(user, CommonPermissions.PublishContent, contentItem)),
-            Dynamic("Content_SaveDraftButton").Location("Actions:20")
-                .RenderWhen(async () =>
-                {
-                    return contentTypeDefinition.IsDraftable()
-                    && await _authorizationService.AuthorizeAsync(user, CommonPermissions.EditContent, contentItem);
-                })
+            Dynamic("Content_UnpublishButton").Location("Actions:20")
+                .RenderWhen(async () => contentItem.Published
+                    && await _authorizationService.AuthorizeAsync(user, CommonPermissions.PublishContent, contentItem)),
+            Dynamic("Content_SaveDraftButton").Location("Actions:30")
+                .RenderWhen(async () => contentTypeDefinition.IsDraftable()
+                    && await _authorizationService.AuthorizeAsync(user, CommonPermissions.EditContent, contentItem)),
+            Dynamic("Content_DeleteButton").Location("Actions:40")
+                .RenderWhen(async () => contentItem.Id != 0
+                    && await _authorizationService.AuthorizeAsync(user, CommonPermissions.DeleteContent, contentItem))
             );
     }
 }

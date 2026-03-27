@@ -31,9 +31,9 @@ public sealed class FacebookPluginPartDisplayDriver : ContentPartDisplayDriver<F
     {
         return Combine(
             Initialize<FacebookPluginPartViewModel>("FacebookPluginPart", async m => await BuildViewModelAsync(m, part))
-                .Location("Detail", "Content"),
+                .Location(OrchardCoreConstants.DisplayType.Detail, "Content"),
             Initialize<FacebookPluginPartViewModel>("FacebookPluginPart_Summary", async m => await BuildViewModelAsync(m, part))
-                .Location("Summary", "Content")
+                .Location(OrchardCoreConstants.DisplayType.Summary, "Content")
         );
     }
 

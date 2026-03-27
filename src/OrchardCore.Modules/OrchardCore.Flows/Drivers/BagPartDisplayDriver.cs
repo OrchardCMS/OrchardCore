@@ -79,11 +79,15 @@ public sealed class BagPartDisplayDriver : ContentPartDisplayDriver<BagPart>
         {
             var contentDefinitionManager = _serviceProvider.GetRequiredService<IContentDefinitionManager>();
 
+            var blocksSettings = context.TypePartDefinition.GetSettings<BagPartBlocksEditorSettings>();
+
             m.BagPart = bagPart;
             m.Updater = context.Updater;
             m.ContainedContentTypeDefinitions = await GetContainedContentTypesAsync(context.TypePartDefinition);
             m.AccessibleWidgets = await GetAccessibleWidgetsAsync(bagPart.ContentItems, contentDefinitionManager);
             m.TypePartDefinition = context.TypePartDefinition;
+            m.AddButtonText = blocksSettings.AddButtonText;
+            m.ModalTitleText = blocksSettings.ModalTitleText;
         });
     }
 
@@ -103,9 +107,6 @@ public sealed class BagPartDisplayDriver : ContentPartDisplayDriver<BagPart>
         for (var i = 0; i < model.Prefixes.Length; i++)
         {
             var contentItem = await _contentManager.NewAsync(model.ContentTypes[i]);
-
-            // Assign the owner of the item to ensure we can validate access to it later.
-            contentItem.Owner = GetCurrentOwner();
 
             // Try to match the requested id with an existing id
             ContentItem existingContentItem = null;

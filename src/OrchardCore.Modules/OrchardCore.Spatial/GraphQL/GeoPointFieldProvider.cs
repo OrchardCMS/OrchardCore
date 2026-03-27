@@ -7,6 +7,7 @@ using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Spatial.Fields;
 
 namespace OrchardCore.Spatial.GraphQL;
+
 public class GeoPointFieldProvider : IContentFieldProvider
 {
     protected readonly IStringLocalizer S;
@@ -20,6 +21,10 @@ public class GeoPointFieldProvider : IContentFieldProvider
 
     public FieldType GetField(ISchema schema, ContentPartFieldDefinition field, string namedPartTechnicalName, string customFieldName = null)
     {
+        if (field.FieldDefinition.Name != nameof(GeoPointField))
+        {
+            return null;
+        }
 
         return new FieldType
         {
@@ -51,7 +56,8 @@ public class GeoPointFieldProvider : IContentFieldProvider
 
     public bool HasField(ISchema schema, ContentPartFieldDefinition field)
     {
-        if (field.FieldDefinition.Name == nameof(GeoPointField)) {
+        if (field.FieldDefinition.Name == nameof(GeoPointField))
+        {
             return true;
         }
         return false;

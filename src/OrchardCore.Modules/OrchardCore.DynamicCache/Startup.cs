@@ -1,6 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DynamicCache.EventHandlers;
 using OrchardCore.DynamicCache.Services;
@@ -29,7 +28,6 @@ public sealed class Startup : StartupBase
         services.AddScoped<ITagRemovedEventHandler>(sp => sp.GetRequiredService<IDynamicCacheService>());
 
         services.AddScoped<IShapeDisplayEvents, DynamicCacheShapeDisplayEvents>();
-        services.AddShapeAttributes<CachedShapeWrapperShapes>();
 
         services.AddSingleton<IDynamicCache, DefaultDynamicCache>();
         services.AddSingleton<DynamicCacheTagHelperService>();

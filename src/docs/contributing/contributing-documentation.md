@@ -35,7 +35,7 @@ With MkDocs you can get the full docs.orchardcore.net experience locally too. If
 
 1. Follow the [MkDocs installation guide](https://www.mkdocs.org/user-guide/installation/) to install Python, PIP and MkDocs. If you already have a fresh enough Python installation, you can simply run `pip install mkdocs`.
 2. Open a command line in the root of your clone of the repository.
-3. Run `pip install -r src/docs/requirements.txt` to install dependencies.
+3. Run `python -m pip install -r src/docs/requirements.txt` to install dependencies.
 4. Run `python -m mkdocs serve` to start the site. You'll then be able to browse it under <http://127.0.0.1:8000>.
 
 ## Submitting a pull request and gathering feedback

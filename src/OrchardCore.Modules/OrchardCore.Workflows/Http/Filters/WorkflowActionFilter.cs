@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Logging;
 using OrchardCore.Locking.Distributed;
 using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Http.Services;
@@ -14,6 +16,7 @@ internal sealed class WorkflowActionFilter : IAsyncActionFilter
     private readonly IWorkflowTypeStore _workflowTypeStore;
     private readonly IWorkflowStore _workflowStore;
     private readonly IDistributedLock _distributedLock;
+    private readonly ILogger<WorkflowActionFilter> _logger;
 
     public WorkflowActionFilter(
         IWorkflowManager workflowManager,
@@ -21,7 +24,8 @@ internal sealed class WorkflowActionFilter : IAsyncActionFilter
         IWorkflowInstanceRouteEntries workflowRouteEntries,
         IWorkflowTypeStore workflowTypeStore,
         IWorkflowStore workflowStore,
-        IDistributedLock distributedLock
+        IDistributedLock distributedLock,
+        ILogger<WorkflowActionFilter> logger
     )
     {
         _workflowManager = workflowManager;
@@ -30,15 +34,79 @@ internal sealed class WorkflowActionFilter : IAsyncActionFilter
         _workflowTypeStore = workflowTypeStore;
         _workflowStore = workflowStore;
         _distributedLock = distributedLock;
+        _logger = logger;
     }
 
-    public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
+    public Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
         var httpMethod = context.HttpContext.Request.Method;
         var routeValues = context.RouteData.Values;
-        var workflowTypeEntries = await _workflowTypeRouteEntries.GetWorkflowRouteEntriesAsync(httpMethod, routeValues);
-        var workflowEntries = await _workflowRouteEntries.GetWorkflowRouteEntriesAsync(httpMethod, routeValues);
 
+        var workflowTypeEntriesTask = _workflowTypeRouteEntries.GetWorkflowRouteEntriesAsync(httpMethod, routeValues);
+
+        if (!workflowTypeEntriesTask.IsCompletedSuccessfully)
+        {
+            return AwaitedWorkflowTypeEntries(this, routeValues, next, httpMethod, workflowTypeEntriesTask);
+        }
+
+        var workflowTypeEntries = workflowTypeEntriesTask.Result;
+
+        var workflowEntriesTask = _workflowRouteEntries.GetWorkflowRouteEntriesAsync(httpMethod, routeValues);
+
+        if (!workflowEntriesTask.IsCompletedSuccessfully)
+        {
+            return AwaitedWorkflowEntries(this, routeValues, next, workflowTypeEntries, workflowEntriesTask);
+        }
+
+        var workflowEntries = workflowEntriesTask.Result;
+
+        if (!workflowTypeEntries.Any() && !workflowEntries.Any())
+        {
+            return next();
+        }
+
+        return ProcessWorkflowsAsync(routeValues, workflowTypeEntries, workflowEntries, next);
+
+        static async Task AwaitedWorkflowTypeEntries(
+            WorkflowActionFilter workflowActionFilter,
+            RouteValueDictionary routeValues,
+            ActionExecutionDelegate next,
+            string httpMethod,
+            Task<IEnumerable<Models.WorkflowRoutesEntry>> workflowTypeEntriesTask)
+        {
+            var workflowTypeEntries = await workflowTypeEntriesTask;
+            var workflowEntries = await workflowActionFilter._workflowRouteEntries.GetWorkflowRouteEntriesAsync(httpMethod, routeValues);
+
+            if (!workflowTypeEntries.Any() && !workflowEntries.Any())
+            {
+                await next();
+                return;
+            }
+
+            await workflowActionFilter.ProcessWorkflowsAsync(routeValues, workflowTypeEntries, workflowEntries, next);
+        }
+
+        static async Task AwaitedWorkflowEntries(
+            WorkflowActionFilter workflowActionFilter,
+            RouteValueDictionary routeValues,
+            ActionExecutionDelegate next,
+            IEnumerable<Models.WorkflowRoutesEntry> workflowTypeEntries,
+            Task<IEnumerable<Models.WorkflowRoutesEntry>> workflowEntriesTask)
+        {
+            var workflowEntries = await workflowEntriesTask;
+
+            if (!workflowTypeEntries.Any() && !workflowEntries.Any())
+            {
+                await next();
+                return;
+            }
+
+            await workflowActionFilter.ProcessWorkflowsAsync(routeValues, workflowTypeEntries, workflowEntries, next);
+        }
+    }
+
+    private async Task ProcessWorkflowsAsync(RouteValueDictionary routeValues, IEnumerable<Models.WorkflowRoutesEntry> workflowTypeEntries, IEnumerable<Models.WorkflowRoutesEntry> workflowEntries, ActionExecutionDelegate next)
+    {
         if (workflowTypeEntries.Any())
         {
             var workflowTypeIds = workflowTypeEntries.Select(x => long.Parse(x.WorkflowId)).ToList();
@@ -49,7 +117,12 @@ internal sealed class WorkflowActionFilter : IAsyncActionFilter
             {
                 if (workflowTypes.TryGetValue(long.Parse(entry.WorkflowId), out var workflowType))
                 {
-                    var activity = workflowType.Activities.Single(x => x.ActivityId == entry.ActivityId);
+                    var activity = workflowType.Activities.SingleOrDefault(x => x.ActivityId == entry.ActivityId);
+                    if (activity is null)
+                    {
+                        _logger.LogWarning("The activity with id '{ActivityId}' could not be found in the workflow type '{WorkflowTypeId}'.", entry.ActivityId, workflowType.Id);
+                        continue;
+                    }
 
                     if (activity.IsStart)
                     {

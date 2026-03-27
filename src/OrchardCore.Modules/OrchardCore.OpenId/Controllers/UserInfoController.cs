@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Net.Mime;
 using System.Security.Claims;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
@@ -18,7 +19,7 @@ public sealed class UserInfoController : Controller
     // GET/POST: /connect/userinfo
     [AcceptVerbs("GET", "POST")]
     [IgnoreAntiforgeryToken]
-    [Produces("application/json")]
+    [Produces(MediaTypeNames.Application.Json)]
     public async Task<IActionResult> Me()
     {
         // Warning: this action is decorated with IgnoreAntiforgeryTokenAttribute to override
