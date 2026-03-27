@@ -68,7 +68,9 @@ public static class TenantHelper
             await recipeSelect.SelectOptionAsync(tenant.SetupRecipe);
         }
 
-        // Set database provider to Sqlite if not already set by environment variable.
+        // Set database provider to Sqlite if not already set.
+        // When DatabaseConfigurationPreset is true (external DB configured on the parent),
+        // the #DatabaseProvider dropdown is not rendered — only the table prefix is shown.
         var dbProvider = page.Locator("#DatabaseProvider");
         if (await dbProvider.CountAsync() > 0)
         {
@@ -77,16 +79,14 @@ public static class TenantHelper
             {
                 await dbProvider.SelectOptionAsync("Sqlite");
             }
-            else
-            {
-                // If a provider is set (via env var), set the table prefix (prefer TenantInfo.TablePrefix, fall back to tenant name) if the field exists.
-                var tablePrefix = page.Locator("#TablePrefix");
-                if (await tablePrefix.CountAsync() > 0)
-                {
-                    var tablePrefixValue = string.IsNullOrEmpty(tenant.TablePrefix) ? tenant.Name : tenant.TablePrefix;
-                    await tablePrefix.FillAsync(tablePrefixValue);
-                }
-            }
+        }
+
+        // Always set the table prefix when available, regardless of whether the provider dropdown is visible.
+        var tablePrefix = page.Locator("#TablePrefix");
+        if (await tablePrefix.CountAsync() > 0 && await tablePrefix.IsVisibleAsync())
+        {
+            var tablePrefixValue = string.IsNullOrEmpty(tenant.TablePrefix) ? tenant.Name : tenant.TablePrefix;
+            await tablePrefix.FillAsync(tablePrefixValue);
         }
 
         await page.Locator("button.create[type=\"submit\"]").ClickAsync();

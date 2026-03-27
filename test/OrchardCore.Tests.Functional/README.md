@@ -13,7 +13,7 @@ Build the project and install the Playwright browser:
 
 ```bash
 dotnet build -c Release test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj
-pwsh test/OrchardCore.Tests.Functional/bin/Release/net10.0/playwright.ps1 install chromium
+dotnet exec test/OrchardCore.Tests.Functional/bin/Release/net10.0/Microsoft.Playwright.dll install chromium
 ```
 
 Run all tests:
@@ -117,6 +117,23 @@ A `FakeLoggerProvider` (from `Microsoft.Extensions.Diagnostics.Testing`) capture
 | `ORCHARD_URL` | Base URL when using `ORCHARD_EXTERNAL` | `http://localhost:5000` |
 | `OrchardCore__DatabaseProvider` | Database provider (`Postgres`, `MySql`, `SqlConnection`) | SQLite |
 | `OrchardCore__ConnectionString` | Connection string for the database provider | Not set |
+
+## Testing with external databases
+
+A helper script spins up a Docker container and runs the CMS tests with the same configuration as CI:
+
+```bash
+cd test/OrchardCore.Tests.Functional
+
+./run-db-tests.sh postgres   # PostgreSQL
+./run-db-tests.sh mysql      # MySQL
+./run-db-tests.sh mssql      # SQL Server
+./run-db-tests.sh sqlite     # SQLite (no container)
+./run-db-tests.sh all        # All databases sequentially
+./run-db-tests.sh cleanup    # Remove test containers
+```
+
+Requires Docker.
 
 ## Playwright tracing
 

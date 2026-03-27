@@ -31,6 +31,15 @@ public sealed class OrchardTestServer : IAsyncDisposable
         return value;
     }
 
+    /// <summary>
+    /// The per-fixture connection string used by the most recently started server.
+    /// Used by test helpers (e.g., CreateTenantAsync) to fill in child tenant connection strings.
+    /// </summary>
+    [ThreadStatic]
+    private static string _currentConnectionString;
+
+    public static string CurrentConnectionString => _currentConnectionString;
+
     private readonly WebApplication _app;
     private readonly FakeLogCollector _logCollector;
 
@@ -160,9 +169,12 @@ public sealed class OrchardTestServer : IAsyncDisposable
                 if (dbName is not null)
                 {
                     connectionString = ReplaceDatabaseName(_originalConnectionString, $"{dbName}_{instanceId}");
-                    EnsureDatabaseExists(connectionString, _originalDatabaseProvider);
+                    EnsureCleanDatabase(connectionString, _originalDatabaseProvider);
                 }
             }
+
+            // Store for test helpers that need the fixture-specific connection string.
+            _currentConnectionString = connectionString;
 
             // Write tenants.json so OrchardCore picks up the per-fixture database.
             Directory.CreateDirectory(resolvedAppDataPath);
@@ -193,11 +205,11 @@ public sealed class OrchardTestServer : IAsyncDisposable
     }
 
     /// <summary>
-    /// Creates a fixture-specific database if it doesn't already exist. The CI workflow
-    /// creates a single shared service database (e.g., "app"), but each test fixture uses
-    /// its own database (e.g., "app_cmssetupfixture") to avoid cross-fixture interference.
+    /// Drops and recreates the fixture-specific database to ensure a clean state.
+    /// Each test fixture uses its own database (e.g., "app_SaasFixture") to avoid
+    /// cross-fixture interference. Dropping ensures no leftover tables from previous runs.
     /// </summary>
-    private static void EnsureDatabaseExists(string connectionString, string databaseProvider)
+    private static void EnsureCleanDatabase(string connectionString, string databaseProvider)
     {
         var dbName = ExtractDatabaseName(connectionString);
         if (dbName is null)
@@ -229,6 +241,7 @@ public sealed class OrchardTestServer : IAsyncDisposable
 
         connection.Open();
 
+        // Check if the database exists.
         using var checkCommand = connection.CreateCommand();
         var param = checkCommand.CreateParameter();
         param.ParameterName = "@dbName";
@@ -243,9 +256,36 @@ public sealed class OrchardTestServer : IAsyncDisposable
             _ => null,
         };
 
-        if (checkCommand.CommandText is null || checkCommand.ExecuteScalar() is not null)
+        if (checkCommand.CommandText is null)
         {
             return;
+        }
+
+        // Drop if it already exists so we start clean (no leftover tables from previous runs).
+        if (checkCommand.ExecuteScalar() is not null)
+        {
+            // Terminate active connections before dropping (required by Postgres < 13 which lacks DROP ... WITH (FORCE)).
+            if (databaseProvider == "Postgres")
+            {
+                using var terminateCommand = connection.CreateCommand();
+                var terminateParam = terminateCommand.CreateParameter();
+                terminateParam.ParameterName = "@dbName";
+                terminateParam.Value = dbName;
+                terminateCommand.Parameters.Add(terminateParam);
+                terminateCommand.CommandText = "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = @dbName AND pid <> pg_backend_pid()";
+                terminateCommand.ExecuteNonQuery();
+            }
+
+            using var dropCommand = connection.CreateCommand();
+            dropCommand.CommandText = databaseProvider switch
+            {
+                "Postgres" => $"DROP DATABASE \"{dbName.Replace("\"", "\"\"")}\"",
+                "MySql" => $"DROP DATABASE `{dbName.Replace("`", "``")}`",
+                "SqlConnection" => $"ALTER DATABASE [{dbName.Replace("]", "]]")}] SET SINGLE_USER WITH ROLLBACK IMMEDIATE; DROP DATABASE [{dbName.Replace("]", "]]")}]",
+                _ => null,
+            };
+
+            dropCommand.ExecuteNonQuery();
         }
 
         // CREATE DATABASE is DDL and cannot be parameterized; quote per provider.
