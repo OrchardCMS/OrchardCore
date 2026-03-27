@@ -31,7 +31,7 @@
         }
 
         var widgetContent = await ContentItemDisplayManager.BuildDisplayAsync(widget, Model.BuildPartDisplayContext.Updater, Model.BuildPartDisplayContext.DisplayType, Model.BuildPartDisplayContext.GroupId);
-        var flowMetadata = widget.As<FlowMetadata>();
+        widget.TryGet<FlowMetadata>(out var flowMetadata);
 
         if (flowMetadata != null)
         {

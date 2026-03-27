@@ -78,7 +78,7 @@ public class AliasPartHandler : ContentPartHandler<AliasPart>
 
     public override async Task CloningAsync(CloneContentContext context, AliasPart part)
     {
-        var clonedPart = context.CloneContentItem.As<AliasPart>();
+        var clonedPart = context.CloneContentItem.GetOrCreate<AliasPart>();
         clonedPart.Alias = await GenerateUniqueAliasAsync(part.Alias, clonedPart);
 
         clonedPart.Apply();
