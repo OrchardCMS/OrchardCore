@@ -40,11 +40,11 @@ Tests use `OrchardTestServer`, which builds and starts OrchardCore in-process us
 Test fixtures run in parallel. Each fixture is fully isolated:
 
 - **App data**: Each fixture gets its own `App_Data_Tests_{FixtureName}` directory.
-- **Database**: When using shared database servers (MySQL, PostgreSQL, SQL Server), each fixture creates its own database (e.g., `app_AgencyFixture`).
-- **Configuration**: Database settings are injected per-host via `builder.Configuration` — no global environment variables are mutated at runtime.
+- **Database**: When using shared database servers (MySQL, PostgreSQL, SQL Server), each fixture drops and recreates its own database (e.g., `app_AgencyFixture`) to ensure a clean state.
+- **Configuration**: Database env vars (`OrchardCore__ConnectionString`, `OrchardCore__DatabaseProvider`) are captured once at process start and immediately cleared. Each host receives its per-fixture connection string via `tenants.json` and `builder.Configuration`.
 - **Recipes**: Test-only recipes are served from embedded assembly resources via `EmbeddedRecipeHarvester`, eliminating shared filesystem state.
 
-Parallelism is controlled by `maxParallelThreads` in `xunit.runner.json`.
+Parallelism is controlled by `maxParallelThreads` in `xunit.runner.json` (defaults to CPU core count when omitted).
 
 ### Test structure
 
