@@ -16,6 +16,8 @@ public sealed class OpenIdClientSettingsStep : NamedRecipeStepHandler
     private readonly IOpenIdClientService _clientService;
     private readonly IDataProtectionProvider _dataProtectionProvider;
 
+    private static readonly char[] ScopeDelimiters = [' ', ','];
+
     public OpenIdClientSettingsStep(
         IOpenIdClientService clientService,
         IDataProtectionProvider dataProtectionProvider)
@@ -30,11 +32,15 @@ public sealed class OpenIdClientSettingsStep : NamedRecipeStepHandler
         var model = context.Step.ToObject<OpenIdClientSettingsStepModel>();
         var settings = await _clientService.LoadSettingsAsync();
 
-        settings.Scopes = model.Scopes?.Split([' ', ','], StringSplitOptions.RemoveEmptyEntries);
+        settings.Scopes = model.Scopes?.Split(ScopeDelimiters, StringSplitOptions.RemoveEmptyEntries);
         settings.Authority = !string.IsNullOrEmpty(model.Authority) ? new Uri(model.Authority, UriKind.Absolute) : null;
         settings.CallbackPath = model.CallbackPath;
         settings.ClientId = model.ClientId;
         if (!string.IsNullOrEmpty(model.ClientSecret))
+        {
+            settings.ClientSecret = model.ClientSecret;
+        }
+        else if (!string.IsNullOrEmpty(model.ClientSecretPlainText))
         {
             var protector = _dataProtectionProvider.CreateProtector(nameof(OpenIdClientConfiguration));
             settings.ClientSecret = protector.Protect(model.ClientSecret);
@@ -60,6 +66,7 @@ public sealed class OpenIdClientSettingsStepModel
 
     public string ClientId { get; set; }
     public string ClientSecret { get; set; }
+    public string ClientSecretPlainText { get; set; }
     public string CallbackPath { get; set; }
     public string SignedOutRedirectUri { get; set; }
     public string SignedOutCallbackPath { get; set; }
