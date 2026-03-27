@@ -31,7 +31,7 @@ public class SiteSettings : DocumentEntity, ISite
     public T As<T>() where T : new()
         => TryGet<T>(out var settings) ? settings : new T();
 
-    public bool TryGet<T>(out T settings) where T : new()
+    public bool TryGet<T>(out T settings)
     {
         var name = typeof(T).Name;
 

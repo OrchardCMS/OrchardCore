@@ -61,11 +61,9 @@ public static class EntityExtensions
         => entity.Remove(typeof(T).Name);
 
     public static bool TryGet<T>(this IEntity entity, out T aspect)
-        where T : new()
         => entity.TryGet(typeof(T).Name, out aspect);
 
     public static bool TryGet<T>(this IEntity entity, string name, out T aspect)
-        where T : new()
     {
         ArgumentException.ThrowIfNullOrEmpty(name);
 

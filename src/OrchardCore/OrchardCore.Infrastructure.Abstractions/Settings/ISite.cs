@@ -39,5 +39,5 @@ public interface ISite : IEntity
 
     T As<T>() where T : new();
 
-    bool TryGet<T>(out T settings) where T : new();
+    bool TryGet<T>(out T settings);
 }
