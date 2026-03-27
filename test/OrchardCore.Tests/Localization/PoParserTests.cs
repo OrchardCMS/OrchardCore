@@ -6,7 +6,7 @@ namespace OrchardCore.Tests.Localization;
 public class PoParserTests
 {
     [Fact]
-    public async Task ParseAsync_RetursSimpleEntry()
+    public async Task ParseAsync_ReturnsSimpleEntry()
     {
         // msgid "Unknown system error"
         // msgstr "Error desconegut del sistema"

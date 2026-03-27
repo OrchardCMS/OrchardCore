@@ -33,9 +33,9 @@ public class PoFilesTranslationsProvider : ITranslationProvider
         {
             using var stream = fileInfo.CreateReadStream();
             using var reader = new StreamReader(stream);
-            var culureDictionaryRecords = PoParser.Parse(reader);
+            var cultureDictionaryRecords = PoParser.Parse(reader);
 
-            dictionary.MergeTranslations(culureDictionaryRecords);
+            dictionary.MergeTranslations(cultureDictionaryRecords);
         }
     }
 }
