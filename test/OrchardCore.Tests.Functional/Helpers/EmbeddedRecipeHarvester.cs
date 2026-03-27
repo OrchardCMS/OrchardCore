@@ -39,7 +39,7 @@ public sealed class EmbeddedRecipeHarvester : IRecipeHarvester
                 var firstDotIndex = trimmed.IndexOf('.');
                 if (firstDotIndex >= 0)
                 {
-                    subpath = trimmed.Substring(0, firstDotIndex) + "/" + trimmed.Substring(firstDotIndex + 1);
+                    subpath = string.Concat(trimmed.AsSpan(0, firstDotIndex), "/", trimmed.AsSpan(firstDotIndex + 1));
                 }
                 else
                 {
