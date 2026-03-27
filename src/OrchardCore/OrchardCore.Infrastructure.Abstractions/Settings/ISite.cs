@@ -38,4 +38,6 @@ public interface ISite : IEntity
     CacheMode CacheMode { get; set; }
 
     T As<T>() where T : new();
+
+    bool TryGet<T>(out T settings) where T : new();
 }
