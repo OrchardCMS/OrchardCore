@@ -22,7 +22,7 @@ public class ComponentViewLocationExpanderProvider : IViewLocationExpanderProvid
     private readonly IMemoryCache _memoryCache;
 
     public ComponentViewLocationExpanderProvider(
-        RazorCompilationFileProviderAccessor fileProviderAccessor,
+        ViewFileProviderAccessor fileProviderAccessor,
         IExtensionManager extensionManager,
         ShellDescriptor shellDescriptor,
         IMemoryCache memoryCache)

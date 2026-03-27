@@ -14,6 +14,8 @@
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
+  <!-- Keep this package for its transitive dependencies (Razor.Extensions, DependencyModel)
+       even though AddRazorRuntimeCompilation() is no longer called. -->
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" ExcludeAssets="build;buildTransitive" />
   </ItemGroup>
