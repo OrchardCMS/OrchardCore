@@ -19,7 +19,6 @@ public sealed class OrchardTestFixture : IAsyncDisposable
     private IPlaywright _playwright;
     private IBrowser _browser;
     private bool _disposed;
-    private bool _recipeCopied;
 
     public string BaseUrl { get; private set; }
     public IBrowser Browser => _browser;
@@ -49,12 +48,6 @@ public sealed class OrchardTestFixture : IAsyncDisposable
         if (Directory.Exists(AppDataPath))
         {
             Directory.Delete(AppDataPath, recursive: true);
-        }
-
-        // Copy test recipes if needed.
-        if (!_isMvc)
-        {
-            _recipeCopied = AppLifecycleHelper.CopyRecipe(AppDir, "migrations.recipe.json");
         }
 
         if (string.IsNullOrEmpty(System.Environment.GetEnvironmentVariable("ORCHARD_EXTERNAL")))
@@ -163,17 +156,13 @@ public sealed class OrchardTestFixture : IAsyncDisposable
             await _server.DisposeAsync();
         }
 
-        // Only delete the recipe if this fixture created it.
-        if (_recipeCopied)
-        {
-            AppLifecycleHelper.DeleteRecipe(AppDir, "migrations.recipe.json");
-        }
-
-        // Clear SQLite connection pool to release file locks, then clean up test data.
-        global::Microsoft.Data.Sqlite.SqliteConnection.ClearAllPools();
-
         if (Directory.Exists(AppDataPath))
         {
+            // Clear SQLite connection pool to release file locks before deleting.
+            global::Microsoft.Data.Sqlite.SqliteConnection.ClearPool(
+                new global::Microsoft.Data.Sqlite.SqliteConnection(
+                    $"Data Source={Path.Combine(AppDataPath, "Sites", "Default", "yessql.db")}"));
+
             Directory.Delete(AppDataPath, recursive: true);
         }
     }

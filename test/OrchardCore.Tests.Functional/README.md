@@ -33,44 +33,55 @@ dotnet test --project test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functi
 
 ### In-process hosting
 
-Tests use `OrchardTestServer`, which builds and starts OrchardCore in-process using `WebApplication.CreateBuilder` with the same configuration as the actual `Program.cs` entry points. Each test class fixture gets its own server instance on a dynamic port, with an isolated `App_Data_Tests_{FixtureName}` directory.
+Tests use `OrchardTestServer`, which builds and starts OrchardCore in-process using `WebApplication.CreateBuilder` with the same configuration as the actual `Program.cs` entry points. Each test class fixture gets its own server instance on a dynamic port, with an isolated `App_Data_Tests_{FixtureName}` directory and (when using shared databases) a fixture-specific database.
 
-### Serial execution
+### Parallel execution
 
-Tests run serially (`maxParallelThreads: 1` in `xunit.runner.json`) to avoid database conflicts when using shared database servers (MySQL, PostgreSQL, SQL Server) in CI. Each CMS recipe test class has its own `IClassFixture<T>` (e.g., `AgencyFixture`, `BlogFixture`) that starts an independent OrchardCore instance with an isolated app data directory and fixture-specific database name.
+Test fixtures run in parallel. Each fixture is fully isolated:
+
+- **App data**: Each fixture gets its own `App_Data_Tests_{FixtureName}` directory.
+- **Database**: When using shared database servers (MySQL, PostgreSQL, SQL Server), each fixture creates its own database (e.g., `app_AgencyFixture`).
+- **Configuration**: Database settings are injected per-host via `builder.Configuration` — no global environment variables are mutated at runtime.
+- **Recipes**: Test-only recipes are served from embedded assembly resources via `EmbeddedRecipeHarvester`, eliminating shared filesystem state.
+
+Parallelism is controlled by `maxParallelThreads` in `xunit.runner.json`.
 
 ### Test structure
 
 ```
 test/OrchardCore.Tests.Functional/
   Helpers/
-    OrchardTestServer.cs       # Builds and runs OrchardCore in-process
-    OrchardTestFixture.cs      # Manages Playwright browser + server lifecycle
-    AppLifecycleHelper.cs      # Copies/deletes embedded recipe files (thread-safe)
-    AuthHelper.cs              # IPage.LoginAsync() extension
-    TenantHelper.cs            # IPage.SiteSetupAsync(), CreateTenantAsync() extensions
-    ButtonHelper.cs            # IPage.ClickSaveAsync() etc. extensions
-    ConfigurationHelper.cs     # IPage.SetPageSizeAsync() extension
-    FeatureHelper.cs           # IPage.EnableFeatureAsync() / DisableFeatureAsync()
-    SelectorHelper.cs          # IPage.GetByCy() / FindByCy() for data-cy attributes
-    TestUtils.cs               # OrchardConfig, TenantInfo, GenerateTenantInfo()
+    OrchardTestServer.cs         # Builds and runs OrchardCore in-process
+    OrchardTestFixture.cs        # Manages Playwright browser + server lifecycle
+    EmbeddedRecipeHarvester.cs   # Serves test recipes from embedded resources
+    AuthHelper.cs                # IPage.LoginAsync() extension
+    TenantHelper.cs              # IPage.SiteSetupAsync(), CreateTenantAsync() extensions
+    ButtonHelper.cs              # IPage.ClickSaveAsync() etc. extensions
+    ConfigurationHelper.cs       # IPage.SetPageSizeAsync() extension
+    FeatureHelper.cs             # IPage.EnableFeatureAsync() / DisableFeatureAsync()
+    SelectorHelper.cs            # IPage.GetByCy() / FindByCy() for data-cy attributes
+    TestUtils.cs                 # OrchardConfig, TenantInfo, GenerateTenantInfo()
   Tests/
     Cms/
-      CmsRecipeFixture.cs      # Base fixture: starts app, runs setup with a recipe
-      CmsTestBase.cs           # Base test class with log assertion in teardown
-      AgencyTests.cs           # Tests for the Agency recipe
-      BlogTests.cs             # Tests for the Blog recipe
-      ComingSoonTests.cs       # Tests for the ComingSoon recipe
-      HeadlessTests.cs         # Tests for the Headless recipe
-      MigrationsTests.cs       # Tests for database migrations via custom recipe
-      SaasFixture.cs           # Fixture for SaaS multi-tenancy tests
-      SaasTests.cs             # Tests tenant creation and isolation
+      CmsRecipeFixture.cs        # Base fixture: starts app, runs setup with a recipe
+      CmsTestBase.cs             # Base test class with log assertion in teardown
+      AgencyTests.cs             # Tests for the Agency recipe
+      BlogTests.cs               # Tests for the Blog recipe
+      ComingSoonTests.cs         # Tests for the ComingSoon recipe
+      HeadlessTests.cs           # Tests for the Headless recipe
+      MigrationsTests.cs         # Tests for database migrations via custom recipe
+      SaasFixture.cs             # Fixture for SaaS multi-tenancy tests
+      SaasTests.cs               # Tests tenant creation and isolation
     Mvc/
-      MvcSetupFixture.cs       # Fixture for the MVC HelloWorld app
-      MvcTests.cs              # Smoke test for MVC module
+      MvcSetupFixture.cs         # Fixture for the MVC HelloWorld app
+      MvcTests.cs                # Smoke test for MVC module
   Fixtures/
-    migrations.recipe.json     # Embedded recipe for testing database migrations
+    migrations.recipe.json       # Embedded recipe for testing database migrations
 ```
+
+### Adding test recipes
+
+Place any `.recipe.json` file in the `Fixtures/` folder. The csproj embeds `Fixtures/**/*.json` as assembly resources, and `EmbeddedRecipeHarvester` automatically discovers and serves them — no manual registration needed.
 
 ### Fixture hierarchy
 
@@ -104,7 +115,6 @@ A `FakeLoggerProvider` (from `Microsoft.Extensions.Diagnostics.Testing`) capture
 | `PLAYWRIGHT_TRACING` | Enable Playwright tracing (set to any value) | Disabled |
 | `ORCHARD_EXTERNAL` | Skip in-process hosting, use an externally running app | Not set |
 | `ORCHARD_URL` | Base URL when using `ORCHARD_EXTERNAL` | `http://localhost:5000` |
-| `ORCHARD_APP_DATA` | App data directory path | Not set |
 | `OrchardCore__DatabaseProvider` | Database provider (`Postgres`, `MySql`, `SqlConnection`) | SQLite |
 | `OrchardCore__ConnectionString` | Connection string for the database provider | Not set |
 

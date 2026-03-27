@@ -8,12 +8,13 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Testing;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Logging;
+using OrchardCore.Recipes.Services;
 
 namespace OrchardCore.Tests.Functional.Helpers;
 
 public sealed class OrchardTestServer : IAsyncDisposable
 {
-    // Capture the original connection string before any fixture modifies the env var.
+    // Capture the original values once at process start, before any fixture runs.
     private static readonly string _originalConnectionString =
         System.Environment.GetEnvironmentVariable("OrchardCore__ConnectionString");
 
@@ -36,8 +37,6 @@ public sealed class OrchardTestServer : IAsyncDisposable
     {
         var loggerProvider = new FakeLoggerProvider();
 
-        SetupAppData(appDataPath, instanceId);
-
         var builder = WebApplication.CreateBuilder(new WebApplicationOptions
         {
             ApplicationName = "OrchardCore.Cms.Web",
@@ -50,7 +49,10 @@ public sealed class OrchardTestServer : IAsyncDisposable
             .AddOrchardCms()
             .AddSetupFeatures("OrchardCore.AutoSetup");
 
-        ConfigureServices(builder, appDataPath, loggerProvider);
+        // Serve test recipes from embedded resources instead of copying files.
+        builder.Services.AddScoped<IRecipeHarvester, EmbeddedRecipeHarvester>();
+
+        ConfigureServices(builder, appDataPath, instanceId, loggerProvider);
 
         var app = builder.Build();
         app.UseStaticFiles();
@@ -65,8 +67,6 @@ public sealed class OrchardTestServer : IAsyncDisposable
     {
         var loggerProvider = new FakeLoggerProvider();
 
-        SetupAppData(appDataPath, null);
-
         var builder = WebApplication.CreateBuilder(new WebApplicationOptions
         {
             ApplicationName = "OrchardCore.Mvc.Web",
@@ -77,7 +77,7 @@ public sealed class OrchardTestServer : IAsyncDisposable
             .AddOrchardCore()
             .AddMvc();
 
-        ConfigureServices(builder, appDataPath, loggerProvider);
+        ConfigureServices(builder, appDataPath, instanceId: null, loggerProvider);
 
         var app = builder.Build();
         app.UseStaticFiles();
@@ -119,68 +119,59 @@ public sealed class OrchardTestServer : IAsyncDisposable
         }
     }
 
-    /// <summary>
-    /// Prepares the app data directory. When a shared database server is configured via
-    /// environment variables, creates a fixture-specific database and REMOVES the env vars
-    /// so ShellSettingsManager can't override our per-fixture configuration.
-    /// The connection string is written to tenants.json instead.
-    /// Safe because tests run serially (maxParallelThreads: 1).
-    /// </summary>
-    private static void SetupAppData(string appDataPath, string instanceId)
-    {
-        System.Environment.SetEnvironmentVariable("ORCHARD_APP_DATA", appDataPath);
-
-        if (string.IsNullOrEmpty(_originalConnectionString) || string.IsNullOrEmpty(_originalDatabaseProvider))
-        {
-            return;
-        }
-
-        // Remove the env vars so ShellSettingsManager can't re-add them with highest priority.
-        System.Environment.SetEnvironmentVariable("OrchardCore__ConnectionString", null);
-        System.Environment.SetEnvironmentVariable("OrchardCore__DatabaseProvider", null);
-
-        var connectionString = _originalConnectionString;
-
-        if (!string.IsNullOrEmpty(instanceId))
-        {
-            var dbName = ExtractDatabaseName(_originalConnectionString);
-            if (dbName is not null)
-            {
-                connectionString = ReplaceDatabaseName(_originalConnectionString, $"{dbName}_{instanceId}");
-                EnsureDatabaseExists(connectionString, _originalDatabaseProvider);
-            }
-        }
-
-        // Write tenants.json with the fixture-specific connection string.
-        // With env vars removed, this is the sole source of database configuration.
-        Directory.CreateDirectory(appDataPath);
-        File.WriteAllText(
-            Path.Combine(appDataPath, "tenants.json"),
-            JsonSerializer.Serialize(new Dictionary<string, object>
-            {
-                ["Default"] = new Dictionary<string, string>
-                {
-                    ["DatabaseProvider"] = _originalDatabaseProvider,
-                    ["ConnectionString"] = connectionString,
-                },
-            }));
-    }
-
-    private static void ConfigureServices(WebApplicationBuilder builder, string appDataPath, FakeLoggerProvider loggerProvider)
+    private static void ConfigureServices(
+        WebApplicationBuilder builder,
+        string appDataPath,
+        string instanceId,
+        FakeLoggerProvider loggerProvider)
     {
         builder.WebHost.UseUrls("http://127.0.0.1:0");
         builder.WebHost.UseSetting("suppressHostingStartup", "true");
 
-        // PostConfigure overrides whatever ShellOptionsSetup set from the env var,
-        // ensuring each instance uses its own app data path.
         var resolvedAppDataPath = Path.IsPathRooted(appDataPath)
             ? appDataPath
             : Path.Combine(builder.Environment.ContentRootPath, appDataPath);
 
+        // Override app data path per fixture via PostConfigure (no env var needed).
         builder.Services.PostConfigure<ShellOptions>(options =>
         {
             options.ShellsApplicationDataPath = resolvedAppDataPath;
         });
+
+        // Override database config via IConfiguration (higher priority than env vars)
+        // so we never need to mutate global environment variables.
+        if (!string.IsNullOrEmpty(_originalConnectionString) && !string.IsNullOrEmpty(_originalDatabaseProvider))
+        {
+            var connectionString = _originalConnectionString;
+
+            if (!string.IsNullOrEmpty(instanceId))
+            {
+                var dbName = ExtractDatabaseName(_originalConnectionString);
+                if (dbName is not null)
+                {
+                    connectionString = ReplaceDatabaseName(_originalConnectionString, $"{dbName}_{instanceId}");
+                    EnsureDatabaseExists(connectionString, _originalDatabaseProvider);
+                }
+            }
+
+            // Write tenants.json so OrchardCore picks up the per-fixture database.
+            Directory.CreateDirectory(resolvedAppDataPath);
+            File.WriteAllText(
+                Path.Combine(resolvedAppDataPath, "tenants.json"),
+                JsonSerializer.Serialize(new Dictionary<string, object>
+                {
+                    ["Default"] = new Dictionary<string, string>
+                    {
+                        ["DatabaseProvider"] = _originalDatabaseProvider,
+                        ["ConnectionString"] = connectionString,
+                    },
+                }));
+
+            // Override the env-var-sourced configuration keys so ShellSettingsManager
+            // doesn't re-apply the original values with highest priority.
+            builder.Configuration["OrchardCore:ConnectionString"] = connectionString;
+            builder.Configuration["OrchardCore:DatabaseProvider"] = _originalDatabaseProvider;
+        }
 
         // Disable YesSql concurrency checks during setup. Each recipe step runs in a new
         // scope with a new session, but the document cache can serve stale versions, causing
