@@ -10,7 +10,7 @@ Vue.component('media-items-grid', {
                     v-on:click.stop="toggleSelectionOfMedia(media)"
                     draggable="true" v-on:dragstart="dragStart(media, $event)">
                     <div class="thumb-container" :style="{height: thumbSize +'px'}">
-                        <img v-if="media.mime.startsWith('image')"
+                        <img v-if="media.mime?.startsWith('image')"
                                 :src="buildMediaUrl(media.url, thumbSize)"
                                 :data-mime="media.mime"
                                 :style="{maxHeight: thumbSize +'px', maxWidth: thumbSize +'px'}" />
