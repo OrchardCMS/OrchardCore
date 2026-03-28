@@ -65,6 +65,7 @@ public sealed class UserInformationDisplayDriver : DisplayDriver<User>
             {
                 model.PhoneNumber = user.PhoneNumber;
                 model.PhoneNumberConfirmed = user.PhoneNumberConfirmed;
+                model.DefaultRegion = settings.DefaultPhoneRegion;
 
                 model.AllowEditing = context.IsNew || (settings.AllowChangingPhoneNumber && canEditUserInfo);
 
@@ -101,9 +102,17 @@ public sealed class UserInformationDisplayDriver : DisplayDriver<User>
 
             await context.Updater.TryUpdateModelAsync(phoneNumberModel, Prefix);
 
-            if (!string.IsNullOrEmpty(phoneNumberModel.PhoneNumber) && !_phoneFormatValidator.IsValid(phoneNumberModel.PhoneNumber))
+            if (!string.IsNullOrEmpty(phoneNumberModel.PhoneNumber))
             {
-                context.Updater.ModelState.AddModelError(Prefix, nameof(phoneNumberModel.PhoneNumber), S["Please provide a valid phone number."]);
+                var result = _phoneFormatValidator.Validate(phoneNumberModel.PhoneNumber, phoneNumberModel.RegionCode);
+                if (!result.IsValid)
+                {
+                    context.Updater.ModelState.AddModelError(Prefix, nameof(phoneNumberModel.PhoneNumber), S[result.ErrorMessage]);
+                }
+                else
+                {
+                    user.PhoneNumber = result.E164Number;
+                }
             }
             else
             {
@@ -128,9 +137,17 @@ public sealed class UserInformationDisplayDriver : DisplayDriver<User>
 
                 if (settings.AllowChangingPhoneNumber && await context.Updater.TryUpdateModelAsync(phoneNumberModel, Prefix))
                 {
-                    if (!string.IsNullOrEmpty(phoneNumberModel.PhoneNumber) && !_phoneFormatValidator.IsValid(phoneNumberModel.PhoneNumber))
+                    if (!string.IsNullOrEmpty(phoneNumberModel.PhoneNumber))
                     {
-                        context.Updater.ModelState.AddModelError(Prefix, nameof(phoneNumberModel.PhoneNumber), S["Please provide a valid phone number."]);
+                        var result = _phoneFormatValidator.Validate(phoneNumberModel.PhoneNumber, phoneNumberModel.RegionCode);
+                        if (!result.IsValid)
+                        {
+                            context.Updater.ModelState.AddModelError(Prefix, nameof(phoneNumberModel.PhoneNumber), S[result.ErrorMessage]);
+                        }
+                        else
+                        {
+                            user.PhoneNumber = result.E164Number;
+                        }
                     }
                     else
                     {

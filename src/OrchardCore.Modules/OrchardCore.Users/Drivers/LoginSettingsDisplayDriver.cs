@@ -37,6 +37,7 @@ public sealed class LoginSettingsDisplayDriver : SiteDisplayDriver<LoginSettings
             model.AllowChangingPhoneNumber = settings.AllowChangingPhoneNumber;
             model.AllowRememberMe = settings.AllowRememberMe;
             model.UsePersistentAuthenticationCookie = settings.UsePersistentAuthenticationCookie;
+            model.DefaultPhoneRegion = settings.DefaultPhoneRegion;
         }).Location("Content:5#General")
         .RenderWhen(static (driver) => driver._authorizationService.AuthorizeAsync(driver._httpContextAccessor.HttpContext.User, UsersPermissions.ManageUsers), this)
         .OnGroup(SettingsGroupId);
