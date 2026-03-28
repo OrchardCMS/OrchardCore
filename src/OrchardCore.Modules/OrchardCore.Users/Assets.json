@@ -10,5 +10,11 @@
     "name": "users-qrcode",
     "source": "../../../node_modules/qrcodejs/qrcode.js",
     "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "vite",
+    "name": "users-phone-input",
+    "source": "Assets/js/phone-input",
+    "tags": ["admin", "dashboard", "js"]
   }
 ]

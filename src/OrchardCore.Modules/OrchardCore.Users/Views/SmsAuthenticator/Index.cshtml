@@ -20,11 +20,16 @@
 <form method="post">
     <div class="mb-3">
         <label asp-for="PhoneNumber" class="form-label">@T["Phone Number"]</label>
-        <input class="form-control" type="text" asp-for="PhoneNumber" asp-is-disabled="!Model.AllowChangingPhoneNumber">
-        @if (Model.AllowChangingPhoneNumber)
-        {
-            <span>@T["Phone number must include a country code. For example, +1 for United States."]</span>
-        }
+        <div data-phone-input
+             data-phone-value="@Model.PhoneNumber"
+             data-phone-disabled="@(!Model.AllowChangingPhoneNumber)"
+             data-phone-region=""
+             data-phone-confirmed="False">
+        </div>
+        <input type="hidden" asp-for="PhoneNumber" data-phone-e164 />
     </div>
     <button type="submit" class="btn btn-primary">@T["Request Code"]</button>
 </form>
+
+<style asp-name="phone-input"></style>
+<script asp-name="phone-input" at="Foot" type="module"></script>
