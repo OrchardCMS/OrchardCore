@@ -90,7 +90,11 @@ public class LocalizationPartHandler : ContentPartHandler<LocalizationPart>
 
     public override Task CloningAsync(CloneContentContext context, LocalizationPart part)
     {
-        var clonedPart = context.CloneContentItem.GetOrCreate<LocalizationPart>();
+        if (!context.CloneContentItem.TryGet<LocalizationPart>(out var clonedPart))
+        {
+            throw new InvalidOperationException("The cloned content item doesn't contain a LocalizationPart.");
+        }
+
         clonedPart.LocalizationSet = string.Empty;
         clonedPart.Apply();
         return Task.CompletedTask;

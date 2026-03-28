@@ -146,7 +146,11 @@ public class AutoroutePartHandler : ContentPartHandler<AutoroutePart>
 
     public override async Task CloningAsync(CloneContentContext context, AutoroutePart part)
     {
-        var clonedPart = context.CloneContentItem.GetOrCreate<AutoroutePart>();
+        if (!context.CloneContentItem.TryGet<AutoroutePart>(out var clonedPart))
+        {
+            throw new InvalidOperationException("The cloned content item doesn't contain an AutoroutePart.");
+        }
+
         clonedPart.Path = await GenerateUniqueAbsolutePathAsync(part.Path, context.CloneContentItem.ContentItemId);
         clonedPart.SetHomepage = false;
         clonedPart.Apply();
