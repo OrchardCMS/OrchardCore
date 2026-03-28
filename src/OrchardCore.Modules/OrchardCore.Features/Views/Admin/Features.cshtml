@@ -110,7 +110,7 @@
                                         @if (feature.FeatureDependencies != null && feature.FeatureDependencies.Any())
                                         {
                                             <div class="mb-1">
-                                                <div id="direct-dependencies" class="d-inline">
+                                                <div class="d-inline direct-dependencies">
                                                     @foreach (var dependencyId in feature.Descriptor.Dependencies)
                                                     {
                                                         var dependencyName = Model.Features.Where(f => f.Descriptor.Id == dependencyId)
@@ -121,7 +121,7 @@
                                                         </span>
                                                     }
                                                 </div>
-                                                <div id="transitive-dependencies" class="d-none d-inline">
+                                                <div class="d-inline transitive-dependencies d-none">
                                                     @foreach (var d in dependencies)
                                                     {
                                                         <span class="badge ta-badge">
@@ -135,7 +135,9 @@
                                                         </span>
                                                     }
                                                 </div>
-                                                <a href="#" class="dependencies-toggle ms-1 link-primary small" data-show="@T["Show more"]" data-hide="@T["Show less"]">@T["Show more"]</a>
+                                                <span class="badge ta-badge d-inline">
+                                                    <a class="text-dark show-more" href="#">...</a>
+                                                </span>
                                             </div>
                                         }
 
@@ -261,18 +263,16 @@
             $("[name='submit.BulkAction']").click();
         });
 
-        $('.dependencies-toggle').on('click', function (e) {
+        $('.show-more').on('click', function (e) {
             e.preventDefault();
 
-            var $toggle = $(this);
-            var $direct_dependencies = $toggle.siblings('#direct-dependencies');
-            var $transitive_dependencies = $toggle.prev('#transitive-dependencies')
+            var $toogle_parent = $(this).parent();
+            var $direct_dependencies = $toogle_parent.siblings('.direct-dependencies');
+            var $transitive_dependencies = $toogle_parent.prev('.transitive-dependencies')
 
+            $direct_dependencies.toggleClass('d-none');
             $transitive_dependencies.toggleClass('d-none');
-            $direct_dependencies.toggleClass('d-none', !$transitive_dependencies.hasClass('d-none'));
-            $toggle.text($transitive_dependencies.hasClass('d-none')
-                ? $toggle.data('show')
-                : $toggle.data('hide'));
+            $toogle_parent.toggleClass('d-none');
         });
     });
 </script>
