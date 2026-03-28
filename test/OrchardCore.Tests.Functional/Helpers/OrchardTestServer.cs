@@ -52,9 +52,13 @@ public sealed class OrchardTestServer : IAsyncDisposable
         _logCollector = logCollector;
     }
 
-    public static async Task<OrchardTestServer> StartCmsAsync(string contentRoot, string appDataPath, string instanceId = null)
+    public static async Task<OrchardTestServer> StartCmsAsync(string contentRoot, string appDataPath, string instanceId = null, string autoSetupRecipe = null)
     {
         var loggerProvider = new FakeLoggerProvider();
+
+        // Ensure a clean database before building the host so the sync ConfigureServices
+        // doesn't need to block on DB operations.
+        var connectionString = await ResolveAndCleanDatabaseAsync(instanceId);
 
         var builder = WebApplication.CreateBuilder(new WebApplicationOptions
         {
@@ -71,7 +75,7 @@ public sealed class OrchardTestServer : IAsyncDisposable
         // Serve test recipes from embedded resources instead of copying files.
         builder.Services.AddScoped<IRecipeHarvester, EmbeddedRecipeHarvester>();
 
-        ConfigureServices(builder, appDataPath, instanceId, loggerProvider);
+        ConfigureServices(builder, appDataPath, connectionString, loggerProvider, autoSetupRecipe);
 
         var app = builder.Build();
         app.UseStaticFiles();
@@ -96,7 +100,7 @@ public sealed class OrchardTestServer : IAsyncDisposable
             .AddOrchardCore()
             .AddMvc();
 
-        ConfigureServices(builder, appDataPath, instanceId: null, loggerProvider);
+        ConfigureServices(builder, appDataPath, connectionString: null, loggerProvider);
 
         var app = builder.Build();
         app.UseStaticFiles();
@@ -138,11 +142,41 @@ public sealed class OrchardTestServer : IAsyncDisposable
         }
     }
 
+    /// <summary>
+    /// Resolves the per-fixture connection string and drops/recreates the database asynchronously.
+    /// Returns the resolved connection string, or null when no external database is configured.
+    /// </summary>
+    private static async Task<string> ResolveAndCleanDatabaseAsync(string instanceId)
+    {
+        if (string.IsNullOrEmpty(_originalConnectionString) || string.IsNullOrEmpty(_originalDatabaseProvider))
+        {
+            return null;
+        }
+
+        var connectionString = _originalConnectionString;
+
+        if (!string.IsNullOrEmpty(instanceId))
+        {
+            var dbName = ExtractDatabaseName(_originalConnectionString);
+            if (dbName is not null)
+            {
+                connectionString = ReplaceDatabaseName(_originalConnectionString, $"{dbName}_{instanceId}");
+                await EnsureCleanDatabaseAsync(connectionString, _originalDatabaseProvider);
+            }
+        }
+
+        // Store for test helpers that need the fixture-specific connection string.
+        _currentConnectionString = connectionString;
+
+        return connectionString;
+    }
+
     private static void ConfigureServices(
         WebApplicationBuilder builder,
         string appDataPath,
-        string instanceId,
-        FakeLoggerProvider loggerProvider)
+        string connectionString,
+        FakeLoggerProvider loggerProvider,
+        string autoSetupRecipe = null)
     {
         builder.WebHost.UseUrls("http://127.0.0.1:0");
         builder.WebHost.UseSetting("suppressHostingStartup", "true");
@@ -159,23 +193,8 @@ public sealed class OrchardTestServer : IAsyncDisposable
 
         // Override database config via IConfiguration (higher priority than env vars)
         // so we never need to mutate global environment variables.
-        if (!string.IsNullOrEmpty(_originalConnectionString) && !string.IsNullOrEmpty(_originalDatabaseProvider))
+        if (!string.IsNullOrEmpty(connectionString) && !string.IsNullOrEmpty(_originalDatabaseProvider))
         {
-            var connectionString = _originalConnectionString;
-
-            if (!string.IsNullOrEmpty(instanceId))
-            {
-                var dbName = ExtractDatabaseName(_originalConnectionString);
-                if (dbName is not null)
-                {
-                    connectionString = ReplaceDatabaseName(_originalConnectionString, $"{dbName}_{instanceId}");
-                    EnsureCleanDatabase(connectionString, _originalDatabaseProvider);
-                }
-            }
-
-            // Store for test helpers that need the fixture-specific connection string.
-            _currentConnectionString = connectionString;
-
             // Write tenants.json so OrchardCore picks up the per-fixture database.
             Directory.CreateDirectory(resolvedAppDataPath);
             File.WriteAllText(
@@ -200,6 +219,27 @@ public sealed class OrchardTestServer : IAsyncDisposable
         // ConcurrencyException on SiteSettings with external databases.
         builder.Configuration["OrchardCore:OrchardCore_Documents:CheckConcurrency"] = "false";
 
+        // Configure AutoSetup so the tenant is provisioned on first request
+        // without browser-driven form submission.
+        if (!string.IsNullOrEmpty(autoSetupRecipe))
+        {
+            var config = TestUtils.DefaultConfig;
+            var dbProvider = _originalDatabaseProvider ?? "Sqlite";
+            var connString = connectionString ?? _originalConnectionString ?? string.Empty;
+
+            // Leave AutoSetupPath empty so the middleware is added inline (not branched
+            // via MapWhen), which preserves the full endpoint routing pipeline.
+            builder.Configuration["OrchardCore:OrchardCore_AutoSetup:Tenants:0:ShellName"] = "Default";
+            builder.Configuration["OrchardCore:OrchardCore_AutoSetup:Tenants:0:SiteName"] = $"Testing {autoSetupRecipe}";
+            builder.Configuration["OrchardCore:OrchardCore_AutoSetup:Tenants:0:SiteTimeZone"] = "America/New_York";
+            builder.Configuration["OrchardCore:OrchardCore_AutoSetup:Tenants:0:AdminUsername"] = config.Username;
+            builder.Configuration["OrchardCore:OrchardCore_AutoSetup:Tenants:0:AdminEmail"] = config.Email;
+            builder.Configuration["OrchardCore:OrchardCore_AutoSetup:Tenants:0:AdminPassword"] = config.Password;
+            builder.Configuration["OrchardCore:OrchardCore_AutoSetup:Tenants:0:DatabaseProvider"] = dbProvider;
+            builder.Configuration["OrchardCore:OrchardCore_AutoSetup:Tenants:0:DatabaseConnectionString"] = connString;
+            builder.Configuration["OrchardCore:OrchardCore_AutoSetup:Tenants:0:RecipeName"] = autoSetupRecipe;
+        }
+
         builder.Logging.AddFilter<FakeLoggerProvider>(level => level >= LogLevel.Warning);
         builder.Logging.AddProvider(loggerProvider);
     }
@@ -209,7 +249,7 @@ public sealed class OrchardTestServer : IAsyncDisposable
     /// Each test fixture uses its own database (e.g., "app_SaasFixture") to avoid
     /// cross-fixture interference. Dropping ensures no leftover tables from previous runs.
     /// </summary>
-    private static void EnsureCleanDatabase(string connectionString, string databaseProvider)
+    private static async Task EnsureCleanDatabaseAsync(string connectionString, string databaseProvider)
     {
         var dbName = ExtractDatabaseName(connectionString);
         if (dbName is null)
@@ -233,16 +273,16 @@ public sealed class OrchardTestServer : IAsyncDisposable
             return;
         }
 
-        using var connection = CreateConnection(serverConnectionString, databaseProvider);
+        await using var connection = CreateConnection(serverConnectionString, databaseProvider);
         if (connection is null)
         {
             return;
         }
 
-        connection.Open();
+        await connection.OpenAsync();
 
         // Check if the database exists.
-        using var checkCommand = connection.CreateCommand();
+        await using var checkCommand = connection.CreateCommand();
         var param = checkCommand.CreateParameter();
         param.ParameterName = "@dbName";
         param.Value = dbName;
@@ -262,21 +302,21 @@ public sealed class OrchardTestServer : IAsyncDisposable
         }
 
         // Drop if it already exists so we start clean (no leftover tables from previous runs).
-        if (checkCommand.ExecuteScalar() is not null)
+        if (await checkCommand.ExecuteScalarAsync() is not null)
         {
             // Terminate active connections before dropping (required by Postgres < 13 which lacks DROP ... WITH (FORCE)).
             if (databaseProvider == "Postgres")
             {
-                using var terminateCommand = connection.CreateCommand();
+                await using var terminateCommand = connection.CreateCommand();
                 var terminateParam = terminateCommand.CreateParameter();
                 terminateParam.ParameterName = "@dbName";
                 terminateParam.Value = dbName;
                 terminateCommand.Parameters.Add(terminateParam);
                 terminateCommand.CommandText = "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = @dbName AND pid <> pg_backend_pid()";
-                terminateCommand.ExecuteNonQuery();
+                await terminateCommand.ExecuteNonQueryAsync();
             }
 
-            using var dropCommand = connection.CreateCommand();
+            await using var dropCommand = connection.CreateCommand();
             dropCommand.CommandText = databaseProvider switch
             {
                 "Postgres" => $"DROP DATABASE \"{dbName.Replace("\"", "\"\"")}\"",
@@ -285,11 +325,11 @@ public sealed class OrchardTestServer : IAsyncDisposable
                 _ => null,
             };
 
-            dropCommand.ExecuteNonQuery();
+            await dropCommand.ExecuteNonQueryAsync();
         }
 
         // CREATE DATABASE is DDL and cannot be parameterized; quote per provider.
-        using var createCommand = connection.CreateCommand();
+        await using var createCommand = connection.CreateCommand();
         createCommand.CommandText = databaseProvider switch
         {
             "Postgres" => $"CREATE DATABASE \"{dbName.Replace("\"", "\"\"")}\"",
@@ -298,7 +338,7 @@ public sealed class OrchardTestServer : IAsyncDisposable
             _ => null,
         };
 
-        createCommand.ExecuteNonQuery();
+        await createCommand.ExecuteNonQueryAsync();
     }
 
     private static void ValidateDatabaseName(string dbName)

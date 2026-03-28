@@ -5,53 +5,32 @@ namespace OrchardCore.Tests.Functional.Tests.Cms;
 
 public abstract class CmsRecipeFixture : IAsyncLifetime
 {
-    private readonly OrchardTestFixture _testFixture;
-
     protected abstract string RecipeName { get; }
 
-    public IBrowser Browser => _testFixture.Browser;
-    public string BaseUrl => _testFixture.BaseUrl;
+    /// <summary>
+    /// The URL prefix for this recipe's tenant (e.g., "blog", "agency").
+    /// </summary>
+    public string Prefix { get; private set; }
 
-    protected CmsRecipeFixture()
-    {
-        _testFixture = new OrchardTestFixture(instanceId: GetType().Name);
-    }
+    public IBrowser Browser => CmsServer.Browser;
+    public string BaseUrl => CmsServer.BaseUrl;
 
     public async ValueTask InitializeAsync()
     {
-        await _testFixture.InitializeAsync();
-
-        var page = await CreatePageAsync();
-        try
-        {
-            await page.GotoAsync("/");
-
-            if (await page.Locator("#SiteName").CountAsync() > 0)
-            {
-                await page.SiteSetupAsync(new TenantInfo
-                {
-                    Name = $"Testing {RecipeName}",
-                    Prefix = string.Empty,
-                    SetupRecipe = RecipeName,
-                });
-            }
-        }
-        finally
-        {
-            await page.CloseAsync();
-        }
+        await CmsServer.AcquireAsync();
+        Prefix = CmsServer.GetPrefix(RecipeName);
     }
 
-    public void AssertNoLoggedIssues() => _testFixture.AssertNoLoggedIssues();
+    public void AssertNoLoggedIssues() => CmsServer.AssertNoLoggedIssues();
 
     public async Task<IPage> CreatePageAsync()
     {
-        return await _testFixture.CreatePageAsync();
+        return await CmsServer.CreatePageAsync();
     }
 
     public async ValueTask DisposeAsync()
     {
-        await _testFixture.DisposeAsync();
+        await CmsServer.ReleaseAsync();
     }
 }
 
