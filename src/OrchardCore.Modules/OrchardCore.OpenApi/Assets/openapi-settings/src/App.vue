@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { reactive, ref, watch } from 'vue'
+import { getTranslations, setTranslations } from '@bloom/helpers/localizations'
 import AuthSettings from './components/AuthSettings.vue'
 import ConnectionTester from './components/ConnectionTester.vue'
 
@@ -18,6 +19,7 @@ interface OpenApiSettingsData {
 
 const props = defineProps<{
     settingsData?: string
+    translations?: string
 }>()
 
 const settings = reactive<OpenApiSettingsData>({
@@ -36,6 +38,16 @@ const featureStatus = reactive({
     reDocUI: false,
     scalarUI: false,
 })
+
+// Load localizations from the translations prop.
+if (props.translations) {
+    try {
+        setTranslations(typeof props.translations === 'string' ? JSON.parse(props.translations) : props.translations)
+    }
+    catch {
+        // Use key fallbacks if JSON is invalid.
+    }
+}
 
 // Load initial data from the settings-data attribute injected by Razor.
 if (props.settingsData) {

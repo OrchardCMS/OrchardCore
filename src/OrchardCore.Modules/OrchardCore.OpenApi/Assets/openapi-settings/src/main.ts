@@ -1,22 +1,16 @@
-import { createApp } from 'vue'
-import { setTranslations } from '@bloom/helpers/localizations'
+import { createApp, h } from 'vue'
 import App from './App.vue'
 
 const mountEl = document.getElementById('vue-openapi-settings')
 
 if (mountEl) {
-    const localizationsAttr = mountEl.getAttribute('localizations')
-    if (localizationsAttr) {
-        try {
-            setTranslations(JSON.parse(localizationsAttr))
-        }
-        catch {
-            // Use defaults if JSON is invalid.
-        }
-    }
+    const settingsEl = mountEl.querySelector('openapi-settings')
 
-    const app = createApp(App, {
-        settingsData: mountEl.getAttribute('settings-data'),
+    const app = createApp({
+        render: () => h(App, {
+            settingsData: settingsEl?.getAttribute('settings-data'),
+            translations: settingsEl?.getAttribute('translations'),
+        }),
     })
     app.mount(mountEl)
 }
