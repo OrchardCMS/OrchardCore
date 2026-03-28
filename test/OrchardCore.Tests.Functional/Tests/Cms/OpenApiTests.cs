@@ -5,7 +5,7 @@ using Xunit;
 
 namespace OrchardCore.Tests.Functional.Tests.Cms;
 
-public sealed class OpenApiTests : CmsTestBase
+public sealed class OpenApiTests : CmsTestBase, IClassFixture<CmsSetupFixture>
 {
     public OpenApiTests(CmsSetupFixture fixture) : base(fixture) { }
 
