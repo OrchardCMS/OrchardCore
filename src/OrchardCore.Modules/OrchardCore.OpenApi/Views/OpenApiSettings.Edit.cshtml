@@ -17,7 +17,7 @@
 @* Vue app mount point *@
 <div id="vue-openapi-settings">
     <openapi-settings
-        settings-data="@Json.Serialize(new
+        settings-data='@Html.Raw(Json.Serialize(new
         {
             isSwaggerUIEnabled = Model.IsSwaggerUIEnabled,
             isReDocUIEnabled = Model.IsReDocUIEnabled,
@@ -29,7 +29,7 @@
             oAuthClientId = Model.OAuthClientId ?? "",
             oAuthScopes = Model.OAuthScopes ?? "",
             pathBase = Context.Request.PathBase.Value ?? "",
-        })"
+        }))'
         translations='@Html.Raw(Json.Serialize(jsLocalizations))'>
     </openapi-settings>
 </div>

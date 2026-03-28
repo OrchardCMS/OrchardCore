@@ -306,6 +306,7 @@ public sealed class OpenApiTests : CmsTestBase, IClassFixture<CmsSetupFixture>
         // Navigate back to the main tenant and login.
         await AuthHelper.LoginAsync(page, $"/{Tenant.Prefix}");
         await page.GotoAsync($"/{Tenant.Prefix}/Admin/Settings/openapi");
+        await page.Locator("#vue-AuthenticationType").WaitForAsync(new() { State = WaitForSelectorState.Visible, Timeout = 15000 });
 
         // Select Client Credentials auth type (value = 2).
         await page.Locator("#vue-AuthenticationType").SelectOptionAsync("2");
@@ -330,6 +331,7 @@ public sealed class OpenApiTests : CmsTestBase, IClassFixture<CmsSetupFixture>
         await EnableOpenApiAsync(page);
 
         await page.GotoAsync($"/{Tenant.Prefix}/Admin/Settings/openapi");
+        await page.Locator("#vue-AuthenticationType").WaitForAsync(new() { State = WaitForSelectorState.Visible, Timeout = 15000 });
 
         // Select Client Credentials auth type.
         await page.Locator("#vue-AuthenticationType").SelectOptionAsync("2");
@@ -358,6 +360,7 @@ public sealed class OpenApiTests : CmsTestBase, IClassFixture<CmsSetupFixture>
         // Navigate back to the main tenant and login.
         await AuthHelper.LoginAsync(page, $"/{Tenant.Prefix}");
         await page.GotoAsync($"/{Tenant.Prefix}/Admin/Settings/openapi");
+        await page.Locator("#vue-AuthenticationType").WaitForAsync(new() { State = WaitForSelectorState.Visible, Timeout = 15000 });
 
         // Select Authorization Code + PKCE auth type (value = 1).
         await page.Locator("#vue-AuthenticationType").SelectOptionAsync("1");
@@ -391,6 +394,9 @@ public sealed class OpenApiTests : CmsTestBase, IClassFixture<CmsSetupFixture>
         await AuthHelper.LoginAsync(page, $"/{Tenant.Prefix}");
         await page.GotoAsync($"/{Tenant.Prefix}/Admin/Settings/openapi");
 
+        // Wait for the Vue app to mount before interacting with its elements.
+        await page.Locator("#vue-AuthenticationType").WaitForAsync(new() { State = WaitForSelectorState.Visible, Timeout = 15000 });
+
         // Select Client Credentials auth type.
         await page.Locator("#vue-AuthenticationType").SelectOptionAsync("2");
 
@@ -407,7 +413,7 @@ public sealed class OpenApiTests : CmsTestBase, IClassFixture<CmsSetupFixture>
 
         // Verify the ConnectionTester component rendered: client secret field and button visible.
         var clientSecretInput = page.Locator("#vue-ClientSecret");
-        await clientSecretInput.WaitForAsync(new() { State = WaitForSelectorState.Visible, Timeout = 10000 });
+        await clientSecretInput.WaitForAsync(new() { State = WaitForSelectorState.Visible, Timeout = 15000 });
         await Assertions.Expect(clientSecretInput).ToBeVisibleAsync();
 
         var testButton = page.Locator("button:has-text('Test Connection')");
