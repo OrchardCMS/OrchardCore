@@ -21,13 +21,8 @@ public class Shapes : ShapeTableProvider
                 {
                     var displayType = displaying.Shape.Metadata.DisplayType;
 
-                    // Use cached alternates for content shapes and add them efficiently
-                    var alternates = ContentShapeAlternatesFactory.GetAlternates(
-                        contentItem.ContentType,
-                        contentItem.Id.ToString(),
-                        displayType);
-
-                    displaying.Shape.Metadata.Alternates.AddRange(alternates);
+                    var entry = ContentShapeAlternatesFactory.GetEntry(contentItem.ContentType, displayType);
+                    displaying.Shape.Metadata.Alternates.AddRange(entry.GetAlternates(contentItem.Id.ToString()));
                 }
             });
 

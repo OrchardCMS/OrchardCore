@@ -69,7 +69,7 @@ public sealed partial class TextFieldSettingsDriver : ContentPartFieldDefinition
                 context.Updater.ModelState.AddModelError(Prefix, nameof(model.Pattern), S["Pattern doesn't contain a valid Liquid expression. Details: {0}", string.Join(' ', errors)]);
             }
         }
-        
+
         if (contentPartFieldSettings.Editor == TextFieldColorEditor &&
             !string.IsNullOrEmpty(model.DefaultValue) &&
             !HexColorRegex().IsMatch(model.DefaultValue))

@@ -252,7 +252,7 @@ public class DefaultMediaFileStore : IMediaFileStore
             // Inherit the value from the underlying file store.
             PermittedStorage = await _fileStore.GetPermittedStorageAsync(),
         };
-        
+
         await _mediaEventHandlers.InvokeAsync((handler, context) => handler.MediaPermittedStorageAsync(context), context, _logger);
 
         return context.PermittedStorage;
