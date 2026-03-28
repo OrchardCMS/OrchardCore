@@ -4,14 +4,18 @@ namespace OrchardCore.Tests.Functional.Helpers;
 
 public sealed class OrchardTestFixture : IAsyncDisposable
 {
-    // Shared server state keyed by app type (CMS vs MVC) to prevent parallel init races
-    // while allowing different app types to run their own servers.
-    private static readonly SemaphoreSlim _serverLock = new(1, 1);
-    private static readonly Dictionary<string, SharedServerState> _servers = [];
+    private static int _traceCounter;
+
+    private static readonly bool _tracingEnabled =
+        !string.IsNullOrEmpty(System.Environment.GetEnvironmentVariable("PLAYWRIGHT_TRACING"));
+
+    private static readonly string _traceDir =
+        Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "traces");
 
     private readonly bool _isMvc;
-    private readonly int _port;
+    private readonly string _instanceId;
 
+    private OrchardTestServer _server;
     private IPlaywright _playwright;
     private IBrowser _browser;
     private bool _disposed;
@@ -19,10 +23,10 @@ public sealed class OrchardTestFixture : IAsyncDisposable
     public string BaseUrl { get; private set; }
     public IBrowser Browser => _browser;
 
-    public OrchardTestFixture(bool isMvc = false, int port = 5000)
+    public OrchardTestFixture(bool isMvc = false, string instanceId = null)
     {
         _isMvc = isMvc;
-        _port = port;
+        _instanceId = instanceId;
     }
 
     private static string ProjectRoot =>
@@ -33,47 +37,31 @@ public sealed class OrchardTestFixture : IAsyncDisposable
             ? Path.Combine(ProjectRoot, "src", "OrchardCore.Mvc.Web")
             : Path.Combine(ProjectRoot, "src", "OrchardCore.Cms.Web");
 
-    private string Assembly => _isMvc ? "OrchardCore.Mvc.Web.dll" : "OrchardCore.Cms.Web.dll";
-
-    private string ServerKey => _isMvc ? "mvc" : "cms";
+    private string AppDataPath =>
+        string.IsNullOrEmpty(_instanceId)
+            ? Path.Combine(AppDir, "App_Data_Tests")
+            : Path.Combine(AppDir, $"App_Data_Tests_{_instanceId}");
 
     public async Task InitializeAsync()
     {
-        await _serverLock.WaitAsync();
-        try
+        // Clean previous test data.
+        if (Directory.Exists(AppDataPath))
         {
-            if (!_servers.TryGetValue(ServerKey, out var state))
-            {
-                state = new SharedServerState();
-                _servers[ServerKey] = state;
-            }
-
-            state.RefCount++;
-
-            if (state.BaseUrl == null)
-            {
-                state.BaseUrl = Environment.GetEnvironmentVariable("ORCHARD_URL")
-                    ?? $"http://localhost:{_port}";
-
-                if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("ORCHARD_EXTERNAL")))
-                {
-                    AppLifecycleHelper.DeleteAppData(AppDir);
-
-                    if (!_isMvc)
-                    {
-                        CopyRecipeIfNeeded(state, "migrations.recipe.json");
-                    }
-
-                    state.ServerProcess = AppLifecycleHelper.HostApp(AppDir, Assembly, state.BaseUrl);
-                    await AppLifecycleHelper.WaitForReadyAsync(state.BaseUrl, 30_000);
-                }
-            }
-
-            BaseUrl = state.BaseUrl;
+            Directory.Delete(AppDataPath, recursive: true);
         }
-        finally
+
+        if (string.IsNullOrEmpty(System.Environment.GetEnvironmentVariable("ORCHARD_EXTERNAL")))
         {
-            _serverLock.Release();
+            _server = _isMvc
+                ? await OrchardTestServer.StartMvcAsync(AppDir, AppDataPath)
+                : await OrchardTestServer.StartCmsAsync(AppDir, AppDataPath, _instanceId);
+
+            BaseUrl = _server.ServerAddress;
+        }
+        else
+        {
+            BaseUrl = System.Environment.GetEnvironmentVariable("ORCHARD_URL")
+                ?? "http://localhost:5000";
         }
 
         _playwright = await Playwright.CreateAsync();
@@ -82,11 +70,25 @@ public sealed class OrchardTestFixture : IAsyncDisposable
         );
     }
 
-    public async Task<IPage> CreatePageAsync()
+    public async Task<IPage> CreatePageAsync(string traceName = null)
     {
+        // Capture the test display name at call time (inside the test) so it can be used
+        // when the page close event fires (potentially after the test has completed).
+        var capturedTraceName = traceName ?? SanitizeFileName(TestContext.Current?.Test?.TestDisplayName);
+
         var context = await _browser.NewContextAsync(
             new BrowserNewContextOptions { BaseURL = BaseUrl }
         );
+
+        if (_tracingEnabled)
+        {
+            await context.Tracing.StartAsync(new TracingStartOptions
+            {
+                Screenshots = true,
+                Snapshots = true,
+                Sources = true,
+            });
+        }
 
         var page = await context.NewPageAsync();
 
@@ -94,6 +96,21 @@ public sealed class OrchardTestFixture : IAsyncDisposable
         {
             try
             {
+                if (_tracingEnabled)
+                {
+                    var traceIndex = Interlocked.Increment(ref _traceCounter);
+                    var fileName = string.IsNullOrEmpty(capturedTraceName)
+                        ? $"trace-{traceIndex}.zip"
+                        : $"trace-{capturedTraceName}-{traceIndex}.zip";
+
+                    Directory.CreateDirectory(_traceDir);
+
+                    await context.Tracing.StopAsync(new TracingStopOptions
+                    {
+                        Path = Path.Combine(_traceDir, fileName),
+                    });
+                }
+
                 await context.CloseAsync();
             }
             catch (Exception)
@@ -104,6 +121,19 @@ public sealed class OrchardTestFixture : IAsyncDisposable
 
         return page;
     }
+
+    private static string SanitizeFileName(string name)
+    {
+        if (string.IsNullOrEmpty(name))
+        {
+            return null;
+        }
+
+        var invalidChars = Path.GetInvalidFileNameChars();
+        return string.Concat(name.Select(c => Array.IndexOf(invalidChars, c) >= 0 ? '_' : c));
+    }
+
+    public void AssertNoLoggedIssues() => _server?.AssertNoLoggedIssues();
 
     public async ValueTask DisposeAsync()
     {
@@ -121,55 +151,19 @@ public sealed class OrchardTestFixture : IAsyncDisposable
 
         _playwright?.Dispose();
 
-        await _serverLock.WaitAsync();
-        try
+        if (_server is not null)
         {
-            if (!_servers.TryGetValue(ServerKey, out var state))
-            {
-                return;
-            }
-
-            state.RefCount--;
-
-            if (state.RefCount > 0)
-            {
-                return;
-            }
-
-            if (state.ServerProcess is not null)
-            {
-                AppLifecycleHelper.KillApp(state.ServerProcess);
-            }
-
-            if (!_isMvc)
-            {
-                foreach (var recipe in state.CopiedRecipes)
-                {
-                    AppLifecycleHelper.DeleteRecipe(AppDir, recipe);
-                }
-            }
-
-            _servers.Remove(ServerKey);
+            await _server.DisposeAsync();
         }
-        finally
+
+        if (Directory.Exists(AppDataPath))
         {
-            _serverLock.Release();
-        }
-    }
+            // Clear SQLite connection pool to release file locks before deleting.
+            global::Microsoft.Data.Sqlite.SqliteConnection.ClearPool(
+                new global::Microsoft.Data.Sqlite.SqliteConnection(
+                    $"Data Source={Path.Combine(AppDataPath, "Sites", "Default", "yessql.db")}"));
 
-    private void CopyRecipeIfNeeded(SharedServerState state, string recipeFileName)
-    {
-        if (AppLifecycleHelper.CopyRecipe(AppDir, recipeFileName))
-        {
-            state.CopiedRecipes.Add(recipeFileName);
+            Directory.Delete(AppDataPath, recursive: true);
         }
-    }
-
-    private sealed class SharedServerState
-    {
-        public Process ServerProcess;
-        public string BaseUrl;
-        public int RefCount;
-        public readonly List<string> CopiedRecipes = [];
     }
 }

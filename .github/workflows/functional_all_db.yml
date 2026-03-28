@@ -17,6 +17,8 @@ on:
 env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   DOTNET_CLI_TELEMETRY_OPTOUT: true
+  PLAYWRIGHT_TRACING: true
+  ASPNETCORE_ENVIRONMENT: Production
 
 jobs:
   test_functional_mvc:
@@ -37,7 +39,7 @@ jobs:
       run: |
         dotnet build -c Release test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj
     - name: Cache Playwright Browsers
-      uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
+      uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
       with:
         path: ~/.cache/ms-playwright
         key: playwright-${{ hashFiles('Directory.Packages.props') }}
@@ -45,8 +47,6 @@ jobs:
       run: |
         pwsh test/OrchardCore.Tests.Functional/bin/Release/net10.0/playwright.ps1 install --with-deps chromium
     - name: Functional Tests
-      env:
-        ORCHARD_APP: mvc
       run: |
         dotnet test --project test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj -c Release --no-build --filter-class "*Mvc*"
     - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
@@ -55,6 +55,7 @@ jobs:
         name: functional-mvc-failure
         path: |
           src/OrchardCore.Mvc.Web/App_Data_Tests/logs
+          test/OrchardCore.Tests.Functional/traces
         retention-days: 3
 
   test_functional_cms_sqlite:
@@ -73,7 +74,7 @@ jobs:
       run: |
         dotnet build -c Release test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj
     - name: Cache Playwright Browsers
-      uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
+      uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
       with:
         path: ~/.cache/ms-playwright
         key: playwright-${{ hashFiles('Directory.Packages.props') }}
@@ -88,7 +89,8 @@ jobs:
       with:
         name: functional-cms-sqlite-failure
         path: |
-          src/OrchardCore.Cms.Web/App_Data_Tests/logs
+          src/OrchardCore.Cms.Web/App_Data_Tests_*/logs
+          test/OrchardCore.Tests.Functional/traces
         retention-days: 3
 
   test_functional_cms_postgresql:
@@ -101,6 +103,9 @@ jobs:
     services:
       postgres:
         image: postgres:11
+        credentials:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
         ports:
           - 5432:5432
         env:
@@ -124,7 +129,7 @@ jobs:
       run: |
         dotnet build -c Release test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj
     - name: Cache Playwright Browsers
-      uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
+      uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
       with:
         path: ~/.cache/ms-playwright
         key: playwright-${{ hashFiles('Directory.Packages.props') }}
@@ -139,7 +144,8 @@ jobs:
       with:
         name: functional-cms-postgresql-failure
         path: |
-          src/OrchardCore.Cms.Web/App_Data_Tests/logs
+          src/OrchardCore.Cms.Web/App_Data_Tests_*/logs
+          test/OrchardCore.Tests.Functional/traces
         retention-days: 3
 
   test_functional_cms_mysql:
@@ -152,6 +158,9 @@ jobs:
     services:
       mysql:
         image: mysql:8
+        credentials:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
         ports:
           - 3306:3306
         env:
@@ -169,7 +178,7 @@ jobs:
       run: |
         dotnet build -c Release test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj
     - name: Cache Playwright Browsers
-      uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
+      uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
       with:
         path: ~/.cache/ms-playwright
         key: playwright-${{ hashFiles('Directory.Packages.props') }}
@@ -184,7 +193,8 @@ jobs:
       with:
         name: functional-cms-mysql-failure
         path: |
-          src/OrchardCore.Cms.Web/App_Data_Tests/logs
+          src/OrchardCore.Cms.Web/App_Data_Tests_*/logs
+          test/OrchardCore.Tests.Functional/traces
         retention-days: 3
 
   test_functional_cms_mssql:
@@ -213,7 +223,7 @@ jobs:
       run: |
         dotnet build -c Release test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj
     - name: Cache Playwright Browsers
-      uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
+      uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
       with:
         path: ~/.cache/ms-playwright
         key: playwright-${{ hashFiles('Directory.Packages.props') }}
@@ -228,5 +238,7 @@ jobs:
       with:
         name: functional-cms-mssql-failure
         path: |
-          src/OrchardCore.Cms.Web/App_Data_Tests/logs
+          src/OrchardCore.Cms.Web/App_Data_Tests_*/logs
+          test/OrchardCore.Tests.Functional/traces
         retention-days: 3
+

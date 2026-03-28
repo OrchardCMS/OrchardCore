@@ -13,6 +13,7 @@ public sealed class TenantInfo
     public string Prefix { get; set; } = string.Empty;
     public string SetupRecipe { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
+    public string TablePrefix { get; set; } = string.Empty;
 }
 
 public static class TestUtils
@@ -32,6 +33,7 @@ public static class TestUtils
             Prefix = uniqueName,
             SetupRecipe = setupRecipeName,
             Description = description,
+            TablePrefix = uniqueName,
         };
     }
 

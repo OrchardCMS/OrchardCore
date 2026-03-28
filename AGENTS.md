@@ -105,7 +105,7 @@ End-to-end tests are located in `test/OrchardCore.Tests.Functional/`.
 dotnet test test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj --filter-class "*Cms*"
 
 # Run MVC functional tests
-ORCHARD_APP=mvc dotnet test test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj --filter-class "*Mvc*"
+dotnet test test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj --filter-class "*Mvc*"
 ```
 
 ### Automated Browser Testing (Playwright MCP)
@@ -386,7 +386,7 @@ Run the Playwright functional tests:
 dotnet test test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj --filter-class "*Cms*"
 
 # Run MVC functional tests
-ORCHARD_APP=mvc dotnet test test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj --filter-class "*Mvc*"
+dotnet test test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj --filter-class "*Mvc*"
 ```
 
 ## Common Extension Points
@@ -500,3 +500,4 @@ yarn check
 - [Discord Community](https://orchardcore.net/discord)
 - [Issue Tracker](https://github.com/OrchardCMS/OrchardCore/issues)
 - [API Reference](https://docs.orchardcore.net/en/latest/reference/)
+

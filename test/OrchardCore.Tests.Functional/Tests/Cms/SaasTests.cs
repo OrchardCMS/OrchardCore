@@ -1,20 +1,30 @@
 using Microsoft.Playwright;
 using OrchardCore.Tests.Functional.Helpers;
-using Xunit;
 
 namespace OrchardCore.Tests.Functional.Tests.Cms;
 
-public sealed class SaasTests : CmsTestBase
+public sealed class SaasTests : IClassFixture<SaasFixture>, IAsyncLifetime
 {
-    public SaasTests(CmsSetupFixture fixture) : base(fixture) { }
+    private readonly SaasFixture _fixture;
 
-    protected override string RecipeName => "SaaS";
+    public SaasTests(SaasFixture fixture)
+    {
+        _fixture = fixture;
+    }
+
+    public ValueTask InitializeAsync() => ValueTask.CompletedTask;
+
+    public ValueTask DisposeAsync()
+    {
+        _fixture.AssertNoLoggedIssues();
+        return ValueTask.CompletedTask;
+    }
 
     [Fact]
     public async Task DisplaysTheHomePageOfTheSaasTheme()
     {
-        var page = await Fixture.CreatePageAsync();
-        await page.GotoAsync($"/{Tenant.Prefix}");
+        var page = await _fixture.CreatePageAsync();
+        await page.GotoAsync($"/{_fixture.Tenant.Prefix}");
         await Assertions.Expect(page.Locator("h4")).ToContainTextAsync("Welcome to Orchard Core, your site has been successfully set up.");
         await page.CloseAsync();
     }
@@ -22,9 +32,9 @@ public sealed class SaasTests : CmsTestBase
     [Fact]
     public async Task SaasAdminLoginShouldWork()
     {
-        var page = await Fixture.CreatePageAsync();
-        await AuthHelper.LoginAsync(page, $"/{Tenant.Prefix}");
-        await page.GotoAsync($"/{Tenant.Prefix}/Admin");
+        var page = await _fixture.CreatePageAsync();
+        await page.LoginAsync($"/{_fixture.Tenant.Prefix}");
+        await page.GotoAsync($"/{_fixture.Tenant.Prefix}/Admin");
         await Assertions.Expect(page.Locator(".menu-admin")).ToHaveAttributeAsync("id", "adminMenu");
         await page.CloseAsync();
     }

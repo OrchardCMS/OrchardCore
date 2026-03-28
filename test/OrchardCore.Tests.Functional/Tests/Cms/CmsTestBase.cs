@@ -1,32 +1,20 @@
-using OrchardCore.Tests.Functional.Helpers;
-using Xunit;
-
 namespace OrchardCore.Tests.Functional.Tests.Cms;
 
-[Collection(CmsTestCollection.Name)]
-public abstract class CmsTestBase : IAsyncLifetime
+public abstract class CmsTestBase<TFixture> : IAsyncLifetime
+    where TFixture : CmsRecipeFixture
 {
-    protected CmsSetupFixture Fixture { get; }
+    protected TFixture Fixture { get; }
 
-    protected TenantInfo Tenant { get; private set; }
-
-    protected abstract string RecipeName { get; }
-
-    protected CmsTestBase(CmsSetupFixture fixture)
+    protected CmsTestBase(TFixture fixture)
     {
         Fixture = fixture;
     }
 
-    public async ValueTask InitializeAsync()
-    {
-        Tenant = TestUtils.GenerateTenantInfo(RecipeName);
-        var page = await Fixture.CreatePageAsync();
-        await TenantHelper.NewTenantAsync(page, Tenant);
-        await page.CloseAsync();
-    }
+    public ValueTask InitializeAsync() => ValueTask.CompletedTask;
 
     public virtual ValueTask DisposeAsync()
     {
+        Fixture.AssertNoLoggedIssues();
         return ValueTask.CompletedTask;
     }
 }

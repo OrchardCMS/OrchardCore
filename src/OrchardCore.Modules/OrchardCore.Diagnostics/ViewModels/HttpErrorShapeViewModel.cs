@@ -23,12 +23,7 @@ public class HttpErrorShapeViewModel : ShapeViewModel
             HttpStatusCode = httpStatusCode;
 
             // Assign an alternative for every status-code to enable the customization for each status.
-
-            // (ex. 'HttpError-404.cshtml' or 'HttpError-404.liquid')
-            Metadata.Alternates.Add($"{ShapeType}__{Code}");
-
-            // (ex. 'HttpError-NotFound.cshtml' or 'HttpError-NotFound.liquid')
-            Metadata.Alternates.Add($"{ShapeType}__{httpStatusCode}");
+            Metadata.Alternates.AddRange(HttpErrorAlternatesFactory.GetAlternates(code.Value, httpStatusCode));
         }
     }
 }
