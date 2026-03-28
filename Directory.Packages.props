@@ -98,10 +98,12 @@
     <PackageVersion Include="Microsoft.AspNetCore.DataProtection.StackExchangeRedis" Version="10.0.5" />
     <PackageVersion Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="10.0.5" />
     <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.5" />
+    <PackageVersion Include="Microsoft.Playwright" Version="1.58.0" />
     <PackageVersion Include="Microsoft.AspNetCore.Owin" Version="10.0.5" />
     <PackageVersion Include="Microsoft.Extensions.Caching.Memory" Version="10.0.5" />
     <PackageVersion Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="10.0.5" />
     <!-- dotnet/extensions repository -->
+    <PackageVersion Include="Microsoft.Extensions.Diagnostics.Testing" Version="10.4.0" />
     <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="10.4.0" />
     <!-- Serilog.AspNetCore -->
     <PackageVersion Include="Serilog.AspNetCore" Version="10.0.0" />
