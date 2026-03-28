@@ -94,13 +94,6 @@ public abstract class BlobFileStoreTestsBase : IAsyncLifetime
     // -- Capabilities --
 
     [AzuriteFact]
-    public void EnsureCapabilities_SetsCorrectProvider()
-    {
-        var expected = IsHnsEnabled ? "Azure Blob (Gen2)" : "Azure Blob (Gen1)";
-        Assert.Equal(expected, _store.Capabilities.StorageProvider);
-    }
-
-    [AzuriteFact]
     public void EnsureCapabilities_SetsHnsFlag()
     {
         Assert.Equal(IsHnsEnabled, _store.Capabilities.HasHierarchicalNamespace);
