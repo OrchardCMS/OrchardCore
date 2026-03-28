@@ -120,7 +120,9 @@ A `FakeLoggerProvider` (from `Microsoft.Extensions.Diagnostics.Testing`) capture
 
 ## Testing with external databases
 
-A helper script spins up a Docker container and runs the CMS tests with the same configuration as CI:
+Helper scripts spin up a Docker container and run the CMS tests with the same configuration as CI.
+
+**Linux / macOS:**
 
 ```bash
 cd test/OrchardCore.Tests.Functional
@@ -132,6 +134,21 @@ cd test/OrchardCore.Tests.Functional
 ./run-db-tests.sh all        # All databases sequentially
 ./run-db-tests.sh cleanup    # Remove test containers
 ```
+
+**Windows (PowerShell):**
+
+```powershell
+cd test/OrchardCore.Tests.Functional
+
+.\run-db-tests.ps1 postgres   # PostgreSQL
+.\run-db-tests.ps1 mysql      # MySQL
+.\run-db-tests.ps1 mssql      # SQL Server
+.\run-db-tests.ps1 sqlite     # SQLite (no container)
+.\run-db-tests.ps1 all        # All databases sequentially
+.\run-db-tests.ps1 cleanup    # Remove test containers
+```
+
+`run-db-tests.ps1` can also be used on Linux/macOS via [PowerShell](https://github.com/PowerShell/PowerShell). If `pwsh` is not available, install it from the [PowerShell GitHub releases page](https://github.com/PowerShell/PowerShell/releases/latest).
 
 Requires Docker.
 
