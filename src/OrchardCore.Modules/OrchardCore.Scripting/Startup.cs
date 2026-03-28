@@ -11,5 +11,6 @@ public sealed class Startup : StartupBase
     {
         services.AddJavaScriptEngine();
         services.AddSingleton<IGlobalMethodProvider, LogProvider>();
+        services.AddSingleton<IGlobalMethodProvider, ProtectDataProvider>();
     }
 }
