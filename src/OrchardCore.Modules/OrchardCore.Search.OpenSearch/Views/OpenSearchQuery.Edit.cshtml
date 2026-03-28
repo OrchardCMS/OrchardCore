@@ -1,0 +1,33 @@
+@model OpenSearchQueryViewModel
+
+<style asp-name="codemirror"></style>
+<script asp-name="codemirror" at="Foot"></script>
+<script asp-name="codemirror-mode-javascript" at="Foot"></script>
+
+<div class="mb-3">
+    <label asp-for="Index" class="form-label">@T["Index"]</label>
+    <select asp-for="Index" class="form-select" asp-items="Model.Indexes">
+        <option value="">@T["Select an index"]</option>
+    </select>
+    <span class="hint">@T["The OpenSearch index to search on"]</span>
+</div>
+
+<div class="mb-3">
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" asp-for="ReturnContentItems" checked="@Model.ReturnContentItems" />
+        <label class="form-check-label" asp-for="ReturnContentItems">@T["Return Content Items"]</label>
+        <span class="hint dashed">@T["Check to return the corresponding content items."]</span>
+    </div>
+</div>
+
+<div class="mb-3">
+    <label asp-for="Query" class="form-label">@T["Query"]</label>
+    <textarea asp-for="Query" rows="12" class="form-control"></textarea>
+    <span class="hint">@T["The search query uses the OpenSearch format. Some documentation can be found here <a target=\"_blank\" href=\"https://opensearch.org/docs/latest/query-dsl/\">https://opensearch.org/docs/latest/query-dsl/</a>"]</span>
+</div>
+
+<script at="Foot">
+    $(function () {
+        CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Query)'), { mode: "javascript", json: true, lineNumbers: true, viewportMargin: Infinity });
+    });
+</script>
