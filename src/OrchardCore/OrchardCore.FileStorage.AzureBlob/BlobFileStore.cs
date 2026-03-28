@@ -128,8 +128,7 @@ public class BlobFileStore : IFileStore
 
             _capabilities = new FileStoreCapabilities(
                 hasHierarchicalNamespace: hnsEnabled.Value,
-                supportsAtomicMove: hnsEnabled.Value,
-                storageProvider: hnsEnabled.Value ? "Azure Blob (Gen2)" : "Azure Blob (Gen1)");
+                supportsAtomicMove: hnsEnabled.Value);
 
             if (hnsEnabled.Value)
             {

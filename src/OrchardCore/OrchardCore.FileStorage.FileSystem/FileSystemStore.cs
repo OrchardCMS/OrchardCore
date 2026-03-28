@@ -8,6 +8,8 @@ public class FileSystemStore : IFileStore
     private readonly ILogger<FileSystemStore> _logger;
     private readonly string _fileSystemPath;
 
+    public IFileStoreCapabilities Capabilities { get; } = new FileStoreCapabilities(hasHierarchicalNamespace: false, supportsAtomicMove: false);
+
     public FileSystemStore(string fileSystemPath, ILogger<FileSystemStore> logger)
     {
         _logger = logger;

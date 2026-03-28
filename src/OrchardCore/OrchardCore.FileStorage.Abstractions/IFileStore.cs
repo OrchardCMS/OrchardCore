@@ -157,7 +157,7 @@ public interface IFileStore
     /// <summary>
     /// Gets the capabilities supported by this file store.
     /// </summary>
-    IFileStoreCapabilities Capabilities => FileStoreCapabilities.Default;
+    IFileStoreCapabilities Capabilities { get; }
 }
 
 public static class IFileStoreExtensions

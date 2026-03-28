@@ -84,22 +84,27 @@ public sealed class Startup : Modules.StartupBase
             services.AddSingleton<IMediaFileStoreCache>(serviceProvider =>
                 serviceProvider.GetRequiredService<IMediaFileStoreCacheFileProvider>());
 
+            // Register the blob file store as a singleton so it can be injected for async initialization.
+            services.AddSingleton(serviceProvider =>
+            {
+                var blobStorageOptions = serviceProvider.GetRequiredService<IOptions<MediaBlobStorageOptions>>().Value;
+                var clock = serviceProvider.GetRequiredService<IClock>();
+                var contentTypeProvider = serviceProvider.GetRequiredService<IContentTypeProvider>();
+                var blobLogger = serviceProvider.GetRequiredService<ILogger<BlobFileStore>>();
+
+                return new BlobFileStore(blobStorageOptions, clock, contentTypeProvider, blobLogger);
+            });
+
             // Replace the default media file store with a blob file store.
             services.Replace(ServiceDescriptor.Singleton<IMediaFileStore>(serviceProvider =>
             {
-                var blobStorageOptions = serviceProvider.GetRequiredService<IOptions<MediaBlobStorageOptions>>().Value;
-                var shellOptions = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
+                var fileStore = serviceProvider.GetRequiredService<BlobFileStore>();
                 var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
                 var mediaOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>().Value;
-                var clock = serviceProvider.GetRequiredService<IClock>();
-                var contentTypeProvider = serviceProvider.GetRequiredService<IContentTypeProvider>();
                 var mediaEventHandlers = serviceProvider.GetServices<IMediaEventHandler>();
                 var mediaCreatingEventHandlers = serviceProvider.GetServices<IMediaCreatingEventHandler>();
                 var logger = serviceProvider.GetRequiredService<ILogger<DefaultMediaFileStore>>();
 
-                var blobLogger = serviceProvider.GetRequiredService<ILogger<BlobFileStore>>();
-                var fileStore = new BlobFileStore(blobStorageOptions, clock, contentTypeProvider, blobLogger);
-                fileStore.EnsureCapabilitiesAsync().GetAwaiter().GetResult();
                 var mediaUrlBase = "/" + fileStore.Combine(shellSettings.RequestUrlPrefix, mediaOptions.AssetsRequestPath);
 
                 var originalPathBase = serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext
