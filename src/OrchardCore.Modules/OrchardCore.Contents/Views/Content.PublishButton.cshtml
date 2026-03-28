@@ -8,7 +8,12 @@
 }
 else
 {
-    <div class="btn-group mb-1">
+    <div class="btn-group mb-1"
+         data-action-group="oc-content-publish-action"
+         data-action-default="submit.Publish"
+         data-label-default="@T["Publish"]"
+         data-action-alt="submit.PublishAndContinue"
+         data-label-alt="@T["Publish and continue"]">
         <button class="btn btn-success publish" type="submit" name="submit.Publish" value="submit.Publish">@T["Publish"]</button>
         <button type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-reference="parent" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <span class="visually-hidden">@T["Toggle Dropdown"]</span>
@@ -17,6 +22,7 @@ else
             <button class="dropdown-item publish-continue" type="submit" name="submit.Publish" value="submit.PublishAndContinue">@T["and continue"]</button>
         </div>
     </div>
+    <script at="Foot" asp-src="~/OrchardCore.Contents/Scripts/content-action-buttons.js"></script>
 }
 
 <script at="Foot" asp-src="~/OrchardCore.Contents/Scripts/expand-cards-with-invalid-inputs.js"></script>

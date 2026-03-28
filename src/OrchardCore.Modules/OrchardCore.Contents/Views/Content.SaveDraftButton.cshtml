@@ -8,7 +8,12 @@
 }
 else
 {
-    <div class="btn-group mb-1">
+    <div class="btn-group mb-1"
+         data-action-group="oc-content-save-action"
+         data-action-default="submit.Save"
+         data-label-default="@T["Save Draft"]"
+         data-action-alt="submit.SaveAndContinue"
+         data-label-alt="@T["Save Draft and continue"]">
         <button class="btn btn-primary draft" type="submit" name="submit.Save" value="submit.Save">@T["Save Draft"]</button>
         <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-reference="parent" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <span class="visually-hidden">@T["Toggle Dropdown"]</span>
@@ -17,4 +22,5 @@ else
             <button class="dropdown-item draft-continue" type="submit" name="submit.Save" value="submit.SaveAndContinue">@T["and continue"]</button>
         </div>
     </div>
+    <script at="Foot" asp-src="~/OrchardCore.Contents/Scripts/content-action-buttons.js"></script>
 }

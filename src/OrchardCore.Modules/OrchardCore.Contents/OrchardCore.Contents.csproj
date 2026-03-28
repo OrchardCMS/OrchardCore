@@ -13,6 +13,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Assets\js\content-action-buttons.js" />
+  </ItemGroup>
+
+  <ItemGroup>
     <InternalsVisibleTo Include="OrchardCore.Tests" />
   </ItemGroup>
 
