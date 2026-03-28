@@ -10,6 +10,7 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
+using OrchardCore.Localization;
 using OrchardCore.OpenApi.Drivers;
 using OrchardCore.OpenApi.Settings;
 using OrchardCore.Security.Permissions;
@@ -47,6 +48,7 @@ public sealed class Startup : StartupBase
         services.AddPermissionProvider<Permissions>();
         services.AddNavigationProvider<AdminMenu>();
         services.AddSiteDisplayDriver<OpenApiSettingsDisplayDriver>();
+        services.AddScoped<IJSLocalizer, Services.OpenApiJSLocalizer>();
     }
 
     public override void Configure(

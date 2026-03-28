@@ -11,6 +11,7 @@ const client = new Client(getTenantPathBase(), apiService.getAxiosInstance())
 
 export function useOpenApi() {
     const testing = ref(false)
+    const testSuccess = ref(false)
     const testResult = ref<TestConnectionResult | null>(null)
 
     async function testConnection(config: {
@@ -22,6 +23,7 @@ export function useOpenApi() {
         scopes?: string
     }): Promise<void> {
         testing.value = true
+        testSuccess.value = false
         testResult.value = null
 
         try {
@@ -34,7 +36,8 @@ export function useOpenApi() {
                 scopes: config.scopes,
             })
 
-            const result = await client.testConnection(request)
+            const result = await client.apiTestOpenApiConnection(request)
+            testSuccess.value = true
             testResult.value = result
 
             notify(
@@ -60,8 +63,9 @@ export function useOpenApi() {
     }
 
     function clearResult() {
+        testSuccess.value = false
         testResult.value = null
     }
 
-    return { testing, testResult, testConnection, clearResult }
+    return { testing, testSuccess, testResult, testConnection, clearResult }
 }

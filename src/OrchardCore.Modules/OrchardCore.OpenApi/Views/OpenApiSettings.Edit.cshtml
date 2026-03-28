@@ -10,24 +10,22 @@
 <input asp-for="OAuthClientId" type="hidden" />
 <input asp-for="OAuthScopes" type="hidden" />
 
-@* Initial data for the Vue app. *@
-<script type="application/json" id="openapi-settings-data">
-    @Json.Serialize(new
-    {
-        isSwaggerUIEnabled = Model.IsSwaggerUIEnabled,
-        isReDocUIEnabled = Model.IsReDocUIEnabled,
-        isScalarUIEnabled = Model.IsScalarUIEnabled,
-        allowAnonymousSchemaAccess = Model.AllowAnonymousSchemaAccess,
-        authenticationType = (int)Model.AuthenticationType,
-        authorizationUrl = Model.AuthorizationUrl ?? "",
-        tokenUrl = Model.TokenUrl ?? "",
-        oAuthClientId = Model.OAuthClientId ?? "",
-        oAuthScopes = Model.OAuthScopes ?? "",
-        pathBase = Context.Request.PathBase.Value ?? "",
-    })
-</script>
-
-@* Vue app mount point. *@
-<div id="vue-openapi-settings"></div>
+@* Vue app mount point — settings and localizations are passed as attributes. *@
+<div id="vue-openapi-settings"
+     settings-data="@Json.Serialize(new
+     {
+         isSwaggerUIEnabled = Model.IsSwaggerUIEnabled,
+         isReDocUIEnabled = Model.IsReDocUIEnabled,
+         isScalarUIEnabled = Model.IsScalarUIEnabled,
+         allowAnonymousSchemaAccess = Model.AllowAnonymousSchemaAccess,
+         authenticationType = (int)Model.AuthenticationType,
+         authorizationUrl = Model.AuthorizationUrl ?? "",
+         tokenUrl = Model.TokenUrl ?? "",
+         oAuthClientId = Model.OAuthClientId ?? "",
+         oAuthScopes = Model.OAuthScopes ?? "",
+         pathBase = Context.Request.PathBase.Value ?? "",
+     })"
+     localizations="@Json.Serialize(Orchard.GetJSLocalizations("openapi-settings"))">
+</div>
 
 <script asp-src="~/OrchardCore.OpenApi/Scripts/openapi-settings/openapi-settings.js" at="Foot"></script>

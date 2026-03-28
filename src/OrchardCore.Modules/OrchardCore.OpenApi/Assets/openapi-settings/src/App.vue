@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, ref, watch, onMounted } from 'vue'
+import { reactive, ref, watch } from 'vue'
 import AuthSettings from './components/AuthSettings.vue'
 import ConnectionTester from './components/ConnectionTester.vue'
 
@@ -15,6 +15,10 @@ interface OpenApiSettingsData {
     isReDocUIEnabled?: boolean
     isScalarUIEnabled?: boolean
 }
+
+const props = defineProps<{
+    settingsData?: string
+}>()
 
 const settings = reactive<OpenApiSettingsData>({
     allowAnonymousSchemaAccess: true,
@@ -33,27 +37,24 @@ const featureStatus = reactive({
     scalarUI: false,
 })
 
-// Load initial data from the JSON blob injected by Razor.
-onMounted(() => {
-    const dataEl = document.getElementById('openapi-settings-data')
-    if (dataEl?.textContent) {
-        try {
-            const data = JSON.parse(dataEl.textContent) as OpenApiSettingsData
-            pathBase.value = data.pathBase ?? ''
-            featureStatus.swaggerUI = data.isSwaggerUIEnabled ?? false
-            featureStatus.reDocUI = data.isReDocUIEnabled ?? false
-            featureStatus.scalarUI = data.isScalarUIEnabled ?? false
-            delete data.pathBase
-            delete data.isSwaggerUIEnabled
-            delete data.isReDocUIEnabled
-            delete data.isScalarUIEnabled
-            Object.assign(settings, data)
-        }
-        catch {
-            // Use defaults if JSON is invalid.
-        }
+// Load initial data from the settings-data attribute injected by Razor.
+if (props.settingsData) {
+    try {
+        const data = JSON.parse(props.settingsData) as OpenApiSettingsData
+        pathBase.value = data.pathBase ?? ''
+        featureStatus.swaggerUI = data.isSwaggerUIEnabled ?? false
+        featureStatus.reDocUI = data.isReDocUIEnabled ?? false
+        featureStatus.scalarUI = data.isScalarUIEnabled ?? false
+        delete data.pathBase
+        delete data.isSwaggerUIEnabled
+        delete data.isReDocUIEnabled
+        delete data.isScalarUIEnabled
+        Object.assign(settings, data)
     }
-})
+    catch {
+        // Use defaults if JSON is invalid.
+    }
+}
 
 // Sync reactive state to hidden form inputs so ASP.NET model binding works.
 // All inputs are type="hidden", so we always set the value attribute.
