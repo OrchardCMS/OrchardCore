@@ -6,10 +6,15 @@ public class EditUserPhoneNumberViewModel
 {
     public string PhoneNumber { get; set; }
 
+    public string RegionCode { get; set; }
+
     [BindNever]
     public bool PhoneNumberConfirmed { get; set; }
 
     [BindNever]
     public bool AllowEditing { get; set; }
+
+    [BindNever]
+    public string DefaultRegion { get; set; }
 }
 

@@ -102,11 +102,17 @@ public sealed class SmsAuthenticatorController : TwoFactorAuthenticationBaseCont
 
         model.AllowChangingPhoneNumber = canSetNewPhone;
 
-        if (canSetNewPhone && !_phoneFormatValidator.IsValid(model.PhoneNumber))
+        if (canSetNewPhone)
         {
-            ModelState.AddModelError(nameof(model.PhoneNumber), S["Invalid phone number used."]);
+            var validationResult = _phoneFormatValidator.Validate(model.PhoneNumber);
+            if (!validationResult.IsValid)
+            {
+                ModelState.AddModelError(nameof(model.PhoneNumber), S[validationResult.ErrorMessage]);
 
-            return View(model);
+                return View(model);
+            }
+
+            model.PhoneNumber = validationResult.E164Number;
         }
 
         var phoneNumber = canSetNewPhone ? model.PhoneNumber : currentPhoneNumber;
