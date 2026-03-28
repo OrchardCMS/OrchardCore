@@ -11,6 +11,7 @@
     display: none;
     position: fixed;
     bottom: 0;
+    width: 100%;
     z-index: var(--oc-action-bar-zindex);
     border-radius: 0 !important;
     border-left: none !important;
@@ -32,5 +33,6 @@
 
     .action-bar-mobile-content {
         padding-bottom: var(--oc-action-bar-mobile-height);
+        margin-bottom: 0.5rem;
     }
 }

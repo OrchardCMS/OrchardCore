@@ -28,7 +28,7 @@
   /* Action bar should always be less than dropdown menu */
   --oc-action-bar-zindex: 980;
   --oc-second-action-bar-zindex: 983;
-  --oc-action-bar-mobile-height: 5rem;
+  --oc-action-bar-mobile-height: 0px;
   /* Undefined Bootstrap variables */
   --bs-dropdown-zindex: 1000;
   --bs-zindex-fixed: 1030;
@@ -176,6 +176,7 @@ a:hover {
   display: none;
   position: fixed;
   bottom: 0;
+  width: 100%;
   z-index: var(--oc-action-bar-zindex);
   border-radius: 0 !important;
   border-left: none !important;
@@ -197,6 +198,7 @@ a:hover {
 
   .action-bar-mobile-content {
     padding-bottom: var(--oc-action-bar-mobile-height);
+    margin-bottom: 0.5rem;
   }
 }
 

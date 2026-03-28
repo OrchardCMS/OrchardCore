@@ -43,7 +43,7 @@
             }
         </div>
 
-        @if (!adminSettings.DisplayStickyButtons && Model.Actions)
+        @if (!adminSettings.DisplayStickyButtons && Model.Actions != null)
         {
             <div class="@Orchard.GetWrapperClasses("edit-item-secondary", "group") d-none d-md-block">
                 <div class="@Orchard.GetEndClasses(true, "edit-item-actions")">
@@ -78,4 +78,14 @@
             }
         </div>
     </div>
+    <script at="Foot">
+        (function () {
+            var mobileBar = document.querySelector('.action-bar-mobile');
+            if (mobileBar) {
+                new ResizeObserver(function () {
+                    document.documentElement.style.setProperty('--oc-action-bar-mobile-height', mobileBar.offsetHeight + 'px');
+                }).observe(mobileBar);
+            }
+        })();
+    </script>
 }
