@@ -62,7 +62,7 @@ public static class ContentItemExtensions
     }
 
     /// <summary>
-    /// ⚠️ Not recommended for use. Prefer <see cref="GetOrCreate{TPart}(ContentItem)"/> and <see cref="TryGet{TPart}(ContentItem, out TPart)"/> instead. 
+    ///  Gets a content part by its type. ⚠️ Not recommended for use. Prefer <see cref="GetOrCreate{TPart}(ContentItem)"/> and <see cref="TryGet{TPart}(ContentItem, out TPart)"/> instead. 
     /// </summary>
     /// <param name="contentItem">The <see cref="ContentItem"/>.</param>
     /// <typeparam name="TPart">The type of the content part.</typeparam>
