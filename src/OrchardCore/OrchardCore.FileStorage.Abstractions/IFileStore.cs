@@ -158,6 +158,11 @@ public interface IFileStore
     /// Gets the capabilities supported by this file store.
     /// </summary>
     IFileStoreCapabilities Capabilities { get; }
+
+    /// <summary>
+    /// Gets a human-readable name for this file store (e.g. "Local", "Azure Blob (Gen2)", "Amazon S3").
+    /// </summary>
+    string StorageName => "File Store";
 }
 
 public static class IFileStoreExtensions

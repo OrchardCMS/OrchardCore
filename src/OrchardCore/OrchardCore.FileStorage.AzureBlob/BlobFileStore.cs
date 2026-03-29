@@ -55,6 +55,10 @@ public class BlobFileStore : IFileStore
 
     public IFileStoreCapabilities Capabilities => _capabilities ?? FileStoreCapabilities.Default;
 
+    public string StorageName => _capabilities is not null && _capabilities.HasHierarchicalNamespace
+        ? "Azure Blob (Gen2)"
+        : "Azure Blob (Gen1)";
+
     public BlobFileStore(
         BlobStorageOptions options,
         IClock clock,
