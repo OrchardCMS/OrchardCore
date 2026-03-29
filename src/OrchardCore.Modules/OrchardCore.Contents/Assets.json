@@ -22,11 +22,5 @@
     "name": "content-localization",
     "source": "Assets/js/content-type-check-all.js",
     "tags": [ "admin", "dashboard", "js" ]
-  },
-  {
-    "action": "min",
-    "name": "content-utilities",
-    "source": "Assets/js/content-action-buttons.js",
-    "tags": [ "admin", "dashboard", "js" ]
   }
 ]

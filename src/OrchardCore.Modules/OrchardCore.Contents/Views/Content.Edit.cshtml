@@ -78,14 +78,4 @@
             }
         </div>
     </div>
-    <script at="Foot">
-        (function () {
-            var mobileBar = document.querySelector('.action-bar-mobile');
-            if (mobileBar) {
-                new ResizeObserver(function () {
-                    document.documentElement.style.setProperty('--oc-action-bar-mobile-height', mobileBar.offsetHeight + 'px');
-                }).observe(mobileBar);
-            }
-        })();
-    </script>
 }
