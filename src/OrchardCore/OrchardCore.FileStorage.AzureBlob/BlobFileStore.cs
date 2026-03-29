@@ -3,6 +3,7 @@ using System.Net.Mime;
 using Azure;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
+using Azure.Storage;
 using Azure.Storage.Files.DataLake;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Logging;
@@ -68,8 +69,19 @@ public class BlobFileStore : IFileStore
         _blobServiceClient = new BlobServiceClient(_options.ConnectionString);
         _useHierarchicalNamespaceOverride = options.UseHierarchicalNamespace;
 
-        var serviceClient = new DataLakeServiceClient(_options.ConnectionString);
-        _dataLakeFileSystemClient = serviceClient.GetFileSystemClient(_options.ContainerName);
+        if (!string.IsNullOrEmpty(_options.DfsEndpoint))
+        {
+            // Use explicit DFS endpoint (required for local emulators like Azurite
+            // where the DFS endpoint runs on a separate port).
+            var credential = ParseCredentialsFromConnectionString(_options.ConnectionString);
+            var serviceClient = new DataLakeServiceClient(new Uri(_options.DfsEndpoint), credential);
+            _dataLakeFileSystemClient = serviceClient.GetFileSystemClient(_options.ContainerName);
+        }
+        else
+        {
+            var serviceClient = new DataLakeServiceClient(_options.ConnectionString);
+            _dataLakeFileSystemClient = serviceClient.GetFileSystemClient(_options.ContainerName);
+        }
 
         if (!string.IsNullOrEmpty(_options.BasePath))
         {
@@ -116,8 +128,7 @@ public class BlobFileStore : IFileStore
 
             _capabilities = new FileStoreCapabilities(
                 hasHierarchicalNamespace: hnsEnabled.Value,
-                supportsAtomicMove: hnsEnabled.Value,
-                storageProvider: hnsEnabled.Value ? "Azure Blob (Gen2)" : "Azure Blob (Gen1)");
+                supportsAtomicMove: hnsEnabled.Value);
 
             if (hnsEnabled.Value)
             {
@@ -174,6 +185,10 @@ public class BlobFileStore : IFileStore
                     return new BlobDirectory(path, _clock.UtcNow);
                 }
 
+                return null;
+            }
+            catch (RequestFailedException ex) when (ex.Status == 404)
+            {
                 return null;
             }
             catch (Exception ex)
@@ -456,6 +471,10 @@ public class BlobFileStore : IFileStore
             {
                 throw;
             }
+            catch (RequestFailedException ex) when (ex.Status == 404)
+            {
+                return false;
+            }
             catch (Exception ex)
             {
                 throw new FileStoreException($"Cannot delete directory '{path}'.", ex);
@@ -671,6 +690,32 @@ public class BlobFileStore : IFileStore
         using var stream = new MemoryStream(MarkerFileContent);
 
         await placeholderBlob.UploadAsync(stream);
+    }
+
+    private static StorageSharedKeyCredential ParseCredentialsFromConnectionString(string connectionString)
+    {
+        string accountName = null;
+        string accountKey = null;
+
+        foreach (var part in connectionString.Split(';', StringSplitOptions.RemoveEmptyEntries))
+        {
+            var kvp = part.Split('=', 2);
+            if (kvp.Length == 2)
+            {
+                if (kvp[0].Equals("AccountName", StringComparison.OrdinalIgnoreCase))
+                {
+                    accountName = kvp[1];
+                }
+                else if (kvp[0].Equals("AccountKey", StringComparison.OrdinalIgnoreCase))
+                {
+                    accountKey = kvp[1];
+                }
+            }
+        }
+
+        return new StorageSharedKeyCredential(
+            accountName ?? throw new FileStoreException("AccountName not found in connection string."),
+            accountKey ?? throw new FileStoreException("AccountKey not found in connection string."));
     }
 
     /// <summary>

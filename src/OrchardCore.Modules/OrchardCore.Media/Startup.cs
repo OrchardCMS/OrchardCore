@@ -77,7 +77,6 @@ public sealed class Startup : StartupBase
     {
         services.AddHttpClient();
         services.AddSingleton<IJSLocalizer, MediaJSLocalizer>();
-        services.AddSingleton<IJSLocalizer, NullJSLocalizer>();
         services.AddSingleton<IAnchorTag, MediaAnchorTag>();
 
         // In-memory directory tree cache (built lazily, invalidated on folder mutations).
@@ -210,7 +209,9 @@ public sealed class Startup : StartupBase
         );
 
         // Media Field
-        services.AddContentField<MediaField>().UseDisplayDriver<MediaFieldDisplayDriver>();
+        services.AddContentField<MediaField>()
+            .UseDisplayDriver<MediaFieldDisplayDriver>()
+            .AddHandler<AttachedMediaFieldHandler>();
         services.AddScoped<IContentPartFieldDefinitionDisplayDriver, MediaFieldSettingsDriver>();
         services.AddScoped<AttachedMediaFieldFileService, AttachedMediaFieldFileService>();
         services.AddScoped<IContentHandler, AttachedMediaFieldContentHandler>();

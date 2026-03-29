@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Localization;
 
@@ -16,9 +15,9 @@ public class MediaJSLocalizer(IStringLocalizer<MediaJSLocalizer> S) : IJSLocaliz
     /// in a .cshtml template for the po Extractor to find the strings to translate.
     /// </summary>
     /// <returns>Returns a list of localized strings</returns>
-    public Dictionary<string, string> GetLocalizations(string[] groups)
+    public IDictionary<string, string> GetLocalizations(string group)
     {
-        if (groups.Contains("media-app", StringComparer.OrdinalIgnoreCase))
+        if (string.Equals(group, "media-app", StringComparison.OrdinalIgnoreCase))
         {
             return new Dictionary<string, string>
             {
@@ -104,7 +103,7 @@ public class MediaJSLocalizer(IStringLocalizer<MediaJSLocalizer> S) : IJSLocaliz
             };
         }
 
-        if (groups.Contains("media-field", StringComparer.OrdinalIgnoreCase))
+        if (string.Equals(group, "media-field", StringComparison.OrdinalIgnoreCase))
         {
             return new Dictionary<string, string>
             {

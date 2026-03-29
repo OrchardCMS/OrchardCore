@@ -1,12 +1,6 @@
-using System.IO;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using Moq;
-using Xunit;
-using OrchardCore.Media.Core;
 using OrchardCore.FileStorage;
+using OrchardCore.Media.Core;
 using OrchardCore.Media.Events;
-using Microsoft.Extensions.Logging;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Media;
 
@@ -145,11 +139,11 @@ public class DefaultMediaFileStoreTests
 
         // Act
         await store.CreateFileFromStreamAsync("test1.txt", stream1);
-        var exception = await Assert.ThrowsAsync<FileStoreException>(() => 
+        var exception = await Assert.ThrowsAsync<FileStoreException>(() =>
             store.CreateFileFromStreamAsync("test2.txt", stream2));
-        
+
         // Assert
-        const string expectedMessage = 
+        const string expectedMessage =
             "You tried to upload a file that requires 200 B of storage space, but only 150 B is available. Try " +
             "uploading a file that fits the available space, or delete some unnecessary files.";
         Assert.Equal(expectedMessage, exception.Message);

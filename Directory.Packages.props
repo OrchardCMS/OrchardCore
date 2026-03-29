@@ -5,8 +5,8 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="AngleSharp" Version="1.4.0" />
-    <PackageVersion Include="AWSSDK.S3" Version="4.0.19" />
-    <PackageVersion Include="AWSSDK.Extensions.NETCore.Setup" Version="4.0.3.25" />
+    <PackageVersion Include="AWSSDK.S3" Version="4.0.19.1" />
+    <PackageVersion Include="AWSSDK.Extensions.NETCore.Setup" Version="4.0.3.26" />
     <PackageVersion Include="Azure.Communication.Email" Version="1.1.0" />
     <PackageVersion Include="Azure.Communication.Sms" Version="1.0.2" />
     <PackageVersion Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.5.0" />
@@ -17,8 +17,8 @@
     <PackageVersion Include="Azure.Storage.Files.DataLake" Version="12.19.1" />
     <PackageVersion Include="BenchmarkDotNet" Version="0.15.8" />
     <PackageVersion Include="Castle.Core" Version="5.2.1" />
-    <PackageVersion Include="DocumentFormat.OpenXml" Version="3.4.1" />
-    <PackageVersion Include="Elastic.Clients.Elasticsearch" Version="8.19.16" />
+    <PackageVersion Include="DocumentFormat.OpenXml" Version="3.5.1" />
+    <PackageVersion Include="Elastic.Clients.Elasticsearch" Version="8.19.17" />
     <PackageVersion Include="Fluid.Core" Version="2.31.0" />
     <PackageVersion Include="GraphQL" Version="8.8.4" />
     <PackageVersion Include="GraphQL.DataLoader" Version="8.8.4" />
@@ -40,7 +40,7 @@
     <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="5.3.0" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="5.3.0" />
     <PackageVersion Include="Microsoft.Extensions.Azure" Version="1.13.1" />
-    <PackageVersion Include="Microsoft.Identity.Web" Version="4.5.0" />
+    <PackageVersion Include="Microsoft.Identity.Web" Version="4.6.0" />
     <PackageVersion Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="8.16.0" />
     <PackageVersion Include="Microsoft.IO.RecyclableMemoryStream" Version="3.0.1" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.3.0" />
@@ -65,7 +65,7 @@
     <PackageVersion Include="SixLabors.ImageSharp.Web" Version="3.2.0" />
     <PackageVersion Include="SixLabors.ImageSharp.Web.Providers.Azure" Version="3.2.0" />
     <PackageVersion Include="SixLabors.ImageSharp.Web.Providers.AWS" Version="3.2.0" />
-    <PackageVersion Include="StackExchange.Redis" Version="2.12.1" />
+    <PackageVersion Include="StackExchange.Redis" Version="2.12.4" />
     <PackageVersion Include="StyleCop.Analyzers" Version="1.1.118" />
     <PackageVersion Include="Swashbuckle.AspNetCore.ReDoc" Version="10.1.4" />
     <PackageVersion Include="Swashbuckle.AspNetCore.SwaggerGen" Version="10.1.4" />

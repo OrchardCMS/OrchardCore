@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Removing;
+using OrchardCore.FileStorage.AzureBlob;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Media.Azure.Services;
@@ -14,6 +15,7 @@ public sealed class MediaBlobContainerTenantEvents : ModularTenantEvents
 {
     private readonly MediaBlobStorageOptions _options;
     private readonly ShellSettings _shellSettings;
+    private readonly BlobFileStore _blobFileStore;
     private readonly ILogger _logger;
 
     internal readonly IStringLocalizer S;
@@ -21,18 +23,22 @@ public sealed class MediaBlobContainerTenantEvents : ModularTenantEvents
     public MediaBlobContainerTenantEvents(
         IOptions<MediaBlobStorageOptions> options,
         ShellSettings shellSettings,
+        BlobFileStore blobFileStore,
         IStringLocalizer<MediaBlobContainerTenantEvents> localizer,
         ILogger<MediaBlobContainerTenantEvents> logger
         )
     {
         _options = options.Value;
         _shellSettings = shellSettings;
+        _blobFileStore = blobFileStore;
         S = localizer;
         _logger = logger;
     }
 
     public override async Task ActivatingAsync()
     {
+        await _blobFileStore.EnsureCapabilitiesAsync();
+
         // Only create container if options are valid.
         if (_shellSettings.IsUninitialized() || !_options.IsConfigured() || !_options.CreateContainer)
         {
