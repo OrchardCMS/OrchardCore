@@ -32,12 +32,12 @@ public class ListPartLocalizationHandler : ContentLocalizationPartHandlerBase<Li
 
         foreach (var item in containedList)
         {
-            var localizationPart = item.As<LocalizationPart>();
-            if (localizationPart.Culture == context.Culture)
+            if (item.TryGet<LocalizationPart>(out var localizationPart) &&
+                localizationPart.Culture == context.Culture &&
+                item.TryGet<ContainedPart>(out var containedPart))
             {
-                var cp = item.As<ContainedPart>();
-                cp.ListContentItemId = context.ContentItem.ContentItemId;
-                cp.Apply();
+                containedPart.ListContentItemId = context.ContentItem.ContentItemId;
+                containedPart.Apply();
                 await _session.SaveAsync(item);
             }
         }

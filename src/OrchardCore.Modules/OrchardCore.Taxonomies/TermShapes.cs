@@ -66,8 +66,7 @@ public class TermShapes : ShapeTableProvider
                 termShape.Properties["TaxonomyContentItem"] = taxonomyContentItem;
                 termShape.Properties["TaxonomyName"] = taxonomyContentItem.DisplayText;
 
-                var taxonomyPart = taxonomyContentItem.As<TaxonomyPart>();
-                if (taxonomyPart == null)
+                if (!taxonomyContentItem.TryGet<TaxonomyPart>(out var taxonomyPart))
                 {
                     return;
                 }
@@ -145,7 +144,10 @@ public class TermShapes : ShapeTableProvider
                 var termShape = termItem.GetProperty<IShape>("Term");
                 var level = termItem.GetProperty<int>("Level");
                 var taxonomyContentItem = termItem.GetProperty<ContentItem>("TaxonomyContentItem");
-                var taxonomyPart = taxonomyContentItem.As<TaxonomyPart>();
+                if (!taxonomyContentItem.TryGet<TaxonomyPart>(out var taxonomyPart))
+                {
+                    return;
+                }
                 var differentiator = termItem.Metadata.Differentiator;
 
                 var shapeFactory = context.ServiceProvider.GetRequiredService<IShapeFactory>();

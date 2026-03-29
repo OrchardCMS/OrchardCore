@@ -27,22 +27,30 @@ internal sealed class AzureAISearchIndexProfileDisplayDriver : DisplayDriver<Ind
 
         var data = Initialize<AzureAISettingsIndexProfileViewModel>("AzureAISearchIndexProfile_Edit", model =>
         {
-            var metadata = indexProfile.As<AzureAISearchIndexMetadata>();
+            model.AnalyzerName = AzureAISearchDefaultOptions.DefaultAnalyzer;
 
-            model.AnalyzerName = metadata.AnalyzerName ?? AzureAISearchDefaultOptions.DefaultAnalyzer;
+            if (indexProfile.TryGet<AzureAISearchIndexMetadata>(out var metadata))
+            {
+                model.AnalyzerName = metadata.AnalyzerName ?? AzureAISearchDefaultOptions.DefaultAnalyzer;
+            }
+
             model.Analyzers = _azureAIOptions.Analyzers.Select(x => new SelectListItem(x, x));
         }).Location("Content:5");
 
         var queryData = Initialize<AzureAISearchDefaultQueryViewModel>("AzureAISearchQuerySettings_Edit", model =>
         {
-            var metadata = indexProfile.As<AzureAISearchDefaultQueryMetadata>();
-
-            var indexMetadata = indexProfile.As<AzureAISearchIndexMetadata>();
-
-            model.QueryAnalyzerName = metadata.QueryAnalyzerName ?? AzureAISearchDefaultOptions.DefaultAnalyzer;
+            model.QueryAnalyzerName = AzureAISearchDefaultOptions.DefaultAnalyzer;
             model.Analyzers = _azureAIOptions.Analyzers.Select(x => new SelectListItem(x, x));
 
-            if (indexMetadata.IndexMappings?.Count > 0)
+            string[] defaultSearchFields = null;
+
+            if (indexProfile.TryGet<AzureAISearchDefaultQueryMetadata>(out var metadata))
+            {
+                model.QueryAnalyzerName = metadata.QueryAnalyzerName ?? AzureAISearchDefaultOptions.DefaultAnalyzer;
+                defaultSearchFields = metadata.DefaultSearchFields;
+            }
+
+            if (indexProfile.TryGet<AzureAISearchIndexMetadata>(out var indexMetadata) && indexMetadata.IndexMappings?.Count > 0)
             {
                 model.DefaultSearchFields = indexMetadata.IndexMappings
                 .Where(x => x.IsSearchable)
@@ -50,7 +58,7 @@ internal sealed class AzureAISearchIndexProfileDisplayDriver : DisplayDriver<Ind
                 {
                     Text = x.AzureFieldKey,
                     Value = x.AzureFieldKey,
-                    Selected = metadata.DefaultSearchFields?.Contains(x.AzureFieldKey) ?? false,
+                    Selected = defaultSearchFields?.Contains(x.AzureFieldKey) ?? false,
                 }).OrderBy(x => x.Text)
                 .ToArray();
             }
