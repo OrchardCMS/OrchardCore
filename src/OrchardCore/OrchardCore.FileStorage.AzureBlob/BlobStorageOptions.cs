@@ -20,8 +20,30 @@ public abstract class BlobStorageOptions
     /// <summary>
     /// Overrides auto-detection of Hierarchical Namespace (HNS / ADLS Gen2) support.
     /// Set to <c>true</c> to force HNS-aware behavior, <c>false</c> to force flat-namespace behavior,
-    /// or leave <c>null</c> to auto-detect from the storage account at startup.
+    /// or leave <c>null</c> (default) to auto-detect from the storage account at startup.
     /// </summary>
+    /// <remarks>
+    /// Auto-detection calls <c>GetAccountInfoAsync()</c>, which requires storage account-level
+    /// permissions. You must set this explicitly when:
+    /// <list type="bullet">
+    ///   <item>
+    ///     <description>
+    ///       <b>SAS tokens</b> — A container-scoped SAS token does not have permission to call
+    ///       <c>GetAccountInfo</c>, so detection fails and falls back to flat-namespace behavior.
+    ///       Set to <c>true</c> if the account is actually Gen2/HNS-enabled.
+    ///     </description>
+    ///   </item>
+    ///   <item>
+    ///     <description>
+    ///       <b>Local emulators (Azurite)</b> — Azurite does not implement the <c>GetAccountInfo</c>
+    ///       endpoint. Set to <c>true</c> together with <see cref="DfsEndpoint"/> to enable
+    ///       HNS simulation in local development.
+    ///     </description>
+    ///   </item>
+    /// </list>
+    /// Without this override there is no way to use HNS-dependent features (atomic moves, real
+    /// directory operations) in either of those scenarios.
+    /// </remarks>
     public bool? UseHierarchicalNamespace { get; set; }
 
     /// <summary>
