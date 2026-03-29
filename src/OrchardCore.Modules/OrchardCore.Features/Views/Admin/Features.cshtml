@@ -200,83 +200,83 @@
 </form>
 <script at="Foot">
     $(function () {
-    const EscapeKey = 'Escape';
-    var searchBox = $('#search-box');
+        const EscapeKey = 'Escape';
+        var searchBox = $('#search-box');
 
-    // On each keypress filter the list of features
-    searchBox.keyup(function (e) {
-    var search = $(this).val().toLowerCase();
-    var elementsToFilter = $("[data-filter-value]");
+        // On each keypress filter the list of features
+        searchBox.keyup(function (e) {
+            var search = $(this).val().toLowerCase();
+            var elementsToFilter = $("[data-filter-value]");
 
-    // On ESC, clear the search box and display all features
-    if (e.key == EscapeKey || search == '') {
-    searchBox.val('');
-    elementsToFilter.removeClass("d-none first-child-visible last-child-visible");
-    } else {
-    elementsToFilter.each(function () {
-    var text = $(this).data('filter-value').toLowerCase();
-    var found = text.indexOf(search) > -1;
+            // On ESC, clear the search box and display all features
+            if (e.key == EscapeKey || search == '') {
+                searchBox.val('');
+                elementsToFilter.removeClass("d-none first-child-visible last-child-visible");
+            } else {
+                elementsToFilter.each(function () {
+                    var text = $(this).data('filter-value').toLowerCase();
+                    var found = text.indexOf(search) > -1;
 
-    if (found) {
-    $(this).removeClass("d-none first-child-visible last-child-visible");
-    }
-    else {
-    $(this).addClass("d-none");
-    }
-    });
+                    if (found) {
+                        $(this).removeClass("d-none first-child-visible last-child-visible");
+                    }
+                    else {
+                        $(this).addClass("d-none");
+                    }
+                });
 
-    $('ul.list-group').each(function () {
-    $(this).find('li').filter(":not(.d-none)").first().addClass("first-child-visible");
-    $(this).find('li').filter(":not(.d-none)").last().addClass("last-child-visible");
-    });
-    }
+                $('ul.list-group').each(function () {
+                    $(this).find('li').filter(":not(.d-none)").first().addClass("first-child-visible");
+                    $(this).find('li').filter(":not(.d-none)").last().addClass("last-child-visible");
+                });
+            }
 
-    var visible = $('.list-group > li:visible');
-    if (visible.length == 0) {
-    $('#list-alert').removeClass("d-none");
-    }
-    else {
-    $('#list-alert').addClass("d-none");
-    }
-    });
+            var visible = $('.list-group > li:visible');
+            if (visible.length == 0) {
+                $('#list-alert').removeClass("d-none");
+            }
+            else {
+                $('#list-alert').addClass("d-none");
+            }
+        });
 
-    //prevent posting form on pressing enter key
-    searchBox.keydown(function (e) {
-    if (e.key == 'Enter') {
-    return false;
-    }
-    });
+        //prevent posting form on pressing enter key
+        searchBox.keydown(function (e) {
+            if (e.key == 'Enter') {
+                return false;
+            }
+        });
 
-    // this function will be executed on click of X (clear button)
-    searchBox.on('search', function () {
-    var search = $(this).val();
-    if (search != '') {
-    return;
-    }
+        // this function will be executed on click of X (clear button)
+        searchBox.on('search', function () {
+            var search = $(this).val();
+            if (search != '') {
+                return;
+            }
 
-    var e = $.Event('keyup');
-    e.key= EscapeKey;
+            var e = $.Event('keyup');
+            e.key= EscapeKey;
             
-    searchBox.trigger(e);
-    });
+            searchBox.trigger(e);
+        });
 
-    $(".dropdown-menu a").filter(function () {
-    return $(this).data("action");
-    }).on('click', function () {
-    $("[name='BulkAction']").val($(this).data('action'));
-    $("[name='submit.BulkAction']").click();
-    });
+        $(".dropdown-menu a").filter(function () {
+            return $(this).data("action");
+        }).on('click', function () {
+            $("[name='BulkAction']").val($(this).data('action'));
+            $("[name='submit.BulkAction']").click();
+        });
 
-    $('.show-more').on('click', function (e) {
-    e.preventDefault();
+        $('.show-more').on('click', function (e) {
+            e.preventDefault();
 
-    var $toogle_parent = $(this).parent();
-    var $direct_dependencies = $toogle_parent.siblings('.direct-dependencies');
-    var $transitive_dependencies = $toogle_parent.prev('.transitive-dependencies')
+            var $toogle_parent = $(this).parent();
+            var $direct_dependencies = $toogle_parent.siblings('.direct-dependencies');
+            var $transitive_dependencies = $toogle_parent.prev('.transitive-dependencies')
 
-    $direct_dependencies.toggleClass('d-none');
-    $transitive_dependencies.toggleClass('d-none');
-    $toogle_parent.toggleClass('d-none');
-    });
+            $direct_dependencies.toggleClass('d-none');
+            $transitive_dependencies.toggleClass('d-none');
+            $toogle_parent.toggleClass('d-none');
+        });
     });
 </script>
