@@ -21,9 +21,7 @@ public class ArchiveLaterPartIndexProvider : ContentHandlerBase, IIndexProvider,
 
     public override async Task UpdatedAsync(UpdateContentContext context)
     {
-        var part = context.ContentItem.As<ArchiveLaterPart>();
-
-        if (part != null)
+        if (context.ContentItem.TryGet<ArchiveLaterPart>(out _))
         {
             _contentDefinitionManager ??= _serviceProvider.GetRequiredService<IContentDefinitionManager>();
 
@@ -54,8 +52,7 @@ public class ArchiveLaterPartIndexProvider : ContentHandlerBase, IIndexProvider,
                     return null;
                 }
 
-                var part = contentItem.As<ArchiveLaterPart>();
-                if (part == null || !part.ScheduledArchiveUtc.HasValue)
+                if (!contentItem.TryGet<ArchiveLaterPart>(out var part) || !part.ScheduledArchiveUtc.HasValue)
                 {
                     return null;
                 }

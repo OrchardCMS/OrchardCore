@@ -17,8 +17,7 @@ public class ContentAuditTrailEventHandler : AuditTrailEventHandlerBase
 
         if (context is AuditTrailCreateContext<AuditTrailContentEvent> contentEvent)
         {
-            var auditTrailPart = contentEvent.AuditTrailEventItem.ContentItem.As<AuditTrailPart>();
-            if (auditTrailPart == null)
+            if (!contentEvent.AuditTrailEventItem.ContentItem.TryGet<AuditTrailPart>(out var auditTrailPart))
             {
                 return Task.CompletedTask;
             }

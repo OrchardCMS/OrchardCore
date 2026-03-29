@@ -1,7 +1,10 @@
 @using OrchardCore.ContentManagement
 @{
     ContentItem contentItem = Model.ContentItem;
-    var linkMenuItemPart = contentItem.As<LinkMenuItemPart>();
+    if (!contentItem.TryGet<LinkMenuItemPart>(out var linkMenuItemPart))
+    {
+        return;
+    }
     int level = (int)Model.Level;
 
     TagBuilder tag = Tag(Model, "a");

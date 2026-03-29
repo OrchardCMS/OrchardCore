@@ -269,8 +269,20 @@ internal sealed class IndexingMigrations : DataMigration
 
         foreach (var indexProfile in await GetElasticsearchIndexesAsync(indexProfileManager))
         {
-            if (IsLegacyAnalyzerName(indexProfile.As<ElasticsearchDefaultQueryMetadata>()?.QueryAnalyzerName) ||
-                IsLegacyAnalyzerName(indexProfile.As<ElasticsearchIndexMetadata>()?.AnalyzerName))
+            ElasticsearchDefaultQueryMetadata queryMetadata = null;
+            if (indexProfile.TryGet<ElasticsearchDefaultQueryMetadata>(out var storedQueryMetadata))
+            {
+                queryMetadata = storedQueryMetadata;
+            }
+
+            ElasticsearchIndexMetadata indexMetadata = null;
+            if (indexProfile.TryGet<ElasticsearchIndexMetadata>(out var storedIndexMetadata))
+            {
+                indexMetadata = storedIndexMetadata;
+            }
+
+            if (IsLegacyAnalyzerName(queryMetadata?.QueryAnalyzerName) ||
+                IsLegacyAnalyzerName(indexMetadata?.AnalyzerName))
             {
                 indexProfile.Alter<ElasticsearchDefaultQueryMetadata>(metadata =>
                     metadata.QueryAnalyzerName = ElasticsearchConstants.DefaultAnalyzer);
