@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Localization;
 
-namespace OrchardCore.Email.Core.Services;
+namespace OrchardCore.Email.Services;
 
 public class EmailMessageValidator : EmailServiceEventsBase
 {

@@ -27,6 +27,7 @@ using OrchardCore.Lists.Models;
 using OrchardCore.Lists.Services;
 using OrchardCore.Lists.Settings;
 using OrchardCore.Lists.ViewModels;
+using OrchardCore.Localization.Data;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Lists;
@@ -105,5 +106,14 @@ public sealed class FeedsStartup : StartupBase
             pattern: "Contents/Lists/{contentItemId}/rss",
             defaults: new { controller = "Feed", action = "Index", format = "rss" }
         );
+    }
+}
+
+[RequireFeatures("OrchardCore.AdminMenu", "OrchardCore.DataLocalization")]
+public sealed class DataLocalizationStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddScoped<ILocalizationDataProvider, ListsAdminNodeDataLocalizationProvider>();
     }
 }

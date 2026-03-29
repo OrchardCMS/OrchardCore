@@ -32,6 +32,7 @@ public class PlaceholderAdminNodeNavigationBuilder : IAdminNodeNavigationBuilder
 
         return builder.AddAsync(new LocalizedString(node.LinkText, node.LinkText), async itemBuilder =>
         {
+            itemBuilder.MenuName(node.MenuName);
             itemBuilder.Priority(node.Priority);
             itemBuilder.Position(node.Position);
 

@@ -319,6 +319,37 @@ public class ContainerService : IContainerService
         }
     }
 
+    /// <summary>
+    /// Change PagerSlim to Pager and use the standard Skip and Take methods.
+    /// </summary>
+    public async Task<IEnumerable<ContentItem>> QueryContainedItemsAsync(
+        string contentItemId,
+        bool enableOrdering,
+        Pager pager,
+        ContainedItemOptions containedItemOptions)
+    {
+        ArgumentNullException.ThrowIfNull(containedItemOptions);
+
+        var query = _session.Query<ContentItem>()
+            .With<ContainedPartIndex>(x => x.ListContentItemId == contentItemId);
+
+        ApplyContainedItemOptionsFilter(containedItemOptions, query);
+
+        if (enableOrdering)
+        {
+            query.With<ContainedPartIndex>().OrderBy(x => x.Order);
+        }
+        else
+        {
+            query.With<ContentItemIndex>().OrderByDescending(i => i.CreatedUtc);
+        }
+
+        var startIndex = pager.GetStartIndex();
+        query.Skip(startIndex).Take(pager.PageSize);
+
+        return await query.ListAsync(_contentManager);
+    }
+
     private static void ApplyPagingContentIndexFilter(DateTime? before, DateTime? after, bool orderByAsc, IQuery<ContentItem> query)
     {
         var indexQuery = query.With<ContentItemIndex>();

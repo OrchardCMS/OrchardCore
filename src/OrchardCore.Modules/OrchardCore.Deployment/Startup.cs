@@ -6,6 +6,7 @@ using OrchardCore.Data.Migration;
 using OrchardCore.Deployment.Core;
 using OrchardCore.Deployment.Core.Services;
 using OrchardCore.Deployment.Deployment;
+using OrchardCore.Deployment.Drivers;
 using OrchardCore.Deployment.Indexes;
 using OrchardCore.Deployment.Recipes;
 using OrchardCore.Deployment.Steps;
@@ -27,6 +28,10 @@ public sealed class Startup : StartupBase
         services.AddPermissionProvider<Permissions>();
 
         services.AddSingleton<IDeploymentTargetProvider, FileDownloadDeploymentTargetProvider>();
+
+        // Register the fallback type for unknown deployment steps (e.g., when a feature is disabled).
+        services.AddJsonDerivedTypeFallback<DeploymentStep, UnknownDeploymentStep>();
+        services.AddDisplayDriver<DeploymentStep, UnknownDeploymentStepDriver>();
 
         // Custom File deployment step
         services.AddDeployment<CustomFileDeploymentSource, CustomFileDeploymentStep, CustomFileDeploymentStepDriver>();

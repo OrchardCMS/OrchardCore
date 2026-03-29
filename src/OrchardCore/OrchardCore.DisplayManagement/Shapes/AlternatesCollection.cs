@@ -1,16 +1,15 @@
 using System.Collections;
-using System.Collections.ObjectModel;
 
 namespace OrchardCore.DisplayManagement.Shapes;
 
 /// <summary>
 /// An ordered collection optimized for lookups.
 /// </summary>
-public class AlternatesCollection : IEnumerable<string>
+public sealed class AlternatesCollection : IEnumerable<string>
 {
     public static readonly AlternatesCollection Empty = [];
 
-    private KeyedAlternateCollection _collection;
+    private readonly OrderedDictionary<string, string> _items = new(StringComparer.Ordinal);
 
     public AlternatesCollection(params string[] alternates)
     {
@@ -23,66 +22,75 @@ public class AlternatesCollection : IEnumerable<string>
         }
     }
 
-    public string this[int index] => _collection?[index] ?? "";
+    public string this[int index]
+    {
+        get => index < _items.Count ? _items.GetAt(index).Value : "";
+    }
 
-    public string Last => _collection?.LastOrDefault() ?? "";
+    public string Last
+    {
+        get => _items.Count > 0 ? _items.GetAt(_items.Count - 1).Value : "";
+    }
 
     public void Add(string alternate)
     {
         ArgumentNullException.ThrowIfNull(alternate);
 
-        EnsureCollection();
+        EnsureMutable();
 
-        if (!_collection.Contains(alternate))
-        {
-            _collection.Add(alternate);
-        }
+        _items.TryAdd(alternate, alternate);
     }
 
     public void Remove(string alternate)
     {
         ArgumentNullException.ThrowIfNull(alternate);
 
-        if (_collection == null)
+        if (Count == 0)
         {
             return;
         }
 
-        _collection.Remove(alternate);
+        EnsureMutable();
+
+        _items.Remove(alternate);
     }
 
     public void Clear()
     {
-        if (_collection == null)
+        if (Count == 0)
         {
             return;
         }
 
-        _collection.Clear();
+        EnsureMutable();
+
+        _items.Clear();
     }
 
     public bool Contains(string alternate)
     {
         ArgumentNullException.ThrowIfNull(alternate);
 
-        if (_collection == null)
-        {
-            return false;
-        }
-
-        return _collection.Contains(alternate);
+        return _items.ContainsKey(alternate);
     }
 
-    public int Count => _collection == null ? 0 : _collection.Count;
+    public int Count => _items.Count;
 
     public void AddRange(AlternatesCollection alternates)
     {
-        AddRange(alternates._collection);
+        ArgumentNullException.ThrowIfNull(alternates);
+
+        for (var i = 0; i < alternates._items.Count; i++)
+        {
+            Add(alternates._items.GetAt(i).Value);
+        }
     }
 
     public void AddRange(IEnumerable<string> alternates)
     {
         ArgumentNullException.ThrowIfNull(alternates);
+
+        EnsureMutable();
 
         foreach (var alternate in alternates)
         {
@@ -90,36 +98,17 @@ public class AlternatesCollection : IEnumerable<string>
         }
     }
 
-    private void EnsureCollection()
+    private void EnsureMutable()
     {
         if (this == Empty)
         {
             throw new NotSupportedException("AlternateCollection can't be changed.");
         }
-
-        _collection ??= new KeyedAlternateCollection();
     }
 
     public IEnumerator<string> GetEnumerator()
-    {
-        if (_collection == null)
-        {
-            return Enumerable.Empty<string>().GetEnumerator();
-        }
-
-        return _collection.GetEnumerator();
-    }
+        => _items.Values.GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator()
-    {
-        return GetEnumerator();
-    }
-
-    private sealed class KeyedAlternateCollection : KeyedCollection<string, string>
-    {
-        protected override string GetKeyForItem(string item)
-        {
-            return item;
-        }
-    }
+        => _items.Values.GetEnumerator();
 }

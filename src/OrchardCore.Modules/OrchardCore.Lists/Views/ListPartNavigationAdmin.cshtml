@@ -2,6 +2,7 @@
 @using OrchardCore.ContentManagement
 @using OrchardCore.Contents
 @using OrchardCore.Localization.Data
+@using System.Security.Claims
 @model OrchardCore.Lists.ViewModels.ListPartNavigationAdminViewModel
 @inject IContentManager ContentManager
 @inject IAuthorizationService AuthorizationService
@@ -10,7 +11,7 @@
     var authorizedContentTypeDefinitions = new List<ContentTypeDefinition>();
     foreach (var contentTypeDefinition in Model.ContainedContentTypeDefinitions)
     {
-        if (!await AuthorizationService.AuthorizeContentTypeAsync(User, CommonPermissions.EditContent, contentTypeDefinition.Name, User.Identity.Name))
+        if (!await AuthorizationService.AuthorizeContentTypeAsync(User, CommonPermissions.EditContent, contentTypeDefinition.Name, User.FindFirstValue(ClaimTypes.NameIdentifier)))
         {
             continue;
         }

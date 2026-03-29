@@ -1,9 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DataLocalization.Deployment;
+using OrchardCore.DataLocalization.Liquid;
 using OrchardCore.DataLocalization.Recipes;
 using OrchardCore.DataLocalization.Services;
 using OrchardCore.Deployment;
-using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Liquid;
 using OrchardCore.Localization.Data;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
@@ -22,19 +23,16 @@ public class Startup : StartupBase
     /// <inheritdocs />
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.AddLiquidFilter<DataLocalizationFilter>("d");
+
         services.AddScoped<TranslationsManager>();
 
 #pragma warning disable CS0618 // Type or member is obsolete
         services.AddRecipeExecutionStep<TranslationsStep>();
 #pragma warning restore CS0618 // Type or member is obsolete
 
-        // Legacy deployment step (kept for backward compatibility).
-        services.AddTransient<IDeploymentSource, AllDataTranslationsDeploymentSource>();
-        services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllDataTranslationsDeploymentStep>());
-        services.AddScoped<IDisplayDriver<DeploymentStep>, AllDataTranslationsDeploymentStepDriver>();
-
-        // New deployment step with culture/category filtering.
         services.AddDeployment<TranslationsDeploymentSource, TranslationsDeploymentStep, TranslationsDeploymentStepDriver>();
+        services.AddDeployment<AllDataTranslationsDeploymentSource, AllDataTranslationsDeploymentStep, AllDataTranslationsDeploymentStepDriver>();
 
         services.AddScoped<IPermissionProvider, Permissions>();
         services.AddScoped<INavigationProvider, AdminMenu>();

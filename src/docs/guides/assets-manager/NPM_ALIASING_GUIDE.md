@@ -121,7 +121,7 @@ Assets.json:
 ```json
 {
   "dependencies": {
-    "@fortawesome/fontawesome-free": "7.1.0",
+    "@fortawesome/fontawesome-free": "7.2.0",
     "@fortawesome/fontawesome-free-6.7.2": "npm:@fortawesome/fontawesome-free@6.7.2",
     "@fortawesome/fontawesome-free-6.6.0": "npm:@fortawesome/fontawesome-free@6.6.0"
   }

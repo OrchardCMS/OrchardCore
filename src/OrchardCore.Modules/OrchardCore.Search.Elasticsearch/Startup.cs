@@ -70,6 +70,7 @@ public sealed class Startup : StartupBase
         services.AddDisplayDriver<IndexProfile, ElasticsearchIndexProfileDisplayDriver>();
 
         services.AddIndexProfileHandler<ElasticsearchIndexProfileHandler>();
+        services.AddDataMigration<PermissionMigrations>();
     }
 }
 

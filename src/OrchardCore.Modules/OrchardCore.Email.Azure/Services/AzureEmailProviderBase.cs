@@ -4,6 +4,7 @@ using Azure.Communication.Email;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Email.Azure.Models;
+using OrchardCore.Infrastructure;
 
 namespace OrchardCore.Email.Azure.Services;
 
@@ -97,13 +98,13 @@ public abstract class AzureEmailProviderBase : IEmailProvider
 
     public abstract LocalizedString DisplayName { get; }
 
-    public virtual async Task<EmailResult> SendAsync(MailMessage message)
+    public virtual async Task<Result> SendAsync(MailMessage message)
     {
         ArgumentNullException.ThrowIfNull(message);
 
         if (!_providerOptions.IsEnabled)
         {
-            return EmailResult.FailedResult(S["The Azure Email Provider is disabled."]);
+            return Result.Failed(S["The Azure Email Provider is disabled."]);
         }
 
         var senderAddress = string.IsNullOrWhiteSpace(message.From)
@@ -124,7 +125,11 @@ public abstract class AzureEmailProviderBase : IEmailProvider
             }
             else
             {
-                return EmailResult.FailedResult(nameof(message.From), S["Invalid email address for the sender: '{0}'.", senderAddress]);
+                return Result.Failed(new ResultError
+                {
+                    Key = nameof(message.From),
+                    Message = S["Invalid email address for the sender: '{0}'.", senderAddress],
+                });
             }
         }
 
@@ -133,28 +138,34 @@ public abstract class AzureEmailProviderBase : IEmailProvider
 
         if (errors.Count > 0)
         {
-            return EmailResult.FailedResult(errors);
+            var resultErrors = errors.SelectMany(kvp => kvp.Value.Select(error => new ResultError
+            {
+                Key = kvp.Key,
+                Message = error,
+            }));
+
+            return Result.Failed(resultErrors);
         }
 
         try
         {
             _emailClient ??= new EmailClient(_providerOptions.ConnectionString);
 
-            var emailResult = await _emailClient.SendAsync(WaitUntil.Completed, emailMessage);
+            var result = await _emailClient.SendAsync(WaitUntil.Completed, emailMessage);
 
-            if (emailResult.HasValue)
+            if (result.HasValue)
             {
-                return EmailResult.SuccessResult;
+                return Result.Success();
             }
 
-            return EmailResult.FailedResult(string.Empty, S["An error occurred while sending an email."]);
+            return Result.Failed(S["An error occurred while sending an email."]);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "An error occurred while sending an email using the Azure Email Provider.");
 
             // IMPORTANT: Do not expose ex.Message as it could contain the connection string in a raw format!
-            return EmailResult.FailedResult(string.Empty, S["An error occurred while sending an email."]);
+            return Result.Failed(S["An error occurred while sending an email."]);
         }
     }
 

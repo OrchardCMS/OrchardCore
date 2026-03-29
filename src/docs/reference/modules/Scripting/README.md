@@ -70,6 +70,25 @@ Here is a list of javascript methods provided by Orchard Modules.
 | `base64(String): String`                                | Decodes the specified string from Base64 encoding. Use <https://www.base64-image.de/> to convert your files to base64.   |
 | `html(String): String`                                  | Decodes the specified string from HTML encoding.                                                                         |
 | `gzip(String): String`                                  | Decodes the specified string from gzip/base64 encoding. Use <http://www.txtwizard.net/compression> to gzip your strings. |
+| `protect(purpose: String, value: String): String`       | Protects the specified value using the ASP.NET Core Data Protection API with the given purpose string.                   |
+
+!!! warning
+    The `protect` function is intended for use during development and testing scenarios only. **Storing secrets in recipe files for production environments is not recommended** and should be avoided. Use a secure secret management solution (e.g., Azure Key Vault, environment variables) for production deployments.
+
+**Example:**
+
+```json
+{
+  "steps": [
+    {
+      "name": "Settings",
+      "Properties": {
+        "ApiKey": "[js: protect('MyModule.ApiKey', 'my-secret-value')]"
+      }
+    }
+  ]
+}
+```
 
 #### Content (`OrchardCore.Contents`)
 

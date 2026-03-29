@@ -9,17 +9,9 @@ namespace OrchardCore.Modules;
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
 public class RequireFeaturesAttribute : Attribute
 {
-    public RequireFeaturesAttribute(string featureName)
+    public RequireFeaturesAttribute(params string[] featureNames)
     {
-        RequiredFeatureNames = new string[] { featureName };
-    }
-
-    public RequireFeaturesAttribute(string featureName, params string[] otherFeatureNames)
-    {
-        RequiredFeatureNames = new List<string>(otherFeatureNames)
-        {
-            featureName,
-        };
+        RequiredFeatureNames = featureNames;
     }
 
     /// <summary>

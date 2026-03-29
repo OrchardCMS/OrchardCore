@@ -128,7 +128,7 @@ public sealed class AdminController : Controller
         var viewModel = new EditShapePlacementViewModel
         {
             Creating = true,
-            ShapeType = suggestion,
+            ShapeType = suggestion?.Trim(),
             Nodes = JConvert.SerializeObject(template, JOptions.Indented),
         };
 
@@ -186,6 +186,18 @@ public sealed class AdminController : Controller
 
         ViewData["ReturnUrl"] = returnUrl;
 
+        viewModel.ShapeType = viewModel.ShapeType?.Trim();
+
+        if (string.IsNullOrWhiteSpace(viewModel.ShapeType))
+        {
+            ModelState.AddModelError(nameof(viewModel.ShapeType), S["The Shape type can't be empty."]);
+        }
+
+        if (!ModelState.IsValid)
+        {
+            return View(viewModel);
+        }
+
         if (viewModel.Creating && await _placementsManager.GetShapePlacementsAsync(viewModel.ShapeType) != null)
         {
             // Prevent overriding existing rules on creation.
@@ -201,7 +213,7 @@ public sealed class AdminController : Controller
             var emptyNodesIndexes = Array.FindAll(placementNodes, IsEmpty)
                 .Select(node => Array.IndexOf(placementNodes, node) + 1);
 
-            if (emptyNodesIndexes.Any()) 
+            if (emptyNodesIndexes.Any())
             {
                 await _notifier.ErrorAsync(H["A valid placement must contain either <b>place</b>, <b>shape</b>, <b>wrappers</b> or <b>alternates</b>. Please correct the placements at positions: {0}.", string.Join(", ", emptyNodesIndexes)]);
                 return View(viewModel);

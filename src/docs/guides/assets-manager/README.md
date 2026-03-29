@@ -33,8 +33,8 @@ Alternatively, if you make a lot of changes during development that you want to 
 ## All features
 
 - Build all assets: `yarn build`
-- Build module by name: `yarn build -n asset-name`
-- Build assets by tag: `yarn build -t tagname`
+- Build module by name: `yarn build -n asset-name` (also supports `--name` / `--names`)
+- Build assets by tag: `yarn build -t tagname` (also supports `--tag` / `--tags`)
 - Watch module by name: `yarn watch -n asset-name`.
 - Host with bundler dev server: `yarn host -n asset-name`.
 - Action on multiple assets with `-n` filter: `yarn {build, watch or host} -n asset-name1, asset-name2`  
@@ -238,6 +238,45 @@ Or simply build that Vite app:
 
 ```cmd
 yarn build -n my-vue-app
+```
+
+#### Minification and Source Maps
+
+The asset manager automatically applies the `orchard-minify` Vite plugin during `build` and `watch` commands. This plugin runs after Vite writes the bundle and produces output files that follow the Orchard Core asset convention:
+
+**JavaScript:**
+
+| File | Description |
+|------|-------------|
+| `file.js` | Minified with `sourceMappingURL` reference |
+| `file.min.js` | Minified without `sourceMappingURL` reference |
+| `file.map` | Source map |
+
+**CSS:**
+
+| File | Description |
+|------|-------------|
+| `file.css` | Minified with `sourceMappingURL` reference |
+| `file.min.css` | Minified without `sourceMappingURL` reference |
+| `file.css.map` | Source map |
+
+The `.min.*` files are intended for production use (via `SetUrl()` in `ResourceManifestOptionsConfiguration`) since they do not reference a source map. The non-min files include the source map reference, making them suitable for development and debugging.
+
+**How it works:**
+
+- JavaScript is minified using [esbuild](https://esbuild.github.io/).
+- CSS is minified using [Lightning CSS](https://lightningcss.dev/).
+- The plugin is injected automatically by the asset manager — no configuration is needed in your `vite.config.ts`.
+
+**Important:** Because the plugin disables Vite's built-in minification and handles it in a post-build step, you should **not** set `build.minify` in your `vite.config.ts` when using the asset manager. The plugin will take care of it.
+
+**Resource manifest example:**
+
+```csharp
+_manifest
+    .DefineScript("my-app")
+    .SetUrl("~/MyModule/Scripts/my-app.min.js", "~/MyModule/Scripts/my-app.js")
+    .SetVersion("1.0.0");
 ```
 
 ### Webpack

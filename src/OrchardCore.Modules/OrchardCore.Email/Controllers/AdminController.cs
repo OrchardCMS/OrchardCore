@@ -6,7 +6,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Email.Core.Services;
+using OrchardCore.Email.Services;
 using OrchardCore.Email.ViewModels;
 
 namespace OrchardCore.Email.Controllers;
@@ -86,10 +86,7 @@ public sealed class AdminController : Controller
 
                 foreach (var error in result.Errors)
                 {
-                    foreach (var errorMessage in error.Value)
-                    {
-                        ModelState.AddModelError(error.Key, errorMessage);
-                    }
+                    ModelState.AddModelError(error.Key, error.Message.Value);
                 }
             }
             catch (InvalidEmailProviderException)
