@@ -30,6 +30,7 @@ internal sealed class AzureAISearchIndexProfileDisplayDriver : DisplayDriver<Ind
         var data = Initialize<AzureAISettingsIndexProfileViewModel>("AzureAISearchIndexProfile_Edit", model =>
         {
             model.AnalyzerName = AzureAISearchDefaultOptions.DefaultAnalyzer;
+<<<<<<< HEAD:src/OrchardCore.Modules/OrchardCore.AzureAI/Drivers/AzureAISearchIndexProfileDisplayDriver.cs
 
             if (indexProfile.TryGet<AzureAISearchIndexMetadata>(out var metadata))
             {
@@ -37,11 +38,21 @@ internal sealed class AzureAISearchIndexProfileDisplayDriver : DisplayDriver<Ind
             }
 
             model.Analyzers = azureAIOptions.Analyzers.Select(x => new SelectListItem(x, x));
+=======
+
+            if (indexProfile.TryGet<AzureAISearchIndexMetadata>(out var metadata))
+            {
+                model.AnalyzerName = metadata.AnalyzerName ?? AzureAISearchDefaultOptions.DefaultAnalyzer;
+            }
+
+            model.Analyzers = _azureAIOptions.Analyzers.Select(x => new SelectListItem(x, x));
+>>>>>>> 21e864e1b1 (Reduce Allocation by using `.TryGet<>` method over `.As<>`  (#19072)):src/OrchardCore.Modules/OrchardCore.Search.AzureAI/Drivers/AzureAISearchIndexProfileDisplayDriver.cs
         }).Location("Content:5");
 
         var queryData = Initialize<AzureAISearchDefaultQueryViewModel>("AzureAISearchQuerySettings_Edit", model =>
         {
             model.QueryAnalyzerName = AzureAISearchDefaultOptions.DefaultAnalyzer;
+<<<<<<< HEAD:src/OrchardCore.Modules/OrchardCore.AzureAI/Drivers/AzureAISearchIndexProfileDisplayDriver.cs
             model.Analyzers = azureAIOptions.Analyzers.Select(x => new SelectListItem(x, x));
 
             string[] defaultSearchFields = null;
@@ -52,6 +63,18 @@ internal sealed class AzureAISearchIndexProfileDisplayDriver : DisplayDriver<Ind
                 defaultSearchFields = metadata.DefaultSearchFields;
             }
 
+=======
+            model.Analyzers = _azureAIOptions.Analyzers.Select(x => new SelectListItem(x, x));
+
+            string[] defaultSearchFields = null;
+
+            if (indexProfile.TryGet<AzureAISearchDefaultQueryMetadata>(out var metadata))
+            {
+                model.QueryAnalyzerName = metadata.QueryAnalyzerName ?? AzureAISearchDefaultOptions.DefaultAnalyzer;
+                defaultSearchFields = metadata.DefaultSearchFields;
+            }
+
+>>>>>>> 21e864e1b1 (Reduce Allocation by using `.TryGet<>` method over `.As<>`  (#19072)):src/OrchardCore.Modules/OrchardCore.Search.AzureAI/Drivers/AzureAISearchIndexProfileDisplayDriver.cs
             if (indexProfile.TryGet<AzureAISearchIndexMetadata>(out var indexMetadata) && indexMetadata.IndexMappings?.Count > 0)
             {
                 model.DefaultSearchFields = indexMetadata.IndexMappings

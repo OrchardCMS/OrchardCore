@@ -48,6 +48,13 @@ public sealed class MenuPartDisplayDriver : ContentPartDisplayDriver<MenuPart>
                 : [];
             var invalidMenuItemDescriptions = new List<string>();
 
+<<<<<<< HEAD
+=======
+            var menuItems = part.ContentItem.TryGet<MenuItemsListPart>(out var menuItemsListPart)
+                ? menuItemsListPart.MenuItems
+                : [];
+
+>>>>>>> 21e864e1b1 (Reduce Allocation by using `.TryGet<>` method over `.As<>`  (#19072))
             foreach (var menuItem in menuItems)
             {
                 if (!menuItemContentTypes.Any(c => c.Name == menuItem.ContentType))
@@ -114,7 +121,14 @@ public sealed class MenuPartDisplayDriver : ContentPartDisplayDriver<MenuPart>
             }
 
             menuItem = menuItems.MenuItems[index];
+<<<<<<< HEAD
             _ = menuItem.TryGet<MenuItemsListPart>(out menuItems);
+=======
+            if (!menuItem.TryGet<MenuItemsListPart>(out menuItems))
+            {
+                return null;
+            }
+>>>>>>> 21e864e1b1 (Reduce Allocation by using `.TryGet<>` method over `.As<>`  (#19072))
         }
 
         var newObj = JObject.FromObject(menuItem, JOptions.Default);

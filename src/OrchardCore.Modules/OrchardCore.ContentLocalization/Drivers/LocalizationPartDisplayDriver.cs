@@ -71,6 +71,7 @@ public sealed class LocalizationPartDisplayDriver : ContentPartDisplayDriver<Loc
 
         var supportedCultures = await _localizationService.GetSupportedCulturesAsync();
         var currentCultures = supportedCultures.Where(c => c != model.Culture).Select(culture =>
+<<<<<<< HEAD
         {
             return new LocalizationLinksViewModel()
             {
@@ -79,6 +80,16 @@ public sealed class LocalizationPartDisplayDriver : ContentPartDisplayDriver<Loc
                 ContentItemId = alreadyTranslated.FirstOrDefault(c => GetCulture(c) == culture)?.ContentItemId,
             };
         }).ToList();
+=======
+          {
+              return new LocalizationLinksViewModel()
+              {
+                  IsDeleted = false,
+                  Culture = CultureInfo.GetCultureInfo(culture),
+                  ContentItemId = alreadyTranslated.FirstOrDefault(c => GetCulture(c) == culture)?.ContentItemId,
+              };
+          }).ToList();
+>>>>>>> 21e864e1b1 (Reduce Allocation by using `.TryGet<>` method over `.As<>`  (#19072))
 
         // Content items that have been translated but the culture was removed from the settings page
         var deletedCultureTranslations = alreadyTranslated.Where(c => GetCulture(c) != model.Culture).Select(ci =>
@@ -99,6 +110,7 @@ public sealed class LocalizationPartDisplayDriver : ContentPartDisplayDriver<Loc
         model.ContentItemCultures = currentCultures.Concat(deletedCultureTranslations).ToList();
     }
 
+<<<<<<< HEAD
     private async ValueTask<IEnumerable<ContentItem>> GetAlreadyTranslatedAsync(LocalizationPart localizationPart)
     {
         _alreadyTranslated ??= [];
@@ -118,6 +130,8 @@ public sealed class LocalizationPartDisplayDriver : ContentPartDisplayDriver<Loc
         return items;
     }
 
+=======
+>>>>>>> 21e864e1b1 (Reduce Allocation by using `.TryGet<>` method over `.As<>`  (#19072))
     private static string GetCulture(ContentItem contentItem)
         => contentItem.TryGet<LocalizationPart>(out var localizationPart)
         ? localizationPart.Culture

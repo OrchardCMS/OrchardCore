@@ -200,25 +200,31 @@ public class ContainerService : IContainerService
             {
                 pager.After = containedItems.Last().CreatedUtc.Value.Ticks.ToString();
             }
-            if (containedItems.Count() == pager.PageSize + 1)
-            {
-                containedItems = containedItems.Skip(1);
-                if (enableOrdering)
+                if (containedItems.Count() == pager.PageSize + 1)
                 {
+<<<<<<< HEAD
                     if (containedItems.First().TryGet<ContainedPart>(out var firstContainedPart))
                     {
                         pager.Before = firstContainedPart.Order.ToString();
+=======
+                    containedItems = containedItems.Skip(1);
+                    if (enableOrdering)
+                    {
+                        if (containedItems.First().TryGet<ContainedPart>(out var firstContainedPart))
+                        {
+                            pager.Before = firstContainedPart.Order.ToString();
+                        }
+                    }
+                    else
+                    {
+                        pager.Before = containedItems.First().CreatedUtc.Value.Ticks.ToString();
+>>>>>>> 21e864e1b1 (Reduce Allocation by using `.TryGet<>` method over `.As<>`  (#19072))
                     }
                 }
-                else
-                {
-                    pager.Before = containedItems.First().CreatedUtc.Value.Ticks.ToString();
-                }
-            }
 
-            return containedItems;
-        }
-        else if (pager.After != null)
+                return containedItems;
+            }
+            else if (pager.After != null)
         {
             if (enableOrdering)
             {
