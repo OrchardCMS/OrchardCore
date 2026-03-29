@@ -93,9 +93,9 @@ public class MediaApiController : Controller
 
         return Ok(new FileStoreCapabilitiesDto
         {
+            StorageName = _mediaFileStore.StorageName,
             HasHierarchicalNamespace = _mediaFileStore.Capabilities.HasHierarchicalNamespace,
             SupportsAtomicMove = _mediaFileStore.Capabilities.SupportsAtomicMove,
-            StorageProvider = _mediaFileStore.Capabilities.StorageProvider,
         });
     }
 
@@ -1001,9 +1001,9 @@ public class FileStoreEntryDto
 
 public class FileStoreCapabilitiesDto
 {
+    public string StorageName { get; set; }
     public bool HasHierarchicalNamespace { get; set; }
     public bool SupportsAtomicMove { get; set; }
-    public string StorageProvider { get; set; }
 }
 
 public class PermittedStorageDto

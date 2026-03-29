@@ -100,6 +100,12 @@ public class MediaJSLocalizer(IStringLocalizer<MediaJSLocalizer> S) : IJSLocaliz
                 { "ValidationFileExtensionRequired", S["Invalid file extension"].Value },
                 { "ValidationFilenameRequired", S["File name is required"].Value },
                 { "ValidationFolderRequired", S["A folder must be selected"].Value },
+                // Storage info popover
+                { "StorageInfo", S["Storage Info"].Value },
+                { "StorageProvider", S["Storage Provider"].Value },
+                { "AvailableStorage", S["Available Storage"].Value },
+                { "HierarchicalNamespace", S["Hierarchical Namespace"].Value },
+                { "AtomicMove", S["Atomic Move"].Value },
             };
         }
 

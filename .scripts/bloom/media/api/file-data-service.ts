@@ -109,9 +109,9 @@ export class FileDataService implements IFileDataService {
   async getCapabilities(): Promise<IFileStoreCapabilities> {
     const dto = await this.client.getCapabilities();
     return {
+      storageName: dto.storageName ?? "Unknown",
       hasHierarchicalNamespace: dto.hasHierarchicalNamespace ?? false,
       supportsAtomicMove: dto.supportsAtomicMove ?? false,
-      storageProvider: dto.storageProvider ?? "Unknown",
     };
   }
 

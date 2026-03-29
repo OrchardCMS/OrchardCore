@@ -45,13 +45,27 @@
                   <span>{{ t.Loading || 'Loading...' }}</span>
                 </div>
                 <div class="storage-popover-content" v-else-if="storageCapabilities || storageInfo">
-                  <div class="storage-popover-row" v-if="storageCapabilities">
+                  <div class="storage-popover-row" v-if="storageCapabilities?.storageName">
                     <span class="storage-popover-label">{{ t.StorageProvider || 'Storage Provider' }}</span>
-                    <span>{{ storageCapabilities.storageProvider }}</span>
+                    <span>{{ storageCapabilities.storageName }}</span>
                   </div>
                   <div class="storage-popover-row" v-if="storageInfo">
                     <span class="storage-popover-label">{{ t.AvailableStorage || 'Available Storage' }}</span>
                     <span>{{ storageInfo.text }}</span>
+                  </div>
+                  <div class="storage-popover-row" v-if="storageCapabilities">
+                    <span class="storage-popover-label">{{ t.HierarchicalNamespace || 'Hierarchical Namespace' }}</span>
+                    <span>
+                      <fa-icon :icon="storageCapabilities.hasHierarchicalNamespace ? 'fa-solid fa-check' : 'fa-solid fa-xmark'"
+                        :class="storageCapabilities.hasHierarchicalNamespace ? 'tw:text-green-500' : 'tw:text-red-400'"></fa-icon>
+                    </span>
+                  </div>
+                  <div class="storage-popover-row" v-if="storageCapabilities">
+                    <span class="storage-popover-label">{{ t.AtomicMove || 'Atomic Move' }}</span>
+                    <span>
+                      <fa-icon :icon="storageCapabilities.supportsAtomicMove ? 'fa-solid fa-check' : 'fa-solid fa-xmark'"
+                        :class="storageCapabilities.supportsAtomicMove ? 'tw:text-green-500' : 'tw:text-red-400'"></fa-icon>
+                    </span>
                   </div>
                 </div>
                 <div class="storage-popover-content" v-else>

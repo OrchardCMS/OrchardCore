@@ -1954,7 +1954,7 @@ export interface IDirectoryTreeNodeDto {
 export class FileStoreCapabilitiesDto implements IFileStoreCapabilitiesDto {
     hasHierarchicalNamespace?: boolean;
     supportsAtomicMove?: boolean;
-    storageProvider?: string | undefined;
+    storageName?: string | undefined;
 
     constructor(data?: IFileStoreCapabilitiesDto) {
         if (data) {
@@ -1969,7 +1969,7 @@ export class FileStoreCapabilitiesDto implements IFileStoreCapabilitiesDto {
         if (_data) {
             this.hasHierarchicalNamespace = _data["hasHierarchicalNamespace"];
             this.supportsAtomicMove = _data["supportsAtomicMove"];
-            this.storageProvider = _data["storageProvider"];
+            this.storageName = _data["storageName"];
         }
     }
 
@@ -1984,7 +1984,7 @@ export class FileStoreCapabilitiesDto implements IFileStoreCapabilitiesDto {
         data = typeof data === 'object' ? data : {};
         data["hasHierarchicalNamespace"] = this.hasHierarchicalNamespace;
         data["supportsAtomicMove"] = this.supportsAtomicMove;
-        data["storageProvider"] = this.storageProvider;
+        data["storageName"] = this.storageName;
         return data;
     }
 }
@@ -1992,7 +1992,7 @@ export class FileStoreCapabilitiesDto implements IFileStoreCapabilitiesDto {
 export interface IFileStoreCapabilitiesDto {
     hasHierarchicalNamespace?: boolean;
     supportsAtomicMove?: boolean;
-    storageProvider?: string | undefined;
+    storageName?: string | undefined;
 }
 
 export class FileStoreEntryDto implements IFileStoreEntryDto {
