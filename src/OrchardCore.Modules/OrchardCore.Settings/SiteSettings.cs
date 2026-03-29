@@ -8,7 +8,7 @@ namespace OrchardCore.Settings;
 // When updating class also update SiteSettingsDeploymentSource and SettingsStep.
 public class SiteSettings : DocumentEntity, ISite
 {
-    private readonly object _missing = new();
+    private static readonly object _missing = new();
     private readonly ConcurrentDictionary<string, object> _cache = new();
 
     public string BaseUrl { get; set; }
