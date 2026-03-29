@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using System.Security.Cryptography;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -84,11 +85,6 @@ public class ShapeFactoryGenerator : IIncrementalGenerator
 
     private static bool HasAccessibleParameterlessConstructor(INamedTypeSymbol typeSymbol)
     {
-        if (typeSymbol.StaticConstructors.Length > 0 && typeSymbol.InstanceConstructors.Length == 0)
-        {
-            return false;
-        }
-
         if (typeSymbol.InstanceConstructors.Length == 0)
         {
             return true;
@@ -128,7 +124,7 @@ public class ShapeFactoryGenerator : IIncrementalGenerator
         for (var i = 0; i < distinctTypes.Length; i++)
         {
             var typeName = distinctTypes[i].ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
-            sb.AppendLine($"            global::OrchardCore.DisplayManagement.GeneratedShapeTypeRegistry.Register(typeof({typeName}), typeof(GeneratedShape_{i}));");
+            sb.AppendLine($"            global::OrchardCore.DisplayManagement.GeneratedShapeTypeRegistry.Register(typeof({typeName}), typeof({GetGeneratedTypeName(distinctTypes[i])}));");
         }
 
         sb.AppendLine("        }");
@@ -137,7 +133,7 @@ public class ShapeFactoryGenerator : IIncrementalGenerator
 
         for (var i = 0; i < distinctTypes.Length; i++)
         {
-            GenerateShapeType(sb, distinctTypes[i], i);
+            GenerateShapeType(sb, distinctTypes[i]);
         }
 
         sb.AppendLine("}");
@@ -145,11 +141,12 @@ public class ShapeFactoryGenerator : IIncrementalGenerator
         context.AddSource("ShapeFactoryGenerator.g.cs", SourceText.From(sb.ToString(), Encoding.UTF8));
     }
 
-    private static void GenerateShapeType(StringBuilder sb, INamedTypeSymbol typeSymbol, int index)
+    private static void GenerateShapeType(StringBuilder sb, INamedTypeSymbol typeSymbol)
     {
         var baseTypeName = typeSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
+        var generatedTypeName = GetGeneratedTypeName(typeSymbol);
 
-        sb.AppendLine($"    file sealed class GeneratedShape_{index} : {baseTypeName}, global::OrchardCore.DisplayManagement.IShape, global::OrchardCore.DisplayManagement.IPositioned");
+        sb.AppendLine($"    file sealed class {generatedTypeName} : {baseTypeName}, global::OrchardCore.DisplayManagement.IShape, global::OrchardCore.DisplayManagement.IPositioned");
         sb.AppendLine("    {");
         sb.AppendLine("        private readonly global::OrchardCore.DisplayManagement.Views.ShapeViewModel _shape = new();");
         sb.AppendLine();
@@ -185,5 +182,14 @@ public class ShapeFactoryGenerator : IIncrementalGenerator
         sb.AppendLine("            => _shape.AddAsync(item, position);");
         sb.AppendLine("    }");
         sb.AppendLine();
+    }
+
+    private static string GetGeneratedTypeName(INamedTypeSymbol typeSymbol)
+    {
+        var typeName = typeSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
+        using var sha256 = SHA256.Create();
+        var hash = sha256.ComputeHash(Encoding.UTF8.GetBytes(typeName));
+
+        return $"GeneratedShape_{BitConverter.ToString(hash).Replace("-", "")}";
     }
 }

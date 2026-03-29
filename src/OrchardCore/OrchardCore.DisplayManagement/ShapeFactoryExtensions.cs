@@ -217,7 +217,7 @@ public static class ShapeFactoryExtensions
             return (IShape)Activator.CreateInstance(generatedShapeType);
         }
 
-        throw new InvalidOperationException($"No generated shape type was registered for '{baseType.FullName}'. Ensure the assembly using '{baseType.Name}' is built with OrchardCore source generators.");
+        throw new InvalidOperationException($"No generated shape type was registered for '{baseType.FullName}'. Ensure the project builds successfully with the OrchardCore source generator analyzer enabled so the generated shape wrapper can be registered at startup.");
     }
 }
 
