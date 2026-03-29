@@ -126,7 +126,64 @@ public class ShapeFactoryTests
         Assert.Equal("Baz", foo.Baz);
     }
 
+    [Fact]
+    public async Task CreateStronglyTypedShapeUsesGeneratedShapeType()
+    {
+        var factory = _serviceProvider.GetRequiredService<IShapeFactory>();
+
+        var shape = await factory.CreateAsync<TestShapeViewModel>(model =>
+        {
+            model.Title = "Generated";
+            model.Count = 5;
+        });
+
+        var typedShape = Assert.IsAssignableFrom<TestShapeViewModel>(shape);
+        var generatedShapeType = typedShape.GetType();
+
+        Assert.NotEqual(typeof(TestShapeViewModel), generatedShapeType);
+        Assert.True(GeneratedShapeTypeRegistry.TryGetGeneratedShapeType(typeof(TestShapeViewModel), out var registeredShapeType));
+        Assert.Equal(generatedShapeType, registeredShapeType);
+        Assert.Equal("Generated", typedShape.Title);
+        Assert.Equal(5, typedShape.Count);
+        Assert.Same(shape.Metadata, ((IShape)shape).Metadata);
+    }
+
+    [Fact]
+    public async Task CreateStronglyTypedShapeDelegatesShapeMembers()
+    {
+        var factory = _serviceProvider.GetRequiredService<IShapeFactory>();
+
+        var shape = await factory.CreateAsync<TestShapeViewModel>();
+
+        shape.Id = "shape-id";
+        shape.TagName = "section";
+        shape.Classes.Add("test-class");
+        shape.Attributes["data-test"] = "true";
+        shape.Properties["answer"] = 42;
+
+        await shape.AddAsync(new Shape(), "1");
+
+        var positionedShape = Assert.IsAssignableFrom<IPositioned>(shape);
+
+        positionedShape.Position = "3";
+
+        Assert.Equal("shape-id", shape.Id);
+        Assert.Equal("section", shape.TagName);
+        Assert.Contains("test-class", shape.Classes);
+        Assert.Equal("true", shape.Attributes["data-test"]);
+        Assert.Equal(42, shape.Properties["answer"]);
+        Assert.Equal("3", positionedShape.Position);
+        Assert.Single(shape.Items);
+    }
+
     private sealed class SubShape : Shape
     {
     }
+}
+
+public class TestShapeViewModel
+{
+    public string Title { get; set; }
+
+    public int Count { get; set; }
 }

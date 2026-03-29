@@ -1,5 +1,4 @@
 using System.Collections.Concurrent;
-using Castle.DynamicProxy;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Views;
 
@@ -7,8 +6,7 @@ namespace OrchardCore.DisplayManagement;
 
 public static class ShapeFactoryExtensions
 {
-    private static readonly ConcurrentDictionary<Type, Type> _proxyTypesCache = [];
-    private static readonly ProxyGenerator _proxyGenerator = new();
+    private static readonly ConcurrentDictionary<Type, Type> _generatedShapeTypes = [];
 
     /// <summary>
     /// Creates a new generic shape by copying the properties of an object.
@@ -175,8 +173,29 @@ public static class ShapeFactoryExtensions
         }
     }
 
+    internal static void RegisterGeneratedShapeType(Type baseType, Type generatedShapeType)
+    {
+        ArgumentNullException.ThrowIfNull(baseType);
+        ArgumentNullException.ThrowIfNull(generatedShapeType);
+
+        if (!baseType.IsAssignableFrom(generatedShapeType))
+        {
+            throw new ArgumentException($"'{generatedShapeType}' must inherit from '{baseType}'.", nameof(generatedShapeType));
+        }
+
+        if (!typeof(IShape).IsAssignableFrom(generatedShapeType))
+        {
+            throw new ArgumentException($"'{generatedShapeType}' must implement '{typeof(IShape)}'.", nameof(generatedShapeType));
+        }
+
+        _generatedShapeTypes.TryAdd(baseType, generatedShapeType);
+    }
+
+    internal static bool TryGetGeneratedShapeType(Type baseType, out Type generatedShapeType)
+        => _generatedShapeTypes.TryGetValue(baseType, out generatedShapeType);
+
     /// <summary>
-    /// Creates a dynamic proxy based shape instance for the specified type.
+    /// Creates a source-generated shape instance for the specified type.
     /// </summary>
     /// <param name="baseType">The type of the new shape to create.</param>
     /// <returns>
@@ -187,27 +206,26 @@ public static class ShapeFactoryExtensions
     /// </remarks>
     private static IShape CreateStronglyTypedShape(Type baseType)
     {
-        var shapeType = baseType;
-
-        // Don't generate a proxy for shape types.
-        if (typeof(IShape).IsAssignableFrom(shapeType))
+        // Don't generate a shape wrapper for shape types.
+        if (typeof(IShape).IsAssignableFrom(baseType))
         {
             return (IShape)Activator.CreateInstance(baseType);
         }
 
-        if (_proxyTypesCache.TryGetValue(baseType, out var proxyType))
+        if (TryGetGeneratedShapeType(baseType, out var generatedShapeType))
         {
-            var model = new ShapeViewModel();
-
-            return (IShape)Activator.CreateInstance(proxyType, model, model, Array.Empty<IInterceptor>());
+            return (IShape)Activator.CreateInstance(generatedShapeType);
         }
 
-        var options = new ProxyGenerationOptions();
-        options.AddMixinInstance(new ShapeViewModel());
-        var shape = (IShape)_proxyGenerator.CreateClassProxy(baseType, options);
-
-        _proxyTypesCache.TryAdd(baseType, shape.GetType());
-
-        return shape;
+        throw new InvalidOperationException($"No generated shape type was registered for '{baseType.FullName}'. Ensure the assembly using '{baseType.Name}' is built with OrchardCore source generators.");
     }
+}
+
+public static class GeneratedShapeTypeRegistry
+{
+    public static void Register(Type baseType, Type generatedShapeType)
+        => ShapeFactoryExtensions.RegisterGeneratedShapeType(baseType, generatedShapeType);
+
+    public static bool TryGetGeneratedShapeType(Type baseType, out Type generatedShapeType)
+        => ShapeFactoryExtensions.TryGetGeneratedShapeType(baseType, out generatedShapeType);
 }
