@@ -84,7 +84,10 @@ public class ShapeFactoryGenerator : IIncrementalGenerator
     }
 
     private static ITypeSymbol? GetStateType(InvocationKind invocationKind, ImmutableArray<IParameterSymbol> logicalParameters)
-        => invocationKind is InvocationKind.ActionWithState or InvocationKind.FuncWithState ? logicalParameters[2].Type : null;
+        => (invocationKind is InvocationKind.ActionWithState or InvocationKind.FuncWithState) &&
+            logicalParameters.Length >= 3
+                ? logicalParameters[2].Type
+                : null;
 
     private static InvocationKind? GetInvocationKind(IMethodSymbol targetMethod, ImmutableArray<IParameterSymbol> logicalParameters, INamedTypeSymbol modelType)
     {
@@ -337,51 +340,61 @@ public class ShapeFactoryGenerator : IIncrementalGenerator
         sb.AppendLine("    {");
         sb.AppendLine("        private readonly global::OrchardCore.DisplayManagement.Views.ShapeViewModel _shape = new();");
         sb.AppendLine();
-        sb.AppendLine($"        public {GetNewModifier(modelType, "Metadata")}global::OrchardCore.DisplayManagement.Shapes.ShapeMetadata Metadata => _shape.Metadata;");
+        sb.AppendLine($"        public {GetMemberHidingModifier(modelType, "Metadata")}global::OrchardCore.DisplayManagement.Shapes.ShapeMetadata Metadata => _shape.Metadata;");
         sb.AppendLine();
-        sb.AppendLine($"        public {GetNewModifier(modelType, "Position")}string Position");
+        sb.AppendLine($"        public {GetMemberHidingModifier(modelType, "Position")}string Position");
         sb.AppendLine("        {");
         sb.AppendLine("            get => _shape.Position;");
         sb.AppendLine("            set => _shape.Position = value;");
         sb.AppendLine("        }");
         sb.AppendLine();
-        sb.AppendLine($"        public {GetNewModifier(modelType, "Id")}string Id");
+        sb.AppendLine($"        public {GetMemberHidingModifier(modelType, "Id")}string Id");
         sb.AppendLine("        {");
         sb.AppendLine("            get => _shape.Id;");
         sb.AppendLine("            set => _shape.Id = value;");
         sb.AppendLine("        }");
         sb.AppendLine();
-        sb.AppendLine($"        public {GetNewModifier(modelType, "TagName")}string TagName");
+        sb.AppendLine($"        public {GetMemberHidingModifier(modelType, "TagName")}string TagName");
         sb.AppendLine("        {");
         sb.AppendLine("            get => _shape.TagName;");
         sb.AppendLine("            set => _shape.TagName = value;");
         sb.AppendLine("        }");
         sb.AppendLine();
-        sb.AppendLine($"        public {GetNewModifier(modelType, "Classes")}global::System.Collections.Generic.IList<string> Classes => _shape.Classes;");
+        sb.AppendLine($"        public {GetMemberHidingModifier(modelType, "Classes")}global::System.Collections.Generic.IList<string> Classes => _shape.Classes;");
         sb.AppendLine();
-        sb.AppendLine($"        public {GetNewModifier(modelType, "Attributes")}global::System.Collections.Generic.IDictionary<string, string> Attributes => _shape.Attributes;");
+        sb.AppendLine($"        public {GetMemberHidingModifier(modelType, "Attributes")}global::System.Collections.Generic.IDictionary<string, string> Attributes => _shape.Attributes;");
         sb.AppendLine();
-        sb.AppendLine($"        public {GetNewModifier(modelType, "Properties")}global::System.Collections.Generic.IDictionary<string, object> Properties => _shape.Properties;");
+        sb.AppendLine($"        public {GetMemberHidingModifier(modelType, "Properties")}global::System.Collections.Generic.IDictionary<string, object> Properties => _shape.Properties;");
         sb.AppendLine();
-        sb.AppendLine($"        public {GetNewModifier(modelType, "Items")}global::System.Collections.Generic.IReadOnlyList<global::OrchardCore.DisplayManagement.IPositioned> Items => _shape.Items;");
+        sb.AppendLine($"        public {GetMemberHidingModifier(modelType, "Items")}global::System.Collections.Generic.IReadOnlyList<global::OrchardCore.DisplayManagement.IPositioned> Items => _shape.Items;");
         sb.AppendLine();
-        sb.AppendLine($"        public {GetNewModifier(modelType, "AddAsync", 2)}global::System.Threading.Tasks.ValueTask<global::OrchardCore.DisplayManagement.IShape> AddAsync(object item, string position)");
+        sb.AppendLine($"        public {GetMemberHidingModifier(modelType, "AddAsync", 2)}global::System.Threading.Tasks.ValueTask<global::OrchardCore.DisplayManagement.IShape> AddAsync(object item, string position)");
         sb.AppendLine("            => _shape.AddAsync(item, position);");
         sb.AppendLine("    }");
         sb.AppendLine();
     }
 
-    private static string GetNewModifier(INamedTypeSymbol modelType, string memberName, int parameterCount = 0)
+    private static string GetMemberHidingModifier(INamedTypeSymbol modelType, string memberName, int parameterCount = 0)
         => HasConflictingMember(modelType, memberName, parameterCount) ? "new " : string.Empty;
 
     private static bool HasConflictingMember(INamedTypeSymbol modelType, string memberName, int parameterCount)
-        => modelType.GetMembers(memberName).Any(member =>
-            member switch
+    {
+        for (var current = modelType; current is not null; current = current.BaseType)
+        {
+            if (current.GetMembers(memberName).Any(member =>
+                member switch
+                {
+                    IPropertySymbol => parameterCount == 0,
+                    IMethodSymbol method => method.Parameters.Length == parameterCount,
+                    _ => false,
+                }))
             {
-                IPropertySymbol => parameterCount == 0,
-                IMethodSymbol method => method.Parameters.Length == parameterCount,
-                _ => false,
-            });
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     private static void GenerateInterceptor(StringBuilder sb, InvocationInfo invocation)
     {

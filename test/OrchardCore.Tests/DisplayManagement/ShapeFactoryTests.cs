@@ -204,7 +204,9 @@ public class ShapeFactoryTests
         var typedShape = Assert.IsAssignableFrom<TestShapeViewModel>(shape);
         var generatedShapeType = typedShape.GetType();
 
+        Assert.IsAssignableFrom<IShape>(typedShape);
         Assert.NotEqual(typeof(TestShapeViewModel), generatedShapeType);
+        Assert.Equal(typeof(TestShapeViewModel), generatedShapeType.BaseType);
         Assert.Equal(typeof(ShapeFactoryTests).Assembly, generatedShapeType.Assembly);
         Assert.False(generatedShapeType.Assembly.IsDynamic);
         Assert.Equal("Driver", typedShape.Title);
@@ -224,6 +226,8 @@ public class ShapeFactoryTests
 
     private static async Task<IShape> BuildShapeAsync(ShapeResult shapeResult, IShapeFactory factory)
     {
+        // ShapeResult only populates Shape during the full display pipeline, so this test
+        // invokes the stored builder and initializer directly to verify generated wrapper usage.
         var shapeBuilderField = typeof(ShapeResult).GetField("_shapeBuilder", BindingFlags.Instance | BindingFlags.NonPublic);
         var initializingAsyncField = typeof(ShapeResult).GetField("_initializingAsync", BindingFlags.Instance | BindingFlags.NonPublic);
 
@@ -249,11 +253,12 @@ public class ShapeFactoryTests
     private sealed class TestDisplayDriver : DisplayDriverBase
     {
         public ShapeResult Build()
-            => Initialize<TestShapeViewModel>("TestShapeViewModel_Edit", async model =>
+            => Initialize<TestShapeViewModel>("TestShapeViewModel_Edit", model =>
             {
                 model.Title = "Driver";
                 model.Count = 10;
-                await ValueTask.CompletedTask;
+
+                return ValueTask.CompletedTask;
             });
     }
 }
