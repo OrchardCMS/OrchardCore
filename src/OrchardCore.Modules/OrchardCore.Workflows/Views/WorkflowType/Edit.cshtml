@@ -1,6 +1,9 @@
 @model WorkflowTypeViewModel
+@using OrchardCore.Admin.Models
 @using OrchardCore.Workflows.ViewModels
-
+@{
+    var adminSettings = Site.As<AdminSettings>();
+}
 <zone Name="Title"><h1>@RenderTitleSegments(Model.WorkflowType.Name)</h1></zone>
 
 <zone name="Breadcrumbs">
@@ -12,29 +15,37 @@
     </nav>
 </zone>
 
-<div class="card text-bg-theme mb-3">
-    <div class="card-body">
-        <div class="d-flex justify-content-between">
-            <div>
-                <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#activity-picker" data-picker-title="@T["Available Events"]" data-activity-type="Event">
-                    <i class="fa-solid fa-bolt"></i> @T["Add Event"]
-                </button>
-                <button type="button" id="add-task-button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#activity-picker" data-picker-title="@T["Available Tasks"]" data-activity-type="Task">
-                    <i class="fa-solid fa-bars-progress"></i> @T["Add Task"]
-                </button>
-            </div>
-            <div>
-                <a class="btn btn-sm btn-secondary" asp-action="Export" data-url-af="UnsafeUrl" asp-route-id="@Model.WorkflowType.Id" asp-route-returnUrl="@FullRequestPath">@T["Export"]</a>
-                <a class="btn btn-sm btn-secondary" asp-action="EditProperties" asp-route-id="@Model.WorkflowType.Id" asp-route-returnUrl="@FullRequestPath">@T["Properties"]</a>
-                <a class="btn btn-sm btn-secondary" asp-action="Index" asp-controller="Workflow" asp-route-workflowtypeid="@Model.WorkflowType.Id" asp-route-returnUrl="@FullRequestPath">@T["Instances"] <span class="badge ta-badge">@Model.WorkflowCount</span></a>
+<form asp-action="Edit" method="post" id="workflowEditorForm" class="no-multisubmit">
+
+    <div class="card text-bg-theme mb-3 position-sticky action-bar">
+        <div class="card-body">
+            <div class="d-flex align-items-center row">
+                <div class="col">
+                    <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#activity-picker" data-picker-title="@T["Available Events"]" data-activity-type="Event">
+                        <i class="fa-solid fa-bolt"></i> @T["Add Event"]
+                    </button>
+                    <button type="button" id="add-task-button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#activity-picker" data-picker-title="@T["Available Tasks"]" data-activity-type="Task">
+                        <i class="fa-solid fa-bars-progress"></i> @T["Add Task"]
+                    </button>
+                </div>
+                <div class="col text-end">
+                    <a class="btn btn-sm btn-secondary" asp-action="Export" data-url-af="UnsafeUrl" asp-route-id="@Model.WorkflowType.Id" asp-route-returnUrl="@FullRequestPath">@T["Export"]</a>
+                    <a class="btn btn-sm btn-secondary" asp-action="EditProperties" asp-route-id="@Model.WorkflowType.Id" asp-route-returnUrl="@FullRequestPath">@T["Properties"]</a>
+                    <a class="btn btn-sm btn-secondary" asp-action="Index" asp-controller="Workflow" asp-route-workflowtypeid="@Model.WorkflowType.Id" asp-route-returnUrl="@FullRequestPath">@T["Instances"] <span class="badge ta-badge">@Model.WorkflowCount</span></a>
+                </div>
+                @if (adminSettings.DisplayStickyButtons)
+                {
+                    <div class="col-auto text-end">
+                        <button class="btn btn-success save" type="submit">@T["Save"]</button>
+                        <a class="btn btn-secondary cancel" role="button" asp-route-action="Index">@T["Cancel"]</a>
+                    </div>
+                }
             </div>
         </div>
     </div>
-</div>
 
-<div asp-validation-summary="ModelOnly"></div>
+    <div asp-validation-summary="ModelOnly"></div>
 
-<form asp-action="Edit" method="post" id="workflowEditorForm" class="no-multisubmit">
     <div class="mb-3">
         <div class="workflow-container text-bg-theme">
             <div class="workflow-canvas-container">
@@ -48,12 +59,15 @@
         </div>
         <input asp-for="State" id="workflowStateInput" type="hidden" />
     </div>
-    <div class="mb-3">
+    @if (!adminSettings.DisplayStickyButtons)
+    {
         <div class="mb-3">
-            <button class="btn btn-success save" type="submit">@T["Save"]</button>
-            <a class="btn btn-secondary cancel" role="button" asp-route-action="Index">@T["Cancel"]</a>
+            <div class="mb-3">
+                <button class="btn btn-success save" type="submit">@T["Save"]</button>
+                <a class="btn btn-secondary cancel" role="button" asp-route-action="Index">@T["Cancel"]</a>
+            </div>
         </div>
-    </div>
+    }
 </form>
 
 <!-- Activity Picker Modal -->
