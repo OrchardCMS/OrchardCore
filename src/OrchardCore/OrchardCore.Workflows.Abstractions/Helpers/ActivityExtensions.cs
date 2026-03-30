@@ -14,7 +14,12 @@ public static class ActivityExtensions
 
     public static LocalizedHtmlString GetTitleOrDefault(this IActivity activity, Func<LocalizedHtmlString> defaultTitle)
     {
-        var title = activity.As<ActivityMetadata>().Title;
+        string title = null;
+
+        if (activity.TryGet<ActivityMetadata>(out var metadata))
+        {
+            title = metadata.Title;
+        }
 
         // A string used in LocalizedHtmlString won't be encoded so it needs to be pre-encoded.
         // Passing the title as an argument so it uses the HtmlEncoder when rendered

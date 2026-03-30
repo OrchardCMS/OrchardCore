@@ -15,9 +15,7 @@ public sealed class ContentAutorouteShapeTableProvider : ShapeTableProvider
                 var shape = displaying.Shape;
                 var contentItem = shape.GetProperty<ContentItem>("ContentItem");
 
-                var autoroutePart = contentItem?.As<AutoroutePart>();
-
-                if (autoroutePart != null)
+                if (contentItem is not null && contentItem.TryGet<AutoroutePart>(out var autoroutePart))
                 {
                     var displayType = displaying.Shape.Metadata.DisplayType;
 

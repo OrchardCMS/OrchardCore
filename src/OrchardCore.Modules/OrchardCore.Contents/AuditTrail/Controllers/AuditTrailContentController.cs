@@ -76,8 +76,7 @@ public sealed class AuditTrailContentController : Controller
             return Forbid();
         }
 
-        var auditTrailPart = contentItem.As<AuditTrailPart>();
-        if (auditTrailPart != null)
+        if (contentItem.TryGet<AuditTrailPart>(out var auditTrailPart))
         {
             auditTrailPart.ShowComment = true;
         }

@@ -47,19 +47,18 @@ public sealed class ElasticsearchQuerySource : IQuerySource
 
     public async Task<IQueryResults> ExecuteQueryAsync(Query query, IDictionary<string, object> parameters)
     {
-        var metadata = query.As<ElasticsearchQueryMetadata>();
         var elasticQueryResults = new ElasticsearchQueryResults()
         {
             // We always return an empty collection if the bottom lines queries have no results.
             Items = [],
         };
 
-        var tokenizedContent = await _liquidTemplateManager.RenderStringAsync(metadata?.Template, _javaScriptEncoder, parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions))));
-
-        if (string.IsNullOrEmpty(metadata.Index))
+        if (!query.TryGet<ElasticsearchQueryMetadata>(out var metadata) || string.IsNullOrEmpty(metadata.Index))
         {
             return elasticQueryResults;
         }
+
+        var tokenizedContent = await _liquidTemplateManager.RenderStringAsync(metadata.Template, _javaScriptEncoder, parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions))));
 
         var index = await _indexProfileStore.FindByNameAsync(metadata.Index);
 

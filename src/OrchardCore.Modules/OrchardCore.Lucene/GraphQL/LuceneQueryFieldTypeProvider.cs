@@ -67,8 +67,6 @@ public sealed class LuceneQueryFieldTypeProvider : ISchemaBuilder
                 FieldType fieldType;
 
                 var fieldTypeName = querySchema["fieldTypeName"]?.ToString() ?? query.Name;
-                var metadata = query.As<LuceneQueryMetadata>();
-
                 if (query.ReturnContentItems &&
                     type.StartsWith("ContentItem/", StringComparison.OrdinalIgnoreCase))
                 {
