@@ -141,8 +141,8 @@ public class ShapeFactoryTests
         var generatedShapeType = typedShape.GetType();
 
         Assert.NotEqual(typeof(TestShapeViewModel), generatedShapeType);
-        Assert.True(GeneratedShapeTypeRegistry.TryGetGeneratedShapeType(typeof(TestShapeViewModel), out var registeredShapeType));
-        Assert.Equal(generatedShapeType, registeredShapeType);
+        Assert.Equal(typeof(ShapeFactoryTests).Assembly, generatedShapeType.Assembly);
+        Assert.False(generatedShapeType.Assembly.IsDynamic);
         Assert.Equal("Generated", typedShape.Title);
         Assert.Equal(5, typedShape.Count);
         Assert.Same(shape.Metadata, ((IShape)shape).Metadata);
@@ -176,6 +176,21 @@ public class ShapeFactoryTests
         Assert.Single(shape.Items);
     }
 
+    [Fact]
+    public void CreateStronglyTypedShapeFallsBackToCastleProxy()
+    {
+        var shapeFactoryExtensionsType = typeof(IShapeFactory).Assembly.GetType("OrchardCore.DisplayManagement.ShapeFactoryExtensions", throwOnError: true);
+        var createStronglyTypedShapeMethod = shapeFactoryExtensionsType.GetMethod("CreateStronglyTypedShape", BindingFlags.NonPublic | BindingFlags.Static);
+
+        Assert.NotNull(createStronglyTypedShapeMethod);
+
+        var shape = (IShape)createStronglyTypedShapeMethod.Invoke(null, [typeof(FallbackOnlyShapeViewModel)]);
+        var typedShape = Assert.IsAssignableFrom<FallbackOnlyShapeViewModel>(shape);
+
+        Assert.NotEqual(typeof(FallbackOnlyShapeViewModel), typedShape.GetType());
+        Assert.True(typedShape.GetType().Assembly.IsDynamic);
+    }
+
     private sealed class SubShape : Shape
     {
     }
@@ -186,4 +201,9 @@ public class TestShapeViewModel
     public string Title { get; set; }
 
     public int Count { get; set; }
+}
+
+public class FallbackOnlyShapeViewModel
+{
+    public string Name { get; set; }
 }

@@ -26,4 +26,8 @@
     <ProjectReference Include="..\OrchardCore.Mvc.Core\OrchardCore.Mvc.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Castle.Core" />
+  </ItemGroup>
+
 </Project>
