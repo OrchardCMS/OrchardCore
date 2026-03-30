@@ -77,24 +77,24 @@ public class ShapeFactoryGenerator : IIncrementalGenerator
         return methodSymbol.Parameters;
     }
 
-    private static ITypeSymbol? GetStateType(ImmutableArray<IParameterSymbol> parameters)
-        => parameters.Length == 3 ? parameters[2].Type : null;
+    private static ITypeSymbol? GetStateType(ImmutableArray<IParameterSymbol> logicalParameters)
+        => logicalParameters.Length == 3 ? logicalParameters[2].Type : null;
 
-    private static InvocationKind? GetInvocationKind(ImmutableArray<IParameterSymbol> parameters, INamedTypeSymbol modelType)
+    private static InvocationKind? GetInvocationKind(ImmutableArray<IParameterSymbol> logicalParameters, INamedTypeSymbol modelType)
     {
-        if (parameters.IsDefaultOrEmpty)
+        if (logicalParameters.IsDefaultOrEmpty)
         {
             return null;
         }
 
-        if (parameters.Length == 1)
+        if (logicalParameters.Length == 1)
         {
-            if (IsAction(parameters[0].Type, modelType))
+            if (IsAction(logicalParameters[0].Type, modelType))
             {
                 return InvocationKind.ActionWithoutShapeType;
             }
 
-            if (IsFunc(parameters[0].Type, modelType, null))
+            if (IsFunc(logicalParameters[0].Type, modelType, null))
             {
                 return InvocationKind.FuncWithoutShapeType;
             }
@@ -102,14 +102,14 @@ public class ShapeFactoryGenerator : IIncrementalGenerator
             return null;
         }
 
-        if (parameters.Length == 2 && parameters[0].Type.SpecialType == SpecialType.System_String)
+        if (logicalParameters.Length == 2 && logicalParameters[0].Type.SpecialType == SpecialType.System_String)
         {
-            if (IsAction(parameters[1].Type, modelType))
+            if (IsAction(logicalParameters[1].Type, modelType))
             {
                 return InvocationKind.ActionWithShapeType;
             }
 
-            if (IsFunc(parameters[1].Type, modelType, null))
+            if (IsFunc(logicalParameters[1].Type, modelType, null))
             {
                 return InvocationKind.FuncWithShapeType;
             }
@@ -117,14 +117,14 @@ public class ShapeFactoryGenerator : IIncrementalGenerator
             return null;
         }
 
-        if (parameters.Length == 3 && parameters[0].Type.SpecialType == SpecialType.System_String)
+        if (logicalParameters.Length == 3 && logicalParameters[0].Type.SpecialType == SpecialType.System_String)
         {
-            if (IsAction(parameters[1].Type, modelType, parameters[2].Type))
+            if (IsAction(logicalParameters[1].Type, modelType, logicalParameters[2].Type))
             {
                 return InvocationKind.ActionWithState;
             }
 
-            if (IsFunc(parameters[1].Type, modelType, parameters[2].Type))
+            if (IsFunc(logicalParameters[1].Type, modelType, logicalParameters[2].Type))
             {
                 return InvocationKind.FuncWithState;
             }
@@ -364,15 +364,11 @@ public class ShapeFactoryGenerator : IIncrementalGenerator
                 sb.AppendLine($"        private static global::System.Threading.Tasks.ValueTask<global::OrchardCore.DisplayManagement.IShape> ShapeFactory(global::System.Func<{modelTypeName}, global::System.Threading.Tasks.ValueTask> initializeAsync)");
                 sb.AppendLine("        {");
                 sb.AppendLine($"            var shape = (global::OrchardCore.DisplayManagement.IShape)new {generatedTypeName}();");
+                sb.AppendLine($"            var task = initializeAsync?.Invoke(({modelTypeName})shape) ?? global::System.Threading.Tasks.ValueTask.CompletedTask;");
                 sb.AppendLine();
-                sb.AppendLine("            if (initializeAsync != null)");
+                sb.AppendLine("            if (!task.IsCompletedSuccessfully)");
                 sb.AppendLine("            {");
-                sb.AppendLine($"                var task = initializeAsync(({modelTypeName})shape);");
-                sb.AppendLine();
-                sb.AppendLine("                if (!task.IsCompletedSuccessfully)");
-                sb.AppendLine("                {");
-                sb.AppendLine("                    return ShapeFactoryInterceptorHelpers.Awaited(task, shape);");
-                sb.AppendLine("                }");
+                sb.AppendLine("                return ShapeFactoryInterceptorHelpers.Awaited(task, shape);");
                 sb.AppendLine("            }");
                 sb.AppendLine();
                 sb.AppendLine("            return global::System.Threading.Tasks.ValueTask.FromResult(shape);");
@@ -389,15 +385,11 @@ public class ShapeFactoryGenerator : IIncrementalGenerator
                 sb.AppendLine($"        private static global::System.Threading.Tasks.ValueTask<global::OrchardCore.DisplayManagement.IShape> ShapeFactory(global::System.Func<{modelTypeName}, global::System.Threading.Tasks.ValueTask> initializeAsync)");
                 sb.AppendLine("        {");
                 sb.AppendLine($"            var shape = (global::OrchardCore.DisplayManagement.IShape)new {generatedTypeName}();");
+                sb.AppendLine($"            var task = initializeAsync?.Invoke(({modelTypeName})shape) ?? global::System.Threading.Tasks.ValueTask.CompletedTask;");
                 sb.AppendLine();
-                sb.AppendLine("            if (initializeAsync != null)");
+                sb.AppendLine("            if (!task.IsCompletedSuccessfully)");
                 sb.AppendLine("            {");
-                sb.AppendLine($"                var task = initializeAsync(({modelTypeName})shape);");
-                sb.AppendLine();
-                sb.AppendLine("                if (!task.IsCompletedSuccessfully)");
-                sb.AppendLine("                {");
-                sb.AppendLine("                    return ShapeFactoryInterceptorHelpers.Awaited(task, shape);");
-                sb.AppendLine("                }");
+                sb.AppendLine("                return ShapeFactoryInterceptorHelpers.Awaited(task, shape);");
                 sb.AppendLine("            }");
                 sb.AppendLine();
                 sb.AppendLine("            return global::System.Threading.Tasks.ValueTask.FromResult(shape);");
@@ -415,15 +407,11 @@ public class ShapeFactoryGenerator : IIncrementalGenerator
                 sb.AppendLine($"        private static global::System.Threading.Tasks.ValueTask<global::OrchardCore.DisplayManagement.IShape> ShapeFactory(global::System.Func<{modelTypeName}, {funcStateType}, global::System.Threading.Tasks.ValueTask> initializeAsync, {funcStateType} state)");
                 sb.AppendLine("        {");
                 sb.AppendLine($"            var shape = (global::OrchardCore.DisplayManagement.IShape)new {generatedTypeName}();");
+                sb.AppendLine($"            var task = initializeAsync?.Invoke(({modelTypeName})shape, state) ?? global::System.Threading.Tasks.ValueTask.CompletedTask;");
                 sb.AppendLine();
-                sb.AppendLine("            if (initializeAsync != null)");
+                sb.AppendLine("            if (!task.IsCompletedSuccessfully)");
                 sb.AppendLine("            {");
-                sb.AppendLine($"                var task = initializeAsync(({modelTypeName})shape, state);");
-                sb.AppendLine();
-                sb.AppendLine("                if (!task.IsCompletedSuccessfully)");
-                sb.AppendLine("                {");
-                sb.AppendLine("                    return ShapeFactoryInterceptorHelpers.Awaited(task, shape);");
-                sb.AppendLine("                }");
+                sb.AppendLine("                return ShapeFactoryInterceptorHelpers.Awaited(task, shape);");
                 sb.AppendLine("            }");
                 sb.AppendLine();
                 sb.AppendLine("            return global::System.Threading.Tasks.ValueTask.FromResult(shape);");

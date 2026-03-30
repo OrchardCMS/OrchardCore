@@ -177,19 +177,32 @@ public class ShapeFactoryTests
     }
 
     [Fact]
-    public void CreateStronglyTypedShapeFallsBackToCastleProxy()
+    public async Task CreateStronglyTypedShapeFallsBackToCastleProxy()
     {
+        var factory = _serviceProvider.GetRequiredService<IShapeFactory>();
         var shapeFactoryExtensionsType = typeof(IShapeFactory).Assembly.GetType("OrchardCore.DisplayManagement.ShapeFactoryExtensions", throwOnError: true);
-        var createStronglyTypedShapeMethod = shapeFactoryExtensionsType.GetMethod("CreateStronglyTypedShape", BindingFlags.NonPublic | BindingFlags.Static);
+        var createAsyncMethod = GetCreateAsyncActionOverload(shapeFactoryExtensionsType);
+        var genericCreateAsyncMethod = createAsyncMethod.MakeGenericMethod(typeof(FallbackOnlyShapeViewModel));
 
-        Assert.NotNull(createStronglyTypedShapeMethod);
+        Assert.NotNull(genericCreateAsyncMethod);
 
-        var shape = (IShape)createStronglyTypedShapeMethod.Invoke(null, [typeof(FallbackOnlyShapeViewModel)]);
+        var shape = await (ValueTask<IShape>)genericCreateAsyncMethod.Invoke(null, [factory, null]);
         var typedShape = Assert.IsAssignableFrom<FallbackOnlyShapeViewModel>(shape);
 
         Assert.NotEqual(typeof(FallbackOnlyShapeViewModel), typedShape.GetType());
         Assert.True(typedShape.GetType().Assembly.IsDynamic);
     }
+
+    private static MethodInfo GetCreateAsyncActionOverload(Type shapeFactoryExtensionsType)
+        => shapeFactoryExtensionsType
+            .GetMethods(BindingFlags.Public | BindingFlags.Static)
+            .Single(method => method.Name == "CreateAsync" &&
+                method.IsGenericMethodDefinition &&
+                method.GetGenericArguments().Length == 1 &&
+                method.GetParameters().Length == 2 &&
+                method.GetParameters()[0].ParameterType == typeof(IShapeFactory) &&
+                method.GetParameters()[1].ParameterType.IsGenericType &&
+                method.GetParameters()[1].ParameterType.GetGenericTypeDefinition() == typeof(Action<>));
 
     private sealed class SubShape : Shape
     {
