@@ -1,12 +1,6 @@
-using System.IO;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using Moq;
-using Xunit;
-using OrchardCore.Media.Core;
 using OrchardCore.FileStorage;
+using OrchardCore.Media.Core;
 using OrchardCore.Media.Events;
-using Microsoft.Extensions.Logging;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Media;
 
@@ -111,5 +105,47 @@ public class DefaultMediaFileStoreTests
         handler1.Verify(x => x.MediaCreatingAsync(It.IsAny<MediaCreatingContext>(), inputStream), Times.Once);
         handler2.Verify(x => x.MediaCreatingAsync(It.IsAny<MediaCreatingContext>(), stream1), Times.Once);
         fileStoreMock.Verify(x => x.CreateFileFromStreamAsync("test.txt", stream2, false), Times.Once);
+    }
+
+    [Fact]
+    public async Task CreateFileFromStreamAsync_ValidateAvailableStorageAsync()
+    {
+        // Arrange
+        var fileStoreMock = new Mock<IFileStore>();
+        var loggerMock = new Mock<ILogger<DefaultMediaFileStore>>();
+        var stream1 = new MemoryStream(new byte[100]);
+        var stream2 = new MemoryStream(new byte[200]);
+        var handler = new Mock<IMediaEventHandler>();
+
+        handler
+            .Setup(x => x.MediaPermittedStorageAsync(It.IsAny<MediaPermittedStorageContext>()))
+            .Returns<MediaPermittedStorageContext>(context =>
+            {
+                context.Constrain(150);
+                return Task.CompletedTask;
+            });
+
+        fileStoreMock
+            .Setup(x => x.CreateFileFromStreamAsync("test.txt", stream2, false))
+            .ReturnsAsync("result");
+
+        var store = new DefaultMediaFileStore(
+            fileStoreMock.Object,
+            "",
+            "",
+            [handler.Object],
+            [],
+            loggerMock.Object);
+
+        // Act
+        await store.CreateFileFromStreamAsync("test1.txt", stream1);
+        var exception = await Assert.ThrowsAsync<FileStoreException>(() =>
+            store.CreateFileFromStreamAsync("test2.txt", stream2));
+
+        // Assert
+        const string expectedMessage =
+            "You tried to upload a file that requires 200 B of storage space, but only 150 B is available. Try " +
+            "uploading a file that fits the available space, or delete some unnecessary files.";
+        Assert.Equal(expectedMessage, exception.Message);
     }
 }

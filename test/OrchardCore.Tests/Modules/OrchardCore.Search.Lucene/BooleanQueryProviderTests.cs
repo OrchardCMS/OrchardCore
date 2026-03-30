@@ -18,10 +18,10 @@ public partial class BooleanQueryProviderTests
             ]
         }
         """)!;
-        
+
         RunBoolQueryFilterTest(arrayFilter.AsObject());
     }
-    
+
     [Fact]
     public void BoolQueryFilterAsObjectDoesNotThrow()
     {

@@ -1,5 +1,4 @@
 using Fluid;
-using Microsoft.AspNetCore.Identity;
 using OrchardCore.Liquid;
 using OrchardCore.Tests.Apis.Context;
 using OrchardCore.Users;

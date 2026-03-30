@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Nodes;
 using Dapper;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,6 +12,7 @@ using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Indexing;
 using OrchardCore.Indexing.Core;
 using OrchardCore.Indexing.Core.Models;
+using OrchardCore.Indexing.Models;
 using OrchardCore.Search.Elasticsearch.Core.Models;
 using OrchardCore.Search.Elasticsearch.Core.Services;
 using OrchardCore.Search.Elasticsearch.Models;
@@ -22,8 +24,10 @@ namespace OrchardCore.Search.Elasticsearch.Migrations;
 
 internal sealed class IndexingMigrations : DataMigration
 {
-    private readonly ShellSettings _shellSettings;
+    private const string SearchSettings = nameof(SearchSettings);
+    private const string DefaultIndexProfileName = nameof(DefaultIndexProfileName);
 
+    private readonly ShellSettings _shellSettings;
 
     public IndexingMigrations(ShellSettings shellSettings)
     {
@@ -32,7 +36,7 @@ internal sealed class IndexingMigrations : DataMigration
 
     public int Create()
     {
-        var stepNumber = 1;
+        const int stepNumber = 2;
 
         if (_shellSettings.IsInitializing())
         {
@@ -62,14 +66,8 @@ internal sealed class IndexingMigrations : DataMigration
             await connection.OpenAsync();
             var jsonContent = await connection.QueryFirstOrDefaultAsync<string>(sqlBuilder.ToSqlString());
 
-            if (string.IsNullOrEmpty(jsonContent))
-            {
-                return;
-            }
-
-            var jsonObject = JsonNode.Parse(jsonContent);
-
-            if (jsonObject["ElasticIndexSettings"] is not JsonObject indexesObject)
+            if (string.IsNullOrEmpty(jsonContent) ||
+                JsonNode.Parse(jsonContent)?["ElasticIndexSettings"] is not JsonObject indexesObject)
             {
                 return;
             }
@@ -218,9 +216,22 @@ internal sealed class IndexingMigrations : DataMigration
                     }
                 }
             }
+
+            await UpdateLegacyAnalyzerNameAsync(indexProfileManager);
+
+            await EnsureDefaultSearchSiteSettingAsync(indexProfileManager, siteService, site);
         });
 
         return stepNumber;
+    }
+
+    [SuppressMessage("Performance", "CA1822:Mark members as static")]
+    public int UpdateFrom1()
+    {
+        ShellScope.AddDeferredTask(scope =>
+            UpdateLegacyAnalyzerNameAsync(scope.ServiceProvider.GetRequiredService<IIndexProfileManager>()));
+
+        return 2;
     }
 
     private static string[] GetDefaultSearchFields(JsonNode settings)
@@ -249,4 +260,68 @@ internal sealed class IndexingMigrations : DataMigration
 
         return defaultSearchFields.ToArray();
     }
+
+    private static async Task UpdateLegacyAnalyzerNameAsync(IIndexProfileManager indexProfileManager)
+    {
+        // The name "standardanalyzer" is a legacy used prior OC 1.6 release. It can be removed in future releases.
+        static bool IsLegacyAnalyzerName(string analyzerName) =>
+            analyzerName == "standardanalyzer" || string.IsNullOrEmpty(analyzerName);
+
+        foreach (var indexProfile in await GetElasticsearchIndexesAsync(indexProfileManager))
+        {
+            ElasticsearchDefaultQueryMetadata queryMetadata = null;
+            if (indexProfile.TryGet<ElasticsearchDefaultQueryMetadata>(out var storedQueryMetadata))
+            {
+                queryMetadata = storedQueryMetadata;
+            }
+
+            ElasticsearchIndexMetadata indexMetadata = null;
+            if (indexProfile.TryGet<ElasticsearchIndexMetadata>(out var storedIndexMetadata))
+            {
+                indexMetadata = storedIndexMetadata;
+            }
+
+            if (IsLegacyAnalyzerName(queryMetadata?.QueryAnalyzerName) ||
+                IsLegacyAnalyzerName(indexMetadata?.AnalyzerName))
+            {
+                indexProfile.Alter<ElasticsearchDefaultQueryMetadata>(metadata =>
+                    metadata.QueryAnalyzerName = ElasticsearchConstants.DefaultAnalyzer);
+                indexProfile.Alter<ElasticsearchIndexMetadata>(metadata =>
+                    metadata.AnalyzerName = ElasticsearchConstants.DefaultAnalyzer);
+
+                await indexProfileManager.ResetAsync(indexProfile);
+                await indexProfileManager.UpdateAsync(indexProfile);
+            }
+        }
+    }
+
+    /// <summary>
+    /// In previous versions, if there was one Elasticsearch index it was already treated as the default search index
+    /// even if the site setting was not explicitly saved. Since this is no longer the default behavior, the setting has
+    /// to be applied in a migration if there are applicable indexes.
+    /// </summary>
+    private static async Task EnsureDefaultSearchSiteSettingAsync(
+        IIndexProfileManager indexProfileManager,
+        ISiteService siteService,
+        ISite site)
+    {
+        // Ensure that the site.Properties.SearchSettings object exists so we can safely set its property.
+        if (site.Properties[SearchSettings] is not JsonObject searchSettings)
+        {
+            searchSettings = [];
+            site.Properties[SearchSettings] = searchSettings;
+        }
+
+        // If the site.Properties.SearchSettings.DefaultIndexProfileName setting is missing or empty, and there is at
+        // least one Elasticsearch index in store, set it to the first index.
+        if (string.IsNullOrWhiteSpace((searchSettings[DefaultIndexProfileName] as JsonValue)?.GetValue<string>()) &&
+            (await GetElasticsearchIndexesAsync(indexProfileManager))?.OrderBy(index => index.CreatedUtc).FirstOrDefault() is { } indexProfile)
+        {
+            searchSettings[DefaultIndexProfileName] = indexProfile.Name;
+            await siteService.UpdateSiteSettingsAsync(site);
+        }
+    }
+
+    private static ValueTask<IEnumerable<IndexProfile>> GetElasticsearchIndexesAsync(IIndexProfileManager indexProfileManager) =>
+        indexProfileManager.GetByProviderAsync(ElasticsearchConstants.ProviderName);
 }

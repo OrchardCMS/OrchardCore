@@ -1,6 +1,6 @@
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.Email.Core;
+namespace OrchardCore.Email;
 
 public sealed class Permissions : IPermissionProvider
 {

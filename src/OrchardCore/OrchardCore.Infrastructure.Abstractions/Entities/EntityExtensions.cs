@@ -57,12 +57,13 @@ public static class EntityExtensions
         where T : new()
         => entity.Put(typeof(T).Name, aspect);
 
+    public static bool Remove<T>(this IEntity entity)
+        => entity.Remove(typeof(T).Name);
+
     public static bool TryGet<T>(this IEntity entity, out T aspect)
-        where T : new()
         => entity.TryGet(typeof(T).Name, out aspect);
 
     public static bool TryGet<T>(this IEntity entity, string name, out T aspect)
-        where T : new()
     {
         ArgumentException.ThrowIfNullOrEmpty(name);
 
@@ -76,6 +77,13 @@ public static class EntityExtensions
         aspect = default;
 
         return false;
+    }
+
+    public static bool Remove(this IEntity entity, string name)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(name);
+
+        return entity.Properties.Remove(name);
     }
 
     public static IEntity Put(this IEntity entity, string name, object value)

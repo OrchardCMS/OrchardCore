@@ -2471,7 +2471,7 @@ Vue.component('media-items-table', {
                           :key="media.name">
                              <td class="thumbnail-column">
                                 <div class="img-wrapper">
-                                    <img v-if="media.mime.startsWith('image')" draggable="false" :src="buildMediaUrl(media.url, thumbSize)" />
+                                    <img v-if="media.mime?.startsWith('image')" draggable="false" :src="buildMediaUrl(media.url, thumbSize)" />
                                     <i v-else :class="getfontAwesomeClassNameForFileName(media.name, \'fa-4x\')" :data-mime="media.mime"></i>
                                 </div>
                             </td>
@@ -2569,7 +2569,7 @@ Vue.component('media-items-grid', {
                     v-on:click.stop="toggleSelectionOfMedia(media)"
                     draggable="true" v-on:dragstart="dragStart(media, $event)">
                     <div class="thumb-container" :style="{height: thumbSize +'px'}">
-                        <img v-if="media.mime.startsWith('image')"
+                        <img v-if="media.mime?.startsWith('image')"
                                 :src="buildMediaUrl(media.url, thumbSize)"
                                 :data-mime="media.mime"
                                 :style="{maxHeight: thumbSize +'px', maxWidth: thumbSize +'px'}" />
@@ -2651,7 +2651,8 @@ $(document).on('mediaApp:ready', function () {
             done: function (e, data) {
                 $.each(data.result.files, function (index, file) {
                     if (!file.error) {
-                        mediaApp.mediaItems.push(file)
+                        mediaApp.mediaItems.push(file);
+                        mediaApp.getPermittedStorage();
                     }
                 });
             }
@@ -2735,7 +2736,8 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                     mediaFilter: '',
                     sortBy: '',
                     sortAsc: true,
-                    itemsInPage: []
+                    itemsInPage: [],
+                    permittedStorage: null,
                 },
                 created: function () {
                     var self = this;
@@ -2889,7 +2891,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                             this.selectedFolder = newPrefs.selectedFolder;
                             this.gridView = newPrefs.gridView;
                         }
-                    }
+                    },
                 },
                 watch: {
                     currentPrefs: function (newPrefs) {
@@ -2944,6 +2946,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                                 self.selectedMedias = [];
                                 self.sortBy = '';
                                 self.sortAsc = true;
+                                self.getPermittedStorage();
                             },
                             error: function (error) {
                                 console.log('error loading folder:' + folder.path);
@@ -3007,6 +3010,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                                         },
                                         success: function (data) {
                                             bus.$emit('deleteFolder', folder);
+                                            self.getPermittedStorage();
                                         },
                                         error: function (error) {
                                             console.error(error.responseText);
@@ -3031,6 +3035,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                     },
                     selectAndDeleteMedia: function (media) {
                         this.deleteMedia();
+                        this.getPermittedStorage();
                     },
                     deleteMediaList: function () {
                         var mediaList = this.selectedMedias;
@@ -3064,6 +3069,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                                                 }
                                             }
                                             self.selectedMedias = [];
+                                            self.getPermittedStorage();
                                         },
                                         error: function (error) {
                                             console.error(error.responseText);
@@ -3095,6 +3101,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                                                 bus.$emit('mediaDeleted', media);
                                             }
                                             //self.selectedMedia = null;
+                                            self.getPermittedStorage();
                                         },
                                         error: function (error) {
                                             console.error(error.responseText);
@@ -3139,6 +3146,22 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                             this.sortAsc = true;
                             this.sortBy = newSort;
                         }
+                    },
+                    getPermittedStorage: function () {
+                        const self = this;
+                        $.ajax({
+                            url: document.getElementById('getPermittedStorageUrl').value,
+                            method: 'POST',
+                            data: {
+                                __RequestVerificationToken: $("input[name='__RequestVerificationToken']").val()
+                            },
+                            success: function (data) {
+                                self.permittedStorage = data;
+                            },
+                            error: function (error) {
+                                console.error(error.responseText);
+                            }
+                        });
                     }
                 }
             });
@@ -3256,9 +3279,20 @@ Vue.component('mediaFieldThumbsContainer', {
                 :style="{width: thumbSize + 2 + 'px'}"
                 v-on:click="selectMedia(media)"
                 v-if="!media.isRemoved">
-                    <div v-if="media.mediaPath!== 'not-found'">
+                    <div v-if="media.errorType==='transient'">
+                        <div class="thumb-container flex-column" :style="{height: thumbSize + 'px'}">
+                            <i class="fa-solid fa-triangle-exclamation text-warning d-block" aria-hidden="true"></i>
+                            <span class="text-warning small d-block">{{ T.mediaTemporarilyUnavailable }}</span>
+                        </div>
+                        <div class="media-container-main-item-title card-body">
+                            <a href="javascript:;" class="btn btn-light btn-sm float-end inline-media-button delete-button"
+                                v-on:click.stop="selectAndDeleteMedia(media)"><i class="fa-solid fa-trash" aria-hidden="true"></i></a>
+                            <span class="media-filename card-text small text-warning" :title="media.name">{{ media.name }}</span>
+                        </div>
+                    </div>
+                    <div v-else-if="!media.errorType">
                         <div class="thumb-container" :style="{height: thumbSize + 'px'}" >
-                            <img v-if="media.mime.startsWith('image')"
+                            <img v-if="media.mime?.startsWith('image')"
                                 :src="buildMediaUrl(media.url, thumbSize)"
                                 :data-mime="media.mime"
                                 width="100%"
@@ -3276,7 +3310,6 @@ Vue.component('mediaFieldThumbsContainer', {
                         <div class="thumb-container flex-column" :style="{height: thumbSize + 'px'}">
                             <i class="fa-solid fa-ban text-danger d-block" aria-hidden="true"></i>
                             <span class="text-danger small d-block">{{ T.mediaNotFound }}</span>
-                            <span class="text-danger small d-block text-center">{{ T.discardWarning }}</span>
                         </div>
                         <div class="media-container-main-item-title card-body">
                             <a href="javascript:;" class="btn btn-light btn-sm float-end inline-media-button delete-button"
@@ -3312,6 +3345,7 @@ Vue.component('mediaFieldThumbsContainer', {
         // retrieving localized strings from view
         self.T.mediaNotFound = $('#t-media-not-found').val();
         self.T.discardWarning = $('#t-discard-warning').val();
+        self.T.mediaTemporarilyUnavailable = $('#t-media-temporarily-unavailable').val();
         self.T.noImages = $('#t-no-images').val();
     },
     mounted: function () {
@@ -3418,9 +3452,6 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
                         return JSON.stringify(initialPaths);
                     }
                     this.mediaItems.forEach(function (x) {
-                        if (x.mediaPath === 'not-found') {
-                            return;
-                        }
                         mediaPaths.push({ path: x.mediaPath, isRemoved: x.isRemoved, isNew: x.isNew, mediaText: x.mediaText, anchor: x.anchor, attachedFileName: x.attachedFileName });
                     });
                     return JSON.stringify(mediaPaths);
@@ -3452,7 +3483,13 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
                                 },
                                 error: function (error) {
                                     console.log(JSON.stringify(error));
-                                    items.splice(i, 1, { name: x.path, mime: '', mediaPath: 'not-found', mediaText: '', anchor: { x: 0.5, y: 0.5 }, attachedFileName: x.attachedFileName });
+                                    var item;
+                                    if (error.status === 404) {
+                                        item = { name: x.path, mime: '', mediaPath: x.path, errorType: 'not-found', mediaText: x.mediaText, anchor: x.anchor, attachedFileName: x.attachedFileName };
+                                    } else {
+                                        item = { name: x.path, mime: '', mediaPath: x.path, errorType: 'transient', mediaText: x.mediaText, anchor: x.anchor, attachedFileName: x.attachedFileName };
+                                    }
+                                    items.splice(i, 1, item);
                                     if (items.length === ++length) {
                                         items.forEach(function (x) {
                                             self.mediaItems.push(x);
@@ -3732,24 +3769,26 @@ Vue.component("mediaFieldGalleryListItem", {
     template:
     /*html*/
     `
-        <li class="list-group-item d-flex p-0 overflow-hidden align-items-center" v-if="!media.isRemoved" :class="media.mediaPath=='not-found' ? 'text-danger' : ''">
+        <li class="list-group-item d-flex p-0 overflow-hidden align-items-center" v-if="!media.isRemoved" :class="media.errorType==='not-found' ? 'text-danger' : (media.errorType==='transient' ? 'text-warning' : '')">
             <div class="media-preview flex-shrink-0">
                 <img
-                    v-if="media.mime.startsWith('image')"
+                    v-if="media.mime?.startsWith('image') && !media.errorType"
                     :src="buildMediaUrl(media.url, media.anchor)"
                     :data-mime="media.mime"
                     class="w-100 object-fit-scale"
                 />
-                <i v-else-if="media.mediaPath=='not-found'" :title="media.name" class="fa-solid fa-triangle-exclamation"></i>
+                <i v-else-if="media.errorType==='transient'" :title="media.name" class="fa-solid fa-triangle-exclamation"></i>
+                <i v-else-if="media.errorType==='not-found'" :title="media.name" class="fa-solid fa-triangle-exclamation"></i>
                 <i v-else :class="$parent.getfontAwesomeClassNameForFileName(media.name, 'fa-4x card-text')" :data-mime="media.mime"></i>
             </div>
             <div class="me-auto flex-shrink-1">
-                <span v-if="media.mediaPath=='not-found'" class="media-filename card-text small">{{ $parent.T.mediaNotFound }} - {{ $parent.T.discardWarning }}</span>
+                <span v-if="media.errorType==='transient'" class="media-filename card-text small">{{ $parent.T.mediaTemporarilyUnavailable }}</span>
+                <span v-else-if="media.errorType==='not-found'" class="media-filename card-text small">{{ $parent.T.mediaNotFound }}</span>
                 <span v-else class="media-filename card-text small" :title="media.name">{{ media.name }}</span>
             </div>
             <div class="media-field-gallery-list-actions flex-shrink-0">
                 <a
-                    v-show="allowMediaText && media.mediaPath!=='not-found'"
+                    v-show="allowMediaText && !media.errorType"
                     class="btn btn-light btn-sm inline-media-button view-button"
                     v-on:click.prevent.stop="$parent.showMediaTextModal(media)"
                     href="javascript:;"
@@ -3764,7 +3803,7 @@ Vue.component("mediaFieldGalleryListItem", {
                 </a>
                 <a
                     href="javascript:;"
-                    v-show="allowAnchors && media.mime.startsWith('image') && media.mediaPath!=='not-found'"
+                    v-show="allowAnchors && media.mime?.startsWith('image') && !media.errorType"
                     v-on:click="$parent.showAnchorModal(media)"
                     class="btn btn-light btn-sm inline-media-button view-button"
                     title="Set anchor"
@@ -3774,7 +3813,7 @@ Vue.component("mediaFieldGalleryListItem", {
                 <a
                     :href="media.url"
                     target="_blank"
-                    v-show="media.mediaPath!=='not-found'"
+                    v-show="!media.errorType"
                     class="btn btn-light btn-sm inline-media-button view-button"
                     title="View media"
                 >
@@ -3813,23 +3852,26 @@ Vue.component("mediaFieldGalleryCardItem", {
     /*html*/
     `
         <li class="media-field-gallery-item" v-if="!media.isRemoved">
-            <div class="card ratio ratio-1x1 overflow-hidden" :class="media.mediaPath=='not-found' ? 'text-danger border-danger' : ''">
+            <div class="card ratio ratio-1x1 overflow-hidden" :class="media.errorType==='not-found' ? 'text-danger border-danger' : (media.errorType==='transient' ? 'text-warning border-warning' : '')">
                 <div class="d-flex flex-column h-100">
                     <div class="flex-grow-1 media-preview d-flex justify-content-center align-items-center">
                         <div class="update-media" v-if="!$parent.allowMultiple" v-on:click="$parent.showMediaModal">
                             + Media Library
                         </div>
-                        <div class="image-wrapper" v-if="media.mime.startsWith('image')">
+                        <div class="image-wrapper" v-if="media.mime?.startsWith('image') && !media.errorType">
                             <img
                                 :src="buildMediaUrl(media.url)"
                                 :data-mime="media.mime"
                                 class="w-100 h-100 object-fit-scale"
                             />
                         </div>
-                        <div v-else-if="media.mediaPath=='not-found'" class="d-flex flex-column justify-content-center align-items-center h-100 bg-body file-icon not-found" :title="media.name">
+                        <div v-else-if="media.errorType==='transient'" class="d-flex flex-column justify-content-center align-items-center h-100 bg-body file-icon" :title="media.name">
+                            <i class="fa-solid fa-triangle-exclamation fa-2x card-text"></i>
+                            <span class="card-text small pt-2" :title="media.name">{{ $parent.T.mediaTemporarilyUnavailable }}</span>
+                        </div>
+                        <div v-else-if="media.errorType==='not-found'" class="d-flex flex-column justify-content-center align-items-center h-100 bg-body file-icon not-found" :title="media.name">
                             <i class="fa-solid fa-triangle-exclamation fa-2x card-text'"></i>
                             <span class="card-text small pt-2" :title="media.name">{{ $parent.T.mediaNotFound }}</span>
-                            <span class="card-text small pt-2 px-2 text-center" :title="media.name">{{ $parent.T.discardWarning }}</span>
                         </div>
                         <div v-else class="d-flex flex-column justify-content-center align-items-center h-100 bg-body file-icon">
                             <i :class="$parent.getfontAwesomeClassNameForFileName(media.name, 'fa-4x card-text')" :data-mime="media.mime"></i>
@@ -3839,7 +3881,7 @@ Vue.component("mediaFieldGalleryCardItem", {
 
                     <div class="media-field-gallery-card-actions flex-shrink-0">
                         <a
-                            v-show="allowMediaText && media.mediaPath!=='not-found'"
+                            v-show="allowMediaText && !media.errorType"
                             class="btn btn-light btn-sm inline-media-button view-button"
                             v-on:click.prevent.stop="$parent.showMediaTextModal(media)"
                             href="javascript:;"
@@ -3854,7 +3896,7 @@ Vue.component("mediaFieldGalleryCardItem", {
                         </a>
                         <a
                             href="javascript:;"
-                            v-show="allowAnchors && media.mime.startsWith('image') && media.mediaPath!=='not-found'"
+                            v-show="allowAnchors && media.mime?.startsWith('image') && !media.errorType"
                             v-on:click="$parent.showAnchorModal(media)"
                             class="btn btn-light btn-sm inline-media-button view-button"
                             title="Set anchor"
@@ -3864,7 +3906,7 @@ Vue.component("mediaFieldGalleryCardItem", {
                         <a
                             :href="media.url"
                             target="_blank"
-                            v-show="media.mediaPath!=='not-found'"
+                            v-show="!media.errorType"
                             class="btn btn-light btn-sm inline-media-button view-button"
                             title="View media"
                         >
@@ -4008,6 +4050,7 @@ Vue.component("mediaFieldGalleryContainer", {
         // retrieving localized strings from view
         self.T.mediaNotFound = $("#t-media-not-found").val();
         self.T.discardWarning = $("#t-discard-warning").val();
+        self.T.mediaTemporarilyUnavailable = $("#t-media-temporarily-unavailable").val();
         self.T.noImages = $("#t-no-images").val();
     },
     mounted: function mounted() {
@@ -4222,9 +4265,6 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple,
                         return JSON.stringify(initialPaths);
                     }
                     this.mediaItems.forEach(function (x) {
-                        if (x.mediaPath === 'not-found') {
-                            return;
-                        }
                         mediaPaths.push({ path: x.mediaPath, mediaText: x.mediaText, anchor: x.anchor });
                     });
                     return JSON.stringify(mediaPaths);
@@ -4262,7 +4302,13 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple,
                                 },
                                 error: function (error) {
                                     console.log(error);
-                                    items.splice(i, 1, { name: x.path, mime: '', mediaPath: 'not-found', mediaText: '', anchor: { x: 0, y: 0 } });
+                                    var item;
+                                    if (error.status === 404) {
+                                        item = { name: x.path, mime: '', mediaPath: x.path, errorType: 'not-found', mediaText: x.mediaText, anchor: x.anchor };
+                                    } else {
+                                        item = { name: x.path, mime: '', mediaPath: x.path, errorType: 'transient', mediaText: x.mediaText, anchor: x.anchor };
+                                    }
+                                    items.splice(i, 1, item);
                                     if (items.length === ++length) {
                                         items.forEach(function (x) {
                                             self.mediaItems.push(x);
