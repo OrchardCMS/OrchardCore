@@ -1,8 +1,10 @@
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Theming;
+using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Tests.Stubs;
 
@@ -193,6 +195,22 @@ public class ShapeFactoryTests
         Assert.True(typedShape.GetType().Assembly.IsDynamic);
     }
 
+    [Fact]
+    public async Task DisplayDriverInitializeUsesGeneratedShapeType()
+    {
+        var factory = _serviceProvider.GetRequiredService<IShapeFactory>();
+        var shapeResult = new TestDisplayDriver().Build();
+        var shape = await BuildShapeAsync(shapeResult, factory);
+        var typedShape = Assert.IsAssignableFrom<TestShapeViewModel>(shape);
+        var generatedShapeType = typedShape.GetType();
+
+        Assert.NotEqual(typeof(TestShapeViewModel), generatedShapeType);
+        Assert.Equal(typeof(ShapeFactoryTests).Assembly, generatedShapeType.Assembly);
+        Assert.False(generatedShapeType.Assembly.IsDynamic);
+        Assert.Equal("Driver", typedShape.Title);
+        Assert.Equal(10, typedShape.Count);
+    }
+
     private static MethodInfo GetCreateAsyncActionOverload(Type shapeFactoryExtensionsType)
         => shapeFactoryExtensionsType
             .GetMethods(BindingFlags.Public | BindingFlags.Static)
@@ -204,8 +222,39 @@ public class ShapeFactoryTests
                 method.GetParameters()[1].ParameterType.IsGenericType &&
                 method.GetParameters()[1].ParameterType.GetGenericTypeDefinition() == typeof(Action<>));
 
+    private static async Task<IShape> BuildShapeAsync(ShapeResult shapeResult, IShapeFactory factory)
+    {
+        var shapeBuilderField = typeof(ShapeResult).GetField("_shapeBuilder", BindingFlags.Instance | BindingFlags.NonPublic);
+        var initializingAsyncField = typeof(ShapeResult).GetField("_initializingAsync", BindingFlags.Instance | BindingFlags.NonPublic);
+
+        Assert.NotNull(shapeBuilderField);
+        Assert.NotNull(initializingAsyncField);
+
+        var shapeBuilder = Assert.IsType<Func<IBuildShapeContext, ValueTask<IShape>>>(shapeBuilderField.GetValue(shapeResult));
+        var initializingAsync = (Func<IShape, Task>)initializingAsyncField.GetValue(shapeResult);
+        var shape = await shapeBuilder(new BuildDisplayContext(new Shape(), "Detail", string.Empty, factory, null, null));
+
+        if (initializingAsync is not null)
+        {
+            await initializingAsync(shape);
+        }
+
+        return shape;
+    }
+
     private sealed class SubShape : Shape
     {
+    }
+
+    private sealed class TestDisplayDriver : DisplayDriverBase
+    {
+        public ShapeResult Build()
+            => Initialize<TestShapeViewModel>("TestShapeViewModel_Edit", async model =>
+            {
+                model.Title = "Driver";
+                model.Count = 10;
+                await ValueTask.CompletedTask;
+            });
     }
 }
 
