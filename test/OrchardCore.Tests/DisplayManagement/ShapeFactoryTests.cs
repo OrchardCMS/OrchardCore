@@ -145,6 +145,7 @@ public class ShapeFactoryTests
         Assert.NotEqual(typeof(TestShapeViewModel), generatedShapeType);
         Assert.Equal(typeof(ShapeFactoryTests).Assembly, generatedShapeType.Assembly);
         Assert.False(generatedShapeType.Assembly.IsDynamic);
+        Assert.DoesNotContain(generatedShapeType.GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public), field => field.FieldType == typeof(ShapeViewModel));
         Assert.Equal("Generated", typedShape.Title);
         Assert.Equal(5, typedShape.Count);
         Assert.Same(shape.Metadata, ((IShape)shape).Metadata);
