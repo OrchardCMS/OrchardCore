@@ -11,7 +11,7 @@ public static class EntityExtensions
     /// <param name="entity">The <see cref="IEntity"/>.</param>
     /// <typeparam name="T">The type of the property to extract.</typeparam>
     /// <returns>A new instance of the requested type if the property was not found.</returns>
-    [Obsolete("Use TryGet<> or GetOrCreate<> instead.")]
+    [Obsolete("Use TryGet<T> or GetOrCreate<T> instead.")]
     public static T As<T>(this IEntity entity)
         where T : new()
         => entity.As<T>(typeof(T).Name);
