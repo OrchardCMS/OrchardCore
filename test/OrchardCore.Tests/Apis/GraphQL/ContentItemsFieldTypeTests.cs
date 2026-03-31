@@ -10,6 +10,7 @@ using OrchardCore.ContentManagement.GraphQL.Options;
 using OrchardCore.ContentManagement.GraphQL.Queries;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Data;
+using OrchardCore.Entities;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Extensions;
 using OrchardCore.Json;
@@ -631,12 +632,23 @@ public class AnimalIndexProvider : IndexProvider<ContentItem>
         context.For<AnimalIndex>()
             .Map(contentItem =>
             {
-                return new AnimalIndex
+                if (contentItem.TryGet<Animal>(out var animal))
                 {
-                    Name = contentItem.GetOrCreate<Animal>() != null
-                        ? contentItem.GetOrCreate<Animal>().Name
-                        : contentItem.GetOrCreate<AnimalPart>().Name,
-                };
+                    return new AnimalIndex
+                    {
+                        Name = animal.Name,
+                    };
+                }
+
+                if (contentItem.TryGet<AnimalPart>(out var animalPart))
+                {
+                    return new AnimalIndex
+                    {
+                        Name = animalPart.Name,
+                    };
+                }
+
+                return null;
             });
     }
 }
@@ -654,24 +666,25 @@ public class AnimalTraitsIndexProvider : IndexProvider<ContentItem>
         context.For<AnimalTraitsIndex>()
             .Map(contentItem =>
             {
-                var animal = contentItem.GetOrCreate<Animal>();
-
-                if (animal != null)
+                if (contentItem.TryGet<Animal>(out var animal))
                 {
                     return new AnimalTraitsIndex
                     {
-                        IsHappy = contentItem.GetOrCreate<Animal>().IsHappy,
-                        IsScary = contentItem.GetOrCreate<Animal>().IsScary,
+                        IsHappy = animal.IsHappy,
+                        IsScary = animal.IsScary,
                     };
                 }
 
-                var animalPartSuffix = contentItem.GetOrCreate<AnimalPart>();
-
-                return new AnimalTraitsIndex
+                if (contentItem.TryGet<AnimalPart>(out var animalPart))
                 {
-                    IsHappy = animalPartSuffix.IsHappy,
-                    IsScary = animalPartSuffix.IsScary,
-                };
+                    return new AnimalTraitsIndex
+                    {
+                        IsHappy = animalPart.IsHappy,
+                        IsScary = animalPart.IsScary,
+                    };
+                }
+
+                return null;
             });
     }
 }
@@ -688,12 +701,23 @@ public class AnimalLocalizationIndexProvider : IndexProvider<ContentItem>
         context.For<AnimalLocalizationIndex>()
             .Map(contentItem =>
             {
-                var animal = contentItem.GetOrCreate<Animal>();
-
-                return new AnimalLocalizationIndex
+                if (contentItem.TryGet<Animal>(out var animal))
                 {
-                    Culture = animal?.Culture ?? contentItem.GetOrCreate<AnimalPart>().Culture,
-                };
+                    return new AnimalLocalizationIndex
+                    {
+                        Culture = animal.Culture,
+                    };
+                }
+
+                if (contentItem.TryGet<AnimalPart>(out var animalPart))
+                {
+                    return new AnimalLocalizationIndex
+                    {
+                        Culture = animalPart.Culture,
+                    };
+                }
+
+                return null;
             });
     }
 }
