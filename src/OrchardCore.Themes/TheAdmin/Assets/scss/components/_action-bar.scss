@@ -11,7 +11,8 @@
     display: none;
     position: fixed;
     bottom: 0;
-    width: 100%;
+    left: var(--oc-start-navigation-width-when-compact, 48);
+    right: 0;
     z-index: var(--oc-action-bar-zindex);
     border-radius: 0 !important;
     border-left: none !important;
