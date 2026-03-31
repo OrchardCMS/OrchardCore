@@ -374,7 +374,7 @@ public class ShapeFactoryGenerator : IIncrementalGenerator
         sb.AppendLine("            {");
         sb.AppendLine("                _items ??= [];");
         sb.AppendLine();
-        sb.AppendLine("                if (!_sorted)");
+        sb.AppendLine("                if (!_sorted && _items.Count > 0)");
         sb.AppendLine("                {");
         sb.AppendLine("                    _items = global::System.Linq.Enumerable.ToList(global::System.Linq.Enumerable.OrderBy(_items, static x => x, global::OrchardCore.DisplayManagement.Zones.FlatPositionComparer.Instance));");
         sb.AppendLine("                    _sorted = true;");
