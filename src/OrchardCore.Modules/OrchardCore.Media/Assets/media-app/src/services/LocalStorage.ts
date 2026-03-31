@@ -7,6 +7,8 @@ const { selectedDirectory, rootDirectory, setSelectedDirectory } = useGlobals();
 
 const smallThumbs: Ref<boolean> = ref(false);
 const gridView: Ref<boolean> = ref(false);
+const pageSize: Ref<number> = ref(10);
+const largeThumbs: Ref<boolean> = ref(false);
 
 export function useLocalStorage() {
   const localStorageData = computed<ILocalStorageData>({
@@ -15,6 +17,8 @@ export function useLocalStorage() {
         smallThumbs: smallThumbs.value,
         selectedDirectory: selectedDirectory.value,
         gridView: gridView.value,
+        pageSize: pageSize.value,
+        largeThumbs: largeThumbs.value,
       };
     },
     set(localStorageData) {
@@ -25,6 +29,8 @@ export function useLocalStorage() {
       smallThumbs.value = localStorageData.smallThumbs;
       setSelectedDirectory(localStorageData.selectedDirectory);
       gridView.value = localStorageData.gridView;
+      pageSize.value = localStorageData.pageSize ?? 10;
+      largeThumbs.value = localStorageData.largeThumbs ?? false;
     },
   });
 
@@ -45,5 +51,5 @@ export function useLocalStorage() {
     localStorage.setItem(LS_ID, JSON.stringify(data));
   });
 
-  return { setLocalStorage, localStorageData, smallThumbs, gridView };
+  return { setLocalStorage, localStorageData, smallThumbs, gridView, pageSize, largeThumbs };
 }

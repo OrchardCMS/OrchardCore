@@ -73,6 +73,38 @@
                 </div>
               </div>
             </div>
+            <div class="tw:relative tw:px-3">
+              <a href="javascript:void(0)" class="settings-btn" :title="t.Settings || 'Settings'"
+                @click="toggleSettingsPopover">
+                <fa-icon icon="fa-solid fa-gear"></fa-icon>
+              </a>
+              <div v-if="showSettingsPopover" class="settings-popover">
+                <div class="settings-popover-content">
+                  <div class="settings-popover-row">
+                    <label class="settings-popover-label" for="settings-page-size">{{ t.ItemsPerPage || 'Items per page' }}</label>
+                    <select id="settings-page-size" class="ma-input settings-select" v-model.number="pageSize">
+                      <option :value="10">10</option>
+                      <option :value="20">20</option>
+                      <option :value="50">50</option>
+                      <option :value="100">100</option>
+                    </select>
+                  </div>
+                  <div class="settings-popover-row">
+                    <span class="settings-popover-label">{{ t.ThumbnailSize || 'Thumbnail size' }}</span>
+                    <div class="ma-btn-group">
+                      <button type="button" class="ma-btn ma-btn-sm" :class="{ 'ma-btn-primary': !largeThumbs, 'ma-btn-light': largeThumbs }"
+                        @click="largeThumbs = false">
+                        {{ t.Normal || 'Normal' }}
+                      </button>
+                      <button type="button" class="ma-btn ma-btn-sm" :class="{ 'ma-btn-primary': largeThumbs, 'ma-btn-light': !largeThumbs }"
+                        @click="largeThumbs = true">
+                        {{ t.Large || 'Large' }}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </nav>
           <div class="action-bar tw:py-3 tw:px-4 tw:flex tw:flex-wrap">
             <div class="tw:mr-auto">
@@ -124,7 +156,7 @@
             :filtered-file-items="itemsInPage" :selected-files="selectedFiles"
             v-show="!isLoadingFiles && filteredFileItems.length > 0 && !gridView">
           </router-view>
-          <ol class="file-items-grid" v-show="!isLoadingFiles && filteredFileItems.length > 0 && gridView">
+          <ol class="file-items-grid" :class="{ 'large-thumbs': largeThumbs }" v-show="!isLoadingFiles && filteredFileItems.length > 0 && gridView">
             <li v-for="file in itemsInPage" :key="file.filePath"
               :class="{ selected: isFileSelected(file) }"
               class="card" draggable="true"
@@ -179,7 +211,7 @@
           </div>
         </div>
         <div v-show="filteredFileItems.length > 0" class="file-container-footer tw:p-3 tw:pb-0">
-          <pager :source-items="filteredFileItems" :key="selectedDirectory.directoryPath"></pager>
+          <pager :source-items="filteredFileItems" :page-size="pageSize" :key="selectedDirectory.directoryPath"></pager>
         </div>
       </div>
     </div>
@@ -306,7 +338,21 @@ getFileLibraryStoreAsync().then(() => {
   });
 });
 
-const { setLocalStorage, gridView } = useLocalStorage();
+const { setLocalStorage, gridView, pageSize, largeThumbs } = useLocalStorage();
+
+const showSettingsPopover = ref(false);
+const toggleSettingsPopover = () => {
+  showSettingsPopover.value = !showSettingsPopover.value;
+};
+const handleSettingsClickOutside = (e: MouseEvent) => {
+  if (showSettingsPopover.value &&
+    !(e.target as HTMLElement)?.closest('.settings-btn, .settings-popover')) {
+    showSettingsPopover.value = false;
+  }
+};
+import { onMounted, onUnmounted } from "vue";
+onMounted(() => document.addEventListener('click', handleSettingsClickOutside));
+onUnmounted(() => document.removeEventListener('click', handleSettingsClickOutside));
 const { canManage } = usePermissions();
 if (props.signalrEnabled === "true") {
   useSignalR();

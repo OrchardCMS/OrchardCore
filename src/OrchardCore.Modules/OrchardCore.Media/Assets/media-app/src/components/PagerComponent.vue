@@ -55,13 +55,12 @@ const props = defineProps({
   sourceItems: {
     type: Array<IFileLibraryItemDto>,
     required: true
+  },
+  pageSize: {
+    type: Number,
+    default: 10
   }
 });
-
-/**
- * Number of items to show per page
- */
-const pageSize = ref(10);
 
 /**
  * The current page number, 0-indexed
@@ -119,7 +118,7 @@ const total = computed(() => {
  * The total number of pages
  */
 const totalPages = computed(() => {
-  let pages = Math.ceil(total.value / pageSize.value);
+  let pages = Math.ceil(total.value / props.pageSize);
   return pages > 0 ? pages : 1;
 });
 
@@ -169,8 +168,8 @@ const canDoLast = computed(() => {
 // That event will be handled by the parent file app to display the items in the page.
 // this logic will not run if the computed property is not used in the template. We use a dummy "data-computed-trigger" attribute for that.
 const itemsInCurrentPage = computed(() => {
-  let start = pageSize.value * current.value;
-  let end = start + pageSize.value;
+  let start = props.pageSize * current.value;
+  let end = start + props.pageSize;
   let result = props.sourceItems.slice(start, end);
 
   emit("PagerEvent", result);
