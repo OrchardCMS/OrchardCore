@@ -67,6 +67,27 @@
                         :class="storageCapabilities.supportsAtomicMove ? 'tw:text-green-500' : 'tw:text-red-400'"></fa-icon>
                     </span>
                   </div>
+                  <div class="storage-popover-row">
+                    <span class="storage-popover-label">{{ t.SignalR || 'SignalR' }}</span>
+                    <span>
+                      <fa-icon :icon="isSignalREnabled ? 'fa-solid fa-check' : 'fa-solid fa-xmark'"
+                        :class="isSignalREnabled ? 'tw:text-green-500' : 'tw:text-red-400'"></fa-icon>
+                    </span>
+                  </div>
+                  <div class="storage-popover-row">
+                    <span class="storage-popover-label">{{ t.TusUploads || 'TUS Uploads' }}</span>
+                    <span>
+                      <fa-icon :icon="isTusEnabled ? 'fa-solid fa-check' : 'fa-solid fa-xmark'"
+                        :class="isTusEnabled ? 'tw:text-green-500' : 'tw:text-red-400'"></fa-icon>
+                    </span>
+                  </div>
+                  <div class="storage-popover-row">
+                    <span class="storage-popover-label">{{ t.Scalable || 'Scalable' }}</span>
+                    <span>
+                      <fa-icon :icon="isScalable ? 'fa-solid fa-check' : 'fa-solid fa-xmark'"
+                        :class="isScalable ? 'tw:text-green-500' : 'tw:text-red-400'"></fa-icon>
+                    </span>
+                  </div>
                 </div>
                 <div class="storage-popover-content" v-else>
                   <span>{{ t.Unavailable || 'Unavailable' }}</span>
@@ -294,6 +315,10 @@ const props = defineProps({
     type: String,
     default: "false",
   },
+  signalrBackplane: {
+    type: String,
+    default: "false",
+  },
   debugEnabled: {
     type: String,
     default: "false",
@@ -353,6 +378,10 @@ getFileLibraryStoreAsync().then(() => {
 const { setLocalStorage, gridView, pageSize, largeThumbs } = useLocalStorage();
 
 const thumbSize = 480;
+const isTusEnabled = computed(() => props.tusEnabled === "true");
+const isSignalREnabled = computed(() => props.signalrEnabled === "true");
+const hasSignalRBackplane = computed(() => props.signalrBackplane === "true");
+const isScalable = computed(() => isTusEnabled.value && isSignalREnabled.value && hasSignalRBackplane.value);
 
 const showSettingsPopover = ref(false);
 const toggleSettingsPopover = () => {
