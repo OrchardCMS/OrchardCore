@@ -31,7 +31,7 @@ Vue.component('mediaFieldThumbsContainer', {
                     </div>
                     <div v-else-if="!media.errorType">
                         <div class="thumb-container" :style="{height: thumbSize + 'px'}" >
-                            <img v-if="media.mime.startsWith('image')"
+                            <img v-if="media.mime?.startsWith('image')"
                                 :src="buildMediaUrl(media.url, thumbSize)"
                                 :data-mime="media.mime"
                                 width="100%"

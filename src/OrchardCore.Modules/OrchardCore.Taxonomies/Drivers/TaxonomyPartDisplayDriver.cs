@@ -52,7 +52,7 @@ public sealed class TaxonomyPartDisplayDriver : ContentPartDisplayDriver<Taxonom
 
         if (!string.IsNullOrWhiteSpace(model.Hierarchy))
         {
-            var originalTaxonomyItems = part.ContentItem.As<TaxonomyPart>();
+            var originalTaxonomyItems = part.ContentItem.GetOrCreate<TaxonomyPart>();
 
             var newHierarchy = JsonNode.Parse(model.Hierarchy).AsArray();
 

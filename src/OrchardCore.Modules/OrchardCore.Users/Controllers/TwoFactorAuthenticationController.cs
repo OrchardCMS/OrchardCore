@@ -219,9 +219,9 @@ public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationB
         var model = new TwoFactorAuthenticationViewModel();
         await PopulateModelAsync(user, providers, model);
 
-        if (user is User u)
+        if (user is User u && u.TryGet<TwoFactorPreference>(out var preference))
         {
-            model.PreferredProvider = u.As<TwoFactorPreference>().DefaultProvider;
+            model.PreferredProvider = preference.DefaultProvider;
         }
 
         return View(model);
@@ -442,9 +442,9 @@ public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationB
         if (!validProviderRequested && user is User u)
         {
             // At this point, no or invalid provider was given. Check the user preference and load the default provider if available.
-            var preferences = u.As<TwoFactorPreference>();
-
-            if (!string.IsNullOrEmpty(preferences.DefaultProvider) && providers.Contains(preferences.DefaultProvider))
+            if (u.TryGet<TwoFactorPreference>(out var preferences) &&
+                !string.IsNullOrEmpty(preferences.DefaultProvider) &&
+                providers.Contains(preferences.DefaultProvider))
             {
                 defaultProvider = preferences.DefaultProvider;
             }
