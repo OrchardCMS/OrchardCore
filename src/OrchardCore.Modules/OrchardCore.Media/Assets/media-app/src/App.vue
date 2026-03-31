@@ -250,6 +250,10 @@ const props = defineProps({
     type: String,
     default: "",
   },
+  signalrEnabled: {
+    type: String,
+    default: "false",
+  },
 })
 
 const {
@@ -304,7 +308,9 @@ getFileLibraryStoreAsync().then(() => {
 
 const { setLocalStorage, gridView } = useLocalStorage();
 const { canManage } = usePermissions();
-useSignalR();
+if (props.signalrEnabled === "true") {
+  useSignalR();
+}
 
 const { storageInfo, storageCapabilities, showStoragePopover, storageLoading, toggleStoragePopover } = useStoragePopover(props.basePath);
 

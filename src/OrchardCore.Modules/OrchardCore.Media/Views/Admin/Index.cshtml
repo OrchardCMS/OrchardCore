@@ -1,11 +1,14 @@
 @using OrchardCore.Localization
 @using OrchardCore.Environment.Shell
 @using OrchardCore.Media.Services
+@using OrchardCore.Media.Hubs
+@using Microsoft.AspNetCore.SignalR
 @inject ShellSettings ShellSettings
 @{
     var jsLocalizations = Orchard.GetJSLocalizations("media-app");
     var siteId = ShellSettings.TenantId;
     var tusEnabled = Context.RequestServices.IsMediaTusEnabled();
+    var signalrEnabled = Context.RequestServices.GetService<IHubContext<MediaHub>>() != null;
 }
 
 <script type="module" asp-name="media" version="2" at="Foot"></script>
@@ -23,6 +26,7 @@
         tus-enabled="@(tusEnabled ? "true" : "false")"
         tus-endpoint-url="@Href("~/api/media/tus")"
         tus-file-info-url="@Href("~/api/media/TusFileInfo")"
+        signalr-enabled="@(signalrEnabled ? "true" : "false")"
     >
     </media-app>
 </div>
