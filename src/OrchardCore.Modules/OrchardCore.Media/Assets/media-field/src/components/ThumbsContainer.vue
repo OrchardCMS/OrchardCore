@@ -107,6 +107,7 @@ import { computed, ref, toRaw } from "vue";
 import type { IMediaFieldItem } from "../interfaces/MediaFieldTypes";
 import { getIconClassForFilename } from "../services/FontAwesomeThumbnails";
 import { getTranslations } from "@bloom/helpers/localizations";
+import { buildMediaUrl } from "@bloom/media/utils";
 
 const props = defineProps<{
   mediaItems: IMediaFieldItem[];
@@ -155,8 +156,4 @@ function onDragEnd() {
   draggedItem.value = null;
 }
 
-function buildMediaUrl(url: string, size: number): string {
-  const separator = url.indexOf("?") === -1 ? "?" : "&";
-  return `${url}${separator}width=${size}&height=${size}`;
-}
 </script>

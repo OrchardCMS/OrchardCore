@@ -162,7 +162,7 @@
               class="card" draggable="true"
               @dragstart="dragFileStart(file, $event)">
               <div class="thumb-container" @click.stop="toggleFile(file)">
-                <img v-if="isImage(file)" :src="file.url" :alt="file.name" loading="lazy" />
+                <img v-if="isImage(file)" :src="buildMediaUrl(file.url!, thumbSize)" :alt="file.name" loading="lazy" />
                 <div v-else class="file-icon-placeholder">
                   <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path
@@ -216,7 +216,7 @@
       </div>
     </div>
     <notification-toast />
-    <upload-toast />
+    <upload-toast :tus-enabled="tusEnabled === 'true'" />
     <ModalsContainer />
   </div>
 </template>
@@ -250,7 +250,7 @@ import { getTranslations, setTranslations } from "@bloom/helpers/localizations";
 import { useFileListFiltering } from "./composables/useFileListFiltering";
 import { useBreadcrumbs } from "./composables/useBreadcrumbs";
 import { useStoragePopover } from "./composables/useStoragePopover";
-import { downloadSelectedFiles, getFileExtension, isFileSelected } from "./services/Utils";
+import { downloadSelectedFiles, getFileExtension, isFileSelected, buildMediaUrl } from "./services/Utils";
 import FileMenu from "./components/FileMenu.vue";
 
 const props = defineProps({
@@ -270,6 +270,14 @@ const props = defineProps({
     type: Number,
     required: true,
   },
+  maxFileSize: {
+    type: Number,
+    default: 0,
+  },
+  allowedExtensions: {
+    type: String,
+    default: "",
+  },
   tusEnabled: {
     type: String,
     default: "false",
@@ -283,6 +291,10 @@ const props = defineProps({
     default: "",
   },
   signalrEnabled: {
+    type: String,
+    default: "false",
+  },
+  debugEnabled: {
     type: String,
     default: "false",
   },
@@ -340,6 +352,8 @@ getFileLibraryStoreAsync().then(() => {
 
 const { setLocalStorage, gridView, pageSize, largeThumbs } = useLocalStorage();
 
+const thumbSize = 480;
+
 const showSettingsPopover = ref(false);
 const toggleSettingsPopover = () => {
   showSettingsPopover.value = !showSettingsPopover.value;
@@ -366,6 +380,9 @@ const { showConfirmModal } = useConfirmModal();
 
 useFileUpload({
   maxUploadChunkSize: props.maxUploadChunkSize,
+  maxFileSize: props.maxFileSize,
+  allowedExtensions: props.allowedExtensions,
+  debugEnabled: props.debugEnabled === "true",
   tusEnabled: props.tusEnabled === "true",
   tusEndpointUrl: props.tusEndpointUrl,
   tusFileInfoUrl: props.tusFileInfoUrl,

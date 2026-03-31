@@ -131,6 +131,7 @@ public class MediaJSLocalizer(IStringLocalizer<MediaJSLocalizer> S) : IJSLocaliz
                 { "uploads", S["Uploads"].Value },
                 { "errors", S["Errors"].Value },
                 { "clearErrors", S["Clear Errors"].Value },
+                { "fileTooLarge", S["This file exceeds the maximum upload size of {0}"].Value },
                 { "selectMedia", S["Select Media"].Value },
                 { "loadingMediaBrowser", S["Loading media browser..."].Value },
             };

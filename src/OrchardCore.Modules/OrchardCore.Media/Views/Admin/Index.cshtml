@@ -1,4 +1,6 @@
 @inject ShellSettings ShellSettings
+@inject IOptions<MediaOptions> MediaOptions
+@inject IHostEnvironment HostEnvironment
 @{
     var jsLocalizations = Orchard.GetJSLocalizations("media-app");
     var siteId = ShellSettings.TenantId;
@@ -18,10 +20,13 @@
         base-path="@Href("~")"
         upload-files-url="@Href("~/api/media/Upload")"
         :max-upload-chunk-size="0"
+        :max-file-size="@MediaOptions.Value.MaxFileSize"
+        allowed-extensions="@string.Join(',', MediaOptions.Value.AllowedFileExtensions)"
         tus-enabled="@(tusEnabled ? "true" : "false")"
         tus-endpoint-url="@Href("~/api/media/tus")"
         tus-file-info-url="@Href("~/api/media/TusFileInfo")"
         signalr-enabled="@(signalrEnabled ? "true" : "false")"
+        debug-enabled="@(HostEnvironment.IsDevelopment() ? "true" : "false")"
     >
     </media-app>
 </div>

@@ -4,7 +4,7 @@ import { IFileLibraryItemDto } from "@bloom/media/interfaces";
 import { useGlobals } from "./Globals";
 import { getTranslations } from "@bloom/helpers/localizations";
 
-export { humanFileSize, getFileExtension, printDateTime } from "@bloom/media/utils";
+export { humanFileSize, getFileExtension, printDateTime, buildMediaUrl } from "@bloom/media/utils";
 
 const t = getTranslations();
 const { setIsDownloading, selectedFiles, setSelectedFiles, setSelectedAll } = useGlobals();

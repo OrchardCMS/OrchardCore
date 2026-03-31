@@ -108,6 +108,10 @@ function readAttachedConfig(el: HTMLElement): IAttachedFieldConfig {
     maxUploadChunkSize: dataset.maxUploadChunkSize
       ? parseInt(dataset.maxUploadChunkSize, 10)
       : undefined,
+    maxFileSize: dataset.maxFileSize
+      ? parseInt(dataset.maxFileSize, 10)
+      : undefined,
+    debugEnabled: dataset.debugEnabled === "true" || import.meta.env.DEV,
     tusEnabled: dataset.tusEnabled === "true",
     tusEndpointUrl: dataset.tusEndpointUrl || "",
     tusFileInfoUrl: dataset.tusFileInfoUrl || "",

@@ -35,10 +35,13 @@ if (culture == "fr") {
   uppyLocale = Spanish;
 }
 
-const uppy = new Uppy({ logger: debugLogger, locale: uppyLocale });
+const uppy = new Uppy({ locale: uppyLocale });
 
 export interface IFileUploadModel {
   maxUploadChunkSize: number;
+  maxFileSize: number;
+  allowedExtensions: string;
+  debugEnabled: boolean;
   tusEnabled: boolean;
   tusEndpointUrl: string;
   tusFileInfoUrl: string;
@@ -66,8 +69,6 @@ const setUppyUrl = (): string => {
   if (xhrUploadPlugin) {
     xhrUploadPlugin.setOptions({
       endpoint: result,
-      fieldName: "files",
-      bundle: true,
     });
   }
 
@@ -80,6 +81,21 @@ const setUppyUrl = (): string => {
  * Otherwise, falls back to @uppy/xhr-upload (default behavior).
  */
 export const useFileUpload = (model: IFileUploadModel): void => {
+  if (model.debugEnabled || import.meta.env.DEV) {
+    uppy.setOptions({ logger: debugLogger });
+  }
+
+  const restrictions: Record<string, unknown> = {};
+  if (model.maxFileSize > 0) {
+    restrictions.maxFileSize = model.maxFileSize;
+  }
+  if (model.allowedExtensions) {
+    restrictions.allowedFileTypes = model.allowedExtensions.split(",");
+  }
+  if (Object.keys(restrictions).length > 0) {
+    uppy.setOptions({ restrictions });
+  }
+
   const isTus = model.tusEnabled && !!model.tusEndpointUrl;
 
   if (!isTus) {
@@ -195,7 +211,8 @@ export const useFileUpload = (model: IFileUploadModel): void => {
         uppy.use(XHRUpload, {
           endpoint: setUppyUrl(),
           fieldName: "files",
-          bundle: true,
+          bundle: false,
+          limit: 5,
           shouldRetry: () => false,
           onAfterResponse(xhr) {
             const statuses = [400, 401, 403, 500];

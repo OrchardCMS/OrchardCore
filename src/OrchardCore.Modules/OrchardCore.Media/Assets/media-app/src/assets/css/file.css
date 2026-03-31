@@ -982,9 +982,9 @@ ol.file-items-grid .thumb-container {
 }
 
 ol.file-items-grid .thumb-container img {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
   background: repeating-conic-gradient(var(--media-thumb-checker-color) 0% 25%, transparent 0% 50%) 50% / 10px 10px;
 }
 

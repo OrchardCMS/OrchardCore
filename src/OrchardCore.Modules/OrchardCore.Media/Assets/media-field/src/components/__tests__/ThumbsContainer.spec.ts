@@ -156,7 +156,7 @@ describe("ThumbsContainer", () => {
     });
     const wrapper = mountComponent({ mediaItems: [item], thumbSize: 200 });
     const img = wrapper.find("img");
-    expect(img.attributes("src")).toBe("/media/img.jpg?width=200&height=200");
+    expect(img.attributes("src")).toBe("/media/img.jpg?width=200");
   });
 
   it("emits deleteMedia on trash click for transient error item", async () => {

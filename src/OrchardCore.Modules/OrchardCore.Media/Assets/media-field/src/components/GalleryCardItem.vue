@@ -99,6 +99,7 @@
 import type { IMediaFieldItem } from "../interfaces/MediaFieldTypes";
 import { getIconClassForFilename } from "../services/FontAwesomeThumbnails";
 import { getTranslations } from "@bloom/helpers/localizations";
+import { buildMediaUrl } from "@bloom/media/utils";
 
 const props = defineProps<{
   media: IMediaFieldItem;
@@ -121,8 +122,4 @@ const t = getTranslations();
 
 const thumbSize = props.size === "sm" ? 120 : 240;
 
-function buildMediaUrl(url: string, size: number): string {
-  const sep = url.indexOf("?") === -1 ? "?" : "&";
-  return `${url}${sep}width=${size}&height=${size}`;
-}
 </script>

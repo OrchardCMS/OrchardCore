@@ -1,6 +1,8 @@
 import { ref, toRaw, type Ref } from "vue";
-import Uppy from "@uppy/core";
+import Uppy, { debugLogger } from "@uppy/core";
 import Tus from "@uppy/tus";
+import { getTranslations } from "@bloom/helpers/localizations";
+import { humanFileSize } from "@bloom/media/utils";
 
 export interface IUploadFileEntry {
   name: string;
@@ -13,10 +15,13 @@ export interface IFieldUploadConfig {
   uploadAction: string;
   tempUploadFolder: string;
   maxUploadChunkSize?: number;
+  maxFileSize?: number;
+  debugEnabled?: boolean;
   tusEnabled?: boolean;
   tusEndpointUrl?: string;
   tusFileInfoUrl?: string;
 }
+
 
 /**
  * Per-instance upload state and logic for attached media fields.
@@ -49,7 +54,10 @@ export function useFieldUpload(config: IFieldUploadConfig) {
     file: File,
     entry: IUploadFileEntry
   ): Promise<UploadedFileResult | null> {
-    const uppy = new Uppy({ autoProceed: false });
+    const uppy = new Uppy({
+      autoProceed: false,
+      logger: config.debugEnabled ? debugLogger : undefined,
+    });
     uppy.use(Tus, {
       endpoint: config.tusEndpointUrl!,
       retryDelays: [0, 1000, 3000, 5000],
@@ -182,6 +190,21 @@ export function useFieldUpload(config: IFieldUploadConfig) {
     const errors: string[] = [];
 
     for (const file of fileList) {
+      if (config.maxFileSize && config.maxFileSize > 0 && file.size > config.maxFileSize) {
+        const t = getTranslations();
+        const sizeStr = humanFileSize(config.maxFileSize);
+        const message = t.fileTooLarge.replace("{0}", sizeStr);
+        const entry: IUploadFileEntry = {
+          name: file.name,
+          percentage: 0,
+          errorMessage: message,
+          success: false,
+        };
+        files.value.push(entry);
+        errors.push(`${file.name}: ${entry.errorMessage}`);
+        continue;
+      }
+
       const entry: IUploadFileEntry = {
         name: file.name,
         percentage: 0,

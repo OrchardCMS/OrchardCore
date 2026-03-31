@@ -216,6 +216,7 @@ public sealed class Startup : StartupBase
         services.AddScoped<AttachedMediaFieldFileService, AttachedMediaFieldFileService>();
         services.AddScoped<IContentHandler, AttachedMediaFieldContentHandler>();
         services.AddScoped<IModularTenantEvents, TempDirCleanerService>();
+        services.AddScoped<IModularTenantEvents, MediaConfigurationValidator>();
         services.AddDataMigration<Migrations>();
         services.AddRecipeExecutionStep<MediaStep>();
 

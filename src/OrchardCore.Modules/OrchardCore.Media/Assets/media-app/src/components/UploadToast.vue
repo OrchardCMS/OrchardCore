@@ -28,7 +28,7 @@
         :class="{ 'is-error': f.errorMessage, 'is-success': f.success }">
         <div class="tw:flex tw:justify-between tw:items-center">
           <span class="upload-toast-filename" :title="f.errorMessage || f.name">{{ f.name }}</span>
-          <span v-if="!f.errorMessage && !f.success" class="tw:flex tw:items-center tw:gap-1">
+          <span v-if="!f.errorMessage && !f.success && props.tusEnabled" class="tw:flex tw:items-center tw:gap-1">
             <button class="ma-btn ma-btn-link ma-btn-sm tw:p-0" @click="togglePause(f)"
               :title="f.paused ? t.ResumeUpload : t.PauseUpload">
               <fa-icon :icon="f.paused ? 'fa-solid fa-play' : 'fa-solid fa-pause'"></fa-icon>
@@ -67,6 +67,10 @@
 import { ref, computed } from 'vue'
 import { useEventBus } from '../services/UseEventBus'
 import { getTranslations } from '@bloom/helpers/localizations'
+
+const props = defineProps<{
+  tusEnabled: boolean;
+}>();
 
 const { on, emit } = useEventBus();
 const t = getTranslations();

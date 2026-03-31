@@ -2,6 +2,7 @@
 
 @inject IOptions<MediaOptions> MediaOptions
 @inject IDataLocalizer D
+@inject IHostEnvironment HostEnvironment
 
 @{
     var tusEnabled = Context.RequestServices.IsMediaTusEnabled();
@@ -38,6 +39,8 @@
              data-upload-action="@Url.Action("Upload", "Admin", new { area = "OrchardCore.Media" })"
              data-temp-upload-folder="@Model.TempUploadFolder"
              data-max-upload-chunk-size="@MediaOptions.Value.MaxUploadChunkSize"
+             data-max-file-size="@MediaOptions.Value.MaxFileSize"
+             data-debug-enabled="@(HostEnvironment.IsDevelopment() ? "true" : "false")"
              data-media-app-translations="@mediaAppTranslationsJson"
              data-base-path="@Url.Content("~/")"
              data-upload-files-url="@Url.Content("~/api/media/Upload")"

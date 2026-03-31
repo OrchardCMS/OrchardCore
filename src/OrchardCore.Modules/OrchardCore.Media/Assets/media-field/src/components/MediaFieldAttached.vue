@@ -180,6 +180,8 @@ export interface IAttachedFieldConfig {
   uploadAction: string;
   tempUploadFolder: string;
   maxUploadChunkSize?: number;
+  maxFileSize?: number;
+  debugEnabled?: boolean;
   tusEnabled?: boolean;
   tusEndpointUrl?: string;
   tusFileInfoUrl?: string;
@@ -197,6 +199,8 @@ const uploadConfig: IFieldUploadConfig = {
   uploadAction: props.config.uploadAction,
   tempUploadFolder: props.config.tempUploadFolder,
   maxUploadChunkSize: props.config.maxUploadChunkSize,
+  maxFileSize: props.config.maxFileSize,
+  debugEnabled: props.config.debugEnabled,
   tusEnabled: props.config.tusEnabled,
   tusEndpointUrl: props.config.tusEndpointUrl,
   tusFileInfoUrl: props.config.tusFileInfoUrl,

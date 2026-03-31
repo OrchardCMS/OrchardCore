@@ -99,6 +99,7 @@
 import type { IMediaFieldItem } from "../interfaces/MediaFieldTypes";
 import { getIconClassForFilename } from "../services/FontAwesomeThumbnails";
 import { getTranslations } from "@bloom/helpers/localizations";
+import { buildMediaUrl } from "@bloom/media/utils";
 
 defineProps<{
   media: IMediaFieldItem;
@@ -118,8 +119,4 @@ defineEmits<{
 
 const t = getTranslations();
 
-function buildMediaUrl(url: string, size: number): string {
-  const sep = url.indexOf("?") === -1 ? "?" : "&";
-  return `${url}${sep}width=${size}&height=${size}`;
-}
 </script>
