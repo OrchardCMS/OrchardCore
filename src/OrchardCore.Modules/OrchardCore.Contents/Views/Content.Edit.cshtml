@@ -68,14 +68,16 @@
 
 @if (Model.MobileActions != null)
 {
-    <div class="card text-bg-theme action-bar-mobile">
-        <div class="card-body p-2">
-            @await DisplayAsync(Model.MobileActions)
+    <div class="action-bar-mobile d-md-none">
+        <div class="card text-bg-theme">
+            <div class="card-body p-2">
+                @await DisplayAsync(Model.MobileActions)
 
-            @if (hasReturnUrl)
-            {
-                <a class="btn btn-secondary cancel mb-1" role="button" href="@returnUrl">@T["Cancel"]</a>
-            }
+                @if (hasReturnUrl)
+                {
+                    <a class="btn btn-secondary cancel mb-1" role="button" href="@returnUrl">@T["Cancel"]</a>
+                }
+            </div>
         </div>
     </div>
 }
