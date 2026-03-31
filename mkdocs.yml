@@ -205,6 +205,7 @@ nav:
               - Liquid: reference/modules/Liquid/README.md
               - Media:
                   - Media: reference/modules/Media/README.md
+                  - Media Gallery: reference/modules/Media/MediaGallery.md
                   - Media Slugify: reference/modules/Media.Slugify/README.md
                   - Media Amazon S3: reference/modules/Media.AmazonS3/README.md
                   - Media Azure: reference/modules/Media.Azure/README.md
