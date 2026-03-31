@@ -4,16 +4,15 @@ using Xunit;
 
 namespace OrchardCore.Tests.Functional.Tests.Cms;
 
-[Collection(CmsTestCollection.Name)]
-public sealed class MediaTusUploadTests : IAsyncLifetime
+public sealed class MediaTusUploadTests : IClassFixture<SaasFixture>, IAsyncLifetime
 {
     private const int SmallFileSize = 1 * 1024 * 1024;   // 1 MB
     private const int LargeFileSize = 10 * 1024 * 1024;  // 10 MB
 
-    private readonly CmsSetupFixture _fixture;
+    private readonly SaasFixture _fixture;
     private TenantInfo _tenant;
 
-    public MediaTusUploadTests(CmsSetupFixture fixture)
+    public MediaTusUploadTests(SaasFixture fixture)
     {
         _fixture = fixture;
     }
