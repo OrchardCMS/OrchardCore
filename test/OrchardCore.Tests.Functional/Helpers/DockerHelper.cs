@@ -71,6 +71,10 @@ public static class DockerHelper
                 "OrchardCore__OrchardCore_Media_Azure__ConnectionString",
                 _azuriteConnectionString
             );
+            System.Environment.SetEnvironmentVariable(
+                "OrchardCore__OrchardCore_Media_Azure__ContainerName",
+                "oc-media-tests"
+            );
             Log($"Started Docker container '{_azuriteContainerName}' (Azurite).");
         }
 

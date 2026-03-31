@@ -128,7 +128,10 @@ public sealed class OrchardTestServer : IAsyncDisposable
     private static bool IsIgnoredWarning(FakeLogRecord record) =>
         (record.Category == "Microsoft.AspNetCore.DataProtection.KeyManagement.XmlKeyManager"
             && record.Message.Contains("No XML encryptor configured"))
-        || record.Category == "OrchardCore.Media.Controllers.MediaApiController";
+        || record.Category == "OrchardCore.Media.Controllers.MediaApiController"
+        || record.Category == "OrchardCore.Media.Services.DiskTusTempStore"
+        || (record.Category == "Microsoft.AspNetCore.Server.Kestrel"
+            && record.Message.Contains("Connection processing ended abnormally"));
 
     public async ValueTask DisposeAsync()
     {
