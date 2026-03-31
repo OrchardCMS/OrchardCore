@@ -40,15 +40,13 @@ export function minifyPlugin() {
 
                     const mapFileName = `${parsed.name}.map`;
                     const minPath = path.join(parsed.dir, `${parsed.name}.min.js`);
-                    const normalizedCode = result.code.replace(/\r\n/g, "\n");
-                    const normalizedMap = result.map.replace(/\r\n/g, "\n");
 
                     // .js — minified with sourcemap reference
-                    fs.writeFileSync(filePath, `${normalizedCode}//# sourceMappingURL=${mapFileName}\n`);
+                    fs.writeFileSync(filePath, `${result.code}//# sourceMappingURL=${mapFileName}\n`);
                     // .min.js — minified without sourcemap reference
-                    fs.writeFileSync(minPath, normalizedCode);
+                    fs.writeFileSync(minPath, result.code);
                     // .map — source map
-                    fs.writeFileSync(path.join(parsed.dir, mapFileName), normalizedMap);
+                    fs.writeFileSync(path.join(parsed.dir, mapFileName), result.map);
                 }
 
                 if (fileName.endsWith(".css") && chunk.type === "asset" && typeof chunk.source === "string") {
@@ -63,7 +61,7 @@ export function minifyPlugin() {
 
                     const mapFileName = `${parsed.name}.css.map`;
                     const minPath = path.join(parsed.dir, `${parsed.name}.min.css`);
-                    const minified = code.toString().replace(/\r\n/g, "\n");
+                    const minified = code.toString();
 
                     // .css — minified with sourcemap reference
                     fs.writeFileSync(filePath, `${minified}\n/*# sourceMappingURL=${mapFileName} */\n`);
