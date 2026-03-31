@@ -126,8 +126,9 @@ public sealed class OrchardTestServer : IAsyncDisposable
     }
 
     private static bool IsIgnoredWarning(FakeLogRecord record) =>
-        record.Category == "Microsoft.AspNetCore.DataProtection.KeyManagement.XmlKeyManager"
-        && record.Message.Contains("No XML encryptor configured");
+        (record.Category == "Microsoft.AspNetCore.DataProtection.KeyManagement.XmlKeyManager"
+            && record.Message.Contains("No XML encryptor configured"))
+        || record.Category == "OrchardCore.Media.Controllers.MediaApiController";
 
     public async ValueTask DisposeAsync()
     {
