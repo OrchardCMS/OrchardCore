@@ -108,7 +108,7 @@ internal sealed class IndexingMigrations : DataMigration
                     }
                 }
 
-                var metadata = indexProfile.As<ContentIndexMetadata>();
+                var metadata = indexProfile.GetOrCreate<ContentIndexMetadata>();
 
                 if (string.IsNullOrEmpty(metadata.Culture))
                 {
@@ -143,7 +143,7 @@ internal sealed class IndexingMigrations : DataMigration
 
                 indexProfile.Put(metadata);
 
-                var elasticsearchMetadata = indexProfile.As<ElasticsearchIndexMetadata>();
+                var elasticsearchMetadata = indexProfile.GetOrCreate<ElasticsearchIndexMetadata>();
 
                 var storeSourceData = indexObject.Value[nameof(elasticsearchMetadata.StoreSourceData)]?.GetValue<bool>();
 
@@ -167,7 +167,7 @@ internal sealed class IndexingMigrations : DataMigration
 
                 indexProfile.Put(elasticsearchMetadata);
 
-                var queryMetadata = indexProfile.As<ElasticsearchDefaultQueryMetadata>();
+                var queryMetadata = indexProfile.GetOrCreate<ElasticsearchDefaultQueryMetadata>();
                 if (string.IsNullOrEmpty(queryMetadata.QueryAnalyzerName))
                 {
                     queryMetadata.QueryAnalyzerName = indexObject.Value[nameof(queryMetadata.QueryAnalyzerName)]?.GetValue<string>();

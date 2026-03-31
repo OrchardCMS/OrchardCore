@@ -37,7 +37,10 @@ public interface ISite : IEntity
 
     CacheMode CacheMode { get; set; }
 
+    [Obsolete("Use TryGet<> or GetOrCreate<> instead.")]
     T As<T>() where T : new();
+
+    T GetOrCreate<T>() where T : new();
 
     bool TryGet<T>(out T settings);
 }

@@ -168,7 +168,7 @@ public class ContentItemsFieldTypeTests : IAsyncLifetime
                         .ResolveAsync(context) as IEnumerable<ContentItem>;
 
         Assert.Single(dogs);
-        Assert.Equal("doug", dogs.First().As<AnimalPart>().Name);
+        Assert.Equal("doug", dogs.First().GetOrCreate<AnimalPart>().Name);
     }
 
     [Fact]
@@ -206,7 +206,7 @@ public class ContentItemsFieldTypeTests : IAsyncLifetime
         var dogs = await ResolveContentItems(type, context);
 
         Assert.Single(dogs);
-        Assert.Equal("doug", dogs.First().As<AnimalPart>().Name);
+        Assert.Equal("doug", dogs.First().GetOrCreate<AnimalPart>().Name);
     }
 
     [Theory]
@@ -247,7 +247,7 @@ public class ContentItemsFieldTypeTests : IAsyncLifetime
         var dogs = await ResolveContentItems(type, context);
 
         Assert.Single(dogs);
-        Assert.Equal("doug", dogs.First().As<AnimalPart>().Name);
+        Assert.Equal("doug", dogs.First().GetOrCreate<AnimalPart>().Name);
     }
 
     [Fact]
@@ -282,13 +282,13 @@ public class ContentItemsFieldTypeTests : IAsyncLifetime
         var cats = await ResolveContentItems(type, context);
 
         Assert.Single(cats);
-        Assert.Equal("doug", cats.First().As<Animal>().Name);
+        Assert.Equal("doug", cats.First().GetOrCreate<Animal>().Name);
 
         context.Arguments["where"] = new ArgumentValue(JObject.Parse("{ \"dogs\": { \"name\": \"doug\" } }"), ArgumentSource.Variable);
         var dogs = await ResolveContentItems(type, context);
 
         Assert.Single(dogs);
-        Assert.Equal("doug", dogs.First().As<Animal>().Name);
+        Assert.Equal("doug", dogs.First().GetOrCreate<Animal>().Name);
     }
 
     [Fact]
@@ -335,9 +335,9 @@ public class ContentItemsFieldTypeTests : IAsyncLifetime
         var animals = await ResolveContentItems(type, context);
 
         Assert.Single(animals);
-        Assert.Equal("doug", animals.First().As<Animal>().Name);
-        Assert.True(animals.First().As<Animal>().IsScary);
-        Assert.False(animals.First().As<Animal>().IsHappy);
+        Assert.Equal("doug", animals.First().GetOrCreate<Animal>().Name);
+        Assert.True(animals.First().GetOrCreate<Animal>().IsScary);
+        Assert.False(animals.First().GetOrCreate<Animal>().IsHappy);
     }
 
     [Fact]
@@ -372,7 +372,7 @@ public class ContentItemsFieldTypeTests : IAsyncLifetime
         var dogs = await ResolveContentItems(type, context);
 
         Assert.Single(dogs);
-        Assert.Equal("doug", dogs.First().As<AnimalPart>().Name);
+        Assert.Equal("doug", dogs.First().GetOrCreate<AnimalPart>().Name);
     }
 
     [Fact]
@@ -411,7 +411,7 @@ public class ContentItemsFieldTypeTests : IAsyncLifetime
         var animals = await ResolveContentItems(type, context);
 
         Assert.Single(animals);
-        Assert.Equal("cs-CZ", animals.First().As<AnimalPart>().Culture);
+        Assert.Equal("cs-CZ", animals.First().GetOrCreate<AnimalPart>().Culture);
     }
 
     [Theory]
@@ -449,7 +449,7 @@ public class ContentItemsFieldTypeTests : IAsyncLifetime
         var animals = await ResolveContentItems(type, context);
 
         Assert.Single(animals);
-        Assert.Equal("cs-CZ", animals.First().As<AnimalPart>().Culture);
+        Assert.Equal("cs-CZ", animals.First().GetOrCreate<AnimalPart>().Culture);
     }
 
     [Fact]
@@ -484,7 +484,7 @@ public class ContentItemsFieldTypeTests : IAsyncLifetime
         var dogs = await ResolveContentItems(type, context);
 
         Assert.Single(dogs);
-        Assert.Equal("doug", dogs.First().As<AnimalPart>().Name);
+        Assert.Equal("doug", dogs.First().GetOrCreate<AnimalPart>().Name);
     }
 
     private static async Task<IEnumerable<ContentItem>> ResolveContentItems(ContentItemsFieldType type, ResolveFieldContext context)
@@ -633,9 +633,9 @@ public class AnimalIndexProvider : IndexProvider<ContentItem>
             {
                 return new AnimalIndex
                 {
-                    Name = contentItem.As<Animal>() != null
-                        ? contentItem.As<Animal>().Name
-                        : contentItem.As<AnimalPart>().Name,
+                    Name = contentItem.GetOrCreate<Animal>() != null
+                        ? contentItem.GetOrCreate<Animal>().Name
+                        : contentItem.GetOrCreate<AnimalPart>().Name,
                 };
             });
     }
@@ -654,18 +654,18 @@ public class AnimalTraitsIndexProvider : IndexProvider<ContentItem>
         context.For<AnimalTraitsIndex>()
             .Map(contentItem =>
             {
-                var animal = contentItem.As<Animal>();
+                var animal = contentItem.GetOrCreate<Animal>();
 
                 if (animal != null)
                 {
                     return new AnimalTraitsIndex
                     {
-                        IsHappy = contentItem.As<Animal>().IsHappy,
-                        IsScary = contentItem.As<Animal>().IsScary,
+                        IsHappy = contentItem.GetOrCreate<Animal>().IsHappy,
+                        IsScary = contentItem.GetOrCreate<Animal>().IsScary,
                     };
                 }
 
-                var animalPartSuffix = contentItem.As<AnimalPart>();
+                var animalPartSuffix = contentItem.GetOrCreate<AnimalPart>();
 
                 return new AnimalTraitsIndex
                 {
@@ -688,11 +688,11 @@ public class AnimalLocalizationIndexProvider : IndexProvider<ContentItem>
         context.For<AnimalLocalizationIndex>()
             .Map(contentItem =>
             {
-                var animal = contentItem.As<Animal>();
+                var animal = contentItem.GetOrCreate<Animal>();
 
                 return new AnimalLocalizationIndex
                 {
-                    Culture = animal?.Culture ?? contentItem.As<AnimalPart>().Culture,
+                    Culture = animal?.Culture ?? contentItem.GetOrCreate<AnimalPart>().Culture,
                 };
             });
     }

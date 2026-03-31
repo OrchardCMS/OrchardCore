@@ -49,7 +49,7 @@ public sealed class ElasticsearchIndexProfileHandler : IndexProfileHandlerBase
         }
 
         // When the provider is 'Elasticsearch', "regardless of the type" we need to validate the index mappings.
-        var metadata = context.Model.As<ElasticsearchIndexMetadata>();
+        var metadata = context.Model.GetOrCreate<ElasticsearchIndexMetadata>();
 
         if (metadata.IndexMappings?.Mapping?.Properties is null || !metadata.IndexMappings.Mapping.Properties.Any())
         {
@@ -74,7 +74,7 @@ public sealed class ElasticsearchIndexProfileHandler : IndexProfileHandlerBase
             return Task.CompletedTask;
         }
 
-        var metadata = index.As<ElasticsearchIndexMetadata>();
+        var metadata = index.GetOrCreate<ElasticsearchIndexMetadata>();
 
         metadata.IndexMappings ??= new ElasticsearchIndexMap();
 
@@ -115,7 +115,7 @@ public sealed class ElasticsearchIndexProfileHandler : IndexProfileHandlerBase
 
         index.Put(metadata);
 
-        var queryMetadata = index.As<ElasticsearchDefaultQueryMetadata>();
+        var queryMetadata = index.GetOrCreate<ElasticsearchDefaultQueryMetadata>();
 
         var queryAnalyzerName = data[nameof(queryMetadata.QueryAnalyzerName)]?.GetValue<string>();
 

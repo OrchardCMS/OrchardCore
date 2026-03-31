@@ -28,7 +28,7 @@ public class SiteSettings : DocumentEntity, ISite
     public bool AppendVersion { get; set; } = true;
     public CacheMode CacheMode { get; set; }
 
-    public T As<T>() where T : new()
+    public T GetOrCreate<T>() where T : new()
         => TryGet<T>(out var settings) ? settings : new T();
 
     public bool TryGet<T>(out T settings)
