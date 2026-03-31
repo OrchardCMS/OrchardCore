@@ -133,7 +133,7 @@ public sealed class OrchardTestServer : IAsyncDisposable
         || (record.Category == "Microsoft.AspNetCore.Server.Kestrel"
             && record.Message.Contains("Connection processing ended abnormally"))
         || (record.Category == "Microsoft.AspNetCore.Diagnostics.ExceptionHandlerMiddleware"
-            && record.Message.Contains("Cannot create directory '_Users"));
+            && record.Exception?.ToString().Contains("Cannot create directory '_Users") == true);
 
     public async ValueTask DisposeAsync()
     {
