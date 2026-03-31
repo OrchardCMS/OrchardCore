@@ -1,16 +1,22 @@
 using Microsoft.Playwright;
-using Xunit;
 
 namespace OrchardCore.Tests.Functional.Tests.Mvc;
 
-[Collection(MvcTestCollection.Name)]
-public sealed class MvcTests
+public sealed class MvcTests : IClassFixture<MvcSetupFixture>, IAsyncLifetime
 {
     private readonly MvcSetupFixture _fixture;
 
     public MvcTests(MvcSetupFixture fixture)
     {
         _fixture = fixture;
+    }
+
+    public ValueTask InitializeAsync() => ValueTask.CompletedTask;
+
+    public ValueTask DisposeAsync()
+    {
+        _fixture.AssertNoLoggedIssues();
+        return ValueTask.CompletedTask;
     }
 
     [Fact]

@@ -19,6 +19,9 @@ public static class SiteMockHelper
         mockSite.Setup(x => x.As<T>())
             .Returns(obj);
 
+        mockSite.Setup(x => x.TryGet(out obj))
+            .Returns(true);
+
         return mockSite;
     }
 }

@@ -4,13 +4,13 @@ namespace OrchardCore.Tests.Functional.Helpers;
 
 public static class TenantHelper
 {
-    public static async Task VisitTenantSetupPageAsync(IPage page, TenantInfo tenant)
+    public static async Task VisitTenantSetupPageAsync(this IPage page, TenantInfo tenant)
     {
         await page.GotoAsync("/Admin/Tenants");
         await page.Locator($"#btn-setup-{tenant.Name}").ClickAsync();
     }
 
-    public static async Task SiteSetupAsync(IPage page, TenantInfo tenant)
+    public static async Task SiteSetupAsync(this IPage page, TenantInfo tenant)
     {
         var config = TestUtils.DefaultConfig;
         await page.Locator("#SiteName").FillAsync(tenant.Name);
@@ -33,6 +33,15 @@ public static class TenantHelper
             {
                 await dbProvider.SelectOptionAsync("Sqlite");
             }
+            else if (!string.IsNullOrEmpty(tenant.TablePrefix))
+            {
+                // When using a shared database (non-SQLite), set the table prefix to isolate data.
+                var tablePrefix = page.Locator("#TablePrefix");
+                if (await tablePrefix.CountAsync() > 0 && await tablePrefix.IsVisibleAsync())
+                {
+                    await tablePrefix.FillAsync(tenant.TablePrefix);
+                }
+            }
         }
 
         await page.Locator("#UserName").FillAsync(config.Username);
@@ -43,7 +52,7 @@ public static class TenantHelper
         await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
     }
 
-    public static async Task CreateTenantAsync(IPage page, TenantInfo tenant)
+    public static async Task CreateTenantAsync(this IPage page, TenantInfo tenant)
     {
         await page.GotoAsync("/Admin/Tenants");
         await page.Locator(".btn.create").First.ClickAsync();
@@ -59,7 +68,9 @@ public static class TenantHelper
             await recipeSelect.SelectOptionAsync(tenant.SetupRecipe);
         }
 
-        // Set database provider to Sqlite if not already set by environment variable.
+        // Set database provider to Sqlite if not already set.
+        // When DatabaseConfigurationPreset is true (external DB configured on the parent),
+        // the #DatabaseProvider dropdown is not rendered — only the table prefix is shown.
         var dbProvider = page.Locator("#DatabaseProvider");
         if (await dbProvider.CountAsync() > 0)
         {
@@ -68,26 +79,25 @@ public static class TenantHelper
             {
                 await dbProvider.SelectOptionAsync("Sqlite");
             }
-            else
-            {
-                // If a provider is set (via env var), set the table prefix to the tenant name, if the field exists.
-                var tablePrefix = page.Locator("#TablePrefix");
-                if (await tablePrefix.CountAsync() > 0)
-                {
-                    await tablePrefix.FillAsync(tenant.Name);
-                }
-            }
+        }
+
+        // Always set the table prefix when available, regardless of whether the provider dropdown is visible.
+        var tablePrefix = page.Locator("#TablePrefix");
+        if (await tablePrefix.CountAsync() > 0 && await tablePrefix.IsVisibleAsync())
+        {
+            var tablePrefixValue = string.IsNullOrEmpty(tenant.TablePrefix) ? tenant.Name : tenant.TablePrefix;
+            await tablePrefix.FillAsync(tablePrefixValue);
         }
 
         await page.Locator("button.create[type=\"submit\"]").ClickAsync();
         await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
     }
 
-    public static async Task NewTenantAsync(IPage page, TenantInfo tenant)
+    public static async Task NewTenantAsync(this IPage page, TenantInfo tenant)
     {
-        await AuthHelper.LoginAsync(page);
-        await CreateTenantAsync(page, tenant);
-        await VisitTenantSetupPageAsync(page, tenant);
-        await SiteSetupAsync(page, tenant);
+        await page.LoginAsync();
+        await page.CreateTenantAsync(tenant);
+        await page.VisitTenantSetupPageAsync(tenant);
+        await page.SiteSetupAsync(tenant);
     }
 }
