@@ -10,6 +10,7 @@ namespace OrchardCore.Localization.PortableObject;
 public static class PoParser
 {
     private static readonly FrozenDictionary<char, char> _escapeTranslations;
+    private static readonly char[] _whitespaceSeparators = [' ', '\t'];
 
     static PoParser()
     {
@@ -155,7 +156,7 @@ public static class PoParser
             return (PoContext.Text, Unescape(TrimQuote(line.Trim())));
         }
 
-        var separatorIndex = line.IndexOfAny([' ', '\t']);
+        var separatorIndex = line.IndexOfAny(_whitespaceSeparators);
         if (separatorIndex <= 0 || separatorIndex == line.Length - 1)
         {
             return (PoContext.Other, string.Empty);
