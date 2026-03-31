@@ -1,14 +1,11 @@
 @inject ShellSettings ShellSettings
 @inject IOptions<MediaOptions> MediaOptions
 @inject IHostEnvironment HostEnvironment
-@inject IShellFeaturesManager ShellFeaturesManager
 @{
     var jsLocalizations = Orchard.GetJSLocalizations("media-app");
     var siteId = ShellSettings.TenantId;
     var tusEnabled = Context.RequestServices.IsMediaTusEnabled();
     var signalrEnabled = Context.RequestServices.GetService<IHubContext<MediaHub>>() != null;
-    var signalrBackplane = await ShellFeaturesManager.IsFeatureEnabledAsync("OrchardCore.Media.SignalR.Azure")
-        || await ShellFeaturesManager.IsFeatureEnabledAsync("OrchardCore.Media.SignalR.Redis");
 }
 
 <script type="module" asp-name="media" version="2" at="Foot"></script>
@@ -29,7 +26,7 @@
         tus-endpoint-url="@Href("~/api/media/tus")"
         tus-file-info-url="@Href("~/api/media/TusFileInfo")"
         signalr-enabled="@(signalrEnabled ? "true" : "false")"
-        signalr-backplane="@(signalrBackplane ? "true" : "false")"
+
         debug-enabled="@(HostEnvironment.IsDevelopment() ? "true" : "false")"
     >
     </media-app>

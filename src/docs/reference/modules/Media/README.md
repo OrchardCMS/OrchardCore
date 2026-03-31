@@ -399,7 +399,10 @@ The following configuration values are used by default and can be customized:
     // The maximum chunk size when uploading files in bytes. If 0, no chunked upload is used. This is useful to work around request size limitations of a hosting environment.
     "MaxUploadChunkSize": 104857600,
     // The lifetime of temporary files created during upload. Defaults to 1 hour.
-    "TemporaryFileLifetime": "01:00:00"
+    "TemporaryFileLifetime": "01:00:00",
+    // The path used to store temporary TUS upload data. Defaults to {TempPath}/TusUploads.
+    // Configure this to a shared filesystem path for multi-instance deployments.
+    "TusTempPath": "/mnt/shared/TusUploads"
   }
 }
 ```
@@ -427,102 +430,7 @@ services.Configure<StaticFileOptions>(o => ...);
 
 ## Media Gallery
 
-The Media Gallery is a Vue 3 application that provides the admin UI for managing media files and folders.
-
-### File Operations
-
-The gallery supports the following operations on files:
-
-- **Upload** — Upload files via the upload button or drag-and-drop onto the file list area.
-- **Rename** — Rename a single file via its context menu.
-- **Move** — Move one or more selected files to another folder via the context menu. Files can also be moved by dragging them onto a folder in the tree.
-- **Copy** — Copy a single file to another folder via its context menu.
-- **Delete** — Delete one or more selected files. A confirmation dialog is shown before deletion.
-- **Download** — Download a single file via its context menu.
-
-### Folder Management
-
-- **Create subfolder** — Right-click a folder in the tree to create a subfolder.
-- **Delete folder** — Right-click a folder to delete it. The root folder cannot be deleted.
-- **Breadcrumb navigation** — Navigate the folder hierarchy via the breadcrumb bar.
-
-### Search, Sort, and Pagination
-
-- **Search** — Filter the file list by name using the search bar.
-- **Sort** — Sort by name, size, MIME type, or last modified date in ascending or descending order.
-- **Pagination** — The file list is paginated. Page size can be configured via the settings popover.
-
-### Storage Information
-
-The storage info popover (accessible from the toolbar) displays information about the configured storage provider:
-
-- Storage provider name
-- Available storage space
-- Hierarchical namespace support
-- Atomic move support
-
-## Upload Behavior
-
-### File Size Validation
-
-The `MaxFileSize` setting is enforced at multiple layers:
-
-1. **Client-side** — Files exceeding the limit are rejected before upload begins, with a localized error message.
-2. **ASP.NET Core** — The `MediaSizeLimitAttribute` configures both Kestrel's `MaxRequestBodySize` and the form `MultipartBodyLengthLimit` to match `MaxFileSize`.
-3. **TUS protocol** — When TUS is enabled, `MaxAllowedUploadSizeInBytesLong` is set to `MaxFileSize`.
-
-!!! warning
-    When hosting behind IIS, you must also configure `maxAllowedContentLength` in `web.config` to match or exceed `MaxFileSize`. If the IIS limit is lower, uploads will be rejected by IIS before reaching the application. A warning is logged at startup when this mismatch is detected. See [IIS Request Limits](https://docs.microsoft.com/en-us/iis/configuration/system.webserver/security/requestfiltering/requestlimits/) for details.
-
-### File Extension Validation
-
-The `AllowedFileExtensions` setting is enforced both client-side and server-side. Files with disallowed extensions are rejected before upload begins in the Media Gallery. The server also validates extensions on all upload endpoints.
-
-### Concurrent Uploads
-
-When uploading multiple files, the Media Library uploads each file as a separate request with a maximum of **5 concurrent uploads**. Files beyond this limit are queued and uploaded as previous uploads complete. This prevents overwhelming the server while still allowing efficient batch uploads.
-
-## TUS Resumable Uploads (`OrchardCore.Media.Tus`)
-
-The TUS feature enables resumable file uploads using the [TUS protocol](https://tus.io/). When enabled, it replaces the default upload mechanism, allowing uploads to be paused, resumed, and recovered after network interruptions.
-
-To enable, activate the **Media TUS Uploads** feature in the admin panel.
-
-When TUS is enabled:
-
-- Files are uploaded in configurable chunks (default 5 MB, controlled by `MaxUploadChunkSize`).
-- Uploads can be paused and resumed from the upload toast.
-- Interrupted uploads automatically resume from where they left off using fingerprint-based tracking in the browser's localStorage.
-- The `MaxFileSize` limit is enforced by the TUS server.
-
-The TUS endpoint is available at `/api/media/tus`.
-
-## SignalR Real-time Updates (`OrchardCore.Media.SignalR`)
-
-The SignalR feature enables real-time media updates. When enabled, changes to media files and folders (uploads, renames, moves, deletes) are broadcast to all connected clients. This keeps the Media Gallery in sync across multiple browser tabs and users.
-
-To enable, activate the **Media SignalR** feature in the admin panel.
-
-For multi-instance deployments, a backplane is required. Two options are available:
-
-- **`OrchardCore.Media.SignalR.Azure`** — Uses Azure SignalR Service as the backplane.
-- **`OrchardCore.Media.SignalR.Redis`** — Uses Redis as the backplane.
-
-## Media Field Editor Types
-
-The `MediaField` supports three editor types, configurable per field instance:
-
-### Standard (picker)
-
-The default editor. Users select media from the Media Library via a picker modal. No direct upload is available from the field — files must already exist in the Media Library.
-
-### Attached
-
-Users upload files directly from the field via a file input or drag-and-drop. Uploaded files are stored in a temporary folder and moved to the final location when the content item is published. Supports TUS resumable uploads when the TUS feature is enabled.
-
-### Gallery
-
-A gallery-oriented editor with card and list views. Users select media from the Media Library via a picker modal. Supports reordering items via drag-and-drop.
+For documentation on the Media Gallery admin UI, including file operations, upload behavior, TUS resumable uploads, SignalR real-time updates, multi-instance deployment, and media field editor types, see the [Media Gallery documentation](MediaGallery.md).
 
 ## Media Profiles
 

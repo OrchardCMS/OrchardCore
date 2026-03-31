@@ -108,7 +108,6 @@ public class MediaJSLocalizer(IStringLocalizer<MediaJSLocalizer> S) : IJSLocaliz
                 { "AtomicMove", S["Atomic Move"].Value },
                 { "SignalR", S["SignalR"].Value },
                 { "TusUploads", S["TUS Uploads"].Value },
-                { "Scalable", S["Scalable"].Value },
             };
         }
 

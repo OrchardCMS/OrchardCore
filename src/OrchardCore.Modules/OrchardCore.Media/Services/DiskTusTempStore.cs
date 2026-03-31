@@ -1,27 +1,28 @@
 using System.IO.Pipelines;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
 
 namespace OrchardCore.Media.Services;
 
 /// <summary>
 /// Default <see cref="ITusTempStore"/> implementation that stores partial upload
-/// data on local disk at <c>Path.GetTempPath()/TusUploads/{tenantId}/</c>.
-/// Suitable for single-server deployments or multi-server with a shared filesystem.
+/// data on disk. The base path is configurable via <see cref="MediaOptions.TusTempPath"/>
+/// (defaults to <c>Path.GetTempPath()/TusUploads</c>).
+/// Configure this to a shared filesystem path for multi-instance deployments.
 /// </summary>
 public sealed class DiskTusTempStore : ITusTempStore
 {
-    private const string TusTempFolderName = "TusUploads";
-
     private readonly string _tempDirectory;
     private readonly ILogger _logger;
 
     public DiskTusTempStore(
+        IOptions<MediaOptions> mediaOptions,
         ShellSettings shellSettings,
         ILogger<DiskTusTempStore> logger)
     {
         _logger = logger;
-        _tempDirectory = Path.Combine(Path.GetTempPath(), TusTempFolderName, shellSettings.TenantId);
+        _tempDirectory = Path.Combine(mediaOptions.Value.TusTempPath, shellSettings.TenantId);
     }
 
     public Task CreateFileAsync(string fileId, CancellationToken cancellationToken)
