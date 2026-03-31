@@ -17,8 +17,7 @@ public class LayerMetadataIndexProvider : IndexProvider<ContentItem>
             .When(contentItem => contentItem.Has<LayerMetadata>())
             .Map(contentItem =>
             {
-                var layerMetadata = contentItem.As<LayerMetadata>();
-                if (layerMetadata == null)
+                if (!contentItem.TryGet<LayerMetadata>(out var layerMetadata))
                 {
                     return null;
                 }

@@ -44,7 +44,7 @@ public class LayerService : ILayerService
         var allWidgets = await GetLayerWidgetsAsync(predicate);
 
         return allWidgets
-            .Select(x => x.As<LayerMetadata>())
+            .Select(x => x.TryGet<LayerMetadata>(out var layerMetadata) ? layerMetadata : null)
             .Where(x => x != null)
             .OrderBy(x => x.Position)
             .ToList();
