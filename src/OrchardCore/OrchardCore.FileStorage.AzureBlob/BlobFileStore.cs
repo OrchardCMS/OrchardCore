@@ -49,7 +49,7 @@ public class BlobFileStore : IFileStore
     private readonly ILogger _logger;
     private readonly bool? _useHierarchicalNamespaceOverride;
     private readonly SemaphoreSlim _capabilitiesLock = new(1, 1);
-    private IFileStoreCapabilities _capabilities;
+    private FileStoreCapabilities _capabilities;
 
     private readonly string _basePrefix;
 
