@@ -10,7 +10,26 @@ Parcel is the easiest way to build assets so far as it doesn't require any confi
 
 ## Prerequisites
 
-1. Install the current 22.x version of [Node.js](https://nodejs.org/en/download). If you are already using a different version of Node.js for other projects, we recommend using Node Version Manager (see [here](https://github.com/nvm-sh/nvm) for the original project for *nix systems, and [here](https://github.com/coreybutler/nvm-windows) for Windows).
+1. Install the **Node.js 24.x LTS** version of [Node.js](https://nodejs.org/en/download). The required version is pinned in the `.node-version` file at the root of the repository.
+
+    If you are already using a different version of Node.js for other projects, we recommend using a Node version manager. [fnm](https://github.com/Schniz/fnm) (Fast Node Manager) is the recommended option as it supports the `.node-version` file natively and works across all platforms:
+
+    ```bash
+    # Install fnm (see https://github.com/Schniz/fnm#installation for other methods)
+    # Windows (winget):
+    winget install Schniz.fnm
+    # macOS (Homebrew):
+    brew install fnm
+    # Linux (curl):
+    curl -fsSL https://fnm.vercel.app/install | bash
+
+    # Then, from the root of the repository, install and use the pinned Node version:
+    fnm install
+    fnm use
+    ```
+
+    Alternatively, you can use [nvm](https://github.com/nvm-sh/nvm) (*nix) or [nvm-windows](https://github.com/coreybutler/nvm-windows) (Windows). With nvm, run `nvm install` and `nvm use` from the root of the repository.
+
 2. From the root of the repository, run the following commands. Be sure to indeed run **exactly** these, and verify that the Yarn version matches the `packageManager` value in the root `package.json` (currently v4.9.x).
     ```cmd
     REM On Windows may require to run command shell with administrator privileges.
@@ -19,7 +38,7 @@ Parcel is the easiest way to build assets so far as it doesn't require any confi
     ```
 
 !!! danger
-    Some third-party distributors may not include Corepack by default, in particular if you install Node.js from your system package manager. If that happens, running `npm install -g corepack` before `corepack enable` should do the trick.    
+    Some third-party distributors may not include Corepack by default, in particular if you install Node.js from your system package manager. If that happens, running `npm install -g corepack` before `corepack enable` should do the trick.
 
 ## Building assets if you change an SCSS, JS, or TS/TSX file
 
