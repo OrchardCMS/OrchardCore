@@ -1,3 +1,4 @@
+using OrchardCore.Tests.Functional.Tests.Mvc;
 using Xunit;
 
 namespace OrchardCore.Tests.Functional;

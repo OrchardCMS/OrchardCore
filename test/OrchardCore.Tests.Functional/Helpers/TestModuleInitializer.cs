@@ -13,6 +13,6 @@ internal static class TestModuleInitializer
     [ModuleInitializer]
     internal static void Initialize()
     {
-        AppLifecycleHelper.TryStartDockerServices();
+        DockerHelper.TryStartDockerServices();
     }
 }
