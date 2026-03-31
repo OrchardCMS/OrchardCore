@@ -69,9 +69,7 @@ public sealed class Startup : StartupBase
 
         services.AddDisplayDriver<IndexProfile, OpenSearchIndexProfileDisplayDriver>();
 
-        services.AddIndexProfileHandler<OpenSearchIndexProfileHandler>();
-        services.AddDataMigration<PermissionMigrations>();
-    }
+        services.AddIndexProfileHandler<OpenSearchIndexProfileHandler>();    }
 }
 
 [RequireFeatures("OrchardCore.Recipes.Core")]

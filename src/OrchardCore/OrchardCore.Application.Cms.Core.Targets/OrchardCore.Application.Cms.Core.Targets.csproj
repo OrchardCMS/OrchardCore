@@ -92,6 +92,7 @@
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Navigation\OrchardCore.Navigation.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Notifications\OrchardCore.Notifications.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.OpenId\OrchardCore.OpenId.csproj" PrivateAssets="none" />
+    <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.OpenSearch\OrchardCore.OpenSearch.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Placements\OrchardCore.Placements.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.PublishLater\OrchardCore.PublishLater.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Queries\OrchardCore.Queries.csproj" PrivateAssets="none" />
@@ -108,7 +109,6 @@
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Search\OrchardCore.Search.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Search.AzureAI\OrchardCore.Search.AzureAI.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Search.Elasticsearch\OrchardCore.Search.Elasticsearch.csproj" PrivateAssets="none" />
-    <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.OpenSearch\OrchardCore.OpenSearch.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Search.Lucene\OrchardCore.Search.Lucene.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Security\OrchardCore.Security.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Seo\OrchardCore.Seo.csproj" PrivateAssets="none" />

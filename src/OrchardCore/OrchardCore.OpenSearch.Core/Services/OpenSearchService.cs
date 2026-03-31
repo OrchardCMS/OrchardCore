@@ -14,7 +14,7 @@ using OrchardCore.OpenSearch.Core.Services;
 
 namespace OrchardCore.OpenSearch.Services;
 
-public class OpenSearchService : ISearchService
+public sealed class OpenSearchService : ISearchService
 {
     private readonly OpenSearchIndexManager _openSearchIndexManager;
     private readonly OpenSearchClient _openSearchClient;

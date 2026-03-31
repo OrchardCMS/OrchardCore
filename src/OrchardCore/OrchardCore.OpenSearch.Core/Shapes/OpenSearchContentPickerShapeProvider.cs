@@ -6,7 +6,7 @@ using OrchardCore.DisplayManagement.Shapes;
 
 namespace OrchardCore.OpenSearch;
 
-public class OpenSearchContentPickerShapeProvider : IShapeAttributeProvider
+public sealed class OpenSearchContentPickerShapeProvider : IShapeAttributeProvider
 {
     protected readonly IStringLocalizer S;
 
