@@ -155,7 +155,7 @@ public static class PoParser
             return (PoContext.Text, Unescape(TrimQuote(line.Trim())));
         }
 
-        var separatorIndex = line.IndexOf(' ');
+        var separatorIndex = line.IndexOfAny([' ', '\t']);
         if (separatorIndex <= 0 || separatorIndex == line.Length - 1)
         {
             return (PoContext.Other, string.Empty);
