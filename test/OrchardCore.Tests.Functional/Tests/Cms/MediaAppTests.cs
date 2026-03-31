@@ -4,7 +4,8 @@ using Xunit;
 
 namespace OrchardCore.Tests.Functional.Tests.Cms;
 
-public sealed class MediaAppTests : IClassFixture<SaasFixture>, IAsyncLifetime
+[Collection(CmsTestCollection.Name)]
+public sealed class MediaAppTests : IAsyncLifetime
 {
     private const int SmallFileSize = 100 * 1024; // 100 KB
 
