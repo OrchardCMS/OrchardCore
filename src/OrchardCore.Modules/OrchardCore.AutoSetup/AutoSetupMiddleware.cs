@@ -180,18 +180,24 @@ public class AutoSetupMiddleware
 
         if (setupContext.Errors.Count == 0)
         {
-            _logger.LogInformation("AutoSetup successfully provisioned the site '{SiteName}'.", setupOptions.SiteName);
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation("AutoSetup successfully provisioned the site '{SiteName}'.", setupOptions.SiteName);
+            }
 
             return true;
         }
 
-        var stringBuilder = new StringBuilder();
-        foreach (var error in setupContext.Errors)
+        if (_logger.IsEnabled(LogLevel.Error))
         {
-            stringBuilder.AppendLine($"{error.Key} : '{error.Value}'");
-        }
+            var stringBuilder = new StringBuilder();
+            foreach (var error in setupContext.Errors)
+            {
+                stringBuilder.AppendLine($"{error.Key} : '{error.Value}'");
+            }
 
-        _logger.LogError("AutoSetup failed installing the site '{SiteName}' with errors: {Errors}", setupOptions.SiteName, stringBuilder);
+            _logger.LogError("AutoSetup failed installing the site '{SiteName}' with errors: {Errors}", setupOptions.SiteName, stringBuilder);
+        }
 
         return false;
     }

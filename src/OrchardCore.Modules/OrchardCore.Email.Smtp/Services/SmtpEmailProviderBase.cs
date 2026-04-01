@@ -46,7 +46,10 @@ public abstract class SmtpEmailProviderBase : IEmailProvider
             ? _providerOptions.DefaultSender
             : message.From;
 
-        _logger.LogDebug("Attempting to send email to {Email}.", message.To);
+        if (_logger.IsEnabled(LogLevel.Debug))
+        {
+            _logger.LogDebug("Attempting to send email to {Email}.", message.To);
+        }
 
         // Set the MailMessage.From, to avoid the confusion between DefaultSender (Author) and submitter (Sender).
         if (!string.IsNullOrWhiteSpace(senderAddress))

@@ -645,7 +645,11 @@ public class DefaultContentManager : IContentManager
                 {
                     if (importedVersionIds.Contains(importingItem.ContentItemVersionId))
                     {
-                        _logger.LogInformation("Duplicate content item version id '{ContentItemVersionId}' skipped", importingItem.ContentItemVersionId);
+                        if (_logger.IsEnabled(LogLevel.Information))
+                        {
+                            _logger.LogInformation("Duplicate content item version id '{ContentItemVersionId}' skipped", importingItem.ContentItemVersionId);
+                        }
+
                         continue;
                     }
 
@@ -705,7 +709,11 @@ public class DefaultContentManager : IContentManager
 
                     if (JsonNode.DeepEquals(jImporting, jOriginal))
                     {
-                        _logger.LogInformation("Importing '{ContentItemVersionId}' skipped as it is unchanged", importingItem.ContentItemVersionId);
+                        if (_logger.IsEnabled(LogLevel.Information))
+                        {
+                            _logger.LogInformation("Importing '{ContentItemVersionId}' skipped as it is unchanged", importingItem.ContentItemVersionId);
+                        }
+
                         continue;
                     }
 

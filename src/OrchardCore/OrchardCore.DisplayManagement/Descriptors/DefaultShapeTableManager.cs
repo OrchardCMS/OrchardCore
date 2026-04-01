@@ -69,7 +69,10 @@ public class DefaultShapeTableManager : IShapeTableManager
 
     private async Task<ShapeTable> BuildShapeTableAsync(string themeId)
     {
-        _logger.LogInformation("Start building shape table for {Theme}", themeId);
+        if (_logger.IsEnabled(LogLevel.Information))
+        {
+            _logger.LogInformation("Start building shape table for {Theme}", themeId);
+        }
 
         // These services are resolved lazily since they are only required when initializing the shape tables
         // during the first request. And binding strategies would be expensive to build since this service is called many times
@@ -140,7 +143,10 @@ public class DefaultShapeTableManager : IShapeTableManager
             bindings: descriptors.SelectMany(sd => sd.Bindings).ToFrozenDictionary(kv => kv.Key, kv => kv.Value, StringComparer.OrdinalIgnoreCase)
         );
 
-        _logger.LogInformation("Done building shape table for {Theme}", themeId);
+        if (_logger.IsEnabled(LogLevel.Information))
+        {
+            _logger.LogInformation("Done building shape table for {Theme}", themeId);
+        }
 
         _shapeTableCache[themeId ?? DefaultThemeIdKey] = shapeTable;
 
