@@ -16,6 +16,8 @@ public sealed class LocalizationPartDisplayDriver : ContentPartDisplayDriver<Loc
     private readonly IIdGenerator _idGenerator;
     private readonly ILocalizationService _localizationService;
 
+    private Dictionary<string, IEnumerable<ContentItem>> _alreadyTranslated;
+
     public LocalizationPartDisplayDriver(
         IContentLocalizationManager contentLocalizationManager,
         IIdGenerator idGenerator,
@@ -58,7 +60,7 @@ public sealed class LocalizationPartDisplayDriver : ContentPartDisplayDriver<Loc
 
     public async ValueTask BuildViewModelAsync(LocalizationPartViewModel model, LocalizationPart localizationPart)
     {
-        var alreadyTranslated = await _contentLocalizationManager.GetItemsForSetAsync(localizationPart.LocalizationSet);
+        var alreadyTranslated = await GetAlreadyTranslatedAsync(localizationPart);
 
         model.Culture = localizationPart.Culture;
         model.LocalizationSet = localizationPart.LocalizationSet;
@@ -95,6 +97,19 @@ public sealed class LocalizationPartDisplayDriver : ContentPartDisplayDriver<Loc
         }).OfType<LocalizationLinksViewModel>().ToList();
 
         model.ContentItemCultures = currentCultures.Concat(deletedCultureTranslations).ToList();
+    }
+
+    private async ValueTask<IEnumerable<ContentItem>> GetAlreadyTranslatedAsync(LocalizationPart localizationPart)
+    {
+        _alreadyTranslated ??= [];
+
+        if (!_alreadyTranslated.TryGetValue(localizationPart.LocalizationSet, out var items))
+        {
+            items = await _contentLocalizationManager.GetItemsForSetAsync(localizationPart.LocalizationSet);
+            _alreadyTranslated[localizationPart.LocalizationSet] = items;
+        }
+
+        return items;
     }
 
     private static string GetCulture(ContentItem contentItem)
