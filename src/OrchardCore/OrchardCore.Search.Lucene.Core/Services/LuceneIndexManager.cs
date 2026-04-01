@@ -172,7 +172,7 @@ public sealed class LuceneIndexManager : IIndexManager, IDocumentIndexManager
 
         await _indexStore.WriteAsync(index, writer =>
         {
-            var metadata = index.As<LuceneIndexMetadata>();
+            var metadata = index.GetOrCreate<LuceneIndexMetadata>();
 
             writer.DeleteDocuments(documentIds.Select(id => new Term(metadata.IndexMappings.KeyFieldName, id)).ToArray());
         });
@@ -194,7 +194,7 @@ public sealed class LuceneIndexManager : IIndexManager, IDocumentIndexManager
         {
             await _indexStore.WriteAsync(index, writer =>
             {
-                var metadata = index.As<LuceneIndexMetadata>();
+                var metadata = index.GetOrCreate<LuceneIndexMetadata>();
 
                 foreach (var indexDocument in documents)
                 {
