@@ -121,30 +121,3 @@ const confirmFolderModal = (modalName: string, confirmAction: IConfirmFolderActi
   );
 };
 </script>
-
-<style scoped>
-/* rtl:ignore */
-.folder-spinner {
-  display: inline-block;
-  width: 12px;
-  height: 12px;
-  border: 2px solid #ccc;
-  border-top-color: #2c84d8;
-  border-radius: 50%;
-  animation: spin 0.6s linear infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-/* Show folder actions only on hover */
-.folder-actions {
-  opacity: 0;
-  transition: opacity 0.15s ease;
-}
-
-.folder:hover .folder-actions {
-  opacity: 1;
-}
-</style>
