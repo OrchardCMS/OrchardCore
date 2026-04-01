@@ -8,7 +8,7 @@
 @inject IDisplayManager<Navbar> DisplayManager
 @inject IUpdateModelAccessor UpdateModelAccessor
 @{
-    var adminSettings = Site.As<AdminSettings>();
+    var adminSettings = Site.GetOrCreate<AdminSettings>();
 
     // Branding and Navbar are pre-rendered to allow resource injection.
     var brandingHtml = await DisplayAsync(await New.AdminBranding());

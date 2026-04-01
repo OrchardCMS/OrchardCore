@@ -78,7 +78,7 @@ public class ContentElementTests
             Minutes = -15,
         });
 
-        var instance = contentItem.As<TestContentPart>();
+        var instance = contentItem.GetOrCreate<TestContentPart>();
 
         Assert.NotNull(instance);
         Assert.Equal(-15, instance.Minutes);
