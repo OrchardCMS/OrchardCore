@@ -114,4 +114,9 @@ public static class OrchardCoreConstants
     {
         public const string ScriptingEncryptionPurpose = "oc-scripting";
     }
+
+    public static class Security
+    {
+        public const string ScriptingEncryptionPurpose = "oc-scripting";
+    }
 }
