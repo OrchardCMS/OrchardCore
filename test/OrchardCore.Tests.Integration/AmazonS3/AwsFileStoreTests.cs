@@ -8,7 +8,7 @@ using OrchardCore.FileStorage.AmazonS3;
 using OrchardCore.Modules;
 using Xunit;
 
-namespace OrchardCore.Tests.Modules.OrchardCore.Media.AmazonS3;
+namespace OrchardCore.Tests.Integration.AmazonS3;
 
 /// <summary>
 /// Integration tests for <see cref="AwsFileStore"/> that run against LocalStack's S3 emulator.

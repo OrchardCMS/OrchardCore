@@ -31,7 +31,7 @@ jobs:
     - uses: ./.github/actions/setup-dotnet
     - name: Build
       run: |
-        dotnet build -c Release --project ./test/OrchardCore.Tests/OrchardCore.Tests.csproj /p:NuGetAudit=false
+        dotnet build -c Release --project ./test/OrchardCore.Tests.Integration/OrchardCore.Tests.Integration.csproj /p:NuGetAudit=false
     - name: Start LocalStack
       run: |
         docker run -d --name localstack -p 4566:4566 localstack/localstack:s3-latest
@@ -47,4 +47,4 @@ jobs:
       env:
         LOCALSTACK_SERVICE_URL: http://127.0.0.1:4566
       run: |
-        dotnet test --project ./test/OrchardCore.Tests/OrchardCore.Tests.csproj -c Release --no-build --filter "FullyQualifiedName~OrchardCore.Tests.Modules.OrchardCore.Media.AmazonS3"
+        dotnet test --project ./test/OrchardCore.Tests.Integration/OrchardCore.Tests.Integration.csproj -c Release --no-build
