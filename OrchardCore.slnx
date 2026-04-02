@@ -51,6 +51,7 @@
   </Folder>
   <Folder Name="/scripts/Bloom/components/">
     <File Path=".scripts/bloom/components/password-strength.ts" />
+    <File Path=".scripts/bloom/components/phone-input.ts" />
   </Folder>
   <Folder Name="/scripts/Bloom/helpers/">
     <File Path=".scripts/bloom/helpers/globals.ts" />

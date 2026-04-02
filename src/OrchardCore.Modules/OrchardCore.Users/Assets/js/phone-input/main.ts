@@ -1,4 +1,5 @@
 import intlTelInput from 'intl-tel-input/build/js/intlTelInputWithUtils';
+import phoneInput from '@orchardcore/bloom/components/phone-input';
 import 'intl-tel-input/build/css/intlTelInput.css';
 import './phone-input.css';
 
@@ -6,9 +7,7 @@ document.querySelectorAll<HTMLElement>('[data-phone-input]').forEach((el) => {
     const form = el.closest('form');
     const hiddenInput = form?.querySelector<HTMLInputElement>('[data-phone-e164]');
     const disabled = el.dataset.phoneDisabled === 'True';
-    const initialValue = el.dataset.phoneValue ?? '';
     const defaultRegion = el.dataset.phoneRegion ?? '';
-    const confirmed = el.dataset.phoneConfirmed === 'True';
 
     // Build the input group
     const group = document.createElement('div');
@@ -26,11 +25,6 @@ document.querySelectorAll<HTMLElement>('[data-phone-input]').forEach((el) => {
     itiWrapper.appendChild(input);
     group.appendChild(itiWrapper);
 
-    // Status icon
-    const iconSpan = document.createElement('span');
-    iconSpan.className = 'input-group-text';
-    group.appendChild(iconSpan);
-
     el.appendChild(group);
 
     // Initialize intl-tel-input
@@ -45,54 +39,6 @@ document.querySelectorAll<HTMLElement>('[data-phone-input]').forEach((el) => {
             : {}),
     });
 
-    function updateIcon() {
-        const number = iti.getNumber();
-        const hasValue = number.length > 0;
-        let iconClass: string;
-        let title: string;
-        let colorClass: string;
-
-        if (confirmed && !hasValue) {
-            iconClass = 'fa-solid fa-check-circle';
-            colorClass = 'text-success';
-            title = 'Verified';
-        } else if (hasValue && iti.isValidNumber()) {
-            iconClass = 'fa-solid fa-check';
-            colorClass = 'text-success';
-            title = 'Valid';
-        } else if (hasValue) {
-            iconClass = 'fa-solid fa-xmark';
-            colorClass = 'text-danger';
-            title = 'Invalid';
-        } else {
-            iconClass = 'fa-solid fa-circle-exclamation';
-            colorClass = '';
-            title = 'Unverified';
-        }
-
-        iconSpan.innerHTML = `<i class="${iconClass} ${colorClass}" title="${title}"></i>`;
-    }
-
-    function syncHiddenInput() {
-        if (hiddenInput) {
-            hiddenInput.value = iti.getNumber();
-        }
-    }
-
-    input.addEventListener('input', () => {
-        updateIcon();
-        syncHiddenInput();
-    });
-
-    input.addEventListener('countrychange', () => {
-        updateIcon();
-        syncHiddenInput();
-    });
-
-    if (initialValue) {
-        iti.setNumber(initialValue);
-    }
-
-    updateIcon();
-    syncHiddenInput();
+    // Delegate validation and syncing to Bloom component
+    phoneInput({ el, iti, hiddenInput });
 });
