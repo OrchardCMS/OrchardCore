@@ -88,7 +88,17 @@ const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../
 const nodeVersionFile = path.join(repoRoot, ".node-version");
 if (fs.existsSync(nodeVersionFile)) {
     const expectedVersion = fs.readFileSync(nodeVersionFile, "utf8").trim();
+    const isCI = !!(process.env.CI || process.env.TF_BUILD || process.env.GITHUB_ACTIONS);
     if (process.versions.node !== expectedVersion) {
+        if (isCI) {
+            console.error(
+                chalk.red(
+                    `✖ Error: CI is running Node.js ${process.versions.node}, but this repository requires Node.js ${expectedVersion} (see .node-version).`
+                )
+            );
+            process.exit(1);
+        }
+
         console.warn(
             chalk.yellow(
                 `⚠ Warning: You are using Node.js ${process.versions.node}, but this repository requires Node.js ${expectedVersion} (see .node-version).`
