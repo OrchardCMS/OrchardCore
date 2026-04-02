@@ -36,9 +36,7 @@ public sealed class RemotePublishingController : Controller
             return NotFound();
         }
 
-        var listPart = contentItem.As<ListPart>();
-
-        if (listPart == null)
+        if (!contentItem.TryGet<ListPart>(out _))
         {
             return NotFound();
         }
