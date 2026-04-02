@@ -20,11 +20,10 @@ Parcel is the easiest way to build assets so far as it doesn't require any confi
       1) Continue anyway
       2) Abort
       3) Install via fnm, Node.js 24.X.X and build
-      4) Install via nvm, Node.js 24.X.X and build
-      5) Install via Volta, Node.js 24.X.X and build
+      4) Install via Volta, Node.js 24.X.X and build
     ```
 
-    Options 3-5 will automatically install the chosen version manager (if not already present), install the required Node.js version, enable corepack, and restart the build.
+    Options 3-4 will automatically install the chosen version manager (if not already present), install the required Node.js version, enable corepack, and restart the build.
 
     !!! note "Windows"
         On Windows, if the version manager needs to be installed first, the process will exit after installation and ask you to restart your terminal before re-running the build.

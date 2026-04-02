@@ -27,11 +27,6 @@ function prompt(question) {
 
 function isCommandAvailable(cmd) {
     try {
-        if (cmd === "nvm") {
-            // nvm is a shell function, not a binary — check if the script exists
-            const nvmDir = process.env.NVM_DIR || path.join(process.env.HOME, ".nvm");
-            return fs.existsSync(path.join(nvmDir, "nvm.sh"));
-        }
         execSync(`${cmd} --version`, { stdio: "ignore" });
         return true;
     } catch {
@@ -61,27 +56,6 @@ const versionManagers = {
         },
         execCommand(version, args) {
             return `fnm exec --using ${version} -- corepack yarn ${args}`;
-        },
-    },
-    nvm: {
-        name: "nvm",
-        install() {
-            console.log(chalk.cyan("Installing nvm (Node Version Manager)..."));
-            if (process.platform === "win32") {
-                console.log(chalk.red("Automatic nvm installation is not supported on Windows."));
-                console.log(chalk.yellow("Please install nvm-windows manually: https://github.com/coreybutler/nvm-windows"));
-                process.exit(1);
-            }
-            execSync("curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash", { stdio: "inherit" });
-        },
-        useNode(version) {
-            const nvmDir = process.env.NVM_DIR || path.join(process.env.HOME, ".nvm");
-            const nvmLoad = `. "${nvmDir}/nvm.sh"`;
-            execSync(`${nvmLoad} && nvm install ${version} && corepack enable`, { stdio: "inherit", shell: "bash" });
-        },
-        execCommand(version, args) {
-            const nvmDir = process.env.NVM_DIR || path.join(process.env.HOME, ".nvm");
-            return `bash -c '. "${nvmDir}/nvm.sh" && nvm use ${version} && corepack yarn ${args}'`;
         },
     },
     volta: {
@@ -124,13 +98,12 @@ if (fs.existsSync(nodeVersionFile)) {
         console.log(chalk.white("  1) Continue anyway"));
         console.log(chalk.white("  2) Abort"));
         console.log(chalk.white(`  3) Install via fnm, Node.js ${expectedVersion} and build`));
-        console.log(chalk.white(`  4) Install via nvm, Node.js ${expectedVersion} and build`));
-        console.log(chalk.white(`  5) Install via Volta, Node.js ${expectedVersion} and build`));
+        console.log(chalk.white(`  4) Install via Volta, Node.js ${expectedVersion} and build`));
         console.log("");
 
-        const answer = await prompt(chalk.yellow("Select an option (1-5): "));
+        const answer = await prompt(chalk.yellow("Select an option (1-4): "));
 
-        const managerByOption = { "3": "fnm", "4": "nvm", "5": "volta" };
+        const managerByOption = { "3": "fnm", "4": "volta" };
 
         if (answer === "1") {
             // Continue with current Node version
