@@ -6,10 +6,11 @@
 
 @{
     var entry = Model.Value.ContentTransferEntry;
-    entry.TryGet<ImportFileProcessStatsPart>(out var part);
 }
 
-@if (entry.Status == ContentTransferEntryStatus.Processing && part?.TotalRecords > 0)
+@if (entry.Status == ContentTransferEntryStatus.Processing
+    && entry.TryGet<ImportFileProcessStatsPart>(out var part)
+    && part.TotalRecords > 0)
 {
     var percent = (int)((double)part.TotalProcessed / part.TotalRecords * 100);
     var errorCount = part.Errors?.Count ?? 0;

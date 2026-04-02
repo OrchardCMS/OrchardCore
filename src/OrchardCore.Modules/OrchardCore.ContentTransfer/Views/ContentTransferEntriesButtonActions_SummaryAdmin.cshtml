@@ -8,12 +8,13 @@
 
 @{
     var entry = Model.Value.ContentTransferEntry;
-    entry.TryGet<ImportFileProcessStatsPart>(out var statsPart);
+    var hasErrorRecords = entry.TryGet<ImportFileProcessStatsPart>(out var statsPart)
+        && statsPart.Errors?.Count > 0;
     var canDelete = await AuthorizationService.AuthorizeAsync(User, ContentTransferPermissions.DeleteContentTransferEntries);
     var canProcessImport = await AuthorizationService.AuthorizeAsync(User, ContentTransferPermissions.ImportContentFromFile, (object)entry.ContentType);
 }
 
-@if (entry.Direction == ContentTransferDirection.Import && statsPart?.Errors?.Count > 0)
+@if (entry.Direction == ContentTransferDirection.Import && hasErrorRecords)
 {
     <a asp-action="DownloadErrors" asp-controller="Admin" asp-route-area="@ContentTransferConstants.Feature.ModuleId" asp-route-entryId="@entry.EntryId" class="dropdown-item btn-sm">
         <i class="fa-solid fa-file-excel text-danger" aria-hidden="true"></i> @T["Download errors ({0})", statsPart.Errors.Count]
