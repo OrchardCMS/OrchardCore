@@ -846,8 +846,7 @@ public class HtmlBodyPartContentImportHandlerTests
 
         await _handler.ImportAsync(context);
 
-        var part = contentItem.As<HtmlBodyPart>();
-        Assert.NotNull(part);
+        Assert.True(contentItem.TryGet<HtmlBodyPart>(out var part));
         Assert.Equal("<p>Hello World</p>", part.Html);
     }
 
@@ -871,8 +870,7 @@ public class HtmlBodyPartContentImportHandlerTests
 
         await _handler.ImportAsync(context);
 
-        var part = contentItem.As<HtmlBodyPart>();
-        Assert.NotNull(part);
+        Assert.True(contentItem.TryGet<HtmlBodyPart>(out var part));
         Assert.Equal(string.Empty, part.Html);
     }
 
@@ -896,8 +894,7 @@ public class HtmlBodyPartContentImportHandlerTests
 
         await _handler.ImportAsync(context);
 
-        var part = contentItem.As<HtmlBodyPart>();
-        Assert.Null(part);
+        Assert.False(contentItem.TryGet<HtmlBodyPart>(out _));
     }
 
     [Fact]
@@ -916,7 +913,7 @@ public class HtmlBodyPartContentImportHandlerTests
         var exportContext = new ContentPartExportMapContext
         {
             ContentTypePartDefinition = CreateTypePartDefinition("HtmlBodyPart"),
-            ContentPart = contentItem.As<HtmlBodyPart>(),
+            ContentPart = contentItem.GetOrCreate<HtmlBodyPart>(),
             ContentItem = contentItem,
             Row = row,
         };
@@ -942,7 +939,7 @@ public class HtmlBodyPartContentImportHandlerTests
         var exportContext = new ContentPartExportMapContext
         {
             ContentTypePartDefinition = CreateTypePartDefinition("HtmlBodyPart"),
-            ContentPart = contentItem.As<HtmlBodyPart>(),
+            ContentPart = contentItem.GetOrCreate<HtmlBodyPart>(),
             ContentItem = contentItem,
             Row = row,
         };
@@ -1012,8 +1009,7 @@ public class AutoroutePartContentImportHandlerTests
 
         await _handler.ImportAsync(context);
 
-        var part = contentItem.As<AutoroutePart>();
-        Assert.NotNull(part);
+        Assert.True(contentItem.TryGet<AutoroutePart>(out var part));
         Assert.Equal("my-article-slug", part.Path);
     }
 
@@ -1039,8 +1035,7 @@ public class AutoroutePartContentImportHandlerTests
 
         await _handler.ImportAsync(context);
 
-        var part = contentItem.As<AutoroutePart>();
-        Assert.Null(part);
+        Assert.False(contentItem.TryGet<AutoroutePart>(out _));
     }
 
     [Fact]
@@ -1063,8 +1058,7 @@ public class AutoroutePartContentImportHandlerTests
 
         await _handler.ImportAsync(context);
 
-        var part = contentItem.As<AutoroutePart>();
-        Assert.Null(part);
+        Assert.False(contentItem.TryGet<AutoroutePart>(out _));
     }
 
     [Fact]
@@ -1083,7 +1077,7 @@ public class AutoroutePartContentImportHandlerTests
         var exportContext = new ContentPartExportMapContext
         {
             ContentTypePartDefinition = CreateTypePartDefinition("AutoroutePart"),
-            ContentPart = contentItem.As<AutoroutePart>(),
+            ContentPart = contentItem.GetOrCreate<AutoroutePart>(),
             ContentItem = contentItem,
             Row = row,
         };
@@ -1109,7 +1103,7 @@ public class AutoroutePartContentImportHandlerTests
         var exportContext = new ContentPartExportMapContext
         {
             ContentTypePartDefinition = CreateTypePartDefinition("AutoroutePart"),
-            ContentPart = contentItem.As<AutoroutePart>(),
+            ContentPart = contentItem.GetOrCreate<AutoroutePart>(),
             ContentItem = contentItem,
             Row = row,
         };
@@ -1179,8 +1173,7 @@ public class MarkdownBodyPartContentImportHandlerTests
 
         await _handler.ImportAsync(context);
 
-        var part = contentItem.As<MarkdownBodyPart>();
-        Assert.NotNull(part);
+        Assert.True(contentItem.TryGet<MarkdownBodyPart>(out var part));
         Assert.Equal("## Hello World", part.Markdown);
     }
 
@@ -1199,7 +1192,7 @@ public class MarkdownBodyPartContentImportHandlerTests
         var exportContext = new ContentPartExportMapContext
         {
             ContentTypePartDefinition = CreateTypePartDefinition("MarkdownBodyPart"),
-            ContentPart = contentItem.As<MarkdownBodyPart>(),
+            ContentPart = contentItem.GetOrCreate<MarkdownBodyPart>(),
             ContentItem = contentItem,
             Row = row,
         };
@@ -1256,8 +1249,7 @@ public class AliasPartContentImportHandlerTests
 
         await _handler.ImportAsync(context);
 
-        var part = contentItem.As<AliasPart>();
-        Assert.NotNull(part);
+        Assert.True(contentItem.TryGet<AliasPart>(out var part));
         Assert.Equal("my-alias", part.Alias);
     }
 
@@ -1276,7 +1268,7 @@ public class AliasPartContentImportHandlerTests
         var exportContext = new ContentPartExportMapContext
         {
             ContentTypePartDefinition = CreateTypePartDefinition("AliasPart"),
-            ContentPart = contentItem.As<AliasPart>(),
+            ContentPart = contentItem.GetOrCreate<AliasPart>(),
             ContentItem = contentItem,
             Row = row,
         };
@@ -1333,8 +1325,7 @@ public class PublishLaterPartContentImportHandlerTests
 
         await _handler.ImportAsync(context);
 
-        var part = contentItem.As<PublishLaterPart>();
-        Assert.NotNull(part);
+        Assert.True(contentItem.TryGet<PublishLaterPart>(out var part));
         Assert.NotNull(part.ScheduledPublishUtc);
     }
 
@@ -1354,7 +1345,7 @@ public class PublishLaterPartContentImportHandlerTests
         var exportContext = new ContentPartExportMapContext
         {
             ContentTypePartDefinition = CreateTypePartDefinition("PublishLaterPart"),
-            ContentPart = contentItem.As<PublishLaterPart>(),
+            ContentPart = contentItem.GetOrCreate<PublishLaterPart>(),
             ContentItem = contentItem,
             Row = row,
         };
@@ -1673,7 +1664,8 @@ public class ArchiveLaterPartContentImportHandlerTests
             Row = row,
         });
 
-        Assert.NotNull(contentItem.As<ArchiveLaterPart>()?.ScheduledArchiveUtc);
+        Assert.True(contentItem.TryGet<ArchiveLaterPart>(out var part));
+        Assert.NotNull(part.ScheduledArchiveUtc);
     }
 
     [Fact]
@@ -1692,7 +1684,7 @@ public class ArchiveLaterPartContentImportHandlerTests
         await _handler.ExportAsync(new ContentPartExportMapContext
         {
             ContentTypePartDefinition = CreateTypePartDefinition("ArchiveLaterPart"),
-            ContentPart = contentItem.As<ArchiveLaterPart>(),
+            ContentPart = contentItem.GetOrCreate<ArchiveLaterPart>(),
             ContentItem = contentItem,
             Row = row,
         });
@@ -1739,7 +1731,8 @@ public class LiquidPartContentImportHandlerTests
             Row = row,
         });
 
-        Assert.Equal("{{ Model.ContentItem.DisplayText }}", contentItem.As<LiquidPart>()?.Liquid);
+        Assert.True(contentItem.TryGet<LiquidPart>(out var part));
+        Assert.Equal("{{ Model.ContentItem.DisplayText }}", part.Liquid);
     }
 
     [Fact]
@@ -1757,7 +1750,7 @@ public class LiquidPartContentImportHandlerTests
         await _handler.ExportAsync(new ContentPartExportMapContext
         {
             ContentTypePartDefinition = CreateTypePartDefinition("LiquidPart"),
-            ContentPart = contentItem.As<LiquidPart>(),
+            ContentPart = contentItem.GetOrCreate<LiquidPart>(),
             ContentItem = contentItem,
             Row = row,
         });
