@@ -46,7 +46,10 @@ const versionManagers = {
             console.log(chalk.cyan("Installing fnm (Fast Node Manager)..."));
             if (process.platform === "win32") {
                 execSync("winget install Schniz.fnm", { stdio: "inherit" });
-                console.log(chalk.yellow("\nPlease restart your terminal for fnm to be available in your PATH, then re-run the build."));
+                console.log(chalk.yellow("\nPlease restart your terminal, then run the following commands:"));
+                console.log(chalk.white(`  fnm install ${expectedVersion}`));
+                console.log(chalk.white("  corepack enable"));
+                console.log(chalk.white("  yarn build"));
                 process.exit(0);
             } else {
                 execSync("curl -fsSL https://fnm.vercel.app/install | bash", { stdio: "inherit" });
@@ -54,7 +57,7 @@ const versionManagers = {
         },
         useNode(version) {
             execSync(`fnm install ${version}`, { stdio: "inherit" });
-            execSync(`fnm use ${version}`, { stdio: "inherit" });
+            execSync(`fnm exec --using ${version} -- corepack enable`, { stdio: "inherit" });
         },
         execCommand(version, args) {
             return `fnm exec --using ${version} -- corepack yarn ${args}`;
@@ -74,7 +77,7 @@ const versionManagers = {
         useNode(version) {
             const nvmDir = process.env.NVM_DIR || path.join(process.env.HOME, ".nvm");
             const nvmLoad = `. "${nvmDir}/nvm.sh"`;
-            execSync(`${nvmLoad} && nvm install ${version}`, { stdio: "inherit", shell: "bash" });
+            execSync(`${nvmLoad} && nvm install ${version} && corepack enable`, { stdio: "inherit", shell: "bash" });
         },
         execCommand(version, args) {
             const nvmDir = process.env.NVM_DIR || path.join(process.env.HOME, ".nvm");
@@ -87,7 +90,10 @@ const versionManagers = {
             console.log(chalk.cyan("Installing Volta..."));
             if (process.platform === "win32") {
                 execSync("winget install Volta.Volta", { stdio: "inherit" });
-                console.log(chalk.yellow("\nPlease restart your terminal for Volta to be available in your PATH, then re-run the build."));
+                console.log(chalk.yellow("\nPlease restart your terminal, then run the following commands:"));
+                console.log(chalk.white(`  volta install node@${expectedVersion}`));
+                console.log(chalk.white("  corepack enable"));
+                console.log(chalk.white("  yarn build"));
                 process.exit(0);
             } else {
                 execSync("curl https://get.volta.sh | bash", { stdio: "inherit" });
@@ -95,6 +101,7 @@ const versionManagers = {
         },
         useNode(version) {
             execSync(`volta install node@${version}`, { stdio: "inherit" });
+            execSync("corepack enable", { stdio: "inherit" });
         },
         execCommand(version, args) {
             return `volta run --node ${version} -- corepack yarn ${args}`;
