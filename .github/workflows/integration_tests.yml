@@ -1,0 +1,50 @@
+name: Integration Tests
+
+on:
+  # Manual trigger.
+  workflow_dispatch:
+  pull_request_review:
+    types: [submitted]
+  # Run it on main and release pushes too, in case we merge from a branch that's not up-to-date with the target branch
+  # and breaks something after merge (or if we push to main).
+  push:
+    paths-ignore:
+      - '**/*.md'
+      - 'mkdocs.yml'
+      - 'src/docs/**/*'
+    branches: [ main, release/** ]
+
+env:
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+jobs:
+  test_s3_localstack:
+    name: Integration Tests - S3 (LocalStack)
+    if: github.event_name == 'workflow_dispatch' ||
+        github.event_name == 'push' ||
+        github.event.review.state == 'APPROVED' ||
+        github.event.review.state == 'CHANGES_REQUESTED'
+    runs-on: ubuntu-24.04
+    steps:
+    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+    - uses: ./.github/actions/setup-dotnet
+    - name: Build
+      run: |
+        dotnet build -c Release --project ./test/OrchardCore.Tests/OrchardCore.Tests.csproj /p:NuGetAudit=false
+    - name: Start LocalStack
+      run: |
+        docker run -d --name localstack -p 4566:4566 localstack/localstack:s3-latest
+        echo "Waiting for LocalStack to be ready..."
+        for i in $(seq 1 30); do
+          if curl -s http://127.0.0.1:4566/_localstack/health | grep -q '"s3": "available"'; then
+            echo "LocalStack is ready."
+            break
+          fi
+          sleep 2
+        done
+    - name: S3 Integration Tests
+      env:
+        LOCALSTACK_SERVICE_URL: http://127.0.0.1:4566
+      run: |
+        dotnet test --project ./test/OrchardCore.Tests/OrchardCore.Tests.csproj -c Release --no-build --filter "FullyQualifiedName~OrchardCore.Tests.Modules.OrchardCore.Media.AmazonS3"
