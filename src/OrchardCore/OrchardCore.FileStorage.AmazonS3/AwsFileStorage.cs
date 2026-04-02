@@ -71,7 +71,7 @@ public class AwsFileStore : IFileStore
         bool includeSubDirectories = false)
     {
         path = this.NormalizePath(path);
-        
+
         var listObjectsResponse = await _amazonS3Client.ListObjectsV2Async(new ListObjectsV2Request
         {
             BucketName = _options.BucketName,

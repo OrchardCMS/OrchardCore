@@ -155,17 +155,16 @@ public class AuditTrailManager : IAuditTrailManager
 
     private async Task<string> GetClientIpAddressAsync()
     {
-        var settings = await GetAuditTrailSettingsAsync();
-        if (!settings.ClientIpAddressAllowed)
+        var siteSettings = await _siteService.GetSiteSettingsAsync();
+
+        if (!siteSettings.TryGet<AuditTrailSettings>(out var settings) ||
+            !settings.ClientIpAddressAllowed)
         {
             return null;
         }
 
         return (await _clientIPAddressAccessor.GetIPAddressAsync())?.ToString();
     }
-
-    private async Task<AuditTrailSettings> GetAuditTrailSettingsAsync() =>
-        (await _siteService.GetSiteSettingsAsync()).As<AuditTrailSettings>();
 
     private async Task<bool> IsEventEnabledAsync(AuditTrailEventDescriptor descriptor)
     {
@@ -174,7 +173,12 @@ public class AuditTrailManager : IAuditTrailManager
             return true;
         }
 
-        var settings = await GetAuditTrailSettingsAsync();
+        var siteSettings = await _siteService.GetSiteSettingsAsync();
+
+        if (!siteSettings.TryGet<AuditTrailSettings>(out var settings))
+        {
+            return descriptor.IsEnabledByDefault;
+        }
 
         var eventSettings = settings.Categories
             .FirstOrDefault(category => category.Name == descriptor.Category)?.Events

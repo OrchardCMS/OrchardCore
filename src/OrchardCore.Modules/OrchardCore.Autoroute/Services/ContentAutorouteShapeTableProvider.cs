@@ -2,7 +2,6 @@ using OrchardCore.Autoroute.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
-using OrchardCore.DisplayManagement.Utilities;
 
 namespace OrchardCore.Autoroute.Services;
 
@@ -16,17 +15,16 @@ public sealed class ContentAutorouteShapeTableProvider : ShapeTableProvider
                 var shape = displaying.Shape;
                 var contentItem = shape.GetProperty<ContentItem>("ContentItem");
 
-                var autoroutePart = contentItem?.As<AutoroutePart>();
-
-                if (autoroutePart != null)
+                if (contentItem is not null && contentItem.TryGet<AutoroutePart>(out var autoroutePart))
                 {
-                    var encodedSlug = autoroutePart.Path.EncodeAlternateElement().Replace("/", "__");
+                    var displayType = displaying.Shape.Metadata.DisplayType;
 
-                    // Content__Slug__[Slug] e.g. Content-Slug-example, Content-Slug-blog-my-post
-                    displaying.Shape.Metadata.Alternates.Add("Content__Slug__" + encodedSlug);
+                    // Get cached alternates and add them efficiently
+                    var cachedAlternates = AutorouteAlternatesFactory.GetAlternates(
+                        autoroutePart.Path,
+                        displayType);
 
-                    // Content_[DisplayType]__Slug__[Slug] e.g. Content-Slug-example.Summary, Content-Slug-blog-my-post.Summary
-                    displaying.Shape.Metadata.Alternates.Add("Content_" + displaying.Shape.Metadata.DisplayType + "__Slug__" + encodedSlug);
+                    displaying.Shape.Metadata.Alternates.AddRange(cachedAlternates);
                 }
             });
 

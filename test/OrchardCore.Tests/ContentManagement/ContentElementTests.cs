@@ -3,6 +3,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.Title.Models;
 
 namespace OrchardCore.Tests.ContentManagement;
+
 public class ContentElementTests
 {
     [Fact]
@@ -77,7 +78,7 @@ public class ContentElementTests
             Minutes = -15,
         });
 
-        var instance = contentItem.As<TestContentPart>();
+        var instance = contentItem.GetOrCreate<TestContentPart>();
 
         Assert.NotNull(instance);
         Assert.Equal(-15, instance.Minutes);

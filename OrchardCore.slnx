@@ -288,8 +288,8 @@
   <Folder Name="/test/">
     <Project Path="test/OrchardCore.Abstractions.Tests/OrchardCore.Abstractions.Tests.csproj" />
     <Project Path="test/OrchardCore.Benchmarks/OrchardCore.Benchmarks.csproj" />
-    <Project Path="test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj" />
     <Project Path="test/OrchardCore.Tests/OrchardCore.Tests.csproj" />
+    <Project Path="test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj" />
     <Project Path="test/OrchardCore.Tests.Integration/OrchardCore.Tests.Integration.csproj" />
   </Folder>
   <Folder Name="/test/OrchardCore.Tests.Features/">

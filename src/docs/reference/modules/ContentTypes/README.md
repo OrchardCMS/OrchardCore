@@ -179,7 +179,7 @@ public sealed class ProductController : Controller
             return NotFoundObjectResult();
         }
 
-        var productPart = product.As<Product>();
+        var productPart = product.GetOrCreate<Product>();
 
         // you'll get exceptions if any of these Fields are null
         // the null-conditional operator (?) should be used for any fields which aren't required
@@ -200,7 +200,7 @@ public sealed class ProductController : Controller
             return NotFoundObjectResult();
         }
 
-        var productPart = product.As<Product>();
+        var productPart = product.GetOrCreate<Product>();
         productPart.Price.Value = price;
 
         product.Apply(productPart) //apply modified part to a content item

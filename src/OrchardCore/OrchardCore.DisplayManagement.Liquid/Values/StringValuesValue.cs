@@ -195,41 +195,31 @@ internal sealed class StringValuesValue : FluidValue
     public override void WriteTo(TextWriter writer, TextEncoder encoder, CultureInfo cultureInfo)
     {
         AssertWriteToParameters(writer, encoder, cultureInfo);
-
-        if (_stringValues.Count == 0)
-        {
-            return;
-        }
-        else if (_stringValues.Count == 1)
-        {
-            writer.Write(_stringValues[0]);
-        }
-        else
-        {
-            foreach (var v in _stringValues)
-            {
-                writer.Write(v);
-            }
-        }
+        WriteEncodedTo(writer, encoder);
     }
 
-    public override async ValueTask WriteToAsync(TextWriter writer, TextEncoder encoder, CultureInfo cultureInfo)
+    public override ValueTask WriteToAsync(TextWriter writer, TextEncoder encoder, CultureInfo cultureInfo)
     {
         AssertWriteToParameters(writer, encoder, cultureInfo);
+        WriteEncodedTo(writer, encoder);
+        return ValueTask.CompletedTask;
+    }
 
+    private void WriteEncodedTo(TextWriter writer, TextEncoder encoder)
+    {
         if (_stringValues.Count == 0)
         {
             return;
         }
         else if (_stringValues.Count == 1)
         {
-            await writer.WriteAsync(_stringValues[0]);
+            encoder.Encode(writer, _stringValues[0]);
         }
         else
         {
             foreach (var v in _stringValues)
             {
-                await writer.WriteAsync(v);
+                encoder.Encode(writer, v);
             }
         }
     }
