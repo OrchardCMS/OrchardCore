@@ -166,8 +166,8 @@ public class LuceneQueryTests
             Assert.NotEmpty(contentItems);
             Assert.True(contentItems.Count() >= 4);
 
-            Assert.Contains("Orchard", contentItems.ElementAt(0).As<HtmlBodyPart>().Html, StringComparison.OrdinalIgnoreCase);
-            Assert.Contains("Orchard", contentItems.ElementAt(1).As<HtmlBodyPart>().Html, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("Orchard", contentItems.ElementAt(0).GetOrCreate<HtmlBodyPart>().Html, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("Orchard", contentItems.ElementAt(1).GetOrCreate<HtmlBodyPart>().Html, StringComparison.OrdinalIgnoreCase);
             Assert.Contains("Orchard", contentItems.ElementAt(2).DisplayText, StringComparison.OrdinalIgnoreCase);
             Assert.Contains("Orchard", contentItems.ElementAt(3).DisplayText, StringComparison.OrdinalIgnoreCase);
         }

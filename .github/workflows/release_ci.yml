@@ -28,10 +28,6 @@ jobs:
           echo "VERSION=${VERSION}" >> $GITHUB_OUTPUT
       shell: bash
     - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-    - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
-      with:
-        node-version: "15"
-        package-manager-cache: false
     - uses: ./.github/actions/setup-dotnet
     - name: Set build number 
       if: matrix.os == 'ubuntu-24.04'
@@ -44,20 +40,33 @@ jobs:
     - name: Unit Tests
       run: |
         dotnet test --project ./test/OrchardCore.Tests/OrchardCore.Tests.csproj -c Release --no-build
-    - name: Functional Tests
+    - name: Cache Playwright Browsers
+      if: matrix.os == 'ubuntu-24.04'
+      uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+      with:
+        path: ~/.cache/ms-playwright
+        key: playwright-${{ hashFiles('Directory.Packages.props') }}
+    - name: Install Playwright Browsers
       if: matrix.os == 'ubuntu-24.04'
       run: |
-        cd test/OrchardCore.Tests.Functional
-        npm install
-        npm run cms:test
-        npm run mvc:test
+        pwsh test/OrchardCore.Tests.Functional/bin/Release/net10.0/playwright.ps1 install --with-deps chromium
+    - name: Functional Tests - CMS
+      if: matrix.os == 'ubuntu-24.04'
+      run: |
+        dotnet test --project test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj -c Release --no-build --filter-class "*Cms*"
+    - name: Functional Tests - MVC
+      if: matrix.os == 'ubuntu-24.04'
+      run: |
+        dotnet test --project test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj -c Release --no-build --filter-class "*Mvc*"
     - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
       if: matrix.os == 'ubuntu-24.04' && failure()
       with:
         name: Functional Test failure
         path: |
-          test/OrchardCore.Tests.Functional/cms-tests/cypress/screenshots
-          src/OrchardCore.Cms.Web/App_Data_Tests/logs
+          src/OrchardCore.Cms.Web/App_Data_Tests_*/logs
+          src/OrchardCore.Mvc.Web/App_Data_Tests/logs
+          test/OrchardCore.Tests.Functional/traces
+        retention-days: 3
     - name: Deploy release NuGet packages
       if: matrix.os == 'ubuntu-24.04'
       run: |
@@ -77,7 +86,7 @@ jobs:
       shell: pwsh
       run: |
         Get-ChildItem ./src/OrchardCore.Cms.Web/App_Data -Recurse | Remove-Item -Recurse -Confirm:$false
-        Get-ChildItem ./src/OrchardCore.Cms.Web/App_Data_Tests -Recurse | Remove-Item -Recurse -Confirm:$false
+        Get-ChildItem ./src/OrchardCore.Cms.Web/App_Data_Tests_* -Recurse | Remove-Item -Recurse -Confirm:$false
         $output = [System.IO.Path]::GetFullPath("./.build/release")
         dotnet publish src/OrchardCore.Cms.Web/OrchardCore.Cms.Web.csproj -c Release --property:PublishDir=$output --no-build --framework net10.0
         docker buildx build -f Dockerfile-CI --platform=linux/amd64 -t orchardproject/orchardcore-cms-linux:latest -t orchardproject/orchardcore-cms-linux:${{ steps.get_version.outputs.VERSION }} --push .

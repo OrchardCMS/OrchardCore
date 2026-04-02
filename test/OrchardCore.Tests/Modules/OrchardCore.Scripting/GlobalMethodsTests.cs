@@ -1,6 +1,7 @@
 using OrchardCore.Scripting;
+using OrchardCore.Scripting.Providers;
 
-namespace OrchardCore.Json.Nodes.Test;
+namespace OrchardCore.Tests.Modules.OrchardCore.Scripting;
 
 public class GlobalMethodsTests
 {
@@ -32,5 +33,56 @@ public class GlobalMethodsTests
         var expected = "<Hello>";
 
         Assert.Equal(expected, htmldecode(source));
+    }
+
+    [Fact]
+    public void ShouldEncryptAndDecrypt()
+    {
+        var services = new ServiceCollection();
+        services.AddDataProtection();
+        using var serviceProvider = services.BuildServiceProvider();
+
+        var methods = new DataProtectionMethods();
+        var methodDict = methods.GetMethods().ToDictionary(m => m.Name);
+
+        var encrypt = (Func<string, string>)methodDict["encrypt"].Method(serviceProvider);
+        var decrypt = (Func<string, string>)methodDict["decrypt"].Method(serviceProvider);
+
+        const string plainText = "Hello World!";
+        var encrypted = encrypt(plainText);
+        var decrypted = decrypt(encrypted);
+
+        Assert.NotEqual(plainText, encrypted);
+        Assert.Equal(plainText, decrypted);
+    }
+
+    [Fact]
+    public void ShouldReturnEmptyStringWhenDecryptingEmptyInput()
+    {
+        var services = new ServiceCollection();
+        services.AddDataProtection();
+        using var serviceProvider = services.BuildServiceProvider();
+
+        var methods = new DataProtectionMethods();
+        var methodDict = methods.GetMethods().ToDictionary(m => m.Name);
+
+        var decrypt = (Func<string, string>)methodDict["decrypt"].Method(serviceProvider);
+
+        Assert.Equal(string.Empty, decrypt(string.Empty));
+    }
+
+    [Fact]
+    public void ShouldReturnEmptyStringWhenDecryptingInvalidInput()
+    {
+        var services = new ServiceCollection();
+        services.AddDataProtection();
+        using var serviceProvider = services.BuildServiceProvider();
+
+        var methods = new DataProtectionMethods();
+        var methodDict = methods.GetMethods().ToDictionary(m => m.Name);
+
+        var decrypt = (Func<string, string>)methodDict["decrypt"].Method(serviceProvider);
+
+        Assert.Equal(string.Empty, decrypt(Convert.ToBase64String("not-a-valid-ciphertext"u8.ToArray())));
     }
 }

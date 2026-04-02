@@ -69,9 +69,7 @@ public sealed class WidgetsListPartDisplayDriver : ContentPartDisplayDriver<Widg
                     continue;
                 }
 
-                var layerMetadata = widget.As<WidgetMetadata>();
-
-                if (layerMetadata != null)
+                if (widget.TryGet<WidgetMetadata>(out _))
                 {
                     var widgetContent = await contentItemDisplayManager.BuildDisplayAsync(widget, context.Updater);
 
