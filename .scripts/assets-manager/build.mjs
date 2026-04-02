@@ -27,6 +27,11 @@ function prompt(question) {
 
 function isCommandAvailable(cmd) {
     try {
+        if (cmd === "nvm") {
+            // nvm is a shell function, not a binary — check if the script exists
+            const nvmDir = process.env.NVM_DIR || path.join(process.env.HOME, ".nvm");
+            return fs.existsSync(path.join(nvmDir, "nvm.sh"));
+        }
         execSync(`${cmd} --version`, { stdio: "ignore" });
         return true;
     } catch {
@@ -41,6 +46,8 @@ const versionManagers = {
             console.log(chalk.cyan("Installing fnm (Fast Node Manager)..."));
             if (process.platform === "win32") {
                 execSync("winget install Schniz.fnm", { stdio: "inherit" });
+                console.log(chalk.yellow("\nPlease restart your terminal for fnm to be available in your PATH, then re-run the build."));
+                process.exit(0);
             } else {
                 execSync("curl -fsSL https://fnm.vercel.app/install | bash", { stdio: "inherit" });
             }
@@ -80,6 +87,8 @@ const versionManagers = {
             console.log(chalk.cyan("Installing Volta..."));
             if (process.platform === "win32") {
                 execSync("winget install Volta.Volta", { stdio: "inherit" });
+                console.log(chalk.yellow("\nPlease restart your terminal for Volta to be available in your PATH, then re-run the build."));
+                process.exit(0);
             } else {
                 execSync("curl https://get.volta.sh | bash", { stdio: "inherit" });
             }
