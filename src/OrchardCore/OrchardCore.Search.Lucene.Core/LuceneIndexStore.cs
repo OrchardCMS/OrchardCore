@@ -135,17 +135,26 @@ public sealed class LuceneIndexStore : ILuceneIndexStore, IDisposable
     {
         if (!_writers.TryGetValue(index.Id, out var writer))
         {
-            var metadata = index.As<LuceneIndexMetadata>();
-            var queryMetadata = index.As<LuceneIndexDefaultQueryMetadata>();
+            var analyzerName = LuceneConstants.DefaultAnalyzer;
+            if (index.TryGet<LuceneIndexMetadata>(out var metadata) && !string.IsNullOrEmpty(metadata.AnalyzerName))
+            {
+                analyzerName = metadata.AnalyzerName;
+            }
 
-            var analyzer = _analyzerManager.CreateAnalyzer(metadata.AnalyzerName ?? LuceneConstants.DefaultAnalyzer);
+            var defaultVersion = LuceneConstants.DefaultVersion;
+            if (index.TryGet<LuceneIndexDefaultQueryMetadata>(out var queryMetadata))
+            {
+                defaultVersion = queryMetadata.DefaultVersion;
+            }
+
+            var analyzer = _analyzerManager.CreateAnalyzer(analyzerName);
 
             lock (_lock)
             {
                 if (!_writers.TryGetValue(index.Id, out writer))
                 {
                     var directory = CreateDirectory(index.IndexFullName);
-                    var config = new IndexWriterConfig(queryMetadata.DefaultVersion, analyzer)
+                    var config = new IndexWriterConfig(defaultVersion, analyzer)
                     {
                         OpenMode = OpenMode.CREATE_OR_APPEND,
                         WriteLockTimeout = LuceneLock.LOCK_POLL_INTERVAL * 3,

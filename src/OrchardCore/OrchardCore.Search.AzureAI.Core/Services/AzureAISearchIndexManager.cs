@@ -177,7 +177,7 @@ public sealed class AzureAISearchIndexManager : IIndexManager
         var searchFields = new List<SearchField>();
 
         var suggesterFieldNames = new List<string>();
-        var metadata = indexProfile.As<AzureAISearchIndexMetadata>();
+        var metadata = indexProfile.GetOrCreate<AzureAISearchIndexMetadata>();
 
         foreach (var indexMap in metadata.IndexMappings)
         {

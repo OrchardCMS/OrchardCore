@@ -60,18 +60,28 @@ public class ElasticsearchService : ISearchService
             return result;
         }
 
-        var metadata = index.As<ContentIndexMetadata>();
+        var latest = false;
 
-        var queryMetadata = index.As<ElasticsearchDefaultQueryMetadata>();
+        if (index.TryGet<ContentIndexMetadata>(out var storedMetadata))
+        {
+            latest = storedMetadata.IndexLatest;
+        }
 
-        if (index == null || !await _elasticIndexManager.ExistsAsync(index.IndexFullName))
+        if (!await _elasticIndexManager.ExistsAsync(index.IndexFullName))
         {
             _logger.LogWarning("Elasticsearch: Couldn't execute search. The search index doesn't exist.");
 
             return result;
         }
 
-        result.Latest = metadata.IndexLatest;
+        result.Latest = latest;
+
+        if (!index.TryGet<ElasticsearchDefaultQueryMetadata>(out var queryMetadata))
+        {
+            _logger.LogWarning("Elasticsearch: Couldn't execute search. No default query settings were configured.");
+
+            return result;
+        }
 
         if (queryMetadata.DefaultSearchFields == null || queryMetadata.DefaultSearchFields.Length == 0)
         {
@@ -83,6 +93,12 @@ public class ElasticsearchService : ISearchService
         try
         {
             var searchType = queryMetadata.GetSearchType();
+            var analyzerName = ElasticsearchConstants.DefaultAnalyzer;
+
+            if (index.TryGet<ElasticsearchIndexMetadata>(out var indexMetadata))
+            {
+                analyzerName = indexMetadata.GetQueryAnalyzerName();
+            }
 
             SearchRequest searchRequest;
 
@@ -106,14 +122,12 @@ public class ElasticsearchService : ISearchService
                 {
                     _logger.LogError(ex, "Incorrect Elasticsearch search query syntax provided in custom query.");
 
-                    var metadataIndex = index.As<ElasticsearchIndexMetadata>();
-
                     searchRequest = new()
                     {
                         Query = new MultiMatchQuery
                         {
                             Fields = queryMetadata.DefaultSearchFields,
-                            Analyzer = metadataIndex.GetQueryAnalyzerName(),
+                            Analyzer = analyzerName,
                             Query = term,
                         },
                     };
@@ -121,28 +135,24 @@ public class ElasticsearchService : ISearchService
             }
             else if (searchType == ElasticsearchConstants.QueryStringSearchType)
             {
-                var metadataIndex = index.As<ElasticsearchIndexMetadata>();
-
                 searchRequest = new()
                 {
                     Query = new QueryStringQuery
                     {
                         Fields = queryMetadata.DefaultSearchFields,
-                        Analyzer = metadataIndex.GetQueryAnalyzerName(),
+                        Analyzer = analyzerName,
                         Query = term,
                     },
                 };
             }
             else
             {
-                var metadataIndex = index.As<ElasticsearchIndexMetadata>();
-
                 searchRequest = new()
                 {
                     Query = new MultiMatchQuery
                     {
                         Fields = queryMetadata.DefaultSearchFields,
-                        Analyzer = metadataIndex.GetQueryAnalyzerName(),
+                        Analyzer = analyzerName,
                         Query = term,
                     },
                 };

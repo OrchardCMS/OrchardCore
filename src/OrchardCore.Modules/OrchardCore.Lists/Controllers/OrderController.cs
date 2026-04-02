@@ -74,7 +74,12 @@ public sealed class OrderController : Controller
             }
         }
 
-        var currentOrderOfFirstItem = pageOfContentItems.FirstOrDefault().As<ContainedPart>().Order;
+        if (!pageOfContentItems.First().TryGet<ContainedPart>(out var containedPart))
+        {
+            return NotFound();
+        }
+
+        var currentOrderOfFirstItem = containedPart.Order;
 
         var contentItem = pageOfContentItems[oldIndex];
 

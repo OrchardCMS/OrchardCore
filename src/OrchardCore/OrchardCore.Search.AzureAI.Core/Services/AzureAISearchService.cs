@@ -42,8 +42,10 @@ public sealed class AzureAISearchService : ISearchService
             return result;
         }
 
-        result.Latest = index.As<ContentIndexMetadata>().IndexLatest;
-        var queryMetadata = index.As<AzureAISearchDefaultQueryMetadata>();
+        if (index.TryGet<ContentIndexMetadata>(out var contentMetadata))
+        {
+            result.Latest = contentMetadata.IndexLatest;
+        }
 
         try
         {
@@ -56,8 +58,7 @@ public sealed class AzureAISearchService : ISearchService
                 Select = { ContentIndexingConstants.ContentItemIdKey },
             };
 
-
-            if (queryMetadata.DefaultSearchFields?.Length > 0)
+            if (index.TryGet<AzureAISearchDefaultQueryMetadata>(out var queryMetadata) && queryMetadata.DefaultSearchFields?.Length > 0)
             {
                 foreach (var field in queryMetadata.DefaultSearchFields)
                 {
@@ -66,16 +67,17 @@ public sealed class AzureAISearchService : ISearchService
             }
             else
             {
-                var indexMetadata = index.As<AzureAISearchIndexMetadata>();
-
-                foreach (var field in indexMetadata.IndexMappings)
+                if (index.TryGet<AzureAISearchIndexMetadata>(out var indexMetadata))
                 {
-                    if (!field.IsSearchable)
+                    foreach (var field in indexMetadata.IndexMappings)
                     {
-                        continue;
-                    }
+                        if (!field.IsSearchable)
+                        {
+                            continue;
+                        }
 
-                    searchOptions.SearchFields.Add(field.AzureFieldKey);
+                        searchOptions.SearchFields.Add(field.AzureFieldKey);
+                    }
                 }
             }
 
@@ -97,4 +99,3 @@ public sealed class AzureAISearchService : ISearchService
         return result;
     }
 }
-

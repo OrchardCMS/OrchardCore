@@ -69,7 +69,7 @@ public sealed class ContentIndexProfileHandler : IndexProfileHandlerBase
             return Task.CompletedTask;
         }
 
-        var metadata = context.IndexProfile.As<ContentIndexMetadata>();
+        var metadata = context.IndexProfile.GetOrCreate<ContentIndexMetadata>();
 
         context.Data["IndexLatest"] = metadata.IndexLatest;
         context.Data["Culture"] = metadata.Culture;
@@ -93,7 +93,7 @@ public sealed class ContentIndexProfileHandler : IndexProfileHandlerBase
             return Task.CompletedTask;
         }
 
-        var metadata = context.Model.As<ContentIndexMetadata>();
+        var metadata = context.Model.GetOrCreate<ContentIndexMetadata>();
 
         if (metadata.IndexedContentTypes is null || metadata.IndexedContentTypes.Length == 0)
         {
@@ -110,7 +110,7 @@ public sealed class ContentIndexProfileHandler : IndexProfileHandlerBase
             return Task.CompletedTask;
         }
 
-        var metadata = indexProfile.As<ContentIndexMetadata>();
+        var metadata = indexProfile.GetOrCreate<ContentIndexMetadata>();
 
         var indexLatest = data[nameof(metadata.IndexLatest)]?.GetValue<bool>();
 

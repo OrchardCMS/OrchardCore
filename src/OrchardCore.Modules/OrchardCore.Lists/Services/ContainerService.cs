@@ -48,8 +48,7 @@ public class ContainerService : IContainerService
         var i = 0;
         foreach (var contentItem in contentItems)
         {
-            var containedPart = contentItem.As<ContainedPart>();
-            if (containedPart != null && containedPart.Order != orderOfFirstItem + i)
+            if (contentItem.TryGet<ContainedPart>(out var containedPart) && containedPart.Order != orderOfFirstItem + i)
             {
                 containedPart.Order = orderOfFirstItem + i;
                 containedPart.Apply();
@@ -92,15 +91,14 @@ public class ContainerService : IContainerService
             .OrderByDescending(x => x.CreatedUtc);
 
         // Load items so that loading handlers are invoked.
-        var contentItemGroups = (await containedItemsQuery.ListAsync(_contentManager)).ToLookup(l => l.As<ContainedPart>()?.ListContentItemId);
+        var contentItemGroups = (await containedItemsQuery.ListAsync(_contentManager)).ToLookup(l => l.TryGet<ContainedPart>(out var cp) ? cp.ListContentItemId : null);
 
         foreach (var contentItemGroup in contentItemGroups)
         {
             var i = 0;
             foreach (var contentItem in contentItemGroup)
             {
-                var containedPart = contentItem.As<ContainedPart>();
-                if (containedPart != null)
+                if (contentItem.TryGet<ContainedPart>(out var containedPart))
                 {
                     if (contentItem.Published && contentItem.Latest)
                     {
@@ -115,8 +113,7 @@ public class ContainerService : IContainerService
 
                         // If a published version exists, find it, and set it to the same order as the draft.
                         var publishedItem = contentItemGroup.FirstOrDefault(p => p.Published == true && p.ContentItemId == contentItem.ContentItemId);
-                        var publishedContainedPart = publishedItem?.As<ContainedPart>();
-                        if (publishedContainedPart != null)
+                        if (publishedItem != null && publishedItem.TryGet<ContainedPart>(out var publishedContainedPart))
                         {
                             publishedContainedPart.Order = i;
                             publishedContainedPart.Apply();
@@ -194,28 +191,34 @@ public class ContainerService : IContainerService
             pager.Before = null;
             if (enableOrdering)
             {
-                pager.After = containedItems.Last().As<ContainedPart>().Order.ToString();
+                if (containedItems.Last().TryGet<ContainedPart>(out var lastContainedPart))
+                {
+                    pager.After = lastContainedPart.Order.ToString();
+                }
             }
             else
             {
                 pager.After = containedItems.Last().CreatedUtc.Value.Ticks.ToString();
             }
-            if (containedItems.Count() == pager.PageSize + 1)
-            {
-                containedItems = containedItems.Skip(1);
-                if (enableOrdering)
+                if (containedItems.Count() == pager.PageSize + 1)
                 {
-                    pager.Before = containedItems.First().As<ContainedPart>().Order.ToString();
+                    containedItems = containedItems.Skip(1);
+                    if (enableOrdering)
+                    {
+                        if (containedItems.First().TryGet<ContainedPart>(out var firstContainedPart))
+                        {
+                            pager.Before = firstContainedPart.Order.ToString();
+                        }
+                    }
+                    else
+                    {
+                        pager.Before = containedItems.First().CreatedUtc.Value.Ticks.ToString();
+                    }
                 }
-                else
-                {
-                    pager.Before = containedItems.First().CreatedUtc.Value.Ticks.ToString();
-                }
-            }
 
-            return containedItems;
-        }
-        else if (pager.After != null)
+                return containedItems;
+            }
+            else if (pager.After != null)
         {
             if (enableOrdering)
             {
@@ -248,7 +251,10 @@ public class ContainerService : IContainerService
             // There is always a Before page as we clicked on After
             if (enableOrdering)
             {
-                pager.Before = containedItems.First().As<ContainedPart>().Order.ToString();
+                if (containedItems.First().TryGet<ContainedPart>(out var firstContainedPart))
+                {
+                    pager.Before = firstContainedPart.Order.ToString();
+                }
             }
             else
             {
@@ -261,7 +267,10 @@ public class ContainerService : IContainerService
                 containedItems = containedItems.Take(pager.PageSize);
                 if (enableOrdering)
                 {
-                    pager.After = containedItems.Last().As<ContainedPart>().Order.ToString();
+                    if (containedItems.Last().TryGet<ContainedPart>(out var lastContainedPart))
+                    {
+                        pager.After = lastContainedPart.Order.ToString();
+                    }
                 }
                 else
                 {
@@ -307,7 +316,10 @@ public class ContainerService : IContainerService
                 containedItems = containedItems.Take(pager.PageSize);
                 if (enableOrdering)
                 {
-                    pager.After = containedItems.Last().As<ContainedPart>().Order.ToString();
+                    if (containedItems.Last().TryGet<ContainedPart>(out var lastContainedPart))
+                    {
+                        pager.After = lastContainedPart.Order.ToString();
+                    }
                 }
                 else
                 {

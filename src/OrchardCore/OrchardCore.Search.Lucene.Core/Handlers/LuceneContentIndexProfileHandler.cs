@@ -47,14 +47,14 @@ public sealed class LuceneContentIndexProfileHandler : IndexProfileHandlerBase
             return;
         }
 
-        var LuceneMetadata = index.As<LuceneIndexMetadata>();
+        var LuceneMetadata = index.GetOrCreate<LuceneIndexMetadata>();
 
         var map = new LuceneIndexMap()
         {
             KeyFieldName = ContentIndexingConstants.ContentItemIdKey,
         };
 
-        var metadata = index.As<ContentIndexMetadata>();
+        var metadata = index.GetOrCreate<ContentIndexMetadata>();
 
         map.Fields = (await PopulateTypeMappingAsync(metadata)).ToArray();
 
@@ -70,14 +70,14 @@ public sealed class LuceneContentIndexProfileHandler : IndexProfileHandlerBase
             return;
         }
 
-        var LuceneMetadata = index.As<LuceneIndexMetadata>();
+        var LuceneMetadata = index.GetOrCreate<LuceneIndexMetadata>();
 
         var map = new LuceneIndexMap()
         {
             KeyFieldName = ContentIndexingConstants.ContentItemIdKey,
         };
 
-        var metadata = index.As<ContentIndexMetadata>();
+        var metadata = index.GetOrCreate<ContentIndexMetadata>();
 
         map.Fields = (await PopulateTypeMappingAsync(metadata)).ToArray();
 
@@ -99,7 +99,7 @@ public sealed class LuceneContentIndexProfileHandler : IndexProfileHandlerBase
 
         index.Put(LuceneMetadata);
 
-        var queryMetadata = index.As<LuceneIndexDefaultQueryMetadata>();
+        var queryMetadata = index.GetOrCreate<LuceneIndexDefaultQueryMetadata>();
 
         if (queryMetadata.DefaultSearchFields is null || queryMetadata.DefaultSearchFields.Length == 0)
         {

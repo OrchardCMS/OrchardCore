@@ -61,7 +61,10 @@ public sealed class LuceneQuerySource : IQuerySource
             Items = [],
         };
 
-        var metadata = query.As<LuceneQueryMetadata>();
+        if (!query.TryGet<LuceneQueryMetadata>(out var metadata) || string.IsNullOrEmpty(metadata.Index))
+        {
+            return result;
+        }
 
         var index = await _indexStore.FindByNameAsync(metadata.Index);
 
@@ -76,11 +79,23 @@ public sealed class LuceneQuerySource : IQuerySource
 
             var parameterizedQuery = JsonNode.Parse(tokenizedContent, JOptions.Node, JOptions.Document).AsObject();
 
-            var analyzer = _luceneAnalyzerManager.CreateAnalyzer(index.As<LuceneIndexMetadata>().AnalyzerName);
+            var analyzerName = LuceneConstants.DefaultAnalyzer;
 
-            var queryMetadata = index.As<LuceneIndexDefaultQueryMetadata>();
+            if (index.TryGet<LuceneIndexMetadata>(out var indexMetadata) &&
+                !string.IsNullOrEmpty(indexMetadata.AnalyzerName))
+            {
+                analyzerName = indexMetadata.AnalyzerName;
+            }
 
-            var context = new LuceneQueryContext(searcher, queryMetadata.DefaultVersion, analyzer);
+            var analyzer = _luceneAnalyzerManager.CreateAnalyzer(analyzerName);
+
+            var defaultVersion = LuceneConstants.DefaultVersion;
+            if (index.TryGet<LuceneIndexDefaultQueryMetadata>(out var queryMetadata))
+            {
+                defaultVersion = queryMetadata.DefaultVersion;
+            }
+
+            var context = new LuceneQueryContext(searcher, defaultVersion, analyzer);
             var docs = await _queryService.SearchAsync(context, parameterizedQuery);
             result.Count = docs.Count;
 

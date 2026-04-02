@@ -51,7 +51,7 @@ internal sealed class ElasticsearchIndexProfileDisplayDriver : DisplayDriver<Ind
 
         var data = Initialize<ElasticsearchIndexProfileViewModel>("ElasticsearchIndexProfile_Edit", model =>
         {
-            var metadata = indexProfile.As<ElasticsearchIndexMetadata>();
+            var metadata = indexProfile.GetOrCreate<ElasticsearchIndexMetadata>();
 
             model.StoreSourceData = metadata.StoreSourceData;
             model.AnalyzerName = metadata.AnalyzerName ?? ElasticsearchConstants.DefaultAnalyzer;
@@ -60,7 +60,7 @@ internal sealed class ElasticsearchIndexProfileDisplayDriver : DisplayDriver<Ind
 
         var queryData = Initialize<ElasticsearchDefaultQueryViewModel>("ElasticsearchQuerySettings_Edit", model =>
         {
-            var queryMetadata = indexProfile.As<ElasticsearchDefaultQueryMetadata>();
+            var queryMetadata = indexProfile.GetOrCreate<ElasticsearchDefaultQueryMetadata>();
 
             model.SearchType = queryMetadata.SearchType;
             model.DefaultQuery = queryMetadata.DefaultQuery;
@@ -73,7 +73,7 @@ internal sealed class ElasticsearchIndexProfileDisplayDriver : DisplayDriver<Ind
                 new(S["Custom Query"], ElasticsearchConstants.CustomSearchType),
             ];
 
-            var metadata = indexProfile.As<ElasticsearchIndexMetadata>();
+            var metadata = indexProfile.GetOrCreate<ElasticsearchIndexMetadata>();
 
             if (metadata.IndexMappings?.Mapping?.Properties is null || !metadata.IndexMappings.Mapping.Properties.Any())
             {
@@ -107,7 +107,7 @@ internal sealed class ElasticsearchIndexProfileDisplayDriver : DisplayDriver<Ind
 
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-        var metadata = indexProfile.As<ElasticsearchIndexMetadata>();
+        var metadata = indexProfile.GetOrCreate<ElasticsearchIndexMetadata>();
 
         metadata.StoreSourceData = model.StoreSourceData;
         metadata.AnalyzerName = model.AnalyzerName;

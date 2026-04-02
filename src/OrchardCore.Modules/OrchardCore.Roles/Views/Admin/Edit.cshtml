@@ -72,7 +72,7 @@
 
             @foreach (var group in Model.RoleCategoryPermissions.OrderBy(x => x.Key.Title).ThenBy(x => x.Key.Source))
             {
-                var permissionsContext = $"Permissions;{group.Key.Title}";
+                var permissionsContext = $"Permissions{Constants.ContextSeparator}{group.Key.Title}";
                 <fieldset class="permissions-list">
                     <legend>
                         <span>@D[group.Key.Title, permissionsContext]</span>

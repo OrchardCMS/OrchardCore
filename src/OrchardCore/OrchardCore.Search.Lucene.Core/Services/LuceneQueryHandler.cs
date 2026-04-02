@@ -28,7 +28,7 @@ public sealed class LuceneQueryHandler : QueryHandlerBase
 
         if (hasTemplate || hasIndex)
         {
-            var metadata = context.Query.As<LuceneQueryMetadata>();
+            var metadata = context.Query.GetOrCreate<LuceneQueryMetadata>();
 
             if (hasTemplate)
             {

@@ -61,7 +61,7 @@ public sealed class ElasticsearchDocumentIndexManager : IDocumentIndexManager
             return false;
         }
 
-        var metadata = index.As<ElasticsearchIndexMetadata>();
+        var metadata = index.GetOrCreate<ElasticsearchIndexMetadata>();
 
         var response = await _client.DeleteByQueryAsync<Dictionary<string, object>>(index.IndexFullName, descriptor => descriptor
             .Query(q => q

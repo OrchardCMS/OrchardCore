@@ -162,9 +162,19 @@ public sealed class AdminController : Controller
         {
             await _indexStore.SearchAsync(index, async searcher =>
             {
-                var queryMetadata = index.As<LuceneIndexDefaultQueryMetadata>();
-                var analyzer = _analyzerManager.CreateAnalyzer(index.As<LuceneIndexMetadata>().AnalyzerName);
-                var context = new LuceneQueryContext(searcher, queryMetadata.DefaultVersion, analyzer);
+                var defaultVersion = LuceneConstants.DefaultVersion;
+                if (index.TryGet<LuceneIndexDefaultQueryMetadata>(out var queryMetadata))
+                {
+                    defaultVersion = queryMetadata.DefaultVersion;
+                }
+
+                LuceneIndexMetadata metadata = null;
+                if (index.TryGet<LuceneIndexMetadata>(out var storedMetadata))
+                {
+                    metadata = storedMetadata;
+                }
+                var analyzer = _analyzerManager.CreateAnalyzer(metadata?.AnalyzerName);
+                var context = new LuceneQueryContext(searcher, defaultVersion, analyzer);
 
                 var parameters = JConvert.DeserializeObject<Dictionary<string, object>>(model.Parameters);
 

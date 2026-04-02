@@ -16,7 +16,7 @@ public sealed class LuceneIndexProfileHandler : IndexProfileHandlerBase
             return Task.CompletedTask;
         }
 
-        var LuceneMetadata = context.Model.As<LuceneIndexMetadata>();
+        var LuceneMetadata = context.Model.GetOrCreate<LuceneIndexMetadata>();
 
         var analyzerName = context.Data[nameof(LuceneMetadata.AnalyzerName)]?.GetValue<string>();
 

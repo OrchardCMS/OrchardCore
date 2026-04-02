@@ -107,7 +107,7 @@ internal sealed class IndexingMigrations : DataMigration
                     }
                 }
 
-                var metadata = indexProfile.As<ContentIndexMetadata>();
+                var metadata = indexProfile.GetOrCreate<ContentIndexMetadata>();
 
                 if (string.IsNullOrEmpty(metadata.Culture))
                 {
@@ -142,7 +142,7 @@ internal sealed class IndexingMigrations : DataMigration
 
                 indexProfile.Put(metadata);
 
-                var azureMetadata = indexProfile.As<LuceneIndexMetadata>();
+                var azureMetadata = indexProfile.GetOrCreate<LuceneIndexMetadata>();
 
                 if (string.IsNullOrEmpty(azureMetadata.AnalyzerName))
                 {
@@ -158,7 +158,7 @@ internal sealed class IndexingMigrations : DataMigration
 
                 indexProfile.Put(azureMetadata);
 
-                var queryMetadata = indexProfile.As<LuceneIndexDefaultQueryMetadata>();
+                var queryMetadata = indexProfile.GetOrCreate<LuceneIndexDefaultQueryMetadata>();
                 if (string.IsNullOrEmpty(queryMetadata.QueryAnalyzerName))
                 {
                     queryMetadata.QueryAnalyzerName = indexObject.Value[nameof(queryMetadata.QueryAnalyzerName)]?.GetValue<string>();

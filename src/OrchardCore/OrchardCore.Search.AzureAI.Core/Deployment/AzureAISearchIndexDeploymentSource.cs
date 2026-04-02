@@ -44,7 +44,7 @@ public sealed class AzureAISearchIndexDeploymentSource
                 continue;
             }
 
-            var metadata = index.As<ContentIndexMetadata>();
+            var metadata = index.GetOrCreate<ContentIndexMetadata>();
 
             var contentTypes = new JsonArray();
 
@@ -56,7 +56,7 @@ public sealed class AzureAISearchIndexDeploymentSource
                 }
             }
 
-            var indexMetadata = index.As<AzureAISearchIndexMetadata>();
+            var indexMetadata = index.GetOrCreate<AzureAISearchIndexMetadata>();
 
             var indexInfo = new JsonObject()
             {
@@ -64,7 +64,7 @@ public sealed class AzureAISearchIndexDeploymentSource
                 { "Type", index.Type },
                 { "Name", index.Name },
                 { "AnalyzerName", indexMetadata.AnalyzerName },
-                { "QueryAnalyzerName", index.As<AzureAISearchDefaultQueryMetadata>().QueryAnalyzerName },
+                { "QueryAnalyzerName", index.GetOrCreate<AzureAISearchDefaultQueryMetadata>().QueryAnalyzerName },
                 { "IndexMappings", JArray.FromObject(indexMetadata.IndexMappings ?? []) },
                 { "IndexedContentTypes", contentTypes },
                 { "Culture", metadata.Culture },

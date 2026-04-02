@@ -183,7 +183,7 @@ public sealed class AdminController : Controller, IUpdateModel
                 case NotificationBulkAction.Unread:
                     foreach (var notification in notifications)
                     {
-                        var readPart = notification.As<NotificationReadInfo>();
+                        var readPart = notification.GetOrCreate<NotificationReadInfo>();
                         if (readPart.IsRead)
                         {
                             readPart.IsRead = false;
@@ -204,7 +204,7 @@ public sealed class AdminController : Controller, IUpdateModel
                 case NotificationBulkAction.Read:
                     foreach (var notification in notifications)
                     {
-                        var readPart = notification.As<NotificationReadInfo>();
+                        var readPart = notification.GetOrCreate<NotificationReadInfo>();
 
                         if (!readPart.IsRead)
                         {
@@ -256,7 +256,7 @@ public sealed class AdminController : Controller, IUpdateModel
         var counter = 0;
         foreach (var notification in notifications)
         {
-            var readPart = notification.As<NotificationReadInfo>();
+            var readPart = notification.GetOrCreate<NotificationReadInfo>();
 
             readPart.IsRead = true;
             readPart.ReadAtUtc = utcNow;
@@ -288,7 +288,7 @@ public sealed class AdminController : Controller, IUpdateModel
 
             if (notification != null)
             {
-                var readPart = notification.As<NotificationReadInfo>();
+                var readPart = notification.GetOrCreate<NotificationReadInfo>();
 
                 if (markAsRead)
                 {

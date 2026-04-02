@@ -145,7 +145,7 @@ internal sealed class AzureAISearchIndexSettingsMigrations : DataMigration
                     indexProfile.Id = id;
                 }
 
-                var metadata = indexProfile.As<ContentIndexMetadata>();
+                var metadata = indexProfile.GetOrCreate<ContentIndexMetadata>();
 
                 if (string.IsNullOrEmpty(metadata.Culture))
                 {
@@ -185,7 +185,7 @@ internal sealed class AzureAISearchIndexSettingsMigrations : DataMigration
 
                 indexProfile.Put(metadata);
 
-                var azureMetadata = indexProfile.As<AzureAISearchIndexMetadata>();
+                var azureMetadata = indexProfile.GetOrCreate<AzureAISearchIndexMetadata>();
 
                 if (string.IsNullOrEmpty(azureMetadata.AnalyzerName))
                 {
@@ -211,7 +211,7 @@ internal sealed class AzureAISearchIndexSettingsMigrations : DataMigration
 
                 indexProfile.Put(azureMetadata);
 
-                var queryMetadata = indexProfile.As<AzureAISearchDefaultQueryMetadata>();
+                var queryMetadata = indexProfile.GetOrCreate<AzureAISearchDefaultQueryMetadata>();
 
                 if (string.IsNullOrEmpty(queryMetadata.QueryAnalyzerName))
                 {

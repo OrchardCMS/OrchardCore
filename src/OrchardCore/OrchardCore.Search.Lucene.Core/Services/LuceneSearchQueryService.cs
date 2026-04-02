@@ -39,7 +39,7 @@ public class LuceneSearchQueryService : ILuceneSearchQueryService
         {
             if (end > 0)
             {
-                var metadata = index.As<LuceneIndexMetadata>();
+                var metadata = index.GetOrCreate<LuceneIndexMetadata>();
                 var idSets = new HashSet<string>() { metadata.IndexMappings.KeyFieldName };
                 var collector = TopScoreDocCollector.Create(end, true);
 

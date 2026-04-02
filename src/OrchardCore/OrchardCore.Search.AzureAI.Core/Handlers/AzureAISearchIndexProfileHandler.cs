@@ -37,7 +37,7 @@ public sealed class AzureAISearchIndexProfileHandler : IndexProfileHandlerBase
             context.Result.Fail(new ValidationResult(S["Invalid index name. Must start with a letter and be 1–128 characters long. Only letters, numbers, and underscores are allowed. Names cannot begin with 'azureSearch'."]));
         }
 
-        var metadata = context.Model.As<AzureAISearchIndexMetadata>();
+        var metadata = context.Model.GetOrCreate<AzureAISearchIndexMetadata>();
 
         if (metadata.IndexMappings is null || metadata.IndexMappings.Count == 0)
         {
@@ -54,7 +54,7 @@ public sealed class AzureAISearchIndexProfileHandler : IndexProfileHandlerBase
             return Task.CompletedTask;
         }
 
-        var metadata = index.As<AzureAISearchIndexMetadata>();
+        var metadata = index.GetOrCreate<AzureAISearchIndexMetadata>();
 
         // For backward compatibility, we look for 'AnalyzerName' and 'QueryAnalyzerName' in the data.
         var analyzerName = data[nameof(metadata.AnalyzerName)]?.GetValue<string>();
@@ -76,7 +76,7 @@ public sealed class AzureAISearchIndexProfileHandler : IndexProfileHandlerBase
 
         index.Put(metadata);
 
-        var queryMetadata = index.As<AzureAISearchDefaultQueryMetadata>();
+        var queryMetadata = index.GetOrCreate<AzureAISearchDefaultQueryMetadata>();
 
         var queryAnalyzerName = data[nameof(queryMetadata.QueryAnalyzerName)]?.GetValue<string>();
 

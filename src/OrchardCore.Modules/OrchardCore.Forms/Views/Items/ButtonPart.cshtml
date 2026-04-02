@@ -1,8 +1,11 @@
 @using OrchardCore.Forms.Models
 @model ShapeViewModel<ButtonPart>
 @{
-    var formElementPart = Model.Value.ContentItem.As<FormElementPart>();
-    var formInputElementPart = Model.Value.ContentItem.As<FormInputElementPart>();
+    if (!Model.Value.ContentItem.TryGet<FormElementPart>(out var formElementPart) ||
+        !Model.Value.ContentItem.TryGet<FormInputElementPart>(out var formInputElementPart))
+    {
+        return;
+    }
     var elementId = formElementPart.Id;
     var elementName = formInputElementPart.Name;
     var id = !string.IsNullOrEmpty(elementId) ? elementId : !string.IsNullOrEmpty(elementName) ? Html.GenerateIdFromName(elementName) : default(string);

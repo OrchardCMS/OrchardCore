@@ -40,13 +40,24 @@ public class LuceneSearchService : ISearchService
             return result;
         }
 
-        var queryMetadata = index.As<LuceneIndexDefaultQueryMetadata>();
+        var defaultVersion = LuceneConstants.DefaultVersion;
+        string[] defaultSearchFields = null;
+        string analyzerName = null;
 
-        var defaultSearchFields = queryMetadata.DefaultSearchFields;
-
-        if (defaultSearchFields is null || defaultSearchFields.Length == 0)
+        if (index.TryGet<LuceneIndexDefaultQueryMetadata>(out var queryMetadata))
         {
-            defaultSearchFields = index.As<LuceneIndexMetadata>().IndexMappings?.Fields;
+            defaultVersion = queryMetadata.DefaultVersion;
+            defaultSearchFields = queryMetadata.DefaultSearchFields;
+        }
+
+        if (index.TryGet<LuceneIndexMetadata>(out var indexMetadata))
+        {
+            analyzerName = indexMetadata.AnalyzerName;
+
+            if (defaultSearchFields is null || defaultSearchFields.Length == 0)
+            {
+                defaultSearchFields = indexMetadata.IndexMappings?.Fields;
+            }
         }
 
         if (defaultSearchFields == null || defaultSearchFields.Length == 0)
@@ -55,10 +66,9 @@ public class LuceneSearchService : ISearchService
 
             return result;
         }
-        var metadata = index.As<LuceneIndexMetadata>();
 
-        var analyzer = _analyzerManager.CreateAnalyzer(metadata.AnalyzerName);
-        var queryParser = new MultiFieldQueryParser(queryMetadata.DefaultVersion, defaultSearchFields, analyzer);
+        var analyzer = _analyzerManager.CreateAnalyzer(analyzerName);
+        var queryParser = new MultiFieldQueryParser(defaultVersion, defaultSearchFields, analyzer);
 
         try
         {

@@ -431,7 +431,7 @@ public sealed class ElasticsearchIndexManager : IIndexManager
             },
         };
 
-        var metadata = indexProfile.As<ElasticsearchIndexMetadata>();
+        var metadata = indexProfile.GetOrCreate<ElasticsearchIndexMetadata>();
 
         var analyzerName = metadata.GetAnalyzerName();
 
@@ -519,7 +519,7 @@ public sealed class ElasticsearchIndexManager : IIndexManager
         elasticTopDocs.TotalCount = searchResponse.HitsMetadata?.Total?.Value1?.Value ?? 0;
         elasticTopDocs.SearchResponse = searchResponse;
 
-        var metadata = indexProfile.As<ElasticsearchIndexMetadata>();
+        var metadata = indexProfile.GetOrCreate<ElasticsearchIndexMetadata>();
         var documents = searchResponse.Documents.GetEnumerator();
         var hits = searchResponse.Hits.GetEnumerator();
 

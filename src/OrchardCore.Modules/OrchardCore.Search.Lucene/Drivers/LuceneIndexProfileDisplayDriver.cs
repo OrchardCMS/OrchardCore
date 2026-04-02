@@ -46,7 +46,7 @@ internal sealed class LuceneIndexProfileDisplayDriver : DisplayDriver<IndexProfi
 
         var data = Initialize<LuceneIndexProfileViewModel>("LuceneIndexProfile_Edit", model =>
         {
-            var metadata = index.As<LuceneIndexMetadata>();
+            var metadata = index.GetOrCreate<LuceneIndexMetadata>();
 
             model.StoreSourceData = metadata.StoreSourceData;
             model.AnalyzerName = metadata.AnalyzerName ?? LuceneConstants.DefaultAnalyzer;
@@ -55,8 +55,8 @@ internal sealed class LuceneIndexProfileDisplayDriver : DisplayDriver<IndexProfi
 
         var queryData = Initialize<LuceneDefaultQueryViewModel>("LuceneQuerySettings_Edit", model =>
         {
-            var metadata = index.As<LuceneIndexMetadata>();
-            var queryMetadata = index.As<LuceneIndexDefaultQueryMetadata>();
+            var metadata = index.GetOrCreate<LuceneIndexMetadata>();
+            var queryMetadata = index.GetOrCreate<LuceneIndexDefaultQueryMetadata>();
 
             model.QueryAnalyzerName = queryMetadata.QueryAnalyzerName ?? LuceneConstants.DefaultAnalyzer;
             model.Analyzers = _luceneAnalyzerManager.GetAnalyzers().Select(x => new SelectListItem(x.Name, x.Name));
@@ -98,7 +98,7 @@ internal sealed class LuceneIndexProfileDisplayDriver : DisplayDriver<IndexProfi
 
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-        var metadata = index.As<LuceneIndexMetadata>();
+        var metadata = index.GetOrCreate<LuceneIndexMetadata>();
 
         metadata.StoreSourceData = model.StoreSourceData;
         metadata.AnalyzerName = model.AnalyzerName;

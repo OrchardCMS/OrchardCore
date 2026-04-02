@@ -2471,7 +2471,7 @@ Vue.component('media-items-table', {
                           :key="media.name">
                              <td class="thumbnail-column">
                                 <div class="img-wrapper">
-                                    <img v-if="media.mime.startsWith('image')" draggable="false" :src="buildMediaUrl(media.url, thumbSize)" />
+                                    <img v-if="media.mime?.startsWith('image')" draggable="false" :src="buildMediaUrl(media.url, thumbSize)" />
                                     <i v-else :class="getfontAwesomeClassNameForFileName(media.name, \'fa-4x\')" :data-mime="media.mime"></i>
                                 </div>
                             </td>
@@ -2569,7 +2569,7 @@ Vue.component('media-items-grid', {
                     v-on:click.stop="toggleSelectionOfMedia(media)"
                     draggable="true" v-on:dragstart="dragStart(media, $event)">
                     <div class="thumb-container" :style="{height: thumbSize +'px'}">
-                        <img v-if="media.mime.startsWith('image')"
+                        <img v-if="media.mime?.startsWith('image')"
                                 :src="buildMediaUrl(media.url, thumbSize)"
                                 :data-mime="media.mime"
                                 :style="{maxHeight: thumbSize +'px', maxWidth: thumbSize +'px'}" />
@@ -3292,7 +3292,7 @@ Vue.component('mediaFieldThumbsContainer', {
                     </div>
                     <div v-else-if="!media.errorType">
                         <div class="thumb-container" :style="{height: thumbSize + 'px'}" >
-                            <img v-if="media.mime.startsWith('image')"
+                            <img v-if="media.mime?.startsWith('image')"
                                 :src="buildMediaUrl(media.url, thumbSize)"
                                 :data-mime="media.mime"
                                 width="100%"
@@ -3772,7 +3772,7 @@ Vue.component("mediaFieldGalleryListItem", {
         <li class="list-group-item d-flex p-0 overflow-hidden align-items-center" v-if="!media.isRemoved" :class="media.errorType==='not-found' ? 'text-danger' : (media.errorType==='transient' ? 'text-warning' : '')">
             <div class="media-preview flex-shrink-0">
                 <img
-                    v-if="media.mime.startsWith('image') && !media.errorType"
+                    v-if="media.mime?.startsWith('image') && !media.errorType"
                     :src="buildMediaUrl(media.url, media.anchor)"
                     :data-mime="media.mime"
                     class="w-100 object-fit-scale"
@@ -3803,7 +3803,7 @@ Vue.component("mediaFieldGalleryListItem", {
                 </a>
                 <a
                     href="javascript:;"
-                    v-show="allowAnchors && media.mime.startsWith('image') && !media.errorType"
+                    v-show="allowAnchors && media.mime?.startsWith('image') && !media.errorType"
                     v-on:click="$parent.showAnchorModal(media)"
                     class="btn btn-light btn-sm inline-media-button view-button"
                     title="Set anchor"
@@ -3858,7 +3858,7 @@ Vue.component("mediaFieldGalleryCardItem", {
                         <div class="update-media" v-if="!$parent.allowMultiple" v-on:click="$parent.showMediaModal">
                             + Media Library
                         </div>
-                        <div class="image-wrapper" v-if="media.mime.startsWith('image') && !media.errorType">
+                        <div class="image-wrapper" v-if="media.mime?.startsWith('image') && !media.errorType">
                             <img
                                 :src="buildMediaUrl(media.url)"
                                 :data-mime="media.mime"
@@ -3896,7 +3896,7 @@ Vue.component("mediaFieldGalleryCardItem", {
                         </a>
                         <a
                             href="javascript:;"
-                            v-show="allowAnchors && media.mime.startsWith('image') && !media.errorType"
+                            v-show="allowAnchors && media.mime?.startsWith('image') && !media.errorType"
                             v-on:click="$parent.showAnchorModal(media)"
                             class="btn btn-light btn-sm inline-media-button view-button"
                             title="Set anchor"

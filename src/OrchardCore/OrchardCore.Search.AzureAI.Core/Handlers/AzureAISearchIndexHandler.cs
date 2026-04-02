@@ -28,7 +28,7 @@ public sealed class AzureAISearchIndexHandler : IndexProfileHandlerBase
             return Task.CompletedTask;
         }
 
-        var metadata = indexProfile.As<AzureAISearchIndexMetadata>();
+        var metadata = indexProfile.GetOrCreate<AzureAISearchIndexMetadata>();
 
         var analyzerName = data[nameof(metadata.AnalyzerName)]?.GetValue<string>()?.Trim();
 
