@@ -3,7 +3,7 @@
 @using OrchardCore.Entities
 @{
     var query = Model.Query as Query;
-    var metadata = query.As<ElasticsearchQueryMetadata>();
+    var metadata = query.GetOrCreate<ElasticsearchQueryMetadata>();
 
     string base64Query = null;
 

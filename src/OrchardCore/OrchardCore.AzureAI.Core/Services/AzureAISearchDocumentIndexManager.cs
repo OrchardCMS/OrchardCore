@@ -153,7 +153,7 @@ public sealed class AzureAISearchDocumentIndexManager : IDocumentIndexManager
             var client = _clientFactory.CreateSearchClient(index.IndexFullName);
 
             // The dictionary key should be indexingKey Not AzureFieldKey.
-            var maps = index.As<AzureAISearchIndexMetadata>().GetMaps();
+            var maps = index.GetOrCreate<AzureAISearchIndexMetadata>().GetMaps();
 
             var pages = indexDocuments.PagesOf(32000);
 
@@ -185,7 +185,7 @@ public sealed class AzureAISearchDocumentIndexManager : IDocumentIndexManager
         {
             var client = _clientFactory.CreateSearchClient(index.IndexFullName);
 
-            var maps = index.As<AzureAISearchIndexMetadata>().GetMaps();
+            var maps = index.GetOrCreate<AzureAISearchIndexMetadata>().GetMaps();
 
             var pages = indexDocuments.PagesOf(32000);
 
@@ -208,7 +208,7 @@ public sealed class AzureAISearchDocumentIndexManager : IDocumentIndexManager
     {
         ArgumentNullException.ThrowIfNull(index);
 
-        return Task.FromResult(index.As<ContentIndexingMetadata>().LastTaskId);
+        return Task.FromResult(index.GetOrCreate<ContentIndexingMetadata>().LastTaskId);
     }
 
     public async Task SetLastTaskIdAsync(IndexProfile index, long lastTaskId)
@@ -228,7 +228,7 @@ public sealed class AzureAISearchDocumentIndexManager : IDocumentIndexManager
 
     private static string GetKeyFieldNameOrThrow(IndexProfile index)
     {
-        var keyName = index.As<AzureAISearchIndexMetadata>().IndexMappings.FirstOrDefault(x => x.IsKey)?.AzureFieldKey;
+        var keyName = index.GetOrCreate<AzureAISearchIndexMetadata>().IndexMappings.FirstOrDefault(x => x.IsKey)?.AzureFieldKey;
 
         if (string.IsNullOrEmpty(keyName))
         {

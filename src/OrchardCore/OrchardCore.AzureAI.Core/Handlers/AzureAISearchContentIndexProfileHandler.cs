@@ -37,14 +37,14 @@ public sealed class AzureAISearchContentIndexProfileHandler : IndexProfileHandle
     {
         await SetMappingAsync(context.Model);
 
-        var queryMetadata = context.Model.As<AzureAISearchDefaultQueryMetadata>();
+        var queryMetadata = context.Model.GetOrCreate<AzureAISearchDefaultQueryMetadata>();
 
         if (queryMetadata.DefaultSearchFields is null || queryMetadata.DefaultSearchFields.Length == 0)
         {
             queryMetadata.DefaultSearchFields = [AzureAISearchIndexManager.FullTextKey];
         }
 
-        var azureMetadata = context.Model.As<AzureAISearchIndexMetadata>();
+        var azureMetadata = context.Model.GetOrCreate<AzureAISearchIndexMetadata>();
 
         if (string.IsNullOrEmpty(queryMetadata.QueryAnalyzerName))
         {
@@ -64,12 +64,12 @@ public sealed class AzureAISearchContentIndexProfileHandler : IndexProfileHandle
             return;
         }
 
-        var azureMetadata = index.As<AzureAISearchIndexMetadata>();
+        var azureMetadata = index.GetOrCreate<AzureAISearchIndexMetadata>();
 
         // Clear the existing mapping to ensure that only fields from the current definitions are included.
         azureMetadata.IndexMappings.Clear();
 
-        var metadata = index.As<ContentIndexMetadata>();
+        var metadata = index.GetOrCreate<ContentIndexMetadata>();
 
         await _mapper.MapAsync(azureMetadata.IndexMappings, index, metadata.IndexedContentTypes, rootFields: true);
 

@@ -78,7 +78,7 @@ internal sealed class AzureAISearchIndexProfileDisplayDriver : DisplayDriver<Ind
 
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-        var metadata = indexProfile.As<AzureAISearchIndexMetadata>();
+        var metadata = indexProfile.GetOrCreate<AzureAISearchIndexMetadata>();
 
         metadata.AnalyzerName = model.AnalyzerName;
 
