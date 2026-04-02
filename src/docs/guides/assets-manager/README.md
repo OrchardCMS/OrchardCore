@@ -28,9 +28,12 @@ Parcel is the easiest way to build assets so far as it doesn't require any confi
     fnm use
     ```
 
-    Alternatively, you can use [nvm](https://github.com/nvm-sh/nvm) (*nix) or [nvm-windows](https://github.com/coreybutler/nvm-windows) (Windows). With nvm, run `nvm install` and `nvm use` from the root of the repository.
+    Alternatively, you can use [nvm](https://github.com/nvm-sh/nvm) (*nix), [nvm-windows](https://github.com/coreybutler/nvm-windows) (Windows), or [Volta](https://volta.sh/). With nvm, run `nvm install` and `nvm use` from the root of the repository. With Volta, run `volta install node@<version>`.
 
-2. From the root of the repository, run the following commands. Be sure to indeed run **exactly** these, and verify that the Yarn version matches the `packageManager` value in the root `package.json` (currently v4.9.x).
+    !!! note
+        The Asset Manager will automatically detect if you are running the wrong Node.js version and prompt you with options to continue, abort, or install the correct version via fnm, nvm, or Volta.
+
+2. From the root of the repository, run the following commands. Be sure to indeed run **exactly** these, and verify that the Yarn version matches the `packageManager` value in the root `package.json` (currently v4.13.x).
     ```cmd
     REM On Windows may require to run command shell with administrator privileges.
     corepack enable 
@@ -170,8 +173,8 @@ yarn create vite
 Here is an example of a Vue app using Typescript:
 
 ```cmd
-➤ YN0000: · Yarn 4.9.4
-➤ YN0000: · Yarn 4.9.4
+➤ YN0000: · Yarn 4.13.0
+➤ YN0000: · Yarn 4.13.0
 ➤ YN0000: ┌ Resolution step
 ➤ YN0085: │ + create-vite@npm:6.2.0
 ➤ YN0000: └ Completed
