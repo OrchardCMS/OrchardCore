@@ -55,7 +55,7 @@ public sealed class AuditTrailContentController : Controller
         var auditTrailContentEvent = (await _session.Query<AuditTrailEvent, AuditTrailEventIndex>(collection: AuditTrailEvent.Collection)
             .Where(index => index.EventId == auditTrailEventId)
             .FirstOrDefaultAsync())
-            ?.As<AuditTrailContentEvent>();
+            ?.GetOrCreate<AuditTrailContentEvent>();
 
         if (auditTrailContentEvent == null || auditTrailContentEvent.ContentItem == null)
         {
@@ -94,7 +94,7 @@ public sealed class AuditTrailContentController : Controller
         var contentItem = (await _session.Query<AuditTrailEvent, AuditTrailEventIndex>(collection: AuditTrailEvent.Collection)
             .Where(index => index.EventId == auditTrailEventId)
             .FirstOrDefaultAsync())
-            ?.As<AuditTrailContentEvent>()
+            ?.GetOrCreate<AuditTrailContentEvent>()
             ?.ContentItem;
 
         if (contentItem == null)
