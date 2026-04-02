@@ -7,7 +7,7 @@
     ViewLayout = "Layout__Login";
 
     var loginProviders = await SignInManager.GetExternalAuthenticationSchemesAsync();
-    var disableLocalLogin = Site.As<LoginSettings>().DisableLocalLogin;
+    var disableLocalLogin = Site.GetOrCreate<LoginSettings>().DisableLocalLogin;
     var hasExternalProviders = loginProviders.Any();
 }
 
