@@ -110,7 +110,10 @@ public abstract class AzureEmailProviderBase : IEmailProvider
             ? _providerOptions.DefaultSender
             : message.From;
 
-        _logger.LogDebug("Attempting to send email to {Email}.", message.To);
+        if (_logger.IsEnabled(LogLevel.Debug))
+        {
+            _logger.LogDebug("Attempting to send email to {Email}.", message.To);
+        }
 
         if (!string.IsNullOrWhiteSpace(senderAddress))
         {

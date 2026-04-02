@@ -49,7 +49,10 @@ public sealed class ScheduledPublishingBackgroundTask : IBackgroundTask
                 part.Apply();
             }
 
-            _logger.LogDebug("Publishing scheduled content item {ContentItemId}.", contentItem.ContentItemId);
+            if (_logger.IsEnabled(LogLevel.Debug))
+            {
+                _logger.LogDebug("Publishing scheduled content item {ContentItemId}.", contentItem.ContentItemId);
+            }
 
             await contentManager.PublishAsync(contentItem);
         }

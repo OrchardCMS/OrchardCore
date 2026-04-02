@@ -1,11 +1,13 @@
 using GraphQL;
 using GraphQL.Resolvers;
 using GraphQL.Types;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.ContentManagement.GraphQL.Queries.Types;
+using ContentsCommonPermissions = OrchardCore.Contents.CommonPermissions;
 
 namespace OrchardCore.ContentManagement.GraphQL.Queries;
 
@@ -41,6 +43,8 @@ public class ContentItemQuery : ISchemaBuilder
             Resolver = new FuncFieldResolver<ContentItem>(ResolveAsync)
         };
 
+        field.RequirePermission(CommonPermissions.ExecuteGraphQL);
+
         schema.Query.AddField(field);
 
         return Task.CompletedTask;
@@ -48,9 +52,23 @@ public class ContentItemQuery : ISchemaBuilder
 
     private async ValueTask<ContentItem> ResolveAsync(IResolveFieldContext context)
     {
+        var httpContext = _httpContextAccessor.HttpContext;
         var contentItemId = context.GetArgument<string>("contentItemId");
-        var contentManager = _httpContextAccessor.HttpContext.RequestServices.GetService<IContentManager>();
+        var contentManager = httpContext.RequestServices.GetRequiredService<IContentManager>();
+        var authorizationService = httpContext.RequestServices.GetRequiredService<IAuthorizationService>();
 
-        return await contentManager.GetAsync(contentItemId);
+        var contentItem = await contentManager.GetAsync(contentItemId);
+
+        if (contentItem == null)
+        {
+            return null;
+        }
+
+        if (!await authorizationService.AuthorizeAsync(httpContext.User, ContentsCommonPermissions.ViewContent, contentItem))
+        {
+            return null;
+        }
+
+        return contentItem;
     }
 }
