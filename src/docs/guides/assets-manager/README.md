@@ -12,26 +12,22 @@ Parcel is the easiest way to build assets so far as it doesn't require any confi
 
 1. Install the **Node.js 24.x LTS** version of [Node.js](https://nodejs.org/en/download). The required version is pinned in the `.node-version` file at the root of the repository.
 
-    If you are already using a different version of Node.js for other projects, we recommend using a Node version manager. [fnm](https://github.com/Schniz/fnm) (Fast Node Manager) is the recommended option as it supports the `.node-version` file natively and works across all platforms:
+    If you don't have the correct version installed, the Asset Manager will automatically detect the mismatch when you run any command (e.g. `yarn build`) and prompt you with the following options:
 
-    ```bash
-    # Install fnm (see https://github.com/Schniz/fnm#installation for other methods)
-    # Windows (winget):
-    winget install Schniz.fnm
-    # macOS (Homebrew):
-    brew install fnm
-    # Linux (curl):
-    curl -fsSL https://fnm.vercel.app/install | bash
+    ```
+    ⚠ Warning: You are using Node.js XX.X.X, but this repository requires Node.js 24.X.X (see .node-version).
 
-    # Then, from the root of the repository, install and use the pinned Node version:
-    fnm install
-    fnm use
+      1) Continue anyway
+      2) Abort
+      3) Install via fnm, Node.js 24.X.X and build
+      4) Install via nvm, Node.js 24.X.X and build
+      5) Install via Volta, Node.js 24.X.X and build
     ```
 
-    Alternatively, you can use [nvm](https://github.com/nvm-sh/nvm) (*nix), [nvm-windows](https://github.com/coreybutler/nvm-windows) (Windows), or [Volta](https://volta.sh/). With nvm, run `nvm install` and `nvm use` from the root of the repository. With Volta, run `volta install node@<version>`.
+    Options 3-5 will automatically install the chosen version manager (if not already present), install the required Node.js version, enable corepack, and restart the build.
 
-    !!! note
-        The Asset Manager will automatically detect if you are running the wrong Node.js version and prompt you with options to continue, abort, or install the correct version via fnm, nvm, or Volta.
+    !!! note "Windows"
+        On Windows, if the version manager needs to be installed first, the process will exit after installation and ask you to restart your terminal before re-running the build.
 
 2. From the root of the repository, run the following commands. Be sure to indeed run **exactly** these, and verify that the Yarn version matches the `packageManager` value in the root `package.json` (currently v4.13.x).
     ```cmd
