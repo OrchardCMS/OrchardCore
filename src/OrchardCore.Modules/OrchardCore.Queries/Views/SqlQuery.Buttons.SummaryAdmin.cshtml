@@ -5,7 +5,7 @@
 
 @{
     var query = Model.Query as Query;
-    var metadata = query.As<SqlQueryMetadata>();
+    var metadata = query.GetOrCreate<SqlQueryMetadata>();
     var base64Query = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(metadata.Template ?? string.Empty));
 }
 
