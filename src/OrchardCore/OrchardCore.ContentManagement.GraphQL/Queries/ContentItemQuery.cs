@@ -38,6 +38,8 @@ public sealed class ContentItemQuery : ISchemaBuilder
             Resolver = new FuncFieldResolver<ContentItem>(ResolveAsync),
         };
 
+        field.RequirePermission(GraphQLPermissions.ExecuteGraphQL);
+
         schema.Query.AddField(field);
 
         return Task.CompletedTask;
@@ -50,6 +52,11 @@ public sealed class ContentItemQuery : ISchemaBuilder
         var authorizationService = context.RequestServices.GetService<IAuthorizationService>();
 
         var contentItem = await contentManager.GetAsync(contentItemId);
+
+        if (contentItem == null)
+        {
+            return null;
+        }
 
         if (!await authorizationService.AuthorizeAsync(context.User, Contents.CommonPermissions.ViewContent, contentItem))
         {
