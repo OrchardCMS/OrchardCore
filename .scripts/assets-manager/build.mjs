@@ -12,6 +12,137 @@ import buildConfig from "./config.mjs";
 import clean from "./clean.mjs";
 import getAllAssetGroups from "./assetGroups.mjs";
 import process from 'node:process';
+import readline from 'node:readline';
+import { execSync } from 'node:child_process';
+
+function prompt(question) {
+    return new Promise((resolve) => {
+        const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
+        rl.question(question, (ans) => {
+            rl.close();
+            resolve(ans.trim().toLowerCase());
+        });
+    });
+}
+
+function isCommandAvailable(cmd) {
+    try {
+        execSync(`${cmd} --version`, { stdio: "ignore" });
+        return true;
+    } catch {
+        return false;
+    }
+}
+
+const versionManagers = {
+    fnm: {
+        name: "fnm",
+        install() {
+            console.log(chalk.cyan("Installing fnm (Fast Node Manager)..."));
+            if (process.platform === "win32") {
+                execSync("winget install Schniz.fnm", { stdio: "inherit" });
+            } else {
+                execSync("curl -fsSL https://fnm.vercel.app/install | bash", { stdio: "inherit" });
+            }
+        },
+        useNode(version) {
+            execSync(`fnm install ${version}`, { stdio: "inherit" });
+            execSync(`fnm use ${version}`, { stdio: "inherit" });
+        },
+        execCommand(version, args) {
+            return `fnm exec --using ${version} -- corepack yarn ${args}`;
+        },
+    },
+    nvm: {
+        name: "nvm",
+        install() {
+            console.log(chalk.cyan("Installing nvm (Node Version Manager)..."));
+            if (process.platform === "win32") {
+                console.log(chalk.red("Automatic nvm installation is not supported on Windows."));
+                console.log(chalk.yellow("Please install nvm-windows manually: https://github.com/coreybutler/nvm-windows"));
+                process.exit(1);
+            }
+            execSync("curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash", { stdio: "inherit" });
+        },
+        useNode(version) {
+            const nvmDir = process.env.NVM_DIR || path.join(process.env.HOME, ".nvm");
+            const nvmLoad = `. "${nvmDir}/nvm.sh"`;
+            execSync(`${nvmLoad} && nvm install ${version}`, { stdio: "inherit", shell: "bash" });
+        },
+        execCommand(version, args) {
+            const nvmDir = process.env.NVM_DIR || path.join(process.env.HOME, ".nvm");
+            return `bash -c '. "${nvmDir}/nvm.sh" && nvm use ${version} && corepack yarn ${args}'`;
+        },
+    },
+    volta: {
+        name: "volta",
+        install() {
+            console.log(chalk.cyan("Installing Volta..."));
+            if (process.platform === "win32") {
+                execSync("winget install Volta.Volta", { stdio: "inherit" });
+            } else {
+                execSync("curl https://get.volta.sh | bash", { stdio: "inherit" });
+            }
+        },
+        useNode(version) {
+            execSync(`volta install node@${version}`, { stdio: "inherit" });
+        },
+        execCommand(version, args) {
+            return `volta run --node ${version} -- corepack yarn ${args}`;
+        },
+    },
+};
+
+// Check that the running Node.js version matches .node-version
+const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
+const nodeVersionFile = path.join(repoRoot, ".node-version");
+if (fs.existsSync(nodeVersionFile)) {
+    const expectedVersion = fs.readFileSync(nodeVersionFile, "utf8").trim();
+    if (process.versions.node !== expectedVersion) {
+        console.warn(
+            chalk.yellow(
+                `⚠ Warning: You are using Node.js ${process.versions.node}, but this repository requires Node.js ${expectedVersion} (see .node-version).`
+            )
+        );
+        console.log("");
+        console.log(chalk.white("  1) Continue anyway"));
+        console.log(chalk.white("  2) Abort"));
+        console.log(chalk.white(`  3) Install via fnm, Node.js ${expectedVersion} and build`));
+        console.log(chalk.white(`  4) Install via nvm, Node.js ${expectedVersion} and build`));
+        console.log(chalk.white(`  5) Install via Volta, Node.js ${expectedVersion} and build`));
+        console.log("");
+
+        const answer = await prompt(chalk.yellow("Select an option (1-5): "));
+
+        const managerByOption = { "3": "fnm", "4": "nvm", "5": "volta" };
+
+        if (answer === "1") {
+            // Continue with current Node version
+        } else if (managerByOption[answer]) {
+            const manager = versionManagers[managerByOption[answer]];
+            try {
+                if (!isCommandAvailable(manager.name)) {
+                    manager.install();
+                }
+                console.log(chalk.cyan(`Installing Node.js ${expectedVersion} via ${manager.name}...`));
+                manager.useNode(expectedVersion);
+                console.log(chalk.green(`\nRestarting build with Node.js ${expectedVersion}...\n`));
+                const args = process.argv.slice(2).join(" ");
+                execSync(manager.execCommand(expectedVersion, args), {
+                    stdio: "inherit",
+                    cwd: repoRoot,
+                });
+            } catch (err) {
+                console.error(chalk.red(`Failed: ${err.message}`));
+                process.exit(1);
+            }
+            process.exit(0);
+        } else {
+            console.log(chalk.red("Build aborted."));
+            process.exit(1);
+        }
+    }
+}
 
 const startTime = performance.now();
 
