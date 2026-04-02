@@ -6,7 +6,7 @@ using OrchardCore.FileStorage.AzureBlob;
 using OrchardCore.Modules;
 using Xunit;
 
-namespace OrchardCore.Tests.Modules.OrchardCore.Media.Azure;
+namespace OrchardCore.Tests.Integration.AzureBlob;
 
 /// <summary>
 /// Integration tests for <see cref="BlobFileStore"/> that run against Azurite.

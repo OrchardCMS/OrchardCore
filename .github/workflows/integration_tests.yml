@@ -1,0 +1,43 @@
+name: Integration Tests
+
+on:
+  # Manual trigger.
+  workflow_dispatch:
+  pull_request_review:
+    types: [submitted]
+  # Run it on main and release pushes too, in case we merge from a branch that's not up-to-date with the target branch
+  # and breaks something after merge (or if we push to main).
+  push:
+    paths-ignore:
+      - '**/*.md'
+      - 'mkdocs.yml'
+      - 'src/docs/**/*'
+    branches: [ main, release/** ]
+
+env:
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+jobs:
+  test_azure_blob:
+    name: Integration Tests - Azure Blob Storage (Azurite)
+    if: github.event_name == 'workflow_dispatch' ||
+        github.event_name == 'push' ||
+        github.event.review.state == 'APPROVED' ||
+        github.event.review.state == 'CHANGES_REQUESTED'
+    runs-on: ubuntu-24.04
+    steps:
+    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+    - uses: ./.github/actions/setup-dotnet
+    - name: Build
+      run: |
+        dotnet build -c Release ./test/OrchardCore.Tests.Integration/OrchardCore.Tests.Integration.csproj /p:NuGetAudit=false
+    - name: Start Azurite
+      run: |
+        docker run -d --name azurite -p 10000:10000 -p 10004:10004 ghcr.io/skrypt/azurite-adls-gen2:latest azurite --blobHost 0.0.0.0 --dfsHost 0.0.0.0 --queueHost 0.0.0.0 --tableHost 0.0.0.0 --skipApiVersionCheck
+    - name: Azure Blob Integration Tests
+      env:
+        AZURITE_CONNECTION_STRING: "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;"
+        AZURITE_DFS_ENDPOINT: "http://127.0.0.1:10004/devstoreaccount1"
+      run: |
+        dotnet test ./test/OrchardCore.Tests.Integration/OrchardCore.Tests.Integration.csproj -c Release --no-build

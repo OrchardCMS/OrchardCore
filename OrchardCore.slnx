@@ -290,6 +290,7 @@
     <Project Path="test/OrchardCore.Benchmarks/OrchardCore.Benchmarks.csproj" />
     <Project Path="test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj" />
     <Project Path="test/OrchardCore.Tests/OrchardCore.Tests.csproj" />
+    <Project Path="test/OrchardCore.Tests.Integration/OrchardCore.Tests.Integration.csproj" />
   </Folder>
   <Folder Name="/test/OrchardCore.Tests.Features/">
     <Project Path="test/OrchardCore.Tests.Features/Examples.Features.AssyAttrib/Examples.Features.AssyAttrib.csproj" />

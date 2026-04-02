@@ -1,7 +1,7 @@
 using OrchardCore.FileStorage;
 using Xunit;
 
-namespace OrchardCore.Tests.Modules.OrchardCore.Media.Azure;
+namespace OrchardCore.Tests.Integration.AzureBlob;
 
 /// <summary>
 /// Runs all <see cref="BlobFileStoreTestsBase"/> tests with hierarchical-namespace (Gen2 / ADLS) behavior.
