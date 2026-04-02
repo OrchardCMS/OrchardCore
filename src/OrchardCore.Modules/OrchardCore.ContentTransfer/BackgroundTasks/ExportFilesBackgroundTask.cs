@@ -82,7 +82,7 @@ public sealed class ExportFilesBackgroundTask : IBackgroundTask
 
             entry.Status = ContentTransferEntryStatus.Processing;
 
-            var progressPart = entry.As<ImportFileProcessStatsPart>();
+            var progressPart = entry.GetOrCreate<ImportFileProcessStatsPart>();
             progressPart.Errors ??= [];
 
             try
@@ -97,8 +97,7 @@ public sealed class ExportFilesBackgroundTask : IBackgroundTask
                 var exportColumns = columns.Where(x => x.Type != ImportColumnType.ImportOnly).ToList();
 
                 // Count total records for progress tracking.
-                var filters = entry.As<ExportFilterPart>();
-                var hasFilters = filters != null;
+                var hasFilters = entry.TryGet<ExportFilterPart>(out var filters);
 
                 var totalCountQuery = BuildExportQuery(
                     session, entry.ContentType, hasFilters,

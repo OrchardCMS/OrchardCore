@@ -72,14 +72,9 @@ public sealed class PublishLaterPartContentImportHandler : ContentImportHandlerB
         ArgumentNullException.ThrowIfNull(context.ContentItem);
         ArgumentNullException.ThrowIfNull(context.Row);
 
-        if (_column?.Name != null)
+        if (_column?.Name != null && context.ContentItem.TryGet<PublishLaterPart>(out var part))
         {
-            var part = context.ContentItem.As<PublishLaterPart>();
-
-            if (part != null)
-            {
-                context.Row[_column.Name] = part.ScheduledPublishUtc;
-            }
+            context.Row[_column.Name] = part.ScheduledPublishUtc;
         }
 
         return Task.CompletedTask;

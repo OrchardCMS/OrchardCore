@@ -6,7 +6,7 @@
 
 @{
     var entry = Model.Value.ContentTransferEntry;
-    var statsPart = entry.As<ImportFileProcessStatsPart>();
+    entry.TryGet<ImportFileProcessStatsPart>(out var statsPart);
     var errorCount = statsPart?.Errors?.Count ?? 0;
     var successCount = statsPart?.ImportedCount ?? 0;
 }

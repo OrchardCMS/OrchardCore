@@ -72,14 +72,9 @@ public sealed class ArchiveLaterPartContentImportHandler : ContentImportHandlerB
         ArgumentNullException.ThrowIfNull(context.ContentItem);
         ArgumentNullException.ThrowIfNull(context.Row);
 
-        if (_column?.Name != null)
+        if (_column?.Name != null && context.ContentItem.TryGet<ArchiveLaterPart>(out var part))
         {
-            var part = context.ContentItem.As<ArchiveLaterPart>();
-
-            if (part != null)
-            {
-                context.Row[_column.Name] = part.ScheduledArchiveUtc;
-            }
+            context.Row[_column.Name] = part.ScheduledArchiveUtc;
         }
 
         return Task.CompletedTask;

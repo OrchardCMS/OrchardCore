@@ -72,14 +72,9 @@ public sealed class HtmlBodyPartContentImportHandler : ContentImportHandlerBase,
         ArgumentNullException.ThrowIfNull(context.ContentItem);
         ArgumentNullException.ThrowIfNull(context.Row);
 
-        if (_column?.Name != null)
+        if (_column?.Name != null && context.ContentItem.TryGet<HtmlBodyPart>(out var part))
         {
-            var part = context.ContentItem.As<HtmlBodyPart>();
-
-            if (part != null)
-            {
-                context.Row[_column.Name] = part.Html ?? string.Empty;
-            }
+            context.Row[_column.Name] = part.Html ?? string.Empty;
         }
 
         return Task.CompletedTask;

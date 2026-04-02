@@ -8,7 +8,7 @@
 
 @{
     var entry = Model.Value.ContentTransferEntry;
-    var statsPart = entry.As<ImportFileProcessStatsPart>();
+    entry.TryGet<ImportFileProcessStatsPart>(out var statsPart);
     var canDelete = await AuthorizationService.AuthorizeAsync(User, ContentTransferPermissions.DeleteContentTransferEntries);
     var canProcessImport = await AuthorizationService.AuthorizeAsync(User, ContentTransferPermissions.ImportContentFromFile, (object)entry.ContentType);
 }

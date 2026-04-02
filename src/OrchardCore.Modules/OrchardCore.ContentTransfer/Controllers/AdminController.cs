@@ -728,8 +728,9 @@ public sealed class AdminController : Controller, IUpdateModel
             return RedirectTo(returnUrl);
         }
 
-        var progressPart = entry.As<ImportFileProcessStatsPart>();
-        var importedCount = progressPart?.ImportedCount ?? 0;
+        var importedCount = entry.TryGet<ImportFileProcessStatsPart>(out var progressPart)
+            ? progressPart.ImportedCount
+            : 0;
 
         entry.Status = importedCount > 0
             ? ContentTransferEntryStatus.CanceledWithImportedRecords
@@ -811,9 +812,9 @@ public sealed class AdminController : Controller, IUpdateModel
             return NotFound();
         }
 
-        var statsPart = entry.As<ImportFileProcessStatsPart>();
-
-        if (statsPart == null || statsPart.Errors == null || statsPart.Errors.Count == 0)
+        if (!entry.TryGet<ImportFileProcessStatsPart>(out var statsPart)
+            || statsPart.Errors == null
+            || statsPart.Errors.Count == 0)
         {
             await _notifier.WarningAsync(H["No error records found for this entry."]);
             return RedirectToAction(nameof(List));
