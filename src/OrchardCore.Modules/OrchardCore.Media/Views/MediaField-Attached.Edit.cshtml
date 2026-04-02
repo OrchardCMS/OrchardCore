@@ -43,8 +43,9 @@
                 <a href="javascript:;" v-on:click="removeSelected" class="btn btn-secondary btn-sm" v-bind:class="{ disabled : !selectedMedia }"><i class="fa-solid fa-trash" aria-hidden="true"></i></a>
             </div>
             <label class="selected-media-name form-label">
-                <code class="text-end" v-if="selectedMedia">@T["{{{{ selectedMedia.attachedFileName !== null && selectedMedia.attachedFileName !== '' ? selectedMedia.attachedFileName : selectedMedia.name }}}}{{{{ selectedMedia.mediaText === '' ? '' : ', ' + selectedMedia.mediaText }}}} ({{{{ isNaN(fileSize)? 0 : fileSize }}}} KB)"]</code>
+                <code class="text-end" v-if="selectedMedia">{{ selectedMediaDisplayText }}</code>
             </label>
+            <input type="hidden" class="t-selected-media-format" value="@T["{0}{1} ({2} KB)"]" />
         </div>
 
         <upload-list upload-input-id="@mediaFieldId-field-file-upload"></upload-list>
