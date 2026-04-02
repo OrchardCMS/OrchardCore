@@ -179,7 +179,7 @@ public class ContentItemExtensions
         contentItem.Merge(newContentItem);
 
         // Test
-        var mergedPart = contentItem.As<CustomPart>();
+        var mergedPart = contentItem.GetOrCreate<CustomPart>();
         Assert.Equal(value, mergedPart?.Value);
     }
 

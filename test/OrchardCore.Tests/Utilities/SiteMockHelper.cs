@@ -16,7 +16,7 @@ public static class SiteMockHelper
         mockSite.Setup(x => x.Properties)
             .Returns(properties);
 
-        mockSite.Setup(x => x.As<T>())
+        mockSite.Setup(x => x.GetOrCreate<T>())
             .Returns(obj);
 
         mockSite.Setup(x => x.TryGet(out obj))
