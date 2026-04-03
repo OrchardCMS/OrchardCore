@@ -79,7 +79,7 @@ public sealed class TwilioSettingsDisplayDriver : SiteDisplayDriver<TwilioSettin
 
         await context.Updater.TryUpdateModelAsync(model, Prefix);
         var hasChanges = settings.IsEnabled != model.IsEnabled;
-        var smsSettings = site.As<SmsSettings>();
+        var smsSettings = site.GetOrCreate<SmsSettings>();
 
         if (!model.IsEnabled)
         {

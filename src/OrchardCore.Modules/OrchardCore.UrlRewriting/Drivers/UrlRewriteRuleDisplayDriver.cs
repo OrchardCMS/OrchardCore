@@ -27,7 +27,7 @@ public sealed class UrlRewriteRuleDisplayDriver : DisplayDriver<RewriteRule>
 
         return Initialize<UrlRewriteRuleViewModel>("UrlRewriteRule_Edit", model =>
         {
-            var metadata = rule.As<UrlRewriteSourceMetadata>();
+            var metadata = rule.GetOrCreate<UrlRewriteSourceMetadata>();
 
             model.Pattern = metadata.Pattern;
             model.SubstitutionPattern = metadata.SubstitutionPattern;
