@@ -106,6 +106,7 @@ public sealed class LocalizationPartDisplayDriver : ContentPartDisplayDriver<Loc
         if (!_alreadyTranslated.TryGetValue(localizationPart.LocalizationSet, out var items))
         {
             items = await _contentLocalizationManager.GetItemsForSetAsync(localizationPart.LocalizationSet);
+
             _alreadyTranslated[localizationPart.LocalizationSet] = items;
         }
 
