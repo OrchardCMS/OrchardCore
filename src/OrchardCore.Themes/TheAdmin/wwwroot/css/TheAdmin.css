@@ -28,7 +28,7 @@
   /* Action bar should always be less than dropdown menu */
   --oc-action-bar-zindex: 980;
   --oc-second-action-bar-zindex: 983;
-  --oc-action-bar-mobile-height: 0px;
+  --oc-action-bar-height: 0px;
   /* Undefined Bootstrap variables */
   --bs-dropdown-zindex: 1000;
   --bs-zindex-fixed: 1030;
@@ -168,55 +168,121 @@ a:hover {
   z-index: var(--oc-action-bar-zindex);
 }
 
-.second-action-bar {
-  z-index: var(--oc-second-action-bar-zindex);
+@media (max-width: 767.98px) {
+  .action-bar {
+    position: fixed !important;
+    top: auto;
+    bottom: 0;
+    border-radius: 0 !important;
+    border-left: none !important;
+    border-right: none !important;
+    border-bottom: none !important;
+    margin-left: calc(var(--bs-border-width) * -1 + 1rem) !important;
+    margin-right: calc(var(--bs-border-width) * -1 + 1rem) !important;
+    margin-bottom: 0 !important;
+  }
+
+  [dir="ltr"] .action-bar {
+    left: var(--oc-start-navigation-width);
+    right: 0;
+    transition: left 0.2s ease-in-out;
+  }
+
+  [dir="rtl"] .action-bar {
+    right: var(--oc-start-navigation-width);
+    left: 0;
+    transition: right 0.2s ease-in-out;
+  }
+
+  .action-bar .card-body {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .action-bar .btn, .action-bar .button,
+  .action-bar .form-control {
+    font-size: 0.875rem;
+    padding: 0.25rem 0.5rem;
+  }
+
+  .action-bar .has-filter .form-control-feedback,
+  .action-bar .has-search .form-control-feedback {
+    height: 1.75rem;
+  }
+
+  .action-bar .has-filter .form-control-feedback {
+    top: 0.1rem;
+  }
+
+  [dir="ltr"] .action-bar .has-filter .form-control-feedback {
+    left: 3.75rem;
+  }
+
+  [dir="rtl"] .action-bar .has-filter .form-control-feedback {
+    right: 3.75rem;
+  }
+
+  [dir="ltr"] .action-bar [dir=rtl] .has-filter .form-control-feedback {
+    left: 1rem;
+  }
+
+  [dir="rtl"] .action-bar [dir=rtl] .has-filter .form-control-feedback {
+    right: 1rem;
+  }
+
+  [dir="ltr"] .action-bar .has-search .form-control-feedback {
+    left: 1.75rem;
+  }
+
+  [dir="rtl"] .action-bar .has-search .form-control-feedback {
+    right: 1.75rem;
+  }
+
+  .action-bar .has-search:not(.input-group) .form-control-feedback,
+  .action-bar .has-filter:not(.input-group) .form-control-feedback {
+    top: 1.1rem;
+  }
+
+  [dir="ltr"] .action-bar .has-search:not(.input-group) .form-control-feedback,
+  [dir="ltr"] .action-bar .has-filter:not(.input-group) .form-control-feedback {
+    left: 0.75rem;
+  }
+
+  [dir="rtl"] .action-bar .has-search:not(.input-group) .form-control-feedback,
+  [dir="rtl"] .action-bar .has-filter:not(.input-group) .form-control-feedback {
+    right: 0.75rem;
+  }
 }
 
-.action-bar-mobile {
-  position: fixed;
-  bottom: 0;
-  padding-left: 1rem;
-  padding-right: 1rem;
-  z-index: var(--oc-action-bar-zindex);
-}
+@media (max-width: 767.98px) and (max-width: 575.98px) {
+  [dir="ltr"] .action-bar {
+    left: var(--oc-start-navigation-width-when-compact, 48);
+    transition: left 0.5s ease-in-out;
+  }
 
-[dir="ltr"] .action-bar-mobile {
-  left: var(--oc-start-navigation-width);
-  right: 0;
-}
-
-[dir="rtl"] .action-bar-mobile {
-  right: var(--oc-start-navigation-width);
-  left: 0;
-}
-
-.action-bar-mobile .card {
-  border-radius: 0 !important;
-  border-left: none !important;
-  border-right: none !important;
-  border-bottom: none !important;
-  margin-left: calc(var(--bs-border-width) * -1);
-  margin-right: calc(var(--bs-border-width) * -1);
-}
-
-.action-bar-mobile .btn, .action-bar-mobile .button {
-  font-size: 0.875rem;
-  padding: 0.25rem 0.5rem;
+  [dir="rtl"] .action-bar {
+    right: var(--oc-start-navigation-width-when-compact, 48);
+    transition: right 0.5s ease-in-out;
+  }
 }
 
 @media (max-width: 767.98px) {
-  [dir="ltr"] .action-bar-mobile {
+  [dir="ltr"] .left-sidebar-compact .action-bar {
     left: var(--oc-start-navigation-width-when-compact, 48);
   }
 
-  [dir="rtl"] .action-bar-mobile {
+  [dir="rtl"] .left-sidebar-compact .action-bar {
     right: var(--oc-start-navigation-width-when-compact, 48);
   }
 
-  .action-bar-mobile-content {
-    margin-bottom: 0.5rem;
-    padding-bottom: var(--oc-action-bar-mobile-height);
+  div:has(> .action-bar),
+  form:has(> .action-bar) {
+    padding-bottom: calc(var(--oc-action-bar-height) + 0.5rem);
   }
+}
+
+.second-action-bar {
+  z-index: var(--oc-second-action-bar-zindex);
 }
 
 .ta-badge {
