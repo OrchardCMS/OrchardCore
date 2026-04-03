@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Nodes;
 using Dapper;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,7 +17,6 @@ using OrchardCore.Search.Elasticsearch.Core.Models;
 using OrchardCore.Search.Elasticsearch.Core.Services;
 using OrchardCore.Search.Elasticsearch.Models;
 using OrchardCore.Settings;
-using System.Diagnostics.CodeAnalysis;
 using YesSql;
 using YesSql.Sql;
 
@@ -108,7 +108,7 @@ internal sealed class IndexingMigrations : DataMigration
                     }
                 }
 
-                var metadata = indexProfile.As<ContentIndexMetadata>();
+                var metadata = indexProfile.GetOrCreate<ContentIndexMetadata>();
 
                 if (string.IsNullOrEmpty(metadata.Culture))
                 {
@@ -143,7 +143,7 @@ internal sealed class IndexingMigrations : DataMigration
 
                 indexProfile.Put(metadata);
 
-                var elasticsearchMetadata = indexProfile.As<ElasticsearchIndexMetadata>();
+                var elasticsearchMetadata = indexProfile.GetOrCreate<ElasticsearchIndexMetadata>();
 
                 var storeSourceData = indexObject.Value[nameof(elasticsearchMetadata.StoreSourceData)]?.GetValue<bool>();
 
@@ -167,7 +167,7 @@ internal sealed class IndexingMigrations : DataMigration
 
                 indexProfile.Put(elasticsearchMetadata);
 
-                var queryMetadata = indexProfile.As<ElasticsearchDefaultQueryMetadata>();
+                var queryMetadata = indexProfile.GetOrCreate<ElasticsearchDefaultQueryMetadata>();
                 if (string.IsNullOrEmpty(queryMetadata.QueryAnalyzerName))
                 {
                     queryMetadata.QueryAnalyzerName = indexObject.Value[nameof(queryMetadata.QueryAnalyzerName)]?.GetValue<string>();
@@ -224,7 +224,7 @@ internal sealed class IndexingMigrations : DataMigration
 
         return stepNumber;
     }
-    
+
     [SuppressMessage("Performance", "CA1822:Mark members as static")]
     public int UpdateFrom1()
     {
@@ -269,8 +269,20 @@ internal sealed class IndexingMigrations : DataMigration
 
         foreach (var indexProfile in await GetElasticsearchIndexesAsync(indexProfileManager))
         {
-            if (IsLegacyAnalyzerName(indexProfile.As<ElasticsearchDefaultQueryMetadata>()?.QueryAnalyzerName) ||
-                IsLegacyAnalyzerName(indexProfile.As<ElasticsearchIndexMetadata>()?.AnalyzerName))
+            ElasticsearchDefaultQueryMetadata queryMetadata = null;
+            if (indexProfile.TryGet<ElasticsearchDefaultQueryMetadata>(out var storedQueryMetadata))
+            {
+                queryMetadata = storedQueryMetadata;
+            }
+
+            ElasticsearchIndexMetadata indexMetadata = null;
+            if (indexProfile.TryGet<ElasticsearchIndexMetadata>(out var storedIndexMetadata))
+            {
+                indexMetadata = storedIndexMetadata;
+            }
+
+            if (IsLegacyAnalyzerName(queryMetadata?.QueryAnalyzerName) ||
+                IsLegacyAnalyzerName(indexMetadata?.AnalyzerName))
             {
                 indexProfile.Alter<ElasticsearchDefaultQueryMetadata>(metadata =>
                     metadata.QueryAnalyzerName = ElasticsearchConstants.DefaultAnalyzer);
@@ -299,10 +311,10 @@ internal sealed class IndexingMigrations : DataMigration
             searchSettings = [];
             site.Properties[SearchSettings] = searchSettings;
         }
-        
+
         // If the site.Properties.SearchSettings.DefaultIndexProfileName setting is missing or empty, and there is at
         // least one Elasticsearch index in store, set it to the first index.
-        if (string.IsNullOrWhiteSpace((searchSettings[DefaultIndexProfileName] as JsonValue)?.GetValue<string>()) && 
+        if (string.IsNullOrWhiteSpace((searchSettings[DefaultIndexProfileName] as JsonValue)?.GetValue<string>()) &&
             (await GetElasticsearchIndexesAsync(indexProfileManager))?.OrderBy(index => index.CreatedUtc).FirstOrDefault() is { } indexProfile)
         {
             searchSettings[DefaultIndexProfileName] = indexProfile.Name;

@@ -3,7 +3,6 @@ using Lucene.Net.Index;
 using Lucene.Net.Spatial.Prefix;
 using Lucene.Net.Spatial.Prefix.Tree;
 using Microsoft.CodeAnalysis;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Contents.Indexing;
 using OrchardCore.Entities;
@@ -173,7 +172,7 @@ public sealed class LuceneIndexManager : IIndexManager, IDocumentIndexManager
 
         await _indexStore.WriteAsync(index, writer =>
         {
-            var metadata = index.As<LuceneIndexMetadata>();
+            var metadata = index.GetOrCreate<LuceneIndexMetadata>();
 
             writer.DeleteDocuments(documentIds.Select(id => new Term(metadata.IndexMappings.KeyFieldName, id)).ToArray());
         });
@@ -195,7 +194,7 @@ public sealed class LuceneIndexManager : IIndexManager, IDocumentIndexManager
         {
             await _indexStore.WriteAsync(index, writer =>
             {
-                var metadata = index.As<LuceneIndexMetadata>();
+                var metadata = index.GetOrCreate<LuceneIndexMetadata>();
 
                 foreach (var indexDocument in documents)
                 {

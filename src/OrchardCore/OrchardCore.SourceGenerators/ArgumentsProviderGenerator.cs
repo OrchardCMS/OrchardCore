@@ -1,8 +1,8 @@
+using System.Collections.Immutable;
+using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
-using System.Collections.Immutable;
-using System.Text;
 
 #nullable enable
 
@@ -47,7 +47,7 @@ public class ArgumentsProviderGenerator : IIncrementalGenerator
             var source = GenerateNamedEnumerableImplementation(typeSymbol);
             if (!string.IsNullOrEmpty(source))
             {
-                context.AddSource($"{typeSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).Replace("global::", "").Replace(".", "_").Replace("<", "_").Replace(">", "_")}.g.cs", 
+                context.AddSource($"{typeSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).Replace("global::", "").Replace(".", "_").Replace("<", "_").Replace(">", "_")}.g.cs",
                     SourceText.From(source, Encoding.UTF8));
             }
         }
@@ -115,7 +115,7 @@ public class ArgumentsProviderGenerator : IIncrementalGenerator
 
         sb.AppendLine($"{currentIndent}{accessibilityStr} {keyword} {typeSymbol.Name} : global::OrchardCore.DisplayManagement.PropertyBasedNamedEnumerable");
         sb.AppendLine($"{currentIndent}{{");
-        
+
         // Generate static property names array
         sb.AppendLine($"{currentIndent}    private static readonly string[] s_propertyNames = new string[]");
         sb.AppendLine($"{currentIndent}    {{");
@@ -132,7 +132,7 @@ public class ArgumentsProviderGenerator : IIncrementalGenerator
         sb.AppendLine();
         sb.AppendLine($"{currentIndent}    protected override global::System.Collections.Generic.IReadOnlyList<string> PropertyNames => s_propertyNames;");
         sb.AppendLine();
-        
+
         // Implement GetPropertyValue with switch expression
         sb.AppendLine($"{currentIndent}    protected override object? GetPropertyValue(int index)");
         sb.AppendLine($"{currentIndent}    {{");
@@ -146,7 +146,7 @@ public class ArgumentsProviderGenerator : IIncrementalGenerator
         sb.AppendLine($"{currentIndent}            _ => throw new global::System.ArgumentOutOfRangeException(nameof(index))");
         sb.AppendLine($"{currentIndent}        }};");
         sb.AppendLine($"{currentIndent}    }}");
-        
+
         sb.AppendLine($"{currentIndent}}}");
 
         // Close containing types

@@ -57,9 +57,7 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        var part = contentItem.As<LocalizationPart>();
-
-        if (part == null)
+        if (!contentItem.TryGet<LocalizationPart>(out var part))
         {
             return NotFound();
         }

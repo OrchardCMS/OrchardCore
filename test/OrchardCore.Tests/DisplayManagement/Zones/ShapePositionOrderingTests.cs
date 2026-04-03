@@ -1,5 +1,4 @@
 using OrchardCore.DisplayManagement.Shapes;
-using OrchardCore.DisplayManagement.Zones;
 
 namespace OrchardCore.Tests.DisplayManagement.Zones;
 
