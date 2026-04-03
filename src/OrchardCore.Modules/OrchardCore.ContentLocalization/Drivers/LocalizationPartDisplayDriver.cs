@@ -74,14 +74,14 @@ public sealed class LocalizationPartDisplayDriver : ContentPartDisplayDriver<Loc
               {
                   IsDeleted = false,
                   Culture = CultureInfo.GetCultureInfo(culture),
-                  ContentItemId = alreadyTranslated.FirstOrDefault(c => c.As<LocalizationPart>()?.Culture == culture)?.ContentItemId,
+                  ContentItemId = alreadyTranslated.FirstOrDefault(c => GetCulture(c) == culture)?.ContentItemId,
               };
           }).ToList();
 
         // Content items that have been translated but the culture was removed from the settings page
-        var deletedCultureTranslations = alreadyTranslated.Where(c => c.As<LocalizationPart>()?.Culture != model.Culture).Select(ci =>
+        var deletedCultureTranslations = alreadyTranslated.Where(c => GetCulture(c) != model.Culture).Select(ci =>
         {
-            var culture = ci.As<LocalizationPart>()?.Culture;
+            var culture = GetCulture(ci);
             if (currentCultures.Any(c => c.ContentItemId == ci.ContentItemId) || culture == null)
             {
                 return null;
@@ -96,4 +96,9 @@ public sealed class LocalizationPartDisplayDriver : ContentPartDisplayDriver<Loc
 
         model.ContentItemCultures = currentCultures.Concat(deletedCultureTranslations).ToList();
     }
+
+    private static string GetCulture(ContentItem contentItem)
+        => contentItem.TryGet<LocalizationPart>(out var localizationPart)
+        ? localizationPart.Culture
+        : null;
 }

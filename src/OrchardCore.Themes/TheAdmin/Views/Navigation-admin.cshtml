@@ -3,7 +3,7 @@
 @using OrchardCore.Admin.Models
 @using OrchardCore.Navigation
 @{
-    var adminSettings = (await siteService.GetSiteSettingsAsync()).As<AdminSettings>();
+    var adminSettings = (await siteService.GetSiteSettingsAsync()).GetOrCreate<AdminSettings>();
     TagBuilder tag = Tag(Model, "ul");
     tag.Attributes["Id"] = NavigationConstants.AdminMenuId;
 

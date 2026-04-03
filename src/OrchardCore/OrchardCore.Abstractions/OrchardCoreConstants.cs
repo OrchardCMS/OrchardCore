@@ -92,4 +92,14 @@ public static class OrchardCoreConstants
 
         public const string SummaryAdmin = "SummaryAdmin";
     }
+
+    public static class DataLocalizationContext
+    {
+        public const string AdminMenu = "Admin Menus";
+    }
+
+    public static class Security
+    {
+        public const string ScriptingEncryptionPurpose = "oc-scripting";
+    }
 }

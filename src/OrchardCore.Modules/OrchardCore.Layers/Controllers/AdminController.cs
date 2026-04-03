@@ -288,9 +288,7 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
-        var layerMetadata = contentItem.As<LayerMetadata>();
-
-        if (layerMetadata == null)
+        if (!contentItem.TryGet<LayerMetadata>(out var layerMetadata))
         {
             return Forbid();
         }
@@ -309,9 +307,7 @@ public sealed class AdminController : Controller
             var publishedContentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Published);
             if (publishedContentItem != null)
             {
-                layerMetadata = contentItem.As<LayerMetadata>();
-
-                if (layerMetadata == null)
+                if (!publishedContentItem.TryGet(out layerMetadata))
                 {
                     return Forbid();
                 }

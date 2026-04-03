@@ -17,8 +17,7 @@ public sealed class ContentTypesAdminNodeDriver : DisplayDriver<MenuItem, Conten
     public ContentTypesAdminNodeDriver(
         IContentDefinitionManager contentDefinitionManager,
         IHttpContextAccessor httpContextAccessor,
-        IAuthorizationService authorizationService
-        )
+        IAuthorizationService authorizationService)
     {
         _contentDefinitionManager = contentDefinitionManager;
         _httpContextAccessor = httpContextAccessor;
@@ -33,22 +32,22 @@ public sealed class ContentTypesAdminNodeDriver : DisplayDriver<MenuItem, Conten
         );
     }
 
-    public override IDisplayResult Edit(ContentTypesAdminNode treeNode, BuildEditorContext context)
+    public async override Task<IDisplayResult> EditAsync(ContentTypesAdminNode treeNode, BuildEditorContext context)
     {
-        return Initialize<ContentTypesAdminNodeViewModel>("ContentTypesAdminNode_Fields_TreeEdit", async model =>
-            {
-                var listable = await GetListableContentTypeDefinitionsAsync();
+        var contentTypeDefinitions = await GetListableContentTypeDefinitionsAsync();
 
-                model.ShowAll = treeNode.ShowAll;
-                model.IconClass = treeNode.IconClass;
-                model.ContentTypes = listable.Select(x => new ContentTypeEntryViewModel
-                {
-                    ContentTypeName = x.Name,
-                    ContentTypeDisplayName = x.DisplayName,
-                    IsChecked = treeNode.ContentTypes.Any(selected => string.Equals(selected.ContentTypeName, x.Name, StringComparison.OrdinalIgnoreCase)),
-                    IconClass = treeNode.ContentTypes.FirstOrDefault(selected => selected.ContentTypeName == x.Name)?.IconClass ?? string.Empty,
-                }).ToArray();
-            }).Location("Content");
+        return Initialize<ContentTypesAdminNodeViewModel>("ContentTypesAdminNode_Fields_TreeEdit", model =>
+        {
+            model.ShowAll = treeNode.ShowAll;
+            model.IconClass = treeNode.IconClass;
+            model.ContentTypes = contentTypeDefinitions.Select(x => new ContentTypeEntryViewModel
+            {
+                ContentTypeDisplayName = x.DisplayName,
+                ContentTypeName = x.Name,
+                IsChecked = treeNode.ContentTypes.Any(selected => string.Equals(selected.ContentTypeName, x.Name, StringComparison.OrdinalIgnoreCase)),
+                IconClass = treeNode.ContentTypes.FirstOrDefault(selected => selected.ContentTypeName == x.Name)?.IconClass ?? string.Empty,
+            }).ToArray();
+        }).Location("Content");
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ContentTypesAdminNode treeNode, UpdateEditorContext context)
@@ -73,7 +72,7 @@ public sealed class ContentTypesAdminNodeDriver : DisplayDriver<MenuItem, Conten
             })
             .ToArray();
 
-        return Edit(treeNode, context);
+        return await EditAsync(treeNode, context);
     }
 
     private async Task<IEnumerable<ContentTypeDefinition>> GetListableContentTypeDefinitionsAsync()

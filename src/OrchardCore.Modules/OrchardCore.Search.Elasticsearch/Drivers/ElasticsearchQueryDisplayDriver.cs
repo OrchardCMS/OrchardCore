@@ -48,15 +48,17 @@ public sealed class ElasticsearchQueryDisplayDriver : DisplayDriver<Query>
 
         return Initialize<ElasticQueryViewModel>("ElasticQuery_Edit", async model =>
         {
-            var metadata = query.As<ElasticsearchQueryMetadata>();
+            if (query.TryGet<ElasticsearchQueryMetadata>(out var metadata))
+            {
+                model.Query = metadata.Template;
+                model.Index = metadata.Index;
+            }
 
-            model.Query = metadata.Template;
-            model.Index = metadata.Index;
             model.ReturnContentItems = query.ReturnContentItems;
             model.Indexes = (await _store.GetByProviderAsync(ElasticsearchConstants.ProviderName)).Select(x => new SelectListItem(x.Name, x.Name)).ToArray();
 
             // Extract query from the query string if we come from the main query editor.
-            if (string.IsNullOrEmpty(metadata.Template))
+            if (string.IsNullOrEmpty(model.Query))
             {
                 await context.Updater.TryUpdateModelAsync(model, string.Empty, m => m.Query);
             }
