@@ -83,18 +83,26 @@ public sealed class ContentPickerAdminController : Controller
             PartFieldDefinition = partFieldDefinition,
         });
 
-        var contentItems = await _contentManager
-            .GetAsync(results.Select(r => r.ContentItemId));
-
         var selectedItems = new List<VueMultiselectItemViewModel>();
         var user = _httpContextAccessor.HttpContext?.User;
-        foreach (var contentItem in contentItems)
+
+        var missingIds = results
+            .Where(r => r.ContentItem == null)
+            .Select(r => r.ContentItemId)
+            .Distinct();
+
+        var fetchedItems = (await _contentManager.GetAsync(missingIds))
+            .ToDictionary(c => c.ContentItemId);
+
+        foreach (var result in results)
         {
+            var contentItem = result.ContentItem ?? fetchedItems.GetValueOrDefault(result.ContentItemId);
+
             selectedItems.Add(new VueMultiselectItemViewModel()
             {
-                Id = contentItem.ContentItemId,
-                DisplayText = contentItem.ToString(),
-                HasPublished = contentItem.IsPublished(),
+                Id = result.ContentItemId,
+                DisplayText = result.DisplayText,
+                HasPublished = result.HasPublished,
                 IsViewable = await _authorizationService.AuthorizeAsync(user, CommonPermissions.EditContent, contentItem),
             });
         }
