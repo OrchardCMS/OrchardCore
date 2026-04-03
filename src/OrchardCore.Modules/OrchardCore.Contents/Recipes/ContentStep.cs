@@ -4,6 +4,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
+using System.ComponentModel.DataAnnotations;
 
 namespace OrchardCore.Contents.Recipes;
 
@@ -26,7 +27,14 @@ public sealed class ContentStep : NamedRecipeStepHandler
         if (ShellScope.Context.IsActivated)
         {
             var contentManager = ShellScope.Services.GetRequiredService<IContentManager>();
-            await contentManager.ImportAsync(contentItems);
+            try
+            {
+                await contentManager.ImportAsync(contentItems);
+            }
+            catch (ValidationException e)
+            {
+                context.Errors.Add(e.Message);
+            }
 
             return;
         }
@@ -36,7 +44,14 @@ public sealed class ContentStep : NamedRecipeStepHandler
         ShellScope.AddDeferredTask(async scope =>
         {
             var contentManager = scope.ServiceProvider.GetRequiredService<IContentManager>();
-            await contentManager.ImportAsync(contentItems);
+            try
+            {
+                await contentManager.ImportAsync(contentItems);
+            }
+            catch (ValidationException e)
+            {
+                context.Errors.Add(e.Message);
+            }
         });
     }
 }
