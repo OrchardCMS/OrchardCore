@@ -1,3 +1,4 @@
+using OrchardCore.AdminMenu;
 using OrchardCore.AdminMenu.Services;
 using OrchardCore.Lists.AdminNodes;
 using OrchardCore.Localization.Data;
@@ -15,7 +16,7 @@ public class ListsAdminNodeDataLocalizationProvider : AdminNodeDataLocalizationP
         var adminMenuList = await GetAdminMenuListAsync();
 
         return adminMenuList.SelectMany(m => m.MenuItems.OfType<ListsAdminNode>()
-            .Select(n => new DataLocalizedString(DataLocalizationContext.AdminMenu(m.Name), n.ContentType, string.Empty))
+            .Select(n => new DataLocalizedString(OrchardCore.AdminMenu.DataLocalizationContext.AdminMenu(m.Name), n.ContentType, string.Empty))
         );
     }
 }
