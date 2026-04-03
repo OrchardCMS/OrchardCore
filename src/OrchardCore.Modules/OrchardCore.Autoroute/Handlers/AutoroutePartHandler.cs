@@ -120,6 +120,7 @@ public class AutoroutePartHandler : ContentPartHandler<AutoroutePart>
         }
 
         var conflict = await GetAbsolutePathConflictAsync(part.Path, part.ContentItem.ContentItemId);
+        
         if (conflict != null)
         {
             var targetId = conflict.ContainedContentItemId ?? conflict.ContentItemId;
