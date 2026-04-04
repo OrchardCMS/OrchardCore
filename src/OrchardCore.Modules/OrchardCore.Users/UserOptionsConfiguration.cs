@@ -21,15 +21,6 @@ public sealed class UserOptionsConfiguration : IConfigureOptions<ResourceManagem
             .SetUrl("~/OrchardCore.Users/Scripts/qrcode.min.js", "~/OrchardCore.Users/Scripts/qrcode.js")
             .SetVersion("1.0.0");
 
-        _manifest
-            .DefineScript("phone-input")
-            .SetUrl("~/OrchardCore.Users/Scripts/phone-input.min.js", "~/OrchardCore.Users/Scripts/phone-input.js")
-            .SetVersion("1.0.0");
-
-        _manifest
-            .DefineStyle("phone-input")
-            .SetUrl("~/OrchardCore.Users/Styles/phone-input.min.css", "~/OrchardCore.Users/Styles/phone-input.css")
-            .SetVersion("1.0.0");
     }
 
     public void Configure(ResourceManagementOptions options)

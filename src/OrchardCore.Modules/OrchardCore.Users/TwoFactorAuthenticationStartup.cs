@@ -209,6 +209,7 @@ public sealed class SmsAuthenticatorStartup : StartupBase
 
         services.AddTransient<IConfigureOptions<TwoFactorOptions>, PhoneProviderTwoFactorOptionsConfiguration>();
         services.AddDisplayDriver<TwoFactorMethod, TwoFactorMethodLoginSmsDisplayDriver>();
+        services.AddDisplayDriver<User, UserPhoneNumberDisplayDriver>();
         services.AddSiteDisplayDriver<SmsAuthenticatorLoginSettingsDisplayDriver>();
     }
 

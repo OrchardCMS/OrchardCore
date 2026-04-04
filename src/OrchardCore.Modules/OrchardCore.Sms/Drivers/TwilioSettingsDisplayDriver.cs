@@ -102,7 +102,7 @@ public sealed class TwilioSettingsDisplayDriver : SiteDisplayDriver<TwilioSettin
             {
                 context.Updater.ModelState.AddModelError(Prefix, nameof(model.PhoneNumber), S["Phone number requires a value."]);
             }
-            else if (!_phoneFormatValidator.IsValid(model.PhoneNumber))
+            else if (!_phoneFormatValidator.Validate(model.PhoneNumber).Succeeded)
             {
                 context.Updater.ModelState.AddModelError(Prefix, nameof(model.PhoneNumber), S["Please provide a valid phone number."]);
             }

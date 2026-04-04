@@ -29,12 +29,6 @@
     </div>
 </div>
 
-<div class="mb-3">
-    <label asp-for="DefaultPhoneRegion" class="form-label">@T["Default phone region"]</label>
-    <input asp-for="DefaultPhoneRegion" class="form-control w-auto" placeholder="@T["e.g., US, GB, FR"]" maxlength="2" style="text-transform: uppercase;" />
-    <span class="hint">@T["The ISO 3166-1 alpha-2 region code used as the default country for the phone number input (e.g., US, GB, FR). Leave empty to auto-detect."]</span>
-</div>
-
 <div class="mb-3" asp-validation-class-for="UseSiteTheme">
     <div class="form-check">
         <input type="checkbox" class="form-check-input" asp-for="UseSiteTheme" />

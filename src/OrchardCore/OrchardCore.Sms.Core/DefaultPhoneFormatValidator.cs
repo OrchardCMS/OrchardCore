@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Localization;
+using OrchardCore.Infrastructure;
 using PhoneNumbers;
 
 namespace OrchardCore.Sms;
@@ -13,13 +14,16 @@ public class DefaultPhoneFormatValidator : IPhoneFormatValidator
     }
 
     public bool IsValid(string phoneNumber)
-        => Validate(phoneNumber).IsValid;
+        => Validate(phoneNumber).Succeeded;
 
-    public PhoneValidationResult Validate(string phoneNumber, string defaultRegion = null)
+    public Result<PhoneEntry> Validate(string phoneNumber, string defaultRegion = null)
     {
         if (string.IsNullOrWhiteSpace(phoneNumber))
         {
-            return PhoneValidationResult.Failure(S["Please provide a phone number."]);
+            return Result.Failed<PhoneEntry>(new ResultError
+            {
+                Message = S["Please provide a phone number."],
+            });
         }
 
         var phoneNumberUtil = PhoneNumberUtil.GetInstance();
@@ -41,7 +45,10 @@ public class DefaultPhoneFormatValidator : IPhoneFormatValidator
                 _ => S["Please provide a valid phone number."],
             };
 
-            return PhoneValidationResult.Failure(message);
+            return Result.Failed<PhoneEntry>(new ResultError
+            {
+                Message = message,
+            });
         }
 
         if (!phoneNumberUtil.IsValidNumber(phone))
@@ -50,19 +57,26 @@ public class DefaultPhoneFormatValidator : IPhoneFormatValidator
 
             if (regionCode != null && !phoneNumberUtil.IsValidNumberForRegion(phone, regionCode))
             {
-                return PhoneValidationResult.Failure(S["The phone number is not valid for the detected region ({0}).", regionCode]);
+                return Result.Failed<PhoneEntry>(new ResultError
+                {
+                    Message = S["The phone number is not valid for the detected region ({0}).", regionCode],
+                });
             }
 
-            return PhoneValidationResult.Failure(S["Please provide a valid phone number."]);
+            return Result.Failed<PhoneEntry>(new ResultError
+            {
+                Message = S["Please provide a valid phone number."],
+            });
         }
 
         var detectedRegion = phoneNumberUtil.GetRegionCodeForNumber(phone);
 
-        return PhoneValidationResult.Success(
-            e164: phoneNumberUtil.Format(phone, PhoneNumberFormat.E164),
-            national: phoneNumberUtil.Format(phone, PhoneNumberFormat.NATIONAL),
-            regionCode: detectedRegion,
-            countryCode: phone.CountryCode
-        );
+        return Result.Success(new PhoneEntry
+        {
+            E164Number = phoneNumberUtil.Format(phone, PhoneNumberFormat.E164),
+            NationalNumber = phoneNumberUtil.Format(phone, PhoneNumberFormat.NATIONAL),
+            RegionCode = detectedRegion,
+            CountryCode = phone.CountryCode,
+        });
     }
 }
