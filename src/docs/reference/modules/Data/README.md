@@ -12,6 +12,7 @@ This setting represents the name of the file used to store the SQLite database. 
 
 !!!note
     This value is stored in the `ShellSettings` of a tenant, so it can be different for each tenant in the application.
+
 #### `UseConnectionPooling` (boolean)
 
 By default in `.NET 6`, `Microsoft.Data.Sqlite` pools connections to the database. It achieves this by putting locking the database file and leaving connections open to be reused. If the lock is preventing tasks like backups, this functionality can be disabled.
