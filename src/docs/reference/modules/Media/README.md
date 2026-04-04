@@ -551,7 +551,7 @@ A middleware component returns a 404 NotFound response for unauthenticated acces
 
 The `Cache-Control` header for secured files is set to `no-store` by default, preventing their caching. This can be changed with the `MaxSecureFilesBrowserCacheDays` configuration, [see above](#configuration).
 
-### File Upload Limit
+## File Upload Limit
 
 In ASP.NET Core, file upload size limits are enforced at multiple levels — FormOptions, Kestrel/IIS server settings, and sometimes controller-level attributes. By default:
 
@@ -565,49 +565,46 @@ To increase the limit, you can use one of the following approaches:
 
 1. IIS content length limit
 
-Customize the limit in the `web.config` file:
-
-```xml
-<system.webServer>
-  <security>
-    <requestFiltering>
-      <!-- Handle requests up to 1 GB -->
-      <requestLimits maxAllowedContentLength="1073741824" />
-    </requestFiltering>
-  </security>
-</system.webServer>
-```
+    ```xml
+    <system.webServer>
+      <security>
+        <requestFiltering>
+          <requestLimits maxAllowedContentLength="50000000" />
+        </requestFiltering>
+      </security>
+    </system.webServer>
+    ```
 
 2. ASP.NET Core Request length limit
 
-2.1 For application running on IIS
+    2.1 For application running on IIS
 
-```csharp
-services.Configure<IISServerOptions>(options =>
-{
-    options.MaxRequestBodySize = int.MaxValue;
-});
-```
+    ```csharp
+    services.Configure<IISServerOptions>(options =>
+    {
+        options.MaxRequestBodySize = 50000000;
+    });
+    ```
 
-2.2 For application running on Kestrel
+    2.2 For application running on Kestrel
 
-```csharp
-services.Configure<KestrelServerOptions>(options =>
-{
-    options.Limits.MaxRequestBodySize = int.MaxValue;
-});
-```
+    ```csharp
+    services.Configure<KestrelServerOptions>(options =>
+    {
+        options.Limits.MaxRequestBodySize = 50000000;
+    });
+    ```
 
 3. Form's `MultipartBodyLengthLimit`
 
-```csharp
-services.Configure<FormOptions>(options =>
-{
-    options.ValueLengthLimit = int.MaxValue;
-    options.MultipartBodyLengthLimit = int.MaxValue;
-    options.MultipartHeadersLengthLimit = int.MaxValue;
-});
-```
+    ```csharp
+    services.Configure<FormOptions>(options =>
+    {
+        options.ValueLengthLimit = 50000000;
+        options.MultipartBodyLengthLimit = 50000000;
+        options.MultipartHeadersLengthLimit = 50000000;
+    });
+    ```
 
 ## Videos
 
