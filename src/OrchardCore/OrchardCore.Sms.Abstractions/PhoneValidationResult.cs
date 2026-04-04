@@ -1,5 +1,6 @@
 namespace OrchardCore.Sms;
 
+[Obsolete("Use Result<PhoneEntry> from IPhoneFormatValidator.Validate() instead.")]
 public class PhoneValidationResult
 {
     public bool IsValid { get; set; }

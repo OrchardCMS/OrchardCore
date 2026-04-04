@@ -1,5 +1,5 @@
 {
-  "name": "@orchardcore/users",
+  "name": "@orchardcore/sms",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -9,6 +9,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "qrcodejs": "^1.0.0"
+    "intl-tel-input": "^25.3.1"
   }
 }

@@ -14,7 +14,5 @@ public class EditUserPhoneNumberViewModel
     [BindNever]
     public bool AllowEditing { get; set; }
 
-    [BindNever]
-    public string DefaultRegion { get; set; }
 }
 
