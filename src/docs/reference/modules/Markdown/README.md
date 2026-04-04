@@ -56,6 +56,18 @@ You can disable this by unchecking the `Sanitize HTML` setting, or further confi
 
 When rendering content directly you can disable sanitization by passing a boolean to the helper.
 
+!!! note
+    In case you need to bypass sanitization for a specific markdown extensions, you can add its related attributes to sanitizer allowed attributes.
+    For example you can allow `autoidentifiers` extension by allow `id` attribute as following:
+
+    ```csharp
+    builder.Services
+        .AddOrchardCms()
+        .ConfigureServices(tenantServices => 
+            tenantServices.ConfigureHtmlSanitizer(sanitizer => sanitizer.AllowedAttributes.Add("id")
+        );
+    ```
+
 ## Editors
 
 The __Markdown Part__ editor can be different for each content type. In the __Markdown Part__ settings of a
