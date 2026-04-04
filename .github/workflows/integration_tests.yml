@@ -3,7 +3,8 @@ name: Integration Tests
 on:
   # Manual trigger.
   workflow_dispatch:
-  pull_request:
+  pull_request_review:
+    types: [submitted]
   # Run it on main and release pushes too, in case we merge from a branch that's not up-to-date with the target branch
   # and breaks something after merge (or if we push to main).
   push:
@@ -21,7 +22,7 @@ jobs:
   test_s3_localstack:
     name: Integration Tests - S3 (LocalStack)
     if: github.event_name == 'workflow_dispatch' ||
-        github.event_name == 'pull_request' ||
+        github.event_name == 'push' ||
         github.event.review.state == 'APPROVED' ||
         github.event.review.state == 'CHANGES_REQUESTED'
     runs-on: ubuntu-24.04
