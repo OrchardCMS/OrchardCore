@@ -28,7 +28,7 @@ public sealed class ElasticsearchQueryHandler : QueryHandlerBase
 
         if (hasTemplate || hasIndex)
         {
-            var metadata = context.Query.As<ElasticsearchQueryMetadata>();
+            var metadata = context.Query.GetOrCreate<ElasticsearchQueryMetadata>();
 
             if (hasTemplate)
             {

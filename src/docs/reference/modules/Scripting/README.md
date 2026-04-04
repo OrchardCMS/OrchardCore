@@ -71,11 +71,13 @@ Here is a list of javascript methods provided by Orchard Modules.
 | `html(String): String`                                  | Decodes the specified string from HTML encoding.                                                                         |
 | `gzip(String): String`                                  | Decodes the specified string from gzip/base64 encoding. Use <http://www.txtwizard.net/compression> to gzip your strings. |
 | `protect(purpose: String, value: String): String`       | Protects the specified value using the ASP.NET Core Data Protection API with the given purpose string.                   |
+| `encrypt(value: String): String`                        | Encrypts the specified value using the ASP.NET Core Data Protection API. Returns a Base64-encoded ciphertext.            |
+| `decrypt(value: String): String`                        | Decrypts a Base64-encoded string previously encrypted with the `encrypt` function. Returns an empty string if decryption fails. |
 
 !!! warning
     The `protect` function is intended for use during development and testing scenarios only. **Storing secrets in recipe files for production environments is not recommended** and should be avoided. Use a secure secret management solution (e.g., Azure Key Vault, environment variables) for production deployments.
 
-**Example:**
+**Example (protect):**
 
 ```json
 {
@@ -88,6 +90,18 @@ Here is a list of javascript methods provided by Orchard Modules.
     }
   ]
 }
+```
+
+**Example (encrypt / decrypt):**
+
+```javascript
+var encryptedValue = encrypt('my-secret-value');
+```
+
+To read the value back later using JavaScript:
+
+```javascript
+var plainText = decrypt(encryptedValue);
 ```
 
 #### Content (`OrchardCore.Contents`)

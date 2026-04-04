@@ -75,8 +75,7 @@ public sealed class ResetPasswordController : Controller
     public async Task<IActionResult> ForgotPasswordPOST()
     {
         var site = await _siteService.GetSiteSettingsAsync();
-
-        if (!site.As<ResetPasswordSettings>().AllowResetPassword)
+        if (!site.TryGet<ResetPasswordSettings>(out var settings) || !settings.AllowResetPassword)
         {
             return NotFound();
         }

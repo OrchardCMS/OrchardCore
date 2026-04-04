@@ -31,7 +31,7 @@ public sealed class ElasticsearchContentIndexProfileHandler : IndexProfileHandle
             return Task.CompletedTask;
         }
 
-        var metadata = index.As<ElasticsearchIndexMetadata>();
+        var metadata = index.GetOrCreate<ElasticsearchIndexMetadata>();
 
         var map = new ElasticsearchIndexMap()
         {
