@@ -184,7 +184,7 @@ public sealed class AdminController : Controller
 ```
 
 !!!note
-    Make sure you create the database for the following providers before running the setup process; otherwise, the connection will fail, and the setup process will not be able to create the database for you.
+    Make sure you create the database for the following providers *before* running the setup process; otherwise, the connection will fail, and the setup process will not be able to create the database for you.
 
     - SQL Server
     - MySQL
