@@ -58,7 +58,7 @@ When rendering content directly you can disable sanitization by passing a boolea
 
 !!! note
     In case you need to bypass sanitization for a specific markdown extension, you can add its related attributes to the sanitizer's allowed attributes.
-    For example, you can allow `autoidentifiers` extension by allowing `id` attribute as follows:
+    For example, you can allow the `autoidentifiers` extension by allowing the `id` attribute as follows:
 
     ```csharp
     builder.Services
