@@ -57,8 +57,8 @@ You can disable this by unchecking the `Sanitize HTML` setting, or further confi
 When rendering content directly you can disable sanitization by passing a boolean to the helper.
 
 !!! note
-    In case you need to bypass sanitization for a specific markdown extensions, you can add its related attributes to sanitizer allowed attributes.
-    For example you can allow `autoidentifiers` extension by allow `id` attribute as following:
+    In case you need to bypass sanitization for a specific markdown extension, you can add its related attributes to the sanitizer's allowed attributes.
+    For example, you can allow `autoidentifiers` extension by allowing `id` attribute as follows:
 
     ```csharp
     builder.Services
