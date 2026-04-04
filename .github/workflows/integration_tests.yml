@@ -21,7 +21,7 @@ jobs:
   test_s3_localstack:
     name: Integration Tests - S3 (LocalStack)
     if: github.event_name == 'workflow_dispatch' ||
-        github.event_name == 'push' ||
+        github.event_name == 'pull_request' ||
         github.event.review.state == 'APPROVED' ||
         github.event.review.state == 'CHANGES_REQUESTED'
     runs-on: ubuntu-24.04
