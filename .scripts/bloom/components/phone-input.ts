@@ -1,5 +1,6 @@
 interface PhoneInputOptions {
     el: HTMLElement;
+    input: HTMLInputElement;
     iti: any;
     hiddenInput?: HTMLInputElement | null;
 }
@@ -13,7 +14,7 @@ interface PhoneInputOptions {
  * @param options.iti - An initialized intl-tel-input instance.
  * @param options.hiddenInput - Optional hidden input to sync the E.164 number to.
  */
-export default ({ el, iti, hiddenInput }: PhoneInputOptions) => {
+export default ({ el, input, iti, hiddenInput }: PhoneInputOptions) => {
     const confirmed = el.dataset.phoneConfirmed === 'True';
     const initialValue = el.dataset.phoneValue ?? '';
 
@@ -63,8 +64,6 @@ export default ({ el, iti, hiddenInput }: PhoneInputOptions) => {
             hiddenInput.value = iti.getNumber();
         }
     }
-
-    const input = iti.telInput as HTMLInputElement;
 
     input.addEventListener('input', () => {
         updateIcon();
