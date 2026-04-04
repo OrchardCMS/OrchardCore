@@ -209,12 +209,20 @@ public sealed class SmsAuthenticatorStartup : StartupBase
 
         services.AddTransient<IConfigureOptions<TwoFactorOptions>, PhoneProviderTwoFactorOptionsConfiguration>();
         services.AddDisplayDriver<TwoFactorMethod, TwoFactorMethodLoginSmsDisplayDriver>();
-        services.AddDisplayDriver<User, UserPhoneNumberDisplayDriver>();
         services.AddSiteDisplayDriver<SmsAuthenticatorLoginSettingsDisplayDriver>();
     }
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
     {
         routes.AddSmsSendCodeEndpoint<SmsAuthenticatorStartup>();
+    }
+}
+
+[RequireFeatures("OrchardCore.Sms")]
+public sealed class SmsStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddDisplayDriver<User, UserPhoneNumberDisplayDriver>();
     }
 }

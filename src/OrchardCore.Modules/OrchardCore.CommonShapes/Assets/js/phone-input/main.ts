@@ -4,8 +4,9 @@ import 'intl-tel-input/build/css/intlTelInput.css';
 import './phone-input.css';
 
 document.querySelectorAll<HTMLElement>('[data-phone-input]').forEach((el) => {
-    const form = el.closest('form');
-    const hiddenInput = form?.querySelector<HTMLInputElement>('[data-phone-e164]');
+    const hiddenInput = el.nextElementSibling?.matches('[data-phone-e164]')
+        ? el.nextElementSibling as HTMLInputElement
+        : el.closest('form')?.querySelector<HTMLInputElement>('[data-phone-e164]');
     const disabled = el.dataset.phoneDisabled === 'True';
     const defaultRegion = el.dataset.phoneRegion ?? '';
 
@@ -40,5 +41,5 @@ document.querySelectorAll<HTMLElement>('[data-phone-input]').forEach((el) => {
     });
 
     // Delegate validation and syncing to Bloom component
-    phoneInput({ el, iti, hiddenInput });
+    phoneInput({ el, input, iti, hiddenInput });
 });
