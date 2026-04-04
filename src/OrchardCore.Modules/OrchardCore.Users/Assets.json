@@ -37,11 +37,5 @@
     "source": "Assets/ts/login-form-credentials.ts",
     "dest": "wwwroot/Scripts/login-form-credentials/",
     "tags": ["admin", "dashboard", "js"]
-  },
-  {
-    "action": "vite",
-    "name": "users-phone-input",
-    "source": "Assets/js/phone-input",
-    "tags": ["admin", "dashboard", "js"]
   }
 ]
