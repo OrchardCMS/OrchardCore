@@ -6,7 +6,6 @@
     "check": "vue-tsc --noEmit"
   },
   "dependencies": {
-    "intl-tel-input": "^25.3.1",
     "qrcodejs": "^1.0.0"
   }
 }

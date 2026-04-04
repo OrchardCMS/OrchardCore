@@ -1,0 +1,18 @@
+@{
+    var value = (string)Model.Value ?? string.Empty;
+    var inputName = (string)Model.InputName;
+    var disabled = (bool?)Model.Disabled ?? false;
+    var region = (string)Model.Region ?? new RegionInfo(Thread.CurrentThread.CurrentUICulture.Name).TwoLetterISORegionName;
+    var confirmed = (bool?)Model.Confirmed ?? false;
+}
+
+<div data-phone-input
+     data-phone-value="@value"
+     data-phone-disabled="@disabled"
+     data-phone-region="@region"
+     data-phone-confirmed="@confirmed">
+</div>
+<input type="hidden" name="@inputName" data-phone-e164 value="@value" />
+
+<style asp-name="phone-input"></style>
+<script asp-name="phone-input" at="Foot" type="module"></script>
