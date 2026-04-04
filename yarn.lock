@@ -2364,6 +2364,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@orchardcore/commonshapes@workspace:src/OrchardCore.Modules/OrchardCore.CommonShapes/Assets":
+  version: 0.0.0-use.local
+  resolution: "@orchardcore/commonshapes@workspace:src/OrchardCore.Modules/OrchardCore.CommonShapes/Assets"
+  dependencies:
+    intl-tel-input: "npm:^25.3.1"
+  languageName: unknown
+  linkType: soft
+
 "@orchardcore/contentfields@workspace:src/OrchardCore.Modules/OrchardCore.ContentFields/Assets":
   version: 0.0.0-use.local
   resolution: "@orchardcore/contentfields@workspace:src/OrchardCore.Modules/OrchardCore.ContentFields/Assets"
@@ -2573,14 +2581,6 @@ __metadata:
   dependencies:
     "@popperjs/core": "npm:2.11.8"
     bootstrap: "npm:5.3.8"
-  languageName: unknown
-  linkType: soft
-
-"@orchardcore/sms@workspace:src/OrchardCore.Modules/OrchardCore.CommonShapes/Assets":
-  version: 0.0.0-use.local
-  resolution: "@orchardcore/sms@workspace:src/OrchardCore.Modules/OrchardCore.CommonShapes/Assets"
-  dependencies:
-    intl-tel-input: "npm:^25.3.1"
   languageName: unknown
   linkType: soft
 
