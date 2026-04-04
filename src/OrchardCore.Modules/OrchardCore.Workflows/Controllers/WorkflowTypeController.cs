@@ -180,7 +180,7 @@ public sealed class WorkflowTypeController : Controller
             return Forbid();
         }
 
-        if (itemIds?.Count() > 0)
+        if (itemIds?.Any() == true)
         {
             var checkedEntries = await _session.Query<WorkflowType, WorkflowTypeIndex>()
                 .Where(x => x.DocumentId.IsIn(itemIds)).ListAsync();
