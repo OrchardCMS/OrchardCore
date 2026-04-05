@@ -1,6 +1,7 @@
 @using Microsoft.AspNetCore.Html
 @using OrchardCore.Features
 @using OrchardCore.Modules
+
 @model FeaturesViewModel
 @{
     var title = T["Features"];
@@ -49,13 +50,13 @@
         var featureGroups = Model.Features.GroupBy(f => f.Descriptor.Category).OrderBy(o => o.Key).ToArray();
         foreach (var featureGroup in featureGroups)
         {
-            var categoryName = featureGroup.First().Descriptor.Category ?? T["Uncategorized"].Value;
+            var categoryName = featureGroup.FirstOrDefault()?.Descriptor.Category ?? T["Uncategorized"].Value;
             var categoryClassName = string.Format("category {0}", Html.Encode(categoryName.ToString()));
-            if (featureGroup == featureGroups.First())
+            if (featureGroup == featureGroups.FirstOrDefault())
             {
                 categoryClassName += " first";
             }
-            if (featureGroup == featureGroups.Last())
+            if (featureGroup == featureGroups.LastOrDefault())
             {
                 categoryClassName += " last";
             }
@@ -113,9 +114,12 @@
                                                 <div class="d-inline direct-dependencies">
                                                     @foreach (var dependencyId in feature.Descriptor.Dependencies)
                                                     {
-                                                        var dependencyName = Model.Features.Where(f => f.Descriptor.Id == dependencyId)
+                                                        var dependencyName = Model.Features
+                                                            .Where(f => f.Descriptor.Id == dependencyId)
                                                             .OrderBy(f => f.Descriptor.Name)
-                                                            .First().Descriptor.Name;
+                                                            .Select(f => f.Descriptor.Name)
+                                                            .FirstOrDefault() ?? string.Empty;
+
                                                         <span class="badge ta-badge">
                                                             @dependencyName
                                                         </span>
