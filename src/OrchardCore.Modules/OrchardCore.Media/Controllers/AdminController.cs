@@ -161,9 +161,10 @@ public sealed class AdminController : Controller
         return Ok(allowed);
     }
 
-    public async Task<ActionResult<object>> GetMediaItem(string path)
+    public async Task<ActionResult<object>> GetMediaItem(string path, string attachedMediaToken)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaFolder, (object)path)
+        if ((!await IsAttachedMediaServiceAllowedAsync(_attachedMediaFieldFileService.MediaFieldsFolder, path, attachedMediaToken)
+            && !await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaFolder, (object)path))
             || (HttpContext.IsSecureMediaEnabled() && !await _authorizationService.AuthorizeAsync(User, MediaPermissions.ViewMedia, (object)(path ?? string.Empty))))
         {
             return Forbid();
@@ -186,9 +187,10 @@ public sealed class AdminController : Controller
 
     [HttpPost]
     [MediaSizeLimit]
-    public async Task<IActionResult> Upload(string path, string extensions)
+    public async Task<IActionResult> Upload(string path, string extensions, string attachedMediaToken)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaFolder, (object)path)
+        if ((!await IsAttachedMediaServiceAllowedAsync(_attachedMediaFieldFileService.GetMediaFieldsTempSubFolder(), path, attachedMediaToken)
+            && !await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaFolder, (object)path))
             || (HttpContext.IsSecureMediaEnabled() && !await _authorizationService.AuthorizeAsync(User, MediaPermissions.ViewMedia, (object)(path ?? string.Empty))))
         {
             return Forbid();
@@ -287,6 +289,13 @@ public sealed class AdminController : Controller
         }
 
         return result;
+    }
+
+    private async Task<bool> IsAttachedMediaServiceAllowedAsync(string basePath, string path, string attachedMediaToken)
+    {
+        return !string.IsNullOrWhiteSpace(attachedMediaToken)
+            && path.StartsWith(basePath, StringComparison.Ordinal)
+            && await _attachedMediaFieldFileService.ValidateTokenAsync(attachedMediaToken);
     }
 
     [HttpPost]

@@ -1,5 +1,7 @@
 using System.IO.Hashing;
+using System.Security.Cryptography;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Caching.Distributed;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentPreview;
 using OrchardCore.FileStorage;
@@ -12,18 +14,25 @@ namespace OrchardCore.Media.Services;
 /// </summary>
 public class AttachedMediaFieldFileService
 {
+    private const string TokenCacheKeyPrefix = "AttachedMediaToken:";
+    private const int TokenLifetimeHours = 8;
+    private const int TokenBytesLength = 64;
+
     private readonly IMediaFileStore _fileStore;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IUserAssetFolderNameProvider _userAssetFolderNameProvider;
+    private readonly IDistributedCache _distributedCache;
 
     public AttachedMediaFieldFileService(
         IMediaFileStore fileStore,
         IHttpContextAccessor httpContextAccessor,
-        IUserAssetFolderNameProvider userAssetFolderNameProvider)
+        IUserAssetFolderNameProvider userAssetFolderNameProvider,
+        IDistributedCache distributedCache)
     {
         _fileStore = fileStore;
         _httpContextAccessor = httpContextAccessor;
         _userAssetFolderNameProvider = userAssetFolderNameProvider;
+        _distributedCache = distributedCache;
 
         MediaFieldsFolder = "mediafields";
         MediaFieldsTempSubFolder = _fileStore.Combine(MediaFieldsFolder, "temp");
@@ -110,6 +119,45 @@ public class AttachedMediaFieldFileService
     /// <returns></returns>
     public string GetMediaFieldsTempSubFolder()
         => _fileStore.Combine(MediaFieldsTempSubFolder, _userAssetFolderNameProvider.GetUserAssetFolderName(_httpContextAccessor.HttpContext.User));
+
+    /// <summary>
+    /// Generates a token to allow Attached Media get / upload.
+    /// </summary>
+    /// <returns>Generated token.</returns>
+    public async Task<string> GenerateTokenAsync()
+    {
+        var tokenBytes = RandomNumberGenerator.GetBytes(TokenBytesLength);
+        var token = Convert.ToBase64String(tokenBytes);
+        await _distributedCache.SetAsync(TokenCacheKeyPrefix + token, Array.Empty<byte>(),
+            new DistributedCacheEntryOptions()
+            {
+                SlidingExpiration = TimeSpan.FromHours(TokenLifetimeHours),
+            });
+        return token;
+    }
+
+    /// <summary>
+    /// Validates a token.
+    /// </summary>
+    /// <param name="token">Token to validate</param>
+    /// <returns>True if token is valid.</returns>
+    public async Task<bool> ValidateTokenAsync(string token)
+    {
+        return !string.IsNullOrEmpty(token)
+            && (await _distributedCache.GetAsync(TokenCacheKeyPrefix + token)) != null;
+    }
+
+    /// <summary>
+    /// Revoques a token.
+    /// </summary>
+    /// <param name="token">Token to revoke.</param>
+    public void RevokeToken(string token)
+    {
+        if (!string.IsNullOrEmpty(token))
+        {
+            _distributedCache.Remove(TokenCacheKeyPrefix + token);
+        }
+    }
 
     private async Task EnsureGlobalDirectoriesAsync()
     {
