@@ -6,6 +6,13 @@ Most database configuration is handled automatically, but there are limited opti
 
 ### Sqlite
 
+#### `DatabaseName`
+
+This setting represents the name of the file used to store the SQLite database. By default, it is set to `OrchardCore.db`. You can change this value to specify a different file name for your SQLite database.
+
+!!!note
+    This value is stored in the `ShellSettings` of a tenant, so it can be different for each tenant in the application.
+
 #### `UseConnectionPooling` (boolean)
 
 By default in `.NET 6`, `Microsoft.Data.Sqlite` pools connections to the database. It achieves this by putting locking the database file and leaving connections open to be reused. If the lock is preventing tasks like backups, this functionality can be disabled.
