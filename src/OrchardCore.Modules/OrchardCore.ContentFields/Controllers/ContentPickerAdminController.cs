@@ -97,13 +97,14 @@ public sealed class ContentPickerAdminController : Controller
         foreach (var result in results)
         {
             var contentItem = result.ContentItem ?? fetchedItems.GetValueOrDefault(result.ContentItemId);
+            var isViewable = contentItem != null && await _authorizationService.AuthorizeAsync(user, CommonPermissions.EditContent, contentItem);
 
             selectedItems.Add(new VueMultiselectItemViewModel()
             {
                 Id = result.ContentItemId,
                 DisplayText = result.DisplayText,
                 HasPublished = result.HasPublished,
-                IsViewable = await _authorizationService.AuthorizeAsync(user, CommonPermissions.EditContent, contentItem),
+                IsViewable = isViewable,
             });
         }
 
