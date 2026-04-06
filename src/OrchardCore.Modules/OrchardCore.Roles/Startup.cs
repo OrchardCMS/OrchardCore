@@ -11,7 +11,6 @@ using OrchardCore.Localization.Data;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
-using OrchardCore.Roles.Deployment;
 using OrchardCore.Roles.Migrations;
 using OrchardCore.Roles.Recipes;
 using OrchardCore.Roles.Services;
@@ -41,7 +40,10 @@ public sealed class Startup : StartupBase
         services.AddScoped<RoleStore>();
         services.Replace(ServiceDescriptor.Scoped<IRoleClaimStore<IRole>>(sp => sp.GetRequiredService<RoleStore>()));
         services.Replace(ServiceDescriptor.Scoped<IRoleStore<IRole>>(sp => sp.GetRequiredService<RoleStore>()));
+        services.AddRecipeDeploymentStep<RolesRecipeStep>();
+#pragma warning disable CS0618 // Type or member is obsolete
         services.AddRecipeExecutionStep<RolesStep>();
+#pragma warning restore CS0618 // Type or member is obsolete
         services.AddScoped<IAuthorizationHandler, RolesPermissionsHandler>();
         services.AddPermissionProvider<Permissions>();
         services.AddNavigationProvider<AdminMenu>();
@@ -66,7 +68,6 @@ public sealed class DeploymentStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddDeployment<AllRolesDeploymentSource, AllRolesDeploymentStep, AllRolesDeploymentStepDriver>();
     }
 }
 

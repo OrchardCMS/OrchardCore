@@ -15,7 +15,7 @@ public sealed class StepController : Controller
 {
     private readonly IAuthorizationService _authorizationService;
     private readonly IDisplayManager<DeploymentStep> _displayManager;
-    private readonly IEnumerable<IDeploymentStepFactory> _factories;
+    private readonly IDeploymentStepFactoryResolver _factoryResolver;
     private readonly ISession _session;
     private readonly INotifier _notifier;
     private readonly IUpdateModelAccessor _updateModelAccessor;
@@ -25,14 +25,14 @@ public sealed class StepController : Controller
     public StepController(
         IAuthorizationService authorizationService,
         IDisplayManager<DeploymentStep> displayManager,
-        IEnumerable<IDeploymentStepFactory> factories,
+        IDeploymentStepFactoryResolver factoryResolver,
         ISession session,
         IHtmlLocalizer<StepController> htmlLocalizer,
         INotifier notifier,
         IUpdateModelAccessor updateModelAccessor)
     {
         _displayManager = displayManager;
-        _factories = factories;
+        _factoryResolver = factoryResolver;
         _authorizationService = authorizationService;
         _session = session;
         _notifier = notifier;
@@ -55,7 +55,7 @@ public sealed class StepController : Controller
             return NotFound();
         }
 
-        var step = _factories.FirstOrDefault(x => x.Name == type)?.Create();
+        var step = _factoryResolver.GetFactory(type)?.Create();
 
         if (step == null)
         {
@@ -93,7 +93,7 @@ public sealed class StepController : Controller
             return NotFound();
         }
 
-        var step = _factories.FirstOrDefault(x => x.Name == model.DeploymentStepType)?.Create();
+        var step = _factoryResolver.GetFactory(model.DeploymentStepType)?.Create();
 
         if (step == null)
         {

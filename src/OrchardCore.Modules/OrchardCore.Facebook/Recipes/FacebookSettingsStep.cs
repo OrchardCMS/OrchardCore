@@ -8,7 +8,10 @@ namespace OrchardCore.Facebook.Recipes;
 /// <summary>
 /// This recipe step sets general Facebook Login settings.
 /// </summary>
+[Obsolete("Implement IRecipeDeploymentStep instead. This class will be removed in a future version.", false)]
+#pragma warning disable CS0618 // Type or member is obsolete
 public sealed class FacebookSettingsStep : NamedRecipeStepHandler
+#pragma warning restore CS0618
 {
     private readonly IFacebookService _facebookService;
 
@@ -37,14 +40,4 @@ public sealed class FacebookSettingsStep : NamedRecipeStepHandler
 
         await _facebookService.UpdateSettingsAsync(settings);
     }
-}
-
-public sealed class FacebookCoreSettingsStepModel
-{
-    public string AppId { get; set; }
-    public string AppSecret { get; set; }
-    public string SdkJs { get; set; }
-    public bool FBInit { get; set; }
-    public string FBInitParams { get; set; }
-    public string Version { get; set; }
 }

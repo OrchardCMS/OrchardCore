@@ -17,6 +17,7 @@ using OrchardCore.Modules;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Recipes.Models;
+using OrchardCore.Recipes.Services;
 using OrchardCore.Setup.Services;
 using OrchardCore.Tenants.Models;
 using OrchardCore.Tenants.Services;
@@ -385,7 +386,7 @@ public sealed class TenantApiController : ControllerBase
             recipeName = model.RecipeName;
         }
 
-        RecipeDescriptor recipeDescriptor = null;
+        IRecipeDescriptor recipeDescriptor = null;
 
         if (string.IsNullOrEmpty(recipeName))
         {

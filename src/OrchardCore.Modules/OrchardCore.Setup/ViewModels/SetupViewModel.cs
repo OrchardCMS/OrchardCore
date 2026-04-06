@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using OrchardCore.Data;
-using OrchardCore.Recipes.Models;
+using OrchardCore.Recipes.Services;
 
 namespace OrchardCore.Setup.ViewModels;
 
@@ -43,7 +43,7 @@ public class SetupViewModel
     public IEnumerable<DatabaseProvider> DatabaseProviders { get; set; } = [];
 
     [BindNever]
-    public IEnumerable<RecipeDescriptor> Recipes { get; set; }
+    public IEnumerable<IRecipeDescriptor> Recipes { get; set; }
 
     public bool RecipeNamePreset { get; set; }
 

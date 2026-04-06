@@ -60,6 +60,8 @@ public sealed class Startup : StartupBase
         services.AddDataMigration<Migrations>();
         services.AddScoped<IDocumentIndexHandler, ContainedPartContentIndexHandler>();
         services.AddScoped<IContainerService, ContainerService>();
+
+        services.AddContentPartSchemaHandler<ListPartSchemaHandler>();
     }
 }
 

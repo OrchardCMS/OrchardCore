@@ -9,16 +9,16 @@ public sealed class DeploymentPlanDeploymentSource
     : DeploymentSourceBase<DeploymentPlanDeploymentStep>
 {
     private readonly IDeploymentPlanService _deploymentPlanService;
-    private readonly IEnumerable<IDeploymentStepFactory> _deploymentStepFactories;
+    private readonly IDeploymentStepFactoryResolver _factoryResolver;
     private readonly JsonSerializerOptions _jsonSerializerOptions;
 
     public DeploymentPlanDeploymentSource(
         IDeploymentPlanService deploymentPlanService,
-        IEnumerable<IDeploymentStepFactory> deploymentStepFactories,
+        IDeploymentStepFactoryResolver factoryResolver,
         IOptions<DocumentJsonSerializerOptions> jsonSerializerOptions)
     {
         _deploymentPlanService = deploymentPlanService;
-        _deploymentStepFactories = deploymentStepFactories;
+        _factoryResolver = factoryResolver;
         _jsonSerializerOptions = jsonSerializerOptions.Value.SerializerOptions;
     }
 
@@ -29,7 +29,7 @@ public sealed class DeploymentPlanDeploymentSource
             return;
         }
 
-        var deploymentStepFactories = _deploymentStepFactories.ToDictionary(f => f.Name);
+        var deploymentStepFactories = _factoryResolver.GetFactories().ToDictionary(f => f.Name);
 
         var deploymentPlans = step.IncludeAll
             ? (await _deploymentPlanService.GetAllDeploymentPlansAsync()).ToArray()

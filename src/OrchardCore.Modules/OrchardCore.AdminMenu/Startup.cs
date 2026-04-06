@@ -1,6 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.AdminMenu.AdminNodes;
-using OrchardCore.AdminMenu.Deployment;
 using OrchardCore.AdminMenu.Recipes;
 using OrchardCore.AdminMenu.Services;
 using OrchardCore.Deployment;
@@ -23,15 +22,24 @@ public sealed class Startup : StartupBase
         services.AddScoped<IAdminMenuAccessor, AdminMenuAccessor>();
         services.AddScoped<AdminMenuNavigationProvidersCoordinator>();
 
+#pragma warning disable CS0618 // Type or member is obsolete
         services.AddRecipeExecutionStep<AdminMenuStep>();
-
-        services.AddDeployment<AdminMenuDeploymentSource, AdminMenuDeploymentStep, AdminMenuDeploymentStepDriver>();
+#pragma warning restore CS0618 // Type or member is obsolete
+        services.AddRecipeDeploymentStep<AdminMenuRecipeStep>();
 
         // placeholder treeNode
         services.AddAdminNode<PlaceholderAdminNode, PlaceholderAdminNodeNavigationBuilder, PlaceholderAdminNodeDriver>();
 
         // link treeNode
         services.AddAdminNode<LinkAdminNode, LinkAdminNodeNavigationBuilder, LinkAdminNodeDriver>();
+    }
+}
+
+[RequireFeatures("OrchardCore.Deployment", "OrchardCore.AdminMenu")]
+public sealed class DeploymentStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
     }
 }
 

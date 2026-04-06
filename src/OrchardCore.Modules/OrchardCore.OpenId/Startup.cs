@@ -67,7 +67,11 @@ public sealed class ClientStartup : StartupBase
         // Note: the following services are registered using TryAddEnumerable to prevent duplicate registrations.
         services.AddSiteDisplayDriver<OpenIdClientSettingsDisplayDriver>();
 
+        services.AddRecipeDeploymentStep<OpenIdClientSettingsRecipeStep>();
+#pragma warning disable CS0618 // Type or member is obsolete
         services.AddRecipeExecutionStep<OpenIdClientSettingsStep>();
+#pragma warning restore CS0618 // Type or member is obsolete
+
         // Register the options initializers required by the OpenID Connect client handler.
         services.TryAddEnumerable(new[]
         {
@@ -110,9 +114,14 @@ public sealed class ServerStartup : StartupBase
             ServiceDescriptor.Singleton<IBackgroundTask, OpenIdBackgroundTask>(),
         });
 
+        services.AddRecipeDeploymentStep<OpenIdServerSettingsRecipeStep>();
+        services.AddRecipeDeploymentStep<OpenIdApplicationRecipeStep>();
+        services.AddRecipeDeploymentStep<OpenIdScopeRecipeStep>();
+#pragma warning disable CS0618 // Type or member is obsolete
         services.AddRecipeExecutionStep<OpenIdServerSettingsStep>()
             .AddRecipeExecutionStep<OpenIdApplicationStep>()
             .AddRecipeExecutionStep<OpenIdScopeStep>();
+#pragma warning restore CS0618 // Type or member is obsolete
 
         // Note: the OpenIddict ASP.NET host adds an authentication options initializer that takes care of
         // registering the server ASP.NET Core handler. Yet, it MUST NOT be registered at this stage
@@ -224,7 +233,10 @@ public sealed class ValidationStartup : StartupBase
         // Note: the following services are registered using TryAddEnumerable to prevent duplicate registrations.
         services.AddDisplayDriver<OpenIdValidationSettings, OpenIdValidationSettingsDisplayDriver>();
 
+        services.AddRecipeDeploymentStep<OpenIdValidationSettingsRecipeStep>();
+#pragma warning disable CS0618 // Type or member is obsolete
         services.AddRecipeExecutionStep<OpenIdValidationSettingsStep>();
+#pragma warning restore CS0618 // Type or member is obsolete
 
         // Note: the OpenIddict ASP.NET host adds an authentication options initializer that takes care of
         // registering the validation handler. Yet, it MUST NOT be registered at this stage as it is

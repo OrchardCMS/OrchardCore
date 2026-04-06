@@ -7,6 +7,7 @@ namespace OrchardCore.CustomSettings.Recipes;
 /// <summary>
 /// This recipe step updates the site settings.
 /// </summary>
+[Obsolete($"Use {nameof(CustomSettingsRecipeStep)} instead. This class will be removed in a future version.", false)]
 public sealed class CustomSettingsStep : NamedRecipeStepHandler
 {
     private readonly ISiteService _siteService;

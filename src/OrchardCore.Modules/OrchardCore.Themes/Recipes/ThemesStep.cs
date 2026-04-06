@@ -9,7 +9,13 @@ namespace OrchardCore.Themes.Recipes;
 /// <summary>
 /// This recipe step defines the site and admin current themes.
 /// </summary>
+/// <remarks>
+/// This class is obsolete. Implement <see cref="IRecipeDeploymentStep"/> instead.
+/// </remarks>
+[Obsolete($"Implement {nameof(IRecipeDeploymentStep)} instead. This class will be removed in a future version.", false)]
+#pragma warning disable CS0618 // Type or member is obsolete - required for backwards compatibility
 public sealed class ThemesStep : NamedRecipeStepHandler
+#pragma warning restore CS0618
 {
     private readonly ISiteThemeService _siteThemeService;
     private readonly IAdminThemeService _adminThemeService;
@@ -39,6 +45,10 @@ public sealed class ThemesStep : NamedRecipeStepHandler
     }
 }
 
+/// <remarks>
+/// This class is obsolete. Use your own model class instead.
+/// </remarks>
+[Obsolete("Use your own model class instead. This class will be removed in a future version.", false)]
 public sealed class ThemeStepModel
 {
     public string Site { get; set; }

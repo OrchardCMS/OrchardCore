@@ -149,7 +149,7 @@ public sealed class Startup : StartupBase
         services.AddNavigationProvider<AdminMenu>();
         services.AddScoped<IContentDisplayDriver, ContentsDriver>();
         services.AddScoped<IContentHandler, ContentsHandler>();
-        services.AddRecipeExecutionStep<ContentStep>();
+        services.AddRecipeDeploymentStep<UnifiedContentStep>();
 
         services.AddScoped<IDocumentIndexHandler, FullTextContentIndexHandler>();
         services.AddScoped<IDocumentIndexHandler, AspectsContentIndexHandler>();
@@ -210,6 +210,7 @@ public sealed class Startup : StartupBase
         });
 
         services.AddTransient<IContentsAdminListFilterProvider, DefaultContentsAdminListFilterProvider>();
+        services.AddContentPartSchemaHandler<CommonPartSchemaHandler>();
     }
 
     public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -248,6 +249,7 @@ public sealed class DeploymentStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
+        // Custom deployment steps for selective operations.
         services.AddDeployment<AllContentDeploymentSource, AllContentDeploymentStep, AllContentDeploymentStepDriver>();
         services.AddDeployment<ContentDeploymentSource, ContentDeploymentStep, ContentDeploymentStepDriver>();
         services.AddSiteSettingsPropertyDeploymentStep<ContentAuditTrailSettings, DeploymentStartup>(S => S["Content Audit Trail settings"], S => S["Exports the content audit trail settings."]);

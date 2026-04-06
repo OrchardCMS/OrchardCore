@@ -7,7 +7,6 @@ using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
-using OrchardCore.Shortcodes.Deployment;
 using OrchardCore.Shortcodes.Drivers;
 using OrchardCore.Shortcodes.Providers;
 using OrchardCore.Shortcodes.Recipes;
@@ -65,7 +64,10 @@ public sealed class ShortcodeTemplatesStartup : StartupBase
         services.AddPermissionProvider<Permissions>();
         services.AddNavigationProvider<AdminMenu>();
 
+        services.AddRecipeDeploymentStep<ShortcodeTemplateRecipeStep>();
+#pragma warning disable CS0618 // Type or member is obsolete
         services.AddRecipeExecutionStep<ShortcodeTemplateStep>();
+#pragma warning restore CS0618 // Type or member is obsolete
 
         services.AddScoped<Sc.IShortcodeProvider, TemplateShortcodeProvider>();
         services.AddScoped<IShortcodeDescriptorProvider, ShortcodeTemplatesDescriptorProvider>();
@@ -99,6 +101,5 @@ public sealed class ShortcodeTemplatesDeploymentStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddDeployment<AllShortcodeTemplatesDeploymentSource, AllShortcodeTemplatesDeploymentStep, AllShortcodeTemplatesDeploymentStepDriver>();
     }
 }

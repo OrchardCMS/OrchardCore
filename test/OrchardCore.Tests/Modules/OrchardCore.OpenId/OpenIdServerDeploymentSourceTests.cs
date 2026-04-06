@@ -100,7 +100,7 @@ public class OpenIdServerDeploymentSourceTests
             Step = (JsonObject)deploy["steps"][0],
         };
 
-        var recipeStep = new OpenIdServerSettingsStep(openIdServerService);
+        var recipeStep = new OpenIdServerSettingsRecipeStep(openIdServerService);
         await recipeStep.ExecuteAsync(recipeContext);
     }
 }

@@ -6,6 +6,11 @@ namespace OrchardCore.Recipes.Services;
 /// An implementation of this interface will be used every time a recipe step is processed.
 /// Each implementation is responsible for processing only the steps that it targets.
 /// </summary>
+/// <remarks>
+/// This interface is obsolete. Use <see cref="IRecipeDeploymentStep"/> instead, which provides
+/// unified support for schema definition, recipe import, and deployment export.
+/// </remarks>
+[Obsolete($"Use {nameof(IRecipeDeploymentStep)} instead. This interface will be removed in a future version.", false)]
 public interface IRecipeStepHandler
 {
     /// <summary>

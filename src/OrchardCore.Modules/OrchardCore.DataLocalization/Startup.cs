@@ -26,7 +26,10 @@ public class Startup : StartupBase
         services.AddLiquidFilter<DataLocalizationFilter>("d");
 
         services.AddScoped<TranslationsManager>();
+
+#pragma warning disable CS0618 // Type or member is obsolete
         services.AddRecipeExecutionStep<TranslationsStep>();
+#pragma warning restore CS0618 // Type or member is obsolete
 
         services.AddDeployment<TranslationsDeploymentSource, TranslationsDeploymentStep, TranslationsDeploymentStepDriver>();
         services.AddDeployment<AllDataTranslationsDeploymentSource, AllDataTranslationsDeploymentStep, AllDataTranslationsDeploymentStepDriver>();

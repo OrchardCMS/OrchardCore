@@ -15,7 +15,6 @@ using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Setup;
-using OrchardCore.Tenants.Deployment;
 using OrchardCore.Tenants.Recipes;
 using OrchardCore.Tenants.Services;
 
@@ -117,7 +116,10 @@ public sealed class FeatureProfilesStartup : StartupBase
         services.AddScoped<IFeatureProfilesSchemaService, FeatureProfilesSchemaService>();
         services.AddShapeTableProvider<TenantFeatureProfileShapeTableProvider>();
 
+        services.AddRecipeDeploymentStep<Recipes.FeatureProfilesRecipeStep>();
+#pragma warning disable CS0618 // Type or member is obsolete
         services.AddRecipeExecutionStep<FeatureProfilesStep>();
+#pragma warning restore CS0618 // Type or member is obsolete
     }
 }
 
@@ -126,7 +128,6 @@ public sealed class FeatureProfilesDeploymentStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddDeployment<AllFeatureProfilesDeploymentSource, AllFeatureProfilesDeploymentStep, AllFeatureProfilesDeploymentStepDriver>();
     }
 }
 

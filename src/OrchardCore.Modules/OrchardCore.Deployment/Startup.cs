@@ -1,8 +1,10 @@
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment.Core;
+using OrchardCore.Deployment.Core.Services;
 using OrchardCore.Deployment.Deployment;
 using OrchardCore.Deployment.Drivers;
 using OrchardCore.Deployment.Indexes;
@@ -42,10 +44,23 @@ public sealed class Startup : StartupBase
 
         services.AddScoped<IDeploymentPlanService, DeploymentPlanService>();
 
+#pragma warning disable CS0618 // Type or member is obsolete
         services.AddRecipeExecutionStep<DeploymentPlansRecipeStep>();
+#pragma warning restore CS0618 // Type or member is obsolete
+        services.AddRecipeDeploymentStep<DeploymentPlansRecipeDeploymentStep>();
 
         services.AddDeployment<DeploymentPlanDeploymentSource, DeploymentPlanDeploymentStep, DeploymentPlanDeploymentStepDriver>();
 
         services.AddDeployment<JsonRecipeDeploymentSource, JsonRecipeDeploymentStep, JsonRecipeDeploymentStepDriver>();
+
+        // Register the factory resolver that auto-discovers exportable recipe steps.
+        services.AddSingleton<IDeploymentStepFactoryResolver, DeploymentStepFactoryResolver>();
+
+        // Register JSON type info for the generic RecipeStepDeploymentStep type.
+        services.AddJsonDerivedTypeInfo<RecipeStepDeploymentStep, DeploymentStep>();
+
+        // Register the generic recipe-step-based deployment source and driver.
+        services.TryAddEnumerable(ServiceDescriptor.Transient<IDeploymentSource, RecipeStepDeploymentSource>());
+        services.AddDisplayDriver<DeploymentStep, RecipeStepDeploymentStepDriver>();
     }
 }

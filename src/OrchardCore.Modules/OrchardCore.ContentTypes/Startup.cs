@@ -53,12 +53,14 @@ public sealed class Startup : StartupBase
         services.AddScoped<IContentTypeDefinitionDisplayDriver, DefaultContentTypeDisplayDriver>();
         services.AddScoped<IContentTypePartDefinitionDisplayDriver, ContentTypePartSettingsDisplayDriver>();
 
-        // TODO: Put in its own feature to be able to execute this recipe without having to enable
-        // Content Types management UI
-        services.AddRecipeExecutionStep<ContentDefinitionStep>();
+        // Register the unified step for content definitions.
+        services.AddRecipeDeploymentStep<UnifiedContentDefinitionStep>();
+        services.AddRecipeDeploymentStep<ReplaceContentDefinitionRecipeStep>();
+        services.AddRecipeDeploymentStep<DeleteContentDefinitionRecipeStep>();
+#pragma warning disable CS0618 // Type or member is obsolete - kept for backwards compatibility
         services.AddRecipeExecutionStep<ReplaceContentDefinitionStep>();
         services.AddRecipeExecutionStep<DeleteContentDefinitionStep>();
-
+#pragma warning restore CS0618
         services.AddTransient<IRecipeEventHandler, LuceneRecipeEventHandler>();
         services.AddResourceConfiguration<ResourceManagementOptionsConfiguration>();
     }
@@ -69,6 +71,7 @@ public sealed class DeploymentStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
+        // Custom deployment steps for selective operations.
         services.AddDeployment<ContentDefinitionDeploymentSource, ContentDefinitionDeploymentStep, ContentDefinitionDeploymentStepDriver>();
         services.AddDeployment<ReplaceContentDefinitionDeploymentSource, ReplaceContentDefinitionDeploymentStep, ReplaceContentDefinitionDeploymentStepDriver>();
         services.AddDeployment<DeleteContentDefinitionDeploymentSource, DeleteContentDefinitionDeploymentStep, DeleteContentDefinitionDeploymentStepDriver>();
