@@ -30,7 +30,7 @@ document.querySelectorAll<HTMLElement>('[data-phone-input]').forEach((el) => {
 
     // Initialize intl-tel-input
     const iti = intlTelInput(input, {
-        initialCountry: defaultRegion?.toLowerCase() || 'auto',
+        initialCountry: defaultRegion?.toLowerCase() || '',
         separateDialCode: true,
         formatAsYouType: true,
         nationalMode: true,

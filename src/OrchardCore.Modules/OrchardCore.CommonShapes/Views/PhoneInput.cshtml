@@ -2,7 +2,7 @@
     var value = (string)Model.Value ?? string.Empty;
     var inputName = (string)Model.InputName;
     var disabled = (bool?)Model.Disabled ?? false;
-    var region = (string)Model.Region ?? new RegionInfo(Thread.CurrentThread.CurrentUICulture.Name).TwoLetterISORegionName;
+    var region = (string)Model.Region;
     var confirmed = (bool?)Model.Confirmed ?? false;
 }
 
