@@ -115,6 +115,29 @@ or, to display the UTC value before it is converted:
 
 ### `ContentPickerField`
 
+#### Settings
+
+| Setting | Description |
+|---------|-------------|
+| `Required` | Whether to ensure at least one element is selected. |
+| `Multiple` | Whether to allow multiple elements to be selected. |
+| `DisplayAllContentTypes` | When enabled, all content types can be selected. |
+| `DisplayedContentTypes` | The content types that can be selected. Used when `DisplayAllContentTypes` is `false`. |
+| `DisplayedStereotypes` | Restricts the selectable content types to those matching one of the given stereotypes. Takes precedence over `DisplayedContentTypes` when set. |
+| `Placeholder` | The placeholder text to display in the picker input on the editor. |
+| `Hint` | The hint text to display below the field on the editor. |
+| `TitlePattern` | A Liquid pattern used to render the title of each item in the picker. Defaults to `{{ Model.ContentItem \| display_text }}`. |
+
+#### Displaying Localized Content Items
+
+When the content type uses `LocalizationPart`, you can display the culture code alongside the display text in the picker by setting the `TitlePattern` to:
+
+```liquid
+{{ Model.ContentItem | display_text }} ({{ Model.ContentItem.Content.LocalizationPart.Culture }})
+```
+
+This renders the display text of the content item followed by its culture code in parentheses, for example `My Article (en)`.
+
 #### ContentPicker Field Example
 
 === "Liquid"
