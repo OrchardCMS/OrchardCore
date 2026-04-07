@@ -35,6 +35,20 @@ jobs:
     - name: Build
       run: |
         dotnet build ./test/OrchardCore.Tests.Integration/OrchardCore.Tests.Integration.csproj -c Release /p:NuGetAudit=false
+    - name: Cache S3Mock Docker image
+      id: cache-s3mock
+      uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+      with:
+        path: /tmp/s3mock-image.tar
+        key: docker-s3mock-latest
+    - name: Load or pull S3Mock image
+      run: |
+        if [ -f /tmp/s3mock-image.tar ]; then
+          docker load -i /tmp/s3mock-image.tar
+        else
+          docker pull adobe/s3mock
+          docker save adobe/s3mock -o /tmp/s3mock-image.tar
+        fi
     - name: Start S3Mock
       run: |
         docker run -d --name s3mock -p 9090:9090 adobe/s3mock
