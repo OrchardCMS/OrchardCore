@@ -18,9 +18,12 @@ env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   DOTNET_CLI_TELEMETRY_OPTOUT: true
 
+permissions:
+  contents: read
+
 jobs:
-  test_s3_localstack:
-    name: Integration Tests - S3 (LocalStack)
+  test_s3:
+    name: Integration Tests - S3
     if: github.event_name == 'workflow_dispatch' ||
         github.event_name == 'push' ||
         github.event.review.state == 'APPROVED' ||
@@ -32,19 +35,19 @@ jobs:
     - name: Build
       run: |
         dotnet build ./test/OrchardCore.Tests.Integration/OrchardCore.Tests.Integration.csproj -c Release /p:NuGetAudit=false
-    - name: Start LocalStack
+    - name: Start S3Mock
       run: |
-        docker run -d --name localstack -p 4566:4566 localstack/localstack:s3-latest
-        echo "Waiting for LocalStack to be ready..."
+        docker run -d --name s3mock -p 9090:9090 adobe/s3mock
+        echo "Waiting for S3Mock to be ready..."
         for i in $(seq 1 30); do
-          if curl -s http://127.0.0.1:4566/_localstack/health | grep -q '"s3": "available"'; then
-            echo "LocalStack is ready."
+          if curl -sf http://127.0.0.1:9090/ > /dev/null 2>&1; then
+            echo "S3Mock is ready."
             break
           fi
-          sleep 2
+          sleep 1
         done
     - name: S3 Integration Tests
       env:
-        LOCALSTACK_SERVICE_URL: http://127.0.0.1:4566
+        S3_EMULATOR_URL: http://127.0.0.1:9090
       run: |
         dotnet test --project ./test/OrchardCore.Tests.Integration/OrchardCore.Tests.Integration.csproj -c Release --no-build
