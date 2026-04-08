@@ -1,7 +1,11 @@
+import { getAdminPreferences, setAdminPreferences } from '../constants';
+import { AdminPreferences } from './userPreferencesPersistor';
+
 // Persists the last-used action of a [data-action-group] button group so that
 // the main button switches to the alternative action on the next page load.
 // The data attributes are expected to be set by module views; if they are absent
 // the group is silently skipped.
+// State is stored inside the tenant-scoped admin preferences managed by userPreferencesPersistor.
 (function () {
     document.addEventListener('DOMContentLoaded', function () {
         document.querySelectorAll<HTMLElement>('.btn-group[data-action-group]').forEach(initActionGroup);
@@ -35,12 +39,24 @@
             }
         }
 
+        function getStoredAction(): string | null {
+            const prefs = getAdminPreferences();
+            return prefs?.actionGroups?.[storageKey] ?? null;
+        }
+
+        function storeAction(action: string) {
+            const prefs = getAdminPreferences() as AdminPreferences;
+            prefs.actionGroups = prefs.actionGroups ?? {};
+            prefs.actionGroups[storageKey] = action;
+            setAdminPreferences(prefs);
+        }
+
         // Restore stored choice on page load
-        applyState(localStorage.getItem(storageKey) === actionAlt);
+        applyState(getStoredAction() === actionAlt);
 
         // On dropdown item click: store the new default, then let the form submit naturally
         dropdownItem.addEventListener('click', function () {
-            localStorage.setItem(storageKey, dropdownItem!.value);
+            storeAction(dropdownItem!.value);
         });
     }
 })();
