@@ -192,14 +192,13 @@ OrchardCore__MyTenant__OrchardCore_Media__MaxFileSize
 
 By default an Orchard Core site will use `CreateDefaultBuilder` in the Startup Project's `Program.cs` which will load `IConfiguration` in the following order
 
-1. Startup project `appsettings.json`
-2. Startup project `appsettings.{environment}.json`
-3. User Secrets (if environment is **Development**)
-4. Environment Variables
-5. Command Line Args
-6. `IShellConfiguration` will then add these
-    1. `App_Data/appsettings.json`
-    2. `App_Data/Sites/{tenant_name}/appsettings.json` for the particular tenant
+1. The `Startup` ASP.NET Core Project, e.g. `OrchardCore.Cms.Web.csproj`, `appsettings.json`, or by environment `appsettings.Development.json`.
+2. User Secrets (if environment is **Development**)
+3. Environment Variables, or AppSettings as Environment Variables via Azure.
+4. Command Line Args
+5. `IShellConfiguration` will then add these
+    1. Global Tenant Configuration `App_Data/appsettings.json`
+    2. Individual Tenant Configuration files located under each Tenant Folder in the `App_Data/Sites/{tenant_name}/appsettings.json` folder.
 
 !!! note
     Configurations with the same key that are loaded later take precedence over those which were loaded earlier (last wins).
