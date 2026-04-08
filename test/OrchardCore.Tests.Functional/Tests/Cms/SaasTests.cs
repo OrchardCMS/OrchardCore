@@ -24,7 +24,9 @@ public sealed class SaasTests : IClassFixture<SaasFixture>, IAsyncLifetime
     public async Task DisplaysTheHomePageOfTheSaasTheme()
     {
         var page = await _fixture.CreatePageAsync();
-        await page.GotoAsync($"/{_fixture.Tenant.Prefix}");
+        var response = await page.GotoAsync($"/{_fixture.Tenant.Prefix}");
+        Assert.NotNull(response);
+        Assert.True(response.Ok, $"Expected HTTP 200 but got {response.Status} for {response.Url}");
         await Assertions.Expect(page.Locator("h4")).ToContainTextAsync("Welcome to Orchard Core, your site has been successfully set up.");
         await page.CloseAsync();
     }
@@ -34,7 +36,9 @@ public sealed class SaasTests : IClassFixture<SaasFixture>, IAsyncLifetime
     {
         var page = await _fixture.CreatePageAsync();
         await page.LoginAsync($"/{_fixture.Tenant.Prefix}");
-        await page.GotoAsync($"/{_fixture.Tenant.Prefix}/Admin");
+        var response = await page.GotoAsync($"/{_fixture.Tenant.Prefix}/Admin");
+        Assert.NotNull(response);
+        Assert.True(response.Ok, $"Expected HTTP 200 but got {response.Status} for {response.Url}");
         await Assertions.Expect(page.Locator(".menu-admin")).ToHaveAttributeAsync("id", "adminMenu");
         await page.CloseAsync();
     }

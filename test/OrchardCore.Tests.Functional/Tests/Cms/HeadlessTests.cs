@@ -11,7 +11,9 @@ public sealed class HeadlessTests : CmsTestBase<HeadlessFixture>, IClassFixture<
     public async Task DisplaysTheLoginScreenForTheHeadlessTheme()
     {
         var page = await Fixture.CreatePageAsync();
-        await page.GotoAsync("/");
+        var response = await page.GotoAsync("/");
+        Assert.NotNull(response);
+        Assert.True(response.Ok, $"Expected HTTP 200 but got {response.Status} for {response.Url}");
         await Assertions.Expect(page.Locator("h1")).ToContainTextAsync("Log in");
         await page.CloseAsync();
     }
@@ -21,7 +23,9 @@ public sealed class HeadlessTests : CmsTestBase<HeadlessFixture>, IClassFixture<
     {
         var page = await Fixture.CreatePageAsync();
         await page.LoginAsync();
-        await page.GotoAsync("/Admin");
+        var response = await page.GotoAsync("/Admin");
+        Assert.NotNull(response);
+        Assert.True(response.Ok, $"Expected HTTP 200 but got {response.Status} for {response.Url}");
         await Assertions.Expect(page.Locator(".menu-admin")).ToHaveAttributeAsync("id", "adminMenu");
         await page.CloseAsync();
     }
