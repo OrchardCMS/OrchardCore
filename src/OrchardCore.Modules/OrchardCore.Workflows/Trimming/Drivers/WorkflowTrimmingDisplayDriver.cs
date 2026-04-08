@@ -46,7 +46,12 @@ public sealed class WorkflowTrimmingDisplayDriver : SiteDisplayDriver<WorkflowTr
 
             foreach (var status in settings.Statuses ?? [])
             {
-                model.Statuses.Single(statusItem => statusItem.Status == status).IsSelected = true;
+                var statusItem = model.Statuses.FirstOrDefault(statusItem => statusItem.Status.ToString() == status);
+
+                if (statusItem != null)
+                {
+                    statusItem.IsSelected = true;
+                }
             }
         }).Location("Content:5")
         .OnGroup(GroupId);
@@ -66,7 +71,7 @@ public sealed class WorkflowTrimmingDisplayDriver : SiteDisplayDriver<WorkflowTr
         settings.Disabled = viewModel.Disabled;
         settings.Statuses = viewModel.Statuses
             .Where(statusItem => statusItem.IsSelected)
-            .Select(statusItem => statusItem.Status)
+            .Select(statusItem => statusItem.Status.ToString())
             .ToArray();
 
         return await EditAsync(site, settings, context);

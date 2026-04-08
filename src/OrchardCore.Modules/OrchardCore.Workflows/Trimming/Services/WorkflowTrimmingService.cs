@@ -31,14 +31,14 @@ public class WorkflowTrimmingService : IWorkflowTrimmingService
 
         settings.Statuses ??=
         [
-            WorkflowStatus.Idle,
-            WorkflowStatus.Starting,
-            WorkflowStatus.Resuming,
-            WorkflowStatus.Executing,
-            WorkflowStatus.Halted,
-            WorkflowStatus.Finished,
-            WorkflowStatus.Faulted,
-            WorkflowStatus.Aborted
+            nameof(WorkflowStatus.Idle),
+            nameof(WorkflowStatus.Starting),
+            nameof(WorkflowStatus.Resuming),
+            nameof(WorkflowStatus.Executing),
+            nameof(WorkflowStatus.Halted),
+            nameof(WorkflowStatus.Finished),
+            nameof(WorkflowStatus.Faulted),
+            nameof(WorkflowStatus.Aborted),
         ];
 
         if (settings.Statuses.Length <= 0)

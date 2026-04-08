@@ -8,7 +8,7 @@ public class WorkflowIndex : MapIndex
     public long DocumentId { get; set; }
     public string WorkflowTypeId { get; set; }
     public string WorkflowId { get; set; }
-    public WorkflowStatus WorkflowStatus { get; set; }
+    public string WorkflowStatus { get; set; }
     public DateTime CreatedUtc { get; set; }
 }
 
@@ -33,7 +33,7 @@ public class WorkflowIndexProvider : IndexProvider<Workflow>
                     WorkflowTypeId = workflow.WorkflowTypeId,
                     WorkflowId = workflow.WorkflowId,
                     CreatedUtc = workflow.CreatedUtc,
-                    WorkflowStatus = workflow.Status,
+                    WorkflowStatus = workflow.Status.ToString(),
                 }
             );
 
