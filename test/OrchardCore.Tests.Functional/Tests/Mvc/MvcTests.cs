@@ -23,7 +23,9 @@ public sealed class MvcTests : IClassFixture<MvcSetupFixture>, IAsyncLifetime
     public async Task ShouldDisplayHelloWorld()
     {
         var page = await _fixture.CreatePageAsync();
-        await page.GotoAsync("/");
+        var response = await page.GotoAsync("/");
+        Assert.NotNull(response);
+        Assert.True(response.Ok, $"Expected HTTP 200 but got {response.Status} for {response.Url}");
         await Assertions.Expect(page.Locator("body")).ToContainTextAsync("Hello World");
         await page.CloseAsync();
     }
