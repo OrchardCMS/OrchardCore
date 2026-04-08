@@ -104,7 +104,13 @@ public sealed class OrchardTestServer : IAsyncDisposable
 
         await app.StartAsync();
 
-        return new OrchardTestServer(app, GetListeningAddress(app), loggerProvider.Collector);
+        var address = GetListeningAddress(app);
+
+        // The OrchardCore tenant pipeline initializes lazily on the first request.
+        // Warm up the app now so tests don't race against pipeline initialization.
+        await WarmUpAsync(address);
+
+        return new OrchardTestServer(app, address, loggerProvider.Collector);
     }
 
     public void AssertNoLoggedIssues()
@@ -339,6 +345,42 @@ public sealed class OrchardTestServer : IAsyncDisposable
         return System.Text.RegularExpressions.Regex.Replace(
             connectionString, @"((?:Database|database)\s*=\s*)[^;]+", $"${{1}}{newDbName}",
             System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+    }
+
+    /// <summary>
+    /// Polls the root URL until the app serves a non-empty 200 response, ensuring the
+    /// OrchardCore tenant pipeline has finished its lazy first-request initialization
+    /// before the Playwright tests begin.
+    /// </summary>
+    private static async Task WarmUpAsync(string baseAddress, int timeoutSeconds = 30)
+    {
+        using var client = new HttpClient();
+        var deadline = DateTime.UtcNow.AddSeconds(timeoutSeconds);
+
+        while (DateTime.UtcNow < deadline)
+        {
+            try
+            {
+                var response = await client.GetAsync($"{baseAddress}/");
+                if (response.IsSuccessStatusCode)
+                {
+                    var content = await response.Content.ReadAsStringAsync();
+                    if (!string.IsNullOrWhiteSpace(content))
+                    {
+                        return;
+                    }
+                }
+            }
+            catch
+            {
+                // Server not yet accepting connections — keep waiting.
+            }
+
+            await Task.Delay(500);
+        }
+
+        throw new TimeoutException(
+            $"The MVC application at '{baseAddress}' did not serve content within {timeoutSeconds} seconds.");
     }
 
     private static string GetListeningAddress(WebApplication app)
