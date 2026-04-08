@@ -62,11 +62,12 @@ public static class ContentItemExtensions
     }
 
     /// <summary>
-    /// Gets a content part by its type.
+    ///  Gets a content part by its type. ⚠️ Not recommended for use. Prefer <see cref="GetOrCreate{TPart}(ContentItem)"/> and <see cref="TryGet{TPart}(ContentItem, out TPart)"/> instead. 
     /// </summary>
     /// <param name="contentItem">The <see cref="ContentItem"/>.</param>
     /// <typeparam name="TPart">The type of the content part.</typeparam>
     /// <returns>The content part or. <code>null</code> if it doesn't exist.</returns>
+    [Obsolete("Use TryGet<TPart>, GetOrCreate<TPart> or Get<TPart> instead.")]
     public static TPart As<TPart>(this ContentItem contentItem) where TPart : ContentPart
         => contentItem.Get<TPart>(typeof(TPart).Name);
 

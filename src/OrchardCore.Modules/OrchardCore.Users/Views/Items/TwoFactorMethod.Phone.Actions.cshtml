@@ -11,7 +11,7 @@ else
 {
     <div class="btn btn-sm btn-success disabled me-1">@T["Verified"]</div>
 
-    @if (Site.As<LoginSettings>().AllowChangingPhoneNumber)
+    @if (Site.GetOrCreate<LoginSettings>().AllowChangingPhoneNumber)
     {
         <a asp-action="Index" asp-controller="SmsAuthenticator" class="btn btn-sm btn-primary me-1">@T["Edit"]</a>
     }

@@ -1,6 +1,7 @@
 @using Microsoft.AspNetCore.Html
 @using OrchardCore.Features
 @using OrchardCore.Modules
+
 @model FeaturesViewModel
 @{
     var title = T["Features"];
@@ -49,13 +50,13 @@
         var featureGroups = Model.Features.GroupBy(f => f.Descriptor.Category).OrderBy(o => o.Key).ToArray();
         foreach (var featureGroup in featureGroups)
         {
-            var categoryName = featureGroup.First().Descriptor.Category ?? T["Uncategorized"].Value;
+            var categoryName = featureGroup.FirstOrDefault()?.Descriptor.Category ?? T["Uncategorized"].Value;
             var categoryClassName = string.Format("category {0}", Html.Encode(categoryName.ToString()));
-            if (featureGroup == featureGroups.First())
+            if (featureGroup == featureGroups.FirstOrDefault())
             {
                 categoryClassName += " first";
             }
-            if (featureGroup == featureGroups.Last())
+            if (featureGroup == featureGroups.LastOrDefault())
             {
                 categoryClassName += " last";
             }
@@ -110,12 +111,35 @@
                                         @if (feature.FeatureDependencies != null && feature.FeatureDependencies.Any())
                                         {
                                             <div class="mb-1">
-                                                @foreach (var d in dependencies)
+                                                <div class="d-inline direct-dependencies">
+                                                    @foreach (var dependencyId in feature.Descriptor.Dependencies)
+                                                    {
+                                                        var dependencyName = Model.Features
+                                                            .Where(f => f.Descriptor.Id == dependencyId)
+                                                            .OrderBy(f => f.Descriptor.Name)
+                                                            .Select(f => f.Descriptor.Name)
+                                                            .FirstOrDefault() ?? string.Empty;
+
+                                                        <span class="badge ta-badge">
+                                                            @dependencyName
+                                                        </span>
+                                                    }
+                                                </div>
+                                                @if (!feature.Descriptor.Dependencies.SequenceEqual(dependencies.Select(d => d.Descriptor.Id)))
                                                 {
-                                                    <span class="badge ta-badge">
-                                                        @(string.IsNullOrEmpty(d.Descriptor.Name) ? d.Descriptor.Id : d.Descriptor.Name)
+                                                    <div class="d-inline transitive-dependencies d-none">
+                                                        @foreach (var d in dependencies)
+                                                        {
+                                                            <span class="badge ta-badge">
+                                                                @(string.IsNullOrEmpty(d.Descriptor.Name) ? d.Descriptor.Id : d.Descriptor.Name)
+                                                            </span>
+                                                        }
+                                                    </div>
+                                                    <span class="badge ta-badge d-inline">
+                                                        <a class="text-secondary show-more" href="#">...</a>
                                                     </span>
                                                 }
+
                                                 @foreach (var d in missingDependencies)
                                                 {
                                                     <span class="badge text-bg-warning">
@@ -245,6 +269,18 @@
         }).on('click', function () {
             $("[name='BulkAction']").val($(this).data('action'));
             $("[name='submit.BulkAction']").click();
+        });
+
+        $('.show-more').on('click', function (e) {
+            e.preventDefault();
+
+            var $toogle_parent = $(this).parent();
+            var $direct_dependencies = $toogle_parent.siblings('.direct-dependencies');
+            var $transitive_dependencies = $toogle_parent.prev('.transitive-dependencies')
+
+            $direct_dependencies.toggleClass('d-none');
+            $transitive_dependencies.toggleClass('d-none');
+            $toogle_parent.toggleClass('d-none');
         });
     });
 </script>

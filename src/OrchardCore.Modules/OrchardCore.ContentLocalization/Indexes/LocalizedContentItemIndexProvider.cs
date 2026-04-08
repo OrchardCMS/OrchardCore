@@ -25,9 +25,7 @@ public class LocalizedContentItemIndexProvider : ContentHandlerBase, IIndexProvi
     {
         if (context.NoActiveVersionLeft)
         {
-            var part = context.ContentItem.As<LocalizationPart>();
-
-            if (part != null)
+            if (context.ContentItem.TryGet<LocalizationPart>(out _))
             {
                 _itemRemoved.Add(context.ContentItem);
             }
@@ -38,11 +36,9 @@ public class LocalizedContentItemIndexProvider : ContentHandlerBase, IIndexProvi
 
     public override async Task PublishedAsync(PublishContentContext context)
     {
-        var part = context.ContentItem.As<LocalizationPart>();
-
         // Validate that the content definition contains this part, this prevents indexing parts
         // that have been removed from the type definition, but are still present in the elements.            
-        if (part != null)
+        if (context.ContentItem.TryGet<LocalizationPart>(out _))
         {
             // Lazy initialization because of ISession cyclic dependency.
             _contentDefinitionManager ??= _serviceProvider.GetRequiredService<IContentDefinitionManager>();
@@ -76,8 +72,12 @@ public class LocalizedContentItemIndexProvider : ContentHandlerBase, IIndexProvi
                 // If the part was removed from the type definition, a record is still added.
                 var partRemoved = _partRemoved.Contains(contentItem.ContentItemId);
 
-                var part = contentItem.As<LocalizationPart>();
-                if (!partRemoved && (part == null || string.IsNullOrEmpty(part.LocalizationSet) || part.Culture == null))
+                if (!contentItem.TryGet<LocalizationPart>(out var part) && !partRemoved)
+                {
+                    return null;
+                }
+
+                if (!partRemoved && (string.IsNullOrEmpty(part.LocalizationSet) || part.Culture == null))
                 {
                     return null;
                 }

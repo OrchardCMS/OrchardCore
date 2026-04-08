@@ -232,7 +232,7 @@ public sealed class RemoteClientController : Controller
             return Forbid();
         }
 
-        if (itemIds?.Count() > 0)
+        if (itemIds?.Any() == true)
         {
             var remoteClients = (await _remoteClientService.GetRemoteClientListAsync()).RemoteClients;
             var checkedContentItems = remoteClients.Where(x => itemIds.Contains(x.Id)).ToList();
