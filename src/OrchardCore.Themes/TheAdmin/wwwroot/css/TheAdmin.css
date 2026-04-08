@@ -252,6 +252,31 @@ a:hover {
   [dir="rtl"] .action-bar .has-filter:not(.input-group) .form-control-feedback {
     right: 0.75rem;
   }
+
+  .action-bar .action-bar-toggle {
+    flex-shrink: 0;
+  }
+
+  .action-bar .action-bar-toggle::after {
+    content: "";
+    display: inline-block;
+    border-top: 0;
+    border-right: 0.3em solid transparent;
+    border-bottom: 0.3em solid;
+    border-left: 0.3em solid transparent;
+    vertical-align: 0.255em;
+    margin-inline-start: 0.255em;
+  }
+
+  .action-bar.action-bar-expanded .action-bar-toggle::after {
+    border-top: 0.3em solid;
+    border-bottom: 0;
+  }
+
+  .action-bar.action-bar-js:not(.action-bar-expanded) .action-bar-actions > .btn:not(:first-child), .action-bar.action-bar-js:not(.action-bar-expanded) .action-bar-actions > .button:not(:first-child),
+  .action-bar.action-bar-js:not(.action-bar-expanded) .action-bar-actions > .btn-group:not(:first-child) {
+    display: none;
+  }
 }
 
 @media (max-width: 767.98px) and (max-width: 575.98px) {

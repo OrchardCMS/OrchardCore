@@ -53,6 +53,35 @@
             left: 0.75rem;
             top: 1.1rem;
         }
+
+        // Mobile collapsible actions toggle button (injected by JS)
+        .action-bar-toggle {
+            flex-shrink: 0;
+
+            &::after {
+                content: '';
+                display: inline-block;
+                border-top: 0;
+                border-right: 0.3em solid transparent;
+                border-bottom: 0.3em solid;
+                border-left: 0.3em solid transparent;
+                vertical-align: 0.255em;
+                margin-inline-start: 0.255em;
+            }
+        }
+
+        &.action-bar-expanded .action-bar-toggle::after {
+            border-top: 0.3em solid;
+            border-bottom: 0;
+        }
+
+        // Hide all but the first action when collapsed (JS adds action-bar-js to opt in)
+        &.action-bar-js:not(.action-bar-expanded) .action-bar-actions {
+            > .btn:not(:first-child),
+            > .btn-group:not(:first-child) {
+                display: none;
+            }
+        }
     }
 
     @include media-breakpoint-down(sm) {
