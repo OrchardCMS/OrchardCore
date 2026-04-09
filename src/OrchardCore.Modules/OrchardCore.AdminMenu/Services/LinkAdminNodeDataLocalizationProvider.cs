@@ -3,9 +3,9 @@ using OrchardCore.Localization.Data;
 
 namespace OrchardCore.AdminMenu.Services;
 
-public class ListsAdminNodeDataLocalizationProvider : AdminNodeDataLocalizationProvider
+public class LinkAdminNodeDataLocalizationProvider : AdminNodeDataLocalizationProvider
 {
-    public ListsAdminNodeDataLocalizationProvider(IAdminMenuAccessor adminMenuRetrieval) : base(adminMenuRetrieval)
+    public LinkAdminNodeDataLocalizationProvider(IAdminMenuAccessor adminMenuAccessor) : base(adminMenuAccessor)
     {
     }
 
