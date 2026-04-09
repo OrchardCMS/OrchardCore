@@ -41,7 +41,7 @@ public class DataLocalizationProviderTests
         Assert.Equal(5, localizedStrings.Count());
 
         var localizedStringGroups = localizedStrings
-            .GroupBy(s => s.Context.Split(DataLocalizationContext.Separator).Last())
+            .GroupBy(s => s.Context.Split(Constants.ContextSeparator).Last())
             .ToList();
 
         Assert.Equal(2, localizedStringGroups.Count);

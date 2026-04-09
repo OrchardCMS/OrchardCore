@@ -1,4 +1,5 @@
 using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentTypes;
 using OrchardCore.Localization.Data;
 
 namespace OrchardCore.Contents.Services;

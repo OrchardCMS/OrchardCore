@@ -1,3 +1,4 @@
+using OrchardCore.ContentFields;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Localization.Data;

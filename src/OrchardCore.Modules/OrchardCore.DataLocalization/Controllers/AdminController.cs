@@ -8,6 +8,7 @@ using OrchardCore.DataLocalization.Services;
 using OrchardCore.DataLocalization.ViewModels;
 using OrchardCore.Localization;
 using OrchardCore.Localization.Data;
+using Constants = OrchardCore.Localization.Data.Constants;
 
 namespace OrchardCore.DataLocalization.Controllers;
 
@@ -394,7 +395,7 @@ public class AdminController : Controller
 
     private static string GetPrimaryContext(string context)
     {
-        var index = context.IndexOf(DataLocalizationContext.Separator);
+        var index = context.IndexOf(Constants.ContextSeparator);
 
         return index < 0
             ? context
@@ -403,7 +404,7 @@ public class AdminController : Controller
 
     private static string GetSubContext(string context)
     {
-        var index = context.IndexOf(DataLocalizationContext.Separator);
+        var index = context.IndexOf(Constants.ContextSeparator);
 
         return index < 0
             ? null
