@@ -11,7 +11,7 @@ public sealed class HeadlessTests : CmsTestBase<HeadlessFixture>, IClassFixture<
     public async Task DisplaysTheLoginScreenForTheHeadlessTheme()
     {
         var page = await Fixture.CreatePageAsync();
-        await page.GotoAsync("/");
+        await page.GotoAndAssertOkAsync("/");
         await Assertions.Expect(page.Locator("h1")).ToContainTextAsync("Log in");
         await page.CloseAsync();
     }
@@ -21,7 +21,7 @@ public sealed class HeadlessTests : CmsTestBase<HeadlessFixture>, IClassFixture<
     {
         var page = await Fixture.CreatePageAsync();
         await page.LoginAsync();
-        await page.GotoAsync("/Admin");
+        await page.GotoAndAssertOkAsync("/Admin");
         await Assertions.Expect(page.Locator(".menu-admin")).ToHaveAttributeAsync("id", "adminMenu");
         await page.CloseAsync();
     }
