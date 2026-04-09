@@ -14,14 +14,14 @@ In Razor views, you can use the `<menu>` tag helper to render a menu:
 
 #### Tag Helper Attributes
 
-| Attribute                | Description                                                                                      |
-|--------------------------|--------------------------------------------------------------------------------------------------|
-| `alias`                  | The alias of the menu to render (e.g., `alias:main-menu`).                                      |
-| `cache-id`               | Optional. A unique identifier for caching the menu output.                                       |
-| `cache-context`          | Optional. Cache contexts to vary the cached output (e.g., `user.roles`).                         |
-| `cache-tag`              | Optional. Tags to associate with the cached entry for invalidation purposes.                     |
-| `cache-fixed-duration`   | Optional. Fixed duration for caching (e.g., `00:05:00` for 5 minutes).                           |
-| `cache-sliding-duration` | Optional. Sliding expiration duration for caching.                                                |
+| Attribute                | Description                                                                  |
+|--------------------------|------------------------------------------------------------------------------|
+| `alias`                  | The alias of the menu to render (e.g., `alias:main-menu`).                   |
+| `cache-id`               | Optional. A unique identifier for caching the menu output.                   |
+| `cache-context`          | Optional. Cache contexts to vary the cached output (e.g., `user.roles`).     |
+| `cache-tag`              | Optional. Tags to associate with the cached entry for invalidation purposes. |
+| `cache-fixed-duration`   | Optional. Fixed duration for caching (e.g., `00:05:00` for 5 minutes).       |
+| `cache-sliding-duration` | Optional. Sliding expiration duration for caching.                           |
 
 #### Example with Cache Context
 
@@ -41,14 +41,14 @@ In Liquid templates, you can use the `shape` tag to render a menu:
 
 #### Liquid Parameters
 
-| Parameter                | Description                                                                                      |
-|--------------------------|--------------------------------------------------------------------------------------------------|
-| `alias`                  | The alias of the menu to render (e.g., `alias:main-menu`).                                      |
-| `cache_id`               | Optional. A unique identifier for caching the menu output.                                       |
-| `cache_context`          | Optional. Cache contexts to vary the cached output (e.g., `user.roles`).                         |
-| `cache_tag`              | Optional. Tags to associate with the cached entry for invalidation purposes.                     |
-| `cache_fixed_duration`   | Optional. Fixed duration for caching (e.g., `00:05:00` for 5 minutes).                           |
-| `cache_sliding_duration` | Optional. Sliding expiration duration for caching.                                                |
+| Parameter                | Description                                                                  |
+|--------------------------|------------------------------------------------------------------------------|
+| `alias`                  | The alias of the menu to render (e.g., `alias:main-menu`).                   |
+| `cache_id`               | Optional. A unique identifier for caching the menu output.                   |
+| `cache_context`          | Optional. Cache contexts to vary the cached output (e.g., `user.roles`).     |
+| `cache_tag`              | Optional. Tags to associate with the cached entry for invalidation purposes. |
+| `cache_fixed_duration`   | Optional. Fixed duration for caching (e.g., `00:05:00` for 5 minutes).       |
+| `cache_sliding_duration` | Optional. Sliding expiration duration for caching.                           |
 
 #### Example with Cache Context
 

@@ -2,7 +2,6 @@ using OrchardCore.Autoroute.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
-using OrchardCore.DisplayManagement.Utilities;
 
 namespace OrchardCore.Autoroute.Services;
 
@@ -16,9 +15,7 @@ public sealed class WidgetAutorouteShapeTableProvider : ShapeTableProvider
                 var shape = displaying.Shape;
                 var contentItem = shape.GetProperty<ContentItem>("ContentItem");
 
-                var autoroutePart = contentItem?.As<AutoroutePart>();
-
-                if (autoroutePart != null)
+                if (contentItem is not null && contentItem.TryGet<AutoroutePart>(out var autoroutePart))
                 {
                     var displayType = displaying.Shape.Metadata.DisplayType;
 

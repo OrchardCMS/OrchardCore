@@ -19,7 +19,7 @@ public class ContainerFilter : ILiquidFilter
     {
         var contentItem = input.ToObjectValue() as ContentItem ?? throw new ArgumentException("A Content Item was expected");
 
-        var containerId = contentItem.As<ContainedPart>()?.ListContentItemId;
+        var containerId = contentItem.TryGet<ContainedPart>(out var containedPart) ? containedPart.ListContentItemId : null;
 
         if (containerId != null)
         {

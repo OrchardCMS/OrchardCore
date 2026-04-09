@@ -2,7 +2,6 @@ using OrchardCore.Alias.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
-using OrchardCore.DisplayManagement.Utilities;
 
 namespace OrchardCore.Alias.Services;
 
@@ -16,9 +15,7 @@ public sealed class WidgetAliasShapeTableProvider : ShapeTableProvider
                 var shape = displaying.Shape;
                 var contentItem = shape.GetProperty<ContentItem>("ContentItem");
 
-                var aliasPart = contentItem?.As<AliasPart>();
-
-                if (aliasPart != null)
+                if (contentItem is not null && contentItem.TryGet<AliasPart>(out var aliasPart))
                 {
                     var displayType = displaying.Shape.Metadata.DisplayType;
 

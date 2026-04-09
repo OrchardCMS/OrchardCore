@@ -153,7 +153,7 @@ public abstract class NamedIndexingService
             {
                 List<RecordIndexingTask> currentBatch = null;
                 var batchProcessedSuccessfully = false;
-                
+
                 try
                 {
                     // Load the next batch of tasks.
@@ -235,7 +235,7 @@ public abstract class NamedIndexingService
                 {
                     // Log batch processing error and continue with next batch if possible
                     Logger.LogError(ex, "Error processing batch of indexing tasks. Attempting to continue with next batch.");
-                    
+
                     // Move to next batch only if we haven't already updated lastTaskId and we successfully loaded tasks
                     if (!batchProcessedSuccessfully && currentBatch != null && currentBatch.Count > 0)
                     {

@@ -105,7 +105,7 @@
                                     <a asp-route-action="RemoveFieldFrom" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@fieldDefinition.Name" class="btn btn-danger btn-sm" role="button" data-url-af="UnsafeUrl RemoveUrl">@T["Remove"]</a>
                                 }
                             </div>
-                            @D[fieldDefinition.DisplayName(), $"{typePart.PartDefinition.Name}.{fieldDefinition.DisplayName()}"] <span class="hint dashed">@fieldDefinition.FieldDefinition.Name.CamelFriendly()</span>
+                            @D[fieldDefinition.DisplayName(), $"Content Fields{Constants.ContextSeparator}{typePart.PartDefinition.Name}"] <span class="hint dashed">@fieldDefinition.FieldDefinition.Name.CamelFriendly()</span>
 
                             @if (!string.IsNullOrEmpty(fieldDefinition.DisplayMode()))
                             {
