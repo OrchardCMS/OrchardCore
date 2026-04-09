@@ -18,8 +18,6 @@ public abstract class SmtpEmailProviderBase : IEmailProvider
     private readonly IEmailAddressValidator _emailAddressValidator;
     private readonly ILogger _logger;
 
-    private SmtpClient _smtpClient;
-
     protected readonly IStringLocalizer S;
 
     public SmtpEmailProviderBase(
@@ -153,40 +151,33 @@ public abstract class SmtpEmailProviderBase : IEmailProvider
             };
         }
 
-        _smtpClient ??= new SmtpClient();
+        using var client = new SmtpClient();
 
-        _smtpClient.ServerCertificateValidationCallback = CertificateValidationCallback;
+        client.ServerCertificateValidationCallback = CertificateValidationCallback;
 
-        string response = null;
+        await client.ConnectAsync(_providerOptions.Host, _providerOptions.Port, secureSocketOptions);
 
-        try
+        if (_providerOptions.RequireCredentials)
         {
-            await _smtpClient.ConnectAsync(_providerOptions.Host, _providerOptions.Port, secureSocketOptions);
-
-            if (_providerOptions.RequireCredentials)
+            if (_providerOptions.UseDefaultCredentials)
             {
-                if (_providerOptions.UseDefaultCredentials)
-                {
-                    // There's no notion of 'UseDefaultCredentials' in MailKit, so empty credentials is passed in.
-                    await _smtpClient.AuthenticateAsync(string.Empty, string.Empty);
-                }
-                else if (!string.IsNullOrWhiteSpace(_providerOptions.UserName))
-                {
-                    await _smtpClient.AuthenticateAsync(_providerOptions.UserName, _providerOptions.Password);
-                }
+                // There's no notion of 'UseDefaultCredentials' in MailKit, so empty credentials is passed in.
+                await client.AuthenticateAsync(string.Empty, string.Empty);
             }
-
-            if (!string.IsNullOrEmpty(_providerOptions.ProxyHost))
+            else if (!string.IsNullOrWhiteSpace(_providerOptions.UserName))
             {
-                _smtpClient.ProxyClient = new Socks5Client(_providerOptions.ProxyHost, _providerOptions.ProxyPort);
+                await client.AuthenticateAsync(_providerOptions.UserName, _providerOptions.Password);
             }
-
-            response = await _smtpClient.SendAsync(message);
         }
-        catch
+
+        if (!string.IsNullOrEmpty(_providerOptions.ProxyHost))
         {
-            await _smtpClient.DisconnectAsync(true);
+            client.ProxyClient = new Socks5Client(_providerOptions.ProxyHost, _providerOptions.ProxyPort);
         }
+
+        var response = await client.SendAsync(message);
+
+        await client.DisconnectAsync(true);
 
         return response;
     }
