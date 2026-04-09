@@ -18,6 +18,8 @@ public abstract class SmtpEmailProviderBase : IEmailProvider
     private readonly IEmailAddressValidator _emailAddressValidator;
     private readonly ILogger _logger;
 
+    private SmtpClient _smtpClient;
+
     protected readonly IStringLocalizer S;
 
     public SmtpEmailProviderBase(
@@ -151,33 +153,32 @@ public abstract class SmtpEmailProviderBase : IEmailProvider
             };
         }
 
-        using var client = new SmtpClient();
+        _smtpClient ??= new SmtpClient();
 
-        client.ServerCertificateValidationCallback = CertificateValidationCallback;
+        _smtpClient.ServerCertificateValidationCallback = CertificateValidationCallback;
 
-        await client.ConnectAsync(_providerOptions.Host, _providerOptions.Port, secureSocketOptions);
-
+        await _smtpClient.ConnectAsync(_providerOptions.Host, _providerOptions.Port, secureSocketOptions);
         if (_providerOptions.RequireCredentials)
         {
             if (_providerOptions.UseDefaultCredentials)
             {
                 // There's no notion of 'UseDefaultCredentials' in MailKit, so empty credentials is passed in.
-                await client.AuthenticateAsync(string.Empty, string.Empty);
+                await _smtpClient.AuthenticateAsync(string.Empty, string.Empty);
             }
             else if (!string.IsNullOrWhiteSpace(_providerOptions.UserName))
             {
-                await client.AuthenticateAsync(_providerOptions.UserName, _providerOptions.Password);
+                await _smtpClient.AuthenticateAsync(_providerOptions.UserName, _providerOptions.Password);
             }
         }
 
         if (!string.IsNullOrEmpty(_providerOptions.ProxyHost))
         {
-            client.ProxyClient = new Socks5Client(_providerOptions.ProxyHost, _providerOptions.ProxyPort);
+            _smtpClient.ProxyClient = new Socks5Client(_providerOptions.ProxyHost, _providerOptions.ProxyPort);
         }
 
-        var response = await client.SendAsync(message);
+        var response = await _smtpClient.SendAsync(message);
 
-        await client.DisconnectAsync(true);
+        await _smtpClient.DisconnectAsync(true);
 
         return response;
     }
