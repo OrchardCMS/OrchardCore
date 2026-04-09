@@ -11,9 +11,7 @@ public sealed class MigrationsTests : CmsTestBase<MigrationsFixture>, IClassFixt
     public async Task DisplaysTheHomePageOfTheMigrationsRecipe()
     {
         var page = await Fixture.CreatePageAsync();
-        var response = await page.GotoAsync("/");
-        Assert.NotNull(response);
-        Assert.True(response.Ok, $"Expected HTTP 200 but got {response.Status} for {response.Url}");
+        await page.GotoAndAssertOkAsync("/");
         await Assertions.Expect(page.GetByText("Testing features having database migrations")).ToBeVisibleAsync();
         await page.CloseAsync();
     }
@@ -23,9 +21,7 @@ public sealed class MigrationsTests : CmsTestBase<MigrationsFixture>, IClassFixt
     {
         var page = await Fixture.CreatePageAsync();
         await page.LoginAsync();
-        var response = await page.GotoAsync("/Admin");
-        Assert.NotNull(response);
-        Assert.True(response.Ok, $"Expected HTTP 200 but got {response.Status} for {response.Url}");
+        await page.GotoAndAssertOkAsync("/Admin");
         await Assertions.Expect(page.Locator(".menu-admin")).ToHaveAttributeAsync("id", "adminMenu");
         await page.CloseAsync();
     }
