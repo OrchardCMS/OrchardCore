@@ -1,4 +1,5 @@
 using OrchardCore.Entities;
+using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Workflows.Trimming.Models;
 
@@ -8,5 +9,5 @@ public class WorkflowTrimmingSettings : Entity
 
     public bool Disabled { get; set; }
 
-    public string[] Statuses { get; set; }
+    public WorkflowStatus[] Statuses { get; set; }
 }

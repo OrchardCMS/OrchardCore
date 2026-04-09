@@ -31,14 +31,14 @@ public class WorkflowTrimmingService : IWorkflowTrimmingService
 
         settings.Statuses ??=
         [
-            nameof(WorkflowStatus.Idle),
-            nameof(WorkflowStatus.Starting),
-            nameof(WorkflowStatus.Resuming),
-            nameof(WorkflowStatus.Executing),
-            nameof(WorkflowStatus.Halted),
-            nameof(WorkflowStatus.Finished),
-            nameof(WorkflowStatus.Faulted),
-            nameof(WorkflowStatus.Aborted),
+            WorkflowStatus.Idle,
+            WorkflowStatus.Starting,
+            WorkflowStatus.Resuming,
+            WorkflowStatus.Executing,
+            WorkflowStatus.Halted,
+            WorkflowStatus.Finished,
+            WorkflowStatus.Faulted,
+            WorkflowStatus.Aborted,
         ];
 
         if (settings.Statuses.Length <= 0)
@@ -46,8 +46,10 @@ public class WorkflowTrimmingService : IWorkflowTrimmingService
             return 0;
         }
 
+        var statuses = settings.Statuses.Select(s => s.ToString()).ToArray();
+
         var workflowInstances = await _session
-            .Query<Workflow, WorkflowIndex>(x => x.WorkflowStatus.IsIn(settings.Statuses) && x.CreatedUtc <= dateThreshold)
+            .Query<Workflow, WorkflowIndex>(x => x.WorkflowStatus.IsIn(statuses) && x.CreatedUtc <= dateThreshold)
             .OrderBy(x => x.Id)
             .Take(batchSize)
             .ListAsync();
