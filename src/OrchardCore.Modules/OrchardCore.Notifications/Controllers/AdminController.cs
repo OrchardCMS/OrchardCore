@@ -172,7 +172,7 @@ public sealed class AdminController : Controller, IUpdateModel
             return Forbid();
         }
 
-        if (itemIds?.Count() > 0)
+        if (itemIds?.Any() == true)
         {
             var notifications = await _session.Query<Notification, NotificationIndex>(x => x.UserId == CurrentUserId() && x.NotificationId.IsIn(itemIds), collection: NotificationConstants.NotificationCollection).ListAsync();
             var utcNow = _clock.UtcNow;

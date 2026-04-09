@@ -55,10 +55,10 @@ Progress bars are color-coded:
 
 ## Permissions
 
-| Permission | Description |
-|------------|-------------|
-| `ViewTranslations` | View translations and statistics (read-only access) |
-| `ManageTranslations` | Edit translations for all cultures |
+| Permission                     | Description                                                                 |
+|--------------------------------|-----------------------------------------------------------------------------|
+| `ViewTranslations`             | View translations and statistics (read-only access)                         |
+| `ManageTranslations`           | Edit translations for all cultures                                          |
 | `ManageTranslations_{culture}` | Edit translations for a specific culture (e.g., `ManageTranslations_fr-FR`) |
 
 ### Permission Hierarchy
@@ -149,11 +149,11 @@ The strings will automatically appear in the Translation Editor under your speci
 
 When a translation does not exist for the current culture, `IDataLocalizer` returns the **key itself** as the displayed value. This means:
 
-| Key Type | Example Key | Displayed if untranslated | Result |
-|----------|-------------|---------------------------|--------|
-| ✅ Display value | `"Welcome Message"` | `Welcome Message` | Good - readable |
-| ❌ Technical ID | `"welcome_msg_001"` | `welcome_msg_001` | Bad - confusing to users |
-| ❌ Code constant | `"CONTENT_TYPE_ARTICLE"` | `CONTENT_TYPE_ARTICLE` | Bad - not user-friendly |
+| Key Type        | Example Key              | Displayed if untranslated | Result                   |
+|-----------------|--------------------------|---------------------------|--------------------------|
+| ✅ Display value | `"Welcome Message"`      | `Welcome Message`         | Good - readable          |
+| ❌ Technical ID  | `"welcome_msg_001"`      | `welcome_msg_001`         | Bad - confusing to users |
+| ❌ Code constant | `"CONTENT_TYPE_ARTICLE"` | `CONTENT_TYPE_ARTICLE`    | Bad - not user-friendly  |
 
 **Best practices:**
 
@@ -203,14 +203,14 @@ Use the **All Data Translations** deployment step to export all translations for
 
 ## When to Use
 
-| Use Case | Recommended Approach |
-|----------|---------------------|
-| Static UI strings in views/code | PO files (`OrchardCore.Localization`) |
-| Content type/field display names | Data Localization |
-| Permission descriptions | Data Localization |
-| Admin menu items | Data Localization (with custom provider) |
-| User-defined content | `OrchardCore.ContentLocalization` module |
-| Database-stored dynamic strings | Data Localization (with custom provider) |
+| Use Case                         | Recommended Approach                     |
+|----------------------------------|------------------------------------------|
+| Static UI strings in views/code  | PO files (`OrchardCore.Localization`)    |
+| Content type/field display names | Data Localization                        |
+| Permission descriptions          | Data Localization                        |
+| Admin menu items                 | Data Localization (with custom provider) |
+| User-defined content             | `OrchardCore.ContentLocalization` module |
+| Database-stored dynamic strings  | Data Localization (with custom provider) |
 
 ## API Reference
 
@@ -284,13 +284,13 @@ To display translated dynamic strings in Razor views, inject `IDataLocalizer`:
 
 ### Comparison with IStringLocalizer
 
-| Feature | `IStringLocalizer` (T) | `IDataLocalizer` (D) |
-|---------|------------------------|----------------------|
-| Source | PO files (static) | Database (dynamic) |
-| HTML encoding | Auto-encoded by Razor | Auto-encoded by Razor |
-| Pluralization | Supported | Not supported |
-| Arguments | `T["Hello {0}", name]` | `D["Hello {0}", "Context", name]` |
-| Use case | Static UI strings | Dynamic data (content types, permissions) |
+| Feature       | `IStringLocalizer` (T) | `IDataLocalizer` (D)                      |
+|---------------|------------------------|-------------------------------------------|
+| Source        | PO files (static)      | Database (dynamic)                        |
+| HTML encoding | Auto-encoded by Razor  | Auto-encoded by Razor                     |
+| Pluralization | Supported              | Not supported                             |
+| Arguments     | `T["Hello {0}", name]` | `D["Hello {0}", "Context", name]`         |
+| Use case      | Static UI strings      | Dynamic data (content types, permissions) |
 
 ## Liquid filters
 
@@ -300,9 +300,9 @@ Localizes a dynamic data string using the current culture.
 
 ### Parameters
 
-| Property | Example | Description |
-|----------|------------------------|----------------------|
-| Context | The context that the string belongs to | Content Types |
+| Property | Example                                | Description   |
+|----------|----------------------------------------|---------------|
+| Context  | The context that the string belongs to | Content Types |
 
 Input
 

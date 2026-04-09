@@ -265,7 +265,7 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        if (ruleIds?.Count() > 0)
+        if (ruleIds?.Any() == true)
         {
             switch (options.BulkAction)
             {

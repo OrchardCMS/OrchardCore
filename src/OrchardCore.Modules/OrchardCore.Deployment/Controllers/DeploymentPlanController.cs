@@ -130,7 +130,7 @@ public sealed class DeploymentPlanController : Controller
             return Forbid();
         }
 
-        if (itemIds?.Count() > 0)
+        if (itemIds?.Any() == true)
         {
             var checkedItems = await _session.Query<DeploymentPlan, DeploymentPlanIndex>().Where(x => x.DocumentId.IsIn(itemIds)).ListAsync();
             switch (options.BulkAction)

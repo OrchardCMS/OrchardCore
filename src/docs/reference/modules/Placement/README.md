@@ -70,13 +70,13 @@ The `place` value follows the format `Zone:Position`, where:
 
 Examples:
 
-| Place Value | Zone | Position | Description |
-|---|---|---|---|
-| `Content` | Content | *(empty, treated as 0)* | Places in Content zone at default position |
-| `Content:5` | Content | 5 | Places in Content zone at position 5 |
-| `Content:5.1` | Content | 5.1 | Places in Content zone at position 5.1 (between 5 and 6) |
-| `Content:before` | Content | before | Places at the very beginning of the zone |
-| `Content:after` | Content | after | Places at the very end of the zone |
+| Place Value      | Zone    | Position                | Description                                              |
+|------------------|---------|-------------------------|----------------------------------------------------------|
+| `Content`        | Content | *(empty, treated as 0)* | Places in Content zone at default position               |
+| `Content:5`      | Content | 5                       | Places in Content zone at position 5                     |
+| `Content:5.1`    | Content | 5.1                     | Places in Content zone at position 5.1 (between 5 and 6) |
+| `Content:before` | Content | before                  | Places at the very beginning of the zone                 |
+| `Content:after`  | Content | after                   | Places at the very end of the zone                       |
 
 ##### Position ordering rules
 
@@ -338,14 +338,14 @@ The builder enforces the **nesting hierarchy** through the rendering order (**Zo
 
 The builder starts with `.Zone()` and all methods return the same `PlacementLocationBuilder` instance for fluent chaining:
 
-| Method | Description | String equivalent |
-|--------|-------------|-------------------|
-| `.Zone("Content", "5")` | Sets the target zone and shape position (required) | `Content:5` |
-| `.AsLayoutZone()` | Targets a layout zone | `/` prefix |
-| `.Tab("Settings", "1")` | Groups into a tab with optional group position | `#Settings;1` |
-| `.Card("Details", "2")` | Groups into a card with optional group position | `%Details;2` |
-| `.Column("Left", "1", "9")` | Groups into a column with position and width | `\|Left_9;1` |
-| `.Group("search")` | Assigns a group identifier for filtering | `@search` |
+| Method                      | Description                                        | String equivalent |
+|-----------------------------|----------------------------------------------------|-------------------|
+| `.Zone("Content", "5")`     | Sets the target zone and shape position (required) | `Content:5`       |
+| `.AsLayoutZone()`           | Targets a layout zone                              | `/` prefix        |
+| `.Tab("Settings", "1")`     | Groups into a tab with optional group position     | `#Settings;1`     |
+| `.Card("Details", "2")`     | Groups into a card with optional group position    | `%Details;2`      |
+| `.Column("Left", "1", "9")` | Groups into a column with position and width       | `\|Left_9;1`      |
+| `.Group("search")`          | Assigns a group identifier for filtering           | `@search`         |
 
 !!! note
     The `.Column()` method parameters are: `name`, `position`, `width`. For example, `.Column("Left", "1", "9")` creates a column named "Left" at position 1 with width 9.

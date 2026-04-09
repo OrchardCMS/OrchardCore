@@ -4,5 +4,11 @@
     "name": "admin-list-manager",
     "source": "Assets/js/admin-ui.js",
     "tags": [ "indexing", "js" ]
+  },
+  {
+    "action": "min",
+    "name": "technical-name-generator",
+    "source": "Assets/js/technical-name-generator.js",
+    "tags": [ "indexing", "js" ]
   }
 ]
