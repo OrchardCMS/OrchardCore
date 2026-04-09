@@ -1,6 +1,7 @@
 @using OrchardCore.ContentManagement
 @using OrchardCore.ContentManagement.Metadata.Models
 @using OrchardCore.ContentManagement.Metadata.Settings
+@using OrchardCore.ContentTypes
 @using OrchardCore.Mvc.Utilities
 @using OrchardCore.Localization.Data
 @using System.Linq
@@ -55,7 +56,7 @@
     }
 
     var fields = ContentOptions.Value.ContentFieldOptions.Select(cfo => cfo.Type).ToList();
-    string localizedTypeName = D[Model.TypeDefinition.DisplayName, "Content Types"];
+    string localizedTypeName = D[Model.TypeDefinition.DisplayName, DataLocalizationContext.ContentType];
 }
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Edit Content Type - {0}", localizedTypeName])</h1></zone>
@@ -138,7 +139,7 @@
 
                 <li class="list-group-item@(partDefinition == typePart ? " bg-faded" : string.Empty)" style="cursor: move;">
                     <div class="w-100">
-                        @D[partDefinition.DisplayName(), "Content Types"]
+                        @D[partDefinition.DisplayName(), DataLocalizationContext.ContentType]
 
                         @if (partDefinition != typePart)
                         {
