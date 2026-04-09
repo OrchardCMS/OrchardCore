@@ -94,6 +94,7 @@ public sealed class OrchardTestServer : IAsyncDisposable
 
         builder.Services
             .AddOrchardCore()
+            .AddTenantFeatures("OrchardCore.HealthChecks")
             .AddMvc();
 
         ConfigureServices(builder, appDataPath, instanceId: null, loggerProvider);
@@ -348,11 +349,11 @@ public sealed class OrchardTestServer : IAsyncDisposable
     }
 
     /// <summary>
-    /// Polls the root URL until the app serves a non-empty 200 response, ensuring the
+    /// Polls the health endpoint until the app returns a successful response, ensuring the
     /// OrchardCore tenant pipeline has finished its lazy first-request initialization
     /// before the Playwright tests begin.
     /// </summary>
-    private static async Task WarmUpAsync(string baseAddress, int timeoutSeconds = 30)
+    private static async Task WarmUpAsync(string baseAddress, string healthPath = "/health/live", int timeoutSeconds = 30)
     {
         using var client = new HttpClient();
         var deadline = DateTime.UtcNow.AddSeconds(timeoutSeconds);
@@ -361,14 +362,10 @@ public sealed class OrchardTestServer : IAsyncDisposable
         {
             try
             {
-                var response = await client.GetAsync($"{baseAddress}/");
+                var response = await client.GetAsync($"{baseAddress}{healthPath}");
                 if (response.IsSuccessStatusCode)
                 {
-                    var content = await response.Content.ReadAsStringAsync();
-                    if (!string.IsNullOrWhiteSpace(content))
-                    {
-                        return;
-                    }
+                    return;
                 }
             }
             catch
@@ -380,7 +377,7 @@ public sealed class OrchardTestServer : IAsyncDisposable
         }
 
         throw new TimeoutException(
-            $"The MVC application at '{baseAddress}' did not serve content within {timeoutSeconds} seconds.");
+            $"The application at '{baseAddress}' did not respond successfully at '{healthPath}' within {timeoutSeconds} seconds.");
     }
 
     private static string GetListeningAddress(WebApplication app)
