@@ -1,5 +1,10 @@
+using Dapper;
+using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Data;
 using OrchardCore.Data.Migration;
+using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Workflows.Indexes;
+using YesSql;
 using YesSql.Sql;
 
 namespace OrchardCore.Workflows;
@@ -83,7 +88,7 @@ public sealed class Migrations : DataMigration
         );
 
         // Shortcut other migration steps on new content definition schemas.
-        return 3;
+        return 4;
     }
 
     // This code can be removed in a later version.
@@ -145,4 +150,36 @@ public sealed class Migrations : DataMigration
 
         return 3;
     }
+
+    // This code can be removed in a later version.
+    // Normalize WorkflowStatus values stored as integer strings (e.g. "5") to enum names (e.g. "Finished").
+    // SQL Server and SQLite silently coerced the enum int to varchar on insert; those rows must be updated
+    // so that queries comparing against enum names (introduced in migration 4) find them correctly.
+    public static int UpdateFrom3()
+    {
+        ShellScope.AddDeferredTask(async scope =>
+        {
+            var store = scope.ServiceProvider.GetRequiredService<IStore>();
+            var dbConnectionAccessor = scope.ServiceProvider.GetRequiredService<IDbConnectionAccessor>();
+            var dialect = store.Configuration.SqlDialect;
+
+            var tableName = $"{store.Configuration.TablePrefix}WorkflowIndex";
+            var quotedTableName = dialect.QuoteForTableName(tableName, store.Configuration.Schema);
+            var quotedColumnName = dialect.QuoteForColumnName("WorkflowStatus");
+
+            var statuses = new[] { "Idle", "Starting", "Resuming", "Executing", "Halted", "Finished", "Faulted", "Aborted" };
+
+            await using var connection = dbConnectionAccessor.CreateConnection();
+            await connection.OpenAsync();
+
+            for (var i = 0; i < statuses.Length; i++)
+            {
+                var sql = $"UPDATE {quotedTableName} SET {quotedColumnName} = @name WHERE {quotedColumnName} = @id";
+                await connection.ExecuteAsync(sql, new { name = statuses[i], id = i.ToString() });
+            }
+        });
+
+        return 4;
+    }
+
 }
