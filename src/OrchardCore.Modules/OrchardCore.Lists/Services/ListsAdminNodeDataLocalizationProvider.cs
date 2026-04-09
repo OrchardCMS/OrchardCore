@@ -7,7 +7,7 @@ namespace OrchardCore.Lists.Services;
 
 public class ListsAdminNodeDataLocalizationProvider : AdminNodeDataLocalizationProvider
 {
-    public ListsAdminNodeDataLocalizationProvider(IAdminMenuAccessor adminMenuRetrieval) : base(adminMenuRetrieval)
+    public ListsAdminNodeDataLocalizationProvider(IAdminMenuAccessor adminMenuAccessor) : base(adminMenuAccessor)
     {
     }
 
