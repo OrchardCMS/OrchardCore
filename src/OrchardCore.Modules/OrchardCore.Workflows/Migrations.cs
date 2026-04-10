@@ -5,6 +5,7 @@ using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Workflows.Indexes;
+using OrchardCore.Workflows.Models;
 using YesSql;
 using YesSql.Sql;
 
@@ -50,7 +51,7 @@ public sealed class Migrations : DataMigration
         await SchemaBuilder.CreateMapIndexTableAsync<WorkflowIndex>(table => table
             .Column<string>("WorkflowTypeId", c => c.WithLength(26))
             .Column<string>("WorkflowId", c => c.WithLength(26))
-            .Column<int>("WorkflowStatus")
+            .Column<WorkflowStatus>("WorkflowStatus")
             .Column<DateTime>("CreatedUtc")
         );
 
@@ -97,7 +98,7 @@ public sealed class Migrations : DataMigration
     {
         // Add a temporary integer column to hold the migrated WorkflowStatus values.
         await SchemaBuilder.AlterIndexTableAsync<WorkflowIndex>(table => table
-            .AddColumn<int>("WorkflowStatusTemp", c => c.WithDefault(0))
+            .AddColumn<WorkflowStatus>("WorkflowStatusTemp", c => c.WithDefault((int)WorkflowStatus.Idle))
         );
 
         ShellScope.AddDeferredTask(async scope =>
