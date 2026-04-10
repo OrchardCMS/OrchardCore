@@ -1,6 +1,7 @@
 @model OrchardCore.ContentFields.ViewModels.EditContentPickerFieldViewModel
 @using System.Text.Json
 @using System.Text.Json.Nodes
+@using OrchardCore.ContentFields
 @using OrchardCore.Mvc.Utilities
 @using OrchardCore.Localization.Data
 @inject IDataLocalizer D
@@ -14,7 +15,7 @@
     var searchUrl = Url.RouteUrl(new { area = "OrchardCore.ContentFields", controller = "ContentPickerAdmin", action = "SearchContentItems", part = partName, field = fieldName });
     var vueElementId = $"ContentPicker_{partName}_{fieldName}_{Guid.NewGuid().ToString("n")}";
     var multiple = settings.Multiple.ToString().ToLowerInvariant();
-    string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), $"Content Fields{Constants.ContextSeparator}{Model.PartFieldDefinition.PartDefinition.Name}"];
+    string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), DataLocalizationContext.ContentField(Model.PartFieldDefinition.PartDefinition.Name)];
 }
 
 <script asp-name="vue-multiselect-wrapper" at="Foot"></script>
