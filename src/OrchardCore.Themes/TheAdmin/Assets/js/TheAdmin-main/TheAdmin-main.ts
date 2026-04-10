@@ -4,6 +4,7 @@
 // That is why we use a MutationObserver instead of document.Ready().
 import { getAdminPreferences, setCompactExplicit } from '../constants';
 import { actionGroupLoader } from '../TheAdmin/actionGroup';
+import { actionBarCollapseLoader } from '../TheAdmin/actionBarCollapseLoader';
 
 const userPreferencesLoader = () => {
     const observer = new MutationObserver(function (mutations) {
@@ -39,3 +40,4 @@ const userPreferencesLoader = () => {
 
 userPreferencesLoader();
 actionGroupLoader();
+actionBarCollapseLoader();

@@ -4,11 +4,11 @@
 
 @if (string.IsNullOrWhiteSpace(returnUrl))
 {
-    <button type="submit" name="submit.Unpublish" class="btn btn-warning unpublish mb-1" value="submit.Unpublish">@T["Unpublish"]</button>
+    <button type="submit" name="submit.Unpublish" class="btn btn-warning unpublish mb-1 action-bar-collapsible" value="submit.Unpublish">@T["Unpublish"]</button>
 }
 else
 {
-    <div class="btn-group mb-1"
+    <div class="btn-group mb-1 action-bar-collapsible"
          role="group" 
          aria-label="@T["Unpublish actions"]"
          data-action-group="oc-content-unpublish-action"

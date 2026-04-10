@@ -16,4 +16,5 @@ export interface AdminPreferences {
     leftSidebarCompact: boolean;
     isCompactExplicit: boolean;
     actionGroups?: Record<string, string>;
+    actionBarCollapsed?: boolean;
 }

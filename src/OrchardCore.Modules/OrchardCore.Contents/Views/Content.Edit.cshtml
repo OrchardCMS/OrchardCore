@@ -15,6 +15,12 @@
 {
     <div class="card text-bg-theme mb-3 position-sticky action-bar">
         <div class="card-body p-3 d-flex align-items-start gap-2">
+            <button type="button"
+                    class="btn btn-sm btn-outline-secondary action-bar-toggle d-md-none collapsed"
+                    aria-expanded="false"
+                    aria-label="@T["Toggle actions"]"
+                    data-bs-toggle="collapse"
+                    data-bs-target=".action-bar-collapsible"></button>
             <div class="action-bar-actions flex-grow-1 text-end">
                 @await DisplayAsync(Model.Actions)
 
