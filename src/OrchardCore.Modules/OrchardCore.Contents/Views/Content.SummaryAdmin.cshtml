@@ -31,24 +31,24 @@
                     @contentItem
                 }
             </div>
-            <div class="contenttype me-1">
+            <div class="contenttype me-1 mb-1">
                 <span class="badge ta-badge font-weight-normal"><i class="fa-regular fa-file-alt text-secondary" aria-hidden="true"></i> <a asp-route-options.selectedcontenttype=@contentItem.ContentType data-bs-toggle="tooltip" title="@T["Content type"]">@contentItem.ContentType</a></span>
             </div>
             @if (Model.Header != null)
             {
-                <div class="header me-1">
+                <div class="header me-1 mb-1">
                     @await DisplayAsync(Model.Header)
                 </div>
             }
             @if (Model.Tags != null)
             {
-                <div class="tags me-1">
+                <div class="tags me-1 mb-1">
                     @await DisplayAsync(Model.Tags)
                 </div>
             }
             @if (Model.Meta != null)
             {
-                <div class="metadata me-1">
+                <div class="metadata me-1 mb-1">
                     @await DisplayAsync(Model.Meta)
                 </div>
             }
@@ -63,7 +63,7 @@
 
             @if (Model.ActionsMenu != null && Model.ActionsMenu.HasItems)
             {
-                <div class="btn-group" title="@T["Actions"]">
+                <div class="btn-group mb-1" title="@T["Actions"]">
                     <button type="button" class="btn btn-sm btn-secondary dropdown-toggle actions" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <span>@T["Actions"]</span>
                     </button>
