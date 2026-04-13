@@ -35,7 +35,7 @@ public class ClustersProxyConfigFilter : IProxyConfigFilter
                 {
                     Name = options.Enabled ? RequestHeaderNames.FromClustersProxy : RequestHeaderNames.FakeClustersHeader,
                     Mode = options.Enabled ? HeaderMatchMode.NotExists : HeaderMatchMode.Exists,
-                }
+                },
             };
 
             // Preserve the already defined headers.
