@@ -18,27 +18,29 @@ namespace OrchardCore.Clusters
     {
         private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
-        private readonly ClustersOptions _options;
+        private readonly IOptionsMonitor<ClustersOptions> _optionsMonitor;
 
         public ClusteredTenantInactivityCheck(
             IShellHost shellHost,
             ShellSettings shellSettings,
-            IOptions<ClustersOptions> options)
+            IOptionsMonitor<ClustersOptions> optionsMonitor)
         {
             _shellHost = shellHost;
             _shellSettings = shellSettings;
-            _options = options.Value;
+            _optionsMonitor = optionsMonitor;
         }
 
         public async Task DoWorkAsync(IServiceProvider serviceProvider, CancellationToken cancellationToken)
         {
+            var options = _optionsMonitor.CurrentValue;
+
             // Check if the clusters max idle time is configured and if the tenant pipeline has been built.
-            if (_options.MaxIdleTime.HasValue &&
+            if (options.MaxIdleTime.HasValue &&
                 _shellHost.TryGetShellContext(_shellSettings.Name, out var shellContext) &&
                 shellContext.HasPipeline())
             {
                 // Check if the clusters max idle time has expired for this tenant.
-                if (shellContext.LastRequestTimeUtc.Add(_options.MaxIdleTime.Value) < DateTime.UtcNow)
+                if (shellContext.LastRequestTimeUtc.Add(options.MaxIdleTime.Value) < DateTime.UtcNow)
                 {
                     await _shellHost.ReleaseShellContextAsync(_shellSettings, eventSource: false);
                 }

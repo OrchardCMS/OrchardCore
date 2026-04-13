@@ -181,7 +181,7 @@
   </Folder>
   <Folder Name="/src/OrchardCore/">
     <Project Path="src/OrchardCore/OrchardCore.Abstractions/OrchardCore.Abstractions.csproj" />
-    <Project Path="src/OrchardCore/OrchardCore.Clusters/OrchardCore.Clusters.csproj" />
+    <Project Path="src/OrchardCore/OrchardCore.Clusters.Yarp/OrchardCore.Clusters.Yarp.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Admin.Abstractions/OrchardCore.Admin.Abstractions.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.AdminMenu.Abstractions/OrchardCore.AdminMenu.Abstractions.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Apis.GraphQL.Abstractions/OrchardCore.Apis.GraphQL.Abstractions.csproj" />

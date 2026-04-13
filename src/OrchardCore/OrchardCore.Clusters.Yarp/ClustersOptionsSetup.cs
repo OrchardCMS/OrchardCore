@@ -8,27 +8,26 @@ namespace OrchardCore.Clusters;
 /// </summary>
 public class ClustersOptionsSetup : IConfigureOptions<ClustersOptions>
 {
-    private readonly ClustersConfiguration _configuration;
+    private readonly IConfigurationSection _configurationSection;
 
-    public ClustersOptionsSetup(IConfiguration configuration)
-    {
-        _configuration = configuration.GetSection("OrchardCore_Clusters").Get<ClustersConfiguration>();
-    }
+    public ClustersOptionsSetup(IConfiguration configuration) => _configurationSection = configuration.GetSection("OrchardCore_Clusters");
 
     public void Configure(ClustersOptions options)
     {
+        var configuration = _configurationSection.Get<ClustersConfiguration>();
+
         // Check if there is at least one configured cluster.
-        if (_configuration is null || _configuration.Clusters is null || _configuration.Clusters.Count == 0)
+        if (configuration is null || configuration.Clusters is null || configuration.Clusters.Count == 0)
         {
             return;
         }
 
         // Configure global clusters options.
-        options.Enabled = _configuration.Enabled;
-        options.MaxIdleTime = _configuration.MaxIdleTime;
+        options.Enabled = configuration.Enabled;
+        options.MaxIdleTime = configuration.MaxIdleTime;
 
         // Configure all single cluster options.
-        foreach (var cluster in _configuration.Clusters)
+        foreach (var cluster in configuration.Clusters)
         {
             var slotRange = cluster.Value.SlotRange;
             if (slotRange is not null && slotRange.Length == 2)

@@ -15,18 +15,18 @@ public class ModularTenantContainerMiddleware
     private readonly RequestDelegate _next;
     private readonly IShellHost _shellHost;
     private readonly IRunningShellTable _runningShellTable;
-    private readonly ClustersOptions _clustersOptions;
+    private readonly IOptionsMonitor<ClustersOptions> _clustersOptionsMonitor;
 
     public ModularTenantContainerMiddleware(
         RequestDelegate next,
         IShellHost shellHost,
         IRunningShellTable runningShellTable,
-        IOptions<ClustersOptions> clustersOptions)
+        IOptionsMonitor<ClustersOptions> clustersOptionsMonitor)
     {
         _next = next;
         _shellHost = shellHost;
         _runningShellTable = runningShellTable;
-        _clustersOptions = clustersOptions.Value;
+        _clustersOptionsMonitor = clustersOptionsMonitor;
     }
 
     public async Task Invoke(HttpContext httpContext)
@@ -39,11 +39,13 @@ public class ModularTenantContainerMiddleware
         // We only serve the next request if the tenant has been resolved.
         if (shellSettings is not null)
         {
-            if (httpContext.AsClustersProxy(_clustersOptions))
+            var clustersOptions = _clustersOptionsMonitor.CurrentValue;
+
+            if (httpContext.AsClustersProxy(clustersOptions))
             {
                 httpContext.Features.Set(new ClusterFeature
                 {
-                    ClusterId = shellSettings.GetClusterId(_clustersOptions),
+                    ClusterId = shellSettings.GetClusterId(clustersOptions),
                 });
 
                 await _next(httpContext);

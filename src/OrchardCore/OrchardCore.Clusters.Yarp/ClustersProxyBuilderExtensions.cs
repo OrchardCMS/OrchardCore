@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
@@ -15,6 +16,11 @@ public static class ClustersProxyBuilderExtensions
     public static IReverseProxyBuilder AddTenantClusters(this IReverseProxyBuilder builder)
     {
         builder.Services.AddSingleton<IConfigureOptions<ClustersOptions>, ClustersOptionsSetup>();
+        builder.Services.AddSingleton<IOptionsChangeTokenSource<ClustersOptions>>(serviceProvider =>
+            new ConfigurationChangeTokenSource<ClustersOptions>(
+                Options.DefaultName,
+                serviceProvider.GetRequiredService<IConfiguration>().GetSection("OrchardCore_Clusters")));
+
         return builder.AddConfigFilter<ClustersProxyConfigFilter>();
     }
 

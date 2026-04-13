@@ -12,9 +12,9 @@ namespace OrchardCore.Clusters;
 /// </summary>
 public class ClustersProxyConfigFilter : IProxyConfigFilter
 {
-    private readonly ClustersOptions _options;
+    private readonly IOptionsMonitor<ClustersOptions> _optionsMonitor;
 
-    public ClustersProxyConfigFilter(IOptions<ClustersOptions> options) => _options = options.Value;
+    public ClustersProxyConfigFilter(IOptionsMonitor<ClustersOptions> optionsMonitor) => _optionsMonitor = optionsMonitor;
 
     public ValueTask<ClusterConfig> ConfigureClusterAsync(ClusterConfig origCluster, CancellationToken cancel) => new(origCluster);
 
@@ -26,13 +26,15 @@ public class ClustersProxyConfigFilter : IProxyConfigFilter
         // Check if it is the tenant clusters 'RouteTemplate'.
         if (route.RouteId == ClustersOptions.RouteTemplate)
         {
+            var options = _optionsMonitor.CurrentValue;
+
             // Define the headers that incoming requests should match.
             var headers = new List<RouteHeader>
             {
                 new RouteHeader
                 {
-                    Name = _options.Enabled ? RequestHeaderNames.FromClustersProxy : RequestHeaderNames.FakeClustersHeader,
-                    Mode = _options.Enabled ? HeaderMatchMode.NotExists : HeaderMatchMode.Exists,
+                    Name = options.Enabled ? RequestHeaderNames.FromClustersProxy : RequestHeaderNames.FakeClustersHeader,
+                    Mode = options.Enabled ? HeaderMatchMode.NotExists : HeaderMatchMode.Exists,
                 }
             };
 

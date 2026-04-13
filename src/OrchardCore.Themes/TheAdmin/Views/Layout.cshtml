@@ -83,9 +83,6 @@
             {
                 @await RenderSectionAsync("Title", required: false)
             }
-            <div>Host: @Context.Request.Host</div>
-            <div>X-Original-Host: @Context.Request.Headers["X-Original-Host"]</div>
-            <div>X-Forwarded-Host: @Context.Request.Headers["X-Forwarded-Host"]</div>
             @await RenderBodyAsync()
         </div>
 
