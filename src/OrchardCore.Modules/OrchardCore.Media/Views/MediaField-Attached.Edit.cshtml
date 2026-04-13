@@ -46,7 +46,6 @@
             <label class="selected-media-name form-label">
                 <code class="text-end" v-if="selectedMedia">{{ selectedMediaDisplayText }}</code>
             </label>
-            <input type="hidden" id="t-selected-media-format" value="@T["{0}{1} ({2} KB)"]" />
         </div>
 
         <upload-list upload-input-id="@mediaFieldId-field-file-upload"></upload-list>
@@ -64,6 +63,7 @@
         <input type="hidden" id="t-errors" value="@T["Errors"]" />
         <input type="hidden" id="t-clear-errors" value="@T["Clear Errors"]" />
 
+        <input type="hidden" id="t-selected-media-format" value="@T["{0}{1} ({2} KB)"]" />
     </div>
 
     <partial name="Shared/MediaFieldEditLocalization.cshtml" />
