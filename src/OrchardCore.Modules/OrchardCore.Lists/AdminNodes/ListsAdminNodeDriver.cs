@@ -1,6 +1,8 @@
+using System.Net.NetworkInformation;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentTypes;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Lists.Models;
@@ -82,7 +84,7 @@ public sealed class ListsAdminNodeDriver : DisplayDriver<MenuItem, ListsAdminNod
         return contentTypeDefinitions
             .Where(ctd => ctd.Parts.Any(p => p.PartDefinition.Name.Equals(nameof(ListPart), StringComparison.OrdinalIgnoreCase)))
             .OrderBy(ctd => ctd.DisplayName)
-            .Select(ctd => new SelectListItem(D[ctd.DisplayName, "Content Types"], ctd.Name))
+            .Select(ctd => new SelectListItem(D[ctd.DisplayName, DataLocalizationContext.ContentType], ctd.Name))
             .ToList();
     }
 
