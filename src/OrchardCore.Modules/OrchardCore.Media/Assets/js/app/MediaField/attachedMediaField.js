@@ -108,7 +108,7 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
 
                 var size = isNaN(this.fileSize) ? 0 : this.fileSize;
 
-                var formatElement = this.$el.querySelector('.t-selected-media-format');
+                var formatElement = this.$el.querySelector('#t-selected-media-format');
                 var format = formatElement ? formatElement.value : '{0}{1} ({2} KB)';
 
                 return format
@@ -325,7 +325,7 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
                         position = position + 5; // Adjust to hit the mouse pointer.
                     }
                     return position + 'px';
-                } else {
+                } else { 
                     return '0';
                 }
             },

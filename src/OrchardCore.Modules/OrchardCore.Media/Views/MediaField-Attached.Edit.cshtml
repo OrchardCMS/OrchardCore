@@ -46,7 +46,7 @@
             <label class="selected-media-name form-label">
                 <code class="text-end" v-if="selectedMedia">{{ selectedMediaDisplayText }}</code>
             </label>
-            <input type="hidden" class="t-selected-media-format" value="@T["{0}{1} ({2} KB)"]" />
+            <input type="hidden" id="t-selected-media-format" value="@T["{0}{1} ({2} KB)"]" />
         </div>
 
         <upload-list upload-input-id="@mediaFieldId-field-file-upload"></upload-list>
