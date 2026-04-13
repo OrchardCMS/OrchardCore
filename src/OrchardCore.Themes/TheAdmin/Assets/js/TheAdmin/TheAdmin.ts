@@ -1,5 +1,5 @@
-import "./menu";
-import "./resizeDetector";
+import "./sidebar";
+import "./sidebarBreakpointDetector";
 import "./mobileActionBar";
 import "./actionGroup";
 ///<reference path="@types/bootstrap/index.d.ts" />

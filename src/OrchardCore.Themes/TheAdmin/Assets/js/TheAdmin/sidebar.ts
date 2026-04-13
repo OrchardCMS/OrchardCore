@@ -1,5 +1,4 @@
-import { isCompactExplicit, setCompactExplicit } from '../constants';
-import { persistAdminPreferences } from './userPreferencesPersistor';
+import { isCompactExplicit, setCompactExplicit, persistAdminPreferences } from '../adminPreferences';
 // When we load compact status from preferences we need to do some other tasks besides adding the class to the body.
 // UserPreferencesLoader has already added the needed class.
 $(function () {

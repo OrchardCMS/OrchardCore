@@ -1,9 +1,13 @@
-import { getAdminPreferences, setAdminPreferences } from '../constants';
-import { AdminPreferences } from './userPreferencesPersistor';
+import { getAdminPreferences, setAdminPreferences } from '../adminPreferences';
 
-// Keeps --oc-action-bar-height in sync with the actual rendered height
-// of the fixed mobile action bar so that the edit container always has
-// enough bottom padding to prevent content from being covered.
+// Manages the mobile action bar at runtime.
+//
+// This file must remain in the foot bundle (TheAdmin.ts) and must NOT be imported
+// from the head bundle (TheAdmin-main.ts). It contains a DOM-dependent IIFE that
+// queries live elements, so it requires the DOM to already exist. Its observers
+// also serve the opposite purpose from the head-bundle observer: they *save* state
+// changes made by the user, whereas the head-bundle observer *restores* saved state
+// before the first paint.
 (function () {
     const actionBar = document.querySelector<HTMLElement>('.action-bar');
     if (!actionBar) return;
@@ -27,7 +31,7 @@ import { AdminPreferences } from './userPreferencesPersistor';
         }
 
         new MutationObserver(() => {
-            const prefs = getAdminPreferences() as AdminPreferences;
+            const prefs = getAdminPreferences();
             prefs.actionBarCollapsed = toggle.getAttribute('aria-expanded') !== 'true';
             setAdminPreferences(prefs);
         }).observe(toggle, { attributes: true, attributeFilter: ['aria-expanded'] });
