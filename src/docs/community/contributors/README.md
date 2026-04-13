@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-383-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-385-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key))!
@@ -529,6 +529,10 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/Manuel-dev-ing"><img src="https://avatars.githubusercontent.com/u/173723192?v=4?s=100" width="100px;" alt="Manuel Tamayo Montero"/><br /><sub><b>Manuel Tamayo Montero</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=Manuel-dev-ing" title="Code">💻</a></td>
       <td align="center" valign="top" width="16.66%"><a href="https://lamualfa.co"><img src="https://avatars.githubusercontent.com/u/39755201?v=4?s=100" width="100px;" alt="Laode Muhammad Al Fatih"/><br /><sub><b>Laode Muhammad Al Fatih</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=lamualfa" title="Code">💻</a></td>
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/Bellambharath"><img src="https://avatars.githubusercontent.com/u/82457244?v=4?s=100" width="100px;" alt="Bharath Kumar Bellam"/><br /><sub><b>Bharath Kumar Bellam</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=Bellambharath" title="Code">💻</a></td>
+      <td align="center" valign="top" width="16.66%"><a href="https://github.com/ahlxjg"><img src="https://avatars.githubusercontent.com/u/28708286?v=4?s=100" width="100px;" alt="Jack Liu"/><br /><sub><b>Jack Liu</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=ahlxjg" title="Code">💻</a></td>
+    </tr>
+    <tr>
+      <td align="center" valign="top" width="16.66%"><a href="https://github.com/canadacubachina"><img src="https://avatars.githubusercontent.com/u/190653773?v=4?s=100" width="100px;" alt="canadacubachina"/><br /><sub><b>canadacubachina</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=canadacubachina" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>

@@ -36,7 +36,7 @@ Vue.component('media-items-table', {
                           :key="media.name">
                              <td class="thumbnail-column">
                                 <div class="img-wrapper">
-                                    <img v-if="media.mime.startsWith('image')" draggable="false" :src="buildMediaUrl(media.url, thumbSize)" />
+                                    <img v-if="media.mime?.startsWith('image')" draggable="false" :src="buildMediaUrl(media.url, thumbSize)" />
                                     <i v-else :class="getfontAwesomeClassNameForFileName(media.name, \'fa-4x\')" :data-mime="media.mime"></i>
                                 </div>
                             </td>

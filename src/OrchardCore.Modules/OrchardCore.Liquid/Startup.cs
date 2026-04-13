@@ -78,7 +78,9 @@ public sealed class Startup : StartupBase
         .AddLiquidFilter<AbsoluteUrlFilter>("absolute_url")
         .AddLiquidFilter<NewShapeFilter>("shape_new")
         .AddLiquidFilter<ShapeRenderFilter>("shape_render")
-        .AddLiquidFilter<ShapeStringifyFilter>("shape_stringify");
+        .AddLiquidFilter<ShapeStringifyFilter>("shape_stringify")
+        .AddLiquidFilter<EncryptFilter>("encrypt")
+        .AddLiquidFilter<DecryptFilter>("decrypt");
 
         services.AddResourceConfiguration<ResourceManagementOptionsConfiguration>();
     }

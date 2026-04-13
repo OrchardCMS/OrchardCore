@@ -166,7 +166,8 @@ public sealed class Startup : StartupBase
 
         // Media Field
         services.AddContentField<MediaField>()
-            .UseDisplayDriver<MediaFieldDisplayDriver>();
+            .UseDisplayDriver<MediaFieldDisplayDriver>()
+            .AddHandler<AttachedMediaFieldHandler>();
         services.AddScoped<IContentPartFieldDefinitionDisplayDriver, MediaFieldSettingsDriver>();
         services.AddScoped<AttachedMediaFieldFileService, AttachedMediaFieldFileService>();
         services.AddScoped<IContentHandler, AttachedMediaFieldContentHandler>();

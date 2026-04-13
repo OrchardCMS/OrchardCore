@@ -3538,6 +3538,24 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "ahlxjg",
+      "name": "Jack Liu",
+      "avatar_url": "https://avatars.githubusercontent.com/u/28708286?v=4",
+      "profile": "https://github.com/ahlxjg",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "canadacubachina",
+      "name": "canadacubachina",
+      "avatar_url": "https://avatars.githubusercontent.com/u/190653773?v=4",
+      "profile": "https://github.com/canadacubachina",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,

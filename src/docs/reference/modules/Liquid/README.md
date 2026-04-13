@@ -333,6 +333,41 @@ Example:
 {% endfor %}
 ```
 
+## Data Protection Filters
+
+### `encrypt`
+
+Encrypts a string using the ASP.NET Core Data Protection API and returns a Base64-encoded ciphertext.
+
+Input
+
+```liquid
+{{ "my-secret-value" | encrypt }}
+```
+
+Output
+
+```text
+CfDJ8...  (Base64-encoded ciphertext)
+```
+
+### `decrypt`
+
+Decrypts a Base64-encoded string previously encrypted with the `encrypt` filter. Returns nil if the input is empty or cannot be decrypted.
+
+Input
+
+```liquid
+{% assign encrypted = "my-secret-value" | encrypt %}
+{{ encrypted | decrypt }}
+```
+
+Output
+
+```text
+my-secret-value
+```
+
 ## Properties
 
 By default the liquid templates have access to a common set of objects.

@@ -42,11 +42,11 @@ Add the following section to your `appsettings.json`:
 
 ## Configuration Options
 
-| Setting | Description | Example Values |
-|---------|-------------|----------------|
-| `ForwardedHeaders` | Specifies which headers to forward | `None`, `XForwardedFor`, `XForwardedHost`, `XForwardedProto`, `XForwardedPrefix`, `All`, or a combination (comma-separated) |
-| `KnownNetworks` | Array of known proxy networks in CIDR notation | `["192.168.1.0/24", "10.0.0.0/8"]` |
-| `KnownProxies` | Array of known proxy IP addresses | `["192.168.1.200", "192.168.1.201"]` |
+| Setting            | Description                                    | Example Values                                                                                                              |
+|--------------------|------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------|
+| `ForwardedHeaders` | Specifies which headers to forward             | `None`, `XForwardedFor`, `XForwardedHost`, `XForwardedProto`, `XForwardedPrefix`, `All`, or a combination (comma-separated) |
+| `KnownNetworks`    | Array of known proxy networks in CIDR notation | `["192.168.1.0/24", "10.0.0.0/8"]`                                                                                          |
+| `KnownProxies`     | Array of known proxy IP addresses              | `["192.168.1.200", "192.168.1.201"]`                                                                                        |
 
 !!! warning
     The `KnownNetworks` values must be specified in CIDR notation (e.g., `192.168.1.0/24`).

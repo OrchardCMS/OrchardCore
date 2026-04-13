@@ -32,8 +32,7 @@ public class SitemapUrlHrefLangExtendedMetadataProvider : ISitemapContentItemExt
         ContentItem contentItem,
         XElement url)
     {
-        var part = contentItem.As<LocalizationPart>();
-        if (part == null ||
+        if (!contentItem.TryGet<LocalizationPart>(out var part) ||
             queryContext.ReferenceContentItems == null ||
             !queryContext.ReferenceContentItems.Any())
         {
@@ -41,8 +40,8 @@ public class SitemapUrlHrefLangExtendedMetadataProvider : ISitemapContentItemExt
         }
 
         var localizedContentParts = queryContext.ReferenceContentItems
-            .Select(ci => ci.As<LocalizationPart>())
-            .Where(cp => cp.LocalizationSet == part.LocalizationSet);
+            .Select(ci => ci.TryGet<LocalizationPart>(out var localizationPart) ? localizationPart : null)
+            .Where(cp => cp?.LocalizationSet == part.LocalizationSet);
 
         foreach (var localizedPart in localizedContentParts)
         {

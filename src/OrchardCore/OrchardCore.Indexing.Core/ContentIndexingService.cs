@@ -52,7 +52,7 @@ public sealed class ContentIndexingService : NamedIndexingService
 
         foreach (var context in contexts)
         {
-            var metadata = context.IndexProfile.As<ContentIndexMetadata>();
+            var metadata = context.IndexProfile.GetOrCreate<ContentIndexMetadata>();
 
             if (metadata.IndexedContentTypes is null || metadata.IndexedContentTypes.Length == 0)
             {
@@ -107,7 +107,7 @@ public sealed class ContentIndexingService : NamedIndexingService
             return Task.FromResult<BuildDocumentIndexContext>(null);
         }
 
-        var metadata = entry.IndexProfile.As<ContentIndexMetadata>();
+        var metadata = entry.IndexProfile.GetOrCreate<ContentIndexMetadata>();
 
         ContentItem contentItem = null;
 
@@ -134,7 +134,7 @@ public sealed class ContentIndexingService : NamedIndexingService
 
     protected override async ValueTask<bool> ShouldTrackDocumentAsync(BuildDocumentIndexContext buildIndexContext, IndexProfileEntryContext entry, RecordIndexingTask task)
     {
-        var metadata = entry.IndexProfile.As<ContentIndexMetadata>();
+        var metadata = entry.IndexProfile.GetOrCreate<ContentIndexMetadata>();
         var anyCulture = string.IsNullOrEmpty(metadata.Culture) || metadata.Culture == "any";
 
         // Ignore if the culture is not indexed in this index.

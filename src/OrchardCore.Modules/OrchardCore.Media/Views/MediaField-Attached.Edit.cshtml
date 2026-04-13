@@ -1,6 +1,7 @@
 @model OrchardCore.Media.ViewModels.EditMediaFieldViewModel
 @using Microsoft.Extensions.Options
 @using OrchardCore
+@using OrchardCore.ContentFields
 @using OrchardCore.ContentManagement.Metadata.Models
 @using OrchardCore.Media
 @using OrchardCore.Media.Settings
@@ -13,7 +14,7 @@
 @{
     var settings = Model.PartFieldDefinition.GetSettings<MediaFieldSettings>();
     var mediaFieldId = Html.IdFor(m => m);
-    string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), $"Content Fields{Constants.ContextSeparator}{Model.PartFieldDefinition.PartDefinition.Name}"];
+    string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), DataLocalizationContext.ContentField(Model.PartFieldDefinition.PartDefinition.Name)];
 }
 
 <style asp-name="media" at="Head"></style>
@@ -39,7 +40,7 @@
                     <i class="fa-solid fa-upload"></i>
                 </label>
                 <a href="javascript:;" v-show="allowMediaText" v-on:click="showMediaTextModal" class="btn btn-secondary btn-sm" v-bind:class="{ disabled : !selectedMedia }"><i class="fa-regular fa-comment" aria-hidden="true"></i></a>
-                <a href="javascript:;" v-show="allowAnchors" v-on:click="showAnchorModal" class="btn btn-secondary btn-sm" v-bind:class="{ disabled : !selectedMedia || !selectedMedia.mime.startsWith('image') }"><i class="fa-solid fa-crosshairs" aria-hidden="true"></i></a>
+                <a href="javascript:;" v-show="allowAnchors" v-on:click="showAnchorModal" class="btn btn-secondary btn-sm" v-bind:class="{ disabled : !selectedMedia || !selectedMedia.mime?.startsWith('image') }"><i class="fa-solid fa-crosshairs" aria-hidden="true"></i></a>
                 <a href="javascript:;" v-on:click="removeSelected" class="btn btn-secondary btn-sm" v-bind:class="{ disabled : !selectedMedia }"><i class="fa-solid fa-trash" aria-hidden="true"></i></a>
             </div>
             <label class="selected-media-name form-label">
