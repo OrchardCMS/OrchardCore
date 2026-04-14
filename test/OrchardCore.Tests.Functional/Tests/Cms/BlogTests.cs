@@ -44,11 +44,16 @@ public sealed class BlogTests : CmsTestBase<BlogFixture>, IClassFixture<BlogFixt
             .FirstOrDefault(c => c.Name.EndsWith("-adminPreferences", StringComparison.Ordinal));
         Assert.NotNull(prefsCookie);
 
-        const int maxUrlDecodeAttempts = 3;
         var rawPrefs = prefsCookie.Value;
-        for (var i = 0; i < maxUrlDecodeAttempts && rawPrefs.Contains('%'); i++)
+        while (rawPrefs.Contains('%'))
         {
-            rawPrefs = Uri.UnescapeDataString(rawPrefs);
+            var decodedPrefs = Uri.UnescapeDataString(rawPrefs);
+            if (decodedPrefs == rawPrefs)
+            {
+                break;
+            }
+
+            rawPrefs = decodedPrefs;
         }
 
         var prefs = JsonNode.Parse(rawPrefs);
