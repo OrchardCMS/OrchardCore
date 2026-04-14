@@ -435,12 +435,34 @@ export const useFileUpload = (model: IFileUploadModel): void => {
           result.successful.forEach((file: any) => {
             const serverFiles = file.response?.body?.files;
             if (Array.isArray(serverFiles)) {
+              let anySuccess = false;
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               serverFiles.forEach((serverFile: any) => {
-                updates.set(`${serverFile.name}|${serverFile.directoryPath}`, serverFile);
+                if (serverFile.error) {
+                  // Server rejected this file (e.g. duplicate name). Show a warning and
+                  // do NOT add it to the updates map — otherwise the bad item (with
+                  // undefined url/filePath) would end up in fileItems and crash
+                  // buildMediaUrl when the gallery tries to render it.
+                  notify(
+                    new NotificationMessage({
+                      summary: t.ValidationError,
+                      detail: serverFile.error,
+                      severity: SeverityLevel.Warn,
+                    }),
+                  );
+                } else {
+                  updates.set(`${serverFile.name}|${serverFile.directoryPath}`, serverFile);
+                  anySuccess = true;
+                }
               });
+              if (anySuccess) {
+                emit("UploadSuccess", { name: file.name });
+              } else {
+                emit("UploadError", { name: file.name, errorMessage: "" });
+              }
+            } else {
+              emit("UploadSuccess", { name: file.name });
             }
-            emit("UploadSuccess", { name: file.name });
           });
           if (updates.size > 0) {
             setAssetsStore(assetsStore.value.map(a => {

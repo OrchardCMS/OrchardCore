@@ -40,7 +40,7 @@ export function buildMediaUrl(url: string, width?: number, height?: number): str
   const params: string[] = [];
   if (width) params.push(`width=${width}`);
   if (height) params.push(`height=${height}`);
-  if (params.length === 0) return url;
+  if (params.length === 0 || !url) return url ?? "";
   const sep = url.indexOf("?") === -1 ? "?" : "&";
   return `${url}${sep}${params.join("&")}`;
 }

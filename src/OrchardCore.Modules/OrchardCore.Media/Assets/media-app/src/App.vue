@@ -120,7 +120,7 @@
               </div>
             </div>
           </nav>
-          <div class="action-bar tw:py-3 tw:px-4 tw:flex tw:flex-wrap">
+          <div class="action-bar tw:py-3 tw:px-4 tw:flex tw:flex-wrap tw:gap-y-3">
             <div class="tw:mr-auto">
               <div v-show="canManage" class="tw:flex tw:items-center tw:flex-wrap">
                 <div class="ma-btn-group tw:mr-2">
@@ -150,7 +150,7 @@
                 </a>
               </div>
             </div>
-            <div class="tw:mt-3 tw:md:mt-0">
+            <div>
               <div class="file-filter">
                 <div class="ma-input-group">
                   <fa-icon icon="fa-solid fa-filter icon-inside-input"></fa-icon>
