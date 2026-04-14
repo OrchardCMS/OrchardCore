@@ -174,9 +174,34 @@ All nodes run the same compiled application. The only thing that changes per nod
     }
     ```
 
+Each copied root already contains its own copy of:
+
+- `appsettings.json`
+- `NLog.config`
+- all other host files from `src/OrchardCore.Cms.Web/`
+
+The copy command excludes only `bin`, `obj`, and `App_Data`.
+
+That means the demo uses two different configuration locations:
+
+| File location | Purpose in this demo |
+| --- | --- |
+| `<node>-root/appsettings.json` | Host-level configuration for that node. Edit this file for `Logging` and `OrchardCore_Clusters`. |
+| `<node>-root/NLog.config` | Shared logging target definition copied into each node root. You do not need to edit it for this demo. |
+| `<node>-root/App_Data/Sites/Default/appsettings.json` and `<node>-root/App_Data/Sites/<tenant>/appsettings.json` | Tenant state created by Orchard during setup. These files are copied later from the setup node, but they are not where you configure clustering for the demo. |
+
+Because every process starts with a different `--contentRoot`, each node reads the `appsettings.json` from its own copied root, not from the central source tree.
+
 ## 4. Make request routing visible in each node log
 
-In each copied `appsettings.json`, keep `Microsoft.Hosting.Lifetime` at `Information` and also enable request diagnostics:
+Before starting any long-running demo nodes, edit the root-level `appsettings.json` in each copied root:
+
+- `$OC_DEMO/edge-root/appsettings.json`
+- `$OC_DEMO/backend1-root/appsettings.json`
+- `$OC_DEMO/backend2-root/appsettings.json`
+- `$OC_DEMO/backend3-root/appsettings.json`
+
+In each of those files, keep `Microsoft.Hosting.Lifetime` at `Information` and also enable request diagnostics:
 
 ```json
 "Logging": {
@@ -190,9 +215,13 @@ In each copied `appsettings.json`, keep `Microsoft.Hosting.Lifetime` at `Informa
 
 This makes it easy to see which backend received `GET /alpha`, `GET /bravo`, and so on.
 
+The log files are then written under each node's own `App_Data/logs/` directory because each node has its own content root and its own `App_Data`.
+
 ## 5. Start a setup node with clustering disabled
 
 For the setup phase, start only the edge root with clustering disabled.
+
+At this point, `edge-root/appsettings.json` should either have no `OrchardCore_Clusters` section yet, or keep `"Enabled": false`.
 
 Use `http://127.0.0.1:55797` for the setup node:
 
@@ -264,6 +293,10 @@ After the root site and tenants are created, stop the setup node and fan out its
         Copy-Item (Join-Path $OC_DEMO "edge-root/App_Data/*") $target -Recurse -Force
     }
     ```
+
+This step copies only `App_Data`, which means tenant definitions, recipes, SQLite databases if you use them, media, and the tenant-scoped `App_Data/Sites/.../appsettings.json` files created during setup.
+
+It does **not** replace the root-level `appsettings.json` that was already copied into each node root in step 3.
 
 ## 7. Start the 4-node demo
 
@@ -347,7 +380,7 @@ If you open new terminals, rerun the variable setup from step 3 in each terminal
 
 ## 8. Initial layout: two clusters
 
-Set the edge node's `OrchardCore_Clusters` section to:
+Before starting or probing the full 4-node layout, edit only `edge-root/appsettings.json` and set its `OrchardCore_Clusters` section to:
 
 ```json
 "OrchardCore_Clusters": {
@@ -382,7 +415,12 @@ Set the edge node's `OrchardCore_Clusters` section to:
 }
 ```
 
-Backend nodes keep `Enabled` set to `false`.
+For this step:
+
+- `edge-root/appsettings.json` contains the full `OrchardCore_Clusters` section shown below with `"Enabled": true`
+- `backend1-root/appsettings.json`, `backend2-root/appsettings.json`, and `backend3-root/appsettings.json` keep clustering disabled
+
+The backend files can either omit the `OrchardCore_Clusters` section entirely or contain the same section with `"Enabled": false`. The important part is that only the edge node actively redistributes requests.
 
 Send one request per tenant through the edge:
 
@@ -419,7 +457,7 @@ backend3 (:55800) is unused
 
 ## 9. Add a third cluster live
 
-Now edit only the edge node's `appsettings.json` and change the cluster section to:
+Now edit only `edge-root/appsettings.json` and change the cluster section to:
 
 ```json
 "OrchardCore_Clusters": {
@@ -496,7 +534,7 @@ edge (:55797)
 
 ## 10. Remove cluster-b live
 
-Edit only the edge node's `appsettings.json` again:
+Edit only `edge-root/appsettings.json` again:
 
 ```json
 "OrchardCore_Clusters": {
@@ -569,14 +607,14 @@ backend2 (:55799) no longer receives tenant requests
 You can verify the behavior in three ways:
 
 1. Watch the backend terminals. Each request appears in the node that actually handled it.
-2. Confirm that editing only the edge node's `appsettings.json` changes placement after the next request.
+2. Confirm that editing only `edge-root/appsettings.json` changes placement after the next request.
 3. Compare the requests you see with the placement diagrams shown for each reconfiguration step.
 
 ## 12. Optional: demonstrate failover inside one cluster
 
 The previous steps showed tenant placement across clusters. This final step shows the other capability of the feature: the same tenant can be served by multiple backend nodes when its assigned cluster has multiple destinations.
 
-Edit only the edge node's `appsettings.json` and change the cluster section to:
+Edit only `edge-root/appsettings.json` and change the cluster section to:
 
 ```json
 "OrchardCore_Clusters": {
@@ -668,6 +706,7 @@ This demonstrates failover inside one cluster. It does not demonstrate automatic
 
 - This demo intentionally uses the same built application for every node.
 - The nodes still need separate content roots because `App_Data`, logs, and node-specific configuration must not be shared as one writable directory.
+- In this demo, all clustering changes are made in the root-level `appsettings.json` of the edge node. The tenant `App_Data/Sites/.../appsettings.json` files are setup output, not the place where the cluster map is edited.
 - For a production-style setup, nodes in the same cluster should share backing services such as the tenant database, data protection keys, and media storage, while still keeping node-local runtime files separate.
 - If your configuration provider does not support reload notifications, placement changes will not apply dynamically until the edge process restarts.
 
