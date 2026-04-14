@@ -45,14 +45,9 @@ public sealed class BlogTests : CmsTestBase<BlogFixture>, IClassFixture<BlogFixt
         Assert.NotNull(prefsCookie);
 
         var rawPrefs = prefsCookie.Value;
-        if (rawPrefs.Contains('%'))
+        for (var i = 0; i < 3 && rawPrefs.Contains('%'); i++)
         {
             rawPrefs = Uri.UnescapeDataString(rawPrefs);
-
-            if (rawPrefs.Contains('%'))
-            {
-                rawPrefs = Uri.UnescapeDataString(rawPrefs);
-            }
         }
 
         var prefs = JsonNode.Parse(rawPrefs);
