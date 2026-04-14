@@ -1,3 +1,5 @@
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using Microsoft.Playwright;
 using OrchardCore.Tests.Functional.Helpers;
 
@@ -5,6 +7,9 @@ namespace OrchardCore.Tests.Functional.Tests.Cms;
 
 public sealed class BlogTests : CmsTestBase<BlogFixture>, IClassFixture<BlogFixture>
 {
+    // The cookie may be URL-encoded more than once depending on the browser API path.
+    private const int MaxCookieDecodeAttempts = 3;
+
     public BlogTests(BlogFixture fixture) : base(fixture) { }
 
     [Fact]
@@ -33,6 +38,7 @@ public sealed class BlogTests : CmsTestBase<BlogFixture>, IClassFixture<BlogFixt
         await page.LoginAsync();
         await page.GotoAndAssertOkAsync("/Admin");
 
+        // Admin links persisted by TheAdmin include data-admin-hash and local admin hrefs.
         var adminLink = page.Locator("#adminMenu a[data-admin-hash][href^=\"/\"]").First;
         await adminLink.ClickAsync();
         await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
@@ -43,9 +49,29 @@ public sealed class BlogTests : CmsTestBase<BlogFixture>, IClassFixture<BlogFixt
             .FirstOrDefault(c => c.Name.EndsWith("-adminPreferences", StringComparison.Ordinal));
         Assert.NotNull(prefsCookie);
 
-        var decodedPrefs = Uri.UnescapeDataString(prefsCookie.Value);
-        Assert.Contains("selectedNavHash", decodedPrefs, StringComparison.Ordinal);
+        var prefs = ParseCookieJson(prefsCookie.Value);
+        var selectedNavHash = prefs?["selectedNavHash"]?.GetValue<string>();
+        Assert.False(string.IsNullOrWhiteSpace(selectedNavHash));
 
         await page.CloseAsync();
+    }
+
+    private static JsonNode ParseCookieJson(string value)
+    {
+        var raw = value;
+
+        for (var i = 0; i < MaxCookieDecodeAttempts; i++)
+        {
+            try
+            {
+                return JsonNode.Parse(raw);
+            }
+            catch (JsonException) when (raw.Contains('%'))
+            {
+                raw = Uri.UnescapeDataString(raw);
+            }
+        }
+
+        return JsonNode.Parse(raw);
     }
 }
