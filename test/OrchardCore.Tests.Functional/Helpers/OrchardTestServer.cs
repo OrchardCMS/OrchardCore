@@ -94,6 +94,7 @@ public sealed class OrchardTestServer : IAsyncDisposable
 
         builder.Services
             .AddOrchardCore()
+            .AddTenantFeatures("OrchardCore.HealthChecks")
             .AddMvc();
 
         ConfigureServices(builder, appDataPath, instanceId: null, loggerProvider);
@@ -104,7 +105,13 @@ public sealed class OrchardTestServer : IAsyncDisposable
 
         await app.StartAsync();
 
-        return new OrchardTestServer(app, GetListeningAddress(app), loggerProvider.Collector);
+        var address = GetListeningAddress(app);
+
+        // The OrchardCore tenant pipeline initializes lazily on the first request.
+        // Warm up the app now so tests don't race against pipeline initialization.
+        await WarmUpAsync(address);
+
+        return new OrchardTestServer(app, address, loggerProvider.Collector);
     }
 
     public void AssertNoLoggedIssues()
@@ -339,6 +346,38 @@ public sealed class OrchardTestServer : IAsyncDisposable
         return System.Text.RegularExpressions.Regex.Replace(
             connectionString, @"((?:Database|database)\s*=\s*)[^;]+", $"${{1}}{newDbName}",
             System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+    }
+
+    /// <summary>
+    /// Polls the health endpoint until the app returns a successful response, ensuring the
+    /// OrchardCore tenant pipeline has finished its lazy first-request initialization
+    /// before the Playwright tests begin.
+    /// </summary>
+    private static async Task WarmUpAsync(string baseAddress, string healthPath = "/health/live", int timeoutSeconds = 30)
+    {
+        using var client = new HttpClient();
+        var deadline = DateTime.UtcNow.AddSeconds(timeoutSeconds);
+
+        while (DateTime.UtcNow < deadline)
+        {
+            try
+            {
+                var response = await client.GetAsync($"{baseAddress}{healthPath}");
+                if (response.IsSuccessStatusCode)
+                {
+                    return;
+                }
+            }
+            catch
+            {
+                // Server not yet accepting connections — keep waiting.
+            }
+
+            await Task.Delay(500);
+        }
+
+        throw new TimeoutException(
+            $"The application at '{baseAddress}' did not respond successfully at '{healthPath}' within {timeoutSeconds} seconds.");
     }
 
     private static string GetListeningAddress(WebApplication app)

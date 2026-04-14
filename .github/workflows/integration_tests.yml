@@ -18,7 +18,53 @@ env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   DOTNET_CLI_TELEMETRY_OPTOUT: true
 
+permissions:
+  contents: read
+
 jobs:
+  test_s3:
+    name: Integration Tests - S3
+    if: github.event_name == 'workflow_dispatch' ||
+        github.event_name == 'push' ||
+        github.event.review.state == 'APPROVED' ||
+        github.event.review.state == 'CHANGES_REQUESTED'
+    runs-on: ubuntu-24.04
+    steps:
+    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+    - uses: ./.github/actions/setup-dotnet
+    - name: Build
+      run: |
+        dotnet build ./test/OrchardCore.Tests.Integration/OrchardCore.Tests.Integration.csproj -c Release /p:NuGetAudit=false
+    - name: Cache S3Mock Docker image
+      id: cache-s3mock
+      uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+      with:
+        path: /tmp/s3mock-image.tar
+        key: docker-s3mock-latest
+    - name: Load or pull S3Mock image
+      run: |
+        if [ -f /tmp/s3mock-image.tar ]; then
+          docker load -i /tmp/s3mock-image.tar
+        else
+          docker pull adobe/s3mock
+          docker save adobe/s3mock -o /tmp/s3mock-image.tar
+        fi
+    - name: Start S3Mock
+      run: |
+        docker run -d --name s3mock -p 9090:9090 adobe/s3mock
+        echo "Waiting for S3Mock to be ready..."
+        for i in $(seq 1 30); do
+          if curl -sf http://127.0.0.1:9090/ > /dev/null 2>&1; then
+            echo "S3Mock is ready."
+            break
+          fi
+          sleep 1
+        done
+    - name: S3 Integration Tests
+      env:
+        S3_EMULATOR_URL: http://127.0.0.1:9090
+      run: |
+        dotnet test --project ./test/OrchardCore.Tests.Integration/OrchardCore.Tests.Integration.csproj -c Release --no-build
   test_azure_blob:
     name: Integration Tests - Azure Blob Storage (Azurite)
     if: github.event_name == 'workflow_dispatch' ||
@@ -41,3 +87,4 @@ jobs:
         AZURITE_DFS_ENDPOINT: "http://127.0.0.1:10004/devstoreaccount1"
       run: |
         dotnet test ./test/OrchardCore.Tests.Integration/OrchardCore.Tests.Integration.csproj -c Release --no-build
+
