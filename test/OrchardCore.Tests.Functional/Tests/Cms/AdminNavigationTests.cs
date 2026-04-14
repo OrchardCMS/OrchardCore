@@ -13,7 +13,7 @@ public sealed class AdminNavigationTests : CmsTestBase<BlogFixture>, IClassFixtu
     public AdminNavigationTests(BlogFixture fixture) : base(fixture) { }
 
     [Fact]
-    public async Task BlogAdminNavigationShouldNotUseAdminQueryParameter()
+    public async Task AdminNavigationShouldNotUseAdminQueryParameter()
     {
         var page = await Fixture.CreatePageAsync();
         await page.LoginAsync();
