@@ -10,13 +10,14 @@
         Model.Metadata.Alternates.Add("NavigationItemText_Id__" + Model.Id);
     }
 
-    TagBuilder tag = Tag(Model, "a");
+    var isToggleOnlyItem = Model.HasItems && (Model.Href == null || Model.Href.ToString() == "#");
+    TagBuilder tag = Tag(Model, isToggleOnlyItem ? "button" : "a");
     tag.Attributes["id"] = null;
     tag.Attributes["data-admin-hash"] = Model.Hash;
 
-    if (Model.Href == null || Model.Href.ToString() == "#")
+    if (isToggleOnlyItem)
     {
-        tag.Attributes["href"] = "javascript:void(0)";
+        tag.Attributes["type"] = "button";
     }
     else
     {

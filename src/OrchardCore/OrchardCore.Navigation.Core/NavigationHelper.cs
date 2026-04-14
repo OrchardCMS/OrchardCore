@@ -1,5 +1,5 @@
 using System.Text.Json.Nodes;
-using System.Web;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using OrchardCore.Environment.Shell.Scope;
 
@@ -7,6 +7,9 @@ namespace OrchardCore.Navigation;
 
 public static class NavigationHelper
 {
+    private const string SelectedNavHashCacheKey = "OrchardCore.Navigation.SelectedNavHash";
+    private static readonly object SelectedNavHashMissing = new();
+
     public static bool UseLegacyFormat()
     {
         return AppContext.TryGetSwitch(NavigationConstants.LegacyAdminMenuNavigationSwitchKey, out var enable) && enable;
@@ -78,7 +81,7 @@ public static class NavigationHelper
 
         menuItemShape.Id = menuItem.Id;
 
-        MarkAsSelectedIfMatchesQueryOrCookie(menuItem, menuItemShape, viewContext);
+        MarkAsSelectedIfMatchesPathOrPreferences(menuItem, menuItemShape, viewContext);
 
         foreach (var className in menuItem.Classes)
         {
@@ -88,7 +91,7 @@ public static class NavigationHelper
         return menuItemShape;
     }
 
-    private static void MarkAsSelectedIfMatchesQueryOrCookie(MenuItem menuItem, dynamic menuItemShape, ViewContext viewContext)
+    private static void MarkAsSelectedIfMatchesPathOrPreferences(MenuItem menuItem, dynamic menuItemShape, ViewContext viewContext)
     {
         if (string.IsNullOrEmpty(menuItem.Href) || menuItem.Href[0] != '/')
         {
@@ -162,11 +165,17 @@ public static class NavigationHelper
     /// </summary>
     private static string GetSelectedNavHashFromPrefs(ViewContext viewContext)
     {
+        if (viewContext.HttpContext.Items.TryGetValue(SelectedNavHashCacheKey, out var cached))
+        {
+            return ReferenceEquals(cached, SelectedNavHashMissing) ? null : cached as string;
+        }
+
         var key = $"{ShellScope.Context.Settings.Name}-adminPreferences";
         var raw = viewContext.HttpContext.Request.Cookies[key];
 
         if (string.IsNullOrEmpty(raw))
         {
+            viewContext.HttpContext.Items[SelectedNavHashCacheKey] = SelectedNavHashMissing;
             return null;
         }
 
@@ -174,10 +183,13 @@ public static class NavigationHelper
         {
             var json = Uri.UnescapeDataString(raw);
             var node = JsonNode.Parse(json);
-            return node?["selectedNavHash"]?.GetValue<string>();
+            var selectedNavHash = node?["selectedNavHash"]?.GetValue<string>();
+            viewContext.HttpContext.Items[SelectedNavHashCacheKey] = selectedNavHash ?? SelectedNavHashMissing;
+            return selectedNavHash;
         }
         catch
         {
+            viewContext.HttpContext.Items[SelectedNavHashCacheKey] = SelectedNavHashMissing;
             return null;
         }
     }
@@ -206,7 +218,15 @@ public static class NavigationHelper
 
         prefs["selectedNavHash"] = hash;
 
-        viewContext.HttpContext.Response.Cookies.Append(key, Uri.EscapeDataString(prefs.ToJsonString()));
+        var options = new CookieOptions
+        {
+            Path = "/",
+            Expires = DateTimeOffset.UtcNow.AddDays(360),
+            MaxAge = TimeSpan.FromDays(360),
+        };
+
+        viewContext.HttpContext.Response.Cookies.Append(key, Uri.EscapeDataString(prefs.ToJsonString()), options);
+        viewContext.HttpContext.Items[SelectedNavHashCacheKey] = hash ?? SelectedNavHashMissing;
     }
 
     /// <summary>
