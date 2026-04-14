@@ -49,14 +49,14 @@ public sealed class BlogTests : CmsTestBase<BlogFixture>, IClassFixture<BlogFixt
             .FirstOrDefault(c => c.Name.EndsWith("-adminPreferences", StringComparison.Ordinal));
         Assert.NotNull(prefsCookie);
 
-        var prefs = ParseCookieJson(prefsCookie.Value);
+        var prefs = ParseAndDecodeCookieJson(prefsCookie.Value);
         var selectedNavHash = prefs?["selectedNavHash"]?.GetValue<string>();
         Assert.False(string.IsNullOrWhiteSpace(selectedNavHash));
 
         await page.CloseAsync();
     }
 
-    private static JsonNode ParseCookieJson(string value)
+    private static JsonNode ParseAndDecodeCookieJson(string value)
     {
         var raw = value;
 
@@ -66,9 +66,15 @@ public sealed class BlogTests : CmsTestBase<BlogFixture>, IClassFixture<BlogFixt
             {
                 return JsonNode.Parse(raw);
             }
-            catch (JsonException) when (raw.Contains('%'))
+            catch (JsonException)
             {
-                raw = Uri.UnescapeDataString(raw);
+                var decoded = Uri.UnescapeDataString(raw);
+                if (decoded == raw)
+                {
+                    break;
+                }
+
+                raw = decoded;
             }
         }
 
