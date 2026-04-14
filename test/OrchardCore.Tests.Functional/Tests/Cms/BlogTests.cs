@@ -44,8 +44,9 @@ public sealed class BlogTests : CmsTestBase<BlogFixture>, IClassFixture<BlogFixt
             .FirstOrDefault(c => c.Name.EndsWith("-adminPreferences", StringComparison.Ordinal));
         Assert.NotNull(prefsCookie);
 
+        const int maxUrlDecodeAttempts = 3;
         var rawPrefs = prefsCookie.Value;
-        for (var i = 0; i < 3 && rawPrefs.Contains('%'); i++)
+        for (var i = 0; i < maxUrlDecodeAttempts && rawPrefs.Contains('%'); i++)
         {
             rawPrefs = Uri.UnescapeDataString(rawPrefs);
         }
