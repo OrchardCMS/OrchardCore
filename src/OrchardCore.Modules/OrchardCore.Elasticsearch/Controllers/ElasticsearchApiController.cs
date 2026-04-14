@@ -1,0 +1,108 @@
+using System.Text.Json;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
+using OrchardCore.Entities;
+using OrchardCore.Queries;
+using OrchardCore.Elasticsearch.Core.Services;
+using OrchardCore.Elasticsearch.Models;
+using OrchardCore.Elasticsearch.ViewModels;
+
+namespace OrchardCore.Elasticsearch;
+
+[Route("api/elasticsearch")]
+[ApiController]
+[Authorize(AuthenticationSchemes = "Api"), IgnoreAntiforgeryToken, AllowAnonymous]
+public sealed class ElasticsearchApiController : ControllerBase
+{
+    private readonly IAuthorizationService _authorizationService;
+    private readonly IQueryManager _queryManager;
+
+    public ElasticsearchApiController(
+        IAuthorizationService authorizationService,
+        IQueryManager queryManager)
+    {
+        _authorizationService = authorizationService;
+        _queryManager = queryManager;
+    }
+
+    [HttpGet]
+    [Route("content")]
+    [EndpointName("ApiGetElasticsearchContent")]
+    public async Task<IActionResult> Content([FromQuery] ElasticApiQueryViewModel queryModel)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, ElasticsearchPermissions.QueryElasticApi))
+        {
+            return this.ChallengeOrForbid("Api");
+        }
+
+        var result = await ElasticQueryApiAsync(queryModel, returnContentItems: true);
+
+        return new ObjectResult(result);
+    }
+
+    [HttpPost]
+    [Route("content")]
+    [EndpointName("ApiPostElasticsearchContent")]
+    public async Task<IActionResult> ContentPost(ElasticApiQueryViewModel queryModel)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, ElasticsearchPermissions.QueryElasticApi))
+        {
+            return this.ChallengeOrForbid();
+        }
+
+        var result = await ElasticQueryApiAsync(queryModel, returnContentItems: true);
+
+        return new ObjectResult(result);
+    }
+
+    [HttpGet]
+    [Route("documents")]
+    [EndpointName("ApiGetElasticsearchDocuments")]
+    public async Task<IActionResult> Documents([FromQuery] ElasticApiQueryViewModel queryModel)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, ElasticsearchPermissions.QueryElasticApi))
+        {
+            return this.ChallengeOrForbid();
+        }
+
+        var result = await ElasticQueryApiAsync(queryModel);
+
+        return new ObjectResult(result);
+    }
+
+    [HttpPost]
+    [Route("documents")]
+    [EndpointName("ApiPostElasticsearchDocuments")]
+    public async Task<IActionResult> DocumentsPost(ElasticApiQueryViewModel queryModel)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, ElasticsearchPermissions.QueryElasticApi))
+        {
+            return this.ChallengeOrForbid("Api");
+        }
+
+        var result = await ElasticQueryApiAsync(queryModel);
+
+        return new ObjectResult(result);
+    }
+
+    private async Task<IQueryResults> ElasticQueryApiAsync(ElasticApiQueryViewModel queryModel, bool returnContentItems = false)
+    {
+        var elasticQuery = await _queryManager.NewAsync(ElasticsearchQuerySource.SourceName);
+        elasticQuery.ReturnContentItems = returnContentItems;
+
+        elasticQuery.Put(new ElasticsearchQueryMetadata
+        {
+            Index = queryModel.IndexName,
+            Template = queryModel.Query,
+        });
+
+        var queryParameters = queryModel.Parameters != null
+            ? JConvert.DeserializeObject<Dictionary<string, object>>(queryModel.Parameters)
+            : [];
+
+        var result = await _queryManager.ExecuteQueryAsync(elasticQuery, queryParameters);
+
+        return result;
+    }
+}
