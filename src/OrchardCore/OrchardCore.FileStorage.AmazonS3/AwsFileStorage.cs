@@ -68,7 +68,7 @@ public class AwsFileStore : IFileStore
             FetchOwner = false,
         });
 
-        return awsDirectory.S3Objects.Count > 0 ? new AwsDirectory(path, _clock.UtcNow) : null;
+        return awsDirectory.S3Objects?.Count > 0 ? new AwsDirectory(path, _clock.UtcNow) : null;
     }
 
     public async IAsyncEnumerable<IFileStoreEntry> GetDirectoryContentAsync(string path = null,
@@ -84,7 +84,7 @@ public class AwsFileStore : IFileStore
             FetchOwner = false,
         });
 
-        foreach (var file in listObjectsResponse.S3Objects)
+        foreach (var file in listObjectsResponse.S3Objects ?? [])
         {
             var itemName = Path.GetFileName(WebUtility.UrlDecode(file.Key));
 
@@ -99,7 +99,7 @@ public class AwsFileStore : IFileStore
             }
         }
 
-        foreach (var awsFolderPath in listObjectsResponse.CommonPrefixes)
+        foreach (var awsFolderPath in listObjectsResponse.CommonPrefixes ?? [])
         {
             var folderPath = awsFolderPath;
             if (!string.IsNullOrEmpty(_basePrefix))
@@ -169,7 +169,7 @@ public class AwsFileStore : IFileStore
             Prefix = NormalizePrefix(this.Combine(_basePrefix, path)),
         });
 
-        if (listObjectsResponse.S3Objects.Count > 0)
+        if (listObjectsResponse.S3Objects?.Count > 0)
         {
             var deleteObjectsRequest = new DeleteObjectsRequest
             {
@@ -223,7 +223,7 @@ public class AwsFileStore : IFileStore
                 Prefix = this.Combine(_basePrefix, dstPath),
             });
 
-            if (listObjects.S3Objects.Count > 0)
+            if (listObjects.S3Objects?.Count > 0)
             {
                 throw new ExistsFileStoreException($"Cannot copy file '{srcPath}' because a file already exists in the new path '{dstPath}'.");
             }
@@ -282,7 +282,7 @@ public class AwsFileStore : IFileStore
                     Prefix = this.Combine(_basePrefix, path),
                 });
 
-                if (listObjects.S3Objects.Count > 0)
+                if (listObjects.S3Objects?.Count > 0)
                 {
                     throw new ExistsFileStoreException($"Cannot create file '{path}' because it already exists.");
                 }

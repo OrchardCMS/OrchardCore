@@ -1,4 +1,5 @@
 using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentTypes;
 using OrchardCore.Localization.Data;
 
 namespace OrchardCore.Contents.Services;
@@ -7,8 +8,6 @@ public class ContentTypeDataLocalizationProvider : ILocalizationDataProvider
 {
     private readonly IContentDefinitionManager _contentDefinitionManager;
 
-    private static readonly string _contentTypesContext = "Content Types";
-
     public ContentTypeDataLocalizationProvider(IContentDefinitionManager contentDefinitionManager)
     {
         _contentDefinitionManager = contentDefinitionManager;
@@ -16,5 +15,5 @@ public class ContentTypeDataLocalizationProvider : ILocalizationDataProvider
 
     public async Task<IEnumerable<DataLocalizedString>> GetDescriptorsAsync()
         => (await _contentDefinitionManager.ListTypeDefinitionsAsync())
-            .Select(t => new DataLocalizedString(_contentTypesContext, t.DisplayName, string.Empty));
+            .Select(t => new DataLocalizedString(DataLocalizationContext.ContentType, t.DisplayName, string.Empty));
 }

@@ -13,6 +13,7 @@
     var mediaAppLocalizations = Orchard.GetJSLocalizations("media-app");
     var translationsJson = System.Text.Json.JsonSerializer.Serialize(jsLocalizations);
     var mediaAppTranslationsJson = System.Text.Json.JsonSerializer.Serialize(mediaAppLocalizations);
+    string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), $"Content Fields{Constants.ContextSeparator}{Model.PartFieldDefinition.PartDefinition.Name}"];
 }
 
 <style asp-name="media" at="Head"></style>

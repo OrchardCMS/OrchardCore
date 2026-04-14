@@ -2,7 +2,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using OrchardCore.ContentManagement;
 using OrchardCore.Html.Models;
-using OrchardCore.Search.Lucene;
+using OrchardCore.Lucene;
 using OrchardCore.Tests.Apis.Context;
 
 namespace OrchardCore.Tests.Apis.Lucene;
