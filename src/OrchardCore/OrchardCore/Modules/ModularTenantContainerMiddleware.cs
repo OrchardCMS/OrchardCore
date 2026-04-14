@@ -43,9 +43,18 @@ public class ModularTenantContainerMiddleware
 
             if (httpContext.AsClustersProxy(clustersOptions))
             {
+                var clusterId = shellSettings.GetClusterId(clustersOptions);
+
+                if (clusterId is null)
+                {
+                    httpContext.Response.StatusCode = StatusCodes.Status503ServiceUnavailable;
+                    await httpContext.Response.WriteAsync("No cluster is configured for the requested tenant.");
+                    return;
+                }
+
                 httpContext.Features.Set(new ClusterFeature
                 {
-                    ClusterId = shellSettings.GetClusterId(clustersOptions),
+                    ClusterId = clusterId,
                 });
 
                 await _next(httpContext);
