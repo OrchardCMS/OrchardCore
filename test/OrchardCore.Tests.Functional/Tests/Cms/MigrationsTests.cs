@@ -11,7 +11,7 @@ public sealed class MigrationsTests : CmsTestBase<MigrationsFixture>, IClassFixt
     public async Task DisplaysTheHomePageOfTheMigrationsRecipe()
     {
         var page = await Fixture.CreatePageAsync();
-        await page.GotoAsync("/");
+        await page.GotoAndAssertOkAsync("/");
         await Assertions.Expect(page.GetByText("Testing features having database migrations")).ToBeVisibleAsync();
         await page.CloseAsync();
     }
@@ -21,7 +21,7 @@ public sealed class MigrationsTests : CmsTestBase<MigrationsFixture>, IClassFixt
     {
         var page = await Fixture.CreatePageAsync();
         await page.LoginAsync();
-        await page.GotoAsync("/Admin");
+        await page.GotoAndAssertOkAsync("/Admin");
         await Assertions.Expect(page.Locator(".menu-admin")).ToHaveAttributeAsync("id", "adminMenu");
         await page.CloseAsync();
     }
