@@ -11,7 +11,7 @@ public sealed class AgencyTests : CmsTestBase<AgencyFixture>, IClassFixture<Agen
     public async Task DisplaysTheHomePageOfTheAgencyTheme()
     {
         var page = await Fixture.CreatePageAsync();
-        await page.GotoAsync("/");
+        await page.GotoAndAssertOkAsync("/");
         await Assertions.Expect(page.Locator("#services")).ToContainTextAsync("Lorem ipsum dolor sit amet consectetur");
         await page.CloseAsync();
     }
@@ -21,7 +21,7 @@ public sealed class AgencyTests : CmsTestBase<AgencyFixture>, IClassFixture<Agen
     {
         var page = await Fixture.CreatePageAsync();
         await page.LoginAsync();
-        await page.GotoAsync("/Admin");
+        await page.GotoAndAssertOkAsync("/Admin");
         await Assertions.Expect(page.Locator(".menu-admin")).ToHaveAttributeAsync("id", "adminMenu");
         await page.CloseAsync();
     }

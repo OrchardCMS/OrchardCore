@@ -1,6 +1,7 @@
 @model OrchardCore.Taxonomies.ViewModels.EditTagTaxonomyFieldViewModel
 @using OrchardCore.Taxonomies.Settings
 @using OrchardCore.ContentManagement.Metadata.Models
+@using OrchardCore.ContentFields
 @using Microsoft.AspNetCore.Authorization
 @using OrchardCore.Mvc.Utilities
 @using OrchardCore
@@ -24,7 +25,7 @@
     }
 
     var vueElementId = $"TaxonomyField-Tags_{partName}_{fieldName}_{Guid.NewGuid().ToString("n")}";
-    string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), $"Content Fields{Constants.ContextSeparator}{Model.PartFieldDefinition.PartDefinition.Name}"];
+    string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), DataLocalizationContext.ContentField(Model.PartFieldDefinition.PartDefinition.Name)];
 }
 
 <script asp-src="~/OrchardCore.Taxonomies/Scripts/tags-editor.min.js" debug-src="~/OrchardCore.Taxonomies/Scripts/tags-editor.js" asp-name="tags-editor" at="Foot" depends-on="vuejs:2, vue-multiselect:2"></script>
