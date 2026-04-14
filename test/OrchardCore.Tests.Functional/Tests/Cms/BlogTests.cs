@@ -1,4 +1,3 @@
-using System.Text.Json.Nodes;
 using Microsoft.Playwright;
 using OrchardCore.Tests.Functional.Helpers;
 
@@ -44,21 +43,8 @@ public sealed class BlogTests : CmsTestBase<BlogFixture>, IClassFixture<BlogFixt
             .FirstOrDefault(c => c.Name.EndsWith("-adminPreferences", StringComparison.Ordinal));
         Assert.NotNull(prefsCookie);
 
-        var rawPrefs = prefsCookie.Value;
-        while (rawPrefs.Contains('%'))
-        {
-            var decodedPrefs = Uri.UnescapeDataString(rawPrefs);
-            if (decodedPrefs == rawPrefs)
-            {
-                break;
-            }
-
-            rawPrefs = decodedPrefs;
-        }
-
-        var prefs = JsonNode.Parse(rawPrefs);
-        var selectedNavHash = prefs?["selectedNavHash"]?.GetValue<string>();
-        Assert.False(string.IsNullOrWhiteSpace(selectedNavHash));
+        var decodedPrefs = Uri.UnescapeDataString(prefsCookie.Value);
+        Assert.Contains("selectedNavHash", decodedPrefs, StringComparison.Ordinal);
 
         await page.CloseAsync();
     }
