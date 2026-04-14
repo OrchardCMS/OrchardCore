@@ -9,6 +9,14 @@ import { getAdminPreferences, setAdminPreferences } from '../adminPreferences';
 // changes made by the user, whereas the head-bundle observer *restores* saved state
 // before the first paint.
 (function () {
+
+    const secondActionBar = document.querySelector<HTMLElement>('.second-action-bar');
+    if (secondActionBar) {
+        new ResizeObserver(() => {
+            document.documentElement.style.setProperty('--oc-second-action-bar-height', secondActionBar.offsetHeight + 'px');
+        }).observe(secondActionBar);
+    }
+
     const actionBar = document.querySelector<HTMLElement>('.action-bar');
     if (!actionBar) return;
 

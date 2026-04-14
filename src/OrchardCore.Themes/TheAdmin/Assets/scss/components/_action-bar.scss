@@ -3,13 +3,18 @@
     z-index: var(--oc-action-bar-zindex);
 }
 
+.second-action-bar {
+    z-index: var(--oc-second-action-bar-zindex);
+}
+
 @include media-breakpoint-down(md) {
-    .action-bar {
+
+    .action-bar,
+    .second-action-bar {
         position: fixed !important;
         left: var(--oc-start-navigation-width);
         right: 0;
         top: auto;
-        bottom: 0;
         border-radius: 0 !important;
         border-left: none !important;
         border-right: none !important;
@@ -84,7 +89,6 @@
         &:not(:has(.action-bar-collapsible)) .action-bar-toggle {
             display: none;
         }
-
         // Suppress Bootstrap's collapse height animation on individual action elements
         // so that the :has()-driven instant show/hide is not interrupted by a transition.
         .action-bar-collapsible.collapsing {
@@ -94,23 +98,28 @@
         }
     }
 
+    .action-bar {
+        bottom: var(--oc-second-action-bar-height);
+    }
+
+    .second-action-bar {
+        bottom: 0;
+    }
+
     @include media-breakpoint-down(sm) {
-        .action-bar {
+        .action-bar,
+        .second-action-bar {
             left: var(--oc-start-navigation-width-when-compact, 48);
             transition: left 0.5s ease-in-out;
         }
     }
 
-    .left-sidebar-compact .action-bar {
+    .left-sidebar-compact .action-bar,
+    .left-sidebar-compact .second-action-bar {
         left: var(--oc-start-navigation-width-when-compact, 48);
     }
 
-    div:has(> .action-bar),
-    form:has(> .action-bar) {
-        padding-bottom: calc(var(--oc-action-bar-height) + 0.5rem);
+    .action-bar-content {
+        padding-bottom: calc(var(--oc-action-bar-height) + var(--oc-second-action-bar-height) + 0.5rem);
     }
-}
-
-.second-action-bar {
-    z-index: var(--oc-second-action-bar-zindex);
 }

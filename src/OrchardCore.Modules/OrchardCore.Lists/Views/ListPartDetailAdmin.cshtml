@@ -24,21 +24,25 @@ else
 
     @if (Model.ContentItems.Any())
     {
-        <ul class="list-group" id="ci-sortable">
-            @foreach (var contentItem in Model.ContentItems)
-            {
-                var contentItemSummary = (dynamic)await ContentItemDisplayManager.BuildDisplayAsync(contentItem, Model.Context.Updater, "SummaryAdmin", Model.Context.GroupId);
-                if (enableOrdering)
+        <div class="action-bar-content">
+            <ul class="list-group" id="ci-sortable">
+                @foreach (var contentItem in Model.ContentItems)
                 {
-                    await contentItemSummary.Selectors.AddAsync(await New.ListPart_Sortable());
+                    var contentItemSummary = (dynamic)await ContentItemDisplayManager.BuildDisplayAsync(contentItem, Model.Context.Updater, "SummaryAdmin", Model.Context.GroupId);
+                    if (enableOrdering)
+                    {
+                        await contentItemSummary.Selectors.AddAsync(await New.ListPart_Sortable());
+                    }
+                    <li class="list-group-item list-group-item-action">
+                        @await DisplayAsync(contentItemSummary)
+                    </li>
                 }
-                <li class="list-group-item list-group-item-action">
-                    @await DisplayAsync(contentItemSummary)
-                </li>
-            }
-        </ul>
+            </ul>
 
-        @await DisplayAsync(Model.Pager)
+            @await DisplayAsync(Model.Pager)
+
+        </div>
+
         @if (enableOrdering)
         {
             <div id="ordering-url" class="d-none" data-url="@Url.Action("UpdateContentItemOrders", "Order", new { area = "OrchardCore.Lists" })" />
