@@ -436,6 +436,7 @@ export const useFileUpload = (model: IFileUploadModel): void => {
             const serverFiles = file.response?.body?.files;
             if (Array.isArray(serverFiles)) {
               let anySuccess = false;
+              let serverError = "";
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               serverFiles.forEach((serverFile: any) => {
                 if (serverFile.error) {
@@ -443,6 +444,7 @@ export const useFileUpload = (model: IFileUploadModel): void => {
                   // do NOT add it to the updates map — otherwise the bad item (with
                   // undefined url/filePath) would end up in fileItems and crash
                   // buildMediaUrl when the gallery tries to render it.
+                  serverError = serverFile.error;
                   notify(
                     new NotificationMessage({
                       summary: t.ValidationError,
@@ -458,7 +460,7 @@ export const useFileUpload = (model: IFileUploadModel): void => {
               if (anySuccess) {
                 emit("UploadSuccess", { name: file.name });
               } else {
-                emit("UploadError", { name: file.name, errorMessage: "" });
+                emit("UploadError", { name: file.name, errorMessage: serverError || t.Error });
               }
             } else {
               emit("UploadSuccess", { name: file.name });
