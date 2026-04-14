@@ -156,16 +156,13 @@ const loadChildrenFromApi = async (folder: IHFileLibraryItemDto) => {
 };
 
 // When a new folder is created, expand the parent to show it.
+// The tree was already updated in-place by createDirectory, so we keep the
+// parent in loadedFolders — otherwise a subsequent DirChildrenLoaded event
+// would overwrite our local children list with a potentially stale server
+// response (e.g. server cache not yet including the just-created folder).
 on("DirAddReq", (element: { selectedDirectory: IFileLibraryItemDto; data: IFileLibraryItemDto; }) => {
   const parentPath = element.selectedDirectory.directoryPath;
   expandFolder(parentPath);
-
-  // Invalidate the cache so next toggle re-fetches children.
-  if (loadedFolders.value.has(parentPath)) {
-    const next = new Set(loadedFolders.value);
-    next.delete(parentPath);
-    loadedFolders.value = next;
-  }
 });
 
 // Open ancestor folders when a directory is selected (e.g., via breadcrumb or URL).

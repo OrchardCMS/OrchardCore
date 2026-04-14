@@ -130,9 +130,11 @@ export function useFileLibraryManager() {
 
     if (canManage.value) {
       try {
-        const response = await fileDataService.createFolder(selectedDirectory.value.directoryPath, directory.name);
-        // Add the new folder as a child of the current directory in the tree.
-        const parentPath = selectedDirectory.value.directoryPath;
+        // directory.directoryPath is the PARENT path (set by useFolderModal), which
+        // may be the folder whose ellipsis menu was clicked rather than the
+        // currently selected one.
+        const parentPath = directory.directoryPath;
+        const response = await fileDataService.createFolder(parentPath, directory.name);
         const parentNode = findNodeByPath(hierarchicalDirectories.value, parentPath);
         if (parentNode) {
           const newChild: IHFileLibraryItemDto = {
@@ -157,7 +159,7 @@ export function useFileLibraryManager() {
           setHierarchicalData({ ...hierarchicalDirectories.value });
         }
         setAssetsStore([...assetsStore.value, response]);
-        emit("DirAddReq", { selectedDirectory: selectedDirectory.value, data: response });
+        emit("DirAddReq", { selectedDirectory: { ...selectedDirectory.value, directoryPath: parentPath } as IFileLibraryItemDto, data: response });
       } catch (error) {
         notify(error);
       }

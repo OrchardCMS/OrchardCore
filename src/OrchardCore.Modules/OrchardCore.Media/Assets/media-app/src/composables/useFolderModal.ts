@@ -42,7 +42,10 @@ export function useFolderModal() {
     uVfm.close(getFolderModalName(modalName, confirmAction.folder));
 
     if (confirmAction.action === FolderAction.Create && confirmAction.inputValue) {
-      onCreateFolder({ name: confirmAction.inputValue, directoryPath: confirmAction.inputValue, isDirectory: true, filePath: "" } as IFileLibraryItemDto);
+      // directoryPath carries the PARENT folder path — createDirectory uses it to
+      // place the new folder as a child of the folder whose menu was clicked,
+      // not the currently selected folder.
+      onCreateFolder({ name: confirmAction.inputValue, directoryPath: confirmAction.folder.directoryPath, isDirectory: true, filePath: "" } as IFileLibraryItemDto);
     } else if (confirmAction.action === FolderAction.Delete) {
       onDeleteFolder(confirmAction.folder);
     }
