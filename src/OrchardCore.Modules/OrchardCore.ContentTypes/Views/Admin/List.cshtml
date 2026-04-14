@@ -1,4 +1,5 @@
 @model ListContentTypesViewModel
+@using OrchardCore.ContentTypes
 @using OrchardCore.Localization.Data
 @inject IDataLocalizer D
 
@@ -23,7 +24,7 @@
 <ul id="list-items" class="list-group">
     @foreach (var type in Model.Types)
     {
-        <li class="list-group-item" data-filter-value="@D[type.DisplayName, "Content Types"]" data-type-name="@type.Name">
+        <li class="list-group-item" data-filter-value="@D[type.DisplayName, DataLocalizationContext.ContentType]" data-type-name="@type.Name">
             @Html.DisplayFor(m => type)
         </li>
     }

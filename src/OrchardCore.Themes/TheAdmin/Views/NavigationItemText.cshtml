@@ -1,5 +1,6 @@
 @using System.Linq
 @using OrchardCore
+@using OrchardCore.AdminMenu
 @using OrchardCore.Localization.Data
 
 @inject IDataLocalizer D
@@ -13,9 +14,7 @@
                     .Where(c => c.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
                     .Select(c => c.Substring(prefix.Length));
 
-    var context = string.Concat(OrchardCoreConstants.DataLocalizationContext.AdminMenu,
-        OrchardCore.Localization.Data.Constants.ContextSeparator,
-        Model.Item.MenuName);
+    var context = OrchardCore.AdminMenu.DataLocalizationContext.AdminMenu(Model.Item.MenuName);
 }
 
 @if (iconClasses.Any())

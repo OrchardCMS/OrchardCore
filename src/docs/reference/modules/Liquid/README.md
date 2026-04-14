@@ -70,6 +70,22 @@ Blog
 
 ## String Filters
 
+### `transliterate`
+Convert Unicode text (e.g. Greek, Cyrillic, Arabic, Chinese, etc.) into its closest ASCII/Latin representation using the <https://github.com/anyascii/anyascii> library.
+
+Input
+
+```liquid
+{{ "Ελληνικά" | transliterate }}
+```
+
+Output
+
+```text
+Ellinika
+```
+
+
 ### `slugify`
 
 Convert a text into a string that can be used in a URL.
@@ -85,6 +101,23 @@ Output
 ```text
 this-is-some-text
 ```
+
+There is an option to transliterate (by default `true`) which first transliterates and slugifies afterwards:
+
+```liquid
+{{ "Ελληνικά" | slugify }}
+```
+or 
+```liquid
+{{ "Ελληνικά" | slugify: transliterate: true}}
+```
+
+Output
+
+```text
+ellinika
+```
+
 
 ### `local`
 
@@ -298,6 +331,41 @@ Example:
 {% for k in jsonObject %}
   {{k["key"]}} {{k["value"]}}
 {% endfor %}
+```
+
+## Data Protection Filters
+
+### `encrypt`
+
+Encrypts a string using the ASP.NET Core Data Protection API and returns a Base64-encoded ciphertext.
+
+Input
+
+```liquid
+{{ "my-secret-value" | encrypt }}
+```
+
+Output
+
+```text
+CfDJ8...  (Base64-encoded ciphertext)
+```
+
+### `decrypt`
+
+Decrypts a Base64-encoded string previously encrypted with the `encrypt` filter. Returns nil if the input is empty or cannot be decrypted.
+
+Input
+
+```liquid
+{% assign encrypted = "my-secret-value" | encrypt %}
+{{ encrypted | decrypt }}
+```
+
+Output
+
+```text
+my-secret-value
 ```
 
 ## Properties

@@ -2,6 +2,8 @@ namespace OrchardCore;
 
 public static class OrchardCoreConstants
 {
+    public const char DataLocalizationSeparator = ':';
+
     public static class Shell
     {
         public const string TenantsFileName = "tenants.json";
@@ -93,8 +95,8 @@ public static class OrchardCoreConstants
         public const string SummaryAdmin = "SummaryAdmin";
     }
 
-    public static class DataLocalizationContext
+    public static class Security
     {
-        public const string AdminMenu = "Admin Menus";
+        public const string ScriptingEncryptionPurpose = "oc-scripting";
     }
 }
