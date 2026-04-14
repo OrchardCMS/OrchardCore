@@ -72,6 +72,13 @@ public sealed class BlogTests : CmsTestBase<BlogFixture>, IClassFixture<BlogFixt
             }
         }
 
-        return JsonNode.Parse(raw);
+        try
+        {
+            return JsonNode.Parse(raw);
+        }
+        catch (JsonException exception)
+        {
+            throw new InvalidOperationException("Unable to parse the admin preferences cookie value as JSON.", exception);
+        }
     }
 }
