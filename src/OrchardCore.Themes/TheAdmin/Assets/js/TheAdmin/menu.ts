@@ -1,4 +1,4 @@
-import { isCompactExplicit, setCompactExplicit } from '../constants';
+import { isCompactExplicit, setCompactExplicit, getAdminPreferences, setAdminPreferences } from '../constants';
 import { persistAdminPreferences } from './userPreferencesPersistor';
 // When we load compact status from preferences we need to do some other tasks besides adding the class to the body.
 // UserPreferencesLoader has already added the needed class.
@@ -26,6 +26,14 @@ $('.leftbar-compactor').click(function () {
 $('#left-nav li.has-items').click(function () {
     $('#left-nav li.has-items').removeClass("visible");
     $(this).addClass("visible");
+});
+
+// When navigating via a real nav link, persist the selected item hash inside the
+// existing admin preferences cookie so the server can restore the correct selection.
+$('#left-nav').on('click', 'a[data-admin-hash][href^="/"]', function () {
+    const prefs = getAdminPreferences() as Record<string, unknown>;
+    prefs.selectedNavHash = String($(this).data('admin-hash'));
+    setAdminPreferences(prefs);
 });
 
 $(document).on("click", function (event) {
