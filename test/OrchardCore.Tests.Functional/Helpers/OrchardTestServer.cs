@@ -163,12 +163,16 @@ public sealed class OrchardTestServer : IAsyncDisposable
         var resolvedAppDataPath = Path.IsPathRooted(appDataPath)
             ? appDataPath
             : Path.Combine(builder.Environment.ContentRootPath, appDataPath);
+        var tenantsPath = Path.Combine(resolvedAppDataPath, "tenants.json");
 
         // Override app data path per fixture via PostConfigure (no env var needed).
         builder.Services.PostConfigure<ShellOptions>(options =>
         {
             options.ShellsApplicationDataPath = resolvedAppDataPath;
         });
+
+        // Ensure the per-fixture App_Data path exists before shell initialization persists settings.
+        Directory.CreateDirectory(resolvedAppDataPath);
 
         // Override database config via IConfiguration (higher priority than env vars)
         // so we never need to mutate global environment variables.
@@ -190,9 +194,8 @@ public sealed class OrchardTestServer : IAsyncDisposable
             _currentConnectionString = connectionString;
 
             // Write tenants.json so OrchardCore picks up the per-fixture database.
-            Directory.CreateDirectory(resolvedAppDataPath);
             File.WriteAllText(
-                Path.Combine(resolvedAppDataPath, "tenants.json"),
+                tenantsPath,
                 JsonSerializer.Serialize(new Dictionary<string, object>
                 {
                     ["Default"] = new Dictionary<string, string>
