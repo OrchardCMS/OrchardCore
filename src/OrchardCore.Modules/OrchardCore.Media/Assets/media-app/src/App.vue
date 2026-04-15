@@ -44,42 +44,10 @@
                 <div class="storage-popover-content" v-if="storageLoading">
                   <span>{{ t.Loading || 'Loading...' }}</span>
                 </div>
-                <div class="storage-popover-content" v-else-if="storageCapabilities || storageInfo">
-                  <div class="storage-popover-row" v-if="storageCapabilities?.storageName">
-                    <span class="storage-popover-label">{{ t.StorageProvider || 'Storage Provider' }}</span>
-                    <span>{{ storageCapabilities.storageName }}</span>
-                  </div>
-                  <div class="storage-popover-row" v-if="storageInfo">
+                <div class="storage-popover-content" v-else-if="storageInfo">
+                  <div class="storage-popover-row">
                     <span class="storage-popover-label">{{ t.AvailableStorage || 'Available Storage' }}</span>
                     <span>{{ storageInfo.text }}</span>
-                  </div>
-                  <div class="storage-popover-row" v-if="storageCapabilities">
-                    <span class="storage-popover-label">{{ t.HierarchicalNamespace || 'Hierarchical Namespace' }}</span>
-                    <span>
-                      <fa-icon :icon="storageCapabilities.hasHierarchicalNamespace ? 'fa-solid fa-check' : 'fa-solid fa-xmark'"
-                        :class="storageCapabilities.hasHierarchicalNamespace ? 'tw:text-green-500' : 'tw:text-red-400'"></fa-icon>
-                    </span>
-                  </div>
-                  <div class="storage-popover-row" v-if="storageCapabilities">
-                    <span class="storage-popover-label">{{ t.AtomicMove || 'Atomic Move' }}</span>
-                    <span>
-                      <fa-icon :icon="storageCapabilities.supportsAtomicMove ? 'fa-solid fa-check' : 'fa-solid fa-xmark'"
-                        :class="storageCapabilities.supportsAtomicMove ? 'tw:text-green-500' : 'tw:text-red-400'"></fa-icon>
-                    </span>
-                  </div>
-                  <div class="storage-popover-row">
-                    <span class="storage-popover-label">{{ t.SignalR || 'SignalR' }}</span>
-                    <span>
-                      <fa-icon :icon="isSignalREnabled ? 'fa-solid fa-check' : 'fa-solid fa-xmark'"
-                        :class="isSignalREnabled ? 'tw:text-green-500' : 'tw:text-red-400'"></fa-icon>
-                    </span>
-                  </div>
-                  <div class="storage-popover-row">
-                    <span class="storage-popover-label">{{ t.TusUploads || 'TUS Uploads' }}</span>
-                    <span>
-                      <fa-icon :icon="isTusEnabled ? 'fa-solid fa-check' : 'fa-solid fa-xmark'"
-                        :class="isTusEnabled ? 'tw:text-green-500' : 'tw:text-red-400'"></fa-icon>
-                    </span>
                   </div>
                 </div>
                 <div class="storage-popover-content" v-else>
@@ -240,7 +208,7 @@
 </style>
 
 <script setup lang="ts">
-import { ref, watch, computed, defineProps } from "vue";
+import { ref, watch, defineProps } from "vue";
 import FolderTree from "./components/FolderTree.vue";
 import UploadToast from "./components/UploadToast.vue";
 import NotificationToast from "./components/NotificationToast.vue";
@@ -367,8 +335,6 @@ getFileLibraryStoreAsync().then(() => {
 const { setLocalStorage, gridView, pageSize, largeThumbs } = useLocalStorage();
 
 const thumbSize = 480;
-const isTusEnabled = computed(() => props.tusEnabled === "true");
-const isSignalREnabled = computed(() => props.signalrEnabled === "true");
 
 const showSettingsPopover = ref(false);
 const toggleSettingsPopover = () => {
@@ -388,7 +354,7 @@ if (props.signalrEnabled === "true") {
   useSignalR();
 }
 
-const { storageInfo, storageCapabilities, showStoragePopover, storageLoading, toggleStoragePopover } = useStoragePopover(props.basePath);
+const { storageInfo, showStoragePopover, storageLoading, toggleStoragePopover } = useStoragePopover(props.basePath);
 
 setUploadFilesUrl(props.uploadFilesUrl);
 

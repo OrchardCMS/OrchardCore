@@ -147,27 +147,6 @@ describe("FileDataService", () => {
     });
   });
 
-  describe("getCapabilities", () => {
-    it("returns capabilities", async () => {
-      vi.spyOn(service, "getCapabilities").mockResolvedValue({
-        hasHierarchicalNamespace: true,
-        supportsAtomicMove: true,
-      });
-      const result = await service.getCapabilities();
-      expect(result.hasHierarchicalNamespace).toBe(true);
-      expect(result.supportsAtomicMove).toBe(true);
-    });
-
-    it("returns false defaults for flat storage", async () => {
-      vi.spyOn(service, "getCapabilities").mockResolvedValue({
-        hasHierarchicalNamespace: false,
-        supportsAtomicMove: false,
-      });
-      const result = await service.getCapabilities();
-      expect(result.hasHierarchicalNamespace).toBe(false);
-    });
-  });
-
   describe("getDirectoryTree", () => {
     it("returns directory tree", async () => {
       vi.spyOn(service, "getDirectoryTree").mockResolvedValue({

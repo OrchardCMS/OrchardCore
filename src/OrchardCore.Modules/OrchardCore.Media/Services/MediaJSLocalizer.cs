@@ -61,6 +61,9 @@ public class MediaJSLocalizer(IStringLocalizer<MediaJSLocalizer> S) : IJSLocaliz
                 { "ActionFolderTitle", S["Folder Action"].Value },
                 { "ActionFolderMessage", S["What do you want to do with this folder?"].Value },
                 { "CreateSubFolder", S["Create a subfolder"].Value },
+                { "CreateFolderTitle", S["Create folder"].Value },
+                { "DeleteFolderTitle", S["Delete folder"].Value },
+                { "DeleteFolderMessage", S["Are you sure you want to delete this folder?"].Value },
                 // Common modal buttons
                 { "Ok", S["Ok"].Value },
                 { "Cancel", S["Cancel"].Value },
@@ -102,12 +105,7 @@ public class MediaJSLocalizer(IStringLocalizer<MediaJSLocalizer> S) : IJSLocaliz
                 { "ValidationFolderRequired", S["A folder must be selected"].Value },
                 // Storage info popover
                 { "StorageInfo", S["Storage Info"].Value },
-                { "StorageProvider", S["Storage Provider"].Value },
                 { "AvailableStorage", S["Available Storage"].Value },
-                { "HierarchicalNamespace", S["Hierarchical Namespace"].Value },
-                { "AtomicMove", S["Atomic Move"].Value },
-                { "SignalR", S["SignalR"].Value },
-                { "TusUploads", S["TUS Uploads"].Value },
             };
         }
 

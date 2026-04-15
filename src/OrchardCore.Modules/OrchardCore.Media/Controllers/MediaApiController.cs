@@ -76,30 +76,6 @@ public class MediaApiController : Controller
     }
 
     [HttpGet]
-    [Route("GetCapabilities")]
-    [ProducesResponseType(typeof(FileStoreCapabilitiesDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
-    public async Task<ActionResult<FileStoreCapabilitiesDto>> GetCapabilities()
-    {
-        var sw = System.Diagnostics.Stopwatch.StartNew();
-
-        if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMedia))
-        {
-            return this.ApiChallengeOrForbidForCookieAuth();
-        }
-
-        _logger.LogWarning("GetCapabilities — total: {TotalMs}ms", sw.ElapsedMilliseconds);
-
-        return Ok(new FileStoreCapabilitiesDto
-        {
-            StorageName = _mediaFileStore.StorageName,
-            HasHierarchicalNamespace = _mediaFileStore.Capabilities.HasHierarchicalNamespace,
-            SupportsAtomicMove = _mediaFileStore.Capabilities.SupportsAtomicMove,
-        });
-    }
-
-    [HttpGet]
     [Route("GetPermittedStorage")]
     [ProducesResponseType(typeof(PermittedStorageDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
@@ -997,13 +973,6 @@ public class FileStoreEntryDto
     public string Url { get; set; }
     public string Mime { get; set; }
     public bool? HasChildren { get; set; }
-}
-
-public class FileStoreCapabilitiesDto
-{
-    public string StorageName { get; set; }
-    public bool HasHierarchicalNamespace { get; set; }
-    public bool SupportsAtomicMove { get; set; }
 }
 
 public class PermittedStorageDto

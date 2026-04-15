@@ -1,4 +1,4 @@
-import { IFileLibraryItemDto, IFileStoreCapabilities, IDirectoryTreeNode, IPaginatedFoldersResult, IDirectoryContentResult, IPermittedStorageResult } from "../interfaces";
+import { IFileLibraryItemDto, IDirectoryTreeNode, IPaginatedFoldersResult, IDirectoryContentResult, IPermittedStorageResult } from "../interfaces";
 import { Client, FileStoreEntryDto, MoveMedias, DirectoryTreeNodeDto } from "@bloom/services/OpenApiClient";
 
 export interface IFileDataService {
@@ -13,7 +13,6 @@ export interface IFileDataService {
   deleteMediaList(paths: string[]): Promise<void>;
   deleteFolder(path: string): Promise<void>;
   createFolder(path: string, name: string): Promise<IFileLibraryItemDto>;
-  getCapabilities(): Promise<IFileStoreCapabilities>;
   getDirectoryTree(): Promise<IDirectoryTreeNode>;
   getDirectoryContent(path: string): Promise<IDirectoryContentResult>;
   getPermittedStorage(): Promise<IPermittedStorageResult>;
@@ -104,15 +103,6 @@ export class FileDataService implements IFileDataService {
   async createFolder(path: string, name: string): Promise<IFileLibraryItemDto> {
     const dto = await this.client.createFolder(path, name);
     return toFileLibraryItem(dto);
-  }
-
-  async getCapabilities(): Promise<IFileStoreCapabilities> {
-    const dto = await this.client.getCapabilities();
-    return {
-      storageName: dto.storageName ?? "Unknown",
-      hasHierarchicalNamespace: dto.hasHierarchicalNamespace ?? false,
-      supportsAtomicMove: dto.supportsAtomicMove ?? false,
-    };
   }
 
   async getDirectoryTree(): Promise<IDirectoryTreeNode> {

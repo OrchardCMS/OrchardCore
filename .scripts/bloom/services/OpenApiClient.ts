@@ -10,29 +10,835 @@
 import axios, { AxiosError } from 'axios';
 import type { AxiosInstance, AxiosRequestConfig, AxiosResponse, CancelToken } from 'axios';
 
-export interface IClient {
+export interface ICreateEndpointClient {
     /**
      * @param draft (optional) 
      * @param body (optional) 
      * @return OK
      */
-    contentPOST(draft: boolean | undefined, body: ContentItem | undefined,  cancelToken?: CancelToken): Promise<void>;
+    contentPOSTPOST(draft: boolean | undefined, body: ContentItem | undefined,  cancelToken?: CancelToken): Promise<void>;
+}
+
+export class CreateEndpointClient implements ICreateEndpointClient {
+    protected instance: AxiosInstance;
+    protected baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, instance?: AxiosInstance) {
+
+        this.instance = instance || axios.create();
+
+        this.baseUrl = baseUrl ?? "";
+
+    }
+
+    /**
+     * @param draft (optional) 
+     * @param body (optional) 
+     * @return OK
+     */
+    contentPOSTPOST(draft: boolean | undefined, body: ContentItem | undefined, cancelToken?: CancelToken): Promise<void> {
+        let url_ = this.baseUrl + "/api/content?";
+        if (draft === null)
+            throw new globalThis.Error("The parameter 'draft' cannot be null.");
+        else if (draft !== undefined)
+            url_ += "draft=" + encodeURIComponent("" + draft) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json",
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processContentPOSTPOST(_response);
+        });
+    }
+
+    protected processContentPOSTPOST(response: AxiosResponse): Promise<void> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            return Promise.resolve<void>(null as any);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<void>(null as any);
+    }
+}
+
+export interface IDeleteEndpointClient {
     /**
      * @return OK
      */
-    contentDELETE(contentItemId: string,  cancelToken?: CancelToken): Promise<void>;
+    contentDELETEDELETE(contentItemId: string,  cancelToken?: CancelToken): Promise<void>;
+}
+
+export class DeleteEndpointClient implements IDeleteEndpointClient {
+    protected instance: AxiosInstance;
+    protected baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, instance?: AxiosInstance) {
+
+        this.instance = instance || axios.create();
+
+        this.baseUrl = baseUrl ?? "";
+
+    }
+
     /**
      * @return OK
      */
-    contentGET(contentItemId: string,  cancelToken?: CancelToken): Promise<void>;
+    contentDELETEDELETE(contentItemId: string, cancelToken?: CancelToken): Promise<void> {
+        let url_ = this.baseUrl + "/api/content/{contentItemId}";
+        if (contentItemId === undefined || contentItemId === null)
+            throw new globalThis.Error("The parameter 'contentItemId' must be defined.");
+        url_ = url_.replace("{contentItemId}", encodeURIComponent("" + contentItemId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: AxiosRequestConfig = {
+            method: "DELETE",
+            url: url_,
+            headers: {
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processContentDELETEDELETE(_response);
+        });
+    }
+
+    protected processContentDELETEDELETE(response: AxiosResponse): Promise<void> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            return Promise.resolve<void>(null as any);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<void>(null as any);
+    }
+}
+
+export interface IGetEndpointClient {
+    /**
+     * @return OK
+     */
+    contentGETGET(contentItemId: string,  cancelToken?: CancelToken): Promise<void>;
+}
+
+export class GetEndpointClient implements IGetEndpointClient {
+    protected instance: AxiosInstance;
+    protected baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, instance?: AxiosInstance) {
+
+        this.instance = instance || axios.create();
+
+        this.baseUrl = baseUrl ?? "";
+
+    }
+
+    /**
+     * @return OK
+     */
+    contentGETGET(contentItemId: string, cancelToken?: CancelToken): Promise<void> {
+        let url_ = this.baseUrl + "/api/content/{contentItemId}";
+        if (contentItemId === undefined || contentItemId === null)
+            throw new globalThis.Error("The parameter 'contentItemId' must be defined.");
+        url_ = url_.replace("{contentItemId}", encodeURIComponent("" + contentItemId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: AxiosRequestConfig = {
+            method: "GET",
+            url: url_,
+            headers: {
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processContentGETGET(_response);
+        });
+    }
+
+    protected processContentGETGET(response: AxiosResponse): Promise<void> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            return Promise.resolve<void>(null as any);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<void>(null as any);
+    }
+}
+
+export interface IElasticsearchApiClient {
+    /**
+     * @param indexName (optional) 
+     * @param query (optional) 
+     * @param parameters (optional) 
+     * @return OK
+     */
+    contentGETGET2(indexName: string | undefined, query: string | undefined, parameters: string | undefined,  cancelToken?: CancelToken): Promise<void>;
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    contentPOSTPOST22(body: ElasticApiQueryViewModel | undefined,  cancelToken?: CancelToken): Promise<void>;
+    /**
+     * @param indexName (optional) 
+     * @param query (optional) 
+     * @param parameters (optional) 
+     * @return OK
+     */
+    documentsGETGET(indexName: string | undefined, query: string | undefined, parameters: string | undefined,  cancelToken?: CancelToken): Promise<void>;
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    documentsPOSTPOST(body: ElasticApiQueryViewModel | undefined,  cancelToken?: CancelToken): Promise<void>;
+}
+
+export class ElasticsearchApiClient implements IElasticsearchApiClient {
+    protected instance: AxiosInstance;
+    protected baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, instance?: AxiosInstance) {
+
+        this.instance = instance || axios.create();
+
+        this.baseUrl = baseUrl ?? "";
+
+    }
+
+    /**
+     * @param indexName (optional) 
+     * @param query (optional) 
+     * @param parameters (optional) 
+     * @return OK
+     */
+    contentGETGET2(indexName: string | undefined, query: string | undefined, parameters: string | undefined, cancelToken?: CancelToken): Promise<void> {
+        let url_ = this.baseUrl + "/api/elasticsearch/content?";
+        if (indexName === null)
+            throw new globalThis.Error("The parameter 'indexName' cannot be null.");
+        else if (indexName !== undefined)
+            url_ += "IndexName=" + encodeURIComponent("" + indexName) + "&";
+        if (query === null)
+            throw new globalThis.Error("The parameter 'query' cannot be null.");
+        else if (query !== undefined)
+            url_ += "Query=" + encodeURIComponent("" + query) + "&";
+        if (parameters === null)
+            throw new globalThis.Error("The parameter 'parameters' cannot be null.");
+        else if (parameters !== undefined)
+            url_ += "Parameters=" + encodeURIComponent("" + parameters) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: AxiosRequestConfig = {
+            method: "GET",
+            url: url_,
+            headers: {
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processContentGETGET2(_response);
+        });
+    }
+
+    protected processContentGETGET2(response: AxiosResponse): Promise<void> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            return Promise.resolve<void>(null as any);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    contentPOSTPOST22(body: ElasticApiQueryViewModel | undefined, cancelToken?: CancelToken): Promise<void> {
+        let url_ = this.baseUrl + "/api/elasticsearch/content";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json",
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processContentPOSTPOST22(_response);
+        });
+    }
+
+    protected processContentPOSTPOST22(response: AxiosResponse): Promise<void> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            return Promise.resolve<void>(null as any);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    /**
+     * @param indexName (optional) 
+     * @param query (optional) 
+     * @param parameters (optional) 
+     * @return OK
+     */
+    documentsGETGET(indexName: string | undefined, query: string | undefined, parameters: string | undefined, cancelToken?: CancelToken): Promise<void> {
+        let url_ = this.baseUrl + "/api/elasticsearch/documents?";
+        if (indexName === null)
+            throw new globalThis.Error("The parameter 'indexName' cannot be null.");
+        else if (indexName !== undefined)
+            url_ += "IndexName=" + encodeURIComponent("" + indexName) + "&";
+        if (query === null)
+            throw new globalThis.Error("The parameter 'query' cannot be null.");
+        else if (query !== undefined)
+            url_ += "Query=" + encodeURIComponent("" + query) + "&";
+        if (parameters === null)
+            throw new globalThis.Error("The parameter 'parameters' cannot be null.");
+        else if (parameters !== undefined)
+            url_ += "Parameters=" + encodeURIComponent("" + parameters) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: AxiosRequestConfig = {
+            method: "GET",
+            url: url_,
+            headers: {
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processDocumentsGETGET(_response);
+        });
+    }
+
+    protected processDocumentsGETGET(response: AxiosResponse): Promise<void> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            return Promise.resolve<void>(null as any);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    documentsPOSTPOST(body: ElasticApiQueryViewModel | undefined, cancelToken?: CancelToken): Promise<void> {
+        let url_ = this.baseUrl + "/api/elasticsearch/documents";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json",
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processDocumentsPOSTPOST(_response);
+        });
+    }
+
+    protected processDocumentsPOSTPOST(response: AxiosResponse): Promise<void> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            return Promise.resolve<void>(null as any);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<void>(null as any);
+    }
+}
+
+export interface IGetIntellisenseEndpointClient {
     /**
      * @return OK
      */
     liquidIntellisense_js( cancelToken?: CancelToken): Promise<void>;
+}
+
+export class GetIntellisenseEndpointClient implements IGetIntellisenseEndpointClient {
+    protected instance: AxiosInstance;
+    protected baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, instance?: AxiosInstance) {
+
+        this.instance = instance || axios.create();
+
+        this.baseUrl = baseUrl ?? "";
+
+    }
+
     /**
      * @return OK
      */
-    getCapabilities( cancelToken?: CancelToken): Promise<FileStoreCapabilitiesDto>;
+    liquidIntellisense_js( cancelToken?: CancelToken): Promise<void> {
+        let url_ = this.baseUrl + "/OrchardCore.Liquid/Scripts/liquid-intellisense.js";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: AxiosRequestConfig = {
+            method: "GET",
+            url: url_,
+            headers: {
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processLiquidIntellisense_js(_response);
+        });
+    }
+
+    protected processLiquidIntellisense_js(response: AxiosResponse): Promise<void> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            return Promise.resolve<void>(null as any);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<void>(null as any);
+    }
+}
+
+export interface ILuceneApiClient {
+    /**
+     * @param indexName (optional) 
+     * @param query (optional) 
+     * @param parameters (optional) 
+     * @return OK
+     */
+    contentGETGET3(indexName: string | undefined, query: string | undefined, parameters: string | undefined,  cancelToken?: CancelToken): Promise<void>;
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    contentPOSTPOST33(body: LuceneQueryModel | undefined,  cancelToken?: CancelToken): Promise<void>;
+    /**
+     * @param indexName (optional) 
+     * @param query (optional) 
+     * @param parameters (optional) 
+     * @return OK
+     */
+    documentsGETGET2(indexName: string | undefined, query: string | undefined, parameters: string | undefined,  cancelToken?: CancelToken): Promise<void>;
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    documentsPOSTPOST2(body: LuceneQueryModel | undefined,  cancelToken?: CancelToken): Promise<void>;
+}
+
+export class LuceneApiClient implements ILuceneApiClient {
+    protected instance: AxiosInstance;
+    protected baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, instance?: AxiosInstance) {
+
+        this.instance = instance || axios.create();
+
+        this.baseUrl = baseUrl ?? "";
+
+    }
+
+    /**
+     * @param indexName (optional) 
+     * @param query (optional) 
+     * @param parameters (optional) 
+     * @return OK
+     */
+    contentGETGET3(indexName: string | undefined, query: string | undefined, parameters: string | undefined, cancelToken?: CancelToken): Promise<void> {
+        let url_ = this.baseUrl + "/api/lucene/content?";
+        if (indexName === null)
+            throw new globalThis.Error("The parameter 'indexName' cannot be null.");
+        else if (indexName !== undefined)
+            url_ += "IndexName=" + encodeURIComponent("" + indexName) + "&";
+        if (query === null)
+            throw new globalThis.Error("The parameter 'query' cannot be null.");
+        else if (query !== undefined)
+            url_ += "Query=" + encodeURIComponent("" + query) + "&";
+        if (parameters === null)
+            throw new globalThis.Error("The parameter 'parameters' cannot be null.");
+        else if (parameters !== undefined)
+            url_ += "Parameters=" + encodeURIComponent("" + parameters) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: AxiosRequestConfig = {
+            method: "GET",
+            url: url_,
+            headers: {
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processContentGETGET3(_response);
+        });
+    }
+
+    protected processContentGETGET3(response: AxiosResponse): Promise<void> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            return Promise.resolve<void>(null as any);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    contentPOSTPOST33(body: LuceneQueryModel | undefined, cancelToken?: CancelToken): Promise<void> {
+        let url_ = this.baseUrl + "/api/lucene/content";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json",
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processContentPOSTPOST33(_response);
+        });
+    }
+
+    protected processContentPOSTPOST33(response: AxiosResponse): Promise<void> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            return Promise.resolve<void>(null as any);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    /**
+     * @param indexName (optional) 
+     * @param query (optional) 
+     * @param parameters (optional) 
+     * @return OK
+     */
+    documentsGETGET2(indexName: string | undefined, query: string | undefined, parameters: string | undefined, cancelToken?: CancelToken): Promise<void> {
+        let url_ = this.baseUrl + "/api/lucene/documents?";
+        if (indexName === null)
+            throw new globalThis.Error("The parameter 'indexName' cannot be null.");
+        else if (indexName !== undefined)
+            url_ += "IndexName=" + encodeURIComponent("" + indexName) + "&";
+        if (query === null)
+            throw new globalThis.Error("The parameter 'query' cannot be null.");
+        else if (query !== undefined)
+            url_ += "Query=" + encodeURIComponent("" + query) + "&";
+        if (parameters === null)
+            throw new globalThis.Error("The parameter 'parameters' cannot be null.");
+        else if (parameters !== undefined)
+            url_ += "Parameters=" + encodeURIComponent("" + parameters) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: AxiosRequestConfig = {
+            method: "GET",
+            url: url_,
+            headers: {
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processDocumentsGETGET2(_response);
+        });
+    }
+
+    protected processDocumentsGETGET2(response: AxiosResponse): Promise<void> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            return Promise.resolve<void>(null as any);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    documentsPOSTPOST2(body: LuceneQueryModel | undefined, cancelToken?: CancelToken): Promise<void> {
+        let url_ = this.baseUrl + "/api/lucene/documents";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json",
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processDocumentsPOSTPOST2(_response);
+        });
+    }
+
+    protected processDocumentsPOSTPOST2(response: AxiosResponse): Promise<void> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            return Promise.resolve<void>(null as any);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<void>(null as any);
+    }
+}
+
+export interface IMediaApiClient {
     /**
      * @return OK
      */
@@ -118,19 +924,9 @@ export interface IClient {
      * @return OK
      */
     tusFileInfo(uploadId: string,  cancelToken?: CancelToken): Promise<FileStoreEntryDto>;
-    /**
-     * @param parameters (optional) 
-     * @return OK
-     */
-    queriesPOST(name: string, parameters: string | undefined,  cancelToken?: CancelToken): Promise<void>;
-    /**
-     * @param parameters (optional) 
-     * @return OK
-     */
-    queriesGET(name: string, parameters: string | undefined,  cancelToken?: CancelToken): Promise<void>;
 }
 
-export class Client implements IClient {
+export class MediaApiClient implements IMediaApiClient {
     protected instance: AxiosInstance;
     protected baseUrl: string;
     protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
@@ -141,275 +937,6 @@ export class Client implements IClient {
 
         this.baseUrl = baseUrl ?? "";
 
-    }
-
-    /**
-     * @param draft (optional) 
-     * @param body (optional) 
-     * @return OK
-     */
-    contentPOST(draft: boolean | undefined, body: ContentItem | undefined, cancelToken?: CancelToken): Promise<void> {
-        let url_ = this.baseUrl + "/api/content?";
-        if (draft === null)
-            throw new globalThis.Error("The parameter 'draft' cannot be null.");
-        else if (draft !== undefined)
-            url_ += "draft=" + encodeURIComponent("" + draft) + "&";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(body);
-
-        let options_: AxiosRequestConfig = {
-            data: content_,
-            method: "POST",
-            url: url_,
-            headers: {
-                "Content-Type": "application/json",
-            },
-            cancelToken
-        };
-
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
-            return this.processContentPOST(_response);
-        });
-    }
-
-    protected processContentPOST(response: AxiosResponse): Promise<void> {
-        const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
-        if (status === 200) {
-            const _responseText = response.data;
-            return Promise.resolve<void>(null as any);
-
-        } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-        }
-        return Promise.resolve<void>(null as any);
-    }
-
-    /**
-     * @return OK
-     */
-    contentDELETE(contentItemId: string, cancelToken?: CancelToken): Promise<void> {
-        let url_ = this.baseUrl + "/api/content/{contentItemId}";
-        if (contentItemId === undefined || contentItemId === null)
-            throw new globalThis.Error("The parameter 'contentItemId' must be defined.");
-        url_ = url_.replace("{contentItemId}", encodeURIComponent("" + contentItemId));
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_: AxiosRequestConfig = {
-            method: "DELETE",
-            url: url_,
-            headers: {
-            },
-            cancelToken
-        };
-
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
-            return this.processContentDELETE(_response);
-        });
-    }
-
-    protected processContentDELETE(response: AxiosResponse): Promise<void> {
-        const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
-        if (status === 200) {
-            const _responseText = response.data;
-            return Promise.resolve<void>(null as any);
-
-        } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-        }
-        return Promise.resolve<void>(null as any);
-    }
-
-    /**
-     * @return OK
-     */
-    contentGET(contentItemId: string, cancelToken?: CancelToken): Promise<void> {
-        let url_ = this.baseUrl + "/api/content/{contentItemId}";
-        if (contentItemId === undefined || contentItemId === null)
-            throw new globalThis.Error("The parameter 'contentItemId' must be defined.");
-        url_ = url_.replace("{contentItemId}", encodeURIComponent("" + contentItemId));
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_: AxiosRequestConfig = {
-            method: "GET",
-            url: url_,
-            headers: {
-            },
-            cancelToken
-        };
-
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
-            return this.processContentGET(_response);
-        });
-    }
-
-    protected processContentGET(response: AxiosResponse): Promise<void> {
-        const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
-        if (status === 200) {
-            const _responseText = response.data;
-            return Promise.resolve<void>(null as any);
-
-        } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-        }
-        return Promise.resolve<void>(null as any);
-    }
-
-    /**
-     * @return OK
-     */
-    liquidIntellisense_js( cancelToken?: CancelToken): Promise<void> {
-        let url_ = this.baseUrl + "/OrchardCore.Liquid/Scripts/liquid-intellisense.js";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_: AxiosRequestConfig = {
-            method: "GET",
-            url: url_,
-            headers: {
-            },
-            cancelToken
-        };
-
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
-            return this.processLiquidIntellisense_js(_response);
-        });
-    }
-
-    protected processLiquidIntellisense_js(response: AxiosResponse): Promise<void> {
-        const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
-        if (status === 200) {
-            const _responseText = response.data;
-            return Promise.resolve<void>(null as any);
-
-        } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-        }
-        return Promise.resolve<void>(null as any);
-    }
-
-    /**
-     * @return OK
-     */
-    getCapabilities( cancelToken?: CancelToken): Promise<FileStoreCapabilitiesDto> {
-        let url_ = this.baseUrl + "/api/media/GetCapabilities";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_: AxiosRequestConfig = {
-            method: "GET",
-            url: url_,
-            headers: {
-                "Accept": "application/json"
-            },
-            cancelToken
-        };
-
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
-            return this.processGetCapabilities(_response);
-        });
-    }
-
-    protected processGetCapabilities(response: AxiosResponse): Promise<FileStoreCapabilitiesDto> {
-        const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
-        if (status === 200) {
-            const _responseText = response.data;
-            let result200: any = null;
-            let resultData200  = _responseText;
-            result200 = FileStoreCapabilitiesDto.fromJS(resultData200);
-            return Promise.resolve<FileStoreCapabilitiesDto>(result200);
-
-        } else if (status === 401) {
-            const _responseText = response.data;
-            let result401: any = null;
-            let resultData401  = _responseText;
-            result401 = ProblemDetails.fromJS(resultData401);
-            return throwException("Unauthorized", status, _responseText, _headers, result401);
-
-        } else if (status === 403) {
-            const _responseText = response.data;
-            let result403: any = null;
-            let resultData403  = _responseText;
-            result403 = ProblemDetails.fromJS(resultData403);
-            return throwException("Forbidden", status, _responseText, _headers, result403);
-
-        } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-        }
-        return Promise.resolve<FileStoreCapabilitiesDto>(null as any);
     }
 
     /**
@@ -1647,12 +2174,39 @@ export class Client implements IClient {
         }
         return Promise.resolve<FileStoreEntryDto>(null as any);
     }
+}
+
+export interface IQueryApiClient {
+    /**
+     * @param parameters (optional) 
+     * @return OK
+     */
+    queriesPOSTPOST(name: string, parameters: string | undefined,  cancelToken?: CancelToken): Promise<void>;
+    /**
+     * @param parameters (optional) 
+     * @return OK
+     */
+    queriesGETGET(name: string, parameters: string | undefined,  cancelToken?: CancelToken): Promise<void>;
+}
+
+export class QueryApiClient implements IQueryApiClient {
+    protected instance: AxiosInstance;
+    protected baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, instance?: AxiosInstance) {
+
+        this.instance = instance || axios.create();
+
+        this.baseUrl = baseUrl ?? "";
+
+    }
 
     /**
      * @param parameters (optional) 
      * @return OK
      */
-    queriesPOST(name: string, parameters: string | undefined, cancelToken?: CancelToken): Promise<void> {
+    queriesPOSTPOST(name: string, parameters: string | undefined, cancelToken?: CancelToken): Promise<void> {
         let url_ = this.baseUrl + "/api/queries/{name}?";
         if (name === undefined || name === null)
             throw new globalThis.Error("The parameter 'name' must be defined.");
@@ -1678,11 +2232,11 @@ export class Client implements IClient {
                 throw _error;
             }
         }).then((_response: AxiosResponse) => {
-            return this.processQueriesPOST(_response);
+            return this.processQueriesPOSTPOST(_response);
         });
     }
 
-    protected processQueriesPOST(response: AxiosResponse): Promise<void> {
+    protected processQueriesPOSTPOST(response: AxiosResponse): Promise<void> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -1707,7 +2261,7 @@ export class Client implements IClient {
      * @param parameters (optional) 
      * @return OK
      */
-    queriesGET(name: string, parameters: string | undefined, cancelToken?: CancelToken): Promise<void> {
+    queriesGETGET(name: string, parameters: string | undefined, cancelToken?: CancelToken): Promise<void> {
         let url_ = this.baseUrl + "/api/queries/{name}?";
         if (name === undefined || name === null)
             throw new globalThis.Error("The parameter 'name' must be defined.");
@@ -1733,11 +2287,361 @@ export class Client implements IClient {
                 throw _error;
             }
         }).then((_response: AxiosResponse) => {
-            return this.processQueriesGET(_response);
+            return this.processQueriesGETGET(_response);
         });
     }
 
-    protected processQueriesGET(response: AxiosResponse): Promise<void> {
+    protected processQueriesGETGET(response: AxiosResponse): Promise<void> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            return Promise.resolve<void>(null as any);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<void>(null as any);
+    }
+}
+
+export interface ITenantApiClient {
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    create(body: TenantApiModel | undefined,  cancelToken?: CancelToken): Promise<void>;
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    edit(body: TenantApiModel | undefined,  cancelToken?: CancelToken): Promise<void>;
+    /**
+     * @return OK
+     */
+    disable(tenantName: string,  cancelToken?: CancelToken): Promise<void>;
+    /**
+     * @return OK
+     */
+    enable(tenantName: string,  cancelToken?: CancelToken): Promise<void>;
+    /**
+     * @return OK
+     */
+    remove(tenantName: string,  cancelToken?: CancelToken): Promise<void>;
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    setup(body: SetupApiViewModel | undefined,  cancelToken?: CancelToken): Promise<void>;
+}
+
+export class TenantApiClient implements ITenantApiClient {
+    protected instance: AxiosInstance;
+    protected baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, instance?: AxiosInstance) {
+
+        this.instance = instance || axios.create();
+
+        this.baseUrl = baseUrl ?? "";
+
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    create(body: TenantApiModel | undefined, cancelToken?: CancelToken): Promise<void> {
+        let url_ = this.baseUrl + "/api/tenants/create";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json",
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processCreate(_response);
+        });
+    }
+
+    protected processCreate(response: AxiosResponse): Promise<void> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            return Promise.resolve<void>(null as any);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    edit(body: TenantApiModel | undefined, cancelToken?: CancelToken): Promise<void> {
+        let url_ = this.baseUrl + "/api/tenants/edit";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json",
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processEdit(_response);
+        });
+    }
+
+    protected processEdit(response: AxiosResponse): Promise<void> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            return Promise.resolve<void>(null as any);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    disable(tenantName: string, cancelToken?: CancelToken): Promise<void> {
+        let url_ = this.baseUrl + "/api/tenants/disable/{tenantName}";
+        if (tenantName === undefined || tenantName === null)
+            throw new globalThis.Error("The parameter 'tenantName' must be defined.");
+        url_ = url_.replace("{tenantName}", encodeURIComponent("" + tenantName));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: AxiosRequestConfig = {
+            method: "POST",
+            url: url_,
+            headers: {
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processDisable(_response);
+        });
+    }
+
+    protected processDisable(response: AxiosResponse): Promise<void> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            return Promise.resolve<void>(null as any);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    enable(tenantName: string, cancelToken?: CancelToken): Promise<void> {
+        let url_ = this.baseUrl + "/api/tenants/enable/{tenantName}";
+        if (tenantName === undefined || tenantName === null)
+            throw new globalThis.Error("The parameter 'tenantName' must be defined.");
+        url_ = url_.replace("{tenantName}", encodeURIComponent("" + tenantName));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: AxiosRequestConfig = {
+            method: "POST",
+            url: url_,
+            headers: {
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processEnable(_response);
+        });
+    }
+
+    protected processEnable(response: AxiosResponse): Promise<void> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            return Promise.resolve<void>(null as any);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    remove(tenantName: string, cancelToken?: CancelToken): Promise<void> {
+        let url_ = this.baseUrl + "/api/tenants/remove/{tenantName}";
+        if (tenantName === undefined || tenantName === null)
+            throw new globalThis.Error("The parameter 'tenantName' must be defined.");
+        url_ = url_.replace("{tenantName}", encodeURIComponent("" + tenantName));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: AxiosRequestConfig = {
+            method: "POST",
+            url: url_,
+            headers: {
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processRemove(_response);
+        });
+    }
+
+    protected processRemove(response: AxiosResponse): Promise<void> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            return Promise.resolve<void>(null as any);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    setup(body: SetupApiViewModel | undefined, cancelToken?: CancelToken): Promise<void> {
+        let url_ = this.baseUrl + "/api/tenants/setup";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json",
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processSetup(_response);
+        });
+    }
+
+    protected processSetup(response: AxiosResponse): Promise<void> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -1951,12 +2855,12 @@ export interface IDirectoryTreeNodeDto {
     children?: DirectoryTreeNodeDto[] | undefined;
 }
 
-export class FileStoreCapabilitiesDto implements IFileStoreCapabilitiesDto {
-    hasHierarchicalNamespace?: boolean;
-    supportsAtomicMove?: boolean;
-    storageName?: string | undefined;
+export class ElasticApiQueryViewModel implements IElasticApiQueryViewModel {
+    indexName?: string | undefined;
+    query?: string | undefined;
+    parameters?: string | undefined;
 
-    constructor(data?: IFileStoreCapabilitiesDto) {
+    constructor(data?: IElasticApiQueryViewModel) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -1967,32 +2871,32 @@ export class FileStoreCapabilitiesDto implements IFileStoreCapabilitiesDto {
 
     init(_data?: any) {
         if (_data) {
-            this.hasHierarchicalNamespace = _data["hasHierarchicalNamespace"];
-            this.supportsAtomicMove = _data["supportsAtomicMove"];
-            this.storageName = _data["storageName"];
+            this.indexName = _data["indexName"];
+            this.query = _data["query"];
+            this.parameters = _data["parameters"];
         }
     }
 
-    static fromJS(data: any): FileStoreCapabilitiesDto {
+    static fromJS(data: any): ElasticApiQueryViewModel {
         data = typeof data === 'object' ? data : {};
-        let result = new FileStoreCapabilitiesDto();
+        let result = new ElasticApiQueryViewModel();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["hasHierarchicalNamespace"] = this.hasHierarchicalNamespace;
-        data["supportsAtomicMove"] = this.supportsAtomicMove;
-        data["storageName"] = this.storageName;
+        data["indexName"] = this.indexName;
+        data["query"] = this.query;
+        data["parameters"] = this.parameters;
         return data;
     }
 }
 
-export interface IFileStoreCapabilitiesDto {
-    hasHierarchicalNamespace?: boolean;
-    supportsAtomicMove?: boolean;
-    storageName?: string | undefined;
+export interface IElasticApiQueryViewModel {
+    indexName?: string | undefined;
+    query?: string | undefined;
+    parameters?: string | undefined;
 }
 
 export class FileStoreEntryDto implements IFileStoreEntryDto {
@@ -2061,6 +2965,50 @@ export interface IFileStoreEntryDto {
     url?: string | undefined;
     mime?: string | undefined;
     hasChildren?: boolean | undefined;
+}
+
+export class LuceneQueryModel implements ILuceneQueryModel {
+    indexName?: string | undefined;
+    query?: string | undefined;
+    parameters?: string | undefined;
+
+    constructor(data?: ILuceneQueryModel) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.indexName = _data["indexName"];
+            this.query = _data["query"];
+            this.parameters = _data["parameters"];
+        }
+    }
+
+    static fromJS(data: any): LuceneQueryModel {
+        data = typeof data === 'object' ? data : {};
+        let result = new LuceneQueryModel();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["indexName"] = this.indexName;
+        data["query"] = this.query;
+        data["parameters"] = this.parameters;
+        return data;
+    }
+}
+
+export interface ILuceneQueryModel {
+    indexName?: string | undefined;
+    query?: string | undefined;
+    parameters?: string | undefined;
 }
 
 export class MoveMedias implements IMoveMedias {
@@ -2265,6 +3213,174 @@ export interface IProblemDetails {
     instance?: string | undefined;
 
     [key: string]: any;
+}
+
+export class SetupApiViewModel implements ISetupApiViewModel {
+    name!: string;
+    siteName!: string;
+    databaseProvider?: string | undefined;
+    connectionString?: string | undefined;
+    tablePrefix?: string | undefined;
+    userName!: string;
+    email!: string;
+    password?: string | undefined;
+    recipeName?: string | undefined;
+    recipe?: string | undefined;
+    siteTimeZone?: string | undefined;
+    schema?: string | undefined;
+
+    constructor(data?: ISetupApiViewModel) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.name = _data["name"];
+            this.siteName = _data["siteName"];
+            this.databaseProvider = _data["databaseProvider"];
+            this.connectionString = _data["connectionString"];
+            this.tablePrefix = _data["tablePrefix"];
+            this.userName = _data["userName"];
+            this.email = _data["email"];
+            this.password = _data["password"];
+            this.recipeName = _data["recipeName"];
+            this.recipe = _data["recipe"];
+            this.siteTimeZone = _data["siteTimeZone"];
+            this.schema = _data["schema"];
+        }
+    }
+
+    static fromJS(data: any): SetupApiViewModel {
+        data = typeof data === 'object' ? data : {};
+        let result = new SetupApiViewModel();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["name"] = this.name;
+        data["siteName"] = this.siteName;
+        data["databaseProvider"] = this.databaseProvider;
+        data["connectionString"] = this.connectionString;
+        data["tablePrefix"] = this.tablePrefix;
+        data["userName"] = this.userName;
+        data["email"] = this.email;
+        data["password"] = this.password;
+        data["recipeName"] = this.recipeName;
+        data["recipe"] = this.recipe;
+        data["siteTimeZone"] = this.siteTimeZone;
+        data["schema"] = this.schema;
+        return data;
+    }
+}
+
+export interface ISetupApiViewModel {
+    name: string;
+    siteName: string;
+    databaseProvider?: string | undefined;
+    connectionString?: string | undefined;
+    tablePrefix?: string | undefined;
+    userName: string;
+    email: string;
+    password?: string | undefined;
+    recipeName?: string | undefined;
+    recipe?: string | undefined;
+    siteTimeZone?: string | undefined;
+    schema?: string | undefined;
+}
+
+export class TenantApiModel implements ITenantApiModel {
+    description?: string | undefined;
+    name!: string;
+    category?: string | undefined;
+    databaseProvider?: string | undefined;
+    requestUrlPrefix?: string | undefined;
+    requestUrlHost?: string | undefined;
+    connectionString?: string | undefined;
+    tablePrefix?: string | undefined;
+    schema?: string | undefined;
+    recipeName?: string | undefined;
+    featureProfiles?: string[] | undefined;
+    isNewTenant?: boolean;
+
+    constructor(data?: ITenantApiModel) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.description = _data["description"];
+            this.name = _data["name"];
+            this.category = _data["category"];
+            this.databaseProvider = _data["databaseProvider"];
+            this.requestUrlPrefix = _data["requestUrlPrefix"];
+            this.requestUrlHost = _data["requestUrlHost"];
+            this.connectionString = _data["connectionString"];
+            this.tablePrefix = _data["tablePrefix"];
+            this.schema = _data["schema"];
+            this.recipeName = _data["recipeName"];
+            if (Array.isArray(_data["featureProfiles"])) {
+                this.featureProfiles = [] as any;
+                for (let item of _data["featureProfiles"])
+                    this.featureProfiles!.push(item);
+            }
+            this.isNewTenant = _data["isNewTenant"];
+        }
+    }
+
+    static fromJS(data: any): TenantApiModel {
+        data = typeof data === 'object' ? data : {};
+        let result = new TenantApiModel();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["description"] = this.description;
+        data["name"] = this.name;
+        data["category"] = this.category;
+        data["databaseProvider"] = this.databaseProvider;
+        data["requestUrlPrefix"] = this.requestUrlPrefix;
+        data["requestUrlHost"] = this.requestUrlHost;
+        data["connectionString"] = this.connectionString;
+        data["tablePrefix"] = this.tablePrefix;
+        data["schema"] = this.schema;
+        data["recipeName"] = this.recipeName;
+        if (Array.isArray(this.featureProfiles)) {
+            data["featureProfiles"] = [];
+            for (let item of this.featureProfiles)
+                data["featureProfiles"].push(item);
+        }
+        data["isNewTenant"] = this.isNewTenant;
+        return data;
+    }
+}
+
+export interface ITenantApiModel {
+    description?: string | undefined;
+    name: string;
+    category?: string | undefined;
+    databaseProvider?: string | undefined;
+    requestUrlPrefix?: string | undefined;
+    requestUrlHost?: string | undefined;
+    connectionString?: string | undefined;
+    tablePrefix?: string | undefined;
+    schema?: string | undefined;
+    recipeName?: string | undefined;
+    featureProfiles?: string[] | undefined;
+    isNewTenant?: boolean;
 }
 
 export class ValidationProblemDetails implements IValidationProblemDetails {

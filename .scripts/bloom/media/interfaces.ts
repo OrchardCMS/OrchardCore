@@ -138,15 +138,6 @@ export interface IFileCopyDto {
 }
 
 /**
- * Storage backend capabilities returned by the GetCapabilities endpoint.
- */
-export interface IFileStoreCapabilities {
-  storageName: string;
-  hasHierarchicalNamespace: boolean;
-  supportsAtomicMove: boolean;
-}
-
-/**
  * Paginated result from the GetFolders endpoint.
  */
 export interface IPaginatedFoldersResult {

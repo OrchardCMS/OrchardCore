@@ -5,7 +5,7 @@
       <span class="modal__title">
         {{ title }}
       </span>
-      <span class="tw:cursor-pointer" @click="showModal = false">
+      <span class="tw:cursor-pointer" @click="close">
         <fa-icon icon="fa-solid fa-xmark fa-2xl"></fa-icon>
       </span>
     </div>
@@ -14,7 +14,7 @@
       <input @keyup.enter="onPressEnter" class="p-inputtext tw:w-full" placeholder="Enter a folder name"
         type="text" name="create-folder" v-model="inputValue" />
     </div>
-    <div>
+    <div v-if="!preSelectedAction && preSelectedAction !== 0">
       <template v-for="(folderActionElem, index) in commonActions" v-bind:key="index">
         <div class="tw:py-1 tw:w-full tw:flex tw:items-center">
           <input class="tw:w-4 tw:h-4" role="radiobutton" name="folder-action" type="radio"
@@ -26,7 +26,7 @@
       </template>
     </div>
     <div class="tw:mt-3 tw:flex tw:flex-row tw:justify-end">
-      <button class="ma-btn ma-btn-light tw:border tw:border-gray-400 cancel" @click="showModal = false">
+      <button class="ma-btn ma-btn-light tw:border tw:border-gray-400 cancel" @click="close">
         {{ t.Cancel }}
       </button>
       <button id="btn-submit" class="tw:ml-2 ma-btn ma-btn-primary"
@@ -66,6 +66,10 @@ const props = defineProps({
   showModalProp: {
     type: Boolean,
     default: false
+  },
+  preSelectedAction: {
+    type: Number as PropType<FolderAction>,
+    default: undefined
   }
 })
 
@@ -90,7 +94,17 @@ if (props.folder.directoryPath && props.folder.directoryPath !== "/") {
 const commonActions = folderActionElems.filter(item => item.allowedDirectory == "*");
 let showModal = ref(props.showModalProp);
 let inputValue = "";
-let folderAction = ref();
+let folderAction = ref(props.preSelectedAction);
+
+const emit = defineEmits<{
+  (e: 'confirm', action: IConfirmFolderActionViewModel): void
+  (e: 'closed'): void
+}>()
+
+const close = () => {
+  showModal.value = false;
+  emit('closed');
+};
 
 /**
  * Triggers the click event on the submit button when the Enter key is pressed
@@ -103,8 +117,4 @@ on("ResetModalFolderAction", () => {
   folderAction = ref();
   inputValue = "";
 });
-
-const emit = defineEmits<{
-  (e: 'confirm', action: IConfirmFolderActionViewModel): void
-}>()
 </script>

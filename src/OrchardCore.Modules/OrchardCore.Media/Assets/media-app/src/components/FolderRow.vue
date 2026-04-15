@@ -22,19 +22,8 @@
         <div class="folder-name tw:ms-2 tw:overflow-hidden">
           <div class="tw:pr-2 tw:truncate">{{ node.item.name }}</div>
         </div>
-        <div class="folder-actions tw:shrink-0">
-          <a href="javascript:void(0)" :title="t.ActionFolderTitle" class="action-button"
-            @click.stop="() => openFolderModal('folder-action', node.item)"><fa-icon
-              icon="fas fa-ellipsis-v" size="xl"></fa-icon>
-            <ModalFolderAction ref="modalAction" :show-modal-prop="showModal"
-              :modal-name="getFolderModalName('folder-action', node.item)"
-              :folder="node.item" :title="t.ActionFolderTitle"
-              @confirm="(viewModel: IConfirmFolderActionViewModel) => confirmFolderModal('folder-action', viewModel)">
-              <p class="tw:font-bold tw:m-0">{{ node.item.directoryPath }}</p>
-              <p class="tw:m-0">{{ t.ActionFolderMessage }}</p>
-              <template #submit>{{ t.Ok }}</template>
-            </ModalFolderAction>
-          </a>
+        <div class="folder-actions tw:shrink-0" @click.stop>
+          <FolderMenu :folder="node.item" />
         </div>
       </a>
     </div>
@@ -42,14 +31,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
-import ModalFolderAction from './ModalFolderAction.vue';
-import { IFileLibraryItemDto, IConfirmFolderActionViewModel, IHFileLibraryItemDto } from '@bloom/media/interfaces';
-import { useEventBus } from '../services/UseEventBus';
+import { computed } from 'vue';
+import FolderMenu from './FolderMenu.vue';
 import { useGlobals } from '../services/Globals';
 import { FontAwesomeIcon as FaIcon } from '@fortawesome/vue-fontawesome';
-import { getTranslations } from '@bloom/helpers/localizations';
-import { useFolderModal } from '../composables/useFolderModal';
 import { useFolderDragDrop } from '../composables/useFolderDragDrop';
 import type { IFlatTreeNode } from '../services/HierarchicalTreeBuilder';
 import { BASE_DIR } from "@bloom/media/constants";
@@ -64,13 +49,7 @@ const emitComponent = defineEmits<{
 }>();
 
 const { selectedDirectory, expandedFolders, loadingFolders } = useGlobals();
-const t = getTranslations();
-const { emit } = useEventBus();
-const { getFolderModalName, openFolderModal, confirmFolderModal: confirmModal } = useFolderModal();
 const { isHovered, handleDragOver, handleDragLeave, moveFileToFolder } = useFolderDragDrop();
-
-const modalAction = ref<InstanceType<typeof ModalFolderAction>>();
-const showModal = ref(false);
 
 const isSelected = computed(() => {
   return selectedDirectory.value.name === props.node.item.name
@@ -107,17 +86,5 @@ const select = () => {
 
 const toggle = () => {
   emitComponent("toggle", props.node);
-};
-
-const confirmFolderModal = (modalName: string, confirmAction: IConfirmFolderActionViewModel) => {
-  confirmModal(
-    modalName,
-    confirmAction,
-    (folder) => emit("DirCreateReq", folder),
-    (folder) => {
-      const { children, ...directory } = folder as IHFileLibraryItemDto;
-      emit("DirDeleteReq", directory);
-    },
-  );
 };
 </script>
