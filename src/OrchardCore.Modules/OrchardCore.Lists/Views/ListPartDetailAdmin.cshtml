@@ -24,24 +24,21 @@ else
 
     @if (Model.ContentItems.Any())
     {
-        <div class="action-bar-content">
-            <ul class="list-group" id="ci-sortable">
-                @foreach (var contentItem in Model.ContentItems)
+        <ul class="list-group" id="ci-sortable">
+            @foreach (var contentItem in Model.ContentItems)
+            {
+                var contentItemSummary = (dynamic)await ContentItemDisplayManager.BuildDisplayAsync(contentItem, Model.Context.Updater, "SummaryAdmin", Model.Context.GroupId);
+                if (enableOrdering)
                 {
-                    var contentItemSummary = (dynamic)await ContentItemDisplayManager.BuildDisplayAsync(contentItem, Model.Context.Updater, "SummaryAdmin", Model.Context.GroupId);
-                    if (enableOrdering)
-                    {
-                        await contentItemSummary.Selectors.AddAsync(await New.ListPart_Sortable());
-                    }
-                    <li class="list-group-item list-group-item-action">
-                        @await DisplayAsync(contentItemSummary)
-                    </li>
+                    await contentItemSummary.Selectors.AddAsync(await New.ListPart_Sortable());
                 }
-            </ul>
+                <li class="list-group-item list-group-item-action">
+                    @await DisplayAsync(contentItemSummary)
+                </li>
+            }
+        </ul>
 
-            @await DisplayAsync(Model.Pager)
-
-        </div>
+        @await DisplayAsync(Model.Pager)
 
         @if (enableOrdering)
         {

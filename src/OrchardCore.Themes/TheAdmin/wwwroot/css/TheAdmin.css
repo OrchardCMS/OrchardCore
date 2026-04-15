@@ -352,7 +352,8 @@ a:hover {
     right: var(--oc-start-navigation-width-when-compact, 48);
   }
 
-  .action-bar-content {
+  *:has(> .action-bar ~ *),
+  *:has(> .second-action-bar ~ *) {
     padding-bottom: calc(var(--oc-action-bar-height) + var(--oc-second-action-bar-height) + 0.5rem);
   }
 }

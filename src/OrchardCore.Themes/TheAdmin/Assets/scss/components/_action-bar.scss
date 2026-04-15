@@ -58,7 +58,6 @@
             left: 0.75rem;
             top: 1.1rem;
         }
-
         // Mobile collapsible actions toggle button
         .action-bar-toggle {
             flex-shrink: 0;
@@ -78,13 +77,11 @@
                 border-bottom: 0;
             }
         }
-
         // Hide collapsible actions when the toggle is in its collapsed state.
         // Scoped to .action-bar so desktop (non-sticky) rendering is unaffected.
         &:has(.action-bar-toggle[aria-expanded="false"]) .action-bar-collapsible {
             display: none;
         }
-
         // Auto-hide the toggle when no collapsible actions are present.
         &:not(:has(.action-bar-collapsible)) .action-bar-toggle {
             display: none;
@@ -119,7 +116,10 @@
         left: var(--oc-start-navigation-width-when-compact, 48);
     }
 
-    .action-bar-content {
+    // Add bottom padding to the page content when either action bar is present to prevent 
+    // content from being obscured by the fixed action bar(s).
+    *:has(> .action-bar ~ *),
+    *:has(> .second-action-bar ~ *) {
         padding-bottom: calc(var(--oc-action-bar-height) + var(--oc-second-action-bar-height) + 0.5rem);
     }
 }
