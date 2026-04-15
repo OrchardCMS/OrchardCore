@@ -109,7 +109,7 @@ public sealed class OrchardTestServer : IAsyncDisposable
 
         // The OrchardCore tenant pipeline initializes lazily on the first request.
         // Warm up the app now so tests don't race against pipeline initialization.
-        await WarmUpAsync(address);
+        await WarmUpAsync(address, timeoutSeconds: 90);
 
         return new OrchardTestServer(app, address, loggerProvider.Collector);
     }
