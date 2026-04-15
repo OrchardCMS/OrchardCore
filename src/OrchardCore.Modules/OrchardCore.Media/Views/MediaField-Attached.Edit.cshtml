@@ -44,7 +44,7 @@
                 <a href="javascript:;" v-on:click="removeSelected" class="btn btn-secondary btn-sm" v-bind:class="{ disabled : !selectedMedia }"><i class="fa-solid fa-trash" aria-hidden="true"></i></a>
             </div>
             <label class="selected-media-name form-label">
-                <code class="text-end" v-if="selectedMedia">@T["{{{{ selectedMedia.attachedFileName !== null && selectedMedia.attachedFileName !== '' ? selectedMedia.attachedFileName : selectedMedia.name }}}}{{{{ selectedMedia.mediaText === '' ? '' : ', ' + selectedMedia.mediaText }}}} ({{{{ isNaN(fileSize)? 0 : fileSize }}}} KB)"]</code>
+                <code class="text-end" v-if="selectedMedia">{{ selectedMediaDisplayText }}</code>
             </label>
         </div>
 
@@ -63,6 +63,7 @@
         <input type="hidden" id="t-errors" value="@T["Errors"]" />
         <input type="hidden" id="t-clear-errors" value="@T["Clear Errors"]" />
 
+        <input type="hidden" id="t-selected-media-format" value="@T["{0}{1} ({2} KB)"]" />
     </div>
 
     <partial name="Shared/MediaFieldEditLocalization.cshtml" />
