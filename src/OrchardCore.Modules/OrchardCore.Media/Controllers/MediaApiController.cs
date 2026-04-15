@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -77,6 +78,7 @@ public class MediaApiController : Controller
 
     [HttpGet]
     [Route("GetPermittedStorage")]
+    [EndpointName("ApiGetPermittedStorage")]
     [ProducesResponseType(typeof(PermittedStorageDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
@@ -96,6 +98,7 @@ public class MediaApiController : Controller
 
     [HttpGet]
     [Route("GetDirectoryTree")]
+    [EndpointName("ApiGetDirectoryTree")]
     [ProducesResponseType(typeof(DirectoryTreeNodeDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
@@ -130,6 +133,7 @@ public class MediaApiController : Controller
 
     [HttpGet]
     [Route("GetFolders")]
+    [EndpointName("ApiGetFolders")]
     [ProducesResponseType(typeof(PaginatedFoldersDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
@@ -221,6 +225,7 @@ public class MediaApiController : Controller
 
     [HttpGet]
     [Route("GetMediaItems")]
+    [EndpointName("ApiGetMediaItems")]
     [ProducesResponseType(typeof(IEnumerable<FileStoreEntryDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
@@ -274,6 +279,7 @@ public class MediaApiController : Controller
     /// </summary>
     [HttpGet]
     [Route("GetDirectoryContent")]
+    [EndpointName("ApiGetDirectoryContent")]
     [ProducesResponseType(typeof(DirectoryContentDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
@@ -356,6 +362,7 @@ public class MediaApiController : Controller
 
     [HttpGet]
     [Route("GetMediaItem")]
+    [EndpointName("ApiGetMediaItem")]
     [ProducesResponseType(typeof(FileStoreEntryDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
@@ -383,7 +390,40 @@ public class MediaApiController : Controller
     }
 
     [HttpGet]
+    [Route("GetMediaFieldItems")]
+    [EndpointName("ApiGetMediaFieldItems")]
+    [ProducesResponseType(typeof(IEnumerable<FileStoreEntryDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+    public async Task<ActionResult<IEnumerable<FileStoreEntryDto>>> GetMediaFieldItems([FromQuery] IEnumerable<string> paths)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMedia))
+        {
+            return this.ApiChallengeOrForbidForCookieAuth();
+        }
+
+        var requestedPaths = paths
+            ?.Where(static path => !string.IsNullOrWhiteSpace(path))
+            .Distinct(StringComparer.Ordinal)
+            .ToArray() ?? [];
+
+        if (requestedPaths.Length == 0)
+        {
+            return Array.Empty<FileStoreEntryDto>();
+        }
+
+        var mediaItems = await Task.WhenAll(requestedPaths.Select(async path =>
+        {
+            var fileEntry = await _mediaFileStore.GetFileInfoAsync(path);
+            return fileEntry is null ? null : CreateFileResult(fileEntry);
+        }));
+
+        return mediaItems.Where(static mediaItem => mediaItem is not null).ToArray();
+    }
+
+    [HttpGet]
     [Route("GetAllMediaItems")]
+    [EndpointName("ApiGetAllMediaItems")]
     [ProducesResponseType(typeof(IEnumerable<FileStoreEntryDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
@@ -435,6 +475,7 @@ public class MediaApiController : Controller
     [HttpPost]
     [MediaSizeLimit]
     [Route("Upload")]
+    [EndpointName("ApiUploadMedia")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
@@ -538,6 +579,7 @@ public class MediaApiController : Controller
 
     [HttpPost]
     [Route("CopyMedia")]
+    [EndpointName("ApiCopyMedia")]
     [ProducesResponseType(typeof(FileStoreEntryDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
@@ -583,6 +625,7 @@ public class MediaApiController : Controller
 
     [HttpPost]
     [Route("DeleteFolder")]
+    [EndpointName("ApiDeleteFolder")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
@@ -623,6 +666,7 @@ public class MediaApiController : Controller
 
     [HttpPost]
     [Route("DeleteMedia")]
+    [EndpointName("ApiDeleteMedia")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
@@ -650,6 +694,7 @@ public class MediaApiController : Controller
 
     [HttpPost]
     [Route("MoveMedia")]
+    [EndpointName("ApiMoveMedia")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
@@ -696,6 +741,7 @@ public class MediaApiController : Controller
 
     [HttpPost]
     [Route("DeleteMediaList")]
+    [EndpointName("ApiDeleteMediaList")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
@@ -733,6 +779,7 @@ public class MediaApiController : Controller
 
     [HttpPost]
     [Route("MoveMediaList")]
+    [EndpointName("ApiMoveMediaList")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
@@ -783,6 +830,7 @@ public class MediaApiController : Controller
 
     [HttpPost]
     [Route("CreateFolder")]
+    [EndpointName("ApiCreateFolder")]
     [ProducesResponseType(typeof(FileStoreEntryDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
@@ -881,6 +929,7 @@ public class MediaApiController : Controller
 
     [HttpGet]
     [Route("TusFileInfo/{uploadId}")]
+    [EndpointName("ApiGetTusFileInfo")]
     [ProducesResponseType(typeof(FileStoreEntryDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]

@@ -16,7 +16,7 @@ export interface ICreateEndpointClient {
      * @param body (optional) 
      * @return OK
      */
-    contentPOSTPOST(draft: boolean | undefined, body: ContentItem | undefined,  cancelToken?: CancelToken): Promise<void>;
+    contentPOST(draft: boolean | undefined, body: ContentItem | undefined,  cancelToken?: CancelToken): Promise<void>;
 }
 
 export class CreateEndpointClient implements ICreateEndpointClient {
@@ -37,7 +37,7 @@ export class CreateEndpointClient implements ICreateEndpointClient {
      * @param body (optional) 
      * @return OK
      */
-    contentPOSTPOST(draft: boolean | undefined, body: ContentItem | undefined, cancelToken?: CancelToken): Promise<void> {
+    contentPOST(draft: boolean | undefined, body: ContentItem | undefined, cancelToken?: CancelToken): Promise<void> {
         let url_ = this.baseUrl + "/api/content?";
         if (draft === null)
             throw new globalThis.Error("The parameter 'draft' cannot be null.");
@@ -64,11 +64,11 @@ export class CreateEndpointClient implements ICreateEndpointClient {
                 throw _error;
             }
         }).then((_response: AxiosResponse) => {
-            return this.processContentPOSTPOST(_response);
+            return this.processContentPOST(_response);
         });
     }
 
-    protected processContentPOSTPOST(response: AxiosResponse): Promise<void> {
+    protected processContentPOST(response: AxiosResponse): Promise<void> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -94,7 +94,7 @@ export interface IDeleteEndpointClient {
     /**
      * @return OK
      */
-    contentDELETEDELETE(contentItemId: string,  cancelToken?: CancelToken): Promise<void>;
+    contentDELETE(contentItemId: string,  cancelToken?: CancelToken): Promise<void>;
 }
 
 export class DeleteEndpointClient implements IDeleteEndpointClient {
@@ -113,7 +113,7 @@ export class DeleteEndpointClient implements IDeleteEndpointClient {
     /**
      * @return OK
      */
-    contentDELETEDELETE(contentItemId: string, cancelToken?: CancelToken): Promise<void> {
+    contentDELETE(contentItemId: string, cancelToken?: CancelToken): Promise<void> {
         let url_ = this.baseUrl + "/api/content/{contentItemId}";
         if (contentItemId === undefined || contentItemId === null)
             throw new globalThis.Error("The parameter 'contentItemId' must be defined.");
@@ -135,11 +135,11 @@ export class DeleteEndpointClient implements IDeleteEndpointClient {
                 throw _error;
             }
         }).then((_response: AxiosResponse) => {
-            return this.processContentDELETEDELETE(_response);
+            return this.processContentDELETE(_response);
         });
     }
 
-    protected processContentDELETEDELETE(response: AxiosResponse): Promise<void> {
+    protected processContentDELETE(response: AxiosResponse): Promise<void> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -165,7 +165,7 @@ export interface IGetEndpointClient {
     /**
      * @return OK
      */
-    contentGETGET(contentItemId: string,  cancelToken?: CancelToken): Promise<void>;
+    contentGET(contentItemId: string,  cancelToken?: CancelToken): Promise<void>;
 }
 
 export class GetEndpointClient implements IGetEndpointClient {
@@ -184,7 +184,7 @@ export class GetEndpointClient implements IGetEndpointClient {
     /**
      * @return OK
      */
-    contentGETGET(contentItemId: string, cancelToken?: CancelToken): Promise<void> {
+    contentGET(contentItemId: string, cancelToken?: CancelToken): Promise<void> {
         let url_ = this.baseUrl + "/api/content/{contentItemId}";
         if (contentItemId === undefined || contentItemId === null)
             throw new globalThis.Error("The parameter 'contentItemId' must be defined.");
@@ -206,11 +206,11 @@ export class GetEndpointClient implements IGetEndpointClient {
                 throw _error;
             }
         }).then((_response: AxiosResponse) => {
-            return this.processContentGETGET(_response);
+            return this.processContentGET(_response);
         });
     }
 
-    protected processContentGETGET(response: AxiosResponse): Promise<void> {
+    protected processContentGET(response: AxiosResponse): Promise<void> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -239,24 +239,24 @@ export interface IElasticsearchApiClient {
      * @param parameters (optional) 
      * @return OK
      */
-    contentGETGET2(indexName: string | undefined, query: string | undefined, parameters: string | undefined,  cancelToken?: CancelToken): Promise<void>;
+    apiGetElasticsearchContent(indexName: string | undefined, query: string | undefined, parameters: string | undefined,  cancelToken?: CancelToken): Promise<void>;
     /**
      * @param body (optional) 
      * @return OK
      */
-    contentPOSTPOST22(body: ElasticApiQueryViewModel | undefined,  cancelToken?: CancelToken): Promise<void>;
+    apiPostElasticsearchContent(body: ElasticApiQueryViewModel | undefined,  cancelToken?: CancelToken): Promise<void>;
     /**
      * @param indexName (optional) 
      * @param query (optional) 
      * @param parameters (optional) 
      * @return OK
      */
-    documentsGETGET(indexName: string | undefined, query: string | undefined, parameters: string | undefined,  cancelToken?: CancelToken): Promise<void>;
+    apiGetElasticsearchDocuments(indexName: string | undefined, query: string | undefined, parameters: string | undefined,  cancelToken?: CancelToken): Promise<void>;
     /**
      * @param body (optional) 
      * @return OK
      */
-    documentsPOSTPOST(body: ElasticApiQueryViewModel | undefined,  cancelToken?: CancelToken): Promise<void>;
+    apiPostElasticsearchDocuments(body: ElasticApiQueryViewModel | undefined,  cancelToken?: CancelToken): Promise<void>;
 }
 
 export class ElasticsearchApiClient implements IElasticsearchApiClient {
@@ -278,7 +278,7 @@ export class ElasticsearchApiClient implements IElasticsearchApiClient {
      * @param parameters (optional) 
      * @return OK
      */
-    contentGETGET2(indexName: string | undefined, query: string | undefined, parameters: string | undefined, cancelToken?: CancelToken): Promise<void> {
+    apiGetElasticsearchContent(indexName: string | undefined, query: string | undefined, parameters: string | undefined, cancelToken?: CancelToken): Promise<void> {
         let url_ = this.baseUrl + "/api/elasticsearch/content?";
         if (indexName === null)
             throw new globalThis.Error("The parameter 'indexName' cannot be null.");
@@ -309,11 +309,11 @@ export class ElasticsearchApiClient implements IElasticsearchApiClient {
                 throw _error;
             }
         }).then((_response: AxiosResponse) => {
-            return this.processContentGETGET2(_response);
+            return this.processApiGetElasticsearchContent(_response);
         });
     }
 
-    protected processContentGETGET2(response: AxiosResponse): Promise<void> {
+    protected processApiGetElasticsearchContent(response: AxiosResponse): Promise<void> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -338,7 +338,7 @@ export class ElasticsearchApiClient implements IElasticsearchApiClient {
      * @param body (optional) 
      * @return OK
      */
-    contentPOSTPOST22(body: ElasticApiQueryViewModel | undefined, cancelToken?: CancelToken): Promise<void> {
+    apiPostElasticsearchContent(body: ElasticApiQueryViewModel | undefined, cancelToken?: CancelToken): Promise<void> {
         let url_ = this.baseUrl + "/api/elasticsearch/content";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -361,11 +361,11 @@ export class ElasticsearchApiClient implements IElasticsearchApiClient {
                 throw _error;
             }
         }).then((_response: AxiosResponse) => {
-            return this.processContentPOSTPOST22(_response);
+            return this.processApiPostElasticsearchContent(_response);
         });
     }
 
-    protected processContentPOSTPOST22(response: AxiosResponse): Promise<void> {
+    protected processApiPostElasticsearchContent(response: AxiosResponse): Promise<void> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -392,7 +392,7 @@ export class ElasticsearchApiClient implements IElasticsearchApiClient {
      * @param parameters (optional) 
      * @return OK
      */
-    documentsGETGET(indexName: string | undefined, query: string | undefined, parameters: string | undefined, cancelToken?: CancelToken): Promise<void> {
+    apiGetElasticsearchDocuments(indexName: string | undefined, query: string | undefined, parameters: string | undefined, cancelToken?: CancelToken): Promise<void> {
         let url_ = this.baseUrl + "/api/elasticsearch/documents?";
         if (indexName === null)
             throw new globalThis.Error("The parameter 'indexName' cannot be null.");
@@ -423,11 +423,11 @@ export class ElasticsearchApiClient implements IElasticsearchApiClient {
                 throw _error;
             }
         }).then((_response: AxiosResponse) => {
-            return this.processDocumentsGETGET(_response);
+            return this.processApiGetElasticsearchDocuments(_response);
         });
     }
 
-    protected processDocumentsGETGET(response: AxiosResponse): Promise<void> {
+    protected processApiGetElasticsearchDocuments(response: AxiosResponse): Promise<void> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -452,7 +452,7 @@ export class ElasticsearchApiClient implements IElasticsearchApiClient {
      * @param body (optional) 
      * @return OK
      */
-    documentsPOSTPOST(body: ElasticApiQueryViewModel | undefined, cancelToken?: CancelToken): Promise<void> {
+    apiPostElasticsearchDocuments(body: ElasticApiQueryViewModel | undefined, cancelToken?: CancelToken): Promise<void> {
         let url_ = this.baseUrl + "/api/elasticsearch/documents";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -475,11 +475,11 @@ export class ElasticsearchApiClient implements IElasticsearchApiClient {
                 throw _error;
             }
         }).then((_response: AxiosResponse) => {
-            return this.processDocumentsPOSTPOST(_response);
+            return this.processApiPostElasticsearchDocuments(_response);
         });
     }
 
-    protected processDocumentsPOSTPOST(response: AxiosResponse): Promise<void> {
+    protected processApiPostElasticsearchDocuments(response: AxiosResponse): Promise<void> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -576,24 +576,24 @@ export interface ILuceneApiClient {
      * @param parameters (optional) 
      * @return OK
      */
-    contentGETGET3(indexName: string | undefined, query: string | undefined, parameters: string | undefined,  cancelToken?: CancelToken): Promise<void>;
+    apiGetLuceneContent(indexName: string | undefined, query: string | undefined, parameters: string | undefined,  cancelToken?: CancelToken): Promise<void>;
     /**
      * @param body (optional) 
      * @return OK
      */
-    contentPOSTPOST33(body: LuceneQueryModel | undefined,  cancelToken?: CancelToken): Promise<void>;
+    apiPostLuceneContent(body: LuceneQueryModel | undefined,  cancelToken?: CancelToken): Promise<void>;
     /**
      * @param indexName (optional) 
      * @param query (optional) 
      * @param parameters (optional) 
      * @return OK
      */
-    documentsGETGET2(indexName: string | undefined, query: string | undefined, parameters: string | undefined,  cancelToken?: CancelToken): Promise<void>;
+    apiGetLuceneDocuments(indexName: string | undefined, query: string | undefined, parameters: string | undefined,  cancelToken?: CancelToken): Promise<void>;
     /**
      * @param body (optional) 
      * @return OK
      */
-    documentsPOSTPOST2(body: LuceneQueryModel | undefined,  cancelToken?: CancelToken): Promise<void>;
+    apiPostLuceneDocuments(body: LuceneQueryModel | undefined,  cancelToken?: CancelToken): Promise<void>;
 }
 
 export class LuceneApiClient implements ILuceneApiClient {
@@ -615,7 +615,7 @@ export class LuceneApiClient implements ILuceneApiClient {
      * @param parameters (optional) 
      * @return OK
      */
-    contentGETGET3(indexName: string | undefined, query: string | undefined, parameters: string | undefined, cancelToken?: CancelToken): Promise<void> {
+    apiGetLuceneContent(indexName: string | undefined, query: string | undefined, parameters: string | undefined, cancelToken?: CancelToken): Promise<void> {
         let url_ = this.baseUrl + "/api/lucene/content?";
         if (indexName === null)
             throw new globalThis.Error("The parameter 'indexName' cannot be null.");
@@ -646,11 +646,11 @@ export class LuceneApiClient implements ILuceneApiClient {
                 throw _error;
             }
         }).then((_response: AxiosResponse) => {
-            return this.processContentGETGET3(_response);
+            return this.processApiGetLuceneContent(_response);
         });
     }
 
-    protected processContentGETGET3(response: AxiosResponse): Promise<void> {
+    protected processApiGetLuceneContent(response: AxiosResponse): Promise<void> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -675,7 +675,7 @@ export class LuceneApiClient implements ILuceneApiClient {
      * @param body (optional) 
      * @return OK
      */
-    contentPOSTPOST33(body: LuceneQueryModel | undefined, cancelToken?: CancelToken): Promise<void> {
+    apiPostLuceneContent(body: LuceneQueryModel | undefined, cancelToken?: CancelToken): Promise<void> {
         let url_ = this.baseUrl + "/api/lucene/content";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -698,11 +698,11 @@ export class LuceneApiClient implements ILuceneApiClient {
                 throw _error;
             }
         }).then((_response: AxiosResponse) => {
-            return this.processContentPOSTPOST33(_response);
+            return this.processApiPostLuceneContent(_response);
         });
     }
 
-    protected processContentPOSTPOST33(response: AxiosResponse): Promise<void> {
+    protected processApiPostLuceneContent(response: AxiosResponse): Promise<void> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -729,7 +729,7 @@ export class LuceneApiClient implements ILuceneApiClient {
      * @param parameters (optional) 
      * @return OK
      */
-    documentsGETGET2(indexName: string | undefined, query: string | undefined, parameters: string | undefined, cancelToken?: CancelToken): Promise<void> {
+    apiGetLuceneDocuments(indexName: string | undefined, query: string | undefined, parameters: string | undefined, cancelToken?: CancelToken): Promise<void> {
         let url_ = this.baseUrl + "/api/lucene/documents?";
         if (indexName === null)
             throw new globalThis.Error("The parameter 'indexName' cannot be null.");
@@ -760,11 +760,11 @@ export class LuceneApiClient implements ILuceneApiClient {
                 throw _error;
             }
         }).then((_response: AxiosResponse) => {
-            return this.processDocumentsGETGET2(_response);
+            return this.processApiGetLuceneDocuments(_response);
         });
     }
 
-    protected processDocumentsGETGET2(response: AxiosResponse): Promise<void> {
+    protected processApiGetLuceneDocuments(response: AxiosResponse): Promise<void> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -789,7 +789,7 @@ export class LuceneApiClient implements ILuceneApiClient {
      * @param body (optional) 
      * @return OK
      */
-    documentsPOSTPOST2(body: LuceneQueryModel | undefined, cancelToken?: CancelToken): Promise<void> {
+    apiPostLuceneDocuments(body: LuceneQueryModel | undefined, cancelToken?: CancelToken): Promise<void> {
         let url_ = this.baseUrl + "/api/lucene/documents";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -812,11 +812,11 @@ export class LuceneApiClient implements ILuceneApiClient {
                 throw _error;
             }
         }).then((_response: AxiosResponse) => {
-            return this.processDocumentsPOSTPOST2(_response);
+            return this.processApiPostLuceneDocuments(_response);
         });
     }
 
-    protected processDocumentsPOSTPOST2(response: AxiosResponse): Promise<void> {
+    protected processApiPostLuceneDocuments(response: AxiosResponse): Promise<void> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -842,88 +842,93 @@ export interface IMediaApiClient {
     /**
      * @return OK
      */
-    getPermittedStorage( cancelToken?: CancelToken): Promise<PermittedStorageDto>;
+    apiGetPermittedStorage( cancelToken?: CancelToken): Promise<PermittedStorageDto>;
     /**
      * @return OK
      */
-    getDirectoryTree( cancelToken?: CancelToken): Promise<DirectoryTreeNodeDto>;
+    apiGetDirectoryTree( cancelToken?: CancelToken): Promise<DirectoryTreeNodeDto>;
     /**
      * @param path (optional) 
      * @param skip (optional) 
      * @param take (optional) 
      * @return OK
      */
-    getFolders(path: string | undefined, skip: number | undefined, take: number | undefined,  cancelToken?: CancelToken): Promise<PaginatedFoldersDto>;
+    apiGetFolders(path: string | undefined, skip: number | undefined, take: number | undefined,  cancelToken?: CancelToken): Promise<PaginatedFoldersDto>;
     /**
      * @param path (optional) 
      * @param extensions (optional) 
      * @return OK
      */
-    getMediaItems(path: string | undefined, extensions: string | undefined,  cancelToken?: CancelToken): Promise<FileStoreEntryDto[]>;
+    apiGetMediaItems(path: string | undefined, extensions: string | undefined,  cancelToken?: CancelToken): Promise<FileStoreEntryDto[]>;
     /**
      * @param path (optional) 
      * @param extensions (optional) 
      * @return OK
      */
-    getDirectoryContent(path: string | undefined, extensions: string | undefined,  cancelToken?: CancelToken): Promise<DirectoryContentDto>;
+    apiGetDirectoryContent(path: string | undefined, extensions: string | undefined,  cancelToken?: CancelToken): Promise<DirectoryContentDto>;
     /**
      * @param path (optional) 
      * @return OK
      */
-    getMediaItem(path: string | undefined,  cancelToken?: CancelToken): Promise<FileStoreEntryDto>;
+    apiGetMediaItem(path: string | undefined,  cancelToken?: CancelToken): Promise<FileStoreEntryDto>;
+    /**
+     * @param paths (optional) 
+     * @return OK
+     */
+    apiGetMediaFieldItems(paths: string[] | undefined,  cancelToken?: CancelToken): Promise<FileStoreEntryDto[]>;
     /**
      * @param extensions (optional) 
      * @return OK
      */
-    getAllMediaItems(extensions: string | undefined,  cancelToken?: CancelToken): Promise<FileStoreEntryDto[]>;
+    apiGetAllMediaItems(extensions: string | undefined,  cancelToken?: CancelToken): Promise<FileStoreEntryDto[]>;
     /**
      * @param path (optional) 
      * @param extensions (optional) 
      * @return OK
      */
-    upload(path: string | undefined, extensions: string | undefined,  cancelToken?: CancelToken): Promise<void>;
+    apiUploadMedia(path: string | undefined, extensions: string | undefined,  cancelToken?: CancelToken): Promise<void>;
     /**
      * @param oldPath (optional) 
      * @param newPath (optional) 
      * @return OK
      */
-    copyMedia(oldPath: string | undefined, newPath: string | undefined,  cancelToken?: CancelToken): Promise<FileStoreEntryDto>;
+    apiCopyMedia(oldPath: string | undefined, newPath: string | undefined,  cancelToken?: CancelToken): Promise<FileStoreEntryDto>;
     /**
      * @param path (optional) 
      * @return OK
      */
-    deleteFolder(path: string | undefined,  cancelToken?: CancelToken): Promise<void>;
+    apiDeleteFolder(path: string | undefined,  cancelToken?: CancelToken): Promise<void>;
     /**
      * @param path (optional) 
      * @return OK
      */
-    deleteMedia(path: string | undefined,  cancelToken?: CancelToken): Promise<void>;
+    apiDeleteMedia(path: string | undefined,  cancelToken?: CancelToken): Promise<void>;
     /**
      * @param oldPath (optional) 
      * @param newPath (optional) 
      * @return OK
      */
-    moveMedia(oldPath: string | undefined, newPath: string | undefined,  cancelToken?: CancelToken): Promise<void>;
+    apiMoveMedia(oldPath: string | undefined, newPath: string | undefined,  cancelToken?: CancelToken): Promise<void>;
     /**
      * @param body (optional) 
      * @return OK
      */
-    deleteMediaList(body: string[] | undefined,  cancelToken?: CancelToken): Promise<void>;
+    apiDeleteMediaList(body: string[] | undefined,  cancelToken?: CancelToken): Promise<void>;
     /**
      * @param body (optional) 
      * @return OK
      */
-    moveMediaList(body: MoveMedias | undefined,  cancelToken?: CancelToken): Promise<void>;
+    apiMoveMediaList(body: MoveMedias | undefined,  cancelToken?: CancelToken): Promise<void>;
     /**
      * @param path (optional) 
      * @param name (optional) 
      * @return OK
      */
-    createFolder(path: string | undefined, name: string | undefined,  cancelToken?: CancelToken): Promise<FileStoreEntryDto>;
+    apiCreateFolder(path: string | undefined, name: string | undefined,  cancelToken?: CancelToken): Promise<FileStoreEntryDto>;
     /**
      * @return OK
      */
-    tusFileInfo(uploadId: string,  cancelToken?: CancelToken): Promise<FileStoreEntryDto>;
+    apiGetTusFileInfo(uploadId: string,  cancelToken?: CancelToken): Promise<FileStoreEntryDto>;
 }
 
 export class MediaApiClient implements IMediaApiClient {
@@ -942,7 +947,7 @@ export class MediaApiClient implements IMediaApiClient {
     /**
      * @return OK
      */
-    getPermittedStorage( cancelToken?: CancelToken): Promise<PermittedStorageDto> {
+    apiGetPermittedStorage( cancelToken?: CancelToken): Promise<PermittedStorageDto> {
         let url_ = this.baseUrl + "/api/media/GetPermittedStorage";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -962,11 +967,11 @@ export class MediaApiClient implements IMediaApiClient {
                 throw _error;
             }
         }).then((_response: AxiosResponse) => {
-            return this.processGetPermittedStorage(_response);
+            return this.processApiGetPermittedStorage(_response);
         });
     }
 
-    protected processGetPermittedStorage(response: AxiosResponse): Promise<PermittedStorageDto> {
+    protected processApiGetPermittedStorage(response: AxiosResponse): Promise<PermittedStorageDto> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -1007,7 +1012,7 @@ export class MediaApiClient implements IMediaApiClient {
     /**
      * @return OK
      */
-    getDirectoryTree( cancelToken?: CancelToken): Promise<DirectoryTreeNodeDto> {
+    apiGetDirectoryTree( cancelToken?: CancelToken): Promise<DirectoryTreeNodeDto> {
         let url_ = this.baseUrl + "/api/media/GetDirectoryTree";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -1027,11 +1032,11 @@ export class MediaApiClient implements IMediaApiClient {
                 throw _error;
             }
         }).then((_response: AxiosResponse) => {
-            return this.processGetDirectoryTree(_response);
+            return this.processApiGetDirectoryTree(_response);
         });
     }
 
-    protected processGetDirectoryTree(response: AxiosResponse): Promise<DirectoryTreeNodeDto> {
+    protected processApiGetDirectoryTree(response: AxiosResponse): Promise<DirectoryTreeNodeDto> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -1075,7 +1080,7 @@ export class MediaApiClient implements IMediaApiClient {
      * @param take (optional) 
      * @return OK
      */
-    getFolders(path: string | undefined, skip: number | undefined, take: number | undefined, cancelToken?: CancelToken): Promise<PaginatedFoldersDto> {
+    apiGetFolders(path: string | undefined, skip: number | undefined, take: number | undefined, cancelToken?: CancelToken): Promise<PaginatedFoldersDto> {
         let url_ = this.baseUrl + "/api/media/GetFolders?";
         if (path === null)
             throw new globalThis.Error("The parameter 'path' cannot be null.");
@@ -1107,11 +1112,11 @@ export class MediaApiClient implements IMediaApiClient {
                 throw _error;
             }
         }).then((_response: AxiosResponse) => {
-            return this.processGetFolders(_response);
+            return this.processApiGetFolders(_response);
         });
     }
 
-    protected processGetFolders(response: AxiosResponse): Promise<PaginatedFoldersDto> {
+    protected processApiGetFolders(response: AxiosResponse): Promise<PaginatedFoldersDto> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -1161,7 +1166,7 @@ export class MediaApiClient implements IMediaApiClient {
      * @param extensions (optional) 
      * @return OK
      */
-    getMediaItems(path: string | undefined, extensions: string | undefined, cancelToken?: CancelToken): Promise<FileStoreEntryDto[]> {
+    apiGetMediaItems(path: string | undefined, extensions: string | undefined, cancelToken?: CancelToken): Promise<FileStoreEntryDto[]> {
         let url_ = this.baseUrl + "/api/media/GetMediaItems?";
         if (path === null)
             throw new globalThis.Error("The parameter 'path' cannot be null.");
@@ -1189,11 +1194,11 @@ export class MediaApiClient implements IMediaApiClient {
                 throw _error;
             }
         }).then((_response: AxiosResponse) => {
-            return this.processGetMediaItems(_response);
+            return this.processApiGetMediaItems(_response);
         });
     }
 
-    protected processGetMediaItems(response: AxiosResponse): Promise<FileStoreEntryDto[]> {
+    protected processApiGetMediaItems(response: AxiosResponse): Promise<FileStoreEntryDto[]> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -1250,7 +1255,7 @@ export class MediaApiClient implements IMediaApiClient {
      * @param extensions (optional) 
      * @return OK
      */
-    getDirectoryContent(path: string | undefined, extensions: string | undefined, cancelToken?: CancelToken): Promise<DirectoryContentDto> {
+    apiGetDirectoryContent(path: string | undefined, extensions: string | undefined, cancelToken?: CancelToken): Promise<DirectoryContentDto> {
         let url_ = this.baseUrl + "/api/media/GetDirectoryContent?";
         if (path === null)
             throw new globalThis.Error("The parameter 'path' cannot be null.");
@@ -1278,11 +1283,11 @@ export class MediaApiClient implements IMediaApiClient {
                 throw _error;
             }
         }).then((_response: AxiosResponse) => {
-            return this.processGetDirectoryContent(_response);
+            return this.processApiGetDirectoryContent(_response);
         });
     }
 
-    protected processGetDirectoryContent(response: AxiosResponse): Promise<DirectoryContentDto> {
+    protected processApiGetDirectoryContent(response: AxiosResponse): Promise<DirectoryContentDto> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -1331,7 +1336,7 @@ export class MediaApiClient implements IMediaApiClient {
      * @param path (optional) 
      * @return OK
      */
-    getMediaItem(path: string | undefined, cancelToken?: CancelToken): Promise<FileStoreEntryDto> {
+    apiGetMediaItem(path: string | undefined, cancelToken?: CancelToken): Promise<FileStoreEntryDto> {
         let url_ = this.baseUrl + "/api/media/GetMediaItem?";
         if (path === null)
             throw new globalThis.Error("The parameter 'path' cannot be null.");
@@ -1355,11 +1360,11 @@ export class MediaApiClient implements IMediaApiClient {
                 throw _error;
             }
         }).then((_response: AxiosResponse) => {
-            return this.processGetMediaItem(_response);
+            return this.processApiGetMediaItem(_response);
         });
     }
 
-    protected processGetMediaItem(response: AxiosResponse): Promise<FileStoreEntryDto> {
+    protected processApiGetMediaItem(response: AxiosResponse): Promise<FileStoreEntryDto> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -1405,10 +1410,87 @@ export class MediaApiClient implements IMediaApiClient {
     }
 
     /**
+     * @param paths (optional) 
+     * @return OK
+     */
+    apiGetMediaFieldItems(paths: string[] | undefined, cancelToken?: CancelToken): Promise<FileStoreEntryDto[]> {
+        let url_ = this.baseUrl + "/api/media/GetMediaFieldItems?";
+        if (paths === null)
+            throw new globalThis.Error("The parameter 'paths' cannot be null.");
+        else if (paths !== undefined)
+            paths && paths.forEach(item => { url_ += "paths=" + encodeURIComponent("" + item) + "&"; });
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: AxiosRequestConfig = {
+            method: "GET",
+            url: url_,
+            headers: {
+                "Accept": "application/json"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processApiGetMediaFieldItems(_response);
+        });
+    }
+
+    protected processApiGetMediaFieldItems(response: AxiosResponse): Promise<FileStoreEntryDto[]> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(FileStoreEntryDto.fromJS(item));
+            }
+            else {
+                result200 = null as any;
+            }
+            return Promise.resolve<FileStoreEntryDto[]>(result200);
+
+        } else if (status === 401) {
+            const _responseText = response.data;
+            let result401: any = null;
+            let resultData401  = _responseText;
+            result401 = ProblemDetails.fromJS(resultData401);
+            return throwException("Unauthorized", status, _responseText, _headers, result401);
+
+        } else if (status === 403) {
+            const _responseText = response.data;
+            let result403: any = null;
+            let resultData403  = _responseText;
+            result403 = ProblemDetails.fromJS(resultData403);
+            return throwException("Forbidden", status, _responseText, _headers, result403);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<FileStoreEntryDto[]>(null as any);
+    }
+
+    /**
      * @param extensions (optional) 
      * @return OK
      */
-    getAllMediaItems(extensions: string | undefined, cancelToken?: CancelToken): Promise<FileStoreEntryDto[]> {
+    apiGetAllMediaItems(extensions: string | undefined, cancelToken?: CancelToken): Promise<FileStoreEntryDto[]> {
         let url_ = this.baseUrl + "/api/media/GetAllMediaItems?";
         if (extensions === null)
             throw new globalThis.Error("The parameter 'extensions' cannot be null.");
@@ -1432,11 +1514,11 @@ export class MediaApiClient implements IMediaApiClient {
                 throw _error;
             }
         }).then((_response: AxiosResponse) => {
-            return this.processGetAllMediaItems(_response);
+            return this.processApiGetAllMediaItems(_response);
         });
     }
 
-    protected processGetAllMediaItems(response: AxiosResponse): Promise<FileStoreEntryDto[]> {
+    protected processApiGetAllMediaItems(response: AxiosResponse): Promise<FileStoreEntryDto[]> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -1486,7 +1568,7 @@ export class MediaApiClient implements IMediaApiClient {
      * @param extensions (optional) 
      * @return OK
      */
-    upload(path: string | undefined, extensions: string | undefined, cancelToken?: CancelToken): Promise<void> {
+    apiUploadMedia(path: string | undefined, extensions: string | undefined, cancelToken?: CancelToken): Promise<void> {
         let url_ = this.baseUrl + "/api/media/Upload?";
         if (path === null)
             throw new globalThis.Error("The parameter 'path' cannot be null.");
@@ -1513,11 +1595,11 @@ export class MediaApiClient implements IMediaApiClient {
                 throw _error;
             }
         }).then((_response: AxiosResponse) => {
-            return this.processUpload(_response);
+            return this.processApiUploadMedia(_response);
         });
     }
 
-    protected processUpload(response: AxiosResponse): Promise<void> {
+    protected processApiUploadMedia(response: AxiosResponse): Promise<void> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -1557,7 +1639,7 @@ export class MediaApiClient implements IMediaApiClient {
      * @param newPath (optional) 
      * @return OK
      */
-    copyMedia(oldPath: string | undefined, newPath: string | undefined, cancelToken?: CancelToken): Promise<FileStoreEntryDto> {
+    apiCopyMedia(oldPath: string | undefined, newPath: string | undefined, cancelToken?: CancelToken): Promise<FileStoreEntryDto> {
         let url_ = this.baseUrl + "/api/media/CopyMedia?";
         if (oldPath === null)
             throw new globalThis.Error("The parameter 'oldPath' cannot be null.");
@@ -1585,11 +1667,11 @@ export class MediaApiClient implements IMediaApiClient {
                 throw _error;
             }
         }).then((_response: AxiosResponse) => {
-            return this.processCopyMedia(_response);
+            return this.processApiCopyMedia(_response);
         });
     }
 
-    protected processCopyMedia(response: AxiosResponse): Promise<FileStoreEntryDto> {
+    protected processApiCopyMedia(response: AxiosResponse): Promise<FileStoreEntryDto> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -1645,7 +1727,7 @@ export class MediaApiClient implements IMediaApiClient {
      * @param path (optional) 
      * @return OK
      */
-    deleteFolder(path: string | undefined, cancelToken?: CancelToken): Promise<void> {
+    apiDeleteFolder(path: string | undefined, cancelToken?: CancelToken): Promise<void> {
         let url_ = this.baseUrl + "/api/media/DeleteFolder?";
         if (path === null)
             throw new globalThis.Error("The parameter 'path' cannot be null.");
@@ -1668,11 +1750,11 @@ export class MediaApiClient implements IMediaApiClient {
                 throw _error;
             }
         }).then((_response: AxiosResponse) => {
-            return this.processDeleteFolder(_response);
+            return this.processApiDeleteFolder(_response);
         });
     }
 
-    protected processDeleteFolder(response: AxiosResponse): Promise<void> {
+    protected processApiDeleteFolder(response: AxiosResponse): Promise<void> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -1718,7 +1800,7 @@ export class MediaApiClient implements IMediaApiClient {
      * @param path (optional) 
      * @return OK
      */
-    deleteMedia(path: string | undefined, cancelToken?: CancelToken): Promise<void> {
+    apiDeleteMedia(path: string | undefined, cancelToken?: CancelToken): Promise<void> {
         let url_ = this.baseUrl + "/api/media/DeleteMedia?";
         if (path === null)
             throw new globalThis.Error("The parameter 'path' cannot be null.");
@@ -1741,11 +1823,11 @@ export class MediaApiClient implements IMediaApiClient {
                 throw _error;
             }
         }).then((_response: AxiosResponse) => {
-            return this.processDeleteMedia(_response);
+            return this.processApiDeleteMedia(_response);
         });
     }
 
-    protected processDeleteMedia(response: AxiosResponse): Promise<void> {
+    protected processApiDeleteMedia(response: AxiosResponse): Promise<void> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -1792,7 +1874,7 @@ export class MediaApiClient implements IMediaApiClient {
      * @param newPath (optional) 
      * @return OK
      */
-    moveMedia(oldPath: string | undefined, newPath: string | undefined, cancelToken?: CancelToken): Promise<void> {
+    apiMoveMedia(oldPath: string | undefined, newPath: string | undefined, cancelToken?: CancelToken): Promise<void> {
         let url_ = this.baseUrl + "/api/media/MoveMedia?";
         if (oldPath === null)
             throw new globalThis.Error("The parameter 'oldPath' cannot be null.");
@@ -1819,11 +1901,11 @@ export class MediaApiClient implements IMediaApiClient {
                 throw _error;
             }
         }).then((_response: AxiosResponse) => {
-            return this.processMoveMedia(_response);
+            return this.processApiMoveMedia(_response);
         });
     }
 
-    protected processMoveMedia(response: AxiosResponse): Promise<void> {
+    protected processApiMoveMedia(response: AxiosResponse): Promise<void> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -1876,7 +1958,7 @@ export class MediaApiClient implements IMediaApiClient {
      * @param body (optional) 
      * @return OK
      */
-    deleteMediaList(body: string[] | undefined, cancelToken?: CancelToken): Promise<void> {
+    apiDeleteMediaList(body: string[] | undefined, cancelToken?: CancelToken): Promise<void> {
         let url_ = this.baseUrl + "/api/media/DeleteMediaList";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -1899,11 +1981,11 @@ export class MediaApiClient implements IMediaApiClient {
                 throw _error;
             }
         }).then((_response: AxiosResponse) => {
-            return this.processDeleteMediaList(_response);
+            return this.processApiDeleteMediaList(_response);
         });
     }
 
-    protected processDeleteMediaList(response: AxiosResponse): Promise<void> {
+    protected processApiDeleteMediaList(response: AxiosResponse): Promise<void> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -1949,7 +2031,7 @@ export class MediaApiClient implements IMediaApiClient {
      * @param body (optional) 
      * @return OK
      */
-    moveMediaList(body: MoveMedias | undefined, cancelToken?: CancelToken): Promise<void> {
+    apiMoveMediaList(body: MoveMedias | undefined, cancelToken?: CancelToken): Promise<void> {
         let url_ = this.baseUrl + "/api/media/MoveMediaList";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -1972,11 +2054,11 @@ export class MediaApiClient implements IMediaApiClient {
                 throw _error;
             }
         }).then((_response: AxiosResponse) => {
-            return this.processMoveMediaList(_response);
+            return this.processApiMoveMediaList(_response);
         });
     }
 
-    protected processMoveMediaList(response: AxiosResponse): Promise<void> {
+    protected processApiMoveMediaList(response: AxiosResponse): Promise<void> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -2030,7 +2112,7 @@ export class MediaApiClient implements IMediaApiClient {
      * @param name (optional) 
      * @return OK
      */
-    createFolder(path: string | undefined, name: string | undefined, cancelToken?: CancelToken): Promise<FileStoreEntryDto> {
+    apiCreateFolder(path: string | undefined, name: string | undefined, cancelToken?: CancelToken): Promise<FileStoreEntryDto> {
         let url_ = this.baseUrl + "/api/media/CreateFolder?";
         if (path === null)
             throw new globalThis.Error("The parameter 'path' cannot be null.");
@@ -2058,11 +2140,11 @@ export class MediaApiClient implements IMediaApiClient {
                 throw _error;
             }
         }).then((_response: AxiosResponse) => {
-            return this.processCreateFolder(_response);
+            return this.processApiCreateFolder(_response);
         });
     }
 
-    protected processCreateFolder(response: AxiosResponse): Promise<FileStoreEntryDto> {
+    protected processApiCreateFolder(response: AxiosResponse): Promise<FileStoreEntryDto> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -2110,7 +2192,7 @@ export class MediaApiClient implements IMediaApiClient {
     /**
      * @return OK
      */
-    tusFileInfo(uploadId: string, cancelToken?: CancelToken): Promise<FileStoreEntryDto> {
+    apiGetTusFileInfo(uploadId: string, cancelToken?: CancelToken): Promise<FileStoreEntryDto> {
         let url_ = this.baseUrl + "/api/media/TusFileInfo/{uploadId}";
         if (uploadId === undefined || uploadId === null)
             throw new globalThis.Error("The parameter 'uploadId' must be defined.");
@@ -2133,11 +2215,11 @@ export class MediaApiClient implements IMediaApiClient {
                 throw _error;
             }
         }).then((_response: AxiosResponse) => {
-            return this.processTusFileInfo(_response);
+            return this.processApiGetTusFileInfo(_response);
         });
     }
 
-    protected processTusFileInfo(response: AxiosResponse): Promise<FileStoreEntryDto> {
+    protected processApiGetTusFileInfo(response: AxiosResponse): Promise<FileStoreEntryDto> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -2181,12 +2263,12 @@ export interface IQueryApiClient {
      * @param parameters (optional) 
      * @return OK
      */
-    queriesPOSTPOST(name: string, parameters: string | undefined,  cancelToken?: CancelToken): Promise<void>;
+    apiExecuteQueryPOSTPOST(name: string, parameters: string | undefined,  cancelToken?: CancelToken): Promise<void>;
     /**
      * @param parameters (optional) 
      * @return OK
      */
-    queriesGETGET(name: string, parameters: string | undefined,  cancelToken?: CancelToken): Promise<void>;
+    apiExecuteQueryGETGET(name: string, parameters: string | undefined,  cancelToken?: CancelToken): Promise<void>;
 }
 
 export class QueryApiClient implements IQueryApiClient {
@@ -2206,7 +2288,7 @@ export class QueryApiClient implements IQueryApiClient {
      * @param parameters (optional) 
      * @return OK
      */
-    queriesPOSTPOST(name: string, parameters: string | undefined, cancelToken?: CancelToken): Promise<void> {
+    apiExecuteQueryPOSTPOST(name: string, parameters: string | undefined, cancelToken?: CancelToken): Promise<void> {
         let url_ = this.baseUrl + "/api/queries/{name}?";
         if (name === undefined || name === null)
             throw new globalThis.Error("The parameter 'name' must be defined.");
@@ -2232,11 +2314,11 @@ export class QueryApiClient implements IQueryApiClient {
                 throw _error;
             }
         }).then((_response: AxiosResponse) => {
-            return this.processQueriesPOSTPOST(_response);
+            return this.processApiExecuteQueryPOSTPOST(_response);
         });
     }
 
-    protected processQueriesPOSTPOST(response: AxiosResponse): Promise<void> {
+    protected processApiExecuteQueryPOSTPOST(response: AxiosResponse): Promise<void> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -2261,7 +2343,7 @@ export class QueryApiClient implements IQueryApiClient {
      * @param parameters (optional) 
      * @return OK
      */
-    queriesGETGET(name: string, parameters: string | undefined, cancelToken?: CancelToken): Promise<void> {
+    apiExecuteQueryGETGET(name: string, parameters: string | undefined, cancelToken?: CancelToken): Promise<void> {
         let url_ = this.baseUrl + "/api/queries/{name}?";
         if (name === undefined || name === null)
             throw new globalThis.Error("The parameter 'name' must be defined.");
@@ -2287,11 +2369,11 @@ export class QueryApiClient implements IQueryApiClient {
                 throw _error;
             }
         }).then((_response: AxiosResponse) => {
-            return this.processQueriesGETGET(_response);
+            return this.processApiExecuteQueryGETGET(_response);
         });
     }
 
-    protected processQueriesGETGET(response: AxiosResponse): Promise<void> {
+    protected processApiExecuteQueryGETGET(response: AxiosResponse): Promise<void> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -2318,29 +2400,29 @@ export interface ITenantApiClient {
      * @param body (optional) 
      * @return OK
      */
-    create(body: TenantApiModel | undefined,  cancelToken?: CancelToken): Promise<void>;
+    apiCreateTenant(body: TenantApiModel | undefined,  cancelToken?: CancelToken): Promise<void>;
     /**
      * @param body (optional) 
      * @return OK
      */
-    edit(body: TenantApiModel | undefined,  cancelToken?: CancelToken): Promise<void>;
+    apiEditTenant(body: TenantApiModel | undefined,  cancelToken?: CancelToken): Promise<void>;
     /**
      * @return OK
      */
-    disable(tenantName: string,  cancelToken?: CancelToken): Promise<void>;
+    apiDisableTenant(tenantName: string,  cancelToken?: CancelToken): Promise<void>;
     /**
      * @return OK
      */
-    enable(tenantName: string,  cancelToken?: CancelToken): Promise<void>;
+    apiEnableTenant(tenantName: string,  cancelToken?: CancelToken): Promise<void>;
     /**
      * @return OK
      */
-    remove(tenantName: string,  cancelToken?: CancelToken): Promise<void>;
+    apiRemoveTenant(tenantName: string,  cancelToken?: CancelToken): Promise<void>;
     /**
      * @param body (optional) 
      * @return OK
      */
-    setup(body: SetupApiViewModel | undefined,  cancelToken?: CancelToken): Promise<void>;
+    apiSetupTenant(body: SetupApiViewModel | undefined,  cancelToken?: CancelToken): Promise<void>;
 }
 
 export class TenantApiClient implements ITenantApiClient {
@@ -2360,7 +2442,7 @@ export class TenantApiClient implements ITenantApiClient {
      * @param body (optional) 
      * @return OK
      */
-    create(body: TenantApiModel | undefined, cancelToken?: CancelToken): Promise<void> {
+    apiCreateTenant(body: TenantApiModel | undefined, cancelToken?: CancelToken): Promise<void> {
         let url_ = this.baseUrl + "/api/tenants/create";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -2383,11 +2465,11 @@ export class TenantApiClient implements ITenantApiClient {
                 throw _error;
             }
         }).then((_response: AxiosResponse) => {
-            return this.processCreate(_response);
+            return this.processApiCreateTenant(_response);
         });
     }
 
-    protected processCreate(response: AxiosResponse): Promise<void> {
+    protected processApiCreateTenant(response: AxiosResponse): Promise<void> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -2412,7 +2494,7 @@ export class TenantApiClient implements ITenantApiClient {
      * @param body (optional) 
      * @return OK
      */
-    edit(body: TenantApiModel | undefined, cancelToken?: CancelToken): Promise<void> {
+    apiEditTenant(body: TenantApiModel | undefined, cancelToken?: CancelToken): Promise<void> {
         let url_ = this.baseUrl + "/api/tenants/edit";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -2435,11 +2517,11 @@ export class TenantApiClient implements ITenantApiClient {
                 throw _error;
             }
         }).then((_response: AxiosResponse) => {
-            return this.processEdit(_response);
+            return this.processApiEditTenant(_response);
         });
     }
 
-    protected processEdit(response: AxiosResponse): Promise<void> {
+    protected processApiEditTenant(response: AxiosResponse): Promise<void> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -2463,7 +2545,7 @@ export class TenantApiClient implements ITenantApiClient {
     /**
      * @return OK
      */
-    disable(tenantName: string, cancelToken?: CancelToken): Promise<void> {
+    apiDisableTenant(tenantName: string, cancelToken?: CancelToken): Promise<void> {
         let url_ = this.baseUrl + "/api/tenants/disable/{tenantName}";
         if (tenantName === undefined || tenantName === null)
             throw new globalThis.Error("The parameter 'tenantName' must be defined.");
@@ -2485,11 +2567,11 @@ export class TenantApiClient implements ITenantApiClient {
                 throw _error;
             }
         }).then((_response: AxiosResponse) => {
-            return this.processDisable(_response);
+            return this.processApiDisableTenant(_response);
         });
     }
 
-    protected processDisable(response: AxiosResponse): Promise<void> {
+    protected processApiDisableTenant(response: AxiosResponse): Promise<void> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -2513,7 +2595,7 @@ export class TenantApiClient implements ITenantApiClient {
     /**
      * @return OK
      */
-    enable(tenantName: string, cancelToken?: CancelToken): Promise<void> {
+    apiEnableTenant(tenantName: string, cancelToken?: CancelToken): Promise<void> {
         let url_ = this.baseUrl + "/api/tenants/enable/{tenantName}";
         if (tenantName === undefined || tenantName === null)
             throw new globalThis.Error("The parameter 'tenantName' must be defined.");
@@ -2535,11 +2617,11 @@ export class TenantApiClient implements ITenantApiClient {
                 throw _error;
             }
         }).then((_response: AxiosResponse) => {
-            return this.processEnable(_response);
+            return this.processApiEnableTenant(_response);
         });
     }
 
-    protected processEnable(response: AxiosResponse): Promise<void> {
+    protected processApiEnableTenant(response: AxiosResponse): Promise<void> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -2563,7 +2645,7 @@ export class TenantApiClient implements ITenantApiClient {
     /**
      * @return OK
      */
-    remove(tenantName: string, cancelToken?: CancelToken): Promise<void> {
+    apiRemoveTenant(tenantName: string, cancelToken?: CancelToken): Promise<void> {
         let url_ = this.baseUrl + "/api/tenants/remove/{tenantName}";
         if (tenantName === undefined || tenantName === null)
             throw new globalThis.Error("The parameter 'tenantName' must be defined.");
@@ -2585,11 +2667,11 @@ export class TenantApiClient implements ITenantApiClient {
                 throw _error;
             }
         }).then((_response: AxiosResponse) => {
-            return this.processRemove(_response);
+            return this.processApiRemoveTenant(_response);
         });
     }
 
-    protected processRemove(response: AxiosResponse): Promise<void> {
+    protected processApiRemoveTenant(response: AxiosResponse): Promise<void> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -2614,7 +2696,7 @@ export class TenantApiClient implements ITenantApiClient {
      * @param body (optional) 
      * @return OK
      */
-    setup(body: SetupApiViewModel | undefined, cancelToken?: CancelToken): Promise<void> {
+    apiSetupTenant(body: SetupApiViewModel | undefined, cancelToken?: CancelToken): Promise<void> {
         let url_ = this.baseUrl + "/api/tenants/setup";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -2637,11 +2719,11 @@ export class TenantApiClient implements ITenantApiClient {
                 throw _error;
             }
         }).then((_response: AxiosResponse) => {
-            return this.processSetup(_response);
+            return this.processApiSetupTenant(_response);
         });
     }
 
-    protected processSetup(response: AxiosResponse): Promise<void> {
+    protected processApiSetupTenant(response: AxiosResponse): Promise<void> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {

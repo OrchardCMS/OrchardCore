@@ -74,15 +74,15 @@ namespace OrchardCore.OpenApi.Services
 
         /// <returns>OK</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task ContentPOSTPOSTAsync(bool? draft, ContentItem body)
+        public virtual System.Threading.Tasks.Task ContentPOSTAsync(bool? draft, ContentItem body)
         {
-            return ContentPOSTPOSTAsync(draft, body, System.Threading.CancellationToken.None);
+            return ContentPOSTAsync(draft, body, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>OK</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task ContentPOSTPOSTAsync(bool? draft, ContentItem body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task ContentPOSTAsync(bool? draft, ContentItem body, System.Threading.CancellationToken cancellationToken)
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -333,15 +333,15 @@ namespace OrchardCore.OpenApi.Services
 
         /// <returns>OK</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task ContentDELETEDELETEAsync(string contentItemId)
+        public virtual System.Threading.Tasks.Task ContentDELETEAsync(string contentItemId)
         {
-            return ContentDELETEDELETEAsync(contentItemId, System.Threading.CancellationToken.None);
+            return ContentDELETEAsync(contentItemId, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>OK</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task ContentDELETEDELETEAsync(string contentItemId, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task ContentDELETEAsync(string contentItemId, System.Threading.CancellationToken cancellationToken)
         {
             if (contentItemId == null)
                 throw new System.ArgumentNullException("contentItemId");
@@ -586,15 +586,15 @@ namespace OrchardCore.OpenApi.Services
 
         /// <returns>OK</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task ContentGETGETAsync(string contentItemId)
+        public virtual System.Threading.Tasks.Task ContentGETAsync(string contentItemId)
         {
-            return ContentGETGETAsync(contentItemId, System.Threading.CancellationToken.None);
+            return ContentGETAsync(contentItemId, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>OK</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task ContentGETGETAsync(string contentItemId, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task ContentGETAsync(string contentItemId, System.Threading.CancellationToken cancellationToken)
         {
             if (contentItemId == null)
                 throw new System.ArgumentNullException("contentItemId");
@@ -839,15 +839,15 @@ namespace OrchardCore.OpenApi.Services
 
         /// <returns>OK</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task ContentGETGET2Async(string indexName, string query, string parameters)
+        public virtual System.Threading.Tasks.Task ApiGetElasticsearchContentAsync(string indexName, string query, string parameters)
         {
-            return ContentGETGET2Async(indexName, query, parameters, System.Threading.CancellationToken.None);
+            return ApiGetElasticsearchContentAsync(indexName, query, parameters, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>OK</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task ContentGETGET2Async(string indexName, string query, string parameters, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task ApiGetElasticsearchContentAsync(string indexName, string query, string parameters, System.Threading.CancellationToken cancellationToken)
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -925,15 +925,15 @@ namespace OrchardCore.OpenApi.Services
 
         /// <returns>OK</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task ContentPOSTPOST22Async(ElasticApiQueryViewModel body)
+        public virtual System.Threading.Tasks.Task ApiPostElasticsearchContentAsync(ElasticApiQueryViewModel body)
         {
-            return ContentPOSTPOST22Async(body, System.Threading.CancellationToken.None);
+            return ApiPostElasticsearchContentAsync(body, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>OK</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task ContentPOSTPOST22Async(ElasticApiQueryViewModel body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task ApiPostElasticsearchContentAsync(ElasticApiQueryViewModel body, System.Threading.CancellationToken cancellationToken)
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -1001,15 +1001,15 @@ namespace OrchardCore.OpenApi.Services
 
         /// <returns>OK</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task DocumentsGETGETAsync(string indexName, string query, string parameters)
+        public virtual System.Threading.Tasks.Task ApiGetElasticsearchDocumentsAsync(string indexName, string query, string parameters)
         {
-            return DocumentsGETGETAsync(indexName, query, parameters, System.Threading.CancellationToken.None);
+            return ApiGetElasticsearchDocumentsAsync(indexName, query, parameters, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>OK</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task DocumentsGETGETAsync(string indexName, string query, string parameters, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task ApiGetElasticsearchDocumentsAsync(string indexName, string query, string parameters, System.Threading.CancellationToken cancellationToken)
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -1087,15 +1087,15 @@ namespace OrchardCore.OpenApi.Services
 
         /// <returns>OK</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task DocumentsPOSTPOSTAsync(ElasticApiQueryViewModel body)
+        public virtual System.Threading.Tasks.Task ApiPostElasticsearchDocumentsAsync(ElasticApiQueryViewModel body)
         {
-            return DocumentsPOSTPOSTAsync(body, System.Threading.CancellationToken.None);
+            return ApiPostElasticsearchDocumentsAsync(body, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>OK</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task DocumentsPOSTPOSTAsync(ElasticApiQueryViewModel body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task ApiPostElasticsearchDocumentsAsync(ElasticApiQueryViewModel body, System.Threading.CancellationToken cancellationToken)
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -1589,15 +1589,15 @@ namespace OrchardCore.OpenApi.Services
 
         /// <returns>OK</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task ContentGETGET3Async(string indexName, string query, string parameters)
+        public virtual System.Threading.Tasks.Task ApiGetLuceneContentAsync(string indexName, string query, string parameters)
         {
-            return ContentGETGET3Async(indexName, query, parameters, System.Threading.CancellationToken.None);
+            return ApiGetLuceneContentAsync(indexName, query, parameters, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>OK</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task ContentGETGET3Async(string indexName, string query, string parameters, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task ApiGetLuceneContentAsync(string indexName, string query, string parameters, System.Threading.CancellationToken cancellationToken)
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -1675,15 +1675,15 @@ namespace OrchardCore.OpenApi.Services
 
         /// <returns>OK</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task ContentPOSTPOST33Async(LuceneQueryModel body)
+        public virtual System.Threading.Tasks.Task ApiPostLuceneContentAsync(LuceneQueryModel body)
         {
-            return ContentPOSTPOST33Async(body, System.Threading.CancellationToken.None);
+            return ApiPostLuceneContentAsync(body, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>OK</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task ContentPOSTPOST33Async(LuceneQueryModel body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task ApiPostLuceneContentAsync(LuceneQueryModel body, System.Threading.CancellationToken cancellationToken)
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -1751,15 +1751,15 @@ namespace OrchardCore.OpenApi.Services
 
         /// <returns>OK</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task DocumentsGETGET2Async(string indexName, string query, string parameters)
+        public virtual System.Threading.Tasks.Task ApiGetLuceneDocumentsAsync(string indexName, string query, string parameters)
         {
-            return DocumentsGETGET2Async(indexName, query, parameters, System.Threading.CancellationToken.None);
+            return ApiGetLuceneDocumentsAsync(indexName, query, parameters, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>OK</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task DocumentsGETGET2Async(string indexName, string query, string parameters, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task ApiGetLuceneDocumentsAsync(string indexName, string query, string parameters, System.Threading.CancellationToken cancellationToken)
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -1837,15 +1837,15 @@ namespace OrchardCore.OpenApi.Services
 
         /// <returns>OK</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task DocumentsPOSTPOST2Async(LuceneQueryModel body)
+        public virtual System.Threading.Tasks.Task ApiPostLuceneDocumentsAsync(LuceneQueryModel body)
         {
-            return DocumentsPOSTPOST2Async(body, System.Threading.CancellationToken.None);
+            return ApiPostLuceneDocumentsAsync(body, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>OK</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task DocumentsPOSTPOST2Async(LuceneQueryModel body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task ApiPostLuceneDocumentsAsync(LuceneQueryModel body, System.Threading.CancellationToken cancellationToken)
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -2090,15 +2090,15 @@ namespace OrchardCore.OpenApi.Services
 
         /// <returns>OK</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<PermittedStorageDto> GetPermittedStorageAsync()
+        public virtual System.Threading.Tasks.Task<PermittedStorageDto> ApiGetPermittedStorageAsync()
         {
-            return GetPermittedStorageAsync(System.Threading.CancellationToken.None);
+            return ApiGetPermittedStorageAsync(System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>OK</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<PermittedStorageDto> GetPermittedStorageAsync(System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<PermittedStorageDto> ApiGetPermittedStorageAsync(System.Threading.CancellationToken cancellationToken)
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -2188,15 +2188,15 @@ namespace OrchardCore.OpenApi.Services
 
         /// <returns>OK</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<DirectoryTreeNodeDto> GetDirectoryTreeAsync()
+        public virtual System.Threading.Tasks.Task<DirectoryTreeNodeDto> ApiGetDirectoryTreeAsync()
         {
-            return GetDirectoryTreeAsync(System.Threading.CancellationToken.None);
+            return ApiGetDirectoryTreeAsync(System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>OK</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<DirectoryTreeNodeDto> GetDirectoryTreeAsync(System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<DirectoryTreeNodeDto> ApiGetDirectoryTreeAsync(System.Threading.CancellationToken cancellationToken)
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -2286,15 +2286,15 @@ namespace OrchardCore.OpenApi.Services
 
         /// <returns>OK</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<PaginatedFoldersDto> GetFoldersAsync(string path, int? skip, int? take)
+        public virtual System.Threading.Tasks.Task<PaginatedFoldersDto> ApiGetFoldersAsync(string path, int? skip, int? take)
         {
-            return GetFoldersAsync(path, skip, take, System.Threading.CancellationToken.None);
+            return ApiGetFoldersAsync(path, skip, take, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>OK</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<PaginatedFoldersDto> GetFoldersAsync(string path, int? skip, int? take, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<PaginatedFoldersDto> ApiGetFoldersAsync(string path, int? skip, int? take, System.Threading.CancellationToken cancellationToken)
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -2408,15 +2408,15 @@ namespace OrchardCore.OpenApi.Services
 
         /// <returns>OK</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<System.Collections.ObjectModel.Collection<FileStoreEntryDto>> GetMediaItemsAsync(string path, string extensions)
+        public virtual System.Threading.Tasks.Task<System.Collections.ObjectModel.Collection<FileStoreEntryDto>> ApiGetMediaItemsAsync(string path, string extensions)
         {
-            return GetMediaItemsAsync(path, extensions, System.Threading.CancellationToken.None);
+            return ApiGetMediaItemsAsync(path, extensions, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>OK</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<System.Collections.ObjectModel.Collection<FileStoreEntryDto>> GetMediaItemsAsync(string path, string extensions, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<System.Collections.ObjectModel.Collection<FileStoreEntryDto>> ApiGetMediaItemsAsync(string path, string extensions, System.Threading.CancellationToken cancellationToken)
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -2526,15 +2526,15 @@ namespace OrchardCore.OpenApi.Services
 
         /// <returns>OK</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<DirectoryContentDto> GetDirectoryContentAsync(string path, string extensions)
+        public virtual System.Threading.Tasks.Task<DirectoryContentDto> ApiGetDirectoryContentAsync(string path, string extensions)
         {
-            return GetDirectoryContentAsync(path, extensions, System.Threading.CancellationToken.None);
+            return ApiGetDirectoryContentAsync(path, extensions, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>OK</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<DirectoryContentDto> GetDirectoryContentAsync(string path, string extensions, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<DirectoryContentDto> ApiGetDirectoryContentAsync(string path, string extensions, System.Threading.CancellationToken cancellationToken)
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -2644,15 +2644,15 @@ namespace OrchardCore.OpenApi.Services
 
         /// <returns>OK</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<FileStoreEntryDto> GetMediaItemAsync(string path)
+        public virtual System.Threading.Tasks.Task<FileStoreEntryDto> ApiGetMediaItemAsync(string path)
         {
-            return GetMediaItemAsync(path, System.Threading.CancellationToken.None);
+            return ApiGetMediaItemAsync(path, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>OK</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<FileStoreEntryDto> GetMediaItemAsync(string path, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<FileStoreEntryDto> ApiGetMediaItemAsync(string path, System.Threading.CancellationToken cancellationToken)
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -2758,15 +2758,119 @@ namespace OrchardCore.OpenApi.Services
 
         /// <returns>OK</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<System.Collections.ObjectModel.Collection<FileStoreEntryDto>> GetAllMediaItemsAsync(string extensions)
+        public virtual System.Threading.Tasks.Task<System.Collections.ObjectModel.Collection<FileStoreEntryDto>> ApiGetMediaFieldItemsAsync(System.Collections.Generic.IEnumerable<string> paths)
         {
-            return GetAllMediaItemsAsync(extensions, System.Threading.CancellationToken.None);
+            return ApiGetMediaFieldItemsAsync(paths, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>OK</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<System.Collections.ObjectModel.Collection<FileStoreEntryDto>> GetAllMediaItemsAsync(string extensions, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<System.Collections.ObjectModel.Collection<FileStoreEntryDto>> ApiGetMediaFieldItemsAsync(System.Collections.Generic.IEnumerable<string> paths, System.Threading.CancellationToken cancellationToken)
+        {
+            var client_ = _httpClient;
+            var disposeClient_ = false;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    request_.Method = new System.Net.Http.HttpMethod("GET");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
+
+                    var urlBuilder_ = new System.Text.StringBuilder();
+                    if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
+                    // Operation Path: "api/media/GetMediaFieldItems"
+                    urlBuilder_.Append("api/media/GetMediaFieldItems");
+                    urlBuilder_.Append('?');
+                    if (paths != null)
+                    {
+                            foreach (var item_ in paths) { urlBuilder_.Append(System.Uri.EscapeDataString("paths")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(item_, System.Globalization.CultureInfo.InvariantCulture))).Append('&'); }
+                    }
+                    urlBuilder_.Length--;
+
+                    PrepareRequest(client_, request_, urlBuilder_);
+
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+
+                    PrepareRequest(client_, request_, url_);
+
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    var disposeResponse_ = true;
+                    try
+                    {
+                        var headers_ = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.IEnumerable<string>>();
+                        foreach (var item_ in response_.Headers)
+                            headers_[item_.Key] = item_.Value;
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+
+                        ProcessResponse(client_, response_);
+
+                        var status_ = (int)response_.StatusCode;
+                        if (status_ == 200)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.ObjectModel.Collection<FileStoreEntryDto>>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new SwaggerException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            return objectResponse_.Object;
+                        }
+                        else
+                        if (status_ == 401)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new SwaggerException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            throw new SwaggerException<ProblemDetails>("Unauthorized", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 403)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new SwaggerException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            throw new SwaggerException<ProblemDetails>("Forbidden", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        {
+                            var responseData_ = response_.Content == null ? null : await ReadAsStringAsync(response_.Content, cancellationToken).ConfigureAwait(false);
+                            throw new SwaggerException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                        }
+                    }
+                    finally
+                    {
+                        if (disposeResponse_)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+                if (disposeClient_)
+                    client_.Dispose();
+            }
+        }
+
+        /// <returns>OK</returns>
+        /// <exception cref="SwaggerException">A server side error occurred.</exception>
+        public virtual System.Threading.Tasks.Task<System.Collections.ObjectModel.Collection<FileStoreEntryDto>> ApiGetAllMediaItemsAsync(string extensions)
+        {
+            return ApiGetAllMediaItemsAsync(extensions, System.Threading.CancellationToken.None);
+        }
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>OK</returns>
+        /// <exception cref="SwaggerException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<System.Collections.ObjectModel.Collection<FileStoreEntryDto>> ApiGetAllMediaItemsAsync(string extensions, System.Threading.CancellationToken cancellationToken)
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -2862,15 +2966,15 @@ namespace OrchardCore.OpenApi.Services
 
         /// <returns>OK</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task UploadAsync(string path, string extensions)
+        public virtual System.Threading.Tasks.Task ApiUploadMediaAsync(string path, string extensions)
         {
-            return UploadAsync(path, extensions, System.Threading.CancellationToken.None);
+            return ApiUploadMediaAsync(path, extensions, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>OK</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task UploadAsync(string path, string extensions, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task ApiUploadMediaAsync(string path, string extensions, System.Threading.CancellationToken cancellationToken)
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -2965,15 +3069,15 @@ namespace OrchardCore.OpenApi.Services
 
         /// <returns>OK</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<FileStoreEntryDto> CopyMediaAsync(string oldPath, string newPath)
+        public virtual System.Threading.Tasks.Task<FileStoreEntryDto> ApiCopyMediaAsync(string oldPath, string newPath)
         {
-            return CopyMediaAsync(oldPath, newPath, System.Threading.CancellationToken.None);
+            return ApiCopyMediaAsync(oldPath, newPath, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>OK</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<FileStoreEntryDto> CopyMediaAsync(string oldPath, string newPath, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<FileStoreEntryDto> ApiCopyMediaAsync(string oldPath, string newPath, System.Threading.CancellationToken cancellationToken)
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -3094,15 +3198,15 @@ namespace OrchardCore.OpenApi.Services
 
         /// <returns>OK</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task DeleteFolderAsync(string path)
+        public virtual System.Threading.Tasks.Task ApiDeleteFolderAsync(string path)
         {
-            return DeleteFolderAsync(path, System.Threading.CancellationToken.None);
+            return ApiDeleteFolderAsync(path, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>OK</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task DeleteFolderAsync(string path, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task ApiDeleteFolderAsync(string path, System.Threading.CancellationToken cancellationToken)
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -3203,15 +3307,15 @@ namespace OrchardCore.OpenApi.Services
 
         /// <returns>OK</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task DeleteMediaAsync(string path)
+        public virtual System.Threading.Tasks.Task ApiDeleteMediaAsync(string path)
         {
-            return DeleteMediaAsync(path, System.Threading.CancellationToken.None);
+            return ApiDeleteMediaAsync(path, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>OK</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task DeleteMediaAsync(string path, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task ApiDeleteMediaAsync(string path, System.Threading.CancellationToken cancellationToken)
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -3312,15 +3416,15 @@ namespace OrchardCore.OpenApi.Services
 
         /// <returns>OK</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task MoveMediaAsync(string oldPath, string newPath)
+        public virtual System.Threading.Tasks.Task ApiMoveMediaAsync(string oldPath, string newPath)
         {
-            return MoveMediaAsync(oldPath, newPath, System.Threading.CancellationToken.None);
+            return ApiMoveMediaAsync(oldPath, newPath, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>OK</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task MoveMediaAsync(string oldPath, string newPath, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task ApiMoveMediaAsync(string oldPath, string newPath, System.Threading.CancellationToken cancellationToken)
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -3435,15 +3539,15 @@ namespace OrchardCore.OpenApi.Services
 
         /// <returns>OK</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task DeleteMediaListAsync(System.Collections.Generic.IEnumerable<string> body)
+        public virtual System.Threading.Tasks.Task ApiDeleteMediaListAsync(System.Collections.Generic.IEnumerable<string> body)
         {
-            return DeleteMediaListAsync(body, System.Threading.CancellationToken.None);
+            return ApiDeleteMediaListAsync(body, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>OK</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task DeleteMediaListAsync(System.Collections.Generic.IEnumerable<string> body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task ApiDeleteMediaListAsync(System.Collections.Generic.IEnumerable<string> body, System.Threading.CancellationToken cancellationToken)
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -3541,15 +3645,15 @@ namespace OrchardCore.OpenApi.Services
 
         /// <returns>OK</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task MoveMediaListAsync(MoveMedias body)
+        public virtual System.Threading.Tasks.Task ApiMoveMediaListAsync(MoveMedias body)
         {
-            return MoveMediaListAsync(body, System.Threading.CancellationToken.None);
+            return ApiMoveMediaListAsync(body, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>OK</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task MoveMediaListAsync(MoveMedias body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task ApiMoveMediaListAsync(MoveMedias body, System.Threading.CancellationToken cancellationToken)
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -3657,15 +3761,15 @@ namespace OrchardCore.OpenApi.Services
 
         /// <returns>OK</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<FileStoreEntryDto> CreateFolderAsync(string path, string name)
+        public virtual System.Threading.Tasks.Task<FileStoreEntryDto> ApiCreateFolderAsync(string path, string name)
         {
-            return CreateFolderAsync(path, name, System.Threading.CancellationToken.None);
+            return ApiCreateFolderAsync(path, name, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>OK</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<FileStoreEntryDto> CreateFolderAsync(string path, string name, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<FileStoreEntryDto> ApiCreateFolderAsync(string path, string name, System.Threading.CancellationToken cancellationToken)
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -3776,15 +3880,15 @@ namespace OrchardCore.OpenApi.Services
 
         /// <returns>OK</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<FileStoreEntryDto> TusFileInfoAsync(string uploadId)
+        public virtual System.Threading.Tasks.Task<FileStoreEntryDto> ApiGetTusFileInfoAsync(string uploadId)
         {
-            return TusFileInfoAsync(uploadId, System.Threading.CancellationToken.None);
+            return ApiGetTusFileInfoAsync(uploadId, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>OK</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<FileStoreEntryDto> TusFileInfoAsync(string uploadId, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<FileStoreEntryDto> ApiGetTusFileInfoAsync(string uploadId, System.Threading.CancellationToken cancellationToken)
         {
             if (uploadId == null)
                 throw new System.ArgumentNullException("uploadId");
@@ -4055,15 +4159,15 @@ namespace OrchardCore.OpenApi.Services
 
         /// <returns>OK</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task QueriesPOSTPOSTAsync(string name, string parameters)
+        public virtual System.Threading.Tasks.Task ApiExecuteQueryPOSTPOSTAsync(string name, string parameters)
         {
-            return QueriesPOSTPOSTAsync(name, parameters, System.Threading.CancellationToken.None);
+            return ApiExecuteQueryPOSTPOSTAsync(name, parameters, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>OK</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task QueriesPOSTPOSTAsync(string name, string parameters, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task ApiExecuteQueryPOSTPOSTAsync(string name, string parameters, System.Threading.CancellationToken cancellationToken)
         {
             if (name == null)
                 throw new System.ArgumentNullException("name");
@@ -4138,15 +4242,15 @@ namespace OrchardCore.OpenApi.Services
 
         /// <returns>OK</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task QueriesGETGETAsync(string name, string parameters)
+        public virtual System.Threading.Tasks.Task ApiExecuteQueryGETGETAsync(string name, string parameters)
         {
-            return QueriesGETGETAsync(name, parameters, System.Threading.CancellationToken.None);
+            return ApiExecuteQueryGETGETAsync(name, parameters, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>OK</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task QueriesGETGETAsync(string name, string parameters, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task ApiExecuteQueryGETGETAsync(string name, string parameters, System.Threading.CancellationToken cancellationToken)
         {
             if (name == null)
                 throw new System.ArgumentNullException("name");
@@ -4397,15 +4501,15 @@ namespace OrchardCore.OpenApi.Services
 
         /// <returns>OK</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task CreateAsync(TenantApiModel body)
+        public virtual System.Threading.Tasks.Task ApiCreateTenantAsync(TenantApiModel body)
         {
-            return CreateAsync(body, System.Threading.CancellationToken.None);
+            return ApiCreateTenantAsync(body, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>OK</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task CreateAsync(TenantApiModel body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task ApiCreateTenantAsync(TenantApiModel body, System.Threading.CancellationToken cancellationToken)
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -4473,15 +4577,15 @@ namespace OrchardCore.OpenApi.Services
 
         /// <returns>OK</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task EditAsync(TenantApiModel body)
+        public virtual System.Threading.Tasks.Task ApiEditTenantAsync(TenantApiModel body)
         {
-            return EditAsync(body, System.Threading.CancellationToken.None);
+            return ApiEditTenantAsync(body, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>OK</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task EditAsync(TenantApiModel body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task ApiEditTenantAsync(TenantApiModel body, System.Threading.CancellationToken cancellationToken)
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -4549,15 +4653,15 @@ namespace OrchardCore.OpenApi.Services
 
         /// <returns>OK</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task DisableAsync(string tenantName)
+        public virtual System.Threading.Tasks.Task ApiDisableTenantAsync(string tenantName)
         {
-            return DisableAsync(tenantName, System.Threading.CancellationToken.None);
+            return ApiDisableTenantAsync(tenantName, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>OK</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task DisableAsync(string tenantName, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task ApiDisableTenantAsync(string tenantName, System.Threading.CancellationToken cancellationToken)
         {
             if (tenantName == null)
                 throw new System.ArgumentNullException("tenantName");
@@ -4626,15 +4730,15 @@ namespace OrchardCore.OpenApi.Services
 
         /// <returns>OK</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task EnableAsync(string tenantName)
+        public virtual System.Threading.Tasks.Task ApiEnableTenantAsync(string tenantName)
         {
-            return EnableAsync(tenantName, System.Threading.CancellationToken.None);
+            return ApiEnableTenantAsync(tenantName, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>OK</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task EnableAsync(string tenantName, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task ApiEnableTenantAsync(string tenantName, System.Threading.CancellationToken cancellationToken)
         {
             if (tenantName == null)
                 throw new System.ArgumentNullException("tenantName");
@@ -4703,15 +4807,15 @@ namespace OrchardCore.OpenApi.Services
 
         /// <returns>OK</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task RemoveAsync(string tenantName)
+        public virtual System.Threading.Tasks.Task ApiRemoveTenantAsync(string tenantName)
         {
-            return RemoveAsync(tenantName, System.Threading.CancellationToken.None);
+            return ApiRemoveTenantAsync(tenantName, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>OK</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task RemoveAsync(string tenantName, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task ApiRemoveTenantAsync(string tenantName, System.Threading.CancellationToken cancellationToken)
         {
             if (tenantName == null)
                 throw new System.ArgumentNullException("tenantName");
@@ -4780,15 +4884,15 @@ namespace OrchardCore.OpenApi.Services
 
         /// <returns>OK</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task SetupAsync(SetupApiViewModel body)
+        public virtual System.Threading.Tasks.Task ApiSetupTenantAsync(SetupApiViewModel body)
         {
-            return SetupAsync(body, System.Threading.CancellationToken.None);
+            return ApiSetupTenantAsync(body, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>OK</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task SetupAsync(SetupApiViewModel body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task ApiSetupTenantAsync(SetupApiViewModel body, System.Threading.CancellationToken cancellationToken)
         {
             var client_ = _httpClient;
             var disposeClient_ = false;

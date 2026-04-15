@@ -55,12 +55,12 @@ export class FileDataService implements IFileDataService {
   }
 
   async getFileItem(path: string): Promise<IFileLibraryItemDto> {
-    const dto = await this.client.getMediaItem(path);
+    const dto = await this.client.apiGetMediaItem(path);
     return toFileLibraryItem(dto);
   }
 
   async getFolders(path: string, skip?: number, take?: number): Promise<IPaginatedFoldersResult> {
-    const dto = await this.client.getFolders(path, skip, take);
+    const dto = await this.client.apiGetFolders(path, skip, take);
     return {
       items: (dto.items ?? []).map(toFileLibraryItem),
       hasMore: dto.hasMore ?? false,
@@ -68,53 +68,53 @@ export class FileDataService implements IFileDataService {
   }
 
   async getMediaItems(path: string): Promise<IFileLibraryItemDto[]> {
-    const dtos = await this.client.getMediaItems(path, undefined);
+    const dtos = await this.client.apiGetMediaItems(path, undefined);
     return dtos.map(toFileLibraryItem);
   }
 
   async listAllItems(): Promise<IFileLibraryItemDto[]> {
-    const dtos = await this.client.getAllMediaItems(undefined);
+    const dtos = await this.client.apiGetAllMediaItems(undefined);
     return dtos.map(toFileLibraryItem);
   }
 
   async copyMedia(oldPath: string, newPath: string): Promise<IFileLibraryItemDto> {
-    const dto = await this.client.copyMedia(oldPath, newPath);
+    const dto = await this.client.apiCopyMedia(oldPath, newPath);
     return toFileLibraryItem(dto);
   }
 
   async moveMedia(oldPath: string, newPath: string): Promise<void> {
-    await this.client.moveMedia(oldPath, newPath);
+    await this.client.apiMoveMedia(oldPath, newPath);
   }
 
   async moveMediaList(mediaNames: string[], sourceFolder: string, targetFolder: string): Promise<void> {
     const body = new MoveMedias({ mediaNames, sourceFolder, targetFolder });
-    await this.client.moveMediaList(body);
+    await this.client.apiMoveMediaList(body);
   }
 
   async deleteMedia(path: string): Promise<void> {
-    await this.client.deleteMedia(path);
+    await this.client.apiDeleteMedia(path);
   }
 
   async deleteMediaList(paths: string[]): Promise<void> {
-    await this.client.deleteMediaList(paths);
+    await this.client.apiDeleteMediaList(paths);
   }
 
   async deleteFolder(path: string): Promise<void> {
-    await this.client.deleteFolder(path);
+    await this.client.apiDeleteFolder(path);
   }
 
   async createFolder(path: string, name: string): Promise<IFileLibraryItemDto> {
-    const dto = await this.client.createFolder(path, name);
+    const dto = await this.client.apiCreateFolder(path, name);
     return toFileLibraryItem(dto);
   }
 
   async getDirectoryTree(): Promise<IDirectoryTreeNode> {
-    const dto = await this.client.getDirectoryTree();
+    const dto = await this.client.apiGetDirectoryTree();
     return toDirectoryTreeNode(dto);
   }
 
   async getDirectoryContent(path: string): Promise<IDirectoryContentResult> {
-    const dto = await this.client.getDirectoryContent(path, undefined);
+    const dto = await this.client.apiGetDirectoryContent(path, undefined);
     return {
       folders: (dto.folders ?? []).map(toFileLibraryItem),
       files: (dto.files ?? []).map(toFileLibraryItem),
@@ -122,7 +122,7 @@ export class FileDataService implements IFileDataService {
   }
 
   async getPermittedStorage(): Promise<IPermittedStorageResult> {
-    const dto = await this.client.getPermittedStorage();
+    const dto = await this.client.apiGetPermittedStorage();
     return {
       bytes: dto.bytes ?? null,
       text: dto.text ?? "",
