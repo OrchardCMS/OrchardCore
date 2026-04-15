@@ -9,17 +9,11 @@ public static class TransliterationSlugServiceExtensions
     /// optionally transliterating non-Latin characters to their ASCII equivalents first.
     /// </summary>
     /// <param name="text">The text to transform.</param>
-    /// <param name="transliterate">Whether to transliterate non-Latin characters before slugifying.</param>
     /// <returns>The slug created from the input text.</returns>
-    public static string Slugify(this ISlugService slugService, string text, bool transliterate)
+    public static string SlugifyWithTransliteration(this ISlugService slugService, string text)
     {
         ArgumentException.ThrowIfNullOrEmpty(text);
 
-        if (transliterate)
-        {
-            text = text.Transliterate();
-        }
-
-        return slugService.Slugify(text);
+        return slugService.Slugify(text.Transliterate());
     }
 }

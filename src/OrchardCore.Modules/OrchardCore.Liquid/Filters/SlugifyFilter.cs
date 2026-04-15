@@ -17,7 +17,10 @@ public class SlugifyFilter : ILiquidFilter
     {
         var transliterateArg = arguments["transliterate"];
         var transliterate = transliterateArg.IsNil() || transliterateArg.ToBooleanValue();
+        var slug = transliterate
+            ? _slugService.SlugifyWithTransliteration(input.ToStringValue())
+            : _slugService.Slugify(input.ToStringValue());
 
-        return new StringValue(_slugService.Slugify(input.ToStringValue(), transliterate));
+        return new StringValue(slug);
     }
 }

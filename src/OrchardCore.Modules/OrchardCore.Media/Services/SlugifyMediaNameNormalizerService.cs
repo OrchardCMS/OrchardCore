@@ -19,11 +19,15 @@ public class SlugifyMediaNameNormalizerService : IMediaNameNormalizerService
 
     public string NormalizeFolderName(string folderName)
     {
-        return _slugService.Slugify(folderName, _options.Transliterate);
+        return _options.Transliterate
+            ? _slugService.SlugifyWithTransliteration(folderName)
+            : _slugService.Slugify(folderName);
     }
 
     public string NormalizeFileName(string fileName)
     {
-        return _slugService.Slugify(Path.GetFileNameWithoutExtension(fileName), _options.Transliterate) + Path.GetExtension(fileName);
+        return _options.Transliterate
+            ? _slugService.SlugifyWithTransliteration(Path.GetFileNameWithoutExtension(fileName))
+            : _slugService.Slugify(Path.GetFileNameWithoutExtension(fileName)) + Path.GetExtension(fileName);
     }
 }
