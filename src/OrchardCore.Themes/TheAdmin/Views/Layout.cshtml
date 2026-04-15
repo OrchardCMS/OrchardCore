@@ -75,7 +75,7 @@
             </div>
         </div>
 
-        <div class="ta-content">
+        <div class="ta-content@(adminSettings.DisplayStickyButtons ? " sticky-buttons" : "")">
             @await RenderSectionAsync("Header", required: false)
             @await RenderSectionAsync("Messages", required: false)
             @await RenderSectionAsync("Breadcrumbs", required: false)

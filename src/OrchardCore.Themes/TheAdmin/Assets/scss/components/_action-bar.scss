@@ -7,119 +7,124 @@
     z-index: var(--oc-second-action-bar-zindex);
 }
 
-@include media-breakpoint-down(md) {
+.sticky-buttons {
+    @include media-breakpoint-down(md) {
 
-    .action-bar,
-    .second-action-bar {
-        position: fixed !important;
-        left: var(--oc-start-navigation-width);
-        right: 0;
-        top: auto;
-        border-radius: 0 !important;
-        border-left: none !important;
-        border-right: none !important;
-        border-bottom: none !important;
-        margin-left: calc((var(--bs-border-width) * -1) + 1rem) !important;
-        margin-right: calc((var(--bs-border-width) * -1) + 1rem) !important;
-        margin-bottom: 0 !important;
-        transition: left 0.2s ease-in-out;
+        .action-bar,
+        .second-action-bar {
+            position: fixed !important;
+            left: var(--oc-start-navigation-width);
+            right: 0;
+            top: auto;
+            border-radius: 0 !important;
+            border-left: none !important;
+            border-right: none !important;
+            border-bottom: none !important;
+            margin-left: calc((var(--bs-border-width) * -1) + 1rem) !important;
+            margin-right: calc((var(--bs-border-width) * -1) + 1rem) !important;
+            margin-bottom: 0 !important;
+            transition: left 0.2s ease-in-out;
 
-        .card-body {
-            padding-left: 0;
-            padding-right: 0;
-        }
-
-        .btn,
-        .form-control {
-            font-size: $input-btn-font-size-sm;
-            padding: $input-btn-padding-y-sm $input-btn-padding-x-sm;
-        }
-
-        .has-filter .form-control-feedback,
-        .has-search .form-control-feedback {
-            height: 1.75rem;
-        }
-
-        .has-filter .form-control-feedback {
-            left: 3.75rem;
-            top: 0.1rem;
-        }
-
-        [dir="rtl"] .has-filter .form-control-feedback {
-            left: 1rem;
-        }
-
-        .has-search .form-control-feedback {
-            left: 1.75rem;
-        }
-
-        .has-search:not(.input-group) .form-control-feedback,
-        .has-filter:not(.input-group) .form-control-feedback {
-            left: 0.75rem;
-            top: 1.1rem;
-        }
-        // Mobile collapsible actions toggle button
-        .action-bar-toggle {
-            flex-shrink: 0;
-
-            &::after {
-                content: '';
-                display: inline-block;
-                border-top: 0;
-                border-right: 0.4em solid transparent;
-                border-bottom: 0.4em solid;
-                border-left: 0.4em solid transparent;
-                vertical-align: 0.255em;
+            .card-body {
+                padding-left: 0;
+                padding-right: 0;
             }
 
-            &[aria-expanded="true"]::after {
-                border-top: 0.4em solid;
-                border-bottom: 0;
+            .btn,
+            .form-control {
+                font-size: $input-btn-font-size-sm;
+                padding: $input-btn-padding-y-sm $input-btn-padding-x-sm;
+            }
+
+            .has-filter .form-control-feedback,
+            .has-search .form-control-feedback {
+                height: 1.75rem;
+            }
+
+            .has-filter .form-control-feedback {
+                left: 3.75rem;
+                top: 0.1rem;
+            }
+
+            [dir="rtl"] .has-filter .form-control-feedback {
+                left: 1rem;
+            }
+
+            .has-search .form-control-feedback {
+                left: 1.75rem;
+            }
+
+            .has-search:not(.input-group) .form-control-feedback,
+            .has-filter:not(.input-group) .form-control-feedback {
+                left: 0.75rem;
+                top: 1.1rem;
+            }
+            // Mobile collapsible actions toggle button
+            .action-bar-toggle {
+                flex-shrink: 0;
+
+                &::after {
+                    content: '';
+                    display: inline-block;
+                    border-top: 0;
+                    border-right: 0.4em solid transparent;
+                    border-bottom: 0.4em solid;
+                    border-left: 0.4em solid transparent;
+                    vertical-align: 0.255em;
+                }
+
+                &[aria-expanded="true"]::after {
+                    border-top: 0.4em solid;
+                    border-bottom: 0;
+                }
+            }
+            // Hide collapsible actions when the toggle is in its collapsed state.
+            // Scoped to .action-bar so desktop (non-sticky) rendering is unaffected.
+            &:has(.action-bar-toggle[aria-expanded="false"]) .action-bar-collapsible {
+                display: none;
+            }
+            // Auto-hide the toggle when no collapsible actions are present.
+            &:not(:has(.action-bar-collapsible)) .action-bar-toggle {
+                display: none;
+            }
+            // Suppress Bootstrap's collapse height animation on individual action elements
+            // so that the :has()-driven instant show/hide is not interrupted by a transition.
+            .action-bar-collapsible.collapsing {
+                height: auto !important;
+                transition: none !important;
+                overflow: visible !important;
             }
         }
-        // Hide collapsible actions when the toggle is in its collapsed state.
-        // Scoped to .action-bar so desktop (non-sticky) rendering is unaffected.
-        &:has(.action-bar-toggle[aria-expanded="false"]) .action-bar-collapsible {
-            display: none;
+
+        .action-bar {
+            bottom: var(--oc-second-action-bar-height);
         }
-        // Auto-hide the toggle when no collapsible actions are present.
-        &:not(:has(.action-bar-collapsible)) .action-bar-toggle {
-            display: none;
+
+        .second-action-bar {
+            bottom: 0;
         }
-        // Suppress Bootstrap's collapse height animation on individual action elements
-        // so that the :has()-driven instant show/hide is not interrupted by a transition.
-        .action-bar-collapsible.collapsing {
-            height: auto !important;
-            transition: none !important;
-            overflow: visible !important;
+
+        @include media-breakpoint-down(sm) {
+            .action-bar,
+            .second-action-bar {
+                left: var(--oc-start-navigation-width-when-compact, 48);
+                transition: left 0.5s ease-in-out;
+            }
+        }
+        // Add bottom padding to the page content when either action bar is present to prevent
+        // content from being obscured by the fixed action bar(s).
+        *:has(> .action-bar ~ *),
+        *:has(> .second-action-bar ~ *) {
+            padding-bottom: calc(var(--oc-action-bar-height) + var(--oc-second-action-bar-height) + 0.5rem);
         }
     }
+}
 
-    .action-bar {
-        bottom: var(--oc-second-action-bar-height);
-    }
-
-    .second-action-bar {
-        bottom: 0;
-    }
-
-    @include media-breakpoint-down(sm) {
+.left-sidebar-compact {
+    .sticky-buttons {
         .action-bar,
         .second-action-bar {
             left: var(--oc-start-navigation-width-when-compact, 48);
-            transition: left 0.5s ease-in-out;
         }
-    }
-
-    .left-sidebar-compact .action-bar,
-    .left-sidebar-compact .second-action-bar {
-        left: var(--oc-start-navigation-width-when-compact, 48);
-    }
-
-    // Add bottom padding to the page content when either action bar is present to prevent 
-    // content from being obscured by the fixed action bar(s).
-    *:has(> .action-bar ~ *),
-    *:has(> .second-action-bar ~ *) {
-        padding-bottom: calc(var(--oc-action-bar-height) + var(--oc-second-action-bar-height) + 0.5rem);
     }
 }
