@@ -20,6 +20,9 @@ env:
   PLAYWRIGHT_TRACING: true
   ASPNETCORE_ENVIRONMENT: Production
 
+permissions:
+  contents: read
+
 jobs:
   test_functional_mvc:
     name: Functional Tests - MVC
