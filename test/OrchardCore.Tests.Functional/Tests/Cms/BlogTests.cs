@@ -25,5 +25,4 @@ public sealed class BlogTests : CmsTestBase<BlogFixture>, IClassFixture<BlogFixt
         await Assertions.Expect(page.Locator(".menu-admin")).ToHaveAttributeAsync("id", "adminMenu");
         await page.CloseAsync();
     }
-
 }
