@@ -3507,6 +3507,32 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
             fileSize: function () {
                 return Math.round(this.selectedMedia.size / 1024);
             },
+            selectedMediaDisplayText: function () {
+                if (!this.selectedMedia) {
+                    return "";
+                }
+
+                var fileName =
+                    this.selectedMedia.attachedFileName !== null &&
+                        this.selectedMedia.attachedFileName !== ''
+                        ? this.selectedMedia.attachedFileName
+                        : this.selectedMedia.name;
+
+                var mediaText =
+                    this.selectedMedia.mediaText === ''
+                        ? ''
+                        : ', ' + this.selectedMedia.mediaText;
+
+                var size = isNaN(this.fileSize) ? 0 : this.fileSize;
+
+                var formatElement = this.$el.querySelector('#t-selected-media-format');
+                var format = formatElement ? formatElement.value : '{0}{1} ({2} KB)';
+
+                return format
+                    .replace('{0}', fileName)
+                    .replace('{1}', mediaText)
+                    .replace('{2}', size);
+            },
             canAddMedia: function () {
                 var nonRemovedMediaItems = [];
                 for (var i = 0; i < this.mediaItems.length; i++) {
@@ -3716,7 +3742,7 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
                         position = position + 5; // Adjust to hit the mouse pointer.
                     }
                     return position + 'px';
-                } else {
+                } else { 
                     return '0';
                 }
             },
