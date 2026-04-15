@@ -163,10 +163,10 @@ public sealed class OrchardTestServer : IAsyncDisposable
         builder.Services.PostConfigure<ShellOptions>(options =>
         {
             options.ShellsApplicationDataPath = resolvedAppDataPath;
-        });
 
-        // Ensure the per-fixture App_Data path exists before shell initialization persists settings.
-        Directory.CreateDirectory(resolvedAppDataPath);
+            // Ensure the per-fixture App_Data path exists for the exact value Orchard will use.
+            Directory.CreateDirectory(options.ShellsApplicationDataPath);
+        });
 
         // Override database config via IConfiguration (higher priority than env vars)
         // so we never need to mutate global environment variables.
