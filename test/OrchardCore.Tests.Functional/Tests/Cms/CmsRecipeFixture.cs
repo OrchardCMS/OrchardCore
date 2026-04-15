@@ -80,3 +80,4 @@ public sealed class MigrationsFixture : CmsRecipeFixture
 {
     protected override string RecipeName => "Migrations";
 }
+
