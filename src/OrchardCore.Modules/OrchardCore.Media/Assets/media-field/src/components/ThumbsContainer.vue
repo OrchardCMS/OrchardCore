@@ -51,6 +51,7 @@
               :src="buildMediaUrl(media.url!, thumbSize)"
               :data-mime="media.mime"
               class="tw:max-w-full tw:max-h-full tw:object-contain"
+              draggable="false"
             />
             <i
               v-else

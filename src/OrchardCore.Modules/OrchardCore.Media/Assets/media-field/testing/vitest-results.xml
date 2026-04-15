@@ -1,129 +1,83 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuites name="vitest tests" tests="278" failures="0" errors="0" time="2.65">
-    <testsuite name="src/__tests__/main.spec.ts" timestamp="2026-04-15T03:56:15.845Z" hostname="Nemo" tests="17" failures="0" errors="0" skipped="0" time="0.8693451">
-        <testcase classname="src/__tests__/main.spec.ts" name="main.ts &gt; mountMediaField &gt; mounts a Vue app on the given element" time="0.4011603">
+<testsuites name="vitest tests" tests="280" failures="0" errors="0" time="2.526">
+    <testsuite name="src/__tests__/main.spec.ts" timestamp="2026-04-15T04:19:01.342Z" hostname="Nemo" tests="17" failures="0" errors="0" skipped="0" time="0.7489214">
+        <testcase classname="src/__tests__/main.spec.ts" name="main.ts &gt; mountMediaField &gt; mounts a Vue app on the given element" time="0.4138961">
         </testcase>
-        <testcase classname="src/__tests__/main.spec.ts" name="main.ts &gt; mountMediaField &gt; reads config from data attributes" time="0.0154269">
+        <testcase classname="src/__tests__/main.spec.ts" name="main.ts &gt; mountMediaField &gt; reads config from data attributes" time="0.0121933">
         </testcase>
-        <testcase classname="src/__tests__/main.spec.ts" name="main.ts &gt; mountMediaField &gt; reads translations with defaults when data-translations is absent" time="0.0159842">
+        <testcase classname="src/__tests__/main.spec.ts" name="main.ts &gt; mountMediaField &gt; reads translations with defaults when data-translations is absent" time="0.0087944">
         </testcase>
-        <testcase classname="src/__tests__/main.spec.ts" name="main.ts &gt; mountMediaField &gt; reads custom translations from data-translations" time="0.0104459">
+        <testcase classname="src/__tests__/main.spec.ts" name="main.ts &gt; mountMediaField &gt; reads custom translations from data-translations" time="0.0104796">
         </testcase>
-        <testcase classname="src/__tests__/main.spec.ts" name="main.ts &gt; mountAttachedMediaField &gt; reads attached config including uploadAction and tempUploadFolder" time="0.0204957">
+        <testcase classname="src/__tests__/main.spec.ts" name="main.ts &gt; mountAttachedMediaField &gt; reads attached config including uploadAction and tempUploadFolder" time="0.0129747">
         </testcase>
-        <testcase classname="src/__tests__/main.spec.ts" name="main.ts &gt; mountAttachedMediaField &gt; handles missing attached-specific attributes gracefully" time="0.0130663">
+        <testcase classname="src/__tests__/main.spec.ts" name="main.ts &gt; mountAttachedMediaField &gt; handles missing attached-specific attributes gracefully" time="0.0163276">
         </testcase>
-        <testcase classname="src/__tests__/main.spec.ts" name="main.ts &gt; mountGalleryMediaField &gt; mounts a gallery field on the element" time="0.017566">
+        <testcase classname="src/__tests__/main.spec.ts" name="main.ts &gt; mountGalleryMediaField &gt; mounts a gallery field on the element" time="0.0121962">
         </testcase>
-        <testcase classname="src/__tests__/main.spec.ts" name="main.ts &gt; readConfig (via mountMediaField) &gt; parses paths JSON" time="0.1135982">
+        <testcase classname="src/__tests__/main.spec.ts" name="main.ts &gt; readConfig (via mountMediaField) &gt; parses paths JSON" time="0.0114003">
         </testcase>
-        <testcase classname="src/__tests__/main.spec.ts" name="main.ts &gt; readConfig (via mountMediaField) &gt; handles invalid JSON for paths without throwing" time="0.0270296">
+        <testcase classname="src/__tests__/main.spec.ts" name="main.ts &gt; readConfig (via mountMediaField) &gt; handles invalid JSON for paths without throwing" time="0.0133716">
         </testcase>
-        <testcase classname="src/__tests__/main.spec.ts" name="main.ts &gt; readConfig (via mountMediaField) &gt; reads boolean attributes correctly" time="0.0177804">
+        <testcase classname="src/__tests__/main.spec.ts" name="main.ts &gt; readConfig (via mountMediaField) &gt; reads boolean attributes correctly" time="0.0157399">
         </testcase>
-        <testcase classname="src/__tests__/main.spec.ts" name="main.ts &gt; readTranslations (via mountMediaField) &gt; falls back to defaults when data-translations is missing" time="0.0703433">
+        <testcase classname="src/__tests__/main.spec.ts" name="main.ts &gt; readTranslations (via mountMediaField) &gt; falls back to defaults when data-translations is missing" time="0.0176936">
         </testcase>
-        <testcase classname="src/__tests__/main.spec.ts" name="main.ts &gt; readTranslations (via mountMediaField) &gt; falls back to defaults when data-translations contains invalid JSON" time="0.015588">
+        <testcase classname="src/__tests__/main.spec.ts" name="main.ts &gt; readTranslations (via mountMediaField) &gt; falls back to defaults when data-translations contains invalid JSON" time="0.0304046">
         </testcase>
-        <testcase classname="src/__tests__/main.spec.ts" name="main.ts &gt; readTranslations (via mountMediaField) &gt; merges custom translations over defaults" time="0.0151687">
+        <testcase classname="src/__tests__/main.spec.ts" name="main.ts &gt; readTranslations (via mountMediaField) &gt; merges custom translations over defaults" time="0.0170515">
         </testcase>
-        <testcase classname="src/__tests__/main.spec.ts" name="main.ts &gt; autoMount &gt; auto-mounts elements with data-media-field-type on import" time="0.0366334">
+        <testcase classname="src/__tests__/main.spec.ts" name="main.ts &gt; autoMount &gt; auto-mounts elements with data-media-field-type on import" time="0.0268274">
         </testcase>
-        <testcase classname="src/__tests__/main.spec.ts" name="main.ts &gt; autoMount &gt; auto-mounts multiple element types" time="0.0376965">
+        <testcase classname="src/__tests__/main.spec.ts" name="main.ts &gt; autoMount &gt; auto-mounts multiple element types" time="0.0639175">
         </testcase>
-        <testcase classname="src/__tests__/main.spec.ts" name="main.ts &gt; autoMount &gt; skips elements that are already mounted" time="0.0200121">
+        <testcase classname="src/__tests__/main.spec.ts" name="main.ts &gt; autoMount &gt; skips elements that are already mounted" time="0.0208132">
         </testcase>
-        <testcase classname="src/__tests__/main.spec.ts" name="main.ts &gt; autoMount &gt; ignores elements with unknown media-field-type" time="0.0189499">
-        </testcase>
-    </testsuite>
-    <testsuite name="src/components/__tests__/GalleryCardItem.spec.ts" timestamp="2026-04-15T03:56:15.851Z" hostname="Nemo" tests="12" failures="0" errors="0" skipped="0" time="0.10091">
-        <testcase classname="src/components/__tests__/GalleryCardItem.spec.ts" name="GalleryCardItem &gt; renders for normal image item" time="0.0353519">
-        </testcase>
-        <testcase classname="src/components/__tests__/GalleryCardItem.spec.ts" name="GalleryCardItem &gt; renders file icon for non-image" time="0.0077281">
-        </testcase>
-        <testcase classname="src/components/__tests__/GalleryCardItem.spec.ts" name="GalleryCardItem &gt; shows transient warning" time="0.0060028">
-        </testcase>
-        <testcase classname="src/components/__tests__/GalleryCardItem.spec.ts" name="GalleryCardItem &gt; shows not-found error" time="0.0039392">
-        </testcase>
-        <testcase classname="src/components/__tests__/GalleryCardItem.spec.ts" name="GalleryCardItem &gt; hidden when isRemoved" time="0.002432">
-        </testcase>
-        <testcase classname="src/components/__tests__/GalleryCardItem.spec.ts" name="GalleryCardItem &gt; emits editMediaText on button click" time="0.0104491">
-        </testcase>
-        <testcase classname="src/components/__tests__/GalleryCardItem.spec.ts" name="GalleryCardItem &gt; emits editAnchor on button click" time="0.006349">
-        </testcase>
-        <testcase classname="src/components/__tests__/GalleryCardItem.spec.ts" name="GalleryCardItem &gt; emits deleteMedia on trash click" time="0.007216">
-        </testcase>
-        <testcase classname="src/components/__tests__/GalleryCardItem.spec.ts" name="GalleryCardItem &gt; uses 120px thumb size for &apos;sm&apos;" time="0.0044793">
-        </testcase>
-        <testcase classname="src/components/__tests__/GalleryCardItem.spec.ts" name="GalleryCardItem &gt; uses 240px thumb size for &apos;lg&apos;" time="0.0043216">
-        </testcase>
-        <testcase classname="src/components/__tests__/GalleryCardItem.spec.ts" name="GalleryCardItem &gt; shows filled comment icon when mediaText exists" time="0.006018">
-        </testcase>
-        <testcase classname="src/components/__tests__/GalleryCardItem.spec.ts" name="GalleryCardItem &gt; shows outline comment icon when no mediaText" time="0.0045735">
+        <testcase classname="src/__tests__/main.spec.ts" name="main.ts &gt; autoMount &gt; ignores elements with unknown media-field-type" time="0.0427925">
         </testcase>
     </testsuite>
-    <testsuite name="src/components/__tests__/GalleryContainer.spec.ts" timestamp="2026-04-15T03:56:15.854Z" hostname="Nemo" tests="13" failures="0" errors="0" skipped="0" time="0.1734172">
-        <testcase classname="src/components/__tests__/GalleryContainer.spec.ts" name="GalleryContainer &gt; renders in grid view by default" time="0.0346584">
+    <testsuite name="src/components/__tests__/GalleryCardItem.spec.ts" timestamp="2026-04-15T04:19:01.347Z" hostname="Nemo" tests="12" failures="0" errors="0" skipped="0" time="0.1037028">
+        <testcase classname="src/components/__tests__/GalleryCardItem.spec.ts" name="GalleryCardItem &gt; renders for normal image item" time="0.0302056">
+        </testcase>
+        <testcase classname="src/components/__tests__/GalleryCardItem.spec.ts" name="GalleryCardItem &gt; renders file icon for non-image" time="0.0071026">
+        </testcase>
+        <testcase classname="src/components/__tests__/GalleryCardItem.spec.ts" name="GalleryCardItem &gt; shows transient warning" time="0.0040981">
+        </testcase>
+        <testcase classname="src/components/__tests__/GalleryCardItem.spec.ts" name="GalleryCardItem &gt; shows not-found error" time="0.0033852">
+        </testcase>
+        <testcase classname="src/components/__tests__/GalleryCardItem.spec.ts" name="GalleryCardItem &gt; hidden when isRemoved" time="0.0019035">
+        </testcase>
+        <testcase classname="src/components/__tests__/GalleryCardItem.spec.ts" name="GalleryCardItem &gt; emits editMediaText on button click" time="0.0091805">
+        </testcase>
+        <testcase classname="src/components/__tests__/GalleryCardItem.spec.ts" name="GalleryCardItem &gt; emits editAnchor on button click" time="0.0078787">
+        </testcase>
+        <testcase classname="src/components/__tests__/GalleryCardItem.spec.ts" name="GalleryCardItem &gt; emits deleteMedia on trash click" time="0.0124108">
+        </testcase>
+        <testcase classname="src/components/__tests__/GalleryCardItem.spec.ts" name="GalleryCardItem &gt; uses 120px thumb size for &apos;sm&apos;" time="0.0060806">
+        </testcase>
+        <testcase classname="src/components/__tests__/GalleryCardItem.spec.ts" name="GalleryCardItem &gt; uses 240px thumb size for &apos;lg&apos;" time="0.0055474">
+        </testcase>
+        <testcase classname="src/components/__tests__/GalleryCardItem.spec.ts" name="GalleryCardItem &gt; shows filled comment icon when mediaText exists" time="0.0076759">
+        </testcase>
+        <testcase classname="src/components/__tests__/GalleryCardItem.spec.ts" name="GalleryCardItem &gt; shows outline comment icon when no mediaText" time="0.0064341">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/components/__tests__/GalleryContainer.spec.ts" timestamp="2026-04-15T04:19:01.349Z" hostname="Nemo" tests="13" failures="0" errors="0" skipped="0" time="0.1689079">
+        <testcase classname="src/components/__tests__/GalleryContainer.spec.ts" name="GalleryContainer &gt; renders in grid view by default" time="0.0367831">
             <system-err>
 [Vue warn]: withDirectives can only be used inside render functions.
 [Vue warn]: withDirectives can only be used inside render functions.
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/GalleryContainer.spec.ts" name="GalleryContainer &gt; shows add card in grid view" time="0.0059935">
+        <testcase classname="src/components/__tests__/GalleryContainer.spec.ts" name="GalleryContainer &gt; shows add card in grid view" time="0.0067422">
             <system-err>
 [Vue warn]: withDirectives can only be used inside render functions.
 [Vue warn]: withDirectives can only be used inside render functions.
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/GalleryContainer.spec.ts" name="GalleryContainer &gt; toggles to list view on button click" time="0.0105962">
-            <system-err>
-[Vue warn]: withDirectives can only be used inside render functions.
-[Vue warn]: withDirectives can only be used inside render functions.
-[Vue warn]: withDirectives can only be used inside render functions.
-[Vue warn]: withDirectives can only be used inside render functions.
-
-            </system-err>
-        </testcase>
-        <testcase classname="src/components/__tests__/GalleryContainer.spec.ts" name="GalleryContainer &gt; shows &apos;Add media&apos; empty item in list when no items" time="0.005696">
-            <system-err>
-[Vue warn]: withDirectives can only be used inside render functions.
-[Vue warn]: withDirectives can only be used inside render functions.
-[Vue warn]: withDirectives can only be used inside render functions.
-[Vue warn]: withDirectives can only be used inside render functions.
-
-            </system-err>
-        </testcase>
-        <testcase classname="src/components/__tests__/GalleryContainer.spec.ts" name="GalleryContainer &gt; renders all items including duplicates" time="0.015182">
-            <system-err>
-[Vue warn]: withDirectives can only be used inside render functions.
-[Vue warn]: withDirectives can only be used inside render functions.
-
-            </system-err>
-        </testcase>
-        <testcase classname="src/components/__tests__/GalleryContainer.spec.ts" name="GalleryContainer &gt; filters out isRemoved items" time="0.0073575">
-            <system-err>
-[Vue warn]: withDirectives can only be used inside render functions.
-[Vue warn]: withDirectives can only be used inside render functions.
-
-            </system-err>
-        </testcase>
-        <testcase classname="src/components/__tests__/GalleryContainer.spec.ts" name="GalleryContainer &gt; emits showPicker on add button click" time="0.0094697">
-            <system-err>
-[Vue warn]: withDirectives can only be used inside render functions.
-[Vue warn]: withDirectives can only be used inside render functions.
-
-            </system-err>
-        </testcase>
-        <testcase classname="src/components/__tests__/GalleryContainer.spec.ts" name="GalleryContainer &gt; emits reorder on drag-drop (test via component method call)" time="0.0088111">
-            <system-err>
-[Vue warn]: withDirectives can only be used inside render functions.
-[Vue warn]: withDirectives can only be used inside render functions.
-
-            </system-err>
-        </testcase>
-        <testcase classname="src/components/__tests__/GalleryContainer.spec.ts" name="GalleryContainer &gt; saves/loads view prefs from localStorage" time="0.0114073">
+        <testcase classname="src/components/__tests__/GalleryContainer.spec.ts" name="GalleryContainer &gt; toggles to list view on button click" time="0.0104689">
             <system-err>
 [Vue warn]: withDirectives can only be used inside render functions.
 [Vue warn]: withDirectives can only be used inside render functions.
@@ -132,23 +86,69 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/GalleryContainer.spec.ts" name="GalleryContainer &gt; enforces single item for non-multiple mode (watch fires reorder)" time="0.0106701">
+        <testcase classname="src/components/__tests__/GalleryContainer.spec.ts" name="GalleryContainer &gt; shows &apos;Add media&apos; empty item in list when no items" time="0.0074646">
+            <system-err>
+[Vue warn]: withDirectives can only be used inside render functions.
+[Vue warn]: withDirectives can only be used inside render functions.
+[Vue warn]: withDirectives can only be used inside render functions.
+[Vue warn]: withDirectives can only be used inside render functions.
+
+            </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/GalleryContainer.spec.ts" name="GalleryContainer &gt; handles invalid localStorage gracefully (catch block)" time="0.0054933">
+        <testcase classname="src/components/__tests__/GalleryContainer.spec.ts" name="GalleryContainer &gt; renders all items including duplicates" time="0.0163894">
             <system-err>
 [Vue warn]: withDirectives can only be used inside render functions.
 [Vue warn]: withDirectives can only be used inside render functions.
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/GalleryContainer.spec.ts" name="GalleryContainer &gt; onDragEnd resets draggedItem" time="0.0350379">
+        <testcase classname="src/components/__tests__/GalleryContainer.spec.ts" name="GalleryContainer &gt; filters out isRemoved items" time="0.0072218">
             <system-err>
 [Vue warn]: withDirectives can only be used inside render functions.
 [Vue warn]: withDirectives can only be used inside render functions.
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/GalleryContainer.spec.ts" name="GalleryContainer &gt; grid size toggle between sm and lg" time="0.0109431">
+        <testcase classname="src/components/__tests__/GalleryContainer.spec.ts" name="GalleryContainer &gt; emits showPicker on add button click" time="0.0277348">
+            <system-err>
+[Vue warn]: withDirectives can only be used inside render functions.
+[Vue warn]: withDirectives can only be used inside render functions.
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/components/__tests__/GalleryContainer.spec.ts" name="GalleryContainer &gt; emits reorder on drag-drop (test via component method call)" time="0.0148612">
+            <system-err>
+[Vue warn]: withDirectives can only be used inside render functions.
+[Vue warn]: withDirectives can only be used inside render functions.
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/components/__tests__/GalleryContainer.spec.ts" name="GalleryContainer &gt; saves/loads view prefs from localStorage" time="0.0072526">
+            <system-err>
+[Vue warn]: withDirectives can only be used inside render functions.
+[Vue warn]: withDirectives can only be used inside render functions.
+[Vue warn]: withDirectives can only be used inside render functions.
+[Vue warn]: withDirectives can only be used inside render functions.
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/components/__tests__/GalleryContainer.spec.ts" name="GalleryContainer &gt; enforces single item for non-multiple mode (watch fires reorder)" time="0.0105859">
+        </testcase>
+        <testcase classname="src/components/__tests__/GalleryContainer.spec.ts" name="GalleryContainer &gt; handles invalid localStorage gracefully (catch block)" time="0.0054543">
+            <system-err>
+[Vue warn]: withDirectives can only be used inside render functions.
+[Vue warn]: withDirectives can only be used inside render functions.
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/components/__tests__/GalleryContainer.spec.ts" name="GalleryContainer &gt; onDragEnd resets draggedItem" time="0.0069715">
+            <system-err>
+[Vue warn]: withDirectives can only be used inside render functions.
+[Vue warn]: withDirectives can only be used inside render functions.
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/components/__tests__/GalleryContainer.spec.ts" name="GalleryContainer &gt; grid size toggle between sm and lg" time="0.0089132">
             <system-err>
 [Vue warn]: withDirectives can only be used inside render functions.
 [Vue warn]: withDirectives can only be used inside render functions.
@@ -160,40 +160,40 @@
             </system-err>
         </testcase>
     </testsuite>
-    <testsuite name="src/components/__tests__/GalleryListItem.spec.ts" timestamp="2026-04-15T03:56:15.857Z" hostname="Nemo" tests="15" failures="0" errors="0" skipped="0" time="0.1092121">
-        <testcase classname="src/components/__tests__/GalleryListItem.spec.ts" name="GalleryListItem &gt; renders media name for normal item" time="0.0238329">
+    <testsuite name="src/components/__tests__/GalleryListItem.spec.ts" timestamp="2026-04-15T04:19:01.354Z" hostname="Nemo" tests="15" failures="0" errors="0" skipped="0" time="0.1257341">
+        <testcase classname="src/components/__tests__/GalleryListItem.spec.ts" name="GalleryListItem &gt; renders media name for normal item" time="0.0183435">
         </testcase>
-        <testcase classname="src/components/__tests__/GalleryListItem.spec.ts" name="GalleryListItem &gt; shows &apos;Temporarily unavailable&apos; for transient error" time="0.0035184">
+        <testcase classname="src/components/__tests__/GalleryListItem.spec.ts" name="GalleryListItem &gt; shows &apos;Temporarily unavailable&apos; for transient error" time="0.0036302">
         </testcase>
-        <testcase classname="src/components/__tests__/GalleryListItem.spec.ts" name="GalleryListItem &gt; shows &apos;Media not found&apos; for not-found error" time="0.0035">
+        <testcase classname="src/components/__tests__/GalleryListItem.spec.ts" name="GalleryListItem &gt; shows &apos;Media not found&apos; for not-found error" time="0.0031934">
         </testcase>
-        <testcase classname="src/components/__tests__/GalleryListItem.spec.ts" name="GalleryListItem &gt; hidden when isRemoved is true" time="0.0027999">
+        <testcase classname="src/components/__tests__/GalleryListItem.spec.ts" name="GalleryListItem &gt; hidden when isRemoved is true" time="0.0021549">
         </testcase>
-        <testcase classname="src/components/__tests__/GalleryListItem.spec.ts" name="GalleryListItem &gt; shows image thumbnail for image mime" time="0.010111">
+        <testcase classname="src/components/__tests__/GalleryListItem.spec.ts" name="GalleryListItem &gt; shows image thumbnail for image mime" time="0.0096971">
         </testcase>
-        <testcase classname="src/components/__tests__/GalleryListItem.spec.ts" name="GalleryListItem &gt; shows icon for non-image" time="0.0072541">
+        <testcase classname="src/components/__tests__/GalleryListItem.spec.ts" name="GalleryListItem &gt; shows icon for non-image" time="0.0041258">
         </testcase>
-        <testcase classname="src/components/__tests__/GalleryListItem.spec.ts" name="GalleryListItem &gt; shows mediaText button when allowMediaText and no error" time="0.0055617">
+        <testcase classname="src/components/__tests__/GalleryListItem.spec.ts" name="GalleryListItem &gt; shows mediaText button when allowMediaText and no error" time="0.0047347">
         </testcase>
-        <testcase classname="src/components/__tests__/GalleryListItem.spec.ts" name="GalleryListItem &gt; hides mediaText button when error" time="0.0042238">
+        <testcase classname="src/components/__tests__/GalleryListItem.spec.ts" name="GalleryListItem &gt; hides mediaText button when error" time="0.003354">
         </testcase>
-        <testcase classname="src/components/__tests__/GalleryListItem.spec.ts" name="GalleryListItem &gt; shows anchor button for images when allowAnchors" time="0.0051621">
+        <testcase classname="src/components/__tests__/GalleryListItem.spec.ts" name="GalleryListItem &gt; shows anchor button for images when allowAnchors" time="0.0044875">
         </testcase>
-        <testcase classname="src/components/__tests__/GalleryListItem.spec.ts" name="GalleryListItem &gt; hides anchor button for non-images" time="0.0044888">
+        <testcase classname="src/components/__tests__/GalleryListItem.spec.ts" name="GalleryListItem &gt; hides anchor button for non-images" time="0.0035912">
         </testcase>
-        <testcase classname="src/components/__tests__/GalleryListItem.spec.ts" name="GalleryListItem &gt; emits editMediaText on button click" time="0.0106933">
+        <testcase classname="src/components/__tests__/GalleryListItem.spec.ts" name="GalleryListItem &gt; emits editMediaText on button click" time="0.0126972">
         </testcase>
-        <testcase classname="src/components/__tests__/GalleryListItem.spec.ts" name="GalleryListItem &gt; emits editAnchor on button click" time="0.0047832">
+        <testcase classname="src/components/__tests__/GalleryListItem.spec.ts" name="GalleryListItem &gt; emits editAnchor on button click" time="0.0046861">
         </testcase>
-        <testcase classname="src/components/__tests__/GalleryListItem.spec.ts" name="GalleryListItem &gt; emits deleteMedia on trash click" time="0.0102813">
+        <testcase classname="src/components/__tests__/GalleryListItem.spec.ts" name="GalleryListItem &gt; emits deleteMedia on trash click" time="0.0046917">
         </testcase>
-        <testcase classname="src/components/__tests__/GalleryListItem.spec.ts" name="GalleryListItem &gt; is draggable when allowMultiple" time="0.0061072">
+        <testcase classname="src/components/__tests__/GalleryListItem.spec.ts" name="GalleryListItem &gt; is draggable when allowMultiple" time="0.0402053">
         </testcase>
-        <testcase classname="src/components/__tests__/GalleryListItem.spec.ts" name="GalleryListItem &gt; is not draggable when allowMultiple is false" time="0.0050201">
+        <testcase classname="src/components/__tests__/GalleryListItem.spec.ts" name="GalleryListItem &gt; is not draggable when allowMultiple is false" time="0.0043066">
         </testcase>
     </testsuite>
-    <testsuite name="src/components/__tests__/MediaFieldAttached.spec.ts" timestamp="2026-04-15T03:56:15.859Z" hostname="Nemo" tests="30" failures="0" errors="0" skipped="0" time="0.3918524">
-        <testcase classname="src/components/__tests__/MediaFieldAttached.spec.ts" name="MediaFieldAttached &gt; renders hidden input with serialized paths" time="0.0519715">
+    <testsuite name="src/components/__tests__/MediaFieldAttached.spec.ts" timestamp="2026-04-15T04:19:01.357Z" hostname="Nemo" tests="30" failures="0" errors="0" skipped="0" time="0.364914">
+        <testcase classname="src/components/__tests__/MediaFieldAttached.spec.ts" name="MediaFieldAttached &gt; renders hidden input with serialized paths" time="0.0456475">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer media-items= [] selected-media=null thumb-size=240  ... &gt; 
@@ -213,7 +213,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldAttached.spec.ts" name="MediaFieldAttached &gt; loadInitialPaths works" time="0.0175881">
+        <testcase classname="src/components/__tests__/MediaFieldAttached.spec.ts" name="MediaFieldAttached &gt; loadInitialPaths works" time="0.0131502">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer media-items= [] selected-media=null thumb-size=240  ... &gt; 
@@ -233,7 +233,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldAttached.spec.ts" name="MediaFieldAttached &gt; handles file input change (onFileInputChange)" time="0.0360525">
+        <testcase classname="src/components/__tests__/MediaFieldAttached.spec.ts" name="MediaFieldAttached &gt; handles file input change (onFileInputChange)" time="0.0368514">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer media-items= [] selected-media=null thumb-size=240  ... &gt; 
@@ -253,7 +253,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldAttached.spec.ts" name="MediaFieldAttached &gt; handles drag-drop (onDrop)" time="0.036152">
+        <testcase classname="src/components/__tests__/MediaFieldAttached.spec.ts" name="MediaFieldAttached &gt; handles drag-drop (onDrop)" time="0.0206453">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer media-items= [] selected-media=null thumb-size=240  ... &gt; 
@@ -273,7 +273,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldAttached.spec.ts" name="MediaFieldAttached &gt; handleFiles calls uploadService.uploadFiles" time="0.0166294">
+        <testcase classname="src/components/__tests__/MediaFieldAttached.spec.ts" name="MediaFieldAttached &gt; handleFiles calls uploadService.uploadFiles" time="0.0290964">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer media-items= [] selected-media=null thumb-size=240  ... &gt; 
@@ -293,7 +293,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldAttached.spec.ts" name="MediaFieldAttached &gt; handleFiles adds uploaded items to mediaItems" time="0.0112584">
+        <testcase classname="src/components/__tests__/MediaFieldAttached.spec.ts" name="MediaFieldAttached &gt; handleFiles adds uploaded items to mediaItems" time="0.0138534">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer media-items= [] selected-media=null thumb-size=240  ... &gt; 
@@ -313,7 +313,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldAttached.spec.ts" name="MediaFieldAttached &gt; canAddMedia false for single mode with item" time="0.0194032">
+        <testcase classname="src/components/__tests__/MediaFieldAttached.spec.ts" name="MediaFieldAttached &gt; canAddMedia false for single mode with item" time="0.0194432">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer media-items= [] selected-media=null thumb-size=240  ... &gt; 
@@ -341,7 +341,7 @@
     size: [33m100[39m,
     isNew: [33mtrue[39m,
     attachedFileName: [32m&apos;a.jpg&apos;[39m,
-    vuekey: [32m&apos;uuid-a.jpg17762253755170&apos;[39m
+    vuekey: [32m&apos;uuid-a.jpg17762267410440&apos;[39m
   }
 ] selected-media= {
   name: [32m&apos;uuid-a.jpg&apos;[39m,
@@ -351,7 +351,7 @@
   size: [33m100[39m,
   isNew: [33mtrue[39m,
   attachedFileName: [32m&apos;a.jpg&apos;[39m,
-  vuekey: [32m&apos;uuid-a.jpg17762253755170&apos;[39m
+  vuekey: [32m&apos;uuid-a.jpg17762267410440&apos;[39m
 } thumb-size=240  ... &gt; 
   at &lt;MediaFieldAttached config= {
   paths: [],
@@ -367,7 +367,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldAttached.spec.ts" name="MediaFieldAttached &gt; removeSelected works" time="0.0157281">
+        <testcase classname="src/components/__tests__/MediaFieldAttached.spec.ts" name="MediaFieldAttached &gt; removeSelected works" time="0.0139121">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer media-items= [] selected-media=null thumb-size=240  ... &gt; 
@@ -422,7 +422,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldAttached.spec.ts" name="MediaFieldAttached &gt; drag zone shows overlay when dragging over" time="0.0105852">
+        <testcase classname="src/components/__tests__/MediaFieldAttached.spec.ts" name="MediaFieldAttached &gt; drag zone shows overlay when dragging over" time="0.0095872">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer media-items= [] selected-media=null thumb-size=240  ... &gt; 
@@ -442,7 +442,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldAttached.spec.ts" name="MediaFieldAttached &gt; serializedPaths includes isNew, isRemoved, attachedFileName" time="0.0103812">
+        <testcase classname="src/components/__tests__/MediaFieldAttached.spec.ts" name="MediaFieldAttached &gt; serializedPaths includes isNew, isRemoved, attachedFileName" time="0.0097053">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer media-items= [] selected-media=null thumb-size=240  ... &gt; 
@@ -470,7 +470,7 @@
     size: [33m100[39m,
     isNew: [33mtrue[39m,
     attachedFileName: [32m&apos;file.jpg&apos;[39m,
-    vuekey: [32m&apos;uuid-file.jpg17762253755610&apos;[39m
+    vuekey: [32m&apos;uuid-file.jpg17762267410840&apos;[39m
   }
 ] selected-media=null thumb-size=240  ... &gt; 
   at &lt;MediaFieldAttached config= {
@@ -487,7 +487,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldAttached.spec.ts" name="MediaFieldAttached &gt; loadInitialPaths handles 404 as not-found error" time="0.0092928">
+        <testcase classname="src/components/__tests__/MediaFieldAttached.spec.ts" name="MediaFieldAttached &gt; loadInitialPaths handles 404 as not-found error" time="0.007109">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer media-items= [] selected-media=null thumb-size=240  ... &gt; 
@@ -507,7 +507,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldAttached.spec.ts" name="MediaFieldAttached &gt; loadInitialPaths handles network error as transient" time="0.0063292">
+        <testcase classname="src/components/__tests__/MediaFieldAttached.spec.ts" name="MediaFieldAttached &gt; loadInitialPaths handles network error as transient" time="0.0068048">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer media-items= [] selected-media=null thumb-size=240  ... &gt; 
@@ -527,7 +527,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldAttached.spec.ts" name="MediaFieldAttached &gt; loadInitialPaths with empty paths sets initialized" time="0.0053151">
+        <testcase classname="src/components/__tests__/MediaFieldAttached.spec.ts" name="MediaFieldAttached &gt; loadInitialPaths with empty paths sets initialized" time="0.007217">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer media-items= [] selected-media=null thumb-size=240  ... &gt; 
@@ -547,7 +547,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldAttached.spec.ts" name="MediaFieldAttached &gt; onDrop does nothing when no files in dataTransfer" time="0.0088202">
+        <testcase classname="src/components/__tests__/MediaFieldAttached.spec.ts" name="MediaFieldAttached &gt; onDrop does nothing when no files in dataTransfer" time="0.0095586">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer media-items= [] selected-media=null thumb-size=240  ... &gt; 
@@ -567,7 +567,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldAttached.spec.ts" name="MediaFieldAttached &gt; onFileInputChange does nothing when no files selected" time="0.004617">
+        <testcase classname="src/components/__tests__/MediaFieldAttached.spec.ts" name="MediaFieldAttached &gt; onFileInputChange does nothing when no files selected" time="0.0066323">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer media-items= [] selected-media=null thumb-size=240  ... &gt; 
@@ -587,7 +587,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldAttached.spec.ts" name="MediaFieldAttached &gt; selectAndDeleteMedia selects then removes item" time="0.0045008">
+        <testcase classname="src/components/__tests__/MediaFieldAttached.spec.ts" name="MediaFieldAttached &gt; selectAndDeleteMedia selects then removes item" time="0.0055054">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer media-items= [] selected-media=null thumb-size=240  ... &gt; 
@@ -609,7 +609,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldAttached.spec.ts" name="MediaFieldAttached &gt; onReorder updates mediaItems order" time="0.0075696">
+        <testcase classname="src/components/__tests__/MediaFieldAttached.spec.ts" name="MediaFieldAttached &gt; onReorder updates mediaItems order" time="0.008144">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer media-items= [] selected-media=null thumb-size=240  ... &gt; 
@@ -629,7 +629,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldAttached.spec.ts" name="MediaFieldAttached &gt; cancelMediaText does not change mediaText" time="0.014845">
+        <testcase classname="src/components/__tests__/MediaFieldAttached.spec.ts" name="MediaFieldAttached &gt; cancelMediaText does not change mediaText" time="0.0114306">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer media-items= [] selected-media=null thumb-size=240  ... &gt; 
@@ -684,7 +684,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldAttached.spec.ts" name="MediaFieldAttached &gt; saveMediaText saves editingMediaText to selected item" time="0.0122304">
+        <testcase classname="src/components/__tests__/MediaFieldAttached.spec.ts" name="MediaFieldAttached &gt; saveMediaText saves editingMediaText to selected item" time="0.0113947">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer media-items= [] selected-media=null thumb-size=240  ... &gt; 
@@ -739,7 +739,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldAttached.spec.ts" name="MediaFieldAttached &gt; showAnchorModal / saveAnchor / resetAnchor / cancelAnchor work" time="0.0085398">
+        <testcase classname="src/components/__tests__/MediaFieldAttached.spec.ts" name="MediaFieldAttached &gt; showAnchorModal / saveAnchor / resetAnchor / cancelAnchor work" time="0.0118211">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer media-items= [] selected-media=null thumb-size=240  ... &gt; 
@@ -794,7 +794,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldAttached.spec.ts" name="MediaFieldAttached &gt; cancelAnchor does not modify anchor" time="0.0087075">
+        <testcase classname="src/components/__tests__/MediaFieldAttached.spec.ts" name="MediaFieldAttached &gt; cancelAnchor does not modify anchor" time="0.0107991">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer media-items= [] selected-media=null thumb-size=240  ... &gt; 
@@ -849,7 +849,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldAttached.spec.ts" name="MediaFieldAttached &gt; persists smallThumbs preference to localStorage" time="0.0081157">
+        <testcase classname="src/components/__tests__/MediaFieldAttached.spec.ts" name="MediaFieldAttached &gt; persists smallThumbs preference to localStorage" time="0.0051373">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer media-items= [] selected-media=null thumb-size=240  ... &gt; 
@@ -869,7 +869,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldAttached.spec.ts" name="MediaFieldAttached &gt; handles invalid mediaFieldPrefs in localStorage gracefully" time="0.0077742">
+        <testcase classname="src/components/__tests__/MediaFieldAttached.spec.ts" name="MediaFieldAttached &gt; handles invalid mediaFieldPrefs in localStorage gracefully" time="0.0054039">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer media-items= [] selected-media=null thumb-size=240  ... &gt; 
@@ -889,7 +889,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldAttached.spec.ts" name="MediaFieldAttached &gt; handleFiles in single mode replaces existing item" time="0.0081722">
+        <testcase classname="src/components/__tests__/MediaFieldAttached.spec.ts" name="MediaFieldAttached &gt; handleFiles in single mode replaces existing item" time="0.0068325">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer media-items= [] selected-media=null thumb-size=240  ... &gt; 
@@ -909,9 +909,9 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldAttached.spec.ts" name="MediaFieldAttached &gt; handleFiles logs warning when there are upload errors" time="0.0081103">
+        <testcase classname="src/components/__tests__/MediaFieldAttached.spec.ts" name="MediaFieldAttached &gt; handleFiles logs warning when there are upload errors" time="0.0078656">
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldAttached.spec.ts" name="MediaFieldAttached &gt; removeSelected else-if branch: removes single item when nothing selected" time="0.0065107">
+        <testcase classname="src/components/__tests__/MediaFieldAttached.spec.ts" name="MediaFieldAttached &gt; removeSelected else-if branch: removes single item when nothing selected" time="0.0063977">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer media-items= [] selected-media=null thumb-size=240  ... &gt; 
@@ -931,7 +931,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldAttached.spec.ts" name="MediaFieldAttached &gt; setAnchor updates editingAnchor from mouse position" time="0.0094801">
+        <testcase classname="src/components/__tests__/MediaFieldAttached.spec.ts" name="MediaFieldAttached &gt; setAnchor updates editingAnchor from mouse position" time="0.0084511">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer media-items= [] selected-media=null thumb-size=240  ... &gt; 
@@ -986,7 +986,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldAttached.spec.ts" name="MediaFieldAttached &gt; setAnchor does nothing when anchorImageRef is null" time="0.0082462">
+        <testcase classname="src/components/__tests__/MediaFieldAttached.spec.ts" name="MediaFieldAttached &gt; setAnchor does nothing when anchorImageRef is null" time="0.0050678">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer media-items= [] selected-media=null thumb-size=240  ... &gt; 
@@ -1006,7 +1006,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldAttached.spec.ts" name="MediaFieldAttached &gt; handleFiles with multiple uploads in single mode keeps only first" time="0.0084935">
+        <testcase classname="src/components/__tests__/MediaFieldAttached.spec.ts" name="MediaFieldAttached &gt; handleFiles with multiple uploads in single mode keeps only first" time="0.0051435">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer media-items= [] selected-media=null thumb-size=240  ... &gt; 
@@ -1026,7 +1026,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldAttached.spec.ts" name="MediaFieldAttached &gt; dragover and dragleave toggle isDraggingOver" time="0.0080575">
+        <testcase classname="src/components/__tests__/MediaFieldAttached.spec.ts" name="MediaFieldAttached &gt; dragover and dragleave toggle isDraggingOver" time="0.0041145">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer media-items= [] selected-media=null thumb-size=240  ... &gt; 
@@ -1047,8 +1047,8 @@
             </system-err>
         </testcase>
     </testsuite>
-    <testsuite name="src/components/__tests__/MediaFieldBasic.spec.ts" timestamp="2026-04-15T03:56:15.868Z" hostname="Nemo" tests="41" failures="0" errors="0" skipped="0" time="0.4397559">
-        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; renders hidden input with serialized paths" time="0.0472006">
+    <testsuite name="src/components/__tests__/MediaFieldBasic.spec.ts" timestamp="2026-04-15T04:19:01.365Z" hostname="Nemo" tests="42" failures="0" errors="0" skipped="0" time="0.4083889">
+        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; renders hidden input with serialized paths" time="0.0520257">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer media-items= [] selected-media=null thumb-size=240  ... &gt; 
@@ -1096,7 +1096,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; serializedPaths returns config.paths before initialization" time="0.012303">
+        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; serializedPaths returns config.paths before initialization" time="0.0135711">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer media-items= [] selected-media=null thumb-size=240  ... &gt; 
@@ -1144,7 +1144,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; serializedPaths returns mediaItems after initialization" time="0.0136529">
+        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; serializedPaths returns mediaItems after initialization" time="0.0150408">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer media-items= [] selected-media=null thumb-size=240  ... &gt; 
@@ -1192,7 +1192,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; loadInitialPaths fetches media details from API" time="0.033932">
+        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; loadInitialPaths fetches media details from API" time="0.0487971">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer media-items= [] selected-media=null thumb-size=240  ... &gt; 
@@ -1240,7 +1240,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; loadInitialPaths handles 404 as not-found error" time="0.0184046">
+        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; loadInitialPaths handles 404 as not-found error" time="0.0125864">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer media-items= [] selected-media=null thumb-size=240  ... &gt; 
@@ -1288,7 +1288,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; loadInitialPaths handles network error as transient" time="0.0101221">
+        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; loadInitialPaths handles network error as transient" time="0.0088101">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer media-items= [] selected-media=null thumb-size=240  ... &gt; 
@@ -1336,7 +1336,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; loadInitialPaths with empty paths sets initialized" time="0.0104396">
+        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; loadInitialPaths with empty paths sets initialized" time="0.008599">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer media-items= [] selected-media=null thumb-size=240  ... &gt; 
@@ -1384,7 +1384,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; addMediaFiles adds items for multiple mode" time="0.0276457">
+        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; addMediaFiles adds items for multiple mode" time="0.0186701">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer media-items= [] selected-media=null thumb-size=240  ... &gt; 
@@ -1432,7 +1432,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; addMediaFiles replaces for single mode" time="0.009837">
+        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; addMediaFiles replaces for single mode" time="0.007021">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer media-items= [] selected-media=null thumb-size=240  ... &gt; 
@@ -1480,242 +1480,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; removeSelected removes selected item" time="0.0227658">
-            <system-err>
-[Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
-  at &lt;ThumbsContainer media-items= [] selected-media=null thumb-size=240  ... &gt; 
-  at &lt;MediaFieldBasic config= {
-  paths: [],
-  multiple: [33mtrue[39m,
-  allowMediaText: [33mfalse[39m,
-  allowAnchors: [33mfalse[39m,
-  allowedExtensions: [32m&apos;&apos;[39m,
-  mediaItemUrl: [32m&apos;/api/media&apos;[39m,
-  mediaAppTranslations: [32m&apos;&apos;[39m,
-  basePath: [32m&apos;/&apos;[39m,
-  uploadFilesUrl: [32m&apos;/api/upload&apos;[39m
-} inputName=&quot;MediaField&quot; ref=&quot;VTU_COMPONENT&quot; &gt; 
-  at &lt;VTUROOT&gt;
-[Vue warn]: withDirectives can only be used inside render functions.
-[Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
-  at &lt;VueFinalModal modelValue=false onUpdate:modelValue=fn class=&quot;tw:flex tw:items-center tw:justify-center&quot;  ... &gt; 
-  at &lt;MediaPickerModal ref=&quot;pickerModalRef&quot; field-id=&quot;MediaField&quot; allowed-extensions=&quot;&quot;  ... &gt; 
-  at &lt;MediaFieldBasic config= {
-  paths: [],
-  multiple: [33mtrue[39m,
-  allowMediaText: [33mfalse[39m,
-  allowAnchors: [33mfalse[39m,
-  allowedExtensions: [32m&apos;&apos;[39m,
-  mediaItemUrl: [32m&apos;/api/media&apos;[39m,
-  mediaAppTranslations: [32m&apos;&apos;[39m,
-  basePath: [32m&apos;/&apos;[39m,
-  uploadFilesUrl: [32m&apos;/api/upload&apos;[39m
-} inputName=&quot;MediaField&quot; ref=&quot;VTU_COMPONENT&quot; &gt; 
-  at &lt;VTUROOT&gt;
-[Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
-  at &lt;MediaFieldBasic config= {
-  paths: [],
-  multiple: [33mtrue[39m,
-  allowMediaText: [33mfalse[39m,
-  allowAnchors: [33mfalse[39m,
-  allowedExtensions: [32m&apos;&apos;[39m,
-  mediaItemUrl: [32m&apos;/api/media&apos;[39m,
-  mediaAppTranslations: [32m&apos;&apos;[39m,
-  basePath: [32m&apos;/&apos;[39m,
-  uploadFilesUrl: [32m&apos;/api/upload&apos;[39m
-} inputName=&quot;MediaField&quot; ref=&quot;VTU_COMPONENT&quot; &gt; 
-  at &lt;VTUROOT&gt;
-
-[Vue warn]: Component emitted event &quot;select-media&quot; but it is neither declared in the emits option nor as an &quot;onSelectMedia&quot; prop.
-[Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
-  at &lt;ThumbsContainer media-items= [
-  {
-    name: [32m&apos;test.jpg&apos;[39m,
-    mime: [32m&apos;image/jpeg&apos;[39m,
-    mediaPath: [32m&apos;a.jpg&apos;[39m,
-    url: [32m&apos;/media/test/test.jpg&apos;[39m,
-    size: [33m1024[39m,
-    vuekey: [32m&apos;a0&apos;[39m
-  }
-] selected-media= {
-  name: [32m&apos;test.jpg&apos;[39m,
-  mime: [32m&apos;image/jpeg&apos;[39m,
-  mediaPath: [32m&apos;a.jpg&apos;[39m,
-  url: [32m&apos;/media/test/test.jpg&apos;[39m,
-  size: [33m1024[39m,
-  vuekey: [32m&apos;a0&apos;[39m
-} thumb-size=240  ... &gt; 
-  at &lt;MediaFieldBasic config= {
-  paths: [],
-  multiple: [33mtrue[39m,
-  allowMediaText: [33mfalse[39m,
-  allowAnchors: [33mfalse[39m,
-  allowedExtensions: [32m&apos;&apos;[39m,
-  mediaItemUrl: [32m&apos;/api/media&apos;[39m,
-  mediaAppTranslations: [32m&apos;&apos;[39m,
-  basePath: [32m&apos;/&apos;[39m,
-  uploadFilesUrl: [32m&apos;/api/upload&apos;[39m
-} inputName=&quot;MediaField&quot; ref=&quot;VTU_COMPONENT&quot; &gt; 
-  at &lt;VTUROOT&gt;
-[Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
-  at &lt;MediaFieldBasic config= {
-  paths: [],
-  multiple: [33mtrue[39m,
-  allowMediaText: [33mfalse[39m,
-  allowAnchors: [33mfalse[39m,
-  allowedExtensions: [32m&apos;&apos;[39m,
-  mediaItemUrl: [32m&apos;/api/media&apos;[39m,
-  mediaAppTranslations: [32m&apos;&apos;[39m,
-  basePath: [32m&apos;/&apos;[39m,
-  uploadFilesUrl: [32m&apos;/api/upload&apos;[39m
-} inputName=&quot;MediaField&quot; ref=&quot;VTU_COMPONENT&quot; &gt; 
-  at &lt;VTUROOT&gt;
-
-            </system-err>
-        </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; selectMedia sets selectedMedia" time="0.008107">
-            <system-err>
-[Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
-  at &lt;ThumbsContainer media-items= [] selected-media=null thumb-size=240  ... &gt; 
-  at &lt;MediaFieldBasic config= {
-  paths: [],
-  multiple: [33mtrue[39m,
-  allowMediaText: [33mfalse[39m,
-  allowAnchors: [33mfalse[39m,
-  allowedExtensions: [32m&apos;&apos;[39m,
-  mediaItemUrl: [32m&apos;/api/media&apos;[39m,
-  mediaAppTranslations: [32m&apos;&apos;[39m,
-  basePath: [32m&apos;/&apos;[39m,
-  uploadFilesUrl: [32m&apos;/api/upload&apos;[39m
-} inputName=&quot;MediaField&quot; ref=&quot;VTU_COMPONENT&quot; &gt; 
-  at &lt;VTUROOT&gt;
-[Vue warn]: withDirectives can only be used inside render functions.
-[Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
-  at &lt;VueFinalModal modelValue=false onUpdate:modelValue=fn class=&quot;tw:flex tw:items-center tw:justify-center&quot;  ... &gt; 
-  at &lt;MediaPickerModal ref=&quot;pickerModalRef&quot; field-id=&quot;MediaField&quot; allowed-extensions=&quot;&quot;  ... &gt; 
-  at &lt;MediaFieldBasic config= {
-  paths: [],
-  multiple: [33mtrue[39m,
-  allowMediaText: [33mfalse[39m,
-  allowAnchors: [33mfalse[39m,
-  allowedExtensions: [32m&apos;&apos;[39m,
-  mediaItemUrl: [32m&apos;/api/media&apos;[39m,
-  mediaAppTranslations: [32m&apos;&apos;[39m,
-  basePath: [32m&apos;/&apos;[39m,
-  uploadFilesUrl: [32m&apos;/api/upload&apos;[39m
-} inputName=&quot;MediaField&quot; ref=&quot;VTU_COMPONENT&quot; &gt; 
-  at &lt;VTUROOT&gt;
-[Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
-  at &lt;MediaFieldBasic config= {
-  paths: [],
-  multiple: [33mtrue[39m,
-  allowMediaText: [33mfalse[39m,
-  allowAnchors: [33mfalse[39m,
-  allowedExtensions: [32m&apos;&apos;[39m,
-  mediaItemUrl: [32m&apos;/api/media&apos;[39m,
-  mediaAppTranslations: [32m&apos;&apos;[39m,
-  basePath: [32m&apos;/&apos;[39m,
-  uploadFilesUrl: [32m&apos;/api/upload&apos;[39m
-} inputName=&quot;MediaField&quot; ref=&quot;VTU_COMPONENT&quot; &gt; 
-  at &lt;VTUROOT&gt;
-
-[Vue warn]: Component emitted event &quot;select-media&quot; but it is neither declared in the emits option nor as an &quot;onSelectMedia&quot; prop.
-
-            </system-err>
-        </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; canAddMedia false when single and has item" time="0.0078505">
-            <system-err>
-[Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
-  at &lt;ThumbsContainer media-items= [] selected-media=null thumb-size=240  ... &gt; 
-  at &lt;MediaFieldBasic config= {
-  paths: [],
-  multiple: [33mfalse[39m,
-  allowMediaText: [33mfalse[39m,
-  allowAnchors: [33mfalse[39m,
-  allowedExtensions: [32m&apos;&apos;[39m,
-  mediaItemUrl: [32m&apos;/api/media&apos;[39m,
-  mediaAppTranslations: [32m&apos;&apos;[39m,
-  basePath: [32m&apos;/&apos;[39m,
-  uploadFilesUrl: [32m&apos;/api/upload&apos;[39m
-} inputName=&quot;MediaField&quot; ref=&quot;VTU_COMPONENT&quot; &gt; 
-  at &lt;VTUROOT&gt;
-[Vue warn]: withDirectives can only be used inside render functions.
-[Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
-  at &lt;VueFinalModal modelValue=false onUpdate:modelValue=fn class=&quot;tw:flex tw:items-center tw:justify-center&quot;  ... &gt; 
-  at &lt;MediaPickerModal ref=&quot;pickerModalRef&quot; field-id=&quot;MediaField&quot; allowed-extensions=&quot;&quot;  ... &gt; 
-  at &lt;MediaFieldBasic config= {
-  paths: [],
-  multiple: [33mfalse[39m,
-  allowMediaText: [33mfalse[39m,
-  allowAnchors: [33mfalse[39m,
-  allowedExtensions: [32m&apos;&apos;[39m,
-  mediaItemUrl: [32m&apos;/api/media&apos;[39m,
-  mediaAppTranslations: [32m&apos;&apos;[39m,
-  basePath: [32m&apos;/&apos;[39m,
-  uploadFilesUrl: [32m&apos;/api/upload&apos;[39m
-} inputName=&quot;MediaField&quot; ref=&quot;VTU_COMPONENT&quot; &gt; 
-  at &lt;VTUROOT&gt;
-[Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
-  at &lt;MediaFieldBasic config= {
-  paths: [],
-  multiple: [33mfalse[39m,
-  allowMediaText: [33mfalse[39m,
-  allowAnchors: [33mfalse[39m,
-  allowedExtensions: [32m&apos;&apos;[39m,
-  mediaItemUrl: [32m&apos;/api/media&apos;[39m,
-  mediaAppTranslations: [32m&apos;&apos;[39m,
-  basePath: [32m&apos;/&apos;[39m,
-  uploadFilesUrl: [32m&apos;/api/upload&apos;[39m
-} inputName=&quot;MediaField&quot; ref=&quot;VTU_COMPONENT&quot; &gt; 
-  at &lt;VTUROOT&gt;
-
-[Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
-  at &lt;ThumbsContainer media-items= [
-  {
-    name: [32m&apos;test.jpg&apos;[39m,
-    mime: [32m&apos;image/jpeg&apos;[39m,
-    mediaPath: [32m&apos;a.jpg&apos;[39m,
-    url: [32m&apos;/media/test/test.jpg&apos;[39m,
-    size: [33m1024[39m,
-    vuekey: [32m&apos;a0&apos;[39m
-  }
-] selected-media= {
-  name: [32m&apos;test.jpg&apos;[39m,
-  mime: [32m&apos;image/jpeg&apos;[39m,
-  mediaPath: [32m&apos;a.jpg&apos;[39m,
-  url: [32m&apos;/media/test/test.jpg&apos;[39m,
-  size: [33m1024[39m,
-  vuekey: [32m&apos;a0&apos;[39m
-} thumb-size=240  ... &gt; 
-  at &lt;MediaFieldBasic config= {
-  paths: [],
-  multiple: [33mfalse[39m,
-  allowMediaText: [33mfalse[39m,
-  allowAnchors: [33mfalse[39m,
-  allowedExtensions: [32m&apos;&apos;[39m,
-  mediaItemUrl: [32m&apos;/api/media&apos;[39m,
-  mediaAppTranslations: [32m&apos;&apos;[39m,
-  basePath: [32m&apos;/&apos;[39m,
-  uploadFilesUrl: [32m&apos;/api/upload&apos;[39m
-} inputName=&quot;MediaField&quot; ref=&quot;VTU_COMPONENT&quot; &gt; 
-  at &lt;VTUROOT&gt;
-[Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
-  at &lt;MediaFieldBasic config= {
-  paths: [],
-  multiple: [33mfalse[39m,
-  allowMediaText: [33mfalse[39m,
-  allowAnchors: [33mfalse[39m,
-  allowedExtensions: [32m&apos;&apos;[39m,
-  mediaItemUrl: [32m&apos;/api/media&apos;[39m,
-  mediaAppTranslations: [32m&apos;&apos;[39m,
-  basePath: [32m&apos;/&apos;[39m,
-  uploadFilesUrl: [32m&apos;/api/upload&apos;[39m
-} inputName=&quot;MediaField&quot; ref=&quot;VTU_COMPONENT&quot; &gt; 
-  at &lt;VTUROOT&gt;
-
-            </system-err>
-        </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; canAddMedia true when multiple" time="0.0064105">
+        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; addMediaFiles ignores duplicate mediaPath entries" time="0.008588">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer media-items= [] selected-media=null thumb-size=240  ... &gt; 
@@ -1763,7 +1528,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; shows Remove button when selectedMedia" time="0.0131665">
+        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; removeSelected removes selected item" time="0.0187314">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer media-items= [] selected-media=null thumb-size=240  ... &gt; 
@@ -1856,7 +1621,289 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; shows Media Text button when selectedMedia and allowMediaText" time="0.0098961">
+        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; selectMedia sets selectedMedia" time="0.008869">
+            <system-err>
+[Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
+  at &lt;ThumbsContainer media-items= [] selected-media=null thumb-size=240  ... &gt; 
+  at &lt;MediaFieldBasic config= {
+  paths: [],
+  multiple: [33mtrue[39m,
+  allowMediaText: [33mfalse[39m,
+  allowAnchors: [33mfalse[39m,
+  allowedExtensions: [32m&apos;&apos;[39m,
+  mediaItemUrl: [32m&apos;/api/media&apos;[39m,
+  mediaAppTranslations: [32m&apos;&apos;[39m,
+  basePath: [32m&apos;/&apos;[39m,
+  uploadFilesUrl: [32m&apos;/api/upload&apos;[39m
+} inputName=&quot;MediaField&quot; ref=&quot;VTU_COMPONENT&quot; &gt; 
+  at &lt;VTUROOT&gt;
+[Vue warn]: withDirectives can only be used inside render functions.
+[Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
+  at &lt;VueFinalModal modelValue=false onUpdate:modelValue=fn class=&quot;tw:flex tw:items-center tw:justify-center&quot;  ... &gt; 
+  at &lt;MediaPickerModal ref=&quot;pickerModalRef&quot; field-id=&quot;MediaField&quot; allowed-extensions=&quot;&quot;  ... &gt; 
+  at &lt;MediaFieldBasic config= {
+  paths: [],
+  multiple: [33mtrue[39m,
+  allowMediaText: [33mfalse[39m,
+  allowAnchors: [33mfalse[39m,
+  allowedExtensions: [32m&apos;&apos;[39m,
+  mediaItemUrl: [32m&apos;/api/media&apos;[39m,
+  mediaAppTranslations: [32m&apos;&apos;[39m,
+  basePath: [32m&apos;/&apos;[39m,
+  uploadFilesUrl: [32m&apos;/api/upload&apos;[39m
+} inputName=&quot;MediaField&quot; ref=&quot;VTU_COMPONENT&quot; &gt; 
+  at &lt;VTUROOT&gt;
+[Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
+  at &lt;MediaFieldBasic config= {
+  paths: [],
+  multiple: [33mtrue[39m,
+  allowMediaText: [33mfalse[39m,
+  allowAnchors: [33mfalse[39m,
+  allowedExtensions: [32m&apos;&apos;[39m,
+  mediaItemUrl: [32m&apos;/api/media&apos;[39m,
+  mediaAppTranslations: [32m&apos;&apos;[39m,
+  basePath: [32m&apos;/&apos;[39m,
+  uploadFilesUrl: [32m&apos;/api/upload&apos;[39m
+} inputName=&quot;MediaField&quot; ref=&quot;VTU_COMPONENT&quot; &gt; 
+  at &lt;VTUROOT&gt;
+
+[Vue warn]: Component emitted event &quot;select-media&quot; but it is neither declared in the emits option nor as an &quot;onSelectMedia&quot; prop.
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; canAddMedia false when single and has item" time="0.0090919">
+            <system-err>
+[Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
+  at &lt;ThumbsContainer media-items= [] selected-media=null thumb-size=240  ... &gt; 
+  at &lt;MediaFieldBasic config= {
+  paths: [],
+  multiple: [33mfalse[39m,
+  allowMediaText: [33mfalse[39m,
+  allowAnchors: [33mfalse[39m,
+  allowedExtensions: [32m&apos;&apos;[39m,
+  mediaItemUrl: [32m&apos;/api/media&apos;[39m,
+  mediaAppTranslations: [32m&apos;&apos;[39m,
+  basePath: [32m&apos;/&apos;[39m,
+  uploadFilesUrl: [32m&apos;/api/upload&apos;[39m
+} inputName=&quot;MediaField&quot; ref=&quot;VTU_COMPONENT&quot; &gt; 
+  at &lt;VTUROOT&gt;
+[Vue warn]: withDirectives can only be used inside render functions.
+[Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
+  at &lt;VueFinalModal modelValue=false onUpdate:modelValue=fn class=&quot;tw:flex tw:items-center tw:justify-center&quot;  ... &gt; 
+  at &lt;MediaPickerModal ref=&quot;pickerModalRef&quot; field-id=&quot;MediaField&quot; allowed-extensions=&quot;&quot;  ... &gt; 
+  at &lt;MediaFieldBasic config= {
+  paths: [],
+  multiple: [33mfalse[39m,
+  allowMediaText: [33mfalse[39m,
+  allowAnchors: [33mfalse[39m,
+  allowedExtensions: [32m&apos;&apos;[39m,
+  mediaItemUrl: [32m&apos;/api/media&apos;[39m,
+  mediaAppTranslations: [32m&apos;&apos;[39m,
+  basePath: [32m&apos;/&apos;[39m,
+  uploadFilesUrl: [32m&apos;/api/upload&apos;[39m
+} inputName=&quot;MediaField&quot; ref=&quot;VTU_COMPONENT&quot; &gt; 
+  at &lt;VTUROOT&gt;
+[Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
+  at &lt;MediaFieldBasic config= {
+  paths: [],
+  multiple: [33mfalse[39m,
+  allowMediaText: [33mfalse[39m,
+  allowAnchors: [33mfalse[39m,
+  allowedExtensions: [32m&apos;&apos;[39m,
+  mediaItemUrl: [32m&apos;/api/media&apos;[39m,
+  mediaAppTranslations: [32m&apos;&apos;[39m,
+  basePath: [32m&apos;/&apos;[39m,
+  uploadFilesUrl: [32m&apos;/api/upload&apos;[39m
+} inputName=&quot;MediaField&quot; ref=&quot;VTU_COMPONENT&quot; &gt; 
+  at &lt;VTUROOT&gt;
+
+[Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
+  at &lt;ThumbsContainer media-items= [
+  {
+    name: [32m&apos;test.jpg&apos;[39m,
+    mime: [32m&apos;image/jpeg&apos;[39m,
+    mediaPath: [32m&apos;a.jpg&apos;[39m,
+    url: [32m&apos;/media/test/test.jpg&apos;[39m,
+    size: [33m1024[39m,
+    vuekey: [32m&apos;a0&apos;[39m
+  }
+] selected-media= {
+  name: [32m&apos;test.jpg&apos;[39m,
+  mime: [32m&apos;image/jpeg&apos;[39m,
+  mediaPath: [32m&apos;a.jpg&apos;[39m,
+  url: [32m&apos;/media/test/test.jpg&apos;[39m,
+  size: [33m1024[39m,
+  vuekey: [32m&apos;a0&apos;[39m
+} thumb-size=240  ... &gt; 
+  at &lt;MediaFieldBasic config= {
+  paths: [],
+  multiple: [33mfalse[39m,
+  allowMediaText: [33mfalse[39m,
+  allowAnchors: [33mfalse[39m,
+  allowedExtensions: [32m&apos;&apos;[39m,
+  mediaItemUrl: [32m&apos;/api/media&apos;[39m,
+  mediaAppTranslations: [32m&apos;&apos;[39m,
+  basePath: [32m&apos;/&apos;[39m,
+  uploadFilesUrl: [32m&apos;/api/upload&apos;[39m
+} inputName=&quot;MediaField&quot; ref=&quot;VTU_COMPONENT&quot; &gt; 
+  at &lt;VTUROOT&gt;
+[Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
+  at &lt;MediaFieldBasic config= {
+  paths: [],
+  multiple: [33mfalse[39m,
+  allowMediaText: [33mfalse[39m,
+  allowAnchors: [33mfalse[39m,
+  allowedExtensions: [32m&apos;&apos;[39m,
+  mediaItemUrl: [32m&apos;/api/media&apos;[39m,
+  mediaAppTranslations: [32m&apos;&apos;[39m,
+  basePath: [32m&apos;/&apos;[39m,
+  uploadFilesUrl: [32m&apos;/api/upload&apos;[39m
+} inputName=&quot;MediaField&quot; ref=&quot;VTU_COMPONENT&quot; &gt; 
+  at &lt;VTUROOT&gt;
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; canAddMedia true when multiple" time="0.008072">
+            <system-err>
+[Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
+  at &lt;ThumbsContainer media-items= [] selected-media=null thumb-size=240  ... &gt; 
+  at &lt;MediaFieldBasic config= {
+  paths: [],
+  multiple: [33mtrue[39m,
+  allowMediaText: [33mfalse[39m,
+  allowAnchors: [33mfalse[39m,
+  allowedExtensions: [32m&apos;&apos;[39m,
+  mediaItemUrl: [32m&apos;/api/media&apos;[39m,
+  mediaAppTranslations: [32m&apos;&apos;[39m,
+  basePath: [32m&apos;/&apos;[39m,
+  uploadFilesUrl: [32m&apos;/api/upload&apos;[39m
+} inputName=&quot;MediaField&quot; ref=&quot;VTU_COMPONENT&quot; &gt; 
+  at &lt;VTUROOT&gt;
+[Vue warn]: withDirectives can only be used inside render functions.
+[Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
+  at &lt;VueFinalModal modelValue=false onUpdate:modelValue=fn class=&quot;tw:flex tw:items-center tw:justify-center&quot;  ... &gt; 
+  at &lt;MediaPickerModal ref=&quot;pickerModalRef&quot; field-id=&quot;MediaField&quot; allowed-extensions=&quot;&quot;  ... &gt; 
+  at &lt;MediaFieldBasic config= {
+  paths: [],
+  multiple: [33mtrue[39m,
+  allowMediaText: [33mfalse[39m,
+  allowAnchors: [33mfalse[39m,
+  allowedExtensions: [32m&apos;&apos;[39m,
+  mediaItemUrl: [32m&apos;/api/media&apos;[39m,
+  mediaAppTranslations: [32m&apos;&apos;[39m,
+  basePath: [32m&apos;/&apos;[39m,
+  uploadFilesUrl: [32m&apos;/api/upload&apos;[39m
+} inputName=&quot;MediaField&quot; ref=&quot;VTU_COMPONENT&quot; &gt; 
+  at &lt;VTUROOT&gt;
+[Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
+  at &lt;MediaFieldBasic config= {
+  paths: [],
+  multiple: [33mtrue[39m,
+  allowMediaText: [33mfalse[39m,
+  allowAnchors: [33mfalse[39m,
+  allowedExtensions: [32m&apos;&apos;[39m,
+  mediaItemUrl: [32m&apos;/api/media&apos;[39m,
+  mediaAppTranslations: [32m&apos;&apos;[39m,
+  basePath: [32m&apos;/&apos;[39m,
+  uploadFilesUrl: [32m&apos;/api/upload&apos;[39m
+} inputName=&quot;MediaField&quot; ref=&quot;VTU_COMPONENT&quot; &gt; 
+  at &lt;VTUROOT&gt;
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; shows Remove button when selectedMedia" time="0.0074126">
+            <system-err>
+[Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
+  at &lt;ThumbsContainer media-items= [] selected-media=null thumb-size=240  ... &gt; 
+  at &lt;MediaFieldBasic config= {
+  paths: [],
+  multiple: [33mtrue[39m,
+  allowMediaText: [33mfalse[39m,
+  allowAnchors: [33mfalse[39m,
+  allowedExtensions: [32m&apos;&apos;[39m,
+  mediaItemUrl: [32m&apos;/api/media&apos;[39m,
+  mediaAppTranslations: [32m&apos;&apos;[39m,
+  basePath: [32m&apos;/&apos;[39m,
+  uploadFilesUrl: [32m&apos;/api/upload&apos;[39m
+} inputName=&quot;MediaField&quot; ref=&quot;VTU_COMPONENT&quot; &gt; 
+  at &lt;VTUROOT&gt;
+[Vue warn]: withDirectives can only be used inside render functions.
+[Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
+  at &lt;VueFinalModal modelValue=false onUpdate:modelValue=fn class=&quot;tw:flex tw:items-center tw:justify-center&quot;  ... &gt; 
+  at &lt;MediaPickerModal ref=&quot;pickerModalRef&quot; field-id=&quot;MediaField&quot; allowed-extensions=&quot;&quot;  ... &gt; 
+  at &lt;MediaFieldBasic config= {
+  paths: [],
+  multiple: [33mtrue[39m,
+  allowMediaText: [33mfalse[39m,
+  allowAnchors: [33mfalse[39m,
+  allowedExtensions: [32m&apos;&apos;[39m,
+  mediaItemUrl: [32m&apos;/api/media&apos;[39m,
+  mediaAppTranslations: [32m&apos;&apos;[39m,
+  basePath: [32m&apos;/&apos;[39m,
+  uploadFilesUrl: [32m&apos;/api/upload&apos;[39m
+} inputName=&quot;MediaField&quot; ref=&quot;VTU_COMPONENT&quot; &gt; 
+  at &lt;VTUROOT&gt;
+[Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
+  at &lt;MediaFieldBasic config= {
+  paths: [],
+  multiple: [33mtrue[39m,
+  allowMediaText: [33mfalse[39m,
+  allowAnchors: [33mfalse[39m,
+  allowedExtensions: [32m&apos;&apos;[39m,
+  mediaItemUrl: [32m&apos;/api/media&apos;[39m,
+  mediaAppTranslations: [32m&apos;&apos;[39m,
+  basePath: [32m&apos;/&apos;[39m,
+  uploadFilesUrl: [32m&apos;/api/upload&apos;[39m
+} inputName=&quot;MediaField&quot; ref=&quot;VTU_COMPONENT&quot; &gt; 
+  at &lt;VTUROOT&gt;
+[Vue warn]: Component emitted event &quot;select-media&quot; but it is neither declared in the emits option nor as an &quot;onSelectMedia&quot; prop.
+[Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
+  at &lt;ThumbsContainer media-items= [
+  {
+    name: [32m&apos;test.jpg&apos;[39m,
+    mime: [32m&apos;image/jpeg&apos;[39m,
+    mediaPath: [32m&apos;a.jpg&apos;[39m,
+    url: [32m&apos;/media/test/test.jpg&apos;[39m,
+    size: [33m1024[39m,
+    vuekey: [32m&apos;a0&apos;[39m
+  }
+] selected-media= {
+  name: [32m&apos;test.jpg&apos;[39m,
+  mime: [32m&apos;image/jpeg&apos;[39m,
+  mediaPath: [32m&apos;a.jpg&apos;[39m,
+  url: [32m&apos;/media/test/test.jpg&apos;[39m,
+  size: [33m1024[39m,
+  vuekey: [32m&apos;a0&apos;[39m
+} thumb-size=240  ... &gt; 
+  at &lt;MediaFieldBasic config= {
+  paths: [],
+  multiple: [33mtrue[39m,
+  allowMediaText: [33mfalse[39m,
+  allowAnchors: [33mfalse[39m,
+  allowedExtensions: [32m&apos;&apos;[39m,
+  mediaItemUrl: [32m&apos;/api/media&apos;[39m,
+  mediaAppTranslations: [32m&apos;&apos;[39m,
+  basePath: [32m&apos;/&apos;[39m,
+  uploadFilesUrl: [32m&apos;/api/upload&apos;[39m
+} inputName=&quot;MediaField&quot; ref=&quot;VTU_COMPONENT&quot; &gt; 
+  at &lt;VTUROOT&gt;
+[Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
+  at &lt;MediaFieldBasic config= {
+  paths: [],
+  multiple: [33mtrue[39m,
+  allowMediaText: [33mfalse[39m,
+  allowAnchors: [33mfalse[39m,
+  allowedExtensions: [32m&apos;&apos;[39m,
+  mediaItemUrl: [32m&apos;/api/media&apos;[39m,
+  mediaAppTranslations: [32m&apos;&apos;[39m,
+  basePath: [32m&apos;/&apos;[39m,
+  uploadFilesUrl: [32m&apos;/api/upload&apos;[39m
+} inputName=&quot;MediaField&quot; ref=&quot;VTU_COMPONENT&quot; &gt; 
+  at &lt;VTUROOT&gt;
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; shows Media Text button when selectedMedia and allowMediaText" time="0.0072461">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer media-items= [] selected-media=null thumb-size=240  ... &gt; 
@@ -1949,7 +1996,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; shows Anchor button when selectedMedia, allowAnchors, and image type" time="0.0081795">
+        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; shows Anchor button when selectedMedia, allowAnchors, and image type" time="0.0063079">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer media-items= [] selected-media=null thumb-size=240  ... &gt; 
@@ -2042,7 +2089,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; smallThumbs toggle changes thumbSize" time="0.0058497">
+        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; smallThumbs toggle changes thumbSize" time="0.0056025">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer media-items= [] selected-media=null thumb-size=240  ... &gt; 
@@ -2118,7 +2165,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; selectAndDeleteMedia selects then removes item" time="0.007286">
+        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; selectAndDeleteMedia selects then removes item" time="0.0073768">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer media-items= [] selected-media=null thumb-size=240  ... &gt; 
@@ -2168,7 +2215,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; onReorder updates mediaItems order" time="0.0069815">
+        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; onReorder updates mediaItems order" time="0.0070388">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer media-items= [] selected-media=null thumb-size=240  ... &gt; 
@@ -2216,7 +2263,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; addMediaFiles with single file for single mode" time="0.0069859">
+        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; addMediaFiles with single file for single mode" time="0.0073843">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer media-items= [] selected-media=null thumb-size=240  ... &gt; 
@@ -2264,7 +2311,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; showPicker button is disabled when canAddMedia is false" time="0.0106024">
+        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; showPicker button is disabled when canAddMedia is false" time="0.0091948">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer media-items= [] selected-media=null thumb-size=240  ... &gt; 
@@ -2356,7 +2403,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; onPickerSelect adds files via addMediaFiles" time="0.0071052">
+        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; onPickerSelect adds files via addMediaFiles" time="0.007057">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer media-items= [] selected-media=null thumb-size=240  ... &gt; 
@@ -2404,7 +2451,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; cancelMediaText does not change mediaText" time="0.0124063">
+        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; cancelMediaText does not change mediaText" time="0.0096159">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer media-items= [] selected-media=null thumb-size=240  ... &gt; 
@@ -2499,7 +2546,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; saveMediaText saves editingMediaText to selected item" time="0.0105841">
+        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; saveMediaText saves editingMediaText to selected item" time="0.0076064">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer media-items= [] selected-media=null thumb-size=240  ... &gt; 
@@ -2594,7 +2641,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; showAnchorModal / saveAnchor / resetAnchor / cancelAnchor" time="0.0138751">
+        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; showAnchorModal / saveAnchor / resetAnchor / cancelAnchor" time="0.0078712">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer media-items= [] selected-media=null thumb-size=240  ... &gt; 
@@ -2687,7 +2734,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; cancelAnchor does not modify anchor" time="0.0100423">
+        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; cancelAnchor does not modify anchor" time="0.0104852">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer media-items= [] selected-media=null thumb-size=240  ... &gt; 
@@ -2782,7 +2829,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; persists smallThumbs to localStorage on change" time="0.0047275">
+        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; persists smallThumbs to localStorage on change" time="0.0068177">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer media-items= [] selected-media=null thumb-size=240  ... &gt; 
@@ -2830,7 +2877,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; handles invalid mediaFieldPrefs in localStorage gracefully" time="0.003787">
+        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; handles invalid mediaFieldPrefs in localStorage gracefully" time="0.0053022">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer media-items= [] selected-media=null thumb-size=240  ... &gt; 
@@ -2878,7 +2925,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; auto-selects first item in single mode on initial load" time="0.0066917">
+        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; auto-selects first item in single mode on initial load" time="0.0038551">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer media-items= [] selected-media=null thumb-size=240  ... &gt; 
@@ -2926,7 +2973,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; onDocumentClick deselects when clicking outside" time="0.0112219">
+        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; onDocumentClick deselects when clicking outside" time="0.0070421">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer media-items= [] selected-media=null thumb-size=240  ... &gt; 
@@ -2976,7 +3023,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; onDocumentClick does NOT deselect when clicking inside .mf-thumb-item" time="0.0090383">
+        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; onDocumentClick does NOT deselect when clicking inside .mf-thumb-item" time="0.0039334">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer media-items= [] selected-media=null thumb-size=240  ... &gt; 
@@ -3026,7 +3073,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; setAnchor updates editingAnchor from mouse position" time="0.0086345">
+        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; setAnchor updates editingAnchor from mouse position" time="0.0067842">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer media-items= [] selected-media=null thumb-size=240  ... &gt; 
@@ -3119,7 +3166,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; cancelMediaText closes modal via direct call" time="0.0049017">
+        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; cancelMediaText closes modal via direct call" time="0.0031206">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer media-items= [] selected-media=null thumb-size=240  ... &gt; 
@@ -3167,7 +3214,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; cancelAnchor closes modal via direct call" time="0.0034466">
+        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; cancelAnchor closes modal via direct call" time="0.0028888">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer media-items= [] selected-media=null thumb-size=240  ... &gt; 
@@ -3215,7 +3262,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; removeSelected removes single item when nothing is selected" time="0.0054322">
+        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; removeSelected removes single item when nothing is selected" time="0.0052722">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer media-items= [] selected-media=null thumb-size=240  ... &gt; 
@@ -3263,7 +3310,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; showPicker calls pickerModalRef.open (no-op when ref is stub)" time="0.0056012">
+        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; showPicker calls pickerModalRef.open (no-op when ref is stub)" time="0.0045386">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer media-items= [] selected-media=null thumb-size=240  ... &gt; 
@@ -3311,7 +3358,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; showPicker does nothing when canAddMedia is false" time="0.0052993">
+        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; showPicker does nothing when canAddMedia is false" time="0.0033755">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer media-items= [] selected-media=null thumb-size=240  ... &gt; 
@@ -3359,7 +3406,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; showMediaTextModal does nothing when no selectedMedia" time="0.0031842">
+        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; showMediaTextModal does nothing when no selectedMedia" time="0.0028954">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer media-items= [] selected-media=null thumb-size=240  ... &gt; 
@@ -3407,7 +3454,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; saveMediaText updates mediaText on selectedMedia via direct call" time="0.004807">
+        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; saveMediaText updates mediaText on selectedMedia via direct call" time="0.003547">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer media-items= [] selected-media=null thumb-size=240  ... &gt; 
@@ -3452,12 +3499,11 @@
   uploadFilesUrl: [32m&apos;/api/upload&apos;[39m
 } inputName=&quot;MediaField&quot; ref=&quot;VTU_COMPONENT&quot; &gt; 
   at &lt;VTUROOT&gt;
-
 [Vue warn]: Component emitted event &quot;select-media&quot; but it is neither declared in the emits option nor as an &quot;onSelectMedia&quot; prop.
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; onPickerSelect adds files via addMediaFiles" time="0.0043559">
+        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; onPickerSelect adds files via addMediaFiles" time="0.0025849">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer media-items= [] selected-media=null thumb-size=240  ... &gt; 
@@ -3505,7 +3551,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; onBeforeUnmount removes document click listener" time="0.0048509">
+        <testcase classname="src/components/__tests__/MediaFieldBasic.spec.ts" name="MediaFieldBasic &gt; onBeforeUnmount removes document click listener" time="0.0054528">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer media-items= [] selected-media=null thumb-size=240  ... &gt; 
@@ -3557,8 +3603,8 @@
             </system-err>
         </testcase>
     </testsuite>
-    <testsuite name="src/components/__tests__/MediaFieldGallery.spec.ts" timestamp="2026-04-15T03:56:15.880Z" hostname="Nemo" tests="29" failures="0" errors="0" skipped="0" time="0.3364465">
-        <testcase classname="src/components/__tests__/MediaFieldGallery.spec.ts" name="MediaFieldGallery &gt; renders hidden input" time="0.0573503">
+    <testsuite name="src/components/__tests__/MediaFieldGallery.spec.ts" timestamp="2026-04-15T04:19:01.375Z" hostname="Nemo" tests="30" failures="0" errors="0" skipped="0" time="0.3195099">
+        <testcase classname="src/components/__tests__/MediaFieldGallery.spec.ts" name="MediaFieldGallery &gt; renders hidden input" time="0.0428223">
             <system-err>
 [Vue warn]: withDirectives can only be used inside render functions.
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
@@ -3592,7 +3638,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldGallery.spec.ts" name="MediaFieldGallery &gt; loadInitialPaths works" time="0.0169623">
+        <testcase classname="src/components/__tests__/MediaFieldGallery.spec.ts" name="MediaFieldGallery &gt; loadInitialPaths works" time="0.0228196">
             <system-err>
 [Vue warn]: withDirectives can only be used inside render functions.
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
@@ -3626,7 +3672,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldGallery.spec.ts" name="MediaFieldGallery &gt; addMediaFiles adds for multiple, replaces for single" time="0.048048">
+        <testcase classname="src/components/__tests__/MediaFieldGallery.spec.ts" name="MediaFieldGallery &gt; addMediaFiles adds for multiple, replaces for single" time="0.0292553">
             <system-err>
 [Vue warn]: withDirectives can only be used inside render functions.
 [Vue warn]: withDirectives can only be used inside render functions.
@@ -3692,7 +3738,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldGallery.spec.ts" name="MediaFieldGallery &gt; selectAndDeleteMedia removes item" time="0.0209285">
+        <testcase classname="src/components/__tests__/MediaFieldGallery.spec.ts" name="MediaFieldGallery &gt; addMediaFiles ignores duplicate mediaPath entries" time="0.0164806">
             <system-err>
 [Vue warn]: withDirectives can only be used inside render functions.
 [Vue warn]: withDirectives can only be used inside render functions.
@@ -3728,7 +3774,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldGallery.spec.ts" name="MediaFieldGallery &gt; onReorder updates mediaItems" time="0.0093063">
+        <testcase classname="src/components/__tests__/MediaFieldGallery.spec.ts" name="MediaFieldGallery &gt; selectAndDeleteMedia removes item" time="0.0237959">
             <system-err>
 [Vue warn]: withDirectives can only be used inside render functions.
 [Vue warn]: withDirectives can only be used inside render functions.
@@ -3764,7 +3810,43 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldGallery.spec.ts" name="MediaFieldGallery &gt; serializedPaths correct after init" time="0.008912">
+        <testcase classname="src/components/__tests__/MediaFieldGallery.spec.ts" name="MediaFieldGallery &gt; onReorder updates mediaItems" time="0.0158378">
+            <system-err>
+[Vue warn]: withDirectives can only be used inside render functions.
+[Vue warn]: withDirectives can only be used inside render functions.
+[Vue warn]: withDirectives can only be used inside render functions.
+[Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
+  at &lt;VueFinalModal modelValue=false onUpdate:modelValue=fn class=&quot;tw:flex tw:items-center tw:justify-center&quot;  ... &gt; 
+  at &lt;MediaPickerModal ref=&quot;pickerModalRef&quot; field-id=&quot;GalleryField&quot; allowed-extensions=&quot;&quot;  ... &gt; 
+  at &lt;MediaFieldGallery config= {
+  paths: [],
+  multiple: [33mtrue[39m,
+  allowMediaText: [33mfalse[39m,
+  allowAnchors: [33mfalse[39m,
+  allowedExtensions: [32m&apos;&apos;[39m,
+  mediaItemUrl: [32m&apos;/api/media&apos;[39m,
+  mediaAppTranslations: [32m&apos;&apos;[39m,
+  basePath: [32m&apos;/&apos;[39m,
+  uploadFilesUrl: [32m&apos;/api/upload&apos;[39m
+} inputName=&quot;GalleryField&quot; ref=&quot;VTU_COMPONENT&quot; &gt; 
+  at &lt;VTUROOT&gt;
+[Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
+  at &lt;MediaFieldGallery config= {
+  paths: [],
+  multiple: [33mtrue[39m,
+  allowMediaText: [33mfalse[39m,
+  allowAnchors: [33mfalse[39m,
+  allowedExtensions: [32m&apos;&apos;[39m,
+  mediaItemUrl: [32m&apos;/api/media&apos;[39m,
+  mediaAppTranslations: [32m&apos;&apos;[39m,
+  basePath: [32m&apos;/&apos;[39m,
+  uploadFilesUrl: [32m&apos;/api/upload&apos;[39m
+} inputName=&quot;GalleryField&quot; ref=&quot;VTU_COMPONENT&quot; &gt; 
+  at &lt;VTUROOT&gt;
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/components/__tests__/MediaFieldGallery.spec.ts" name="MediaFieldGallery &gt; serializedPaths correct after init" time="0.0105784">
             <system-err>
 [Vue warn]: withDirectives can only be used inside render functions.
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
@@ -3798,7 +3880,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldGallery.spec.ts" name="MediaFieldGallery &gt; showPicker calls pickerModalRef.open" time="0.0100355">
+        <testcase classname="src/components/__tests__/MediaFieldGallery.spec.ts" name="MediaFieldGallery &gt; showPicker calls pickerModalRef.open" time="0.0096684">
             <system-err>
 [Vue warn]: withDirectives can only be used inside render functions.
 [Vue warn]: withDirectives can only be used inside render functions.
@@ -3834,43 +3916,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldGallery.spec.ts" name="MediaFieldGallery &gt; onEditMediaText sets selectedMedia and opens modal" time="0.0119887">
-            <system-err>
-[Vue warn]: withDirectives can only be used inside render functions.
-[Vue warn]: withDirectives can only be used inside render functions.
-[Vue warn]: withDirectives can only be used inside render functions.
-[Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
-  at &lt;VueFinalModal modelValue=false onUpdate:modelValue=fn class=&quot;tw:flex tw:items-center tw:justify-center&quot;  ... &gt; 
-  at &lt;MediaPickerModal ref=&quot;pickerModalRef&quot; field-id=&quot;GalleryField&quot; allowed-extensions=&quot;&quot;  ... &gt; 
-  at &lt;MediaFieldGallery config= {
-  paths: [],
-  multiple: [33mtrue[39m,
-  allowMediaText: [33mtrue[39m,
-  allowAnchors: [33mfalse[39m,
-  allowedExtensions: [32m&apos;&apos;[39m,
-  mediaItemUrl: [32m&apos;/api/media&apos;[39m,
-  mediaAppTranslations: [32m&apos;&apos;[39m,
-  basePath: [32m&apos;/&apos;[39m,
-  uploadFilesUrl: [32m&apos;/api/upload&apos;[39m
-} inputName=&quot;GalleryField&quot; ref=&quot;VTU_COMPONENT&quot; &gt; 
-  at &lt;VTUROOT&gt;
-[Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
-  at &lt;MediaFieldGallery config= {
-  paths: [],
-  multiple: [33mtrue[39m,
-  allowMediaText: [33mtrue[39m,
-  allowAnchors: [33mfalse[39m,
-  allowedExtensions: [32m&apos;&apos;[39m,
-  mediaItemUrl: [32m&apos;/api/media&apos;[39m,
-  mediaAppTranslations: [32m&apos;&apos;[39m,
-  basePath: [32m&apos;/&apos;[39m,
-  uploadFilesUrl: [32m&apos;/api/upload&apos;[39m
-} inputName=&quot;GalleryField&quot; ref=&quot;VTU_COMPONENT&quot; &gt; 
-  at &lt;VTUROOT&gt;
-
-            </system-err>
-        </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldGallery.spec.ts" name="MediaFieldGallery &gt; saveMediaText updates mediaText" time="0.0086135">
+        <testcase classname="src/components/__tests__/MediaFieldGallery.spec.ts" name="MediaFieldGallery &gt; onEditMediaText sets selectedMedia and opens modal" time="0.0111723">
             <system-err>
 [Vue warn]: withDirectives can only be used inside render functions.
 [Vue warn]: withDirectives can only be used inside render functions.
@@ -3906,115 +3952,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldGallery.spec.ts" name="MediaFieldGallery &gt; onEditAnchor sets selectedMedia and opens anchor modal" time="0.0069425">
-            <system-err>
-[Vue warn]: withDirectives can only be used inside render functions.
-[Vue warn]: withDirectives can only be used inside render functions.
-[Vue warn]: withDirectives can only be used inside render functions.
-[Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
-  at &lt;VueFinalModal modelValue=false onUpdate:modelValue=fn class=&quot;tw:flex tw:items-center tw:justify-center&quot;  ... &gt; 
-  at &lt;MediaPickerModal ref=&quot;pickerModalRef&quot; field-id=&quot;GalleryField&quot; allowed-extensions=&quot;&quot;  ... &gt; 
-  at &lt;MediaFieldGallery config= {
-  paths: [],
-  multiple: [33mtrue[39m,
-  allowMediaText: [33mfalse[39m,
-  allowAnchors: [33mtrue[39m,
-  allowedExtensions: [32m&apos;&apos;[39m,
-  mediaItemUrl: [32m&apos;/api/media&apos;[39m,
-  mediaAppTranslations: [32m&apos;&apos;[39m,
-  basePath: [32m&apos;/&apos;[39m,
-  uploadFilesUrl: [32m&apos;/api/upload&apos;[39m
-} inputName=&quot;GalleryField&quot; ref=&quot;VTU_COMPONENT&quot; &gt; 
-  at &lt;VTUROOT&gt;
-[Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
-  at &lt;MediaFieldGallery config= {
-  paths: [],
-  multiple: [33mtrue[39m,
-  allowMediaText: [33mfalse[39m,
-  allowAnchors: [33mtrue[39m,
-  allowedExtensions: [32m&apos;&apos;[39m,
-  mediaItemUrl: [32m&apos;/api/media&apos;[39m,
-  mediaAppTranslations: [32m&apos;&apos;[39m,
-  basePath: [32m&apos;/&apos;[39m,
-  uploadFilesUrl: [32m&apos;/api/upload&apos;[39m
-} inputName=&quot;GalleryField&quot; ref=&quot;VTU_COMPONENT&quot; &gt; 
-  at &lt;VTUROOT&gt;
-
-            </system-err>
-        </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldGallery.spec.ts" name="MediaFieldGallery &gt; saveAnchor updates anchor" time="0.0088952">
-            <system-err>
-[Vue warn]: withDirectives can only be used inside render functions.
-[Vue warn]: withDirectives can only be used inside render functions.
-[Vue warn]: withDirectives can only be used inside render functions.
-[Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
-  at &lt;VueFinalModal modelValue=false onUpdate:modelValue=fn class=&quot;tw:flex tw:items-center tw:justify-center&quot;  ... &gt; 
-  at &lt;MediaPickerModal ref=&quot;pickerModalRef&quot; field-id=&quot;GalleryField&quot; allowed-extensions=&quot;&quot;  ... &gt; 
-  at &lt;MediaFieldGallery config= {
-  paths: [],
-  multiple: [33mtrue[39m,
-  allowMediaText: [33mfalse[39m,
-  allowAnchors: [33mtrue[39m,
-  allowedExtensions: [32m&apos;&apos;[39m,
-  mediaItemUrl: [32m&apos;/api/media&apos;[39m,
-  mediaAppTranslations: [32m&apos;&apos;[39m,
-  basePath: [32m&apos;/&apos;[39m,
-  uploadFilesUrl: [32m&apos;/api/upload&apos;[39m
-} inputName=&quot;GalleryField&quot; ref=&quot;VTU_COMPONENT&quot; &gt; 
-  at &lt;VTUROOT&gt;
-[Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
-  at &lt;MediaFieldGallery config= {
-  paths: [],
-  multiple: [33mtrue[39m,
-  allowMediaText: [33mfalse[39m,
-  allowAnchors: [33mtrue[39m,
-  allowedExtensions: [32m&apos;&apos;[39m,
-  mediaItemUrl: [32m&apos;/api/media&apos;[39m,
-  mediaAppTranslations: [32m&apos;&apos;[39m,
-  basePath: [32m&apos;/&apos;[39m,
-  uploadFilesUrl: [32m&apos;/api/upload&apos;[39m
-} inputName=&quot;GalleryField&quot; ref=&quot;VTU_COMPONENT&quot; &gt; 
-  at &lt;VTUROOT&gt;
-
-            </system-err>
-        </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldGallery.spec.ts" name="MediaFieldGallery &gt; resetAnchor resets to 0.5, 0.5" time="0.0057884">
-            <system-err>
-[Vue warn]: withDirectives can only be used inside render functions.
-[Vue warn]: withDirectives can only be used inside render functions.
-[Vue warn]: withDirectives can only be used inside render functions.
-[Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
-  at &lt;VueFinalModal modelValue=false onUpdate:modelValue=fn class=&quot;tw:flex tw:items-center tw:justify-center&quot;  ... &gt; 
-  at &lt;MediaPickerModal ref=&quot;pickerModalRef&quot; field-id=&quot;GalleryField&quot; allowed-extensions=&quot;&quot;  ... &gt; 
-  at &lt;MediaFieldGallery config= {
-  paths: [],
-  multiple: [33mtrue[39m,
-  allowMediaText: [33mfalse[39m,
-  allowAnchors: [33mtrue[39m,
-  allowedExtensions: [32m&apos;&apos;[39m,
-  mediaItemUrl: [32m&apos;/api/media&apos;[39m,
-  mediaAppTranslations: [32m&apos;&apos;[39m,
-  basePath: [32m&apos;/&apos;[39m,
-  uploadFilesUrl: [32m&apos;/api/upload&apos;[39m
-} inputName=&quot;GalleryField&quot; ref=&quot;VTU_COMPONENT&quot; &gt; 
-  at &lt;VTUROOT&gt;
-[Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
-  at &lt;MediaFieldGallery config= {
-  paths: [],
-  multiple: [33mtrue[39m,
-  allowMediaText: [33mfalse[39m,
-  allowAnchors: [33mtrue[39m,
-  allowedExtensions: [32m&apos;&apos;[39m,
-  mediaItemUrl: [32m&apos;/api/media&apos;[39m,
-  mediaAppTranslations: [32m&apos;&apos;[39m,
-  basePath: [32m&apos;/&apos;[39m,
-  uploadFilesUrl: [32m&apos;/api/upload&apos;[39m
-} inputName=&quot;GalleryField&quot; ref=&quot;VTU_COMPONENT&quot; &gt; 
-  at &lt;VTUROOT&gt;
-
-            </system-err>
-        </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldGallery.spec.ts" name="MediaFieldGallery &gt; cancelMediaText closes modal without saving (via exposed state)" time="0.0121124">
+        <testcase classname="src/components/__tests__/MediaFieldGallery.spec.ts" name="MediaFieldGallery &gt; saveMediaText updates mediaText" time="0.0078953">
             <system-err>
 [Vue warn]: withDirectives can only be used inside render functions.
 [Vue warn]: withDirectives can only be used inside render functions.
@@ -4050,7 +3988,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldGallery.spec.ts" name="MediaFieldGallery &gt; cancelAnchor closes modal without saving (via exposed state)" time="0.0057639">
+        <testcase classname="src/components/__tests__/MediaFieldGallery.spec.ts" name="MediaFieldGallery &gt; onEditAnchor sets selectedMedia and opens anchor modal" time="0.0093595">
             <system-err>
 [Vue warn]: withDirectives can only be used inside render functions.
 [Vue warn]: withDirectives can only be used inside render functions.
@@ -4086,7 +4024,151 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldGallery.spec.ts" name="MediaFieldGallery &gt; loadInitialPaths handles 404 as not-found" time="0.0055247">
+        <testcase classname="src/components/__tests__/MediaFieldGallery.spec.ts" name="MediaFieldGallery &gt; saveAnchor updates anchor" time="0.007749">
+            <system-err>
+[Vue warn]: withDirectives can only be used inside render functions.
+[Vue warn]: withDirectives can only be used inside render functions.
+[Vue warn]: withDirectives can only be used inside render functions.
+[Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
+  at &lt;VueFinalModal modelValue=false onUpdate:modelValue=fn class=&quot;tw:flex tw:items-center tw:justify-center&quot;  ... &gt; 
+  at &lt;MediaPickerModal ref=&quot;pickerModalRef&quot; field-id=&quot;GalleryField&quot; allowed-extensions=&quot;&quot;  ... &gt; 
+  at &lt;MediaFieldGallery config= {
+  paths: [],
+  multiple: [33mtrue[39m,
+  allowMediaText: [33mfalse[39m,
+  allowAnchors: [33mtrue[39m,
+  allowedExtensions: [32m&apos;&apos;[39m,
+  mediaItemUrl: [32m&apos;/api/media&apos;[39m,
+  mediaAppTranslations: [32m&apos;&apos;[39m,
+  basePath: [32m&apos;/&apos;[39m,
+  uploadFilesUrl: [32m&apos;/api/upload&apos;[39m
+} inputName=&quot;GalleryField&quot; ref=&quot;VTU_COMPONENT&quot; &gt; 
+  at &lt;VTUROOT&gt;
+[Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
+  at &lt;MediaFieldGallery config= {
+  paths: [],
+  multiple: [33mtrue[39m,
+  allowMediaText: [33mfalse[39m,
+  allowAnchors: [33mtrue[39m,
+  allowedExtensions: [32m&apos;&apos;[39m,
+  mediaItemUrl: [32m&apos;/api/media&apos;[39m,
+  mediaAppTranslations: [32m&apos;&apos;[39m,
+  basePath: [32m&apos;/&apos;[39m,
+  uploadFilesUrl: [32m&apos;/api/upload&apos;[39m
+} inputName=&quot;GalleryField&quot; ref=&quot;VTU_COMPONENT&quot; &gt; 
+  at &lt;VTUROOT&gt;
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/components/__tests__/MediaFieldGallery.spec.ts" name="MediaFieldGallery &gt; resetAnchor resets to 0.5, 0.5" time="0.0068217">
+            <system-err>
+[Vue warn]: withDirectives can only be used inside render functions.
+[Vue warn]: withDirectives can only be used inside render functions.
+[Vue warn]: withDirectives can only be used inside render functions.
+[Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
+  at &lt;VueFinalModal modelValue=false onUpdate:modelValue=fn class=&quot;tw:flex tw:items-center tw:justify-center&quot;  ... &gt; 
+  at &lt;MediaPickerModal ref=&quot;pickerModalRef&quot; field-id=&quot;GalleryField&quot; allowed-extensions=&quot;&quot;  ... &gt; 
+  at &lt;MediaFieldGallery config= {
+  paths: [],
+  multiple: [33mtrue[39m,
+  allowMediaText: [33mfalse[39m,
+  allowAnchors: [33mtrue[39m,
+  allowedExtensions: [32m&apos;&apos;[39m,
+  mediaItemUrl: [32m&apos;/api/media&apos;[39m,
+  mediaAppTranslations: [32m&apos;&apos;[39m,
+  basePath: [32m&apos;/&apos;[39m,
+  uploadFilesUrl: [32m&apos;/api/upload&apos;[39m
+} inputName=&quot;GalleryField&quot; ref=&quot;VTU_COMPONENT&quot; &gt; 
+  at &lt;VTUROOT&gt;
+[Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
+  at &lt;MediaFieldGallery config= {
+  paths: [],
+  multiple: [33mtrue[39m,
+  allowMediaText: [33mfalse[39m,
+  allowAnchors: [33mtrue[39m,
+  allowedExtensions: [32m&apos;&apos;[39m,
+  mediaItemUrl: [32m&apos;/api/media&apos;[39m,
+  mediaAppTranslations: [32m&apos;&apos;[39m,
+  basePath: [32m&apos;/&apos;[39m,
+  uploadFilesUrl: [32m&apos;/api/upload&apos;[39m
+} inputName=&quot;GalleryField&quot; ref=&quot;VTU_COMPONENT&quot; &gt; 
+  at &lt;VTUROOT&gt;
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/components/__tests__/MediaFieldGallery.spec.ts" name="MediaFieldGallery &gt; cancelMediaText closes modal without saving (via exposed state)" time="0.0080771">
+            <system-err>
+[Vue warn]: withDirectives can only be used inside render functions.
+[Vue warn]: withDirectives can only be used inside render functions.
+[Vue warn]: withDirectives can only be used inside render functions.
+[Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
+  at &lt;VueFinalModal modelValue=false onUpdate:modelValue=fn class=&quot;tw:flex tw:items-center tw:justify-center&quot;  ... &gt; 
+  at &lt;MediaPickerModal ref=&quot;pickerModalRef&quot; field-id=&quot;GalleryField&quot; allowed-extensions=&quot;&quot;  ... &gt; 
+  at &lt;MediaFieldGallery config= {
+  paths: [],
+  multiple: [33mtrue[39m,
+  allowMediaText: [33mtrue[39m,
+  allowAnchors: [33mfalse[39m,
+  allowedExtensions: [32m&apos;&apos;[39m,
+  mediaItemUrl: [32m&apos;/api/media&apos;[39m,
+  mediaAppTranslations: [32m&apos;&apos;[39m,
+  basePath: [32m&apos;/&apos;[39m,
+  uploadFilesUrl: [32m&apos;/api/upload&apos;[39m
+} inputName=&quot;GalleryField&quot; ref=&quot;VTU_COMPONENT&quot; &gt; 
+  at &lt;VTUROOT&gt;
+[Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
+  at &lt;MediaFieldGallery config= {
+  paths: [],
+  multiple: [33mtrue[39m,
+  allowMediaText: [33mtrue[39m,
+  allowAnchors: [33mfalse[39m,
+  allowedExtensions: [32m&apos;&apos;[39m,
+  mediaItemUrl: [32m&apos;/api/media&apos;[39m,
+  mediaAppTranslations: [32m&apos;&apos;[39m,
+  basePath: [32m&apos;/&apos;[39m,
+  uploadFilesUrl: [32m&apos;/api/upload&apos;[39m
+} inputName=&quot;GalleryField&quot; ref=&quot;VTU_COMPONENT&quot; &gt; 
+  at &lt;VTUROOT&gt;
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/components/__tests__/MediaFieldGallery.spec.ts" name="MediaFieldGallery &gt; cancelAnchor closes modal without saving (via exposed state)" time="0.0050753">
+            <system-err>
+[Vue warn]: withDirectives can only be used inside render functions.
+[Vue warn]: withDirectives can only be used inside render functions.
+[Vue warn]: withDirectives can only be used inside render functions.
+[Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
+  at &lt;VueFinalModal modelValue=false onUpdate:modelValue=fn class=&quot;tw:flex tw:items-center tw:justify-center&quot;  ... &gt; 
+  at &lt;MediaPickerModal ref=&quot;pickerModalRef&quot; field-id=&quot;GalleryField&quot; allowed-extensions=&quot;&quot;  ... &gt; 
+  at &lt;MediaFieldGallery config= {
+  paths: [],
+  multiple: [33mtrue[39m,
+  allowMediaText: [33mfalse[39m,
+  allowAnchors: [33mtrue[39m,
+  allowedExtensions: [32m&apos;&apos;[39m,
+  mediaItemUrl: [32m&apos;/api/media&apos;[39m,
+  mediaAppTranslations: [32m&apos;&apos;[39m,
+  basePath: [32m&apos;/&apos;[39m,
+  uploadFilesUrl: [32m&apos;/api/upload&apos;[39m
+} inputName=&quot;GalleryField&quot; ref=&quot;VTU_COMPONENT&quot; &gt; 
+  at &lt;VTUROOT&gt;
+[Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
+  at &lt;MediaFieldGallery config= {
+  paths: [],
+  multiple: [33mtrue[39m,
+  allowMediaText: [33mfalse[39m,
+  allowAnchors: [33mtrue[39m,
+  allowedExtensions: [32m&apos;&apos;[39m,
+  mediaItemUrl: [32m&apos;/api/media&apos;[39m,
+  mediaAppTranslations: [32m&apos;&apos;[39m,
+  basePath: [32m&apos;/&apos;[39m,
+  uploadFilesUrl: [32m&apos;/api/upload&apos;[39m
+} inputName=&quot;GalleryField&quot; ref=&quot;VTU_COMPONENT&quot; &gt; 
+  at &lt;VTUROOT&gt;
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/components/__tests__/MediaFieldGallery.spec.ts" name="MediaFieldGallery &gt; loadInitialPaths handles 404 as not-found" time="0.0043094">
             <system-err>
 [Vue warn]: withDirectives can only be used inside render functions.
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
@@ -4120,7 +4202,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldGallery.spec.ts" name="MediaFieldGallery &gt; loadInitialPaths handles network error as transient" time="0.0064365">
+        <testcase classname="src/components/__tests__/MediaFieldGallery.spec.ts" name="MediaFieldGallery &gt; loadInitialPaths handles network error as transient" time="0.0039782">
             <system-err>
 [Vue warn]: withDirectives can only be used inside render functions.
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
@@ -4154,7 +4236,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldGallery.spec.ts" name="MediaFieldGallery &gt; loadInitialPaths with empty paths sets initialized" time="0.0049091">
+        <testcase classname="src/components/__tests__/MediaFieldGallery.spec.ts" name="MediaFieldGallery &gt; loadInitialPaths with empty paths sets initialized" time="0.003913">
             <system-err>
 [Vue warn]: withDirectives can only be used inside render functions.
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
@@ -4188,7 +4270,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldGallery.spec.ts" name="MediaFieldGallery &gt; selectAndDeleteMedia clears selectedMedia when deleting selected item" time="0.0052128">
+        <testcase classname="src/components/__tests__/MediaFieldGallery.spec.ts" name="MediaFieldGallery &gt; selectAndDeleteMedia clears selectedMedia when deleting selected item" time="0.0042312">
             <system-err>
 [Vue warn]: withDirectives can only be used inside render functions.
 [Vue warn]: withDirectives can only be used inside render functions.
@@ -4226,7 +4308,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldGallery.spec.ts" name="MediaFieldGallery &gt; addMediaFiles with single file in single mode" time="0.0044648">
+        <testcase classname="src/components/__tests__/MediaFieldGallery.spec.ts" name="MediaFieldGallery &gt; addMediaFiles with single file in single mode" time="0.0043382">
             <system-err>
 [Vue warn]: withDirectives can only be used inside render functions.
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
@@ -4260,7 +4342,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldGallery.spec.ts" name="MediaFieldGallery &gt; onEditAnchor defaults to center when no anchor exists" time="0.0045171">
+        <testcase classname="src/components/__tests__/MediaFieldGallery.spec.ts" name="MediaFieldGallery &gt; onEditAnchor defaults to center when no anchor exists" time="0.0054187">
             <system-err>
 [Vue warn]: withDirectives can only be used inside render functions.
 [Vue warn]: withDirectives can only be used inside render functions.
@@ -4296,7 +4378,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldGallery.spec.ts" name="MediaFieldGallery &gt; serializedPaths returns config.paths before initialization" time="0.0069159">
+        <testcase classname="src/components/__tests__/MediaFieldGallery.spec.ts" name="MediaFieldGallery &gt; serializedPaths returns config.paths before initialization" time="0.0061849">
             <system-err>
 [Vue warn]: withDirectives can only be used inside render functions.
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
@@ -4330,7 +4412,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldGallery.spec.ts" name="MediaFieldGallery &gt; loadInitialPaths treats non-404 HTTP errors as transient" time="0.0086152">
+        <testcase classname="src/components/__tests__/MediaFieldGallery.spec.ts" name="MediaFieldGallery &gt; loadInitialPaths treats non-404 HTTP errors as transient" time="0.0069447">
             <system-err>
 [Vue warn]: withDirectives can only be used inside render functions.
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
@@ -4364,7 +4446,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldGallery.spec.ts" name="MediaFieldGallery &gt; setAnchor updates editingAnchor from mouse position" time="0.0080245">
+        <testcase classname="src/components/__tests__/MediaFieldGallery.spec.ts" name="MediaFieldGallery &gt; setAnchor updates editingAnchor from mouse position" time="0.007167">
             <system-err>
 [Vue warn]: withDirectives can only be used inside render functions.
 [Vue warn]: withDirectives can only be used inside render functions.
@@ -4400,7 +4482,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldGallery.spec.ts" name="MediaFieldGallery &gt; setAnchor does nothing when anchorImageRef is null" time="0.0063589">
+        <testcase classname="src/components/__tests__/MediaFieldGallery.spec.ts" name="MediaFieldGallery &gt; setAnchor does nothing when anchorImageRef is null" time="0.0054297">
             <system-err>
 [Vue warn]: withDirectives can only be used inside render functions.
 [Vue warn]: withDirectives can only be used inside render functions.
@@ -4436,7 +4518,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldGallery.spec.ts" name="MediaFieldGallery &gt; cancelMediaText closes modal directly" time="0.0063377">
+        <testcase classname="src/components/__tests__/MediaFieldGallery.spec.ts" name="MediaFieldGallery &gt; cancelMediaText closes modal directly" time="0.0067907">
             <system-err>
 [Vue warn]: withDirectives can only be used inside render functions.
 [Vue warn]: withDirectives can only be used inside render functions.
@@ -4472,7 +4554,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldGallery.spec.ts" name="MediaFieldGallery &gt; cancelAnchor closes modal directly" time="0.0082547">
+        <testcase classname="src/components/__tests__/MediaFieldGallery.spec.ts" name="MediaFieldGallery &gt; cancelAnchor closes modal directly" time="0.0071159">
             <system-err>
 [Vue warn]: withDirectives can only be used inside render functions.
 [Vue warn]: withDirectives can only be used inside render functions.
@@ -4508,7 +4590,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldGallery.spec.ts" name="MediaFieldGallery &gt; serializedPaths maps mediaItems after initialization" time="0.0122543">
+        <testcase classname="src/components/__tests__/MediaFieldGallery.spec.ts" name="MediaFieldGallery &gt; serializedPaths maps mediaItems after initialization" time="0.0109098">
             <system-err>
 [Vue warn]: withDirectives can only be used inside render functions.
 [Vue warn]: withDirectives can only be used inside render functions.
@@ -4560,7 +4642,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldGallery.spec.ts" name="MediaFieldGallery &gt; showPicker calls pickerModalRef.open" time="0.0075644">
+        <testcase classname="src/components/__tests__/MediaFieldGallery.spec.ts" name="MediaFieldGallery &gt; showPicker calls pickerModalRef.open" time="0.0062573">
             <system-err>
 [Vue warn]: withDirectives can only be used inside render functions.
 [Vue warn]: withDirectives can only be used inside render functions.
@@ -4596,7 +4678,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaFieldGallery.spec.ts" name="MediaFieldGallery &gt; onPickerSelect adds files" time="0.0071212">
+        <testcase classname="src/components/__tests__/MediaFieldGallery.spec.ts" name="MediaFieldGallery &gt; onPickerSelect adds files" time="0.0069036">
             <system-err>
 [Vue warn]: withDirectives can only be used inside render functions.
 [Vue warn]: withDirectives can only be used inside render functions.
@@ -4633,8 +4715,8 @@
             </system-err>
         </testcase>
     </testsuite>
-    <testsuite name="src/components/__tests__/MediaPickerModal.spec.ts" timestamp="2026-04-15T03:56:15.887Z" hostname="Nemo" tests="9" failures="0" errors="0" skipped="0" time="0.1172165">
-        <testcase classname="src/components/__tests__/MediaPickerModal.spec.ts" name="MediaPickerModal &gt; initially not visible" time="0.0291204">
+    <testsuite name="src/components/__tests__/MediaPickerModal.spec.ts" timestamp="2026-04-15T04:19:01.381Z" hostname="Nemo" tests="9" failures="0" errors="0" skipped="0" time="0.1239036">
+        <testcase classname="src/components/__tests__/MediaPickerModal.spec.ts" name="MediaPickerModal &gt; initially not visible" time="0.0302542">
             <system-err>
 [Vue warn]: withDirectives can only be used inside render functions.
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
@@ -4644,18 +4726,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaPickerModal.spec.ts" name="MediaPickerModal &gt; opens via exposed open() method" time="0.0102297">
-            <system-err>
-[Vue warn]: withDirectives can only be used inside render functions.
-[Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
-  at &lt;VueFinalModal modelValue=false onUpdate:modelValue=fn class=&quot;tw:flex tw:items-center tw:justify-center&quot;  ... &gt; 
-  at &lt;MediaPickerModal fieldId=&quot;test-field&quot; allowedExtensions=&quot;.jpg,.png&quot; allowMultiple=true  ... &gt; 
-  at &lt;VTUROOT&gt;
-[Vue warn]: withDirectives can only be used inside render functions.
-
-            </system-err>
-        </testcase>
-        <testcase classname="src/components/__tests__/MediaPickerModal.spec.ts" name="MediaPickerModal &gt; shows loading state initially" time="0.005606">
+        <testcase classname="src/components/__tests__/MediaPickerModal.spec.ts" name="MediaPickerModal &gt; opens via exposed open() method" time="0.0078615">
             <system-err>
 [Vue warn]: withDirectives can only be used inside render functions.
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
@@ -4666,7 +4737,18 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaPickerModal.spec.ts" name="MediaPickerModal &gt; shows error when media-app import fails" time="0.0105807">
+        <testcase classname="src/components/__tests__/MediaPickerModal.spec.ts" name="MediaPickerModal &gt; shows loading state initially" time="0.0067531">
+            <system-err>
+[Vue warn]: withDirectives can only be used inside render functions.
+[Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
+  at &lt;VueFinalModal modelValue=false onUpdate:modelValue=fn class=&quot;tw:flex tw:items-center tw:justify-center&quot;  ... &gt; 
+  at &lt;MediaPickerModal fieldId=&quot;test-field&quot; allowedExtensions=&quot;.jpg,.png&quot; allowMultiple=true  ... &gt; 
+  at &lt;VTUROOT&gt;
+[Vue warn]: withDirectives can only be used inside render functions.
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/components/__tests__/MediaPickerModal.spec.ts" name="MediaPickerModal &gt; shows error when media-app import fails" time="0.0111542">
             <system-err>
 [Vue warn]: withDirectives can only be used inside render functions.
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
@@ -4682,7 +4764,7 @@ Failed to load media app: Error: Module load failed
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaPickerModal.spec.ts" name="MediaPickerModal &gt; emits select with converted IMediaFieldItem[] on confirm" time="0.0196126">
+        <testcase classname="src/components/__tests__/MediaPickerModal.spec.ts" name="MediaPickerModal &gt; emits select with converted IMediaFieldItem[] on confirm" time="0.0219051">
             <system-err>
 [Vue warn]: withDirectives can only be used inside render functions.
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
@@ -4692,7 +4774,7 @@ Failed to load media app: Error: Module load failed
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaPickerModal.spec.ts" name="MediaPickerModal &gt; cancel closes modal" time="0.0107483">
+        <testcase classname="src/components/__tests__/MediaPickerModal.spec.ts" name="MediaPickerModal &gt; cancel closes modal" time="0.0057599">
             <system-err>
 [Vue warn]: withDirectives can only be used inside render functions.
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
@@ -4704,7 +4786,7 @@ Failed to load media app: Error: Module load failed
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaPickerModal.spec.ts" name="MediaPickerModal &gt; cleanup unmounts picker on close" time="0.0180755">
+        <testcase classname="src/components/__tests__/MediaPickerModal.spec.ts" name="MediaPickerModal &gt; cleanup unmounts picker on close" time="0.0067736">
             <system-err>
 [Vue warn]: withDirectives can only be used inside render functions.
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
@@ -4714,7 +4796,7 @@ Failed to load media app: Error: Module load failed
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaPickerModal.spec.ts" name="MediaPickerModal &gt; OK button disabled when no selection" time="0.0056688">
+        <testcase classname="src/components/__tests__/MediaPickerModal.spec.ts" name="MediaPickerModal &gt; OK button disabled when no selection" time="0.0223794">
             <system-err>
 [Vue warn]: withDirectives can only be used inside render functions.
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
@@ -4724,7 +4806,7 @@ Failed to load media app: Error: Module load failed
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaPickerModal.spec.ts" name="MediaPickerModal &gt; onSelectionChange callback updates selectedCount" time="0.0058239">
+        <testcase classname="src/components/__tests__/MediaPickerModal.spec.ts" name="MediaPickerModal &gt; onSelectionChange callback updates selectedCount" time="0.0092401">
             <system-err>
 [Vue warn]: withDirectives can only be used inside render functions.
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
@@ -4735,8 +4817,8 @@ Failed to load media app: Error: Module load failed
             </system-err>
         </testcase>
     </testsuite>
-    <testsuite name="src/components/__tests__/ThumbsContainer.spec.ts" timestamp="2026-04-15T03:56:15.889Z" hostname="Nemo" tests="17" failures="0" errors="0" skipped="0" time="0.2003713">
-        <testcase classname="src/components/__tests__/ThumbsContainer.spec.ts" name="ThumbsContainer &gt; shows &apos;No Files&apos; empty state when mediaItems is empty" time="0.0280177">
+    <testsuite name="src/components/__tests__/ThumbsContainer.spec.ts" timestamp="2026-04-15T04:19:01.383Z" hostname="Nemo" tests="17" failures="0" errors="0" skipped="0" time="0.1790285">
+        <testcase classname="src/components/__tests__/ThumbsContainer.spec.ts" name="ThumbsContainer &gt; shows &apos;No Files&apos; empty state when mediaItems is empty" time="0.0282114">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer mediaItems= [] selectedMedia=null thumbSize=120  ... &gt; 
@@ -4744,7 +4826,7 @@ Failed to load media app: Error: Module load failed
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/ThumbsContainer.spec.ts" name="ThumbsContainer &gt; renders visible items (filters out isRemoved)" time="0.0240864">
+        <testcase classname="src/components/__tests__/ThumbsContainer.spec.ts" name="ThumbsContainer &gt; renders visible items (filters out isRemoved)" time="0.020646">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer mediaItems= [
@@ -4778,7 +4860,7 @@ Failed to load media app: Error: Module load failed
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/ThumbsContainer.spec.ts" name="ThumbsContainer &gt; shows image preview for image mime types" time="0.021286">
+        <testcase classname="src/components/__tests__/ThumbsContainer.spec.ts" name="ThumbsContainer &gt; shows image preview for image mime types" time="0.0074564">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer mediaItems= [
@@ -4795,7 +4877,7 @@ Failed to load media app: Error: Module load failed
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/ThumbsContainer.spec.ts" name="ThumbsContainer &gt; shows icon for non-image files" time="0.0098482">
+        <testcase classname="src/components/__tests__/ThumbsContainer.spec.ts" name="ThumbsContainer &gt; shows icon for non-image files" time="0.0083485">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer mediaItems= [
@@ -4812,7 +4894,7 @@ Failed to load media app: Error: Module load failed
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/ThumbsContainer.spec.ts" name="ThumbsContainer &gt; applies active class on selected item" time="0.0083611">
+        <testcase classname="src/components/__tests__/ThumbsContainer.spec.ts" name="ThumbsContainer &gt; applies active class on selected item" time="0.0077962">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer mediaItems= [
@@ -4836,7 +4918,7 @@ Failed to load media app: Error: Module load failed
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/ThumbsContainer.spec.ts" name="ThumbsContainer &gt; emits selectMedia on item click" time="0.0310512">
+        <testcase classname="src/components/__tests__/ThumbsContainer.spec.ts" name="ThumbsContainer &gt; emits selectMedia on item click" time="0.0125013">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer mediaItems= [
@@ -4853,7 +4935,7 @@ Failed to load media app: Error: Module load failed
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/ThumbsContainer.spec.ts" name="ThumbsContainer &gt; emits deleteMedia on trash button click" time="0.0081449">
+        <testcase classname="src/components/__tests__/ThumbsContainer.spec.ts" name="ThumbsContainer &gt; emits deleteMedia on trash button click" time="0.0164758">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer mediaItems= [
@@ -4870,7 +4952,7 @@ Failed to load media app: Error: Module load failed
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/ThumbsContainer.spec.ts" name="ThumbsContainer &gt; shows transient error state with warning icon" time="0.0061909">
+        <testcase classname="src/components/__tests__/ThumbsContainer.spec.ts" name="ThumbsContainer &gt; shows transient error state with warning icon" time="0.0107252">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer mediaItems= [
@@ -4888,7 +4970,7 @@ Failed to load media app: Error: Module load failed
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/ThumbsContainer.spec.ts" name="ThumbsContainer &gt; shows not-found error state with ban icon" time="0.0074521">
+        <testcase classname="src/components/__tests__/ThumbsContainer.spec.ts" name="ThumbsContainer &gt; shows not-found error state with ban icon" time="0.0091123">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer mediaItems= [
@@ -4906,7 +4988,7 @@ Failed to load media app: Error: Module load failed
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/ThumbsContainer.spec.ts" name="ThumbsContainer &gt; strips GUID prefix from name when isNew is true (substring(36))" time="0.0072901">
+        <testcase classname="src/components/__tests__/ThumbsContainer.spec.ts" name="ThumbsContainer &gt; strips GUID prefix from name when isNew is true (substring(36))" time="0.0065739">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer mediaItems= [
@@ -4924,7 +5006,7 @@ Failed to load media app: Error: Module load failed
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/ThumbsContainer.spec.ts" name="ThumbsContainer &gt; emits reorder with rearranged array on drop" time="0.0112702">
+        <testcase classname="src/components/__tests__/ThumbsContainer.spec.ts" name="ThumbsContainer &gt; emits reorder with rearranged array on drop" time="0.009428">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer mediaItems= [
@@ -4957,7 +5039,7 @@ Failed to load media app: Error: Module load failed
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/ThumbsContainer.spec.ts" name="ThumbsContainer &gt; does not allow drag when allowMultiple is false" time="0.0126313">
+        <testcase classname="src/components/__tests__/ThumbsContainer.spec.ts" name="ThumbsContainer &gt; does not allow drag when allowMultiple is false" time="0.0049795">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer mediaItems= [
@@ -4974,7 +5056,7 @@ Failed to load media app: Error: Module load failed
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/ThumbsContainer.spec.ts" name="ThumbsContainer &gt; onDragEnd resets draggedItem (subsequent drop is no-op)" time="0.0055866">
+        <testcase classname="src/components/__tests__/ThumbsContainer.spec.ts" name="ThumbsContainer &gt; onDragEnd resets draggedItem (subsequent drop is no-op)" time="0.0060435">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer mediaItems= [
@@ -4999,7 +5081,7 @@ Failed to load media app: Error: Module load failed
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/ThumbsContainer.spec.ts" name="ThumbsContainer &gt; buildMediaUrl appends width/height params (check img src)" time="0.00468">
+        <testcase classname="src/components/__tests__/ThumbsContainer.spec.ts" name="ThumbsContainer &gt; buildMediaUrl appends width/height params (check img src)" time="0.0048888">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer mediaItems= [
@@ -5016,7 +5098,7 @@ Failed to load media app: Error: Module load failed
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/ThumbsContainer.spec.ts" name="ThumbsContainer &gt; emits deleteMedia on trash click for transient error item" time="0.0046377">
+        <testcase classname="src/components/__tests__/ThumbsContainer.spec.ts" name="ThumbsContainer &gt; emits deleteMedia on trash click for transient error item" time="0.0042683">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer mediaItems= [
@@ -5034,7 +5116,7 @@ Failed to load media app: Error: Module load failed
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/ThumbsContainer.spec.ts" name="ThumbsContainer &gt; emits deleteMedia on trash click for not-found error item" time="0.0038115">
+        <testcase classname="src/components/__tests__/ThumbsContainer.spec.ts" name="ThumbsContainer &gt; emits deleteMedia on trash click for not-found error item" time="0.003796">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer mediaItems= [
@@ -5052,7 +5134,7 @@ Failed to load media app: Error: Module load failed
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/ThumbsContainer.spec.ts" name="ThumbsContainer &gt; onDragStart sets dataTransfer.effectAllowed when dataTransfer exists" time="0.0041035">
+        <testcase classname="src/components/__tests__/ThumbsContainer.spec.ts" name="ThumbsContainer &gt; onDragStart sets dataTransfer.effectAllowed when dataTransfer exists" time="0.0040564">
             <system-err>
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 
   at &lt;ThumbsContainer mediaItems= [
@@ -5078,78 +5160,78 @@ Failed to load media app: Error: Module load failed
             </system-err>
         </testcase>
     </testsuite>
-    <testsuite name="src/components/__tests__/UploadList.spec.ts" timestamp="2026-04-15T03:56:15.893Z" hostname="Nemo" tests="11" failures="0" errors="0" skipped="0" time="0.1236112">
-        <testcase classname="src/components/__tests__/UploadList.spec.ts" name="UploadList &gt; is hidden when files array is empty (v-show)" time="0.0300223">
+    <testsuite name="src/components/__tests__/UploadList.spec.ts" timestamp="2026-04-15T04:19:01.387Z" hostname="Nemo" tests="11" failures="0" errors="0" skipped="0" time="0.1099409">
+        <testcase classname="src/components/__tests__/UploadList.spec.ts" name="UploadList &gt; is hidden when files array is empty (v-show)" time="0.0297412">
             <system-err>
 [Vue warn]: withDirectives can only be used inside render functions.
 [Vue warn]: withDirectives can only be used inside render functions.
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/UploadList.spec.ts" name="UploadList &gt; shows header with upload count" time="0.0123604">
+        <testcase classname="src/components/__tests__/UploadList.spec.ts" name="UploadList &gt; shows header with upload count" time="0.0141469">
             <system-err>
 [Vue warn]: withDirectives can only be used inside render functions.
 [Vue warn]: withDirectives can only be used inside render functions.
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/UploadList.spec.ts" name="UploadList &gt; shows error count when errors exist" time="0.0060838">
+        <testcase classname="src/components/__tests__/UploadList.spec.ts" name="UploadList &gt; shows error count when errors exist" time="0.0049802">
             <system-err>
 [Vue warn]: withDirectives can only be used inside render functions.
 [Vue warn]: withDirectives can only be used inside render functions.
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/UploadList.spec.ts" name="UploadList &gt; shows progress bar for in-progress files" time="0.0066789">
+        <testcase classname="src/components/__tests__/UploadList.spec.ts" name="UploadList &gt; shows progress bar for in-progress files" time="0.0047435">
             <system-err>
 [Vue warn]: withDirectives can only be used inside render functions.
 [Vue warn]: withDirectives can only be used inside render functions.
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/UploadList.spec.ts" name="UploadList &gt; shows check icon for successful files" time="0.0093992">
+        <testcase classname="src/components/__tests__/UploadList.spec.ts" name="UploadList &gt; shows check icon for successful files" time="0.0054262">
             <system-err>
 [Vue warn]: withDirectives can only be used inside render functions.
 [Vue warn]: withDirectives can only be used inside render functions.
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/UploadList.spec.ts" name="UploadList &gt; shows error message for failed files" time="0.0172782">
+        <testcase classname="src/components/__tests__/UploadList.spec.ts" name="UploadList &gt; shows error message for failed files" time="0.0046864">
             <system-err>
 [Vue warn]: withDirectives can only be used inside render functions.
 [Vue warn]: withDirectives can only be used inside render functions.
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/UploadList.spec.ts" name="UploadList &gt; emits clearErrors on broom button click" time="0.0084681">
+        <testcase classname="src/components/__tests__/UploadList.spec.ts" name="UploadList &gt; emits clearErrors on broom button click" time="0.0126046">
             <system-err>
 [Vue warn]: withDirectives can only be used inside render functions.
 [Vue warn]: withDirectives can only be used inside render functions.
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/UploadList.spec.ts" name="UploadList &gt; emits dismiss on X button for error entry" time="0.0081191">
+        <testcase classname="src/components/__tests__/UploadList.spec.ts" name="UploadList &gt; emits dismiss on X button for error entry" time="0.0076694">
             <system-err>
 [Vue warn]: withDirectives can only be used inside render functions.
 [Vue warn]: withDirectives can only be used inside render functions.
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/UploadList.spec.ts" name="UploadList &gt; toggles expanded/collapsed on header click" time="0.0087823">
+        <testcase classname="src/components/__tests__/UploadList.spec.ts" name="UploadList &gt; toggles expanded/collapsed on header click" time="0.0100081">
             <system-err>
 [Vue warn]: withDirectives can only be used inside render functions.
 [Vue warn]: withDirectives can only be used inside render functions.
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/UploadList.spec.ts" name="UploadList &gt; shows dismissAll X button when no pending uploads" time="0.0081843">
+        <testcase classname="src/components/__tests__/UploadList.spec.ts" name="UploadList &gt; shows dismissAll X button when no pending uploads" time="0.0085899">
             <system-err>
 [Vue warn]: withDirectives can only be used inside render functions.
 [Vue warn]: withDirectives can only be used inside render functions.
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/UploadList.spec.ts" name="UploadList &gt; emits dismissAll on X button click" time="0.0063388">
+        <testcase classname="src/components/__tests__/UploadList.spec.ts" name="UploadList &gt; emits dismissAll on X button click" time="0.0055356">
             <system-err>
 [Vue warn]: withDirectives can only be used inside render functions.
 [Vue warn]: withDirectives can only be used inside render functions.
@@ -5157,176 +5239,176 @@ Failed to load media app: Error: Module load failed
             </system-err>
         </testcase>
     </testsuite>
-    <testsuite name="src/services/__tests__/FieldUploadService.spec.ts" timestamp="2026-04-15T03:56:15.896Z" hostname="Nemo" tests="26" failures="0" errors="0" skipped="0" time="0.0686957">
-        <testcase classname="src/services/__tests__/FieldUploadService.spec.ts" name="useFieldUpload &gt; returns reactive files ref that is initially empty" time="0.003361">
+    <testsuite name="src/services/__tests__/FieldUploadService.spec.ts" timestamp="2026-04-15T04:19:01.389Z" hostname="Nemo" tests="26" failures="0" errors="0" skipped="0" time="0.0673735">
+        <testcase classname="src/services/__tests__/FieldUploadService.spec.ts" name="useFieldUpload &gt; returns reactive files ref that is initially empty" time="0.0028435">
         </testcase>
-        <testcase classname="src/services/__tests__/FieldUploadService.spec.ts" name="useFieldUpload &gt; clearErrors &gt; removes only entries with error messages" time="0.0013273">
+        <testcase classname="src/services/__tests__/FieldUploadService.spec.ts" name="useFieldUpload &gt; clearErrors &gt; removes only entries with error messages" time="0.0013383">
         </testcase>
-        <testcase classname="src/services/__tests__/FieldUploadService.spec.ts" name="useFieldUpload &gt; dismiss &gt; removes the specific entry" time="0.0015897">
+        <testcase classname="src/services/__tests__/FieldUploadService.spec.ts" name="useFieldUpload &gt; dismiss &gt; removes the specific entry" time="0.0023144">
         </testcase>
-        <testcase classname="src/services/__tests__/FieldUploadService.spec.ts" name="useFieldUpload &gt; dismissAll &gt; clears all entries" time="0.0008727">
+        <testcase classname="src/services/__tests__/FieldUploadService.spec.ts" name="useFieldUpload &gt; dismissAll &gt; clears all entries" time="0.0005975">
         </testcase>
-        <testcase classname="src/services/__tests__/FieldUploadService.spec.ts" name="useFieldUpload &gt; uploadFiles &gt; returns uploaded result on successful upload" time="0.011579">
+        <testcase classname="src/services/__tests__/FieldUploadService.spec.ts" name="useFieldUpload &gt; uploadFiles &gt; returns uploaded result on successful upload" time="0.0110809">
         </testcase>
-        <testcase classname="src/services/__tests__/FieldUploadService.spec.ts" name="useFieldUpload &gt; uploadFiles &gt; uses filePath when XHR response omits mediaPath" time="0.0011722">
+        <testcase classname="src/services/__tests__/FieldUploadService.spec.ts" name="useFieldUpload &gt; uploadFiles &gt; uses filePath when XHR response omits mediaPath" time="0.0031656">
         </testcase>
-        <testcase classname="src/services/__tests__/FieldUploadService.spec.ts" name="useFieldUpload &gt; uploadFiles &gt; captures server-side file error" time="0.0013875">
+        <testcase classname="src/services/__tests__/FieldUploadService.spec.ts" name="useFieldUpload &gt; uploadFiles &gt; captures server-side file error" time="0.0026491">
         </testcase>
-        <testcase classname="src/services/__tests__/FieldUploadService.spec.ts" name="useFieldUpload &gt; uploadFiles &gt; handles HTTP error status" time="0.0016513">
+        <testcase classname="src/services/__tests__/FieldUploadService.spec.ts" name="useFieldUpload &gt; uploadFiles &gt; handles HTTP error status" time="0.0025033">
         </testcase>
-        <testcase classname="src/services/__tests__/FieldUploadService.spec.ts" name="useFieldUpload &gt; uploadFiles &gt; handles network error" time="0.0017989">
+        <testcase classname="src/services/__tests__/FieldUploadService.spec.ts" name="useFieldUpload &gt; uploadFiles &gt; handles network error" time="0.0024296">
         </testcase>
-        <testcase classname="src/services/__tests__/FieldUploadService.spec.ts" name="useFieldUpload &gt; uploadFiles &gt; handles invalid JSON response" time="0.0017443">
+        <testcase classname="src/services/__tests__/FieldUploadService.spec.ts" name="useFieldUpload &gt; uploadFiles &gt; handles invalid JSON response" time="0.0019024">
         </testcase>
-        <testcase classname="src/services/__tests__/FieldUploadService.spec.ts" name="useFieldUpload &gt; uploadFiles &gt; handles empty files array in response" time="0.0015951">
+        <testcase classname="src/services/__tests__/FieldUploadService.spec.ts" name="useFieldUpload &gt; uploadFiles &gt; handles empty files array in response" time="0.0015172">
         </testcase>
-        <testcase classname="src/services/__tests__/FieldUploadService.spec.ts" name="useFieldUpload &gt; uploadFiles &gt; tracks upload progress percentage" time="0.0015188">
+        <testcase classname="src/services/__tests__/FieldUploadService.spec.ts" name="useFieldUpload &gt; uploadFiles &gt; tracks upload progress percentage" time="0.0008214">
         </testcase>
-        <testcase classname="src/services/__tests__/FieldUploadService.spec.ts" name="useFieldUpload &gt; uploadFiles &gt; opens XHR with correct method and URL" time="0.0021592">
+        <testcase classname="src/services/__tests__/FieldUploadService.spec.ts" name="useFieldUpload &gt; uploadFiles &gt; opens XHR with correct method and URL" time="0.0013032">
         </testcase>
-        <testcase classname="src/services/__tests__/FieldUploadService.spec.ts" name="useFieldUpload &gt; anti-forgery token &gt; reads token from DOM input and includes it in FormData" time="0.0057723">
+        <testcase classname="src/services/__tests__/FieldUploadService.spec.ts" name="useFieldUpload &gt; anti-forgery token &gt; reads token from DOM input and includes it in FormData" time="0.0050057">
         </testcase>
-        <testcase classname="src/services/__tests__/FieldUploadService.spec.ts" name="useFieldUpload &gt; anti-forgery token &gt; returns empty string when no token input exists in DOM" time="0.0017866">
+        <testcase classname="src/services/__tests__/FieldUploadService.spec.ts" name="useFieldUpload &gt; anti-forgery token &gt; returns empty string when no token input exists in DOM" time="0.0011995">
         </testcase>
-        <testcase classname="src/services/__tests__/FieldUploadService.spec.ts" name="useFieldUpload &gt; uploadFiles with TUS enabled &gt; uses TUS when tusEnabled is true" time="0.0026111">
+        <testcase classname="src/services/__tests__/FieldUploadService.spec.ts" name="useFieldUpload &gt; uploadFiles with TUS enabled &gt; uses TUS when tusEnabled is true" time="0.0020669">
         </testcase>
-        <testcase classname="src/services/__tests__/FieldUploadService.spec.ts" name="useFieldUpload &gt; uploadFiles with TUS enabled &gt; uses filePath when TusFileInfo omits mediaPath" time="0.0021136">
+        <testcase classname="src/services/__tests__/FieldUploadService.spec.ts" name="useFieldUpload &gt; uploadFiles with TUS enabled &gt; uses filePath when TusFileInfo omits mediaPath" time="0.001731">
         </testcase>
-        <testcase classname="src/services/__tests__/FieldUploadService.spec.ts" name="useFieldUpload &gt; uploadFiles with TUS enabled &gt; handles TUS progress event" time="0.0022408">
+        <testcase classname="src/services/__tests__/FieldUploadService.spec.ts" name="useFieldUpload &gt; uploadFiles with TUS enabled &gt; handles TUS progress event" time="0.0012527">
         </testcase>
-        <testcase classname="src/services/__tests__/FieldUploadService.spec.ts" name="useFieldUpload &gt; uploadFiles with TUS enabled &gt; rejects when TUS response has no uploadURL" time="0.0020183">
+        <testcase classname="src/services/__tests__/FieldUploadService.spec.ts" name="useFieldUpload &gt; uploadFiles with TUS enabled &gt; rejects when TUS response has no uploadURL" time="0.0013903">
         </testcase>
-        <testcase classname="src/services/__tests__/FieldUploadService.spec.ts" name="useFieldUpload &gt; uploadFiles with TUS enabled &gt; rejects when TUS file info request fails" time="0.0018192">
+        <testcase classname="src/services/__tests__/FieldUploadService.spec.ts" name="useFieldUpload &gt; uploadFiles with TUS enabled &gt; rejects when TUS file info request fails" time="0.0014672">
         </testcase>
-        <testcase classname="src/services/__tests__/FieldUploadService.spec.ts" name="useFieldUpload &gt; uploadFiles with TUS enabled &gt; rejects when TUS file info fetch throws a network error" time="0.0017765">
+        <testcase classname="src/services/__tests__/FieldUploadService.spec.ts" name="useFieldUpload &gt; uploadFiles with TUS enabled &gt; rejects when TUS file info fetch throws a network error" time="0.0014729">
         </testcase>
-        <testcase classname="src/services/__tests__/FieldUploadService.spec.ts" name="useFieldUpload &gt; uploadFiles with TUS enabled &gt; handles TUS upload-error event" time="0.0013315">
+        <testcase classname="src/services/__tests__/FieldUploadService.spec.ts" name="useFieldUpload &gt; uploadFiles with TUS enabled &gt; handles TUS upload-error event" time="0.0015876">
         </testcase>
-        <testcase classname="src/services/__tests__/FieldUploadService.spec.ts" name="useFieldUpload &gt; uploadFiles with TUS enabled &gt; handles TUS upload-error with null error" time="0.0009518">
+        <testcase classname="src/services/__tests__/FieldUploadService.spec.ts" name="useFieldUpload &gt; uploadFiles with TUS enabled &gt; handles TUS upload-error with null error" time="0.0014205">
         </testcase>
-        <testcase classname="src/services/__tests__/FieldUploadService.spec.ts" name="useFieldUpload &gt; uploadFiles with TUS enabled &gt; uses default chunk size when maxUploadChunkSize is 0" time="0.0009078">
+        <testcase classname="src/services/__tests__/FieldUploadService.spec.ts" name="useFieldUpload &gt; uploadFiles with TUS enabled &gt; uses default chunk size when maxUploadChunkSize is 0" time="0.0011861">
         </testcase>
-        <testcase classname="src/services/__tests__/FieldUploadService.spec.ts" name="useFieldUpload &gt; uploadFiles with TUS enabled &gt; uses configured chunk size when maxUploadChunkSize &gt; 0" time="0.0008895">
+        <testcase classname="src/services/__tests__/FieldUploadService.spec.ts" name="useFieldUpload &gt; uploadFiles with TUS enabled &gt; uses configured chunk size when maxUploadChunkSize &gt; 0" time="0.0012615">
         </testcase>
-        <testcase classname="src/services/__tests__/FieldUploadService.spec.ts" name="useFieldUpload &gt; auto-remove on success &gt; schedules entry removal via setTimeout and callback removes entry" time="0.0103092">
+        <testcase classname="src/services/__tests__/FieldUploadService.spec.ts" name="useFieldUpload &gt; auto-remove on success &gt; schedules entry removal via setTimeout and callback removes entry" time="0.0098224">
         </testcase>
     </testsuite>
-    <testsuite name="src/services/__tests__/FontAwesomeThumbnails.spec.ts" timestamp="2026-04-15T03:56:15.900Z" hostname="Nemo" tests="58" failures="0" errors="0" skipped="0" time="0.0112126">
-        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; image extensions &gt; returns image icon for .jpg" time="0.0011077">
+    <testsuite name="src/services/__tests__/FontAwesomeThumbnails.spec.ts" timestamp="2026-04-15T04:19:01.392Z" hostname="Nemo" tests="58" failures="0" errors="0" skipped="0" time="0.0109464">
+        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; image extensions &gt; returns image icon for .jpg" time="0.0016086">
         </testcase>
-        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; image extensions &gt; returns image icon for .jpeg" time="0.0001372">
+        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; image extensions &gt; returns image icon for .jpeg" time="0.0001963">
         </testcase>
-        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; image extensions &gt; returns image icon for .png" time="0.0000788">
+        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; image extensions &gt; returns image icon for .png" time="0.0000807">
         </testcase>
-        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; image extensions &gt; returns image icon for .gif" time="0.0000726">
+        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; image extensions &gt; returns image icon for .gif" time="0.0000714">
         </testcase>
-        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; image extensions &gt; returns image icon for .webp" time="0.0001016">
+        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; image extensions &gt; returns image icon for .webp" time="0.0001203">
         </testcase>
-        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; image extensions &gt; returns image icon for .svg" time="0.0001894">
+        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; image extensions &gt; returns image icon for .svg" time="0.0001343">
         </testcase>
-        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; image extensions &gt; returns image icon for .bmp" time="0.0001286">
+        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; image extensions &gt; returns image icon for .bmp" time="0.0000801">
         </testcase>
-        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; image extensions &gt; returns image icon for .ico" time="0.0000918">
+        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; image extensions &gt; returns image icon for .ico" time="0.0000806">
         </testcase>
-        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; document extensions &gt; returns pdf icon for .pdf" time="0.000248">
+        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; document extensions &gt; returns pdf icon for .pdf" time="0.0001799">
         </testcase>
-        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; document extensions &gt; returns word icon for .doc" time="0.0001859">
+        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; document extensions &gt; returns word icon for .doc" time="0.0001723">
         </testcase>
-        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; document extensions &gt; returns word icon for .docx" time="0.0000995">
+        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; document extensions &gt; returns word icon for .docx" time="0.0001003">
         </testcase>
-        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; document extensions &gt; returns powerpoint icon for .ppt" time="0.0001552">
+        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; document extensions &gt; returns powerpoint icon for .ppt" time="0.0001801">
         </testcase>
-        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; document extensions &gt; returns powerpoint icon for .pptx" time="0.0001198">
+        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; document extensions &gt; returns powerpoint icon for .pptx" time="0.0001404">
         </testcase>
-        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; document extensions &gt; returns excel icon for .xls" time="0.0000775">
+        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; document extensions &gt; returns excel icon for .xls" time="0.0001373">
         </testcase>
-        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; document extensions &gt; returns excel icon for .xlsx" time="0.0000726">
+        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; document extensions &gt; returns excel icon for .xlsx" time="0.0001254">
         </testcase>
-        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; document extensions &gt; returns file icon for .csv" time="0.0000676">
+        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; document extensions &gt; returns file icon for .csv" time="0.0001354">
         </testcase>
-        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; audio extensions &gt; returns audio icon for .aac" time="0.0000876">
+        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; audio extensions &gt; returns audio icon for .aac" time="0.0001194">
         </testcase>
-        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; audio extensions &gt; returns audio icon for .mp3" time="0.0001553">
+        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; audio extensions &gt; returns audio icon for .mp3" time="0.0001176">
         </testcase>
-        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; audio extensions &gt; returns audio icon for .ogg" time="0.0000895">
+        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; audio extensions &gt; returns audio icon for .ogg" time="0.000085">
         </testcase>
-        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; video extensions &gt; returns video icon for .avi" time="0.00013">
+        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; video extensions &gt; returns video icon for .avi" time="0.0001025">
         </testcase>
-        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; video extensions &gt; returns video icon for .flv" time="0.0001049">
+        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; video extensions &gt; returns video icon for .flv" time="0.0001107">
         </testcase>
-        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; video extensions &gt; returns video icon for .mkv" time="0.0001234">
+        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; video extensions &gt; returns video icon for .mkv" time="0.0001415">
         </testcase>
-        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; video extensions &gt; returns video icon for .mp4" time="0.0001371">
+        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; video extensions &gt; returns video icon for .mp4" time="0.0001096">
         </testcase>
-        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; video extensions &gt; returns video icon for .webm" time="0.000111">
+        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; video extensions &gt; returns video icon for .webm" time="0.0001104">
         </testcase>
-        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; archive extensions &gt; returns archive icon for .gz" time="0.0001889">
+        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; archive extensions &gt; returns archive icon for .gz" time="0.0001177">
         </testcase>
-        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; archive extensions &gt; returns archive icon for .zip" time="0.0000975">
+        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; archive extensions &gt; returns archive icon for .zip" time="0.0001006">
         </testcase>
-        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; code extensions &gt; returns code icon for .css" time="0.0001235">
+        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; code extensions &gt; returns code icon for .css" time="0.0001209">
         </testcase>
-        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; code extensions &gt; returns code icon for .html" time="0.0000869">
+        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; code extensions &gt; returns code icon for .html" time="0.0000843">
         </testcase>
-        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; code extensions &gt; returns code icon for .js" time="0.0000891">
+        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; code extensions &gt; returns code icon for .js" time="0.0000794">
         </testcase>
-        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; text extension &gt; returns text icon for .txt" time="0.0002992">
+        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; text extension &gt; returns text icon for .txt" time="0.0001794">
         </testcase>
-        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; unknown and edge cases &gt; returns default file icon for unknown extension" time="0.0002511">
+        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; unknown and edge cases &gt; returns default file icon for unknown extension" time="0.0001823">
         </testcase>
-        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; unknown and edge cases &gt; returns default file icon for empty filename" time="0.0001279">
+        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; unknown and edge cases &gt; returns default file icon for empty filename" time="0.0001153">
         </testcase>
-        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; unknown and edge cases &gt; returns default file icon for filename without extension" time="0.0002747">
+        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; unknown and edge cases &gt; returns default file icon for filename without extension" time="0.0003055">
         </testcase>
-        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; case insensitivity &gt; handles uppercase JPG" time="0.0000867">
+        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; case insensitivity &gt; handles uppercase JPG" time="0.000122">
         </testcase>
-        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; case insensitivity &gt; handles uppercase PDF" time="0.0000621">
+        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; case insensitivity &gt; handles uppercase PDF" time="0.0000881">
         </testcase>
-        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; case insensitivity &gt; handles mixed case Png" time="0.0000507">
+        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; case insensitivity &gt; handles mixed case Png" time="0.0000889">
         </testcase>
-        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; sizeClass parameter &gt; appends sizeClass when provided" time="0.0000653">
+        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; sizeClass parameter &gt; appends sizeClass when provided" time="0.0001064">
         </testcase>
-        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; sizeClass parameter &gt; does not append extra space when sizeClass is empty" time="0.0000522">
+        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; sizeClass parameter &gt; does not append extra space when sizeClass is empty" time="0.0000777">
         </testcase>
-        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; sizeClass parameter &gt; appends sizeClass to default icon for unknown extension" time="0.0000931">
+        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="getIconClassForFilename &gt; sizeClass parameter &gt; appends sizeClass to default icon for unknown extension" time="0.0001139">
         </testcase>
-        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="isImageExtension &gt; returns true for image extensions &gt; returns true for gif" time="0.0004074">
+        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="isImageExtension &gt; returns true for image extensions &gt; returns true for gif" time="0.0003609">
         </testcase>
-        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="isImageExtension &gt; returns true for image extensions &gt; returns true for jpeg" time="0.0001551">
+        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="isImageExtension &gt; returns true for image extensions &gt; returns true for jpeg" time="0.0001436">
         </testcase>
-        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="isImageExtension &gt; returns true for image extensions &gt; returns true for jpg" time="0.0000844">
+        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="isImageExtension &gt; returns true for image extensions &gt; returns true for jpg" time="0.0000994">
         </testcase>
-        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="isImageExtension &gt; returns true for image extensions &gt; returns true for png" time="0.0000908">
+        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="isImageExtension &gt; returns true for image extensions &gt; returns true for png" time="0.0000653">
         </testcase>
-        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="isImageExtension &gt; returns true for image extensions &gt; returns true for webp" time="0.0000825">
+        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="isImageExtension &gt; returns true for image extensions &gt; returns true for webp" time="0.0000645">
         </testcase>
-        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="isImageExtension &gt; returns true for image extensions &gt; returns true for svg" time="0.000096">
+        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="isImageExtension &gt; returns true for image extensions &gt; returns true for svg" time="0.0000563">
         </testcase>
-        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="isImageExtension &gt; returns true for image extensions &gt; returns true for bmp" time="0.0000975">
+        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="isImageExtension &gt; returns true for image extensions &gt; returns true for bmp" time="0.0000603">
         </testcase>
-        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="isImageExtension &gt; returns true for image extensions &gt; returns true for ico" time="0.0000959">
+        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="isImageExtension &gt; returns true for image extensions &gt; returns true for ico" time="0.0000554">
         </testcase>
-        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="isImageExtension &gt; returns false for non-image extensions &gt; returns false for pdf" time="0.0001434">
+        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="isImageExtension &gt; returns false for non-image extensions &gt; returns false for pdf" time="0.0001203">
         </testcase>
-        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="isImageExtension &gt; returns false for non-image extensions &gt; returns false for doc" time="0.0000895">
+        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="isImageExtension &gt; returns false for non-image extensions &gt; returns false for doc" time="0.0000901">
         </testcase>
-        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="isImageExtension &gt; returns false for non-image extensions &gt; returns false for mp3" time="0.0001203">
+        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="isImageExtension &gt; returns false for non-image extensions &gt; returns false for mp3" time="0.0000955">
         </testcase>
-        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="isImageExtension &gt; returns false for non-image extensions &gt; returns false for mp4" time="0.000084">
+        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="isImageExtension &gt; returns false for non-image extensions &gt; returns false for mp4" time="0.0000631">
         </testcase>
-        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="isImageExtension &gt; returns false for non-image extensions &gt; returns false for zip" time="0.0000851">
+        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="isImageExtension &gt; returns false for non-image extensions &gt; returns false for zip" time="0.0000681">
         </testcase>
-        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="isImageExtension &gt; returns false for non-image extensions &gt; returns false for js" time="0.0000947">
+        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="isImageExtension &gt; returns false for non-image extensions &gt; returns false for js" time="0.0000582">
         </testcase>
-        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="isImageExtension &gt; returns false for non-image extensions &gt; returns false for txt" time="0.0001236">
+        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="isImageExtension &gt; returns false for non-image extensions &gt; returns false for txt" time="0.0000618">
         </testcase>
-        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="isImageExtension &gt; returns false for non-image extensions &gt; returns false for csv" time="0.0000884">
+        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="isImageExtension &gt; returns false for non-image extensions &gt; returns false for csv" time="0.000059">
         </testcase>
-        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="isImageExtension &gt; handles leading dot" time="0.0001839">
+        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="isImageExtension &gt; handles leading dot" time="0.0001455">
         </testcase>
-        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="isImageExtension &gt; is case insensitive" time="0.0001805">
+        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="isImageExtension &gt; is case insensitive" time="0.0001408">
         </testcase>
-        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="isImageExtension &gt; returns false for empty string" time="0.0001027">
+        <testcase classname="src/services/__tests__/FontAwesomeThumbnails.spec.ts" name="isImageExtension &gt; returns false for empty string" time="0.0000705">
         </testcase>
     </testsuite>
 </testsuites>

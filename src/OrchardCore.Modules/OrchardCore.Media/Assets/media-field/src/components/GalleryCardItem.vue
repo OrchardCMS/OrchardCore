@@ -28,6 +28,7 @@
             :src="buildMediaUrl(media.url!, thumbSize)"
             :data-mime="media.mime"
             class="tw:w-full tw:h-full tw:object-cover"
+            draggable="false"
           />
         </div>
         <div

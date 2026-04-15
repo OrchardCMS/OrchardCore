@@ -22,6 +22,7 @@
         :src="buildMediaUrl(media.url!, 32)"
         :data-mime="media.mime"
         class="tw:w-full tw:h-full tw:object-cover"
+        draggable="false"
       />
       <i
         v-else-if="media.errorType === 'transient'"

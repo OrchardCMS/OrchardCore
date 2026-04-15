@@ -210,7 +210,10 @@ function selectAndDeleteMedia(media: IMediaFieldItem) {
 }
 
 function addMediaFiles(files: IMediaFieldItem[]) {
-  const validFiles = files.filter((item) => isValidMediaPath(item.mediaPath));
+  const existingPaths = new Set(mediaItems.value.map((m) => m.mediaPath));
+  const validFiles = files.filter(
+    (item) => isValidMediaPath(item.mediaPath) && !existingPaths.has(item.mediaPath)
+  );
   if (validFiles.length === 0) {
     return;
   }

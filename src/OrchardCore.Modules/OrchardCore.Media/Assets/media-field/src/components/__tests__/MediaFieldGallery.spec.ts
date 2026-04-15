@@ -106,6 +106,30 @@ describe("MediaFieldGallery", () => {
     expect(vmSingle.mediaItems).toHaveLength(1);
   });
 
+  it("addMediaFiles ignores duplicate mediaPath entries", async () => {
+    const wrapper = createWrapper({ multiple: true, paths: [] });
+    await flushPromises();
+
+    const vm = wrapper.vm as any;
+    vm.addMediaFiles([makeMediaItem({ mediaPath: "a.jpg", vuekey: "a0" })]);
+    await nextTick();
+    expect(vm.mediaItems).toHaveLength(1);
+
+    // Adding the same path again should be a no-op
+    vm.addMediaFiles([makeMediaItem({ mediaPath: "a.jpg", vuekey: "a1" })]);
+    await nextTick();
+    expect(vm.mediaItems).toHaveLength(1);
+
+    // Batch that mixes new and duplicate paths – only new ones are added
+    vm.addMediaFiles([
+      makeMediaItem({ mediaPath: "a.jpg", vuekey: "a2" }),
+      makeMediaItem({ mediaPath: "b.jpg", vuekey: "b0" }),
+    ]);
+    await nextTick();
+    expect(vm.mediaItems).toHaveLength(2);
+    expect(vm.mediaItems.map((i: any) => i.mediaPath)).toEqual(["a.jpg", "b.jpg"]);
+  });
+
   it("selectAndDeleteMedia removes item", async () => {
     const wrapper = createWrapper({ multiple: true, paths: [] });
     await flushPromises();
