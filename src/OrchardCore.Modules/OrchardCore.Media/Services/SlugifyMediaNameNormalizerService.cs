@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Options;
+using OrchardCore.Localization;
 using OrchardCore.Modules.Services;
 
 namespace OrchardCore.Media.Services;

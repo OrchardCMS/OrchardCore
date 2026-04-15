@@ -1,3 +1,4 @@
+using OrchardCore.Localization;
 using OrchardCore.Modules.Services;
 
 namespace OrchardCore.Tests.Tokens.Content;

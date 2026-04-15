@@ -5,6 +5,8 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin.Models;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Liquid;
+using OrchardCore.localization.Liquid.Filters;
 using OrchardCore.Localization.Drivers;
 using OrchardCore.Localization.Models;
 using OrchardCore.Localization.Services;
@@ -34,6 +36,8 @@ public sealed class Startup : StartupBase
             AddDataAnnotationsPortableObjectLocalization();
 
         services.Replace(ServiceDescriptor.Singleton<ILocalizationFileLocationProvider, ModularPoFileLocationProvider>());
+
+        services.AddLiquidFilter<TransliterateFilter>("transliterate");
     }
 
     /// <inheritdocs />
