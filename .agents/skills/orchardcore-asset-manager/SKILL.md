@@ -54,6 +54,27 @@ echo "1" | yarn clean
 
 The `-n` name maps to the `"name"` field in `Assets.json`.
 
+## Local Claude Code Setup (One-time, per developer)
+
+`.claude/` is gitignored. To avoid being prompted on every build command, create `.claude/settings.json` locally with these pre-approved commands:
+
+```json
+{
+  "permissions": {
+    "allow": [
+      "Bash(echo \"1\" | yarn build*)",
+      "Bash(echo \"3\" | yarn build*)",
+      "Bash(fnm exec --using 24.14.1 -- corepack yarn install*)",
+      "Bash(yarn check*)",
+      "Bash(yarn lint*)",
+      "Bash(echo \"1\" | yarn dry-run*)"
+    ]
+  }
+}
+```
+
+Do **not** commit this file or add a `.gitignore` exception for it — it is intentionally kept local to avoid silently pre-approving commands on other developers' machines.
+
 ## Prerequisites / Installing Dependencies
 
 Before building, if packages are missing:
