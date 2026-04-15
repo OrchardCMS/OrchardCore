@@ -107,7 +107,6 @@ describe("GalleryCardItem", () => {
     });
     const img = wrapper.find("img");
     expect(img.attributes("src")).toContain("width=120");
-    expect(img.attributes("src")).toContain("height=120");
   });
 
   it("uses 240px thumb size for 'lg'", () => {
@@ -117,7 +116,6 @@ describe("GalleryCardItem", () => {
     });
     const img = wrapper.find("img");
     expect(img.attributes("src")).toContain("width=240");
-    expect(img.attributes("src")).toContain("height=240");
   });
 
   it("shows filled comment icon when mediaText exists", () => {

@@ -117,15 +117,15 @@
 </div>
 
 @* Endpoints *@
-<input type="hidden" id="getFoldersUrl" value="@Url.Action("GetFolders", "Admin", new { area = "OrchardCore.Media" })" />
-<input type="hidden" id="deleteFolderUrl" value="@Url.Action("DeleteFolder", "Admin", new { area = "OrchardCore.Media" })" />
-<input type="hidden" id="createFolderUrl" value="@Url.Action("CreateFolder", "Admin", new { area = "OrchardCore.Media" })" />
-<input type="hidden" id="getMediaItemsUrl" value="@Url.Action("GetMediaItems", "Admin", new { area = "OrchardCore.Media" })" />
-<input type="hidden" id="deleteMediaUrl" value="@Url.Action("DeleteMedia", "Admin", new { area = "OrchardCore.Media" })" />
-<input type="hidden" id="renameMediaUrl" value="@Url.Action("MoveMedia", "Admin", new { area = "OrchardCore.Media" })" />
-<input type="hidden" id="deleteMediaListUrl" value="@Url.Action("DeleteMediaList", "Admin", new { area = "OrchardCore.Media" })" />
-<input type="hidden" id="moveMediaListUrl" value="@Url.Action("MoveMediaList", "Admin", new { area = "OrchardCore.Media" })" />
-<input type="hidden" id="uploadFiles" value="@Url.Action("Upload", "Admin", new { area = "OrchardCore.Media" })" />
+<input type="hidden" id="getFoldersUrl" value="@Url.Content("~/api/media/GetFolders")" />
+<input type="hidden" id="deleteFolderUrl" value="@Url.Content("~/api/media/DeleteFolder")" />
+<input type="hidden" id="createFolderUrl" value="@Url.Content("~/api/media/CreateFolder")" />
+<input type="hidden" id="getMediaItemsUrl" value="@Url.Content("~/api/media/GetMediaItems")" />
+<input type="hidden" id="deleteMediaUrl" value="@Url.Content("~/api/media/DeleteMedia")" />
+<input type="hidden" id="renameMediaUrl" value="@Url.Content("~/api/media/MoveMedia")" />
+<input type="hidden" id="deleteMediaListUrl" value="@Url.Content("~/api/media/DeleteMediaList")" />
+<input type="hidden" id="moveMediaListUrl" value="@Url.Content("~/api/media/MoveMediaList")" />
+<input type="hidden" id="uploadFiles" value="@Url.Content("~/api/media/Upload")" />
 <input type="hidden" id="allowedExtensions" value="@Model.Extensions" />
 <input type="hidden" id="getPermittedStorageUrl" value="@Url.Action("GetPermittedStorage", "Admin", new { area = "OrchardCore.Media" })" />
 

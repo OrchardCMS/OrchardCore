@@ -292,7 +292,7 @@ describe("FolderComponent", () => {
 
     await wrapper.vm.$nextTick();
     expect(dirCreateSpy).toHaveBeenCalledWith(
-      expect.objectContaining({ name: "New Folder", directoryPath: "New Folder" }),
+      expect.objectContaining({ name: "New Folder", directoryPath: "/test/directory", filePath: "" }),
     );
   });
 

@@ -84,16 +84,16 @@ describe("GalleryContainer", () => {
     expect(wrapper.find(".mf-gallery-list-empty").exists()).toBe(true);
   });
 
-  it("de-duplicates items by mediaPath", () => {
+  it("renders all items including duplicates", () => {
     const items = [
       makeMediaItem({ mediaPath: "a.jpg", name: "a.jpg", vuekey: "a0" }),
       makeMediaItem({ mediaPath: "a.jpg", name: "a-dup.jpg", vuekey: "a1" }),
       makeMediaItem({ mediaPath: "b.jpg", name: "b.jpg", vuekey: "b0" }),
     ];
     const wrapper = createWrapper({ mediaItems: items });
-    // In grid view, GalleryCardItem stubs are rendered for unique items
+    // Duplicates are allowed — all 3 items render
     const cards = wrapper.findAllComponents({ name: "GalleryCardItem" });
-    expect(cards).toHaveLength(2);
+    expect(cards).toHaveLength(3);
   });
 
   it("filters out isRemoved items", () => {

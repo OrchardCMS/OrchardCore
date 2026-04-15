@@ -3,6 +3,7 @@ import Uppy, { debugLogger } from "@uppy/core";
 import Tus from "@uppy/tus";
 import { getTranslations } from "@bloom/helpers/localizations";
 import { humanFileSize } from "@bloom/media/utils";
+import { normalizeMediaPath } from "./MediaPath";
 
 export interface IUploadFileEntry {
   name: string;
@@ -30,6 +31,15 @@ export interface IFieldUploadConfig {
 export function useFieldUpload(config: IFieldUploadConfig) {
   const files: Ref<IUploadFileEntry[]> = ref([]);
   const isTus = !!config.tusEnabled && !!config.tusEndpointUrl;
+
+  function normalizeUploadedFileResult(serverFile: UploadedFileResult): UploadedFileResult {
+    const mediaPath = normalizeMediaPath(serverFile.mediaPath) ?? normalizeMediaPath(serverFile.filePath);
+
+    return {
+      ...serverFile,
+      mediaPath: mediaPath ?? "",
+    };
+  }
 
   function getAntiForgeryToken(): string {
     const input = document.querySelector<HTMLInputElement>(
@@ -98,7 +108,7 @@ export function useFieldUpload(config: IFieldUploadConfig) {
         try {
           const res = await fetch(fileInfoUrl);
           if (res.ok) {
-            const serverFile = await res.json();
+            const serverFile = normalizeUploadedFileResult(await res.json());
             resolve({
               ...serverFile,
               isNew: true,
@@ -149,7 +159,7 @@ export function useFieldUpload(config: IFieldUploadConfig) {
           try {
             const resp = JSON.parse(xhr.responseText);
             if (resp.files && resp.files.length > 0) {
-              const serverFile = resp.files[0];
+              const serverFile = normalizeUploadedFileResult(resp.files[0]);
               if (serverFile.error) {
                 reject(new Error(serverFile.error));
               } else {
@@ -262,6 +272,7 @@ export interface UploadedFileResult {
   size: number;
   url: string;
   mediaPath: string;
+  filePath?: string;
   mime: string;
   isNew: boolean;
   attachedFileName: string;

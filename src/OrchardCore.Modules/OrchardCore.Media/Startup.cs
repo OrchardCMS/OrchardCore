@@ -608,7 +608,8 @@ public sealed class MediaTusStartup : StartupBase
 
                             var mediaFileStore =
                                 httpContext.RequestServices.GetRequiredService<IMediaFileStore>();
-                            var mediaFilePath = mediaFileStore.Combine(
+                            var mediaFilePath = await GetAvailableMediaFilePathAsync(
+                                mediaFileStore,
                                 entry.DestinationPath,
                                 entry.FileName
                             );
@@ -631,6 +632,37 @@ public sealed class MediaTusStartup : StartupBase
                 };
             }
         );
+    }
+
+    private static async Task<string> GetAvailableMediaFilePathAsync(
+        IMediaFileStore mediaFileStore,
+        string destinationPath,
+        string fileName)
+    {
+        var extension = Path.GetExtension(fileName);
+        var baseFileName = Path.GetFileNameWithoutExtension(fileName);
+
+        if (string.IsNullOrEmpty(baseFileName))
+        {
+            baseFileName = "file";
+        }
+
+        var filePath = mediaFileStore.Combine(destinationPath, fileName);
+
+        if (await mediaFileStore.GetFileInfoAsync(filePath) == null)
+        {
+            return filePath;
+        }
+
+        var index = 1;
+        do
+        {
+            filePath = mediaFileStore.Combine(destinationPath, $"{baseFileName}-{index}{extension}");
+            index++;
+        }
+        while (await mediaFileStore.GetFileInfoAsync(filePath) != null);
+
+        return filePath;
     }
 }
 

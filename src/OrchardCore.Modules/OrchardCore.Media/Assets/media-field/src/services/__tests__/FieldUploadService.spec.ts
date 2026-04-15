@@ -241,6 +241,34 @@ describe("useFieldUpload", () => {
       expect(entry?.percentage).toBe(100);
     });
 
+    it("uses filePath when XHR response omits mediaPath", async () => {
+      const { uploadFiles } = useFieldUpload(defaultConfig);
+
+      const promise = uploadFiles([makeFile("fallback.jpg")]);
+
+      await vi.waitFor(() => expect(xhrInstances).toHaveLength(1));
+      const xhr = xhrInstances[0];
+
+      xhr.status = 200;
+      xhr.responseText = JSON.stringify({
+        files: [
+          {
+            name: "uuid-fallback.jpg",
+            size: 1024,
+            url: "/media/fallback.jpg",
+            filePath: "MediaFields/temp/fallback.jpg",
+            mime: "image/jpeg",
+          },
+        ],
+      });
+      xhr.triggerLoad();
+
+      const result = await promise;
+
+      expect(result.uploaded).toHaveLength(1);
+      expect(result.uploaded[0].mediaPath).toBe("MediaFields/temp/fallback.jpg");
+    });
+
     it("captures server-side file error", async () => {
       const { uploadFiles } = useFieldUpload(defaultConfig);
 
@@ -478,6 +506,35 @@ describe("useFieldUpload", () => {
       });
       expect(result.errors).toHaveLength(0);
       expect(uppy.destroyFn).toHaveBeenCalled();
+    });
+
+    it("uses filePath when TusFileInfo omits mediaPath", async () => {
+      global.fetch = vi.fn(() =>
+        Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve({
+            name: "tus-fallback.jpg",
+            size: 2048,
+            url: "/media/tus-fallback.jpg",
+            filePath: "MediaFields/temp/tus-fallback.jpg",
+            mime: "image/jpeg",
+          }),
+        })
+      ) as any;
+
+      const { uploadFiles } = useFieldUpload(tusConfig);
+      const file = makeFile("fallback.jpg");
+      const promise = uploadFiles([file]);
+
+      await vi.waitFor(() => expect(MockUppy.instances).toHaveLength(1));
+      const uppy = MockUppy.instances[0];
+
+      uppy.triggerEvent("upload-success", uppy.files[0], { uploadURL: "https://tus.example.com/files/fallback123" });
+
+      const result = await promise;
+
+      expect(result.uploaded).toHaveLength(1);
+      expect(result.uploaded[0].mediaPath).toBe("MediaFields/temp/tus-fallback.jpg");
     });
 
     it("handles TUS progress event", async () => {

@@ -55,6 +55,7 @@ import { VueFinalModal } from "vue-final-modal";
 import type { IMediaFieldItem } from "../interfaces/MediaFieldTypes";
 import { getTranslations } from "@bloom/helpers/localizations";
 import type { IMediaPickerHandle } from "@media-app";
+import { resolvePickerFilePath } from "../services/MediaPath";
 
 const props = defineProps<{
   fieldId: string;
@@ -118,15 +119,28 @@ function confirm() {
   const selected = pickerHandle.getSelectedFiles();
   if (selected.length === 0) return;
 
-  // Convert to IMediaFieldItem
-  const items: IMediaFieldItem[] = selected.map((f, i) => ({
-    name: f.name,
-    mime: f.mime || "",
-    mediaPath: f.filePath,
-    url: f.url,
-    size: f.size,
-    vuekey: f.filePath + i,
-  }));
+  // Keep only selections with a valid media path.
+  const items: IMediaFieldItem[] = selected
+    .map((f, i) => {
+      const mediaPath = resolvePickerFilePath(f);
+      if (!mediaPath) {
+        return null;
+      }
+
+      return {
+        name: f.name,
+        mime: f.mime || "",
+        mediaPath,
+        url: f.url,
+        size: f.size,
+        vuekey: mediaPath + i,
+      } as IMediaFieldItem;
+    })
+    .filter((item): item is IMediaFieldItem => item !== null);
+
+  if (items.length === 0) {
+    return;
+  }
 
   emit("select", items);
   visible.value = false;

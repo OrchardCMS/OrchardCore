@@ -31,7 +31,7 @@
              data-allow-media-text="@(settings.AllowMediaText ? "true" : "false")"
              data-allow-anchors="@(settings.AllowAnchors ? "true" : "false")"
              data-allowed-extensions="@string.Join(',', Model.AllowedExtensions)"
-             data-media-item-url="@Url.Action("GetMediaItem", "Admin", new { area = "OrchardCore.Media" })"
+             data-media-item-url="@Url.Content("~/api/media/GetMediaItem")"
              data-media-app-translations="@mediaAppTranslationsJson"
              data-base-path="@Url.Content("~/")"
              data-upload-files-url="@Url.Content("~/api/media/Upload")"

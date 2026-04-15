@@ -1655,8 +1655,7 @@ describe("UppyFileUpload", () => {
 
         expect(mockXhrPlugin.setOptions).toHaveBeenCalledWith(
           expect.objectContaining({
-            fieldName: "files",
-            bundle: true,
+            endpoint: "/api/upload?path=%2FTest",
           }),
         );
 

@@ -150,6 +150,7 @@ import type {
   IMediaFieldPath,
 } from "../interfaces/MediaFieldTypes";
 import { getTranslations } from "@bloom/helpers/localizations";
+import { isValidMediaPath, normalizeMediaPath, sanitizeFieldPaths } from "../services/MediaPath";
 
 const props = defineProps<{
   config: IMediaFieldConfig;
@@ -193,11 +194,13 @@ const serializedPaths = computed(() => {
   if (!initialized.value) {
     return JSON.stringify(props.config.paths);
   }
-  const paths: IMediaFieldPath[] = mediaItems.value.map((m) => ({
-    path: m.mediaPath,
-    mediaText: m.mediaText,
-    anchor: m.anchor,
-  }));
+  const paths: IMediaFieldPath[] = mediaItems.value
+    .filter((m) => isValidMediaPath(m.mediaPath))
+    .map((m) => ({
+      path: normalizeMediaPath(m.mediaPath)!,
+      mediaText: m.mediaText,
+      anchor: m.anchor,
+    }));
   return JSON.stringify(paths);
 });
 
@@ -215,20 +218,21 @@ onMounted(() => {
 });
 
 async function loadInitialPaths(paths: IMediaFieldPath[]) {
-  if (!paths || paths.length === 0) {
+  const validPaths = sanitizeFieldPaths(paths);
+  if (validPaths.length === 0) {
     initialized.value = true;
     return;
   }
 
-  const items: IMediaFieldItem[] = paths.map((p, i) => ({
+  const items: IMediaFieldItem[] = validPaths.map((p, i) => ({
     name: " " + p.path, // placeholder name
     mime: "",
-    mediaPath: "",
+    mediaPath: p.path,
     vuekey: p.path + i,
   }));
 
   const loaded = await Promise.all(
-    paths.map(async (p, i) => {
+    validPaths.map(async (p, i) => {
       try {
         const url = `${props.config.mediaItemUrl}?path=${encodeURIComponent(p.path)}`;
         const resp = await fetch(url);
@@ -246,6 +250,7 @@ async function loadInitialPaths(paths: IMediaFieldPath[]) {
         const data = await resp.json();
         return {
           ...data,
+          mediaPath: normalizeMediaPath(data.mediaPath) ?? p.path,
           mediaText: p.mediaText,
           anchor: p.anchor,
           vuekey: data.name + i,
@@ -311,7 +316,7 @@ function selectAndDeleteMedia(media: IMediaFieldItem) {
 }
 
 function onReorder(items: IMediaFieldItem[]) {
-  mediaItems.value = items;
+  mediaItems.value = items.filter((item) => isValidMediaPath(item.mediaPath));
 }
 
 /**
@@ -319,13 +324,18 @@ function onReorder(items: IMediaFieldItem[]) {
  * This is the public API for external integration (e.g., media picker modal).
  */
 function addMediaFiles(files: IMediaFieldItem[]) {
-  if (files.length > 1 && !multiple.value) {
+  const validFiles = files.filter((item) => isValidMediaPath(item.mediaPath));
+  if (validFiles.length === 0) {
+    return;
+  }
+
+  if (validFiles.length > 1 && !multiple.value) {
     // Only allow one item for single-select fields
-    mediaItems.value = [files[0]];
+    mediaItems.value = [validFiles[0]];
   } else if (multiple.value) {
-    mediaItems.value = mediaItems.value.concat(files);
+    mediaItems.value = mediaItems.value.concat(validFiles);
   } else {
-    mediaItems.value = [files[0]];
+    mediaItems.value = [validFiles[0]];
   }
   initialized.value = true;
 

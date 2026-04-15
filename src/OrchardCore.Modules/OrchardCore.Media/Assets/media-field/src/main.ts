@@ -18,6 +18,7 @@ import MediaFieldGallery from "./components/MediaFieldGallery.vue";
 import { setTranslations } from "@bloom/helpers/localizations";
 import type { IMediaFieldConfig, IMediaFieldPath } from "./interfaces/MediaFieldTypes";
 import type { IAttachedFieldConfig } from "./components/MediaFieldAttached.vue";
+import { sanitizeFieldPaths } from "./services/MediaPath";
 
 import "vue-final-modal/style.css";
 import "./assets/css/field.css";
@@ -33,7 +34,7 @@ function readConfig(el: HTMLElement): IMediaFieldConfig {
   const dataset = el.dataset;
   let paths: IMediaFieldPath[] = [];
   try {
-    paths = JSON.parse(dataset.paths || "[]");
+    paths = sanitizeFieldPaths(JSON.parse(dataset.paths || "[]"));
   } catch {
     paths = [];
   }

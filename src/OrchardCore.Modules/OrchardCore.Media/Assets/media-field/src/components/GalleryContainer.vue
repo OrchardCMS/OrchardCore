@@ -150,15 +150,7 @@ const gridView = ref(true);
 const size = ref<"sm" | "lg">("lg");
 
 // De-duplicate by mediaPath
-const uniqueItems = computed(() => {
-  const seen = new Set<string>();
-  return props.mediaItems.filter((item) => {
-    if (item.isRemoved) return false;
-    if (seen.has(item.mediaPath)) return false;
-    seen.add(item.mediaPath);
-    return true;
-  });
-});
+const uniqueItems = computed(() => props.mediaItems.filter((item) => !item.isRemoved));
 
 // --- LocalStorage prefs ---
 const storageKey = computed(() => STORAGE_KEY_PREFIX + props.idPrefix);

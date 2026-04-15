@@ -169,6 +169,7 @@ import type {
 } from "../interfaces/MediaFieldTypes";
 import { getTranslations } from "@bloom/helpers/localizations";
 import { useFieldUpload, type IFieldUploadConfig } from "../services/FieldUploadService";
+import { isValidMediaPath, normalizeMediaPath, sanitizeFieldPaths } from "../services/MediaPath";
 
 export interface IAttachedFieldConfig {
   paths: IMediaFieldPath[];
@@ -244,14 +245,16 @@ const serializedPaths = computed(() => {
     return JSON.stringify(props.config.paths);
   }
   const paths: (IMediaFieldPath & { isRemoved?: boolean; isNew?: boolean; attachedFileName?: string })[] =
-    mediaItems.value.map((m) => ({
-      path: m.mediaPath,
-      isRemoved: m.isRemoved,
-      isNew: m.isNew,
-      mediaText: m.mediaText,
-      anchor: m.anchor,
-      attachedFileName: m.attachedFileName,
-    }));
+    mediaItems.value
+      .filter((m) => isValidMediaPath(m.mediaPath))
+      .map((m) => ({
+        path: normalizeMediaPath(m.mediaPath)!,
+        isRemoved: m.isRemoved,
+        isNew: m.isNew,
+        mediaText: m.mediaText,
+        anchor: m.anchor,
+        attachedFileName: m.attachedFileName,
+      }));
   return JSON.stringify(paths);
 });
 
@@ -268,13 +271,14 @@ onMounted(() => {
 });
 
 async function loadInitialPaths(paths: IMediaFieldPath[]) {
-  if (!paths || paths.length === 0) {
+  const validPaths = sanitizeFieldPaths(paths);
+  if (validPaths.length === 0) {
     initialized.value = true;
     return;
   }
 
   const loaded = await Promise.all(
-    paths.map(async (p, i) => {
+    validPaths.map(async (p, i) => {
       try {
         const url = `${props.config.mediaItemUrl}?path=${encodeURIComponent(p.path)}`;
         const resp = await fetch(url);
@@ -293,6 +297,7 @@ async function loadInitialPaths(paths: IMediaFieldPath[]) {
         const data = await resp.json();
         return {
           ...data,
+          mediaPath: normalizeMediaPath(data.mediaPath) ?? p.path,
           mediaText: p.mediaText,
           anchor: p.anchor,
           attachedFileName: (p as any).attachedFileName, // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -327,16 +332,29 @@ async function handleFiles(fileList: File[]) {
   }
 
   if (uploaded.length > 0) {
-    const newItems: IMediaFieldItem[] = uploaded.map((f, i) => ({
-      name: f.name,
-      mime: f.mime || "",
-      mediaPath: f.mediaPath || "",
-      url: f.url || "",
-      size: f.size || 0,
-      isNew: true,
-      attachedFileName: f.attachedFileName,
-      vuekey: f.name + Date.now() + i,
-    }));
+    const newItems: IMediaFieldItem[] = uploaded
+      .map((f, i) => {
+        const mediaPath = normalizeMediaPath(f.mediaPath);
+        if (!mediaPath) {
+          return null;
+        }
+
+        return {
+          name: f.name,
+          mime: f.mime || "",
+          mediaPath,
+          url: f.url || "",
+          size: f.size || 0,
+          isNew: true,
+          attachedFileName: f.attachedFileName,
+          vuekey: f.name + Date.now() + i,
+        } as IMediaFieldItem;
+      })
+      .filter((item): item is IMediaFieldItem => item !== null);
+
+    if (newItems.length === 0) {
+      return;
+    }
 
     if (newItems.length > 1 && !multiple.value) {
       mediaItems.value = [newItems[0]];
@@ -391,7 +409,7 @@ function selectAndDeleteMedia(media: IMediaFieldItem) {
 }
 
 function onReorder(items: IMediaFieldItem[]) {
-  mediaItems.value = items;
+  mediaItems.value = items.filter((item) => isValidMediaPath(item.mediaPath));
 }
 
 // --- Media Text Modal ---
@@ -455,7 +473,9 @@ watch(
   mediaItems,
   () => {
     setTimeout(() => {
-      document.dispatchEvent(new CustomEvent("contentpreview:render"));
+      if (typeof document !== "undefined") {
+        document.dispatchEvent(new CustomEvent("contentpreview:render"));
+      }
     }, 100);
   },
   { deep: true }
