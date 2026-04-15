@@ -44,6 +44,7 @@ export function makeConfig(overrides: Partial<IMediaFieldConfig> = {}): IMediaFi
     allowAnchors: false,
     allowedExtensions: "",
     mediaItemUrl: "/api/media",
+    mediaItemsUrl: "",
     mediaAppTranslations: "",
     basePath: "/",
     uploadFilesUrl: "/api/upload",

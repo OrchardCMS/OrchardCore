@@ -53,6 +53,7 @@ function makeAttachedConfig(overrides: Partial<IAttachedFieldConfig> = {}): IAtt
     allowAnchors: false,
     allowedExtensions: "",
     mediaItemUrl: "/api/media",
+    mediaItemsUrl: "",
     uploadAction: "/api/upload",
     tempUploadFolder: "/temp",
     ...overrides,
@@ -125,6 +126,26 @@ describe("MediaFieldAttached", () => {
 
     const vm = wrapper.vm as any;
     expect(vm.mediaItems).toHaveLength(1);
+  });
+
+  it("loadInitialPaths batches requests when mediaItemsUrl is configured", async () => {
+    global.fetch = vi.fn(() =>
+      Promise.resolve({
+        ok: true,
+        status: 200,
+        json: () => Promise.resolve([
+          { name: "test.jpg", mime: "image/jpeg", filePath: "test/test.jpg", url: "/media/test.jpg" },
+        ]),
+      })
+    ) as any;
+
+    const paths = [makePath({ path: "test/test.jpg" })];
+    createWrapper({ paths, mediaItemsUrl: "/api/media/GetMediaFieldItems" });
+    await flushPromises();
+
+    expect(global.fetch).toHaveBeenCalledWith(
+      expect.stringContaining("/api/media/GetMediaFieldItems?paths=test%2Ftest.jpg")
+    );
   });
 
   it("handles file input change (onFileInputChange)", async () => {

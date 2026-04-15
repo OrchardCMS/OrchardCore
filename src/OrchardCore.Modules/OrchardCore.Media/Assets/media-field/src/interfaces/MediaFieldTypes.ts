@@ -43,6 +43,7 @@ export interface IMediaFieldConfig {
   allowAnchors: boolean;
   allowedExtensions: string;
   mediaItemUrl: string;
+  mediaItemsUrl?: string;
   /** JSON-serialized translations for the media-app picker */
   mediaAppTranslations?: string;
   /** Base path for media URLs (e.g., "/") */

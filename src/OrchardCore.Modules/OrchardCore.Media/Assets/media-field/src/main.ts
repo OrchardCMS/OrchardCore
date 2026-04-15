@@ -46,6 +46,7 @@ function readConfig(el: HTMLElement): IMediaFieldConfig {
     allowAnchors: dataset.allowAnchors === "true",
     allowedExtensions: dataset.allowedExtensions || "",
     mediaItemUrl: dataset.mediaItemUrl || "",
+    mediaItemsUrl: dataset.mediaItemsUrl || "",
     mediaAppTranslations: dataset.mediaAppTranslations || "",
     basePath: dataset.basePath || "",
     uploadFilesUrl: dataset.uploadFilesUrl || "",

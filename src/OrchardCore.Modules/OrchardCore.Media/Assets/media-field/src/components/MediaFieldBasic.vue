@@ -151,6 +151,7 @@ import type {
 } from "../interfaces/MediaFieldTypes";
 import { getTranslations } from "@bloom/helpers/localizations";
 import { isValidMediaPath, normalizeMediaPath, sanitizeFieldPaths } from "../services/MediaPath";
+import { loadInitialMediaItems } from "../services/InitialMediaLoader";
 
 const props = defineProps<{
   config: IMediaFieldConfig;
@@ -224,52 +225,7 @@ async function loadInitialPaths(paths: IMediaFieldPath[]) {
     return;
   }
 
-  const items: IMediaFieldItem[] = validPaths.map((p, i) => ({
-    name: " " + p.path, // placeholder name
-    mime: "",
-    mediaPath: p.path,
-    vuekey: p.path + i,
-  }));
-
-  const loaded = await Promise.all(
-    validPaths.map(async (p, i) => {
-      try {
-        const url = `${props.config.mediaItemUrl}?path=${encodeURIComponent(p.path)}`;
-        const resp = await fetch(url);
-        if (!resp.ok) {
-          return {
-            name: p.path,
-            mime: "",
-            mediaPath: p.path,
-            errorType: resp.status === 404 ? "not-found" : "transient",
-            mediaText: p.mediaText,
-            anchor: p.anchor,
-            vuekey: p.path + i,
-          } as IMediaFieldItem;
-        }
-        const data = await resp.json();
-        return {
-          ...data,
-          mediaPath: normalizeMediaPath(data.mediaPath) ?? p.path,
-          mediaText: p.mediaText,
-          anchor: p.anchor,
-          vuekey: data.name + i,
-        } as IMediaFieldItem;
-      } catch {
-        return {
-          name: p.path,
-          mime: "",
-          mediaPath: p.path,
-          errorType: "transient",
-          mediaText: p.mediaText,
-          anchor: p.anchor,
-          vuekey: p.path + i,
-        } as IMediaFieldItem;
-      }
-    })
-  );
-
-  mediaItems.value = loaded;
+  mediaItems.value = await loadInitialMediaItems(validPaths, props.config);
   initialized.value = true;
 
   // Auto-select first item for single-select fields

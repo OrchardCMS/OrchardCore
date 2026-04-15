@@ -131,6 +131,26 @@ describe("MediaFieldBasic", () => {
     expect(vm.mediaItems[0].errorType).toBe("transient");
   });
 
+  it("loadInitialPaths batches requests when mediaItemsUrl is configured", async () => {
+    global.fetch = vi.fn(() =>
+      Promise.resolve({
+        ok: true,
+        status: 200,
+        json: () => Promise.resolve([
+          { name: "test.jpg", mime: "image/jpeg", filePath: "test/test.jpg", url: "/media/test.jpg" },
+        ]),
+      })
+    ) as any;
+
+    const paths = [makePath({ path: "test/test.jpg" })];
+    createWrapper({ paths, mediaItemsUrl: "/api/media/GetMediaFieldItems" });
+    await flushPromises();
+
+    expect(global.fetch).toHaveBeenCalledWith(
+      expect.stringContaining("/api/media/GetMediaFieldItems?paths=test%2Ftest.jpg")
+    );
+  });
+
   it("loadInitialPaths with empty paths sets initialized", async () => {
     const wrapper = createWrapper({ paths: [] });
     await flushPromises();
