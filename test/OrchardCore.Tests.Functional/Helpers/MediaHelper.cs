@@ -168,7 +168,7 @@ public static class MediaHelper
         await rootFolder.Locator(".action-button").ClickAsync();
 
         // Wait for the popup menu and click "Create a subfolder".
-        var menu = page.Locator("#overlay_menu");
+        var menu = page.Locator("#overlay_folder_menu");
         await menu.WaitForAsync(new() { State = WaitForSelectorState.Visible, Timeout = 5_000 });
         await menu.GetByText("Create a subfolder", new() { Exact = true }).ClickAsync();
 
@@ -222,7 +222,7 @@ public static class MediaHelper
         await fileRow.First.Locator(".action-button").ClickAsync();
 
         // Wait for the popup menu to appear.
-        await page.Locator("#overlay_menu").WaitForAsync(new() { State = WaitForSelectorState.Visible, Timeout = 5_000 });
+        await page.Locator("#overlay_file_menu").WaitForAsync(new() { State = WaitForSelectorState.Visible, Timeout = 5_000 });
     }
 
     /// <summary>
@@ -233,7 +233,7 @@ public static class MediaHelper
         await OpenFileActionMenuAsync(page, fileName);
 
         // Click "Delete" in the popup menu.
-        await page.Locator("#overlay_menu").GetByText("Delete").ClickAsync();
+        await page.Locator("#overlay_file_menu").GetByText("Delete").ClickAsync();
 
         // Wait for confirm modal and click the confirm button.
         var modal = page.Locator(".action-modal").First;
@@ -252,7 +252,7 @@ public static class MediaHelper
         await OpenFileActionMenuAsync(page, oldName);
 
         // Click "Rename" in the popup menu.
-        await page.Locator("#overlay_menu").GetByText("Rename").ClickAsync();
+        await page.Locator("#overlay_file_menu").GetByText("Rename").ClickAsync();
 
         // Wait for the file action modal.
         var modal = page.Locator(".action-modal").Last;
@@ -276,7 +276,7 @@ public static class MediaHelper
         await OpenFileActionMenuAsync(page, fileName);
 
         // Click "Move" in the popup menu.
-        await page.Locator("#overlay_menu").GetByText("Move").ClickAsync();
+        await page.Locator("#overlay_file_menu").GetByText("Move").ClickAsync();
 
         // Wait for the file action modal with TreeSelect.
         var modal = page.Locator(".action-modal").Last;
@@ -301,7 +301,7 @@ public static class MediaHelper
         await OpenFileActionMenuAsync(page, fileName);
 
         // Click "Copy" in the popup menu.
-        await page.Locator("#overlay_menu").GetByText("Copy").ClickAsync();
+        await page.Locator("#overlay_file_menu").GetByText("Copy").ClickAsync();
 
         // Wait for the file action modal with TreeSelect.
         var modal = page.Locator(".action-modal").Last;

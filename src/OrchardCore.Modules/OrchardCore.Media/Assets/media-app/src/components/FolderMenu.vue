@@ -4,7 +4,7 @@
       :title="t.ActionFolderTitle" @click.stop="toggle">
       <fa-icon icon="fas fa-ellipsis-v" size="xl"></fa-icon>
     </a>
-    <p-menu ref="menu" id="overlay_menu" class="file-app" :model="items" :popup="true" />
+    <p-menu ref="menu" id="overlay_folder_menu" class="file-app" :model="items" :popup="true" />
   </div>
   <ModalsContainer v-if="showModal" />
 </template>
