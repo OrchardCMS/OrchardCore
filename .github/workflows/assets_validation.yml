@@ -29,7 +29,7 @@ jobs:
       run: |
         npm install -g corepack
         corepack enable
-        yarn --immutable --no-check-resolutions
+        yarn --no-check-resolutions
         yarn build
     - name: Check if git has changes
       shell: pwsh
