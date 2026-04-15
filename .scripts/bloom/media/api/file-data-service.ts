@@ -1,5 +1,5 @@
 import { IFileLibraryItemDto, IDirectoryTreeNode, IPaginatedFoldersResult, IDirectoryContentResult, IPermittedStorageResult } from "../interfaces";
-import { Client, FileStoreEntryDto, MoveMedias, DirectoryTreeNodeDto } from "@bloom/services/OpenApiClient";
+import { MediaApiClient, FileStoreEntryDto, MoveMedias, DirectoryTreeNodeDto } from "@bloom/services/OpenApiClient";
 
 export interface IFileDataService {
   getFileItem(path: string): Promise<IFileLibraryItemDto>;
@@ -45,10 +45,13 @@ function toDirectoryTreeNode(dto: DirectoryTreeNodeDto): IDirectoryTreeNode {
  * Delegates to the NSwag-generated Client.
  */
 export class FileDataService implements IFileDataService {
-  private client: Client;
+  private client: MediaApiClient;
 
   constructor(baseUrl: string = "") {
-    this.client = new Client(baseUrl);
+    // NSwag appends "/api/..." to baseUrl; a trailing "/" would produce
+    // "//api/..." which the browser parses as protocol-relative.
+    const normalized = baseUrl.endsWith("/") ? baseUrl.slice(0, -1) : baseUrl;
+    this.client = new MediaApiClient(normalized);
   }
 
   async getFileItem(path: string): Promise<IFileLibraryItemDto> {

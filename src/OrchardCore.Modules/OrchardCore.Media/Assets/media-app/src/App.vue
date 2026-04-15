@@ -208,7 +208,7 @@
 </style>
 
 <script setup lang="ts">
-import { ref, watch, defineProps } from "vue";
+import { ref, defineProps } from "vue";
 import FolderTree from "./components/FolderTree.vue";
 import UploadToast from "./components/UploadToast.vue";
 import NotificationToast from "./components/NotificationToast.vue";
