@@ -167,15 +167,16 @@ public static class MediaHelper
         await rootFolder.HoverAsync();
         await rootFolder.Locator(".action-button").ClickAsync();
 
+        // Wait for the popup menu and click "Create a subfolder".
+        var menu = page.Locator("#overlay_menu");
+        await menu.WaitForAsync(new() { State = WaitForSelectorState.Visible, Timeout = 5_000 });
+        await menu.GetByText("Create a subfolder", new() { Exact = true }).ClickAsync();
+
         // Wait for the folder action modal to appear.
         var modal = page.Locator(".action-modal").First;
         await modal.WaitForAsync(new() { State = WaitForSelectorState.Visible, Timeout = 5_000 });
 
-        // Select "Create SubFolder" radio if not already selected.
-        var createRadio = modal.Locator("input[type='radio']").First;
-        await createRadio.CheckAsync();
-
-        // Type folder name.
+        // Type folder name (action is pre-selected from the menu, no radio needed).
         var input = modal.Locator("input[name='create-folder']");
         await input.FillAsync(folderName);
 
