@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Caching.Distributed;
 using OrchardCore.ContentManagement;
 using OrchardCore.FileStorage;
 using OrchardCore.Media;
@@ -322,10 +323,13 @@ public class ViewMediaFolderAuthorizationHandlerTests
         var mockContentManager = new Mock<IContentManager>();
         mockContentManager.Setup(cm => cm.GetAsync(It.IsAny<string>(), It.IsAny<VersionOptions>())).ReturnsAsync(Mock.Of<ContentItem>()); // Pretends an existing content item.
 
+        var mockDistributedCache = new Mock<IDistributedCache>();
+
         var attachedMediaFieldFileService = new AttachedMediaFieldFileService(
             mockMediaFileStore.Object,
             httpContextAccessor,
-            mockUserAssetFolderNameProvider.Object);
+            mockUserAssetFolderNameProvider.Object,
+            mockDistributedCache.Object);
 
         // Create an IAuthorizationService mock that mimics how OC is granting permissions. 
         var mockAuthorizationService = new Mock<IAuthorizationService>();

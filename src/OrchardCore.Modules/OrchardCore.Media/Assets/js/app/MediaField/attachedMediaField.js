@@ -1,4 +1,4 @@
-function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaItemUrl, allowMultiple, allowMediaText, allowAnchors, tempUploadFolder, maxUploadChunkSize) {
+function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaItemUrl, allowMultiple, allowMediaText, allowAnchors, tempUploadFolder, maxUploadChunkSize, attachedMediaToken) {
 
     var target = $(document.getElementById($(el).data('for')));
     var initialPaths = target.data("init");
@@ -49,7 +49,7 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
                         items.push({ name: ' ' + x.path, mime: '', mediaPath: '', anchor: x.anchor, attachedFileName: x.attachedFileName }); // don't remove the space. Something different is needed or it wont react when the real name arrives.
                         promise = $.when(signal).done(function () {
                             $.ajax({
-                                url: mediaItemUrl + "?path=" + encodeURIComponent(x.path),
+                                url: mediaItemUrl + "?path=" + encodeURIComponent(x.path) + "&attachedMediaToken=" + encodeURIComponent(attachedMediaToken),
                                 method: 'GET',
                                 success: function (data) {
                                     data.vuekey = data.name + i.toString(); // Because a unique key is required by Vue on v-for 
@@ -156,6 +156,7 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
 
                         return [
                             { name: 'path', value: tempUploadFolder },
+                            { name: 'attachedMediaToken', value: attachedMediaToken },
                             { name: '__RequestVerificationToken', value: antiForgeryToken },
                             { name: '__chunkedFileUploadId', value: chunkedFileUploadId },
                         ];

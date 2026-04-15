@@ -31,6 +31,8 @@ public class EditMediaFieldViewModel
     public string[] AttachedFileNames { get; set; } = [];
 
     public string[] AllowedExtensions { get; set; } = [];
+
+    public string AttachedMediaToken { get; set; }
 }
 
 public class EditMediaFieldItemInfo

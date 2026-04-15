@@ -41,9 +41,15 @@ public sealed class MediaFieldDisplayDriver : ContentFieldDisplayDriver<MediaFie
         .Location(OrchardCoreConstants.DisplayType.Summary, "Content");
     }
 
-    public override IDisplayResult Edit(MediaField field, BuildFieldEditorContext context)
+    public override async Task<IDisplayResult> EditAsync(MediaField field, BuildFieldEditorContext context)
     {
         var itemPaths = field.Paths?.ToList().Select(p => new EditMediaFieldItemInfo { Path = p }).ToArray() ?? [];
+
+        string attachedMediaToken = null;
+        if (string.Equals(context.PartFieldDefinition.Editor(), "Attached", StringComparison.OrdinalIgnoreCase))
+        {
+            attachedMediaToken = await _attachedMediaFieldFileService.GenerateTokenAsync();
+        }
 
         return Initialize<EditMediaFieldViewModel>(GetEditorShapeType(context), model =>
         {
@@ -79,6 +85,11 @@ public sealed class MediaFieldDisplayDriver : ContentFieldDisplayDriver<MediaFie
             model.PartFieldDefinition = context.PartFieldDefinition;
             model.AllowMediaText = settings.AllowMediaText;
             model.AllowedExtensions = settings.AllowedExtensions ?? [];
+
+            if (string.Equals(context.PartFieldDefinition.Editor(), "Attached", StringComparison.OrdinalIgnoreCase))
+            {
+                model.AttachedMediaToken = attachedMediaToken;
+            }
         });
     }
 
@@ -86,7 +97,7 @@ public sealed class MediaFieldDisplayDriver : ContentFieldDisplayDriver<MediaFie
     {
         var model = new EditMediaFieldViewModel();
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix, f => f.Paths);
+        await context.Updater.TryUpdateModelAsync(model, Prefix, f => f.Paths, f => f.AttachedMediaToken);
 
         // Deserializing an empty string doesn't return an array
         var items = string.IsNullOrWhiteSpace(model.Paths)
@@ -130,6 +141,11 @@ public sealed class MediaFieldDisplayDriver : ContentFieldDisplayDriver<MediaFie
                 // Log the error and add a generic error message.
                 context.Updater.ModelState.AddModelError(Prefix, nameof(model.Paths), S["{0}: There was an error handling the files.", context.PartFieldDefinition.DisplayName()]);
                 _logger.LogError(e, "Error handling attached media files for field '{Field}'", context.PartFieldDefinition.DisplayName());
+            }
+
+            if (!string.IsNullOrEmpty(model.AttachedMediaToken))
+            {
+                _attachedMediaFieldFileService.RevokeToken(model.AttachedMediaToken);
             }
         }
 
@@ -178,6 +194,6 @@ public sealed class MediaFieldDisplayDriver : ContentFieldDisplayDriver<MediaFie
             field.Content.Remove("Anchors");
         }
 
-        return Edit(field, context);
+        return await EditAsync(field, context);
     }
 }

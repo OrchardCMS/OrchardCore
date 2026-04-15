@@ -55,6 +55,9 @@
         <partial name="Shared/MediaFieldEditMediaTextModal.cshtml" />
         <partial name="Shared/MediaFieldEditAnchorModal.cshtml" />
 
+        @*Attached Media token*@
+        <input asp-for="AttachedMediaToken" type="hidden" />
+
         @*Localizable Strings for uploadComponent*@
         <input type="hidden" id="t-error" value="@T["This file exceeds the maximum upload size"]" />
 
@@ -81,5 +84,6 @@
     @(settings.AllowMediaText ? "true" : "false"),
     @(settings.AllowAnchors ? "true" : "false"),
         '@Model.TempUploadFolder',
-    @MediaOptions.Value.MaxUploadChunkSize);
+    @MediaOptions.Value.MaxUploadChunkSize,
+    '@Html.Raw(Model.AttachedMediaToken)');
 </script>
