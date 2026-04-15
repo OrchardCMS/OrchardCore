@@ -348,14 +348,16 @@ a:hover {
   }
 }
 
-[dir="ltr"] .left-sidebar-compact .sticky-buttons .action-bar,
-[dir="ltr"] .left-sidebar-compact .sticky-buttons .second-action-bar {
-  left: var(--oc-start-navigation-width-when-compact, 48);
-}
+@media (max-width: 767.98px) {
+  [dir="ltr"] .left-sidebar-compact .sticky-buttons .action-bar,
+  [dir="ltr"] .left-sidebar-compact .sticky-buttons .second-action-bar {
+    left: var(--oc-start-navigation-width-when-compact, 48);
+  }
 
-[dir="rtl"] .left-sidebar-compact .sticky-buttons .action-bar,
-[dir="rtl"] .left-sidebar-compact .sticky-buttons .second-action-bar {
-  right: var(--oc-start-navigation-width-when-compact, 48);
+  [dir="rtl"] .left-sidebar-compact .sticky-buttons .action-bar,
+  [dir="rtl"] .left-sidebar-compact .sticky-buttons .second-action-bar {
+    right: var(--oc-start-navigation-width-when-compact, 48);
+  }
 }
 
 .ta-badge {

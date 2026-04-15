@@ -120,11 +120,13 @@
     }
 }
 
-.left-sidebar-compact {
-    .sticky-buttons {
-        .action-bar,
-        .second-action-bar {
-            left: var(--oc-start-navigation-width-when-compact, 48);
+@include media-breakpoint-down(md) {
+    .left-sidebar-compact {
+        .sticky-buttons {
+            .action-bar,
+            .second-action-bar {
+                left: var(--oc-start-navigation-width-when-compact, 48);
+            }
         }
     }
 }
