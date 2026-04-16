@@ -217,12 +217,3 @@ public sealed class SmsAuthenticatorStartup : StartupBase
         routes.AddSmsSendCodeEndpoint<SmsAuthenticatorStartup>();
     }
 }
-
-[RequireFeatures("OrchardCore.Sms")]
-public sealed class SmsStartup : StartupBase
-{
-    public override void ConfigureServices(IServiceCollection services)
-    {
-        services.AddDisplayDriver<User, UserPhoneNumberDisplayDriver>();
-    }
-}
