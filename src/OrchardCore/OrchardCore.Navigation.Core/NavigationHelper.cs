@@ -1,12 +1,15 @@
-using System.Web;
+using System.Text.Json.Nodes;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.WebUtilities;
 using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.Navigation;
 
 public static class NavigationHelper
 {
+    private const string SelectedNavHashCacheKey = "OrchardCore.Navigation.SelectedNavHash";
+    private static readonly object SelectedNavHashMissing = new();
+
     public static bool UseLegacyFormat()
     {
         return AppContext.TryGetSwitch(NavigationConstants.LegacyAdminMenuNavigationSwitchKey, out var enable) && enable;
@@ -78,12 +81,7 @@ public static class NavigationHelper
 
         menuItemShape.Id = menuItem.Id;
 
-        if (!string.IsNullOrEmpty(menuItem.Href) && menuItem.Href[0] == '/')
-        {
-            menuItemShape.Href = QueryHelpers.AddQueryString(menuItem.Href, menu.MenuName, menuItemShape.Hash);
-        }
-
-        MarkAsSelectedIfMatchesQueryOrCookie(menuItem, menuItemShape, viewContext);
+        MarkAsSelectedIfMatchesPathOrPreferences(menuItem, menuItemShape, viewContext);
 
         foreach (var className in menuItem.Classes)
         {
@@ -93,27 +91,43 @@ public static class NavigationHelper
         return menuItemShape;
     }
 
-    private static void MarkAsSelectedIfMatchesQueryOrCookie(MenuItem menuItem, dynamic menuItemShape, ViewContext viewContext)
+    private static void MarkAsSelectedIfMatchesPathOrPreferences(MenuItem menuItem, dynamic menuItemShape, ViewContext viewContext)
     {
-        if (!string.IsNullOrEmpty(menuItem.Href) && menuItem.Href[0] == '/')
+        if (string.IsNullOrEmpty(menuItem.Href) || menuItem.Href[0] != '/')
         {
-            var hash = viewContext.HttpContext.Request.Query[(string)menuItemShape.Menu.MenuName];
+            menuItemShape.Selected = menuItemShape.Score > 0;
+            return;
+        }
 
-            if (hash.Count > 0)
-            {
-                if (hash[0] == menuItemShape.Hash)
-                {
-                    menuItemShape.Score += 2;
-                }
-            }
-            else
-            {
-                var cookie = viewContext.HttpContext.Request.Cookies[menuItemShape.Menu.MenuName + '_' + ShellScope.Context.Settings.Name];
+        // Strip query string from the menu item href to get a pure path for comparison.
+        var hrefSpan = menuItem.Href.AsSpan();
+        var queryIndex = hrefSpan.IndexOf('?');
+        var hrefPath = (queryIndex >= 0 ? hrefSpan[..queryIndex] : hrefSpan).ToString();
 
-                if (cookie == menuItemShape.Hash)
-                {
-                    menuItemShape.Score++;
-                }
+        var requestPath = viewContext.HttpContext.Request.Path.Value ?? "/";
+        var segmentCount = hrefPath.Split('/', StringSplitOptions.RemoveEmptyEntries).Length;
+
+        if (requestPath.Equals(hrefPath, StringComparison.OrdinalIgnoreCase))
+        {
+            // Exact URL match — score by path depth so deeper (more specific) links beat
+            // shallower ones that share the same prefix.
+            menuItemShape.Score += segmentCount + 2;
+        }
+        else if (segmentCount > 0 && requestPath.StartsWith(hrefPath.TrimEnd('/') + "/", StringComparison.OrdinalIgnoreCase))
+        {
+            // Prefix match (e.g. "/Admin/ContentTypes" matches "/Admin/ContentTypes/Edit/Blog").
+            // Deeper prefix = higher score, ensuring the most specific ancestor wins.
+            menuItemShape.Score += segmentCount;
+        }
+        else
+        {
+            // No URL match — fall back to the selectedNavHash stored in the admin preferences
+            // cookie, which JS writes proactively when the user clicks a nav link.
+            var selectedNavHash = GetSelectedNavHashFromPrefs(viewContext);
+
+            if (selectedNavHash == menuItemShape.Hash)
+            {
+                menuItemShape.Score++;
             }
         }
 
@@ -129,10 +143,12 @@ public static class NavigationHelper
     {
         var selectedItem = GetHighestPrioritySelectedMenuItem(parentShape);
 
-        // Apply the selection to the hierarchy
+        // Persist the selected item hash inside the existing admin preferences cookie so
+        // that direct URL navigations (not triggered by a nav click) also update the stored
+        // selection, keeping the fallback in sync with URL-path-matched selections.
         if (selectedItem != null)
         {
-            viewContext.HttpContext.Response.Cookies.Append(HttpUtility.UrlEncode($"{selectedItem.Menu.MenuName}_{ShellScope.Context.Settings.Name}"), selectedItem.Hash);
+            UpdateSelectedNavHashInPrefs(viewContext, selectedItem.Hash);
 
             while (selectedItem.Parent != null)
             {
@@ -140,6 +156,77 @@ public static class NavigationHelper
                 selectedItem.Selected = true;
             }
         }
+    }
+
+    /// <summary>
+    /// Reads the <c>selectedNavHash</c> field from the admin preferences cookie.
+    /// The cookie is written by JS (js-cookie) using <c>encodeURIComponent</c>, so the
+    /// raw value must be URL-decoded before JSON parsing.
+    /// </summary>
+    private static string GetSelectedNavHashFromPrefs(ViewContext viewContext)
+    {
+        if (viewContext.HttpContext.Items.TryGetValue(SelectedNavHashCacheKey, out var cached))
+        {
+            return ReferenceEquals(cached, SelectedNavHashMissing) ? null : cached as string;
+        }
+
+        var key = $"{ShellScope.Context.Settings.Name}-adminPreferences";
+        var raw = viewContext.HttpContext.Request.Cookies[key];
+
+        if (string.IsNullOrEmpty(raw))
+        {
+            viewContext.HttpContext.Items[SelectedNavHashCacheKey] = SelectedNavHashMissing;
+            return null;
+        }
+
+        try
+        {
+            var json = Uri.UnescapeDataString(raw);
+            var node = JsonNode.Parse(json);
+            var selectedNavHash = node?["selectedNavHash"]?.GetValue<string>();
+            viewContext.HttpContext.Items[SelectedNavHashCacheKey] = selectedNavHash ?? SelectedNavHashMissing;
+            return selectedNavHash;
+        }
+        catch
+        {
+            viewContext.HttpContext.Items[SelectedNavHashCacheKey] = SelectedNavHashMissing;
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// Merges the <c>selectedNavHash</c> field into the existing admin preferences cookie,
+    /// preserving all other fields (e.g. <c>leftSidebarCompact</c>).
+    /// The value is URL-encoded to match the encoding js-cookie uses when reading.
+    /// </summary>
+    private static void UpdateSelectedNavHashInPrefs(ViewContext viewContext, string hash)
+    {
+        var key = $"{ShellScope.Context.Settings.Name}-adminPreferences";
+        var raw = viewContext.HttpContext.Request.Cookies[key];
+
+        JsonObject prefs;
+
+        try
+        {
+            var json = string.IsNullOrEmpty(raw) ? "{}" : Uri.UnescapeDataString(raw);
+            prefs = JsonNode.Parse(json)?.AsObject() ?? new JsonObject();
+        }
+        catch
+        {
+            prefs = new JsonObject();
+        }
+
+        prefs["selectedNavHash"] = hash;
+
+        var options = new CookieOptions
+        {
+            Path = "/",
+            Expires = DateTimeOffset.UtcNow.AddDays(360),
+            MaxAge = TimeSpan.FromDays(360),
+        };
+
+        viewContext.HttpContext.Response.Cookies.Append(key, Uri.EscapeDataString(prefs.ToJsonString()), options);
+        viewContext.HttpContext.Items[SelectedNavHashCacheKey] = hash ?? SelectedNavHashMissing;
     }
 
     /// <summary>

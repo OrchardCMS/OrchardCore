@@ -52,7 +52,21 @@ const versionManagers = {
         },
         useNode(version) {
             execSync(`fnm install ${version}`, { stdio: "inherit" });
-            execSync(`fnm exec --using ${version} -- corepack enable`, { stdio: "inherit" });
+            try {
+                execSync(`fnm exec --using ${version} -- corepack enable`, { stdio: "inherit" });
+            } catch (err) {
+                if (process.platform === "win32") {
+                    console.log(
+                        chalk.yellow(
+                            `\nfnm was just installed but its shims are not yet on PATH in this terminal session.`
+                        )
+                    );
+                    console.log(chalk.yellow("Please restart your terminal (close and reopen it), then run:"));
+                    console.log(chalk.white("  yarn build"));
+                    process.exit(0);
+                }
+                throw err;
+            }
         },
         execCommand(version, args) {
             return `fnm exec --using ${version} -- corepack yarn ${args}`;
@@ -74,8 +88,22 @@ const versionManagers = {
             }
         },
         useNode(version) {
-            execSync(`volta install node@${version}`, { stdio: "inherit" });
-            execSync("corepack enable", { stdio: "inherit" });
+            try {
+                execSync(`volta install node@${version}`, { stdio: "inherit" });
+                execSync("corepack enable", { stdio: "inherit" });
+            } catch (err) {
+                if (process.platform === "win32") {
+                    console.log(
+                        chalk.yellow(
+                            `\nVolta was just installed but its shims are not yet on PATH in this terminal session.`
+                        )
+                    );
+                    console.log(chalk.yellow("Please restart your terminal (close and reopen it), then run:"));
+                    console.log(chalk.white("  yarn build"));
+                    process.exit(0);
+                }
+                throw err;
+            }
         },
         execCommand(version, args) {
             return `volta run --node ${version} -- corepack yarn ${args}`;
