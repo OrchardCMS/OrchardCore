@@ -1,14 +1,12 @@
 [
   {
-    "action": "min",
-    "name": "trumbowyg.media.tag",
-    "source": "Assets/trumbowyg.media.tag.js",
-    "tags": ["admin", "dashboard", "js"]
-  },
-  {
-    "action": "min",
-    "name": "trumbowyg.media.url",
-    "source": "Assets/trumbowyg.media.url.js",
+    "action": "parcel",
+    "name": "trumbowyg.media",
+    "source": [
+      "Assets/trumbowyg.media.tag.ts",
+      "Assets/trumbowyg.media.url.ts"
+    ],
+    "dest": "wwwroot/Scripts",
     "tags": ["admin", "dashboard", "js"]
   }
 ]

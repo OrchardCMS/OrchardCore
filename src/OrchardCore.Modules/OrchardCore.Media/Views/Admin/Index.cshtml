@@ -1,11 +1,6 @@
-@inject ShellSettings ShellSettings
-@inject IOptions<MediaOptions> MediaOptions
-@inject IHostEnvironment HostEnvironment
+@model OrchardCore.Media.ViewModels.MediaIndexViewModel
 @{
     var jsLocalizations = Orchard.GetJSLocalizations("media-app");
-    var siteId = ShellSettings.TenantId;
-    var tusEnabled = Context.RequestServices.IsMediaTusEnabled();
-    var signalrEnabled = Context.RequestServices.GetService<IHubContext<MediaHub>>() != null;
 }
 
 <script type="module" asp-name="media" version="2" at="Foot"></script>
@@ -15,19 +10,19 @@
 
 <div id="media-app">
     <media-app
-        site-id="@siteId"
+        site-id="@Model.SiteId"
         translations="@Json.Serialize(jsLocalizations).ToString()"
         base-path="@Href("~")"
         upload-files-url="@Href("~/api/media/Upload")"
         :max-upload-chunk-size="0"
-        :max-file-size="@MediaOptions.Value.MaxFileSize"
-        allowed-extensions="@string.Join(',', MediaOptions.Value.AllowedFileExtensions)"
-        tus-enabled="@(tusEnabled ? "true" : "false")"
+        :max-file-size="@Model.MaxFileSize"
+        allowed-extensions="@Model.AllowedExtensions"
+        tus-enabled="@(Model.TusEnabled ? "true" : "false")"
         tus-endpoint-url="@Href("~/api/media/tus")"
         tus-file-info-url="@Href("~/api/media/TusFileInfo")"
-        signalr-enabled="@(signalrEnabled ? "true" : "false")"
+        signalr-enabled="@(Model.SignalrEnabled ? "true" : "false")"
 
-        debug-enabled="@(HostEnvironment.IsDevelopment() ? "true" : "false")"
+        debug-enabled="@(Model.DebugEnabled ? "true" : "false")"
     >
     </media-app>
 </div>

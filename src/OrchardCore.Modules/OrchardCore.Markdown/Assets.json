@@ -13,9 +13,10 @@
     "tags": ["admin", "markdown", "js"]
   },
   {
-    "action": "min",
+    "action": "parcel",
     "name": "markdown-mediatoolbar",
-    "source": "Assets/Scripts/mde.mediatoolbar.js",
+    "source": ["Assets/Scripts/mde.mediatoolbar.ts"],
+    "dest": "wwwroot/Scripts",
     "tags": ["admin", "markdown", "js"]
   }
 ]

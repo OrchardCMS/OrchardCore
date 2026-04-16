@@ -1,10 +1,18 @@
+@using System.Text.Json
+
 @Model.Metadata.ChildContent
 
-@* Inject the modal window only once per page *@
-@if (!Context.Items.ContainsKey("Media_Modal__HtmlField"))
+@if (!Context.Items.ContainsKey("Media_Assets__HtmlField"))
 {
-    Context.Items["Media_Modal__HtmlField"] = new object();
-    <zone name="Footer">
-        @await DisplayAsync(await New.Media_Modal__HtmlField())
-    </zone>
+    Context.Items["Media_Assets__HtmlField"] = new object();
+
+    var jsLocalizations = Orchard.GetJSLocalizations("media-app");
+
+    <style asp-name="media" at="Head"></style>
+    <script asp-name="media" at="Foot"></script>
+    <div hidden
+         data-media-picker-config
+         data-translations="@JsonSerializer.Serialize(jsLocalizations)"
+         data-base-path="@Url.Content("~/")"
+         data-upload-files-url="@Url.Content("~/api/media/Upload")"></div>
 }

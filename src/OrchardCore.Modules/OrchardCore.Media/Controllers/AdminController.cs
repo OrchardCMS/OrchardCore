@@ -1,10 +1,15 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Media.Core.Helpers;
+using OrchardCore.Media.Hubs;
 using OrchardCore.Media.Services;
 using OrchardCore.Media.ViewModels;
 
@@ -39,13 +44,20 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        return View();
-    }
+        var tusEnabled = HttpContext.RequestServices.IsMediaTusEnabled();
+        var signalrEnabled = HttpContext.RequestServices.GetService<IHubContext<MediaHub>>() is not null;
+        var shellSettings = HttpContext.RequestServices.GetRequiredService<ShellSettings>();
+        var hostEnvironment = HttpContext.RequestServices.GetRequiredService<IHostEnvironment>();
 
-    public async Task<IActionResult> MediaApplication(MediaApplicationViewModel model)
-    {
-        // Check if the user has access to new folders. If not, we hide the "create folder" button from the root folder.
-        model.AllowNewRootFolders = !HttpContext.IsSecureMediaEnabled() || await _authorizationService.AuthorizeAsync(User, MediaPermissions.ViewMedia, (object)"_non-existent-path-87FD1922-8F88-4A33-9766-DA03E6E6F7BA");
+        var model = new MediaIndexViewModel
+        {
+            SiteId = shellSettings.TenantId,
+            MaxFileSize = _mediaOptions.MaxFileSize,
+            AllowedExtensions = string.Join(',', _mediaOptions.AllowedFileExtensions),
+            TusEnabled = tusEnabled,
+            SignalrEnabled = signalrEnabled,
+            DebugEnabled = hostEnvironment.IsDevelopment(),
+        };
 
         return View(model);
     }

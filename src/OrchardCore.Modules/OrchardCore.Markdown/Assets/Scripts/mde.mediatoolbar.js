@@ -1,5 +1,19 @@
 var mdeToolbar;
 
+async function openMediaPickerDialog() {
+    const mediaModule = await import('/OrchardCore.Media/Scripts/media2.js');
+    const config = window.__orchardMediaPickerConfig || {};
+
+    return mediaModule.openMediaPicker({
+        translations: config.translations || '{}',
+        basePath: config.basePath || '/',
+        uploadFilesUrl: config.uploadFilesUrl || '/api/media/Upload',
+        allowedExtensions: config.allowedExtensions || '',
+        allowMultiple: true,
+        maxUploadChunkSize: config.maxUploadChunkSize || 0,
+    });
+}
+
 $(function () {
     mdeToolbar = [
         {
@@ -83,23 +97,19 @@ $(function () {
         "|",
         {
             name: "image",
-            action: function (editor) {
-                var modalEl = document.getElementById('mediaModalMarkdown');
-                var modal = new bootstrap.Modal(modalEl);
-                modal.show();
-                $('#mediaMarkdownSelectButton').off('click');
-                $('#mediaMarkdownSelectButton').on('click', function (v) {
-                    var handle = modalEl._pickerHandle;
-                    var selectedFiles = handle ? handle.getSelectedFiles() : [];
-                    var mediaMarkdownContent = "";
-                    for (var i = 0; i < selectedFiles.length; i++) {
-                        mediaMarkdownContent += ' [image]' + selectedFiles[i].filePath + '[/image]';
-                    }
-                    var cm = editor.codemirror;
-                    cm.replaceSelection(mediaMarkdownContent);
-                    modal.hide();
-                    $(this).off('click');
-                });
+            action: async function (editor) {
+                var selectedFiles = await openMediaPickerDialog();
+                if (!selectedFiles.length) {
+                    return;
+                }
+
+                var mediaMarkdownContent = "";
+                for (var i = 0; i < selectedFiles.length; i++) {
+                    mediaMarkdownContent += ' [image]' + selectedFiles[i].filePath + '[/image]';
+                }
+
+                var cm = editor.codemirror;
+                cm.replaceSelection(mediaMarkdownContent);
             },
             className: "far fa-image fa-sm",
             title: "Insert Image",

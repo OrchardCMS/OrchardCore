@@ -23,6 +23,7 @@ import TreeSelect from 'primevue/treeselect';
 import { useGlobals } from "./services/Globals";
 import { useEventBus } from "./services/UseEventBus";
 import type { IFileLibraryItemDto } from "@bloom/media/interfaces";
+import MediaPickerModal from "./components/MediaPickerModal.vue";
 
 /* add icons to the library (once) */
 library.add(fas);
@@ -78,17 +79,18 @@ export interface IMediaPickerHandle {
   unmount(): void;
 }
 
+export interface IMediaPickerConfig {
+  translations: string;
+  basePath: string;
+  uploadFilesUrl: string;
+  allowedExtensions?: string;
+  allowMultiple?: boolean;
+  maxUploadChunkSize?: number;
+}
+
 export function mountMediaAppAsPicker(
   container: HTMLElement,
-  config: {
-    translations: string;
-    basePath: string;
-    uploadFilesUrl: string;
-    allowedExtensions?: string;
-    allowMultiple?: boolean;
-    maxUploadChunkSize?: number;
-    onSelectionChange?: (count: number) => void;
-  }
+  config: IMediaPickerConfig & { onSelectionChange?: (count: number) => void }
 ): IMediaPickerHandle {
   const parseBoolean = (value: unknown, defaultValue: boolean): boolean => {
     if (typeof value === "boolean") {
@@ -172,38 +174,49 @@ export function mountMediaAppAsPicker(
   };
 }
 
-/**
- * Auto-setup media picker containers inside Bootstrap modals.
- * Looks for [data-media-picker-container] elements whose value is the ID of a parent modal.
- * Mounts mountMediaAppAsPicker on show.bs.modal and unmounts on hidden.bs.modal.
- * Stores the active picker handle as _pickerHandle on the modal element.
- */
-function setupModalPickers() {
-  document.querySelectorAll<HTMLElement>("[data-media-picker-container]").forEach((container) => {
-    const modalId = container.dataset.mediaPickerContainer;
-    const modalEl = modalId ? document.getElementById(modalId) : null;
-    if (!modalEl) return;
+export function openMediaPicker(config: IMediaPickerConfig): Promise<IFileLibraryItemDto[]> {
+  return new Promise((resolve) => {
+    const host = document.createElement("div");
+    document.body.appendChild(host);
 
-    let handle: IMediaPickerHandle | null = null;
+    let settled = false;
+    const pickerApp = createApp(MediaPickerModal, {
+      config,
+      mountPicker: (
+        container: HTMLElement,
+        pickerConfig: IMediaPickerConfig & { onSelectionChange?: (count: number) => void }
+      ) => mountMediaAppAsPicker(container, pickerConfig),
+      onResolve: (files: IFileLibraryItemDto[]) => {
+        if (settled) {
+          return;
+        }
 
-    modalEl.addEventListener("show.bs.modal", () => {
-      handle?.unmount();
-      handle = mountMediaAppAsPicker(container, {
-        translations: container.dataset.translations || "{}",
-        basePath: container.dataset.basePath || "/",
-        uploadFilesUrl: container.dataset.uploadFilesUrl || "",
-        allowedExtensions: container.dataset.allowedExtensions || "",
-        allowMultiple: true,
-      });
-      (modalEl as unknown as Record<string, unknown>)._pickerHandle = handle;
+        settled = true;
+        pickerApp.unmount();
+        host.remove();
+        resolve(files);
+      },
     });
 
-    modalEl.addEventListener("hidden.bs.modal", () => {
-      handle?.unmount();
-      handle = null;
-      (modalEl as unknown as Record<string, unknown>)._pickerHandle = null;
-    });
+    configureMediaApp(pickerApp);
+    registerNotificationBus();
+    pickerApp.mount(host);
   });
 }
 
-setupModalPickers();
+type OrchardMediaApi = {
+  openMediaPicker: (config: IMediaPickerConfig) => Promise<IFileLibraryItemDto[]>;
+  mountMediaAppAsPicker: typeof mountMediaAppAsPicker;
+};
+
+declare global {
+  interface Window {
+    OrchardCoreMedia?: OrchardMediaApi;
+  }
+}
+
+window.OrchardCoreMedia = {
+  openMediaPicker,
+  mountMediaAppAsPicker,
+};
+
