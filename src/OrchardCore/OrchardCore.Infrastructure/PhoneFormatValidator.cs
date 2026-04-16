@@ -2,9 +2,9 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.Infrastructure;
 using PhoneNumbers;
 
-namespace OrchardCore.Sms;
+namespace OrchardCore;
 
-public class DefaultPhoneFormatValidator : IPhoneFormatValidator
+public class PhoneFormatValidator : IPhoneFormatValidator
 {
     internal readonly IStringLocalizer S;
 

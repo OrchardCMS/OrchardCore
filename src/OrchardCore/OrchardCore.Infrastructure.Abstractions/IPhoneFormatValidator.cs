@@ -1,6 +1,4 @@
-using OrchardCore.Infrastructure;
-
-namespace OrchardCore.Sms;
+namespace OrchardCore;
 
 /// <summary>
 /// Provides phone number format validation and parsing.

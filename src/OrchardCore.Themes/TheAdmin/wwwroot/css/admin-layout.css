@@ -132,19 +132,19 @@ body:not(.left-sidebar-compact) #ta-left-sidebar figure {
   margin: 0;
 }
 
-body:not(.left-sidebar-compact) #ta-left-sidebar a[aria-expanded=true] .chevron {
+body:not(.left-sidebar-compact) #ta-left-sidebar [aria-expanded=true] .chevron {
   transition-duration: 0.2s;
 }
 
-[dir="ltr"] body:not(.left-sidebar-compact) #ta-left-sidebar a[aria-expanded=true] .chevron {
+[dir="ltr"] body:not(.left-sidebar-compact) #ta-left-sidebar [aria-expanded=true] .chevron {
   transform: rotate(90deg);
 }
 
-[dir="rtl"] body:not(.left-sidebar-compact) #ta-left-sidebar a[aria-expanded=true] .chevron {
+[dir="rtl"] body:not(.left-sidebar-compact) #ta-left-sidebar [aria-expanded=true] .chevron {
   transform: rotate(-90deg);
 }
 
-body:not(.left-sidebar-compact) #ta-left-sidebar a[aria-expanded=false] .chevron {
+body:not(.left-sidebar-compact) #ta-left-sidebar [aria-expanded=false] .chevron {
   transition-duration: 0.2s;
 }
 
@@ -172,10 +172,29 @@ body:not(.left-sidebar-compact) #ta-left-sidebar .chevron {
 }
 
 body:not(.left-sidebar-compact) #ta-left-sidebar figcaption,
-body:not(.left-sidebar-compact) #ta-left-sidebar a {
+body:not(.left-sidebar-compact) #ta-left-sidebar a,
+body:not(.left-sidebar-compact) #ta-left-sidebar button.item-label {
   position: relative;
   display: block;
   margin: 0;
+}
+
+body:not(.left-sidebar-compact) #ta-left-sidebar button.item-label {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  width: 100%;
+  color: var(--oc-admin-menu-item-font-color);
+  outline: none;
+}
+
+[dir="ltr"] body:not(.left-sidebar-compact) #ta-left-sidebar button.item-label {
+  text-align: left;
+}
+
+[dir="rtl"] body:not(.left-sidebar-compact) #ta-left-sidebar button.item-label {
+  text-align: right;
 }
 
 body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav {
@@ -292,7 +311,9 @@ body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav > ul.menu-admin > li 
 body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav ul li .item-label,
 body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav li a:hover,
 body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav li a:active,
-body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav li a:visited {
+body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav li a:visited,
+body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav li button.item-label:hover,
+body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav li button.item-label:active {
   color: var(--oc-admin-menu-item-font-color);
   text-decoration: none;
 }
@@ -300,14 +321,18 @@ body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav li a:visited {
 [dir="ltr"] body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav ul li .item-label,
 [dir="ltr"] body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav li a:hover,
 [dir="ltr"] body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav li a:active,
-[dir="ltr"] body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav li a:visited {
+[dir="ltr"] body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav li a:visited,
+[dir="ltr"] body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav li button.item-label:hover,
+[dir="ltr"] body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav li button.item-label:active {
   padding-left: 16px;
 }
 
 [dir="rtl"] body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav ul li .item-label,
 [dir="rtl"] body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav li a:hover,
 [dir="rtl"] body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav li a:active,
-[dir="rtl"] body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav li a:visited {
+[dir="rtl"] body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav li a:visited,
+[dir="rtl"] body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav li button.item-label:hover,
+[dir="rtl"] body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav li button.item-label:active {
   padding-right: 16px;
 }
 
@@ -335,14 +360,18 @@ body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav {
 [dir="ltr"] body:not(.left-sidebar-compact) #ta-left-sidebar li.has-items .item-label,
 [dir="ltr"] body:not(.left-sidebar-compact) #ta-left-sidebar li.has-items a:hover,
 [dir="ltr"] body:not(.left-sidebar-compact) #ta-left-sidebar li.has-items a:active,
-[dir="ltr"] body:not(.left-sidebar-compact) #ta-left-sidebar li.has-items a:visited {
+[dir="ltr"] body:not(.left-sidebar-compact) #ta-left-sidebar li.has-items a:visited,
+[dir="ltr"] body:not(.left-sidebar-compact) #ta-left-sidebar li.has-items button.item-label:hover,
+[dir="ltr"] body:not(.left-sidebar-compact) #ta-left-sidebar li.has-items button.item-label:active {
   padding-left: 12px;
 }
 
 [dir="rtl"] body:not(.left-sidebar-compact) #ta-left-sidebar li.has-items .item-label,
 [dir="rtl"] body:not(.left-sidebar-compact) #ta-left-sidebar li.has-items a:hover,
 [dir="rtl"] body:not(.left-sidebar-compact) #ta-left-sidebar li.has-items a:active,
-[dir="rtl"] body:not(.left-sidebar-compact) #ta-left-sidebar li.has-items a:visited {
+[dir="rtl"] body:not(.left-sidebar-compact) #ta-left-sidebar li.has-items a:visited,
+[dir="rtl"] body:not(.left-sidebar-compact) #ta-left-sidebar li.has-items button.item-label:hover,
+[dir="rtl"] body:not(.left-sidebar-compact) #ta-left-sidebar li.has-items button.item-label:active {
   padding-right: 12px;
 }
 
@@ -587,7 +616,7 @@ body:not(.left-sidebar-compact) #ta-left-sidebar #filter:focus {
   margin: 0;
 }
 
-.left-sidebar-compact #ta-left-sidebar a[aria-expanded=false] .chevron {
+.left-sidebar-compact #ta-left-sidebar [aria-expanded=false] .chevron {
   transition-duration: 0.2s;
 }
 
@@ -615,10 +644,29 @@ body:not(.left-sidebar-compact) #ta-left-sidebar #filter:focus {
 }
 
 .left-sidebar-compact #ta-left-sidebar figcaption,
-.left-sidebar-compact #ta-left-sidebar a {
+.left-sidebar-compact #ta-left-sidebar a,
+.left-sidebar-compact #ta-left-sidebar button.item-label {
   position: relative;
   display: block;
   margin: 0;
+}
+
+.left-sidebar-compact #ta-left-sidebar button.item-label {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  width: 100%;
+  color: var(--oc-admin-menu-item-font-color);
+  outline: none;
+}
+
+[dir="ltr"] .left-sidebar-compact #ta-left-sidebar button.item-label {
+  text-align: left;
+}
+
+[dir="rtl"] .left-sidebar-compact #ta-left-sidebar button.item-label {
+  text-align: right;
 }
 
 .left-sidebar-compact #ta-left-sidebar #left-nav {
@@ -753,7 +801,7 @@ body:not(.left-sidebar-compact) #ta-left-sidebar #filter:focus {
   box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
 }
 
-.left-sidebar-compact #ta-left-sidebar #left-nav > ul > li.has-items.visible > figure > figcaption > a.item-label {
+.left-sidebar-compact #ta-left-sidebar #left-nav > ul > li.has-items.visible > figure > figcaption > .item-label {
   z-index: 9999;
 }
 
@@ -935,21 +983,27 @@ body:not(.left-sidebar-compact) #ta-left-sidebar #filter:focus {
 .left-sidebar-compact #ta-left-sidebar #left-nav ul li .item-label,
 .left-sidebar-compact #ta-left-sidebar #left-nav li a:hover,
 .left-sidebar-compact #ta-left-sidebar #left-nav li a:active,
-.left-sidebar-compact #ta-left-sidebar #left-nav li a:visited {
+.left-sidebar-compact #ta-left-sidebar #left-nav li a:visited,
+.left-sidebar-compact #ta-left-sidebar #left-nav li button.item-label:hover,
+.left-sidebar-compact #ta-left-sidebar #left-nav li button.item-label:active {
   text-decoration: none;
 }
 
 [dir="ltr"] .left-sidebar-compact #ta-left-sidebar #left-nav ul li .item-label,
 [dir="ltr"] .left-sidebar-compact #ta-left-sidebar #left-nav li a:hover,
 [dir="ltr"] .left-sidebar-compact #ta-left-sidebar #left-nav li a:active,
-[dir="ltr"] .left-sidebar-compact #ta-left-sidebar #left-nav li a:visited {
+[dir="ltr"] .left-sidebar-compact #ta-left-sidebar #left-nav li a:visited,
+[dir="ltr"] .left-sidebar-compact #ta-left-sidebar #left-nav li button.item-label:hover,
+[dir="ltr"] .left-sidebar-compact #ta-left-sidebar #left-nav li button.item-label:active {
   padding-left: 16px;
 }
 
 [dir="rtl"] .left-sidebar-compact #ta-left-sidebar #left-nav ul li .item-label,
 [dir="rtl"] .left-sidebar-compact #ta-left-sidebar #left-nav li a:hover,
 [dir="rtl"] .left-sidebar-compact #ta-left-sidebar #left-nav li a:active,
-[dir="rtl"] .left-sidebar-compact #ta-left-sidebar #left-nav li a:visited {
+[dir="rtl"] .left-sidebar-compact #ta-left-sidebar #left-nav li a:visited,
+[dir="rtl"] .left-sidebar-compact #ta-left-sidebar #left-nav li button.item-label:hover,
+[dir="rtl"] .left-sidebar-compact #ta-left-sidebar #left-nav li button.item-label:active {
   padding-right: 16px;
 }
 
@@ -967,14 +1021,18 @@ body:not(.left-sidebar-compact) #ta-left-sidebar #filter:focus {
 [dir="ltr"] .left-sidebar-compact #ta-left-sidebar li.has-items .item-label,
 [dir="ltr"] .left-sidebar-compact #ta-left-sidebar li.has-items a:hover,
 [dir="ltr"] .left-sidebar-compact #ta-left-sidebar li.has-items a:active,
-[dir="ltr"] .left-sidebar-compact #ta-left-sidebar li.has-items a:visited {
+[dir="ltr"] .left-sidebar-compact #ta-left-sidebar li.has-items a:visited,
+[dir="ltr"] .left-sidebar-compact #ta-left-sidebar li.has-items button.item-label:hover,
+[dir="ltr"] .left-sidebar-compact #ta-left-sidebar li.has-items button.item-label:active {
   padding-left: 12px;
 }
 
 [dir="rtl"] .left-sidebar-compact #ta-left-sidebar li.has-items .item-label,
 [dir="rtl"] .left-sidebar-compact #ta-left-sidebar li.has-items a:hover,
 [dir="rtl"] .left-sidebar-compact #ta-left-sidebar li.has-items a:active,
-[dir="rtl"] .left-sidebar-compact #ta-left-sidebar li.has-items a:visited {
+[dir="rtl"] .left-sidebar-compact #ta-left-sidebar li.has-items a:visited,
+[dir="rtl"] .left-sidebar-compact #ta-left-sidebar li.has-items button.item-label:hover,
+[dir="rtl"] .left-sidebar-compact #ta-left-sidebar li.has-items button.item-label:active {
   padding-right: 12px;
 }
 
@@ -1265,7 +1323,7 @@ body:not(.left-sidebar-compact) #ta-left-sidebar #filter:focus {
   right: var(--oc-start-navigation-width-when-compact);
 }
 
-.left-sidebar-compact #ta-left-sidebar a[aria-expanded=true] .chevron {
+.left-sidebar-compact #ta-left-sidebar [aria-expanded=true] .chevron {
   transform: rotate(90deg);
   transition-duration: 0.2s;
 }
