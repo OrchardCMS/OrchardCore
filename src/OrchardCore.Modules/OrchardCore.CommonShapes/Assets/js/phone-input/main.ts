@@ -8,17 +8,19 @@ document.querySelectorAll<HTMLElement>('[data-phone-input]').forEach((el) => {
         ? el.nextElementSibling as HTMLInputElement
         : el.closest('form')?.querySelector<HTMLInputElement>('[data-phone-e164]');
     const disabled = el.dataset.phoneDisabled === 'True';
+    const required = el.dataset.phoneRequired === 'True';
     const defaultRegion = el.dataset.phoneRegion ?? '';
 
-    // Build the input group
+    // Build the wrapper
     const group = document.createElement('div');
-    group.className = 'input-group col-md-4 phone-input-group';
+    group.className = 'col-md-4 phone-input-group';
 
     // Create the tel input
     const input = document.createElement('input');
     input.type = 'tel';
     input.className = 'form-control';
     input.disabled = disabled;
+    input.required = required;
 
     // Wrapper so intl-tel-input's DOM wrapping stays contained
     const itiWrapper = document.createElement('div');

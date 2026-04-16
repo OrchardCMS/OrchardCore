@@ -1,21 +1,42 @@
-/* The wrapper takes up available space in the input-group */
+/* Outer wrapper: flex so the iti wrapper stretches to available width */
+.phone-input-group {
+    display: flex;
+    align-items: stretch;
+    width: 100%;
+}
+
+/* The wrapper takes up available space and anchors the overlaid icons */
 .phone-input-group .phone-input-iti-wrapper {
+    position: relative;
     flex: 1 1 auto;
     min-width: 0;
 }
+
 .phone-input-group .phone-input-iti-wrapper .iti {
     width: 100%;
 }
+
+/* Reserve right-side space for the status icon */
 .phone-input-group .phone-input-iti-wrapper .iti input.form-control {
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
+    padding-right: 36px;
     width: 100%;
+}
+
+/* Status icon — overlaid on the right, no background or border */
+.phone-input-status-icon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 5;
+    pointer-events: none;
+    line-height: 1;
 }
 
 /* Dark mode overrides for intl-tel-input */
 [data-bs-theme="dark"] .iti__country-container .iti__selected-country,
 [data-bs-theme="dark"] .iti__country-container .iti__selected-country-primary {
-    background-color: var(--bs-input-bg, #212529);
+    background-color: transparent !important;
     color: var(--bs-body-color, #dee2e6);
 }
 
