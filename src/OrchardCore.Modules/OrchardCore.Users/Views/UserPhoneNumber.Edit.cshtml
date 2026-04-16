@@ -3,16 +3,7 @@
 <div class="ocat-wrapper" asp-validation-class-for="PhoneNumber">
     <label asp-for="PhoneNumber" class="ocat-label">@T["Phone Number"]</label>
     <div class="ocat-end">
-        <div data-phone-input
-             data-phone-value="@Model.PhoneNumber"
-             data-phone-disabled="@(!Model.AllowEditing)"
-             data-phone-region="@Model.DefaultRegion"
-             data-phone-confirmed="@Model.PhoneNumberConfirmed">
-        </div>
-        <input type="hidden" asp-for="PhoneNumber" data-phone-e164 />
+        @await DisplayAsync(await New.PhoneInput(Value: Model.PhoneNumber, InputName: Html.NameFor(m => m.PhoneNumber), Disabled: !Model.AllowEditing, Confirmed: Model.PhoneNumberConfirmed, Required: Model.Required))
         <span asp-validation-for="PhoneNumber" class="text-danger"></span>
     </div>
 </div>
-
-<style asp-name="phone-input"></style>
-<script asp-name="phone-input" at="Foot" type="module"></script>

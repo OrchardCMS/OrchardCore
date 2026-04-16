@@ -5,9 +5,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Settings;
-using OrchardCore.Sms;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.ViewModels;
 
@@ -19,6 +19,7 @@ public sealed class UserPhoneNumberDisplayDriver : DisplayDriver<User>
     private readonly IAuthorizationService _authorizationService;
     private readonly IPhoneFormatValidator _phoneFormatValidator;
     private readonly ISiteService _siteService;
+    private readonly IShellFeaturesManager _shellFeaturesManager;
 
     internal readonly IStringLocalizer S;
 
@@ -27,13 +28,15 @@ public sealed class UserPhoneNumberDisplayDriver : DisplayDriver<User>
         IAuthorizationService authorizationService,
         IPhoneFormatValidator phoneFormatValidator,
         IStringLocalizer<UserPhoneNumberDisplayDriver> stringLocalizer,
-        ISiteService siteService)
+        ISiteService siteService,
+        IShellFeaturesManager shellFeaturesManager)
     {
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
         _phoneFormatValidator = phoneFormatValidator;
         S = stringLocalizer;
         _siteService = siteService;
+        _shellFeaturesManager = shellFeaturesManager;
     }
 
     public override async Task<IDisplayResult> EditAsync(User user, BuildEditorContext context)
@@ -45,12 +48,14 @@ public sealed class UserPhoneNumberDisplayDriver : DisplayDriver<User>
 
         var settings = await _siteService.GetSettingsAsync<LoginSettings>();
         var canEditUserInfo = await CanEditUserInfoAsync(user);
+        var required = await IsPhoneRequiredAsync();
 
         return Initialize<EditUserPhoneNumberViewModel>("UserPhoneNumber_Edit", model =>
         {
             model.PhoneNumber = user.PhoneNumber;
             model.PhoneNumberConfirmed = user.PhoneNumberConfirmed;
             model.AllowEditing = context.IsNew || (settings.AllowChangingPhoneNumber && canEditUserInfo);
+            model.Required = required;
         }).Location("Content:1.3");
     }
 
@@ -62,6 +67,7 @@ public sealed class UserPhoneNumberDisplayDriver : DisplayDriver<User>
         }
 
         var phoneNumberModel = new EditUserPhoneNumberViewModel();
+        var required = await IsPhoneRequiredAsync();
 
         if (context.IsNew)
         {
@@ -84,6 +90,10 @@ public sealed class UserPhoneNumberDisplayDriver : DisplayDriver<User>
                 {
                     user.PhoneNumber = result.Value.E164Number;
                 }
+            }
+            else if (required)
+            {
+                context.Updater.ModelState.AddModelError(Prefix, nameof(phoneNumberModel.PhoneNumber), S["A phone number is required."]);
             }
             else
             {
@@ -116,6 +126,10 @@ public sealed class UserPhoneNumberDisplayDriver : DisplayDriver<User>
                             user.PhoneNumber = result.Value.E164Number;
                         }
                     }
+                    else if (required)
+                    {
+                        context.Updater.ModelState.AddModelError(Prefix, nameof(phoneNumberModel.PhoneNumber), S["A phone number is required."]);
+                    }
                     else
                     {
                         user.PhoneNumber = phoneNumberModel.PhoneNumber;
@@ -126,6 +140,9 @@ public sealed class UserPhoneNumberDisplayDriver : DisplayDriver<User>
 
         return await EditAsync(user, context);
     }
+
+    private async Task<bool> IsPhoneRequiredAsync()
+        => await _shellFeaturesManager.IsFeatureEnabledAsync(UserConstants.Features.SmsAuthenticator);
 
     private async Task<bool> CanEditUserInfoAsync(User user)
     {

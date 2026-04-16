@@ -18,18 +18,15 @@ export default ({ el, input, iti, hiddenInput }: PhoneInputOptions) => {
     const confirmed = el.dataset.phoneConfirmed === 'True';
     const initialValue = el.dataset.phoneValue ?? '';
 
-    // Build the input group
-    const group = el.querySelector('.input-group') ?? (() => {
-        const g = document.createElement('div');
-        g.className = 'input-group col-md-4 phone-input-group';
-        el.appendChild(g);
-        return g;
-    })();
+    // Both icons are overlaid inside the iti wrapper to avoid Bootstrap addon
+    // background/border-radius conflicts.
+    const itiWrapper = input.closest<HTMLElement>('.phone-input-iti-wrapper')
+        ?? input.parentElement!;
 
     // Status icon
     const iconSpan = document.createElement('span');
-    iconSpan.className = 'input-group-text';
-    group.appendChild(iconSpan);
+    iconSpan.className = 'phone-input-status-icon';
+    itiWrapper.appendChild(iconSpan);
 
     function updateIcon() {
         const number = iti.getNumber();
