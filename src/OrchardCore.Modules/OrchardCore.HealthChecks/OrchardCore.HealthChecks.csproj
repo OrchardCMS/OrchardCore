@@ -5,7 +5,7 @@
     <Title>OrchardCore HealthChecks</Title>
     <Description>$(OCFrameworkDescription)
 
-    This module provides health check for the website.</Description>
+    This module provides health checks for the website.</Description>
     <PackageTags>$(PackageTags) OrchardCoreFramework Infrastructure</PackageTags>
   </PropertyGroup>
 

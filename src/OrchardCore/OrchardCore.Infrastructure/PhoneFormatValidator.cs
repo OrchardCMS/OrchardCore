@@ -1,8 +1,8 @@
 using PhoneNumbers;
 
-namespace OrchardCore.Sms;
+namespace OrchardCore;
 
-public class DefaultPhoneFormatValidator : IPhoneFormatValidator
+public class PhoneFormatValidator : IPhoneFormatValidator
 {
     public bool IsValid(string phoneNumber)
     {

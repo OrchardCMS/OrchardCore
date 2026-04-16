@@ -24,7 +24,7 @@ internal sealed class SearchLocalizationDataProvider : ILocalizationDataProvider
 
         return new[]
         {
-            new DataLocalizedString("Search", searchSettings.Placeholder, string.Empty),
+            new DataLocalizedString(DataLocalizationContext.Search, searchSettings.Placeholder, string.Empty),
         };
     }
 }

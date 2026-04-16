@@ -25,14 +25,14 @@ body:not(.left-sidebar-compact) {
             margin: 0;
         }
         // Rotate the chevron's icon when the menu is active
-        a[aria-expanded="true"] {
+        [aria-expanded="true"] {
             .chevron {
                 transform: rotate(90deg);
                 transition-duration: 0.2s;
             }
         }
 
-        a[aria-expanded="false"] {
+        [aria-expanded="false"] {
             .chevron {
                 transition-duration: 0.2s;
             }
@@ -54,10 +54,22 @@ body:not(.left-sidebar-compact) {
         }
 
         figcaption,
-        a {
+        a,
+        button.item-label {
             position: relative;
             display: block;
             margin: 0;
+        }
+
+        button.item-label {
+            background: none;
+            border: none;
+            padding: 0;
+            font: inherit;
+            text-align: left;
+            width: 100%;
+            color: var(--oc-admin-menu-item-font-color);
+            outline: none;
         }
 
         #left-nav {
@@ -160,7 +172,9 @@ body:not(.left-sidebar-compact) {
             ul li .item-label,
             li a:hover,
             li a:active,
-            li a:visited {
+            li a:visited,
+            li button.item-label:hover,
+            li button.item-label:active {
                 color: var(--oc-admin-menu-item-font-color);
                 text-decoration: none;
                 padding-left: $link-padding-left;
@@ -190,7 +204,9 @@ body:not(.left-sidebar-compact) {
         li.has-items .item-label,
         li.has-items a:hover,
         li.has-items a:active,
-        li.has-items a:visited {
+        li.has-items a:visited,
+        li.has-items button.item-label:hover,
+        li.has-items button.item-label:active {
             padding-left: $link-padding-left - 4px;
         }
 
@@ -353,7 +369,7 @@ body:not(.left-sidebar-compact) {
             margin: 0;
         }
 
-        a[aria-expanded="false"] {
+        [aria-expanded="false"] {
             .chevron {
                 transition-duration: 0.2s;
             }
@@ -375,10 +391,22 @@ body:not(.left-sidebar-compact) {
         }
 
         figcaption,
-        a {
+        a,
+        button.item-label {
             position: relative;
             display: block;
             margin: 0;
+        }
+
+        button.item-label {
+            background: none;
+            border: none;
+            padding: 0;
+            font: inherit;
+            text-align: left;
+            width: 100%;
+            color: var(--oc-admin-menu-item-font-color);
+            outline: none;
         }
 
         #left-nav {
@@ -500,7 +528,7 @@ body:not(.left-sidebar-compact) {
                 > li.has-items.visible > figure > figcaption {
                     box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
 
-                    > a.item-label {
+                    > .item-label {
                         z-index: 9999;
                     }
                 }
@@ -645,7 +673,9 @@ body:not(.left-sidebar-compact) {
             ul li .item-label,
             li a:hover,
             li a:active,
-            li a:visited {
+            li a:visited,
+            li button.item-label:hover,
+            li button.item-label:active {
                 text-decoration: none;
                 padding-left: $link-padding-left;
             }
@@ -665,7 +695,9 @@ body:not(.left-sidebar-compact) {
         li.has-items .item-label,
         li.has-items a:hover,
         li.has-items a:active,
-        li.has-items a:visited {
+        li.has-items a:visited,
+        li.has-items button.item-label:hover,
+        li.has-items button.item-label:active {
             padding-left: $link-padding-left - 4px;
         }
 
@@ -865,7 +897,7 @@ body:not(.left-sidebar-compact) {
 .left-sidebar-compact {
     #ta-left-sidebar {
         // Rotate the chevron's icon when the menu is active
-        a[aria-expanded="true"] {
+        [aria-expanded="true"] {
             .chevron {
                 transform: rotate(90deg);
                 transition-duration: 0.2s;

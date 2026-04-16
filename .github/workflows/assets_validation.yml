@@ -16,6 +16,9 @@ concurrency:
   group: ${{ github.head_ref || github.run_id }}-assets_validation
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
   test-npm-build:
     name: Test building assets

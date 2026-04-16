@@ -15,6 +15,9 @@ env:
   DOTNET_CLI_TELEMETRY_OPTOUT: true
   PLAYWRIGHT_TRACING: true
 
+permissions:
+  contents: read
+
 jobs:
   test:
     runs-on: ${{ matrix.os }}

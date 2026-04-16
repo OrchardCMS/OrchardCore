@@ -1,4 +1,4 @@
-namespace OrchardCore.Sms;
+namespace OrchardCore;
 
 public interface IPhoneFormatValidator
 {

@@ -27,6 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="AnyAscii" />
     <PackageReference Include="System.IO.Hashing" />
   </ItemGroup>
 

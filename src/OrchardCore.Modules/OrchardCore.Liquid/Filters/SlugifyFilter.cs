@@ -14,8 +14,9 @@ public class SlugifyFilter : ILiquidFilter
     }
     public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
     {
-        var text = input.ToStringValue();
+        var transliterateArg = arguments["transliterate"];
+        var transliterate = transliterateArg.IsNil() || transliterateArg.ToBooleanValue();
 
-        return new StringValue(_slugService.Slugify(text));
+        return new StringValue(_slugService.Slugify(input.ToStringValue(), transliterate));
     }
 }
