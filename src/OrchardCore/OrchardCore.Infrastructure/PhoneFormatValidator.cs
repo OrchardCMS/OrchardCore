@@ -8,7 +8,7 @@ public class PhoneFormatValidator : IPhoneFormatValidator
 {
     internal readonly IStringLocalizer S;
 
-    public DefaultPhoneFormatValidator(IStringLocalizer<DefaultPhoneFormatValidator> stringLocalizer)
+    public PhoneFormatValidator(IStringLocalizer<PhoneFormatValidator> stringLocalizer)
     {
         S = stringLocalizer;
     }

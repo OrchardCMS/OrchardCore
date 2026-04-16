@@ -1,4 +1,4 @@
-namespace OrchardCore.Sms;
+namespace OrchardCore;
 
 /// <summary>
 /// Represents a validated phone number with its formatted values.
