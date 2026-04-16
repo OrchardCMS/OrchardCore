@@ -6,6 +6,7 @@ export interface AdminPreferences {
     isCompactExplicit: boolean;
     actionGroups?: Record<string, string>;
     actionBarCollapsed?: boolean;
+    selectedNavHash?: string;
 }
 
 let isCompactExplicit = false;
