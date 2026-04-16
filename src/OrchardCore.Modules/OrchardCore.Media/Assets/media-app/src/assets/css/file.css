@@ -1455,7 +1455,8 @@ ol.file-items-grid .file-icon-placeholder .file-ext {
    ============================================================ */
 .file-modal.modal-dialog,
 .file-modal .modal-content {
-  height: 95%;
+  height: 85vh;
+  max-height: 85vh;
 }
 
 .modal-content .modal-body #media-app {
@@ -1485,8 +1486,8 @@ ol.file-items-grid .file-icon-placeholder .file-ext {
 
 @media only screen and (min-width: 576px) {
   .modal-dialog.file-modal {
-    max-width: 992px;
-    padding-left: 17px;
+    width: 1000px !important;
+    max-width: 90vw !important;
   }
 }
 

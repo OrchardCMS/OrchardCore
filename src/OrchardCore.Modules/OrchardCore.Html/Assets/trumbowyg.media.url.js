@@ -13,24 +13,24 @@
                     var btnDef = {
                         fn: function () {
                             trumbowyg.saveRange();
-                            $("#mediaApp").detach().appendTo('#mediaModalBody .modal-body');
-                            document.getElementById("mediaApp").classList.remove("d-none");
-                            mediaApp.selectedMedias = [];
-                            var modal = new bootstrap.Modal($("#mediaModalBody"));
+                            var modalEl = document.getElementById("mediaModalBody");
+                            var modal = new bootstrap.Modal(modalEl);
                             modal.show();
-                            //disable an reset on click event over the button to avoid issue if press button multiple times or have multiple editor
+                            //disable and reset on click event over the button to avoid issue if press button multiple times or have multiple editor
                             $('#mediaBodySelectButton').off('click');
                             $('#mediaBodySelectButton').on('click', function (v) {
                                 //avoid multiple image insert
                                 trumbowyg.restoreRange();
                                 trumbowyg.range.deleteContents();
-                                
+
                                 $(window).trigger('scroll');
 
-                                for (let i = 0; i < mediaApp.selectedMedias.length; i++) {
+                                var handle = modalEl._pickerHandle;
+                                var selectedFiles = handle ? handle.getSelectedFiles() : [];
+                                for (let i = 0; i < selectedFiles.length; i++) {
                                     var img = document.createElement("img");
-                                    img.src = mediaApp.selectedMedias[i].url;
-                                    img.alt = mediaApp.selectedMedias[i].name;
+                                    img.src = selectedFiles[i].url || '';
+                                    img.alt = selectedFiles[i].name;
                                     trumbowyg.range.insertNode(img);
                                 }
 

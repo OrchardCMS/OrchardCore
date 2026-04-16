@@ -84,18 +84,19 @@ $(function () {
         {
             name: "image",
             action: function (editor) {
-                $("#mediaApp").detach().appendTo('#mediaModalMarkdown .modal-body');
-                document.getElementById("mediaApp").classList.remove("d-none");
-                mediaApp.selectedMedias = [];
-                var modal = new bootstrap.Modal($('#mediaModalMarkdown'));
+                var modalEl = document.getElementById('mediaModalMarkdown');
+                var modal = new bootstrap.Modal(modalEl);
                 modal.show();
+                $('#mediaMarkdownSelectButton').off('click');
                 $('#mediaMarkdownSelectButton').on('click', function (v) {
+                    var handle = modalEl._pickerHandle;
+                    var selectedFiles = handle ? handle.getSelectedFiles() : [];
                     var mediaMarkdownContent = "";
-                    for (i = 0; i < mediaApp.selectedMedias.length; i++) {
-                        mediaMarkdownContent += ' [image]' + mediaApp.selectedMedias[i].mediaPath + '[/image]';
+                    for (var i = 0; i < selectedFiles.length; i++) {
+                        mediaMarkdownContent += ' [image]' + selectedFiles[i].filePath + '[/image]';
                     }
                     var cm = editor.codemirror;
-                    cm.replaceSelection(mediaMarkdownContent)
+                    cm.replaceSelection(mediaMarkdownContent);
                     modal.hide();
                     $(this).off('click');
                 });

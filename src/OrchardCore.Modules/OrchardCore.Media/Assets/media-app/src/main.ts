@@ -171,3 +171,39 @@ export function mountMediaAppAsPicker(
     },
   };
 }
+
+/**
+ * Auto-setup media picker containers inside Bootstrap modals.
+ * Looks for [data-media-picker-container] elements whose value is the ID of a parent modal.
+ * Mounts mountMediaAppAsPicker on show.bs.modal and unmounts on hidden.bs.modal.
+ * Stores the active picker handle as _pickerHandle on the modal element.
+ */
+function setupModalPickers() {
+  document.querySelectorAll<HTMLElement>("[data-media-picker-container]").forEach((container) => {
+    const modalId = container.dataset.mediaPickerContainer;
+    const modalEl = modalId ? document.getElementById(modalId) : null;
+    if (!modalEl) return;
+
+    let handle: IMediaPickerHandle | null = null;
+
+    modalEl.addEventListener("show.bs.modal", () => {
+      handle?.unmount();
+      handle = mountMediaAppAsPicker(container, {
+        translations: container.dataset.translations || "{}",
+        basePath: container.dataset.basePath || "/",
+        uploadFilesUrl: container.dataset.uploadFilesUrl || "",
+        allowedExtensions: container.dataset.allowedExtensions || "",
+        allowMultiple: true,
+      });
+      (modalEl as unknown as Record<string, unknown>)._pickerHandle = handle;
+    });
+
+    modalEl.addEventListener("hidden.bs.modal", () => {
+      handle?.unmount();
+      handle = null;
+      (modalEl as unknown as Record<string, unknown>)._pickerHandle = null;
+    });
+  });
+}
+
+setupModalPickers();

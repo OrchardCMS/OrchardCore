@@ -13,12 +13,10 @@
                     var btnDef = {
                         fn: function () {
                             trumbowyg.saveRange();
-                            $("#mediaApp").detach().appendTo('#mediaModalHtmlField .modal-body');
-                            document.getElementById("mediaApp").classList.remove("d-none");
-                            mediaApp.selectedMedias = [];
-                            var modal = new bootstrap.Modal($("#mediaModalHtmlField"));
+                            var modalEl = document.getElementById("mediaModalHtmlField");
+                            var modal = new bootstrap.Modal(modalEl);
                             modal.show();
-                            //disable an reset on click event over the button to avoid issue if press button multiple times or have multiple editor
+                            //disable and reset on click event over the button to avoid issue if press button multiple times or have multiple editor
                             $('#mediaHtmlFieldSelectButton').off('click');
                             $('#mediaHtmlFieldSelectButton').on('click', function (v) {
                                 //avoid multiple image insert
@@ -27,10 +25,12 @@
 
                                 $(window).trigger('scroll');
 
-                                for (let i = 0; i < mediaApp.selectedMedias.length; i++) {
+                                var handle = modalEl._pickerHandle;
+                                var selectedFiles = handle ? handle.getSelectedFiles() : [];
+                                for (let i = 0; i < selectedFiles.length; i++) {
                                     var img = document.createElement("img");
-                                    img.src = mediaApp.selectedMedias[i].url;
-                                    img.alt = mediaApp.selectedMedias[i].name;
+                                    img.src = selectedFiles[i].url || '';
+                                    img.alt = selectedFiles[i].name;
                                     trumbowyg.range.insertNode(img);
                                 }
                                 
