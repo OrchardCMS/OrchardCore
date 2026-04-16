@@ -75,7 +75,7 @@ public sealed class UserRoleDisplayDriver : DisplayDriver<User>
                 roleEntries.Add(roleEntry);
             }
 
-            model.Roles = roleEntries.ToArray();
+            model.Roles = roleEntries.OrderBy(role => role.Role).ToArray();
         })
         .Location("Content:1.10")
         .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, UsersPermissions.EditUsers, user));
