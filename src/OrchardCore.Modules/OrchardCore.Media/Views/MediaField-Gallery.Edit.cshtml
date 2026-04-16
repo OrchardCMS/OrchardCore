@@ -27,7 +27,7 @@
              data-media-field-type="gallery"
              data-input-name="@Html.NameFor(m => m.Paths)"
              data-paths="@Model.Paths"
-             data-multiple="true"
+             data-multiple="@(settings.Multiple ? "true" : "false")"
              data-allow-media-text="@(settings.AllowMediaText ? "true" : "false")"
              data-allow-anchors="@(settings.AllowAnchors ? "true" : "false")"
              data-allowed-extensions="@string.Join(',', Model.AllowedExtensions)"
