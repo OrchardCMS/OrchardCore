@@ -4,13 +4,15 @@
     var disabled = (bool?)Model.Disabled ?? false;
     var region = (string)Model.Region;
     var confirmed = (bool?)Model.Confirmed ?? false;
+    var required = (bool?)Model.Required ?? false;
 }
 
 <div data-phone-input
      data-phone-value="@value"
      data-phone-disabled="@disabled"
      data-phone-region="@region"
-     data-phone-confirmed="@confirmed">
+     data-phone-confirmed="@confirmed"
+     data-phone-required="@required">
 </div>
 <input type="hidden" name="@inputName" data-phone-e164 value="@value" />
 
