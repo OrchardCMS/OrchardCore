@@ -1171,32 +1171,32 @@ ol.file-items-grid .file-icon-placeholder .file-ext {
 /* ============================================================
    Dropdown Menu (PrimeVue Menu)
    ============================================================ */
-#overlay_menu {
+.file-app {
   width: auto !important;
   min-width: 150px !important;
   z-index: 2100 !important;
 }
 
-#overlay_menu .p-menu-list {
+.file-app .p-menu-list {
   padding: 0;
   margin: 0;
   list-style: none;
 }
 
-#overlay_menu .p-menu-item-label {
+.file-app .p-menu-item-label {
   white-space: nowrap;
 }
 
-#overlay_menu .p-menu-item-link {
+.file-app .p-menu-item-link {
   color: var(--gray-700);
   text-decoration: none;
 }
 
-#overlay_menu .p-menu-item-link .p-menu-item-icon {
+.file-app .p-menu-item-link .p-menu-item-icon {
   color: var(--bs-secondary-color, var(--gray-600));
 }
 
-#overlay_menu .p-menu-item-link:hover {
+.file-app .p-menu-item-link:hover {
   color: var(--gray-1000);
 }
 
@@ -1446,7 +1446,7 @@ ol.file-items-grid .file-icon-placeholder .file-ext {
   list-style: none;
 }
 
-#overlay_menu.file-app .p-menu-submenu-label {
+.file-app .p-menu-submenu-label {
   display: none;
 }
 
@@ -2187,11 +2187,11 @@ ol.file-items-grid .file-icon-placeholder .file-ext {
   color: var(--bs-secondary-color);
 }
 
-[data-bs-theme="dark"] #overlay_menu .p-menu-item-link {
+[data-bs-theme="dark"] .file-app .p-menu-item-link {
   color: var(--bs-body-color);
 }
 
-[data-bs-theme="dark"] #overlay_menu .p-menu-item-link:hover {
+[data-bs-theme="dark"] .file-app .p-menu-item-link:hover {
   color: #fff;
 }
 
