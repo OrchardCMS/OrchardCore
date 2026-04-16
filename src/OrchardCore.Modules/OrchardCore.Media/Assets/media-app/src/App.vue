@@ -252,6 +252,10 @@ const props = defineProps({
     type: Number,
     required: true,
   },
+  allowMultipleSelection: {
+    type: Boolean,
+    default: true,
+  },
   maxFileSize: {
     type: Number,
     default: 0,
@@ -297,12 +301,35 @@ const {
   setIsLoading,
   setBasePath,
   setSelectedFiles,
+  setAllowMultipleSelection,
   setSelectedAll,
   setIsDownloading,
   setUploadFilesUrl,
+  setAllowedExtensions,
+  allowMultipleSelection,
 } = useGlobals();
 
+function parseBoolean(value: unknown, defaultValue: boolean): boolean {
+  if (typeof value === "boolean") {
+    return value;
+  }
+
+  if (typeof value === "string") {
+    const normalized = value.trim().toLowerCase();
+    if (normalized === "true") {
+      return true;
+    }
+    if (normalized === "false") {
+      return false;
+    }
+  }
+
+  return defaultValue;
+}
+
 setBasePath(props.basePath);
+setAllowMultipleSelection(parseBoolean(props.allowMultipleSelection, true));
+setAllowedExtensions(props.allowedExtensions);
 setIsDownloading(false);
 
 const translations = getTranslations();
@@ -391,6 +418,9 @@ const { filteredFileItems } = useFileListFiltering();
 const selectAll = () => {
   if (isSelectedAll.value) {
     setSelectedFiles([]);
+    setSelectedAll(false);
+  } else if (!allowMultipleSelection.value) {
+    setSelectedFiles(filteredFileItems.value.length > 0 ? [filteredFileItems.value[0]] : []);
     setSelectedAll(false);
   } else {
     selectedFiles.value = [];

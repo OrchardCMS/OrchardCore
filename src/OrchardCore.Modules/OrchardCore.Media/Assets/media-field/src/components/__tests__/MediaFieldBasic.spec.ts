@@ -257,6 +257,25 @@ describe("MediaFieldBasic", () => {
     expect(vm.selectedMedia).toBe(vm.mediaItems[0]);
   });
 
+  it("selectMedia deselects when clicking the same image twice", async () => {
+    const wrapper = createWrapper({ multiple: true, paths: [] });
+    await flushPromises();
+
+    const vm = wrapper.vm as any;
+    const item = makeMediaItem({ mediaPath: "a.jpg", vuekey: "a0" });
+    vm.addMediaFiles([item]);
+    await nextTick();
+
+    const thumbs = wrapper.findComponent({ name: "ThumbsContainer" });
+    await thumbs.vm.$emit("select-media", vm.mediaItems[0]);
+    await nextTick();
+    expect(vm.selectedMedia).toBe(vm.mediaItems[0]);
+
+    await thumbs.vm.$emit("select-media", vm.mediaItems[0]);
+    await nextTick();
+    expect(vm.selectedMedia).toBeNull();
+  });
+
   it("canAddMedia false when single and has item", async () => {
     const wrapper = createWrapper({ multiple: false, paths: [] });
     await flushPromises();
@@ -444,6 +463,22 @@ describe("MediaFieldBasic", () => {
     const vm = wrapper.vm as any;
     expect(vm.mediaItems).toHaveLength(1);
     expect(vm.mediaItems[0].mediaPath).toBe("picked.jpg");
+  });
+
+  it("onPickerSelect keeps only one item in single mode", async () => {
+    const wrapper = createWrapper({ multiple: false, paths: [] });
+    await flushPromises();
+
+    const picker = wrapper.findComponent({ name: "MediaPickerModal" });
+    await picker.vm.$emit("select", [
+      makeMediaItem({ mediaPath: "picked-a.jpg", vuekey: "p0" }),
+      makeMediaItem({ mediaPath: "picked-b.jpg", vuekey: "p1" }),
+    ]);
+    await nextTick();
+
+    const vm = wrapper.vm as any;
+    expect(vm.mediaItems).toHaveLength(1);
+    expect(vm.mediaItems[0].mediaPath).toBe("picked-a.jpg");
   });
 
   // -- Media Text Modal (via button clicks) --------------------------------

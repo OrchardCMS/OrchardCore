@@ -37,6 +37,18 @@ if (culture == "fr") {
 
 const uppy = new Uppy({ locale: uppyLocale });
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const handleRestrictionFailed = (_file: any, error: { message: any }) => {
+  notify(
+    new NotificationMessage({
+      summary: t.ValidationError,
+      detail: error.message,
+      severity: SeverityLevel.Warn,
+    }),
+  );
+  return false;
+};
+
 export interface IFileUploadModel {
   maxUploadChunkSize: number;
   maxFileSize: number;
@@ -133,17 +145,14 @@ export const useFileUpload = (model: IFileUploadModel): void => {
   onMounted(() => {
     const fileInput = <HTMLInputElement>document.querySelector("#fileupload");
 
+    // The uploader is a module-level singleton reused across picker mounts.
+    // Rebind this listener to prevent duplicate validation toasts.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    uppy.on("restriction-failed", (_file: any, error: { message: any }) => {
-      notify(
-        new NotificationMessage({
-          summary: t.ValidationError,
-          detail: error.message,
-          severity: SeverityLevel.Warn,
-        }),
-      );
-      return false;
-    });
+    const uppyWithOff = uppy as any;
+    if (typeof uppyWithOff.off === "function") {
+      uppyWithOff.off("restriction-failed", handleRestrictionFailed);
+    }
+    uppy.on("restriction-failed", handleRestrictionFailed);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     fileInput?.addEventListener("change", (event: any) => {

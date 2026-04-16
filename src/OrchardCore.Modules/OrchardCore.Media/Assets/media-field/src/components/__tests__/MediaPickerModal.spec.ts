@@ -215,6 +215,38 @@ describe("MediaPickerModal", () => {
     expect(internal.setupState.selectedCount).toBe(0);
   });
 
+  it("passes allowMultiple to media picker mount config", async () => {
+    const wrapper = createWrapper({ allowMultiple: false });
+    (wrapper.vm as any).open();
+    await nextTick();
+
+    setContainerRef(wrapper);
+
+    const modal = wrapper.findComponent({ name: "VueFinalModal" });
+    modal.vm.$emit("opened");
+    await flushPromises();
+
+    expect(mockMountMediaAppAsPicker).toHaveBeenCalled();
+    const callArgs = mockMountMediaAppAsPicker.mock.calls[0][1];
+    expect(callArgs.allowMultiple).toBe(false);
+  });
+
+  it("passes allowedExtensions to media picker mount config", async () => {
+    const wrapper = createWrapper({ allowedExtensions: ".jpg,.png" });
+    (wrapper.vm as any).open();
+    await nextTick();
+
+    setContainerRef(wrapper);
+
+    const modal = wrapper.findComponent({ name: "VueFinalModal" });
+    modal.vm.$emit("opened");
+    await flushPromises();
+
+    expect(mockMountMediaAppAsPicker).toHaveBeenCalled();
+    const callArgs = mockMountMediaAppAsPicker.mock.calls[0][1];
+    expect(callArgs.allowedExtensions).toBe(".jpg,.png");
+  });
+
   it("onSelectionChange callback updates selectedCount", async () => {
     const wrapper = createWrapper();
     (wrapper.vm as any).open();
@@ -237,5 +269,83 @@ describe("MediaPickerModal", () => {
 
     const internal = (wrapper.vm as any).$;
     expect(internal.setupState.selectedCount).toBe(3);
+  });
+
+  it("confirm emits only one item when allowMultiple is false", async () => {
+    mockGetSelectedFiles.mockReturnValueOnce([
+      {
+        name: "a.jpg",
+        mime: "image/jpeg",
+        filePath: "uploads/a.jpg",
+        url: "/media/a.jpg",
+        size: 100,
+      },
+      {
+        name: "b.jpg",
+        mime: "image/jpeg",
+        filePath: "uploads/b.jpg",
+        url: "/media/b.jpg",
+        size: 200,
+      },
+    ]);
+
+    const wrapper = createWrapper({ allowMultiple: false });
+    (wrapper.vm as any).open();
+    await nextTick();
+
+    setContainerRef(wrapper);
+
+    const modal = wrapper.findComponent({ name: "VueFinalModal" });
+    modal.vm.$emit("opened");
+    await flushPromises();
+
+    const internal = (wrapper.vm as any).$;
+    internal.setupState.confirm();
+    await flushPromises();
+
+    const selectEvents = wrapper.emitted("select");
+    expect(selectEvents).toBeTruthy();
+    const items = selectEvents![0][0] as any[];
+    expect(items).toHaveLength(1);
+    expect(items[0].mediaPath).toBe("uploads/a.jpg");
+  });
+
+  it("confirm filters out files that do not match allowedExtensions", async () => {
+    mockGetSelectedFiles.mockReturnValueOnce([
+      {
+        name: "ok.jpg",
+        mime: "image/jpeg",
+        filePath: "uploads/ok.jpg",
+        url: "/media/ok.jpg",
+        size: 100,
+      },
+      {
+        name: "blocked.pdf",
+        mime: "application/pdf",
+        filePath: "uploads/blocked.pdf",
+        url: "/media/blocked.pdf",
+        size: 200,
+      },
+    ]);
+
+    const wrapper = createWrapper({ allowedExtensions: ".jpg,.png" });
+    (wrapper.vm as any).open();
+    await nextTick();
+
+    setContainerRef(wrapper);
+
+    const modal = wrapper.findComponent({ name: "VueFinalModal" });
+    modal.vm.$emit("opened");
+    await flushPromises();
+
+    const internal = (wrapper.vm as any).$;
+    internal.setupState.confirm();
+    await flushPromises();
+
+    const selectEvents = wrapper.emitted("select");
+    expect(selectEvents).toBeTruthy();
+    const items = selectEvents![0][0] as any[];
+    expect(items).toHaveLength(1);
+    expect(items[0].mediaPath).toBe("uploads/ok.jpg");
   });
 });

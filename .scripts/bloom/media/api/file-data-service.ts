@@ -4,7 +4,7 @@ import { MediaApiClient, FileStoreEntryDto, MoveMedias, DirectoryTreeNodeDto } f
 export interface IFileDataService {
   getFileItem(path: string): Promise<IFileLibraryItemDto>;
   getFolders(path: string, skip?: number, take?: number): Promise<IPaginatedFoldersResult>;
-  getMediaItems(path: string): Promise<IFileLibraryItemDto[]>;
+  getMediaItems(path: string, extensions?: string): Promise<IFileLibraryItemDto[]>;
   listAllItems(): Promise<IFileLibraryItemDto[]>;
   copyMedia(oldPath: string, newPath: string): Promise<IFileLibraryItemDto>;
   moveMedia(oldPath: string, newPath: string): Promise<void>;
@@ -14,7 +14,7 @@ export interface IFileDataService {
   deleteFolder(path: string): Promise<void>;
   createFolder(path: string, name: string): Promise<IFileLibraryItemDto>;
   getDirectoryTree(): Promise<IDirectoryTreeNode>;
-  getDirectoryContent(path: string): Promise<IDirectoryContentResult>;
+  getDirectoryContent(path: string, extensions?: string): Promise<IDirectoryContentResult>;
   getPermittedStorage(): Promise<IPermittedStorageResult>;
 }
 
@@ -67,8 +67,8 @@ export class FileDataService implements IFileDataService {
     };
   }
 
-  async getMediaItems(path: string): Promise<IFileLibraryItemDto[]> {
-    const dtos = await this.client.apiGetMediaItems(path, undefined);
+  async getMediaItems(path: string, extensions?: string): Promise<IFileLibraryItemDto[]> {
+    const dtos = await this.client.apiGetMediaItems(path, extensions);
     return dtos.map(toFileLibraryItem);
   }
 
@@ -113,8 +113,8 @@ export class FileDataService implements IFileDataService {
     return toDirectoryTreeNode(dto);
   }
 
-  async getDirectoryContent(path: string): Promise<IDirectoryContentResult> {
-    const dto = await this.client.apiGetDirectoryContent(path, undefined);
+  async getDirectoryContent(path: string, extensions?: string): Promise<IDirectoryContentResult> {
+    const dto = await this.client.apiGetDirectoryContent(path, extensions);
     return {
       folders: (dto.folders ?? []).map(toFileLibraryItem),
       files: (dto.files ?? []).map(toFileLibraryItem),

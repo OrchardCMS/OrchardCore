@@ -13,7 +13,7 @@ function isNotFoundError(error: unknown): boolean {
 }
 const { canManage } = usePermissions();
 const { setServerDirectoryTree } = useHierarchicalTreeBuilder();
-const { assetsStore, basePath, selectedDirectory, rootDirectory, selectedFiles, fileItems, hierarchicalDirectories, setAssetsStore, setSelectedFiles, setSelectedAll, setFileItems, setHierarchicalData, setRootDirectory, markAllFoldersLoaded, setIsLoadingFiles } = useGlobals();
+const { assetsStore, basePath, selectedDirectory, rootDirectory, selectedFiles, fileItems, hierarchicalDirectories, allowedExtensions, setAssetsStore, setSelectedFiles, setSelectedAll, setFileItems, setHierarchicalData, setRootDirectory, markAllFoldersLoaded, setIsLoadingFiles } = useGlobals();
 const t = getTranslations();
 const { emit } = useEventBus();
 
@@ -313,7 +313,7 @@ export function useFileLibraryManager() {
       const currentDir = selectedDirectory.value?.directoryPath ?? "";
       const [tree, currentFiles] = await Promise.all([
         fileDataService.getDirectoryTree(),
-        fileDataService.getMediaItems(currentDir),
+        fileDataService.getMediaItems(currentDir, allowedExtensions.value),
       ]);
 
       setFileItems(currentFiles.filter(f => !f.isDirectory));
@@ -353,7 +353,7 @@ export function useFileLibraryManager() {
       setIsLoadingFiles(false);
       // Refresh silently in the background.
       try {
-        const content = await fileDataService.getDirectoryContent(directoryPath);
+        const content = await fileDataService.getDirectoryContent(directoryPath, allowedExtensions.value);
         if (requestId !== loadRequestId) return null; // stale
         fileCache.set(directoryPath, content.files);
         setFileItems(content.files);
@@ -372,7 +372,7 @@ export function useFileLibraryManager() {
       setIsLoadingFiles(true);
     }
     try {
-      const content = await fileDataService.getDirectoryContent(directoryPath);
+      const content = await fileDataService.getDirectoryContent(directoryPath, allowedExtensions.value);
       if (requestId !== loadRequestId) return null; // stale
       fileCache.set(directoryPath, content.files);
       setFileItems(content.files);

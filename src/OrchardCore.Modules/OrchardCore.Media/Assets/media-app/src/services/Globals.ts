@@ -8,6 +8,7 @@ const rootDirectory = ref({} as IFileLibraryItemDto);
 const hierarchicalDirectories = ref({} as IHFileLibraryItemDto);
 const basePath = ref("");
 const selectedFiles = ref([] as IFileLibraryItemDto[]);
+const allowMultipleSelection = ref(true);
 const isSelectedAll = ref(false);
 const errors = ref(<any>[]); // eslint-disable-line @typescript-eslint/no-explicit-any
 const fileFilter = ref("");
@@ -47,6 +48,7 @@ const directoryIndex = computed(() => {
 });
 
 const uploadBaseUrl = ref("");
+const allowedExtensions = ref("");
 const uploadFilesUrl = computed(() => {
   const dirPath = selectedDirectory.value.directoryPath ?? "";
   return `${uploadBaseUrl.value}?path=${encodeURIComponent(dirPath)}`;
@@ -63,6 +65,10 @@ export const useGlobals = () => {
 
   const setUploadFilesUrl = (value: string) => {
     uploadBaseUrl.value = value;
+  };
+
+  const setAllowedExtensions = (value: string) => {
+    allowedExtensions.value = value;
   };
 
   const setIsLoading = (value: boolean) => {
@@ -95,6 +101,10 @@ export const useGlobals = () => {
 
   const setSelectedFiles = (value: IFileLibraryItemDto[]) => {
     selectedFiles.value = value;
+  };
+
+  const setAllowMultipleSelection = (value: boolean) => {
+    allowMultipleSelection.value = value;
   };
 
   const setBasePath = (value: string) => {
@@ -180,6 +190,7 @@ export const useGlobals = () => {
     sortAsc,
     itemsInPage,
     isLoading,
+    allowMultipleSelection,
     isLoadingFiles,
     isDownloading,
     isSelectedAll,
@@ -192,12 +203,14 @@ export const useGlobals = () => {
     rootDirectory,
     hierarchicalDirectories,
     uploadFilesUrl,
+    allowedExtensions,
     setAssetsStore,
     setSelectedDirectory,
     setFileItems,
     setRootDirectory,
     setHierarchicalData,
     setBasePath,
+    setAllowMultipleSelection,
     setSelectedFiles,
     setSelectedAll,
     setErrors,
@@ -209,6 +222,7 @@ export const useGlobals = () => {
     setIsLoadingFiles,
     setIsDownloading,
     setUploadFilesUrl,
+    setAllowedExtensions,
     expandedFolders,
     loadingFolders,
     loadedFolders,

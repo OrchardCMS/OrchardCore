@@ -84,10 +84,32 @@ export function mountMediaAppAsPicker(
     translations: string;
     basePath: string;
     uploadFilesUrl: string;
+    allowedExtensions?: string;
+    allowMultiple?: boolean;
     maxUploadChunkSize?: number;
     onSelectionChange?: (count: number) => void;
   }
 ): IMediaPickerHandle {
+  const parseBoolean = (value: unknown, defaultValue: boolean): boolean => {
+    if (typeof value === "boolean") {
+      return value;
+    }
+
+    if (typeof value === "string") {
+      const normalized = value.trim().toLowerCase();
+      if (normalized === "true") {
+        return true;
+      }
+      if (normalized === "false") {
+        return false;
+      }
+    }
+
+    return defaultValue;
+  };
+
+  const pickerAllowsMultiple = parseBoolean(config.allowMultiple, true);
+
   // Reset module-level state before mounting a new picker instance.
   // Clear the event bus to prevent duplicate handlers from previous mount cycles,
   // since the mitt emitter is a module-level singleton that persists across unmounts.
@@ -104,6 +126,8 @@ export function mountMediaAppAsPicker(
         translations: config.translations,
         basePath: config.basePath,
         uploadFilesUrl: config.uploadFilesUrl,
+        allowedExtensions: config.allowedExtensions ?? "",
+        allowMultipleSelection: pickerAllowsMultiple,
         maxUploadChunkSize: config.maxUploadChunkSize ?? 0,
       }),
   });
@@ -114,6 +138,16 @@ export function mountMediaAppAsPicker(
 
   // Watch selectedFiles for changes and notify via callback.
   // Must use deep:true because the array is mutated in-place via push/splice.
+  const stopSelectionEnforcement = watch(
+    globals.selectedFiles,
+    (files) => {
+      if (!pickerAllowsMultiple && files.length > 1) {
+        globals.setSelectedFiles([files[files.length - 1]]);
+      }
+    },
+    { deep: true },
+  );
+
   const stopWatch = config.onSelectionChange
     ? watch(
         globals.selectedFiles,
@@ -132,6 +166,7 @@ export function mountMediaAppAsPicker(
     },
     unmount() {
       if (stopWatch) stopWatch();
+      stopSelectionEnforcement();
       app.unmount();
     },
   };

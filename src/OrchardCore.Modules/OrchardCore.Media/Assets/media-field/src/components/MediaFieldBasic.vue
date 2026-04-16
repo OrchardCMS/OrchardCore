@@ -253,7 +253,7 @@ onBeforeUnmount(() => {
 
 // --- Actions ---
 function selectMedia(media: IMediaFieldItem) {
-  selectedMedia.value = media;
+  selectedMedia.value = selectedMedia.value === media ? null : media;
 }
 
 function removeSelected() {

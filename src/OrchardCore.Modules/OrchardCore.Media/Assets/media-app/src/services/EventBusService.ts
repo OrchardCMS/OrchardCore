@@ -20,6 +20,7 @@ export const useEventBusService = () => {
     rootDirectory,
     directoryIndex,
     selectedFiles,
+    allowMultipleSelection,
     setSortBy,
     setSortAsc,
     setFileFilter,
@@ -47,6 +48,8 @@ export const useEventBusService = () => {
     if (isFileSelected(file) == true) {
       selectedFiles.value.splice(selectedFiles.value.indexOf(file), 1);
       setSelectedFiles(selectedFiles.value);
+    } else if (!allowMultipleSelection.value) {
+      setSelectedFiles([file]);
     } else {
       selectedFiles.value.push(file);
       setSelectedFiles(selectedFiles.value);
@@ -103,7 +106,11 @@ export const useEventBusService = () => {
     setErrors([]);
 
     const uploadInput = document.querySelector("#fileupload");
-    uploadInput?.setAttribute("multiple", "true");
+    if (allowMultipleSelection.value) {
+      uploadInput?.setAttribute("multiple", "true");
+    } else {
+      uploadInput?.removeAttribute("multiple");
+    }
 
     emit("AfterDirSelected", directory);
   });

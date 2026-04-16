@@ -2,28 +2,28 @@
 
 <div class="mb-3">
     <div class="form-check">
-        <input type="checkbox" class="form-check-input" asp-for="Required" checked="@Model.Required">
+        <input type="checkbox" class="form-check-input" asp-for="Required">
         <label class="form-check-label" asp-for="Required">@T["Required"]</label>
         <span class="hint dashed">@T["Whether a media is required."]</span>
     </div>
 </div>
 <div class="mb-3">
     <div class="form-check">
-        <input type="checkbox" class="form-check-input" asp-for="Multiple" checked="@Model.Multiple">
+        <input type="checkbox" class="form-check-input" asp-for="Multiple">
         <label class="form-check-label" asp-for="Multiple">@T["Multiple"]</label>
         <span class="hint dashed">@T["Whether multiple media can be selected."]</span>
     </div>
 </div>
 <div class="mb-3 ">
     <div class="form-check">
-        <input type="checkbox" class="form-check-input" asp-for="AllowMediaText" checked="@Model.AllowMediaText">
+        <input type="checkbox" class="form-check-input" asp-for="AllowMediaText">
         <label class="form-check-label" asp-for="AllowMediaText">@T["Allow media text"]</label>
         <span class="hint dashed">@T["Whether media text editing is allowed."]</span>
     </div>
 </div>
 <div class="mb-3">
     <div class="form-check">
-        <input type="checkbox" class="form-check-input" asp-for="AllowAnchors" checked="@Model.AllowAnchors">
+        <input type="checkbox" class="form-check-input" asp-for="AllowAnchors">
         <label class="form-check-label" asp-for="AllowAnchors">@T["Allow anchors"]</label>
         <span class="hint dashed">@T["Whether selecting an anchor point for resizing is allowed."]</span>
     </div>
@@ -37,7 +37,7 @@
 </div>
 <div class="mb-3">
     <div class="form-check">
-        <input type="checkbox" class="form-check-input" asp-for="AllowAllDefaultMediaTypes" checked="@Model.AllowAllDefaultMediaTypes" data-bs-toggle="collapse" data-bs-target="#MediaExtensionWrapper" role="button" aria-expanded="@(Model.AllowAllDefaultMediaTypes ? "false" : "true")" aria-controls="MediaExtensionWrapper">
+        <input type="checkbox" class="form-check-input" asp-for="AllowAllDefaultMediaTypes" data-bs-toggle="collapse" data-bs-target="#MediaExtensionWrapper" role="button" aria-expanded="@(Model.AllowAllDefaultMediaTypes ? "false" : "true")" aria-controls="MediaExtensionWrapper">
         <label class="form-check-label" asp-for="AllowAllDefaultMediaTypes">@T["Allow all default media types"]</label>
         <span class="hint dashed">@T["This will allow the user to attach any accessible file from the media library."]</span>
     </div>
@@ -58,7 +58,7 @@
                 var htmlId = $"MediaExtensionTypeId_{group.Key}";
 
                 <div class="form-check">
-                    <input type="checkbox" class="form-check-input media-extensions-selector" checked="@allSelected" id="@htmlId" value="@string.Join(';', group.Value.Select(m => m.ContentType))">
+                    <input type="checkbox" class="form-check-input media-extensions-selector" id="@htmlId" value="@string.Join(';', group.Value.Select(m => m.ContentType))" @((allSelected ? "checked" : string.Empty))>
                     <label class="form-check-label cursor-pointer" for="@htmlId">@T["{0} types", group.Key]</label>
                     <span class="hint dashed">@T["Select all extensions with the '{0}' type.", group.Key]</span>
                 </div>

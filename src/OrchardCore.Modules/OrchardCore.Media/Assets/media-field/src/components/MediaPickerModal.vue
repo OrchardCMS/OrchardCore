@@ -50,7 +50,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { VueFinalModal } from "vue-final-modal";
 import type { IMediaFieldItem } from "../interfaces/MediaFieldTypes";
 import { getTranslations } from "@bloom/helpers/localizations";
@@ -81,7 +81,46 @@ const error = ref("");
 const containerRef = ref<HTMLElement | null>(null);
 const selectedCount = ref(0);
 
+function parseBoolean(value: unknown, defaultValue: boolean): boolean {
+  if (typeof value === "boolean") {
+    return value;
+  }
+
+  if (typeof value === "string") {
+    const normalized = value.trim().toLowerCase();
+    if (normalized === "true") {
+      return true;
+    }
+    if (normalized === "false") {
+      return false;
+    }
+  }
+
+  return defaultValue;
+}
+
+const allowMultipleSelection = computed(() => parseBoolean(props.allowMultiple as unknown, true));
+
 let pickerHandle: IMediaPickerHandle | null = null;
+
+function parseAllowedExtensions(value: string): Set<string> {
+  return new Set(
+    value
+      .split(",")
+      .map((ext) => ext.trim().toLowerCase())
+      .filter((ext) => ext.length > 0)
+      .map((ext) => (ext.startsWith(".") ? ext : `.${ext}`))
+  );
+}
+
+function getExtension(pathOrName: string): string {
+  const idx = pathOrName.lastIndexOf(".");
+  if (idx < 0) {
+    return "";
+  }
+
+  return pathOrName.substring(idx).toLowerCase();
+}
 
 function open() {
   visible.value = true;
@@ -100,6 +139,8 @@ async function onOpened() {
       translations: props.mediaAppTranslations,
       basePath: props.basePath,
       uploadFilesUrl: props.uploadFilesUrl,
+      allowedExtensions: props.allowedExtensions,
+      allowMultiple: allowMultipleSelection.value,
       onSelectionChange: (count: number) => {
         selectedCount.value = count;
       },
@@ -119,12 +160,21 @@ function confirm() {
   const selected = pickerHandle.getSelectedFiles();
   if (selected.length === 0) return;
 
+  const allowedExtensions = parseAllowedExtensions(props.allowedExtensions);
+
   // Keep only selections with a valid media path.
   const items: IMediaFieldItem[] = selected
     .map((f, i) => {
       const mediaPath = resolvePickerFilePath(f);
       if (!mediaPath) {
         return null;
+      }
+
+      if (allowedExtensions.size > 0) {
+        const ext = getExtension(mediaPath || f.name || "");
+        if (!ext || !allowedExtensions.has(ext)) {
+          return null;
+        }
       }
 
       return {
@@ -142,7 +192,9 @@ function confirm() {
     return;
   }
 
-  emit("select", items);
+  const limitedItems = allowMultipleSelection.value ? items : [items[0]];
+
+  emit("select", limitedItems);
   visible.value = false;
 }
 

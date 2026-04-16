@@ -593,4 +593,20 @@ describe("MediaFieldGallery", () => {
     const vm = wrapper.vm as any;
     expect(vm.mediaItems).toHaveLength(1);
   });
+
+  it("onPickerSelect keeps only one item in single mode", async () => {
+    const wrapper = createWrapper({ multiple: false, paths: [] });
+    await flushPromises();
+
+    const internal = (wrapper.vm as any).$;
+    internal.setupState.onPickerSelect([
+      makeMediaItem({ mediaPath: "picked-a.jpg", vuekey: "p0" }),
+      makeMediaItem({ mediaPath: "picked-b.jpg", vuekey: "p1" }),
+    ]);
+    await nextTick();
+
+    const vm = wrapper.vm as any;
+    expect(vm.mediaItems).toHaveLength(1);
+    expect(vm.mediaItems[0].mediaPath).toBe("picked-a.jpg");
+  });
 });

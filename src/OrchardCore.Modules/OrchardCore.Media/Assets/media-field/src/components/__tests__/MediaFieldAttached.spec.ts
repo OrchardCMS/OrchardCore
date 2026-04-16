@@ -291,6 +291,51 @@ describe("MediaFieldAttached", () => {
     expect(vm.selectedMedia).toBeNull();
   });
 
+  it("onDocumentClick deselects when clicking outside images", async () => {
+    mockFetchOk({ name: "test.jpg", mime: "image/jpeg", mediaPath: "test/test.jpg", url: "/media/test.jpg" });
+    const paths = [makePath({ path: "test/test.jpg" })];
+    const wrapper = createWrapper({ paths, multiple: true });
+    await flushPromises();
+    await nextTick();
+
+    const vm = wrapper.vm as any;
+    const thumbs = wrapper.findComponent({ name: "ThumbsContainer" });
+    await thumbs.vm.$emit("select-media", vm.mediaItems[0]);
+    await nextTick();
+    expect(vm.selectedMedia).toBeTruthy();
+
+    const outsideEl = document.createElement("div");
+    document.body.appendChild(outsideEl);
+    outsideEl.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    await nextTick();
+
+    expect(vm.selectedMedia).toBeNull();
+    document.body.removeChild(outsideEl);
+  });
+
+  it("onDocumentClick does not deselect when clicking an image thumbnail", async () => {
+    mockFetchOk({ name: "test.jpg", mime: "image/jpeg", mediaPath: "test/test.jpg", url: "/media/test.jpg" });
+    const paths = [makePath({ path: "test/test.jpg" })];
+    const wrapper = createWrapper({ paths, multiple: true });
+    await flushPromises();
+    await nextTick();
+
+    const vm = wrapper.vm as any;
+    const thumbs = wrapper.findComponent({ name: "ThumbsContainer" });
+    await thumbs.vm.$emit("select-media", vm.mediaItems[0]);
+    await nextTick();
+    expect(vm.selectedMedia).toBeTruthy();
+
+    const thumbEl = document.createElement("div");
+    thumbEl.className = "mf-thumb-item";
+    document.body.appendChild(thumbEl);
+    thumbEl.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    await nextTick();
+
+    expect(vm.selectedMedia).toBeTruthy();
+    document.body.removeChild(thumbEl);
+  });
+
   it("drag zone shows overlay when dragging over", async () => {
     const wrapper = createWrapper({ multiple: true });
     await flushPromises();

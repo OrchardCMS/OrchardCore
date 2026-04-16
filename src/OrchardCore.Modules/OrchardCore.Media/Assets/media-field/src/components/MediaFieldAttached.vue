@@ -159,7 +159,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, nextTick } from "vue";
+import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from "vue";
 import { VueFinalModal } from "vue-final-modal";
 import ThumbsContainer from "./ThumbsContainer.vue";
 import UploadList from "./UploadList.vue";
@@ -281,6 +281,16 @@ async function loadInitialPaths(paths: IMediaFieldPath[]) {
 
   mediaItems.value = await loadInitialMediaItems(validPaths, props.config);
   initialized.value = true;
+}
+
+// --- Click outside to deselect ---
+function onDocumentClick(e: MouseEvent) {
+  const el = e.target as HTMLElement;
+  if (el.closest(".mf-thumb-item") || el.closest(".vfm")) {
+    return;
+  }
+
+  selectedMedia.value = null;
 }
 
 // --- File upload handling ---
@@ -442,6 +452,14 @@ watch(
   },
   { deep: true }
 );
+
+onMounted(() => {
+  document.addEventListener("click", onDocumentClick);
+});
+
+onBeforeUnmount(() => {
+  document.removeEventListener("click", onDocumentClick);
+});
 
 defineExpose({ mediaItems, selectedMedia, isDraggingOver });
 </script>
