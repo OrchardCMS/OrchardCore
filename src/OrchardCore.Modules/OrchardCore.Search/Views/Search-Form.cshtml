@@ -1,13 +1,14 @@
 @model SearchFormViewModel
 
 @using OrchardCore.Localization.Data
+@using OrchardCore.Search
 
 @inject IDataLocalizer D
 
 @{
     var placeholder = string.IsNullOrWhiteSpace(Model.Placeholder)
         ? T["Enter your search term(s)"].Value
-        : D[Model.Placeholder, "Search"];
+        : D[Model.Placeholder, DataLocalizationContext.Search];
 }
 <form asp-action="Search" asp-controller="Search" asp-area="OrchardCore.Search" asp-route-index="@Model.Index" method="get">
     <div class="input-group mb-3 mt-5">
