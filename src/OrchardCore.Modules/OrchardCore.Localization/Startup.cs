@@ -37,7 +37,7 @@ public sealed class Startup : StartupBase
 
         services.Replace(ServiceDescriptor.Singleton<ILocalizationFileLocationProvider, ModularPoFileLocationProvider>());
 
-        services.AddLiquidFilter<TransliterateFilter>("translit");
+        services.AddLiquidFilter<TransliterateFilter>("transliterate");
     }
 
     /// <inheritdocs />
