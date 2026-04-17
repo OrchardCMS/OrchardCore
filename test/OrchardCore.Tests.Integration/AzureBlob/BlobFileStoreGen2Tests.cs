@@ -11,7 +11,7 @@ public sealed class BlobFileStoreGen2Tests : BlobFileStoreTestsBase
 {
     protected override bool IsHnsEnabled => true;
 
-    [AzuriteFact]
+    [Fact]
     public async Task CreateDirectory_Nested_CreatesIntermediateDirectories()
     {
         await TryCreateDirectoryAsync("a/b/c");
@@ -21,7 +21,7 @@ public sealed class BlobFileStoreGen2Tests : BlobFileStoreTestsBase
         Assert.NotNull(await GetDirectoryInfoAsync("a"));
     }
 
-    [AzuriteFact]
+    [Fact]
     public async Task GetDirectoryContent_Flat_IncludesGen2Directories()
     {
         await TryCreateDirectoryAsync("flat-gen2");
@@ -41,7 +41,7 @@ public sealed class BlobFileStoreGen2Tests : BlobFileStoreTestsBase
         Assert.Contains(entries, e => !e.IsDirectory && e.Name == "nested.txt");
     }
 
-    [AzuriteFact]
+    [Fact]
     public async Task MoveFile_IsAtomic()
     {
         // Gen2 move uses DataLake RenameAsync which is an atomic server-side operation.
@@ -56,7 +56,7 @@ public sealed class BlobFileStoreGen2Tests : BlobFileStoreTestsBase
         Assert.Equal("atomic", await ReadFileContentAsync("atomic-dst.txt"));
     }
 
-    [AzuriteFact]
+    [Fact]
     public async Task GetDirectoryInfo_AfterDeletingDirectory_ReturnsNull()
     {
         await TryCreateDirectoryAsync("temp-dir");
@@ -67,7 +67,7 @@ public sealed class BlobFileStoreGen2Tests : BlobFileStoreTestsBase
         Assert.Null(await GetDirectoryInfoAsync("temp-dir"));
     }
 
-    [AzuriteFact]
+    [Fact]
     public async Task CreateDirectory_EmptyDirectory_ExistsWithNoContent()
     {
         await TryCreateDirectoryAsync("empty-gen2-dir");

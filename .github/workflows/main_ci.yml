@@ -60,3 +60,7 @@ jobs:
           src/OrchardCore.Mvc.Web/App_Data_Tests/logs
           test/OrchardCore.Tests.Functional/traces
         retention-days: 3
+    - name: Integration Tests
+      if: matrix.os == 'ubuntu-24.04'
+      run: |
+        dotnet test --project ./test/OrchardCore.Tests.Integration/OrchardCore.Tests.Integration.csproj -c Release --no-build
