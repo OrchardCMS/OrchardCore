@@ -6,6 +6,9 @@ on:
   # it manually in a PR.
   workflow_dispatch:
     
+permissions:
+  contents: write
+
 jobs:
   update-contributor-map:
     name: Update Contributor Map
