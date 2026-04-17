@@ -140,6 +140,12 @@ public sealed class UserRoleDisplayDriver : DisplayDriver<User>
                 await _userRoleStore.RemoveFromRoleAsync(user, _userManager.NormalizeName(role), default);
             }
 
+            if (rolesToRemove.Count > 0)
+            {
+                // When roles are removed, the security stamp needs to be updated to invalidate existing authentication sessions.
+                await _userManager.UpdateSecurityStampAsync(user);
+            }
+
             // Add new roles.
             foreach (var role in accessibleAndSelectedRoleNames)
             {
