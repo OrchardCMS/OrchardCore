@@ -73,7 +73,7 @@
       :field-id="inputName"
       :allowed-extensions="config.allowedExtensions"
       :allow-multiple="multiple"
-      :media-app-translations="config.mediaAppTranslations || ''"
+      :media-gallery-translations="config.mediaAppTranslations || ''"
       :base-path="config.basePath || ''"
       :upload-files-url="config.uploadFilesUrl || ''"
       @select="onPickerSelect"

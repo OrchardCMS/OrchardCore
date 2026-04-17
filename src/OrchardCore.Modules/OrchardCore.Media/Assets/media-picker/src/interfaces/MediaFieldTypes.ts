@@ -44,11 +44,11 @@ export interface IMediaFieldConfig {
   allowedExtensions: string;
   mediaItemUrl: string;
   mediaItemsUrl?: string;
-  /** JSON-serialized translations for the media-app picker */
+  /** JSON-serialized translations for the media-gallery picker */
   mediaAppTranslations?: string;
   /** Base path for media URLs (e.g., "/") */
   basePath?: string;
-  /** Upload endpoint URL for the media-app picker */
+  /** Upload endpoint URL for the media-gallery picker */
   uploadFilesUrl?: string;
   /** Whether TUS resumable uploads are enabled */
   tusEnabled?: boolean;

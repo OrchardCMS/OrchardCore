@@ -24,7 +24,7 @@ vi.mock("@bloom/helpers/localizations", () => ({
   setTranslations: mockSetTranslations,
 }));
 
-vi.mock("@media-app", () => ({
+vi.mock("@media-gallery", () => ({
   mountMediaAppAsPicker: vi.fn(),
 }));
 

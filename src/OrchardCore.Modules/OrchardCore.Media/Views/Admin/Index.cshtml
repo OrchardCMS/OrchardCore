@@ -1,6 +1,6 @@
 @model OrchardCore.Media.ViewModels.MediaIndexViewModel
 @{
-    var jsLocalizations = Orchard.GetJSLocalizations("media-app");
+    var jsLocalizations = Orchard.GetJSLocalizations("media-gallery");
 }
 
 <script type="module" asp-name="media" version="2" at="Foot"></script>
@@ -8,8 +8,8 @@
 
 <h1 style="display:none">@RenderTitleSegments(T["Assets"])</h1>
 
-<div id="media-app">
-    <media-app
+<div id="media-gallery">
+    <media-gallery
         site-id="@Model.SiteId"
         translations="@Json.Serialize(jsLocalizations).ToString()"
         base-path="@Href("~")"
@@ -24,5 +24,5 @@
 
         debug-enabled="@(Model.DebugEnabled ? "true" : "false")"
     >
-    </media-app>
+    </media-gallery>
 </div>

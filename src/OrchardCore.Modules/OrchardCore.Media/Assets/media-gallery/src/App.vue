@@ -341,7 +341,7 @@ if (props.translations) {
   try {
     setTranslations(typeof props.translations === "string" ? JSON.parse(props.translations) : props.translations);
   } catch (e) {
-    console.warn("Failed to parse media-app translations:", e);
+    console.warn("Failed to parse media-gallery translations:", e);
   }
 }
 const t = translations;

@@ -9,7 +9,7 @@
     var settings = Model.PartFieldDefinition.GetSettings<MediaFieldSettings>();
     var fieldId = Html.IdFor(m => m);
     var jsLocalizations = Orchard.GetJSLocalizations("media-field");
-    var mediaAppLocalizations = Orchard.GetJSLocalizations("media-app");
+    var mediaAppLocalizations = Orchard.GetJSLocalizations("media-gallery");
     var translationsJson = System.Text.Json.JsonSerializer.Serialize(jsLocalizations);
     var mediaAppTranslationsJson = System.Text.Json.JsonSerializer.Serialize(mediaAppLocalizations);
     string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), DataLocalizationContext.ContentField(Model.PartFieldDefinition.PartDefinition.Name)];
@@ -42,7 +42,7 @@
              data-max-upload-chunk-size="@MediaOptions.Value.MaxUploadChunkSize"
              data-max-file-size="@MediaOptions.Value.MaxFileSize"
              data-debug-enabled="@(HostEnvironment.IsDevelopment() ? "true" : "false")"
-             data-media-app-translations="@mediaAppTranslationsJson"
+             data-media-gallery-translations="@mediaAppTranslationsJson"
              data-base-path="@Url.Content("~/")"
              data-upload-files-url="@Url.Content("~/api/media/Upload")"
              data-tus-enabled="@(tusEnabled ? "true" : "false")"

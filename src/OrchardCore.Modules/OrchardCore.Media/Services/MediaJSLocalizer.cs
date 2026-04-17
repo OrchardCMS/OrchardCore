@@ -17,7 +17,7 @@ public class MediaJSLocalizer(IStringLocalizer<MediaJSLocalizer> S) : IJSLocaliz
     /// <returns>Returns a list of localized strings</returns>
     public IDictionary<string, string> GetLocalizations(string group)
     {
-        if (string.Equals(group, "media-app", StringComparison.OrdinalIgnoreCase))
+        if (string.Equals(group, "media-gallery", StringComparison.OrdinalIgnoreCase))
         {
             return new Dictionary<string, string>
             {

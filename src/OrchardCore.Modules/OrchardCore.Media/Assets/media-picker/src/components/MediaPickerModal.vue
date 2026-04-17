@@ -17,7 +17,7 @@
       </button>
     </div>
     <div class="tw:flex-1 tw:min-h-0 tw:overflow-hidden tw:flex tw:flex-col">
-      <!-- Loading state while media-app module is being imported -->
+      <!-- Loading state while media-gallery module is being imported -->
       <div v-if="loading" class="tw:flex tw:items-center tw:justify-center tw:py-12">
         <i class="fa-solid fa-spinner fa-spin tw:mr-2" aria-hidden="true"></i>
         {{ t.loadingMediaBrowser }}
@@ -27,8 +27,8 @@
         <i class="fa-solid fa-triangle-exclamation tw:mr-2" aria-hidden="true"></i>
         {{ error }}
       </div>
-      <!-- Container where the media-app will be mounted -->
-      <div v-show="!loading && !error" ref="containerRef" class="mf-picker-media-app tw:flex-1 tw:min-h-0 tw:flex tw:flex-col"></div>
+      <!-- Container where the media-gallery will be mounted -->
+      <div v-show="!loading && !error" ref="containerRef" class="mf-picker-media-gallery tw:flex-1 tw:min-h-0 tw:flex tw:flex-col"></div>
     </div>
     <div class="tw:flex tw:items-center tw:justify-between tw:px-4 tw:py-3">
       <span class="tw:text-sm tw:text-gray-500">
@@ -54,14 +54,14 @@ import { computed, onMounted, ref } from "vue";
 import { VueFinalModal } from "vue-final-modal";
 import type { IMediaFieldItem } from "../interfaces/MediaFieldTypes";
 import { getTranslations } from "@bloom/helpers/localizations";
-import type { IMediaPickerHandle } from "@media-app";
+import type { IMediaPickerHandle } from "@media-gallery";
 import { resolvePickerFilePath } from "../services/MediaPath";
 
 const props = defineProps<{
   fieldId?: string;
   allowedExtensions: string;
   allowMultiple?: boolean;
-  /** JSON-serialized translations for the media-app */
+  /** JSON-serialized translations for the media-gallery */
   mediaAppTranslations: string;
   /** Base path (e.g., "/") */
   basePath: string;
@@ -143,7 +143,7 @@ async function onOpened() {
   if (!containerRef.value) return;
 
   try {
-    const { mountMediaAppAsPicker } = await import("@media-app");
+    const { mountMediaAppAsPicker } = await import("@media-gallery");
 
     pickerHandle = mountMediaAppAsPicker(containerRef.value, {
       translations: props.mediaAppTranslations,

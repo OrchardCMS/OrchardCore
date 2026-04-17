@@ -5256,7 +5256,7 @@
 
             </system-err>
         </testcase>
-        <testcase classname="src/components/__tests__/MediaPickerModal.spec.ts" name="MediaPickerModal &gt; shows error when media-app import fails" time="0.012574662">
+        <testcase classname="src/components/__tests__/MediaPickerModal.spec.ts" name="MediaPickerModal &gt; shows error when media-gallery import fails" time="0.012574662">
             <system-err>
 [Vue warn]: withDirectives can only be used inside render functions.
 [Vue warn]: Missing ref owner context. ref cannot be used on hoisted vnodes. A vnode with ref must be created inside the render function. 

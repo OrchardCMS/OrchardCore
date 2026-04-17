@@ -247,7 +247,7 @@
 /* ============================================================
    Main Layout
    ============================================================ */
-#media-app {
+#media-gallery {
   height: calc(100vh - var(--oc-top-nav-height, 52px) - 2rem);
 }
 
@@ -364,7 +364,7 @@
   opacity: 0.65;
 }
 
-.left-sidebar-compact #media-app {
+.left-sidebar-compact #media-gallery {
   left: 48px;
 }
 
@@ -1246,7 +1246,7 @@ ol.file-items-grid .file-icon-placeholder .file-ext {
   max-height: 85vh;
 }
 
-.modal-content .modal-body #media-app {
+.modal-content .modal-body #media-gallery {
   position: static;
   height: 100%;
 }

@@ -17,7 +17,7 @@
     "baseUrl": ".",
     "paths": {
       "@bloom/*": ["../../../../../../../.scripts/bloom/*"],
-      "@media-app": ["../media-app/src/main.ts"]
+      "@media-gallery": ["../media-gallery/src/main.ts"]
     }
   },
   "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"],

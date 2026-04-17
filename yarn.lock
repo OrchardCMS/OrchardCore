@@ -3019,7 +3019,7 @@ __metadata:
   dependencies:
     "@popperjs/core": "npm:2.11.8"
     bootstrap: "npm:5.3.8"
-    orchardcore-media-app: "workspace:*"
+    orchardcore-media-gallery: "workspace:*"
   languageName: unknown
   linkType: soft
 
@@ -3069,7 +3069,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@orchardcore/html@workspace:src/OrchardCore.Modules/OrchardCore.Html/Assets"
   dependencies:
-    orchardcore-media-app: "workspace:*"
+    orchardcore-media-gallery: "workspace:*"
   languageName: unknown
   linkType: soft
 
@@ -3100,7 +3100,7 @@ __metadata:
     "@popperjs/core": "npm:2.11.8"
     bootstrap: "npm:5.3.8"
     easymde: "npm:2.18.0"
-    orchardcore-media-app: "workspace:*"
+    orchardcore-media-gallery: "workspace:*"
   languageName: unknown
   linkType: soft
 
@@ -13478,9 +13478,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"orchardcore-media-app@workspace:*, orchardcore-media-app@workspace:src/OrchardCore.Modules/OrchardCore.Media/Assets/media-app":
+"orchardcore-media-gallery@workspace:*, orchardcore-media-gallery@workspace:src/OrchardCore.Modules/OrchardCore.Media/Assets/media-gallery":
   version: 0.0.0-use.local
-  resolution: "orchardcore-media-app@workspace:src/OrchardCore.Modules/OrchardCore.Media/Assets/media-app"
+  resolution: "orchardcore-media-gallery@workspace:src/OrchardCore.Modules/OrchardCore.Media/Assets/media-gallery"
   dependencies:
     "@fortawesome/fontawesome-svg-core": "npm:^6.4.2"
     "@fortawesome/free-regular-svg-icons": "npm:^6.4.2"

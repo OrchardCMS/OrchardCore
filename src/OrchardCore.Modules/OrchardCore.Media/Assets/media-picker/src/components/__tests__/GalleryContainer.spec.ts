@@ -15,7 +15,7 @@ vi.mock("vue-final-modal", () => ({
   createVfm: () => ({ install: vi.fn() }),
 }));
 
-vi.mock("@media-app", () => ({
+vi.mock("@media-gallery", () => ({
   mountMediaAppAsPicker: vi.fn(() => ({
     getSelectedFiles: vi.fn(() => []),
     unmount: vi.fn(),

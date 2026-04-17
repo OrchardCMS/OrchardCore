@@ -5,14 +5,14 @@ import postcssRTLCSS from "postcss-rtlcss";
 import { Mode } from "postcss-rtlcss/options";
 import path from "path";
 
-const mediaAppSrc = path.resolve(__dirname, "../media-app/src/main.ts");
+const mediaAppSrc = path.resolve(__dirname, "../media-gallery/src/main.ts");
 
 export default defineConfig({
     resolve: {
         alias: {
             vue: "vue/dist/vue.esm-bundler.js",
             "@bloom": path.resolve(__dirname, "../../../../../.scripts/bloom"),
-            "@media-app": mediaAppSrc,
+            "@media-gallery": mediaAppSrc,
         },
     },
     plugins: [tailwindcss(), vue()],

@@ -26,7 +26,7 @@ public static class LocalizationOrchardHelperExtensions
     /// <example>
     /// In a Razor view or layout:
     /// <code>
-    /// var localizations = Orchard.GetJSLocalizations("media-app");
+    /// var localizations = Orchard.GetJSLocalizations("media-gallery");
     /// </code>
     /// </example>
     public static IDictionary<string, string> GetJSLocalizations(this IOrchardHelper orchardHelper, params string[] groups)

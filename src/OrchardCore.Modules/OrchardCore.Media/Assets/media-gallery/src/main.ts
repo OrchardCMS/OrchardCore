@@ -57,15 +57,15 @@ function configureMediaApp(app: VueApp) {
 
 /**
  * Auto-mount the full media app on the admin Media Library page.
- * Only mounts if #media-app exists in the DOM.
+ * Only mounts if #media-gallery exists in the DOM.
  */
-const mediaAppEl = document.getElementById("media-app");
+const mediaAppEl = document.getElementById("media-gallery");
 if (mediaAppEl) {
   const app = createApp({ name: "media-library" });
-  app.component("media-app", AppComponent);
+  app.component("media-gallery", AppComponent);
   configureMediaApp(app);
   registerNotificationBus();
-  app.mount("#media-app");
+  app.mount("#media-gallery");
 }
 
 /**

@@ -1,6 +1,6 @@
 export {};
 
-import { openMediaPicker } from 'orchardcore-media-app/src/picker-api';
+import { openMediaPicker } from 'orchardcore-media-gallery/src/picker-api';
 
 type MediaPickerFile = {
     filePath?: string;

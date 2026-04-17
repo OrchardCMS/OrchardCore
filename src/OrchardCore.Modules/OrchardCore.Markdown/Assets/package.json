@@ -5,6 +5,6 @@
     "@popperjs/core": "2.11.8",
     "bootstrap": "5.3.8",
     "easymde": "2.18.0",
-    "orchardcore-media-app": "workspace:*"
+    "orchardcore-media-gallery": "workspace:*"
   }
 }

@@ -50,11 +50,11 @@
 
 
 /* ============================================================
-   Picker modal — flex chain for embedded media-app
-   Targets the .fileApp element rendered by the media-app bundle
+   Picker modal — flex chain for embedded media-gallery
+   Targets the .fileApp element rendered by the media-gallery bundle
    inside our container; cannot be expressed as an inline utility.
    ============================================================ */
-.mf-picker-media-app .fileApp {
+.mf-picker-media-gallery .fileApp {
   flex: 1;
   min-height: 0;
   display: flex;

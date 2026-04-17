@@ -68,7 +68,7 @@ The state should support:
 - marking those files as selected by default
 - distinguishing picker-only temporary ordering from the normal library sort order
 
-This should be implemented in the shared picker/media-app integration layer instead of inside individual media field components.
+This should be implemented in the shared picker/media-gallery integration layer instead of inside individual media field components.
 
 ### 2. Extend the picker contract
 
@@ -115,12 +115,12 @@ This keeps the behavior centralized and reduces the chance that Basic and Galler
 
 ## Files Likely To Change
 
-- `src/OrchardCore.Modules/OrchardCore.Media/Assets/media-app/src/main.ts`
-- `src/OrchardCore.Modules/OrchardCore.Media/Assets/media-app/src/services/Globals.ts`
-- `src/OrchardCore.Modules/OrchardCore.Media/Assets/media-app/src/services/UppyFileUpload.ts`
-- `src/OrchardCore.Modules/OrchardCore.Media/Assets/media-app/src/composables/useFileListFiltering.ts`
+- `src/OrchardCore.Modules/OrchardCore.Media/Assets/media-gallery/src/main.ts`
+- `src/OrchardCore.Modules/OrchardCore.Media/Assets/media-gallery/src/services/Globals.ts`
+- `src/OrchardCore.Modules/OrchardCore.Media/Assets/media-gallery/src/services/UppyFileUpload.ts`
+- `src/OrchardCore.Modules/OrchardCore.Media/Assets/media-gallery/src/composables/useFileListFiltering.ts`
 - `src/OrchardCore.Modules/OrchardCore.Media/Assets/media-field/src/components/MediaPickerModal.vue`
-- tests for both `media-app` and `media-field`
+- tests for both `media-gallery` and `media-field`
 
 ## Testing Plan
 
@@ -132,7 +132,7 @@ Add or update tests to cover:
 - uploaded files are auto-selected in picker mode
 - selected count changes immediately after upload success
 - session-uploaded files are rendered before the normal list ordering
-- standalone media-app mode remains unchanged
+- standalone media-gallery mode remains unchanged
 
 ### Media Field Tests
 
@@ -159,7 +159,7 @@ Verify the following scenarios in the admin UI:
 - The current media app sorting pipeline is generic, so adding picker-specific ordering must not leak into standalone mode.
 - Upload success handling differs between XHR and TUS flows, so both paths must participate in the same picker-session behavior.
 - Selection updates must avoid duplicate entries and must remain consistent with the existing `getSelectedFiles()` contract.
-- The implementation should not require the media field components to understand media-app internal state.
+- The implementation should not require the media field components to understand media-gallery internal state.
 
 ## Acceptance Criteria
 
@@ -172,7 +172,7 @@ Verify the following scenarios in the admin UI:
 
 ## Proposed Delivery Order
 
-1. Extend picker/media-app session state and contract.
+1. Extend picker/media-gallery session state and contract.
 2. Implement auto-selection on upload success for both XHR and TUS.
 3. Implement picker-only uploaded-first ordering.
 4. Add automated tests.

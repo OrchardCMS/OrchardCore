@@ -1,8 +1,8 @@
 [
   {
     "action": "vite",
-    "name": "media-app",
-    "source": "Assets/media-app",
+    "name": "media-gallery",
+    "source": "Assets/media-gallery",
     "tags": ["admin", "dashboard", "js"]
   },
   {

@@ -28,7 +28,7 @@ const mockMountMediaAppAsPicker = vi.fn(() => ({
   unmount: mockUnmount,
 }));
 
-vi.mock("@media-app", () => ({
+vi.mock("@media-gallery", () => ({
   mountMediaAppAsPicker: mockMountMediaAppAsPicker,
 }));
 
@@ -103,7 +103,7 @@ describe("MediaPickerModal", () => {
     expect(mockMountMediaAppAsPicker).not.toHaveBeenCalled();
   });
 
-  it("shows error when media-app import fails", async () => {
+  it("shows error when media-gallery import fails", async () => {
     mockMountMediaAppAsPicker.mockImplementationOnce(() => {
       throw new Error("Module load failed");
     });
