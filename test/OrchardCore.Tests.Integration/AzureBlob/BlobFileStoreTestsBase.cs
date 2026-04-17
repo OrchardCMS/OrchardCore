@@ -19,7 +19,7 @@ public abstract class BlobFileStoreTestsBase : IAsyncLifetime
         .WithCommand("--skipApiVersionCheck")
         .Build();
 
-    protected abstract bool IsHnsEnabled { get; }
+    protected virtual bool IsHnsEnabled { get; }
 
     private BlobFileStore _store;
     private BlobContainerClient _containerClient;
