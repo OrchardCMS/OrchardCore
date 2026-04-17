@@ -1,6 +1,6 @@
 <template>
   <div class="fileApp" v-on:dragover="handleScrollWhileDrag">
-    <div class="ma-alert ma-alert-danger message-warning" v-if="errors.length > 0">
+    <div class="tw:p-4 tw:rounded-md tw:border tw:text-[#842029] tw:bg-[#f8d7da] tw:border-[#f5c2c7] message-warning" v-if="errors.length > 0">
       <ul>
         <li v-for="(e, i) in errors" :key="i">{{ e }}</li>
       </ul>
@@ -64,7 +64,7 @@
                 <div class="settings-popover-content">
                   <div class="settings-popover-row">
                     <label class="settings-popover-label" for="settings-page-size">{{ t.ItemsPerPage || 'Items per page' }}</label>
-                    <select id="settings-page-size" class="ma-input settings-select" v-model.number="pageSize">
+                    <select id="settings-page-size" class="tw:block tw:w-full tw:px-3 tw:py-1.5 tw:text-sm tw:font-normal tw:leading-normal tw:text-[var(--bs-body-color)] tw:bg-[var(--bs-body-bg)] tw:border tw:border-[var(--bs-border-color)] tw:rounded-md tw:transition-colors focus:tw:border-[#0d6efd] focus:tw:outline-none settings-select" v-model.number="pageSize">
                       <option :value="10">10</option>
                       <option :value="20">20</option>
                       <option :value="50">50</option>
@@ -73,12 +73,16 @@
                   </div>
                   <div class="settings-popover-row">
                     <span class="settings-popover-label">{{ t.ThumbnailSize || 'Thumbnail size' }}</span>
-                    <div class="ma-btn-group">
-                      <button type="button" class="ma-btn ma-btn-sm" :class="{ 'ma-btn-primary': !largeThumbs, 'ma-btn-light': largeThumbs }"
+                    <div class="tw:inline-flex tw:align-middle">
+                      <button type="button"
+                        class="tw:inline-flex tw:items-center tw:justify-center tw:gap-1.5 tw:px-2 tw:py-1 tw:text-[0.8125rem] tw:font-normal tw:leading-normal tw:cursor-pointer tw:select-none tw:border tw:rounded-md tw:rounded-r-none tw:transition-colors"
+                        :class="!largeThumbs ? 'tw:text-white tw:bg-[#0d6efd] tw:border-[#0d6efd] hover:tw:bg-[#0b5ed7]' : 'tw:text-[var(--bs-body-color)] tw:bg-[var(--bs-secondary-bg)] tw:border-[var(--bs-border-color)] hover:tw:bg-[var(--bs-tertiary-bg)]'"
                         @click="largeThumbs = false">
                         {{ t.Normal || 'Normal' }}
                       </button>
-                      <button type="button" class="ma-btn ma-btn-sm" :class="{ 'ma-btn-primary': largeThumbs, 'ma-btn-light': !largeThumbs }"
+                      <button type="button"
+                        class="tw:inline-flex tw:items-center tw:justify-center tw:gap-1.5 tw:px-2 tw:py-1 tw:text-[0.8125rem] tw:font-normal tw:leading-normal tw:cursor-pointer tw:select-none tw:border tw:rounded-md tw:rounded-l-none tw:-ml-px tw:transition-colors"
+                        :class="largeThumbs ? 'tw:text-white tw:bg-[#0d6efd] tw:border-[#0d6efd] hover:tw:bg-[#0b5ed7]' : 'tw:text-[var(--bs-body-color)] tw:bg-[var(--bs-secondary-bg)] tw:border-[var(--bs-border-color)] hover:tw:bg-[var(--bs-tertiary-bg)]'"
                         @click="largeThumbs = true">
                         {{ t.Large || 'Large' }}
                       </button>
@@ -90,29 +94,27 @@
           </nav>
           <div class="action-bar tw:py-3 tw:px-4 tw:flex tw:flex-wrap tw:gap-y-3">
             <div class="tw:mr-auto">
-              <div v-show="canManage" class="tw:flex tw:items-center tw:flex-wrap">
-                <div class="ma-btn-group tw:mr-2">
-                  <label :title="t.UploadFiles" for="fileupload" class="ma-btn ma-btn-primary fileinput-button upload-button">
+              <div v-show="canManage" class="tw:flex tw:items-stretch tw:flex-wrap">
+                  <label :title="t.UploadFiles" for="fileupload" class="tw:inline-flex tw:items-center tw:justify-center tw:gap-1.5 tw:px-3 tw:py-1.5 tw:text-sm tw:font-normal tw:leading-normal tw:text-center tw:cursor-pointer tw:select-none tw:border tw:rounded-md tw:transition-colors tw:text-white tw:bg-[#0d6efd] tw:border-[#0d6efd] hover:tw:bg-[#0b5ed7] hover:tw:border-[#0a58ca] tw:no-underline tw:mr-2 fileinput-button upload-button">
                     <input id="fileupload" type="file" name="files" multiple />
                     <fa-icon icon="fa-solid fa-cloud-arrow-up"></fa-icon>
                     {{ t.UploadFiles }}
                   </label>
-                </div>
-                <a :title="t.DeleteAll" href="javascript:void(0)" class="ma-btn ma-btn-light tw:mr-2"
-                  @click="() => deleteSelectedFiles()" :class="{ 'is-disabled': selectedFiles.length < 1 }">
+                <a :title="t.DeleteAll" href="javascript:void(0)" class="tw:inline-flex tw:items-center tw:justify-center tw:gap-1.5 tw:px-3 tw:py-1.5 tw:text-sm tw:font-normal tw:leading-normal tw:text-center tw:cursor-pointer tw:select-none tw:border tw:rounded-md tw:transition-colors tw:text-[var(--bs-body-color)] tw:bg-[var(--bs-secondary-bg)] tw:border-[var(--bs-border-color)] hover:tw:bg-[var(--bs-tertiary-bg)] tw:no-underline tw:mr-2"
+                  @click="() => deleteSelectedFiles()" :class="{ 'tw:cursor-default tw:pointer-events-none tw:opacity-65': selectedFiles.length < 1 }">
                   <fa-icon icon="fa-solid fa-trash"></fa-icon>
-                  <span class="ma-badge tw:ml-1" v-show="selectedFiles.length > 0">{{ selectedFiles.length
+                  <span class="tw:inline-flex tw:items-center tw:justify-center tw:px-[0.65em] tw:py-[0.25em] tw:text-[0.75em] tw:font-bold tw:leading-none tw:text-[var(--bs-body-color)] tw:bg-[var(--bs-tertiary-bg)] tw:rounded-full tw:ml-1" v-show="selectedFiles.length > 0">{{ selectedFiles.length
                     }}</span>
                 </a>
-                <a :title="t.DownloadAll" href="javascript:void(0)" class="ma-btn ma-btn-light tw:mr-2"
+                <a :title="t.DownloadAll" href="javascript:void(0)" class="tw:inline-flex tw:items-center tw:justify-center tw:gap-1.5 tw:px-3 tw:py-1.5 tw:text-sm tw:font-normal tw:leading-normal tw:text-center tw:cursor-pointer tw:select-none tw:border tw:rounded-md tw:transition-colors tw:text-[var(--bs-body-color)] tw:bg-[var(--bs-secondary-bg)] tw:border-[var(--bs-border-color)] hover:tw:bg-[var(--bs-tertiary-bg)] tw:no-underline tw:mr-2"
                   @click="() => downloadSelectedFiles()"
-                  :class="{ 'is-disabled': selectedFiles.length < 1 || isDownloading }">
+                  :class="{ 'tw:cursor-default tw:pointer-events-none tw:opacity-65': selectedFiles.length < 1 || isDownloading }">
                   <fa-icon icon="fa-solid fa-download"></fa-icon>
-                  <span class="ma-badge tw:ml-1" v-show="selectedFiles.length > 0">{{ selectedFiles.length
+                  <span class="tw:inline-flex tw:items-center tw:justify-center tw:px-[0.65em] tw:py-[0.25em] tw:text-[0.75em] tw:font-bold tw:leading-none tw:text-[var(--bs-body-color)] tw:bg-[var(--bs-tertiary-bg)] tw:rounded-full tw:ml-1" v-show="selectedFiles.length > 0">{{ selectedFiles.length
                     }}</span>
                 </a>
                 <a :title="gridView ? (t.TableView ?? 'Table view') : (t.GridView ?? 'Grid view')"
-                  href="javascript:void(0)" class="ma-btn ma-btn-light tw:mr-2"
+                  href="javascript:void(0)" class="tw:inline-flex tw:items-center tw:justify-center tw:gap-1.5 tw:px-3 tw:py-1.5 tw:text-sm tw:font-normal tw:leading-normal tw:text-center tw:cursor-pointer tw:select-none tw:border tw:rounded-md tw:transition-colors tw:text-[var(--bs-body-color)] tw:bg-[var(--bs-secondary-bg)] tw:border-[var(--bs-border-color)] hover:tw:bg-[var(--bs-tertiary-bg)] tw:no-underline tw:mr-2"
                   @click="gridView = !gridView">
                   <fa-icon :icon="gridView ? 'fa-solid fa-list' : 'fa-solid fa-grip'"></fa-icon>
                 </a>
@@ -120,11 +122,13 @@
             </div>
             <div>
               <div class="file-filter">
-                <div class="ma-input-group">
-                  <fa-icon icon="fa-solid fa-filter icon-inside-input"></fa-icon>
-                  <input type="text" id="file-filter-input" v-model="fileFilter" class="ma-input input-filter"
+                <div class="tw:flex tw:flex-nowrap tw:items-stretch tw:w-full">
+                  <span class="tw:flex tw:items-center tw:px-3 tw:border tw:border-r-0 tw:border-[var(--bs-border-color)] tw:bg-[var(--bs-tertiary-bg)] tw:text-[var(--bs-secondary-color)] tw:rounded-l-md">
+                    <fa-icon icon="fa-solid fa-filter"></fa-icon>
+                  </span>
+                  <input type="text" id="file-filter-input" v-model="fileFilter" class="tw:flex-auto tw:min-w-0 tw:block tw:px-3 tw:py-1.5 tw:text-sm tw:font-normal tw:leading-normal tw:text-[var(--bs-body-color)] tw:bg-[var(--bs-body-bg)] tw:border tw:border-[var(--bs-border-color)] tw:rounded-none tw:transition-colors focus:tw:border-[#0d6efd] focus:tw:outline-none input-filter"
                     :placeholder="t.Filter" :aria-label="t.Filter" />
-                  <button id="clear-file-filter-button" class="ma-btn ma-btn-outline" :disabled="fileFilter == ''"
+                  <button id="clear-file-filter-button" class="tw:inline-flex tw:items-center tw:justify-center tw:gap-1.5 tw:px-3 tw:py-1.5 tw:text-sm tw:font-normal tw:leading-normal tw:cursor-pointer tw:select-none tw:border tw:border-l-0 tw:rounded-r-md tw:transition-colors tw:text-[var(--bs-secondary-color)] tw:border-[var(--bs-border-color)] tw:bg-[var(--bs-tertiary-bg)] hover:tw:text-[var(--bs-body-color)] hover:tw:bg-[var(--bs-secondary-bg)]" :disabled="fileFilter == ''"
                     v-on:click="fileFilter = ''">
                     <fa-icon icon="fa-solid fa-times"></fa-icon>
                   </button>

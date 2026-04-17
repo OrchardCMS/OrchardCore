@@ -11,7 +11,7 @@ type MediaPickerConfig = {
 };
 
 type MediaPickerFile = {
-    filePath: string;
+    filePath?: string;
 };
 
 type TrumbowygEditable = {

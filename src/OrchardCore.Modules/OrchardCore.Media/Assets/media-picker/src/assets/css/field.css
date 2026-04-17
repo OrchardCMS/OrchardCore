@@ -1,0 +1,76 @@
+/* ============================================================
+   Media Picker — Minimal Stylesheet
+   All component styles are expressed as Tailwind utilities in
+   the Vue templates. This file only contains things that cannot
+   be expressed as inline utilities.
+   ============================================================ */
+
+/* Tailwind v4 — with preflight, tw: prefix, BS dark mode selector */
+@import "tailwindcss" prefix(tw);
+@custom-variant dark (&:where([data-bs-theme="dark"], [data-bs-theme="dark"] *));
+
+/* ============================================================
+   CSS Custom Properties (Bootstrap compat tokens)
+   ============================================================ */
+:root {
+  --bs-body-bg: #fff;
+  --bs-body-color: #212529;
+  --bs-border-color: #dee2e6;
+  --mf-accent: #7bc143;
+}
+
+/* ============================================================
+   Scoped element resets
+   Neutralize Bootstrap element-level rules within the field
+   ============================================================ */
+.media-field-app p,
+.media-field-app ul,
+.media-field-app ol {
+  margin: 0;
+  padding: 0;
+}
+
+.media-field-app ul,
+.media-field-app ol {
+  list-style: none;
+}
+
+.media-field-app a {
+  color: inherit;
+  text-decoration: inherit;
+}
+
+/* ============================================================
+   VFM z-index override
+   Must sit above Bootstrap sidebar (z-index: 1030)
+   ============================================================ */
+.vfm {
+  z-index: 2000 !important;
+}
+
+
+/* ============================================================
+   Picker modal — flex chain for embedded media-app
+   Targets the .fileApp element rendered by the media-app bundle
+   inside our container; cannot be expressed as an inline utility.
+   ============================================================ */
+.mf-picker-media-app .fileApp {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ============================================================
+   Anchor marker
+   Uses transform translate(-50%, -50%) + text-shadow; both are
+   awkward with arbitrary Tailwind values so kept here.
+   ============================================================ */
+.mf-anchor-marker {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  font-size: 1.5rem;
+  color: var(--mf-accent);
+  text-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+}

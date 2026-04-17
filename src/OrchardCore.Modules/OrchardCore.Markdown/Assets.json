@@ -16,7 +16,7 @@
     "action": "parcel",
     "name": "markdown-mediatoolbar",
     "source": ["Assets/Scripts/mde.mediatoolbar.ts"],
-    "dest": "wwwroot/Scripts",
+    "dest": "wwwroot/Scripts/mediatoolbar",
     "tags": ["admin", "markdown", "js"]
   }
 ]

@@ -23,7 +23,6 @@ import TreeSelect from 'primevue/treeselect';
 import { useGlobals } from "./services/Globals";
 import { useEventBus } from "./services/UseEventBus";
 import type { IFileLibraryItemDto } from "@bloom/media/interfaces";
-import MediaPickerModal from "./components/MediaPickerModal.vue";
 
 /* add icons to the library (once) */
 library.add(fas);
@@ -174,49 +173,4 @@ export function mountMediaAppAsPicker(
   };
 }
 
-export function openMediaPicker(config: IMediaPickerConfig): Promise<IFileLibraryItemDto[]> {
-  return new Promise((resolve) => {
-    const host = document.createElement("div");
-    document.body.appendChild(host);
-
-    let settled = false;
-    const pickerApp = createApp(MediaPickerModal, {
-      config,
-      mountPicker: (
-        container: HTMLElement,
-        pickerConfig: IMediaPickerConfig & { onSelectionChange?: (count: number) => void }
-      ) => mountMediaAppAsPicker(container, pickerConfig),
-      onResolve: (files: IFileLibraryItemDto[]) => {
-        if (settled) {
-          return;
-        }
-
-        settled = true;
-        pickerApp.unmount();
-        host.remove();
-        resolve(files);
-      },
-    });
-
-    configureMediaApp(pickerApp);
-    registerNotificationBus();
-    pickerApp.mount(host);
-  });
-}
-
-type OrchardMediaApi = {
-  openMediaPicker: (config: IMediaPickerConfig) => Promise<IFileLibraryItemDto[]>;
-  mountMediaAppAsPicker: typeof mountMediaAppAsPicker;
-};
-
-declare global {
-  interface Window {
-    OrchardCoreMedia?: OrchardMediaApi;
-  }
-}
-
-window.OrchardCoreMedia = {
-  openMediaPicker,
-  mountMediaAppAsPicker,
-};
 

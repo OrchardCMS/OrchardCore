@@ -98,106 +98,6 @@
   text-decoration: inherit;
 }
 
-/* ============================================================
-   Custom Buttons (replaces Bootstrap .btn)
-   ============================================================ */
-.ma-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.375rem;
-  padding: 0.375rem 0.75rem;
-  font-size: 0.875rem;
-  font-weight: 400;
-  line-height: 1.5;
-  text-align: center;
-  text-decoration: none;
-  vertical-align: middle;
-  cursor: pointer;
-  user-select: none;
-  border: 1px solid transparent;
-  border-radius: 0.375rem;
-  transition: color 0.15s, background-color 0.15s, border-color 0.15s;
-  color: var(--bs-body-color, #212529);
-  background-color: transparent;
-}
-
-.ma-btn:focus-visible {
-  outline: 0;
-  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-}
-
-.ma-btn.is-disabled,
-.ma-btn[disabled] {
-  pointer-events: none;
-  opacity: 0.65;
-}
-
-.ma-btn-primary {
-  color: #fff;
-  background-color: var(--media-primary, #0d6efd);
-  border-color: var(--media-primary, #0d6efd);
-}
-
-.ma-btn-primary:hover {
-  background-color: #0b5ed7;
-  border-color: #0a58ca;
-}
-
-.ma-btn-light {
-  color: var(--gray-700, #495057);
-  background-color: #f1f6ff;
-  border-color: var(--gray-300, #dee2e6);
-}
-
-.ma-btn-light:hover {
-  background-color: #e2ecff;
-  border-color: var(--gray-400, #ced4da);
-}
-
-.ma-btn-link {
-  color: var(--gray-600, #6c757d);
-  background-color: transparent;
-  border-color: transparent;
-  text-decoration: none;
-  padding: 0;
-}
-
-.ma-btn-link:hover {
-  color: var(--gray-1000, #212529);
-}
-
-.ma-btn-outline {
-  color: var(--gray-600, #6c757d);
-  background-color: transparent;
-  border-color: var(--gray-400, #ced4da);
-}
-
-.ma-btn-outline:hover {
-  color: var(--gray-700, #495057);
-  background-color: var(--gray-100, #f8f9fa);
-}
-
-.ma-btn-sm {
-  padding: 0.25rem 0.5rem;
-  font-size: 0.8125rem;
-}
-
-.ma-btn-group {
-  display: inline-flex;
-  vertical-align: middle;
-}
-
-.ma-btn-group > .ma-btn:not(:last-child) {
-  border-top-right-radius: 0;
-  border-bottom-right-radius: 0;
-}
-
-.ma-btn-group > .ma-btn:not(:first-child) {
-  border-top-left-radius: 0;
-  border-bottom-left-radius: 0;
-  margin-left: -1px;
-}
 
 /* ============================================================
    Custom Form Components (replaces Bootstrap .form-check, etc.)
@@ -239,68 +139,6 @@
   box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
 }
 
-.ma-input {
-  display: block;
-  width: 100%;
-  padding: 0.375rem 0.75rem;
-  font-size: 0.875rem;
-  font-weight: 400;
-  line-height: 1.5;
-  color: var(--bs-body-color, #212529);
-  background-color: #fff;
-  background-clip: padding-box;
-  border: 1px solid var(--gray-400, #ced4da);
-  border-radius: 0.375rem;
-  transition: border-color 0.15s, box-shadow 0.15s;
-}
-
-.ma-input:focus {
-  border-color: var(--media-primary, #0d6efd);
-  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-  outline: 0;
-}
-
-.ma-input-group {
-  position: relative;
-  display: flex;
-  flex-wrap: nowrap;
-  align-items: stretch;
-  width: 100%;
-}
-
-.ma-input-group > .ma-input {
-  position: relative;
-  flex: 1 1 auto;
-  width: 1%;
-  min-width: 0;
-}
-
-.ma-input-group > .ma-input:not(:last-child) {
-  border-top-right-radius: 0;
-  border-bottom-right-radius: 0;
-}
-
-.ma-input-group > .ma-btn:last-child {
-  border-top-left-radius: 0;
-  border-bottom-left-radius: 0;
-  margin-left: -1px;
-}
-
-/* ============================================================
-   Custom Badge
-   ============================================================ */
-.ma-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.25em 0.65em;
-  font-size: 0.75em;
-  font-weight: 700;
-  line-height: 1;
-  color: #000;
-  background-color: var(--gray-200, #e9ecef);
-  border-radius: 50rem;
-}
 
 /* ============================================================
    Custom Pagination
@@ -358,20 +196,6 @@
   border-color: var(--gray-300, #dee2e6);
 }
 
-/* ============================================================
-   Custom Alert
-   ============================================================ */
-.ma-alert {
-  padding: 1rem;
-  border-radius: 0.375rem;
-  border: 1px solid transparent;
-}
-
-.ma-alert-danger {
-  color: #842029;
-  background-color: #f8d7da;
-  border-color: #f5c2c7;
-}
 
 /* ============================================================
    Card (used by upload list, grid items)
@@ -579,45 +403,8 @@
   color: black;
 }
 
-.action-bar .file-filter button {
-  border-color: var(--gray-400);
-  color: var(--gray-400);
-  opacity: 1;
-}
-
-.action-bar .file-filter button:not(:disabled) {
-  border-color: var(--gray-500);
-  background-color: var(--gray-200);
-  color: var(--gray-700);
-}
-
 .action-bar .file-filter svg {
   opacity: 0.6;
-}
-
-.action-bar .file-filter .fa-filter {
-  position: relative;
-  left: 23px;
-  top: 10px;
-  z-index: 100;
-  margin-left: -20px;
-}
-
-.action-bar .file-filter .ma-input.input-filter {
-  border-color: var(--gray-400);
-  border-right: none;
-  padding-left: 32px;
-  border-top-right-radius: 0;
-  border-bottom-right-radius: 0;
-}
-
-.action-bar .file-filter .icon-inside-input {
-  position: absolute;
-  top: 8px;
-  left: 10px;
-  z-index: 1030;
-  pointer-events: none;
-  color: var(--gray-600);
 }
 
 .action-bar .fileinput-button {

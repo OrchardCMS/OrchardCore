@@ -13,12 +13,12 @@
         </span>
       </div>
       <div class="upload-toast-actions">
-        <button v-if="errorCount > 0" class="ma-btn ma-btn-link ma-btn-sm tw:text-red-500 tw:p-0 tw:me-2"
+        <button v-if="errorCount > 0" class="tw:inline-flex tw:items-center tw:justify-center tw:gap-1.5 tw:text-[0.8125rem] tw:font-normal tw:leading-normal tw:cursor-pointer tw:select-none tw:bg-transparent tw:border-0 tw:no-underline tw:text-red-500 hover:tw:text-red-700 tw:p-0 tw:me-2"
           @click.stop="clearErrors">{{ t.ClearErrors }}</button>
-        <button class="ma-btn ma-btn-link ma-btn-sm tw:p-0" @click.stop="expanded = !expanded">
+        <button class="tw:inline-flex tw:items-center tw:justify-center tw:gap-1.5 tw:text-[0.8125rem] tw:font-normal tw:leading-normal tw:cursor-pointer tw:select-none tw:bg-transparent tw:border-0 tw:text-[#6c757d] hover:tw:text-[#212529] tw:p-0 tw:no-underline" @click.stop="expanded = !expanded">
           <fa-icon :icon="expanded ? 'fa-solid fa-chevron-down' : 'fa-solid fa-chevron-up'"></fa-icon>
         </button>
-        <button v-if="pendingCount === 0" class="ma-btn ma-btn-link ma-btn-sm tw:p-0 tw:ms-2" @click.stop="dismissAll">
+        <button v-if="pendingCount === 0" class="tw:inline-flex tw:items-center tw:justify-center tw:gap-1.5 tw:text-[0.8125rem] tw:font-normal tw:leading-normal tw:cursor-pointer tw:select-none tw:bg-transparent tw:border-0 tw:text-[#6c757d] hover:tw:text-[#212529] tw:p-0 tw:ms-2 tw:no-underline" @click.stop="dismissAll">
           <fa-icon icon="fa-solid fa-times"></fa-icon>
         </button>
       </div>
@@ -29,12 +29,12 @@
         <div class="tw:flex tw:justify-between tw:items-center">
           <span class="upload-toast-filename" :title="f.errorMessage || f.name">{{ f.name }}</span>
           <span v-if="!f.errorMessage && !f.success && props.tusEnabled" class="tw:flex tw:items-center tw:gap-1">
-            <button class="ma-btn ma-btn-link ma-btn-sm tw:p-0" @click="togglePause(f)"
+            <button class="tw:inline-flex tw:items-center tw:justify-center tw:gap-1.5 tw:text-[0.8125rem] tw:font-normal tw:leading-normal tw:cursor-pointer tw:select-none tw:bg-transparent tw:border-0 tw:text-[#6c757d] hover:tw:text-[#212529] tw:p-0 tw:no-underline" @click="togglePause(f)"
               :title="f.paused ? t.ResumeUpload : t.PauseUpload">
               <fa-icon :icon="f.paused ? 'fa-solid fa-play' : 'fa-solid fa-pause'"></fa-icon>
             </button>
           </span>
-          <button v-else-if="f.errorMessage" class="ma-btn ma-btn-link ma-btn-sm tw:p-0 tw:text-red-500"
+          <button v-else-if="f.errorMessage" class="tw:inline-flex tw:items-center tw:justify-center tw:gap-1.5 tw:text-[0.8125rem] tw:font-normal tw:leading-normal tw:cursor-pointer tw:select-none tw:bg-transparent tw:border-0 tw:no-underline tw:text-red-500 hover:tw:text-red-700 tw:p-0"
             @click="dismiss(f)">
             <fa-icon icon="fa-solid fa-times"></fa-icon>
           </button>

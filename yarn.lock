@@ -13522,9 +13522,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"orchardcore-media-field@workspace:src/OrchardCore.Modules/OrchardCore.Media/Assets/media-field":
+"orchardcore-media-picker@workspace:src/OrchardCore.Modules/OrchardCore.Media/Assets/media-picker":
   version: 0.0.0-use.local
-  resolution: "orchardcore-media-field@workspace:src/OrchardCore.Modules/OrchardCore.Media/Assets/media-field"
+  resolution: "orchardcore-media-picker@workspace:src/OrchardCore.Modules/OrchardCore.Media/Assets/media-picker"
   dependencies:
     "@fortawesome/fontawesome-svg-core": "npm:^6.4.2"
     "@fortawesome/free-regular-svg-icons": "npm:^6.4.2"

@@ -7,8 +7,8 @@
   },
   {
     "action": "vite",
-    "name": "media-field",
-    "source": "Assets/media-field",
+    "name": "media-picker",
+    "source": "Assets/media-picker",
     "tags": ["admin", "dashboard", "js"]
   }
 ]

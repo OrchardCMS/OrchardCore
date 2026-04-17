@@ -23,14 +23,14 @@ public sealed class ResourceManagementOptionsConfiguration : IConfigureOptions<R
             .SetVersion("2.0.0");
 
         _manifest
-            .DefineScript("media-field")
-            .SetUrl("~/OrchardCore.Media/Scripts/media-field2.min.js", "~/OrchardCore.Media/Scripts/media-field2.js")
+            .DefineScript("media-picker")
+            .SetUrl("~/OrchardCore.Media/Scripts/media-picker2.min.js", "~/OrchardCore.Media/Scripts/media-picker2.js")
             .SetVersion("2.0.0")
             .SetAttribute("type", "module");
 
         _manifest
-            .DefineStyle("media-field")
-            .SetUrl("~/OrchardCore.Media/Styles/media-field2.min.css", "~/OrchardCore.Media/Styles/media-field2.css")
+            .DefineStyle("media-picker")
+            .SetUrl("~/OrchardCore.Media/Styles/media-picker2.min.css", "~/OrchardCore.Media/Styles/media-picker2.css")
             .SetVersion("2.0.0");
     }
 

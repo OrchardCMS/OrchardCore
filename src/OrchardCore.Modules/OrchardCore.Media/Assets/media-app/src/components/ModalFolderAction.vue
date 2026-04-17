@@ -25,11 +25,11 @@
         </div>
       </template>
     </div>
-    <div class="tw:mt-3 tw:flex tw:flex-row tw:justify-end">
-      <button class="ma-btn ma-btn-light tw:border tw:border-gray-400 cancel" @click="close">
+    <div class="tw:mt-3 tw:flex tw:flex-row tw:justify-end tw:gap-2">
+      <button class="tw:inline-flex tw:items-center tw:justify-center tw:gap-1.5 tw:px-3 tw:py-1.5 tw:text-sm tw:font-normal tw:leading-normal tw:cursor-pointer tw:select-none tw:border tw:rounded-md tw:transition-colors tw:text-[var(--bs-body-color)] tw:bg-[var(--bs-secondary-bg)] tw:border-[var(--bs-border-color)] hover:tw:bg-[var(--bs-tertiary-bg)] cancel" @click="close">
         {{ t.Cancel }}
       </button>
-      <button id="btn-submit" class="tw:ml-2 ma-btn ma-btn-primary"
+      <button id="btn-submit" class="tw:inline-flex tw:items-center tw:justify-center tw:gap-1.5 tw:px-3 tw:py-1.5 tw:text-sm tw:font-normal tw:leading-normal tw:cursor-pointer tw:select-none tw:border tw:rounded-md tw:transition-colors tw:text-white tw:bg-[#0d6efd] tw:border-[#0d6efd] hover:tw:bg-[#0b5ed7] hover:tw:border-[#0a58ca]"
         @click="emit('confirm', { action: folderAction, folder: folder, inputValue: inputValue })">
         <slot name="submit"></slot>
       </button>

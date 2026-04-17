@@ -2,17 +2,17 @@ export {};
 
 import { openMediaPicker } from 'orchardcore-media-app/src/picker-api';
 
+type MediaPickerFile = {
+    name?: string;
+    url?: string;
+};
+
 type MediaPickerConfig = {
     translations?: string;
     basePath?: string;
     uploadFilesUrl?: string;
     allowedExtensions?: string;
     maxUploadChunkSize?: number;
-};
-
-type MediaPickerFile = {
-    name: string;
-    url?: string;
 };
 
 type TrumbowygEditable = {
@@ -100,7 +100,7 @@ if (trumbowyg) {
                     for (const selectedFile of selectedFiles) {
                         const img = document.createElement('img');
                         img.src = selectedFile.url ?? '';
-                        img.alt = selectedFile.name;
+                        img.alt = selectedFile.name ?? '';
                         editor.range.insertNode(img);
                     }
 
