@@ -399,7 +399,10 @@ The following configuration values are used by default and can be customized:
     // The maximum chunk size when uploading files in bytes. If 0, no chunked upload is used. This is useful to work around request size limitations of a hosting environment.
     "MaxUploadChunkSize": 104857600,
     // The lifetime of temporary files created during upload. Defaults to 1 hour.
-    "TemporaryFileLifetime": "01:00:00"
+    "TemporaryFileLifetime": "01:00:00",
+    // The path used to store temporary TUS upload data. Defaults to {TempPath}/TusUploads.
+    // Configure this to a shared filesystem path for multi-instance deployments.
+    "TusTempPath": "/mnt/shared/TusUploads"
   }
 }
 ```
@@ -424,6 +427,10 @@ To configure `wwwroot` static file options apply:
 ```
 services.Configure<StaticFileOptions>(o => ...);
 ```
+
+## Media Gallery
+
+For documentation on the Media Gallery admin UI, including file operations, upload behavior, TUS resumable uploads, SignalR real-time updates, multi-instance deployment, and media field editor types, see the [Media Gallery documentation](MediaGallery.md).
 
 ## Media Profiles
 

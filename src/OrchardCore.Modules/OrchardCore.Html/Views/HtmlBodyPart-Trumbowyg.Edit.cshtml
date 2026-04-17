@@ -13,11 +13,11 @@
 
 @if (trumbowygSettings.InsertMediaWithUrl)
 {
-    <script asp-src="~/OrchardCore.Html/Scripts/trumbowyg.media.url.min.js" debug-src="~/OrchardCore.Html/Scripts/trumbowyg.media.url.js" depends-on="trumbowyg" at="Foot"></script>
+    <script asp-src="~/OrchardCore.Html/Scripts/trumbowyg/trumbowyg.media.url.min.js" debug-src="~/OrchardCore.Html/Scripts/trumbowyg/trumbowyg.media.url.js" depends-on="trumbowyg" at="Foot"></script>
 }
 else
 {
-    <script asp-src="~/OrchardCore.Html/Scripts/trumbowyg.media.tag.min.js" debug-src="~/OrchardCore.Html/Scripts/trumbowyg.media.tag.js" depends-on="trumbowyg" at="Foot"></script>
+    <script asp-src="~/OrchardCore.Html/Scripts/trumbowyg/trumbowyg.media.tag.min.js" debug-src="~/OrchardCore.Html/Scripts/trumbowyg/trumbowyg.media.tag.js" depends-on="trumbowyg" at="Foot"></script>
 }
 
 @await DisplayAsync(await New.ShortcodeModal())

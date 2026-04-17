@@ -73,3 +73,47 @@ using OrchardCore.Modules.Manifest;
     ],
     Category = "Content Management"
 )]
+
+[assembly: Feature(
+    Id = "OrchardCore.Media.Tus",
+    Name = "Media TUS Uploads",
+    Description = "Enables resumable file uploads using the TUS protocol. When enabled, replaces the default chunked upload mechanism with the TUS standard, allowing uploads to be paused and resumed.",
+    Dependencies =
+    [
+        "OrchardCore.Media"
+    ],
+    Category = "Content Management"
+)]
+
+[assembly: Feature(
+    Id = "OrchardCore.Media.SignalR",
+    Name = "Media SignalR",
+    Description = "Enables real-time media updates via SignalR. When enabled, changes to media files and folders are broadcast to connected clients.",
+    Dependencies =
+    [
+        "OrchardCore.Media"
+    ],
+    Category = "Content Management"
+)]
+
+[assembly: Feature(
+    Id = "OrchardCore.Media.SignalR.Azure",
+    Name = "Media SignalR - Azure",
+    Description = "Uses Azure SignalR Service as the backplane for real-time media updates, enabling multi-instance deployments.",
+    Dependencies =
+    [
+        "OrchardCore.Media.SignalR"
+    ],
+    Category = "Content Management"
+)]
+
+[assembly: Feature(
+    Id = "OrchardCore.Media.SignalR.Redis",
+    Name = "Media SignalR - Redis",
+    Description = "Uses Redis as the backplane for real-time media updates, enabling multi-instance deployments.",
+    Dependencies =
+    [
+        "OrchardCore.Media.SignalR"
+    ],
+    Category = "Content Management"
+)]

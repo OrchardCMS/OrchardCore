@@ -3,7 +3,8 @@ using OrchardCore.Tests.Functional.Helpers;
 
 namespace OrchardCore.Tests.Functional.Tests.Cms;
 
-public sealed class SaasTests : IClassFixture<SaasFixture>, IAsyncLifetime
+[Collection(CmsTestCollection.Name)]
+public sealed class SaasTests : IAsyncLifetime
 {
     private readonly SaasFixture _fixture;
 

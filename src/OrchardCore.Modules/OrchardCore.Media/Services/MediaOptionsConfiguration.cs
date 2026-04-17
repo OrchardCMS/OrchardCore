@@ -53,7 +53,7 @@ public sealed class MediaOptionsConfiguration : IConfigureOptions<MediaOptions>
     private const int DefaultMaxBrowserCacheDays = 30;
     private const int DefaultSecureFilesMaxBrowserCacheDays = 0;
     private const int DefaultMaxCacheDays = 365;
-    private const int DefaultMaxFileSize = 30_000_000;
+    private const long DefaultMaxFileSize = 30_000_000;
 
     private const string DefaultAssetsPath = "Media";
     private const string DefaultAssetsUsersFolder = "_Users";
@@ -102,6 +102,7 @@ public sealed class MediaOptionsConfiguration : IConfigureOptions<MediaOptions>
         options.UseTokenizedQueryString = section.GetValue("UseTokenizedQueryString", DefaultUseTokenizedQueryString);
         options.MaxUploadChunkSize = section.GetValue(nameof(options.MaxUploadChunkSize), DefaultMaxUploadChunkSize);
         options.TemporaryFileLifetime = section.GetValue(nameof(options.TemporaryFileLifetime), _defaultTemporaryFileLifeTime);
+        options.TusTempPath = section.GetValue(nameof(options.TusTempPath), Path.Combine(Path.GetTempPath(), "TusUploads"));
 
         var contentSecurityPolicy = section.GetValue("ContentSecurityPolicy", DefaultContentSecurityPolicy);
 

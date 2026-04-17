@@ -11,13 +11,13 @@ public sealed class ResourceManagementOptionsConfiguration : IConfigureOptions<R
 
         manifest
             .DefineScript("trumbowyg-media-url")
-            .SetUrl("~/OrchardCore.ContentFields/Scripts/trumbowyg.media.url.min.js", "~/OrchardCore.ContentFields/Scripts/trumbowyg.media.url.js")
+            .SetUrl("~/OrchardCore.ContentFields/Scripts/trumbowyg/trumbowyg.media.url.min.js", "~/OrchardCore.ContentFields/Scripts/trumbowyg/trumbowyg.media.url.js")
             .SetDependencies("trumbowyg")
             .SetVersion("1.0.0");
 
         manifest
             .DefineScript("trumbowyg-media-tag")
-            .SetUrl("~/OrchardCore.ContentFields/Scripts/trumbowyg.media.tag.min.js", "~/OrchardCore.ContentFields/Scripts/trumbowyg.media.tag.js")
+            .SetUrl("~/OrchardCore.ContentFields/Scripts/trumbowyg/trumbowyg.media.tag.min.js", "~/OrchardCore.ContentFields/Scripts/trumbowyg/trumbowyg.media.tag.js")
             .SetDependencies("trumbowyg")
             .SetVersion("1.0.0");
 
