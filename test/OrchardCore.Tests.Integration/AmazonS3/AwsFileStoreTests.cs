@@ -16,7 +16,7 @@ public class AwsFileStoreTests : IAsyncLifetime
     private AmazonS3Client _s3Client;
     private string _bucketName;
 
-    private readonly LocalStackContainer _localStackContainer = new LocalStackBuilder("localstack/localstack:latest")
+    private readonly LocalStackContainer _localStackContainer = new LocalStackBuilder("localstack/localstack:2.0")
         .Build();
 
     static AwsFileStoreTests()
