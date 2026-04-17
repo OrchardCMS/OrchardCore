@@ -5,7 +5,7 @@
 @model OpenIdServerSettingsViewModel
 @inject IStringLocalizer<OpenIdServerSettingsViewModel> S
 @{
-    var loclizedDateFormat = S["dd/MM/yy"];
+    var localizedDateFormat = S["dd/MM/yy"];
 }
 <div class="mb-4">
     <h3>@T["Endpoints"]</h3>
@@ -210,7 +210,7 @@
                         friendlyName = T["No Friendly Name"].Value;
                     }
                     <option value="@certificate.ThumbPrint" data-StoreLocation="@certificate.StoreLocation" data-StoreName="@certificate.StoreName" selected="@(selectedCertificate)">
-                        @friendlyName [@certificate.NotBefore.ToString(loclizedDateFormat) - @certificate.NotAfter.ToString(loclizedDateFormat)] @certificate.Subject
+                        @friendlyName [@certificate.NotBefore.ToString(localizedDateFormat) - @certificate.NotAfter.ToString(localizedDateFormat)] @certificate.Subject
                     </option>
                 }
             </select>
@@ -274,7 +274,7 @@
                         friendlyName = T["No Friendly Name"].Value;
                     }
                     <option value="@certificate.ThumbPrint" data-StoreLocation="@certificate.StoreLocation" data-StoreName="@certificate.StoreName" selected="@(selectedCertificate)">
-                                                                                    @friendlyName [@certificate.NotBefore.ToString(loclizedDateFormat) - @certificate.NotAfter.ToString(loclizedDateFormat)] @certificate.Subject
+                        @friendlyName [@certificate.NotBefore.ToString(localizedDateFormat) - @certificate.NotAfter.ToString(localizedDateFormat)] @certificate.Subject
                     </option>
                 }
             </select>
