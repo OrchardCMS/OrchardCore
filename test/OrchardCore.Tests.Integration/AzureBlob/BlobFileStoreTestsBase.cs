@@ -4,6 +4,7 @@ using Moq;
 using OrchardCore.FileStorage;
 using OrchardCore.FileStorage.AzureBlob;
 using OrchardCore.Modules;
+using Testcontainers.Azurite;
 using Xunit;
 
 namespace OrchardCore.Tests.Integration.AzureBlob;
@@ -14,39 +15,40 @@ namespace OrchardCore.Tests.Integration.AzureBlob;
 /// </summary>
 public abstract class BlobFileStoreTestsBase : IAsyncLifetime
 {
-    private const string EnvVar = "AZURITE_CONNECTION_STRING";
-    private const string DfsEnvVar = "AZURITE_DFS_ENDPOINT";
+    private readonly AzuriteContainer _azuriteContainer = new AzuriteBuilder("mcr.microsoft.com/azure-storage/azurite:3.30.0")
+        .WithCommand("--skipApiVersionCheck")
+        .Build();
 
-    protected abstract bool IsHnsEnabled { get; }
+    protected virtual bool IsHnsEnabled { get; }
 
     private BlobFileStore _store;
     private BlobContainerClient _containerClient;
     private string _containerName;
 
-    protected static string GetConnectionString()
-        => System.Environment.GetEnvironmentVariable(EnvVar);
-
     public async ValueTask InitializeAsync()
     {
-        var connectionString = GetConnectionString();
+        await _azuriteContainer.StartAsync()
+            .ConfigureAwait(false);
+
         _containerName = $"test-{Guid.NewGuid():N}";
 
-        var options = new TestBlobStorageOptions
-        {
-            ConnectionString = connectionString,
-            ContainerName = _containerName,
-            BasePath = "",
-            UseHierarchicalNamespace = IsHnsEnabled,
-            DfsEndpoint = System.Environment.GetEnvironmentVariable(DfsEnvVar),
-        };
+        _containerClient = new BlobContainerClient(_azuriteContainer.GetConnectionString(), _containerName);
 
-        _containerClient = new BlobContainerClient(connectionString, _containerName);
         await _containerClient.CreateIfNotExistsAsync();
 
         var clock = Mock.Of<IClock>(c => c.UtcNow == DateTime.UtcNow);
         var contentTypeProvider = new FileExtensionContentTypeProvider();
 
-        _store = new BlobFileStore(options, clock, contentTypeProvider);
+        var blobStorageOptions = new TestBlobStorageOptions
+        {
+            ConnectionString = _azuriteContainer.GetConnectionString(),
+            ContainerName = _containerName,
+            BasePath = "",
+            UseHierarchicalNamespace = IsHnsEnabled,
+        };
+
+        _store = new BlobFileStore(blobStorageOptions, clock, contentTypeProvider);
+
         await _store.EnsureCapabilitiesAsync();
     }
 
@@ -93,13 +95,13 @@ public abstract class BlobFileStoreTestsBase : IAsyncLifetime
 
     // -- Capabilities --
 
-    [AzuriteFact]
+    [Fact]
     public void EnsureCapabilities_SetsHnsFlag()
     {
         Assert.Equal(IsHnsEnabled, _store.Capabilities.HasHierarchicalNamespace);
     }
 
-    [AzuriteFact]
+    [Fact]
     public void EnsureCapabilities_SetsAtomicMoveFlag()
     {
         Assert.Equal(IsHnsEnabled, _store.Capabilities.SupportsAtomicMove);
@@ -107,14 +109,14 @@ public abstract class BlobFileStoreTestsBase : IAsyncLifetime
 
     // -- File operations --
 
-    [AzuriteFact]
+    [Fact]
     public async Task CreateFile_ReturnsPath()
     {
         var result = await CreateTestFileAsync("folder/file.txt");
         Assert.Equal("folder/file.txt", result);
     }
 
-    [AzuriteFact]
+    [Fact]
     public async Task GetFileInfo_ReturnsCorrectMetadata()
     {
         var content = "hello world";
@@ -129,14 +131,14 @@ public abstract class BlobFileStoreTestsBase : IAsyncLifetime
         Assert.False(info.IsDirectory);
     }
 
-    [AzuriteFact]
+    [Fact]
     public async Task GetFileInfo_NonExistent_ReturnsNull()
     {
         var info = await _store.GetFileInfoAsync("does-not-exist.txt");
         Assert.Null(info);
     }
 
-    [AzuriteFact]
+    [Fact]
     public async Task GetFileStream_ReturnsContent()
     {
         var expected = "stream content test";
@@ -147,14 +149,14 @@ public abstract class BlobFileStoreTestsBase : IAsyncLifetime
         Assert.Equal(expected, actual);
     }
 
-    [AzuriteFact]
+    [Fact]
     public async Task GetFileStream_NonExistent_Throws()
     {
         await Assert.ThrowsAsync<FileStoreException>(
             () => _store.GetFileStreamAsync("no-such-file.txt"));
     }
 
-    [AzuriteFact]
+    [Fact]
     public async Task DeleteFile_ReturnsTrue()
     {
         await CreateTestFileAsync("delete-me.txt");
@@ -165,14 +167,14 @@ public abstract class BlobFileStoreTestsBase : IAsyncLifetime
         Assert.Null(await _store.GetFileInfoAsync("delete-me.txt"));
     }
 
-    [AzuriteFact]
+    [Fact]
     public async Task DeleteFile_NonExistent_ReturnsFalse()
     {
         var result = await _store.TryDeleteFileAsync("ghost.txt");
         Assert.False(result);
     }
 
-    [AzuriteFact]
+    [Fact]
     public async Task CopyFile_CreatesNewFile()
     {
         var content = "copy me";
@@ -184,7 +186,7 @@ public abstract class BlobFileStoreTestsBase : IAsyncLifetime
         Assert.Equal(content, await ReadFileContentAsync("copied.txt"));
     }
 
-    [AzuriteFact]
+    [Fact]
     public async Task CopyFile_SamePath_Throws()
     {
         await CreateTestFileAsync("same.txt");
@@ -193,7 +195,7 @@ public abstract class BlobFileStoreTestsBase : IAsyncLifetime
             () => _store.CopyFileAsync("same.txt", "same.txt"));
     }
 
-    [AzuriteFact]
+    [Fact]
     public async Task CreateFile_OverwriteTrue_Succeeds()
     {
         await CreateTestFileAsync("overwrite.txt", "v1");
@@ -205,7 +207,7 @@ public abstract class BlobFileStoreTestsBase : IAsyncLifetime
         Assert.Equal("v2", content);
     }
 
-    [AzuriteFact]
+    [Fact]
     public async Task CreateFile_OverwriteFalse_Throws()
     {
         await CreateTestFileAsync("no-overwrite.txt");
@@ -217,7 +219,7 @@ public abstract class BlobFileStoreTestsBase : IAsyncLifetime
 
     // -- Directory operations --
 
-    [AzuriteFact]
+    [Fact]
     public async Task GetDirectoryInfo_Root_ReturnsEntry()
     {
         var info = await _store.GetDirectoryInfoAsync(string.Empty);
@@ -226,7 +228,7 @@ public abstract class BlobFileStoreTestsBase : IAsyncLifetime
         Assert.True(info.IsDirectory);
     }
 
-    [AzuriteFact]
+    [Fact]
     public async Task GetDirectoryInfo_Existing_ReturnsEntry()
     {
         await _store.TryCreateDirectoryAsync("my-folder");
@@ -238,7 +240,7 @@ public abstract class BlobFileStoreTestsBase : IAsyncLifetime
         Assert.Equal("my-folder", info.Path);
     }
 
-    [AzuriteFact]
+    [Fact]
     public async Task GetDirectoryInfo_NonExistent_ReturnsNull()
     {
         var info = await _store.GetDirectoryInfoAsync("no-such-folder");
@@ -249,7 +251,7 @@ public abstract class BlobFileStoreTestsBase : IAsyncLifetime
         Assert.Null(info);
     }
 
-    [AzuriteFact]
+    [Fact]
     public async Task CreateDirectory_NewDirectory_Succeeds()
     {
         var result = await _store.TryCreateDirectoryAsync("new-dir");
@@ -260,7 +262,7 @@ public abstract class BlobFileStoreTestsBase : IAsyncLifetime
         Assert.NotNull(info);
     }
 
-    [AzuriteFact]
+    [Fact]
     public async Task DeleteDirectory_WithContents_DeletesAll()
     {
         await _store.TryCreateDirectoryAsync("dir-to-delete");
@@ -274,14 +276,14 @@ public abstract class BlobFileStoreTestsBase : IAsyncLifetime
         Assert.Null(await _store.GetFileInfoAsync("dir-to-delete/file2.txt"));
     }
 
-    [AzuriteFact]
+    [Fact]
     public async Task DeleteDirectory_NonExistent_ReturnsFalse()
     {
         var result = await _store.TryDeleteDirectoryAsync("phantom-dir");
         Assert.False(result);
     }
 
-    [AzuriteFact]
+    [Fact]
     public async Task DeleteDirectory_Root_Throws()
     {
         await Assert.ThrowsAsync<FileStoreException>(
@@ -290,7 +292,7 @@ public abstract class BlobFileStoreTestsBase : IAsyncLifetime
 
     // -- Move --
 
-    [AzuriteFact]
+    [Fact]
     public async Task MoveFile_MovesToNewPath()
     {
         var content = "move me";
@@ -302,7 +304,7 @@ public abstract class BlobFileStoreTestsBase : IAsyncLifetime
         Assert.Equal(content, await ReadFileContentAsync("dst.txt"));
     }
 
-    [AzuriteFact]
+    [Fact]
     public async Task MoveFile_AcrossDirectories()
     {
         await _store.TryCreateDirectoryAsync("dir-a");
@@ -317,7 +319,7 @@ public abstract class BlobFileStoreTestsBase : IAsyncLifetime
 
     // -- Directory content listing --
 
-    [AzuriteFact]
+    [Fact]
     public async Task GetDirectoryContent_ListsFilesAndDirs()
     {
         await CreateTestFileAsync("root-file.txt");
@@ -334,7 +336,7 @@ public abstract class BlobFileStoreTestsBase : IAsyncLifetime
         Assert.Contains(entries, e => e.Name == "sub-dir" && e.IsDirectory);
     }
 
-    [AzuriteFact]
+    [Fact]
     public async Task GetDirectoryContent_ExcludesMarkerFiles()
     {
         await _store.TryCreateDirectoryAsync("marker-test");
@@ -349,7 +351,7 @@ public abstract class BlobFileStoreTestsBase : IAsyncLifetime
         Assert.DoesNotContain(entries, e => e.Name == "OrchardCore.Media.txt");
     }
 
-    [AzuriteFact]
+    [Fact]
     public async Task GetDirectoryContent_Flat_ListsNestedContent()
     {
         await CreateTestFileAsync("flat/a.txt");
@@ -365,7 +367,7 @@ public abstract class BlobFileStoreTestsBase : IAsyncLifetime
         Assert.Contains(entries, e => !e.IsDirectory && e.Name == "b.txt");
     }
 
-    [AzuriteFact]
+    [Fact]
     public async Task CreateDirectory_AlreadyExists_ReturnsFalse()
     {
         await _store.TryCreateDirectoryAsync("existing-dir");
@@ -385,14 +387,14 @@ public abstract class BlobFileStoreTestsBase : IAsyncLifetime
         }
     }
 
-    [AzuriteFact]
+    [Fact]
     public async Task MoveFile_NonExistent_Throws()
     {
         await Assert.ThrowsAsync<FileStoreException>(
             () => _store.MoveFileAsync("no-such-file.txt", "destination.txt"));
     }
 
-    [AzuriteFact]
+    [Fact]
     public async Task DeleteDirectory_WithNestedSubdirectories_DeletesAll()
     {
         await _store.TryCreateDirectoryAsync("parent");
@@ -408,7 +410,7 @@ public abstract class BlobFileStoreTestsBase : IAsyncLifetime
         Assert.Null(await _store.GetDirectoryInfoAsync("parent"));
     }
 
-    [AzuriteFact]
+    [Fact]
     public async Task GetDirectoryContent_Subdirectory_ListsOnlyDirectChildren()
     {
         await _store.TryCreateDirectoryAsync("listing");
@@ -428,7 +430,7 @@ public abstract class BlobFileStoreTestsBase : IAsyncLifetime
         Assert.DoesNotContain(entries, e => e.Name == "file-b.txt");
     }
 
-    [AzuriteFact]
+    [Fact]
     public async Task MoveFile_PreservesContent()
     {
         var content = "preserve this content across move";
@@ -438,29 +440,5 @@ public abstract class BlobFileStoreTestsBase : IAsyncLifetime
 
         var actual = await ReadFileContentAsync("moved-preserve.txt");
         Assert.Equal(content, actual);
-    }
-}
-
-/// <summary>
-/// Concrete <see cref="BlobStorageOptions"/> for testing (the base class is abstract).
-/// </summary>
-internal sealed class TestBlobStorageOptions : BlobStorageOptions;
-
-/// <summary>
-/// Skips the test when the Azurite connection string is not configured.
-/// Set the <c>AZURITE_CONNECTION_STRING</c> environment variable to run these tests.
-/// </summary>
-[AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
-internal sealed class AzuriteFactAttribute : FactAttribute
-{
-    public AzuriteFactAttribute(
-        [System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = null,
-        [System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = -1)
-        : base(sourceFilePath, sourceLineNumber)
-    {
-        if (string.IsNullOrEmpty(System.Environment.GetEnvironmentVariable("AZURITE_CONNECTION_STRING")))
-        {
-            Skip = "Azurite is not configured. Set AZURITE_CONNECTION_STRING to run this test.";
-        }
     }
 }
