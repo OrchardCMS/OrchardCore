@@ -7,7 +7,7 @@
     <div class="mf-toolbar tw:flex tw:items-center tw:gap-2 tw:mb-2">
       <button
         type="button"
-        class="tw:inline-flex tw:items-center tw:gap-1.5 tw:px-3 tw:py-1.5 tw:text-sm tw:leading-normal tw:border tw:border-[#7bc143] tw:rounded tw:bg-[#7bc143] tw:text-white tw:cursor-pointer hover:tw:bg-[#6aab36] hover:tw:border-[#6aab36] disabled:tw:opacity-65 disabled:tw:pointer-events-none"
+        :class="['mf-btn-primary', !canAddMedia ? 'is-disabled' : '', 'tw:inline-flex tw:items-center tw:gap-1.5 tw:px-3 tw:py-1.5 tw:text-sm tw:leading-normal tw:border tw:border-[#7bc143] tw:rounded tw:bg-[#7bc143] tw:text-white tw:cursor-pointer hover:tw:bg-[#6aab36] hover:tw:border-[#6aab36] disabled:tw:opacity-65 disabled:tw:pointer-events-none']"
         :disabled="!canAddMedia"
         @click="showPicker"
       >
@@ -18,7 +18,7 @@
       <button
         v-if="selectedMedia"
         type="button"
-        class="tw:inline-flex tw:items-center tw:gap-1.5 tw:px-3 tw:py-1.5 tw:text-sm tw:leading-normal tw:border tw:border-[#dc3545] tw:rounded tw:bg-[#dc3545] tw:text-white tw:cursor-pointer hover:tw:bg-[#bb2d3b] hover:tw:border-[#bb2d3b]"
+        class="mf-btn-danger tw:inline-flex tw:items-center tw:gap-1.5 tw:px-3 tw:py-1.5 tw:text-sm tw:leading-normal tw:border tw:border-[#dc3545] tw:rounded tw:bg-[#dc3545] tw:text-white tw:cursor-pointer hover:tw:bg-[#bb2d3b] hover:tw:border-[#bb2d3b]"
         @click="removeSelected"
       >
         <i class="fa-solid fa-trash" aria-hidden="true"></i>
@@ -48,7 +48,7 @@
       <!-- Thumb size toggle -->
       <button
         type="button"
-        class="tw:inline-flex tw:items-center tw:gap-1.5 tw:px-2 tw:py-1.5 tw:border-none tw:bg-transparent tw:cursor-pointer tw:text-[var(--bs-body-color)] hover:tw:text-[#7bc143] dark:tw:text-[#dee2e6] tw:ml-auto"
+        class="mf-btn-icon tw:inline-flex tw:items-center tw:gap-1.5 tw:px-2 tw:py-1.5 tw:border-none tw:bg-transparent tw:cursor-pointer tw:text-[var(--bs-body-color)] hover:tw:text-[#7bc143] dark:tw:text-[#dee2e6] tw:ml-auto"
         :title="smallThumbs ? t.largeThumbsTitle : t.smallThumbsTitle"
         @click="smallThumbs = !smallThumbs"
       >

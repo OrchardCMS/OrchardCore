@@ -4,7 +4,7 @@
 <template>
   <li
     v-if="!media.isRemoved"
-    class="tw:flex tw:items-center tw:p-0 tw:border-b tw:border-[var(--bs-border-color)] tw:overflow-hidden last:tw:border-b-0"
+    class="mf-gallery-list-item tw:flex tw:items-center tw:p-0 tw:border-b tw:border-[var(--bs-border-color)] tw:overflow-hidden last:tw:border-b-0"
     :class="{
       'tw:border-[#ffc107]': media.errorType === 'transient',
       'tw:border-[#dc3545]': media.errorType === 'not-found',
@@ -17,7 +17,7 @@
     @dragend="$emit('dragend')"
   >
     <!-- Preview thumbnail -->
-    <div class="tw:w-10 tw:h-10 tw:flex-shrink-0 tw:flex tw:items-center tw:justify-center tw:bg-[var(--bs-tertiary-bg)] tw:overflow-hidden">
+    <div class="mf-gallery-list-preview tw:w-10 tw:h-10 tw:flex-shrink-0 tw:flex tw:items-center tw:justify-center tw:bg-[var(--bs-tertiary-bg)] tw:overflow-hidden">
       <img
         v-if="media.mime?.startsWith('image') && !media.errorType"
         :src="buildMediaUrl(media.url!, 32)"

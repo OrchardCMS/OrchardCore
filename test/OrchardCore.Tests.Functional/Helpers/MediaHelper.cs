@@ -238,7 +238,10 @@ public static class MediaHelper
         // Wait for confirm modal and click the confirm button.
         var modal = page.Locator(".action-modal").First;
         await modal.WaitForAsync(new() { State = WaitForSelectorState.Visible, Timeout = 5_000 });
-        await modal.Locator(".ma-btn-primary").ClickAsync();
+
+        // Keep compatibility with both legacy and updated modal button markup.
+        var confirmButton = modal.Locator(".ma-btn-primary, #btn-submit, button:has-text('OK'), button:has-text('Ok'), button:has-text('Delete')").First;
+        await confirmButton.ClickAsync();
 
         // Wait for the file to disappear.
         await page.WaitForTimeoutAsync(1_000);

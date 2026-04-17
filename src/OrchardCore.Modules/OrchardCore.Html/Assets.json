@@ -6,7 +6,7 @@
       "Assets/trumbowyg.media.tag.ts",
       "Assets/trumbowyg.media.url.ts"
     ],
-    "dest": "wwwroot/Scripts",
+    "dest": "wwwroot/Scripts/trumbowyg",
     "tags": ["admin", "dashboard", "js"]
   }
 ]

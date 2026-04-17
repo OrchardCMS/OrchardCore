@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- Empty state -->
-    <div v-if="visibleItems.length === 0" class="tw:border tw:border-dashed tw:border-[var(--bs-border-color,#dee2e6)] tw:rounded tw:p-8 tw:text-center tw:bg-[var(--bs-tertiary-bg,#f8f9fa)] dark:tw:bg-[#2b3035] dark:tw:border-[#495057]">
+    <div v-if="visibleItems.length === 0" class="mf-empty-card tw:border tw:border-dashed tw:border-[var(--bs-border-color,#dee2e6)] tw:rounded tw:p-8 tw:text-center tw:bg-[var(--bs-tertiary-bg,#f8f9fa)] dark:tw:bg-[#2b3035] dark:tw:border-[#495057]">
       <span class="tw:text-[#6c757d] tw:text-sm">{{ t.noImages }}</span>
     </div>
 
@@ -15,7 +15,7 @@
           'tw:border tw:border-[var(--bs-border-color)] tw:rounded tw:overflow-hidden tw:transition-all tw:bg-[var(--bs-body-bg)] hover:tw:border-[#adb5bd] dark:tw:bg-[#212529] dark:tw:border-[#495057]',
           allowMultiple ? 'tw:cursor-grab active:tw:cursor-grabbing' : 'tw:cursor-pointer',
           selectedMedia === media
-            ? 'tw:border-[#7bc143]! tw:shadow-[0_0_0_2px_rgba(123,193,67,0.25)]'
+            ? 'mf-thumb-item-active tw:border-[#7bc143]! tw:shadow-[0_0_0_2px_rgba(123,193,67,0.25)]'
             : '',
         ]"
         :style="{ width: thumbSize + 2 + 'px' }"
@@ -35,7 +35,7 @@
           <div class="tw:px-2 tw:py-1 tw:border-t tw:border-[var(--bs-border-color)] tw:flex tw:items-center tw:gap-1 tw:min-h-8 dark:tw:border-[#495057]">
             <button
               type="button"
-              class="tw:order-2 tw:px-1 tw:py-0.5 tw:text-xs tw:border-none tw:bg-transparent tw:cursor-pointer tw:text-[var(--bs-body-color)] hover:tw:text-[#7bc143] dark:tw:text-[#dee2e6] tw:flex-shrink-0"
+              class="mf-btn-delete tw:order-2 tw:px-1 tw:py-0.5 tw:text-xs tw:border-none tw:bg-transparent tw:cursor-pointer tw:text-[var(--bs-body-color)] hover:tw:text-[#7bc143] dark:tw:text-[#dee2e6] tw:flex-shrink-0"
               @click.stop="emit('deleteMedia', media)"
             >
               <i class="fa-solid fa-trash" aria-hidden="true"></i>
@@ -46,7 +46,7 @@
 
         <!-- Normal item -->
         <div v-else-if="!media.errorType">
-          <div class="tw:flex tw:items-center tw:justify-center tw:bg-[#f8f9fa] dark:tw:bg-[#2b3035]" :style="{ height: thumbSize + 'px' }">
+          <div class="mf-thumb-preview tw:flex tw:items-center tw:justify-center tw:bg-[#f8f9fa] dark:tw:bg-[#2b3035]" :style="{ height: thumbSize + 'px' }">
             <img
               v-if="media.mime && media.mime.startsWith('image')"
               :src="buildMediaUrl(media.url!, thumbSize)"
@@ -63,7 +63,7 @@
           <div class="tw:px-2 tw:py-1 tw:border-t tw:border-[var(--bs-border-color)] tw:flex tw:items-center tw:gap-1 tw:min-h-8 dark:tw:border-[#495057]">
             <button
               type="button"
-              class="tw:order-2 tw:px-1 tw:py-0.5 tw:text-xs tw:border-none tw:bg-transparent tw:cursor-pointer tw:text-[var(--bs-body-color)] hover:tw:text-[#7bc143] dark:tw:text-[#dee2e6] tw:flex-shrink-0"
+              class="mf-btn-delete tw:order-2 tw:px-1 tw:py-0.5 tw:text-xs tw:border-none tw:bg-transparent tw:cursor-pointer tw:text-[var(--bs-body-color)] hover:tw:text-[#7bc143] dark:tw:text-[#dee2e6] tw:flex-shrink-0"
               @click.stop="emit('deleteMedia', media)"
             >
               <i class="fa-solid fa-trash" aria-hidden="true"></i>
@@ -76,7 +76,7 @@
             >
               <i class="fa-solid fa-download" aria-hidden="true"></i>
             </a>
-            <span class="tw:text-xs tw:whitespace-nowrap tw:overflow-hidden tw:text-ellipsis tw:flex-1 tw:min-w-0" :title="media.mediaPath">{{
+            <span class="mf-filename tw:text-xs tw:whitespace-nowrap tw:overflow-hidden tw:text-ellipsis tw:flex-1 tw:min-w-0" :title="media.mediaPath">{{
               media.isNew ? media.name.substring(36) : media.name
             }}</span>
           </div>
@@ -91,7 +91,7 @@
           <div class="tw:px-2 tw:py-1 tw:border-t tw:border-[var(--bs-border-color)] tw:flex tw:items-center tw:gap-1 tw:min-h-8 dark:tw:border-[#495057]">
             <button
               type="button"
-              class="tw:order-2 tw:px-1 tw:py-0.5 tw:text-xs tw:border-none tw:bg-transparent tw:cursor-pointer tw:text-[var(--bs-body-color)] hover:tw:text-[#7bc143] dark:tw:text-[#dee2e6] tw:flex-shrink-0"
+              class="mf-btn-delete tw:order-2 tw:px-1 tw:py-0.5 tw:text-xs tw:border-none tw:bg-transparent tw:cursor-pointer tw:text-[var(--bs-body-color)] hover:tw:text-[#7bc143] dark:tw:text-[#dee2e6] tw:flex-shrink-0"
               @click.stop="emit('deleteMedia', media)"
             >
               <i class="fa-solid fa-trash" aria-hidden="true"></i>

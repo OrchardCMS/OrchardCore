@@ -3,8 +3,8 @@
   Fixed position bottom-right, shows per-file progress and errors.
 -->
 <template>
-  <div v-show="files.length > 0" class="tw:fixed tw:bottom-4 tw:right-4 tw:w-[360px] tw:max-w-[calc(100vw-2rem)] tw:z-[1060] tw:border tw:border-[var(--bs-border-color)] tw:rounded tw:bg-[var(--bs-body-bg)] tw:shadow-md tw:overflow-hidden dark:tw:border-[var(--bs-border-color)]">
-    <div class="tw:flex tw:justify-between tw:items-center tw:px-3 tw:py-2 tw:bg-[#f8f9fa] tw:border-b tw:border-[var(--bs-border-color)] tw:cursor-pointer tw:text-sm tw:font-medium dark:tw:bg-[rgba(255,255,255,0.05)] dark:tw:border-[var(--bs-border-color)]" @click="expanded = !expanded">
+  <div v-show="files.length > 0" class="mf-upload-toast tw:fixed tw:bottom-4 tw:right-4 tw:w-[360px] tw:max-w-[calc(100vw-2rem)] tw:z-[1060] tw:border tw:border-[var(--bs-border-color)] tw:rounded tw:bg-[var(--bs-body-bg)] tw:shadow-md tw:overflow-hidden dark:tw:border-[var(--bs-border-color)]">
+    <div class="mf-upload-toast-header tw:flex tw:justify-between tw:items-center tw:px-3 tw:py-2 tw:bg-[#f8f9fa] tw:border-b tw:border-[var(--bs-border-color)] tw:cursor-pointer tw:text-sm tw:font-medium dark:tw:bg-[rgba(255,255,255,0.05)] dark:tw:border-[var(--bs-border-color)]" @click="expanded = !expanded">
       <div class="tw:flex tw:items-center">
         <span>{{ t.uploads }}</span>
         <span v-if="pendingCount > 0" class="tw:ms-1">({{ pendingCount }})</span>
@@ -12,7 +12,7 @@
           {{ t.errors }}: {{ errorCount }}
         </span>
       </div>
-      <div class="tw:flex tw:items-center">
+      <div class="mf-upload-toast-actions tw:flex tw:items-center">
         <button
           v-if="errorCount > 0"
           type="button"
@@ -45,6 +45,7 @@
         :key="f.name"
         class="tw:px-3 tw:py-1.5 tw:text-[0.8125rem] tw:border-b tw:border-[#f0f0f0] last:tw:border-b-0 dark:tw:border-b-[rgba(255,255,255,0.06)]"
         :class="{
+          'is-error': f.errorMessage,
           'tw:bg-[rgba(220,53,69,0.06)] dark:tw:bg-[rgba(220,53,69,0.12)]': f.errorMessage,
           'tw:bg-[rgba(25,135,84,0.06)] dark:tw:bg-[rgba(25,135,84,0.12)]': f.success,
         }"
@@ -61,11 +62,11 @@
           </button>
           <i v-else-if="f.success" class="fa-solid fa-check tw:text-green-500" aria-hidden="true"></i>
         </div>
-        <div v-if="f.errorMessage" class="tw:text-xs tw:mt-0.5 tw:text-red-500">
+        <div v-if="f.errorMessage" class="mf-upload-toast-error tw:text-xs tw:mt-0.5 tw:text-red-500">
           {{ f.errorMessage }}
         </div>
         <div v-else-if="!f.success" class="tw:mt-1 tw:h-[3px] tw:bg-[#e9ecef] tw:rounded-sm tw:overflow-hidden dark:tw:bg-[#495057]">
-          <div class="tw:h-full tw:bg-[#7bc143] tw:rounded-sm tw:transition-[width]" :style="{ width: f.percentage + '%' }"></div>
+          <div class="mf-upload-toast-progress-bar tw:h-full tw:bg-[#7bc143] tw:rounded-sm tw:transition-[width]" :style="{ width: f.percentage + '%' }"></div>
         </div>
       </div>
     </div>

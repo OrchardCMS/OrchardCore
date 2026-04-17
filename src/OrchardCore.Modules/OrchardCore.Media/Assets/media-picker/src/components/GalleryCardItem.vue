@@ -4,7 +4,7 @@
 <template>
   <li
     v-if="!media.isRemoved"
-    :class="[size === 'sm' ? 'tw:w-[120px]' : 'tw:w-[200px]', allowMultiple ? 'tw:cursor-grab active:tw:cursor-grabbing' : '']"
+    :class="['mf-gallery-card-item', size === 'sm' ? 'tw:w-[120px]' : 'tw:w-[200px]', allowMultiple ? 'tw:cursor-grab active:tw:cursor-grabbing' : '']"
     :draggable="allowMultiple"
     @dragstart="$emit('dragstart', $event)"
     @dragover.prevent
@@ -12,8 +12,10 @@
     @dragend="$emit('dragend')"
   >
     <div
-      class="tw:border tw:border-[var(--bs-border-color)] tw:rounded tw:overflow-hidden tw:flex tw:flex-col tw:h-full tw:bg-[var(--bs-body-bg)]"
+      class="mf-gallery-card tw:border tw:border-[var(--bs-border-color)] tw:rounded tw:overflow-hidden tw:flex tw:flex-col tw:h-full tw:bg-[var(--bs-body-bg)]"
       :class="{
+        'mf-item-warning': media.errorType === 'transient',
+        'mf-item-danger': media.errorType === 'not-found',
         'tw:border-[#ffc107]': media.errorType === 'transient',
         'tw:border-[#dc3545]': media.errorType === 'not-found',
       }"
@@ -45,7 +47,7 @@
           <i class="fa-solid fa-triangle-exclamation fa-2x"></i>
           <span class="tw:text-xs tw:mt-1">{{ t.mediaNotFound }}</span>
         </div>
-        <div v-else class="tw:flex tw:flex-col tw:items-center tw:justify-center tw:w-full tw:h-full tw:p-2">
+        <div v-else class="mf-gallery-card-icon tw:flex tw:flex-col tw:items-center tw:justify-center tw:w-full tw:h-full tw:p-2">
           <i :class="getIconClassForFilename(media.name, 'fa-3x')" :data-mime="media.mime"></i>
           <span class="tw:text-xs tw:mt-1 tw:truncate tw:max-w-full tw:px-1" :title="media.name">
             {{ media.name }}

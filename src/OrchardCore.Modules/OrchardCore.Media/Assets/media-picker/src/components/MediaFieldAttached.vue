@@ -8,8 +8,8 @@
       <!-- Upload button (file input trigger) -->
       <label
         :for="uploadInputId"
-        class="tw:inline-flex tw:items-center tw:gap-1.5 tw:px-3 tw:py-1.5 tw:text-sm tw:leading-normal tw:border tw:border-[#7bc143] tw:rounded tw:bg-[#7bc143] tw:text-white tw:cursor-pointer hover:tw:bg-[#6aab36] hover:tw:border-[#6aab36]"
-        :class="{ 'tw:opacity-65 tw:pointer-events-none': !canAddMedia }"
+        class="mf-btn-primary tw:inline-flex tw:items-center tw:gap-1.5 tw:px-3 tw:py-1.5 tw:text-sm tw:leading-normal tw:border tw:border-[#7bc143] tw:rounded tw:bg-[#7bc143] tw:text-white tw:cursor-pointer hover:tw:bg-[#6aab36] hover:tw:border-[#6aab36]"
+        :class="{ 'is-disabled tw:opacity-65 tw:pointer-events-none': !canAddMedia }"
       >
         <i class="fa-solid fa-upload" aria-hidden="true"></i>
         {{ t.addMedia }}
@@ -27,7 +27,7 @@
       <button
         v-if="selectedMedia"
         type="button"
-        class="tw:inline-flex tw:items-center tw:gap-1.5 tw:px-3 tw:py-1.5 tw:text-sm tw:leading-normal tw:border tw:border-[#dc3545] tw:rounded tw:bg-[#dc3545] tw:text-white tw:cursor-pointer hover:tw:bg-[#bb2d3b] hover:tw:border-[#bb2d3b]"
+        class="mf-btn-danger tw:inline-flex tw:items-center tw:gap-1.5 tw:px-3 tw:py-1.5 tw:text-sm tw:leading-normal tw:border tw:border-[#dc3545] tw:rounded tw:bg-[#dc3545] tw:text-white tw:cursor-pointer hover:tw:bg-[#bb2d3b] hover:tw:border-[#bb2d3b]"
         @click="removeSelected"
       >
         <i class="fa-solid fa-trash" aria-hidden="true"></i>
@@ -57,7 +57,7 @@
       <!-- Thumb size toggle -->
       <button
         type="button"
-        class="tw:inline-flex tw:items-center tw:gap-1.5 tw:px-2 tw:py-1.5 tw:border-none tw:bg-transparent tw:cursor-pointer tw:text-[var(--bs-body-color)] hover:tw:text-[#7bc143] dark:tw:text-[#dee2e6] tw:ml-auto"
+        class="mf-btn-icon tw:inline-flex tw:items-center tw:gap-1.5 tw:px-2 tw:py-1.5 tw:border-none tw:bg-transparent tw:cursor-pointer tw:text-[var(--bs-body-color)] hover:tw:text-[#7bc143] dark:tw:text-[#dee2e6] tw:ml-auto"
         :title="smallThumbs ? t.largeThumbsTitle : t.smallThumbsTitle"
         @click="smallThumbs = !smallThumbs"
       >
@@ -67,8 +67,8 @@
 
     <!-- Drop zone wrapper -->
     <div
-      class="tw:relative tw:border-2 tw:border-dashed tw:border-transparent tw:rounded tw:transition-colors"
-      :class="isDraggingOver ? 'tw:border-[#7bc143] tw:bg-[rgba(123,193,67,0.05)] dark:tw:bg-[rgba(123,193,67,0.1)]' : ''"
+      class="mf-drop-zone tw:relative tw:border-2 tw:border-dashed tw:border-transparent tw:rounded tw:transition-colors"
+      :class="isDraggingOver ? 'mf-drop-zone-active tw:border-[#7bc143] tw:bg-[rgba(123,193,67,0.05)] dark:tw:bg-[rgba(123,193,67,0.1)]' : ''"
       @dragover.prevent="isDraggingOver = true"
       @dragleave="isDraggingOver = false"
       @drop.prevent="onDrop"
@@ -85,7 +85,7 @@
       />
 
       <!-- Drop hint overlay -->
-      <div v-if="isDraggingOver && canAddMedia" class="tw:absolute tw:inset-0 tw:flex tw:flex-col tw:items-center tw:justify-center tw:bg-[rgba(255,255,255,0.85)] tw:text-[#7bc143] tw:font-medium tw:rounded tw:z-10 tw:pointer-events-none dark:tw:bg-[rgba(33,37,41,0.9)]">
+      <div v-if="isDraggingOver && canAddMedia" class="mf-drop-overlay tw:absolute tw:inset-0 tw:flex tw:flex-col tw:items-center tw:justify-center tw:bg-[rgba(255,255,255,0.85)] tw:text-[#7bc143] tw:font-medium tw:rounded tw:z-10 tw:pointer-events-none dark:tw:bg-[rgba(33,37,41,0.9)]">
         <i class="fa-solid fa-cloud-arrow-up tw:text-4xl tw:mb-2" aria-hidden="true"></i>
         <span>{{ t.dropFiles }}</span>
       </div>

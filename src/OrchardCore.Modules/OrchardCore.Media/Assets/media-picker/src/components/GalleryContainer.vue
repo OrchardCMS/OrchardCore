@@ -7,7 +7,7 @@
     <div v-if="allowMultiple" class="tw:flex tw:items-center tw:gap-2 tw:mb-2 tw:flex-wrap">
       <button
         type="button"
-        class="tw:inline-flex tw:items-center tw:gap-1.5 tw:px-3 tw:py-1.5 tw:text-sm tw:leading-normal tw:border tw:border-[#7bc143] tw:rounded tw:bg-[#7bc143] tw:text-white tw:cursor-pointer hover:tw:bg-[#6aab36] hover:tw:border-[#6aab36]"
+        class="mf-btn-primary tw:inline-flex tw:items-center tw:gap-1.5 tw:px-3 tw:py-1.5 tw:text-sm tw:leading-normal tw:border tw:border-[#7bc143] tw:rounded tw:bg-[#7bc143] tw:text-white tw:cursor-pointer hover:tw:bg-[#6aab36] hover:tw:border-[#6aab36]"
         @click="$emit('showPicker')"
       >
         <i class="fa-solid fa-plus" aria-hidden="true"></i>
@@ -58,7 +58,7 @@
     </div>
 
     <!-- List view -->
-    <ol v-if="!gridView" class="tw:list-none tw:p-0 tw:m-0 tw:border tw:border-[var(--bs-border-color)] tw:rounded tw:overflow-hidden dark:tw:border-[#495057]">
+    <ol v-if="!gridView" class="mf-gallery-list tw:list-none tw:p-0 tw:m-0 tw:border tw:border-[var(--bs-border-color)] tw:rounded tw:overflow-hidden dark:tw:border-[#495057]">
       <GalleryListItem
         v-for="media in uniqueItems"
         :key="media.vuekey ?? media.name"
@@ -75,7 +75,7 @@
       />
       <li
         v-if="uniqueItems.length === 0"
-        class="tw:p-4 tw:text-center tw:cursor-pointer tw:text-[var(--bs-secondary-color)] hover:tw:bg-[var(--bs-tertiary-bg)] hover:tw:text-[#7bc143]"
+        class="mf-gallery-list-empty tw:p-4 tw:text-center tw:cursor-pointer tw:text-[var(--bs-secondary-color)] hover:tw:bg-[var(--bs-tertiary-bg)] hover:tw:text-[#7bc143]"
         @click="$emit('showPicker')"
       >
         <i class="fa-solid fa-plus tw:mr-1" aria-hidden="true"></i>
@@ -84,7 +84,7 @@
     </ol>
 
     <!-- Grid/card view -->
-    <ol v-if="gridView" class="tw:list-none tw:p-0 tw:m-0 tw:flex tw:flex-wrap tw:gap-2">
+    <ol v-if="gridView" :class="['mf-gallery-cards', size === 'sm' ? 'mf-size-sm' : 'mf-size-lg', 'tw:list-none tw:p-0 tw:m-0 tw:flex tw:flex-wrap tw:gap-2']">
       <GalleryCardItem
         v-for="media in uniqueItems"
         :key="media.vuekey ?? media.name"
@@ -103,7 +103,7 @@
       <!-- Add card -->
       <li
         v-if="allowMultiple || uniqueItems.length === 0"
-        :class="size === 'sm' ? 'tw:w-[120px]' : 'tw:w-[200px]'"
+        :class="['mf-gallery-add-card', size === 'sm' ? 'tw:w-[120px]' : 'tw:w-[200px]']"
         @click="$emit('showPicker')"
       >
         <div class="tw:border tw:border-dashed tw:border-[var(--bs-border-color)] tw:rounded tw:overflow-hidden tw:flex tw:flex-col tw:h-full tw:cursor-pointer hover:tw:border-[#7bc143] hover:tw:bg-[rgba(123,193,67,0.05)]">
