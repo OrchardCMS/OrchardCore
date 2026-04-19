@@ -42,20 +42,20 @@ public class MarkdownTests
     [Fact]
     public async Task ShouldConvertMarkdownToHtmlAsync()
     {
-        // Setup.
+        // Arrange
         var services = CreateServiceCollection();
         services.AddScoped<IOrchardHelper>(provider => new MockOrchardHelper(provider));
         services.AddScoped<IShortcodeService, ShortcodeService>();
         services.AddScoped<IHtmlSanitizerService, HtmlSanitizerService>();
         
-        // Act.
+        // Act
         var orchard = services.BuildServiceProvider().GetService<IOrchardHelper>();
         
         await using var stringWriter = new StringWriter();
         (await orchard.MarkdownToHtmlAsync("This _is_ a ==test== markdown.")).WriteTo(stringWriter, HtmlEncoder.Default);
         var html = stringWriter.ToString();
 
-        // Test.
+        // Assert
         html = html.ReplaceLineEndings(string.Empty);
         Assert.Equal("<p>This <em>is</em> a <mark>test</mark> markdown.</p>", html);
     }
