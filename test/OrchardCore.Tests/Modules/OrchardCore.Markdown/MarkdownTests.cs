@@ -39,6 +39,27 @@ public class MarkdownTests
         Assert.Equal(@"<h1>foo</h1>", html);
     }
 
+    [Fact]
+    public async Task ShouldConvertMarkdownToHtmlAsync()
+    {
+        // Setup.
+        var services = CreateServiceCollection();
+        services.AddScoped<IOrchardHelper>(provider => new MockOrchardHelper(provider));
+        services.AddScoped<IShortcodeService, ShortcodeService>();
+        services.AddScoped<IHtmlSanitizerService, HtmlSanitizerService>();
+        
+        // Act.
+        var orchard = services.BuildServiceProvider().GetService<IOrchardHelper>();
+        
+        await using var stringWriter = new StringWriter();
+        (await orchard.MarkdownToHtmlAsync("This _is_ a ==test== markdown.")).WriteTo(stringWriter, HtmlEncoder.Default);
+        var html = stringWriter.ToString();
+
+        // Test.
+        html = html.ReplaceLineEndings(string.Empty);
+        Assert.Equal("<p>This <em>is</em> a <mark>test</mark> markdown.</p>", html);
+    }
+
     private static ServiceCollection CreateServiceCollection()
     {
         var services = new ServiceCollection();
@@ -48,5 +69,16 @@ public class MarkdownTests
         services.AddScoped<IMarkdownService, DefaultMarkdownService>();
 
         return services;
+    }
+    
+    private class MockOrchardHelper : IOrchardHelper
+    {
+        public HttpContext HttpContext { get; }
+
+        public MockOrchardHelper(IServiceProvider provider)
+        {
+            HttpContext = new DefaultHttpContext();
+            HttpContext.RequestServices = provider;
+        }
     }
 }
