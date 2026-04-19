@@ -71,7 +71,7 @@ public class MarkdownTests
         return services;
     }
     
-    private class MockOrchardHelper : IOrchardHelper
+    private sealed class MockOrchardHelper : IOrchardHelper
     {
         public HttpContext HttpContext { get; }
 
