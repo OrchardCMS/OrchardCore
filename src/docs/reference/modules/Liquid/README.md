@@ -173,6 +173,20 @@ Output
 Bonjour!
 ```
 
+There is an option to pass parameter(s) to the localized string:
+
+Input
+
+```liquid
+{{ "Hello {0}!" | t: "John" }}
+```
+
+Output
+
+```text
+Bonjour John!
+```
+
 ## Html Filters
 
 ### `absolute_url`
