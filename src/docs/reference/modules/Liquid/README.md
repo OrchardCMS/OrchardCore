@@ -173,7 +173,7 @@ Output
 Bonjour!
 ```
 
-There is an option to pass parameter(s) to the localized string:
+You can pass one or more parameters to a localized string:
 
 Input
 
