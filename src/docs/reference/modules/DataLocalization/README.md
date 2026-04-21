@@ -88,6 +88,13 @@ To allow a user to only edit translations for a specific culture:
 
 The module includes these built-in `ILocalizationDataProvider` implementations:
 
+### Admin Menu Provider
+
+Provides admin menu display names for translation.
+
+- **Context**: `Admin Menus` or `Admin Menus:{menuName}`
+- **Strings**: Display names of all admin menu / sub menu items
+
 ### Content Type Provider
 
 Provides content type display names for translation.
@@ -108,6 +115,13 @@ Provides permission descriptions for translation.
 
 - **Context**: `Permissions`
 - **Strings**: Descriptions of all non-template permissions
+
+### Search Provider
+
+Provides search-related strings for translation.
+
+- **Context**: `Search`
+- **Strings**: Display names of all search-related items
 
 ## Creating Custom Providers
 
