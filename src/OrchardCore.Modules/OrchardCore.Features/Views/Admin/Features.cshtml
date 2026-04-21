@@ -142,8 +142,7 @@
                                                         }
                                                     </div>
 
-                                                    <button class="btn btn-sm p-0 show-more"
-                                                            style="--bs-btn-font-size: 0.75em;"
+                                                    <button class="btn btn-sm btn-outline-secondary badge-show-more"
                                                             data-bs-toggle="tooltip"
                                                             data-bs-placement="bottom"
                                                             data-bs-title="@T["Show transient dependencies"]">
@@ -283,7 +282,7 @@
             $("[name='submit.BulkAction']").click();
         });
 
-        $('.show-more').on('click', function (e) {
+        $('.badge-show-more').on('click', function (e) {
             e.preventDefault();
 
             var $toogle = $(this);

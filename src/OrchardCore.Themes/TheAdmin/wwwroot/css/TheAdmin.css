@@ -173,7 +173,16 @@ a:hover {
 
 .ta-badge {
   border-radius: var(--bs-border-radius-pill) !important;
+}
+
+.ta-badge:not(.text-bg-primary, .text-bg-secondary, .text-bg-success, .text-bg-danger, .text-bg-warning, .text-bg-info, .text-bg-light, .text-bg-dark) {
   border: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color) !important;
+}
+
+.badge-show-more {
+  --bs-btn-font-size: 0.75em;
+  --bs-btn-padding-y: 0;
+  --bs-btn-padding-x: 0.25rem;
 }
 
 @keyframes bs-notify-fadeOut {
