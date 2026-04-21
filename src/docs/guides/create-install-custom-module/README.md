@@ -45,5 +45,5 @@ Once the module is installed, it can be enabled from the administration panel:
 
 If the module does not appear in the list, check the following:    
 - The module must contain a manifest file (`Manifest.cs`)
-- The module project must be referenced by the CMS web project
+- The CMS web project must reference the module project
 
