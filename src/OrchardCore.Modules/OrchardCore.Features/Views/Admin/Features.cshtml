@@ -120,7 +120,10 @@
                                                             .Select(f => f.Descriptor.Name)
                                                             .FirstOrDefault() ?? string.Empty;
 
-                                                        <span class="badge ta-badge">
+                                                        <span class="badge ta-badge text-bg-secondary"
+                                                              data-bs-toggle="tooltip"
+                                                              data-bs-placement="bottom"
+                                                              data-bs-title="@T["Direct dependency"]">
                                                             @dependencyName
                                                         </span>
                                                     }
@@ -128,16 +131,25 @@
                                                 @if (!feature.Descriptor.Dependencies.SequenceEqual(dependencies.Select(d => d.Descriptor.Id)))
                                                 {
                                                     <div class="d-inline transitive-dependencies d-none">
-                                                        @foreach (var d in dependencies)
+                                                        @foreach (var d in dependencies.Where(d => !feature.Descriptor.Dependencies.Contains(d.Descriptor.Id)))
                                                         {
-                                                            <span class="badge ta-badge">
+                                                            <span class="badge ta-badge"
+                                                                  data-bs-toggle="tooltip"
+                                                                  data-bs-placement="bottom"
+                                                                  data-bs-title="@T["Transient dependency"]">
                                                                 @(string.IsNullOrEmpty(d.Descriptor.Name) ? d.Descriptor.Id : d.Descriptor.Name)
                                                             </span>
                                                         }
                                                     </div>
-                                                    <span class="badge ta-badge d-inline">
-                                                        <a class="text-secondary show-more" href="#">...</a>
-                                                    </span>
+
+                                                    <button class="btn btn-sm p-0 show-more"
+                                                            style="--bs-btn-font-size: 0.75rem;"
+                                                            data-bs-toggle="tooltip"
+                                                            data-bs-placement="bottom"
+                                                            data-bs-title="@T["Show transient dependencies"]">
+                                                        <i class="fa-solid fa-plus"></i>
+                                                        <span class="visually-hidden">@T["Show transient dependencies"]</span>
+                                                    </button>
                                                 }
 
                                                 @foreach (var d in missingDependencies)
@@ -274,13 +286,11 @@
         $('.show-more').on('click', function (e) {
             e.preventDefault();
 
-            var $toogle_parent = $(this).parent();
-            var $direct_dependencies = $toogle_parent.siblings('.direct-dependencies');
-            var $transitive_dependencies = $toogle_parent.prev('.transitive-dependencies')
+            var $toogle = $(this);
+            var $transitive_dependencies = $toogle.prev('.transitive-dependencies')
 
-            $direct_dependencies.toggleClass('d-none');
             $transitive_dependencies.toggleClass('d-none');
-            $toogle_parent.toggleClass('d-none');
+            $toogle.toggleClass('d-none');
         });
     });
 </script>
