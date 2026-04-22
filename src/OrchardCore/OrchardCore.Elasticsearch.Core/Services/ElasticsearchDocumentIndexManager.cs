@@ -6,23 +6,27 @@ using Elastic.Clients.Elasticsearch.QueryDsl;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
 using OrchardCore.Contents.Indexing;
+using OrchardCore.Elasticsearch.Core.Models;
 using OrchardCore.Entities;
 using OrchardCore.Indexing;
 using OrchardCore.Indexing.Models;
-using OrchardCore.Elasticsearch.Core.Models;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Elasticsearch.Core.Services;
 
 public sealed class ElasticsearchDocumentIndexManager : IDocumentIndexManager
 {
     private readonly ElasticsearchClient _client;
+    private readonly IEnumerable<IDocumentIndexHandler> _documentIndexHandlers;
     private readonly ILogger _logger;
 
     public ElasticsearchDocumentIndexManager(
         ElasticsearchClient client,
+        IEnumerable<IDocumentIndexHandler> documentIndexHandlers,
         ILogger<ElasticsearchDocumentIndexManager> logger)
     {
         _client = client;
+        _documentIndexHandlers = documentIndexHandlers;
         _logger = logger;
     }
 
@@ -86,6 +90,11 @@ public sealed class ElasticsearchDocumentIndexManager : IDocumentIndexManager
             {
                 _logger.LogWarning("There were issues deleting documents in an Elasticsearch index");
             }
+        }
+
+        if (response.IsValidResponse)
+        {
+            await NotifyDocumentsDeletedAsync(index, ids);
         }
 
         return response.IsValidResponse;
@@ -181,7 +190,50 @@ public sealed class ElasticsearchDocumentIndexManager : IDocumentIndexManager
             }
         }
 
-        return totalBatchesProcessed == totalBatchesSucceeded;
+        var succeeded = totalBatchesProcessed == totalBatchesSucceeded;
+
+        if (succeeded)
+        {
+            await NotifyDocumentsAddedOrUpdatedAsync(index, documents);
+        }
+
+        return succeeded;
+    }
+
+    private async Task NotifyDocumentsAddedOrUpdatedAsync(IndexProfile indexProfile, IEnumerable<DocumentIndex> documents)
+    {
+        if (!_documentIndexHandlers.Any())
+        {
+            return;
+        }
+
+        var documentIds = documents
+            .Select(document => document.Id)
+            .Where(id => !string.IsNullOrWhiteSpace(id))
+            .ToArray();
+
+        if (documentIds.Length == 0)
+        {
+            return;
+        }
+
+        await _documentIndexHandlers.InvokeAsync(
+            (handler, context) => handler.DocumentsAddedOrUpdatedAsync(context.IndexProfile, context.DocumentIds),
+            new DocumentIndexNotificationContext(indexProfile, documentIds),
+            _logger);
+    }
+
+    private async Task NotifyDocumentsDeletedAsync(IndexProfile indexProfile, IEnumerable<string> documentIds)
+    {
+        if (!_documentIndexHandlers.Any() || !documentIds.Any())
+        {
+            return;
+        }
+
+        await _documentIndexHandlers.InvokeAsync(
+            (handler, context) => handler.DocumentsDeletedAsync(context.IndexProfile, context.DocumentIds),
+            new DocumentIndexNotificationContext(indexProfile, documentIds),
+            _logger);
     }
 
     internal async Task<TypeMapping> GetIndexMappingsAsync(string indexFullName)
@@ -357,4 +409,6 @@ public sealed class ElasticsearchDocumentIndexManager : IDocumentIndexManager
             }
         }
     }
+
+    private sealed record DocumentIndexNotificationContext(IndexProfile IndexProfile, IEnumerable<string> DocumentIds);
 }

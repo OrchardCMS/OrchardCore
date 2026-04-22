@@ -2,12 +2,12 @@ using System.Reflection;
 using Azure.Search.Documents;
 using Azure.Search.Documents.Models;
 using Microsoft.Extensions.Logging;
+using OrchardCore.AzureAI.Models;
 using OrchardCore.Contents.Indexing;
 using OrchardCore.Entities;
 using OrchardCore.Indexing;
 using OrchardCore.Indexing.Models;
 using OrchardCore.Modules;
-using OrchardCore.AzureAI.Models;
 using static OrchardCore.Indexing.DocumentIndex;
 
 namespace OrchardCore.AzureAI.Services;
@@ -16,17 +16,20 @@ public sealed class AzureAISearchDocumentIndexManager : IDocumentIndexManager
 {
     private readonly AzureAIClientFactory _clientFactory;
     private readonly IEnumerable<IAzureAISearchDocumentEvents> _documentEvents;
+    private readonly IEnumerable<IDocumentIndexHandler> _documentIndexHandlers;
     private readonly IIndexProfileStore _indexStore;
     private readonly ILogger _logger;
 
     public AzureAISearchDocumentIndexManager(
         AzureAIClientFactory clientFactory,
         IEnumerable<IAzureAISearchDocumentEvents> documentEvents,
+        IEnumerable<IDocumentIndexHandler> documentIndexHandlers,
         IIndexProfileStore indexStore,
         ILogger<AzureAISearchDocumentIndexManager> logger)
     {
         _clientFactory = clientFactory;
         _documentEvents = documentEvents;
+        _documentIndexHandlers = documentIndexHandlers;
         _indexStore = indexStore;
         _logger = logger;
     }
@@ -92,6 +95,7 @@ public sealed class AzureAISearchDocumentIndexManager : IDocumentIndexManager
             var keyName = GetKeyFieldNameOrThrow(index);
 
             await client.DeleteDocumentsAsync(keyName, documentIds);
+            await NotifyDocumentsDeletedAsync(index, documentIds);
 
             return true;
         }
@@ -166,6 +170,8 @@ public sealed class AzureAISearchDocumentIndexManager : IDocumentIndexManager
                 await client.MergeOrUploadDocumentsAsync(docs);
             }
 
+            await NotifyDocumentsAddedOrUpdatedAsync(index, indexDocuments);
+
             return true;
         }
         catch (Exception ex)
@@ -225,6 +231,42 @@ public sealed class AzureAISearchDocumentIndexManager : IDocumentIndexManager
 
     public IContentIndexSettings GetContentIndexSettings()
         => new AzureAISearchContentIndexSettings();
+
+    private async Task NotifyDocumentsAddedOrUpdatedAsync(IndexProfile indexProfile, IEnumerable<DocumentIndex> documents)
+    {
+        if (!_documentIndexHandlers.Any())
+        {
+            return;
+        }
+
+        var documentIds = documents
+            .Select(document => document.Id)
+            .Where(id => !string.IsNullOrWhiteSpace(id))
+            .ToArray();
+
+        if (documentIds.Length == 0)
+        {
+            return;
+        }
+
+        await _documentIndexHandlers.InvokeAsync(
+            (handler, context) => handler.DocumentsAddedOrUpdatedAsync(context.IndexProfile, context.DocumentIds),
+            new DocumentIndexNotificationContext(indexProfile, documentIds),
+            _logger);
+    }
+
+    private async Task NotifyDocumentsDeletedAsync(IndexProfile indexProfile, IEnumerable<string> documentIds)
+    {
+        if (!_documentIndexHandlers.Any() || !documentIds.Any())
+        {
+            return;
+        }
+
+        await _documentIndexHandlers.InvokeAsync(
+            (handler, context) => handler.DocumentsDeletedAsync(context.IndexProfile, context.DocumentIds),
+            new DocumentIndexNotificationContext(indexProfile, documentIds),
+            _logger);
+    }
 
     private static string GetKeyFieldNameOrThrow(IndexProfile index)
     {
@@ -434,4 +476,6 @@ public sealed class AzureAISearchDocumentIndexManager : IDocumentIndexManager
             map.AzureFieldKey == AzureAISearchIndexManager.DisplayTextAnalyzedKey ||
             !map.IsCollection;
     }
+
+    private sealed record DocumentIndexNotificationContext(IndexProfile IndexProfile, IEnumerable<string> DocumentIds);
 }
