@@ -17,6 +17,8 @@ namespace OrchardCore.Flows;
 
 public sealed class Startup : StartupBase
 {
+    public override int Order => -150;
+
     public override void ConfigureServices(IServiceCollection services)
     {
         services.Configure<TemplateOptions>(o =>

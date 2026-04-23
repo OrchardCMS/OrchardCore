@@ -144,7 +144,7 @@ public class AutoroutePartHandler : ContentPartHandler<AutoroutePart>
         await GenerateContainedPathsFromPatternAsync(context.ContentItem, part);
     }
 
-    public override async Task ClonedAsync(CloneContentContext context, AutoroutePart part)
+    public override async Task CloningAsync(CloneContentContext context, AutoroutePart part)
     {
         if (!context.CloneContentItem.TryGet<AutoroutePart>(out var clonedPart))
         {
