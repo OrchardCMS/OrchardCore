@@ -19,7 +19,7 @@ public class ContentItemQueryTests
                 UsePermissionsContext = true,
                 AuthorizedPermissions =
                 [
-                    CommonPermissions.ExecuteGraphQL,
+                    GraphQLPermissions.ExecuteGraphQL,
                     global::OrchardCore.Contents.CommonPermissions.ViewContent,
                 ],
             });
@@ -46,7 +46,7 @@ public class ContentItemQueryTests
                 UsePermissionsContext = true,
                 AuthorizedPermissions =
                 [
-                    CommonPermissions.ExecuteGraphQL,
+                    GraphQLPermissions.ExecuteGraphQL,
                 ],
             });
 
