@@ -16,9 +16,9 @@ public class WidgetsListPartHandler : ContentPartHandler<WidgetsListPart>
         {
             foreach (var zone in part.Widgets.Keys)
             {
-                foreach (var contentItem in part.Widgets[zone])
+                foreach (var widgetContentItem in part.Widgets[zone])
                 {
-                    contentItem.ContentItemId = _idGenerator.GenerateUniqueId(contentItem);
+                    widgetContentItem.ContentItemId = _idGenerator.GenerateUniqueId(widgetContentItem);
                 }
             }
 
