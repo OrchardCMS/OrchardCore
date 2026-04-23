@@ -4,11 +4,11 @@
 
 @if (string.IsNullOrWhiteSpace(returnUrl))
 {
-    <button class="primaryAction btn btn-primary draft mb-1" type="submit" name="submit.Save" value="submit.Save">@T["Save Draft"]</button>
+    <button class="primaryAction btn btn-primary draft mb-1 mb-md-0" type="submit" name="submit.Save" value="submit.Save">@T["Save Draft"]</button>
 }
 else
 {
-    <div class="btn-group mb-1"
+    <div class="btn-group mb-1 mb-md-0"
          role="group"
          aria-label="@T["Save actions"]"
          data-action-group="oc-content-save-action"

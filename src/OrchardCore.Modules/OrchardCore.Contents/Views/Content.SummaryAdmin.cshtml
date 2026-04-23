@@ -7,7 +7,7 @@
 }
 
 <div class="row">
-    <div class="col-lg col-12 title d-flex align-items-center">
+    <div class="col title d-flex align-items-center">
         <div class="selectors-container d-flex">
             @if (Model.Selectors != null)
             {
@@ -21,7 +21,7 @@
             </div>
         </div>
         <div class="summary d-flex flex-column flex-md-row">
-            <div class="contentitem me-2">
+            <div class="contentitem me-2 mb-1 mb-md-0">
                 @if (await AuthorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, contentItem))
                 {
                     <a admin-for="@contentItem" asp-route-returnUrl="@FullRequestPath" />
@@ -31,31 +31,31 @@
                     @contentItem
                 }
             </div>
-            <div class="contenttype me-1 mb-1">
+            <div class="contenttype me-1 mb-1 mb-md-0">
                 <span class="badge ta-badge font-weight-normal"><i class="fa-regular fa-file-alt text-secondary" aria-hidden="true"></i> <a asp-route-options.selectedcontenttype=@contentItem.ContentType data-bs-toggle="tooltip" title="@T["Content type"]">@contentItem.ContentType</a></span>
             </div>
             @if (Model.Header != null)
             {
-                <div class="header me-1 mb-1">
+                <div class="header me-1 mb-1 mb-md-0">
                     @await DisplayAsync(Model.Header)
                 </div>
             }
             @if (Model.Tags != null)
             {
-                <div class="tags me-1 mb-1">
+                <div class="tags me-1 mb-1 mb-md-0">
                     @await DisplayAsync(Model.Tags)
                 </div>
             }
             @if (Model.Meta != null)
             {
-                <div class="metadata me-1 mb-1">
+                <div class="metadata me-1 mb-1 mb-md-0">
                     @await DisplayAsync(Model.Meta)
                 </div>
             }
         </div>
     </div>
-    <div class="col-lg-auto col-12 d-flex justify-content-end">
-        <div class="actions">
+    <div class="col-auto d-flex align-items-center justify-content-end">
+        <div class="actions d-flex flex-column flex-md-row align-items-end align-items-md-center gap-1">
             @if (Model.Actions != null)
             {
                 @await DisplayAsync(Model.Actions)
@@ -63,7 +63,7 @@
 
             @if (Model.ActionsMenu != null && Model.ActionsMenu.HasItems)
             {
-                <div class="btn-group mb-1" title="@T["Actions"]">
+                <div class="btn-group mb-1 mb-md-0" title="@T["Actions"]">
                     <button type="button" class="btn btn-sm btn-secondary dropdown-toggle actions" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <span>@T["Actions"]</span>
                     </button>
