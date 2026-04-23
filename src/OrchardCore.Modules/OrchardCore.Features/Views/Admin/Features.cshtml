@@ -120,10 +120,7 @@
                                                             .Select(f => f.Descriptor.Name)
                                                             .FirstOrDefault() ?? string.Empty;
 
-                                                        <span class="badge ta-badge text-bg-secondary"
-                                                              data-bs-toggle="tooltip"
-                                                              data-bs-placement="bottom"
-                                                              data-bs-title="@T["Direct dependency"]">
+                                                        <span class="badge ta-badge text-bg-secondary">
                                                             @dependencyName
                                                         </span>
                                                     }
@@ -133,10 +130,7 @@
                                                     <div class="d-inline transitive-dependencies d-none">
                                                         @foreach (var d in dependencies.Where(d => !feature.Descriptor.Dependencies.Contains(d.Descriptor.Id)))
                                                         {
-                                                            <span class="badge ta-badge"
-                                                                  data-bs-toggle="tooltip"
-                                                                  data-bs-placement="bottom"
-                                                                  data-bs-title="@T["Transient dependency"]">
+                                                            <span class="badge ta-badge">
                                                                 @(string.IsNullOrEmpty(d.Descriptor.Name) ? d.Descriptor.Id : d.Descriptor.Name)
                                                             </span>
                                                         }
@@ -145,9 +139,9 @@
                                                     <button class="btn btn-sm btn-outline-secondary badge-show-more"
                                                             data-bs-toggle="tooltip"
                                                             data-bs-placement="bottom"
-                                                            data-bs-title="@T["Show transient dependencies"]">
+                                                            data-bs-title="@T["Show indirect dependencies"]">
                                                         <i class="fa-solid fa-ellipsis"></i>
-                                                        <span class="visually-hidden">@T["Show transient dependencies"]</span>
+                                                        <span class="visually-hidden">@T["Show indirect dependencies"]</span>
                                                     </button>
                                                 }
 
