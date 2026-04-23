@@ -39,7 +39,7 @@ This reference allows Orchard Core to discover and load the custom module at run
 ## Enabling the module
 Once the module is installed, it can be enabled from the administration panel:
 1. Go to the Admin dashboard
-2. Navigate to **Configuration > Features**
+2. Navigate to **Tools > Features**
 3. Search using the name defined in the `Name` property of the manifest file
 4. Click the **Enable** button
 
