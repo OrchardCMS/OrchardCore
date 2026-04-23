@@ -3,7 +3,7 @@ using Fluid.Values;
 using OrchardCore.Liquid;
 using OrchardCore.Localization;
 
-namespace OrchardCore.localization.Liquid.Filters;
+namespace OrchardCore.Localization.Liquid.Filters;
 
 public class TransliterateFilter : ILiquidFilter
 {
