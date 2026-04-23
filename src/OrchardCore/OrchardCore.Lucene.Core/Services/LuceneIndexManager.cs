@@ -180,7 +180,7 @@ public sealed class LuceneIndexManager : IIndexManager, IDocumentIndexManager
             writer.DeleteDocuments(documentIds.Select(id => new Term(metadata.IndexMappings.KeyFieldName, id)).ToArray());
         });
 
-        await NotifyDocumentsDeletedAsync(index, documentIds);
+        await _documentIndexHandlers.InvokeAsync((handler, indexProfile, ids) => handler.DocumentsDeletedAsync(indexProfile, ids), index, documentIds, _logger);
 
         return true;
     }
@@ -214,7 +214,7 @@ public sealed class LuceneIndexManager : IIndexManager, IDocumentIndexManager
             return false;
         }
 
-        await NotifyDocumentsAddedOrUpdatedAsync(index, documents);
+        await _documentIndexHandlers.InvokeAsync((handler, indexProfile, docs) => handler.DocumentsAddedOrUpdatedAsync(indexProfile, docs), index, documents, _logger);
 
         return true;
     }
@@ -249,43 +249,6 @@ public sealed class LuceneIndexManager : IIndexManager, IDocumentIndexManager
 
     public IContentIndexSettings GetContentIndexSettings()
          => new LuceneContentIndexSettings();
-
-    private async Task NotifyDocumentsAddedOrUpdatedAsync(IndexProfile indexProfile, IEnumerable<DocumentIndex> documents)
-    {
-        if (!_documentIndexHandlers.Any())
-        {
-            return;
-        }
-
-        var documentIds = documents
-            .Select(document => document.Id)
-            .Where(id => !string.IsNullOrWhiteSpace(id))
-            .Distinct(StringComparer.OrdinalIgnoreCase)
-            .ToArray();
-
-        if (documentIds.Length == 0)
-        {
-            return;
-        }
-
-        await _documentIndexHandlers.InvokeAsync(
-            (handler, context) => handler.DocumentsAddedOrUpdatedAsync(context.IndexProfile, context.DocumentIds),
-            new DocumentIndexNotificationContext(indexProfile, documentIds),
-            _logger);
-    }
-
-    private async Task NotifyDocumentsDeletedAsync(IndexProfile indexProfile, IEnumerable<string> documentIds)
-    {
-        if (!_documentIndexHandlers.Any() || !documentIds.Any())
-        {
-            return;
-        }
-
-        await _documentIndexHandlers.InvokeAsync(
-            (handler, context) => handler.DocumentsDeletedAsync(context.IndexProfile, context.DocumentIds),
-            new DocumentIndexNotificationContext(indexProfile, documentIds),
-            _logger);
-    }
 
     private Document CreateLuceneDocument(DocumentIndex document, bool storeSourceData)
     {
@@ -464,6 +427,4 @@ public sealed class LuceneIndexManager : IIndexManager, IDocumentIndexManager
 
         return doc;
     }
-
-    private sealed record DocumentIndexNotificationContext(IndexProfile IndexProfile, IEnumerable<string> DocumentIds);
 }

@@ -94,7 +94,7 @@ public sealed class ElasticsearchDocumentIndexManager : IDocumentIndexManager
 
         if (response.IsValidResponse)
         {
-            await NotifyDocumentsDeletedAsync(index, ids);
+            await _documentIndexHandlers.InvokeAsync((handler, indexProfile, documentIds) => handler.DocumentsDeletedAsync(indexProfile, documentIds), index, ids, _logger);
         }
 
         return response.IsValidResponse;
@@ -194,46 +194,10 @@ public sealed class ElasticsearchDocumentIndexManager : IDocumentIndexManager
 
         if (succeeded)
         {
-            await NotifyDocumentsAddedOrUpdatedAsync(index, documents);
+            await _documentIndexHandlers.InvokeAsync((handler, indexProfile, docs) => handler.DocumentsAddedOrUpdatedAsync(indexProfile, docs), index, documents, _logger);
         }
 
         return succeeded;
-    }
-
-    private async Task NotifyDocumentsAddedOrUpdatedAsync(IndexProfile indexProfile, IEnumerable<DocumentIndex> documents)
-    {
-        if (!_documentIndexHandlers.Any())
-        {
-            return;
-        }
-
-        var documentIds = documents
-            .Select(document => document.Id)
-            .Where(id => !string.IsNullOrWhiteSpace(id))
-            .ToArray();
-
-        if (documentIds.Length == 0)
-        {
-            return;
-        }
-
-        await _documentIndexHandlers.InvokeAsync(
-            (handler, context) => handler.DocumentsAddedOrUpdatedAsync(context.IndexProfile, context.DocumentIds),
-            new DocumentIndexNotificationContext(indexProfile, documentIds),
-            _logger);
-    }
-
-    private async Task NotifyDocumentsDeletedAsync(IndexProfile indexProfile, IEnumerable<string> documentIds)
-    {
-        if (!_documentIndexHandlers.Any() || !documentIds.Any())
-        {
-            return;
-        }
-
-        await _documentIndexHandlers.InvokeAsync(
-            (handler, context) => handler.DocumentsDeletedAsync(context.IndexProfile, context.DocumentIds),
-            new DocumentIndexNotificationContext(indexProfile, documentIds),
-            _logger);
     }
 
     internal async Task<TypeMapping> GetIndexMappingsAsync(string indexFullName)
@@ -409,6 +373,4 @@ public sealed class ElasticsearchDocumentIndexManager : IDocumentIndexManager
             }
         }
     }
-
-    private sealed record DocumentIndexNotificationContext(IndexProfile IndexProfile, IEnumerable<string> DocumentIds);
 }

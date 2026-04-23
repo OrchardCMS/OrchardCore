@@ -20,11 +20,11 @@ public interface IDocumentIndexHandler
     /// Notifies the handler after documents have been added to or updated in a provider-specific index.
     /// </summary>
     /// <param name="indexProfile">The index profile that was updated.</param>
-    /// <param name="documentIds">The distinct identifiers of the documents that were successfully added or updated.</param>
+    /// <param name="documents">The documents that were successfully added or updated.</param>
     /// <param name="cancellationToken">A token that can be used to cancel the notification.</param>
     Task DocumentsAddedOrUpdatedAsync(
         IndexProfile indexProfile,
-        IEnumerable<string> documentIds,
+        IEnumerable<DocumentIndex> documents,
         CancellationToken cancellationToken = default)
         => Task.CompletedTask;
 
