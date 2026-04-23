@@ -140,6 +140,10 @@ public sealed class BagPartDisplayDriver : ContentPartDisplayDriver<BagPart>
 
                 await _contentHandlers.InvokeAsync((handler, context) => handler.UpdatingAsync(context), updateContentContext, _logger);
 
+                var cloneContentContext = new CloneContentContext(existingContentItem, contentItem);
+
+                await _contentHandlers.InvokeAsync((handler, context) => handler.CloningAsync(context), cloneContentContext, _logger);
+
                 contentItem.ContentItemId = model.ContentItems[i];
                 contentItem.Merge(existingContentItem);
 
