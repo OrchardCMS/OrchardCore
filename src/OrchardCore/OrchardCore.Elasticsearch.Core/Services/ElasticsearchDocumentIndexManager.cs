@@ -6,23 +6,27 @@ using Elastic.Clients.Elasticsearch.QueryDsl;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
 using OrchardCore.Contents.Indexing;
+using OrchardCore.Elasticsearch.Core.Models;
 using OrchardCore.Entities;
 using OrchardCore.Indexing;
 using OrchardCore.Indexing.Models;
-using OrchardCore.Elasticsearch.Core.Models;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Elasticsearch.Core.Services;
 
 public sealed class ElasticsearchDocumentIndexManager : IDocumentIndexManager
 {
     private readonly ElasticsearchClient _client;
+    private readonly IEnumerable<IDocumentIndexHandler> _documentIndexHandlers;
     private readonly ILogger _logger;
 
     public ElasticsearchDocumentIndexManager(
         ElasticsearchClient client,
+        IEnumerable<IDocumentIndexHandler> documentIndexHandlers,
         ILogger<ElasticsearchDocumentIndexManager> logger)
     {
         _client = client;
+        _documentIndexHandlers = documentIndexHandlers;
         _logger = logger;
     }
 
@@ -86,6 +90,11 @@ public sealed class ElasticsearchDocumentIndexManager : IDocumentIndexManager
             {
                 _logger.LogWarning("There were issues deleting documents in an Elasticsearch index");
             }
+        }
+
+        if (response.IsValidResponse)
+        {
+            await _documentIndexHandlers.InvokeAsync((handler, indexProfile, documentIds) => handler.DocumentsDeletedAsync(indexProfile, documentIds), index, ids, _logger);
         }
 
         return response.IsValidResponse;
@@ -181,7 +190,14 @@ public sealed class ElasticsearchDocumentIndexManager : IDocumentIndexManager
             }
         }
 
-        return totalBatchesProcessed == totalBatchesSucceeded;
+        var succeeded = totalBatchesProcessed == totalBatchesSucceeded;
+
+        if (succeeded)
+        {
+            await _documentIndexHandlers.InvokeAsync((handler, indexProfile, docs) => handler.DocumentsAddedOrUpdatedAsync(indexProfile, docs), index, documents, _logger);
+        }
+
+        return succeeded;
     }
 
     internal async Task<TypeMapping> GetIndexMappingsAsync(string indexFullName)

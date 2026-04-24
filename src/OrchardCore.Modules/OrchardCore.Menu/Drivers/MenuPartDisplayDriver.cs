@@ -106,11 +106,13 @@ public sealed class MenuPartDisplayDriver : ContentPartDisplayDriver<MenuPart>
 
         foreach (var index in indexes)
         {
-            menuItem = menuItems.MenuItems[index];
-            if (!menuItem.TryGet<MenuItemsListPart>(out menuItems))
+            if (menuItems == null)
             {
                 return null;
             }
+
+            menuItem = menuItems.MenuItems[index];
+            _ = menuItem.TryGet<MenuItemsListPart>(out menuItems);
         }
 
         var newObj = JObject.FromObject(menuItem, JOptions.Default);
