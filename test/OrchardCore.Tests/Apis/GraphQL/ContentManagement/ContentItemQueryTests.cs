@@ -1,7 +1,9 @@
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Tests.Apis.Context;
+using YesSql;
 
 namespace OrchardCore.Tests.Apis.GraphQL;
 
@@ -66,7 +68,7 @@ public class ContentItemQueryTests
 
         await context.UsingTenantScopeAsync(async scope =>
         {
-            var session = scope.ServiceProvider.GetRequiredService<global::YesSql.ISession>();
+            var session = scope.ServiceProvider.GetRequiredService<ISession>();
             var contentItem = await session.Query<ContentItem, ContentItemIndex>(x => x.ContentType == contentType && x.Published).FirstOrDefaultAsync();
 
             contentItemId = contentItem.ContentItemId;

@@ -77,4 +77,18 @@ public class SlugServiceTests
         var slug = _slugService.Slugify(input);
         Assert.Equal(expected, slug);
     }
+
+    [Fact]
+    public void ShouldTransliterateWhenRequested()
+    {
+        var slug = _slugService.Slugify("Æneid", transliterate: true);
+        Assert.Equal("aeneid", slug);
+    }
+
+    [Fact]
+    public void ShouldNotTransliterateWhenDisabled()
+    {
+        var slug = _slugService.Slugify("Æneid", transliterate: false);
+        Assert.Equal("æneid", slug);
+    }
 }

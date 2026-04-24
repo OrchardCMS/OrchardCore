@@ -10,8 +10,30 @@ Parcel is the easiest way to build assets so far as it doesn't require any confi
 
 ## Prerequisites
 
-1. Install the current 22.x version of [Node.js](https://nodejs.org/en/download). If you are already using a different version of Node.js for other projects, we recommend using Node Version Manager (see [here](https://github.com/nvm-sh/nvm) for the original project for *nix systems, and [here](https://github.com/coreybutler/nvm-windows) for Windows).
-2. From the root of the repository, run the following commands. Be sure to indeed run **exactly** these, and verify that the Yarn version matches the `packageManager` value in the root `package.json` (currently v4.9.x).
+1. Install the **Node.js 24.x LTS** version of [Node.js](https://nodejs.org/en/download). The required version is pinned in the `.node-version` file at the root of the repository.
+
+    If you don't have the correct version installed, the Asset Manager will automatically detect the mismatch when you run any command (e.g. `yarn build`) and prompt you with the following options:
+
+    ```
+    ⚠ Warning: You are using Node.js XX.X.X, but this repository requires Node.js 24.X.X (see .node-version).
+
+      1) Continue anyway
+      2) Abort
+      3) Install via fnm, Node.js 24.X.X and build
+      4) Install via Volta, Node.js 24.X.X and build
+    ```
+
+    Options 3-4 will automatically install the chosen version manager (if not already present), install the required Node.js version, enable corepack, and restart the build.
+
+    !!! warning "Windows - Terminal Restart Required"
+        On Windows, when installing **fnm** or **Volta** for the first time, their executable shims may not be immediately available on the PATH in your current terminal session. If you encounter this issue, you will see one of these messages:
+        
+        - `fnm was just installed but its shims are not yet on PATH in this terminal session.`
+        - `Volta was just installed but its shims are not yet on PATH in this terminal session.`
+        
+        **If you see this message, please restart your terminal** (close and reopen it), then run your command again (e.g., `yarn build`). This is a Windows-specific limitation and necessary only when first installing a version manager.
+
+2. From the root of the repository, run the following commands. Be sure to indeed run **exactly** these, and verify that the Yarn version matches the `packageManager` value in the root `package.json` (currently v4.13.x).
     ```cmd
     REM On Windows may require to run command shell with administrator privileges.
     corepack enable 
@@ -19,7 +41,7 @@ Parcel is the easiest way to build assets so far as it doesn't require any confi
     ```
 
 !!! danger
-    Some third-party distributors may not include Corepack by default, in particular if you install Node.js from your system package manager. If that happens, running `npm install -g corepack` before `corepack enable` should do the trick.    
+    Some third-party distributors may not include Corepack by default, in particular if you install Node.js from your system package manager. If that happens, running `npm install -g corepack` before `corepack enable` should do the trick.
 
 ## Building assets if you change an SCSS, JS, or TS/TSX file
 
@@ -151,8 +173,8 @@ yarn create vite
 Here is an example of a Vue app using Typescript:
 
 ```cmd
-➤ YN0000: · Yarn 4.9.4
-➤ YN0000: · Yarn 4.9.4
+➤ YN0000: · Yarn 4.13.0
+➤ YN0000: · Yarn 4.13.0
 ➤ YN0000: ┌ Resolution step
 ➤ YN0085: │ + create-vite@npm:6.2.0
 ➤ YN0000: └ Completed
