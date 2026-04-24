@@ -11,7 +11,7 @@ public sealed class BlogTests : CmsTestBase<BlogFixture>, IClassFixture<BlogFixt
     public async Task DisplaysTheHomePageOfTheBlogRecipe()
     {
         var page = await Fixture.CreatePageAsync();
-        await page.GotoAsync("/");
+        await page.GotoAndAssertOkAsync("/");
         await Assertions.Expect(page.Locator(".subheading")).ToContainTextAsync("This is the description of your blog");
         await page.CloseAsync();
     }
@@ -21,7 +21,7 @@ public sealed class BlogTests : CmsTestBase<BlogFixture>, IClassFixture<BlogFixt
     {
         var page = await Fixture.CreatePageAsync();
         await page.LoginAsync();
-        await page.GotoAsync("/Admin");
+        await page.GotoAndAssertOkAsync("/Admin");
         await Assertions.Expect(page.Locator(".menu-admin")).ToHaveAttributeAsync("id", "adminMenu");
         await page.CloseAsync();
     }

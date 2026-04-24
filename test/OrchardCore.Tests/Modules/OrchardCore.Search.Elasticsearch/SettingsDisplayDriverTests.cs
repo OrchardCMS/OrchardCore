@@ -13,12 +13,12 @@ using OrchardCore.Locking;
 using OrchardCore.Locking.Distributed;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Scripting;
-using OrchardCore.Search.Elasticsearch.Core.Models;
-using OrchardCore.Search.Elasticsearch.Drivers;
+using OrchardCore.Elasticsearch.Core.Models;
+using OrchardCore.Elasticsearch.Drivers;
 using OrchardCore.Tests.Modules.OrchardCore.ContentFields.Settings;
 using OrchardCore.Tests.Stubs;
 
-namespace OrchardCore.Tests.Modules.OrchardCore.Search.Elasticsearch;
+namespace OrchardCore.Tests.Modules.OrchardCore.Elasticsearch;
 
 public partial class SettingsDisplayDriverTests
 {

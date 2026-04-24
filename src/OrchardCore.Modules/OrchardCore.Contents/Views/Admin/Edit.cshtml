@@ -1,5 +1,6 @@
 @using OrchardCore.ContentManagement
 @using OrchardCore.ContentManagement.Metadata
+@using OrchardCore.ContentTypes
 @using OrchardCore.Mvc.Utilities
 @using OrchardCore.Localization.Data
 
@@ -10,7 +11,7 @@
     ContentItem contentItem = Model.ContentItem;
     var contentTypeDefinition = await ContentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
     var typeDisplayName = contentTypeDefinition?.DisplayName ?? contentItem.ContentType.CamelFriendly();
-    string localizedTypeDisplayName = D[typeDisplayName, "Content Types"];
+    string localizedTypeDisplayName = D[typeDisplayName, DataLocalizationContext.ContentType];
 }
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Edit {0}", localizedTypeDisplayName])</h1></zone>
