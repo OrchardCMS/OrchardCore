@@ -68,7 +68,7 @@ public class ContentItemQueryTests
 
         await context.UsingTenantScopeAsync(async scope =>
         {
-            var session = scope.ServiceProvider.GetRequiredService<ISession>();
+            var session = scope.ServiceProvider.GetRequiredService<global::YesSql.ISession>();
             var contentItem = await session.Query<ContentItem, ContentItemIndex>(x => x.ContentType == contentType && x.Published).FirstOrDefaultAsync();
 
             contentItemId = contentItem.ContentItemId;
