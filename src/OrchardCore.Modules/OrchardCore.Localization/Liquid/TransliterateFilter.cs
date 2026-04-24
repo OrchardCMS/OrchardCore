@@ -1,7 +1,6 @@
 using Fluid;
 using Fluid.Values;
 using OrchardCore.Liquid;
-using OrchardCore.Localization;
 
 namespace OrchardCore.Localization.Liquid.Filters;
 
