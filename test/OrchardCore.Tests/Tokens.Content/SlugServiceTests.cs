@@ -82,7 +82,7 @@ public class SlugServiceTests
     [Fact]
     public void ShouldTransliterateWhenRequested()
     {
-        var slug = _slugService.SlugifyWithTransliteration("Æneid");
+        var slug = _slugService.SlugifyAndTransliterate("Æneid");
         Assert.Equal("aeneid", slug);
     }
 }

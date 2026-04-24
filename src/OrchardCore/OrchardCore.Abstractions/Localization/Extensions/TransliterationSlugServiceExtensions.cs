@@ -5,12 +5,12 @@ namespace OrchardCore.Localization;
 public static class TransliterationSlugServiceExtensions
 {
     /// <summary>
-    /// Transforms specified text to the form suitable for URL slugs,
-    /// optionally transliterating non-Latin characters to their ASCII equivalents first.
+    /// Converts the specified text to a URL-friendly slug after applying transliteration.
     /// </summary>
-    /// <param name="text">The text to transform.</param>
-    /// <returns>The slug created from the input text.</returns>
-    public static string SlugifyWithTransliteration(this ISlugService slugService, string text)
+    /// <param name="slugService">The slug service used to generate the slug from the transliterated text.</param>
+    /// <param name="text">The input text to transliterate and convert to a slug. Cannot be null or empty.</param>
+    /// <returns>A slugified string representing the transliterated input text.</returns>
+    public static string SlugifyAndTransliterate(this ISlugService slugService, string text)
     {
         ArgumentException.ThrowIfNullOrEmpty(text);
 
