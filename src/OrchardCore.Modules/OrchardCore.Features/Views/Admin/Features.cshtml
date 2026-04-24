@@ -120,7 +120,7 @@
                                                             .Select(f => f.Descriptor.Name)
                                                             .FirstOrDefault() ?? string.Empty;
 
-                                                        <span class="badge ta-badge">
+                                                        <span class="badge ta-badge text-bg-secondary">
                                                             @dependencyName
                                                         </span>
                                                     }
@@ -128,16 +128,21 @@
                                                 @if (!feature.Descriptor.Dependencies.SequenceEqual(dependencies.Select(d => d.Descriptor.Id)))
                                                 {
                                                     <div class="d-inline transitive-dependencies d-none">
-                                                        @foreach (var d in dependencies)
+                                                        @foreach (var d in dependencies.Where(d => !feature.Descriptor.Dependencies.Contains(d.Descriptor.Id)))
                                                         {
                                                             <span class="badge ta-badge">
                                                                 @(string.IsNullOrEmpty(d.Descriptor.Name) ? d.Descriptor.Id : d.Descriptor.Name)
                                                             </span>
                                                         }
                                                     </div>
-                                                    <span class="badge ta-badge d-inline">
-                                                        <a class="text-secondary show-more" href="#">...</a>
-                                                    </span>
+
+                                                    <button class="btn btn-sm btn-outline-secondary badge-show-more"
+                                                            data-bs-toggle="tooltip"
+                                                            data-bs-placement="bottom"
+                                                            data-bs-title="@T["Show indirect dependencies"]">
+                                                        <i class="fa-solid fa-ellipsis"></i>
+                                                        <span class="visually-hidden">@T["Show indirect dependencies"]</span>
+                                                    </button>
                                                 }
 
                                                 @foreach (var d in missingDependencies)
@@ -271,16 +276,14 @@
             $("[name='submit.BulkAction']").click();
         });
 
-        $('.show-more').on('click', function (e) {
+        $('.badge-show-more').on('click', function (e) {
             e.preventDefault();
 
-            var $toogle_parent = $(this).parent();
-            var $direct_dependencies = $toogle_parent.siblings('.direct-dependencies');
-            var $transitive_dependencies = $toogle_parent.prev('.transitive-dependencies')
+            var $toogle = $(this);
+            var $transitive_dependencies = $toogle.prev('.transitive-dependencies')
 
-            $direct_dependencies.toggleClass('d-none');
             $transitive_dependencies.toggleClass('d-none');
-            $toogle_parent.toggleClass('d-none');
+            $toogle.toggleClass('d-none');
         });
     });
 </script>
