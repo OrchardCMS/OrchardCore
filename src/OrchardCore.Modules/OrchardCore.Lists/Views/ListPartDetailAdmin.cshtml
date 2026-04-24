@@ -27,10 +27,11 @@ else
         <ul class="list-group" id="ci-sortable">
             @foreach (var contentItem in Model.ContentItems)
             {
-                var contentItemSummary = (dynamic)await ContentItemDisplayManager.BuildDisplayAsync(contentItem, Model.Context.Updater, "SummaryAdmin", Model.Context.GroupId);
+                var contentItemSummary = await ContentItemDisplayManager.BuildDisplayAsync(contentItem, Model.Context.Updater, "SummaryAdmin", Model.Context.GroupId);
+                contentItemSummary.Metadata.Alternates.Add("Content_SummaryAdmin__ListPart");
                 if (enableOrdering)
                 {
-                    await contentItemSummary.Selectors.AddAsync(await New.ListPart_Sortable());
+                    await ((dynamic)contentItemSummary).Selectors.AddAsync(await New.ListPart_Sortable());
                 }
                 <li class="list-group-item list-group-item-action">
                     @await DisplayAsync(contentItemSummary)
