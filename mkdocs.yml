@@ -146,6 +146,7 @@ nav:
       - Integrate Facebook plugins: guides/integrate-facebook-plugins/README.md
       - Run code on startup: guides/run-code-on-startup/README.md
       - Create a custom admin theme: guides/create-admin-theme/README.md
+      - Create a Custom Module: guides/create-install-custom-module/README.md  
       - Customize encoding settings: guides/encoding-settings/README.md
       - Understanding Content Definitions Stores: guides/content-definitions/README.md
       - Change password configuration: guides/password-configuration/README.md
@@ -158,7 +159,6 @@ nav:
         - Assets manager: guides/assets-manager/README.md
         - Using NPM aliases: guides/assets-manager/NPM_ALIASING_GUIDE.md
         - Gulp pipeline: guides/gulp-pipeline/README.md
-        - Creating a Custom Module: guides/create-install-custom-module/README.md
   - Key Topics:
       - Manage your Content: topics/content-management/README.md
       - Content Relationships: topics/content-relationships/README.md
