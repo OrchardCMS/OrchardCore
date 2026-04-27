@@ -66,16 +66,21 @@
 
             <div class="feature-group">
                 <h4 class="mb-2 mt-3" data-filter-value="@categoryName @categoryFeatureNames">@categoryName</h4>
-                <ul class="list-group" data-filter-value="@categoryName @categoryFeatureNames">
-                    @{
-                        foreach (var feature in features)
-                        {
-                            //var lifecycleStatus = feature.Descriptor.Extension.LifecycleStatus;
-                            var featureId = feature.Descriptor.Id;
-                            var featureName = feature.Descriptor.Name;
-                            var isAlwaysEnabled = feature.IsAlwaysEnabled;
+                <div class="select-all-features">
+                    <input type="checkbox" class="select-all" name="select-all" />
+                    <label class="select-all" for="select-all">Select All</label>
+                </div>
 
-                            if (Model.IsProxy && featureId == FeaturesConstants.FeatureId)
+                <ul class="list-group" data-filter-value="@categoryName @categoryFeatureNames">
+                        @{
+                            foreach (var feature in features)
+                            {
+                                //var lifecycleStatus = feature.Descriptor.Extension.LifecycleStatus;
+                                var featureId = feature.Descriptor.Id;
+                                var featureName = feature.Descriptor.Name;
+                                var isAlwaysEnabled = feature.IsAlwaysEnabled;
+                             
+                                if (Model.IsProxy && featureId == FeaturesConstants.FeatureId)
                             {
                                 isAlwaysEnabled = false;
                             }
@@ -282,5 +287,17 @@
             $transitive_dependencies.toggleClass('d-none');
             $toogle_parent.toggleClass('d-none');
         });
+    });
+    $(document).on('change', '.select-all', function () {
+    var group = $(this).closest('.feature-group');
+
+    group.find('input.form-check-input')
+    .not(this)
+    .prop('checked', this.checked);
+    });
+    $('.feature-group').each(function() {
+    if ($(this).find('input[name="featureIds"]').length === 0) {
+    $(this).find('.select-all').hide();
+    }
     });
 </script>
