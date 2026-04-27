@@ -656,7 +656,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
     {
         CopyModelStateErrorsToTempData();
 
-        return RedirectToAction(nameof(AccountController.Login), typeof(AccountController).ControllerName(), new { returnUrl });
+        return RedirectToAction(nameof(AccountController.Login), typeof(AccountController).ControllerName(), new { returnUrl, externalLoginError = true });
     }
 
     private RedirectToActionResult RedirectToLogin()
