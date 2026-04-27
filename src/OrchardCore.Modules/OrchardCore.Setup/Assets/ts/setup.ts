@@ -161,15 +161,20 @@ const init = () => {
         const buildRequirementItem = (
             label: string,
             ruleName: "length" | "uniqueChars" | "uppercase" | "lowercase" | "digit" | "nonAlphanumeric"
-        ) => `<li data-password-rule="${ruleName}" class="password-rule-item text-muted">○ ${label}</li>`;
+        ) => {
+            const li = document.createElement("li");
+            li.dataset.passwordRule = ruleName;
+            li.className = "password-rule-item text-muted";
+            li.textContent = `○ ${label}`;
+            return li;
+        };
 
         const createPopover = () => {
             const el = document.createElement("div");
-            el.className = "popover bs-popover-top show";
+            el.className = "popover bs-popover-top show password-requirements-popover";
             el.role = "tooltip";
-            el.style.position = "absolute";
 
-            const requirements: string[] = [];
+            const requirements: HTMLLIElement[] = [];
             requirements.push(buildRequirementItem(`Minimum length: ${options.requiredLength}`, "length"));
 
             if ((options.requiredUniqueChars ?? 1) > 1) {
@@ -192,14 +197,25 @@ const init = () => {
                 requirements.push(buildRequirementItem("Non alphanumeric: required", "nonAlphanumeric"));
             }
 
-            el.innerHTML =
-                `<div class="popover-arrow" style="position: absolute; left: 0px; transform: translate(119px, 0px);"></div>
-             <div class="popover-header">Password requirements:</div>
-             <div class="popover-body">
-                 <ul class="mb-0 ps-0 list-unstyled" id="passwordRequirementsPopup">
-                    ${requirements.join("")}
-                 </ul>
-             </div>`;
+            const arrow = document.createElement("div");
+            arrow.className = "popover-arrow";
+
+            const header = document.createElement("div");
+            header.className = "popover-header";
+            header.textContent = "Password requirements:";
+
+            const body = document.createElement("div");
+            body.className = "popover-body";
+
+            const list = document.createElement("ul");
+            list.className = "mb-0 ps-0 list-unstyled";
+            list.id = "passwordRequirementsPopup";
+            requirements.forEach((item) => list.appendChild(item));
+
+            body.appendChild(list);
+            el.appendChild(arrow);
+            el.appendChild(header);
+            el.appendChild(body);
 
             const rect = passwordElement.getBoundingClientRect();
             el.style.top = `${rect.top - 228}px`;
