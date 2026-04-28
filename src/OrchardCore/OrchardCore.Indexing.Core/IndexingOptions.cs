@@ -6,11 +6,19 @@ namespace OrchardCore.Indexing.Core;
 public sealed class IndexingOptions
 {
     private readonly Dictionary<IndexProfileKey, IndexingOptionsEntry> _sources = new(IndexProfileKeyComparer.Instance);
+    private readonly Dictionary<string, IndexingProviderOptionsEntry> _providers = new(StringComparer.OrdinalIgnoreCase);
 
     public IReadOnlyDictionary<IndexProfileKey, IndexingOptionsEntry> Sources
         => _sources;
 
-    public void AddIndexingSource(string providerName, string type, Action<IndexingOptionsEntry> configure = null)
+    public IReadOnlyDictionary<string, IndexingProviderOptionsEntry> Providers
+        => _providers;
+
+    public void AddIndexingSource(
+        string providerName,
+        string type,
+        Action<IndexingOptionsEntry> configure = null,
+        Action<IndexingProviderOptionsEntry> configureProvider = null)
     {
         ArgumentException.ThrowIfNullOrEmpty(providerName);
         ArgumentException.ThrowIfNullOrEmpty(type);
@@ -33,6 +41,27 @@ public sealed class IndexingOptions
         }
 
         _sources[key] = entry;
+
+        AddIndexingProvider(providerName, configureProvider);
+    }
+
+    public void AddIndexingProvider(string providerName, Action<IndexingProviderOptionsEntry> configure = null)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(providerName);
+
+        if (!_providers.TryGetValue(providerName, out var entry))
+        {
+            entry = new IndexingProviderOptionsEntry(providerName);
+        }
+
+        configure?.Invoke(entry);
+
+        if (string.IsNullOrEmpty(entry.DisplayName))
+        {
+            entry.DisplayName = new LocalizedString(providerName, providerName);
+        }
+
+        _providers[providerName] = entry;
     }
 }
 
@@ -51,6 +80,18 @@ public sealed class IndexingOptionsEntry
     public LocalizedString DisplayName { get; set; }
 
     public LocalizedString Description { get; set; }
+}
+
+public sealed class IndexingProviderOptionsEntry
+{
+    public IndexingProviderOptionsEntry(string providerName)
+    {
+        ProviderName = providerName;
+    }
+
+    public string ProviderName { get; }
+
+    public LocalizedString DisplayName { get; set; }
 }
 
 public sealed class IndexProfileKeyComparer : IEqualityComparer<IndexProfileKey>
