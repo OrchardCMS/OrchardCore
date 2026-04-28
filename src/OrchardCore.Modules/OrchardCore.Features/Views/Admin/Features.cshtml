@@ -288,16 +288,33 @@
             $toogle_parent.toggleClass('d-none');
         });
     });
-    $(document).on('change', '.select-all', function () {
-    var group = $(this).closest('.feature-group');
 
-    group.find('input.form-check-input')
-    .not(this)
-    .prop('checked', this.checked);
+    // this function notices change in the select all box
+    // and allows for all checkboxes to be update accordingly
+    $(document).on('change', '.select-all', function () {
+        var group = $(this).closest('.feature-group');
+
+        group.find('input.form-check-input')
+        .not(this)
+        .prop('checked', this.checked);
     });
+
+    // This function displays the select all optionality above each feature group,
+    //  filtering out any that do not contain selectable checkboxes
     $('.feature-group').each(function() {
-    if ($(this).find('input[name="featureIds"]').length === 0) {
-    $(this).find('.select-all').hide();
-    }
+        if ($(this).find('input[name="featureIds"]').length === 0) {
+            $(this).find('.select-all').hide();
+        }
+    });
+
+    // This function notices change in the form checkboxes and 
+    // updates the select all checkbox accordingly
+    $(document).on('change', '.feature-group input.form-check-input', function () {
+        var group = $(this).closest('.feature-group');
+
+        var all = group.find('input.form-check-input').not('.select-all');
+        var checked = all.filter(':checked');
+
+        group.find('.select-all').prop('checked', all.length === checked.length);
     });
 </script>
