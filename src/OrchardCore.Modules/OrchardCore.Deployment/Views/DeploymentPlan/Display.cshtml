@@ -56,26 +56,43 @@
 
 <!-- Modal -->
 <div class="modal fade" id="modalSteps" tabindex="-1" role="dialog" aria-labelledby="available-steps-title" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="available-steps-title">@T["Available Steps"]</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <div class="mb-3">
-                    <input class="form-control" id="search-box" type="search" placeholder="@T["Filter"]" aria-label="@T["Filter"]" autofocus />
-                </div>
-                <div id="cards" class="row row-cols-1 row-cols-md-2 g-2">
-                    @foreach (var thumbnail in Model.Thumbnails.OrderBy(t => t.Key))
-                    {
-                        thumbnail.Value.DeploymentPlan = Model.DeploymentPlan;
-                        thumbnail.Value.Type = thumbnail.Key;
-
-                        <div class="col item">
-                            @await DisplayAsync(thumbnail.Value)
+                <div class="row">
+                    <div class="col-sm-3 col-md-3 col-lg-2">
+                        <div class="mb-3">
+                            <input class="form-control" id="search-box" type="search" placeholder="@T["Filter"]" aria-label="@T["Filter"]" autofocus />
                         </div>
-                    }
+                        <ul class="nav nav-pills flex-column" id="deployment-step-categories">
+                            <li class="nav-item">
+                                <a class="nav-link active" href="#all" data-category="all">@T["All"]</a>
+                            </li>
+                            @foreach (var category in Model.Categories)
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#@category.Id" data-category="@category.Id">@category.Name</a>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                    <div class="col-sm-9 col-md-9 col-lg-10">
+                        <div id="cards" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-2">
+                            @foreach (var thumbnail in Model.Thumbnails)
+                            {
+                                thumbnail.Thumbnail.DeploymentPlan = Model.DeploymentPlan;
+                                thumbnail.Thumbnail.Type = thumbnail.Type;
+
+                                <div class="col item deployment-step-item" data-category="@thumbnail.CategoryId">
+                                    @await DisplayAsync(thumbnail.Thumbnail)
+                                </div>
+                            }
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
@@ -120,9 +137,35 @@
     </div>
 </div>
 <script at="Foot">
+    function getDeploymentStepCategory() {
+        return $('#deployment-step-categories .nav-link.active').data('category') || 'all';
+    }
+
+    function filterDeploymentSteps() {
+        var search = replaceDiacritics(String($('#search-box').val() || '').toLowerCase());
+        var selectedCategory = getDeploymentStepCategory();
+
+        $('.deployment-step-item').each(function () {
+            var card = $(this);
+            var cardText = replaceDiacritics(card.text().toLowerCase());
+            var matchesSearch = search === '' || cardText.indexOf(search) > -1;
+            var matchesCategory = selectedCategory === 'all' || card.data('category') === selectedCategory;
+
+            card.toggle(matchesSearch && matchesCategory);
+        });
+    }
+
     $(document).ready(function () {
         $('#modalSteps').on('shown.bs.modal', function () {
             $('#search-box').trigger('focus');
+            filterDeploymentSteps();
+        });
+
+        $('#modalSteps').on('hidden.bs.modal', function () {
+            $('#search-box').val('');
+            $('#deployment-step-categories .nav-link').removeClass('active');
+            $('#deployment-step-categories .nav-link[data-category="all"]').addClass('active');
+            filterDeploymentSteps();
         });
     });
 
@@ -133,25 +176,15 @@
     $(function () {
         var searchBox = $('#search-box');
 
-        // On each keypress filter the list of cards
-        searchBox.keyup(function (e) {
-            var search = replaceDiacritics($(this).val().toLowerCase());
-            if (search == '') {
-                searchBox.val('');
-                $('.item').show();
-            }
-            else {
-                $('.item').each(function () {
-                    var filter = replaceDiacritics($(this).children().children().first().html().toLowerCase());
-                    var found = filter.indexOf(search) > -1;
-                    if (found) {
-                        $(this).show();
-                    }
-                    else {
-                        $(this).hide();
-                    }
-                });
-            }
+        searchBox.on('input', function () {
+            filterDeploymentSteps();
         });
-    })
+
+        $('#deployment-step-categories').on('click', '.nav-link', function (e) {
+            e.preventDefault();
+            $('#deployment-step-categories .nav-link').removeClass('active');
+            $(this).addClass('active');
+            filterDeploymentSteps();
+        });
+    });
 </script>
