@@ -118,7 +118,7 @@
                     {
                         <section class="mb-3">
                             <h5 class="mb-2">@sourceGroup.ProviderDisplayName</h5>
-                            <div class="row row-cols-1 row-cols-md-3 g-2">
+                            <div class="row row-cols-1 row-cols-md-3 g-2 pb-3 border-bottom">
                                 @foreach (var source in sourceGroup.Sources)
                                 {
                                     IShape shape = await New.IndexProfile_Link(ProviderName: source.ProviderName, Type: source.Type, IndexProfileKey: source);
