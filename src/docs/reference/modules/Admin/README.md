@@ -97,7 +97,7 @@ public class VisitSiteNavbarDisplayDriver : DisplayDriver<Navbar>
 }
 ```
 
-You can change it by overriding 'VisitSiteNavbarItem' shape, either from a [custom admin theme](../../themes/create-admin-theme/README.md) or using Admin Templates feature.  
+You can change it by overriding 'VisitSiteNavbarItem' shape, either from a [custom admin theme](../../themes/create-admin-theme/README.md) or using the Admin Templates feature.  
 
 === "Liquid"
 
