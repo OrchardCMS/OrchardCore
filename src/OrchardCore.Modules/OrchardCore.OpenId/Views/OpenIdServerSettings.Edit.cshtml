@@ -4,9 +4,7 @@
 @using System.Security.Cryptography.X509Certificates
 @model OpenIdServerSettingsViewModel
 @inject IStringLocalizer<OpenIdServerSettingsViewModel> S
-@{
-    var localizedDateFormat = S["dd/MM/yy"];
-}
+
 <div class="mb-4">
     <h3>@T["Endpoints"]</h3>
 
@@ -210,7 +208,7 @@
                         friendlyName = T["No Friendly Name"].Value;
                     }
                     <option value="@certificate.ThumbPrint" data-StoreLocation="@certificate.StoreLocation" data-StoreName="@certificate.StoreName" selected="@(selectedCertificate)">
-                        @friendlyName [@certificate.NotBefore.ToString(localizedDateFormat) - @certificate.NotAfter.ToString(localizedDateFormat)] @certificate.Subject
+                                                                                    @friendlyName [<datetime utc="certificate.NotBefore" format="dd/MM/yy" /> - <datetime utc="certificate.NotAfter" format="dd/MM/yy" />] @certificate.Subject
                     </option>
                 }
             </select>
@@ -274,7 +272,7 @@
                         friendlyName = T["No Friendly Name"].Value;
                     }
                     <option value="@certificate.ThumbPrint" data-StoreLocation="@certificate.StoreLocation" data-StoreName="@certificate.StoreName" selected="@(selectedCertificate)">
-                        @friendlyName [@certificate.NotBefore.ToString(localizedDateFormat) - @certificate.NotAfter.ToString(localizedDateFormat)] @certificate.Subject
+                        @friendlyName [<datetime utc="certificate.NotBefore" format="dd/MM/yy" /> - <datetime utc="certificate.NotAfter" format="dd/MM/yy" />] @certificate.Subject
                     </option>
                 }
             </select>
