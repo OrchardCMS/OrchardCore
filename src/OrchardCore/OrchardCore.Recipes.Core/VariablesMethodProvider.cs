@@ -18,28 +18,9 @@ public sealed class VariablesMethodProvider : IGlobalMethodProvider
         {
             Name = GlobalMethodName,
             Method = serviceProvider => (Func<string, object>)(name =>
-            {
-                var variable = variables[name];
-
-                if (variable == null)
-                {
-                    var S = serviceProvider.GetService<IStringLocalizer<VariablesMethodProvider>>();
-
-                    throw new ValidationException(S["The variable '{0}' was used in the recipe but not defined. Make sure you add the '{0}' variable in the '{1}' section of the recipe.", name, GlobalMethodName]);
-                }
-
-                var value = variable.Value<string>();
-
-                // Replace variable value while the result returns another script.
-                while (value.StartsWith('[') && value.EndsWith(']'))
-                {
-                    value = value.Trim('[', ']');
-                    value = (ScriptingManager.Evaluate(value, null, null, scopedMethodProviders) ?? "").ToString();
-                    variables[name] = value;
-                }
-
-                return value;
-            }),
+                GetVariableValueAsync(serviceProvider, variables, scopedMethodProviders, name).GetAwaiter().GetResult()),
+            AsyncMethod = serviceProvider => (Func<string, Task<object>>)(name =>
+                GetVariableValueAsync(serviceProvider, variables, scopedMethodProviders, name)),
         };
     }
 
@@ -48,5 +29,33 @@ public sealed class VariablesMethodProvider : IGlobalMethodProvider
     public IEnumerable<GlobalMethod> GetMethods()
     {
         yield return _globalMethod;
+    }
+
+    private static async Task<object> GetVariableValueAsync(
+        IServiceProvider serviceProvider,
+        JsonObject variables,
+        List<IGlobalMethodProvider> scopedMethodProviders,
+        string name)
+    {
+        var variable = variables[name];
+
+        if (variable == null)
+        {
+            var S = serviceProvider.GetService<IStringLocalizer<VariablesMethodProvider>>();
+
+            throw new ValidationException(S["The variable '{0}' was used in the recipe but not defined. Make sure you add the '{0}' variable in the '{1}' section of the recipe.", name, GlobalMethodName]);
+        }
+
+        var value = variable.Value<string>();
+
+        // Replace variable value while the result returns another script.
+        while (value.StartsWith('[') && value.EndsWith(']'))
+        {
+            value = value.Trim('[', ']');
+            value = (await ScriptingManager.EvaluateAsync(value, null, null, scopedMethodProviders) ?? "").ToString();
+            variables[name] = value;
+        }
+
+        return value;
     }
 }

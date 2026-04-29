@@ -7,6 +7,37 @@ namespace OrchardCore.Tests.Scripting;
 public class ScriptFunctionsTest
 {
     [Fact]
+    public async Task TheScriptingManagerShouldEvaluateAsyncGlobalMethods()
+    {
+        using var context = new SiteContext();
+        await context.InitializeAsync();
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            var syncMethodInvoked = false;
+            var asyncMethod = new GlobalMethod
+            {
+                Name = "getValueAsync",
+                Method = sp => (Func<string>)(() =>
+                {
+                    syncMethodInvoked = true;
+                    return "sync";
+                }),
+                AsyncMethod = sp => (Func<Task<string>>)(async () =>
+                {
+                    await Task.Yield();
+                    return "async";
+                }),
+            };
+
+            var scriptingManager = scope.ServiceProvider.GetRequiredService<IScriptingManager>();
+            var result = await scriptingManager.EvaluateAsync("js:getValueAsync()", null, null, [new TestGlobalMethodProvider(asyncMethod)]);
+
+            Assert.Equal("async", result);
+            Assert.False(syncMethodInvoked);
+        });
+    }
+
+    [Fact]
     public async Task TheScriptingEngineShouldBeAbleToHandleJsonObject()
     {
         using var context = new SiteContext();
@@ -85,5 +116,20 @@ public class ScriptFunctionsTest
 
             return Task.CompletedTask;
         });
+    }
+
+    private sealed class TestGlobalMethodProvider : IGlobalMethodProvider
+    {
+        private readonly GlobalMethod _method;
+
+        public TestGlobalMethodProvider(GlobalMethod method)
+        {
+            _method = method;
+        }
+
+        public IEnumerable<GlobalMethod> GetMethods()
+        {
+            yield return _method;
+        }
     }
 }
