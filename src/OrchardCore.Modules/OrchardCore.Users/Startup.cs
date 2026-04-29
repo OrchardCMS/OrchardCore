@@ -92,7 +92,6 @@ public sealed class Startup : StartupBase
             .AddOptions<EmailConfirmationTokenProviderOptions>();
 
         services.AddTransient<IConfigureOptions<IdentityOptions>, IdentityOptionsConfigurations>();
-        services.AddPhoneFormatValidator();
         // Configure the authentication options to use the application cookie scheme as the default sign-out handler.
         // This is required for security modules like the OpenID module (that uses SignOutAsync()) to work correctly.
         services.AddAuthentication(options => options.DefaultSignOutScheme = IdentityConstants.ApplicationScheme);
@@ -300,6 +299,7 @@ public sealed class RolesStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddScoped<IRoleRemovedEventHandler, UserRoleRemovedEventHandler>();
+        services.AddScoped<IRoleUpdatedEventHandler, UserRoleUpdatedEventHandler>();
         services.AddIndexProvider<UserByRoleNameIndexProvider>();
         services.AddDisplayDriver<User, UserRoleDisplayDriver>();
         services.AddScoped<IAuthorizationHandler, RoleAuthorizationHandler>();
