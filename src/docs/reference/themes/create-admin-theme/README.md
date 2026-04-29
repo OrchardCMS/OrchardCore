@@ -66,7 +66,7 @@ Open a browser on <https://localhost:5001>
 
 Enter the Admin section by opening <https://localhost:5001/admin> and logging in.
 
-Using the left menu go to _Design -> Themes_, search for your theme, **MyAdminTheme**, and select **Make Current**.
+Using the left menu, go to _Design -> Themes_, search for your theme, **MyAdminTheme**, and select **Make Current**.
 
 Now your admin theme is enabled.
 
