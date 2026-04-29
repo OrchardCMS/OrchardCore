@@ -208,7 +208,7 @@
                         friendlyName = T["No Friendly Name"].Value;
                     }
                     <option value="@certificate.ThumbPrint" data-StoreLocation="@certificate.StoreLocation" data-StoreName="@certificate.StoreName" selected="@(selectedCertificate)">
-                                                                                    @friendlyName [<datetime utc="certificate.NotBefore" format="dd/MM/yy" /> - <datetime utc="certificate.NotAfter" format="dd/MM/yy" />] @certificate.Subject
+                        @friendlyName [<datetime utc="certificate.NotBefore" format="dd/MM/yy" /> - <datetime utc="certificate.NotAfter" format="dd/MM/yy" />] @certificate.Subject
                     </option>
                 }
             </select>
