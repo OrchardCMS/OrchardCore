@@ -18,7 +18,7 @@ If you want to specify another prefix in the urls to access the admin section, y
 
 By default, OrchardCore logo and site name are displayed in the top navbar.
 
-You can change it by overriding 'AdminBranding' shape, either from a [custom admin theme](../../../themes/create-admin-theme/README.md) or using Admin Templates feature.  
+You can change it by overriding 'AdminBranding' shape, either from a [custom admin theme](../../themes/create-admin-theme/README.md) or using Admin Templates feature.  
 You can also use this shape to define admin favicon.
 
 Here are samples using logo and favicon from media module.
@@ -97,7 +97,7 @@ public class VisitSiteNavbarDisplayDriver : DisplayDriver<Navbar>
 }
 ```
 
-You can change it by overriding 'VisitSiteNavbarItem' shape, either from a [custom admin theme](../../../themes/create-admin-theme/README.md) or using Admin Templates feature.  
+You can change it by overriding 'VisitSiteNavbarItem' shape, either from a [custom admin theme](../../themes/create-admin-theme/README.md) or using Admin Templates feature.  
 
 === "Liquid"
 
