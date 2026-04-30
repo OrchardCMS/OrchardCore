@@ -172,8 +172,20 @@ a:hover {
 }
 
 .ta-badge {
+  --ta-badge-extra-padding: var(--bs-border-width);
   border-radius: var(--bs-border-radius-pill) !important;
+  padding: calc(var(--bs-badge-padding-y) + var(--ta-badge-extra-padding)) calc(var(--bs-badge-padding-x) + var(--ta-badge-extra-padding));
+}
+
+.ta-badge:not(.text-bg-primary, .text-bg-secondary, .text-bg-success, .text-bg-danger, .text-bg-warning, .text-bg-info, .text-bg-light, .text-bg-dark) {
+  --ta-badge-extra-padding: 0px;
   border: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color) !important;
+}
+
+.badge-show-more {
+  --bs-btn-font-size: 0.75em;
+  --bs-btn-padding-y: 0;
+  --bs-btn-padding-x: 0.25rem;
 }
 
 @keyframes bs-notify-fadeOut {

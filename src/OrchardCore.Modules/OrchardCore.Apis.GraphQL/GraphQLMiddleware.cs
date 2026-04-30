@@ -158,6 +158,7 @@ public class GraphQLMiddleware : IMiddleware
             options.OperationName = request.OperationName;
             options.Variables = request.Variables;
             options.UserContext = _settings.BuildUserContext?.Invoke(context);
+            options.User = context.User;
             options.ValidationRules = DocumentValidator.CoreRules
             .Concat(context.RequestServices.GetServices<IValidationRule>())
             .Append(new ComplexityValidationRule(new ComplexityOptions
