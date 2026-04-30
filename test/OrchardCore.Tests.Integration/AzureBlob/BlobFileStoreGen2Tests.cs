@@ -4,14 +4,12 @@ using Xunit;
 namespace OrchardCore.Tests.Integration.AzureBlob;
 
 /// <summary>
-/// Runs all <see cref="BlobFileStoreTestsBase"/> tests against the Gen2 Azurite instance.
+/// Runs all <see cref="BlobFileStoreTestsBase"/> tests with Gen2 (HNS) behavior.
 /// Auto-detection via <c>GetAccountInfo</c> is used — no <c>UseHierarchicalNamespace</c> override.
 /// </summary>
 public sealed class BlobFileStoreGen2Tests : BlobFileStoreTestsBase
 {
-    protected override string ConnectionStringOverrideEnvVar => "AZURITE_GEN2_CONNECTION_STRING";
-
-    [AzuriteFact("AZURITE_GEN2_CONNECTION_STRING")]
+    [AzuriteFact]
     public async Task CreateDirectory_Nested_CreatesIntermediateDirectories()
     {
         await TryCreateDirectoryAsync("a/b/c");
@@ -21,7 +19,7 @@ public sealed class BlobFileStoreGen2Tests : BlobFileStoreTestsBase
         Assert.NotNull(await GetDirectoryInfoAsync("a"));
     }
 
-    [AzuriteFact("AZURITE_GEN2_CONNECTION_STRING")]
+    [AzuriteFact]
     public async Task GetDirectoryContent_Flat_IncludesGen2Directories()
     {
         await TryCreateDirectoryAsync("flat-gen2");
@@ -41,7 +39,7 @@ public sealed class BlobFileStoreGen2Tests : BlobFileStoreTestsBase
         Assert.Contains(entries, e => !e.IsDirectory && e.Name == "nested.txt");
     }
 
-    [AzuriteFact("AZURITE_GEN2_CONNECTION_STRING")]
+    [AzuriteFact]
     public async Task MoveFile_IsAtomic()
     {
         // Gen2 move uses DataLake RenameAsync which is an atomic server-side operation.
@@ -54,7 +52,7 @@ public sealed class BlobFileStoreGen2Tests : BlobFileStoreTestsBase
         Assert.Equal("atomic", await ReadFileContentAsync("atomic-dst.txt"));
     }
 
-    [AzuriteFact("AZURITE_GEN2_CONNECTION_STRING")]
+    [AzuriteFact]
     public async Task GetDirectoryInfo_AfterDeletingDirectory_ReturnsNull()
     {
         await TryCreateDirectoryAsync("temp-dir");
@@ -65,7 +63,7 @@ public sealed class BlobFileStoreGen2Tests : BlobFileStoreTestsBase
         Assert.Null(await GetDirectoryInfoAsync("temp-dir"));
     }
 
-    [AzuriteFact("AZURITE_GEN2_CONNECTION_STRING")]
+    [AzuriteFact]
     public async Task CreateDirectory_EmptyDirectory_ExistsWithNoContent()
     {
         await TryCreateDirectoryAsync("empty-gen2-dir");

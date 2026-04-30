@@ -15,19 +15,14 @@ namespace OrchardCore.Tests.Integration.AzureBlob;
 public abstract class BlobFileStoreTestsBase : IAsyncLifetime
 {
     private const string ConnectionStringEnvVar = "AZURITE_CONNECTION_STRING";
-    private const string Gen2ConnectionStringEnvVar = "AZURITE_GEN2_CONNECTION_STRING";
 
     /// <summary>
     /// Override for <see cref="BlobStorageOptions.UseHierarchicalNamespace"/>.
     /// <c>null</c> (default) lets <see cref="BlobFileStore.EnsureCapabilitiesAsync"/> auto-detect
-    /// via <c>GetAccountInfo</c>. Set to <c>false</c> to force flat-namespace (Gen1) behavior.
+    /// via <c>GetAccountInfo</c>. Set to <c>false</c> to force flat-namespace (Gen1) behavior
+    /// against an HNS-enabled Azurite instance.
     /// </summary>
     protected virtual bool? UseHierarchicalNamespaceOverride => null;
-
-    /// <summary>
-    /// Override to use the Gen2-specific connection string env var.
-    /// </summary>
-    protected virtual string ConnectionStringOverrideEnvVar => ConnectionStringEnvVar;
 
     private BlobFileStore _store;
     private BlobContainerClient _containerClient;
@@ -35,7 +30,7 @@ public abstract class BlobFileStoreTestsBase : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        var connectionString = System.Environment.GetEnvironmentVariable(ConnectionStringOverrideEnvVar);
+        var connectionString = System.Environment.GetEnvironmentVariable(ConnectionStringEnvVar);
         _containerName = $"test-{Guid.NewGuid():N}";
 
         var options = new TestBlobStorageOptions
@@ -437,20 +432,19 @@ public abstract class BlobFileStoreTestsBase : IAsyncLifetime
 internal sealed class TestBlobStorageOptions : BlobStorageOptions;
 
 /// <summary>
-/// Skips the test when the required Azurite connection string env var is not set.
+/// Skips the test when <c>AZURITE_CONNECTION_STRING</c> is not set.
 /// </summary>
 [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
 internal sealed class AzuriteFactAttribute : FactAttribute
 {
     public AzuriteFactAttribute(
-        string connectionStringEnvVar = "AZURITE_CONNECTION_STRING",
         [System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = null,
         [System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = -1)
         : base(sourceFilePath, sourceLineNumber)
     {
-        if (string.IsNullOrEmpty(System.Environment.GetEnvironmentVariable(connectionStringEnvVar)))
+        if (string.IsNullOrEmpty(System.Environment.GetEnvironmentVariable("AZURITE_CONNECTION_STRING")))
         {
-            Skip = $"Azurite is not configured. Set {connectionStringEnvVar} to run this test.";
+            Skip = "Azurite is not configured. Set AZURITE_CONNECTION_STRING to run this test.";
         }
     }
 }
