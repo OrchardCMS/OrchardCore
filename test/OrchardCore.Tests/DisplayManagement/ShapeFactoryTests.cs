@@ -145,6 +145,7 @@ public class ShapeFactoryTests
         Assert.NotEqual(typeof(TestShapeViewModel), generatedShapeType);
         Assert.Equal(typeof(ShapeFactoryTests).Assembly, generatedShapeType.Assembly);
         Assert.False(generatedShapeType.Assembly.IsDynamic);
+        Assert.True(generatedShapeType.IsPublic);
         Assert.DoesNotContain(generatedShapeType.GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public), field => field.FieldType == typeof(ShapeViewModel));
         Assert.Equal("Generated", typedShape.Title);
         Assert.Equal(5, typedShape.Count);
@@ -197,6 +198,20 @@ public class ShapeFactoryTests
     }
 
     [Fact]
+    public async Task CreateStronglyTypedShapeUsesAttributedModelWithoutInterception()
+    {
+        var factory = _serviceProvider.GetRequiredService<IShapeFactory>();
+        var shape = await factory.CreateAsync<AttributedShapeViewModel>(model => model.Title = "Attributed");
+        var typedShape = Assert.IsAssignableFrom<AttributedShapeViewModel>(shape);
+
+        Assert.Same(typeof(AttributedShapeViewModel), typedShape.GetType());
+        Assert.Equal(typeof(ShapeFactoryTests).Assembly, typedShape.GetType().Assembly);
+        Assert.False(typedShape.GetType().Assembly.IsDynamic);
+        Assert.True(typedShape.GetType().IsPublic);
+        Assert.Equal("Attributed", typedShape.Title);
+    }
+
+    [Fact]
     public async Task DisplayDriverInitializeUsesGeneratedShapeType()
     {
         var factory = _serviceProvider.GetRequiredService<IShapeFactory>();
@@ -210,6 +225,7 @@ public class ShapeFactoryTests
         Assert.Equal(typeof(TestShapeViewModel), generatedShapeType.BaseType);
         Assert.Equal(typeof(ShapeFactoryTests).Assembly, generatedShapeType.Assembly);
         Assert.False(generatedShapeType.Assembly.IsDynamic);
+        Assert.True(generatedShapeType.IsPublic);
         Assert.Equal("Driver", typedShape.Title);
         Assert.Equal(10, typedShape.Count);
     }
@@ -228,6 +244,7 @@ public class ShapeFactoryTests
         Assert.Equal(typeof(TestShapeViewModel), generatedShapeType.BaseType);
         Assert.Equal(typeof(ShapeFactoryTests).Assembly, generatedShapeType.Assembly);
         Assert.False(generatedShapeType.Assembly.IsDynamic);
+        Assert.True(generatedShapeType.IsPublic);
     }
 
     [Fact]
@@ -244,6 +261,7 @@ public class ShapeFactoryTests
         Assert.Equal(typeof(TestShapeViewModel), generatedShapeType.BaseType);
         Assert.Equal(typeof(ShapeFactoryTests).Assembly, generatedShapeType.Assembly);
         Assert.False(generatedShapeType.Assembly.IsDynamic);
+        Assert.True(generatedShapeType.IsPublic);
     }
 
     private static MethodInfo GetCreateAsyncActionOverload(Type shapeFactoryExtensionsType)
@@ -318,4 +336,10 @@ public class TestShapeViewModel
 public class FallbackOnlyShapeViewModel
 {
     public string Name { get; set; }
+}
+
+[GenerateShape]
+public partial class AttributedShapeViewModel
+{
+    public string Title { get; set; }
 }

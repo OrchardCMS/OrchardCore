@@ -13,6 +13,7 @@ namespace OrchardCore.DisplayManagement.SourceGenerators;
 [Generator]
 public class ShapeFactoryGenerator : IIncrementalGenerator
 {
+    private const string GenerateShapeAttributeFullName = "OrchardCore.DisplayManagement.GenerateShapeAttribute";
     private const string ShapeFactoryExtensionsFullName = "OrchardCore.DisplayManagement.ShapeFactoryExtensions";
     private const string IShapeFactoryFullName = "OrchardCore.DisplayManagement.IShapeFactory";
     private const string IShapeFullName = "OrchardCore.DisplayManagement.IShape";
@@ -27,9 +28,20 @@ public class ShapeFactoryGenerator : IIncrementalGenerator
                 transform: static (context, ct) => GetInvocationInfo(context, ct))
             .Where(static info => info is not null);
 
+        var attributedTypes = context.SyntaxProvider
+            .ForAttributeWithMetadataName(
+                GenerateShapeAttributeFullName,
+                predicate: static (node, _) => node is ClassDeclarationSyntax or RecordDeclarationSyntax,
+                transform: static (context, _) => GetAttributedModelType(context))
+            .Where(static type => type is not null);
+
         context.RegisterSourceOutput(
             invocations.Collect(),
             static (spc, invocations) => Execute(invocations!, spc));
+
+        context.RegisterSourceOutput(
+            attributedTypes.Collect(),
+            static (spc, types) => ExecuteAttributedTypes(types!, spc));
     }
 
     private static InvocationInfo? GetInvocationInfo(GeneratorSyntaxContext context, CancellationToken cancellationToken)
@@ -50,6 +62,7 @@ public class ShapeFactoryGenerator : IIncrementalGenerator
             modelType.TypeKind != TypeKind.Class ||
             modelType.IsAbstract ||
             ImplementsIShape(modelType) ||
+            HasGenerateShapeAttribute(modelType) ||
             !HasAccessibleParameterlessConstructor(modelType))
         {
             return null;
@@ -64,12 +77,27 @@ public class ShapeFactoryGenerator : IIncrementalGenerator
         }
 
         var location = context.SemanticModel.GetInterceptableLocation(invocation, cancellationToken);
+
         if (location is null)
         {
             return null;
         }
 
         return new InvocationInfo(location, modelType, invocationKind.Value, GetStateType(invocationKind.Value, logicalParameters));
+    }
+
+    private static INamedTypeSymbol? GetAttributedModelType(GeneratorAttributeSyntaxContext context)
+    {
+        if (context.TargetSymbol is not INamedTypeSymbol modelType ||
+            modelType.TypeKind != TypeKind.Class ||
+            modelType.IsAbstract ||
+            ImplementsIShape(modelType) ||
+            !HasAccessibleParameterlessConstructor(modelType))
+        {
+            return null;
+        }
+
+        return modelType;
     }
 
     private static ImmutableArray<IParameterSymbol> GetLogicalParameters(IMethodSymbol methodSymbol)
@@ -244,6 +272,9 @@ public class ShapeFactoryGenerator : IIncrementalGenerator
     private static bool ImplementsIShape(INamedTypeSymbol typeSymbol)
         => typeSymbol.AllInterfaces.Any(i => i.ToDisplayString() == IShapeFullName);
 
+    private static bool HasGenerateShapeAttribute(INamedTypeSymbol typeSymbol)
+        => typeSymbol.GetAttributes().Any(attribute => attribute.AttributeClass?.ToDisplayString() == GenerateShapeAttributeFullName);
+
     private static bool InheritsFrom(INamedTypeSymbol? typeSymbol, string fullName)
     {
         for (var current = typeSymbol; current is not null; current = current.BaseType)
@@ -311,6 +342,7 @@ public class ShapeFactoryGenerator : IIncrementalGenerator
                                 _ = data;
                             }
                         }
+
                     }
 
                     namespace OrchardCore.DisplayManagement.Generated
@@ -349,12 +381,33 @@ public class ShapeFactoryGenerator : IIncrementalGenerator
         context.AddSource("ShapeFactoryGenerator.g.cs", SourceText.From(sb.ToString(), Encoding.UTF8));
     }
 
+    private static void ExecuteAttributedTypes(ImmutableArray<INamedTypeSymbol> modelTypes, SourceProductionContext context)
+    {
+        if (modelTypes.IsDefaultOrEmpty)
+        {
+            return;
+        }
+
+        foreach (var modelType in modelTypes.Distinct<INamedTypeSymbol>(SymbolEqualityComparer.Default))
+        {
+            context.CancellationToken.ThrowIfCancellationRequested();
+
+            var source = GenerateAttributedShapeType(modelType);
+
+            if (!string.IsNullOrEmpty(source))
+            {
+                context.AddSource($"{modelType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).Replace("global::", string.Empty).Replace(".", "_").Replace("<", "_").Replace(">", "_")}.Shape.g.cs",
+                    SourceText.From(source, Encoding.UTF8));
+            }
+        }
+    }
+
     private static void GenerateShapeType(StringBuilder sb, INamedTypeSymbol modelType)
     {
         var baseTypeName = modelType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
         var generatedTypeName = GetGeneratedTypeName(modelType);
 
-        sb.AppendLine($"    file sealed class {generatedTypeName} : {baseTypeName}, global::OrchardCore.DisplayManagement.IShape, global::OrchardCore.DisplayManagement.IPositioned");
+        sb.AppendLine($"    public sealed class {generatedTypeName} : {baseTypeName}, global::OrchardCore.DisplayManagement.IShape, global::OrchardCore.DisplayManagement.IPositioned");
         sb.AppendLine("    {");
         sb.AppendLine("        private global::OrchardCore.DisplayManagement.Shapes.ShapeMetadata? _metadata;");
         sb.AppendLine();
@@ -423,6 +476,163 @@ public class ShapeFactoryGenerator : IIncrementalGenerator
         sb.AppendLine("        }");
         sb.AppendLine("    }");
         sb.AppendLine();
+    }
+
+    private static string GenerateAttributedShapeType(INamedTypeSymbol modelType)
+    {
+        var sb = new StringBuilder();
+
+        sb.AppendLine("// <auto-generated />");
+        sb.AppendLine("#nullable enable");
+        sb.AppendLine();
+
+        var namespaceName = modelType.ContainingNamespace?.ToDisplayString();
+        var hasNamespace = !string.IsNullOrEmpty(namespaceName) && namespaceName != "<global namespace>";
+        var currentIndent = string.Empty;
+
+        if (hasNamespace)
+        {
+            sb.AppendLine($"namespace {namespaceName}");
+            sb.AppendLine("{");
+            currentIndent = "    ";
+        }
+
+        AppendContainingTypeDeclarations(sb, modelType, ref currentIndent);
+
+        var keyword = modelType.IsRecord ? "partial record" : "partial class";
+        var accessibility = GetAccessibilityText(modelType.DeclaredAccessibility, modelType.ContainingType is not null);
+
+        sb.AppendLine($"{currentIndent}{accessibility} {keyword} {modelType.Name} : global::OrchardCore.DisplayManagement.IShape, global::OrchardCore.DisplayManagement.IPositioned");
+        sb.AppendLine($"{currentIndent}{{");
+        sb.AppendLine($"{currentIndent}    private global::OrchardCore.DisplayManagement.Shapes.ShapeMetadata? _metadata;");
+        sb.AppendLine();
+        sb.AppendLine($"{currentIndent}    private global::System.Collections.Generic.List<string>? _classes;");
+        sb.AppendLine();
+        sb.AppendLine($"{currentIndent}    private global::System.Collections.Generic.Dictionary<string, string>? _attributes;");
+        sb.AppendLine();
+        sb.AppendLine($"{currentIndent}    private global::System.Collections.Generic.Dictionary<string, object>? _properties;");
+        sb.AppendLine();
+        sb.AppendLine($"{currentIndent}    private bool _sorted;");
+        sb.AppendLine();
+        sb.AppendLine($"{currentIndent}    private global::System.Collections.Generic.List<global::OrchardCore.DisplayManagement.IPositioned>? _items;");
+        sb.AppendLine();
+        sb.AppendLine($"{currentIndent}    public global::OrchardCore.DisplayManagement.Shapes.ShapeMetadata Metadata => _metadata ??= new global::OrchardCore.DisplayManagement.Shapes.ShapeMetadata();");
+        sb.AppendLine();
+        sb.AppendLine($"{currentIndent}    public string Position");
+        sb.AppendLine($"{currentIndent}    {{");
+        sb.AppendLine($"{currentIndent}        get => Metadata.Position;");
+        sb.AppendLine($"{currentIndent}        set => Metadata.Position = value;");
+        sb.AppendLine($"{currentIndent}    }}");
+        sb.AppendLine();
+        sb.AppendLine($"{currentIndent}    public string Id {{ get; set; }} = null!;");
+        sb.AppendLine();
+        sb.AppendLine($"{currentIndent}    public string TagName {{ get; set; }} = null!;");
+        sb.AppendLine();
+        sb.AppendLine($"{currentIndent}    public global::System.Collections.Generic.IList<string> Classes => _classes ??= [];");
+        sb.AppendLine();
+        sb.AppendLine($"{currentIndent}    public global::System.Collections.Generic.IDictionary<string, string> Attributes => _attributes ??= [];");
+        sb.AppendLine();
+        sb.AppendLine($"{currentIndent}    public global::System.Collections.Generic.IDictionary<string, object> Properties => _properties ??= [];");
+        sb.AppendLine();
+        sb.AppendLine($"{currentIndent}    public global::System.Collections.Generic.IReadOnlyList<global::OrchardCore.DisplayManagement.IPositioned> Items");
+        sb.AppendLine($"{currentIndent}    {{");
+        sb.AppendLine($"{currentIndent}        get");
+        sb.AppendLine($"{currentIndent}        {{");
+        sb.AppendLine($"{currentIndent}            _items ??= [];");
+        sb.AppendLine();
+        sb.AppendLine($"{currentIndent}            if (!_sorted && _items.Count > 0)");
+        sb.AppendLine($"{currentIndent}            {{");
+        sb.AppendLine($"{currentIndent}                _items = global::System.Linq.Enumerable.ToList(global::System.Linq.Enumerable.OrderBy(_items, static x => x, global::OrchardCore.DisplayManagement.Zones.FlatPositionComparer.Instance));");
+        sb.AppendLine($"{currentIndent}                _sorted = true;");
+        sb.AppendLine($"{currentIndent}            }}");
+        sb.AppendLine();
+        sb.AppendLine($"{currentIndent}            return _items;");
+        sb.AppendLine($"{currentIndent}        }}");
+        sb.AppendLine($"{currentIndent}    }}");
+        sb.AppendLine();
+        sb.AppendLine($"{currentIndent}    public global::System.Threading.Tasks.ValueTask<global::OrchardCore.DisplayManagement.IShape> AddAsync(object item, string position)");
+        sb.AppendLine($"{currentIndent}    {{");
+        sb.AppendLine($"{currentIndent}        if (item == null)");
+        sb.AppendLine($"{currentIndent}        {{");
+        sb.AppendLine($"{currentIndent}            return global::System.Threading.Tasks.ValueTask.FromResult<global::OrchardCore.DisplayManagement.IShape>(this);");
+        sb.AppendLine($"{currentIndent}        }}");
+        sb.AppendLine();
+        sb.AppendLine($"{currentIndent}        position ??= string.Empty;");
+        sb.AppendLine($"{currentIndent}        _sorted = false;");
+        sb.AppendLine($"{currentIndent}        _items ??= [];");
+        sb.AppendLine();
+        sb.AppendLine($"{currentIndent}        var wrapped = global::OrchardCore.DisplayManagement.PositionWrapper.TryWrap(item, position);");
+        sb.AppendLine($"{currentIndent}        if (wrapped is not null)");
+        sb.AppendLine($"{currentIndent}        {{");
+        sb.AppendLine($"{currentIndent}            _items.Add(wrapped);");
+        sb.AppendLine($"{currentIndent}        }}");
+        sb.AppendLine();
+        sb.AppendLine($"{currentIndent}        return global::System.Threading.Tasks.ValueTask.FromResult<global::OrchardCore.DisplayManagement.IShape>(this);");
+        sb.AppendLine($"{currentIndent}    }}");
+        sb.AppendLine($"{currentIndent}}}");
+
+        CloseContainingTypeDeclarations(sb, modelType, ref currentIndent);
+
+        if (hasNamespace)
+        {
+            sb.AppendLine("}");
+        }
+
+        return sb.ToString();
+    }
+
+    private static void AppendContainingTypeDeclarations(StringBuilder sb, INamedTypeSymbol typeSymbol, ref string currentIndent)
+    {
+        var containingTypes = new global::System.Collections.Generic.Stack<INamedTypeSymbol>();
+
+        for (var current = typeSymbol.ContainingType; current is not null; current = current.ContainingType)
+        {
+            containingTypes.Push(current);
+        }
+
+        while (containingTypes.Count > 0)
+        {
+            var containingType = containingTypes.Pop();
+            var keyword = containingType.IsRecord ? "partial record" : "partial class";
+            var accessibility = GetAccessibilityText(containingType.DeclaredAccessibility, containingType.ContainingType is not null);
+
+            sb.AppendLine($"{currentIndent}{accessibility} {keyword} {containingType.Name}");
+            sb.AppendLine($"{currentIndent}{{");
+            currentIndent += "    ";
+        }
+    }
+
+    private static void CloseContainingTypeDeclarations(StringBuilder sb, INamedTypeSymbol typeSymbol, ref string currentIndent)
+    {
+        for (var current = typeSymbol.ContainingType; current is not null; current = current.ContainingType)
+        {
+            currentIndent = currentIndent.Substring(4);
+            sb.AppendLine($"{currentIndent}}}");
+        }
+    }
+
+    private static string GetAccessibilityText(Accessibility accessibility, bool isNested)
+    {
+        if (!isNested)
+        {
+            return accessibility switch
+            {
+                Accessibility.Public => "public",
+                Accessibility.Internal => "internal",
+                _ => "internal",
+            };
+        }
+
+        return accessibility switch
+        {
+            Accessibility.Private => "private",
+            Accessibility.Protected => "protected",
+            Accessibility.Internal => "internal",
+            Accessibility.Public => "public",
+            Accessibility.ProtectedOrInternal => "protected internal",
+            Accessibility.ProtectedAndInternal => "private protected",
+            _ => "public",
+        };
     }
 
     private static string GetMemberHidingModifier(INamedTypeSymbol modelType, string memberName, int parameterCount = 0)
