@@ -171,7 +171,9 @@ const init = () => {
 
         const createPopover = () => {
             const el = document.createElement("div");
-            el.className = "popover bs-popover-top show password-requirements-popover";
+            el.id = "passwordRequirementsPopover";
+            el.className =
+                "popover bs-popover-top show password-requirements-popover";
             el.role = "tooltip";
 
             const requirements: HTMLLIElement[] = [];
@@ -217,11 +219,16 @@ const init = () => {
             el.appendChild(header);
             el.appendChild(body);
 
-            const rect = passwordElement.getBoundingClientRect();
-            el.style.top = `${rect.top - 228}px`;
-            el.style.left = `${rect.left}px`;
-
             document.body.appendChild(el);
+
+            const rect = passwordElement.getBoundingClientRect();
+            const offset = 8;
+            el.style.top = `${
+                rect.top + window.scrollY - el.offsetHeight - offset
+            }px`;
+            el.style.left = `${rect.left + window.scrollX}px`;
+            passwordElement.setAttribute("aria-describedby", el.id);
+
             return el;
         };
 
@@ -248,6 +255,7 @@ const init = () => {
         const removePopover = () => {
             popover?.remove();
             popover = null;
+            passwordElement.removeAttribute("aria-describedby");
             passwordElement.removeEventListener("input", onInput);
         };
 
@@ -268,7 +276,7 @@ const init = () => {
         "#toggleConnectionString"
     );
     if (toggleConnectionString) {
-        toggleConnectionString.addEventListener("click", function (e) {
+        toggleConnectionString.addEventListener("click", function () {
             togglePasswordVisibility(
                 document.querySelector("#ConnectionString"),
                 document.querySelector("#toggleConnectionString")
@@ -277,7 +285,7 @@ const init = () => {
     }
 
     const togglePassword = document.querySelector("#togglePassword");
-    togglePassword?.addEventListener("click", function (e) {
+    togglePassword?.addEventListener("click", function () {
         togglePasswordVisibility(
             document.querySelector("#Password"),
             document.querySelector("#togglePassword")
@@ -287,7 +295,7 @@ const init = () => {
     const togglePasswordConfirmation = document.querySelector(
         "#togglePasswordConfirmation"
     );
-    togglePasswordConfirmation?.addEventListener("click", function (e) {
+    togglePasswordConfirmation?.addEventListener("click", function () {
         togglePasswordVisibility(
             document.querySelector("#PasswordConfirmation"),
             document.querySelector("#togglePasswordConfirmation")
