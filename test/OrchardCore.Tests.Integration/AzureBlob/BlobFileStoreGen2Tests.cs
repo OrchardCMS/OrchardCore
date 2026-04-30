@@ -1,3 +1,4 @@
+using Azure.Storage.Files.DataLake;
 using OrchardCore.FileStorage;
 using Xunit;
 
@@ -9,6 +10,11 @@ namespace OrchardCore.Tests.Integration.AzureBlob;
 /// </summary>
 public sealed class BlobFileStoreGen2Tests : BlobFileStoreTestsBase
 {
+    protected override async Task CreateContainerAsync(string connectionString, string containerName)
+        => await new DataLakeServiceClient(connectionString)
+            .GetFileSystemClient(containerName)
+            .CreateIfNotExistsAsync();
+
     [AzuriteFact]
     public async Task CreateDirectory_Nested_CreatesIntermediateDirectories()
     {
