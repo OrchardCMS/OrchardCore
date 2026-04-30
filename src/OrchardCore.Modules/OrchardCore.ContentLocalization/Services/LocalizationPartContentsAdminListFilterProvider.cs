@@ -16,7 +16,8 @@ public class LocalizationPartContentsAdminListFilterProvider : IContentsAdminLis
                 {
                     if (!string.IsNullOrEmpty(val))
                     {
-                        query.With<LocalizedContentItemIndex>(i => (i.Published || i.Latest) && i.Culture == val);
+                        var normalized = val.ToLowerInvariant();
+                        query.With<LocalizedContentItemIndex>(i => (i.Published || i.Latest) && i.Culture == normalized);
                     }
 
                     return query;
