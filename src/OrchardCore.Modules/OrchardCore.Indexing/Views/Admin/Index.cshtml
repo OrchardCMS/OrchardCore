@@ -1,9 +1,10 @@
 @using Microsoft.AspNetCore.Mvc.Localization
 @using OrchardCore.DisplayManagement
 @using OrchardCore.Indexing.Models
+@using OrchardCore.Indexing.ViewModels
 @using OrchardCore.Infrastructure.Entities
 
-@model ListSourcedEntitiesViewModel<IndexProfileKey, ModelEntry<IndexProfile>, IndexingEntityOptions>
+@model AdminIndexViewModel
 
 <zone Name="Title" Entry>
     <h1>@RenderTitleSegments(T["Indexes"])</h1>
@@ -107,22 +108,28 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                @if (!Model.Sources.Any())
+                @if (!Model.SourceGroups.Any())
                 {
                     <p class="p-3 mb-2 bg-warning text-white">@T["You need to enable a feature which provides an index source."]</p>
                 }
                 else
                 {
-                    <div class="row row-cols-1 row-cols-md-3 g-2">
-                        @foreach (var source in Model.Sources)
-                        {
-                            IShape shape = await New.IndexProfile_Link(ProviderName: source.ProviderName, Type: source.Type, IndexProfileKey: source);
-                            shape.Metadata.Alternates.Add($"IndexProfile_Link__{source.ProviderName}");
-                            shape.Metadata.Alternates.Add($"IndexProfile_Link__{source.ProviderName}__{source.Type}");
+                    @foreach (var sourceGroup in Model.SourceGroups)
+                    {
+                        <section class="mb-3">
+                            <h5 class="mb-2">@sourceGroup.ProviderDisplayName</h5>
+                            <div class="row row-cols-1 row-cols-md-3 g-2 pb-3 border-bottom">
+                                @foreach (var source in sourceGroup.Sources)
+                                {
+                                    IShape shape = await New.IndexProfile_Link(ProviderName: source.ProviderName, Type: source.Type, IndexProfileKey: source);
+                                    shape.Metadata.Alternates.Add($"IndexProfile_Link__{source.ProviderName}");
+                                    shape.Metadata.Alternates.Add($"IndexProfile_Link__{source.ProviderName}__{source.Type}");
 
-                            @await DisplayAsync(shape)
-                        }
-                    </div>
+                                    @await DisplayAsync(shape)
+                                }
+                            </div>
+                        </section>
+                    }
                 }
             </div>
             <div class="modal-footer">
