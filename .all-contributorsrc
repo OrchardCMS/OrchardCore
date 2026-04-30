@@ -3565,6 +3565,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "yashicauni0405",
+      "name": "yashicauni0405",
+      "avatar_url": "https://avatars.githubusercontent.com/u/263265066?v=4",
+      "profile": "https://github.com/yashicauni0405",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,
