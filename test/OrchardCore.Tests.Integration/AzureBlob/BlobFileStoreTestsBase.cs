@@ -58,8 +58,6 @@ public abstract class BlobFileStoreTestsBase : IAsyncLifetime
         }
     }
 
-    protected IFileStoreCapabilities Capabilities => _store.Capabilities;
-
     protected async Task<string> CreateTestFileAsync(string path, string content = "test content")
     {
         using var stream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(content));
@@ -90,20 +88,6 @@ public abstract class BlobFileStoreTestsBase : IAsyncLifetime
 
     protected Task MoveFileAsync(string oldPath, string newPath)
         => _store.MoveFileAsync(oldPath, newPath);
-
-    // -- Capabilities --
-
-    [AzuriteFact]
-    public void EnsureCapabilities_SetsHnsFlag()
-    {
-        Assert.Equal(IsHnsEnabled, _store.Capabilities.HasHierarchicalNamespace);
-    }
-
-    [AzuriteFact]
-    public void EnsureCapabilities_SetsAtomicMoveFlag()
-    {
-        Assert.Equal(IsHnsEnabled, _store.Capabilities.SupportsAtomicMove);
-    }
 
     // -- File operations --
 

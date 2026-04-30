@@ -45,8 +45,6 @@ public sealed class BlobFileStoreGen2Tests : BlobFileStoreTestsBase
     public async Task MoveFile_IsAtomic()
     {
         // Gen2 move uses DataLake RenameAsync which is an atomic server-side operation.
-        Assert.True(Capabilities.SupportsAtomicMove);
-
         await CreateTestFileAsync("atomic-src.txt", "atomic");
 
         await MoveFileAsync("atomic-src.txt", "atomic-dst.txt");
