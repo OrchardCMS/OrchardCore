@@ -17,7 +17,7 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddDeployment<TSource, TStep>(this IServiceCollection services)
         where TSource : IDeploymentSource
-        where TStep : DeploymentStep, new()
+        where TStep : DeploymentStep
     {
         services.AddDeploymentSource<TSource>()
             .AddDeploymentStep<TStep>();
@@ -27,7 +27,7 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddDeployment<TSource, TStep, TDisplayDriver>(this IServiceCollection services)
         where TSource : IDeploymentSource
-        where TStep : DeploymentStep, new()
+        where TStep : DeploymentStep
         where TDisplayDriver : DisplayDriver<DeploymentStep, TStep>
     {
         services.AddDeployment<TSource, TStep>()
@@ -37,7 +37,7 @@ public static class ServiceCollectionExtensions
     }
 
     public static IServiceCollection AddDeploymentWithoutSource<TStep, TDisplayDriver>(this IServiceCollection services)
-        where TStep : DeploymentStep, new()
+        where TStep : DeploymentStep
         where TDisplayDriver : DisplayDriver<DeploymentStep, TStep>
     {
         services.AddDeploymentStep<TStep>()
@@ -55,9 +55,9 @@ public static class ServiceCollectionExtensions
     }
 
     private static IServiceCollection AddDeploymentStep<TStep>(this IServiceCollection services)
-        where TStep : DeploymentStep, new()
+        where TStep : DeploymentStep
     {
-        services.TryAddEnumerable(ServiceDescriptor.Singleton<IDeploymentStepFactory>(new DeploymentStepFactory<TStep>()));
+        services.TryAddEnumerable(ServiceDescriptor.Transient<IDeploymentStepFactory, DeploymentStepFactory<TStep>>());
 
         // TStep instances are part for DeploymentPlan objects that are serialized to JSON
         services.AddJsonDerivedTypeInfo<TStep, DeploymentStep>();
@@ -67,7 +67,7 @@ public static class ServiceCollectionExtensions
 
     private static IServiceCollection AddDeploymentStepDisplayDriver<TDisplayDriver, TStep>(this IServiceCollection services)
         where TDisplayDriver : DisplayDriver<DeploymentStep, TStep>
-        where TStep : DeploymentStep, new()
+        where TStep : DeploymentStep
     {
         services.AddDisplayDriver<DeploymentStep, TDisplayDriver>();
 

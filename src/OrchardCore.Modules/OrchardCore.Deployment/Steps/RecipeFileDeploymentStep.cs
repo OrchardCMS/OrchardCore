@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Localization;
+
 namespace OrchardCore.Deployment.Steps;
 
 /// <summary>
@@ -8,6 +10,12 @@ public class RecipeFileDeploymentStep : DeploymentStep
     public RecipeFileDeploymentStep()
     {
         Name = nameof(RecipeFileDeploymentStep);
+    }
+
+    public RecipeFileDeploymentStep(IStringLocalizer<RecipeFileDeploymentStep> S)
+        : this()
+    {
+        Category = S["Deployment"];
     }
 
     public string RecipeName { get; set; }
