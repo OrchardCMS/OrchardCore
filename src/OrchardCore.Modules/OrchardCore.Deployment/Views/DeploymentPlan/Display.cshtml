@@ -84,8 +84,8 @@
                         <div id="cards" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-2">
                             @foreach (var thumbnail in Model.Thumbnails)
                             {
-                                thumbnail.Thumbnail.DeploymentPlan = Model.DeploymentPlan;
-                                thumbnail.Thumbnail.Type = thumbnail.Type;
+                                thumbnail.Thumbnail.Properties["DeploymentPlan"] = Model.DeploymentPlan;
+                                thumbnail.Thumbnail.Properties["Type"] = thumbnail.Type;
 
                                 <div class="col item deployment-step-item" data-category="@thumbnail.CategoryId">
                                     @await DisplayAsync(thumbnail.Thumbnail)

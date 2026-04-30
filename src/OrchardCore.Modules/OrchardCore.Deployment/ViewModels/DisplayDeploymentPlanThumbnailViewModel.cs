@@ -1,3 +1,5 @@
+using OrchardCore.DisplayManagement;
+
 namespace OrchardCore.Deployment.ViewModels;
 
 public class DisplayDeploymentPlanThumbnailViewModel
@@ -6,7 +8,7 @@ public class DisplayDeploymentPlanThumbnailViewModel
 
     public string CategoryId { get; set; }
 
-    public dynamic Thumbnail { get; set; }
+    public IShape Thumbnail { get; set; }
 
     public string Type { get; set; }
 }
