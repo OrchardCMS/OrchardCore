@@ -35,6 +35,8 @@ public abstract class BlobFileStoreTestsBase : IAsyncLifetime
     private BlobContainerClient _containerClient;
     private string _containerName;
 
+    protected BlobContainerClient ContainerClient => _containerClient;
+
     public async ValueTask InitializeAsync()
     {
         var connectionString = System.Environment.GetEnvironmentVariable(ConnectionStringEnvVar);

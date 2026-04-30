@@ -16,6 +16,21 @@ public sealed class BlobFileStoreGen2Tests : BlobFileStoreTestsBase
             .CreateIfNotExistsAsync();
 
     [AzuriteFact]
+    public async Task CreateDirectory_UsesNoMarkerFile()
+    {
+        await TryCreateDirectoryAsync("gen2-dir");
+
+        // Gen2 creates real directory objects via the DataLake API — no marker blob.
+        var blobs = new List<string>();
+        await foreach (var blob in ContainerClient.GetBlobsAsync(Azure.Storage.Blobs.Models.BlobTraits.None, Azure.Storage.Blobs.Models.BlobStates.None, "gen2-dir/", CancellationToken.None))
+        {
+            blobs.Add(blob.Name);
+        }
+
+        Assert.Empty(blobs);
+    }
+
+    [AzuriteFact]
     public async Task CreateDirectory_Nested_CreatesIntermediateDirectories()
     {
         await TryCreateDirectoryAsync("a/b/c");
