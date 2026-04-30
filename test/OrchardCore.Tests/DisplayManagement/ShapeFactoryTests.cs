@@ -214,6 +214,38 @@ public class ShapeFactoryTests
         Assert.Equal(10, typedShape.Count);
     }
 
+    [Fact]
+    public async Task DisplayDriverInitializeWithoutInitializerUsesGeneratedShapeType()
+    {
+        var factory = _serviceProvider.GetRequiredService<IShapeFactory>();
+        var shapeResult = new TestDisplayDriverWithoutInitializer().Build();
+        var shape = await BuildShapeAsync(shapeResult, factory);
+        var typedShape = Assert.IsAssignableFrom<TestShapeViewModel>(shape);
+        var generatedShapeType = typedShape.GetType();
+
+        Assert.IsAssignableFrom<IShape>(typedShape);
+        Assert.NotEqual(typeof(TestShapeViewModel), generatedShapeType);
+        Assert.Equal(typeof(TestShapeViewModel), generatedShapeType.BaseType);
+        Assert.Equal(typeof(ShapeFactoryTests).Assembly, generatedShapeType.Assembly);
+        Assert.False(generatedShapeType.Assembly.IsDynamic);
+    }
+
+    [Fact]
+    public async Task DisplayDriverInitializeWithoutShapeTypeOrInitializerUsesGeneratedShapeType()
+    {
+        var factory = _serviceProvider.GetRequiredService<IShapeFactory>();
+        var shapeResult = new TestDisplayDriverWithoutShapeTypeOrInitializer().Build();
+        var shape = await BuildShapeAsync(shapeResult, factory);
+        var typedShape = Assert.IsAssignableFrom<TestShapeViewModel>(shape);
+        var generatedShapeType = typedShape.GetType();
+
+        Assert.IsAssignableFrom<IShape>(typedShape);
+        Assert.NotEqual(typeof(TestShapeViewModel), generatedShapeType);
+        Assert.Equal(typeof(TestShapeViewModel), generatedShapeType.BaseType);
+        Assert.Equal(typeof(ShapeFactoryTests).Assembly, generatedShapeType.Assembly);
+        Assert.False(generatedShapeType.Assembly.IsDynamic);
+    }
+
     private static MethodInfo GetCreateAsyncActionOverload(Type shapeFactoryExtensionsType)
         => shapeFactoryExtensionsType
             .GetMethods(BindingFlags.Public | BindingFlags.Static)
@@ -261,6 +293,18 @@ public class ShapeFactoryTests
 
                 return ValueTask.CompletedTask;
             });
+    }
+
+    private sealed class TestDisplayDriverWithoutInitializer : DisplayDriverBase
+    {
+        public ShapeResult Build()
+            => Initialize<TestShapeViewModel>("TestShapeViewModel_Edit");
+    }
+
+    private sealed class TestDisplayDriverWithoutShapeTypeOrInitializer : DisplayDriverBase
+    {
+        public ShapeResult Build()
+            => Initialize<TestShapeViewModel>();
     }
 }
 
