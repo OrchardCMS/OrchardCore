@@ -14,21 +14,28 @@ namespace OrchardCore.Tests.Integration.AzureBlob;
 /// </summary>
 public abstract class BlobFileStoreTestsBase : IAsyncLifetime
 {
-    private const string EnvVar = "AZURITE_CONNECTION_STRING";
-    private const string DfsEnvVar = "AZURITE_DFS_ENDPOINT";
+    private const string ConnectionStringEnvVar = "AZURITE_CONNECTION_STRING";
+    private const string Gen2ConnectionStringEnvVar = "AZURITE_GEN2_CONNECTION_STRING";
 
-    protected abstract bool IsHnsEnabled { get; }
+    /// <summary>
+    /// Override for <see cref="BlobStorageOptions.UseHierarchicalNamespace"/>.
+    /// <c>null</c> (default) lets <see cref="BlobFileStore.EnsureCapabilitiesAsync"/> auto-detect
+    /// via <c>GetAccountInfo</c>. Set to <c>false</c> to force flat-namespace (Gen1) behavior.
+    /// </summary>
+    protected virtual bool? UseHierarchicalNamespaceOverride => null;
+
+    /// <summary>
+    /// Override to use the Gen2-specific connection string env var.
+    /// </summary>
+    protected virtual string ConnectionStringOverrideEnvVar => ConnectionStringEnvVar;
 
     private BlobFileStore _store;
     private BlobContainerClient _containerClient;
     private string _containerName;
 
-    protected static string GetConnectionString()
-        => System.Environment.GetEnvironmentVariable(EnvVar);
-
     public async ValueTask InitializeAsync()
     {
-        var connectionString = GetConnectionString();
+        var connectionString = System.Environment.GetEnvironmentVariable(ConnectionStringOverrideEnvVar);
         _containerName = $"test-{Guid.NewGuid():N}";
 
         var options = new TestBlobStorageOptions
@@ -36,8 +43,7 @@ public abstract class BlobFileStoreTestsBase : IAsyncLifetime
             ConnectionString = connectionString,
             ContainerName = _containerName,
             BasePath = "",
-            UseHierarchicalNamespace = IsHnsEnabled,
-            DfsEndpoint = System.Environment.GetEnvironmentVariable(DfsEnvVar),
+            UseHierarchicalNamespace = UseHierarchicalNamespaceOverride,
         };
 
         _containerClient = new BlobContainerClient(connectionString, _containerName);
@@ -357,15 +363,15 @@ public abstract class BlobFileStoreTestsBase : IAsyncLifetime
         // Creating the same directory again should indicate it already existed.
         var result = await _store.TryCreateDirectoryAsync("existing-dir");
 
-        // Gen1 always returns true (no real directory to check).
-        // Gen2 returns false because the directory already exists.
-        if (IsHnsEnabled)
+        // Gen1 (flat namespace) always returns true — no real directory object to check against.
+        // Gen2 (HNS) returns false because the directory already exists as a first-class object.
+        if (UseHierarchicalNamespaceOverride == false)
         {
-            Assert.False(result);
+            Assert.True(result);
         }
         else
         {
-            Assert.True(result);
+            Assert.False(result);
         }
     }
 
@@ -431,20 +437,20 @@ public abstract class BlobFileStoreTestsBase : IAsyncLifetime
 internal sealed class TestBlobStorageOptions : BlobStorageOptions;
 
 /// <summary>
-/// Skips the test when the Azurite connection string is not configured.
-/// Set the <c>AZURITE_CONNECTION_STRING</c> environment variable to run these tests.
+/// Skips the test when the required Azurite connection string env var is not set.
 /// </summary>
 [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
 internal sealed class AzuriteFactAttribute : FactAttribute
 {
     public AzuriteFactAttribute(
+        string connectionStringEnvVar = "AZURITE_CONNECTION_STRING",
         [System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = null,
         [System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = -1)
         : base(sourceFilePath, sourceLineNumber)
     {
-        if (string.IsNullOrEmpty(System.Environment.GetEnvironmentVariable("AZURITE_CONNECTION_STRING")))
+        if (string.IsNullOrEmpty(System.Environment.GetEnvironmentVariable(connectionStringEnvVar)))
         {
-            Skip = "Azurite is not configured. Set AZURITE_CONNECTION_STRING to run this test.";
+            Skip = $"Azurite is not configured. Set {connectionStringEnvVar} to run this test.";
         }
     }
 }

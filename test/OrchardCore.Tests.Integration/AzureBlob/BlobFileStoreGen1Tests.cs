@@ -5,5 +5,5 @@ namespace OrchardCore.Tests.Integration.AzureBlob;
 /// </summary>
 public sealed class BlobFileStoreGen1Tests : BlobFileStoreTestsBase
 {
-    protected override bool IsHnsEnabled => false;
+    protected override bool? UseHierarchicalNamespaceOverride => false;
 }

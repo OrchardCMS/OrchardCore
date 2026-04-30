@@ -3,7 +3,6 @@ using System.Net.Mime;
 using Azure;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
-using Azure.Storage;
 using Azure.Storage.Files.DataLake;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Logging;
@@ -67,19 +66,8 @@ public class BlobFileStore : IFileStore
         _blobServiceClient = new BlobServiceClient(_options.ConnectionString);
         _useHierarchicalNamespaceOverride = options.UseHierarchicalNamespace;
 
-        if (!string.IsNullOrEmpty(_options.DfsEndpoint))
-        {
-            // Use explicit DFS endpoint (required for local emulators like Azurite
-            // where the DFS endpoint runs on a separate port).
-            var credential = ParseCredentialsFromConnectionString(_options.ConnectionString);
-            var serviceClient = new DataLakeServiceClient(new Uri(_options.DfsEndpoint), credential);
-            _dataLakeFileSystemClient = serviceClient.GetFileSystemClient(_options.ContainerName);
-        }
-        else
-        {
-            var serviceClient = new DataLakeServiceClient(_options.ConnectionString);
-            _dataLakeFileSystemClient = serviceClient.GetFileSystemClient(_options.ContainerName);
-        }
+        var dataLakeServiceClient = new DataLakeServiceClient(_options.ConnectionString);
+        _dataLakeFileSystemClient = dataLakeServiceClient.GetFileSystemClient(_options.ContainerName);
 
         if (!string.IsNullOrEmpty(_options.BasePath))
         {
@@ -106,33 +94,53 @@ public class BlobFileStore : IFileStore
                 return;
             }
 
-            var hnsEnabled = _useHierarchicalNamespaceOverride;
-
-            if (!hnsEnabled.HasValue)
+            try
             {
-                try
+                var accountInfo = await _blobServiceClient.GetAccountInfoAsync();
+                var detectedHns = accountInfo.Value.IsHierarchicalNamespaceEnabled;
+
+                if (_useHierarchicalNamespaceOverride.HasValue && _useHierarchicalNamespaceOverride.Value != detectedHns)
                 {
-                    var accountInfo = await _blobServiceClient.GetAccountInfoAsync();
-                    hnsEnabled = accountInfo.Value.IsHierarchicalNamespaceEnabled;
-                }
-                catch (Exception ex)
-                {
-                    // If we cannot determine HNS status (e.g., insufficient permissions on SAS token),
-                    // default to false (flat namespace behavior).
-                    _logger?.LogWarning(ex, "Unable to detect Azure Blob Storage Hierarchical Namespace status. Falling back to flat namespace behavior.");
-                    hnsEnabled = false;
-                }
-            }
+                    if (_useHierarchicalNamespaceOverride.Value)
+                    {
+                        // Claiming Gen2 on a Gen1 account — DataLake API calls will fail at runtime.
+                        throw new FileStoreException(
+                            "'UseHierarchicalNamespace' is set to 'true' but the storage account does not have " +
+                            "Hierarchical Namespace enabled. Correct the configuration or use a Gen2 storage account.");
+                    }
 
-            _hnsEnabled = hnsEnabled.Value;
+                    // Override=false on a Gen2 account is safe but suboptimal.
+                    _logger?.LogWarning(
+                        "'UseHierarchicalNamespace' is set to 'false' but the storage account has Hierarchical Namespace enabled. " +
+                        "Flat-namespace operations will be used, which means moves are not atomic and directory operations are less efficient. " +
+                        "Remove the setting to use native Gen2 operations.");
+                }
 
-            if (_hnsEnabled.Value)
-            {
-                _logger?.LogInformation("Azure Blob Storage Hierarchical Namespace (ADLS Gen2) detected. Using native directory and atomic move operations.");
+                _hnsEnabled = _useHierarchicalNamespaceOverride ?? detectedHns;
+                _logger?.LogInformation(_hnsEnabled.Value
+                    ? "Azure Blob Storage Hierarchical Namespace (ADLS Gen2) detected. Using native directory and atomic move operations."
+                    : "Azure Blob Storage flat namespace detected. Using standard blob operations with virtual directories.");
             }
-            else
+            catch (FileStoreException)
             {
-                _logger?.LogInformation("Azure Blob Storage flat namespace detected. Using standard blob operations with virtual directories.");
+                throw;
+            }
+            catch (Exception ex) when (_useHierarchicalNamespaceOverride.HasValue)
+            {
+                // GetAccountInfo failed (e.g. container-scoped SAS token) but an explicit override
+                // is configured, so trust it and proceed.
+                _hnsEnabled = _useHierarchicalNamespaceOverride.Value;
+                _logger?.LogWarning(ex,
+                    "Unable to validate the Azure Blob Storage account type. " +
+                    "Proceeding with 'UseHierarchicalNamespace' set to '{HnsEnabled}' from configuration.",
+                    _hnsEnabled.Value);
+            }
+            catch (Exception ex)
+            {
+                throw new FileStoreException(
+                    "Unable to determine the Azure Blob Storage account type (Gen1 flat namespace or Gen2 Hierarchical Namespace). " +
+                    "This is required to select the correct storage operations. " +
+                    "If you are using a container-scoped SAS token, set 'UseHierarchicalNamespace' explicitly in your configuration.", ex);
             }
         }
         finally
@@ -686,32 +694,6 @@ public class BlobFileStore : IFileStore
         using var stream = new MemoryStream(MarkerFileContent);
 
         await placeholderBlob.UploadAsync(stream);
-    }
-
-    private static StorageSharedKeyCredential ParseCredentialsFromConnectionString(string connectionString)
-    {
-        string accountName = null;
-        string accountKey = null;
-
-        foreach (var part in connectionString.Split(';', StringSplitOptions.RemoveEmptyEntries))
-        {
-            var kvp = part.Split('=', 2);
-            if (kvp.Length == 2)
-            {
-                if (kvp[0].Equals("AccountName", StringComparison.OrdinalIgnoreCase))
-                {
-                    accountName = kvp[1];
-                }
-                else if (kvp[0].Equals("AccountKey", StringComparison.OrdinalIgnoreCase))
-                {
-                    accountKey = kvp[1];
-                }
-            }
-        }
-
-        return new StorageSharedKeyCredential(
-            accountName ?? throw new FileStoreException("AccountName not found in connection string."),
-            accountKey ?? throw new FileStoreException("AccountKey not found in connection string."));
     }
 
     /// <summary>

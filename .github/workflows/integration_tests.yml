@@ -78,13 +78,16 @@ jobs:
     - name: Build
       run: |
         dotnet build -c Release ./test/OrchardCore.Tests.Integration/OrchardCore.Tests.Integration.csproj /p:NuGetAudit=false
-    - name: Start Azurite
+    - name: Start Azurite (Gen1 — flat namespace)
       run: |
-        docker run -d --name azurite -p 10000:10000 -p 10004:10004 ghcr.io/skrypt/azurite-adls-gen2:latest azurite --blobHost 0.0.0.0 --dfsHost 0.0.0.0 --queueHost 0.0.0.0 --tableHost 0.0.0.0 --skipApiVersionCheck
+        docker run -d --name azurite-gen1 -p 10000:10000 ghcr.io/skrypt/azurite-adls-gen2:latest azurite --blobHost 0.0.0.0 --skipApiVersionCheck --enableHierarchicalNamespace=false
+    - name: Start Azurite (Gen2 — hierarchical namespace)
+      run: |
+        docker run -d --name azurite-gen2 -p 11000:10000 ghcr.io/skrypt/azurite-adls-gen2:latest azurite --blobHost 0.0.0.0 --skipApiVersionCheck --enableHierarchicalNamespace=true
     - name: Azure Blob Integration Tests
       env:
         AZURITE_CONNECTION_STRING: "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;"
-        AZURITE_DFS_ENDPOINT: "http://127.0.0.1:10004/devstoreaccount1"
+        AZURITE_GEN2_CONNECTION_STRING: "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:11000/devstoreaccount1;"
       run: |
         dotnet test ./test/OrchardCore.Tests.Integration/OrchardCore.Tests.Integration.csproj -c Release --no-build
 
