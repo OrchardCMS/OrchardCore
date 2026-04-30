@@ -85,7 +85,7 @@ public class AccountControllerTests
                     }
                     """,
             };
-            scriptExternalLoginEventHandler.UpdateUserInternal(context, loginSettings);
+            await scriptExternalLoginEventHandler.UpdateUserInternalAsync(context, loginSettings);
 
             if (await userManager.UpdateUserPropertiesAsync(user, context))
             {
@@ -143,7 +143,7 @@ public class AccountControllerTests
                     };
                     """,
             };
-            scriptExternalLoginEventHandler.UpdateUserInternal(updateContext, loginSettings);
+            await scriptExternalLoginEventHandler.UpdateUserInternalAsync(updateContext, loginSettings);
 
             if (await userManager.UpdateUserPropertiesAsync(user, updateContext))
             {

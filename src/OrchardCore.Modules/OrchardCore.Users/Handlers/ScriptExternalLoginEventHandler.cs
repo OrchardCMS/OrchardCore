@@ -63,7 +63,7 @@ public class ScriptExternalLoginEventHandler : IExternalLoginEventHandler
         await UpdateUserInternalAsync(context, loginSettings);
     }
 
-    private async Task UpdateUserInternalAsync(UpdateUserContext context, ExternalLoginSettings loginSettings)
+    public async Task UpdateUserInternalAsync(UpdateUserContext context, ExternalLoginSettings loginSettings)
     {
         if (!loginSettings.UseScriptToSyncProperties)
         {
