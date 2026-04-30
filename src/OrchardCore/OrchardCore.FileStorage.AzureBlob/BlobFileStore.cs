@@ -117,9 +117,14 @@ public class BlobFileStore : IFileStore
                 }
 
                 _hnsEnabled = _useHierarchicalNamespaceOverride ?? detectedHns;
-                _logger?.LogInformation(_hnsEnabled.Value
-                    ? "Azure Blob Storage Hierarchical Namespace (ADLS Gen2) detected. Using native directory and atomic move operations."
-                    : "Azure Blob Storage flat namespace detected. Using standard blob operations with virtual directories.");
+                if (_hnsEnabled.Value)
+                {
+                    _logger?.LogInformation("Azure Blob Storage Hierarchical Namespace (ADLS Gen2) detected. Using native directory and atomic move operations.");
+                }
+                else
+                {
+                    _logger?.LogInformation("Azure Blob Storage flat namespace detected. Using standard blob operations with virtual directories.");
+                }
             }
             catch (FileStoreException)
             {
