@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Localization;
 using OrchardCore.Deployment;
 
 namespace OrchardCore.Settings.Deployment;
@@ -10,6 +11,12 @@ public class SiteSettingsDeploymentStep : DeploymentStep
     public SiteSettingsDeploymentStep()
     {
         Name = nameof(SiteSettings);
+    }
+
+    public SiteSettingsDeploymentStep(IStringLocalizer<SiteSettingsDeploymentStep> S)
+        : this()
+    {
+        Category = S["Configuration"];
     }
 
     public string[] Settings { get; set; }

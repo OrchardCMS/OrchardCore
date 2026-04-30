@@ -1,8 +1,12 @@
+@using Microsoft.Extensions.Localization
 @using OrchardCore.OpenId.ViewModels
 @using OrchardCore.OpenId.Settings
 @using System.Security.Cryptography.X509Certificates
 @model OpenIdServerSettingsViewModel
-
+@inject IStringLocalizer<OpenIdServerSettingsViewModel> S
+@{
+    var localizedDateFormat = S["dd/MM/yy"];
+}
 <div class="mb-4">
     <h3>@T["Endpoints"]</h3>
 
@@ -206,7 +210,7 @@
                         friendlyName = T["No Friendly Name"].Value;
                     }
                     <option value="@certificate.ThumbPrint" data-StoreLocation="@certificate.StoreLocation" data-StoreName="@certificate.StoreName" selected="@(selectedCertificate)">
-                        @friendlyName [@certificate.NotBefore.ToString("dd/MM/yy") - @certificate.NotAfter.ToString("dd/MM/yy")] @certificate.Subject
+                        @friendlyName [@certificate.NotBefore.ToString(localizedDateFormat) - @certificate.NotAfter.ToString(localizedDateFormat)] @certificate.Subject
                     </option>
                 }
             </select>
@@ -270,7 +274,7 @@
                         friendlyName = T["No Friendly Name"].Value;
                     }
                     <option value="@certificate.ThumbPrint" data-StoreLocation="@certificate.StoreLocation" data-StoreName="@certificate.StoreName" selected="@(selectedCertificate)">
-                        @friendlyName [@certificate.NotBefore.ToString("dd/MM/yy") - @certificate.NotAfter.ToString("dd/MM/yy")] @certificate.Subject
+                        @friendlyName [@certificate.NotBefore.ToString(localizedDateFormat) - @certificate.NotAfter.ToString(localizedDateFormat)] @certificate.Subject
                     </option>
                 }
             </select>
