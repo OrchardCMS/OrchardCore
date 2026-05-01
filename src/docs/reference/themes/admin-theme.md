@@ -68,6 +68,5 @@ public class MyService
         var adminTheme = await _themeService.GetAdminThemeAsync();
         var themeName = adminTheme?.Id;
     }
-
 }
 ```
