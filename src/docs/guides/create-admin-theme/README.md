@@ -14,7 +14,7 @@ You will build a custom theme which uses `TheAdmin` as a base theme.
 
 ## Creating an Orchard Core Theme
 
-Create an Orchard Core Theme following the [Create a theme](../../../getting-started/theme.md) guide.
+Create an Orchard Core Theme following the [Create a theme](../../getting-started/theme.md) guide.
 
 ## Edit the Manifest.cs
 

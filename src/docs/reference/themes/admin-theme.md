@@ -1,39 +1,73 @@
-# Admin Theme
+# Admin Theme Conventions
 
-The Admin Theme in Orchard Core provides a specialized interface designed for administrative tasks and back-end management.
+Orchard Core provides specific attributes and services to manage Admin Themes within your modules.
 
-## Enabling the Admin Theme
+## The `[Admin]` Attribute
 
-There are three primary ways to trigger the Admin Theme for your controllers or Razor Pages:
-
-### 1. Using the `[Admin]` Attribute
-
-The most explicit way is to decorate your controller class or a specific action method with the `[Admin]` attribute.
+To ensure a controller or a specific action uses the Admin Theme, decorate it with the `[Admin]` attribute. This is essential when creating custom administration pages.
 
 ```csharp
+using OrchardCore.Admin;
+
 [Admin]
-public class MyCustomController : Controller
+public class MyCustomAdminController : Controller
 {
-    public IActionResult Index() => View();
+    // All actions in this controller will render using the Admin Theme
+    public IActionResult Index()
+    {
+        return View();
+    }
 }
 ```
 
-### 2. Controller Naming Convention
+You can also apply it to specific actions if the rest of the controller should use the front-end theme:
 
-Orchard Core automatically recognizes controllers that follow a specific naming pattern. Any controller whose name ends with `AdminController` or simply `Admin` (e.g., `DashboardAdminController`) will be rendered using the Admin Theme.
+```csharp
+public class SettingsController : Controller
+{
+    [Admin]
+    public IActionResult AdminSettings()
+    {
+        return View(); // Uses Admin Theme
+    }
 
-### 3. Razor Pages Folder Convention
+    public IActionResult Profile()
+    {
+        return View(); // Uses Front-end Theme
+    }
+}
+```
 
-For developers using Razor Pages, any page located within a folder named `Admin` (typically under `/Pages/Admin/`) will automatically use the Admin Theme by default without requiring additional attributes.
+AdminController Base Class
 
-**Example path:** `/Pages/Admin/Index.cshtml`
+For convenience, inheriting from AdminController (found in the OrchardCore.Admin namespace) will automatically apply the [Admin] attribute to your entire controller.
 
-## Technical Insights
+##IThemeService
 
-The seamless switching between front-end and back-end themes is handled by the following core components:
+The **IThemeService** allows you to programmatically manage and discover themes. It is commonly used when you need to know which theme is currently active.
 
-- **AdminZoneFilter**: A global resource filter that intercepts requests. It checks the `ControllerName` or the `ViewEnginePath`. If it detects an "Admin" pattern, it calls `AdminAttribute.Apply()` to mark the request.
+| Method                 | Description                                                                      |
+| :--------------------- | :------------------------------------------------------------------------------- |
+| `GetAdminThemeAsync()` | Returns the `IExtensionInfo` of the currently configured Admin Theme.            |
+| `GetSiteThemeAsync()`  | Returns the `IExtensionInfo` of the currently configured Site (Front-end) Theme. |
 
-- **AdminAttribute**: Acts as a marker in the `HttpContext.Items` to signal that the current request belongs to the administrative interface.
+Example Usage
 
-- **AdminThemeSelector**: A theme selector with a priority of 100. It looks for the admin marker in the request context and, if found, returns the configured Admin Theme name via `IAdminThemeService`.
+```csharp
+public class MyService
+{
+    private readonly IThemeService _themeService;
+
+    public MyService(IThemeService themeService)
+    {
+        _themeService = themeService;
+    }
+
+    public async Task GetCurrentTheme()
+    {
+        var adminTheme = await _themeService.GetAdminThemeAsync();
+        var themeName = adminTheme?.Id;
+    }
+
+}
+```
