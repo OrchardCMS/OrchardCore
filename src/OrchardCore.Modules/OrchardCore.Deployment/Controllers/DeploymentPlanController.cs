@@ -11,6 +11,7 @@ using OrchardCore.Deployment.ViewModels;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Mvc.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
 using YesSql;
@@ -174,18 +175,36 @@ public sealed class DeploymentPlanController : Controller
             items.Add(item);
         }
 
-        var thumbnails = new Dictionary<string, dynamic>();
-        foreach (var factory in _factories)
+        var thumbnails = new List<DisplayDeploymentPlanThumbnailViewModel>();
+        foreach (var factory in _factories.OrderBy(x => x.Name, StringComparer.OrdinalIgnoreCase))
         {
             var step = factory.Create();
             var thumbnail = await _displayManager.BuildDisplayAsync(step, _updateModelAccessor.ModelUpdater, "Thumbnail");
             thumbnail.Properties["DeploymentStep"] = step;
-            thumbnails.Add(factory.Name, thumbnail);
+            var category = step.Category?.Value ?? string.Empty;
+
+            thumbnails.Add(new DisplayDeploymentPlanThumbnailViewModel
+            {
+                Category = category,
+                CategoryId = category.HtmlClassify(),
+                Thumbnail = thumbnail,
+                Type = factory.Name,
+            });
         }
 
         var model = new DisplayDeploymentPlanViewModel
         {
             DeploymentPlan = deploymentPlan,
+            Categories = thumbnails
+                .Where(x => !string.IsNullOrWhiteSpace(x.Category))
+                .Select(x => new DisplayDeploymentPlanCategoryViewModel
+                {
+                    Name = x.Category,
+                    Id = x.CategoryId,
+                })
+                .DistinctBy(x => x.Id, StringComparer.OrdinalIgnoreCase)
+                .OrderBy(x => x.Name, StringComparer.OrdinalIgnoreCase)
+                .ToArray(),
             Items = items,
             Thumbnails = thumbnails,
         };

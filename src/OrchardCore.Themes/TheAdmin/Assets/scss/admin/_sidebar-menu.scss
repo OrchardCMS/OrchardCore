@@ -308,9 +308,14 @@ body:not(.left-sidebar-compact) {
             background: rgba(0, 0, 0, 0.1);
         }
         // third level indent
-        li ul > li ul > li > a {
+        li ul > li ul > li > .item-label {
             color: var(--oc-admin-menu-item-font-color-active);
             padding-left: 3 * $link-padding-left !important;
+
+            &:hover{
+                background: rgba(0, 0, 0, 0.18);
+                color: var(--oc-admin-menu-font-color-hover);
+            }
         }
 
         li ul > li ul > .active > a {

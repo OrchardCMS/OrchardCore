@@ -1,7 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
+using OrchardCore.Elasticsearch.Core.Services;
 using OrchardCore.Indexing.Core;
 using OrchardCore.Queries;
-using OrchardCore.Elasticsearch.Core.Services;
 
 namespace OrchardCore.Elasticsearch;
 
@@ -19,12 +20,25 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-    public static IServiceCollection AddElasticsearchIndexingSource(this IServiceCollection services, string implementationType, Action<IndexingOptionsEntry> action = null)
+    public static IServiceCollection AddElasticsearchIndexingSource(
+        this IServiceCollection services,
+        string implementationType,
+        Action<IndexingOptionsEntry> action = null)
     {
         ArgumentException.ThrowIfNullOrEmpty(implementationType);
 
-        services.AddIndexingSource<ElasticsearchIndexManager, ElasticsearchDocumentIndexManager, ElasticsearchIndexNameProvider>(ElasticsearchConstants.ProviderName, implementationType, action);
+        services.AddIndexingSource<ElasticsearchIndexManager, ElasticsearchDocumentIndexManager, ElasticsearchIndexNameProvider>(
+            ElasticsearchConstants.ProviderName, implementationType, action);
+
+        services
+            .AddOptions<IndexingOptions>()
+            .Configure<IStringLocalizer<ElasticsearchLocalizationMarker>>((options, S) =>
+                options.AddIndexingProvider(ElasticsearchConstants.ProviderName, provider => provider.DisplayName = S["Elasticsearch"]));
 
         return services;
+    }
+
+    private sealed class ElasticsearchLocalizationMarker
+    {
     }
 }
