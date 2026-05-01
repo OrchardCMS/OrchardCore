@@ -40,7 +40,7 @@ public class SettingsController : Controller
 
 AdminController Base Class
 
-For convenience, inheriting from AdminController (found in the OrchardCore.Admin namespace) will automatically apply the [Admin] attribute to your entire controller.
+For convenience, inheriting from AdminController (in the OrchardCore.Admin namespace) automatically applies the [Admin] attribute to your entire controller.
 
 ## IThemeService
 
