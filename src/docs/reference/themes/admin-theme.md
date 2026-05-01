@@ -42,7 +42,7 @@ AdminController Base Class
 
 For convenience, inheriting from AdminController (found in the OrchardCore.Admin namespace) will automatically apply the [Admin] attribute to your entire controller.
 
-##IThemeService
+## IThemeService
 
 The **IThemeService** allows you to programmatically manage and discover themes. It is commonly used when you need to know which theme is currently active.
 
