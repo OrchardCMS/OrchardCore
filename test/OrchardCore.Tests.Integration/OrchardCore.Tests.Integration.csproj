@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <PackageReference Include="Moq" />
+    <PackageReference Include="Testcontainers.LocalStack" />
     <PackageReference Include="xunit.v3.mtp-v2" />
   </ItemGroup>
 

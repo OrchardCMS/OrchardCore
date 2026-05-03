@@ -1,4 +1,3 @@
-using Amazon;
 using Amazon.Runtime;
 using Amazon.S3;
 using Amazon.S3.Model;
@@ -6,38 +5,37 @@ using Moq;
 using OrchardCore.FileStorage;
 using OrchardCore.FileStorage.AmazonS3;
 using OrchardCore.Modules;
+using Testcontainers.LocalStack;
 using Xunit;
 
 namespace OrchardCore.Tests.Integration.AmazonS3;
 
-/// <summary>
-/// Integration tests for <see cref="AwsFileStore"/> that run against an S3-compatible emulator (e.g. Adobe S3Mock).
-/// Set the <c>S3_EMULATOR_URL</c> environment variable (e.g. <c>http://127.0.0.1:9090</c>) to run these tests.
-/// </summary>
-public sealed class AwsFileStoreTests : IAsyncLifetime
+public class AwsFileStoreTests : IAsyncLifetime
 {
-    private const string EnvVar = "S3_EMULATOR_URL";
-
-    private readonly ITestOutputHelper _output;
     private AwsFileStore _store;
     private AmazonS3Client _s3Client;
     private string _bucketName;
 
-    public AwsFileStoreTests(ITestOutputHelper output) => _output = output;
+    private readonly LocalStackContainer _localStackContainer = new LocalStackBuilder("localstack/localstack:2.0")
+        .Build();
 
-    private static string GetServiceUrl()
-        => System.Environment.GetEnvironmentVariable(EnvVar);
+    static AwsFileStoreTests()
+    {
+        System.Environment.SetEnvironmentVariable("AWS_ACCESS_KEY_ID", CommonCredentials.AwsAccessKey);
+        System.Environment.SetEnvironmentVariable("AWS_SECRET_ACCESS_KEY", CommonCredentials.AwsSecretKey);
+    }
 
     public async ValueTask InitializeAsync()
     {
-        var serviceUrl = GetServiceUrl();
+        await _localStackContainer.StartAsync()
+            .ConfigureAwait(false);
+
         _bucketName = $"test-{Guid.NewGuid():N}";
 
         _s3Client = new AmazonS3Client(
-            new BasicAWSCredentials("test", "test"),
             new AmazonS3Config
             {
-                ServiceURL = serviceUrl,
+                ServiceURL = _localStackContainer.GetConnectionString(),
                 ForcePathStyle = true,
                 AuthenticationRegion = "us-east-1",
                 RequestChecksumCalculation = RequestChecksumCalculation.WHEN_REQUIRED,
@@ -56,39 +54,6 @@ public sealed class AwsFileStoreTests : IAsyncLifetime
         _store = new AwsFileStore(clock, options, _s3Client);
     }
 
-    public async ValueTask DisposeAsync()
-    {
-        if (_s3Client is not null && _bucketName is not null)
-        {
-            try
-            {
-                // Delete all objects first (S3 requires empty bucket before deletion).
-                var listResponse = await _s3Client.ListObjectsV2Async(new ListObjectsV2Request
-                {
-                    BucketName = _bucketName,
-                });
-
-                if (listResponse.S3Objects.Count > 0)
-                {
-                    await _s3Client.DeleteObjectsAsync(new DeleteObjectsRequest
-                    {
-                        BucketName = _bucketName,
-                        Objects = listResponse.S3Objects.Select(o => new KeyVersion { Key = o.Key }).ToList(),
-                    });
-                }
-
-                await _s3Client.DeleteBucketAsync(_bucketName);
-            }
-            catch (Exception ex)
-            {
-                _output.WriteLine($"Best effort cleanup failed: {ex.Message}");
-            }
-
-            _s3Client.Dispose();
-        }
-
-    }
-
     private async Task<string> CreateTestFileAsync(string path, string content = "test content")
     {
         using var stream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(content));
@@ -104,14 +69,14 @@ public sealed class AwsFileStoreTests : IAsyncLifetime
 
     // -- File operations --
 
-    [S3MockFact]
+    [Fact]
     public async Task CreateFile_ReturnsPath()
     {
         var result = await CreateTestFileAsync("folder/file.txt");
         Assert.Equal("folder/file.txt", result);
     }
 
-    [S3MockFact]
+    [Fact]
     public async Task GetFileInfo_ReturnsCorrectMetadata()
     {
         var content = "hello world";
@@ -126,14 +91,14 @@ public sealed class AwsFileStoreTests : IAsyncLifetime
         Assert.False(info.IsDirectory);
     }
 
-    [S3MockFact]
+    [Fact]
     public async Task GetFileInfo_NonExistent_ReturnsNull()
     {
         var info = await _store.GetFileInfoAsync("does-not-exist.txt");
         Assert.Null(info);
     }
 
-    [S3MockFact]
+    [Fact]
     public async Task GetFileStream_ReturnsContent()
     {
         var expected = "stream content test";
@@ -144,7 +109,7 @@ public sealed class AwsFileStoreTests : IAsyncLifetime
         Assert.Equal(expected, actual);
     }
 
-    [S3MockFact]
+    [Fact]
     public async Task DeleteFile_ReturnsTrue()
     {
         await CreateTestFileAsync("delete-me.txt");
@@ -155,7 +120,7 @@ public sealed class AwsFileStoreTests : IAsyncLifetime
         Assert.Null(await _store.GetFileInfoAsync("delete-me.txt"));
     }
 
-    [S3MockFact]
+    [Fact]
     public async Task CopyFile_CreatesNewFile()
     {
         var content = "copy me";
@@ -167,7 +132,7 @@ public sealed class AwsFileStoreTests : IAsyncLifetime
         Assert.Equal(content, await ReadFileContentAsync("copied.txt"));
     }
 
-    [S3MockFact]
+    [Fact]
     public async Task CopyFile_SamePath_Throws()
     {
         await CreateTestFileAsync("same.txt");
@@ -176,14 +141,14 @@ public sealed class AwsFileStoreTests : IAsyncLifetime
             () => _store.CopyFileAsync("same.txt", "same.txt"));
     }
 
-    [S3MockFact]
+    [Fact]
     public async Task CopyFile_SourceNotFound_Throws()
     {
         await Assert.ThrowsAsync<FileStoreException>(
             () => _store.CopyFileAsync("ghost.txt", "dest.txt"));
     }
 
-    [S3MockFact]
+    [Fact]
     public async Task CreateFile_OverwriteTrue_Succeeds()
     {
         await CreateTestFileAsync("overwrite.txt", "v1");
@@ -195,7 +160,7 @@ public sealed class AwsFileStoreTests : IAsyncLifetime
         Assert.Equal("v2", content);
     }
 
-    [S3MockFact]
+    [Fact]
     public async Task CreateFile_OverwriteFalse_Throws()
     {
         await CreateTestFileAsync("no-overwrite.txt");
@@ -207,7 +172,7 @@ public sealed class AwsFileStoreTests : IAsyncLifetime
 
     // -- Directory operations --
 
-    [S3MockFact]
+    [Fact]
     public async Task GetDirectoryInfo_Root_ReturnsEntry()
     {
         var info = await _store.GetDirectoryInfoAsync(string.Empty);
@@ -216,7 +181,7 @@ public sealed class AwsFileStoreTests : IAsyncLifetime
         Assert.True(info.IsDirectory);
     }
 
-    [S3MockFact]
+    [Fact]
     public async Task GetDirectoryInfo_Existing_ReturnsEntry()
     {
         await _store.TryCreateDirectoryAsync("my-folder");
@@ -227,14 +192,14 @@ public sealed class AwsFileStoreTests : IAsyncLifetime
         Assert.True(info.IsDirectory);
     }
 
-    [S3MockFact]
+    [Fact]
     public async Task GetDirectoryInfo_NonExistent_ReturnsNull()
     {
         var info = await _store.GetDirectoryInfoAsync("no-such-folder");
         Assert.Null(info);
     }
 
-    [S3MockFact]
+    [Fact]
     public async Task CreateDirectory_Succeeds()
     {
         var result = await _store.TryCreateDirectoryAsync("new-dir");
@@ -245,7 +210,7 @@ public sealed class AwsFileStoreTests : IAsyncLifetime
         Assert.NotNull(info);
     }
 
-    [S3MockFact]
+    [Fact]
     public async Task DeleteDirectory_WithContents_DeletesAll()
     {
         await _store.TryCreateDirectoryAsync("dir-to-delete");
@@ -259,7 +224,7 @@ public sealed class AwsFileStoreTests : IAsyncLifetime
         Assert.Null(await _store.GetFileInfoAsync("dir-to-delete/file2.txt"));
     }
 
-    [S3MockFact]
+    [Fact]
     public async Task DeleteDirectory_Root_Throws()
     {
         await Assert.ThrowsAsync<FileStoreException>(
@@ -268,7 +233,7 @@ public sealed class AwsFileStoreTests : IAsyncLifetime
 
     // -- Move --
 
-    [S3MockFact]
+    [Fact]
     public async Task MoveFile_MovesToNewPath()
     {
         var content = "move me";
@@ -280,7 +245,7 @@ public sealed class AwsFileStoreTests : IAsyncLifetime
         Assert.Equal(content, await ReadFileContentAsync("dst.txt"));
     }
 
-    [S3MockFact]
+    [Fact]
     public async Task MoveFile_AcrossDirectories()
     {
         await _store.TryCreateDirectoryAsync("dir-a");
@@ -295,7 +260,7 @@ public sealed class AwsFileStoreTests : IAsyncLifetime
 
     // -- Directory content listing --
 
-    [S3MockFact]
+    [Fact]
     public async Task GetDirectoryContent_ListsFilesAndDirs()
     {
         await CreateTestFileAsync("root-file.txt");
@@ -311,23 +276,18 @@ public sealed class AwsFileStoreTests : IAsyncLifetime
         Assert.Contains(entries, e => e.Name == "root-file.txt" && !e.IsDirectory);
         Assert.Contains(entries, e => e.Name == "sub-dir" && e.IsDirectory);
     }
-}
 
-/// <summary>
-/// Skips the test when the S3 emulator URL is not configured.
-/// Set the <c>S3_EMULATOR_URL</c> environment variable to run these tests.
-/// </summary>
-[AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
-internal sealed class S3MockFactAttribute : FactAttribute
-{
-    public S3MockFactAttribute(
-        [System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = null,
-        [System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = -1)
-        : base(sourceFilePath, sourceLineNumber)
+    public async ValueTask DisposeAsync()
     {
-        if (string.IsNullOrEmpty(System.Environment.GetEnvironmentVariable("S3_EMULATOR_URL")))
-        {
-            Skip = "S3 emulator is not configured. Set S3_EMULATOR_URL to run this test.";
-        }
+        await _localStackContainer.StopAsync();
+
+        GC.SuppressFinalize(this);
     }
+
+    //public sealed class LocalStackDefaultConfiguration : AwsFileStoreTests
+    //{
+    //    public LocalStackDefaultConfiguration() : base(new LocalStackBuilder(TestSession.GetImageFromDockerfile()).Build())
+    //    {
+    //    }
+    //}
 }
