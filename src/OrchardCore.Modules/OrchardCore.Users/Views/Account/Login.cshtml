@@ -18,6 +18,14 @@
     {
         <div class="col-12">
             <div asp-validation-summary="ModelOnly"></div>
+            @if (ViewData["ResendEmailConfirmationCode"] is string code)
+            {
+                <form asp-controller="Account" asp-action="ResendEmailConfirmation" asp-area="@UserConstants.Features.Users"
+                      asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="mb-3 no-multisubmit">
+                    <input name="code" type="hidden" value="@code" />
+                    <button type="submit" class="btn btn-secondary">@T["Send confirmation email"]</button>
+                </form>
+            }
         </div>
     }
 

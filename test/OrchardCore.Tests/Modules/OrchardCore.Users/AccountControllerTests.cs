@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using OrchardCore.Tests.Apis.Context;
@@ -396,123 +397,53 @@ public class AccountControllerTests
     }
 
     [Fact]
-    public async Task Login_WhenUserIsDisabled_RedirectsToLoginWithError()
+    public async Task Login_WhenEmailIsNotConfirmed_DisplaysMessageAndAllowsResend()
     {
         // Arrange
-        var context = await GetSiteContextAsync(new RegistrationSettings());
+        var context = await GetSiteContextAsync(new RegistrationSettings
+        {
+            UsersMustValidateEmail = true,
+        }, true, true, false);
 
-        var registerGet = await context.Client.GetAsync("Register", TestContext.Current.CancellationToken);
-        Assert.True(registerGet.IsSuccessStatusCode);
+        var responseFromRegisterGet = await context.Client.GetAsync("Register", TestContext.Current.CancellationToken);
+
+        Assert.True(responseFromRegisterGet.IsSuccessStatusCode);
 
         var model = new RegisterViewModel()
         {
-            UserName = "DisabledUser",
-            Email = "DisabledUser@orchardcore.com",
-            Password = "DisabledUser@OC!123",
-            ConfirmPassword = "DisabledUser@OC!123",
+            UserName = "ConfirmMe",
+            Email = "ConfirmMe@orchardcore.com",
+            Password = "ConfirmMe@OC!123",
+            ConfirmPassword = "ConfirmMe@OC!123",
         };
 
-        var registerPost = await context.Client.SendAsync(await CreateRequestMessageAsync(model, registerGet), TestContext.Current.CancellationToken);
-        Assert.Equal(HttpStatusCode.Redirect, registerPost.StatusCode);
+        var responseFromRegisterPost = await context.Client.SendAsync(await CreateRequestMessageAsync(model, responseFromRegisterGet), TestContext.Current.CancellationToken);
 
-        await context.UsingTenantScopeAsync(async scope =>
-        {
-            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IUser>>();
-            var user = await userManager.FindByNameAsync(model.UserName) as User;
-            Assert.NotNull(user);
+        Assert.Equal(HttpStatusCode.Redirect, responseFromRegisterPost.StatusCode);
 
-            user.IsEnabled = false;
-            await userManager.UpdateAsync(user);
-        });
+        var responseFromLoginGet = await context.Client.GetAsync("Login", TestContext.Current.CancellationToken);
+
+        Assert.True(responseFromLoginGet.IsSuccessStatusCode);
 
         // Act
-        var loginGet = await context.Client.GetAsync("Login", TestContext.Current.CancellationToken);
-        Assert.True(loginGet.IsSuccessStatusCode);
-
-        var loginPost = await context.Client.SendAsync(await CreateLoginRequestMessageAsync(model.UserName, model.Password, loginGet), TestContext.Current.CancellationToken);
+        var responseFromLoginPost = await context.Client.SendAsync(await CreateLoginRequestMessageAsync(model, responseFromLoginGet), TestContext.Current.CancellationToken);
 
         // Assert
-        Assert.Equal(HttpStatusCode.Redirect, loginPost.StatusCode);
-        Assert.EndsWith("/Login", loginPost.Headers.Location.ToString());
+        Assert.True(responseFromLoginPost.IsSuccessStatusCode);
 
-        var cookies = CookiesHelper.ExtractCookies(loginPost);
-        Assert.DoesNotContain("orchauth_" + context.TenantName, cookies.Keys);
-    }
+        var body = await responseFromLoginPost.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
 
-    [Fact]
-    public async Task Login_WhenUserIsEnabled_Succeeds()
-    {
-        // Arrange
-        var context = await GetSiteContextAsync(new RegistrationSettings());
+        Assert.Contains("You must confirm your email. A confirmation email was sent when the account was created.", body);
+        Assert.Contains("Send confirmation email", body);
 
-        var registerGet = await context.Client.GetAsync("Register", TestContext.Current.CancellationToken);
-        Assert.True(registerGet.IsSuccessStatusCode);
+        var resendCode = ExtractResendEmailConfirmationCode(body);
 
-        var model = new RegisterViewModel()
-        {
-            UserName = "EnabledUser",
-            Email = "EnabledUser@orchardcore.com",
-            Password = "EnabledUser@OC!123",
-            ConfirmPassword = "EnabledUser@OC!123",
-        };
+        Assert.NotNull(resendCode);
 
-        var registerPost = await context.Client.SendAsync(await CreateRequestMessageAsync(model, registerGet), TestContext.Current.CancellationToken);
-        Assert.Equal(HttpStatusCode.Redirect, registerPost.StatusCode);
+        var responseFromResendPost = await context.Client.SendAsync(await CreateResendEmailConfirmationRequestMessageAsync(resendCode, body, responseFromLoginGet), TestContext.Current.CancellationToken);
 
-        // Act
-        var loginGet = await context.Client.GetAsync("Login", TestContext.Current.CancellationToken);
-        Assert.True(loginGet.IsSuccessStatusCode);
-
-        var loginPost = await context.Client.SendAsync(await CreateLoginRequestMessageAsync(model.UserName, model.Password, loginGet), TestContext.Current.CancellationToken);
-
-        // Assert
-        Assert.Equal(HttpStatusCode.Redirect, loginPost.StatusCode);
-        Assert.Equal($"/{context.TenantName}/", loginPost.Headers.Location.ToString());
-
-        var cookies = CookiesHelper.ExtractCookies(loginPost);
-        Assert.Contains("orchauth_" + context.TenantName, cookies.Keys);
-    }
-
-    [Fact]
-    public async Task Login_WhenUserDisabledUnderModeration_DefersToModerationHandler()
-    {
-        // Arrange
-        var context = await GetSiteContextAsync(new RegistrationSettings()
-        {
-            UsersAreModerated = true,
-        });
-
-        var registerGet = await context.Client.GetAsync("Register", TestContext.Current.CancellationToken);
-        Assert.True(registerGet.IsSuccessStatusCode);
-
-        var model = new RegisterViewModel()
-        {
-            UserName = "ModeratedUser",
-            Email = "ModeratedUser@orchardcore.com",
-            Password = "ModeratedUser@OC!123",
-            ConfirmPassword = "ModeratedUser@OC!123",
-        };
-
-        var registerPost = await context.Client.SendAsync(await CreateRequestMessageAsync(model, registerGet), TestContext.Current.CancellationToken);
-        Assert.Equal(HttpStatusCode.Redirect, registerPost.StatusCode);
-
-        await context.UsingTenantScopeAsync(async scope =>
-        {
-            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IUser>>();
-            var user = await userManager.FindByNameAsync(model.UserName) as User;
-            Assert.NotNull(user);
-            Assert.False(user.IsEnabled);
-        });
-
-        // Act
-        var loginGet = await context.Client.GetAsync("Login", TestContext.Current.CancellationToken);
-        Assert.True(loginGet.IsSuccessStatusCode);
-
-        var loginPost = await context.Client.SendAsync(await CreateLoginRequestMessageAsync(model.UserName, model.Password, loginGet), TestContext.Current.CancellationToken);
-
-        // Assert
-        Assert.Equal(HttpStatusCode.Redirect, loginPost.StatusCode);
-        Assert.Equal($"/{context.TenantName}/{nameof(RegistrationController.RegistrationPending)}", loginPost.Headers.Location.ToString());
+        Assert.Equal(HttpStatusCode.Redirect, responseFromResendPost.StatusCode);
+        Assert.Equal($"/{context.TenantName}/ConfirmEmailSent", responseFromResendPost.Headers.Location.ToString());
     }
 
     private static async Task<HttpRequestMessage> CreateRequestMessageAsync(RegisterViewModel model, HttpResponseMessage response)
@@ -529,16 +460,34 @@ public class AccountControllerTests
         return HttpRequestHelper.CreatePostMessageWithCookies("Register", data, response);
     }
 
-    private static async Task<HttpRequestMessage> CreateLoginRequestMessageAsync(string userName, string password, HttpResponseMessage response)
+    private static async Task<HttpRequestMessage> CreateLoginRequestMessageAsync(RegisterViewModel model, HttpResponseMessage response)
     {
         var data = new Dictionary<string, string>
         {
             {"__RequestVerificationToken", await AntiForgeryHelper.ExtractAntiForgeryToken(response) },
-            {$"{nameof(LoginForm)}.{nameof(LoginViewModel.UserName)}", userName},
-            {$"{nameof(LoginForm)}.{nameof(LoginViewModel.Password)}", password},
+            {$"{nameof(LoginForm)}.{nameof(LoginViewModel.UserName)}", model.UserName},
+            {$"{nameof(LoginForm)}.{nameof(LoginViewModel.Password)}", model.Password},
         };
 
         return HttpRequestHelper.CreatePostMessageWithCookies("Login", data, response);
+    }
+
+    private static Task<HttpRequestMessage> CreateResendEmailConfirmationRequestMessageAsync(string code, string body, HttpResponseMessage response)
+    {
+        var data = new Dictionary<string, string>
+        {
+            {"__RequestVerificationToken", AntiForgeryHelper.ExtractAntiForgeryToken(body) },
+            {"code", code},
+        };
+
+        return Task.FromResult(HttpRequestHelper.CreatePostMessageWithCookies("ResendEmailConfirmation", data, response));
+    }
+
+    private static string ExtractResendEmailConfirmationCode(string body)
+    {
+        var match = Regex.Match(body, """<input name="code" type="hidden" value="([^"]+)" />""");
+
+        return match.Success ? match.Groups[1].Captures[0].Value : null;
     }
 
     private static async Task<SiteContext> GetSiteContextAsync(RegistrationSettings settings, bool enableRegistrationFeature = true, bool requireUniqueEmail = true, bool enableExternalAuthentication = false)
