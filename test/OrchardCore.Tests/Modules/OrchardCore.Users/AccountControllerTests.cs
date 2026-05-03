@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using OrchardCore.Tests.Apis.Context;
@@ -395,6 +396,56 @@ public class AccountControllerTests
         });
     }
 
+    [Fact]
+    public async Task Login_WhenEmailIsNotConfirmed_DisplaysMessageAndAllowsResend()
+    {
+        // Arrange
+        var context = await GetSiteContextAsync(new RegistrationSettings
+        {
+            UsersMustValidateEmail = true,
+        }, true, true, false);
+
+        var responseFromRegisterGet = await context.Client.GetAsync("Register", TestContext.Current.CancellationToken);
+
+        Assert.True(responseFromRegisterGet.IsSuccessStatusCode);
+
+        var model = new RegisterViewModel()
+        {
+            UserName = "ConfirmMe",
+            Email = "ConfirmMe@orchardcore.com",
+            Password = "ConfirmMe@OC!123",
+            ConfirmPassword = "ConfirmMe@OC!123",
+        };
+
+        var responseFromRegisterPost = await context.Client.SendAsync(await CreateRequestMessageAsync(model, responseFromRegisterGet), TestContext.Current.CancellationToken);
+
+        Assert.Equal(HttpStatusCode.Redirect, responseFromRegisterPost.StatusCode);
+
+        var responseFromLoginGet = await context.Client.GetAsync("Login", TestContext.Current.CancellationToken);
+
+        Assert.True(responseFromLoginGet.IsSuccessStatusCode);
+
+        // Act
+        var responseFromLoginPost = await context.Client.SendAsync(await CreateLoginRequestMessageAsync(model, responseFromLoginGet), TestContext.Current.CancellationToken);
+
+        // Assert
+        Assert.True(responseFromLoginPost.IsSuccessStatusCode);
+
+        var body = await responseFromLoginPost.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+
+        Assert.Contains("You must confirm your email. A confirmation email was sent when the account was created.", body);
+        Assert.Contains("Send confirmation email", body);
+
+        var resendCode = ExtractResendEmailConfirmationCode(body);
+
+        Assert.NotNull(resendCode);
+
+        var responseFromResendPost = await context.Client.SendAsync(await CreateResendEmailConfirmationRequestMessageAsync(resendCode, body, responseFromLoginGet), TestContext.Current.CancellationToken);
+
+        Assert.Equal(HttpStatusCode.Redirect, responseFromResendPost.StatusCode);
+        Assert.Equal($"/{context.TenantName}/ConfirmEmailSent", responseFromResendPost.Headers.Location.ToString());
+    }
+
     private static async Task<HttpRequestMessage> CreateRequestMessageAsync(RegisterViewModel model, HttpResponseMessage response)
     {
         var data = new Dictionary<string, string>
@@ -407,6 +458,36 @@ public class AccountControllerTests
         };
 
         return HttpRequestHelper.CreatePostMessageWithCookies("Register", data, response);
+    }
+
+    private static async Task<HttpRequestMessage> CreateLoginRequestMessageAsync(RegisterViewModel model, HttpResponseMessage response)
+    {
+        var data = new Dictionary<string, string>
+        {
+            {"__RequestVerificationToken", await AntiForgeryHelper.ExtractAntiForgeryToken(response) },
+            {$"{nameof(LoginForm)}.{nameof(LoginViewModel.UserName)}", model.UserName},
+            {$"{nameof(LoginForm)}.{nameof(LoginViewModel.Password)}", model.Password},
+        };
+
+        return HttpRequestHelper.CreatePostMessageWithCookies("Login", data, response);
+    }
+
+    private static Task<HttpRequestMessage> CreateResendEmailConfirmationRequestMessageAsync(string code, string body, HttpResponseMessage response)
+    {
+        var data = new Dictionary<string, string>
+        {
+            {"__RequestVerificationToken", AntiForgeryHelper.ExtractAntiForgeryToken(body) },
+            {"code", code},
+        };
+
+        return Task.FromResult(HttpRequestHelper.CreatePostMessageWithCookies("ResendEmailConfirmation", data, response));
+    }
+
+    private static string ExtractResendEmailConfirmationCode(string body)
+    {
+        var match = Regex.Match(body, """<input name="code" type="hidden" value="([^"]+)" />""");
+
+        return match.Success ? match.Groups[1].Captures[0].Value : null;
     }
 
     private static async Task<SiteContext> GetSiteContextAsync(RegistrationSettings settings, bool enableRegistrationFeature = true, bool requireUniqueEmail = true, bool enableExternalAuthentication = false)
