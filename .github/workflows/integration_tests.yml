@@ -37,7 +37,7 @@ jobs:
         dotnet build ./test/OrchardCore.Tests.Integration/OrchardCore.Tests.Integration.csproj -c Release /p:NuGetAudit=false
     - name: Cache S3Mock Docker image
       id: cache-s3mock
-      uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+      uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
       with:
         path: /tmp/s3mock-image.tar
         key: docker-s3mock-latest

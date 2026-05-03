@@ -6,7 +6,7 @@
   <ItemGroup>
     <PackageVersion Include="AnyAscii" Version="0.3.3" />
     <PackageVersion Include="AngleSharp" Version="1.4.0" />
-    <PackageVersion Include="AWSSDK.S3" Version="4.0.21.1" />
+    <PackageVersion Include="AWSSDK.S3" Version="4.0.21.2" />
     <PackageVersion Include="AWSSDK.Extensions.NETCore.Setup" Version="4.0.3.33" />
     <PackageVersion Include="Azure.Communication.Email" Version="1.1.0" />
     <PackageVersion Include="Azure.Communication.Sms" Version="1.0.2" />
@@ -28,7 +28,7 @@
     <PackageVersion Include="JsonPath.Net" Version="2.2.0" />
     <PackageVersion Include="HtmlSanitizer" Version="9.1.893-beta" />
     <PackageVersion Include="Parlot" Version="1.5.7" />
-    <PackageVersion Include="libphonenumber-csharp" Version="9.0.27" />
+    <PackageVersion Include="libphonenumber-csharp" Version="9.0.28" />
     <PackageVersion Include="Lorem.Universal.NET" Version="5.0.0" />
     <PackageVersion Include="Lucene.Net" Version="4.8.0-beta00017" />
     <PackageVersion Include="Lucene.Net.Analysis.Common" Version="4.8.0-beta00017" />
@@ -73,7 +73,7 @@
     <PackageVersion Include="ZString" Version="2.6.0" />
   </ItemGroup>
   <ItemGroup>
-    <GlobalPackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.201" />
+    <GlobalPackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.202" />
     <GlobalPackageReference Include="Microsoft.CodeAnalysis.CSharp.CodeStyle" Version="5.3.0" />
   </ItemGroup>
   <!--
@@ -89,25 +89,25 @@
   <!-- There may be no TFM in an evaluation phase so we can't use a conditional 'Property' -->
   <ItemGroup>
     <PackageVersion Include="AspNet.Security.OAuth.GitHub" Version="10.0.0" />
-    <PackageVersion Include="Microsoft.AspNetCore.Authorization" Version="10.0.5" />
-    <PackageVersion Include="Microsoft.AspNetCore.Authentication.Facebook" Version="10.0.5" />
-    <PackageVersion Include="Microsoft.AspNetCore.Authentication.Google" Version="10.0.5" />
-    <PackageVersion Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="10.0.5" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authorization" Version="10.0.6" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.Facebook" Version="10.0.6" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.Google" Version="10.0.6" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="10.0.6" />
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="10.0.6" />
-    <PackageVersion Include="Microsoft.AspNetCore.Authentication.Twitter" Version="10.0.5" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.Twitter" Version="10.0.6" />
     <PackageVersion Include="Microsoft.AspNetCore.DataProtection.StackExchangeRedis" Version="10.0.7" />
-    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="10.0.5" />
-    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.5" />
+    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="10.0.6" />
+    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.6" />
     <PackageVersion Include="Microsoft.Playwright" Version="1.59.0" />
-    <PackageVersion Include="Microsoft.AspNetCore.Owin" Version="10.0.5" />
-    <PackageVersion Include="Microsoft.Extensions.Caching.Memory" Version="10.0.5" />
-    <PackageVersion Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="10.0.5" />
+    <PackageVersion Include="Microsoft.AspNetCore.Owin" Version="10.0.6" />
+    <PackageVersion Include="Microsoft.Extensions.Caching.Memory" Version="10.0.6" />
+    <PackageVersion Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="10.0.6" />
     <!-- dotnet/extensions repository -->
     <PackageVersion Include="Microsoft.Extensions.Diagnostics.Testing" Version="10.4.0" />
     <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="10.4.0" />
     <!-- Serilog.AspNetCore -->
     <PackageVersion Include="Serilog.AspNetCore" Version="10.0.0" />
-    <PackageVersion Include="System.IO.Hashing" Version="10.0.5" />
-    <PackageVersion Include="System.Text.Json" Version="10.0.5" />
+    <PackageVersion Include="System.IO.Hashing" Version="10.0.6" />
+    <PackageVersion Include="System.Text.Json" Version="10.0.6" />
   </ItemGroup>
 </Project>
