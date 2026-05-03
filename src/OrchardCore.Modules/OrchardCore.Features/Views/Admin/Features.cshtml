@@ -286,4 +286,11 @@
             $toogle.toggleClass('d-none');
         });
     });
+
+    $(function () {
+        setTimeout(function() {
+            $('.alert').fadeOut(500, function() {
+                $(this).remove();
+            }); }, 8000);
+    });
 </script>
