@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Localization;
 using OrchardCore.Deployment;
 
 namespace OrchardCore.ContentTypes.Deployment;
@@ -7,6 +8,12 @@ public class ReplaceContentDefinitionDeploymentStep : DeploymentStep
     public ReplaceContentDefinitionDeploymentStep()
     {
         Name = "ReplaceContentDefinition";
+    }
+
+    public ReplaceContentDefinitionDeploymentStep(IStringLocalizer<ReplaceContentDefinitionDeploymentStep> S)
+        : this()
+    {
+        Category = S["Content Management"];
     }
 
     public bool IncludeAll { get; set; }

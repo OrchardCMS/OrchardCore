@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Localization;
 using OrchardCore.Deployment;
 
 namespace OrchardCore.Elasticsearch.Core.Deployment;
@@ -10,6 +11,12 @@ public sealed class ElasticsearchIndexResetDeploymentStep : DeploymentStep
     public ElasticsearchIndexResetDeploymentStep()
     {
         Name = "ElasticIndexReset";
+    }
+
+    public ElasticsearchIndexResetDeploymentStep(IStringLocalizer<ElasticsearchIndexResetDeploymentStep> S)
+        : this()
+    {
+        Category = S["Search"];
     }
 
     public bool IncludeAll { get; set; } = true;
