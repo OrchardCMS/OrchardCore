@@ -49,7 +49,7 @@ public class UserEventHandler : UserEventHandlerBase, ILoginFormEvent
         var context = new AuditTrailContext<AuditTrailUserEvent>
             (
                 name: UserAuditTrailEventConfiguration.LogInFailed,
-                category: UserAuditTrailEventConfiguration.User,
+                category: UserAuditTrailEventConfiguration.CategoryName,
                 correlationId: string.Empty,
                 userId: string.Empty,
                 userName: userName,
@@ -130,7 +130,7 @@ public class UserEventHandler : UserEventHandlerBase, ILoginFormEvent
         var context = new AuditTrailContext<AuditTrailUserEvent>
             (
                 name: name,
-                category: UserAuditTrailEventConfiguration.User,
+                category: UserAuditTrailEventConfiguration.CategoryName,
                 correlationId: userId,
                 userId: userIdActual,
                 userName: userNameActual,

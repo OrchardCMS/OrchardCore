@@ -5,7 +5,10 @@ namespace OrchardCore.Users.AuditTrail.Services;
 
 public sealed class UserAuditTrailEventConfiguration : IConfigureOptions<AuditTrailOptions>
 {
-    public const string User = nameof(User);
+    [Obsolete($"Use {nameof(CategoryName)} for clarity.")]
+    public const string User = CategoryName;
+    public const string CategoryName = "User";
+    
     public const string Registered = nameof(Registered);
     public const string LoggedIn = nameof(LoggedIn);
     public const string LogInFailed = nameof(LogInFailed);
@@ -19,7 +22,7 @@ public sealed class UserAuditTrailEventConfiguration : IConfigureOptions<AuditTr
 
     public void Configure(AuditTrailOptions options)
     {
-        options.For<UserAuditTrailEventConfiguration>(User, S => S["User"])
+        options.For<UserAuditTrailEventConfiguration>(CategoryName, S => S["User"])
             .WithEvent(LoggedIn, S => S["Logged in"], S => S["A user was successfully logged in."], true)
             .WithEvent(LogInFailed, S => S["Login failed"], S => S["An attempt to login failed."], false) // Intentionally not enabled by default.
             .WithEvent(LogInIsLockedOut, S => S["Login account locked"], S => S["An attempt to login failed because the user is locked out."], true)
