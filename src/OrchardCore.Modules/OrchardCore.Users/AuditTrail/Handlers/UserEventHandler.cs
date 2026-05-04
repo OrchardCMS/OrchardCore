@@ -163,7 +163,7 @@ public class UserEventHandler : UserEventHandlerBase, ILoginFormEvent
 
         await _auditTrailManager.RecordEventAsync(context);
     }
-    private JsonObject CreateSnapshotObject(User fullUser, AuditTrailUserEventSettings settings)
+    private static JsonObject CreateSnapshotObject(User fullUser, AuditTrailUserEventSettings settings)
     {
         var allowedProperties = settings.UserSnapshotProperties.ToList();
         
