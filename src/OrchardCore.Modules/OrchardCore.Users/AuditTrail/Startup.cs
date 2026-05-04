@@ -2,11 +2,14 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.AuditTrail.Models;
 using OrchardCore.AuditTrail.Services.Models;
+using OrchardCore.Data;
+using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Users.AuditTrail.Drivers;
 using OrchardCore.Users.AuditTrail.Handlers;
+using OrchardCore.Users.AuditTrail.Indexes;
 using OrchardCore.Users.AuditTrail.Services;
 using OrchardCore.Users.Events;
 using OrchardCore.Users.Handlers;
@@ -25,6 +28,8 @@ public sealed class Startup : StartupBase
             .AddScoped<ILoginFormEvent>(sp => sp.GetRequiredService<UserEventHandler>());
 
         services.AddDisplayDriver<AuditTrailEvent, AuditTrailUserEventDisplayDriver>();
+        services.AddIndexProvider<AuditTrailUserEventIndexProvider>();
+        services.AddDataMigration<Migrations>();
         
         services.AddPermissionProvider<Permissions>();
     }

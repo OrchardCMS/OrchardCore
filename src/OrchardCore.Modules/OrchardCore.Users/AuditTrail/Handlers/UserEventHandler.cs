@@ -3,10 +3,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.AuditTrail.Indexes;
 using OrchardCore.AuditTrail.Models;
 using OrchardCore.AuditTrail.Services;
 using OrchardCore.AuditTrail.Services.Models;
+using OrchardCore.Entities;
+using OrchardCore.Users.AuditTrail.Indexes;
 using OrchardCore.Users.AuditTrail.Models;
 using OrchardCore.Users.AuditTrail.Services;
 using OrchardCore.Users.Events;
@@ -78,8 +79,27 @@ public class UserEventHandler : UserEventHandlerBase, ILoginFormEvent
     public override Task UpdatedAsync(UserUpdateContext context)
          => RecordAuditTrailUserEventAsync(UserAuditTrailEventConfiguration.Updated, context, _httpContextAccessor);
 
-    public override Task DeletedAsync(UserDeleteContext context)
-         => RecordAuditTrailUserEventAsync(UserAuditTrailEventConfiguration.Deleted, context, _httpContextAccessor);
+    public override async Task DeletedAsync(UserDeleteContext context)
+    {
+        // Don't store snapshot in the delete user event for compliance with regulations about deleting personal data.
+        await RecordAuditTrailEventAsync(UserAuditTrailEventConfiguration.Deleted, context.User);
+
+        // Delete snapshots from existing events.
+        if (context.User is User { UserId: { Length: > 0 } userId })
+        {
+            var eventsToUpdate = await _session
+                .Query<AuditTrailEvent, AuditTrailUserEventIndex>(
+                    index => index.UserId == userId && index.HasUserSnapshot,
+                    collection: AuditTrailEvent.Collection)
+                .ListAsync();
+
+            foreach (var eventToUpdate in eventsToUpdate)
+            {
+                eventToUpdate.Alter<AuditTrailUserEvent>(data => data.User = null);
+                await _session.SaveAsync(eventToUpdate, collection: AuditTrailEvent.Collection);
+            }
+        }
+    }
 
     public override Task ConfirmedAsync(UserConfirmContext context)
         => RecordAuditTrailUserEventAsync(UserAuditTrailEventConfiguration.Confirmed, context, _httpContextAccessor);
@@ -112,20 +132,6 @@ public class UserEventHandler : UserEventHandlerBase, ILoginFormEvent
             UserId = userId,
             User = storeSnapshot ? user as User : null,
         };
-
-        // If the user is deleted, remove its AuditTrail events as well for legal reasons.
-        if (name == UserAuditTrailEventConfiguration.Deleted)
-        {
-            var events = await _session.Query<AuditTrailEvent, AuditTrailEventIndex>(index => index.UserId == userId).ListAsync();
-
-            foreach (var item in events)
-            {
-                _session.Delete(item);
-            }
-
-            // The event for this action will contain the username and ID, but all sensitive data are excluded.
-            userEvent.User = null;
-        }
 
         var context = new AuditTrailContext<AuditTrailUserEvent>
             (
