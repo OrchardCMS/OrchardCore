@@ -167,11 +167,23 @@ public class UserEventHandler : UserEventHandlerBase, ILoginFormEvent
     {
         var allowedProperties = settings.UserSnapshotProperties.ToList();
         
+        // UserId is always included, to ensure that the account is identifiable within the system just using the data
+        // in the snapshot. This is not PII, so storing it long term is not problematic.
+        allowedProperties.Add(nameof(User.UserId));
+        
         // Ensure that the User object only has the allowed properties and none of the banned ones.
         var dictionary = JObject
             .FromObject(fullUser)
             .Where(pair => !BannedProperties.Contains(pair.Key) && allowedProperties.Contains(pair.Key))
             .ToDictionary(pair => pair.Key, pair => pair.Value);
+        
+        // Custom user settings have to be handled separately.
+        dictionary[nameof(User.Properties)] = JObject.FromObject(
+            fullUser
+                .Properties
+                .ToObject<Dictionary<string, JsonObject>>()
+                .Where(pair => allowedProperties.Contains(pair.Key))
+                .ToDictionary(pair => pair.Key, pair => pair.Value));
 
         return JObject.FromObject(dictionary);
     }
