@@ -6,6 +6,7 @@ using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
+using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Users.AuditTrail.Drivers;
 using OrchardCore.Users.AuditTrail.Handlers;
@@ -30,6 +31,7 @@ public sealed class Startup : StartupBase
         services.AddDisplayDriver<AuditTrailEvent, AuditTrailUserEventDisplayDriver>();
         services.AddIndexProvider<AuditTrailUserEventIndexProvider>();
         services.AddDataMigration<Migrations>();
+        services.AddNavigationProvider<AdminMenu>();
         
         services.AddPermissionProvider<Permissions>();
     }

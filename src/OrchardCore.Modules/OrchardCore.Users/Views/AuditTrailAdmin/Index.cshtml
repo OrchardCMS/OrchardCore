@@ -1,0 +1,26 @@
+@model OrchardCore.Users.AuditTrail.ViewModels.AuditTrailUserEventSettingsViewModel
+
+<script asp-name="bootstrap-select" at="Foot"></script>
+
+<zone Name="Title"><h1>@RenderTitleSegments(T["Audit Trail User Event Settings"])</h1></zone>
+
+<form asp-action="Index" method="post" class="no-multisubmit">
+    @if (Model.UserSnapshotProperties.Length > 0)
+    {
+        <h6>@T["User Properties to Store"]</h6>
+        <div class="mb-3">
+            @for (var i = 0; i < Model.UserSnapshotProperties.Length; i++)
+            {
+                var isReadOnly = Model.UserSnapshotProperties[i].Name == nameof(OrchardCore.Users.Models.User.UserId);
+                <div class="form-check">
+                    <input asp-for="UserSnapshotProperties[i].Selected" type="checkbox" class="form-check-input" readonly="@isReadOnly">
+                    <input type="hidden" asp-for="UserSnapshotProperties[i].Name"/>
+                    <label class="form-check-label cursor-pointer" asp-for="UserSnapshotProperties[i].Selected">@Model.UserSnapshotProperties[i].Name</label>
+                </div>
+            }
+            <span class="hint">@T["The selected properties of the <code>User</code> object are stored in the event's \"User Snapshot\" property."]</span>
+        </div>
+    }
+    
+    <input type="submit" value="Save" class="btn btn-primary"/>
+</form>
