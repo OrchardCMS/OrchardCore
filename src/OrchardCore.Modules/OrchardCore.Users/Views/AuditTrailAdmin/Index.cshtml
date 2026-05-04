@@ -11,9 +11,16 @@
         <div class="mb-3">
             @for (var i = 0; i < Model.UserSnapshotProperties.Length; i++)
             {
-                var isReadOnly = Model.UserSnapshotProperties[i].Name == nameof(OrchardCore.Users.Models.User.UserId);
-                <div class="form-check">
-                    <input asp-for="UserSnapshotProperties[i].Selected" type="checkbox" class="form-check-input" readonly="@isReadOnly">
+                <div class="form-check form-switch">
+                    @if (Model.UserSnapshotProperties[i].Name == nameof(OrchardCore.Users.Models.User.UserId))
+                    {
+                        <input asp-for="UserSnapshotProperties[i].Selected" type="checkbox" class="form-check-input" role="switch" disabled checked>
+                    }
+                    else
+                    {
+                        <input asp-for="UserSnapshotProperties[i].Selected" type="checkbox" class="form-check-input" role="switch">
+                    }
+
                     <input type="hidden" asp-for="UserSnapshotProperties[i].Name"/>
                     <label class="form-check-label cursor-pointer" asp-for="UserSnapshotProperties[i].Selected">@Model.UserSnapshotProperties[i].Name</label>
                 </div>

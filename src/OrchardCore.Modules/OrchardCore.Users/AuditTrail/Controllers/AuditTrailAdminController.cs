@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.Admin;
 using OrchardCore.Settings;
@@ -31,10 +30,8 @@ public sealed class AuditTrailAdminController : Controller
 
     public async Task<ActionResult> Index()
     {
-        // UserId is always included, to ensure that the account is identifiable within the system just using the data
-        // in the snapshot. This is not PII, so storing it long term is not problematic.
         var settings = await _siteService.GetSettingsAsync<AuditTrailUserEventSettings>();
-        var selected = (settings.UserSnapshotProperties ?? []).Union([nameof(Users.Models.User.UserId)]).ToHashSet();
+        var selected = (settings.UserSnapshotProperties ?? []).ToHashSet();
 
         var propertyNames = JsonSerializer.SerializeToNode(new User())
             .ToObject<IDictionary<string, object>>()
@@ -62,10 +59,13 @@ public sealed class AuditTrailAdminController : Controller
             return Forbid();
         }
 
+        // UserId is always included, to ensure that the account is identifiable within the system just using the data
+        // in the snapshot. This is not PII, so storing it long term is not problematic.
         var selected = model
             .UserSnapshotProperties
             .Where(item => item.Selected)
-            .Select(item => item.Name);
+            .Select(item => item.Name)
+            .Union([nameof(Users.Models.User.UserId)]);
 
         var siteSettings = await _siteService.LoadSiteSettingsAsync();
         var settings = siteSettings.GetOrCreate<AuditTrailUserEventSettings>();
