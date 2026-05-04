@@ -27,6 +27,8 @@ public sealed class Startup : StartupBase
             o.MemberAccessStrategy.Register<FlowPart>();
         });
 
+        services.AddScoped<IContentPartIndexHandler, BagPartDocumentIndexHandler>();
+
         // Flow Part
         services.AddContentPart<FlowPart>()
             .UseDisplayDriver<FlowPartDisplayDriver>();
@@ -40,6 +42,7 @@ public sealed class Startup : StartupBase
             .UseDisplayDriver<BagPartDisplayDriver>()
             .AddHandler<BagPartHandler>();
         services.AddScoped<IContentTypePartDefinitionDisplayDriver, BagPartSettingsDisplayDriver>();
+        services.AddScoped<IContentTypePartDefinitionDisplayDriver, BagPartBlocksEditorSettingsDriver>();
         services.AddScoped<IContentPartIndexHandler, BagPartIndexHandler>();
 
         services.AddContentPart<FlowMetadata>();

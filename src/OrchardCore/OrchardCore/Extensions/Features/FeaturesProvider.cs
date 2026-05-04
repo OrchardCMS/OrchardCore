@@ -21,7 +21,7 @@ public class FeaturesProvider : IFeaturesProvider
         var featuresInfos = new List<IFeatureInfo>();
 
         // Features and Dependencies live within this section
-        var features = manifestInfo.ModuleInfo.Features.ToList();
+        var features = manifestInfo.ModuleInfo.Features;
         if (features.Count > 0)
         {
             foreach (var feature in features)

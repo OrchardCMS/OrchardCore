@@ -1,14 +1,9 @@
+using OrchardCore.ContentManagement.Metadata.Settings;
+
 namespace OrchardCore.Taxonomies.Settings;
 
-public class TaxonomyFieldSettings
+public class TaxonomyFieldSettings : FieldSettings
 {
-    public string Hint { get; set; }
-
-    /// <summary>
-    /// Whether a selection is required.
-    /// </summary>
-    public bool Required { get; set; }
-
     /// <summary>
     /// The content item id of the taxonomy to choose from.
     /// </summary>
@@ -28,4 +23,9 @@ public class TaxonomyFieldSettings
     /// Whether the field allows the user to add new Terms to the taxonomy (similar to tags).
     /// </summary>
     public bool Open { get; set; }
+
+    /// <summary>
+    /// Gets or sets the placeholder text displayed when the input field is empty.
+    /// </summary>
+    public string Placeholder { get; set; } = string.Empty;
 }

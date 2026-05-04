@@ -26,7 +26,11 @@ internal sealed class FormInputElementVisibilityPartDisplayDriver : ContentPartD
             if (part.ContentItem.TryGet<FormInputElementVisibilityPart>(out var visibilityPart) &&
             visibilityPart.Action != FormVisibilityAction.None)
             {
-                var name = part.ContentItem.As<FormInputElementPart>()?.Name;
+                string name = null;
+                if (part.ContentItem.TryGet<FormInputElementPart>(out var inputElementPart))
+                {
+                    name = inputElementPart.Name;
+                }
 
                 model.ElementName = name;
                 model.Action = visibilityPart.Action;
@@ -45,7 +49,7 @@ internal sealed class FormInputElementVisibilityPartDisplayDriver : ContentPartD
                     ),
                 });
             }
-        }).Location("Detail", "Content");
+        }).Location(OrchardCoreConstants.DisplayType.Detail, "Content");
     }
 
     public override IDisplayResult Edit(FormInputElementVisibilityPart part, BuildPartEditorContext context)

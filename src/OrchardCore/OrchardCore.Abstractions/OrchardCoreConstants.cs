@@ -2,6 +2,8 @@ namespace OrchardCore;
 
 public static class OrchardCoreConstants
 {
+    public const char DataLocalizationSeparator = ':';
+
     public static class Shell
     {
         public const string TenantsFileName = "tenants.json";
@@ -76,6 +78,10 @@ public static class OrchardCoreConstants
 
         // The UrlRewriting module should be registered before any other module that deals with URLs.
         public const int UrlRewriting = InfrastructureService + 100;
+
+        // The Workflows content handler should be registered before other content handlers to ensure it
+        // processes content events last.
+        public const int WorkflowsContentHandlers = InfrastructureService + 100;
     }
 
     public static class DisplayType
@@ -87,5 +93,10 @@ public static class OrchardCoreConstants
         public const string DetailAdmin = "DetailAdmin";
 
         public const string SummaryAdmin = "SummaryAdmin";
+    }
+
+    public static class Security
+    {
+        public const string ScriptingEncryptionPurpose = "oc-scripting";
     }
 }

@@ -187,6 +187,9 @@ Appends a version hash for an asset. Can be piped together with the other media 
 
 ## Razor Helpers
 
+!!! note
+    When using tag helpers in Razor, you must take a direct reference to the `OrchardCore.Media` NuGet package in each theme or module that uses the tag helpers. This is not required when using Liquid.
+
 To obtain the correct URL for an asset, use the `AssetUrl` helper extension method on the view's base `Orchard` property, e.g.:
 
 `@Orchard.AssetUrl(Model.Paths[0])`
@@ -267,8 +270,31 @@ Or when using the MVC tag helpers and the image is resolved from static assets, 
 
 > The Razor Helper is accessible on the `Orchard` property if the view is using Orchard Core's Razor base class, or by injecting `OrchardCore.IOrchardHelper` in all other cases.
 
+### Razor Anchor Tag Helper
+
+The `AnchorTagHelper` in the Media module allows you to generate links (`<a>`) to files in the Media Library using logical paths, automatically resolving the correct URL.
+
+
+`asset-href` attribute is used to specify a logical path in the Media Library. It will be converted to a public `href` URL at render time, e.g.:
+
+`<a asset-href="demo/site-gusta-la-oscuridad-Libro.png" class="btn btn-link btn-sm view-button">View</a>`
+
+Rendered HTML:
+
+`<a href="/media/demo/site-gusta-la-oscuridad-Libro.png?v=-xU7_qsnn4HeHXjHT1gPmep-7Ik68F_ZKYcNO9ChXXg" class="btn btn-link btn-sm view-button"> View </a>`
+
+`target` defines where the link will open. By default, it behaves like a normal `<a>` tag (`_self`), but you can set `_blank` to open in a new tab, e.g.:
+
+`<a href="demo/site-gusta-la-oscuridad-Libro.png?v=-xU7_qsnn4HeHXjHT1gPmep-7Ik68F_ZKYcNO9ChXXg" target="_blank" class="btn btn-link btn-sm view-button"> View </a>`
+
+Rendered HTML:
+
+`<a href="/media/demo/site-gusta-la-oscuridad-Libro.png?v=-xU7_qsnn4HeHXjHT1gPmep-7Ik68F_ZKYcNO9ChXXg" target="_blank" class="btn btn-link btn-sm view-button"> View </a>`
+
 !!! note
-    When using tag helpers in Razor, you must take a direct reference to the `OrchardCore.Media` nuget package in each theme or module that uses the tag helpers. This is not required when using Liquid.
+    - The generated URL includes a version query string for cache busting.
+    - You can use standard HTML attributes like `class`, `target`, `rel`, etc.
+
 
 ## Deployment Step Editor
 
@@ -403,7 +429,7 @@ services.Configure<StaticFileOptions>(o => ...);
 
 Media profiles allow you to defined preset image resizing and formatting commands.
 
-You can create a media profile from the _Configuration -> Media -> Media Profiles_ menu.
+You can create a media profile from the _Media -> Profiles_ menu.
 
 When specifying a media profile with either the liquid, razor helper, or tag helper you provide the profile name, and any additional commands which you want to apply to the media item.
 
@@ -524,6 +550,61 @@ A middleware component returns a 404 NotFound response for unauthenticated acces
 ### Configurable Cache-Control for Secured Files
 
 The `Cache-Control` header for secured files is set to `no-store` by default, preventing their caching. This can be changed with the `MaxSecureFilesBrowserCacheDays` configuration, [see above](#configuration).
+
+## File Upload Limit
+
+In ASP.NET Core, file upload size limits are enforced at multiple levels — FormOptions, Kestrel/IIS server settings, and sometimes controller-level attributes. By default:
+
+- MultipartBodyLengthLimit (FormOptions) → 128 MB for multipart form sections.
+- Kestrel MaxRequestBodySize → ~28.6 MB (30,000,000 bytes).
+- IIS maxAllowedContentLength → ~28.6 MB unless overridden.
+
+If a file exceeds these limits, you'll get errors like `InvalidDataException`: Multipart body length limit exceeded or HTTP 404.13 in IIS.
+
+To increase the limit, you can use one of the following approaches:
+
+1. IIS content length limit
+
+    ```xml
+    <system.webServer>
+      <security>
+        <requestFiltering>
+          <requestLimits maxAllowedContentLength="50000000" />
+        </requestFiltering>
+      </security>
+    </system.webServer>
+    ```
+
+2. ASP.NET Core Request length limit
+
+    2.1 For application running on IIS
+
+    ```csharp
+    services.Configure<IISServerOptions>(options =>
+    {
+        options.MaxRequestBodySize = 50000000;
+    });
+    ```
+
+    2.2 For application running on Kestrel
+
+    ```csharp
+    services.Configure<KestrelServerOptions>(options =>
+    {
+        options.Limits.MaxRequestBodySize = 50000000;
+    });
+    ```
+
+3. Form's `MultipartBodyLengthLimit`
+
+    ```csharp
+    services.Configure<FormOptions>(options =>
+    {
+        options.ValueLengthLimit = 50000000;
+        options.MultipartBodyLengthLimit = 50000000;
+        options.MultipartHeadersLengthLimit = 50000000;
+    });
+    ```
 
 ## Videos
 

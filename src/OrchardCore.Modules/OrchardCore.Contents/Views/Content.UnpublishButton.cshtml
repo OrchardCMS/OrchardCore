@@ -1,0 +1,22 @@
+@{
+    var returnUrl = Context.Request.Query["returnUrl"];
+}
+
+@if (string.IsNullOrWhiteSpace(returnUrl))
+{
+    <button type="submit" name="submit.Unpublish" class="btn btn-warning unpublish mb-1" value="submit.Unpublish">@T["Unpublish"]</button>
+}
+else
+{
+    <div class="btn-group mb-1">
+        <button class="btn btn-warning Unpublish" type="submit" name="submit.Unpublish" value="submit.Unpublish">@T["Unpublish"]</button>
+        <button type="button" class="btn btn-warning dropdown-toggle dropdown-toggle-split" data-reference="parent" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <span class="visually-hidden">@T["Toggle Dropdown"]</span>
+        </button>
+        <div class="dropdown-menu">
+            <button class="dropdown-item Unpublish-continue" type="submit" name="submit.Unpublish" value="submit.UnpublishAndContinue">@T["and continue"]</button>
+        </div>
+    </div>
+}
+
+<script at="Foot" asp-src="~/OrchardCore.Contents/Scripts/expand-cards-with-invalid-inputs.js"></script>

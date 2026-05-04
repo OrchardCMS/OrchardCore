@@ -16,18 +16,24 @@ concurrency:
   group: ${{ github.head_ref || github.run_id }}-assets_validation
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
   test-npm-build:
     name: Test building assets
     runs-on: ubuntu-24.04
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+    - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+      with:
+        node-version-file: '.node-version'
     - name: Rebuild packages
       run: |
         npm install -g corepack
         corepack enable
         yarn --no-check-resolutions
-        yarn build -gr
+        yarn build
     - name: Check if git has changes
       shell: pwsh
       run: |
@@ -110,7 +116,7 @@ jobs:
             Write-Host "No uncommitted changes found. Repository is clean."
         }
     - name: Upload changed files as artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
       if: failure()
       with:
         name: changed-files

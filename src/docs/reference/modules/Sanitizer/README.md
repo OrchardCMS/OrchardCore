@@ -8,6 +8,7 @@ It is used by default for the following parts and fields:
 
 - HTML Body Part
 - HTML Field
+- HTML Menu Item Part
 - Markdown Body Part
 - Markdown Field
 
@@ -25,6 +26,7 @@ The elements sanitized by default are listed on this page: <https://github.com/m
 Orchard Core changes these defaults by:
 
 - allowing the attribute `class`
+- allowing the `mailto` and `tel` schemes
 - removing the tag `form`
 
 ## Configuring the Sanitizer
@@ -40,7 +42,7 @@ services
     .ConfigureServices(tenantServices =>
         tenantServices.ConfigureHtmlSanitizer((sanitizer) =>
             {
-                sanitizer.AllowedSchemes.Add("mailto");
+                sanitizer.AllowedSchemes.Add("ftp");
             }));
 ```
 

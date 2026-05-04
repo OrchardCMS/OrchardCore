@@ -1,8 +1,11 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
 using OrchardCore.ReverseProxy.Settings;
@@ -19,14 +22,25 @@ public sealed class ReverseProxySettingsDisplayDriver : SiteDisplayDriver<Revers
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
 
+    private readonly ReverseProxySettings _reverseProxySettings;
+    private readonly INotifier _notifier;
+
+    internal readonly IHtmlLocalizer H;
+
     public ReverseProxySettingsDisplayDriver(
         IShellReleaseManager shellReleaseManager,
         IHttpContextAccessor httpContextAccessor,
-        IAuthorizationService authorizationService)
+        IAuthorizationService authorizationService,
+        IOptionsSnapshot<ReverseProxySettings> reverseProxySettings,
+        INotifier notifier,
+        IHtmlLocalizer<ReverseProxySettingsDisplayDriver> htmlLocalizer)
     {
         _shellReleaseManager = shellReleaseManager;
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
+        _reverseProxySettings = reverseProxySettings.Value;
+        _notifier = notifier;
+        H = htmlLocalizer;
     }
 
     protected override string SettingsGroupId
@@ -43,11 +57,20 @@ public sealed class ReverseProxySettingsDisplayDriver : SiteDisplayDriver<Revers
 
         context.AddTenantReloadWarningWrapper();
 
+        // Set the settings from configuration when AdminSettings are overridden via ConfigureReverseProxySettings()
+        var currentSettings = settings;
+        if (_reverseProxySettings.FromConfiguration)
+        {
+            currentSettings = _reverseProxySettings;
+
+            await _notifier.InformationAsync(H["The current settings are coming from configuration sources, saving the settings will affect the AdminSettings not the configuration."]);
+        }
+
         return Initialize<ReverseProxySettingsViewModel>("ReverseProxySettings_Edit", model =>
         {
-            model.EnableXForwardedFor = settings.ForwardedHeaders.HasFlag(ForwardedHeaders.XForwardedFor);
-            model.EnableXForwardedHost = settings.ForwardedHeaders.HasFlag(ForwardedHeaders.XForwardedHost);
-            model.EnableXForwardedProto = settings.ForwardedHeaders.HasFlag(ForwardedHeaders.XForwardedProto);
+            model.EnableXForwardedFor = currentSettings.ForwardedHeaders.HasFlag(ForwardedHeaders.XForwardedFor);
+            model.EnableXForwardedHost = currentSettings.ForwardedHeaders.HasFlag(ForwardedHeaders.XForwardedHost);
+            model.EnableXForwardedProto = currentSettings.ForwardedHeaders.HasFlag(ForwardedHeaders.XForwardedProto);
         }).Location("Content:2")
         .OnGroup(SettingsGroupId);
     }

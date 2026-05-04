@@ -42,14 +42,16 @@ public sealed class ScheduledPublishingBackgroundTask : IBackgroundTask
         {
             var contentItem = await contentManager.GetAsync(item.ContentItemId, VersionOptions.Latest);
 
-            var part = contentItem.As<PublishLaterPart>();
-            if (part != null)
+            if (contentItem.TryGet<PublishLaterPart>(out var part))
             {
                 part.ScheduledPublishUtc = null;
                 part.Apply();
             }
 
-            _logger.LogDebug("Publishing scheduled content item {ContentItemId}.", contentItem.ContentItemId);
+            if (_logger.IsEnabled(LogLevel.Debug))
+            {
+                _logger.LogDebug("Publishing scheduled content item {ContentItemId}.", contentItem.ContentItemId);
+            }
 
             await contentManager.PublishAsync(contentItem);
         }

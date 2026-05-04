@@ -17,8 +17,8 @@ public sealed class BooleanFieldDisplayDriver : ContentFieldDisplayDriver<Boolea
             model.Part = context.ContentPart;
             model.PartFieldDefinition = context.PartFieldDefinition;
         })
-        .Location("Detail", "Content")
-        .Location("Summary", "Content");
+        .Location(OrchardCoreConstants.DisplayType.Detail, "Content")
+        .Location(OrchardCoreConstants.DisplayType.Summary, "Content");
     }
 
     public override IDisplayResult Edit(BooleanField field, BuildFieldEditorContext context)

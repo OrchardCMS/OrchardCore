@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore;
+using OrchardCore.Alias;
 using OrchardCore.Alias.Services;
 using OrchardCore.ContentManagement;
 using YesSql;
@@ -23,9 +24,9 @@ public static class AliasPartRazorHelperExtensions
         }
 
         // Provided for backwards compatibility and avoiding confusion.
-        if (alias.StartsWith("alias:", StringComparison.OrdinalIgnoreCase))
+        if (alias.StartsWith(AliasConstants.AliasPrefix, StringComparison.OrdinalIgnoreCase))
         {
-            alias = alias[6..];
+            alias = alias[AliasConstants.AliasPrefix.Length..];
         }
 
         var session = orchardHelper.HttpContext.RequestServices.GetService<ISession>();

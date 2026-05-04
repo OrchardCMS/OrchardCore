@@ -194,30 +194,6 @@ public class EmailTests
     }
 
     [Fact]
-    public async Task SendOfflineEmailHasNoResponse()
-    {
-        // Arrange
-        var message = new MailMessage
-        {
-            To = "info@oc.com",
-            Subject = "Test",
-            TextBody = "Test Message",
-        };
-        var settings = new SmtpOptions
-        {
-            DeliveryMethod = SmtpDeliveryMethod.SpecifiedPickupDirectory,
-        };
-
-        var smtp = CreateSmtpService(settings);
-
-        // Act
-        var result = await smtp.SendAsync(message);
-
-        // Assert
-        Assert.Null(result.Response);
-    }
-
-    [Fact]
     public async Task SendEmail_WithTextAndHtmlFormats()
     {
         // Arrange

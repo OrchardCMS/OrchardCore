@@ -6,6 +6,8 @@
 @using OrchardCore.ContentManagement.Metadata.Settings
 @using OrchardCore.ContentManagement.Metadata.Models
 @using OrchardCore
+@using OrchardCore.Localization.Data
+@inject IDataLocalizer D
 @*
     This template is used to render the editor for a Taxonomy content item.
     It render the hierarchy of the terms.
@@ -44,13 +46,18 @@
                    asp-route-id="@Model.TaxonomyPart.TermContentType"
                    asp-route-taxonomyContentItemId="@Model.TaxonomyPart.ContentItem.ContentItemId"
                    asp-route-area="OrchardCore.Taxonomies">
-                    @T["Add {0}", termContentType.DisplayName]
+                    @T["Add {0}", D[termContentType.DisplayName, "Content Types"]]
                 </a>
             }
         }
 
+        @{
+            var taxonomyItems = Model.TaxonomyPart.ContentItem.TryGet<TaxonomyPart>(out var taxonomyPart)
+                ? taxonomyPart.Terms
+                : [];
+        }
         <ol id="menu" class="list-group my-3">
-            @foreach (var menuItem in Model.TaxonomyPart.ContentItem.As<TaxonomyPart>().Terms)
+            @foreach (var menuItem in taxonomyItems)
             {
                 var termShape = await ContentItemDisplayManager.BuildDisplayAsync(menuItem, updater, "TermAdmin");
                 termShape.Properties["TaxonomyPart"] = Model.TaxonomyPart;

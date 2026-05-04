@@ -1,30 +1,10 @@
 using System.Globalization;
 using Microsoft.AspNetCore.WebUtilities;
+using OrchardCore.Media.Core.Processing;
 using OrchardCore.Media.Fields;
+using OrchardCore.Media.Models;
 
 namespace OrchardCore.Media.Processing;
-
-public enum ResizeMode
-{
-    Undefined,
-    Max,
-    Crop,
-    Pad,
-    BoxPad,
-    Min,
-    Stretch,
-}
-
-public enum Format
-{
-    Undefined,
-    Bmp,
-    Gif,
-    Jpg,
-    Png,
-    Tga,
-    WebP,
-}
 
 internal sealed class ImageSharpUrlFormatter
 {
@@ -35,45 +15,50 @@ internal sealed class ImageSharpUrlFormatter
             return path;
         }
 
-        queryStringParams ??= new Dictionary<string, string>();
+        var mediaCommands = new MediaCommands();
+
+        if (queryStringParams != null)
+        {
+            mediaCommands.SetCommands(queryStringParams);
+        }
 
         if (width.HasValue)
         {
-            queryStringParams["width"] = width.ToString();
+            mediaCommands.Width = width.ToString();
         }
 
         if (height.HasValue)
         {
-            queryStringParams["height"] = height.ToString();
+            mediaCommands.Height = height.ToString();
         }
 
         if (resizeMode != ResizeMode.Undefined)
         {
-            queryStringParams["rmode"] = resizeMode.ToString().ToLower();
+            mediaCommands.ResizeMode = resizeMode.ToString().ToLower();
         }
 
         // The format is set before quality such that the quality is not
         // invalidated when the url is generated.
         if (format != Format.Undefined)
         {
-            queryStringParams["format"] = format.ToString().ToLower();
+            mediaCommands.Format = format.ToString().ToLower();
         }
 
         if (quality.HasValue)
         {
-            queryStringParams["quality"] = quality.ToString();
+            mediaCommands.Quality = quality.ToString();
         }
 
         if (anchor != null)
         {
-            queryStringParams["rxy"] = anchor.X.ToString(CultureInfo.InvariantCulture) + ',' + anchor.Y.ToString(CultureInfo.InvariantCulture);
+            mediaCommands.ResizeFocalPoint = anchor.X.ToString(CultureInfo.InvariantCulture) + ',' + anchor.Y.ToString(CultureInfo.InvariantCulture);
         }
 
         if (!string.IsNullOrEmpty(bgcolor))
         {
-            queryStringParams["bgcolor"] = bgcolor;
+            mediaCommands.BackgroundColor = bgcolor;
         }
 
-        return QueryHelpers.AddQueryString(path, queryStringParams);
+        return QueryHelpers.AddQueryString(path, mediaCommands.GetValues());
     }
 }

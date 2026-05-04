@@ -1,8 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using OrchardCore.Email.Core.Services;
+using OrchardCore.Email.Services;
 
-namespace OrchardCore.Email.Core;
+namespace OrchardCore.Email;
 
 public static class ServiceCollectionExtensions
 {

@@ -34,8 +34,8 @@ public sealed class TaxonomyFieldTagsDisplayDriver : ContentFieldDisplayDriver<T
             model.Field = field;
             model.Part = context.ContentPart;
             model.PartFieldDefinition = context.PartFieldDefinition;
-        }).Location("Detail", "Content")
-        .Location("Summary", "Content");
+        }).Location(OrchardCoreConstants.DisplayType.Detail, "Content")
+        .Location(OrchardCoreConstants.DisplayType.Summary, "Content");
     }
 
     public override IDisplayResult Edit(TaxonomyField field, BuildFieldEditorContext context)
@@ -49,7 +49,15 @@ public sealed class TaxonomyFieldTagsDisplayDriver : ContentFieldDisplayDriver<T
             {
                 var termEntries = new List<TermEntry>();
 
-                var terms = model.Taxonomy.As<TaxonomyPart>().Terms;
+                if (!model.Taxonomy.TryGet<TaxonomyPart>(out var taxonomyPart))
+                {
+                    model.Field = field;
+                    model.Part = context.ContentPart;
+                    model.PartFieldDefinition = context.PartFieldDefinition;
+                    return;
+                }
+
+                var terms = taxonomyPart.Terms;
 
                 // Maintain the listed order in the field, then concatenate the remaining content items.
                 var sortedTerms = terms

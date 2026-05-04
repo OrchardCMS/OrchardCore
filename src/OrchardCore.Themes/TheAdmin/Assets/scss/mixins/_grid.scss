@@ -1,8 +1,6 @@
 // Row / Column Groupings
 // Creates mixins to target columns contained inside a column grouping to expand small sizes.
 // ------------------------------
-@import '../../../../../../node_modules/bootstrap/scss/_variables';
-
 @mixin make-col-fix($breakpoint) {
     .col-#{$breakpoint} {
         flex: 0 0 100%;

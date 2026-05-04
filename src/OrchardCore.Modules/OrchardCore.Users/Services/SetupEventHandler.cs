@@ -6,7 +6,7 @@ using OrchardCore.Users.Models;
 namespace OrchardCore.Users.Services;
 
 /// <summary>
-/// During setup, creates the admin user account.
+/// Handles setup events by creating the initial administrator user during application setup.
 /// </summary>
 public class SetupEventHandler : ISetupEventHandler
 {
@@ -17,6 +17,7 @@ public class SetupEventHandler : ISetupEventHandler
         _userService = userService;
     }
 
+    /// <inheritdoc/>
     public Task SetupAsync(SetupContext context)
     {
         var user = new User

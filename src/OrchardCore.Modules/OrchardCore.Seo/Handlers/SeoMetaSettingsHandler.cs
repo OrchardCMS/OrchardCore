@@ -1,13 +1,10 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Abstractions;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
-using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.Entities;
 using OrchardCore.Media;
 using OrchardCore.Mvc.Core.Utilities;
@@ -20,7 +17,6 @@ public class SeoMetaSettingsHandler : ContentHandlerBase
 {
     private readonly IMediaFileStore _mediaFileStore;
     private readonly ISiteService _siteService;
-    private readonly IActionContextAccessor _actionContextAccessor;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IUrlHelperFactory _urlHelperFactory;
     private IContentManager _contentManager;
@@ -28,14 +24,12 @@ public class SeoMetaSettingsHandler : ContentHandlerBase
     public SeoMetaSettingsHandler(
         IMediaFileStore mediaFileStore,
         ISiteService siteService,
-        IActionContextAccessor actionContextAccessor,
         IHttpContextAccessor httpContextAccessor,
         IUrlHelperFactory urlHelperFactory
         )
     {
         _mediaFileStore = mediaFileStore;
         _siteService = siteService;
-        _actionContextAccessor = actionContextAccessor;
         _httpContextAccessor = httpContextAccessor;
         _urlHelperFactory = urlHelperFactory;
     }
@@ -47,11 +41,10 @@ public class SeoMetaSettingsHandler : ContentHandlerBase
             // This handlers provides defaults, either from the Seo Meta Settings, or ensures values by default. (title etc)
             _contentManager ??= _httpContextAccessor.HttpContext.RequestServices.GetRequiredService<IContentManager>();
             var siteSettings = await _siteService.GetSiteSettingsAsync();
-            var metaSettings = siteSettings.As<ContentItem>("SocialMetaSettings");
 
-            var actionContext = _actionContextAccessor.ActionContext;
-
-            actionContext ??= await GetActionContextAsync(_httpContextAccessor.HttpContext);
+            // In .NET 10, create ActionContext directly instead of using obsolete IActionContextAccessor
+            var httpContext = _httpContextAccessor.HttpContext;
+            var actionContext = await httpContext.GetActionContextAsync();
 
             var urlHelper = _urlHelperFactory.GetUrlHelper(actionContext);
             var contentItemMetadata = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(context.ContentItem);
@@ -62,34 +55,125 @@ public class SeoMetaSettingsHandler : ContentHandlerBase
             // Logic is this happens last after the part settings.
             // so if values are not set it is responsible for settings them.
 
-            string defaultImage = metaSettings.Content.SocialMetaSettings?.DefaultSocialImage?.Paths?.Count > 0 ? metaSettings.Content.SocialMetaSettings.DefaultSocialImage.Paths[0] : string.Empty;
-            string openGraphImage = metaSettings.Content.SocialMetaSettings?.OpenGraphImage?.Paths?.Count > 0 ? metaSettings.Content.SocialMetaSettings?.OpenGraphImage?.Paths[0] : string.Empty;
-            string twitterImage = metaSettings.Content.SocialMetaSettings?.TwitterImage?.Paths?.Count > 0 ? metaSettings.Content.SocialMetaSettings?.TwitterImage?.Paths[0] : string.Empty;
+            var defaultImage = string.Empty;
+            var openGraphImage = string.Empty;
+            var twitterImage = string.Empty;
 
-            string defaultAltText = metaSettings.Content.SocialMetaSettings?.DefaultSocialImage?.MediaTexts?.Count > 0 ? metaSettings.Content.SocialMetaSettings.DefaultSocialImage.MediaTexts[0] : string.Empty;
-            string openGraphAltText = metaSettings.Content.SocialMetaSettings?.OpenGraphImage?.MediaTexts?.Count > 0 ? metaSettings.Content.SocialMetaSettings?.OpenGraphImage?.MediaTexts[0] : string.Empty;
-            string twitterAltText = metaSettings.Content.SocialMetaSettings?.TwitterImage?.MediaTexts?.Count > 0 ? metaSettings.Content.SocialMetaSettings?.TwitterImage?.MediaTexts[0] : string.Empty;
+            var defaultAltText = string.Empty;
+            var openGraphAltText = string.Empty;
+            var twitterAltText = string.Empty;
 
-            string twitterCard = metaSettings.Content.SocialMetaSettings?.TwitterCard?.Text?.ToString();
-            string twitterCreator = metaSettings.Content.SocialMetaSettings?.TwitterCreator?.Text?.ToString();
-            string twitterSite = metaSettings.Content.SocialMetaSettings?.TwitterSite?.Text?.ToString();
+            var defaultMetaDescription = string.Empty;
+            var openGraphType = string.Empty;
+            var defaultOpenGraphDescription = string.Empty;
+            var openGraphSiteName = string.Empty;
+            var openGraphAppId = string.Empty;
+            var defaultTwitterDescription = string.Empty;
+            var twitterCard = string.Empty;
+            var twitterCreator = string.Empty;
+            var twitterSite = string.Empty;
+            var googleSchema = string.Empty;
 
-            string googleSchema = metaSettings.Content.SocialMetaSettings?.GoogleSchema?.Text?.ToString();
+            if (siteSettings.TryGet<ContentItem>("SocialMetaSettings", out var metaSettings))
+            {
+                dynamic socialMetaSettings = metaSettings.Content?.SocialMetaSettings;
+
+                if (socialMetaSettings is not null)
+                {
+                    if (socialMetaSettings.DefaultSocialImage?.Paths?.Count > 0)
+                    {
+                        defaultImage = socialMetaSettings.DefaultSocialImage.Paths[0];
+                    }
+
+                    if (socialMetaSettings.OpenGraphImage?.Paths?.Count > 0)
+                    {
+                        openGraphImage = socialMetaSettings.OpenGraphImage.Paths[0];
+                    }
+
+                    if (socialMetaSettings.TwitterImage?.Paths?.Count > 0)
+                    {
+                        twitterImage = socialMetaSettings.TwitterImage.Paths[0];
+                    }
+
+                    if (socialMetaSettings.DefaultSocialImage?.MediaTexts?.Count > 0)
+                    {
+                        defaultAltText = socialMetaSettings.DefaultSocialImage.MediaTexts[0];
+                    }
+
+                    if (socialMetaSettings.OpenGraphImage?.MediaTexts?.Count > 0)
+                    {
+                        openGraphAltText = socialMetaSettings.OpenGraphImage.MediaTexts[0];
+                    }
+
+                    if (socialMetaSettings.TwitterImage?.MediaTexts?.Count > 0)
+                    {
+                        twitterAltText = socialMetaSettings.TwitterImage.MediaTexts[0];
+                    }
+
+                    if (socialMetaSettings.DefaultMetaDescription?.Text is not null)
+                    {
+                        defaultMetaDescription = socialMetaSettings.DefaultMetaDescription.Text.ToString();
+                    }
+
+                    if (socialMetaSettings.OpenGraphType?.Text is not null)
+                    {
+                        openGraphType = socialMetaSettings.OpenGraphType.Text.ToString();
+                    }
+
+                    if (socialMetaSettings.DefaultOpenGraphDescription?.Text is not null)
+                    {
+                        defaultOpenGraphDescription = socialMetaSettings.DefaultOpenGraphDescription.Text.ToString();
+                    }
+
+                    if (socialMetaSettings.OpenGraphSiteName?.Text is not null)
+                    {
+                        openGraphSiteName = socialMetaSettings.OpenGraphSiteName.Text.ToString();
+                    }
+
+                    if (socialMetaSettings.OpenGraphAppId?.Text is not null)
+                    {
+                        openGraphAppId = socialMetaSettings.OpenGraphAppId.Text.ToString();
+                    }
+
+                    if (socialMetaSettings.DefaultTwitterDescription?.Text is not null)
+                    {
+                        defaultTwitterDescription = socialMetaSettings.DefaultTwitterDescription.Text.ToString();
+                    }
+
+                    if (socialMetaSettings.TwitterCard?.Text is not null)
+                    {
+                        twitterCard = socialMetaSettings.TwitterCard.Text.ToString();
+                    }
+
+                    if (socialMetaSettings.TwitterCreator?.Text is not null)
+                    {
+                        twitterCreator = socialMetaSettings.TwitterCreator.Text.ToString();
+                    }
+
+                    if (socialMetaSettings.TwitterSite?.Text is not null)
+                    {
+                        twitterSite = socialMetaSettings.TwitterSite.Text.ToString();
+                    }
+
+                    if (socialMetaSettings.GoogleSchema?.Text is not null)
+                    {
+                        googleSchema = socialMetaSettings.GoogleSchema.Text.ToString();
+                    }
+                }
+            }
 
             // Meta
-
             if (string.IsNullOrEmpty(aspect.MetaDescription))
             {
-                aspect.MetaDescription = metaSettings.Content.SocialMetaSettings?.DefaultMetaDescription?.Text?.ToString();
+                aspect.MetaDescription = defaultMetaDescription;
             }
 
             // OpenGraph
-
             aspect.OpenGraphUrl = aspect.Canonical ??= absoluteUrl;
 
             if (string.IsNullOrEmpty(aspect.OpenGraphType))
             {
-                aspect.OpenGraphType = metaSettings.Content.SocialMetaSettings?.OpenGraphType?.Text?.ToString();
+                aspect.OpenGraphType = openGraphType;
             }
 
             if (string.IsNullOrEmpty(aspect.OpenGraphTitle))
@@ -99,12 +183,12 @@ public class SeoMetaSettingsHandler : ContentHandlerBase
 
             if (string.IsNullOrEmpty(aspect.OpenGraphDescription))
             {
-                aspect.OpenGraphDescription = metaSettings.Content.SocialMetaSettings?.DefaultOpenGraphDescription?.Text?.ToString();
+                aspect.OpenGraphDescription = defaultOpenGraphDescription;
             }
 
             if (string.IsNullOrEmpty(aspect.OpenGraphSiteName))
             {
-                aspect.OpenGraphSiteName = metaSettings.Content.SocialMetaSettings?.OpenGraphSiteName?.Text?.ToString();
+                aspect.OpenGraphSiteName = openGraphSiteName;
                 if (string.IsNullOrEmpty(aspect.OpenGraphSiteName))
                 {
                     aspect.OpenGraphSiteName = siteSettings.SiteName;
@@ -113,7 +197,7 @@ public class SeoMetaSettingsHandler : ContentHandlerBase
 
             if (string.IsNullOrEmpty(aspect.OpenGraphAppId))
             {
-                aspect.OpenGraphAppId = metaSettings.Content.SocialMetaSettings?.OpenGraphAppId?.Text?.ToString();
+                aspect.OpenGraphAppId = openGraphAppId;
             }
 
             if (string.IsNullOrEmpty(aspect.OpenGraphImage))
@@ -153,7 +237,7 @@ public class SeoMetaSettingsHandler : ContentHandlerBase
 
             if (string.IsNullOrEmpty(aspect.TwitterDescription))
             {
-                aspect.TwitterDescription = metaSettings.Content.SocialMetaSettings?.DefaultTwitterDescription?.Text?.ToString();
+                aspect.TwitterDescription = defaultTwitterDescription;
             }
 
             if (string.IsNullOrEmpty(aspect.TwitterCard))
@@ -203,21 +287,5 @@ public class SeoMetaSettingsHandler : ContentHandlerBase
                 aspect.GoogleSchema = googleSchema;
             }
         });
-    }
-
-    internal static async Task<ActionContext> GetActionContextAsync(HttpContext httpContext)
-    {
-        var routeData = new RouteData();
-        routeData.Routers.Add(new RouteCollection());
-
-        var actionContext = new ActionContext(httpContext, routeData, new ActionDescriptor());
-        var filters = httpContext.RequestServices.GetServices<IAsyncViewActionFilter>();
-
-        foreach (var filter in filters)
-        {
-            await filter.OnActionExecutionAsync(actionContext);
-        }
-
-        return actionContext;
     }
 }

@@ -43,14 +43,16 @@ public sealed class ScheduledArchivingBackgroundTask : IBackgroundTask
         {
             var contentItem = await contentManager.GetAsync(item.ContentItemId);
 
-            var part = contentItem.As<ArchiveLaterPart>();
-            if (part != null)
+            if (contentItem.TryGet<ArchiveLaterPart>(out var part))
             {
                 part.ScheduledArchiveUtc = null;
                 part.Apply();
             }
 
-            _logger.LogDebug("Archiving scheduled content item {ContentItemId}.", contentItem.ContentItemId);
+            if (_logger.IsEnabled(LogLevel.Debug))
+            {
+                _logger.LogDebug("Archiving scheduled content item {ContentItemId}.", contentItem.ContentItemId);
+            }
 
             await contentManager.UnpublishAsync(contentItem);
         }

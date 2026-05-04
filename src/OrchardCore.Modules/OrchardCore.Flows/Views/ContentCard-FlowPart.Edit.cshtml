@@ -1,13 +1,16 @@
 @using OrchardCore.ContentManagement.Metadata.Models
+@using OrchardCore.ContentTypes
 @using OrchardCore.Localization
 @using OrchardCore.Flows.Models
+@using OrchardCore.Localization.Data
 
 @inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
+@inject IDataLocalizer D
 
 @{
     ContentItem contentItem = Model.ContentItem;
     var contentTypeDefinition = await ContentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
-    var contentTypeDisplayText = contentTypeDefinition.DisplayName;
+    var contentTypeDisplayText = D[contentTypeDefinition.DisplayName, DataLocalizationContext.ContentType];
     var contentItemDisplayText = contentItem.ContentItem.DisplayText;
     var widgetContentTypes = (IEnumerable<ContentTypeDefinition>)Model.ContainedContentTypes;
 
@@ -28,7 +31,7 @@
     <div class="widget-editor-header card-header text-muted py-1 ps-2 pe-1">
         @if (Model.CanMove != false)
         {
-            <div class="widget-editor-handle"><i class="fa-solid fa-arrows-alt" aria-hidden="true"></i></div>
+            <div class="widget-editor-handle"><i class="fa-solid fa-up-down-left-right" aria-hidden="true"></i></div>
         }
         <button type="button" class="btn btn-outline-secondary btn-sm widget-editor-btn-toggle widget-editor-btn-collapse"><i class="fa-solid fa-angle-down" aria-hidden="true"></i></button>
         <button type="button" class="btn btn-outline-secondary btn-sm widget-editor-btn-toggle widget-editor-btn-expand"><i class="fa-solid fa-angle-@(Orchard.CultureDir() == LanguageDirection.LTR ? "right" : "left")" aria-hidden="true"></i></button>
@@ -62,7 +65,7 @@
                                        data-contenttypes-name="@Model.ContentTypesName"
                                        data-contentitems-name="@Model.ContentItemsName"
                                        data-widget-type="@type.Name"
-                                       href="javascript:;">@type.DisplayName</a>
+                                       href="javascript:;">@D[type.DisplayName, DataLocalizationContext.ContentType]</a>
                                 </li>
                             }
                         </ul>

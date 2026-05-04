@@ -1,10 +1,9 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.Options;
+using OrchardCore.Media.Core.Processing;
 using OrchardCore.Media.Fields;
 using OrchardCore.Media.Processing;
 using OrchardCore.Media.Services;
-using Format = OrchardCore.Media.Processing.Format;
-using ResizeMode = OrchardCore.Media.Processing.ResizeMode;
 
 namespace OrchardCore.Media.TagHelpers;
 

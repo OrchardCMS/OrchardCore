@@ -1,3 +1,5 @@
+@using Microsoft.AspNetCore.Html
+@using OrchardCore.Flows.Models
 @model OrchardCore.Flows.ViewModels.FlowPartSettingsViewModel
 
 <div class="mb-3">
@@ -10,4 +12,24 @@
     <input type="checkbox" class="form-check-input" asp-for="CollapseContainedItems">
     <label class="form-check-label" asp-for="CollapseContainedItems">@T["Collapse Contained Items"]</label>
     <span class="hint">@T["When checked, the contained items will be collapsed when the edit form is loaded."]</span>
+</div>
+<div class="mb-3">
+    <label asp-for="DefaultAlignment" class="form-label">@T["What default alignment should be used?"]</label>
+    <select asp-for="DefaultAlignment" class="form-select" id="type-part-alignment-select">
+        <option value="">@T["Please choose an alignment"]</option>
+        @foreach (var alignment in Enum.GetValues(typeof(FlowAlignment)))
+        {
+            IHtmlContent alignmentText = alignment switch
+            {
+                FlowAlignment.Left => T["Left"],
+                FlowAlignment.Right => T["Right"],
+                FlowAlignment.Center => T["Center"],
+                FlowAlignment.Justify => T["Justify"],
+                FlowAlignment.Inherit => T["Inherit"],
+                _ => new HtmlString(alignment.ToString())
+            };
+
+            <option value="@alignment">@alignmentText</option>
+        }
+    </select>
 </div>

@@ -6,7 +6,12 @@ import WebpackDevServer from "webpack-dev-server";
 import { Buffer } from "buffer";
 
 const action = process.argv[2];
-const assetConfig = JSON5.parse(Buffer.from(process.argv[3], "base64").toString("utf-8"));
+const encodedGroup = process.argv[3] ?? process.env.ASSETS_MANAGER_ENCODED_GROUP;
+if (!encodedGroup) {
+    console.error("Missing encoded group config.");
+    process.exit(1);
+}
+const assetConfig = JSON5.parse(Buffer.from(encodedGroup, "base64").toString("utf-8"));
 const webpackConfig = await import("../../" + assetConfig.basePath + assetConfig.config);
 const compiler = webpack(webpackConfig.default);
 

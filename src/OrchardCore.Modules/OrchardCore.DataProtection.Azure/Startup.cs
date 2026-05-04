@@ -1,7 +1,9 @@
 using Azure.Storage.Blobs;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell.Configuration;
@@ -33,6 +35,9 @@ public sealed class Startup : StartupBase
             {
                 _logger.LogDebug("OrchardCore_DataProtection_Azure:ConnectionString was found. Adding 'OrchardCore.DataProtection.Azure' feature services.");
             }
+
+            // Remove any previously registered options setups.
+            services.RemoveAll<IConfigureOptions<KeyManagementOptions>>();
 
             services
                 .AddDataProtection()

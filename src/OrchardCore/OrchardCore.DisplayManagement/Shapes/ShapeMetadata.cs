@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Html;
+using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.Environment.Cache;
 
@@ -7,30 +8,86 @@ namespace OrchardCore.DisplayManagement.Shapes;
 
 public class ShapeMetadata
 {
-    private CacheContext _cacheContext;
-
-    public ShapeMetadata()
-    {
-    }
-
+    private (string Type, CacheContext Context) _mainCacheContext;
+    private Dictionary<string, CacheContext> _cacheContexts;
     private List<Action<ShapeDisplayContext>> _displaying;
     private List<Func<IShape, Task>> _processing;
     private List<Action<ShapeDisplayContext>> _displayed;
 
     public string Type { get; set; }
+
     public string DisplayType { get; set; }
+
     public string Position { get; set; }
-    public string Tab { get; set; }
-    public string Card { get; set; }
-    public string Column { get; set; }
+
+    /// <summary>
+    /// Gets or sets the tab grouping metadata.
+    /// </summary>
+    [JsonIgnore]
+    public GroupingMetadata TabGrouping { get; set; }
+
+    /// <summary>
+    /// Gets or sets the tab grouping information as a string.
+    /// This property is provided for backward compatibility and JSON serialization.
+    /// </summary>
+    public string Tab
+    {
+        get => TabGrouping.HasValue ? TabGrouping.ToString() : null;
+        set => TabGrouping = GroupingMetadata.ParseTabOrCard(value);
+    }
+
+    /// <summary>
+    /// Gets or sets the card grouping metadata.
+    /// </summary>
+    [JsonIgnore]
+    public GroupingMetadata CardGrouping { get; set; }
+
+    /// <summary>
+    /// Gets or sets the card grouping information as a string.
+    /// This property is provided for backward compatibility and JSON serialization.
+    /// </summary>
+    public string Card
+    {
+        get => CardGrouping.HasValue ? CardGrouping.ToString() : null;
+        set => CardGrouping = GroupingMetadata.ParseTabOrCard(value);
+    }
+
+    /// <summary>
+    /// Gets or sets the column grouping metadata.
+    /// </summary>
+    [JsonIgnore]
+    public GroupingMetadata ColumnGrouping { get; set; }
+
+    /// <summary>
+    /// Gets or sets the column grouping information as a string.
+    /// This property is provided for backward compatibility and JSON serialization.
+    /// </summary>
+    public string Column
+    {
+        get => ColumnGrouping.HasValue ? ColumnGrouping.ToString() : null;
+        set => ColumnGrouping = GroupingMetadata.ParseColumn(value);
+    }
+
     public string PlacementSource { get; set; }
+
     public string Prefix { get; set; }
+
     public string Name { get; set; }
+
     public string Differentiator { get; set; }
+
     public AlternatesCollection Wrappers { get; set; } = [];
+
     public AlternatesCollection Alternates { get; set; } = [];
-    public bool IsCached => _cacheContext != null;
+
+    public bool IsCached => UseMainCacheContext
+        ? _mainCacheContext.Context is not null
+        : _cacheContexts?.ContainsKey(Type) == true;
+
     public IHtmlContent ChildContent { get; set; }
+
+    internal bool UseMainCacheContext
+        => _mainCacheContext.Type is null || string.Equals(_mainCacheContext.Type, Type, StringComparison.OrdinalIgnoreCase);
 
     // The casts in (IReadOnlyList<T>)_displaying ?? [] are important as they convert [] to Array.Empty.
     // It would use List<T> otherwise which is not what we want here, we don't want to allocate.
@@ -52,9 +109,6 @@ public class ShapeMetadata
     /// </summary>
     [JsonIgnore]
     public IReadOnlyList<Action<ShapeDisplayContext>> Displayed => (IReadOnlyList<Action<ShapeDisplayContext>>)_displayed ?? [];
-
-    [JsonIgnore]
-    public IReadOnlyList<string> BindingSources { get; set; } = [];
 
     public void OnDisplaying(Action<ShapeDisplayContext> context)
     {
@@ -79,12 +133,27 @@ public class ShapeMetadata
     /// </summary>
     public CacheContext Cache(string cacheId)
     {
-        if (_cacheContext == null || _cacheContext.CacheId != cacheId)
+        ArgumentException.ThrowIfNullOrEmpty(cacheId);
+
+        if (UseMainCacheContext)
         {
-            _cacheContext = new CacheContext(cacheId);
+            if (_mainCacheContext.Context is null || _mainCacheContext.Context.CacheId != cacheId)
+            {
+                _mainCacheContext.Context = new CacheContext(cacheId);
+                _mainCacheContext.Type = Type;
+            }
+
+            return _mainCacheContext.Context;
         }
 
-        return _cacheContext;
+        _cacheContexts ??= new(StringComparer.OrdinalIgnoreCase);
+
+        if (!_cacheContexts.TryGetValue(Type, out var cacheContext) || cacheContext.CacheId != cacheId)
+        {
+            _cacheContexts[Type] = cacheContext = new CacheContext(cacheId);
+        }
+
+        return cacheContext;
     }
 
     /// <summary>
@@ -92,6 +161,10 @@ public class ShapeMetadata
     /// </summary>
     public CacheContext Cache()
     {
-        return _cacheContext;
+        return UseMainCacheContext
+            ? _mainCacheContext.Context
+            : _cacheContexts?.TryGetValue(Type, out var cacheContext) == true
+                ? cacheContext
+                : null;
     }
 }

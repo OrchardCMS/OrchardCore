@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Security.Options;
@@ -20,6 +22,9 @@ public sealed class SecuritySettingsDisplayDriver : SiteDisplayDriver<SecuritySe
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
     private readonly SecuritySettings _securitySettings;
+    private readonly INotifier _notifier;
+
+    internal readonly IHtmlLocalizer H;
 
     protected override string SettingsGroupId
         => GroupId;
@@ -28,12 +33,16 @@ public sealed class SecuritySettingsDisplayDriver : SiteDisplayDriver<SecuritySe
         IShellReleaseManager shellReleaseManager,
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
-        IOptionsSnapshot<SecuritySettings> securitySettings)
+        IOptionsSnapshot<SecuritySettings> securitySettings,
+        INotifier notifier,
+        IHtmlLocalizer<SecuritySettingsDisplayDriver> htmlLocalizer)
     {
         _shellReleaseManager = shellReleaseManager;
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
         _securitySettings = securitySettings.Value;
+        _notifier = notifier;
+        H = htmlLocalizer;
     }
 
     public override async Task<IDisplayResult> EditAsync(ISite site, SecuritySettings settings, BuildEditorContext context)
@@ -47,27 +56,40 @@ public sealed class SecuritySettingsDisplayDriver : SiteDisplayDriver<SecuritySe
 
         context.AddTenantReloadWarningWrapper();
 
-        return Initialize<SecuritySettingsViewModel>("SecurityHeadersSettings_Edit", model =>
+        // Set the settings from configuration when AdminSettings are overridden via ConfigureSecuritySettings()
+        var currentSettings = settings;
+        if (_securitySettings.FromConfiguration)
         {
-            // Set the settings from configuration when AdminSettings are overridden via ConfigureSecuritySettings()
-            var currentSettings = settings;
-            if (_securitySettings.FromConfiguration)
-            {
-                currentSettings = _securitySettings;
-            }
+            currentSettings = _securitySettings;
 
+            await _notifier.InformationAsync(H["The current settings are coming from configuration sources, saving the settings will affect the AdminSettings not the configuration."]);
+        }
+
+        var contentSecurityPolicyShapeResult = Initialize<SecuritySettingsViewModel>("ContentSecurityPolicySettings_Edit", model =>
+        {
             model.FromConfiguration = currentSettings.FromConfiguration;
-            model.ContentSecurityPolicy = currentSettings.ContentSecurityPolicy;
-            model.PermissionsPolicy = currentSettings.PermissionsPolicy;
-            model.ReferrerPolicy = currentSettings.ReferrerPolicy;
+
+            model.ContentSecurityPolicy = settings.ContentSecurityPolicy;
 
             model.EnableSandbox = currentSettings.ContentSecurityPolicy != null &&
                 currentSettings.ContentSecurityPolicy.ContainsKey(ContentSecurityPolicyValue.Sandbox);
 
             model.UpgradeInsecureRequests = currentSettings.ContentSecurityPolicy != null &&
                 currentSettings.ContentSecurityPolicy.ContainsKey(ContentSecurityPolicyValue.UpgradeInsecureRequests);
-        }).Location("Content:2")
+        }).Location("Content:2#Content Security Policy;5")
         .OnGroup(SettingsGroupId);
+
+        var permissionsPolicyShapeResult = Initialize<SecuritySettingsViewModel>("PermissionsPolicySettings_Edit", model
+            => model.PermissionsPolicy = currentSettings.PermissionsPolicy)
+            .Location("Content:2#Permissions Policy;10")
+            .OnGroup(SettingsGroupId);
+
+        var referrerPolicyShapeResult = Initialize<SecuritySettingsViewModel>("ReferrerPolicySettings_Edit", model
+            => model.ReferrerPolicy = currentSettings.ReferrerPolicy)
+            .Location("Content:2#Referrer Policy;15")
+            .OnGroup(SettingsGroupId);
+
+        return Combine(contentSecurityPolicyShapeResult, permissionsPolicyShapeResult, referrerPolicyShapeResult);
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, SecuritySettings settings, UpdateEditorContext context)

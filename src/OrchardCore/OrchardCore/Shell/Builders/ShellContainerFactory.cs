@@ -123,7 +123,9 @@ public class ShellContainerFactory : IShellContainerFactory
         // Let any module add custom service descriptors to the tenant.
         foreach (var startup in startups)
         {
-            var feature = blueprint.Dependencies.FirstOrDefault(x => x.Key == startup.GetType()).Value?.FirstOrDefault();
+            // For raw startup classes, use the original type named 'Startup' to find the feature.
+            var startupType = startup is StartupBaseMock mock ? mock.StartupType : startup.GetType();
+            var feature = blueprint.Dependencies.FirstOrDefault(x => x.Key == startupType).Value?.FirstOrDefault();
 
             // If the startup is not coming from an extension, associate it to the application feature.
             // For instance when Startup classes are registered with Configure<Startup>() from the application.

@@ -45,10 +45,10 @@ public sealed class UserRoleDisplayDriver : DisplayDriver<User>
     {
         return CombineAsync(
             Initialize<SummaryAdminUserViewModel>("UserRolesMeta", model => model.User = user)
-                .Location("SummaryAdmin", "Description"),
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Description"),
 
             Initialize<SummaryAdminUserViewModel>("UserRoles", model => model.User = user)
-                .Location("DetailAdmin", "Content:10")
+                .Location(OrchardCoreConstants.DisplayType.DetailAdmin, "Content:10")
         );
     }
 
@@ -75,7 +75,7 @@ public sealed class UserRoleDisplayDriver : DisplayDriver<User>
                 roleEntries.Add(roleEntry);
             }
 
-            model.Roles = roleEntries.ToArray();
+            model.Roles = roleEntries.OrderBy(role => role.Role).ToArray();
         })
         .Location("Content:1.10")
         .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, UsersPermissions.EditUsers, user));
@@ -138,6 +138,12 @@ public sealed class UserRoleDisplayDriver : DisplayDriver<User>
                 }
 
                 await _userRoleStore.RemoveFromRoleAsync(user, _userManager.NormalizeName(role), default);
+            }
+
+            if (rolesToRemove.Count > 0)
+            {
+                // When roles are removed, the security stamp needs to be updated to invalidate existing authentication sessions.
+                await _userManager.UpdateSecurityStampAsync(user);
             }
 
             // Add new roles.

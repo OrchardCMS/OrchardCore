@@ -37,6 +37,7 @@ using OrchardCore.Setup.Events;
 using OrchardCore.Sms;
 using OrchardCore.Users.Commands;
 using OrchardCore.Users.Controllers;
+using OrchardCore.Users.Core.Services;
 using OrchardCore.Users.DataMigrations;
 using OrchardCore.Users.Deployment;
 using OrchardCore.Users.Drivers;
@@ -68,6 +69,8 @@ public sealed class Startup : StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.AddShapeTableProvider<UserDisplayNameShapeTableProvider>();
+
         services.AddDataMigration<ExternalAuthenticationMigrations>();
 
         services.Configure<UserOptions>(userOptions =>
@@ -89,7 +92,6 @@ public sealed class Startup : StartupBase
             .AddOptions<EmailConfirmationTokenProviderOptions>();
 
         services.AddTransient<IConfigureOptions<IdentityOptions>, IdentityOptionsConfigurations>();
-        services.AddPhoneFormatValidator();
         // Configure the authentication options to use the application cookie scheme as the default sign-out handler.
         // This is required for security modules like the OpenID module (that uses SignOutAsync()) to work correctly.
         services.AddAuthentication(options => options.DefaultSignOutScheme = IdentityConstants.ApplicationScheme);
@@ -297,6 +299,7 @@ public sealed class RolesStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddScoped<IRoleRemovedEventHandler, UserRoleRemovedEventHandler>();
+        services.AddScoped<IRoleUpdatedEventHandler, UserRoleUpdatedEventHandler>();
         services.AddIndexProvider<UserByRoleNameIndexProvider>();
         services.AddDisplayDriver<User, UserRoleDisplayDriver>();
         services.AddScoped<IAuthorizationHandler, RoleAuthorizationHandler>();
@@ -352,6 +355,7 @@ public sealed class LiquidStartup : StartupBase
             });
         })
        .AddLiquidFilter<UsersByIdFilter>("users_by_id")
+       .AddLiquidFilter<UsersByNameFilter>("users_by_name")
        .AddLiquidFilter<HasPermissionFilter>("has_permission")
        .AddLiquidFilter<IsInRoleFilter>("is_in_role")
        .AddLiquidFilter<UserEmailFilter>("user_email");

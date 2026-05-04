@@ -36,14 +36,19 @@
 
                         @if (entry.IsSystemRole)
                         {
-                            <span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@T["The '{0}' role cannot be deleted.", entry.Name])">
+                            <span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@T["The '{0}' role cannot be deleted.", entry.Name]">
                                 <i class="fa-solid fa-shield text-secondary me-1" aria-hidden="true"></i>@T["System"]
                             </span>
                         }
                     </div>
-         
+
                     <div>
                         <a class="edit btn btn-primary btn-sm" role="button" asp-action="Edit" asp-route-id="@entry.Name">@T["Edit"]</a>
+
+                        @if (!entry.IsAdminRole)
+                        {
+                            <a class="btn btn-warning btn-sm" asp-action="Clone" asp-route-id="@entry.Name">@T["Clone"]</a>
+                        }
 
                         @if (!entry.IsSystemRole)
                         {
@@ -86,7 +91,7 @@
             var elementsToFilter = $("[data-filter-value]");
 
             // On ESC, clear the search box and display all roles
-            if (e.keyCode == 27 || search == '') {
+            if (e.key === "Escape" || search == '') {
                 searchBox.val('');
                 elementsToFilter.removeClass("d-none first-child-visible last-child-visible");
             }

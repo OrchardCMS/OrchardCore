@@ -23,6 +23,7 @@ using OrchardCore.Navigation;
 using OrchardCore.OpenId.Configuration;
 using OrchardCore.OpenId.Deployment;
 using OrchardCore.OpenId.Drivers;
+using OrchardCore.OpenId.Handlers;
 using OrchardCore.OpenId.Migrations;
 using OrchardCore.OpenId.Recipes;
 using OrchardCore.OpenId.Services;
@@ -51,7 +52,6 @@ public sealed class Startup : StartupBase
             });
 
         services.AddPermissionProvider<Permissions>();
-        services.AddNavigationProvider<ManagementAdminMenu>();
     }
 }
 
@@ -93,6 +93,7 @@ public sealed class ServerStartup : StartupBase
             {
                 options.UseAspNetCore();
                 options.UseDataProtection();
+                options.AddEventHandler(PersistStoresHandler.Descriptor);
             });
 
         services.TryAddSingleton<IOpenIdServerService, OpenIdServerService>();
@@ -248,6 +249,15 @@ public sealed class ValidationDeploymentStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddDeployment<OpenIdValidationDeploymentSource, OpenIdValidationDeploymentStep, OpenIdValidationDeploymentStepDriver>();
+    }
+}
+
+[Feature(OpenIdConstants.Features.Management)]
+public sealed class ManagementStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddNavigationProvider<ManagementAdminMenu>();
     }
 }
 

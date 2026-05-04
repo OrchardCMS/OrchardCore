@@ -12,7 +12,7 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.Indexing.Core.Handlers;
 
-public class IndexingContentHandler : ContentHandlerBase
+public sealed class IndexingContentHandler : ContentHandlerBase
 {
     private readonly Dictionary<string, ContentItem> _contentItems = [];
 
@@ -138,7 +138,7 @@ public class IndexingContentHandler : ContentHandlerBase
                 continue;
             }
 
-            var metadata = indexProfile.As<ContentIndexMetadata>();
+            var metadata = indexProfile.GetOrCreate<ContentIndexMetadata>();
             var contentTypes = metadata.IndexedContentTypes.ToHashSet();
             var documents = new List<ContentItemDocumentIndex>();
             var anyCulture = string.IsNullOrEmpty(metadata.Culture) || metadata.Culture == "any";

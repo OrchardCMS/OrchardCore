@@ -144,6 +144,9 @@ For SQL and Lucene queries you can then define a custom field type name in their
 
 This feature provides a new type of query targeting the SQL database.
 
+!!! note
+    SQL queries can be used as a data source for custom widgets. If parameterized, widgets can control queries by providing values for the query parameters. For example, in the Blog Theme, the `RecentBlogPosts` Query has a parameter for SQL `LIMIT`: `SELECT DocumentId FROM ContentItemIndex WHERE ContentType='BlogPost' AND Published = 1 ORDER BY CreatedUtc DESC LIMIT @limit:3`. This allows you to add a numeric field 'Limit' to your custom widget and then provide the value of that field to the query.
+
 ### Queries recipe step
 
 Here is an example for creating a SQL query from a Queries recipe step:
@@ -237,6 +240,7 @@ group by day(CreatedUtc), month(CreatedUtc), year(CreatedUtc)
 
 Parameters can be provided when running queries.  
 Parameters are safe to use as they will always be parsed before being included in a query.  
+When using untrusted or user-provided input, you should use SQL parameters and not Liquid output expressions (`{{ ... }}`).
 The syntax of a parameter is `@name:default_value`,
 where `name` is the name of the parameter, and `default_value` an expression (usually a literal) to use in case
 the parameter is not defined.
@@ -256,8 +260,26 @@ Parameter names are case-sensitive.
 ## Templates
 
 A SQL query is actually a Liquid template. This allows your queries to be shaped based on the parameters it gets.  
-When injecting user-provided values, be sure to encode these such that they can't be exploited.  
-It is recommended to use parameters to inject values in the queries, and only use Liquid templates to change the shape of the query.
+Do not inject user-provided values directly with Liquid output expressions (`{{ ... }}`), as this can lead to SQL injection.  
+Use SQL parameters (`@name` or `@name:default`) for all user-provided values, and only use Liquid templates to change the shape of the query.
+
+Unsafe example:
+
+```liquid
+SELECT DocumentId
+FROM UserIndex
+WHERE UserName LIKE '%{{ input }}%'
+```
+
+Safe example:
+
+```sql
+SELECT DocumentId
+FROM UserIndex
+WHERE UserName LIKE @pattern
+```
+
+Where the caller provides `pattern` as a parameter value (for example `%alice%`). See [Parameters](#parameters).
 
 This example checks that a `limit` parameter is provided and if so uses it:
 

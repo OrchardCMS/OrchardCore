@@ -52,19 +52,12 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        var checkContentItem = await _contentManager.NewAsync(contentItem.ContentType);
-
-        // Set the current user as the owner to check for ownership permissions on creation
-        checkContentItem.Owner = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, checkContentItem))
+        if (!await _authorizationService.AuthorizeContentTypeAsync(User, CommonPermissions.EditContent, contentItem.ContentType, User.FindFirstValue(ClaimTypes.NameIdentifier)))
         {
             return Forbid();
         }
 
-        var part = contentItem.As<LocalizationPart>();
-
-        if (part == null)
+        if (!contentItem.TryGet<LocalizationPart>(out var part))
         {
             return NotFound();
         }

@@ -55,7 +55,7 @@ internal sealed class BlobOptionsConfiguration : IConfigureOptions<BlobOptions>
 
             // Container name must be lowercase.
             var containerName = template.Render(templateContext, NullEncoder.Default).ToLowerInvariant();
-            options.ContainerName = containerName.Replace("\r", string.Empty).Replace("\n", string.Empty);
+            options.ContainerName = containerName.ReplaceLineEndings(string.Empty);
 
             if (_logger.IsEnabled(LogLevel.Debug))
             {
@@ -72,10 +72,16 @@ internal sealed class BlobOptionsConfiguration : IConfigureOptions<BlobOptions>
         {
             try
             {
-                _logger.LogDebug("Testing data protection container {ContainerName} existence", options.ContainerName);
+                if (_logger.IsEnabled(LogLevel.Debug))
+                {
+                    _logger.LogDebug("Testing data protection container {ContainerName} existence", options.ContainerName);
+                }
                 var blobContainer = new BlobContainerClient(options.ConnectionString, options.ContainerName);
                 var response = blobContainer.CreateIfNotExistsAsync(PublicAccessType.None).GetAwaiter().GetResult();
-                _logger.LogDebug("Data protection container {ContainerName} created.", options.ContainerName);
+                if (_logger.IsEnabled(LogLevel.Debug))
+                {
+                    _logger.LogDebug("Data protection container {ContainerName} created.", options.ContainerName);
+                }
             }
             catch (Exception e)
             {
@@ -112,7 +118,7 @@ internal sealed class BlobOptionsConfiguration : IConfigureOptions<BlobOptions>
             var template = _fluidParser.Parse(options.BlobName);
 
             var blobName = template.Render(templateContext, NullEncoder.Default);
-            options.BlobName = blobName.Replace("\r", string.Empty).Replace("\n", string.Empty);
+            options.BlobName = blobName.ReplaceLineEndings(string.Empty);
 
             if (_logger.IsEnabled(LogLevel.Debug))
             {

@@ -6,7 +6,6 @@ using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Email.Core;
 using OrchardCore.Email.Smtp.Services;
 using OrchardCore.Email.Smtp.ViewModels;
 using OrchardCore.Entities;
@@ -92,7 +91,7 @@ public sealed class SmtpSettingsDisplayDriver : SiteDisplayDriver<SmtpSettings>
 
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-        var emailSettings = site.As<EmailSettings>();
+        var emailSettings = site.GetOrCreate<EmailSettings>();
 
         var hasChanges = model.IsEnabled != settings.IsEnabled;
 

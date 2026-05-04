@@ -92,16 +92,17 @@ public class ListsAdminNodeNavigationBuilder : IAdminNodeNavigationBuilder
 
             if (cim.AdminRouteValues.Count > 0 && ci.DisplayText != null)
             {
-                listTypeMenu.Add(new LocalizedString(ci.DisplayText, ci.DisplayText), m =>
+                listTypeMenu.Add(new LocalizedString(ci.DisplayText, ci.DisplayText), itemBuilder =>
                 {
-                    m.Action(cim.AdminRouteValues["Action"] as string, cim.AdminRouteValues["Controller"] as string, cim.AdminRouteValues);
-                    m.Resource(ci);
-                    m.Priority(_node.Priority);
-                    m.Position(_node.Position);
-                    m.LocalNav();
-                    AddPrefixToClasses(_node.IconForContentItems).ToList().ForEach(c => m.AddClass(c));
+                    itemBuilder.MenuName(_node.MenuName);
+                    itemBuilder.Action(cim.AdminRouteValues["Action"] as string, cim.AdminRouteValues["Controller"] as string, cim.AdminRouteValues);
+                    itemBuilder.Resource(ci);
+                    itemBuilder.Priority(_node.Priority);
+                    itemBuilder.Position(_node.Position);
+                    itemBuilder.LocalNav();
+                    AddPrefixToClasses(_node.IconForContentItems).ToList().ForEach(c => itemBuilder.AddClass(c));
 
-                    m.Permission(ContentTypePermissionsHelper.CreateDynamicPermission(
+                    itemBuilder.Permission(ContentTypePermissionsHelper.CreateDynamicPermission(
                     ContentTypePermissionsHelper.PermissionTemplates[CommonPermissions.EditContent.Name], _contentType));
                 });
             }

@@ -192,7 +192,7 @@ public class RuleTests
         services.AddTransient<IConditionResolver, ConditionResolver>();
         services.AddTransient<IConditionOperatorResolver, ConditionOperatorResolver>();
 
-        services.AddTransient<IRuleService, RuleService>();
+        services.AddRules();
 
         services.AddTransient<AllConditionEvaluator>();
 

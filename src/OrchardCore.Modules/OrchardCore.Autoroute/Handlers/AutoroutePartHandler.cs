@@ -146,7 +146,11 @@ public class AutoroutePartHandler : ContentPartHandler<AutoroutePart>
 
     public override async Task CloningAsync(CloneContentContext context, AutoroutePart part)
     {
-        var clonedPart = context.CloneContentItem.As<AutoroutePart>();
+        if (!context.CloneContentItem.TryGet<AutoroutePart>(out var clonedPart))
+        {
+            throw new InvalidOperationException("The cloned content item doesn't contain an AutoroutePart.");
+        }
+
         clonedPart.Path = await GenerateUniqueAbsolutePathAsync(part.Path, context.CloneContentItem.ContentItemId);
         clonedPart.SetHomepage = false;
         clonedPart.Apply();
@@ -211,8 +215,7 @@ public class AutoroutePartHandler : ContentPartHandler<AutoroutePart>
                 if (!handlerAspect.Disabled)
                 {
                     // Only an autoroute part, not a default handler aspect can set itself as the homepage.
-                    var autoroutePart = contentItem.As<AutoroutePart>();
-                    if (autoroutePart != null && autoroutePart.SetHomepage)
+                    if (contentItem.TryGet<AutoroutePart>(out var autoroutePart) && autoroutePart.SetHomepage)
                     {
                         await SetHomeRouteAsync(autoroutePart, homeRoute =>
                         {
@@ -286,11 +289,9 @@ public class AutoroutePartHandler : ContentPartHandler<AutoroutePart>
             foreach (var jItem in jItems.Cast<JsonObject>())
             {
                 var contentItem = jItem.ToObject<ContentItem>();
-                var containedAutoroutePart = contentItem.As<AutoroutePart>();
-
                 // This is only relevant if the content items have an autoroute part as we adjust the part value as required to guarantee a unique route.
                 // Content items routed only through the handler aspect already guarantee uniqueness.
-                if (containedAutoroutePart != null && !containedAutoroutePart.Disabled)
+                if (contentItem.TryGet<AutoroutePart>(out var containedAutoroutePart) && containedAutoroutePart is { Disabled: false, Path.Length: > 0 })
                 {
                     var path = containedAutoroutePart.Path;
 
@@ -405,7 +406,7 @@ public class AutoroutePartHandler : ContentPartHandler<AutoroutePart>
                     new Dictionary<string, FluidValue>() { [nameof(ContentItem)] = new ObjectValue(model.ContentItem) });
             }
 
-            part.Path = part.Path.Replace("\r", string.Empty).Replace("\n", string.Empty);
+            part.Path = part.Path.ReplaceLineEndings(string.Empty);
 
             if (part.Path?.Length > AutoroutePart.MaxPathLength)
             {
