@@ -1,3 +1,4 @@
+using GraphQL;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -7,12 +8,14 @@ using OrchardCore.AuditTrail.Models;
 using OrchardCore.AuditTrail.Services;
 using OrchardCore.AuditTrail.Services.Models;
 using OrchardCore.Entities;
+using OrchardCore.Settings;
 using OrchardCore.Users.AuditTrail.Indexes;
 using OrchardCore.Users.AuditTrail.Models;
 using OrchardCore.Users.AuditTrail.Services;
 using OrchardCore.Users.Events;
 using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Models;
+using System.Text.Json.Nodes;
 using YesSql;
 using ISession = YesSql.ISession;
 
@@ -20,10 +23,21 @@ namespace OrchardCore.Users.AuditTrail.Handlers;
 
 public class UserEventHandler : UserEventHandlerBase, ILoginFormEvent
 {
+    /// <summary>
+    /// Properties of <see cref="User"/> which may never be stored for security reasons.
+    /// </summary>
+    public static readonly string[] BannedProperties =
+    [
+        nameof(User.PasswordHash),
+        nameof(User.ResetToken),
+        nameof(User.UserTokens),
+    ];
+    
     private readonly IAuditTrailManager _auditTrailManager;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IServiceProvider _serviceProvider;
     private readonly ISession _session;
+    private readonly ISiteService _siteService;
 
     private UserManager<IUser> _userManager;
 
@@ -31,12 +45,14 @@ public class UserEventHandler : UserEventHandlerBase, ILoginFormEvent
         IAuditTrailManager auditTrailManager,
         IHttpContextAccessor httpContextAccessor,
         IServiceProvider serviceProvider,
-        ISession session)
+        ISession session,
+        ISiteService siteService)
     {
         _auditTrailManager = auditTrailManager;
         _httpContextAccessor = httpContextAccessor;
         _serviceProvider = serviceProvider;
         _session = session;
+        _siteService = siteService;
     }
 
     public Task LoggedInAsync(IUser user)
@@ -95,7 +111,7 @@ public class UserEventHandler : UserEventHandlerBase, ILoginFormEvent
 
             foreach (var eventToUpdate in eventsToUpdate)
             {
-                eventToUpdate.Alter<AuditTrailUserEvent>(data => data.User = null);
+                eventToUpdate.Alter<AuditTrailUserEvent>(data => data.Snapshot = null);
                 await _session.SaveAsync(eventToUpdate, collection: AuditTrailEvent.Collection);
             }
         }
@@ -130,7 +146,9 @@ public class UserEventHandler : UserEventHandlerBase, ILoginFormEvent
         {
             UserName = userName,
             UserId = userId,
-            User = storeSnapshot ? user as User : null,
+            Snapshot = storeSnapshot && user is User fullUser 
+                ? CreateSnapshotObject(fullUser, await _siteService.GetSettingsAsync<AuditTrailUserEventSettings>())
+                : null,
         };
 
         var context = new AuditTrailContext<AuditTrailUserEvent>
@@ -144,6 +162,18 @@ public class UserEventHandler : UserEventHandlerBase, ILoginFormEvent
             );
 
         await _auditTrailManager.RecordEventAsync(context);
+    }
+    private JsonObject CreateSnapshotObject(User fullUser, AuditTrailUserEventSettings settings)
+    {
+        var allowedProperties = settings.UserSnapshotProperties.ToList();
+        
+        // Ensure that the User object only has the allowed properties and none of the banned ones.
+        var dictionary = JObject
+            .FromObject(fullUser)
+            .Where(pair => !BannedProperties.Contains(pair.Key) && allowedProperties.Contains(pair.Key))
+            .ToDictionary(pair => pair.Key, pair => pair.Value);
+
+        return JObject.FromObject(dictionary);
     }
 
     #region Unused login events

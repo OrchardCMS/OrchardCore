@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.Admin;
 using OrchardCore.Settings;
+using OrchardCore.Users.AuditTrail.Handlers;
 using OrchardCore.Users.AuditTrail.Models;
 using OrchardCore.Users.AuditTrail.ViewModels;
 using OrchardCore.Users.Models;
@@ -37,6 +38,7 @@ public sealed class AuditTrailAdminController : Controller
             .ToObject<IDictionary<string, object>>()
             .Keys
             .Union(await _customUserSettingsService.GetAllSettingsTypeNamesAsync())
+            .Where(name => !UserEventHandler.BannedProperties.Contains(name))
             .Order();
         
         return View(new AuditTrailUserEventSettingsViewModel

@@ -14,7 +14,7 @@
             <th>@T["Username"]</th>
             <td>@Model.UserEvent.UserName</td>
         </tr>
-        @if (JObject.FromObject(Model.UserEvent.User) is { } userJson)
+        @if (Model.UserEvent.Snapshot is { } userJson)
         {
             <tr>
                 <th>@T["User Snapshot"]</th>

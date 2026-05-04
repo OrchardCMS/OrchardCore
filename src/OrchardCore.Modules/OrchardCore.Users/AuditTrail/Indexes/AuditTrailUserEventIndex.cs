@@ -27,7 +27,7 @@ public class AuditTrailUserEventIndexProvider : IndexProvider<AuditTrailEvent>
             return new AuditTrailUserEventIndex
             {
                 UserId = userEvent.UserId,
-                HasUserSnapshot = userEvent.User != null,
+                HasUserSnapshot = userEvent.Snapshot != null,
             };
         });
 }
