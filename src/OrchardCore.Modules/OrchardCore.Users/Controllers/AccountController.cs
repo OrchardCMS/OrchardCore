@@ -139,17 +139,17 @@ public sealed class AccountController : AccountBaseController
 
                 if (result.Succeeded)
                 {
-                    if (await AddConfirmEmailErrorAsync(user))
-                    {
-                        return View(formShape);
-                    }
-
                     foreach (var loginFormEvent in _loginFormEvents)
                     {
                         var loginResult = await loginFormEvent.ValidatingLoginAsync(user);
 
                         if (loginResult != null)
                         {
+                            if (IsConfirmEmailSentResult(loginResult) && await AddConfirmEmailErrorAsync(user))
+                            {
+                                return View(formShape);
+                            }
+
                             return loginResult;
                         }
                     }
@@ -306,4 +306,9 @@ public sealed class AccountController : AccountBaseController
 
         return true;
     }
+
+    private static bool IsConfirmEmailSentResult(IActionResult result)
+        => result is RedirectToActionResult redirectToActionResult &&
+            string.Equals(redirectToActionResult.ActionName, nameof(EmailConfirmationController.ConfirmEmailSent), StringComparison.Ordinal) &&
+            string.Equals(redirectToActionResult.ControllerName, typeof(EmailConfirmationController).ControllerName(), StringComparison.Ordinal);
 }
