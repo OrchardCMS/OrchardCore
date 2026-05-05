@@ -80,6 +80,12 @@ public sealed class MediaImageSharpConfiguration : IConfigureOptions<ImageSharpM
                 context.Commands[ResizeWebProcessor.Mode] = "max";
             }
 
+            // Default to auto-orient based on EXIF data unless explicitly set.
+            if (context.Commands.Count > 0 && !context.Commands.Contains(AutoOrientWebProcessor.AutoOrient))
+            {
+                context.Commands[AutoOrientWebProcessor.AutoOrient] = "true";
+            }
+
             return Task.CompletedTask;
         };
 

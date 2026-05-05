@@ -15,7 +15,7 @@ public static class MediaOrchardRazorHelperExtensions
     /// <summary>
     /// Returns the relative URL of the specified asset path with optional resizing parameters.
     /// </summary>
-    public static string AssetUrl(this IOrchardHelper orchardHelper, string assetPath, int? width = null, int? height = null, ResizeMode resizeMode = ResizeMode.Undefined, bool appendVersion = false, int? quality = null, Format format = Format.Undefined, Anchor anchor = null, string bgColor = null)
+    public static string AssetUrl(this IOrchardHelper orchardHelper, string assetPath, int? width = null, int? height = null, ResizeMode resizeMode = ResizeMode.Undefined, bool appendVersion = false, int? quality = null, Format format = Format.Undefined, Anchor anchor = null, string bgColor = null, bool? autoorient = null)
     {
         var mediaFileStore = orchardHelper.HttpContext.RequestServices.GetService<IMediaFileStore>();
 
@@ -33,7 +33,7 @@ public static class MediaOrchardRazorHelperExtensions
             resolvedAssetPath = fileVersionProvider.AddFileVersionToPath(orchardHelper.HttpContext.Request.PathBase, resolvedAssetPath);
         }
 
-        return orchardHelper.ImageResizeUrl(resolvedAssetPath, width, height, resizeMode, quality, format, anchor, bgColor);
+        return orchardHelper.ImageResizeUrl(resolvedAssetPath, width, height, resizeMode, quality, format, anchor, bgColor, autoorient);
     }
 
     /// <summary>
@@ -63,9 +63,9 @@ public static class MediaOrchardRazorHelperExtensions
     /// <summary>
     /// Returns a URL with custom resizing parameters for an existing image path.
     /// </summary>
-    public static string ImageResizeUrl(this IOrchardHelper orchardHelper, string imagePath, int? width = null, int? height = null, ResizeMode resizeMode = ResizeMode.Undefined, int? quality = null, Format format = Format.Undefined, Anchor anchor = null, string bgcolor = null)
+    public static string ImageResizeUrl(this IOrchardHelper orchardHelper, string imagePath, int? width = null, int? height = null, ResizeMode resizeMode = ResizeMode.Undefined, int? quality = null, Format format = Format.Undefined, Anchor anchor = null, string bgcolor = null, bool? autoorient = null)
     {
-        var resizedUrl = ImageSharpUrlFormatter.GetImageResizeUrl(imagePath, null, width, height, resizeMode, quality, format, anchor, bgcolor);
+        var resizedUrl = ImageSharpUrlFormatter.GetImageResizeUrl(imagePath, null, width, height, resizeMode, quality, format, anchor, bgcolor, autoorient);
 
         return orchardHelper.TokenizeUrl(resizedUrl);
     }

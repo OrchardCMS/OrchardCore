@@ -8,7 +8,7 @@ namespace OrchardCore.Media.Processing;
 
 internal sealed class ImageSharpUrlFormatter
 {
-    public static string GetImageResizeUrl(string path, IDictionary<string, string> queryStringParams = null, int? width = null, int? height = null, ResizeMode resizeMode = ResizeMode.Undefined, int? quality = null, Format format = Format.Undefined, Anchor anchor = null, string bgcolor = null)
+    public static string GetImageResizeUrl(string path, IDictionary<string, string> queryStringParams = null, int? width = null, int? height = null, ResizeMode resizeMode = ResizeMode.Undefined, int? quality = null, Format format = Format.Undefined, Anchor anchor = null, string bgcolor = null, bool? autoorient = null)
     {
         if (string.IsNullOrEmpty(path) || (!width.HasValue && !height.HasValue && queryStringParams == null))
         {
@@ -57,6 +57,11 @@ internal sealed class ImageSharpUrlFormatter
         if (!string.IsNullOrEmpty(bgcolor))
         {
             mediaCommands.BackgroundColor = bgcolor;
+        }
+
+        if (autoorient.HasValue)
+        {
+            mediaCommands.AutoOrient = autoorient.Value.ToString().ToLower();
         }
 
         return QueryHelpers.AddQueryString(path, mediaCommands.GetValues());

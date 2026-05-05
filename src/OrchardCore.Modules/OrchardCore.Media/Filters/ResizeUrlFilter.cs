@@ -32,7 +32,7 @@ public class ResizeUrlFilter : ILiquidFilter
         var profile = arguments["profile"];
 
         var mediaCommands = new MediaCommands();
-        FluidValue width, height, mode, quality, format, anchor, bgcolor;
+        FluidValue width, height, mode, quality, format, anchor, bgcolor, autoorient;
 
         // Never mix named and indexed arguments as this leads to unpredictable results.
         // Additional commands to a profile must be named as well.
@@ -44,14 +44,15 @@ public class ResizeUrlFilter : ILiquidFilter
         }
 
         width = useNamed ? arguments["width"] : arguments.At(0);
-        height = useNamed ? arguments["height"] : arguments.At(1);
+        height = useNamed ? arguments["height"] : arguments.At(1);  
         mode = useNamed ? arguments["mode"] : arguments.At(2);
         quality = useNamed ? arguments["quality"] : arguments.At(3);
         format = useNamed ? arguments["format"] : arguments.At(4);
         anchor = useNamed ? arguments["anchor"] : arguments.At(5);
         bgcolor = useNamed ? arguments["bgcolor"] : arguments.At(6);
+        autoorient = useNamed ? arguments["autoorient"] : arguments.At(7);
 
-        ApplyMediaCommands(mediaCommands, width, height, mode, quality, format, anchor, bgcolor);
+        ApplyMediaCommands(mediaCommands, width, height, mode, quality, format, anchor, bgcolor, autoorient);
 
         var resizedUrl = QueryHelpers.AddQueryString(url, mediaCommands.GetValues());
 
@@ -63,7 +64,7 @@ public class ResizeUrlFilter : ILiquidFilter
         return new StringValue(resizedUrl);
     }
 
-    private static void ApplyMediaCommands(MediaCommands mediaCommands, FluidValue width, FluidValue height, FluidValue mode, FluidValue quality, FluidValue format, FluidValue anchorValue, FluidValue bgcolor)
+    private static void ApplyMediaCommands(MediaCommands mediaCommands, FluidValue width, FluidValue height, FluidValue mode, FluidValue quality, FluidValue format, FluidValue anchorValue, FluidValue bgcolor, FluidValue autoorient)
     {
         if (!width.IsNil())
         {
@@ -112,6 +113,11 @@ public class ResizeUrlFilter : ILiquidFilter
         if (!bgcolor.IsNil())
         {
             mediaCommands.BackgroundColor = bgcolor.ToStringValue();
+        }
+
+        if (!autoorient.IsNil())
+        {
+            mediaCommands.AutoOrient = autoorient.ToStringValue();
         }
     }
 }

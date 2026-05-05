@@ -16,7 +16,7 @@ public class MediaTokenService : IMediaTokenService
     private const string TokenCacheKeyPrefix = "MediaToken:";
     private readonly IMemoryCache _memoryCache;
 
-    private readonly HashSet<string> _knownCommands = new(12);
+    private readonly HashSet<string> _knownCommands = new(15);
     private readonly byte[] _hashKey;
 
     public MediaTokenService(
