@@ -145,7 +145,7 @@ nav:
       - Install localization files: guides/install-localization-files/README.md
       - Integrate Facebook plugins: guides/integrate-facebook-plugins/README.md
       - Run code on startup: guides/run-code-on-startup/README.md
-      - Create a custom admin theme: guides/create-admin-theme/README.md
+      - Creating an Admin Theme: guides/create-admin-theme/README.md
       - Create a Custom Module: guides/create-install-custom-module/README.md  
       - Customize encoding settings: guides/encoding-settings/README.md
       - Understanding Content Definitions Stores: guides/content-definitions/README.md
@@ -204,6 +204,7 @@ nav:
               - Templates: reference/modules/Templates/README.md
               - Placements: reference/modules/Placements/README.md
               - Themes: reference/modules/Themes/README.md
+              - Admin Theme Conventions: reference/themes/admin-theme.md
               - Liquid: reference/modules/Liquid/README.md
               - Media:
                   - Media: reference/modules/Media/README.md
