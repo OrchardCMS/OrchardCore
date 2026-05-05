@@ -3574,6 +3574,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "JasonPG2007",
+      "name": "Quoc Bao An Nguyen",
+      "avatar_url": "https://avatars.githubusercontent.com/u/124328819?v=4",
+      "profile": "https://quocbaoandev.vercel.app/",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,
