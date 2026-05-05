@@ -120,6 +120,7 @@ public sealed class MediaFileItemType : ObjectGraphType<MediaFileItem>
 
         Field<StringGraphType>("resizeUrl")
             .Description(S["the url of the media file item with image processing parameters"])
+            .Argument<StringGraphType>("profile", arg => arg.Description = S["the media profile name to use for image processing"])
             .Argument<IntGraphType>("width", arg => arg.Description = S["the width of the image"])
             .Argument<IntGraphType>("height", arg => arg.Description = S["the height of the image"])
             .Argument<StringGraphType>("mode", arg => arg.Description = S["the resize mode (pad, boxpad, max, min, stretch)"])
@@ -127,13 +128,14 @@ public sealed class MediaFileItemType : ObjectGraphType<MediaFileItem>
             .Argument<StringGraphType>("format", arg => arg.Description = S["the format of the image (png, jpg, gif, bmp, webp)"])
             .Argument<StringGraphType>("bgcolor", arg => arg.Description = S["the background color of the image"])
             .Argument<BooleanGraphType>("autoorient", arg => arg.Description = S["auto-orient the image based on EXIF data (defaults to true)"])
-            .Resolve(x =>
+            .ResolveAsync(async x =>
             {
                 if (string.IsNullOrEmpty(x.Source.Path))
                 {
                     return x.Source.Url;
                 }
 
+                var profile = x.GetArgument<string>("profile");
                 var width = x.GetArgument<int?>("width");
                 var height = x.GetArgument<int?>("height");
                 var mode = x.GetArgument<string>("mode");
@@ -152,16 +154,34 @@ public sealed class MediaFileItemType : ObjectGraphType<MediaFileItem>
                     ? parsedFormat
                     : Format.Undefined;
 
-                var assetUrl = orchardHelper.AssetUrl(
-                    x.Source.Path,
-                    width,
-                    height,
-                    resizeMode,
-                    appendVersion: true,
-                    quality,
-                    imageFormat,
-                    bgColor: bgcolor,
-                    autoorient: autoorient);
+                string assetUrl;
+                if (!string.IsNullOrEmpty(profile))
+                {
+                    assetUrl = await orchardHelper.AssetProfileUrlAsync(
+                        x.Source.Path,
+                        profile,
+                        width,
+                        height,
+                        resizeMode,
+                        appendVersion: true,
+                        quality,
+                        imageFormat,
+                        bgcolor: bgcolor,
+                        autoorient: autoorient);
+                }
+                else
+                {
+                    assetUrl = orchardHelper.AssetUrl(
+                        x.Source.Path,
+                        width,
+                        height,
+                        resizeMode,
+                        appendVersion: true,
+                        quality,
+                        imageFormat,
+                        bgColor: bgcolor,
+                        autoorient: autoorient);
+                }
 
                 // Encode spaces as %20 to ensure the URL is valid, as GraphQL does not automatically encode them.
                 return assetUrl?.Replace(" ", "%20");
