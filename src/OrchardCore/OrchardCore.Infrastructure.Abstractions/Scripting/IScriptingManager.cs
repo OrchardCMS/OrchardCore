@@ -26,6 +26,18 @@ public interface IScriptingManager
     object Evaluate(string directive, IFileProvider fileProvider, string basePath, IEnumerable<IGlobalMethodProvider> scopedMethodProviders);
 
     /// <summary>
+    /// Executes some prefixed script by looking for a matching scripting engine asynchronously.
+    /// </summary>
+    /// <param name="directive">The directive to execute. A directive is made of a. </param>
+    /// <param name="fileProvider">An optional <see cref="IFileProvider"/> instance.</param>
+    /// <param name="basePath">The base path.</param>
+    /// <param name="scopedMethodProviders">A list of method providers scoped to the script evaluation.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The result of the script if any.</returns>
+    Task<object> EvaluateAsync(string directive, IFileProvider fileProvider, string basePath, IEnumerable<IGlobalMethodProvider> scopedMethodProviders, CancellationToken cancellationToken = default)
+        => Task.FromResult(Evaluate(directive, fileProvider, basePath, scopedMethodProviders));
+
+    /// <summary>
     /// The list of available method providers for this <see cref="IScriptingManager"/>
     /// instance.
     /// </summary>

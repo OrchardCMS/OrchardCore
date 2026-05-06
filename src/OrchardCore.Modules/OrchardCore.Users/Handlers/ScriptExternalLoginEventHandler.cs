@@ -45,7 +45,7 @@ public class ScriptExternalLoginEventHandler : IExternalLoginEventHandler
 
             var script = $"js: function generateUsername(context) {{\n{registrationSettings.GenerateUsernameScript}\n}}\nvar context = {JConvert.SerializeObject(context, JOptions.CamelCase)};\ngenerateUsername(context);\nreturn context;";
 
-            dynamic evaluationResult = _scriptingManager.Evaluate(script, null, null, null);
+            dynamic evaluationResult = await _scriptingManager.EvaluateAsync(script, null, null, null);
 
             if (evaluationResult is IDictionary<string, object> data && data.TryGetValue("userName", out var userNameObj))
             {
@@ -60,10 +60,10 @@ public class ScriptExternalLoginEventHandler : IExternalLoginEventHandler
     {
         var loginSettings = await _siteService.GetSettingsAsync<ExternalLoginSettings>();
 
-        UpdateUserInternal(context, loginSettings);
+        await UpdateUserInternalAsync(context, loginSettings);
     }
 
-    public void UpdateUserInternal(UpdateUserContext context, ExternalLoginSettings loginSettings)
+    public async Task UpdateUserInternalAsync(UpdateUserContext context, ExternalLoginSettings loginSettings)
     {
         if (!loginSettings.UseScriptToSyncProperties)
         {
@@ -71,7 +71,7 @@ public class ScriptExternalLoginEventHandler : IExternalLoginEventHandler
         }
 
         var script = $"js: function syncRoles(context) {{\n{loginSettings.SyncPropertiesScript}\n}}\nvar context={JConvert.SerializeObject(context, JOptions.CamelCase)};\nsyncRoles(context);\nreturn context;";
-        dynamic evaluationResult = _scriptingManager.Evaluate(script, null, null, null);
+        dynamic evaluationResult = await _scriptingManager.EvaluateAsync(script, null, null, null);
         context.RolesToAdd.AddRange((evaluationResult.rolesToAdd as object[]).Select(i => i.ToString()));
         context.RolesToRemove.AddRange((evaluationResult.rolesToRemove as object[]).Select(i => i.ToString()));
 

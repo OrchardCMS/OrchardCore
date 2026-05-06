@@ -15,6 +15,7 @@ public sealed class JavaScriptEngine : IScriptingEngine
     {
         _memoryCache = memoryCache;
         _jintOptions = jintOptions.Value;
+        _jintOptions.ExperimentalFeatures |= ExperimentalFeature.TaskInterop;
     }
 
     public string Prefix => "js";
@@ -23,30 +24,40 @@ public sealed class JavaScriptEngine : IScriptingEngine
     {
         var engine = new Engine(_jintOptions);
 
-        foreach (var method in methods)
-        {
-            engine.SetValue(method.Name, method.Method(serviceProvider));
-        }
-
-        return new JavaScriptScope(engine, serviceProvider);
+        return new JavaScriptScope(engine, serviceProvider, methods);
     }
 
     public object Evaluate(IScriptingScope scope, string script)
     {
-        static void ThrowInvalidScopeTypeException()
-        {
-            throw new ArgumentException($"Expected a scope of type {nameof(JavaScriptScope)}", nameof(scope));
-        }
-
-        if (scope is not JavaScriptScope jsScope)
-        {
-            ThrowInvalidScopeTypeException();
-        }
+        var jsScope = GetJavaScriptScope(scope);
+        jsScope.UseSyncMethods();
 
         var parsedAst = _memoryCache.GetOrCreate(script, static entry => Engine.PrepareScript((string)entry.Key));
 
         var result = jsScope.Engine.Evaluate(parsedAst).ToObject();
 
         return result;
+    }
+
+    public async Task<object> EvaluateAsync(IScriptingScope scope, string script, CancellationToken cancellationToken = default)
+    {
+        var jsScope = GetJavaScriptScope(scope);
+        jsScope.UseAsyncMethods();
+
+        var parsedAst = _memoryCache.GetOrCreate(script, static entry => Engine.PrepareScript((string)entry.Key));
+
+        var result = await jsScope.Engine.EvaluateAsync(parsedAst, cancellationToken);
+
+        return result.ToObject();
+    }
+
+    private static JavaScriptScope GetJavaScriptScope(IScriptingScope scope)
+    {
+        if (scope is not JavaScriptScope jsScope)
+        {
+            throw new ArgumentException($"Expected a scope of type {nameof(JavaScriptScope)}", nameof(scope));
+        }
+
+        return jsScope;
     }
 }

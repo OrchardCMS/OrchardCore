@@ -71,6 +71,29 @@ public class WorkflowManagerTests
     }
 
     [Fact]
+    public async Task WorkflowScriptEvaluatorShouldEvaluateAsyncScopedGlobalMethods()
+    {
+        var serviceProvider = CreateServiceProvider();
+        var scriptEvaluator = CreateWorkflowScriptEvaluator(serviceProvider);
+        using var workflowContext = new WorkflowExecutionContext(
+            new WorkflowType(),
+            new Workflow { WorkflowId = IdGenerator.GenerateId() },
+            null,
+            null,
+            null,
+            null,
+            null,
+            []);
+
+        var result = await scriptEvaluator.EvaluateAsync(
+            new WorkflowExpression<string>("getValueAsync()"),
+            workflowContext,
+            new AsyncStringMethodProvider());
+
+        Assert.Equal("async", result);
+    }
+
+    [Fact]
     public async Task TriggerEventAsync_ShouldAllowReexecutionAfterUnexpectedError()
     {
         const string nonExistentActivityId = "missing";
@@ -276,6 +299,23 @@ public class WorkflowManagerTests
             _onExecute();
 
             throw new InvalidOperationException("Simulated activity failure");
+        }
+    }
+
+    private sealed class AsyncStringMethodProvider : IGlobalMethodProvider
+    {
+        public IEnumerable<GlobalMethod> GetMethods()
+        {
+            yield return new GlobalMethod
+            {
+                Name = "getValueAsync",
+                Method = serviceProvider => (Func<string>)(() => "sync"),
+                AsyncMethod = serviceProvider => (Func<Task<string>>)(async () =>
+                {
+                    await Task.Yield();
+                    return "async";
+                }),
+            };
         }
     }
 }
