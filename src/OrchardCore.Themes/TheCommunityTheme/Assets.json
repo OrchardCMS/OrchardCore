@@ -1,0 +1,30 @@
+[
+  {
+    "action": "copy",
+    "name": "theme-thecommunitytheme",
+    "source": "Assets/TheCommunityTheme/dist/assets/**",
+    "dest": "wwwroot/assets/",
+    "tags": ["theme", "images"]
+  },
+  {
+    "action": "min",
+    "name": "theme-thecommunitytheme",
+    "source": "Assets/TheCommunityTheme/dist/css/styles.css",
+    "dest": "wwwroot/css/",
+    "tags": ["theme", "css"]
+  },
+  {
+    "action": "sass",
+    "name": "theme-thecommunitytheme",
+    "source": "Assets/TheCommunityTheme/src/scss/bootstrap-oc.scss",
+    "dest": "wwwroot/css/",
+    "tags": ["theme", "css"]
+  },
+  {
+    "action": "min",
+    "name": "theme-thecommunitytheme",
+    "source": "Assets/TheCommunityTheme/dist/js/scripts.js",
+    "dest": "wwwroot/js/",
+    "tags": ["theme", "js"]
+  }
+]

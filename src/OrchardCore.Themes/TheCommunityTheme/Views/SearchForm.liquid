@@ -1,0 +1,6 @@
+<form action="{{ '~/search' | href }}" method="post" class="mb-4">
+    <div class="input-group input-group-lg">
+        <input type="text" name="Terms" class="form-control" placeholder="{{ 'Search...' | t }}" value="{{ Model.Terms }}">
+        <button class="btn btn-primary" type="submit"><i class="fas fa-search"></i></button>
+    </div>
+</form>

@@ -1,0 +1,61 @@
+{% zone "Header" %}
+{% assign imagePath = Model.ContentItem.Content.PlantProfile.Image.Paths.first %}
+{% if imagePath %}
+<header class="masthead" style="background-image: url('{{ imagePath | asset_url | resize_url: profile: "hero" }}')">
+{% else %}
+<header class="masthead" style="background-image: url('{{ "~/TheCommunityTheme/assets/img/hero/botanical-garden.svg" | href }}')">
+{% endif %}
+    <div class="container">
+        <div class="masthead-heading">{{ Model.ContentItem | display_text }}</div>
+        <div class="masthead-subheading">{{ Model.ContentItem.Content.PlantProfile.ScientificName.Text }}</div>
+    </div>
+</header>
+{% endzone %}
+
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                {% assign imagePath = Model.ContentItem.Content.PlantProfile.Image.Paths.first %}
+                {% if imagePath %}
+                <img src="{{ imagePath | asset_url | resize_url: profile: 'card' }}" alt="{{ Model.ContentItem | display_text }}" class="img-fluid rounded mb-4">
+                {% endif %}
+                {{ Model.Content.HtmlBodyPart | shape_render }}
+            </div>
+            <div class="col-lg-4">
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">{{ "Botanical Details" | t }}</h5>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>{{ "Scientific Name" | t }}:</strong><br><em>{{ Model.ContentItem.Content.PlantProfile.ScientificName.Text }}</em></p>
+                        {% assign family = Model.ContentItem.Content.PlantProfile.PlantFamily | taxonomy_terms %}
+                        {% if family.size > 0 %}
+                        <p><strong>{{ "Plant Family" | t }}:</strong><br>
+                            {% for f in family %}
+                            <span class="badge bg-success">{{ f | display_text }}</span>
+                            {% endfor %}
+                        </p>
+                        {% endif %}
+                        {% assign zone = Model.ContentItem.Content.PlantProfile.GardenZone | taxonomy_terms %}
+                        {% if zone.size > 0 %}
+                        <p><strong>{{ "Garden Zone" | t }}:</strong><br>
+                            {% for z in zone %}
+                            <span class="badge bg-info">{{ z | display_text }}</span>
+                            {% endfor %}
+                        </p>
+                        {% endif %}
+                        {% assign bloom = Model.ContentItem.Content.PlantProfile.BloomSeason.Text %}
+                        {% if bloom and bloom != "" %}
+                        <p><strong>{{ "Bloom Season" | t }}:</strong> {{ bloom }}</p>
+                        {% endif %}
+                        {% assign care = Model.ContentItem.Content.PlantProfile.CareLevel.Text %}
+                        {% if care and care != "" %}
+                        <p><strong>{{ "Care Level" | t }}:</strong> {{ care }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

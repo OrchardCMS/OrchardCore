@@ -1,0 +1,16 @@
+<div class="col-md-6 col-lg-4 mb-4">
+    <div class="card plant-card h-100">
+        {% assign imagePath = Model.ContentItem.Content.PlantProfile.Image.Paths.first %}
+        {% if imagePath %}
+        <img class="card-img-top" src="{{ imagePath | asset_url | resize_url: profile: 'card' }}" alt="{{ Model.ContentItem | display_text }}">
+        {% endif %}
+        <div class="card-body">
+            {% assign zone = Model.ContentItem.Content.PlantProfile.GardenZone | taxonomy_terms %}
+            {% for z in zone %}
+            <span class="badge bg-success mb-2">{{ z | display_text }}</span>
+            {% endfor %}
+            <h5 class="card-title"><a href="{{ Model.ContentItem | display_url }}" class="text-decoration-none text-dark">{{ Model.ContentItem | display_text }}</a></h5>
+            <p class="scientific-name small">{{ Model.ContentItem.Content.PlantProfile.ScientificName.Text }}</p>
+        </div>
+    </div>
+</div>

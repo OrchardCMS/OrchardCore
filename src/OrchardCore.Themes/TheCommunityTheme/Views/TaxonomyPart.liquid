@@ -1,0 +1,23 @@
+<div class="row">
+    {% for term in Model.TaxonomyPart.Terms %}
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card h-100">
+            {% assign imagePath = term.Content.GardenZone.Image.Paths.first %}
+            {% if imagePath %}
+            <img class="card-img-top" src="{{ imagePath | asset_url | resize_url: profile: 'card' }}" alt="{{ term.DisplayText }}">
+            {% endif %}
+            <div class="card-body">
+                <h5 class="card-title">{{ term.DisplayText }}</h5>
+                {% assign mapLocation = term.Content.GardenZone.MapLocation.Text %}
+                {% if mapLocation and mapLocation != "" %}
+                <p class="text-muted small"><i class="fas fa-map-marker-alt me-1"></i>{{ mapLocation }}</p>
+                {% endif %}
+                {% assign body = term.Content.HtmlBodyPart.Html %}
+                {% if body and body != "" %}
+                <p>{{ body | strip_html | truncate: 120 }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>

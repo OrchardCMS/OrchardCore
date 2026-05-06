@@ -1,0 +1,25 @@
+//
+// Styles
+//
+
+// Import variables
+@import "./variables.scss";
+
+// Import Bootstrap
+@import "bootstrap/scss/bootstrap.scss";
+
+// Global CSS
+@import "./global.scss";
+
+// Components
+@import "./components/buttons.scss";
+@import "./components/navbar.scss";
+@import "./components/cards.scss";
+
+// Sections
+@import "./sections/masthead.scss";
+@import "./sections/programs.scss";
+@import "./sections/events.scss";
+@import "./sections/garden.scss";
+@import "./sections/membership.scss";
+@import "./sections/footer.scss";

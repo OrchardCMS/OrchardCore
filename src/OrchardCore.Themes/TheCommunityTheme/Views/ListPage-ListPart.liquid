@@ -1,0 +1,12 @@
+<div class="row">
+    {% for item in Model.ContentItems %}
+        {{ item | shape_build_display: "Summary" | shape_render }}
+    {% endfor %}
+</div>
+
+{% assign previousText = "← Newer" | t %}
+{% assign nextText = "Older →" | t %}
+
+{% shape_pager Model.Pager previous_text: previousText, next_text: nextText %}
+
+{{ Model.Pager | shape_render }}

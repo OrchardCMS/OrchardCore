@@ -1,0 +1,38 @@
+{% zone "Header" %}
+<header class="masthead" style="background-image: url('{{ "~/TheCommunityTheme/assets/img/hero/community-center.svg" | href }}')">
+    <div class="container">
+        <div class="masthead-heading">{{ Model.ContentItem | display_text }}</div>
+        <div class="masthead-subheading">{{ Model.ContentItem.Content.StaffMember.Role.Text }}</div>
+    </div>
+</header>
+{% endzone %}
+
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4 text-center mb-4">
+                {% assign photo = Model.ContentItem.Content.StaffMember.Photo.Paths.first %}
+                {% if photo %}
+                <img src="{{ photo | asset_url | resize_url: profile: 'avatar' }}" alt="{{ Model.ContentItem | display_text }}" class="rounded-circle mb-3" style="width: 250px; height: 250px; object-fit: cover;">
+                {% endif %}
+                <h4>{{ Model.ContentItem | display_text }}</h4>
+                <p class="text-muted">{{ Model.ContentItem.Content.StaffMember.Role.Text }}</p>
+                {% assign dept = Model.ContentItem.Content.StaffMember.Department.Text %}
+                {% if dept and dept != "" %}
+                <p><span class="badge bg-primary">{{ dept }}</span></p>
+                {% endif %}
+                {% assign email = Model.ContentItem.Content.StaffMember.Email.Text %}
+                {% if email and email != "" %}
+                <p><i class="fas fa-envelope me-2"></i>{{ email }}</p>
+                {% endif %}
+                {% assign phone = Model.ContentItem.Content.StaffMember.Phone.Text %}
+                {% if phone and phone != "" %}
+                <p><i class="fas fa-phone me-2"></i>{{ phone }}</p>
+                {% endif %}
+            </div>
+            <div class="col-lg-8">
+                {{ Model.Content.HtmlBodyPart | shape_render }}
+            </div>
+        </div>
+    </div>
+</section>

@@ -1,0 +1,45 @@
+// Cards
+.program-card,
+.event-card,
+.plant-card,
+.facility-card,
+.staff-card,
+.news-card {
+    border: none;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+    &:hover {
+        transform: translateY(-0.25rem);
+        box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.12);
+    }
+
+    .card-img-top {
+        height: 220px;
+        object-fit: cover;
+    }
+
+    .card-body {
+        padding: 1.5rem;
+    }
+
+    .card-title {
+        font-family: $headings-font-family;
+        font-weight: 700;
+        margin-bottom: 0.75rem;
+    }
+}
+
+.staff-card {
+    text-align: center;
+
+    .card-img-top {
+        width: 180px;
+        height: 180px;
+        border-radius: 50%;
+        margin: 1.5rem auto 0;
+        object-fit: cover;
+    }
+}
