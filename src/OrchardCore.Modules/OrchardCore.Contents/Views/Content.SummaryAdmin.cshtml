@@ -15,10 +15,10 @@
                     @await DisplayAsync(Model.Selectors)
                 </div>
             }
-            <div class="form-check">
-                <input type="checkbox" class="form-check-input" value="@contentItem.Id" name="itemIds" id="itemIds-@contentItem.Id">
-                <label class="form-check-label" for="itemIds-@contentItem.Id"></label>
-            </div>
+            @if (Model.Checkbox != null)
+            {
+                @await DisplayAsync(Model.Checkbox)
+            }
         </div>
         <div class="summary d-flex flex-column flex-md-row">
             <div class="contentitem me-2">
