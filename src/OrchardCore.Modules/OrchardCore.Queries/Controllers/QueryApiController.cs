@@ -3,6 +3,7 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 
 namespace OrchardCore.Queries.Controllers;
 
@@ -27,6 +28,7 @@ public sealed class QueryApiController : ControllerBase
 
     [HttpPost, HttpGet]
     [Route("{name}")]
+    [EndpointName("ApiExecuteQuery")]
     public async Task<IActionResult> Query(
         string name,
         string parameters)
