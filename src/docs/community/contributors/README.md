@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-387-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-388-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key))!
@@ -535,6 +535,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/canadacubachina"><img src="https://avatars.githubusercontent.com/u/190653773?v=4?s=100" width="100px;" alt="canadacubachina"/><br /><sub><b>canadacubachina</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=canadacubachina" title="Code">💻</a></td>
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/Yash5305"><img src="https://avatars.githubusercontent.com/u/133780112?v=4?s=100" width="100px;" alt="Yash5305"/><br /><sub><b>Yash5305</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=Yash5305" title="Code">💻</a></td>
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/yashicauni0405"><img src="https://avatars.githubusercontent.com/u/263265066?v=4?s=100" width="100px;" alt="yashicauni0405"/><br /><sub><b>yashicauni0405</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=yashicauni0405" title="Code">💻</a></td>
+      <td align="center" valign="top" width="16.66%"><a href="https://quocbaoandev.vercel.app/"><img src="https://avatars.githubusercontent.com/u/124328819?v=4?s=100" width="100px;" alt="Quoc Bao An Nguyen"/><br /><sub><b>Quoc Bao An Nguyen</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=JasonPG2007" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
