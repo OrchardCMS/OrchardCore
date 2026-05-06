@@ -1,0 +1,11 @@
+@model OpenSearchContentIndexSettingsViewModel
+
+<h4>@T["OpenSearch Index settings"]</h4>
+
+<div class="mb-3">
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" asp-for="OpenSearchContentIndexSettings.Included" checked="@Model.OpenSearchContentIndexSettings.Included" />
+        <label class="form-check-label" asp-for="OpenSearchContentIndexSettings.Included">@T["Include this element in the index"]</label>
+        <span class="hint dashed">@T["Check to include the value of this element in the index."]</span>
+    </div>
+</div>

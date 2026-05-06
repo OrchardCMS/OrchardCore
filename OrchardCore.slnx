@@ -74,6 +74,7 @@
     <Project Path="src/OrchardCore.Modules/OrchardCore.Alias/OrchardCore.Alias.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.ArchiveLater/OrchardCore.ArchiveLater.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Autoroute/OrchardCore.Autoroute.csproj" />
+    <Project Path="src/OrchardCore.Modules/OrchardCore.AzureAI/OrchardCore.AzureAI.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.ContentFields/OrchardCore.ContentFields.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.ContentLocalization/OrchardCore.ContentLocalization.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.ContentPreview/OrchardCore.ContentPreview.csproj" />
@@ -81,6 +82,7 @@
     <Project Path="src/OrchardCore.Modules/OrchardCore.ContentTypes/OrchardCore.ContentTypes.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.CustomSettings/OrchardCore.CustomSettings.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Demo/OrchardCore.Demo.csproj" />
+    <Project Path="src/OrchardCore.Modules/OrchardCore.Elasticsearch/OrchardCore.Elasticsearch.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Feeds/OrchardCore.Feeds.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Flows/OrchardCore.Flows.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Forms/OrchardCore.Forms.csproj" />
@@ -90,6 +92,7 @@
     <Project Path="src/OrchardCore.Modules/OrchardCore.Layers/OrchardCore.Layers.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Liquid/OrchardCore.Liquid.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Lists/OrchardCore.Lists.csproj" />
+    <Project Path="src/OrchardCore.Modules/OrchardCore.Lucene/OrchardCore.Lucene.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Markdown/OrchardCore.Markdown.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Media.AmazonS3/OrchardCore.Media.AmazonS3.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Media.Azure/OrchardCore.Media.Azure.csproj" />
@@ -97,13 +100,11 @@
     <Project Path="src/OrchardCore.Modules/OrchardCore.Media.Indexing.Pdf/OrchardCore.Media.Indexing.Pdf.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Media/OrchardCore.Media.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Menu/OrchardCore.Menu.csproj" />
+    <Project Path="src/OrchardCore.Modules/OrchardCore.OpenSearch/OrchardCore.OpenSearch.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Placements/OrchardCore.Placements.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.PublishLater/OrchardCore.PublishLater.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Queries/OrchardCore.Queries.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Rules/OrchardCore.Rules.csproj" />
-    <Project Path="src/OrchardCore.Modules/OrchardCore.AzureAI/OrchardCore.AzureAI.csproj" />
-    <Project Path="src/OrchardCore.Modules/OrchardCore.Elasticsearch/OrchardCore.Elasticsearch.csproj" />
-    <Project Path="src/OrchardCore.Modules/OrchardCore.Lucene/OrchardCore.Lucene.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Search/OrchardCore.Search.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Seo/OrchardCore.Seo.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Shortcodes/OrchardCore.Shortcodes.csproj" />
