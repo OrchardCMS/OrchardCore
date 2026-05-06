@@ -66,16 +66,21 @@
 
             <div class="feature-group">
                 <h4 class="mb-2 mt-3" data-filter-value="@categoryName @categoryFeatureNames">@categoryName</h4>
-                <ul class="list-group" data-filter-value="@categoryName @categoryFeatureNames">
-                    @{
-                        foreach (var feature in features)
-                        {
-                            //var lifecycleStatus = feature.Descriptor.Extension.LifecycleStatus;
-                            var featureId = feature.Descriptor.Id;
-                            var featureName = feature.Descriptor.Name;
-                            var isAlwaysEnabled = feature.IsAlwaysEnabled;
+                <div class="select-all-features">
+                    <input type="checkbox" class="select-all" name="select-all" />
+                    <label class="select-all" for="select-all">Select All</label>
+                </div>
 
-                            if (Model.IsProxy && featureId == FeaturesConstants.FeatureId)
+                <ul class="list-group" data-filter-value="@categoryName @categoryFeatureNames">
+                        @{
+                            foreach (var feature in features)
+                            {
+                                //var lifecycleStatus = feature.Descriptor.Extension.LifecycleStatus;
+                                var featureId = feature.Descriptor.Id;
+                                var featureName = feature.Descriptor.Name;
+                                var isAlwaysEnabled = feature.IsAlwaysEnabled;
+                             
+                                if (Model.IsProxy && featureId == FeaturesConstants.FeatureId)
                             {
                                 isAlwaysEnabled = false;
                             }
@@ -285,5 +290,34 @@
             $transitive_dependencies.toggleClass('d-none');
             $toogle.toggleClass('d-none');
         });
+    });
+
+    // this function notices change in the select all box
+    // and allows for all checkboxes to be update accordingly
+    $(document).on('change', '.select-all', function () {
+        var group = $(this).closest('.feature-group');
+
+        group.find('input.form-check-input')
+        .not(this)
+        .prop('checked', this.checked);
+    });
+
+    // This function displays the select all optionality above each feature group,
+    //  filtering out any that do not contain selectable checkboxes
+    $('.feature-group').each(function() {
+        if ($(this).find('input[name="featureIds"]').length === 0) {
+            $(this).find('.select-all').hide();
+        }
+    });
+
+    // This function notices change in the form checkboxes and 
+    // updates the select all checkbox accordingly
+    $(document).on('change', '.feature-group input.form-check-input', function () {
+        var group = $(this).closest('.feature-group');
+
+        var all = group.find('input.form-check-input').not('.select-all');
+        var checked = all.filter(':checked');
+
+        group.find('.select-all').prop('checked', all.length === checked.length);
     });
 </script>
