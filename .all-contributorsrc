@@ -3583,6 +3583,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "okalangkenneth",
+      "name": "Kenneth Okalang",
+      "avatar_url": "https://avatars.githubusercontent.com/u/68539411?v=4",
+      "profile": "http://backendinsight.com",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,
