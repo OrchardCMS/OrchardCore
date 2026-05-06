@@ -156,13 +156,13 @@ public static class OrchardCoreBuilderExtensions
                 if (sp == shellScope?.ServiceProvider)
                 {
                     shellScope
-                        .RegisterBeforeDispose(scope =>
+                        .RegisterBeforeDispose(static scope =>
                         {
                             return scope.ServiceProvider
                                 .GetRequiredService<IDocumentStore>()
                                 .CommitAsync();
                         })
-                        .AddExceptionHandler((scope, e) =>
+                        .AddExceptionHandler(static (scope, e) =>
                         {
                             return scope.ServiceProvider
                                 .GetRequiredService<IDocumentStore>()

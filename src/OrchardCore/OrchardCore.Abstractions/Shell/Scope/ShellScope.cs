@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.ObjectPool;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Modules;
@@ -15,10 +16,10 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
 
     private readonly AsyncServiceScope _serviceScope;
     private Dictionary<object, object> _items;
-    private List<Func<ShellScope, Task>> _beforeDispose;
+    private InlineList<ICallbackInvoker> _beforeDispose;
+    private InlineList<ICallbackInvoker> _deferredTasks;
+    private InlineList<Func<ShellScope, Exception, Task>> _exceptionHandlers;
     private HashSet<string> _deferredSignals;
-    private List<Func<ShellScope, Task>> _deferredTasks;
-    private List<Func<ShellScope, Exception, Task>> _exceptionHandlers;
 
     private ShellScopeStates _state;
 
@@ -208,9 +209,25 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
     /// <summary>
     /// Execute a delegate using a child scope created from the current one.
     /// </summary>
+    public static async Task UsingChildScopeAsync<T>(Func<ShellScope, T, Task> execute, T arg, bool activateShell = true)
+    {
+        await (await CreateChildScopeAsync()).UsingAsync(execute, arg, activateShell);
+    }
+
+    /// <summary>
+    /// Execute a delegate using a child scope created from the current one.
+    /// </summary>
     public static async Task UsingChildScopeAsync(ShellSettings settings, Func<ShellScope, Task> execute, bool activateShell = true)
     {
         await (await CreateChildScopeAsync(settings)).UsingAsync(execute, activateShell);
+    }
+
+    /// <summary>
+    /// Execute a delegate using a child scope created from the current one.
+    /// </summary>
+    public static async Task UsingChildScopeAsync<T>(ShellSettings settings, Func<ShellScope, T, Task> execute, T arg, bool activateShell = true)
+    {
+        await (await CreateChildScopeAsync(settings)).UsingAsync(execute, arg, activateShell);
     }
 
     /// <summary>
@@ -222,9 +239,17 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
     }
 
     /// <summary>
+    /// Execute a delegate using a child scope created from the current one.
+    /// </summary>
+    public static async Task UsingChildScopeAsync<T>(string tenant, Func<ShellScope, T, Task> execute, T arg, bool activateShell = true)
+    {
+        await (await CreateChildScopeAsync(tenant)).UsingAsync(execute, arg, activateShell);
+    }
+
+    /// <summary>
     /// Start holding this shell scope along the async flow.
     /// </summary>
-    public void StartAsyncFlow()
+    private void StartAsyncFlow()
     // Use an object indirection to hold the current scope in the 'AsyncLocal',
     // so that it can be cleared in all execution contexts when it is cleared.
         => _current.Value = new ShellScopeHolder { Scope = this };
@@ -242,13 +267,34 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
 
     /// <summary>
     /// Executes a delegate using this shell scope in an isolated async flow,
+    /// but only as a service scope without managing the shell state and
+    /// without invoking any tenant event.
+    /// </summary>
+    public Task UsingServiceScopeAsync<T>(Func<ShellScope, T, Task> execute, T arg)
+    {
+        _state |= ShellScopeStates.ServiceScopeOnly;
+        return UsingAsync(execute, arg);
+    }
+
+    /// <summary>
+    /// Executes a delegate using this shell scope in an isolated async flow,
     /// while managing the shell state and invoking tenant events.
     /// </summary>
-    public async Task UsingAsync(Func<ShellScope, Task> execute, bool activateShell = true)
+    public Task UsingAsync(Func<ShellScope, Task> execute, bool activateShell = true)
+        => UsingAsyncCore((scope, func) => func(scope), execute, activateShell);
+
+    /// <summary>
+    /// Executes a delegate using this shell scope in an isolated async flow,
+    /// while managing the shell state and invoking tenant events.
+    /// </summary>
+    public Task UsingAsync<T>(Func<ShellScope, T, Task> execute, T arg, bool activateShell = true)
+        => UsingAsyncCore(execute, arg, activateShell);
+
+    private async Task UsingAsyncCore<T>(Func<ShellScope, T, Task> execute, T arg, bool activateShell)
     {
         if (Current == this)
         {
-            await execute(Current);
+            await execute(this, arg);
             return;
         }
 
@@ -264,7 +310,7 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
                         await ActivateShellInternalAsync();
                     }
 
-                    await execute(this);
+                    await execute(this, arg);
                 }
                 finally
                 {
@@ -299,7 +345,7 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
     /// <summary>
     /// Activate the shell, if not yet done, by calling the related tenant event handlers.
     /// </summary>
-    private async Task ActivateShellInternalAsync()
+    private async ValueTask ActivateShellInternalAsync()
     {
         if (ShellContext.IsActivated)
         {
@@ -352,22 +398,24 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
     /// <summary>
     /// Registers a delegate to be invoked when 'BeforeDisposeAsync()' is called on this scope.
     /// </summary>
-    /// <param name="callback">The delegate to be invoked before disposal. This delegate takes a <see cref="ShellScope"/> parameter and returns a <see cref="Task"/>.</param>
+    /// <param name="callback">The delegate to be invoked before disposal. This delegate takes a <see cref="ShellScope"/> and state parameters and returns a <see cref="Task"/>.</param>
+    /// <param name="state">The state object to pass to the callback.</param>
     /// <param name="last">A boolean value indicating whether the delegate should be invoked last. 
     /// If true, the delegate is added to the end of the invocation list; otherwise, it is added to the beginning.</param>
-    internal void BeforeDispose(Func<ShellScope, Task> callback, bool last)
+    internal void BeforeDispose<TState>(Func<ShellScope, TState, Task> callback, TState state, bool last)
     {
         ThrowIfTerminating();
 
-        var list = _beforeDispose ??= [];
+        var item = CallbackInvoker<TState>.Rent(callback, state);
 
         if (last)
         {
-            list.Add(callback);
+            // Note: The callbacks are invoked in reverse order, so adding at index 0 makes it last.
+            _beforeDispose.Insert(0, item);
         }
         else
         {
-            list.Insert(0, callback);
+            _beforeDispose.Add(item);
         }
     }
 
@@ -384,11 +432,13 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
     /// <summary>
     /// Adds a Task to be executed in a new scope after 'BeforeDisposeAsync()'.
     /// </summary>
-    internal void DeferredTask(Func<ShellScope, Task> task)
+    /// <param name="task">The delegate to be executed as a deferred task. This delegate takes a <see cref="ShellScope"/> and state parameters and returns a <see cref="Task"/>.</param>
+    /// <param name="state">The state object to pass to the task.</param>
+    internal void DeferredTask<TState>(Func<ShellScope, TState, Task> task, TState state)
     {
         ThrowIfTerminating();
 
-        (_deferredTasks ??= []).Add(task);
+        _deferredTasks.Add(CallbackInvoker<TState>.Rent(task, state));
     }
 
     /// <summary>
@@ -398,13 +448,20 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
     {
         ThrowIfTerminating();
 
-        (_exceptionHandlers ??= []).Add(callback);
+        _exceptionHandlers.Add(callback);
     }
 
     /// <summary>
     /// Registers a delegate to be invoked before the current shell scope will be disposed.
     /// </summary>
-    public static void RegisterBeforeDispose(Func<ShellScope, Task> callback, bool last = false) => Current?.BeforeDispose(callback, last);
+    public static void RegisterBeforeDispose<TState>(Func<ShellScope, TState, Task> callback, TState state, bool last = false)
+        => Current?.BeforeDispose(callback, state, last);
+
+    /// <summary>
+    /// Registers a delegate to be invoked before the current shell scope will be disposed.
+    /// </summary>
+    public static void RegisterBeforeDispose(Func<ShellScope, Task> callback, bool last = false)
+        => Current?.BeforeDispose(static (scope, cb) => cb(scope), callback, last);
 
     /// <summary>
     /// Adds a Signal (if not already present) to be sent just before the current shell scope will be disposed.
@@ -414,7 +471,14 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
     /// <summary>
     /// Adds a Task to be executed in a new scope once the current shell scope has been disposed.
     /// </summary>
-    public static void AddDeferredTask(Func<ShellScope, Task> task) => Current?.DeferredTask(task);
+    public static void AddDeferredTask<TState>(Func<ShellScope, TState, Task> task, TState state)
+        => Current?.DeferredTask(task, state);
+
+    /// <summary>
+    /// Adds a Task to be executed in a new scope once the current shell scope has been disposed.
+    /// </summary>
+    public static void AddDeferredTask(Func<ShellScope, Task> task)
+        => Current?.DeferredTask(static (scope, t) => t(scope), task);
 
     /// <summary>
     /// Adds an handler to be invoked if an exception is thrown while executing in this shell scope.
@@ -426,7 +490,7 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
     /// </summary>
     public async Task HandleExceptionAsync(Exception e)
     {
-        if (_exceptionHandlers == null)
+        if (_exceptionHandlers.Count <= 0)
         {
             return;
         }
@@ -443,16 +507,26 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
     /// </summary>
     private async Task BeforeDisposeAsync()
     {
-        if (_beforeDispose != null)
+        for (var i = _beforeDispose.Count - 1; i >= 0; i--)
         {
-            foreach (var callback in _beforeDispose)
+            var item = _beforeDispose[i];
+            try
             {
-                await callback(this);
+                await item.InvokeAsync(this);
+            }
+            finally
+            {
+                item.Return();
             }
         }
 
         if (_state.HasFlag(ShellScopeStates.ServiceScopeOnly))
         {
+            for (var i = _deferredTasks.Count - 1; i >= 0; i--)
+            {
+                _deferredTasks[i].Return();
+            }
+
             return;
         }
 
@@ -465,12 +539,14 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
             }
         }
 
-        if (_deferredTasks?.Count > 0)
+        if (_deferredTasks.Count > 0)
         {
             var shellHost = ShellContext.ServiceProvider.GetRequiredService<IShellHost>();
 
-            foreach (var task in _deferredTasks)
+            for (var i = 0; i < _deferredTasks.Count; i++)
             {
+                var item = _deferredTasks[i];
+
                 // Create a new scope (maybe based on a new shell) for each task.
                 ShellScope scope;
                 try
@@ -486,23 +562,30 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
 
                 // Use 'UsingAsync()' in place of 'UsingServiceScopeAsync()' to allow a deferred task to
                 // trigger another one, but still prevent the shell to be activated in a deferred task.
-                await scope.UsingAsync(async scope =>
+                await scope.UsingAsync(static async (scope, state) =>
                 {
-                    var logger = scope.ServiceProvider.GetService<ILogger<ShellScope>>();
+                    var (shellContext, deferredItem) = ((ShellContext, ICallbackInvoker))state;
 
                     try
                     {
-                        await task(scope);
+                        await deferredItem.InvokeAsync(scope);
                     }
                     catch (Exception e)
                     {
+                        var logger = scope.ServiceProvider.GetService<ILogger<ShellScope>>();
+
                         logger?.LogError(e,
                             "Error while processing deferred task '{TaskName}' on tenant '{TenantName}'.",
-                            task.GetType().FullName, ShellContext.Settings.Name);
+                            deferredItem.GetType().FullName, shellContext.Settings.Name);
 
                         await scope.HandleExceptionAsync(e);
                     }
+                    finally
+                    {
+                        deferredItem.Return();
+                    }
                 },
+                (ShellContext, item),
                 activateShell: false);
             }
         }
@@ -512,7 +595,7 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
     /// Terminates the shell, if released and in its last scope, by calling the related event handlers,
     /// and specifies if the shell context should be disposed consequently to this scope being disposed.
     /// </summary>
-    private async Task TerminateShellInternalAsync()
+    private async ValueTask TerminateShellInternalAsync()
     {
         if (_state.HasFlag(ShellScopeStates.ServiceScopeOnly))
         {
@@ -599,6 +682,52 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
     private sealed class ShellScopeHolder
     {
         public ShellScope Scope;
+    }
+
+    /// <summary>
+    /// Interface for invoking callbacks with type-erased state.
+    /// </summary>
+    private interface ICallbackInvoker
+    {
+        Task InvokeAsync(ShellScope scope);
+
+        void Return();
+    }
+
+    /// <summary>
+    /// Generic callback invoker that stores state without boxing value types.
+    /// </summary>
+    private sealed class CallbackInvoker<TState> : ICallbackInvoker
+    {
+        private static readonly ObjectPool<CallbackInvoker<TState>> _pool =
+            new DefaultObjectPool<CallbackInvoker<TState>>(new CallbackInvokerPooledObjectPolicy<TState>(), 64);
+
+        private Func<ShellScope, TState, Task> _callback;
+        private TState _state;
+
+        public static CallbackInvoker<TState> Rent(Func<ShellScope, TState, Task> callback, TState state)
+        {
+            var invoker = _pool.Get();
+            invoker._callback = callback;
+            invoker._state = state;
+            return invoker;
+        }
+
+        public Task InvokeAsync(ShellScope scope) => _callback!(scope, _state);
+
+        public void Return()
+        {
+            _callback = null;
+            _state = default;
+            _pool.Return(this);
+        }
+    }
+
+    private sealed class CallbackInvokerPooledObjectPolicy<TState> : PooledObjectPolicy<CallbackInvoker<TState>>
+    {
+        public override CallbackInvoker<TState> Create() => new();
+
+        public override bool Return(CallbackInvoker<TState> obj) => true;
     }
 
     [Flags]
