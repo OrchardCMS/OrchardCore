@@ -236,6 +236,17 @@ public sealed class Startup : StartupBase
             }
         );
 
+        routes.MapAreaControllerRoute(
+            name: "ResendEmailConfirmation",
+            areaName: UserConstants.Features.Users,
+            pattern: "ResendEmailConfirmation",
+            defaults: new
+            {
+                controller = _accountControllerName,
+                action = nameof(AccountController.ResendEmailConfirmation),
+            }
+        );
+
         builder.UseAuthorization();
     }
 }
