@@ -67,6 +67,7 @@ public class AssetUrlShortcodeProvider : IShortcodeProvider
             var mode = arguments.Named("mode");
             var quality = arguments.Named("quality");
             var format = arguments.Named("format");
+            var autoorient = arguments.Named("autoorient");
 
             if (width != null)
             {
@@ -91,6 +92,11 @@ public class AssetUrlShortcodeProvider : IShortcodeProvider
             if (format != null)
             {
                 mediaCommands.Format = format;
+            }
+
+            if (autoorient != null)
+            {
+                mediaCommands.AutoOrient = autoorient;
             }
 
             content = QueryHelpers.AddQueryString(content, mediaCommands.GetValues());

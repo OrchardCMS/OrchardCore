@@ -98,6 +98,14 @@
     </div>
 
     <div class="form-g mb-3">
+        <div class="form-check">
+            <input asp-for="AutoOrient" class="form-check-input" />
+            <label asp-for="AutoOrient" class="form-check-label">@T["Auto Orient"]</label>
+        </div>
+        <div class="w-100">
+            <span class="hint">@T["Automatically orient the image based on EXIF metadata. Enabled by default."]</span>
+        </div>
+    </div>
         <div class="btn-group">
             <button type="submit" name="submit" class="btn btn-success save">@T["Save"]</button>
             <button type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-reference="parent" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

@@ -1,7 +1,9 @@
+using GraphQL;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Apis.GraphQL;
+using OrchardCore.Media.Core.Processing;
 using OrchardCore.Media.Fields;
 
 namespace OrchardCore.Media.GraphQL;
@@ -115,6 +117,75 @@ public sealed class MediaFileItemType : ObjectGraphType<MediaFileItem>
         Field<StringGraphType>("url")
             .Description(S["the url name of the media file item"])
             .Resolve(x => x.Source.Url);
+
+        Field<StringGraphType>("resizeUrl")
+            .Description(S["the url of the media file item with image processing parameters"])
+            .Argument<StringGraphType>("profile", arg => arg.Description = S["the media profile name to use for image processing"])
+            .Argument<IntGraphType>("width", arg => arg.Description = S["the width of the image"])
+            .Argument<IntGraphType>("height", arg => arg.Description = S["the height of the image"])
+            .Argument<StringGraphType>("mode", arg => arg.Description = S["the resize mode (pad, boxpad, max, min, stretch)"])
+            .Argument<IntGraphType>("quality", arg => arg.Description = S["the quality of the image (1-100)"])
+            .Argument<StringGraphType>("format", arg => arg.Description = S["the format of the image (png, jpg, gif, bmp, webp)"])
+            .Argument<StringGraphType>("bgcolor", arg => arg.Description = S["the background color of the image"])
+            .Argument<BooleanGraphType>("autoorient", arg => arg.Description = S["auto-orient the image based on EXIF data (defaults to true)"])
+            .ResolveAsync(async x =>
+            {
+                if (string.IsNullOrEmpty(x.Source.Path))
+                {
+                    return x.Source.Url;
+                }
+
+                var profile = x.GetArgument<string>("profile");
+                var width = x.GetArgument<int?>("width");
+                var height = x.GetArgument<int?>("height");
+                var mode = x.GetArgument<string>("mode");
+                var quality = x.GetArgument<int?>("quality");
+                var format = x.GetArgument<string>("format");
+                var bgcolor = x.GetArgument<string>("bgcolor");
+                var autoorient = x.GetArgument<bool?>("autoorient");
+
+                var orchardHelper = x.RequestServices.GetRequiredService<IOrchardHelper>();
+
+                var resizeMode = !string.IsNullOrEmpty(mode) && Enum.TryParse<ResizeMode>(mode, ignoreCase: true, out var parsed)
+                    ? parsed
+                    : ResizeMode.Undefined;
+
+                var imageFormat = !string.IsNullOrEmpty(format) && Enum.TryParse<Format>(format, ignoreCase: true, out var parsedFormat)
+                    ? parsedFormat
+                    : Format.Undefined;
+
+                string assetUrl;
+                if (!string.IsNullOrEmpty(profile))
+                {
+                    assetUrl = await orchardHelper.AssetProfileUrlAsync(
+                        x.Source.Path,
+                        profile,
+                        width,
+                        height,
+                        resizeMode,
+                        appendVersion: true,
+                        quality,
+                        imageFormat,
+                        bgcolor: bgcolor,
+                        autoorient: autoorient);
+                }
+                else
+                {
+                    assetUrl = orchardHelper.AssetUrl(
+                        x.Source.Path,
+                        width,
+                        height,
+                        resizeMode,
+                        appendVersion: true,
+                        quality,
+                        imageFormat,
+                        bgColor: bgcolor,
+                        autoorient: autoorient);
+                }
+
+                // Encode spaces as %20 to ensure the URL is valid, as GraphQL does not automatically encode them.
+                return assetUrl?.Replace(" ", "%20");
+            });
 
         Field<StringGraphType>("mediaText")
             .Description(S["the media text of the file item"])
