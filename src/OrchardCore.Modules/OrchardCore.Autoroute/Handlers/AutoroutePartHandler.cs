@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
-using OrchardCore.Autoroute.Core.Indexes;
 using OrchardCore.Autoroute.Models;
 using OrchardCore.Autoroute.ViewModels;
 using OrchardCore.ContentLocalization;
@@ -18,8 +17,6 @@ using OrchardCore.Environment.Cache;
 using OrchardCore.Liquid;
 using OrchardCore.Localization;
 using OrchardCore.Settings;
-using YesSql;
-using YesSql.Services;
 
 namespace OrchardCore.Autoroute.Handlers;
 
@@ -31,7 +28,6 @@ public class AutoroutePartHandler : ContentPartHandler<AutoroutePart>
     private readonly IContentDefinitionManager _contentDefinitionManager;
     private readonly ISiteService _siteService;
     private readonly ITagCache _tagCache;
-    private readonly ISession _session;
     private readonly IServiceProvider _serviceProvider;
 
     protected readonly IStringLocalizer S;
@@ -45,7 +41,6 @@ public class AutoroutePartHandler : ContentPartHandler<AutoroutePart>
         IContentDefinitionManager contentDefinitionManager,
         ISiteService siteService,
         ITagCache tagCache,
-        ISession session,
         IServiceProvider serviceProvider,
         IStringLocalizer<AutoroutePartHandler> stringLocalizer)
     {
@@ -55,7 +50,6 @@ public class AutoroutePartHandler : ContentPartHandler<AutoroutePart>
         _contentDefinitionManager = contentDefinitionManager;
         _siteService = siteService;
         _tagCache = tagCache;
-        _session = session;
         _serviceProvider = serviceProvider;
         S = stringLocalizer;
     }
@@ -125,9 +119,22 @@ public class AutoroutePartHandler : ContentPartHandler<AutoroutePart>
             context.Fail(item);
         }
 
-        if (!await IsAbsolutePathUniqueAsync(part.Path, part.ContentItem.ContentItemId))
+        var conflict = await GetAbsolutePathConflictAsync(part.Path, part.ContentItem.ContentItemId);
+        
+        if (conflict != null)
         {
-            context.Fail(S["Your permalink is already in use."], nameof(part.Path));
+            var targetId = conflict.ContainedContentItemId ?? conflict.ContentItemId;
+            _contentManager ??= _serviceProvider.GetRequiredService<IContentManager>();
+            var targetItem = await _contentManager.GetAsync(targetId, VersionOptions.Latest);
+
+            context.Fail(
+                S["Permalink conflict: '{0}' is already used by ContentItemId '{1}' (DisplayText: '{2}'). Source ContentItemId '{3}' (DisplayText: '{4}').",
+                    part.Path,
+                    targetId,
+                    targetItem?.DisplayText ?? string.Empty,
+                    part.ContentItem.ContentItemId,
+                    part.ContentItem.DisplayText ?? string.Empty],
+                nameof(part.Path));
         }
 
     }
@@ -463,16 +470,29 @@ public class AutoroutePartHandler : ContentPartHandler<AutoroutePart>
     }
 
     private async Task<bool> IsAbsolutePathUniqueAsync(string path, string contentItemId)
-    {
-        path = path.Trim('/');
-        var paths = new string[] { path, "/" + path, path + "/", "/" + path + "/" };
+        => await GetAbsolutePathConflictAsync(path, contentItemId) is null;
 
-        var possibleConflicts = await _session.QueryIndex<AutoroutePartIndex>(o => (o.Published || o.Latest) && o.Path.IsIn(paths)).ListAsync();
-        if (possibleConflicts.Any(x => x.ContentItemId != contentItemId && x.ContainedContentItemId != contentItemId))
+    private async Task<AutorouteEntry> GetAbsolutePathConflictAsync(string path, string contentItemId)
+    {
+        if (string.IsNullOrWhiteSpace(path))
         {
-            return false;
+            return null;
         }
 
-        return true;
+        var normalizedPath = "/" + path.Trim('/');
+        (var found, var entry) = await _entries.TryGetEntryByPathAsync(normalizedPath);
+
+        if (!found)
+        {
+            return null;
+        }
+
+        if (string.Equals(entry.ContentItemId, contentItemId, StringComparison.Ordinal) ||
+            string.Equals(entry.ContainedContentItemId, contentItemId, StringComparison.Ordinal))
+        {
+            return null;
+        }
+
+        return entry;
     }
 }
