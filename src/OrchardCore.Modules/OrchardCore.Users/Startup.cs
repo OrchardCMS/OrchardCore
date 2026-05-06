@@ -164,6 +164,7 @@ public sealed class Startup : StartupBase
         services.AddRecipeExecutionStep<CustomUserSettingsStep>();
         services.AddDisplayDriver<LoginForm, LoginFormDisplayDriver>();
         services.AddScoped<ILoginFormEvent, EmailConfirmationLoginFormEvent>();
+        services.AddScoped<ILoginFormEvent, DisabledUserLoginFormEvent>();
     }
 
     public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
