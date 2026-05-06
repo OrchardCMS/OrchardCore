@@ -39,6 +39,7 @@
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.ResourceManagement\OrchardCore.ResourceManagement.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Shortcodes.Abstractions\OrchardCore.Shortcodes.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.XmlRpc.Abstractions\OrchardCore.XmlRpc.Abstractions.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Abstractions\OrchardCore.Abstractions.csproj" />
   </ItemGroup>
 
   <ItemGroup>

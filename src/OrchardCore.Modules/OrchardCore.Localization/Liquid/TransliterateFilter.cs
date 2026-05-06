@@ -1,8 +1,8 @@
-using AnyAscii;
 using Fluid;
 using Fluid.Values;
+using OrchardCore.Liquid;
 
-namespace OrchardCore.Liquid.Filters;
+namespace OrchardCore.Localization.Liquid.Filters;
 
 public class TransliterateFilter : ILiquidFilter
 {
