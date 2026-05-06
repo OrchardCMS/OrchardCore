@@ -16,7 +16,6 @@ public class TenantValidatorTests : SiteContext
     [Theory]
     [InlineData("Tenant1", "tenant1", "", "Feature Profile", new[] { "A tenant with the same name already exists." })]
     [InlineData("tEnAnT1", "tenant1", "", "Feature Profile", new[] { "A tenant with the same name already exists." })]
-    [InlineData("dEfAuLt", "", "", "Feature Profile", new[] { "The tenant name is in conflict with the 'Default' tenant." })]
     [InlineData("Tenant5", "tenant3", "", "Feature Profile", new[] { "A tenant with the same host and prefix already exists." })]
     [InlineData("Tenant5", "tenant3", null, "Feature Profile", new[] { "A tenant with the same host and prefix already exists." })]
     [InlineData("Tenant5", "", "example2.com", "Feature Profile", new[] { "A tenant with the same host and prefix already exists." })]
@@ -59,6 +58,29 @@ public class TenantValidatorTests : SiteContext
         {
             Assert.Equal(errorMessages[i], errors.ElementAt(i).Message);
         }
+    }
+
+    [Fact]
+    public async Task TenantValidationFailsWhenNameConflictsWithDefaultTenant()
+    {
+        // Arrange
+        await ShellHost.InitializeAsync();
+        await SeedTenantsAsync();
+
+        var tenantValidator = CreateTenantValidator(defaultTenant: false);
+
+        // Act
+        var errors = await tenantValidator.ValidateAsync(new EditTenantViewModel
+        {
+            Name = "dEfAuLt",
+            RequestUrlPrefix = string.Empty,
+            RequestUrlHost = string.Empty,
+            FeatureProfiles = ["Feature Profile"],
+            IsNewTenant = true,
+        });
+
+        // Assert
+        Assert.Contains(errors, error => error.Message == "The tenant name is in conflict with the 'Default' tenant.");
     }
 
     [Theory]
@@ -135,9 +157,9 @@ public class TenantValidatorTests : SiteContext
 
     private static async Task SeedTenantsAsync()
     {
-        await ShellHost.GetOrCreateShellContextAsync(new ShellSettings { Name = "Tenant1", RequestUrlPrefix = "tenant1" }.AsUninitialized());
-        await ShellHost.GetOrCreateShellContextAsync(new ShellSettings { Name = "Tenant2", RequestUrlPrefix = string.Empty, RequestUrlHost = "example2.com" }.AsUninitialized());
-        await ShellHost.GetOrCreateShellContextAsync(new ShellSettings { Name = "Tenant3", RequestUrlPrefix = "tenant3", RequestUrlHost = string.Empty }.AsUninitialized());
-        await ShellHost.GetOrCreateShellContextAsync(new ShellSettings { Name = "Tenant4", RequestUrlPrefix = "tenant4", RequestUrlHost = "example4.com, example5.com" }.AsUninitialized());
+        await ShellHost.GetOrCreateShellContextAsync(new ShellSettings { Name = "Tenant1", RequestUrlPrefix = "tenant1", VersionId = IdGenerator.GenerateId() }.AsUninitialized());
+        await ShellHost.GetOrCreateShellContextAsync(new ShellSettings { Name = "Tenant2", RequestUrlPrefix = string.Empty, RequestUrlHost = "example2.com", VersionId = IdGenerator.GenerateId() }.AsUninitialized());
+        await ShellHost.GetOrCreateShellContextAsync(new ShellSettings { Name = "Tenant3", RequestUrlPrefix = "tenant3", RequestUrlHost = string.Empty, VersionId = IdGenerator.GenerateId() }.AsUninitialized());
+        await ShellHost.GetOrCreateShellContextAsync(new ShellSettings { Name = "Tenant4", RequestUrlPrefix = "tenant4", RequestUrlHost = "example4.com, example5.com", VersionId = IdGenerator.GenerateId() }.AsUninitialized());
     }
 }

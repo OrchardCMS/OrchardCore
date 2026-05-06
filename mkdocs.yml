@@ -171,6 +171,8 @@ nav:
       - Secure your application: topics/security/README.md
       - Data: topics/data/README.md
       - Configuration: topics/configuration/README.md
+      - Tenant Clustering: topics/tenant-clustering/README.md
+      - Tenant Clustering Demo: topics/tenant-clustering/local-demo.md
       - Workflows: topics/workflows/README.md
       - Publishing a new release: topics/publishing-releases/README.md
       - Using Docker: topics/docker/README.md
@@ -295,6 +297,7 @@ nav:
               - Background Tasks: reference/modules/BackgroundTasks/README.md
               - URL Rewriting: reference/modules/UrlRewriting/README.md
               - Reverse Proxy: reference/modules/ReverseProxy/README.md
+              - Tenant Clustering: reference/modules/ReverseProxy/TenantClusters.md
       - Branding: reference/branding/README.md
       - Libraries: reference/libraries/README.md
       - Glossary: reference/glossary/README.md

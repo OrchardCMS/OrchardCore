@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Clusters;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
 
@@ -11,13 +12,24 @@ namespace OrchardCore.Modules;
 /// </summary>
 public class ModularTenantRouterMiddleware
 {
+    private readonly RequestDelegate _next;
     private readonly ILogger _logger;
 
-    public ModularTenantRouterMiddleware(RequestDelegate _, ILogger<ModularTenantRouterMiddleware> logger)
-        => _logger = logger;
+    public ModularTenantRouterMiddleware(
+        RequestDelegate next,
+        ILogger<ModularTenantRouterMiddleware> logger)
+    {
+        _next = next;
+        _logger = logger;
+    }
 
     public Task Invoke(HttpContext httpContext)
     {
+        if (httpContext.TryGetClusterFeature(out _))
+        {
+            return _next(httpContext);
+        }
+
         if (_logger.IsEnabled(LogLevel.Information))
         {
             _logger.LogInformation("Begin Routing Request");
@@ -42,6 +54,9 @@ public class ModularTenantRouterMiddleware
             return Awaited(shellContext, httpContext);
         }
 
+        // Update the last request time (done atomically).
+        shellContext.LastRequestTimeUtc = DateTime.UtcNow;
+
         return shellContext.Pipeline.Invoke(httpContext);
 
         static async Task Awaited(ShellContext shellContext, HttpContext httpContext)
@@ -51,6 +66,9 @@ public class ModularTenantRouterMiddleware
             {
                 await shellContext.BuildPipelineAsync();
             }
+
+            // Update the last request time (done atomically).
+            shellContext.LastRequestTimeUtc = DateTime.UtcNow;
 
             await shellContext.Pipeline.Invoke(httpContext);
         }

@@ -100,5 +100,7 @@ When configuring reverse proxy settings:
 
 For more information, please refer to:
 
+- [Tenant Clustering](TenantClusters.md)
 - [Configuration](../Configuration/README.md)
+- [Tenant Clustering Internals](../../../topics/tenant-clustering/README.md)
 - [Microsoft ASP.NET Core Forwarded Headers Documentation](https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/proxy-load-balancer)
