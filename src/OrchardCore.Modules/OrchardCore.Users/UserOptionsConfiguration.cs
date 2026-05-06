@@ -20,6 +20,7 @@ public sealed class UserOptionsConfiguration : IConfigureOptions<ResourceManagem
             .DefineScript("qrcode")
             .SetUrl("~/OrchardCore.Users/Scripts/qrcode.min.js", "~/OrchardCore.Users/Scripts/qrcode.js")
             .SetVersion("1.0.0");
+
     }
 
     public void Configure(ResourceManagementOptions options)

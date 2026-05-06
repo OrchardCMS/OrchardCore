@@ -2,9 +2,11 @@
 @using OrchardCore.ContentFields
 @using OrchardCore.Mvc.Utilities
 @using OrchardCore.Localization.Data
+@using OrchardCore.ContentManagement.Metadata.Models
 @inject IDataLocalizer D
 @{
     var settings = Model.PartFieldDefinition.GetSettings<TextFieldSettings>();
+    var isAdvanced = Model.PartFieldDefinition.DisplayMode() == "Advanced";
     string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), DataLocalizationContext.ContentField(Model.PartFieldDefinition.PartDefinition.Name)];
 }
 
@@ -18,7 +20,14 @@
 <div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.Text)_FieldWrapper">
     <label asp-for="Text" class="@Orchard.GetLabelClasses(inputRequired: settings.Required)">@localizedFieldName</label>
     <div class="@Orchard.GetEndClasses()">
-        <input asp-for="Text" class="form-control content-preview-text" type="tel" placeholder="@settings.Placeholder" asp-is-disabled="settings.Type == FieldBehaviorType.GeneratedDisabled" />
+        @if (isAdvanced)
+        {
+            @await DisplayAsync(await New.PhoneInput(Value: Model.Text, InputName: Html.NameFor(m => m.Text), Disabled: settings.Type == FieldBehaviorType.GeneratedDisabled))
+        }
+        else
+        {
+            <input asp-for="Text" class="form-control content-preview-text" type="tel" placeholder="@settings.Placeholder" asp-is-disabled="settings.Type == FieldBehaviorType.GeneratedDisabled" />
+        }
         <span asp-validation-for="Text"></span>
         @if (!string.IsNullOrEmpty(settings.Hint))
         {
