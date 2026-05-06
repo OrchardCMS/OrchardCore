@@ -28,6 +28,72 @@
     initializeOptionsEditor(document.getElementById('@Html.IdFor(m => m)'), @Html.Raw(supportedCultures), '@defaultCulture', '@selectedCulture', @Html.Raw(allCultures));
 </script>
 
+<script>
+    
+    document.addEventListener('DOMContentLoaded', (e) => {
+        
+        const cultureTable = document.getElementById('cultureListTable');
+        
+        if(!cultureTable) return;
+        
+        const cultureSelectors = cultureTable.querySelectorAll('.form-check-input');
+
+        const saveButton = document.querySelector('button.primaryAction.save[type="submit"]');
+
+        if(!saveButton) return;
+
+        for(const selector of cultureSelectors) {
+            
+            selector.addEventListener('change', e => {
+                saveButton.click();
+            })
+            
+        }
+        
+    })
+    
+</script>
+
+<script at="Foot" >
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        
+        const modal = document.getElementById('addCultureModal');
+            
+        if(!modal) return;
+        
+        const cultureTable = document.getElementById('cultureListTable');
+        
+        if(!cultureTable) return;
+        
+        const startingCultureCount = cultureTable.children.length;
+        
+        function triggerSave() {
+
+            const saveButton = document.querySelector('button.primaryAction.save[type="submit"]');
+
+            const currentCultureCount = cultureTable.children.length;
+            
+            if (saveButton && startingCultureCount !== currentCultureCount) {
+                saveButton.click();
+            }
+            
+        }
+        
+        modal.addEventListener('hidden.bs.modal', function(e) {
+            triggerSave();
+        })
+        
+        const closeButton = modal.querySelector('.btn-close');
+        
+        closeButton.addEventListener('click', function(e) {
+            triggerSave();
+        })
+        
+    });
+    
+</script>
+
 <script type="text/x-template" id="options-table">
     <div class="mb-3">
         <table class="table border-bottom">
@@ -38,44 +104,72 @@
                     <th>&nbsp;</th>
                 </tr>
             </thead>
-            <tbody>
-                <tr v-for="(culture, index) in data" :key="index">
-                    <td>
-                        <span v-if="culture != ''">{{ culture }}</span>
-                        <span v-if="culture == ''">@CultureInfo.InvariantCulture.DisplayName</span>
-                        <input type="hidden" class="form-control" v-bind:value="culture" />
-                    </td>
-                    <td>
-                        <div class="form-check ms-5">
-                            <input type="radio" class="form-check-input" :id="'customRadio_' + index" v-bind:value="culture" v-model="defaultCulture">
-                            <label class="form-check-label" title="Set as default" v-bind:for="'customRadio_' + index"></label>
-                        </div>
-                    </td>
-                    <td class="text-end">
-                        <a v-on:click="remove(index)" title="@T["Remove culture"]" href="javascript:void(0)" class="btn btn-secondary btn-sm" style="cursor:pointer">
-                            <i class="fa-solid fa-trash" aria-hidden="true"></i>
-                        </a>
-                    </td>
-                </tr>
+            <tbody id="cultureListTable">
+            <tr v-for="(culture, index) in data" :key="index">
+                <td>
+                    <span v-if="culture != ''">{{ culture }}</span>
+                    <span v-if="culture == ''">@CultureInfo.InvariantCulture.DisplayName</span>
+                    <input type="hidden" class="form-control" v-bind:value="culture"/>
+                </td>
+                <td>
+                    <div class="form-check ms-5">
+                        <input type="radio" class="form-check-input" :id="'customRadio_' + index" v-bind:value="culture"
+                               v-model="defaultCulture">
+                        <label class="form-check-label" title="Set as default"
+                               v-bind:for="'customRadio_' + index"></label>
+                    </div>
+                </td>
+                <td class="text-end">
+                    <a v-on:click="remove(index)" title="@T["Remove culture"]" href="javascript:void(0)"
+                       class="btn btn-secondary btn-sm" style="cursor:pointer">
+                        <i class="fa-solid fa-trash" aria-hidden="true"></i>
+                    </a>
+                </td>
+            </tr>
             </tbody>
         </table>
 
-        <div class="row">
-            <div class="col">
-                <select v-model="selectedCulture" class="form-select col">
-                    <option v-for="(culture, index) in allCultures" v-bind:value="culture.Name" :key="index" v-if="!(culture.Supported)">
-                        {{ culture.Name }} ({{ culture.DisplayName }})
-                    </option>
-                </select>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCultureModal">
+            @T["Add culture"]
+        </button>
+
+        <div class="modal fade" id="addCultureModal" tabindex="-1" aria-labelledby="myCustomModalLabel"
+             aria-hidden="true">
+
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">@T["Add culture"]</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                        
+                            <div class="col">
+                                <select v-model="selectedCulture" class="form-select col" v-on:change="add()">
+                                    <option v-for="(culture, index) in allCultures" v-bind:value="culture.Name"
+                                            :key="index"
+                                            v-if="!(culture.Supported)">
+                                        {{ culture.Name }} ({{ culture.DisplayName }})
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>                
             </div>
-            <div class="col">
-                <a v-on:click="add()" href="javascript:void(0)" class="btn btn-success"><i class="fa-solid fa-plus small" aria-hidden="true"></i> @T["Add culture"]</a>
-            </div>
+            
         </div>
 
-        <input class="form-control" id="@Html.IdFor(m => m.SupportedCultures)" name="@Html.NameFor(m => m.SupportedCultures)" type="hidden" v-bind:value="getSupportedCultures()" />
-        <input class="form-control" id="@Html.IdFor(m => m.DefaultCulture)" name="@Html.NameFor(m => m.DefaultCulture)" type="hidden" v-bind:value="getDefaultCulture()" />
+   
+
+        <input class="form-control" id="@Html.IdFor(m => m.SupportedCultures)"
+               name="@Html.NameFor(m => m.SupportedCultures)" type="hidden" v-bind:value="getSupportedCultures()" />
+        <input class="form-control" id="@Html.IdFor(m => m.DefaultCulture)" name="@Html.NameFor(m => m.DefaultCulture)"
+               type="hidden" v-bind:value="getDefaultCulture()"/>
+               
     </div>
+
 </script>
 
 <div id="@Html.IdFor(m => m)" class="field-editor field-editor-predefinedlist">
