@@ -1,0 +1,9 @@
+@model EtlActivityViewModel<JsonExportLoad>
+
+<header>
+    <h4><i class="fa-solid fa-file-export"></i> @T["JSON Export"]</h4>
+</header>
+@if (!string.IsNullOrEmpty(Model.Activity.FileName))
+{
+    <span>@T["File:"] @Model.Activity.FileName</span>
+}

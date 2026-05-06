@@ -1,0 +1,26 @@
+@model EtlActivityEditorViewModel
+
+<zone Name="Title"><h1>@(string.IsNullOrEmpty(Model.ActivityId) ? T["Add Activity"] : T["Edit Activity"])</h1></zone>
+
+<form asp-action="@(string.IsNullOrEmpty(Model.ActivityId) ? "CreateActivity" : "EditActivity")" method="post">
+    <input type="hidden" name="PipelineId" value="@Model.PipelineId" />
+    <input type="hidden" name="ActivityId" value="@Model.ActivityId" />
+    <input type="hidden" name="ActivityName" value="@Model.ActivityName" />
+    <input type="hidden" name="ReturnUrl" value="@Model.ReturnUrl" />
+
+    <div asp-validation-summary="ModelOnly"></div>
+
+    @await DisplayAsync(Model.Editor)
+
+    <div class="mb-3">
+        <button class="btn btn-success" type="submit">@T["Save"]</button>
+        @if (Url.IsLocalUrl(Model.ReturnUrl))
+        {
+            <a class="btn btn-secondary" href="@Model.ReturnUrl">@T["Cancel"]</a>
+        }
+        else
+        {
+            <a class="btn btn-secondary" asp-action="Edit" asp-route-id="@Model.PipelineId">@T["Cancel"]</a>
+        }
+    </div>
+</form>

@@ -253,6 +253,8 @@ nav:
               - Auto Setup: reference/modules/AutoSetup/README.md
               - Features: reference/modules/Features/README.md
               - Contents: reference/modules/Contents/README.md
+              - Content Transfer: reference/modules/ContentTransfer/README.md
+              - Data Pipelines: reference/modules/DataOrchestrator/README.md
               - Configuration: reference/modules/Configuration/README.md
               - Cors: reference/modules/Cors/README.md
               - Custom Settings: reference/modules/CustomSettings/README.md

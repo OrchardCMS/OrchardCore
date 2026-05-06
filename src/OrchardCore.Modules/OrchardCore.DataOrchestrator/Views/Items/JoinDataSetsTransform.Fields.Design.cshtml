@@ -1,0 +1,13 @@
+@model EtlActivityViewModel<JoinDataSetsTransform>
+
+<header>
+    <h4><i class="fa-solid fa-code-merge"></i> @T["Join Data Sets"]</h4>
+</header>
+@if (!string.IsNullOrWhiteSpace(Model.Activity.LeftField))
+{
+    <div>@T["Left:"] @Model.Activity.LeftField</div>
+}
+@if (!string.IsNullOrWhiteSpace(Model.Activity.RightField))
+{
+    <div>@T["Right:"] @Model.Activity.RightField</div>
+}

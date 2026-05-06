@@ -1,0 +1,128 @@
+.etl-container {
+  border: 1px solid var(--bs-border-color);
+  border-radius: 0.25rem;
+  overflow: hidden;
+}
+
+.etl-canvas-container {
+  overflow: auto;
+  max-height: 700px;
+}
+
+.etl-canvas {
+  position: relative;
+  min-height: 400px;
+  overflow: auto;
+  background-color: var(--bs-body-bg);
+  background-image: linear-gradient(var(--bs-border-color-translucent) 1px, transparent 1px), linear-gradient(90deg, var(--bs-border-color-translucent) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+.etl-canvas .activity {
+  position: absolute;
+  border: 1px solid #346789;
+  border-radius: 4px;
+  background-color: var(--bs-secondary-bg);
+  padding: 1em;
+  min-width: 120px;
+  min-height: 60px;
+  max-width: 250px;
+  opacity: 0.9;
+  cursor: move;
+  z-index: 20;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  transition: box-shadow 0.2s, opacity 0.2s;
+}
+.etl-canvas .activity:hover {
+  box-shadow: 2px 2px 12px rgba(0, 0, 0, 0.3);
+  opacity: 1;
+}
+.etl-canvas .activity.activity-source {
+  border-color: #7ab02c;
+  border-width: 2px;
+}
+.etl-canvas .activity.activity-source header h4 i {
+  color: #7ab02c;
+}
+.etl-canvas .activity.activity-transform {
+  border-color: #3a8acd;
+  border-width: 2px;
+}
+.etl-canvas .activity.activity-transform header h4 i {
+  color: #3a8acd;
+}
+.etl-canvas .activity.activity-load {
+  border-color: #6c757d;
+  border-width: 2px;
+}
+.etl-canvas .activity.activity-load header h4 i {
+  color: #6c757d;
+}
+.etl-canvas .activity.activity-start {
+  border-width: 3px;
+  font-weight: bold;
+}
+.etl-canvas .activity header h4 {
+  font-size: 0.9rem;
+  margin-bottom: 0.25rem;
+}
+.etl-canvas .activity header h4 i {
+  margin-right: 0.3rem;
+}
+.etl-canvas .activity .activity-commands {
+  position: absolute;
+  top: -30px;
+  right: 0;
+  white-space: nowrap;
+}
+.etl-canvas .activity .activity-commands .btn {
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  font-size: 0.7rem;
+  line-height: 24px;
+}
+.etl-canvas .jtk-endpoint {
+  z-index: 21;
+  cursor: pointer;
+}
+.etl-canvas .connection-label {
+  z-index: 31;
+  border: 1px solid var(--bs-border-color);
+  padding: 0 0.5rem;
+  border-radius: 2px;
+  background-color: var(--bs-secondary-bg);
+  font-size: 0.75rem;
+}
+.etl-canvas .outcome-label {
+  z-index: 21;
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--bs-body-color);
+  background-color: var(--bs-body-bg);
+  border: 1px solid var(--bs-border-color);
+  padding: 0.1rem 0.4rem;
+  border-radius: 2px;
+  white-space: nowrap;
+}
+
+.modal-activities .activity-picker-categories {
+  gap: 0.25rem;
+}
+.modal-activities .activity-card {
+  margin-bottom: 0.5rem;
+}
+.modal-activities .activity-card .card {
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+}
+.modal-activities .activity-card .card:hover {
+  border-color: var(--bs-primary);
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.08);
+  transform: translateY(-1px);
+}
+.modal-activities .activity-card .card-title {
+  font-size: 0.9rem;
+}
+.modal-activities .activity-card .card-text {
+  font-size: 0.8rem;
+}

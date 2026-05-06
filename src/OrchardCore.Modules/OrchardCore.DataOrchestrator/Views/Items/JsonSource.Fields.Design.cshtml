@@ -1,0 +1,9 @@
+@model EtlActivityViewModel<JsonSource>
+
+<header>
+    <h4><i class="fa-solid fa-code"></i> @T["JSON Data"]</h4>
+</header>
+@if (!string.IsNullOrEmpty(Model.Activity.Data))
+{
+    <span>@T["Data provided"]</span>
+}

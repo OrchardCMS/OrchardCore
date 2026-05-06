@@ -1,0 +1,7 @@
+@model JsonExportLoadViewModel
+
+<div class="mb-3">
+    <label asp-for="FileName" class="form-label">@T["File Name"]</label>
+    <input asp-for="FileName" class="form-control" />
+    <span class="hint">@T["The JSON file is written to Orchard Media using this path, for example `exports/output.json`."]</span>
+</div>

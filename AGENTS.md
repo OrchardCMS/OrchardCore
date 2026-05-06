@@ -391,6 +391,14 @@ dotnet test test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.cspro
 
 ## Common Extension Points
 
+### Adding New Modules
+
+When a new module is added to the CMS, it must be registered in `src/OrchardCore/OrchardCore.Application.Cms.Core.Targets/OrchardCore.Application.Cms.Core.Targets.csproj` so it is discoverable by the application. Add a `ProjectReference` with `PrivateAssets="none"` and keep the references sorted alphabetically:
+
+```xml
+<ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.YourModule\OrchardCore.YourModule.csproj" PrivateAssets="none" />
+```
+
 ### Registering Services
 
 ```csharp
