@@ -3,19 +3,15 @@ using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
 using Microsoft.AspNetCore.Mvc.Razor.Extensions;
-using Microsoft.Extensions.Hosting;
-using OrchardCore.Mvc;
 
 namespace OrchardCore.Admin;
 
 internal sealed class AdminPageRouteModelProvider : IPageRouteModelProvider
 {
-    private readonly IHostEnvironment _hostingEnvironment;
     private readonly ApplicationPartManager _applicationManager;
 
-    public AdminPageRouteModelProvider(IHostEnvironment hostingEnvironment, ApplicationPartManager applicationManager)
+    public AdminPageRouteModelProvider(ApplicationPartManager applicationManager)
     {
-        _hostingEnvironment = hostingEnvironment;
         _applicationManager = applicationManager;
     }
 
@@ -25,18 +21,7 @@ internal sealed class AdminPageRouteModelProvider : IPageRouteModelProvider
     {
         ArgumentNullException.ThrowIfNull(context);
 
-        IEnumerable<CompiledViewDescriptor> descriptors;
-
-        var refsFolderExists = Directory.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "refs"));
-
-        if (_hostingEnvironment.IsDevelopment() && refsFolderExists)
-        {
-            descriptors = GetPageDescriptors<DevelopmentViewsFeature>(_applicationManager);
-        }
-        else
-        {
-            descriptors = GetPageDescriptors<ViewsFeature>(_applicationManager);
-        }
+        var descriptors = GetPageDescriptors<ViewsFeature>(_applicationManager);
 
         var adminPaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
