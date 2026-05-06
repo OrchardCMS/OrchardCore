@@ -1,6 +1,23 @@
 @model LocalizationPartViewModel
-
+@{
+    var contentItem = Model.LocalizationPart.LocalizationSet;
+}
 @if (Model.LocalizationPart.Culture != null)
 {
     <span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@T["Culture"]"><i class="fa-solid fa-globe text-info" aria-hidden="true"></i> @Model.LocalizationPart.Culture</span>
+
+    if (!string.IsNullOrEmpty(Model.LocalizationSet) && Model.ContentItemCultures.Any())
+    {
+        var returnUrl = Context.Request.Path + Context.Request.QueryString;
+        foreach (var contentItemCulture in Model.ContentItemCultures)
+        {
+            if (!string.IsNullOrEmpty(contentItemCulture.ContentItemId))
+            {
+                <span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@T["Culture"]">
+                    <i class="fa-solid fa-globe text-info" aria-hidden="true"></i>
+                    <a asp-action="Edit" asp-controller="Admin" asp-route-area="OrchardCore.Contents" asp-route-contentItemId="@contentItemCulture.ContentItemId" asp-route-returnUrl="@returnUrl" data-url-af="UnsafeUrl">@contentItemCulture.Culture.Name </a>
+                </span>
+            }
+        }
+    }
 }
