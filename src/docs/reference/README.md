@@ -16,6 +16,7 @@ Here's a categorized overview of all built-in Orchard Core features at a glance.
 ### Admin
 
 - [Admin](modules/Admin/README.md)
+- [Admin Theme Conventions](themes/admin-theme.md)
 - [Admin Dashboard](modules/AdminDashboard/README.md)
 - [Admin Menu](modules/AdminMenu/README.md)
 - [Custom Settings](modules/CustomSettings/README.md)
@@ -82,6 +83,7 @@ Here's a categorized overview of all built-in Orchard Core features at a glance.
 - [Templates](modules/Templates/README.md)
 - [Placements](modules/Placements/README.md)
 - [Themes](modules/Themes/README.md)
+- [Admin Theme Conventions](themes/admin-theme.md)
 - [Liquid](modules/Liquid/README.md)
 - [Resources](modules/Resources/README.md)
 - [Rules](modules/Rules/README.md)

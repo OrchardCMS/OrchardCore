@@ -13,15 +13,18 @@ public static class ServiceCollectionExtensions
     {
         services.AddSingleton<IScriptingEngine, JavaScriptEngine>();
 
-        services.Configure<Options>(option => option.SetWrapObjectHandler(static (e, target, type) =>
-        target switch
+        services.Configure<Options>(option =>
+        {
+            option.ExperimentalFeatures |= ExperimentalFeature.TaskInterop;
+            option.SetWrapObjectHandler(static (e, target, type) => target switch
             {
                 JsonDynamicObject dynamicObject => ObjectWrapper.Create(e, (JsonObject)dynamicObject, type),
                 JsonDynamicArray dynamicArray => ObjectWrapper.Create(e, (JsonArray)dynamicArray, type),
                 JsonDynamicValue dynamicValue => ObjectWrapper.Create(e, (JsonValue)dynamicValue, type),
                 StringValues stringValues => ObjectWrapper.Create(e, stringValues.Count <= 1 ? stringValues.ToString() : stringValues.ToArray(), type),
                 _ => ObjectWrapper.Create(e, target, type)
-            }));
+            });
+        });
 
         return services;
     }
