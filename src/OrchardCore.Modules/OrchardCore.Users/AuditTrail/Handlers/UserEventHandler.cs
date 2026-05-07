@@ -26,7 +26,7 @@ public class UserEventHandler : UserEventHandlerBase, ILoginFormEvent
     /// <summary>
     /// Properties of <see cref="User"/> which may never be stored for security reasons.
     /// </summary>
-    public static readonly string[] BannedProperties =
+    public static readonly HashSet<string> BannedProperties =
     [
         nameof(User.PasswordHash),
         nameof(User.ResetToken),
