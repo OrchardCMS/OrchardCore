@@ -2,6 +2,9 @@ using Microsoft.Extensions.Compliance.Redaction;
 
 namespace OrchardCore.Users.AuditTrail.Services;
 
+/// <summary>
+/// Substitutes all but the first and last letter with asterisks. Ideal for redacting emails or names.
+/// </summary>
 public class PartialAsteriskRedactor : Redactor
 {
     public override int Redact(ReadOnlySpan<char> source, Span<char> destination)
