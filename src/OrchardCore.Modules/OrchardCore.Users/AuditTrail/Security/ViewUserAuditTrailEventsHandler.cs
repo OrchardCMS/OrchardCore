@@ -6,7 +6,7 @@ using OrchardCore.Security;
 using OrchardCore.Users.AuditTrail.Models;
 using OrchardCore.Users.Models;
 
-namespace OrchardCore.Users.AuditTrail.Handlers;
+namespace OrchardCore.Users.AuditTrail.Security;
 
 public class ViewUserAuditTrailEventsHandler : AuthorizationHandler<PermissionRequirement>
 {

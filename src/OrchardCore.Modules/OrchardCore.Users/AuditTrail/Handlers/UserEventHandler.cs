@@ -1,5 +1,3 @@
-using GraphQL;
-using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -15,6 +13,7 @@ using OrchardCore.Users.AuditTrail.Services;
 using OrchardCore.Users.Events;
 using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Models;
+using System.Security.Claims;
 using System.Text.Json.Nodes;
 using YesSql;
 using ISession = YesSql.ISession;
