@@ -35,18 +35,7 @@ public sealed class AuditTrailUserEventDisplayDriver : AuditTrailEventSectionDis
                 model.UserEvent = userEvent;
             })
             .RenderWhen(async () =>
-            {
-                if (_httpContextAccessor.HttpContext?.User is not { Identity.IsAuthenticated: true } claimsPrincipal)
-                {
-                    return false;
-                }
-
-                var permission = await _userManager.GetUserAsync(claimsPrincipal) is User { UserId: { } userId } &&
-                                 userId.EqualsOrdinalIgnoreCase(userEvent?.UserId)
-                    ? Permissions.ViewOwnUserAuditTrailEvents
-                    : Permissions.ViewUserAuditTrailEvents; 
-                    
-                return await _authorizationService.AuthorizeAsync(claimsPrincipal, permission);
-            })
+                _httpContextAccessor.HttpContext?.User is { Identity.IsAuthenticated: true } claimsPrincipal &&
+                await _authorizationService.AuthorizeAsync(claimsPrincipal, Permissions.ViewUserAuditTrailEvents, userEvent))
             .Location(OrchardCoreConstants.DisplayType.DetailAdmin, "Content:10");
 }
