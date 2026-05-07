@@ -11,6 +11,7 @@ namespace OrchardCore.ReCaptcha.Drivers;
 public sealed class ReCaptchaResetPasswordFormDisplayDriver : DisplayDriver<ResetPasswordForm>
 {
     private readonly ReCaptchaSettings _settings;
+
     public ReCaptchaResetPasswordFormDisplayDriver(IOptions<ReCaptchaSettings> options)
     {
         _settings = options.Value;

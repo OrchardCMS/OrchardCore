@@ -11,6 +11,7 @@ namespace OrchardCore.ReCaptcha.Drivers;
 public sealed class ReCaptchaLoginFormDisplayDriver : DisplayDriver<LoginForm>
 {
     private readonly ReCaptchaSettings _settings;
+
     public ReCaptchaLoginFormDisplayDriver(IOptions<ReCaptchaSettings> options)
     {
         _settings = options.Value;

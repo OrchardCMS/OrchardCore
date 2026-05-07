@@ -21,6 +21,8 @@ public sealed class ReCaptchaSettingsConfiguration : IConfigureOptions<ReCaptcha
             // Only apply if NOT already set by appsettings.json via PostConfigure
             options.SiteKey ??= settings.SiteKey;
             options.SecretKey ??= settings.SecretKey;
+            options.ReCaptchaScriptUri ??= settings.ReCaptchaScriptUri;
+            options.ReCaptchaApiUri ??= settings.ReCaptchaApiUri;
         }
     }
 }

@@ -69,7 +69,9 @@ The following configuration values can be customized:
 {
   "OrchardCore_ReCaptcha": {
     "SiteKey": "",
-    "SecretKey": ""
+    "SecretKey": "",
+    "ReCaptchaScriptUri": "",
+    "ReCaptchaApiUri": ""
   }
 }
 ```
