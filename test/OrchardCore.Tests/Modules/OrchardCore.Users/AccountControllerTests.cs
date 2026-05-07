@@ -395,6 +395,126 @@ public class AccountControllerTests
         });
     }
 
+    [Fact]
+    public async Task Login_WhenUserIsDisabled_RedirectsToLoginWithError()
+    {
+        // Arrange
+        var context = await GetSiteContextAsync(new RegistrationSettings());
+
+        var registerGet = await context.Client.GetAsync("Register", TestContext.Current.CancellationToken);
+        Assert.True(registerGet.IsSuccessStatusCode);
+
+        var model = new RegisterViewModel()
+        {
+            UserName = "DisabledUser",
+            Email = "DisabledUser@orchardcore.com",
+            Password = "DisabledUser@OC!123",
+            ConfirmPassword = "DisabledUser@OC!123",
+        };
+
+        var registerPost = await context.Client.SendAsync(await CreateRequestMessageAsync(model, registerGet), TestContext.Current.CancellationToken);
+        Assert.Equal(HttpStatusCode.Redirect, registerPost.StatusCode);
+
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IUser>>();
+            var user = await userManager.FindByNameAsync(model.UserName) as User;
+            Assert.NotNull(user);
+
+            user.IsEnabled = false;
+            await userManager.UpdateAsync(user);
+        });
+
+        // Act
+        var loginGet = await context.Client.GetAsync("Login", TestContext.Current.CancellationToken);
+        Assert.True(loginGet.IsSuccessStatusCode);
+
+        var loginPost = await context.Client.SendAsync(await CreateLoginRequestMessageAsync(model.UserName, model.Password, loginGet), TestContext.Current.CancellationToken);
+
+        // Assert
+        Assert.Equal(HttpStatusCode.Redirect, loginPost.StatusCode);
+        Assert.EndsWith("/Login", loginPost.Headers.Location.ToString());
+
+        var cookies = CookiesHelper.ExtractCookies(loginPost);
+        Assert.DoesNotContain("orchauth_" + context.TenantName, cookies.Keys);
+    }
+
+    [Fact]
+    public async Task Login_WhenUserIsEnabled_Succeeds()
+    {
+        // Arrange
+        var context = await GetSiteContextAsync(new RegistrationSettings());
+
+        var registerGet = await context.Client.GetAsync("Register", TestContext.Current.CancellationToken);
+        Assert.True(registerGet.IsSuccessStatusCode);
+
+        var model = new RegisterViewModel()
+        {
+            UserName = "EnabledUser",
+            Email = "EnabledUser@orchardcore.com",
+            Password = "EnabledUser@OC!123",
+            ConfirmPassword = "EnabledUser@OC!123",
+        };
+
+        var registerPost = await context.Client.SendAsync(await CreateRequestMessageAsync(model, registerGet), TestContext.Current.CancellationToken);
+        Assert.Equal(HttpStatusCode.Redirect, registerPost.StatusCode);
+
+        // Act
+        var loginGet = await context.Client.GetAsync("Login", TestContext.Current.CancellationToken);
+        Assert.True(loginGet.IsSuccessStatusCode);
+
+        var loginPost = await context.Client.SendAsync(await CreateLoginRequestMessageAsync(model.UserName, model.Password, loginGet), TestContext.Current.CancellationToken);
+
+        // Assert
+        Assert.Equal(HttpStatusCode.Redirect, loginPost.StatusCode);
+        Assert.Equal($"/{context.TenantName}/", loginPost.Headers.Location.ToString());
+
+        var cookies = CookiesHelper.ExtractCookies(loginPost);
+        Assert.Contains("orchauth_" + context.TenantName, cookies.Keys);
+    }
+
+    [Fact]
+    public async Task Login_WhenUserDisabledUnderModeration_DefersToModerationHandler()
+    {
+        // Arrange
+        var context = await GetSiteContextAsync(new RegistrationSettings()
+        {
+            UsersAreModerated = true,
+        });
+
+        var registerGet = await context.Client.GetAsync("Register", TestContext.Current.CancellationToken);
+        Assert.True(registerGet.IsSuccessStatusCode);
+
+        var model = new RegisterViewModel()
+        {
+            UserName = "ModeratedUser",
+            Email = "ModeratedUser@orchardcore.com",
+            Password = "ModeratedUser@OC!123",
+            ConfirmPassword = "ModeratedUser@OC!123",
+        };
+
+        var registerPost = await context.Client.SendAsync(await CreateRequestMessageAsync(model, registerGet), TestContext.Current.CancellationToken);
+        Assert.Equal(HttpStatusCode.Redirect, registerPost.StatusCode);
+
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IUser>>();
+            var user = await userManager.FindByNameAsync(model.UserName) as User;
+            Assert.NotNull(user);
+            Assert.False(user.IsEnabled);
+        });
+
+        // Act
+        var loginGet = await context.Client.GetAsync("Login", TestContext.Current.CancellationToken);
+        Assert.True(loginGet.IsSuccessStatusCode);
+
+        var loginPost = await context.Client.SendAsync(await CreateLoginRequestMessageAsync(model.UserName, model.Password, loginGet), TestContext.Current.CancellationToken);
+
+        // Assert
+        Assert.Equal(HttpStatusCode.Redirect, loginPost.StatusCode);
+        Assert.Equal($"/{context.TenantName}/{nameof(RegistrationController.RegistrationPending)}", loginPost.Headers.Location.ToString());
+    }
+
     private static async Task<HttpRequestMessage> CreateRequestMessageAsync(RegisterViewModel model, HttpResponseMessage response)
     {
         var data = new Dictionary<string, string>
@@ -407,6 +527,18 @@ public class AccountControllerTests
         };
 
         return HttpRequestHelper.CreatePostMessageWithCookies("Register", data, response);
+    }
+
+    private static async Task<HttpRequestMessage> CreateLoginRequestMessageAsync(string userName, string password, HttpResponseMessage response)
+    {
+        var data = new Dictionary<string, string>
+        {
+            {"__RequestVerificationToken", await AntiForgeryHelper.ExtractAntiForgeryToken(response) },
+            {$"{nameof(LoginForm)}.{nameof(LoginViewModel.UserName)}", userName},
+            {$"{nameof(LoginForm)}.{nameof(LoginViewModel.Password)}", password},
+        };
+
+        return HttpRequestHelper.CreatePostMessageWithCookies("Login", data, response);
     }
 
     private static async Task<SiteContext> GetSiteContextAsync(RegistrationSettings settings, bool enableRegistrationFeature = true, bool requireUniqueEmail = true, bool enableExternalAuthentication = false)
