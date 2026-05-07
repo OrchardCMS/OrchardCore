@@ -539,16 +539,21 @@ body:not(.left-sidebar-compact) #ta-left-sidebar li ul > li ul > li {
   background: rgba(0, 0, 0, 0.1);
 }
 
-body:not(.left-sidebar-compact) #ta-left-sidebar li ul > li ul > li > a {
+body:not(.left-sidebar-compact) #ta-left-sidebar li ul > li ul > li > .item-label {
   color: var(--oc-admin-menu-item-font-color-active);
 }
 
-[dir="ltr"] body:not(.left-sidebar-compact) #ta-left-sidebar li ul > li ul > li > a {
+[dir="ltr"] body:not(.left-sidebar-compact) #ta-left-sidebar li ul > li ul > li > .item-label {
   padding-left: 48px !important;
 }
 
-[dir="rtl"] body:not(.left-sidebar-compact) #ta-left-sidebar li ul > li ul > li > a {
+[dir="rtl"] body:not(.left-sidebar-compact) #ta-left-sidebar li ul > li ul > li > .item-label {
   padding-right: 48px !important;
+}
+
+body:not(.left-sidebar-compact) #ta-left-sidebar li ul > li ul > li > .item-label:hover {
+  background: rgba(0, 0, 0, 0.18);
+  color: var(--oc-admin-menu-font-color-hover);
 }
 
 [dir="ltr"] body:not(.left-sidebar-compact) #ta-left-sidebar li ul > li ul > .active > a {

@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.Extensions.Localization;
 using OrchardCore.Deployment;
 
 namespace OrchardCore.Queries.Deployment;
@@ -11,6 +12,12 @@ public class QueryBasedContentDeploymentStep : DeploymentStep
     public QueryBasedContentDeploymentStep()
     {
         Name = "QueryBasedContentDeploymentStep";
+    }
+
+    public QueryBasedContentDeploymentStep(IStringLocalizer<QueryBasedContentDeploymentStep> S)
+        : this()
+    {
+        Category = S["Content Management"];
     }
 
     [Required]

@@ -72,7 +72,6 @@ public sealed class Startup : StartupBase
         .AddLiquidFilter<LocalTimeZoneFilter>("local")
         .AddLiquidFilter<UtcTimeZoneFilter>("utc")
         .AddLiquidFilter<SlugifyFilter>("slugify")
-        .AddLiquidFilter<TransliterateFilter>("transliterate")
         .AddLiquidFilter<LiquidFilter>("liquid")
         .AddLiquidFilter<ContentUrlFilter>("href")
         .AddLiquidFilter<AbsoluteUrlFilter>("absolute_url")

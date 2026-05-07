@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Localization;
 using OrchardCore.Deployment;
 using OrchardCore.Indexing.Core.Recipes;
 
@@ -8,6 +9,12 @@ public sealed class RebuildIndexDeploymentStep : DeploymentStep
     public RebuildIndexDeploymentStep()
     {
         Name = RebuildIndexStep.Key;
+    }
+
+    public RebuildIndexDeploymentStep(IStringLocalizer<RebuildIndexDeploymentStep> S)
+        : this()
+    {
+        Category = S["Indexing"];
     }
 
     public bool IncludeAll { get; set; }
