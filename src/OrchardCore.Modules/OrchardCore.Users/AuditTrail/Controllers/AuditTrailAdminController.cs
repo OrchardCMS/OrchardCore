@@ -5,6 +5,7 @@ using OrchardCore.Admin;
 using OrchardCore.Settings;
 using OrchardCore.Users.AuditTrail.Handlers;
 using OrchardCore.Users.AuditTrail.Models;
+using OrchardCore.Users.AuditTrail.Services;
 using OrchardCore.Users.AuditTrail.ViewModels;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
@@ -53,7 +54,8 @@ public sealed class AuditTrailAdminController : Controller
                 {
                     Name = name,
                     Redactor = redactorSettings.TryGetValue(name, out var value) && redactors.ContainsKey(value)
-                        ? value : nameof(ErasingRedactor),
+                        ? value
+                        : nameof(RemoveRedactor),
                 })
                 .ToArray(),
             RedactorNames = redactors.Keys,
@@ -72,7 +74,7 @@ public sealed class AuditTrailAdminController : Controller
         // data in the snapshot. This is not PII, so storing it long term is not problematic.
         var selected = model
             .UserSnapshotProperties
-            .Where(item => item.Redactor != nameof(ErasingRedactor))
+            .Where(item => item.Redactor != nameof(RemoveRedactor))
             .ToDictionary(item => item.Name, item => item.Redactor);
         selected[nameof(Users.Models.User.UserId)] = nameof(NullRedactor);
 

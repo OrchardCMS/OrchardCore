@@ -1,5 +1,6 @@
 @using Microsoft.Extensions.Compliance.Redaction
 @using OrchardCore
+@using OrchardCore.Users.AuditTrail.Services
 @model OrchardCore.Users.AuditTrail.ViewModels.AuditTrailUserEventSettingsViewModel
 
 <script asp-name="bootstrap-select" at="Foot"></script>
@@ -28,7 +29,7 @@
                         : Model.RedactorNames
                             .Select(redactor => new SelectListItem
                             {
-                                Text = redactor == nameof(ErasingRedactor) 
+                                Text = redactor == nameof(RemoveRedactor) 
                                     ? string.Empty
                                     : (redactor == nameof(NullRedactor) ? T["Store"].Value : redactor),
                                 Value = redactor,

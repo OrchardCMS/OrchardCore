@@ -34,9 +34,12 @@ public sealed class Startup : StartupBase
         services.AddIndexProvider<AuditTrailUserEventIndexProvider>();
         services.AddDataMigration<Migrations>();
         services.AddNavigationProvider<AdminMenu>();
-        services.AddScoped<Redactor, NullRedactor>();
-        services.AddScoped<Redactor, ErasingRedactor>();
-        services.AddScoped<Redactor, HmacRedactor>();
+
+        services.AddSingleton<Redactor>(_ => NullRedactor.Instance);
+        services.AddSingleton<Redactor>(_ => ErasingRedactor.Instance);
+        services.AddSingleton<Redactor, HmacRedactor>();
+        services.AddSingleton<Redactor, RemoveRedactor>();
+        services.AddSingleton<Redactor, PartialAsteriskRedactor>();
         
         services.AddPermissionProvider<Permissions>();
     }
