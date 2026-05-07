@@ -1,4 +1,6 @@
+using Microsoft.Extensions.Compliance.Redaction;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OrchardCore.AuditTrail.Models;
 using OrchardCore.AuditTrail.Services.Models;
@@ -32,6 +34,9 @@ public sealed class Startup : StartupBase
         services.AddIndexProvider<AuditTrailUserEventIndexProvider>();
         services.AddDataMigration<Migrations>();
         services.AddNavigationProvider<AdminMenu>();
+        services.AddScoped<Redactor, NullRedactor>();
+        services.AddScoped<Redactor, ErasingRedactor>();
+        services.AddScoped<Redactor, HmacRedactor>();
         
         services.AddPermissionProvider<Permissions>();
     }

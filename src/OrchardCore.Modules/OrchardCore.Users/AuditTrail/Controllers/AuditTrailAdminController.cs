@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Compliance.Redaction;
 using OrchardCore.Admin;
 using OrchardCore.Settings;
 using OrchardCore.Users.AuditTrail.Handlers;
@@ -18,21 +19,25 @@ public sealed class AuditTrailAdminController : Controller
     private readonly IAuthorizationService _authorizationService;
     private readonly ISiteService _siteService;
     private readonly CustomUserSettingsService _customUserSettingsService;
+    private readonly IEnumerable<Redactor> _redactors;
 
     public AuditTrailAdminController(
         IAuthorizationService authorizationService,
         ISiteService siteService,
-        IEnumerable<CustomUserSettingsService> customUserSettingsServices)
+        IEnumerable<CustomUserSettingsService> customUserSettingsServices,
+        IEnumerable<Redactor> redactors)
     {
         _authorizationService = authorizationService;
         _siteService = siteService;
         _customUserSettingsService = customUserSettingsServices.FirstOrDefault();
+        _redactors = redactors;
     }
 
     public async Task<ActionResult> Index()
     {
         var settings = await _siteService.GetSettingsAsync<AuditTrailUserEventSettings>();
-        var selected = (settings.UserSnapshotProperties ?? []).ToHashSet();
+        var redactorSettings = settings.UserSnapshotRedactors ?? new Dictionary<string, string>();
+        var redactors = _redactors.ToDictionary(item => item.GetType().Name);
 
         var propertyNames = JsonSerializer.SerializeToNode(new User())
             .ToObject<IDictionary<string, object>>()
@@ -47,9 +52,11 @@ public sealed class AuditTrailAdminController : Controller
                 .Select(name => new AuditTrailUserEventSettingsViewModel.UserSnapshotPropertiesEntry
                 {
                     Name = name,
-                    Selected = selected.Contains(name),
+                    Redactor = redactorSettings.TryGetValue(name, out var value) && redactors.ContainsKey(value)
+                        ? value : nameof(ErasingRedactor),
                 })
                 .ToArray(),
+            RedactorNames = redactors.Keys,
         });
     }
 
@@ -61,17 +68,17 @@ public sealed class AuditTrailAdminController : Controller
             return Forbid();
         }
 
-        // UserId is always included, to ensure that the account is identifiable within the system just using the data
-        // in the snapshot. This is not PII, so storing it long term is not problematic.
+        // UserId is always included as-is, to ensure that the account is identifiable within the system just using the
+        // data in the snapshot. This is not PII, so storing it long term is not problematic.
         var selected = model
             .UserSnapshotProperties
-            .Where(item => item.Selected)
-            .Select(item => item.Name)
-            .Union([nameof(Users.Models.User.UserId)]);
+            .Where(item => item.Redactor != nameof(ErasingRedactor))
+            .ToDictionary(item => item.Name, item => item.Redactor);
+        selected[nameof(Users.Models.User.UserId)] = nameof(NullRedactor);
 
         var siteSettings = await _siteService.LoadSiteSettingsAsync();
         var settings = siteSettings.GetOrCreate<AuditTrailUserEventSettings>();
-        settings.UserSnapshotProperties = selected;
+        settings.UserSnapshotRedactors = selected;
         siteSettings.Properties[nameof(AuditTrailUserEventSettings)] = JObject.FromObject(settings);
         await _siteService.UpdateSiteSettingsAsync(siteSettings);
 

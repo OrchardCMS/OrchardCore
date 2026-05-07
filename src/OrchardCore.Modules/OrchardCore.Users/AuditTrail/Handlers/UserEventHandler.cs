@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Compliance.Redaction;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.AuditTrail.Models;
 using OrchardCore.AuditTrail.Services;
@@ -37,6 +38,7 @@ public class UserEventHandler : UserEventHandlerBase, ILoginFormEvent
     private readonly IServiceProvider _serviceProvider;
     private readonly ISession _session;
     private readonly ISiteService _siteService;
+    private readonly IEnumerable<Redactor> _redactors;
 
     private UserManager<IUser> _userManager;
 
@@ -45,13 +47,15 @@ public class UserEventHandler : UserEventHandlerBase, ILoginFormEvent
         IHttpContextAccessor httpContextAccessor,
         IServiceProvider serviceProvider,
         ISession session,
-        ISiteService siteService)
+        ISiteService siteService,
+        IEnumerable<Redactor> redactors)
     {
         _auditTrailManager = auditTrailManager;
         _httpContextAccessor = httpContextAccessor;
         _serviceProvider = serviceProvider;
         _session = session;
         _siteService = siteService;
+        _redactors = redactors;
     }
 
     public Task LoggedInAsync(IUser user)
@@ -162,27 +166,47 @@ public class UserEventHandler : UserEventHandlerBase, ILoginFormEvent
 
         await _auditTrailManager.RecordEventAsync(context);
     }
-    private static JsonObject CreateSnapshotObject(User fullUser, AuditTrailUserEventSettings settings)
+    private JsonObject CreateSnapshotObject(User fullUser, AuditTrailUserEventSettings settings)
     {
-        var allowedProperties = settings.UserSnapshotProperties.ToList();
-        
         // UserId is always included, to ensure that the account is identifiable within the system just using the data
         // in the snapshot. This is not PII, so storing it long term is not problematic.
-        allowedProperties.Add(nameof(User.UserId));
+        settings.UserSnapshotRedactors[nameof(User.UserId)] = nameof(NullRedactor);
+        
+        var redactors = _redactors.ToDictionary(item => item.GetType().Name);
+
+        JsonValue Redact(string propertyName, JsonNode value)
+        {
+            var text = value?.ToString();
+            if (string.IsNullOrEmpty(text))
+            {
+                return null;
+            }
+            
+            var redactor = redactors[settings.UserSnapshotRedactors[propertyName]];
+            return JsonValue.Create(redactor.Redact(text));
+        }
+
+        Dictionary<string, JsonNode> CreateDictionary(JsonObject data)
+        {
+            return data
+                .Where(pair =>
+                    !BannedProperties.Contains(pair.Key) &&
+                    settings.UserSnapshotRedactors.TryGetValue(pair.Key, out var redactorName) &&
+                    redactors.ContainsKey(redactorName))
+                .Select(pair => new
+                {
+                    pair.Key,
+                    Value = Redact(pair.Key, pair.Value),
+                })
+                .Where(pair => pair.Value != null)
+                .ToDictionary(pair => pair.Key, pair => (JsonNode)pair.Value);
+        }
         
         // Ensure that the User object only has the allowed properties and none of the banned ones.
-        var dictionary = JObject
-            .FromObject(fullUser)
-            .Where(pair => !BannedProperties.Contains(pair.Key) && allowedProperties.Contains(pair.Key))
-            .ToDictionary(pair => pair.Key, pair => pair.Value);
+        var dictionary = CreateDictionary(JObject.FromObject(fullUser));
         
         // Custom user settings have to be handled separately.
-        dictionary[nameof(User.Properties)] = JObject.FromObject(
-            fullUser
-                .Properties
-                .ToObject<Dictionary<string, JsonObject>>()
-                .Where(pair => allowedProperties.Contains(pair.Key))
-                .ToDictionary(pair => pair.Key, pair => pair.Value));
+        dictionary[nameof(User.Properties)] = JObject.FromObject(CreateDictionary(fullUser.Properties));
 
         return JObject.FromObject(dictionary);
     }

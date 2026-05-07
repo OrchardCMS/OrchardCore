@@ -1,3 +1,5 @@
+@using Microsoft.Extensions.Compliance.Redaction
+@using OrchardCore
 @model OrchardCore.Users.AuditTrail.ViewModels.AuditTrailUserEventSettingsViewModel
 
 <script asp-name="bootstrap-select" at="Foot"></script>
@@ -11,21 +13,35 @@
         <div class="mb-3">
             @for (var i = 0; i < Model.UserSnapshotProperties.Length; i++)
             {
-                <div class="form-check form-switch">
-                    @if (Model.UserSnapshotProperties[i].Name == nameof(OrchardCore.Users.Models.User.UserId))
-                    {
-                        <input asp-for="UserSnapshotProperties[i].Selected" type="checkbox" class="form-check-input" role="switch" disabled checked>
-                    }
-                    else
-                    {
-                        <input asp-for="UserSnapshotProperties[i].Selected" type="checkbox" class="form-check-input" role="switch">
-                    }
-
-                    <input type="hidden" asp-for="UserSnapshotProperties[i].Name"/>
-                    <label class="form-check-label cursor-pointer" asp-for="UserSnapshotProperties[i].Selected">@Model.UserSnapshotProperties[i].Name</label>
-                </div>
+                var name = Model.UserSnapshotProperties[i].Name;
+                var value = Model.UserSnapshotProperties[i].Redactor;
+                var items = name == nameof(OrchardCore.Users.Models.User.UserId)
+                        ? new[]
+                        {
+                            new SelectListItem
+                            {
+                                Text = T["Store"].Value,
+                                Value = nameof(NullRedactor),
+                                Selected = true,
+                            }
+                        }
+                        : Model.RedactorNames
+                            .Select(redactor => new SelectListItem
+                            {
+                                Text = redactor == nameof(ErasingRedactor) 
+                                    ? string.Empty
+                                    : (redactor == nameof(NullRedactor) ? T["Store"].Value : redactor),
+                                Value = redactor,
+                                Selected = redactor == value,
+                            })
+                            .OrderBy(item => item.Text)
+                            .ToArray();
+                <input asp-for="UserSnapshotProperties[i].Name" hidden>
+                <label asp-for="UserSnapshotProperties[i].Redactor" class="@Orchard.GetLabelClasses()">@name</label>
+                <select asp-for="UserSnapshotProperties[i].Redactor" class="form-select" asp-items="@items"></select>
+                <span asp-validation-for="UserSnapshotProperties[i].Redactor"></span>
             }
-            <span class="hint">@T["The selected properties of the <code>User</code> object are stored in the event's \"User Snapshot\" property."]</span>
+            <span class="hint">@T["The properties of the <code>User</code> object are stored in the event's \"User Snapshot\" property. If no option is selected, that property will not be stored. The property is retained as text if the \"Store\" option is selected. Otherwise, the selected service is used to redact its content. You can learn more about data redaction <a href=\"{0}\">here</a>.", new Uri("https://learn.microsoft.com/en-us/dotnet/core/extensions/data-redaction")]</span>
         </div>
     }
     
