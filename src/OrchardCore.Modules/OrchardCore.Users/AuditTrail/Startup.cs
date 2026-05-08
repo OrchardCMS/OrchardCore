@@ -1,6 +1,6 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Compliance.Redaction;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OrchardCore.AuditTrail.Models;
 using OrchardCore.AuditTrail.Services.Models;
@@ -13,6 +13,7 @@ using OrchardCore.Security.Permissions;
 using OrchardCore.Users.AuditTrail.Drivers;
 using OrchardCore.Users.AuditTrail.Handlers;
 using OrchardCore.Users.AuditTrail.Indexes;
+using OrchardCore.Users.AuditTrail.Security;
 using OrchardCore.Users.AuditTrail.Services;
 using OrchardCore.Users.Events;
 using OrchardCore.Users.Handlers;
@@ -34,6 +35,7 @@ public sealed class Startup : StartupBase
         services.AddIndexProvider<AuditTrailUserEventIndexProvider>();
         services.AddDataMigration<Migrations>();
         services.AddNavigationProvider<AdminMenu>();
+        services.AddScoped<IAuthorizationHandler, ViewUserAuditTrailEventsHandler>();
 
         services.AddSingleton<Redactor>(_ => NullRedactor.Instance);
         services.AddSingleton<Redactor>(_ => ErasingRedactor.Instance);
