@@ -41,7 +41,9 @@ public sealed class TenantApiController : ControllerBase
     private readonly IdentityOptions _identityOptions;
     private readonly TenantsOptions _tenantsOptions;
     private readonly IEnumerable<DatabaseProvider> _databaseProviders;
+    private readonly IReadOnlyDictionary<string, DatabaseProvider> _databaseProviderLookup;
     private readonly ITenantValidator _tenantValidator;
+    private readonly ITenantDatabasePatternResolver _tenantDatabasePatternResolver;
     private readonly ILogger _logger;
 
     internal readonly IStringLocalizer S;
@@ -60,6 +62,7 @@ public sealed class TenantApiController : ControllerBase
         IOptions<TenantsOptions> tenantsOptions,
         IEnumerable<DatabaseProvider> databaseProviders,
         ITenantValidator tenantValidator,
+        ITenantDatabasePatternResolver tenantDatabasePatternResolver,
         IStringLocalizer<TenantApiController> stringLocalizer,
         ILogger<TenantApiController> logger)
     {
@@ -75,7 +78,9 @@ public sealed class TenantApiController : ControllerBase
         _identityOptions = identityOptions.Value;
         _tenantsOptions = tenantsOptions.Value;
         _databaseProviders = databaseProviders;
+        _databaseProviderLookup = databaseProviders.ToDictionary(provider => provider.Value, StringComparer.OrdinalIgnoreCase);
         _tenantValidator = tenantValidator;
+        _tenantDatabasePatternResolver = tenantDatabasePatternResolver;
         S = stringLocalizer;
         _logger = logger;
     }
@@ -94,11 +99,31 @@ public sealed class TenantApiController : ControllerBase
             return this.ChallengeOrForbid("Api");
         }
 
-        await ValidateModelAsync(model, isNewTenant: !_shellHost.TryGetSettings(model.Name, out var settings));
+        _ = _shellHost.TryGetSettings(model.Name, out var settings);
+        ApplyPresetDatabaseConfiguration(model);
+        ApplyConfiguredDatabasePatterns(model);
+        try
+        {
+            await ValidateModelAsync(model, isNewTenant: settings is null);
+        }
+        catch (Exception ex) when (!ex.IsFatal())
+        {
+            _logger.LogError(ex, "An error occurred while validating the tenant '{TenantName}'.", model.Name);
+            ModelState.AddModelError(string.Empty, S["An error occurred while validating the tenant database settings."]);
+        }
 
         if (ModelState.IsValid)
         {
-            if (model.IsNewTenant)
+            if (!model.IsNewTenant)
+            {
+                // Site already exists, return 201 for idempotency purposes.
+
+                var token = CreateSetupToken(settings);
+
+                return Created(GetEncodedUrl(settings, token), null);
+            }
+
+            try
             {
                 // Creates a default shell settings based on the configuration.
                 using var shellSettings = _shellSettingsManager
@@ -127,13 +152,10 @@ public sealed class TenantApiController : ControllerBase
 
                 return Ok(GetEncodedUrl(reloadedSettings, token));
             }
-            else
+            catch (Exception ex) when (!ex.IsFatal())
             {
-                // Site already exists, return 201 for idempotency purposes.
-
-                var token = CreateSetupToken(settings);
-
-                return Created(GetEncodedUrl(settings, token), null);
+                _logger.LogError(ex, "An error occurred while saving the tenant '{TenantName}'.", model.Name);
+                ModelState.AddModelError(string.Empty, S["An error occurred while saving the tenant settings."]);
             }
         }
 
@@ -154,9 +176,19 @@ public sealed class TenantApiController : ControllerBase
             return this.ChallengeOrForbid("Api");
         }
 
+        ApplyPresetDatabaseConfiguration(model);
+        ApplyConfiguredDatabasePatterns(model);
         if (ModelState.IsValid)
         {
-            await ValidateModelAsync(model, isNewTenant: false);
+            try
+            {
+                await ValidateModelAsync(model, isNewTenant: false);
+            }
+            catch (Exception ex) when (!ex.IsFatal())
+            {
+                _logger.LogError(ex, "An error occurred while validating the tenant '{TenantName}'.", model.Name);
+                ModelState.AddModelError(string.Empty, S["An error occurred while validating the tenant database settings."]);
+            }
         }
 
         if (!_shellHost.TryGetSettings(model.Name, out var shellSettings))
@@ -166,25 +198,33 @@ public sealed class TenantApiController : ControllerBase
 
         if (ModelState.IsValid)
         {
-            shellSettings["Description"] = model.Description;
-            shellSettings["Category"] = model.Category;
-            shellSettings.RequestUrlPrefix = model.RequestUrlPrefix;
-            shellSettings.RequestUrlHost = model.RequestUrlHost;
-            shellSettings["FeatureProfile"] = string.Join(',', model.FeatureProfiles ?? []);
-
-            if (shellSettings.IsUninitialized())
+            try
             {
-                shellSettings["DatabaseProvider"] = model.DatabaseProvider;
-                shellSettings["TablePrefix"] = model.TablePrefix;
-                shellSettings["Schema"] = model.Schema;
-                shellSettings["ConnectionString"] = model.ConnectionString;
-                shellSettings["RecipeName"] = model.RecipeName;
-                shellSettings["Secret"] = Guid.NewGuid().ToString();
+                shellSettings["Description"] = model.Description;
+                shellSettings["Category"] = model.Category;
+                shellSettings.RequestUrlPrefix = model.RequestUrlPrefix;
+                shellSettings.RequestUrlHost = model.RequestUrlHost;
+                shellSettings["FeatureProfile"] = string.Join(',', model.FeatureProfiles ?? []);
+
+                if (shellSettings.IsUninitialized())
+                {
+                    shellSettings["DatabaseProvider"] = model.DatabaseProvider;
+                    shellSettings["TablePrefix"] = model.TablePrefix;
+                    shellSettings["Schema"] = model.Schema;
+                    shellSettings["ConnectionString"] = model.ConnectionString;
+                    shellSettings["RecipeName"] = model.RecipeName;
+                    shellSettings["Secret"] = Guid.NewGuid().ToString();
+                }
+
+                await _shellHost.UpdateShellSettingsAsync(shellSettings);
+
+                return Ok();
             }
-
-            await _shellHost.UpdateShellSettingsAsync(shellSettings);
-
-            return Ok();
+            catch (Exception ex) when (!ex.IsFatal())
+            {
+                _logger.LogError(ex, "An error occurred while saving the tenant '{TenantName}'.", model.Name);
+                ModelState.AddModelError(string.Empty, S["An error occurred while saving the tenant settings."]);
+            }
         }
 
         return BadRequest(ModelState);
@@ -341,6 +381,12 @@ public sealed class TenantApiController : ControllerBase
             databaseProvider = model.DatabaseProvider;
         }
 
+        var presetDatabaseConfiguration = GetPresetDatabaseConfiguration();
+        if (presetDatabaseConfiguration.HasDatabaseProviderPreset)
+        {
+            databaseProvider = presetDatabaseConfiguration.DatabaseProvider;
+        }
+
         if (string.IsNullOrEmpty(databaseProvider))
         {
             return BadRequest(S["The database provider is not defined."]);
@@ -353,17 +399,46 @@ public sealed class TenantApiController : ControllerBase
         }
 
         var tablePrefix = shellSettings["TablePrefix"];
+        var databasePatternResolution = _tenantDatabasePatternResolver.Resolve(shellSettings);
 
-        if (string.IsNullOrEmpty(tablePrefix))
+        if (!string.IsNullOrEmpty(databasePatternResolution.TablePrefixError))
+        {
+            ModelState.AddModelError(nameof(model.TablePrefix), databasePatternResolution.TablePrefixError);
+        }
+
+        if (!string.IsNullOrEmpty(databasePatternResolution.SchemaError))
+        {
+            ModelState.AddModelError(nameof(model.Schema), databasePatternResolution.SchemaError);
+        }
+
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        if (databasePatternResolution.HasTablePrefixPattern)
+        {
+            tablePrefix = databasePatternResolution.TablePrefix;
+        }
+        else if (string.IsNullOrEmpty(tablePrefix))
         {
             tablePrefix = model.TablePrefix;
         }
 
         var schema = shellSettings["Schema"];
 
-        if (string.IsNullOrEmpty(schema))
+        if (databasePatternResolution.HasSchemaPattern)
+        {
+            schema = databasePatternResolution.Schema;
+        }
+        else if (string.IsNullOrEmpty(schema))
         {
             schema = model.Schema;
+        }
+
+        if (presetDatabaseConfiguration.HasConnectionStringPreset)
+        {
+            schema = presetDatabaseConfiguration.Schema;
         }
 
         var connectionString = shellSettings["connectionString"];
@@ -371,6 +446,11 @@ public sealed class TenantApiController : ControllerBase
         if (string.IsNullOrEmpty(connectionString))
         {
             connectionString = model.ConnectionString;
+        }
+
+        if (presetDatabaseConfiguration.HasConnectionStringPreset)
+        {
+            connectionString = presetDatabaseConfiguration.ConnectionString;
         }
 
         if (selectedProvider.HasConnectionString && string.IsNullOrEmpty(connectionString))
@@ -488,5 +568,55 @@ public sealed class TenantApiController : ControllerBase
         model.IsNewTenant = isNewTenant;
 
         ModelState.AddModelErrors(await _tenantValidator.ValidateAsync(model));
+    }
+
+    private void ApplyPresetDatabaseConfiguration(TenantModelBase model)
+    {
+        var presetDatabaseConfiguration = GetPresetDatabaseConfiguration();
+        if (!presetDatabaseConfiguration.HasDatabaseProviderPreset)
+        {
+            return;
+        }
+
+        model.DatabaseProvider = presetDatabaseConfiguration.DatabaseProvider;
+
+        if (presetDatabaseConfiguration.HasConnectionStringPreset)
+        {
+            model.ConnectionString = presetDatabaseConfiguration.ConnectionString;
+            model.Schema = presetDatabaseConfiguration.Schema;
+        }
+    }
+
+    private void ApplyConfiguredDatabasePatterns(TenantModelBase model)
+    {
+        if (string.IsNullOrWhiteSpace(model.Name))
+        {
+            return;
+        }
+
+        _tenantDatabasePatternResolver.Apply(model);
+    }
+
+    private (bool HasDatabaseProviderPreset, bool HasConnectionStringPreset, string DatabaseProvider, string ConnectionString, string Schema) GetPresetDatabaseConfiguration()
+    {
+        // Read from the root application configuration, not from the current
+        // shell settings which may have tenant-specific overrides (e.g., the
+        // Default tenant was set up with SQLite while root config says SqlConnection).
+        using var defaultSettings = _shellSettingsManager.CreateDefaultSettings().AsDisposable();
+        var databaseProvider = defaultSettings["DatabaseProvider"];
+        var connectionString = defaultSettings["ConnectionString"];
+
+        if (string.IsNullOrEmpty(databaseProvider) ||
+            !_databaseProviderLookup.TryGetValue(databaseProvider, out var provider))
+        {
+            return (false, false, null, null, null);
+        }
+
+        return (
+            true,
+            !provider.HasConnectionString || !string.IsNullOrWhiteSpace(connectionString),
+            databaseProvider,
+            connectionString,
+            defaultSettings["Schema"]);
     }
 }

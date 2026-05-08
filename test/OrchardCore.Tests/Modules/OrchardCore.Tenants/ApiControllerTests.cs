@@ -1,3 +1,4 @@
+using System.Globalization;
 using OrchardCore.Data;
 using OrchardCore.Email;
 using OrchardCore.Environment.Shell;
@@ -107,16 +108,266 @@ public class ApiControllerTests
         Assert.NotEqual(token1, token2);
     }
 
-    private TenantApiController CreateController()
+    [Fact]
+    public async Task CreateShouldRejectMissingTablePrefix_WhenRequired()
+    {
+        // Arrange
+        var controller = CreateController(requireTablePrefix: true);
+        var viewModel = new TenantApiModel
+        {
+            Name = "Test",
+            RequestUrlPrefix = "test",
+            RequestUrlHost = "orchardcore.net",
+            DatabaseProvider = DatabaseProviderValue.SqlConnection,
+            TablePrefix = string.Empty,
+            FeatureProfiles = ["Feature Profile"],
+            IsNewTenant = true,
+        };
+
+        // Act
+        var result = await controller.Create(viewModel);
+
+        // Assert
+        Assert.False(controller.ModelState.IsValid);
+        Assert.IsType<BadRequestObjectResult>(result);
+        var error = Assert.Single(controller.ModelState[nameof(viewModel.TablePrefix)].Errors);
+        Assert.Equal("A table prefix is required.", error.ErrorMessage);
+    }
+
+    [Fact]
+    public async Task CreateShouldRejectMissingTablePrefix_WhenRequiredAndDatabaseProviderIsPreset()
+    {
+        // Arrange
+        var controller = CreateController(
+            requireTablePrefix: true,
+            presetDatabaseProvider: DatabaseProviderValue.SqlConnection);
+
+        var viewModel = new TenantApiModel
+        {
+            Name = "Test",
+            RequestUrlPrefix = "test",
+            RequestUrlHost = "orchardcore.net",
+            TablePrefix = string.Empty,
+            FeatureProfiles = ["Feature Profile"],
+            IsNewTenant = true,
+        };
+
+        // Act
+        var result = await controller.Create(viewModel);
+
+        // Assert
+        Assert.False(controller.ModelState.IsValid);
+        Assert.IsType<BadRequestObjectResult>(result);
+        var error = Assert.Single(controller.ModelState[nameof(viewModel.TablePrefix)].Errors);
+        Assert.Equal("A table prefix is required.", error.ErrorMessage);
+    }
+
+    [Fact]
+    public async Task CreateShouldUsePresetDatabaseConfiguration_WhenConfigured()
+    {
+        // Arrange
+        const string presetConnectionString = "Server=localhost;Database=Orchard;";
+
+        var controller = CreateController(
+            presetDatabaseProvider: DatabaseProviderValue.SqlConnection,
+            presetConnectionString: presetConnectionString,
+            presetSchema: "dbo");
+
+        var viewModel = new TenantApiModel
+        {
+            Name = "Test",
+            RequestUrlPrefix = "test",
+            RequestUrlHost = "orchardcore.net",
+            DatabaseProvider = DatabaseProviderValue.Sqlite,
+            ConnectionString = "Ignored",
+            Schema = "ignored",
+            TablePrefix = "Test",
+            FeatureProfiles = ["Feature Profile"],
+            IsNewTenant = true,
+        };
+
+        // Act
+        var result = await controller.Create(viewModel);
+
+        // Assert
+        Assert.True(controller.ModelState.IsValid);
+        Assert.IsType<OkObjectResult>(result);
+        Assert.Equal(DatabaseProviderValue.SqlConnection, _shellSettings["Test"]["DatabaseProvider"]);
+        Assert.Equal(presetConnectionString, _shellSettings["Test"]["ConnectionString"]);
+        Assert.Equal("dbo", _shellSettings["Test"]["Schema"]);
+    }
+
+    [Fact]
+    public async Task CreateShouldUsePresetDatabaseProviderAndPostedConnectionString_WhenOnlyProviderIsConfigured()
+    {
+        // Arrange
+        var controller = CreateController(
+            presetDatabaseProvider: DatabaseProviderValue.SqlConnection);
+
+        var viewModel = new TenantApiModel
+        {
+            Name = "Test",
+            RequestUrlPrefix = "test",
+            RequestUrlHost = "orchardcore.net",
+            DatabaseProvider = DatabaseProviderValue.Sqlite,
+            ConnectionString = "Server=localhost;Database=Tenant;",
+            TablePrefix = "Test",
+            FeatureProfiles = ["Feature Profile"],
+            IsNewTenant = true,
+        };
+
+        // Act
+        var result = await controller.Create(viewModel);
+
+        // Assert
+        Assert.True(controller.ModelState.IsValid);
+        Assert.IsType<OkObjectResult>(result);
+        Assert.Equal(DatabaseProviderValue.SqlConnection, _shellSettings["Test"]["DatabaseProvider"]);
+        Assert.Equal("Server=localhost;Database=Tenant;", _shellSettings["Test"]["ConnectionString"]);
+    }
+
+    [Fact]
+    public async Task EditShouldUsePresetDatabaseConfiguration_WhenConfigured()
+    {
+        // Arrange
+        const string presetConnectionString = "Server=localhost;Database=Orchard;";
+
+        _shellSettings["Test"] = new ShellSettings { Name = "Test", RequestUrlPrefix = "test" }.AsUninitialized();
+
+        var controller = CreateController(
+            presetDatabaseProvider: DatabaseProviderValue.SqlConnection,
+            presetConnectionString: presetConnectionString,
+            presetSchema: "dbo");
+
+        var viewModel = new TenantApiModel
+        {
+            Name = "Test",
+            RequestUrlPrefix = "test",
+            RequestUrlHost = "orchardcore.net",
+            DatabaseProvider = DatabaseProviderValue.Sqlite,
+            ConnectionString = "Ignored",
+            Schema = "ignored",
+            TablePrefix = "Test",
+            FeatureProfiles = ["Feature Profile"],
+        };
+
+        // Act
+        var result = await controller.Edit(viewModel);
+
+        // Assert
+        Assert.True(controller.ModelState.IsValid);
+        Assert.IsType<OkResult>(result);
+        Assert.Equal(DatabaseProviderValue.SqlConnection, _shellSettings["Test"]["DatabaseProvider"]);
+        Assert.Equal(presetConnectionString, _shellSettings["Test"]["ConnectionString"]);
+        Assert.Equal("dbo", _shellSettings["Test"]["Schema"]);
+    }
+
+    [Fact]
+    public async Task CreateShouldReturnGenericError_WhenSavingTenantFails()
+    {
+        // Arrange
+        var controller = CreateController(throwOnUpdate: true);
+        var viewModel = new TenantApiModel
+        {
+            Name = "Test",
+            RequestUrlPrefix = "test",
+            RequestUrlHost = "orchardcore.net",
+            TablePrefix = "Test",
+            FeatureProfiles = ["Feature Profile"],
+            IsNewTenant = true,
+        };
+
+        // Act
+        var result = await controller.Create(viewModel);
+
+        // Assert
+        Assert.False(controller.ModelState.IsValid);
+        Assert.IsType<BadRequestObjectResult>(result);
+        var error = Assert.Single(controller.ModelState[string.Empty].Errors);
+        Assert.Equal("An error occurred while saving the tenant settings.", error.ErrorMessage);
+    }
+
+    [Fact]
+    public async Task CreateShouldUseConfiguredTablePrefixPattern_WhenConfigured()
+    {
+        // Arrange
+        var controller = CreateController(tablePrefixPattern: "{{ ShellSettings.Name }}", schemaPattern: "dbo");
+        var viewModel = new TenantApiModel
+        {
+            Name = "PatternTenant",
+            RequestUrlPrefix = "pattern-tenant",
+            RequestUrlHost = "orchardcore.net",
+            DatabaseProvider = DatabaseProviderValue.SqlConnection,
+            TablePrefix = "Ignored",
+            Schema = "ignored",
+            FeatureProfiles = ["Feature Profile"],
+            IsNewTenant = true,
+        };
+
+        // Act
+        var result = await controller.Create(viewModel);
+
+        // Assert
+        Assert.True(controller.ModelState.IsValid);
+        Assert.IsType<OkObjectResult>(result);
+        Assert.Equal("PatternTenant", _shellSettings["PatternTenant"]["TablePrefix"]);
+        Assert.Equal("dbo", _shellSettings["PatternTenant"]["Schema"]);
+    }
+
+    [Fact]
+    public async Task CreateShouldRejectInvalidConfiguredTablePrefixPattern()
+    {
+        // Arrange
+        var controller = CreateController(tablePrefixPattern: "tenant-{{ ShellSettings.Name }}");
+        var viewModel = new TenantApiModel
+        {
+            Name = "PatternTenant",
+            RequestUrlPrefix = "pattern-tenant",
+            RequestUrlHost = "orchardcore.net",
+            DatabaseProvider = DatabaseProviderValue.SqlConnection,
+            FeatureProfiles = ["Feature Profile"],
+            IsNewTenant = true,
+        };
+
+        // Act
+        var result = await controller.Create(viewModel);
+
+        // Assert
+        Assert.False(controller.ModelState.IsValid);
+        Assert.IsType<BadRequestObjectResult>(result);
+        var error = Assert.Single(controller.ModelState[nameof(viewModel.TablePrefix)].Errors);
+        Assert.Equal("The configured table prefix pattern must resolve to a valid SQL identifier using only letters, numbers, and underscores, and it must start with a letter or underscore.", error.ErrorMessage);
+    }
+
+    private TenantApiController CreateController(
+        bool requireTablePrefix = false,
+        string presetDatabaseProvider = null,
+        string presetConnectionString = null,
+        string presetSchema = null,
+        string tablePrefixPattern = null,
+        string schemaPattern = null,
+        bool throwOnUpdate = false)
     {
         var defaultShellSettings = new ShellSettings()
             .AsDefaultShell()
             .AsRunning();
 
+        defaultShellSettings["DatabaseProvider"] = presetDatabaseProvider;
+        defaultShellSettings["ConnectionString"] = presetConnectionString;
+        defaultShellSettings["Schema"] = presetSchema;
+
         var shellHostMock = new Mock<IShellHost>();
         shellHostMock
             .Setup(host => host.UpdateShellSettingsAsync(It.IsAny<ShellSettings>()))
-            .Callback<ShellSettings>(settings => _shellSettings.Add(settings.Name, settings));
+            .Callback<ShellSettings>(settings =>
+            {
+                if (throwOnUpdate)
+                {
+                    throw new InvalidOperationException("Hidden database details should not leak.");
+                }
+
+                _shellSettings[settings.Name] = settings;
+            });
 
         var _ = It.IsAny<ShellSettings>();
         shellHostMock
@@ -147,16 +398,66 @@ public class ApiControllerTests
             .Setup(featureProfiles => featureProfiles.GetFeatureProfilesAsync())
             .ReturnsAsync(_featureProfiles);
 
+        var databaseProviders = new[]
+        {
+            new DatabaseProvider
+            {
+                Name = "Sql Server",
+                Value = DatabaseProviderValue.SqlConnection,
+                HasConnectionString = true,
+                HasTablePrefix = true,
+            },
+            new DatabaseProvider
+            {
+                Name = "Sqlite",
+                Value = DatabaseProviderValue.Sqlite,
+                HasTablePrefix = false,
+            },
+        };
+
         var stringLocalizerMock = new Mock<IStringLocalizer<TenantValidator>>();
         stringLocalizerMock
             .Setup(localizer => localizer[It.IsAny<string>()])
-            .Returns((string name) => new LocalizedString(name, name));
+            .Returns<string>(name => new LocalizedString(name, name));
+        stringLocalizerMock
+            .Setup(localizer => localizer[It.IsAny<string>(), It.IsAny<object[]>()])
+            .Returns<string, object[]>((name, args) => new LocalizedString(name, string.Format(CultureInfo.InvariantCulture, name, args)));
+
+        var tenantApiLocalizerMock = new Mock<IStringLocalizer<TenantApiController>>();
+        tenantApiLocalizerMock
+            .Setup(localizer => localizer[It.IsAny<string>()])
+            .Returns<string>(name => new LocalizedString(name, name));
+        tenantApiLocalizerMock
+            .Setup(localizer => localizer[It.IsAny<string>(), It.IsAny<object[]>()])
+            .Returns<string, object[]>((name, args) => new LocalizedString(name, string.Format(CultureInfo.InvariantCulture, name, args)));
+
+        var patternLocalizerMock = new Mock<IStringLocalizer<TenantDatabasePatternResolver>>();
+        patternLocalizerMock
+            .Setup(localizer => localizer[It.IsAny<string>()])
+            .Returns<string>(name => new LocalizedString(name, name));
+        patternLocalizerMock
+            .Setup(localizer => localizer[It.IsAny<string>(), It.IsAny<object[]>()])
+            .Returns<string, object[]>((name, args) => new LocalizedString(name, string.Format(CultureInfo.InvariantCulture, name, args)));
+
+        var tenantOptions = new TenantsOptions
+        {
+            RequireTablePrefix = requireTablePrefix,
+            TablePrefixPattern = tablePrefixPattern,
+            SchemaPattern = schemaPattern,
+        };
+
+        var tenantDatabasePatternResolver = new TenantDatabasePatternResolver(
+            Options.Create(tenantOptions),
+            patternLocalizerMock.Object);
 
         var tenantValidator = new TenantValidator(
             shellHostMock.Object,
             shellSettingsManagerMock.Object,
             featureProfilesService.Object,
             Mock.Of<IDbConnectionValidator>(),
+            Options.Create(tenantOptions),
+            databaseProviders,
+            tenantDatabasePatternResolver,
             stringLocalizerMock.Object);
 
         return new TenantApiController(
@@ -170,10 +471,11 @@ public class ApiControllerTests
             _clockMock.Object,
             Mock.Of<IEmailAddressValidator>(),
             Options.Create(new IdentityOptions()),
-            Options.Create(new TenantsOptions()),
-            [],
+            Options.Create(tenantOptions),
+            databaseProviders,
             tenantValidator,
-            Mock.Of<IStringLocalizer<TenantApiController>>(),
+            tenantDatabasePatternResolver,
+            tenantApiLocalizerMock.Object,
             Mock.Of<ILogger<TenantApiController>>())
         {
             ControllerContext = new ControllerContext { HttpContext = CreateHttpContext() },

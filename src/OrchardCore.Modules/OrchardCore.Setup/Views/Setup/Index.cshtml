@@ -165,17 +165,29 @@
     @if (!Model.DatabaseConfigurationPreset)
     {
         <div class="row">
-            <div class="mb-3 col-md-6">
-                <label asp-for="DatabaseProvider" class="form-label">@T["What type of database to use?"]</label>
-                <select asp-for="DatabaseProvider" class="form-select" required>
+            @if (Model.DatabaseProviderPreset)
+            {
+                <select asp-for="DatabaseProvider" class="d-none" tabindex="-1" aria-hidden="true">
                     @foreach (var provider in Model.DatabaseProviders)
                     {
                         <option value="@provider.Value" data-connection-string="@provider.HasConnectionString" data-table-prefix="@provider.HasTablePrefix" data-connection-string-sample="@T["The connection string to your database instance, e.g. {0}.", provider.SampleConnectionString]">@provider.Name</option>
                     }
                 </select>
-                <span asp-validation-for="DatabaseProvider" class="text-danger"></span>
-                <span class="text-muted form-text small">@T["The database is used to store the site's configuration and its contents."]</span>
-            </div>
+            }
+            else
+            {
+                <div class="mb-3 col-md-6">
+                    <label asp-for="DatabaseProvider" class="form-label">@T["What type of database to use?"]</label>
+                    <select asp-for="DatabaseProvider" class="form-select" required>
+                        @foreach (var provider in Model.DatabaseProviders)
+                        {
+                            <option value="@provider.Value" data-connection-string="@provider.HasConnectionString" data-table-prefix="@provider.HasTablePrefix" data-connection-string-sample="@T["The connection string to your database instance, e.g. {0}.", provider.SampleConnectionString]">@provider.Name</option>
+                        }
+                    </select>
+                    <span asp-validation-for="DatabaseProvider" class="text-danger"></span>
+                    <span class="text-muted form-text small">@T["The database is used to store the site's configuration and its contents."]</span>
+                </div>
+            }
 
             <div class="mb-3 col-md-6 tablePrefix" asp-validation-class-for="TablePrefix">
                 <label asp-for="TablePrefix" class="form-label">@T["Table Prefix"]</label>

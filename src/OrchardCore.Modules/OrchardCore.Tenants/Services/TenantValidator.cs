@@ -1,5 +1,6 @@
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using OrchardCore.Data;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Mvc.ModelBinding;
@@ -14,6 +15,9 @@ public partial class TenantValidator : ITenantValidator
     private readonly IShellSettingsManager _shellSettingsManager;
     private readonly IFeatureProfilesService _featureProfilesService;
     private readonly IDbConnectionValidator _dbConnectionValidator;
+    private readonly TenantsOptions _tenantsOptions;
+    private readonly IEnumerable<DatabaseProvider> _databaseProviders;
+    private readonly ITenantDatabasePatternResolver _tenantDatabasePatternResolver;
 
     protected readonly IStringLocalizer S;
 
@@ -22,12 +26,18 @@ public partial class TenantValidator : ITenantValidator
         IShellSettingsManager shellSettingsManager,
         IFeatureProfilesService featureProfilesService,
         IDbConnectionValidator dbConnectionValidator,
+        IOptions<TenantsOptions> tenantsOptions,
+        IEnumerable<DatabaseProvider> databaseProviders,
+        ITenantDatabasePatternResolver tenantDatabasePatternResolver,
         IStringLocalizer<TenantValidator> stringLocalizer)
     {
         _shellHost = shellHost;
         _shellSettingsManager = shellSettingsManager;
         _featureProfilesService = featureProfilesService;
         _dbConnectionValidator = dbConnectionValidator;
+        _tenantsOptions = tenantsOptions.Value;
+        _databaseProviders = databaseProviders;
+        _tenantDatabasePatternResolver = tenantDatabasePatternResolver;
         S = stringLocalizer;
     }
 
@@ -105,13 +115,55 @@ public partial class TenantValidator : ITenantValidator
             shellSettings = existingShellSettings;
         }
 
+        if (!string.IsNullOrWhiteSpace(model.Name))
+        {
+            var databasePatternResolution = _tenantDatabasePatternResolver.Apply(model);
+
+            if (!string.IsNullOrEmpty(databasePatternResolution.TablePrefixError))
+            {
+                errors.Add(new ModelError(nameof(model.TablePrefix), databasePatternResolution.TablePrefixError));
+            }
+
+            if (!string.IsNullOrEmpty(databasePatternResolution.SchemaError))
+            {
+                errors.Add(new ModelError(nameof(model.Schema), databasePatternResolution.SchemaError));
+            }
+        }
+
+        if ((model.IsNewTenant || existingShellSettings?.IsUninitialized() == true) &&
+            IsTablePrefixRequired(model.DatabaseProvider) &&
+            string.IsNullOrWhiteSpace(model.TablePrefix))
+        {
+            errors.Add(new ModelError(nameof(model.TablePrefix), S["A table prefix is required."]));
+        }
+
+        if (ProviderSupportsTablePrefix(model.DatabaseProvider) &&
+            !string.IsNullOrWhiteSpace(model.TablePrefix) &&
+            !SqlIdentifierRegex().IsMatch(model.TablePrefix))
+        {
+            errors.Add(new ModelError(nameof(model.TablePrefix), S["The table prefix must be a valid SQL identifier using only letters, numbers, and underscores, and it must start with a letter or underscore."]));
+        }
+
+        if (!string.IsNullOrWhiteSpace(model.Schema) &&
+            !SqlIdentifierRegex().IsMatch(model.Schema))
+        {
+            errors.Add(new ModelError(nameof(model.Schema), S["The table schema must be a valid SQL identifier using only letters, numbers, and underscores, and it must start with a letter or underscore."]));
+        }
+
         if (shellSettings is not null)
         {
             // A newly loaded settings from the configuration should be disposed.
             using var disposable = existingShellSettings is null ? shellSettings : null;
 
-            var validationContext = new DbConnectionValidatorContext(shellSettings, model);
-            await ValidateConnectionAsync(validationContext, errors);
+            // Skip connection validation if no connection string was provided and the
+            // provider requires one. The admin may intentionally leave it blank so the
+            // person setting up the tenant can supply one during setup.
+            var provider = _databaseProviders.FirstOrDefault(p => p.Value == model.DatabaseProvider);
+            if (provider is null || !provider.HasConnectionString || !string.IsNullOrWhiteSpace(model.ConnectionString))
+            {
+                var validationContext = new DbConnectionValidatorContext(shellSettings, model);
+                await ValidateConnectionAsync(validationContext, errors);
+            }
         }
 
         return errors;
@@ -155,6 +207,18 @@ public partial class TenantValidator : ITenantValidator
         }
     }
 
+    private bool IsTablePrefixRequired(string databaseProvider) =>
+        _tenantsOptions.RequireTablePrefix &&
+        ProviderSupportsTablePrefix(databaseProvider);
+
+    private bool ProviderSupportsTablePrefix(string databaseProvider) =>
+        _databaseProviders.Any(provider =>
+            provider.HasTablePrefix &&
+            string.Equals(provider.Value, databaseProvider, StringComparison.OrdinalIgnoreCase));
+
     [GeneratedRegex(@"^\w+$")]
     private static partial Regex TenantNameRuleRegex();
+
+    [GeneratedRegex(@"^[A-Za-z_][A-Za-z0-9_]*$")]
+    private static partial Regex SqlIdentifierRegex();
 }

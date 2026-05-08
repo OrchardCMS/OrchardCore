@@ -1,12 +1,26 @@
 @model EditTenantViewModel
 @inject IEnumerable<OrchardCore.Data.DatabaseProvider> DatabaseProviders
 
-<h6>
-    @T["Database Presets"]
-    <span class="text-muted form-text small">@T["Optionally specify which presets should be used for the Setup experience."]</span>
-</h6>
+@{
+    var selectedProvider = DatabaseProviders.FirstOrDefault(provider => provider.Value == Model.DatabaseProvider);
+    var selectedProviderHasConnectionString = selectedProvider?.HasConnectionString == true;
+    var selectedProviderHasTablePrefix = selectedProvider?.HasTablePrefix == true;
+    var tablePrefixRequired = !Model.HasTablePrefixPattern && Model.RequireTablePrefix && selectedProviderHasTablePrefix;
+}
+
+@if (!Model.DatabaseProviderPreset)
+{
+    <h6>
+        @T["Database Presets"]
+        <span class="text-muted form-text small">@T["Optionally specify which presets should be used for the Setup experience."]</span>
+    </h6>
+}
 <div class="row row-cols-1 row-cols-md-2">
-    @if (!Model.DatabaseConfigurationPreset || Model.CanEditDatabasePresets)
+    @if (Model.DatabaseProviderPreset)
+    {
+        <input asp-for="DatabaseProvider" type="hidden" />
+    }
+    else
     {
         <div class="mb-3 col" asp-validation-class-for="DatabaseProvider">
             <label asp-for="DatabaseProvider" class="form-label">@T["What type of database to use?"]</label>
@@ -20,30 +34,61 @@
         </div>
     }
 
-    <div class="mb-3 col tablePrefix" asp-validation-class-for="TablePrefix">
-        <label asp-for="TablePrefix" class="form-label">@T["Table Prefix"]</label>
-        <input asp-for="TablePrefix" class="form-control" />
-        <span asp-validation-for="TablePrefix" class="text-danger"></span>
-    </div>
+    @if (Model.HasTablePrefixPattern)
+    {
+        <input asp-for="TablePrefix" type="hidden" data-require-table-prefix="false" data-provider-has-table-prefix="@selectedProviderHasTablePrefix.ToString().ToLowerInvariant()" />
+    }
+    else
+    {
+        <div class="mb-3 col tablePrefixField" asp-validation-class-for="TablePrefix">
+            <label asp-for="TablePrefix" class="form-label">@T["Table Prefix"]</label>
+            <input asp-for="TablePrefix" class="form-control" required="@(tablePrefixRequired ? "required" : null)" data-require-table-prefix="@Model.RequireTablePrefix.ToString().ToLowerInvariant()" data-provider-has-table-prefix="@selectedProviderHasTablePrefix.ToString().ToLowerInvariant()" />
+            <span asp-validation-for="TablePrefix" class="text-danger"></span>
+            <div class="hint">
+                @T["Used to prefix this tenant's database tables when tenants share the same database."]
+                @if (Model.RequireTablePrefix)
+                {
+                    @T["This value is required by configuration when the selected database provider supports table prefixes."]
+                }
+            </div>
+        </div>
+    }
 </div>
 
-@if (!Model.DatabaseConfigurationPreset || Model.CanEditDatabasePresets)
+@if (!Model.DatabaseConfigurationPreset)
 {
-    <div class="row connectionString" asp-validation-class-for="ConnectionString">
+    <div class="row connectionString" asp-validation-class-for="ConnectionString" hidden="@(!selectedProviderHasConnectionString)">
         <div class="mb-3 col-md-12">
             <label asp-for="ConnectionString" class="form-label">@T["Connection string"]</label>
-            <input asp-for="ConnectionString" class="form-control" />
+            <input asp-for="ConnectionString" class="form-control" data-provider-has-connection-string="@selectedProviderHasConnectionString.ToString().ToLowerInvariant()" data-connection-string-sample="@(selectedProviderHasConnectionString ? T["The connection string to your database instance, e.g. {0}.", selectedProvider?.SampleConnectionString] : string.Empty)" />
             <span asp-validation-for="ConnectionString" class="text-danger"></span>
             <span id="connectionStringHint" class="text-muted form-text small"></span>
         </div>
     </div>
 
     <div class="row row-cols-1 row-cols-md-2">
-        <div class="mb-3 col tablePrefix" asp-validation-class-for="Schema">
+        <div class="mb-3 col schemaField" asp-validation-class-for="Schema" hidden="@(!selectedProviderHasTablePrefix)">
             <label asp-for="Schema" class="form-label">@T["Table Schema"]</label>
-            <input asp-for="Schema" class="form-control" />
+            @if (Model.HasSchemaPattern)
+            {
+                <input asp-for="Schema" class="form-control" readonly />
+                <div class="hint">
+                    @if (string.IsNullOrEmpty(Model.ResolvedSchema))
+                    {
+                        @T["Generated automatically from the configured tenant schema pattern when the tenant is created."]
+                    }
+                    else
+                    {
+                        @T["Generated automatically from the configured tenant schema pattern."]
+                    }
+                </div>
+            }
+            else
+            {
+                <input asp-for="Schema" class="form-control" />
+                <div class="hint">@T["When left blank, the default value on the server will be used."] @T["For example, '{0}' for SQL Server.", "dbo"]</div>
+            }
             <span asp-validation-for="Schema" class="text-danger"></span>
-            <div class="hint">@T["When left blank, the default value on the server will be used."] @T["For example, '{0}' for SQL Server.", "dbo"]</div>
         </div>
     </div>
 }
