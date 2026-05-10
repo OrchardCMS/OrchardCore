@@ -1,0 +1,166 @@
+@model OrchardCore.OpenSearch.ViewModels.AdminQueryViewModel
+@using OrchardCore.ContentManagement
+@using System.Text.Json
+@using System.Text.Json.Nodes
+@using Json.Path
+@using OrchardCore.Environment.Shell
+@inject IContentManager ContentManager
+@inject IShellFeaturesManager ShellFeaturesManager
+@{
+    var hasFields = Model.Fields?.Any() == true;
+    var hasDocuments = Model.Documents?.Any() == true;
+}
+
+<style asp-name="codemirror"></style>
+<script asp-name="codemirror" at="Foot"></script>
+<script asp-name="codemirror-mode-javascript" at="Foot"></script>
+
+<zone Name="Title"><h1>@RenderTitleSegments(T["OpenSearch Query"])</h1></zone>
+
+<form asp-action="Query" method="post">
+    <div asp-validation-summary="All"></div>
+    <div class="mb-3">
+        <label asp-for="Id" class="form-label">@T["Index"]</label>
+        <select asp-for="Id" class="form-control" asp-items="Model.Indexes">
+            <option value="">@T["Select an index"]</option>
+        </select>
+        <span class="hint">@T["The OpenSearch index to search on"]</span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="DecodedQuery" class="form-label">@T["Query"]</label>
+        <textarea asp-for="DecodedQuery" rows="12" class="form-control"></textarea>
+        <span class="hint">@T["You can use the <a href=\"{0}\">Match all query</a> to search all documents.", Html.Raw(Url.Action("Query", "Admin", new { area = "OrchardCore.OpenSearch", query = Model.MatchAllQuery, id = Model.Id }))]</span>
+        <span class="hint">@T["The search query uses the OpenSearch format. Some documentation can be found here <a target=\"_blank\" href=\"https://opensearch.org/docs/latest/query-dsl/\">https://opensearch.org/docs/latest/query-dsl/</a>"]</span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Parameters" class="form-label">@T["Parameters"]</label>
+        <textarea asp-for="Parameters" rows="6" class="form-control"></textarea>
+        <span class="hint">@T["An optional Json object containing the parameter values for this query."]</span>
+    </div>
+
+    <div class="mb-3">
+        <button type="submit" class="btn btn-primary">@T["Run Query"]</button>
+    </div>
+</form>
+
+<div class="mb-3">
+    @if (Model.Elapsed != TimeSpan.Zero)
+    {
+        <p><span class="text-muted">@T["Found {0} result(s) in {1} ms", Model.Count.ToString(), Model.Elapsed.TotalMilliseconds.ToString()]</span></p>
+    }
+</div>
+
+@if ((hasDocuments || hasFields) && await ShellFeaturesManager.IsFeatureEnabledAsync("OrchardCore.Queries"))
+{
+    <div class="mb-3">
+        <a href="@Url.Action("Create", "Admin", new { area = "OrchardCore.Queries", id = "OpenSearch", query = Model.DecodedQuery })" class="btn btn-success">@T["Save Query"]</a>
+    </div>
+}
+
+@if (hasDocuments)
+{
+    var fieldNames = Model.Documents.SelectMany(d => JsonSerializer.Deserialize<Dictionary<string, object>>(d.Value).Keys).Distinct().ToArray();
+
+    <div class="mt-3">
+        <p><span class="text-muted">@T["The results displayed in this table are coming from the _source data."]</span></p>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    @foreach (var name in fieldNames)
+                    {
+                        <th>@name</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    int row = 1;
+                }
+                @foreach (var document in Model.Documents)
+                {
+                    <tr>
+                        <th scope="row">@(row++)</th>
+                        @foreach (var fieldName in fieldNames)
+                        {
+                            @if (document.Value.TryGetPropertyValue(fieldName, out var value))
+                            {
+                                <td>@value</td>
+                            }
+                            else
+                            {
+                                <td></td>
+                            }
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@if (hasFields)
+{
+    var fieldNames = Model.Fields.SelectMany(d => JsonSerializer.Deserialize<Dictionary<string, object>>(d.Value).Keys).Distinct().ToArray();
+
+    <div class="mt-3">
+        <p><span class="text-muted">@T["The results displayed in this table are coming from the field(s) data."]</span></p>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    @foreach (var name in fieldNames)
+                    {
+                        <th>@name</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    int row = 1;
+                }
+                @foreach (var field in Model.Fields)
+                {
+                    <tr>
+                        <th scope="row">@(row++)</th>
+                        @foreach (var fieldName in fieldNames)
+                        {
+                            @if (field.Value.TryGetPropertyValue(fieldName, out var value))
+                            {
+                                @if (value.TryGetValue<string[]>(out var terms))
+                                {
+                                    <td>@string.Join(" ||| ", terms)</td>
+                                }
+                                else if (value.TryGetValue<string>(out var term))
+                                {
+                                    <td>@term</td>
+                                }
+                                else
+                                {
+                                    <td>@T["NULL"]</td>
+                                }
+                            }
+                            else
+                            {
+                                <td>@T["NULL"]</td>
+                            }
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+<script at="Foot">
+    document.addEventListener('DOMContentLoaded', () => {
+        CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(m => m.DecodedQuery)'), { mode: "javascript", json: true, lineNumbers: true, viewportMargin: Infinity });
+        CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(m => m.Parameters)'), { mode: "javascript", json: true, lineNumbers: true, viewportMargin: Infinity });
+    });
+</script>
