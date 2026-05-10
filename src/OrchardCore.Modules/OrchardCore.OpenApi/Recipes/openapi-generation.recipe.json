@@ -1,0 +1,24 @@
+{
+  "name": "OpenApiGeneration",
+  "displayName": "OpenApi Generation",
+  "description": "Enables all features that expose API endpoints for OpenApi schema generation and NSwag client generation.",
+  "author": "The Orchard Core Team",
+  "website": "https://orchardcore.net",
+  "version": "1.0.0",
+  "issetuprecipe": false,
+  "categories": [ "api" ],
+  "tags": [ "openapi", "api", "nswag" ],
+  "steps": [
+    {
+      "name": "feature",
+      "enable": [
+        "OrchardCore.Contents",
+        "OrchardCore.Queries",
+        "OrchardCore.Tenants",
+        "OrchardCore.Search.Lucene",
+        "OrchardCore.Search.Elasticsearch",
+        "OrchardCore.OpenApi"
+      ]
+    }
+  ]
+}
