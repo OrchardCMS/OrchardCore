@@ -5,6 +5,7 @@ using global::Microsoft.Extensions.Configuration;
 using global::Microsoft.Extensions.DependencyInjection;
 using global::Microsoft.Extensions.Options;
 using OrchardCore.Clusters;
+using OrchardCore.Environment.Shell;
 
 namespace OrchardCore.Tests.Clusters;
 
@@ -75,5 +76,85 @@ public class ClustersOptionsSetupTests
                 Assert.Equal(8192, cluster.SlotMin);
                 Assert.Equal(16383, cluster.SlotMax);
             });
+    }
+
+    [Fact]
+    public void ConfigureThrowsWhenEnabledWithoutClusters()
+    {
+        var exception = Assert.Throws<InvalidOperationException>(() => Configure(new Dictionary<string, string>
+        {
+            ["OrchardCore_Clusters:Enabled"] = "true",
+        }));
+
+        Assert.Equal("Tenant clustering is enabled but no clusters are configured.", exception.Message);
+    }
+
+    [Fact]
+    public void ConfigureThrowsWhenEnabledClusterSlotRangeHasWrongLength()
+    {
+        var exception = Assert.Throws<InvalidOperationException>(() => Configure(new Dictionary<string, string>
+        {
+            ["OrchardCore_Clusters:Enabled"] = "true",
+            ["OrchardCore_Clusters:Clusters:cluster1:SlotRange:0"] = "0",
+        }));
+
+        Assert.Equal("The tenant cluster 'cluster1' must define a SlotRange with exactly two values.", exception.Message);
+    }
+
+    [Theory]
+    [InlineData("-1", "100")]
+    [InlineData("100", "16384")]
+    public void ConfigureThrowsWhenEnabledClusterSlotRangeIsOutsideAllowedSlots(string slotMin, string slotMax)
+    {
+        var exception = Assert.Throws<InvalidOperationException>(() => Configure(new Dictionary<string, string>
+        {
+            ["OrchardCore_Clusters:Enabled"] = "true",
+            ["OrchardCore_Clusters:Clusters:cluster1:SlotRange:0"] = slotMin,
+            ["OrchardCore_Clusters:Clusters:cluster1:SlotRange:1"] = slotMax,
+        }));
+
+        Assert.Equal($"The tenant cluster 'cluster1' SlotRange must be within 0 and {ShellSettings.ClusterSlotsCount - 1}.", exception.Message);
+    }
+
+    [Fact]
+    public void ConfigureThrowsWhenEnabledClusterSlotRangeIsInverted()
+    {
+        var exception = Assert.Throws<InvalidOperationException>(() => Configure(new Dictionary<string, string>
+        {
+            ["OrchardCore_Clusters:Enabled"] = "true",
+            ["OrchardCore_Clusters:Clusters:cluster1:SlotRange:0"] = "100",
+            ["OrchardCore_Clusters:Clusters:cluster1:SlotRange:1"] = "99",
+        }));
+
+        Assert.Equal("The tenant cluster 'cluster1' SlotRange minimum must be less than or equal to the maximum.", exception.Message);
+    }
+
+    [Fact]
+    public void ConfigureThrowsWhenEnabledClusterSlotRangesOverlap()
+    {
+        var exception = Assert.Throws<InvalidOperationException>(() => Configure(new Dictionary<string, string>
+        {
+            ["OrchardCore_Clusters:Enabled"] = "true",
+            ["OrchardCore_Clusters:Clusters:cluster1:SlotRange:0"] = "0",
+            ["OrchardCore_Clusters:Clusters:cluster1:SlotRange:1"] = "100",
+            ["OrchardCore_Clusters:Clusters:cluster2:SlotRange:0"] = "100",
+            ["OrchardCore_Clusters:Clusters:cluster2:SlotRange:1"] = "200",
+        }));
+
+        Assert.Contains("SlotRange overlaps with the tenant cluster", exception.Message);
+    }
+
+    private static ClustersOptions Configure(Dictionary<string, string> values)
+    {
+        var configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(values)
+            .Build();
+
+        var options = new ClustersOptions();
+        var setup = new ClustersOptionsSetup(configuration);
+
+        setup.Configure(options);
+
+        return options;
     }
 }
