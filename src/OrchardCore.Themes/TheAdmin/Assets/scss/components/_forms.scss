@@ -56,29 +56,44 @@ input[type="password"]::-ms-clear {
     display: none;
 }
 
+.has-filter,
+.has-search {
+    position: relative;
+}
+
 .has-filter .form-control,
 .has-search .form-control {
-    padding-left: 2rem;
     color: var(--bs-body-color);
+}
+
+.has-filter .form-control {
+    padding-left: 2rem;
+}
+
+.has-search .form-control {
+    padding-left: 2.5rem;
 }
 
 .has-filter .form-control-feedback,
 .has-search .form-control-feedback {
     position: absolute;
-    left: 1.75rem;
+    top: 50%;
+    left: 1rem;
     z-index: 10;
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     width: 1rem;
-    height: 2rem;
-    line-height: 1rem;
+    height: 1rem;
+    line-height: 1;
+    transform: translateY(-50%);
     text-align: center;
     pointer-events: none;
     color: var(--bs-secondary);
 }
 
 .has-filter .form-control-feedback {
-    left: 4.25rem;
-    top: 0.25rem;
+    left: 4.5rem;
 }
 
 [dir="rtl"] .has-filter .form-control-feedback {
@@ -86,13 +101,12 @@ input[type="password"]::-ms-clear {
 }
 
 .has-search .form-control-feedback {
-    left: 1.75rem;
+    left: 1rem;
 }
 
 .has-search:not(.input-group) .form-control-feedback,
 .has-filter:not(.input-group) .form-control-feedback {
-    left: 1.75rem;
-    top: 1.25rem;
+    left: 1rem;
 }
 
 .has-filter .btn:not(.show) {
