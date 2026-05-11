@@ -288,17 +288,21 @@
     });
 
   
-    const popup = document.querySelector('.alert');
+    const popups = document.querySelectorAll('.alert');
 
+    popups.forEach((popup, index) => {
+
+    
     setTimeout(() => {
     popup.classList.add('fade-out');
 
     setTimeout(() => {
     popup.style.display = 'none';
     }, 500); 
-    }, 9000);
-
     
+
+    }, 8000 + (index * 1500));
+    });
 
 
 </script>
