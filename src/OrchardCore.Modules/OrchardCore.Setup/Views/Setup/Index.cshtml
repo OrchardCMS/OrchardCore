@@ -170,11 +170,7 @@
             : null;
 
         <div class="row">
-            @if (Model.DatabaseProviderPreset)
-            {
-                <input asp-for="DatabaseProvider" type="hidden" />
-            }
-            else
+            @if (!Model.DatabaseProviderPreset)
             {
                 <div class="mb-3 col-md-6">
                     <label asp-for="DatabaseProvider" class="form-label">@T["What type of database to use?"]</label>
