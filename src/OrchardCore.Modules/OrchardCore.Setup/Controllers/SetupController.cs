@@ -25,7 +25,7 @@ public sealed class SetupController : Controller
     private readonly IdentityOptions _identityOptions;
     private readonly IEmailAddressValidator _emailAddressValidator;
     private readonly IEnumerable<DatabaseProvider> _databaseProviders;
-    private readonly IReadOnlyDictionary<string, DatabaseProvider> _databaseProviderLookup;
+    private readonly Dictionary<string, DatabaseProvider> _databaseProviderLookup;
     private readonly ILogger _logger;
 
     internal readonly IStringLocalizer S;

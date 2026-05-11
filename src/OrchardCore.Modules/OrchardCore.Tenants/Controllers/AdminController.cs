@@ -42,7 +42,7 @@ public sealed class AdminController : Controller
     private readonly PagerOptions _pagerOptions;
     private readonly TenantsOptions _tenantsOptions;
     private readonly ITenantDatabasePatternResolver _tenantDatabasePatternResolver;
-    private readonly IReadOnlyDictionary<string, DatabaseProvider> _databaseProviderLookup;
+    private readonly Dictionary<string, DatabaseProvider> _databaseProviderLookup;
     private readonly ILogger _logger;
     private readonly IShapeFactory _shapeFactory;
 

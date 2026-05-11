@@ -164,15 +164,15 @@
     </div>
     @if (!Model.DatabaseConfigurationPreset)
     {
+        // Resolve preset provider capabilities for server-side visibility.
+        var presetProvider = Model.DatabaseProviderPreset
+            ? Model.DatabaseProviders.FirstOrDefault(p => p.Value == Model.DatabaseProvider)
+            : null;
+
         <div class="row">
             @if (Model.DatabaseProviderPreset)
             {
-                <select asp-for="DatabaseProvider" class="d-none" tabindex="-1" aria-hidden="true">
-                    @foreach (var provider in Model.DatabaseProviders)
-                    {
-                        <option value="@provider.Value" data-connection-string="@provider.HasConnectionString" data-table-prefix="@provider.HasTablePrefix" data-connection-string-sample="@T["The connection string to your database instance, e.g. {0}.", provider.SampleConnectionString]">@provider.Name</option>
-                    }
-                </select>
+                <input asp-for="DatabaseProvider" type="hidden" />
             }
             else
             {
@@ -189,7 +189,7 @@
                 </div>
             }
 
-            <div class="mb-3 col-md-6 tablePrefix" asp-validation-class-for="TablePrefix">
+            <div class="mb-3 col-md-6 tablePrefix" asp-validation-class-for="TablePrefix" style="@(presetProvider is not null && !presetProvider.HasTablePrefix ? "display:none" : "")">
                 <label asp-for="TablePrefix" class="form-label">@T["Table Prefix"]</label>
                 <input asp-for="TablePrefix" class="form-control" />
                 <span asp-validation-for="TablePrefix" class="text-danger"></span>
@@ -197,7 +197,7 @@
             </div>
         </div>
 
-        <div class="row connectionString" asp-validation-class-for="ConnectionString">
+        <div class="row connectionString" asp-validation-class-for="ConnectionString" style="@(presetProvider is not null && !presetProvider.HasConnectionString ? "display:none" : "")">
             <div class="mb-3 col-md-12">
                 <label asp-for="ConnectionString" class="form-label">@T["Connection String"]</label>
                 <div class="input-group mb-2 mb-sm-0">
@@ -205,12 +205,12 @@
                     <button type="button" id="toggleConnectionString" class="btn btn-secondary" tabindex="-1" aria-hidden="true" title="@T["Show/hide connection string"]"><i class="icon fa fa-eye"></i></button>
                 </div>
                 <span asp-validation-for="ConnectionString" class="text-danger"></span>
-                <span id="connectionStringHint" class="text-muted form-text small"></span>
+                <span id="connectionStringHint" class="text-muted form-text small">@(presetProvider?.HasConnectionString == true ? T["The connection string to your database instance, e.g. {0}.", presetProvider.SampleConnectionString] : "")</span>
             </div>
         </div>
 
         <div class="row row-cols-1 row-cols-md-2">
-            <div class="mb-3 col tablePrefix">
+            <div class="mb-3 col tablePrefix" style="@(presetProvider is not null && !presetProvider.HasTablePrefix ? "display:none" : "")">
                 <label asp-for="Schema" class="form-label">@T["Table Schema"]</label>
                 <input asp-for="Schema" class="form-control" />
                 <span asp-validation-for="Schema" class="text-danger"></span>

@@ -41,7 +41,7 @@ public sealed class TenantApiController : ControllerBase
     private readonly IdentityOptions _identityOptions;
     private readonly TenantsOptions _tenantsOptions;
     private readonly IEnumerable<DatabaseProvider> _databaseProviders;
-    private readonly IReadOnlyDictionary<string, DatabaseProvider> _databaseProviderLookup;
+    private readonly Dictionary<string, DatabaseProvider> _databaseProviderLookup;
     private readonly ITenantValidator _tenantValidator;
     private readonly ITenantDatabasePatternResolver _tenantDatabasePatternResolver;
     private readonly ILogger _logger;
