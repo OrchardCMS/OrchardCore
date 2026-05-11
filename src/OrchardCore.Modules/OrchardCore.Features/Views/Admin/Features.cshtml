@@ -287,10 +287,18 @@
         });
     });
 
-    $(function () {
-        setTimeout(function() {
-            $('.alert').fadeOut(500, function() {
-                $(this).remove();
-            }); }, 8000);
-    });
+  
+    const popup = document.querySelector('.alert');
+
+    setTimeout(() => {
+    popup.classList.add('fade-out');
+
+    setTimeout(() => {
+    popup.style.display = 'none';
+    }, 500); 
+    }, 9000);
+
+    
+
+
 </script>
