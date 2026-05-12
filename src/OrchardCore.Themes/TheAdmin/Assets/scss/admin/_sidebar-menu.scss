@@ -27,13 +27,14 @@ body:not(.left-sidebar-compact) {
         // Rotate the chevron's icon when the menu is active
         [aria-expanded="true"] {
             .chevron {
-                transform: rotate(90deg);
+                transform: translateY(-50%) rotate(90deg);
                 transition-duration: 0.2s;
             }
         }
 
         [aria-expanded="false"] {
             .chevron {
+                transform: translateY(-50%);
                 transition-duration: 0.2s;
             }
         }
@@ -48,9 +49,10 @@ body:not(.left-sidebar-compact) {
 
         .chevron {
             position: absolute;
-            top: 38%;
+            top: 50%;
             left: 100%;
             margin-left: -25px;
+            line-height: 1;
         }
 
         figcaption,
@@ -185,6 +187,9 @@ body:not(.left-sidebar-compact) {
                 color: inherit;
                 border: none;
                 padding: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
                 font: inherit;
                 cursor: pointer;
                 width: 45px;
@@ -376,6 +381,7 @@ body:not(.left-sidebar-compact) {
 
         [aria-expanded="false"] {
             .chevron {
+                transform: translateY(-50%);
                 transition-duration: 0.2s;
             }
         }
@@ -390,9 +396,10 @@ body:not(.left-sidebar-compact) {
 
         .chevron {
             position: absolute;
-            top: 38%;
+            top: 50%;
             left: 100%;
             margin-left: -25px;
+            line-height: 1;
         }
 
         figcaption,
@@ -690,6 +697,9 @@ body:not(.left-sidebar-compact) {
                 color: inherit;
                 border: none;
                 padding: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
                 font: inherit;
                 cursor: pointer;
                 width: 45px;
@@ -904,16 +914,11 @@ body:not(.left-sidebar-compact) {
         // Rotate the chevron's icon when the menu is active
         [aria-expanded="true"] {
             .chevron {
-                transform: rotate(90deg);
+                transform: translateY(-50%) rotate(90deg);
                 transition-duration: 0.2s;
             }
         }
     }
-}
-
-// fixing a flickering that occurs on compact leftbar while icons load.
-html:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > .item-label {
-    background-color: var(--oc-admin-menu-bg-color, $gray-100) !important;
 }
 
 // Layout 5 : leftbar compactor button

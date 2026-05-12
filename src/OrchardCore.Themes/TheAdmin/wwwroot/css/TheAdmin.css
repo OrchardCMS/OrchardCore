@@ -1006,29 +1006,44 @@ input[type=password]::-ms-clear {
   display: none;
 }
 
+.has-filter,
+.has-search {
+  position: relative;
+}
+
 .has-filter .form-control,
 .has-search .form-control {
   color: var(--bs-body-color);
 }
 
-[dir="ltr"] .has-filter .form-control,
-[dir="ltr"] .has-search .form-control {
+[dir="ltr"] .has-filter .form-control {
   padding-left: 2rem;
 }
 
-[dir="rtl"] .has-filter .form-control,
-[dir="rtl"] .has-search .form-control {
+[dir="rtl"] .has-filter .form-control {
   padding-right: 2rem;
+}
+
+[dir="ltr"] .has-search .form-control {
+  padding-left: 2.5rem;
+}
+
+[dir="rtl"] .has-search .form-control {
+  padding-right: 2.5rem;
 }
 
 .has-filter .form-control-feedback,
 .has-search .form-control-feedback {
   position: absolute;
+  top: 50%;
   z-index: 10;
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 1rem;
-  height: 2rem;
-  line-height: 1rem;
+  height: 1rem;
+  line-height: 1;
+  transform: translateY(-50%);
   text-align: center;
   pointer-events: none;
   color: var(--bs-secondary);
@@ -1036,24 +1051,20 @@ input[type=password]::-ms-clear {
 
 [dir="ltr"] .has-filter .form-control-feedback,
 [dir="ltr"] .has-search .form-control-feedback {
-  left: 1.75rem;
+  left: 1rem;
 }
 
 [dir="rtl"] .has-filter .form-control-feedback,
 [dir="rtl"] .has-search .form-control-feedback {
-  right: 1.75rem;
-}
-
-.has-filter .form-control-feedback {
-  top: 0.25rem;
+  right: 1rem;
 }
 
 [dir="ltr"] .has-filter .form-control-feedback {
-  left: 4.25rem;
+  left: 4.5rem;
 }
 
 [dir="rtl"] .has-filter .form-control-feedback {
-  right: 4.25rem;
+  right: 4.5rem;
 }
 
 [dir="ltr"] [dir=rtl] .has-filter .form-control-feedback {
@@ -1065,26 +1076,21 @@ input[type=password]::-ms-clear {
 }
 
 [dir="ltr"] .has-search .form-control-feedback {
-  left: 1.75rem;
+  left: 1rem;
 }
 
 [dir="rtl"] .has-search .form-control-feedback {
-  right: 1.75rem;
-}
-
-.has-search:not(.input-group) .form-control-feedback,
-.has-filter:not(.input-group) .form-control-feedback {
-  top: 1.25rem;
+  right: 1rem;
 }
 
 [dir="ltr"] .has-search:not(.input-group) .form-control-feedback,
 [dir="ltr"] .has-filter:not(.input-group) .form-control-feedback {
-  left: 1.75rem;
+  left: 1rem;
 }
 
 [dir="rtl"] .has-search:not(.input-group) .form-control-feedback,
 [dir="rtl"] .has-filter:not(.input-group) .form-control-feedback {
-  right: 1.75rem;
+  right: 1rem;
 }
 
 .has-filter .btn:not(.show), .has-filter .button:not(.show) {

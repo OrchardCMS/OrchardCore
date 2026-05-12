@@ -184,6 +184,34 @@ public class RuleTests
         Assert.Equal(expected, await ruleService.EvaluateAsync(rule));
     }
 
+    [Fact]
+    public async Task ShouldEvaluateJavascriptConditionWithAsyncGlobalMethod()
+    {
+        var rule = new Rule
+        {
+            Conditions =
+            [
+                new JavascriptCondition
+                {
+                    Script = "isAllowedAsync()",
+                }
+            ],
+        };
+
+        var services = CreateRuleServiceCollection()
+            .AddRuleCondition<JavascriptCondition, JavascriptConditionEvaluator>()
+            .AddSingleton<IGlobalMethodProvider, AsyncBooleanMethodProvider>()
+            .AddMemoryCache()
+            .AddScripting()
+            .AddJavaScriptEngine();
+
+        var serviceProvider = services.BuildServiceProvider();
+
+        var ruleService = serviceProvider.GetRequiredService<IRuleService>();
+
+        Assert.True(await ruleService.EvaluateAsync(rule));
+    }
+
     public static ServiceCollection CreateRuleServiceCollection()
     {
         var services = new ServiceCollection();
@@ -201,5 +229,22 @@ public class RuleTests
         services.AddTransient<IConfigureOptions<ConditionOperatorOptions>, ConditionOperatorConfigureOptions>();
 
         return services;
+    }
+
+    private sealed class AsyncBooleanMethodProvider : IGlobalMethodProvider
+    {
+        public IEnumerable<GlobalMethod> GetMethods()
+        {
+            yield return new GlobalMethod
+            {
+                Name = "isAllowedAsync",
+                Method = serviceProvider => (Func<bool>)(() => false),
+                AsyncMethod = serviceProvider => (Func<Task<bool>>)(async () =>
+                {
+                    await Task.Yield();
+                    return true;
+                }),
+            };
+        }
     }
 }

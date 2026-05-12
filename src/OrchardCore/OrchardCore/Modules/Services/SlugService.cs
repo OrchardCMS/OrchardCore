@@ -1,6 +1,5 @@
 using System.Globalization;
 using System.Text;
-using AnyAscii;
 using Cysharp.Text;
 
 namespace OrchardCore.Modules.Services;
@@ -9,16 +8,6 @@ public class SlugService : ISlugService
 {
     private const char Hyphen = '-';
     private const int MaxLength = 1000;
-
-    public string Slugify(string text, bool transliterate)
-    {
-        if (transliterate && !string.IsNullOrEmpty(text))
-        {
-            text = text.Transliterate();
-        }
-
-        return Slugify(text);
-    }
 
     public string Slugify(string text, char separator)
     {
