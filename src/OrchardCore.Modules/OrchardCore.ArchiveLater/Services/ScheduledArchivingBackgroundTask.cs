@@ -43,8 +43,7 @@ public sealed class ScheduledArchivingBackgroundTask : IBackgroundTask
         {
             var contentItem = await contentManager.GetAsync(item.ContentItemId);
 
-            var part = contentItem.As<ArchiveLaterPart>();
-            if (part != null)
+            if (contentItem.TryGet<ArchiveLaterPart>(out var part))
             {
                 part.ScheduledArchiveUtc = null;
                 part.Apply();

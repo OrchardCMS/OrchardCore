@@ -169,7 +169,7 @@ public class RecipeExecutor : IRecipeExecutor
             var scriptingManager = scope.ServiceProvider.GetRequiredService<IScriptingManager>();
 
             // Substitutes the script elements by their actual values.
-            EvaluateJsonTree(scriptingManager, recipeStep, recipeStep.Step);
+            await EvaluateJsonTreeAsync(scriptingManager, recipeStep, recipeStep.Step);
 
             if (_logger.IsEnabled(LogLevel.Information))
             {
@@ -195,7 +195,7 @@ public class RecipeExecutor : IRecipeExecutor
     /// <summary>
     /// Traverse all the nodes of the json document and replaces their value if they are scripted.
     /// </summary>
-    private JsonNode EvaluateJsonTree(IScriptingManager scriptingManager, RecipeExecutionContext context, JsonNode node)
+    private async Task<JsonNode> EvaluateJsonTreeAsync(IScriptingManager scriptingManager, RecipeExecutionContext context, JsonNode node)
     {
         if (node is null)
         {
@@ -208,7 +208,7 @@ public class RecipeExecutor : IRecipeExecutor
                 var array = node.AsArray();
                 for (var i = 0; i < array.Count; i++)
                 {
-                    var item = EvaluateJsonTree(scriptingManager, context, array[i]);
+                    var item = await EvaluateJsonTreeAsync(scriptingManager, context, array[i]);
                     if (item is JsonValue && item != array[i])
                     {
                         array[i] = item;
@@ -221,7 +221,7 @@ public class RecipeExecutor : IRecipeExecutor
                 var properties = node.AsObject();
                 foreach (var property in properties.ToArray())
                 {
-                    var newProperty = EvaluateJsonTree(scriptingManager, context, property.Value);
+                    var newProperty = await EvaluateJsonTreeAsync(scriptingManager, context, property.Value);
                     if (newProperty is JsonValue && newProperty != property.Value)
                     {
                         properties[property.Key] = newProperty;
@@ -247,7 +247,7 @@ public class RecipeExecutor : IRecipeExecutor
 
                     value = value.Trim('[', ']');
 
-                    value = (scriptingManager.Evaluate(
+                    value = (await scriptingManager.EvaluateAsync(
                         value,
                         context.RecipeDescriptor.FileProvider,
                         context.RecipeDescriptor.BasePath,

@@ -78,7 +78,7 @@ public static class GetSdkEndpoints
             // max-age is needed because immutable is not widely supported
             context.Response.Headers.CacheControl = "public, max-age=31536000, immutable";
 
-            return Results.Bytes(scriptBytes, MediaTypeNames.Application.Json);
+            return Results.Bytes(scriptBytes, MediaTypeNames.Text.JavaScript);
         }
     }
 
@@ -134,7 +134,7 @@ public static class GetSdkEndpoints
             // max-age is needed because immutable is not widely supported
             context.Response.Headers.CacheControl = "public, max-age=31536000, immutable";
 
-            return Results.Bytes(scriptBytes, MediaTypeNames.Application.Json);
+            return Results.Bytes(scriptBytes, MediaTypeNames.Text.JavaScript);
         }
     }
 }

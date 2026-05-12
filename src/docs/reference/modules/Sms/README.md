@@ -55,7 +55,7 @@ public class TwilioProviderOptionsConfigurations : IConfigureOptions<SmsProvider
         var typeOptions = new SmsProviderTypeOptions(typeof(TwilioSmsProvider));
 
         var site = _siteService.GetSiteSettingsAsync().GetAwaiter().GetResult();
-        var settings = site.As<TwilioSettings>();
+        var settings = site.GetOrCreate<TwilioSettings>();
 
         typeOptions.IsEnabled = settings.IsEnabled;
 
@@ -107,6 +107,10 @@ When both the `SMS` and `Workflows` features are enabled at the same time, a new
 ## SMS Notification (`OrchardCore.Notifications.Sms`)
 
 This feature provides you a way to send user notifications using SMS based on user preferences. [Click here](../Notifications/README.md) to read more about notifications.
+
+## Health Checks
+
+This module provides a health check to report the status for the Twilio SMS service. Refer also to the [Health Checks Section](../HealthChecks/README.md).
 
 ## Credits
 

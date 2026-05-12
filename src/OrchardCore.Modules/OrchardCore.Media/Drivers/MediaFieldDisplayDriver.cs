@@ -122,7 +122,7 @@ public sealed class MediaFieldDisplayDriver : ContentFieldDisplayDriver<MediaFie
                         return true;
                     }
 
-                    return false; 
+                    return false;
                 });
             }
             catch (Exception e)

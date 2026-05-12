@@ -6,6 +6,7 @@ namespace OrchardCore.Lists.Services;
 
 public interface IContainerService
 {
+    Task<IEnumerable<ContentItem>> QueryContainedItemsAsync(string contentItemId, bool enableOrdering, Pager pager, ContainedItemOptions containedItemOptions);
     /// <summary>
     /// Query contained items by page either order by the created utc or order value.
     /// </summary>

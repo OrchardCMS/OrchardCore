@@ -1,7 +1,11 @@
 @using System.Linq
+@using OrchardCore
+@using OrchardCore.AdminMenu
+@using OrchardCore.Localization.Data
+
+@inject IDataLocalizer D
 
 @{
-
     var prefix = "icon-class-";
 
     //extract icon classes from Model.Classes
@@ -10,14 +14,16 @@
                     .Where(c => c.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
                     .Select(c => c.Substring(prefix.Length));
 
-    if (iconClasses.Any())
-    {
-        <span class="icon"><i class="@string.Join(" ", iconClasses)" aria-hidden="true"></i></span>
-    }
-    else
-    {
-        <span class="icon icon-none">@*<i class="fa-solid fa-ellipsis-v fa-xs" aria-hidden="true"></i>*@</span>
-    }
-
+    var context = OrchardCore.AdminMenu.DataLocalizationContext.AdminMenu(Model.Item.MenuName);
 }
-<span class="title">@Model.Text</span>
+
+@if (iconClasses.Any())
+{
+    <span class="icon"><i class="@string.Join(" ", iconClasses)" aria-hidden="true"></i></span>
+}
+else
+{
+    <span class="icon icon-none">@*<i class="fa-solid fa-ellipsis-v fa-xs" aria-hidden="true"></i>*@</span>
+}
+
+<span class="title">@D[Model.Text, context]</span>

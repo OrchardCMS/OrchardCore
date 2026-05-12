@@ -166,7 +166,8 @@ public sealed class Startup : StartupBase
 
         // Media Field
         services.AddContentField<MediaField>()
-            .UseDisplayDriver<MediaFieldDisplayDriver>();
+            .UseDisplayDriver<MediaFieldDisplayDriver>()
+            .AddHandler<AttachedMediaFieldHandler>();
         services.AddScoped<IContentPartFieldDefinitionDisplayDriver, MediaFieldSettingsDriver>();
         services.AddScoped<AttachedMediaFieldFileService, AttachedMediaFieldFileService>();
         services.AddScoped<IContentHandler, AttachedMediaFieldContentHandler>();
@@ -245,6 +246,8 @@ public sealed class MediaSlugifyStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.AddTransient<IConfigureOptions<MediaSlugifyOptions>, MediaSlugifyOptionsConfiguration>();
+
         // Media Name Normalizer
         services.AddScoped<IMediaNameNormalizerService, SlugifyMediaNameNormalizerService>();
     }

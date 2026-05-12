@@ -13,9 +13,7 @@ public sealed class TestContentElementDisplayDriver : ContentDisplayDriver
 
     public override IDisplayResult Display(ContentItem contentItem, BuildDisplayContext context)
     {
-        var testContentPart = contentItem.As<TestContentPartA>();
-
-        if (testContentPart == null)
+        if (!contentItem.TryGet<TestContentPartA>(out var testContentPart))
         {
             return null;
         }
@@ -48,9 +46,7 @@ public sealed class TestContentElementDisplayDriver : ContentDisplayDriver
 
     public override IDisplayResult Edit(ContentItem contentItem, BuildEditorContext context)
     {
-        var testContentPart = contentItem.As<TestContentPartA>();
-
-        if (testContentPart == null)
+        if (!contentItem.TryGet<TestContentPartA>(out var testContentPart))
         {
             return null;
         }
@@ -60,9 +56,7 @@ public sealed class TestContentElementDisplayDriver : ContentDisplayDriver
 
     public override async Task<IDisplayResult> UpdateAsync(ContentItem contentItem, UpdateEditorContext context)
     {
-        var testContentPart = contentItem.As<TestContentPartA>();
-
-        if (testContentPart == null)
+        if (!contentItem.TryGet<TestContentPartA>(out var testContentPart))
         {
             return null;
         }

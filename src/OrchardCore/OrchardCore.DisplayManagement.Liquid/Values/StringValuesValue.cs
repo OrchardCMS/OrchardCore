@@ -202,13 +202,13 @@ internal sealed class StringValuesValue : FluidValue
         }
         else if (_stringValues.Count == 1)
         {
-            writer.Write(_stringValues[0]);
+            writer.Write(encoder.Encode(_stringValues[0]));
         }
         else
         {
             foreach (var v in _stringValues)
             {
-                writer.Write(v);
+                writer.Write(encoder.Encode(v));
             }
         }
     }
@@ -223,13 +223,13 @@ internal sealed class StringValuesValue : FluidValue
         }
         else if (_stringValues.Count == 1)
         {
-            await writer.WriteAsync(_stringValues[0]);
+            await writer.WriteAsync(encoder.Encode(_stringValues[0]));
         }
         else
         {
             foreach (var v in _stringValues)
             {
-                await writer.WriteAsync(v);
+                await writer.WriteAsync(encoder.Encode(v));
             }
         }
     }

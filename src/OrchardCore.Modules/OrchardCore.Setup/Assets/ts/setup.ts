@@ -141,36 +141,134 @@ const init = () => {
     }
 
     if (passwordElement) {
-        passwordElement.addEventListener("focus", function () {
-            const popover = document.createElement("div");
-            popover.className = "popover bs-popover-top";
-            popover.role = "tooltip";
-            popover.innerHTML = `<div class="popover-arrow" style="position: absolute; left: 0px; transform: translate(119px, 0px);"></div><div class="popover-header">Password requirements: </div><div class="popover-body"><ul><li>Minimum length: ${
-                options.requiredLength
-            }</li><li>Unique Chars: ${
-                options.requiredUniqueChars
-            }</li><li>Uppercase: ${
-                options.requireUppercase ? "required" : "not required"
-            }</li><li>Lowercase: ${
-                options.requireLowercase ? "required" : "not required"
-            }</li><li>Digit: ${
-                options.requireDigit ? "required" : "not required"
-            }</li><li>Non alphanumeric: ${
-                options.requireNonAlphanumeric ? "required" : "not required"
-            }</li></ul></div>`;
+        let popover: HTMLDivElement | null = null;
 
-            const rect = passwordElement.getBoundingClientRect();
-            popover.style.position = "absolute";
-            popover.style.top = `${rect.top - 228}px`;
-            popover.style.left = `${rect.left}px`;
-            document.body.appendChild(popover);
+        const getUniqueCharsCount = (value: string) => new Set(value.split("")).size;
 
-            function removePopover() {
-                popover.remove();
-                passwordElement?.removeEventListener("blur", removePopover);
+        const evaluatePasswordRules = (value: string) => {
+            const length = value.length >= options.requiredLength;
+            const uniqueChars = (options.requiredUniqueChars ?? 1) <= 1
+                ? true
+                : getUniqueCharsCount(value) >= options.requiredUniqueChars;
+            const uppercase = !options.requireUppercase || /[A-Z]/.test(value);
+            const lowercase = !options.requireLowercase || /[a-z]/.test(value);
+            const digit = !options.requireDigit || /[0-9]/.test(value);
+            const nonAlphanumeric = !options.requireNonAlphanumeric || /[^\da-zA-Z]/.test(value);
+
+            return { length, uniqueChars, uppercase, lowercase, digit, nonAlphanumeric };
+        };
+
+        const buildRequirementItem = (
+            label: string,
+            ruleName: "length" | "uniqueChars" | "uppercase" | "lowercase" | "digit" | "nonAlphanumeric"
+        ) => {
+            const li = document.createElement("li");
+            li.dataset.passwordRule = ruleName;
+            li.className = "password-rule-item text-muted";
+            li.textContent = `○ ${label}`;
+            return li;
+        };
+
+        const createPopover = () => {
+            const el = document.createElement("div");
+            el.id = "passwordRequirementsPopover";
+            el.className =
+                "popover bs-popover-top show password-requirements-popover";
+            el.role = "tooltip";
+
+            const requirements: HTMLLIElement[] = [];
+            requirements.push(buildRequirementItem(`Minimum length: ${options.requiredLength}`, "length"));
+
+            if ((options.requiredUniqueChars ?? 1) > 1) {
+                requirements.push(buildRequirementItem(`Unique chars: ${options.requiredUniqueChars}`, "uniqueChars"));
             }
 
-            passwordElement.addEventListener("blur", removePopover);
+            if (options.requireUppercase) {
+                requirements.push(buildRequirementItem("Uppercase: required", "uppercase"));
+            }
+
+            if (options.requireLowercase) {
+                requirements.push(buildRequirementItem("Lowercase: required", "lowercase"));
+            }
+
+            if (options.requireDigit) {
+                requirements.push(buildRequirementItem("Digit: required", "digit"));
+            }
+
+            if (options.requireNonAlphanumeric) {
+                requirements.push(buildRequirementItem("Non alphanumeric: required", "nonAlphanumeric"));
+            }
+
+            const arrow = document.createElement("div");
+            arrow.className = "popover-arrow";
+
+            const header = document.createElement("div");
+            header.className = "popover-header";
+            header.textContent = "Password requirements:";
+
+            const body = document.createElement("div");
+            body.className = "popover-body";
+
+            const list = document.createElement("ul");
+            list.className = "mb-0 ps-0 list-unstyled";
+            list.id = "passwordRequirementsPopup";
+            requirements.forEach((item) => list.appendChild(item));
+
+            body.appendChild(list);
+            el.appendChild(arrow);
+            el.appendChild(header);
+            el.appendChild(body);
+
+            document.body.appendChild(el);
+
+            const rect = passwordElement.getBoundingClientRect();
+            const offset = 8;
+            el.style.top = `${
+                rect.top + window.scrollY - el.offsetHeight - offset
+            }px`;
+            el.style.left = `${rect.left + window.scrollX}px`;
+            passwordElement.setAttribute("aria-describedby", el.id);
+
+            return el;
+        };
+
+        const updatePopoverRules = (value: string) => {
+            if (!popover) {
+                return;
+            }
+
+            const result = evaluatePasswordRules(value);
+            const items = popover.querySelectorAll<HTMLLIElement>("#passwordRequirementsPopup li[data-password-rule]");
+
+            items.forEach((item) => {
+                const rule = item.dataset.passwordRule as keyof typeof result;
+                const met = !!result[rule];
+
+                item.classList.toggle("text-success", met);
+                item.classList.toggle("text-muted", !met);
+                item.textContent = `${met ? "✓" : "○"} ${item.textContent?.replace(/^[✓○]\s*/, "")}`;
+            });
+        };
+
+        const onInput = () => updatePopoverRules(passwordElement.value);
+
+        const removePopover = () => {
+            popover?.remove();
+            popover = null;
+            passwordElement.removeAttribute("aria-describedby");
+            passwordElement.removeEventListener("input", onInput);
+        };
+
+        passwordElement.addEventListener("focus", () => {
+            if (!popover) {
+                popover = createPopover();
+                updatePopoverRules(passwordElement.value);
+                passwordElement.addEventListener("input", onInput);
+            }
+        });
+
+        passwordElement.addEventListener("blur", () => {
+            removePopover();
         });
     }
 
@@ -178,7 +276,7 @@ const init = () => {
         "#toggleConnectionString"
     );
     if (toggleConnectionString) {
-        toggleConnectionString.addEventListener("click", function (e) {
+        toggleConnectionString.addEventListener("click", function () {
             togglePasswordVisibility(
                 document.querySelector("#ConnectionString"),
                 document.querySelector("#toggleConnectionString")
@@ -187,7 +285,7 @@ const init = () => {
     }
 
     const togglePassword = document.querySelector("#togglePassword");
-    togglePassword?.addEventListener("click", function (e) {
+    togglePassword?.addEventListener("click", function () {
         togglePasswordVisibility(
             document.querySelector("#Password"),
             document.querySelector("#togglePassword")
@@ -197,7 +295,7 @@ const init = () => {
     const togglePasswordConfirmation = document.querySelector(
         "#togglePasswordConfirmation"
     );
-    togglePasswordConfirmation?.addEventListener("click", function (e) {
+    togglePasswordConfirmation?.addEventListener("click", function () {
         togglePasswordVisibility(
             document.querySelector("#PasswordConfirmation"),
             document.querySelector("#togglePasswordConfirmation")

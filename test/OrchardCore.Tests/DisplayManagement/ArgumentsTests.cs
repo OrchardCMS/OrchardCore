@@ -94,7 +94,7 @@ public partial class ArgumentsTests
         Assert.Equal("Test", result.Named["Name"]);
         Assert.Equal(42, result.Named["Value"]);
         Assert.Equal(true, result.Named["IsActive"]);
-        
+
         // Verify it's using generated INamedEnumerable (not reflection)
         Assert.IsAssignableFrom<INamedEnumerable<object>>(model);
     }
@@ -154,7 +154,7 @@ public partial class ArgumentsTests
 
         protected override int PropertyCount => 2;
         protected override IReadOnlyList<string> PropertyNames => s_propertyNames;
-        
+
         protected override object GetPropertyValue(int index) => index switch
         {
             0 => Name,

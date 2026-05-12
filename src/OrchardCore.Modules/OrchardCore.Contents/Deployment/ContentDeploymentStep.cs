@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Localization;
 using OrchardCore.Deployment;
 
 namespace OrchardCore.Contents.Deployment;
@@ -10,6 +11,12 @@ public class ContentDeploymentStep : DeploymentStep
     public ContentDeploymentStep()
     {
         Name = "ContentDeploymentStep";
+    }
+
+    public ContentDeploymentStep(IStringLocalizer<ContentDeploymentStep> S)
+        : this()
+    {
+        Category = S["Content Management"];
     }
 
     public string[] ContentTypes { get; set; }

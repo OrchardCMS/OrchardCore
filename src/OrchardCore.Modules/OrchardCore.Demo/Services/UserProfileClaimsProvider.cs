@@ -1,6 +1,5 @@
 using System.Globalization;
 using System.Security.Claims;
-using GraphQL;
 using OrchardCore.Demo.Models;
 using OrchardCore.Entities;
 using OrchardCore.Users;
@@ -17,32 +16,33 @@ internal sealed class UserProfileClaimsProvider : IUserClaimsProvider
 
         ArgumentNullException.ThrowIfNull(claims);
 
-        var u = user as User;
-        var profile = u.As<UserProfile>();
-
         claims.AddClaim(new Claim("preferred_username", user.UserName));
 
-        var name = "";
-        if (!string.IsNullOrEmpty(profile.FirstName))
+        if (user is User u && u.TryGet<UserProfile>(out var profile))
         {
-            claims.AddClaim(new Claim("given_name", profile.FirstName));
-            name += profile.FirstName;
-        }
+            var name = "";
 
-        if (!string.IsNullOrEmpty(profile.LastName))
-        {
-            claims.AddClaim(new Claim("family_name", profile.LastName));
-            name += $" {profile.LastName}";
-        }
+            if (!string.IsNullOrEmpty(profile.FirstName))
+            {
+                claims.AddClaim(new Claim("given_name", profile.FirstName));
+                name += profile.FirstName;
+            }
 
-        if (!string.IsNullOrEmpty(name))
-        {
-            claims.AddClaim(new Claim("name", name));
-        }
+            if (!string.IsNullOrEmpty(profile.LastName))
+            {
+                claims.AddClaim(new Claim("family_name", profile.LastName));
+                name += $" {profile.LastName}";
+            }
 
-        if (profile.UpdatedAt != default)
-        {
-            claims.AddClaim(new Claim("updated_at", ConvertToUnixTimestamp(profile.UpdatedAt).ToString(CultureInfo.InvariantCulture)));
+            if (!string.IsNullOrEmpty(name))
+            {
+                claims.AddClaim(new Claim("name", name));
+            }
+
+            if (profile.UpdatedAt != default)
+            {
+                claims.AddClaim(new Claim("updated_at", ConvertToUnixTimestamp(profile.UpdatedAt).ToString(CultureInfo.InvariantCulture)));
+            }
         }
 
         return Task.FromResult(claims);

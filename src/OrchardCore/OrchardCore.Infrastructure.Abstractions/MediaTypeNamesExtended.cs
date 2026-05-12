@@ -4,9 +4,9 @@ public static class MediaTypeNamesExtended
 {
     public static class Application
     {
-        public const string JsonVendeorPrefix = "application/vnd.api+json";
+        public const string JsonVendorPrefix = "application/vnd.api+json";
 
-        public const string GraphiQL = "application/graphiql";
+        public const string GraphQL = "application/graphql";
 
         public const string JsonLinkedData = "application/ld+json";
 

@@ -20,7 +20,7 @@ public class TwitterSigninService : ITwitterSigninService
     public async Task<TwitterSigninSettings> LoadSettingsAsync()
     {
         var container = await _siteService.LoadSiteSettingsAsync();
-        return container.As<TwitterSigninSettings>();
+        return container.GetOrCreate<TwitterSigninSettings>();
     }
 
     public async Task UpdateSettingsAsync(TwitterSigninSettings settings)

@@ -1,4 +1,4 @@
-# Elasticsearch (`OrchardCore.Search.Elasticsearch`)
+# Elasticsearch (`OrchardCore.Elasticsearch`)
 
 The Elasticsearch module allows you to manage Elasticsearch indices.
 

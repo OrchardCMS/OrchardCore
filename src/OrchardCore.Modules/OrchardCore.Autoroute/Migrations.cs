@@ -45,9 +45,7 @@ public sealed class Migrations : DataMigration
     }
 
     // This code can be removed in a later version.
-#pragma warning disable CA1822 // Mark members as static
-    public int UpdateFrom2()
-#pragma warning restore CA1822 // Mark members as static
+    public static int UpdateFrom2()
     {
         return 3;
     }
@@ -71,9 +69,7 @@ public sealed class Migrations : DataMigration
     }
 
     // This code can be removed in a later version.
-#pragma warning disable CA1822 // Mark members as static
-    public int UpdateFrom4()
-#pragma warning restore CA1822 // Mark members as static
+    public static int UpdateFrom4()
     {
         return 5;
     }

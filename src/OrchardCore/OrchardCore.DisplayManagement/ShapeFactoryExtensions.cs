@@ -9,7 +9,6 @@ public static class ShapeFactoryExtensions
 {
     private static readonly ConcurrentDictionary<Type, Type> _proxyTypesCache = [];
     private static readonly ProxyGenerator _proxyGenerator = new();
-    private static readonly Func<ValueTask<IShape>> _newShape = () => ValueTask.FromResult<IShape>(new Shape());
 
     /// <summary>
     /// Creates a new generic shape by copying the properties of an object.
@@ -25,13 +24,19 @@ public static class ShapeFactoryExtensions
     /// Creates a new generic shape instance.
     /// </summary>
     public static ValueTask<IShape> CreateAsync(this IShapeFactory factory, string shapeType)
-        => factory.CreateAsync(shapeType, _newShape);
+        => factory.CreateAsync<object>(shapeType, static (state) => ValueTask.FromResult<IShape>(new Shape()), null, null, null);
 
     /// <summary>
     /// Creates a new generic shape instance and initializes it.
     /// </summary>
     public static ValueTask<IShape> CreateAsync(this IShapeFactory factory, string shapeType, Func<ValueTask<IShape>> shapeFactory)
         => factory.CreateAsync(shapeType, shapeFactory, null, null);
+
+    /// <summary>
+    /// Creates a new generic shape instance and initializes it.
+    /// </summary>
+    public static ValueTask<IShape> CreateAsync<TState>(this IShapeFactory factory, string shapeType, Func<TState, ValueTask<IShape>> shapeFactory, TState state)
+        => factory.CreateAsync(shapeType, shapeFactory, null, null, state);
 
     /// <summary>
     /// Creates a dynamic proxy instance for the type and initializes it.
@@ -55,12 +60,24 @@ public static class ShapeFactoryExtensions
     public static ValueTask<IShape> CreateAsync<TModel>(this IShapeFactory factory, string shapeType, Action<TModel> initialize = null)
         where TModel : class
     {
-        return factory.CreateAsync<TModel>(shapeType, initializeAsync: (model) =>
+        return factory.CreateAsync<TModel, Action<TModel>>(shapeType, initializeAsync: static (model, initialize) =>
         {
             initialize?.Invoke(model);
 
             return ValueTask.CompletedTask;
-        });
+        }, initialize);
+    }
+
+    public static ValueTask<IShape> CreateAsync<TModel, TState>(this IShapeFactory factory, string shapeType, Action<TModel, TState> initialize, TState state)
+        where TModel : class
+    {
+        return factory.CreateAsync<TModel, (Action<TModel, TState>, TState)>(shapeType, initializeAsync: static (model, state) =>
+        {
+            var (initialize, arg) = state;
+            initialize?.Invoke(model, arg);
+
+            return ValueTask.CompletedTask;
+        }, (initialize, state));
     }
 
     /// <summary>
@@ -75,7 +92,7 @@ public static class ShapeFactoryExtensions
             return factory.CreateAsync(shapeType);
         }
 
-        return factory.CreateAsync(shapeType, _newShape, null, createdContext =>
+        return factory.CreateAsync(shapeType, static (state) => ValueTask.FromResult<IShape>(new Shape()), null, static (createdContext, parameters) =>
         {
             var shape = (Shape)createdContext.Shape;
 
@@ -99,7 +116,7 @@ public static class ShapeFactoryExtensions
                     shape.Properties[kv.Key] = kv.Value;
                 }
             }
-        });
+        }, parameters);
     }
 
     /// <summary>
@@ -113,6 +130,7 @@ public static class ShapeFactoryExtensions
         where TModel : class
         => factory.CreateAsync(typeof(TModel).Name, initializeAsync);
 
+
     /// <summary>
     /// Creates a dynamic proxy instance for the type and initializes it.
     /// </summary>
@@ -123,18 +141,22 @@ public static class ShapeFactoryExtensions
     /// <returns></returns>
     public static ValueTask<IShape> CreateAsync<TModel>(this IShapeFactory factory, string shapeType, Func<TModel, ValueTask> initializeAsync)
         where TModel : class
+        => factory.CreateAsync<TModel, Func<TModel, ValueTask>>(shapeType, static (model, initializeAsync) => initializeAsync is null ? ValueTask.CompletedTask : initializeAsync(model), initializeAsync);
+
+    public static ValueTask<IShape> CreateAsync<TModel, TState>(this IShapeFactory factory, string shapeType, Func<TModel, TState, ValueTask> initializeAsync, TState state)
+        where TModel : class
     {
         ArgumentException.ThrowIfNullOrEmpty(shapeType);
 
-        return factory.CreateAsync(shapeType, () => ShapeFactory(initializeAsync));
+        return factory.CreateAsync(shapeType, static (state) => ShapeFactory(state.initializeAsync, state.state), (initializeAsync, state));
 
-        static ValueTask<IShape> ShapeFactory(Func<TModel, ValueTask> init)
+        static ValueTask<IShape> ShapeFactory(Func<TModel, TState, ValueTask> init, TState state)
         {
             var shape = CreateStronglyTypedShape(typeof(TModel));
 
             if (init != null)
             {
-                var task = init((TModel)shape);
+                var task = init((TModel)shape, state);
 
                 if (!task.IsCompletedSuccessfully)
                 {
@@ -163,7 +185,7 @@ public static class ShapeFactoryExtensions
     /// <remarks>
     /// If <paramref name="baseType"/> implements <see cref="IShape"/> then no dynamic proxy type is used.
     /// </remarks>
-    internal static IShape CreateStronglyTypedShape(Type baseType)
+    private static IShape CreateStronglyTypedShape(Type baseType)
     {
         var shapeType = baseType;
 

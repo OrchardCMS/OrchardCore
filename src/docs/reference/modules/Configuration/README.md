@@ -6,16 +6,11 @@ To learn more about ASP.NET Core `IConfiguration` visit <https://docs.microsoft.
 
 Note that while this documentation page explains configuration happening in the root web app project on the example of `OrchardCore.Cms.Web.csproj` if you use Orchard from NuGet packages in your own web app then same is available in that web app project too.
 
-## Config Sources
+## Configuration Sources
 
-Orchard Core supports a hierarchy of Configuration Sources
+Orchard Core built on top of ASP.NET Core Configuration framework, which support a variety of different configuration options. Developers are not limited to using a single configuration source. In fact several may be set up together such that a default configuration is overridden by settings from another source if they are present.
 
-* The `Startup` ASP.NET Core Project, e.g. `OrchardCore.Cms.Web.csproj`, `appsettings.json`, or by environment  `appsettings.Development.json`.
-* Global Tenant Configuration `App_Data/appsettings.json`, or by environment `App_Data/appsettings.Development.json`.
-* Individual Tenant Configuration files located under each Tenant Folder in the `App_Data/Sites/{tenant_name}/appsettings.json` folder. **Note:** These are mutable files, and do not support an Environment version.
-* Environment Variables, or AppSettings as Environment Variables via Azure.
-
-The Configuration Sources are loaded in the above order, and settings lower in the hierarchy will override values configured higher up, i.e. an Global Tenant value will always be overridden by an Environment Variable.
+The Configuration Sources are loaded in the order described in [Configuration Sources Order](#configuration-sources-order) below.
 
 !!! note
     The `IShellConfiguration` patterns in the `appsettings.json` examples below will only work for modules that specifically support such configuration. You can check out the given module's code or documentation to see if this is the case.
@@ -193,18 +188,17 @@ OrchardCore__MyTenant__OrchardCore_Media__MaxFileSize
     To support Linux the underscore `_` is used as a separator, e.g. `OrchardCore_Media`
     `OrchardCore.Media` is supported for backwards compatibility, but users should migrate to the `_` pattern.
 
-### Order of hierarchy
+### Configuration Sources Order
 
 By default an Orchard Core site will use `CreateDefaultBuilder` in the Startup Project's `Program.cs` which will load `IConfiguration` in the following order
 
-1. Startup project `appsettings.json`
-2. Startup project `appsettings.{environment}.json`
-3. User Secrets (if environment is **Development**)
-4. Environment Variables
-5. Command Line Args
-6. `IShellConfiguration` will then add these
-    1. `App_Data/appsettings.json`
-    2. `App_Data/Sites/{tenant_name}/appsettings.json` for the particular tenant
+1. The `Startup` ASP.NET Core Project, e.g. `OrchardCore.Cms.Web.csproj`, `appsettings.json`, or by environment `appsettings.Development.json`.
+2. User Secrets (if environment is **Development**)
+3. Environment Variables, or AppSettings as Environment Variables via Azure.
+4. Command Line Args
+5. `IShellConfiguration` will then add these
+    1. Global Tenant Configuration `App_Data/appsettings.json`
+    2. Individual Tenant Configuration files located under each Tenant Folder in the `App_Data/Sites/{tenant_name}/appsettings.json` folder.
 
 !!! note
     Configurations with the same key that are loaded later take precedence over those which were loaded earlier (last wins).

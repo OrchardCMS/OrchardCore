@@ -35,9 +35,7 @@ public class ContainedPartIndexProvider : IndexProvider<ContentItem>
                     return null;
                 }
 
-                var containedPart = contentItem.As<ContainedPart>();
-
-                if (containedPart == null)
+                if (!contentItem.TryGet<ContainedPart>(out var containedPart))
                 {
                     return null;
                 }

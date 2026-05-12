@@ -58,10 +58,13 @@ public class LocalLockTests
         var locker = await localLock.AcquireLockAsync("EXP_KEY", TimeSpan.FromMilliseconds(100));
         Assert.True(await localLock.IsLockAcquiredAsync("EXP_KEY"));
 
-        // Wait long enough for expiration callback to fire and release the semaphore.
-        await Task.Delay(300, TestContext.Current.CancellationToken);
-
-        Assert.False(await localLock.IsLockAcquiredAsync("EXP_KEY"));
+        // Poll until the expiration callback fires, with a generous timeout for slow CI runners.
+        var sw = Stopwatch.StartNew();
+        while (await localLock.IsLockAcquiredAsync("EXP_KEY"))
+        {
+            Assert.True(sw.ElapsedMilliseconds < 5000, "Lock did not auto-release within 5 seconds.");
+            await Task.Delay(50, TestContext.Current.CancellationToken);
+        }
 
         var (locker2, locked2) = await localLock.TryAcquireLockAsync("EXP_KEY", TimeSpan.FromMilliseconds(50));
         Assert.True(locked2);

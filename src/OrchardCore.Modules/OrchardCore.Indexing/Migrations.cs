@@ -12,8 +12,7 @@ namespace OrchardCore.Indexing;
 [Obsolete("This migration will be removed in a future release, but must remain until all sites have been successfully migrated to Orchard Core 3.0.")]
 public sealed class Migrations : DataMigration
 {
-#pragma warning disable CA1822 // Mark members as static
-    public int Create()
+    public static int Create()
     {
         // This migration originally created the 'IndexingTask' table before Orchard Core 3.
         // That table have since been deprecated and replaced by the new 'RecordIndexingTask' table.
@@ -24,22 +23,20 @@ public sealed class Migrations : DataMigration
         return 5;
     }
 
-    public int UpdateFrom1()
+    public static int UpdateFrom1()
     {
         return 2;
     }
 
-    public int UpdateFrom2()
+    public static int UpdateFrom2()
     {
         return 3;
     }
 
-    public int UpdateFrom3()
+    public static int UpdateFrom3()
     {
         return 4;
     }
-#pragma warning restore CA1822 // Mark members as static
-
     public int UpdateFrom4()
     {
         ShellScope.AddDeferredTask(async scope =>

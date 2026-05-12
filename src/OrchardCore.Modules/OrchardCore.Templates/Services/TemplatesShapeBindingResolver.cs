@@ -33,7 +33,7 @@ public class TemplatesShapeBindingResolver : IShapeBindingResolver
         _localTemplates = previewTemplatesProvider.GetTemplates();
     }
 
-    public async Task<ShapeBinding> GetShapeBindingAsync(string shapeType)
+    public Task<ShapeBinding> GetShapeBindingAsync(string shapeType)
     {
         // Cache this value since the service is scoped and this method is invoked for every
         // alternate of every shape.
@@ -41,14 +41,19 @@ public class TemplatesShapeBindingResolver : IShapeBindingResolver
 
         if (_isAdmin.Value)
         {
-            return null;
+            return Task.FromResult<ShapeBinding>(null);
         }
 
         if (_localTemplates?.Templates?.TryGetValue(shapeType, out var localTemplate) == true)
         {
-            return BuildShapeBinding(shapeType, localTemplate);
+            return Task.FromResult(BuildShapeBinding(shapeType, localTemplate));
         }
 
+        return GetShapeBindingAsyncCore(shapeType);
+    }
+
+    private async Task<ShapeBinding> GetShapeBindingAsyncCore(string shapeType)
+    {
         _templatesDocument ??= await _templatesManager.GetTemplatesDocumentAsync();
 
         if (_templatesDocument.Templates.TryGetValue(shapeType, out var template))

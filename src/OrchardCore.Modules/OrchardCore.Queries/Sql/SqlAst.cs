@@ -539,7 +539,7 @@ public sealed class ParameterExpression : Expression
 // Identifiers
 public sealed class Identifier : ISqlNode
 {
-    public static readonly Identifier STAR = new (["*"]);
+    public static readonly Identifier STAR = new(["*"]);
 
     private string _cachedToString = null!;
 

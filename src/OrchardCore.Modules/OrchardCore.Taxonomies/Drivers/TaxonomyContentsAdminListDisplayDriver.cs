@@ -71,9 +71,14 @@ public sealed class TaxonomyContentsAdminListDisplayDriver : DisplayDriver<Conte
             results.Add(
                 Initialize<TaxonomyContentsAdminFilterViewModel>("ContentsAdminListTaxonomyFilter", m =>
                 {
+                    if (!taxonomy.TryGet<TaxonomyPart>(out var taxonomyPart))
+                    {
+                        return;
+                    }
+
                     using var sb = ZString.CreateStringBuilder();
                     var termEntries = new List<FilterTermEntry>();
-                    PopulateTermEntries(termEntries, taxonomy.As<TaxonomyPart>().Terms, 0);
+                    PopulateTermEntries(termEntries, taxonomyPart.Terms, 0);
                     var terms = new List<SelectListItem>
                         {
                             new()

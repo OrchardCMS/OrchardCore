@@ -1,10 +1,9 @@
 @model DashboardWrapper
 @using OrchardCore.ContentManagement
 
-@{
-    var dashboardPart = Model.Dashboard.As<DashboardPart>();
+@if (Model.Dashboard.TryGet<DashboardPart>(out var dashboardPart))
+{
+    <div style="--dashboard-width: @(dashboardPart.Width); --dashboard-height: @(dashboardPart.Height);" class="dashboard-wrapper rounded" id="@(Model.Dashboard.ContentItemId)">
+        @await DisplayAsync(Model.Content)
+    </div>
 }
-
-<div style="--dashboard-width: @(dashboardPart.Width); --dashboard-height: @(dashboardPart.Height);" class="dashboard-wrapper rounded" id="@(Model.Dashboard.ContentItemId)">
-    @await DisplayAsync(Model.Content)
-</div>

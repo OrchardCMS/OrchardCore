@@ -1,4 +1,3 @@
-using OrchardCore.Localization;
 using OrchardCore.Localization.Services;
 using OrchardCore.Settings;
 

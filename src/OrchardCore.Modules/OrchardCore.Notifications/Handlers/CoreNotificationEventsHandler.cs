@@ -14,7 +14,7 @@ public class CoreNotificationEventsHandler : NotificationEventsHandler
             context.Notification.UserId = user.UserId;
         }
 
-        var bodyPart = context.Notification.As<NotificationBodyInfo>();
+        var bodyPart = context.Notification.GetOrCreate<NotificationBodyInfo>();
 
         bodyPart.TextBody = context.NotificationMessage.TextBody;
         bodyPart.HtmlBody = context.NotificationMessage.HtmlBody;

@@ -1,5 +1,4 @@
 using OrchardCore.Deployment.ViewModels;
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 

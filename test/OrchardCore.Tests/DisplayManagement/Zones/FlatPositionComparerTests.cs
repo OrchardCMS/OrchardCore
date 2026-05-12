@@ -411,7 +411,7 @@ public class FlatPositionComparerTests
         // Test that "before" gets normalized to a low value
         Assert.True(_comparer.Compare("before", "0") < 0);
         Assert.True(_comparer.Compare("BEFORE", "0") < 0);
-        
+
         // Test that "before" is consistent
         Assert.Equal(0, _comparer.Compare("before", "BEFORE"));
     }
@@ -423,7 +423,7 @@ public class FlatPositionComparerTests
         Assert.True(_comparer.Compare("after", "0") > 0);
         Assert.True(_comparer.Compare("AFTER", "0") > 0);
         Assert.True(_comparer.Compare("after", "999") > 0);
-        
+
         // Test that "after" is consistent
         Assert.Equal(0, _comparer.Compare("after", "AFTER"));
     }
@@ -434,7 +434,7 @@ public class FlatPositionComparerTests
         // Test that similar but different strings don't get normalized
         var result1 = _comparer.Compare("beforex", "0");
         var result2 = _comparer.Compare("afterx", "0");
-        
+
         // These should be string comparisons, not special values
         // beforex comes after "0" alphabetically, afterx comes after "0" alphabetically
         Assert.True(result1 > 0);
@@ -447,7 +447,7 @@ public class FlatPositionComparerTests
         // Empty string should be treated as "0"
         Assert.Equal(0, _comparer.Compare("", "0"));
         Assert.Equal(0, _comparer.Compare("0", ""));
-        
+
         // Whitespace should also be treated as "0" 
         Assert.Equal(0, _comparer.Compare("   ", "0"));
         Assert.Equal(0, _comparer.Compare("0", "   "));

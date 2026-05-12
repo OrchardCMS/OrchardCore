@@ -22,6 +22,11 @@ public class ZoneOnDemand : Shape
         _potentialZoneName = potentialZoneName;
     }
 
+    internal ZoneOnDemand(ZoneHolding parent, string potentialZoneName)
+        : this(null, parent, potentialZoneName)
+    {
+    }
+
     public override bool TryGetMember(System.Dynamic.GetMemberBinder binder, out object result)
     {
         // NilBehavior.
@@ -75,7 +80,7 @@ public class ZoneOnDemand : Shape
 
     public static bool operator ==(ZoneOnDemand _, object b) =>
         // If ZoneOnDemand is compared to null it must return true.
-        b == null || ReferenceEquals(b, Nil.Instance);
+        b is null || ReferenceEquals(b, Nil.Instance);
 
     public static bool operator !=(ZoneOnDemand a, object b) =>
         // If ZoneOnDemand is compared to null it must return true.
@@ -115,7 +120,7 @@ public class ZoneOnDemand : Shape
 
         if (_zone == null)
         {
-            _zone = await _zoneFactory();
+            _zone = await (_zoneFactory != null ? _zoneFactory() : _parent.CreateZoneAsync());
             _zone.Properties["Parent"] = _parent;
             _zone.Properties["ZoneName"] = _potentialZoneName;
             _parent.Properties[_potentialZoneName] = _zone;
