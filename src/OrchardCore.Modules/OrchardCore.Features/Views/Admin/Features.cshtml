@@ -61,14 +61,18 @@
                 categoryClassName += " last";
             }
             var features = featureGroup.OrderBy(f => f.Descriptor.Name);
-
+            var featureCount = featureGroup.Count();
             var categoryFeatureNames = string.Join(" ", features.Select(f => f.Descriptor.Name));
 
             <div class="feature-group">
                 <h4 class="mb-2 mt-3" data-filter-value="@categoryName @categoryFeatureNames">@categoryName</h4>
                 <div class="select-all-features">
-                    <input type="checkbox" class="select-all" name="select-all" />
-                    <label class="select-all" for="select-all">Select All</label>
+                    <input type="checkbox" class="form-check-input" id="select-all">
+                    <label class="items-on-load" for="select-all"> 0 items / @featureCount items in total</label>
+                    <label class="items" for="select-all"></label>
+
+                    <label id="selected-items" class="text-muted" for="select-all"></label>
+
                 </div>
 
                 <ul class="list-group" data-filter-value="@categoryName @categoryFeatureNames">
@@ -79,7 +83,6 @@
                                 var featureId = feature.Descriptor.Id;
                                 var featureName = feature.Descriptor.Name;
                                 var isAlwaysEnabled = feature.IsAlwaysEnabled;
-                             
                                 if (Model.IsProxy && featureId == FeaturesConstants.FeatureId)
                             {
                                 isAlwaysEnabled = false;
@@ -209,112 +212,118 @@
 </form>
 <script at="Foot">
     $(function () {
-        const EscapeKey = 'Escape';
-        var searchBox = $('#search-box');
+    const EscapeKey = 'Escape';
+    var searchBox = $('#search-box');
 
-        // On each keypress filter the list of features
-        searchBox.keyup(function (e) {
-            var search = $(this).val().toLowerCase();
-            var elementsToFilter = $("[data-filter-value]");
+    // On each keypress filter the list of features
+    searchBox.keyup(function (e) {
+    var search = $(this).val().toLowerCase();
+    var elementsToFilter = $("[data-filter-value]");
 
-            // On ESC, clear the search box and display all features
-            if (e.key == EscapeKey || search == '') {
-                searchBox.val('');
-                elementsToFilter.removeClass("d-none first-child-visible last-child-visible");
-            } else {
-                elementsToFilter.each(function () {
-                    var text = $(this).data('filter-value').toLowerCase();
-                    var found = text.indexOf(search) > -1;
+    // On ESC, clear the search box and display all features
+    if (e.key == EscapeKey || search == '') {
+    searchBox.val('');
+    elementsToFilter.removeClass("d-none first-child-visible last-child-visible");
+    } else {
+    elementsToFilter.each(function () {
+    var text = $(this).data('filter-value').toLowerCase();
+    var found = text.indexOf(search) > -1;
 
-                    if (found) {
-                        $(this).removeClass("d-none first-child-visible last-child-visible");
-                    }
-                    else {
-                        $(this).addClass("d-none");
-                    }
-                });
+    if (found) {
+    $(this).removeClass("d-none first-child-visible last-child-visible");
+    }
+    else {
+    $(this).addClass("d-none");
+    }
+    });
 
-                $('ul.list-group').each(function () {
-                    $(this).find('li').filter(":not(.d-none)").first().addClass("first-child-visible");
-                    $(this).find('li').filter(":not(.d-none)").last().addClass("last-child-visible");
-                });
-            }
+    $('ul.list-group').each(function () {
+    $(this).find('li').filter(":not(.d-none)").first().addClass("first-child-visible");
+    $(this).find('li').filter(":not(.d-none)").last().addClass("last-child-visible");
+    });
+    }
 
-            var visible = $('.list-group > li:visible');
-            if (visible.length == 0) {
-                $('#list-alert').removeClass("d-none");
-            }
-            else {
-                $('#list-alert').addClass("d-none");
-            }
-        });
+    var visible = $('.list-group > li:visible');
+    if (visible.length == 0) {
+    $('#list-alert').removeClass("d-none");
+    }
+    else {
+    $('#list-alert').addClass("d-none");
+    }
+    });
 
-        //prevent posting form on pressing enter key
-        searchBox.keydown(function (e) {
-            if (e.key == 'Enter') {
-                return false;
-            }
-        });
+    //prevent posting form on pressing enter key
+    searchBox.keydown(function (e) {
+    if (e.key == 'Enter') {
+    return false;
+    }
+    });
 
-        // this function will be executed on click of X (clear button)
-        searchBox.on('search', function () {
-            var search = $(this).val();
-            if (search != '') {
-                return;
-            }
+    // this function will be executed on click of X (clear button)
+    searchBox.on('search', function () {
+    var search = $(this).val();
+    if (search != '') {
+    return;
+    }
 
-            var e = $.Event('keyup');
-            e.key= EscapeKey;
+    var e = $.Event('keyup');
+    e.key= EscapeKey;
             
-            searchBox.trigger(e);
-        });
+    searchBox.trigger(e);
+    });
 
-        $(".dropdown-menu a").filter(function () {
-            return $(this).data("action");
-        }).on('click', function () {
-            $("[name='BulkAction']").val($(this).data('action'));
-            $("[name='submit.BulkAction']").click();
-        });
+    $(".dropdown-menu a").filter(function () {
+    return $(this).data("action");
+    }).on('click', function () {
+    $("[name='BulkAction']").val($(this).data('action'));
+    $("[name='submit.BulkAction']").click();
+    });
 
-        $('.show-more').on('click', function (e) {
-            e.preventDefault();
+    $('.show-more').on('click', function (e) {
+    e.preventDefault();
 
-            var $toogle_parent = $(this).parent();
-            var $direct_dependencies = $toogle_parent.siblings('.direct-dependencies');
-            var $transitive_dependencies = $toogle_parent.prev('.transitive-dependencies')
+    var $toogle_parent = $(this).parent();
+    var $direct_dependencies = $toogle_parent.siblings('.direct-dependencies');
+    var $transitive_dependencies = $toogle_parent.prev('.transitive-dependencies')
 
-            $direct_dependencies.toggleClass('d-none');
-            $transitive_dependencies.toggleClass('d-none');
-            $toogle_parent.toggleClass('d-none');
-        });
+    $direct_dependencies.toggleClass('d-none');
+    $transitive_dependencies.toggleClass('d-none');
+    $toogle_parent.toggleClass('d-none');
+    });
     });
 
     // this function notices change in the select all box
     // and allows for all checkboxes to be update accordingly
-    $(document).on('change', '.select-all', function () {
-        var group = $(this).closest('.feature-group');
-
-        group.find('input.form-check-input')
-        .not(this)
-        .prop('checked', this.checked);
+    document.addEventListener('change', function (e) {
+        if (!e.target.matches('#select-all')) return;
+        var group = e.target.closest('.feature-group');
+        group.querySelectorAll('input.form-check-input').forEach(function (input) {
+        if (input !== e.target) {
+            input.checked = e.target.checked;
+            }
+        });
     });
 
     // This function displays the select all optionality above each feature group,
-    //  filtering out any that do not contain selectable checkboxes
-    $('.feature-group').each(function() {
-        if ($(this).find('input[name="featureIds"]').length === 0) {
-            $(this).find('.select-all').hide();
+    // filtering out any that do not contain selectable checkboxes
+    document.querySelectorAll('.feature-group').forEach(function (group) {
+    if (group.querySelectorAll('input[name="featureIds"]').length === 0) {
+        group.querySelector('#select-all').style.display = 'none';
+    group.querySelector('.items-on-load').style.display = 'none';
+
         }
     });
 
-    // This function notices change in the form checkboxes and 
+    // This function notices change in the form checkboxes and
     // updates the select all checkbox accordingly
-    $(document).on('change', '.feature-group input.form-check-input', function () {
-        var group = $(this).closest('.feature-group');
-
-        var all = group.find('input.form-check-input').not('.select-all');
-        var checked = all.filter(':checked');
-
-        group.find('.select-all').prop('checked', all.length === checked.length);
+    // also counts all features selected in that feature group and lists it
+    document.addEventListener('change', function (e) {
+    if (!e.target.matches('.feature-group input.form-check-input')) return;
+    var group = e.target.closest('.feature-group');
+    var all = Array.from(group.querySelectorAll('input.form-check-input:not(#select-all)'));
+    var checked = all.filter(function (input) { return input.checked; });
+    group.querySelector('#select-all').checked = all.length === checked.length;
+    group.querySelector('.items-on-load').style.display = 'none';
+    group.querySelector(".items").textContent =  checked.length + " items / " +  all.length + " items in total";
     });
 </script>
