@@ -41,7 +41,7 @@ public sealed class AdminController : Controller
     private readonly ITenantValidator _tenantValidator;
     private readonly PagerOptions _pagerOptions;
     private readonly TenantsOptions _tenantsOptions;
-    private readonly ITenantDatabasePatternResolver _tenantDatabasePatternResolver;
+    private readonly TenantDatabasePatternResolver _tenantDatabasePatternResolver;
     private readonly Dictionary<string, DatabaseProvider> _databaseProviderLookup;
     private readonly ILogger _logger;
     private readonly IShapeFactory _shapeFactory;
@@ -64,7 +64,7 @@ public sealed class AdminController : Controller
         IEnumerable<DatabaseProvider> databaseProviders,
         IOptions<PagerOptions> pagerOptions,
         IOptions<TenantsOptions> tenantsOptions,
-        ITenantDatabasePatternResolver tenantDatabasePatternResolver,
+        TenantDatabasePatternResolver tenantDatabasePatternResolver,
         ILogger<AdminController> logger,
         IShapeFactory shapeFactory,
         IStringLocalizer<AdminController> stringLocalizer,

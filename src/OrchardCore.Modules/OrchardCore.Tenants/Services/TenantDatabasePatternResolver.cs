@@ -7,18 +7,20 @@ using OrchardCore.Tenants.Models;
 
 namespace OrchardCore.Tenants.Services;
 
-public partial class TenantDatabasePatternResolver : ITenantDatabasePatternResolver
+public partial class TenantDatabasePatternResolver
 {
-    private readonly FluidParser _fluidParser = new();
     private readonly TenantsOptions _tenantsOptions;
+    private readonly FluidParser _fluidParser;
 
     protected readonly IStringLocalizer S;
 
     public TenantDatabasePatternResolver(
+        FluidParser fluidParser,
         IOptions<TenantsOptions> tenantsOptions,
         IStringLocalizer<TenantDatabasePatternResolver> stringLocalizer)
     {
         _tenantsOptions = tenantsOptions.Value;
+        _fluidParser = fluidParser;
         S = stringLocalizer;
     }
 

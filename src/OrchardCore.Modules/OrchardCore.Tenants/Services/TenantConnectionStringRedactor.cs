@@ -20,7 +20,7 @@ public static class TenantConnectionStringRedactor
                 ConnectionString = connectionString,
             };
 
-            foreach (var key in builder.Keys.Cast<string>().ToArray())
+            foreach (var key in builder.Keys.Cast<string>())
             {
                 if (IsPasswordKey(key))
                 {

@@ -24,7 +24,6 @@ public sealed class SetupController : Controller
     private readonly IShellHost _shellHost;
     private readonly IdentityOptions _identityOptions;
     private readonly IEmailAddressValidator _emailAddressValidator;
-    private readonly IEnumerable<DatabaseProvider> _databaseProviders;
     private readonly Dictionary<string, DatabaseProvider> _databaseProviderLookup;
     private readonly ILogger _logger;
 
@@ -47,7 +46,6 @@ public sealed class SetupController : Controller
         _shellHost = shellHost;
         _identityOptions = identityOptions.Value;
         _emailAddressValidator = emailAddressValidator;
-        _databaseProviders = databaseProviders;
         _databaseProviderLookup = databaseProviders.ToDictionary(provider => provider.Value, StringComparer.OrdinalIgnoreCase);
         _logger = logger;
         S = localizer;
@@ -65,7 +63,7 @@ public sealed class SetupController : Controller
 
         var model = new SetupViewModel
         {
-            DatabaseProviders = _databaseProviders,
+            DatabaseProviders = _databaseProviderLookup.Values,
             Recipes = recipes,
             RecipeName = defaultRecipe?.Name,
             Secret = token,
@@ -87,7 +85,7 @@ public sealed class SetupController : Controller
             return StatusCode(404);
         }
 
-        model.DatabaseProviders = _databaseProviders;
+        model.DatabaseProviders = _databaseProviderLookup.Values;
         model.Recipes = await _setupService.GetSetupRecipesAsync();
 
         if (string.IsNullOrEmpty(model.Password))

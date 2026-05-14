@@ -1,4 +1,3 @@
-using System.Globalization;
 using OrchardCore.Data;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Models;
@@ -284,6 +283,7 @@ public class TenantValidatorTests : SiteContext
         };
 
         var tenantDatabasePatternResolver = new TenantDatabasePatternResolver(
+            new Fluid.FluidParser(),
             Options.Create(tenantOptions),
             patternLocalizerMock.Object);
 

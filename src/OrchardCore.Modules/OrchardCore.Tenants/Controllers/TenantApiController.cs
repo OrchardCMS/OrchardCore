@@ -40,10 +40,9 @@ public sealed class TenantApiController : ControllerBase
     private readonly IEmailAddressValidator _emailAddressValidator;
     private readonly IdentityOptions _identityOptions;
     private readonly TenantsOptions _tenantsOptions;
-    private readonly IEnumerable<DatabaseProvider> _databaseProviders;
     private readonly Dictionary<string, DatabaseProvider> _databaseProviderLookup;
     private readonly ITenantValidator _tenantValidator;
-    private readonly ITenantDatabasePatternResolver _tenantDatabasePatternResolver;
+    private readonly TenantDatabasePatternResolver _tenantDatabasePatternResolver;
     private readonly ILogger _logger;
 
     internal readonly IStringLocalizer S;
@@ -62,7 +61,7 @@ public sealed class TenantApiController : ControllerBase
         IOptions<TenantsOptions> tenantsOptions,
         IEnumerable<DatabaseProvider> databaseProviders,
         ITenantValidator tenantValidator,
-        ITenantDatabasePatternResolver tenantDatabasePatternResolver,
+        TenantDatabasePatternResolver tenantDatabasePatternResolver,
         IStringLocalizer<TenantApiController> stringLocalizer,
         ILogger<TenantApiController> logger)
     {
@@ -77,7 +76,6 @@ public sealed class TenantApiController : ControllerBase
         _emailAddressValidator = emailAddressValidator;
         _identityOptions = identityOptions.Value;
         _tenantsOptions = tenantsOptions.Value;
-        _databaseProviders = databaseProviders;
         _databaseProviderLookup = databaseProviders.ToDictionary(provider => provider.Value, StringComparer.OrdinalIgnoreCase);
         _tenantValidator = tenantValidator;
         _tenantDatabasePatternResolver = tenantDatabasePatternResolver;
@@ -392,8 +390,7 @@ public sealed class TenantApiController : ControllerBase
             return BadRequest(S["The database provider is not defined."]);
         }
 
-        var selectedProvider = _databaseProviders.FirstOrDefault(provider => provider.Value == databaseProvider);
-        if (selectedProvider == null)
+        if (!_databaseProviderLookup.TryGetValue(databaseProvider, out var selectedProvider))
         {
             return BadRequest(S["The database provider is not supported."]);
         }

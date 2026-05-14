@@ -1,4 +1,3 @@
-using System.Globalization;
 using OrchardCore.Data;
 using OrchardCore.Email;
 using OrchardCore.Environment.Shell;
@@ -447,6 +446,7 @@ public class ApiControllerTests
         };
 
         var tenantDatabasePatternResolver = new TenantDatabasePatternResolver(
+            new Fluid.FluidParser(),
             Options.Create(tenantOptions),
             patternLocalizerMock.Object);
 

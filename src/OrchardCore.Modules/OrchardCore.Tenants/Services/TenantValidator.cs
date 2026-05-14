@@ -17,7 +17,7 @@ public partial class TenantValidator : ITenantValidator
     private readonly IDbConnectionValidator _dbConnectionValidator;
     private readonly TenantsOptions _tenantsOptions;
     private readonly IEnumerable<DatabaseProvider> _databaseProviders;
-    private readonly ITenantDatabasePatternResolver _tenantDatabasePatternResolver;
+    private readonly TenantDatabasePatternResolver _tenantDatabasePatternResolver;
 
     protected readonly IStringLocalizer S;
 
@@ -28,7 +28,7 @@ public partial class TenantValidator : ITenantValidator
         IDbConnectionValidator dbConnectionValidator,
         IOptions<TenantsOptions> tenantsOptions,
         IEnumerable<DatabaseProvider> databaseProviders,
-        ITenantDatabasePatternResolver tenantDatabasePatternResolver,
+        TenantDatabasePatternResolver tenantDatabasePatternResolver,
         IStringLocalizer<TenantValidator> stringLocalizer)
     {
         _shellHost = shellHost;

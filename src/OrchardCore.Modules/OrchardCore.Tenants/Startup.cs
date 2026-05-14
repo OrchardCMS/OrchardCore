@@ -34,7 +34,7 @@ public sealed class Startup : StartupBase
     {
         services.AddNavigationProvider<AdminMenu>();
         services.AddPermissionProvider<Permissions>();
-        services.AddScoped<ITenantDatabasePatternResolver, TenantDatabasePatternResolver>();
+        services.AddScoped<TenantDatabasePatternResolver>();
         services.AddScoped<ITenantValidator, TenantValidator>();
         services.AddShapeTableProvider<TenantShapeTableProvider>();
         services.AddSetup();
