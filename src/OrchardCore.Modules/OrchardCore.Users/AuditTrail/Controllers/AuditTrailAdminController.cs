@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Compliance.Redaction;
 using OrchardCore.Admin;
+using OrchardCore.Entities;
 using OrchardCore.Settings;
 using OrchardCore.Users.AuditTrail.Handlers;
 using OrchardCore.Users.AuditTrail.Models;
@@ -81,7 +82,7 @@ public sealed class AuditTrailAdminController : Controller
         var siteSettings = await _siteService.LoadSiteSettingsAsync();
         var settings = siteSettings.GetOrCreate<AuditTrailUserEventSettings>();
         settings.UserSnapshotRedactors = selected;
-        siteSettings.Properties[nameof(AuditTrailUserEventSettings)] = JObject.FromObject(settings);
+        siteSettings.Put(nameof(AuditTrailUserEventSettings), settings);
         await _siteService.UpdateSiteSettingsAsync(siteSettings);
 
         return RedirectToAction(nameof(Index));

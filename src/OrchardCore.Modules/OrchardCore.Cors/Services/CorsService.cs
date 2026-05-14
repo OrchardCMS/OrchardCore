@@ -1,5 +1,6 @@
 using System.Text.Json.Nodes;
 using OrchardCore.Cors.Settings;
+using OrchardCore.Entities;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Cors.Services;
@@ -21,7 +22,7 @@ public class CorsService
     internal async Task UpdateSettingsAsync(CorsSettings corsSettings)
     {
         var siteSettings = await _siteService.LoadSiteSettingsAsync();
-        siteSettings.Properties[nameof(CorsSettings)] = JObject.FromObject(corsSettings);
+        siteSettings.Put(nameof(CorsSettings), corsSettings);
         await _siteService.UpdateSiteSettingsAsync(siteSettings);
     }
 }
