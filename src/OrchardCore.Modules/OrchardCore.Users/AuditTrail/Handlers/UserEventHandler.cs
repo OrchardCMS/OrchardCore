@@ -169,10 +169,6 @@ public class UserEventHandler : UserEventHandlerBase, ILoginFormEvent
     }
     private JsonObject CreateSnapshotObject(User fullUser, AuditTrailUserEventSettings settings)
     {
-        // UserId is always included, to ensure that the account is identifiable within the system just using the data
-        // in the snapshot. This is not PII, so storing it long term is not problematic.
-        settings.UserSnapshotRedactors[nameof(User.UserId)] = nameof(NullRedactor);
-        
         var redactors = _redactors.ToDictionary(item => item.GetType().Name);
 
         JsonValue Redact(string propertyName, JsonNode value)

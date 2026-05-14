@@ -16,27 +16,17 @@
             {
                 var name = Model.UserSnapshotProperties[i].Name;
                 var value = Model.UserSnapshotProperties[i].Redactor;
-                var items = name == nameof(OrchardCore.Users.Models.User.UserId)
-                        ? new[]
-                        {
-                            new SelectListItem
-                            {
-                                Text = T["Store"].Value,
-                                Value = nameof(NullRedactor),
-                                Selected = true,
-                            }
-                        }
-                        : Model.RedactorNames
-                            .Select(redactor => new SelectListItem
-                            {
-                                Text = redactor == nameof(RemoveRedactor) 
-                                    ? string.Empty
-                                    : (redactor == nameof(NullRedactor) ? T["Store"].Value : redactor),
-                                Value = redactor,
-                                Selected = redactor == value,
-                            })
-                            .OrderBy(item => item.Text)
-                            .ToArray();
+                var items = Model.RedactorNames
+                    .Select(redactor => new SelectListItem
+                    {
+                        Text = redactor == nameof(RemoveRedactor)
+                            ? string.Empty
+                            : (redactor == nameof(NullRedactor) ? T["Store"].Value : redactor),
+                        Value = redactor,
+                        Selected = redactor == value,
+                    })
+                    .OrderBy(item => item.Text)
+                    .ToArray();
                 <input asp-for="UserSnapshotProperties[i].Name" hidden>
                 <label asp-for="UserSnapshotProperties[i].Redactor" class="@Orchard.GetLabelClasses()">@name</label>
                 <select asp-for="UserSnapshotProperties[i].Redactor" class="form-select" asp-items="@items"></select>

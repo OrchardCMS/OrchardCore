@@ -71,13 +71,10 @@ public sealed class AuditTrailAdminController : Controller
             return Forbid();
         }
 
-        // UserId is always included as-is, to ensure that the account is identifiable within the system just using the
-        // data in the snapshot. This is not PII, so storing it long term is not problematic.
         var selected = model
             .UserSnapshotProperties
             .Where(item => item.Redactor != nameof(RemoveRedactor))
             .ToDictionary(item => item.Name, item => item.Redactor);
-        selected[nameof(Users.Models.User.UserId)] = nameof(NullRedactor);
 
         var siteSettings = await _siteService.LoadSiteSettingsAsync();
         var settings = siteSettings.GetOrCreate<AuditTrailUserEventSettings>();
