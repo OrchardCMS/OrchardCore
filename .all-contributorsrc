@@ -3592,6 +3592,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "ghazi1567",
+      "name": "ghazi1567",
+      "avatar_url": "https://avatars.githubusercontent.com/u/38578399?v=4",
+      "profile": "https://github.com/ghazi1567",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,
