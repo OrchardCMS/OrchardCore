@@ -10,9 +10,11 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
+using OrchardCore.Settings.Deployment;
 using OrchardCore.Users.AuditTrail.Drivers;
 using OrchardCore.Users.AuditTrail.Handlers;
 using OrchardCore.Users.AuditTrail.Indexes;
+using OrchardCore.Users.AuditTrail.Models;
 using OrchardCore.Users.AuditTrail.Security;
 using OrchardCore.Users.AuditTrail.Services;
 using OrchardCore.Users.Events;
@@ -45,4 +47,13 @@ public sealed class Startup : StartupBase
         
         services.AddPermissionProvider<Permissions>();
     }
+}
+
+[RequireFeatures("OrchardCore.Users.AuditTrail", "OrchardCore.Deployment")]
+public sealed class DeploymentStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services) =>
+        services.AddSiteSettingsPropertyDeploymentStep<AuditTrailUserEventSettings, DeploymentStartup>(
+            S => S["User Audit Trail settings"],
+            S => S["Exports the user audit trail settings."]);
 }
