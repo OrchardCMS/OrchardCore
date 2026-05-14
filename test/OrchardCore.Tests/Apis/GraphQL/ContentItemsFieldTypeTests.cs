@@ -528,7 +528,7 @@ public class ContentItemsFieldTypeTests : IAsyncLifetime
                         ResolvedType = where,
                     }
                 ],
-#pragma warning enable CA1825 // Avoid unnecessary zero-length array allocations, false positive. 
+#pragma warning restore CA1825 // Avoid unnecessary zero-length array allocations, false positive. 
             },
             RequestServices = services,
         };
