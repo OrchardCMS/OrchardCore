@@ -128,7 +128,7 @@ public class BlogPostApiControllerTests
         Assert.True(draftContentItem.Latest);
         Assert.False(draftContentItem.Published);
         Assert.Equal(displayText, draftContentItem.DisplayText);
-        Assert.NotNull(draftContentItem.As<AutoroutePart>());
+        Assert.NotNull(draftContentItem.GetOrCreate<AutoroutePart>());
     }
 
     [Fact]
@@ -185,7 +185,7 @@ public class BlogPostApiControllerTests
         Assert.True(publishedContentItem.Latest);
         Assert.True(publishedContentItem.Published);
         Assert.Equal(displayText, publishedContentItem.DisplayText);
-        Assert.Equal(path, publishedContentItem.As<AutoroutePart>()?.Path);
+        Assert.Equal(path, publishedContentItem.GetOrCreate<AutoroutePart>()?.Path);
     }
 
     [Fact]
@@ -308,7 +308,7 @@ public class BlogPostApiControllerTests
 
             // The Autoroute part was not welded on, so ContentManager.NewAsync should add it
             // with an empty path and then generate a unique path from the liquid pattern.
-            Assert.Equal("blog/some-other-blog-post", publishedContentItem.As<AutoroutePart>().Path);
+            Assert.Equal("blog/some-other-blog-post", publishedContentItem.GetOrCreate<AutoroutePart>().Path);
         });
     }
 }

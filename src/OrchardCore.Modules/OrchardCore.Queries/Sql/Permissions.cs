@@ -1,4 +1,3 @@
-using OrchardCore.Queries.Core;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Queries.Sql;

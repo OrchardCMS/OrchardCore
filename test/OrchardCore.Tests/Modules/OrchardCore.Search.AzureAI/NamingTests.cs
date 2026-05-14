@@ -1,6 +1,6 @@
-using OrchardCore.Search.AzureAI;
+using OrchardCore.AzureAI;
 
-namespace OrchardCore.Tests.Modules.OrchardCore.Search.AzureAI;
+namespace OrchardCore.Tests.Modules.OrchardCore.AzureAI;
 
 public class NamingTests
 {

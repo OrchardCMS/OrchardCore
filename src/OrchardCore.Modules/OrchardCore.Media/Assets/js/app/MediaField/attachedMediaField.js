@@ -35,9 +35,6 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
                         return JSON.stringify(initialPaths);
                     }
                     this.mediaItems.forEach(function (x) {
-                        if (x.mediaPath === 'not-found') {
-                            return;
-                        }
                         mediaPaths.push({ path: x.mediaPath, isRemoved: x.isRemoved, isNew: x.isNew, mediaText: x.mediaText, anchor: x.anchor, attachedFileName: x.attachedFileName });
                     });
                     return JSON.stringify(mediaPaths);
@@ -69,7 +66,13 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
                                 },
                                 error: function (error) {
                                     console.log(JSON.stringify(error));
-                                    items.splice(i, 1, { name: x.path, mime: '', mediaPath: 'not-found', mediaText: '', anchor: { x: 0.5, y: 0.5 }, attachedFileName: x.attachedFileName });
+                                    var item;
+                                    if (error.status === 404) {
+                                        item = { name: x.path, mime: '', mediaPath: x.path, errorType: 'not-found', mediaText: x.mediaText, anchor: x.anchor, attachedFileName: x.attachedFileName };
+                                    } else {
+                                        item = { name: x.path, mime: '', mediaPath: x.path, errorType: 'transient', mediaText: x.mediaText, anchor: x.anchor, attachedFileName: x.attachedFileName };
+                                    }
+                                    items.splice(i, 1, item);
                                     if (items.length === ++length) {
                                         items.forEach(function (x) {
                                             self.mediaItems.push(x);
@@ -86,6 +89,32 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
             },
             fileSize: function () {
                 return Math.round(this.selectedMedia.size / 1024);
+            },
+            selectedMediaDisplayText: function () {
+                if (!this.selectedMedia) {
+                    return "";
+                }
+
+                var fileName =
+                    this.selectedMedia.attachedFileName !== null &&
+                        this.selectedMedia.attachedFileName !== ''
+                        ? this.selectedMedia.attachedFileName
+                        : this.selectedMedia.name;
+
+                var mediaText =
+                    this.selectedMedia.mediaText === ''
+                        ? ''
+                        : ', ' + this.selectedMedia.mediaText;
+
+                var size = isNaN(this.fileSize) ? 0 : this.fileSize;
+
+                var formatElement = this.$el.querySelector('#t-selected-media-format');
+                var format = formatElement ? formatElement.value : '{0}{1} ({2} KB)';
+
+                return format
+                    .replace('{0}', fileName)
+                    .replace('{1}', mediaText)
+                    .replace('{2}', size);
             },
             canAddMedia: function () {
                 var nonRemovedMediaItems = [];
@@ -296,7 +325,7 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
                         position = position + 5; // Adjust to hit the mouse pointer.
                     }
                     return position + 'px';
-                } else {
+                } else { 
                     return '0';
                 }
             },

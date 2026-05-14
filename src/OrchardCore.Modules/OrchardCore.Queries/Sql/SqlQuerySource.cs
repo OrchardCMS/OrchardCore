@@ -49,14 +49,19 @@ public sealed class SqlQuerySource : IQuerySource
 
     public async Task<IQueryResults> ExecuteQueryAsync(Query query, IDictionary<string, object> parameters)
     {
-        var metadata = query.As<SqlQueryMetadata>();
+        var template = string.Empty;
+
+        if (query.TryGet<SqlQueryMetadata>(out var metadata))
+        {
+            template = metadata.Template;
+        }
 
         var sqlQueryResults = new SQLQueryResults
         {
             Items = [],
         };
 
-        var tokenizedQuery = await _liquidTemplateManager.RenderStringAsync(metadata.Template, NullEncoder.Default,
+        var tokenizedQuery = await _liquidTemplateManager.RenderStringAsync(template, NullEncoder.Default,
             parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions))));
 
         var configuration = _session.Store.Configuration;

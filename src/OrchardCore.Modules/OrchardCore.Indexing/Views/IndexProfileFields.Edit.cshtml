@@ -15,3 +15,11 @@
     <span asp-validation-for="Name" class="text-danger"></span>
     <span class="hint">@T["A unique name for the index."]</span>
 </div>
+
+@if (Model.IsNew)
+{
+    <script asp-src="~/OrchardCore.Indexing/Scripts/technical-name-generator.min.js" debug-src="~/OrchardCore.Indexing/Scripts/technical-name-generator.js" asp-name="technical-name-generator" at="Foot"></script>
+    <script at="Foot" depends-on="technical-name-generator">
+        TechnicalNameGenerator.initialize('@Html.IdFor(m => m.IndexName)', '@Html.IdFor(m => m.Name)');
+    </script>
+}

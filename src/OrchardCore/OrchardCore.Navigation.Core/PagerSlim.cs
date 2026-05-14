@@ -1,6 +1,9 @@
+using OrchardCore.DisplayManagement;
+
 namespace OrchardCore.Navigation;
 
-public class PagerSlim
+[GenerateArguments]
+public partial class PagerSlim
 {
     /// <summary>
     /// Constructs a new pager.

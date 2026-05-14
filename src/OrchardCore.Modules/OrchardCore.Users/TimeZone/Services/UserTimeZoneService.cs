@@ -68,9 +68,9 @@ public class UserTimeZoneService : IUserTimeZoneService
             // Retrieve the user and cache the timeZoneId.
             var user = await _userManager.FindByNameAsync(userName);
 
-            if (user is User u)
+            if (user is User u && u.TryGet<UserTimeZone>(out var userTimeZone))
             {
-                timeZoneId = u.As<UserTimeZone>()?.TimeZoneId;
+                timeZoneId = userTimeZone.TimeZoneId;
             }
 
             // We store a placeholder string to indicate that there is no specific value for this user.

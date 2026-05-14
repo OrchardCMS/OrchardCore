@@ -14,6 +14,6 @@ public sealed class WhileLoopTaskDisplayDriver : ActivityDisplayDriver<WhileLoop
 
     protected override void UpdateActivity(WhileLoopTaskViewModel model, WhileLoopTask activity)
     {
-        activity.Condition = new WorkflowExpression<bool>(model.ConditionExpression.Trim());
+        activity.Condition = new WorkflowExpression<bool>(model.ConditionExpression?.Trim());
     }
 }

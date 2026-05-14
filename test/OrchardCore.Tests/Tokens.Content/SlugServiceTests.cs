@@ -1,3 +1,4 @@
+using OrchardCore.Localization;
 using OrchardCore.Modules.Services;
 
 namespace OrchardCore.Tests.Tokens.Content;
@@ -76,5 +77,12 @@ public class SlugServiceTests
     {
         var slug = _slugService.Slugify(input);
         Assert.Equal(expected, slug);
+    }
+
+    [Fact]
+    public void ShouldTransliterateWhenRequested()
+    {
+        var slug = _slugService.SlugifyAndTransliterate("Æneid");
+        Assert.Equal("aeneid", slug);
     }
 }

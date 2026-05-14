@@ -1,0 +1,57 @@
+@* Shared Content Type Picker Vue Application - Rendered once per page *@
+<div id="contentTypePickerApp">
+    <!-- Error message -->
+    <div v-if="hasError" class="alert alert-danger mb-3" role="alert">
+        @T["Failed to add the item. Please try again."]
+    </div>
+    <div class="row">
+        <!-- Sidebar with search and categories -->
+        <div class="col-sm-3 col-md-3 col-lg-2 content-type-picker-sidebar">
+            <div class="content-type-picker-search mb-3">
+                <input v-model="searchFilter"
+                       type="search"
+                       class="form-control"
+                       placeholder="@T["Search"]"
+                       aria-label="@T["Search"]">
+            </div>
+            <ul class="nav nav-pills flex-column content-type-picker-categories">
+                <li v-for="category in categories" :key="category" class="nav-item">
+                    <a class="nav-link"
+                       :class="{ active: selectedCategory === category }"
+                       href="javascript:;"
+                       v-on:click="selectCategory(category)">
+                        {{ category }}
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Content type grid -->
+        <div class="col-sm-9 col-md-9 col-lg-10">
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-2 content-type-picker-grid">
+                <div v-for="contentType in filteredContentTypes" :key="contentType.name" class="col">
+                    <div class="card h-100 content-type-card">
+                        <img v-if="contentType.thumbnail"
+                             :src="getThumbnailUrl(contentType)"
+                             class="card-img-top"
+                             :alt="contentType.displayName">
+                        <div class="card-body">
+                            <h5 class="card-title fs-6">{{ contentType.displayName }}</h5>
+                            <p v-if="contentType.description" class="card-text text-muted">{{ contentType.description }}</p>
+                        </div>
+                        <div class="card-footer">
+                            <button type="button" class="btn btn-primary btn-sm" v-on:click="selectContentType(contentType)">@T["Add"]</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Empty state -->
+            <div v-if="filteredContentTypes.length === 0" class="content-type-picker-empty">
+                <i class="fa fa-search" aria-hidden="true"></i>
+                <p>@T["No content types match your search criteria."]</p>
+            </div>
+
+        </div>
+    </div>
+</div>

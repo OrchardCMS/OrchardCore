@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.IO.Compression;
+using System.Net.Mime;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Dapper;
@@ -179,7 +180,7 @@ public sealed class WorkflowTypeController : Controller
             return Forbid();
         }
 
-        if (itemIds?.Count() > 0)
+        if (itemIds?.Any() == true)
         {
             var checkedEntries = await _session.Query<WorkflowType, WorkflowTypeIndex>()
                 .Where(x => x.DocumentId.IsIn(itemIds)).ListAsync();
@@ -579,7 +580,7 @@ public sealed class WorkflowTypeController : Controller
             ? workflowTypes.FirstOrDefault().Name
             : S["Workflow Types"];
 
-        return new PhysicalFileResult(archiveFileName, "application/zip")
+        return new PhysicalFileResult(archiveFileName, MediaTypeNames.Application.Zip)
         {
             FileDownloadName = packageName + ".zip",
         };

@@ -46,23 +46,22 @@ public sealed class MarkdownFieldDisplayDriver : ContentFieldDisplayDriver<Markd
     {
         return Initialize<MarkdownFieldViewModel>(GetDisplayShapeType(context), async model =>
         {
-
-            var settings = context.PartFieldDefinition.GetSettings<MarkdownFieldSettings>();
             model.Markdown = field.Markdown;
             model.Field = field;
             model.Part = context.ContentPart;
             model.PartFieldDefinition = context.PartFieldDefinition;
 
+            var settings = context.PartFieldDefinition.GetSettings<MarkdownFieldSettings>();
+
+            if (settings.RenderLiquid)
+            {
+                model.Markdown = await _liquidTemplateManager.RenderStringAsync(model.Markdown, _htmlEncoder, model,
+                    new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(field.ContentItem) });
+            }
+
             // The default Markdown option is to entity escape html
             // so filters must be run after the markdown has been processed.
             model.Html = _markdownService.ToHtml(model.Markdown ?? string.Empty);
-
-            // The liquid rendering is for backwards compatibility and can be removed in a future version.
-            if (!settings.SanitizeHtml)
-            {
-                model.Markdown = await _liquidTemplateManager.RenderStringAsync(model.Html, _htmlEncoder, model,
-                    new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(field.ContentItem) });
-            }
 
             model.Html = await _shortcodeService.ProcessAsync(model.Html,
                 new Context
@@ -94,13 +93,18 @@ public sealed class MarkdownFieldDisplayDriver : ContentFieldDisplayDriver<Markd
     public override async Task<IDisplayResult> UpdateAsync(MarkdownField field, UpdateFieldEditorContext context)
     {
         var viewModel = new EditMarkdownFieldViewModel();
+        var settings = context.PartFieldDefinition.GetSettings<MarkdownFieldSettings>();
 
         await context.Updater.TryUpdateModelAsync(viewModel, Prefix, vm => vm.Markdown);
 
-        if (!string.IsNullOrEmpty(viewModel.Markdown) && !_liquidTemplateManager.Validate(viewModel.Markdown, out var errors))
+        if (settings.RenderLiquid
+            && !string.IsNullOrEmpty(viewModel.Markdown)
+            && !_liquidTemplateManager.Validate(viewModel.Markdown, out var errors))
         {
-            var fieldName = context.PartFieldDefinition.DisplayName();
-            context.Updater.ModelState.AddModelError(Prefix, nameof(viewModel.Markdown), S["{0} field doesn't contain a valid Liquid expression. Details: {1}", fieldName, string.Join(" ", errors)]);
+            context.Updater.ModelState.AddModelError(Prefix, nameof(viewModel.Markdown),
+                S["{0} contains invalid Liquid expression: {1}",
+                    context.PartFieldDefinition.DisplayName(),
+                    string.Join(" ", errors)]);
         }
         else
         {

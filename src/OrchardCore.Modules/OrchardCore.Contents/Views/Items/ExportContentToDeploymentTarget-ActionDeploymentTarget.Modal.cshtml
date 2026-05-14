@@ -17,7 +17,7 @@
                             @foreach (var target in await DeploymentManager.GetDeploymentTargetsAsync())
                             {
                                 var routeWithId = new RouteValueDictionary(target.Route);
-                                routeWithId["id"] = Site.As<ExportContentToDeploymentTargetSettings>().ExportContentToDeploymentTargetPlanId;
+                                routeWithId["id"] = Site.GetOrCreate<ExportContentToDeploymentTargetSettings>().ExportContentToDeploymentTargetPlanId;
                                 routeWithId["returnUrl"] = FullRequestPath;
 
                                 <div class="col">

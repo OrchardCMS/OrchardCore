@@ -8,7 +8,10 @@
 @{
     ContentItem contentItem = Model.ContentItem;
 
-    var menuItemPart = contentItem.As<ContentMenuItemPart>();
+    if (!contentItem.TryGet<ContentMenuItemPart>(out var menuItemPart))
+    {
+        return;
+    }
 
     string contentItemId = menuItemPart.ContentItem.Content.ContentMenuItemPart.SelectedContentItem.ContentItemIds[0];
 

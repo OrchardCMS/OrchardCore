@@ -3,7 +3,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Abstractions.Indexing;
 using OrchardCore.BackgroundJobs;
-using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Indexing.Models;
 using OrchardCore.Infrastructure.Entities;
 using OrchardCore.Modules;

@@ -1,6 +1,7 @@
 using System.Text.Json;
+using System.Text.Encodings.Web;
+using Microsoft.AspNetCore.Http;
 using Fluid;
-using Microsoft.Extensions.Primitives;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
 using OrchardCore.Liquid;
@@ -483,6 +484,58 @@ public class LiquidTests
         });
     }
 
+    [Fact]
+    public async Task StringValuesValue_ShouldHtmlEncodeOutput()
+    {
+        var context = new SiteContext();
+        await context.InitializeAsync();
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            const string template = "{{ Model }}";
+            var liquidTemplateManager = scope.ServiceProvider.GetRequiredService<ILiquidTemplateManager>();
+            var result = await liquidTemplateManager.RenderStringAsync(template, HtmlEncoder.Default, new StringValues("""<script>alert("xss")</script>"""));
+
+            Assert.Equal("&lt;script&gt;alert(&quot;xss&quot;)&lt;/script&gt;", result);
+        });
+    }
+
+    [Fact]
+    public async Task RequestQueryStringValues_ShouldHtmlEncodeOutput()
+    {
+        var result = await RenderRequestValueAsync("{{ Request.Query.q }}", request =>
+        {
+            request.QueryString = new QueryString("""?q=<script>alert("xss")</script>""");
+        });
+
+        Assert.Equal("&lt;script&gt;alert(&quot;xss&quot;)&lt;/script&gt;", result);
+    }
+
+    [Fact]
+    public async Task RequestHeaderStringValues_ShouldHtmlEncodeOutput()
+    {
+        var result = await RenderRequestValueAsync("{{ Request.Headers.test }}", request =>
+        {
+            request.Headers["test"] = """<script>alert("xss")</script>""";
+        });
+
+        Assert.Equal("&lt;script&gt;alert(&quot;xss&quot;)&lt;/script&gt;", result);
+    }
+
+    [Fact]
+    public async Task RequestFormStringValues_ShouldHtmlEncodeOutput()
+    {
+        var result = await RenderRequestValueAsync("{{ Request.Form.q }}", request =>
+        {
+            request.ContentType = "application/x-www-form-urlencoded";
+            request.Form = new FormCollection(new Dictionary<string, StringValues>
+            {
+                ["q"] = """<script>alert("xss")</script>""",
+            });
+        });
+
+        Assert.Equal("&lt;script&gt;alert(&quot;xss&quot;)&lt;/script&gt;", result);
+    }
+
     public static ContentItem[] FakeContentItems => new[] { "30_true", "20_false", "40_true", "60_true", "50_true", "10_true" }.Select(x => CreateFakeContentItem(decimal.Parse(x.Split('_')[0]), x.Split('_')[1] == "true")).ToArray();
 
     public static ContentItem CreateFakeContentItem(decimal order, bool addtoHotActionsMenu)
@@ -508,5 +561,24 @@ public class LiquidTests
     public class MyField : ContentField
     {
         public int Value { get; set; }
+    }
+
+    private static async Task<string> RenderRequestValueAsync(string template, Action<HttpRequest> configureRequest)
+    {
+        var context = new SiteContext();
+        await context.InitializeAsync();
+
+        string result = null;
+
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            var request = SiteContext.HttpContextAccessor.HttpContext.Request;
+            configureRequest(request);
+
+            var liquidTemplateManager = scope.ServiceProvider.GetRequiredService<ILiquidTemplateManager>();
+            result = await liquidTemplateManager.RenderStringAsync(template, HtmlEncoder.Default);
+        });
+
+        return result;
     }
 }

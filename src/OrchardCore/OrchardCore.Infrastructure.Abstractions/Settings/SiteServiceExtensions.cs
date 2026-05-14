@@ -11,7 +11,7 @@ public static class SiteServiceExtensions
     /// <param name="siteService">The site service.</param>
     /// <returns>An instance of the given type if one exists.</returns>
     public static async Task<T> GetSettingsAsync<T>(this ISiteService siteService) where T : new()
-        => (await siteService.GetSiteSettingsAsync()).As<T>();
+        => (await siteService.GetSiteSettingsAsync()).GetOrCreate<T>();
 
     /// <summary>
     /// Gets an instance of the specified settings if it exists.
@@ -21,7 +21,20 @@ public static class SiteServiceExtensions
     /// <param name="name">The entry name.</param>
     /// <returns>An instance of the given type if one exists.</returns>
     public static async Task<T> GetSettingsAsync<T>(this ISiteService siteService, string name) where T : new()
-        => (await siteService.GetSiteSettingsAsync()).As<T>(name);
+        => (await siteService.GetSiteSettingsAsync()).GetOrCreate<T>(name);
+
+    /// <summary>
+    /// Gets an instance of the specified settings if it exists.
+    /// </summary>
+    /// <typeparam name="T">The type of the settings to attempt to get.</typeparam>
+    /// <param name="siteService">The site service.</param>
+    /// <returns>An instance of the given type if one exists.</returns>
+    public static bool TryGetSettings<T>(this ISiteService siteService, out T settings)
+    {
+        var site = siteService.GetSiteSettings();
+
+        return site.TryGet(out settings);
+    }
 
     /// <summary>
     /// Synchronously gets the site settings for reading.
@@ -49,5 +62,5 @@ public static class SiteServiceExtensions
     /// This method should only be used in synchronous code paths. Prefer using <see cref="GetSettingsAsync{T}(ISiteService)"/> in asynchronous code.
     /// </remarks>
     public static T GetSettings<T>(this ISiteService siteService) where T : new()
-        => siteService.GetSiteSettings().As<T>();
+        => siteService.GetSiteSettings().GetOrCreate<T>();
 }

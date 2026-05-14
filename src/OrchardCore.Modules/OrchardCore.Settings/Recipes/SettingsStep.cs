@@ -2,7 +2,6 @@ using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Routing;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
-using OrchardCore.Settings;
 
 namespace OrchardCore.Settings.Recipes;
 

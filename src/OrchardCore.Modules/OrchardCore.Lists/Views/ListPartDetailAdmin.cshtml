@@ -28,6 +28,8 @@ else
             @foreach (var contentItem in Model.ContentItems)
             {
                 var contentItemSummary = (dynamic)await ContentItemDisplayManager.BuildDisplayAsync(contentItem, Model.Context.Updater, "SummaryAdmin", Model.Context.GroupId);
+                contentItemSummary.Checkbox = null;
+
                 if (enableOrdering)
                 {
                     await contentItemSummary.Selectors.AddAsync(await New.ListPart_Sortable());

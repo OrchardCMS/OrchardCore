@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Localization;
 using OrchardCore.Deployment;
 
 namespace OrchardCore.DataLocalization.Deployment;
@@ -10,6 +11,12 @@ public class TranslationsDeploymentStep : DeploymentStep
     public TranslationsDeploymentStep()
     {
         Name = "Translations";
+    }
+
+    public TranslationsDeploymentStep(IStringLocalizer<TranslationsDeploymentStep> S)
+        : this()
+    {
+        Category = S["Internationalization"];
     }
 
     /// <summary>

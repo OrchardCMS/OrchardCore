@@ -29,7 +29,7 @@ public sealed class UrlRewriteRuleHandler : RewriteRuleHandlerBase
             return Task.CompletedTask;
         }
 
-        var metadata = context.Rule.As<UrlRewriteSourceMetadata>();
+        var metadata = context.Rule.GetOrCreate<UrlRewriteSourceMetadata>();
 
         if (string.IsNullOrWhiteSpace(metadata.Pattern))
         {
@@ -59,7 +59,7 @@ public sealed class UrlRewriteRuleHandler : RewriteRuleHandlerBase
             return Task.CompletedTask;
         }
 
-        var metadata = rule.As<UrlRewriteSourceMetadata>();
+        var metadata = rule.GetOrCreate<UrlRewriteSourceMetadata>();
 
         var pattern = data[nameof(UrlRewriteSourceMetadata.Pattern)]?.GetValue<string>();
 

@@ -1,3 +1,4 @@
+using OrchardCore.ContentFields;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Localization.Data;
@@ -23,7 +24,7 @@ public class ContentFieldDataLocalizationProvider : ILocalizationDataProvider
             .SelectMany(t => t.Parts)
             .SelectMany(p => p.PartDefinition.Fields.Select(f =>
                 new DataLocalizedString(
-                    $"Content Fields{Constants.ContextSeparator}{p.PartDefinition.Name}",
+                    DataLocalizationContext.ContentField(p.PartDefinition.Name),
                     f.DisplayName(),
                     string.Empty)))
             .DistinctBy(d => $"{d.Context}|{d.Name}");

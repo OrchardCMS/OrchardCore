@@ -394,130 +394,138 @@ public class WorkflowManager : IWorkflowManager
     {
         // Prevent scope recursion per workflow.
         IncrementRecursion(workflowContext.Workflow);
-
-        var workflowType = workflowContext.WorkflowType;
-        var scheduled = new Stack<ActivityRecord>();
-        var blocking = new List<ActivityRecord>();
-        var isResuming = workflowContext.Status == WorkflowStatus.Resuming;
-        var isFirstPass = true;
-
-        workflowContext.Status = WorkflowStatus.Executing;
-        scheduled.Push(activity);
-
-        while (scheduled.Count > 0)
+        var recursionDecremented = false;
+        try
         {
-            activity = scheduled.Pop();
+            var workflowType = workflowContext.WorkflowType;
+            var scheduled = new Stack<ActivityRecord>();
+            var blocking = new List<ActivityRecord>();
+            var isResuming = workflowContext.Status == WorkflowStatus.Resuming;
+            var isFirstPass = true;
 
-            var activityContext = workflowContext.GetActivity(activity.ActivityId);
+            workflowContext.Status = WorkflowStatus.Executing;
+            scheduled.Push(activity);
 
-            // Signal every activity that the activity is about to be executed.
-            await InvokeActivitiesAsync(workflowContext, x => x.Activity.OnActivityExecutingAsync(workflowContext, activityContext, workflowContext.CancellationToken));
-
-            if (workflowContext.CancellationToken.IsCancellationRequested)
+            while (scheduled.Count > 0)
             {
-                break;
-            }
+                activity = scheduled.Pop();
 
-            var outcomes = Enumerable.Empty<string>();
+                var activityContext = workflowContext.GetActivity(activity.ActivityId);
 
-            try
-            {
-                ActivityExecutionResult result;
+                // Signal every activity that the activity is about to be executed.
+                await InvokeActivitiesAsync(workflowContext, x => x.Activity.OnActivityExecutingAsync(workflowContext, activityContext, workflowContext.CancellationToken));
 
-                if (!isResuming)
+                if (workflowContext.CancellationToken.IsCancellationRequested)
                 {
-                    // Execute the current activity.
-                    result = await activityContext.Activity.ExecuteAsync(workflowContext, activityContext);
-                }
-                else
-                {
-                    // Resume the current activity.
-                    result = await activityContext.Activity.ResumeAsync(workflowContext, activityContext);
-                    isResuming = false;
+                    break;
                 }
 
-                if (result.IsHalted)
+                var outcomes = Enumerable.Empty<string>();
+
+                try
                 {
-                    if (isFirstPass)
+                    ActivityExecutionResult result;
+
+                    if (!isResuming)
                     {
-                        // Resume immediately when this is the first pass.
+                        // Execute the current activity.
+                        result = await activityContext.Activity.ExecuteAsync(workflowContext, activityContext);
+                    }
+                    else
+                    {
+                        // Resume the current activity.
                         result = await activityContext.Activity.ResumeAsync(workflowContext, activityContext);
-                        isFirstPass = false;
-                        outcomes = result.Outcomes;
+                        isResuming = false;
+                    }
 
-                        if (result.IsHalted)
+                    if (result.IsHalted)
+                    {
+                        if (isFirstPass)
+                        {
+                            // Resume immediately when this is the first pass.
+                            result = await activityContext.Activity.ResumeAsync(workflowContext, activityContext);
+                            isFirstPass = false;
+                            outcomes = result.Outcomes;
+
+                            if (result.IsHalted)
+                            {
+                                // Block on this activity.
+                                blocking.Add(activity);
+                            }
+                        }
+                        else
                         {
                             // Block on this activity.
                             blocking.Add(activity);
+
+                            continue;
                         }
                     }
                     else
                     {
-                        // Block on this activity.
-                        blocking.Add(activity);
-
-                        continue;
+                        outcomes = result.Outcomes;
                     }
                 }
-                else
+                catch (Exception ex)
                 {
-                    outcomes = result.Outcomes;
+                    _logger.LogError(ex, "An unhandled error occurred while executing an activity. Workflow ID: '{WorkflowTypeId}'. Activity: '{ActivityId}', '{ActivityName}'. Putting the workflow in the faulted state.", workflowType.Id, activityContext.ActivityRecord.ActivityId, activityContext.ActivityRecord.Name);
+                    workflowContext.Fault(ex, activityContext);
+
+                    DecrementRecursion(workflowContext.Workflow);
+                    recursionDecremented = true;
+
+                    await _workflowFaultHandler.OnWorkflowFaultAsync(this, workflowContext, activityContext, ex);
+
+                    return blocking.Distinct();
                 }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An unhandled error occurred while executing an activity. Workflow ID: '{WorkflowTypeId}'. Activity: '{ActivityId}', '{ActivityName}'. Putting the workflow in the faulted state.", workflowType.Id, activityContext.ActivityRecord.ActivityId, activityContext.ActivityRecord.Name);
-                workflowContext.Fault(ex, activityContext);
 
-                // Decrement the workflow scope recursion count.
-                DecrementRecursion(workflowContext.Workflow);
+                // Signal every activity that the activity is executed.
+                await InvokeActivitiesAsync(workflowContext, x => x.Activity.OnActivityExecutedAsync(workflowContext, activityContext));
 
-                await _workflowFaultHandler.OnWorkflowFaultAsync(this, workflowContext, activityContext, ex);
-
-                return blocking.Distinct();
-            }
-
-            // Signal every activity that the activity is executed.
-            await InvokeActivitiesAsync(workflowContext, x => x.Activity.OnActivityExecutedAsync(workflowContext, activityContext));
-
-            foreach (var outcome in outcomes)
-            {
-                // Look for next activity in the graph.
-                var transition = workflowType.Transitions.FirstOrDefault(x => x.SourceActivityId == activity.ActivityId && x.SourceOutcomeName == outcome);
-
-                if (transition != null)
+                foreach (var outcome in outcomes)
                 {
-                    var destinationActivity = workflowContext.WorkflowType.Activities.SingleOrDefault(x => x.ActivityId == transition.DestinationActivityId);
+                    // Look for next activity in the graph.
+                    var transition = workflowType.Transitions.FirstOrDefault(x => x.SourceActivityId == activity.ActivityId && x.SourceOutcomeName == outcome);
 
-                    // Check that the activity doesn't point to itself.
-                    if (destinationActivity != activity)
+                    if (transition != null)
                     {
-                        scheduled.Push(destinationActivity);
+                        var destinationActivity = workflowContext.WorkflowType.Activities.SingleOrDefault(x => x.ActivityId == transition.DestinationActivityId);
+
+                        // Check that the activity doesn't point to itself.
+                        if (destinationActivity != activity)
+                        {
+                            scheduled.Push(destinationActivity);
+                        }
                     }
+                }
+
+                isFirstPass = false;
+            }
+
+            // Apply Distinct() as two paths could block on the same activity.
+            var blockingActivities = blocking.Distinct().ToList();
+
+            workflowContext.Status = blockingActivities.Count > 0 || workflowContext.Workflow.BlockingActivities.Count > 0 ? WorkflowStatus.Halted : WorkflowStatus.Finished;
+
+            foreach (var blockingActivity in blockingActivities)
+            {
+                // Workflows containing event activities could end up being blocked on the same activity.
+                if (!workflowContext.Workflow.BlockingActivities.Any(x => x.ActivityId == blockingActivity.ActivityId))
+                {
+                    workflowContext.Workflow.BlockingActivities.Add(BlockingActivity.FromActivity(blockingActivity));
                 }
             }
 
-            isFirstPass = false;
+            return blockingActivities;
         }
-
-        // Apply Distinct() as two paths could block on the same activity.
-        var blockingActivities = blocking.Distinct().ToList();
-
-        workflowContext.Status = blockingActivities.Count > 0 || workflowContext.Workflow.BlockingActivities.Count > 0 ? WorkflowStatus.Halted : WorkflowStatus.Finished;
-
-        foreach (var blockingActivity in blockingActivities)
+        finally
         {
-            // Workflows containing event activities could end up being blocked on the same activity.
-            if (!workflowContext.Workflow.BlockingActivities.Any(x => x.ActivityId == blockingActivity.ActivityId))
+            if (!recursionDecremented)
             {
-                workflowContext.Workflow.BlockingActivities.Add(BlockingActivity.FromActivity(blockingActivity));
+                // Decrement the workflow scope recursion.
+                DecrementRecursion(workflowContext.Workflow);
             }
         }
-
-        // Decrement the workflow scope recursion.
-        DecrementRecursion(workflowContext.Workflow);
-
-        return blockingActivities;
     }
 
     private void IncrementRecursion(Workflow workflow)

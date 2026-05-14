@@ -1,4 +1,5 @@
 using System.Globalization;
+using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.ReCaptcha.Configuration;
@@ -9,18 +10,16 @@ namespace OrchardCore.ReCaptcha.Drivers;
 
 public sealed class ReCaptchaLoginFormDisplayDriver : DisplayDriver<LoginForm>
 {
-    private readonly ISiteService _siteService;
+    private readonly ReCaptchaSettings _settings;
 
-    public ReCaptchaLoginFormDisplayDriver(ISiteService siteService)
+    public ReCaptchaLoginFormDisplayDriver(IOptions<ReCaptchaSettings> options)
     {
-        _siteService = siteService;
+        _settings = options.Value;
     }
 
     public override async Task<IDisplayResult> EditAsync(LoginForm model, BuildEditorContext context)
     {
-        var settings = await _siteService.GetSettingsAsync<ReCaptchaSettings>();
-
-        if (!settings.ConfigurationExists())
+        if (!_settings.ConfigurationExists())
         {
             return null;
         }

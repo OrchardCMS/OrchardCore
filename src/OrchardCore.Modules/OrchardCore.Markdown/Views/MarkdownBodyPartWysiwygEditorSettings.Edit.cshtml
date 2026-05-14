@@ -1,0 +1,50 @@
+@model OrchardCore.Markdown.ViewModels.MarkdownFieldWysiwygEditorSettingsViewModel
+
+<div id="@Html.IdFor(m => m)" class="type-part-editor type-part-editor-wysiwyg">
+    <div class="mb-3 row">
+        <div class="col-large col-12 col-sm-12 col-md-12 col-lg-12 col-xl-9">
+            <label asp-for="Options" class="form-label">@T["Enter the editor options"]</label>
+            <span class="hint"><a href="https://github.com/Ionaru/easy-markdown-editor#configuration" target="_blank">@T["Documentation for options"]</a></span>
+            <textarea asp-for="Options" class="form-control" autofocus="autofocus"></textarea>
+        </div>
+    </div>
+</div>
+
+<style asp-name="codemirror"></style>
+<script asp-name="codemirror" at="Foot"></script>
+<script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
+<script asp-name="codemirror-mode-javascript" at="Foot"></script>
+<script at="Foot">
+    $(function () {
+        var optionsTextArea = document.getElementById('@Html.IdFor(x => x.Options)');
+        var editor = CodeMirror.fromTextArea(optionsTextArea, {
+            autoRefresh: true,
+            lineNumbers: true,
+            matchBrackets: true,
+            mode: { name: "javascript" }
+    });
+@{
+    if (string.IsNullOrEmpty(Model.Options))
+    {
+        string fullOptions = @"{
+    toolbar: [
+        ""guide"", ""|"",
+        ""undo"", ""redo"", ""|"",
+        ""bold"", ""italic"", ""strikethrough"", ""|"",
+        ""heading"", ""|"",
+        ""code"", ""quote"", ""|"",
+        ""link"", ""|"",
+        ""shortcode"", ""|"",
+        ""image"", ""|"",
+        ""unordered-list"", ""ordered-list"", ""table"", ""|"",
+        ""horizontal-rule"", ""|"",
+        ""preview"", ""side-by-side"", ""fullscreen""
+    ],
+    spellChecker: false
+}";
+<text>editor.setValue(`@Html.Raw(fullOptions)`);
+        </text>
+    }
+}
+});
+</script>

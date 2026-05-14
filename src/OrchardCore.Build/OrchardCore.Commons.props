@@ -14,6 +14,8 @@
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+    <!-- Enable interceptors -->
+    <InterceptorsNamespaces>$(InterceptorsNamespaces);OrchardCore.DisplayManagement.Generated</InterceptorsNamespaces>
     <!-- Common NuGet properties-->
     <OCFrameworkDescription>Orchard Core Framework is an application framework for building modular, multi-tenant applications on ASP.NET Core.</OCFrameworkDescription>
     <OCCMSDescription>Orchard Core CMS is a Web Content Management System (CMS) built on top of the Orchard Core Framework.</OCCMSDescription>
@@ -45,4 +47,10 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="$(MSBuildThisFileDirectory)/../OrchardCore/OrchardCore.SourceGenerators/OrchardCore.SourceGenerators.csproj" 
+                      Condition=" $(MSBuildProjectName) != 'OrchardCore.SourceGenerators' "
+                      OutputItemType="Analyzer" 
+                      ReferenceOutputAssembly="false" />
+  </ItemGroup>
 </Project>

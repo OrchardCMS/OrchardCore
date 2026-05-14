@@ -1,3 +1,4 @@
+using System.Net.Mime;
 using System.Text;
 using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Authorization;
@@ -79,6 +80,6 @@ public sealed class DownloadController : Controller
 
         var jItem = JObject.FromObject(contentItem);
 
-        return File(Encoding.UTF8.GetBytes(jItem.ToString()), "application/json", $"{contentItem.ContentItemId}.json");
+        return File(Encoding.UTF8.GetBytes(jItem.ToString()), MediaTypeNames.Application.Json, $"{contentItem.ContentItemId}.json");
     }
 }

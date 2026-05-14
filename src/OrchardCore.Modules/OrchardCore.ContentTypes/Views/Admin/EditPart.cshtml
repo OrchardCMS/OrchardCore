@@ -65,7 +65,7 @@
                                         <a asp-route-action="RemoveFieldFrom" asp-route-id="@Model.PartDefinition.Name" asp-route-name="@field.Name" class="btn btn-danger btn-sm" role="button" data-url-af="UnsafeUrl RemoveUrl">@T["Remove"]</a>
                                     }
                                 </div>
-                                @D[field.DisplayName(), $"{Model.PartDefinition.Name}.{field.DisplayName()}"] <span class="hint dashed">@field.FieldDefinition.Name.CamelFriendly()</span>
+                                @D[field.DisplayName(), $"Content Fields{Constants.ContextSeparator}{Model.PartDefinition.Name}"] <span class="hint dashed">@field.FieldDefinition.Name.CamelFriendly()</span>
                             </div>
                             <input type="hidden" name="OrderedFieldNames" value="@field.Name" />
                         </li>

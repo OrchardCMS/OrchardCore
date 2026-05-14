@@ -77,7 +77,7 @@ public class LocalizationServiceCollectionExtensionsTests
 
         Assert.NotNull(dataLocalizerFactory);
         Assert.NotNull(dataLocalizer);
-        
+
         // Verify it's the actual DataLocalizerFactory, not NullDataLocalizerFactory
         Assert.IsType<DataLocalizerFactory>(dataLocalizerFactory);
     }

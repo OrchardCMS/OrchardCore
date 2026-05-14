@@ -22,13 +22,13 @@ public class GoogleAuthenticationService : IGoogleAuthenticationService
     public async Task<GoogleAuthenticationSettings> GetSettingsAsync()
     {
         var container = await _siteService.GetSiteSettingsAsync();
-        return container.As<GoogleAuthenticationSettings>();
+        return container.GetOrCreate<GoogleAuthenticationSettings>();
     }
 
     public async Task<GoogleAuthenticationSettings> LoadSettingsAsync()
     {
         var container = await _siteService.LoadSiteSettingsAsync();
-        return container.As<GoogleAuthenticationSettings>();
+        return container.GetOrCreate<GoogleAuthenticationSettings>();
     }
 
     public async Task UpdateSettingsAsync(GoogleAuthenticationSettings settings)

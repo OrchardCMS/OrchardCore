@@ -29,11 +29,9 @@ public class AliasPartIndexProvider : ContentHandlerBase, IIndexProvider, IScope
 
     public override async Task UpdatedAsync(UpdateContentContext context)
     {
-        var part = context.ContentItem.As<AliasPart>();
-
         // Validate that the content definition contains this part, this prevents indexing parts
         // that have been removed from the type definition, but are still present in the elements.            
-        if (part != null)
+        if (context.ContentItem.TryGet<AliasPart>(out _))
         {
             // Lazy initialization because of ISession cyclic dependency.
             _contentDefinitionManager ??= _serviceProvider.GetRequiredService<IContentDefinitionManager>();
@@ -66,8 +64,7 @@ public class AliasPartIndexProvider : ContentHandlerBase, IIndexProvider, IScope
                     return null;
                 }
 
-                var part = contentItem.As<AliasPart>();
-                if (part == null || string.IsNullOrEmpty(part.Alias))
+                if (!contentItem.TryGet<AliasPart>(out var part) || string.IsNullOrEmpty(part.Alias))
                 {
                     return null;
                 }

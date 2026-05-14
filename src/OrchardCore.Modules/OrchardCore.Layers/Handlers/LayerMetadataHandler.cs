@@ -23,9 +23,7 @@ public class LayerMetadataHandler : ContentHandlerBase
 
     private Task UpdateAsync(ContentItem contentItem)
     {
-        var layerMetadata = contentItem.As<LayerMetadata>();
-
-        if (layerMetadata == null)
+        if (!contentItem.TryGet<LayerMetadata>(out _))
         {
             return Task.CompletedTask;
         }

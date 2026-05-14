@@ -3,6 +3,7 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.Spatial.Fields;
 
 namespace OrchardCore.Spatial.GraphQL;
+
 public class GeoPointFieldQueryObjectType : ObjectGraphType<GeoPointField>
 {
     public GeoPointFieldQueryObjectType(IStringLocalizer<GeoPointFieldQueryObjectType> S)

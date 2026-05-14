@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace OrchardCore.Search.AzureAI.ViewModels;
+namespace OrchardCore.AzureAI.ViewModels;
 
 public class RebuildIndexDeploymentStepViewModel
 {

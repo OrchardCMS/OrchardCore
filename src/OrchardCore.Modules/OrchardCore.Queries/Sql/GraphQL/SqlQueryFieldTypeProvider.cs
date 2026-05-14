@@ -69,8 +69,6 @@ public sealed class SqlQueryFieldTypeProvider : ISchemaBuilder
                 var type = querySchema["type"].ToString();
                 FieldType fieldType;
 
-                var metadata = query.As<SqlQueryMetadata>();
-
                 var fieldTypeName = querySchema["fieldTypeName"]?.ToString() ?? query.Name;
 
                 if (query.ReturnContentItems && type.StartsWith("ContentItem/", StringComparison.OrdinalIgnoreCase))

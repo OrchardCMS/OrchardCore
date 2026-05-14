@@ -5,12 +5,14 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Localization.Data;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Search.Deployment;
 using OrchardCore.Search.Drivers;
 using OrchardCore.Search.Migrations;
 using OrchardCore.Search.Models;
+using OrchardCore.Search.Services;
 using OrchardCore.Search.ViewModels;
 using OrchardCore.Security.Permissions;
 
@@ -59,5 +61,14 @@ public sealed class LiquidStartup : StartupBase
             o.MemberAccessStrategy.Register<SearchFormViewModel>();
             o.MemberAccessStrategy.Register<SearchResultsViewModel>();
         });
+    }
+}
+
+[RequireFeatures("OrchardCore.DataLocalization")]
+public sealed class DataLocalizationStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddScoped<ILocalizationDataProvider, SearchLocalizationDataProvider>();
     }
 }

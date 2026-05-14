@@ -136,8 +136,13 @@ public sealed class AdminController : Controller
         }
         else
         {
+            if (!taxonomy.TryGet<TaxonomyPart>(out var taxonomyPart))
+            {
+                return NotFound();
+            }
+
             // Look for the target taxonomy item in the hierarchy.
-            var parentTaxonomyItem = FindTaxonomyItem((JsonObject)taxonomy.As<TaxonomyPart>().Content, taxonomyItemId);
+            var parentTaxonomyItem = FindTaxonomyItem((JsonObject)taxonomyPart.Content, taxonomyItemId);
 
             // Couldn't find targeted taxonomy item.
             if (parentTaxonomyItem == null)
@@ -181,7 +186,12 @@ public sealed class AdminController : Controller
         }
 
         // Look for the target taxonomy item in the hierarchy.
-        var taxonomyItem = FindTaxonomyItem((JsonObject)taxonomy.As<TaxonomyPart>().Content, taxonomyItemId);
+        if (!taxonomy.TryGet<TaxonomyPart>(out var taxonomyPart))
+        {
+            return NotFound();
+        }
+
+        var taxonomyItem = FindTaxonomyItem((JsonObject)taxonomyPart.Content, taxonomyItemId);
 
         // Couldn't find targeted taxonomy item.
         if (taxonomyItem == null)
@@ -234,7 +244,12 @@ public sealed class AdminController : Controller
         }
 
         // Look for the target taxonomy item in the hierarchy.
-        var taxonomyItem = FindTaxonomyItem((JsonObject)taxonomy.As<TaxonomyPart>().Content, taxonomyItemId);
+        if (!taxonomy.TryGet<TaxonomyPart>(out var taxonomyPart))
+        {
+            return NotFound();
+        }
+
+        var taxonomyItem = FindTaxonomyItem((JsonObject)taxonomyPart.Content, taxonomyItemId);
 
         // Couldn't find targeted taxonomy item.
         if (taxonomyItem == null)
@@ -309,7 +324,12 @@ public sealed class AdminController : Controller
         }
 
         // Look for the target taxonomy item in the hierarchy.
-        var content = (JsonObject)taxonomy.As<TaxonomyPart>().Content;
+        if (!taxonomy.TryGet<TaxonomyPart>(out var taxonomyPart))
+        {
+            return NotFound();
+        }
+
+        var content = (JsonObject)taxonomyPart.Content;
 
         RemoveTaxonomyItem(content, taxonomyItemId);
 

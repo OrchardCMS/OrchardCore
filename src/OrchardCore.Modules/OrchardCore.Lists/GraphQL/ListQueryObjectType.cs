@@ -54,6 +54,6 @@ public class ListQueryObjectType : ObjectGraphType<ListPart>
                                  .Take(count)
                                  .ListAsync();
 
-        return query.ToLookup(k => k.As<ContainedPart>().ListContentItemId);
+        return query.ToLookup(k => k.TryGet<ContainedPart>(out var cp) ? cp.ListContentItemId : null);
     }
 }

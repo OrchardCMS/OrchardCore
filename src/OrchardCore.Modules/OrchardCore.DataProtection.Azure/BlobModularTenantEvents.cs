@@ -33,7 +33,10 @@ internal sealed class BlobModularTenantEvents : ModularTenantEvents
             _blobOptions.ContainerName,
             _blobOptions.BlobName);
 
-        _logger.LogDebug("Deleting blob '{BlobName}' from container '{ContainerName}'.", _blobOptions.BlobName, _blobOptions.ContainerName);
+        if (_logger.IsEnabled(LogLevel.Debug))
+        {
+            _logger.LogDebug("Deleting blob '{BlobName}' from container '{ContainerName}'.", _blobOptions.BlobName, _blobOptions.ContainerName);
+        }
 
         return blobClient.DeleteIfExistsAsync();
     }

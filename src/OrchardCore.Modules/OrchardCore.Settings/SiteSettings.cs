@@ -8,6 +8,7 @@ namespace OrchardCore.Settings;
 // When updating class also update SiteSettingsDeploymentSource and SettingsStep.
 public class SiteSettings : DocumentEntity, ISite
 {
+    private static readonly object _missing = new();
     private readonly ConcurrentDictionary<string, object> _cache = new();
 
     public string BaseUrl { get; set; }
@@ -28,22 +29,41 @@ public class SiteSettings : DocumentEntity, ISite
     public CacheMode CacheMode { get; set; }
 
     public T As<T>() where T : new()
+        => GetOrCreate<T>();
+
+    public T GetOrCreate<T>() where T : new()
+        => TryGet<T>(out var settings) ? settings : new T();
+
+    public bool TryGet<T>(out T settings)
     {
         var name = typeof(T).Name;
+
         if (!IsReadOnly)
         {
-            return this.As<T>(name);
+            return this.TryGet(name, out settings);
         }
 
-        if (_cache.TryGetValue(name, out var obj) && obj is T value)
+        if (_cache.TryGetValue(name, out var obj))
         {
-            return value;
+            if (ReferenceEquals(obj, _missing))
+            {
+                settings = default;
+                return false;
+            }
+
+            settings = (T)obj;
+            return true;
         }
 
-        var settings = this.As<T>(name);
-        _cache[name] = settings;
+        if (this.TryGet(name, out settings))
+        {
+            _cache[name] = settings;
+            return true;
+        }
 
-        return settings;
+        _cache[name] = _missing;
+        settings = default;
+        return false;
     }
 
     internal void ClearCache()

@@ -65,9 +65,7 @@ public class AutoroutePartIndexProvider : ContentHandlerBase, IIndexProvider, IS
     {
         if (context.NoActiveVersionLeft)
         {
-            var part = context.ContentItem.As<AutoroutePart>();
-
-            if (part != null)
+            if (context.ContentItem.TryGet<AutoroutePart>(out _))
             {
                 _itemRemoved.Add(context.ContentItem);
             }
@@ -78,11 +76,9 @@ public class AutoroutePartIndexProvider : ContentHandlerBase, IIndexProvider, IS
 
     public override async Task PublishedAsync(PublishContentContext context)
     {
-        var part = context.ContentItem.As<AutoroutePart>();
-
         // Validate that the content definition contains this part, this prevents indexing parts
         // that have been removed from the type definition, but are still present in the elements.            
-        if (part != null)
+        if (context.ContentItem.TryGet<AutoroutePart>(out _))
         {
             // Lazy initialization because of ISession cyclic dependency.
             _contentDefinitionManager ??= _serviceProvider.GetRequiredService<IContentDefinitionManager>();
@@ -121,8 +117,12 @@ public class AutoroutePartIndexProvider : ContentHandlerBase, IIndexProvider, IS
                 // If the part was removed from the type definition, a record is still added.
                 var partRemoved = _partRemoved.Contains(contentItem.ContentItemId);
 
-                var part = contentItem.As<AutoroutePart>();
-                if (!partRemoved && string.IsNullOrEmpty(part?.Path))
+                if (!contentItem.TryGet<AutoroutePart>(out var part) && !partRemoved)
+                {
+                    return null;
+                }
+
+                if (!partRemoved && string.IsNullOrEmpty(part.Path))
                 {
                     return null;
                 }

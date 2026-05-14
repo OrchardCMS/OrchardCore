@@ -20,6 +20,13 @@ public class NavigationItemBuilder : NavigationBuilder
         _item = existingItem;
     }
 
+    public NavigationItemBuilder MenuName(string name)
+    {
+        _item.MenuName = name;
+
+        return this;
+    }
+
     public NavigationItemBuilder Caption(LocalizedString caption)
     {
         _item.Text = caption;

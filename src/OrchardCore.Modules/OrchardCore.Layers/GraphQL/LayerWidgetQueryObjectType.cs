@@ -14,15 +14,15 @@ public class LayerWidgetQueryObjectType : ObjectGraphType<ContentItem>
 
         Field<StringGraphType>("zone")
             .Description(S["The name of the widget's zone."])
-            .Resolve(context => context.Source.As<LayerMetadata>()?.Zone);
+            .Resolve(context => context.Source.TryGet<LayerMetadata>(out var metadata) ? metadata.Zone : null);
 
         Field<DecimalGraphType>("position")
             .Description(S["The position of the widget in the zone."])
-            .Resolve(context => context.Source.As<LayerMetadata>()?.Position);
+            .Resolve(context => context.Source.TryGet<LayerMetadata>(out var metadata) ? metadata.Position : null);
 
         Field<BooleanGraphType>("renderTitle")
             .Description(S["Whether to render the widget's title."])
-            .Resolve(context => context.Source.As<LayerMetadata>()?.RenderTitle);
+            .Resolve(context => context.Source.TryGet<LayerMetadata>(out var metadata) ? metadata.RenderTitle : null);
 
         Field<ContentItemInterface>("widget")
             .Description(S["A widget on this layer."])

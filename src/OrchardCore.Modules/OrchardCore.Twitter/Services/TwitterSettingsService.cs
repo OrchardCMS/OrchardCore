@@ -25,7 +25,7 @@ public class TwitterSettingsService : ITwitterSettingsService
     public async Task<TwitterSettings> LoadSettingsAsync()
     {
         var container = await _siteService.LoadSiteSettingsAsync();
-        return container.As<TwitterSettings>();
+        return container.GetOrCreate<TwitterSettings>();
     }
 
     public async Task UpdateSettingsAsync(TwitterSettings settings)

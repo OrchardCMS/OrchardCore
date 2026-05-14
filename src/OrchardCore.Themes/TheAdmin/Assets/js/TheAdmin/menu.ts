@@ -1,4 +1,4 @@
-import { isCompactExplicit, setCompactExplicit } from '../constants';
+import { isCompactExplicit, setCompactExplicit, getAdminPreferences, setAdminPreferences } from '../constants';
 import { persistAdminPreferences } from './userPreferencesPersistor';
 // When we load compact status from preferences we need to do some other tasks besides adding the class to the body.
 // UserPreferencesLoader has already added the needed class.
@@ -28,6 +28,14 @@ $('#left-nav li.has-items').click(function () {
     $(this).addClass("visible");
 });
 
+// When navigating via a real nav link, persist the selected item hash inside the
+// existing admin preferences cookie so the server can restore the correct selection.
+$('#left-nav').on('click', 'a[data-admin-hash][href^="/"]', function () {
+    const prefs = getAdminPreferences() as Record<string, unknown>;
+    prefs.selectedNavHash = String($(this).data('admin-hash'));
+    setAdminPreferences(prefs);
+});
+
 $(document).on("click", function (event) {
     var $trigger = $("#left-nav li.has-items");
     if ($trigger !== event.target && !$trigger.has(event.target).length) {
@@ -55,7 +63,7 @@ const setCompactStatus = (explicit) => {
     // We want it expanded so that hovering over the root buttons shows the full submenu
     $('#left-nav ul.menu-admin > li > figure > ul').removeClass('collapse');
     // When hovering, don't want toggling when clicking on label
-    $('#left-nav ul.menu-admin > li > figure > figcaption > a').attr('data-bs-toggle', '');
+    $('#left-nav ul.menu-admin > li > figure > figcaption > .item-label').attr('data-bs-toggle', '');
     $('#left-nav li.has-items').removeClass("visible");
 
     //after menu has collapsed we set the transitions to none so that we don't do any transition
@@ -75,7 +83,7 @@ const unSetCompactStatus = () => {
 
     // resetting what we disabled for compact state
     $('#left-nav ul.menu-admin > li > figure > ul').addClass('collapse');
-    $('#left-nav ul.menu-admin > li > figure > figcaption a').attr('data-bs-toggle', 'collapse');
+    $('#left-nav ul.menu-admin > li > figure > figcaption .item-label').attr('data-bs-toggle', 'collapse');
     $('#left-nav li.has-items').removeClass("visible");
     $('#left-nav > ul > li').css("transition", "");
 

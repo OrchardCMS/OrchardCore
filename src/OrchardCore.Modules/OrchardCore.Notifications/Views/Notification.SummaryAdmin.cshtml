@@ -10,7 +10,7 @@
         return;
     }
 
-    var readInfo = notification.As<NotificationReadInfo>();
+    var readInfo = notification.GetOrCreate<NotificationReadInfo>();
 }
 
 <div class="list-group-item notification-container-item p-3 @(readInfo.IsRead ? "notification-is-read": "notification-is-unread")">

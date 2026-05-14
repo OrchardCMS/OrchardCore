@@ -1,4 +1,4 @@
-# Lucene (`OrchardCore.Search.Lucene`)
+# Lucene (`OrchardCore.Lucene`)
 
 The Lucene module allows you to manage Lucene indexes.
 
@@ -79,7 +79,7 @@ Verbs: `POST` and `GET`
 
 ## Lucene Worker (`OrchardCore.Search.Lucene.Worker`)
 
-This feature creates a background task that will keep the local file system index synchronized with
+This legacy compatibility feature creates a background task that will keep the local file system index synchronized with
 other instances that could have their own local index.  
 It is recommended to use it only if you are running the same tenant on multiple instances (farm) and are using a Lucene file system index.
 

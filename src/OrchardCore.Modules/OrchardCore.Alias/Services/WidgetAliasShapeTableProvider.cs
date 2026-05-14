@@ -2,7 +2,6 @@ using OrchardCore.Alias.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
-using OrchardCore.DisplayManagement.Utilities;
 
 namespace OrchardCore.Alias.Services;
 
@@ -16,17 +15,16 @@ public sealed class WidgetAliasShapeTableProvider : ShapeTableProvider
                 var shape = displaying.Shape;
                 var contentItem = shape.GetProperty<ContentItem>("ContentItem");
 
-                var aliasPart = contentItem?.As<AliasPart>();
-
-                if (aliasPart != null)
+                if (contentItem is not null && contentItem.TryGet<AliasPart>(out var aliasPart))
                 {
-                    var encodedAlias = aliasPart.Alias.EncodeAlternateElement();
+                    var displayType = displaying.Shape.Metadata.DisplayType;
 
-                    // Widget__Alias__[Alias] e.g. Widget-Alias-example, Widget-Alias-my-page
-                    displaying.Shape.Metadata.Alternates.Add("Widget__Alias__" + encodedAlias);
+                    // Get cached alternates and add them efficiently
+                    var cachedAlternates = WidgetAliasAlternatesFactory.GetAlternates(
+                        aliasPart.Alias,
+                        displayType);
 
-                    // Widget_[DisplayType]__Alias__[Alias] e.g. Widget-Alias-example.Summary, Widget-Alias-my-page.Summary
-                    displaying.Shape.Metadata.Alternates.Add("Widget_" + displaying.Shape.Metadata.DisplayType + "__Alias__" + encodedAlias);
+                    displaying.Shape.Metadata.Alternates.AddRange(cachedAlternates);
                 }
             });
 

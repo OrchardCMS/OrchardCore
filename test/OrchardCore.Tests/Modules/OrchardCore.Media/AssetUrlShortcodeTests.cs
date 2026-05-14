@@ -24,6 +24,9 @@ public class AssetUrlShortcodeTests
     [InlineData("", "foo [asset_url]bar[/asset_url] baz foo [asset_url]bar[/asset_url] baz", @"foo /media/bar baz foo /media/bar baz")]
     [InlineData("", @"foo <a href=""[asset_url]bàr.jpeg[/asset_url]"">baz</a>", @"foo <a href=""/media/b%C3%A0r.jpeg"">baz</a>")]
     [InlineData("", @"foo <a href=""[asset_url]bàr.jpeg?width=100[/asset_url]"">baz</a>", @"foo <a href=""/media/b%C3%A0r.jpeg?width=100"">baz</a>")]
+    [InlineData("", @"foo [asset_url]foo bar.jpg[/asset_url] baz", @"foo /media/foo%20bar.jpg baz")]
+    [InlineData("", @"foo [asset_url]my folder/foo bar.jpg[/asset_url] baz", @"foo /media/my%20folder/foo%20bar.jpg baz")]
+    [InlineData("", @"foo <a href=""[asset_url]foo bar.jpg[/asset_url]"">baz</a>", @"foo <a href=""/media/foo%20bar.jpg"">baz</a>")]
     public async Task ShouldProcess(string cdnBaseUrl, string text, string expected)
     {
         var fileStore = new DefaultMediaFileStore(

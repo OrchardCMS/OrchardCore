@@ -37,9 +37,8 @@ public partial class NotificationIndexProvider : IndexProvider<Notification>
             {
                 var content = notification.Summary ?? string.Empty;
 
-                var bodyInfo = notification.As<NotificationBodyInfo>();
-
-                if (!string.IsNullOrEmpty(bodyInfo?.TextBody))
+                if (notification.TryGet<NotificationBodyInfo>(out var bodyInfo) &&
+                    !string.IsNullOrEmpty(bodyInfo.TextBody))
                 {
                     content += $" {bodyInfo.TextBody}";
                 }
@@ -51,14 +50,21 @@ public partial class NotificationIndexProvider : IndexProvider<Notification>
                     content = content[..NotificationConstants.NotificationIndexContentLength];
                 }
 
-                var readInfo = notification.As<NotificationReadInfo>();
+                var isRead = false;
+                DateTime? readAtUtc = null;
+
+                if (notification.TryGet<NotificationReadInfo>(out var readInfo))
+                {
+                    isRead = readInfo.IsRead;
+                    readAtUtc = readInfo.ReadAtUtc;
+                }
 
                 return new NotificationIndex()
                 {
                     NotificationId = notification.NotificationId,
                     UserId = notification.UserId,
-                    IsRead = readInfo.IsRead,
-                    ReadAtUtc = readInfo.ReadAtUtc,
+                    IsRead = isRead,
+                    ReadAtUtc = readAtUtc,
                     CreatedAtUtc = notification.CreatedUtc,
                     Content = content,
                 };

@@ -11,6 +11,7 @@ public static class EntityExtensions
     /// <param name="entity">The <see cref="IEntity"/>.</param>
     /// <typeparam name="T">The type of the property to extract.</typeparam>
     /// <returns>A new instance of the requested type if the property was not found.</returns>
+    [Obsolete("Use TryGet<T> or GetOrCreate<T> instead.")]
     public static T As<T>(this IEntity entity)
         where T : new()
         => entity.As<T>(typeof(T).Name);
@@ -22,7 +23,38 @@ public static class EntityExtensions
     /// <param name="entity">The <see cref="IEntity"/>.</param>
     /// <param name="name">The name of the property to extract.</param>
     /// <returns>A new instance of the requested type if the property was not found.</returns>
+    [Obsolete("Use TryGet<T> or GetOrCreate<T> instead.")]
     public static T As<T>(this IEntity entity, string name)
+        where T : new()
+    {
+        ArgumentNullException.ThrowIfNull(name);
+
+        if (entity.Properties.TryGetPropertyValue(name, out var value))
+        {
+            return value.Deserialize<T>(JOptions.Default);
+        }
+
+        return new T();
+    }
+
+    /// <summary>
+    /// Extracts the specified type of property.
+    /// </summary>
+    /// <param name="entity">The <see cref="IEntity"/>.</param>
+    /// <typeparam name="T">The type of the property to extract.</typeparam>
+    /// <returns>A new instance of the requested type if the property was not found.</returns>
+    public static T GetOrCreate<T>(this IEntity entity)
+        where T : new()
+        => entity.GetOrCreate<T>(typeof(T).Name);
+
+    /// <summary>
+    /// Extracts the specified named property.
+    /// </summary>
+    /// <typeparam name="T">The type of the property to extract.</typeparam>
+    /// <param name="entity">The <see cref="IEntity"/>.</param>
+    /// <param name="name">The name of the property to extract.</param>
+    /// <returns>A new instance of the requested type if the property was not found.</returns>
+    public static T GetOrCreate<T>(this IEntity entity, string name)
         where T : new()
     {
         ArgumentNullException.ThrowIfNull(name);
@@ -57,12 +89,13 @@ public static class EntityExtensions
         where T : new()
         => entity.Put(typeof(T).Name, aspect);
 
+    public static bool Remove<T>(this IEntity entity)
+        => entity.Remove(typeof(T).Name);
+
     public static bool TryGet<T>(this IEntity entity, out T aspect)
-        where T : new()
         => entity.TryGet(typeof(T).Name, out aspect);
 
     public static bool TryGet<T>(this IEntity entity, string name, out T aspect)
-        where T : new()
     {
         ArgumentException.ThrowIfNullOrEmpty(name);
 
@@ -76,6 +109,13 @@ public static class EntityExtensions
         aspect = default;
 
         return false;
+    }
+
+    public static bool Remove(this IEntity entity, string name)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(name);
+
+        return entity.Properties.Remove(name);
     }
 
     public static IEntity Put(this IEntity entity, string name, object value)

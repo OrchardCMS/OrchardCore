@@ -1,9 +1,10 @@
 @using OrchardCore.ContentManagement
+@using OrchardCore.Infrastructure
 @using OrchardCore.ResourceManagement
 @inject IResourceManager ResourceManager
 
 @{
     ContentItem contentItem = Model.ContentItem;
-    ResourceManager.RegisterLink(new LinkEntry { Rel = "wlwmanifest", Type = "application/wlwmanifest+xml", Href = Url.Action("Manifest", "MetaWeblog", new { area = "OrchardCore.XmlRpc" }, Context.Request.Scheme) });
-    ResourceManager.RegisterLink(new LinkEntry { Rel = "EditURI", Type = "application/rsd+xml", Title = "RSD", Href = Url.Action("Rsd", "RemotePublishing", new { area = "OrchardCore.Lists", contentItemId = contentItem.ContentItemId }, Context.Request.Scheme) });
+    ResourceManager.RegisterLink(new LinkEntry { Rel = "wlwmanifest", Type = MediaTypeNamesExtended.Application.XmlWindowsLiveWriter, Href = Url.Action("Manifest", "MetaWeblog", new { area = "OrchardCore.XmlRpc" }, Context.Request.Scheme) });
+    ResourceManager.RegisterLink(new LinkEntry { Rel = "EditURI", Type = MediaTypeNamesExtended.Application.XmlRsd, Title = "RSD", Href = Url.Action("Rsd", "RemotePublishing", new { area = "OrchardCore.Lists", contentItemId = contentItem.ContentItemId }, Context.Request.Scheme) });
 }

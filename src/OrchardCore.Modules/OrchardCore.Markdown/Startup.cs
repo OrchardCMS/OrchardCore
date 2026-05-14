@@ -48,6 +48,7 @@ public sealed class Startup : StartupBase
             .AddHandler<MarkdownBodyPartHandler>();
 
         services.AddScoped<IContentTypePartDefinitionDisplayDriver, MarkdownBodyPartSettingsDisplayDriver>();
+        services.AddScoped<IContentTypePartDefinitionDisplayDriver, MarkdownBodyPartWysiwygEditorSettingsDriver>();
         services.AddDataMigration<Migrations>();
         services.AddScoped<IContentPartIndexHandler, MarkdownBodyPartIndexHandler>();
 
@@ -56,6 +57,7 @@ public sealed class Startup : StartupBase
             .UseDisplayDriver<MarkdownFieldDisplayDriver>();
 
         services.AddScoped<IContentPartFieldDefinitionDisplayDriver, MarkdownFieldSettingsDriver>();
+        services.AddScoped<IContentPartFieldDefinitionDisplayDriver, MarkdownFieldWysiwygEditorSettingsDriver>();
         services.AddScoped<IContentFieldIndexHandler, MarkdownFieldIndexHandler>();
 
         services.AddOptions<MarkdownPipelineOptions>();

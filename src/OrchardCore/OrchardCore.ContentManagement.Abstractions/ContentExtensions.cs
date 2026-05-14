@@ -144,7 +144,7 @@ public static class ContentExtensions
             {
                 element.Data = JObject.FromObject(element);
             }
-            
+
             element.ContentItem = contentElement.ContentItem;
 
             contentElement.Data[name] = element.Data;

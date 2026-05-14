@@ -6,7 +6,7 @@ namespace OrchardCore.DataLocalization.ViewModels;
 public class TranslatableStringViewModel
 {
     /// <summary>
-    /// The full context string (e.g., "Permissions", "Content Types", "Content Fields;TextField").
+    /// The full context string (e.g., "Permissions", "Content Types", "Content Fields:TextField").
     /// </summary>
     public string Context { get; set; }
 

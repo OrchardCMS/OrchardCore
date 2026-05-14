@@ -55,7 +55,7 @@ public class ShapeViewModel : IShape, IPositioned
         {
             _items ??= [];
 
-            if (!_sorted)
+            if (!_sorted && _items.Count > 0)
             {
                 _items = _items.OrderBy(x => x, FlatPositionComparer.Instance).ToList();
                 _sorted = true;

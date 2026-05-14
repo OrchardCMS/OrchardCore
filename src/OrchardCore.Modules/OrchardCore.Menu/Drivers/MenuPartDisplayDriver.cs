@@ -45,7 +45,11 @@ public sealed class MenuPartDisplayDriver : ContentPartDisplayDriver<MenuPart>
 
             var notify = false;
 
-            foreach (var menuItem in part.ContentItem.As<MenuItemsListPart>().MenuItems)
+            var menuItems = part.ContentItem.TryGet<MenuItemsListPart>(out var menuItemsListPart)
+                ? menuItemsListPart.MenuItems
+                : [];
+
+            foreach (var menuItem in menuItems)
             {
                 if (!menuItemContentTypes.Any(c => c.Name == menuItem.ContentType))
                 {
@@ -74,9 +78,7 @@ public sealed class MenuPartDisplayDriver : ContentPartDisplayDriver<MenuPart>
         {
             var menuItems = new JsonArray();
 
-            var originalMenuItems = part.ContentItem.As<MenuItemsListPart>();
-
-            if (originalMenuItems is not null)
+            if (part.ContentItem.TryGet<MenuItemsListPart>(out var originalMenuItems))
             {
                 var newHierarchy = JArray.Parse(model.Hierarchy);
 
@@ -104,8 +106,13 @@ public sealed class MenuPartDisplayDriver : ContentPartDisplayDriver<MenuPart>
 
         foreach (var index in indexes)
         {
+            if (menuItems == null)
+            {
+                return null;
+            }
+
             menuItem = menuItems.MenuItems[index];
-            menuItems = menuItem.As<MenuItemsListPart>();
+            _ = menuItem.TryGet<MenuItemsListPart>(out menuItems);
         }
 
         var newObj = JObject.FromObject(menuItem, JOptions.Default);

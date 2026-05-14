@@ -9,25 +9,25 @@ Fields support multiple editors — different UIs for data input. For example, a
 
 ## Available Fields
 
-| Name                                | Properties                                                     | Available Editors |
-|-------------------------------------|----------------------------------------------------------------|-------------------|
-| `BooleanField`                      | `bool Value`                                                   | (Standard "empty"), `Switch`|
-| `ContentPickerField`                | `string[] ContentItemIds`                                      | (Standard "empty")           |
-| `DateField`                         | `DateTime? Value`                                              | (Standard "empty"), `Localized`        |
-| `DateTimeField`                     | `DateTime? Value`                                              | (Standard "empty")    |
-| `HtmlField`                         | `string Html`                                                  | (Standard "empty"), `Monaco`, `Multiline`, `Trumbowyg`, `Wysiwyg` |
-| `LinkField`                         | `string Url, string Text`                                      | (Standard "empty")           |
-| `LocalizationSetContentPickerField` | `string[] LocalizationSets`                                    | (Standard "empty")           |
-| `MarkdownField`                     | `string Markdown`                                              | (Standard "empty"), `Wysiwyg`     |
-| `MediaField`                        | `string[] Paths`                                               | (Standard "empty"), `Attached`       |
-| `MultiTextField`                    | `string[] Values`                                              | (Standard "empty"), `CheckboxList`, `Picker`           |
-| `NumericField`                      | `decimal? Value`                                               | (Standard "empty"), `Range`, `Select`, `Slider`, `Spinner`       |
-| `GeoPointField`                     | `decimal Latitude, decimal Longitude`                          | (Standard "empty"), `Leaflet`         |
-| `TaxonomyField`                     | `string TaxonomyContentItemId, string[] TaxonomyContentItemId` | (Standard "empty"), `Tags`         |
+| Name                                | Properties                                                     | Available Editors                                                                                                                  |
+|-------------------------------------|----------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------|
+| `BooleanField`                      | `bool Value`                                                   | (Standard "empty"), `Switch`                                                                                                       |
+| `ContentPickerField`                | `string[] ContentItemIds`                                      | (Standard "empty")                                                                                                                 |
+| `DateField`                         | `DateTime? Value`                                              | (Standard "empty"), `Localized`                                                                                                    |
+| `DateTimeField`                     | `DateTime? Value`                                              | (Standard "empty")                                                                                                                 |
+| `HtmlField`                         | `string Html`                                                  | (Standard "empty"), `Monaco`, `Multiline`, `Trumbowyg`, `Wysiwyg`                                                                  |
+| `LinkField`                         | `string Url, string Text`                                      | (Standard "empty")                                                                                                                 |
+| `LocalizationSetContentPickerField` | `string[] LocalizationSets`                                    | (Standard "empty")                                                                                                                 |
+| `MarkdownField`                     | `string Markdown`                                              | (Standard "empty"), `Wysiwyg`                                                                                                      |
+| `MediaField`                        | `string[] Paths`                                               | (Standard "empty"), `Attached`                                                                                                     |
+| `MultiTextField`                    | `string[] Values`                                              | (Standard "empty"), `CheckboxList`, `Picker`                                                                                       |
+| `NumericField`                      | `decimal? Value`                                               | (Standard "empty"), `Range`, `Select`, `Slider`, `Spinner`                                                                         |
+| `GeoPointField`                     | `decimal Latitude, decimal Longitude`                          | (Standard "empty"), `Leaflet`                                                                                                      |
+| `TaxonomyField`                     | `string TaxonomyContentItemId, string[] TaxonomyContentItemId` | (Standard "empty"), `Tags`                                                                                                         |
 | `TextField`                         | `string Text`                                                  | (Standard "empty"), `CodeMirror`, `Color`, `Email`, `Header`, `IconPicker`, `Monaco`, `PredefinedList`, `Tel` , `TextArea` , `Url` |
-| `TimeField`                         | `TimeSpan? Value`                                              | (Standard "empty")        |
-| `UserPickerField`                   | `string[] UserIds`                                             | (Standard "empty"), `UserNames`      |
-| `YoutubeField`                      | `string EmbeddedAddress, string RawAddress`                    | (Standard "empty")          |
+| `TimeField`                         | `TimeSpan? Value`                                              | (Standard "empty")                                                                                                                 |
+| `UserPickerField`                   | `string[] UserIds`                                             | (Standard "empty"), `UserNames`                                                                                                    |
+| `YoutubeField`                      | `string EmbeddedAddress, string RawAddress`                    | (Standard "empty")                                                                                                                 |
 
 !!! note
     Each field is rendered by a corresponding `Shape Type` that uses its own Display view model.  
@@ -114,6 +114,29 @@ or, to display the UTC value before it is converted:
 ```
 
 ### `ContentPickerField`
+
+#### Settings
+
+| Setting                  | Description                                                                                                                                    |
+|--------------------------|------------------------------------------------------------------------------------------------------------------------------------------------|
+| `Required`               | Whether to ensure at least one element is selected.                                                                                            |
+| `Multiple`               | Whether to allow multiple elements to be selected.                                                                                             |
+| `DisplayAllContentTypes` | When enabled, all content types can be selected.                                                                                               |
+| `DisplayedContentTypes`  | The content types that can be selected. Used when `DisplayAllContentTypes` is `false`.                                                         |
+| `DisplayedStereotypes`   | Restricts the selectable content types to those matching one of the given stereotypes. Takes precedence over `DisplayedContentTypes` when set. |
+| `Placeholder`            | The placeholder text to display in the picker input on the editor.                                                                             |
+| `Hint`                   | The hint text to display below the field on the editor.                                                                                        |
+| `TitlePattern`           | A Liquid pattern used to render the title of each item in the picker. Defaults to `{{ Model.ContentItem \| display_text }}`.                   |
+
+#### Displaying Localized Content Items
+
+When the content type uses `LocalizationPart`, you can display the culture code alongside the display text in the picker by setting the `TitlePattern` to:
+
+```liquid
+{{ Model.ContentItem | display_text }} ({{ Model.ContentItem.Content.LocalizationPart.Culture }})
+```
+
+This renders the display text of the content item followed by its culture code in parentheses, for example `My Article (en)`.
 
 #### ContentPicker Field Example
 

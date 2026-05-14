@@ -1,3 +1,4 @@
+using System.Net.Mime;
 using System.Text;
 using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Http;
@@ -129,7 +130,7 @@ public class HttpRequestTask : TaskActivity<HttpRequestTask>
 
     public WorkflowExpression<string> ContentType
     {
-        get => GetProperty(() => new WorkflowExpression<string>("application/json"));
+        get => GetProperty(() => new WorkflowExpression<string>(MediaTypeNames.Application.Json));
         set => SetProperty(value);
     }
 

@@ -15,7 +15,7 @@
         return;
     }
 
-    var readInfo = notification.As<NotificationReadInfo>();
+    var readInfo = notification.GetOrCreate<NotificationReadInfo>();
 }
 
 <div data-message-id="@notification.NotificationId" data-is-read="@readInfo.IsRead.ToString().ToLowerInvariant()" class="dropdown-item mark-notification-as-read lh-sm text-wrap p-2 @(readInfo.IsRead ? "notification-is-read": "notification-is-unread")">

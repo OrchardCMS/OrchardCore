@@ -1,7 +1,15 @@
+@using Microsoft.Extensions.Localization
 @using OrchardCore.OpenId.ViewModels
 @using OrchardCore.OpenId.Settings
 @using System.Security.Cryptography.X509Certificates
 @model OpenIdServerSettingsViewModel
+@inject IStringLocalizer<OpenIdServerSettingsViewModel> S
+
+@{
+    // Use the short date format, but still allow users to define localized versions.
+    // The DateTime shape will use the current culture's pattern by default.
+    var localizedDateFormat = S["d"];
+}
 
 <div class="mb-4">
     <h3>@T["Endpoints"]</h3>
@@ -206,7 +214,7 @@
                         friendlyName = T["No Friendly Name"].Value;
                     }
                     <option value="@certificate.ThumbPrint" data-StoreLocation="@certificate.StoreLocation" data-StoreName="@certificate.StoreName" selected="@(selectedCertificate)">
-                        @friendlyName [@certificate.NotBefore.ToString("dd/MM/yy") - @certificate.NotAfter.ToString("dd/MM/yy")] @certificate.Subject
+                        @friendlyName [<datetime utc="certificate.NotBefore" format="@localizedDateFormat" /> - <datetime utc="certificate.NotAfter" format="@localizedDateFormat" />] @certificate.Subject
                     </option>
                 }
             </select>
@@ -270,7 +278,7 @@
                         friendlyName = T["No Friendly Name"].Value;
                     }
                     <option value="@certificate.ThumbPrint" data-StoreLocation="@certificate.StoreLocation" data-StoreName="@certificate.StoreName" selected="@(selectedCertificate)">
-                        @friendlyName [@certificate.NotBefore.ToString("dd/MM/yy") - @certificate.NotAfter.ToString("dd/MM/yy")] @certificate.Subject
+                        @friendlyName [<datetime utc="certificate.NotBefore" format="@localizedDateFormat" /> - <datetime utc="certificate.NotAfter" format="@localizedDateFormat" />] @certificate.Subject
                     </option>
                 }
             </select>

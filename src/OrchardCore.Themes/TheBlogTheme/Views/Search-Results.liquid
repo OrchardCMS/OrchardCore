@@ -9,7 +9,7 @@
                     {% if content != null %}
                         <h2><a href="{{ item | display_url }}">{{ item | display_text }}</a></h2>
                         {% for value in content %}
-                            {{ value | raw }}
+                            {{ value | sanitize_html | raw }}
                         {% endfor %}
                     {% endif %}
                 {% endfor %}

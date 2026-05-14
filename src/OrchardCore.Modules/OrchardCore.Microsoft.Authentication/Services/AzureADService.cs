@@ -25,7 +25,7 @@ public class AzureADService : IAzureADService
     public async Task<AzureADSettings> LoadSettingsAsync()
     {
         var container = await _siteService.LoadSiteSettingsAsync();
-        return container.As<AzureADSettings>();
+        return container.GetOrCreate<AzureADSettings>();
     }
 
     public async Task UpdateSettingsAsync(AzureADSettings settings)

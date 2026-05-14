@@ -245,7 +245,7 @@ public sealed class MenuController : Controller
             return Forbid();
         }
 
-        if (itemIds?.Count() > 0)
+        if (itemIds?.Any() == true)
         {
             var adminMenuList = (await _adminMenuService.GetAdminMenuListAsync()).AdminMenu;
             var checkedContentItems = adminMenuList.Where(x => itemIds.Contains(x.Id));

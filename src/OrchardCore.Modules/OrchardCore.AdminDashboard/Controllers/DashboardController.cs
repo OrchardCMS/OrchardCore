@@ -161,8 +161,7 @@ public sealed class DashboardController : Controller
 
         foreach (var contentItem in latestItems)
         {
-            var dashboardPart = contentItem.As<DashboardPart>();
-            if (dashboardPart == null)
+            if (!contentItem.TryGet<DashboardPart>(out var dashboardPart))
             {
                 return Forbid();
             }
@@ -180,8 +179,7 @@ public sealed class DashboardController : Controller
             if (contentItem.IsPublished() == false)
             {
                 var publishedVersion = publishedItems.FirstOrDefault(p => p.ContentItemId == contentItem.ContentItemId);
-                var publishedMetaData = publishedVersion?.As<DashboardPart>();
-                if (publishedMetaData != null)
+                if (publishedVersion?.TryGet<DashboardPart>(out var publishedMetaData) == true)
                 {
                     publishedMetaData.Position = partViewModel.Position;
                     publishedMetaData.Width = partViewModel.Width;

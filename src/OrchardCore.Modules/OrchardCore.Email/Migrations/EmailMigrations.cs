@@ -11,9 +11,7 @@ public sealed class EmailMigrations : DataMigration
 {
     private const string SmtpFeatureId = "OrchardCore.Email.Smtp";
 
-#pragma warning disable CA1822 // Member can be static
-    public int Create()
-#pragma warning restore CA1822
+    public static int Create()
     {
         // In version 2.0, the OrchardCore.Email.Smtp was split from OrchardCore.Email. To ensure we keep the change
         // backward compatible, we added this migration step to auto-enable the new SMTP feature for sites that use the

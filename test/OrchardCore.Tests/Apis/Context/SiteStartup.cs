@@ -23,6 +23,7 @@ public class SiteStartup
                 "OrchardCore.Tenants"
             )
             .AddTenantFeatures(
+                "OrchardCore.Localization",
                 "OrchardCore.Apis.GraphQL"
             )
             .ConfigureServices(collection =>

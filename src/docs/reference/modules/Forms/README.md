@@ -49,7 +49,7 @@ Using a workflow is convenient because it doesn't require you to create a custom
 Creating a workflow and associating it with a form typically involves the following steps:
 
 1. Make sure the **HTTP Workflows Activities** feature is enabled.
-2. Click on the Workflows menu item and create a new Workflow Type.
+2. Go to **Design** → **Workflows** and create a new Workflow Type.
 3. Add the **HTTP Request Event** event to the workflow. Make sure the **HTTP Method** field is set to **POST**.
 4. Copy the generated workflow URL to your clipboard.
 5. Click **Save** to save the changes and return to the workflow editor.
@@ -121,7 +121,7 @@ And on the front-end, it will look like this:
 
 In order to validate the form input and send an email, we will create a workflow.
 
-From the admin menu, click the **Workflows** menu item. Next, click on **Create Workflow Type**.  
+From the admin menu, go to **Design** → **Workflows**. Next, click on **Create Workflow Type**.  
 We're now asked to provide a name for the workflow. Enter "Contact Form Workflow", leave the other options as-is, and click **Save**. When you do, you will be redirected to the Workflow Editor, which is where we'll implement the Contact Form submission logic.
 
 ### Adding the Http Request Event

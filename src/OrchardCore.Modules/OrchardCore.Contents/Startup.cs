@@ -304,5 +304,6 @@ public sealed class DataLocalizationStartup : StartupBase
     {
         services.AddScoped<ILocalizationDataProvider, ContentTypeDataLocalizationProvider>();
         services.AddScoped<ILocalizationDataProvider, ContentFieldDataLocalizationProvider>();
+        services.AddScoped<ILocalizationDataProvider, ContentTypesAdminNodeDataLocalizationProvider>();
     }
 }

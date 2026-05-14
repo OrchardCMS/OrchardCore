@@ -1,4 +1,6 @@
-@model OrchardCore.DataLocalization.ViewModels.TranslationsDeploymentStepViewModel
+@using OrchardCore.DataLocalization.ViewModels
+@using OrchardCore.DisplayManagement.Views
+@model TranslationsDeploymentStepViewModel
 
 <h5>@T["Translations"]</h5>
 
@@ -6,8 +8,8 @@
 
 <div class="mb-3">
     <div class="form-check">
-        <input type="checkbox" class="form-check-input" asp-for="IncludeAll" id="@Html.IdFor(m => m.IncludeAll)" />
-        <label class="form-check-label" asp-for="IncludeAll">@T["Include all cultures"]</label>
+        <input type="checkbox" class="form-check-input" asp-for="@Model.IncludeAll" id="@Html.IdFor(m => m.IncludeAll)" />
+        <label class="form-check-label" asp-for="@Model.IncludeAll">@T["Include all cultures"]</label>
         <span class="hint">— @T["When unchecked, you can select specific cultures to export."]</span>
     </div>
 </div>

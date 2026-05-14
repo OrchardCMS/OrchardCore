@@ -1,0 +1,12 @@
+@model ShapeViewModel<UnknownDeploymentStep>
+
+<div class="alert alert-warning mb-0 w-75" role="alert">
+    <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
+    @T["This deployment step is unavailable because the feature that provides it has been disabled or removed."]
+    @if (!string.IsNullOrEmpty(Model.Value.Name))
+    {
+        <br />
+
+        <small class="text-muted">@T["Step: {0}", Model.Value.Name]</small>
+    }
+</div>

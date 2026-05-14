@@ -25,9 +25,10 @@ public sealed class FBInitFilter : IAsyncResultFilter
         // Should only run on the front-end for a full view
         if (context.IsViewOrPageResult() && !AdminAttribute.IsApplied(context.HttpContext))
         {
-            var site = (await _siteService.GetSiteSettingsAsync());
-            var settings = site.As<FacebookSettings>();
-            if (!string.IsNullOrWhiteSpace(settings?.AppId))
+            var site = await _siteService.GetSiteSettingsAsync();
+
+            if (site.TryGet<FacebookSettings>(out var settings) &&
+                !string.IsNullOrWhiteSpace(settings.AppId))
             {
                 if (settings.FBInit)
                 {

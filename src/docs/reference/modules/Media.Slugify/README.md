@@ -12,5 +12,18 @@ Folders and files can be _slugified_ automatically by enabling the Media Slugify
 
 Different files can have the same slug, making it impossible to upload both without renaming one (e.g. `The team (2020).jpg` and `The Team 2020.jpg`).
 
+By default, transliteration happens when the feature is enabled. The following configuration values are used by default and can be customized:
+
+```json
+{
+  "OrchardCore": {
+    "OrchardCore_Media_Slugify": {
+      // Enable/Disable Transliteration.
+      "Transilterate": true
+    }
+  }
+}
+```
+
 !!! note
     Enabling the Media Slugify feature will not rename existing folders and files, only new folders and files will be _slugified_.

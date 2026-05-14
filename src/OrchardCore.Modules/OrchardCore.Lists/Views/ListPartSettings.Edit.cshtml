@@ -28,3 +28,11 @@
         <span class="hint dashed">@T["Check this option to show a header for the owning content."]</span>
     </div>
 </div>
+
+<div class="mb-3">
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" asp-for="ShowFullPager" />
+        <label class="form-check-label" asp-for="ShowFullPager">@T["Show full pager"]</label>
+        <span class="hint dashed">@T["When enabled, the list uses a full pager with numbered pages. Note: This requires an additional database query to determine the total item count."]</span>
+    </div>
+</div>

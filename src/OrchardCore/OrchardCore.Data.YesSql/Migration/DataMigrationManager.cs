@@ -15,6 +15,7 @@ public class DataMigrationManager : IDataMigrationManager
 {
     private const string _updateFromPrefix = "UpdateFrom";
     private const string _asyncSuffix = "Async";
+    private const BindingFlags _migrationMethodFlags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static;
 
     private readonly IEnumerable<IDataMigration> _dataMigrations;
     private readonly ISession _session;
@@ -90,7 +91,10 @@ public class DataMigrationManager : IDataMigrationManager
 
     public async Task Uninstall(string feature)
     {
-        _logger.LogInformation("Uninstalling feature '{FeatureName}'.", feature);
+        if (_logger.IsEnabled(LogLevel.Information))
+        {
+            _logger.LogInformation("Uninstalling feature '{FeatureName}'.", feature);
+        }
 
         var migrations = GetDataMigrations(feature);
 
@@ -109,11 +113,11 @@ public class DataMigrationManager : IDataMigrationManager
             {
                 if (uninstallMethod.ReturnType == typeof(Task))
                 {
-                    await (Task)uninstallMethod.Invoke(migration, []);
+                    await (Task)uninstallMethod.Invoke(GetInvocationTarget(uninstallMethod, migration), []);
                 }
                 else if (uninstallMethod.ReturnType == typeof(void))
                 {
-                    uninstallMethod.Invoke(migration, []);
+                    uninstallMethod.Invoke(GetInvocationTarget(uninstallMethod, migration), []);
                 }
                 else
                 {
@@ -167,7 +171,10 @@ public class DataMigrationManager : IDataMigrationManager
 
         _processedFeatures.Add(featureId);
 
-        _logger.LogInformation("Updating feature '{FeatureName}'", featureId);
+        if (_logger.IsEnabled(LogLevel.Information))
+        {
+            _logger.LogInformation("Updating feature '{FeatureName}'", featureId);
+        }
 
         // proceed with dependent features first, whatever the module it's in
         var dependencies = _extensionManager
@@ -227,7 +234,10 @@ public class DataMigrationManager : IDataMigrationManager
 
                 while (lookupTable.TryGetValue(current, out var methodInfo))
                 {
-                    _logger.LogInformation("Applying migration for '{Migration}' in '{FeatureId}' from version {Version}.", migration.GetType().FullName, featureId, current);
+                    if (_logger.IsEnabled(LogLevel.Information))
+                    {
+                        _logger.LogInformation("Applying migration for '{Migration}' in '{FeatureId}' from version {Version}.", migration.GetType().FullName, featureId, current);
+                    }
 
                     current = await InvokeCreateOrUpdateMethodAsync(methodInfo, migration);
                 }
@@ -258,16 +268,19 @@ public class DataMigrationManager : IDataMigrationManager
     {
         if (method.ReturnType == typeof(Task<int>))
         {
-            return await (Task<int>)method.Invoke(migration, []);
+            return await (Task<int>)method.Invoke(GetInvocationTarget(method, migration), []);
         }
 
         if (method.ReturnType == typeof(int))
         {
-            return (int)method.Invoke(migration, []);
+            return (int)method.Invoke(GetInvocationTarget(method, migration), []);
         }
 
         throw new InvalidOperationException("Invalid return type used in a migration method.");
     }
+
+    private static object GetInvocationTarget(MethodInfo method, IDataMigration migration)
+        => method.IsStatic ? null : migration;
 
     private async Task<Records.DataMigration> GetDataMigrationRecordAsync(IDataMigration tempMigration)
     {
@@ -295,7 +308,7 @@ public class DataMigrationManager : IDataMigrationManager
     private static Dictionary<int, MethodInfo> CreateUpgradeLookupTable(IDataMigration dataMigration)
         => dataMigration
             .GetType()
-            .GetMethods(BindingFlags.Public | BindingFlags.Instance)
+            .GetMethods(_migrationMethodFlags)
             .Select(GetUpdateFromMethod)
             .Where(tuple => tuple != null)
             .ToDictionary(tuple => tuple.Item1, tuple => tuple.Item2);
@@ -322,7 +335,7 @@ public class DataMigrationManager : IDataMigrationManager
     {
         var methodName = "Create";
         // First try to find a method that match the given name. (Ex. Create())
-        var methodInfo = dataMigration.GetType().GetMethod(methodName, BindingFlags.Public | BindingFlags.Instance);
+        var methodInfo = dataMigration.GetType().GetMethod(methodName, _migrationMethodFlags);
 
         if (methodInfo != null && (methodInfo.ReturnType == typeof(int) || methodInfo.ReturnType == typeof(Task<int>)))
         {
@@ -330,7 +343,7 @@ public class DataMigrationManager : IDataMigrationManager
         }
 
         // At this point, try to find a method that matches the given name and ends with Async. (Ex. CreateAsync())
-        methodInfo = dataMigration.GetType().GetMethod(methodName + _asyncSuffix, BindingFlags.Public | BindingFlags.Instance);
+        methodInfo = dataMigration.GetType().GetMethod(methodName + _asyncSuffix, _migrationMethodFlags);
 
         if (methodInfo != null && methodInfo.ReturnType == typeof(Task<int>))
         {
@@ -343,14 +356,14 @@ public class DataMigrationManager : IDataMigrationManager
     private static MethodInfo GetUninstallMethod(IDataMigration dataMigration)
     {
         var methodName = "Uninstall";
-        var methodInfo = dataMigration.GetType().GetMethod(methodName, BindingFlags.Public | BindingFlags.Instance);
+        var methodInfo = dataMigration.GetType().GetMethod(methodName, _migrationMethodFlags);
 
         if (methodInfo != null && (methodInfo.ReturnType == typeof(void) || methodInfo.ReturnType == typeof(Task)))
         {
             return methodInfo;
         }
 
-        methodInfo = dataMigration.GetType().GetMethod(methodName + _asyncSuffix, BindingFlags.Public | BindingFlags.Instance);
+        methodInfo = dataMigration.GetType().GetMethod(methodName + _asyncSuffix, _migrationMethodFlags);
 
         if (methodInfo != null && methodInfo.ReturnType == typeof(Task))
         {

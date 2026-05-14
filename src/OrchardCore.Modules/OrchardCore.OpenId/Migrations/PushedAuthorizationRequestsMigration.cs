@@ -16,9 +16,7 @@ namespace OrchardCore.OpenId.Migrations;
 
 public sealed class PushedAuthorizationRequestsMigration : DataMigration
 {
-#pragma warning disable CA1822 // Mark members as static
-    public int Create()
-#pragma warning restore CA1822 // Mark members as static
+    public static int Create()
     {
         // Note: this migration is responsible for enabling the pushed authorization endpoint in the server settings and
         // automatically granting existing applications the right to use it they are allowed to use the authorization endpoint.

@@ -207,7 +207,7 @@ public sealed class FeatureProfilesController : Controller
             return Forbid();
         }
 
-        if (itemIds?.Count() > 0)
+        if (itemIds?.Any() == true)
         {
             var featureProfilesDocument = await _featureProfilesManager.LoadFeatureProfilesDocumentAsync();
             var checkItems = featureProfilesDocument.FeatureProfiles.Where(x => itemIds.Contains(x.Key));

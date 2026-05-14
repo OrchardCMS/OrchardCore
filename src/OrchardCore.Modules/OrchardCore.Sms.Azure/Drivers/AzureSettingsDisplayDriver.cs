@@ -76,7 +76,7 @@ public sealed class AzureSettingsDisplayDriver : SiteDisplayDriver<AzureSmsSetti
 
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-        var smsSettings = site.As<SmsSettings>();
+        var smsSettings = site.GetOrCreate<SmsSettings>();
 
         var hasChanges = settings.IsEnabled != model.IsEnabled;
         if (!model.IsEnabled)

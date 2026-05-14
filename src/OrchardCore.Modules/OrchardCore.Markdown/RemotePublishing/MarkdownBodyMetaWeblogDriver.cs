@@ -10,8 +10,7 @@ public sealed class MarkdownBodyMetaWeblogDriver : MetaWeblogDriver
 {
     public override void BuildPost(XRpcStruct rpcStruct, XmlRpcContext context, ContentItem contentItem)
     {
-        var bodyPart = contentItem.As<MarkdownBodyPart>();
-        if (bodyPart == null)
+        if (!contentItem.TryGet<MarkdownBodyPart>(out var bodyPart))
         {
             return;
         }
@@ -21,7 +20,7 @@ public sealed class MarkdownBodyMetaWeblogDriver : MetaWeblogDriver
 
     public override void EditPost(XRpcStruct rpcStruct, ContentItem contentItem)
     {
-        if (contentItem.As<MarkdownBodyPart>() != null)
+        if (contentItem.TryGet<MarkdownBodyPart>(out _))
         {
             contentItem.Alter<MarkdownBodyPart>(x => x.Markdown = rpcStruct.Optional<string>("description"));
         }

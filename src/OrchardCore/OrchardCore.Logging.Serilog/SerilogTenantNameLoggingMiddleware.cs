@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Http;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Scope;
 using Serilog.Context;
 
@@ -15,7 +16,8 @@ public class SerilogTenantNameLoggingMiddleware
 
     public async Task Invoke(HttpContext context)
     {
-        var tenantName = ShellScope.Context?.Settings.Name ?? "None";
+        var tenantName = context.Features.Get<ShellContextFeature>()?.ShellContext.Settings.Name ?? ShellScope.Context?.Settings.Name ?? "None";
+
         using (LogContext.PushProperty("TenantName", tenantName))
         {
             await _next.Invoke(context);

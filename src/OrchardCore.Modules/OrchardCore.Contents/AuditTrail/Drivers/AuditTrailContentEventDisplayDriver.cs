@@ -61,7 +61,7 @@ public sealed class AuditTrailContentEventDisplayDriver : AuditTrailEventSection
                         index.CorrelationId == contentEvent.ContentItem.ContentItemId)
                     .OrderByDescending(index => index.Id)
                     .FirstOrDefaultAsync())?
-                    .As<AuditTrailContentEvent>()
+                    .GetOrCreate<AuditTrailContentEvent>()
                     .ContentItem;
 
                 if (previousContentItem != null)
@@ -88,7 +88,7 @@ public sealed class AuditTrailContentEventDisplayDriver : AuditTrailEventSection
                         index.CorrelationId == contentEvent.ContentItem.ContentItemId)
                     .OrderByDescending(index => index.Id)
                     .FirstOrDefaultAsync())?
-                    .As<AuditTrailContentEvent>()
+                    .GetOrCreate<AuditTrailContentEvent>()
                     .ContentItem;
 
                 if (previousContentItem != null)

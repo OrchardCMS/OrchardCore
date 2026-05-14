@@ -15,8 +15,7 @@ public sealed class AutorouteMetaWeblogDriver : MetaWeblogDriver
 
     public override void BuildPost(XRpcStruct rpcStruct, XmlRpcContext context, ContentItem contentItem)
     {
-        var autoroutePart = contentItem.As<AutoroutePart>();
-        if (autoroutePart == null)
+        if (!contentItem.TryGet<AutoroutePart>(out var autoroutePart))
         {
             return;
         }
@@ -26,7 +25,7 @@ public sealed class AutorouteMetaWeblogDriver : MetaWeblogDriver
 
     public override void EditPost(XRpcStruct rpcStruct, ContentItem contentItem)
     {
-        if (contentItem.As<AutoroutePart>() != null)
+        if (contentItem.TryGet<AutoroutePart>(out _))
         {
             var slug = rpcStruct.Optional<string>("wp_slug");
 

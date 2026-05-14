@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <LangVersion>latest</LangVersion>
+    <IsRoslynComponent>true</IsRoslynComponent>
+    <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+    <!-- Disable automatic build output inclusion so the DLL is not placed under lib/<tfm>/ by default. -->
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <!-- Symbols package would be empty because the DLL is added manually; suppress NU5017. -->
+    <IncludeSymbols>false</IncludeSymbols>
+    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Roslyn source-generator analyzers must reside in analyzers/dotnet/cs/ (without a TFM subfolder).
+         BuildOutputTargetFolder would add a netstandard2.0/ subfolder, so we include the DLL explicitly. -->
+    <None Include="$(BaseOutputPath)$(Configuration)/netstandard2.0/$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" />
+    <!-- Empty placeholder required to suppress NuGet warning NU5128 (missing lib/<tfm> entry). -->
+    <None Include="_._" Pack="true" PackagePath="lib/netstandard2.0" Visible="false" />
+  </ItemGroup>
+
+</Project>

@@ -1,5 +1,5 @@
 using OrchardCore.Email;
-using OrchardCore.Email.Core.Services;
+using OrchardCore.Email.Services;
 using OrchardCore.Email.Smtp.Services;
 using OrchardCore.Email.Workflows.Activities;
 using OrchardCore.Workflows.Models;

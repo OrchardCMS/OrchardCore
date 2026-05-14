@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Models;
@@ -27,6 +28,7 @@ public class ShellSettings : IDisposable
     internal volatile int _shellCreating;
 
     private string _requestUrlPrefix;
+    private PathString _requestPathBase;
     private string _versionId;
     private string _tenantId;
     private string _requestUrlHost;
@@ -120,7 +122,24 @@ public class ShellSettings : IDisposable
     public string RequestUrlPrefix
     {
         get => _requestUrlPrefix ??= _settings["RequestUrlPrefix"]?.Trim(' ', '/') ?? string.Empty;
-        set => _requestUrlPrefix = _settings["RequestUrlPrefix"] = value;
+        set
+        {
+            _requestUrlPrefix = _settings["RequestUrlPrefix"] = value;
+            _requestPathBase = default;
+        }
+    }
+
+    // Caches the tenant path base derived from RequestUrlPrefix as a PathString for reuse in the ModularTenantRouterMiddleware.
+    internal PathString RequestPathBase
+    {
+        get
+        {
+            if (_requestPathBase == PathString.Empty)
+            {
+                _requestPathBase = new PathString("/" + RequestUrlPrefix);
+            }
+            return _requestPathBase;
+        }
     }
 
     /// <summary>

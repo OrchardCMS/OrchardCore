@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Localization;
 using OrchardCore.Deployment;
 
 namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget;
@@ -10,5 +11,11 @@ public class ExportContentToDeploymentTargetDeploymentStep : DeploymentStep
     public ExportContentToDeploymentTargetDeploymentStep()
     {
         Name = nameof(ExportContentToDeploymentTargetDeploymentStep);
+    }
+
+    public ExportContentToDeploymentTargetDeploymentStep(IStringLocalizer<ExportContentToDeploymentTargetDeploymentStep> S)
+        : this()
+    {
+        Category = S["Content Management"];
     }
 }

@@ -1,4 +1,4 @@
-# Azure AI Search (`OrchardCore.Search.AzureAI`)
+# Azure AI Search (`OrchardCore.AzureAI`)
 
 The Azure AI Search module allows you to manage Azure AI Search indices.
 

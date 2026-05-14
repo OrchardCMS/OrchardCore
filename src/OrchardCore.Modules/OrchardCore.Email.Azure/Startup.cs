@@ -5,7 +5,6 @@ using OrchardCore.Azure.Email.Drivers;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Email.Azure.Models;
 using OrchardCore.Email.Azure.Services;
-using OrchardCore.Email.Core;
 using OrchardCore.Email.Services;
 using OrchardCore.Environment.Shell.Configuration;
 

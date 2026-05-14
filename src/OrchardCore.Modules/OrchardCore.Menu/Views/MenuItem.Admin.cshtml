@@ -10,7 +10,7 @@
 
 @{
     ContentItem contentItem = Model.ContentItem;
-    var menuItems = contentItem.As<MenuItemsListPart>();
+    contentItem.TryGet<MenuItemsListPart>(out var menuItems);
     var index = 0;
 }
 

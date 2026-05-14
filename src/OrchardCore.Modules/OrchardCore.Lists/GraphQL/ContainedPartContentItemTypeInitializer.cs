@@ -44,7 +44,7 @@ internal sealed class ContainedPartContentItemTypeInitializer : IContentItemType
                 .Type(fieldType)
                 .Resolve(context =>
                 {
-                    return context.Source.ContentItem.As<ContainedPart>();
+                    return context.Source.ContentItem.TryGet<ContainedPart>(out var containedPart) ? containedPart : null;
                 });
         }
     }
