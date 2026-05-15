@@ -87,7 +87,7 @@ public class NotificationService : INotificationService
         context.Notification = notification;
 
         await _notificationEvents.InvokeAsync((handler, notificationContext, token) => handler.CreatingAsync(notificationContext, token), context, cancellationToken, _logger);
-        await _session.SaveAsync(notification, collection: NotificationConstants.NotificationCollection);
+        await _session.SaveAsync(notification, collection: NotificationConstants.NotificationCollection, cancellationToken: cancellationToken);
         await _notificationEvents.InvokeAsync((handler, notificationContext, token) => handler.CreatedAsync(notificationContext, token), context, cancellationToken, _logger);
 
         return notification;
