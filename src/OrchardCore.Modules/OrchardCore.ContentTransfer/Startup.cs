@@ -26,6 +26,7 @@ using OrchardCore.Html.Models;
 using OrchardCore.Liquid.Models;
 using OrchardCore.Markdown.Fields;
 using OrchardCore.Markdown.Models;
+using OrchardCore.Media;
 using OrchardCore.Media.Fields;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
@@ -48,6 +49,8 @@ public sealed class Startup : StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.AddChunkFileUploadServices();
+
         services.AddSingleton<IContentTransferFileStore>(serviceProvider =>
         {
             var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
