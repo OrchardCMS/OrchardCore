@@ -8,11 +8,8 @@ public sealed class ContentTransferTests : CmsTestBase<ContentTransferFixture>, 
 {
     public ContentTransferTests(ContentTransferFixture fixture) : base(fixture) { }
 
-    private static ILocator UploadButton(IPage page) =>
-        page.GetByRole(AriaRole.Button, new() { Name = "Upload" });
-
-    private static ILocator ExportButton(IPage page) =>
-        page.GetByRole(AriaRole.Button, new() { Name = "Export Data" });
+    private static ILocator UploadButton(IPage page)
+        => page.GetByRole(AriaRole.Button, new() { Name = "Upload" });
 
     [Fact]
     public async Task ImportPageIsAccessible()
