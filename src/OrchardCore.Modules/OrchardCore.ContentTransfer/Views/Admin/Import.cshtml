@@ -45,13 +45,18 @@
     <div class="card-body">
 
         <ul>
-            <li>@T["The uploaded excel file must be in .xlsx format."]</li>
-            <li>@T["The uploaded excel file must contains a single tab and all formats should be cleared."]</li>
+            <li>@T["The uploaded file must be in .xlsx (Excel) or .csv format."]</li>
+            <li>@T["For Excel files, the file must contain a single tab and all formats should be cleared."]</li>
+            <li>@T["For CSV files, fields containing commas, quotes, or newlines must be properly quoted per RFC 4180."]</li>
             <li>@T["The very first row of the uploaded file must be the column names. The column names and their requirements are defined below."]</li>
             <li>@T["The order of the column in the file is not important as long as it exists. Any column not defined below will be ignored."]</li>
-            <li>@T["Click 'Download Template' link to download a sample template of a file."] 
+            <li>@T["Click 'Download Template' link to download a sample template of a file."]
                 <a asp-action="DownloadTemplate" asp-controller="Admin" asp-route-contentTypeId="@Model.ContentTypeDefinition.Name" asp-area="@(ContentTransferConstants.Feature.ModuleId)" download="Bulk-@(Model.ContentTypeDefinition.Name)-Import-Template.xlsx">
-                    @T["Download Template"]
+                    @T["Download Template (Excel)"]
+                </a>
+                |
+                <a asp-action="DownloadTemplate" asp-controller="Admin" asp-route-contentTypeId="@Model.ContentTypeDefinition.Name" asp-route-format="csv" asp-area="@(ContentTransferConstants.Feature.ModuleId)" download="Bulk-@(Model.ContentTypeDefinition.Name)-Import-Template.csv">
+                    @T["Download Template (CSV)"]
                 </a>
             </li>
         </ul>

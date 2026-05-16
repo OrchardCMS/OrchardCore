@@ -8,6 +8,7 @@ using OrchardCore.BackgroundTasks;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentTransfer.BackgroundTasks;
 using OrchardCore.ContentTransfer.Drivers;
+using OrchardCore.ContentTransfer.FileFormats;
 using OrchardCore.ContentTransfer.Handlers;
 using OrchardCore.ContentTransfer.Handlers.Fields;
 using OrchardCore.ContentTransfer.Indexes;
@@ -56,6 +57,9 @@ public sealed class Startup : StartupBase
 
             return new ContentTransferFileStore(fileStore);
         });
+
+        services.AddSingleton<IContentTransferFileFormatProvider, ExcelContentTransferFileFormatProvider>();
+        services.AddSingleton<IContentTransferFileFormatProvider, CsvContentTransferFileFormatProvider>();
 
         services.AddDataMigration<ContentTransferMigrations>();
         services.AddIndexProvider<ContentTransferEntryIndexProvider>();

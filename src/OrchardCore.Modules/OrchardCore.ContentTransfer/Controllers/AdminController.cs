@@ -253,9 +253,12 @@ public sealed class AdminController : Controller, IUpdateModel
 
                 var extension = Path.GetExtension(file.FileName);
 
-                if (!string.Equals(extension, ".xlsx", StringComparison.OrdinalIgnoreCase))
+                var formatProviders = HttpContext.RequestServices.GetServices<IContentTransferFileFormatProvider>();
+                var formatProvider = formatProviders.FirstOrDefault(p => p.CanHandle(file.FileName));
+
+                if (formatProvider == null)
                 {
-                    return BadRequest(new { error = S["Only .xlsx files are supported."].Value });
+                    return BadRequest(new { error = S["Only .xlsx and .csv files are supported."].Value });
                 }
 
                 var fileName = Guid.NewGuid() + extension;
@@ -282,7 +285,7 @@ public sealed class AdminController : Controller, IUpdateModel
     }
 
     [Admin("import/contents/{contentTypeId}/download-template", "ImportContentDownloadTemplateTemplate")]
-    public async Task<IActionResult> DownloadTemplate(string contentTypeId)
+    public async Task<IActionResult> DownloadTemplate(string contentTypeId, string format = null)
     {
         if (string.IsNullOrEmpty(contentTypeId))
         {
@@ -315,57 +318,22 @@ public sealed class AdminController : Controller, IUpdateModel
         };
 
         var columns = await _contentImportManager.GetColumnsAsync(context);
+        var importColumns = columns.Where(c => c.Type != ImportColumnType.ExportOnly).Select(c => c.Name).ToList();
 
+        var formatProvider = ResolveFileFormatProvider(format);
         var content = new MemoryStream();
-        using (var spreadsheetDocument = SpreadsheetDocument.Create(content, SpreadsheetDocumentType.Workbook))
+
+        using (var writer = formatProvider.CreateWriter(content, contentTypeDefinition.DisplayName))
         {
-            var workbookPart = spreadsheetDocument.AddWorkbookPart();
-            workbookPart.Workbook = new Workbook();
-
-            var worksheetPart = workbookPart.AddNewPart<WorksheetPart>();
-            worksheetPart.Worksheet = new Worksheet(new SheetData());
-
-            var sheets = workbookPart.Workbook.AppendChild(new Sheets());
-            var sheet = new Sheet()
-            {
-                Id = workbookPart.GetIdOfPart(worksheetPart),
-                SheetId = 1,
-                Name = contentTypeDefinition.DisplayName?.Length > 31
-                    ? contentTypeDefinition.DisplayName[..31]
-                    : contentTypeDefinition.DisplayName,
-            };
-            sheets.Append(sheet);
-
-            var sheetData = worksheetPart.Worksheet.GetFirstChild<SheetData>();
-            var headerRow = new Row() { RowIndex = 1 };
-            sheetData.Append(headerRow);
-
-            uint columnIndex = 1;
-            foreach (var column in columns)
-            {
-                if (column.Type == ImportColumnType.ExportOnly)
-                {
-                    continue;
-                }
-
-                var cell = new Cell()
-                {
-                    CellReference = GetCellReference(columnIndex, 1),
-                    DataType = CellValues.String,
-                    CellValue = new CellValue(column.Name),
-                };
-                headerRow.Append(cell);
-                columnIndex++;
-            }
-
-            workbookPart.Workbook.Save();
+            writer.WriteHeader(importColumns);
+            writer.Flush();
         }
 
         content.Seek(0, SeekOrigin.Begin);
 
-        return new FileStreamResult(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+        return new FileStreamResult(content, formatProvider.ContentType)
         {
-            FileDownloadName = $"{contentTypeDefinition.Name}_Template.xlsx",
+            FileDownloadName = $"{contentTypeDefinition.Name}_Template{formatProvider.FileExtension}",
         };
     }
 
@@ -417,6 +385,7 @@ public sealed class AdminController : Controller, IUpdateModel
     [Admin("export/contents/download-file", "ExportContentDownloadFile")]
     public async Task<IActionResult> DownloadExport(
         string contentTypeId,
+        string format = null,
         bool partialExport = false,
         DateTime? createdFrom = null,
         DateTime? createdTo = null,
@@ -461,11 +430,12 @@ public sealed class AdminController : Controller, IUpdateModel
 
         var contentImportOptions = HttpContext.RequestServices.GetRequiredService<IOptions<ContentImportOptions>>().Value;
         var threshold = contentImportOptions.ExportQueueThreshold;
+        var formatProvider = ResolveFileFormatProvider(format);
 
         if (totalCount > threshold)
         {
             // Queue the export for background processing.
-            var fileName = $"{contentTypeDefinition.Name}_Export_{Guid.NewGuid():N}.xlsx";
+            var fileName = $"{contentTypeDefinition.Name}_Export_{Guid.NewGuid():N}{formatProvider.FileExtension}";
 
             var entry = new ContentTransferEntry()
             {
@@ -473,7 +443,7 @@ public sealed class AdminController : Controller, IUpdateModel
                 ContentType = contentTypeId,
                 Owner = CurrentUserId(),
                 Author = User.Identity.Name,
-                UploadedFileName = $"{contentTypeDefinition.Name}_Export.xlsx",
+                UploadedFileName = $"{contentTypeDefinition.Name}_Export{formatProvider.FileExtension}",
                 StoredFileName = fileName,
                 Status = ContentTransferEntryStatus.New,
                 Direction = ContentTransferDirection.Export,
@@ -506,54 +476,17 @@ public sealed class AdminController : Controller, IUpdateModel
 
         // Immediate export: write directly to a temp file stream using pagination.
         var batchSize = contentImportOptions.ExportBatchSize < 1 ? 200 : contentImportOptions.ExportBatchSize;
+        var columnNames = exportColumns.Select(c => c.Name).ToList();
 
         var tempFilePath = Path.GetTempFileName();
         try
         {
             using (var fileStream = new FileStream(tempFilePath, FileMode.Create, FileAccess.ReadWrite, FileShare.None))
-            using (var spreadsheetDocument = SpreadsheetDocument.Create(fileStream, SpreadsheetDocumentType.Workbook))
+            using (var writer = formatProvider.CreateWriter(fileStream, contentTypeDefinition.DisplayName))
             {
-                var workbookPart = spreadsheetDocument.AddWorkbookPart();
-                workbookPart.Workbook = new Workbook();
-
-                var worksheetPart = workbookPart.AddNewPart<WorksheetPart>();
-                worksheetPart.Worksheet = new Worksheet(new SheetData());
-
-                var sheets = workbookPart.Workbook.AppendChild(new Sheets());
-                var sheet = new Sheet()
-                {
-                    Id = workbookPart.GetIdOfPart(worksheetPart),
-                    SheetId = 1,
-                    Name = contentTypeDefinition.DisplayName?.Length > 31
-                        ? contentTypeDefinition.DisplayName[..31]
-                        : contentTypeDefinition.DisplayName,
-                };
-                sheets.Append(sheet);
-
-                var sheetData = worksheetPart.Worksheet.GetFirstChild<SheetData>();
-
-                // Write header row.
-                var headerRow = new Row() { RowIndex = 1 };
-                sheetData.Append(headerRow);
-
-                uint columnIndex = 1;
-                var columnNames = new List<string>();
-
-                foreach (var column in exportColumns)
-                {
-                    var cell = new Cell()
-                    {
-                        CellReference = GetCellReference(columnIndex, 1),
-                        DataType = CellValues.String,
-                        CellValue = new CellValue(column.Name),
-                    };
-                    headerRow.Append(cell);
-                    columnNames.Add(column.Name);
-                    columnIndex++;
-                }
+                writer.WriteHeader(columnNames);
 
                 // Paginate content items and write each page directly.
-                uint rowIndex = 2;
                 var page = 0;
 
                 while (true)
@@ -591,39 +524,27 @@ public sealed class AdminController : Controller, IUpdateModel
 
                         await _contentImportManager.ExportAsync(mapContext);
 
-                        var row = new Row() { RowIndex = rowIndex };
-                        sheetData.Append(row);
-
-                        columnIndex = 1;
-
+                        var rowValues = new List<string>(columnNames.Count);
                         foreach (var colName in columnNames)
                         {
-                            var cellValue = mapContext.Row[colName]?.ToString() ?? string.Empty;
-                            var cell = new Cell()
-                            {
-                                CellReference = GetCellReference(columnIndex, rowIndex),
-                                DataType = CellValues.String,
-                                CellValue = new CellValue(cellValue),
-                            };
-                            row.Append(cell);
-                            columnIndex++;
+                            rowValues.Add(mapContext.Row[colName]?.ToString() ?? string.Empty);
                         }
 
-                        rowIndex++;
+                        writer.WriteRow(rowValues);
                     }
 
                     page++;
                 }
 
-                workbookPart.Workbook.Save();
+                writer.Flush();
             }
 
             // Read back from temp file for download (file-based, not memory-based).
             var downloadStream = new FileStream(tempFilePath, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize: 4096, options: FileOptions.DeleteOnClose);
 
-            return new FileStreamResult(downloadStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+            return new FileStreamResult(downloadStream, formatProvider.ContentType)
             {
-                FileDownloadName = $"{contentTypeDefinition.Name}_Export.xlsx",
+                FileDownloadName = $"{contentTypeDefinition.Name}_Export{formatProvider.FileExtension}",
             };
         }
         catch
@@ -764,10 +685,11 @@ public sealed class AdminController : Controller, IUpdateModel
         }
 
         var stream = await _contentTransferFileStore.GetFileStreamAsync(fileInfo);
+        var formatProvider = ResolveFileFormatProvider(Path.GetExtension(entry.StoredFileName)?.TrimStart('.'));
 
-        return new FileStreamResult(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+        return new FileStreamResult(stream, formatProvider.ContentType)
         {
-            FileDownloadName = entry.UploadedFileName ?? $"{entry.ContentType}_Export.xlsx",
+            FileDownloadName = entry.UploadedFileName ?? $"{entry.ContentType}_Export{formatProvider.FileExtension}",
         };
     }
 
@@ -1126,6 +1048,25 @@ public sealed class AdminController : Controller, IUpdateModel
         }
 
         return columnName + rowIndex;
+    }
+
+    private IContentTransferFileFormatProvider ResolveFileFormatProvider(string format)
+    {
+        var providers = HttpContext.RequestServices.GetServices<IContentTransferFileFormatProvider>();
+
+        if (!string.IsNullOrEmpty(format))
+        {
+            var extension = format.StartsWith('.') ? format : "." + format;
+            var provider = providers.FirstOrDefault(p => p.FileExtension.Equals(extension, StringComparison.OrdinalIgnoreCase));
+
+            if (provider != null)
+            {
+                return provider;
+            }
+        }
+
+        // Default to Excel.
+        return providers.First(p => p.FileExtension == ".xlsx");
     }
 
     private IQuery<ContentItem> BuildExportQuery(

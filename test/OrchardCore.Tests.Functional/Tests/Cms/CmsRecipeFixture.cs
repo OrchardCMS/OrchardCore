@@ -81,3 +81,8 @@ public sealed class MigrationsFixture : CmsRecipeFixture
     protected override string RecipeName => "Migrations";
 }
 
+public sealed class ContentTransferFixture : CmsRecipeFixture
+{
+    protected override string RecipeName => "ContentTransfer";
+}
+

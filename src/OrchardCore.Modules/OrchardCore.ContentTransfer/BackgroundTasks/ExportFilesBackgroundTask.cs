@@ -1,7 +1,4 @@
 using System.Data;
-using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Packaging;
-using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
@@ -111,54 +108,22 @@ public sealed class ExportFilesBackgroundTask : IBackgroundTask
 
                 progressPart.TotalRecords = totalCount;
 
-                // Write Excel file directly to a temp file using pagination (avoids memory accumulation).
+                // Resolve file format provider from the stored file name extension.
+                var formatProviders = serviceProvider.GetServices<IContentTransferFileFormatProvider>();
+                var formatProvider = formatProviders.FirstOrDefault(p => p.CanHandle(entry.StoredFileName))
+                    ?? formatProviders.First(p => p.FileExtension == ".xlsx");
+
                 var fileName = entry.StoredFileName;
                 var tempFilePath = Path.GetTempFileName();
 
                 using var tempStream = new FileStream(tempFilePath, FileMode.Create, FileAccess.ReadWrite, FileShare.None, bufferSize: 4096, FileOptions.DeleteOnClose);
-                using (var spreadsheetDocument = SpreadsheetDocument.Create(tempStream, SpreadsheetDocumentType.Workbook))
+                var columnNames = exportColumns.Select(c => c.Name).ToList();
+
+                using (var writer = formatProvider.CreateWriter(tempStream, contentTypeDefinition.DisplayName))
                 {
-                    var workbookPart = spreadsheetDocument.AddWorkbookPart();
-                    workbookPart.Workbook = new Workbook();
-
-                    var worksheetPart = workbookPart.AddNewPart<WorksheetPart>();
-                    worksheetPart.Worksheet = new Worksheet(new SheetData());
-
-                    var sheets = workbookPart.Workbook.AppendChild(new Sheets());
-                    var sheet = new Sheet()
-                    {
-                        Id = workbookPart.GetIdOfPart(worksheetPart),
-                        SheetId = 1,
-                        Name = contentTypeDefinition.DisplayName?.Length > 31
-                            ? contentTypeDefinition.DisplayName[..31]
-                            : contentTypeDefinition.DisplayName,
-                    };
-                    sheets.Append(sheet);
-
-                    var sheetData = worksheetPart.Worksheet.GetFirstChild<SheetData>();
-
-                    // Write header row.
-                    var headerRow = new Row() { RowIndex = 1 };
-                    sheetData.Append(headerRow);
-
-                    uint columnIndex = 1;
-                    var columnNames = new List<string>();
-
-                    foreach (var column in exportColumns)
-                    {
-                        var cell = new Cell()
-                        {
-                            CellReference = GetCellReference(columnIndex, 1),
-                            DataType = CellValues.String,
-                            CellValue = new CellValue(column.Name),
-                        };
-                        headerRow.Append(cell);
-                        columnNames.Add(column.Name);
-                        columnIndex++;
-                    }
+                    writer.WriteHeader(columnNames);
 
                     // Paginate content items and write each page directly.
-                    uint rowIndex = 2;
                     var page = 0;
                     var contentManager = serviceProvider.GetRequiredService<IContentManager>();
 
@@ -208,31 +173,18 @@ public sealed class ExportFilesBackgroundTask : IBackgroundTask
 
                             await contentImportManager.ExportAsync(mapContext);
 
-                            // Write the row directly to the spreadsheet.
-                            var row = new Row() { RowIndex = rowIndex };
-                            sheetData.Append(row);
-
-                            columnIndex = 1;
-
+                            var rowValues = new List<string>(columnNames.Count);
                             foreach (var colName in columnNames)
                             {
-                                var cellValue = mapContext.Row[colName]?.ToString() ?? string.Empty;
-                                var cell = new Cell()
-                                {
-                                    CellReference = GetCellReference(columnIndex, rowIndex),
-                                    DataType = CellValues.String,
-                                    CellValue = new CellValue(cellValue),
-                                };
-                                row.Append(cell);
-                                columnIndex++;
+                                rowValues.Add(mapContext.Row[colName]?.ToString() ?? string.Empty);
                             }
 
-                            rowIndex++;
+                            writer.WriteRow(rowValues);
                             progressPart.TotalProcessed++;
                         }
 
                         // Save progress after each page.
-                        progressPart.CurrentRow = (int)rowIndex - 2;
+                        progressPart.CurrentRow = progressPart.TotalProcessed;
                         entry.ProcessSaveUtc = clock.UtcNow;
                         entry.Put(progressPart);
 
@@ -242,7 +194,7 @@ public sealed class ExportFilesBackgroundTask : IBackgroundTask
                         page++;
                     }
 
-                    workbookPart.Workbook.Save();
+                    writer.Flush();
                 }
 
                 // Save the completed file to the file store.
@@ -290,21 +242,6 @@ public sealed class ExportFilesBackgroundTask : IBackgroundTask
 
         session.Save(entry);
         await session.SaveChangesAsync();
-    }
-
-    private static string GetCellReference(uint columnIndex, uint rowIndex)
-    {
-        var columnName = string.Empty;
-        var dividend = columnIndex;
-
-        while (dividend > 0)
-        {
-            var modulo = (dividend - 1) % 26;
-            columnName = Convert.ToChar(65 + modulo) + columnName;
-            dividend = (dividend - modulo) / 26;
-        }
-
-        return columnName + rowIndex;
     }
 
     private static string GetExportLockKey(string entryId)

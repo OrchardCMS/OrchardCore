@@ -1,6 +1,4 @@
 using System.Data;
-using DocumentFormat.OpenXml.Packaging;
-using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
@@ -120,9 +118,14 @@ public sealed class ImportFilesBackgroundTask : IBackgroundTask
 
         try
         {
-            await ProcessExcelFileInBatchesAsync(
+            var formatProviders = serviceProvider.GetServices<IContentTransferFileFormatProvider>();
+            var formatProvider = formatProviders.FirstOrDefault(p => p.CanHandle(entry.StoredFileName))
+                ?? throw new InvalidOperationException(localizer["Unsupported file format: {0}", Path.GetExtension(entry.StoredFileName)]);
+
+            await ProcessFileInBatchesAsync(
                 serviceProvider,
                 fileStream,
+                formatProvider,
                 entry,
                 progressPart,
                 contentTypeDefinition,
@@ -130,7 +133,6 @@ public sealed class ImportFilesBackgroundTask : IBackgroundTask
                 contentImportManager,
                 session,
                 clock,
-                localizer,
                 batchSize,
                 cancellationToken);
         }
@@ -163,78 +165,39 @@ public sealed class ImportFilesBackgroundTask : IBackgroundTask
         await session.SaveChangesAsync(cancellationToken);
     }
 
-    private static async Task ProcessExcelFileInBatchesAsync(
+    private static async Task ProcessFileInBatchesAsync(
         IServiceProvider serviceProvider,
         Stream stream,
+        IContentTransferFileFormatProvider formatProvider,
         ContentTransferEntry entry,
         ImportFileProcessStatsPart progressPart,
-        ContentManagement.Metadata.Models.ContentTypeDefinition contentTypeDefinition,
+        ContentTypeDefinition contentTypeDefinition,
         IContentManager contentManager,
         IContentImportManager contentImportManager,
         ISession session,
         IClock clock,
-        IStringLocalizer localizer,
         int batchSize,
         CancellationToken cancellationToken)
     {
-        using var spreadsheetDocument = SpreadsheetDocument.Open(stream, false);
-        var workbookPart = spreadsheetDocument.WorkbookPart;
+        using var reader = formatProvider.CreateReader(stream);
 
-        if (workbookPart == null)
-        {
-            throw new InvalidOperationException(localizer["Unable to read the uploaded file."]);
-        }
-
-        var firstSheet = workbookPart.Workbook.Descendants<Sheet>().FirstOrDefault();
-
-        if (firstSheet == null)
-        {
-            throw new InvalidOperationException(localizer["Unable to find a tab in the file that contains data."]);
-        }
-
-        var worksheetPart = (WorksheetPart)workbookPart.GetPartById(firstSheet.Id);
-        var sheetData = worksheetPart.Worksheet.GetFirstChild<SheetData>();
-
-        if (sheetData == null)
-        {
-            throw new InvalidOperationException(localizer["Unable to find a tab in the file that contains data."]);
-        }
-
-        var sharedStringTable = workbookPart.GetPartsOfType<SharedStringTablePart>()
-            .FirstOrDefault()?.SharedStringTable;
-
-        var headerRow = sheetData.Elements<Row>().FirstOrDefault();
-
-        if (headerRow == null)
-        {
-            throw new InvalidOperationException(localizer["Unable to find a tab in the file that contains data."]);
-        }
-
+        var columnNames = reader.GetColumnNames();
         var dataTable = new DataTable();
-        var columnNames = new List<string>();
 
-        foreach (var cell in headerRow.Descendants<Cell>())
+        foreach (var columnName in columnNames)
         {
-            var columnName = GetCellValue(cell, sharedStringTable)?.Trim() ?? string.Empty;
-            var columnIndex = GetColumnIndexFromCellReference(cell.CellReference);
+            var name = columnName;
+            var occurrences = dataTable.Columns.Cast<DataColumn>().Count(c => c.ColumnName.Equals(name, StringComparison.OrdinalIgnoreCase));
 
-            if (string.IsNullOrEmpty(columnName))
+            if (occurrences > 0)
             {
-                columnName = "Col " + (columnIndex + 1);
+                name += " " + (occurrences + 1);
             }
 
-            columnNames.Add(columnName);
-            var occurrences = columnNames.Count(x => x.Equals(columnName, StringComparison.OrdinalIgnoreCase));
-
-            if (occurrences > 1)
-            {
-                columnName += " " + occurrences;
-            }
-
-            dataTable.Columns.Add(new DataColumn(columnName));
+            dataTable.Columns.Add(new DataColumn(name));
         }
 
-        progressPart.TotalRecords = Math.Max(sheetData.Elements<Row>().Count() - 1, 0);
+        progressPart.TotalRecords = reader.GetRowCount();
 
         var indexOfKeyColumn = dataTable.Columns.IndexOf(nameof(ContentItem.ContentItemId));
         var indexOfVersionKeyColumn = dataTable.Columns.IndexOf(nameof(ContentItem.ContentItemVersionId));
@@ -244,7 +207,7 @@ public sealed class ImportFilesBackgroundTask : IBackgroundTask
 
         var rowIndex = 1;
 
-        foreach (var sheetRow in sheetData.Elements<Row>().Skip(1))
+        foreach (var rowValues in reader.ReadRows())
         {
             if (cancellationToken.IsCancellationRequested)
             {
@@ -268,19 +231,14 @@ public sealed class ImportFilesBackgroundTask : IBackgroundTask
             var dataRow = dataTable.NewRow();
             var isEmpty = true;
 
-            foreach (var cell in sheetRow.Descendants<Cell>())
+            for (var colIndex = 0; colIndex < rowValues.Length && colIndex < dataTable.Columns.Count; colIndex++)
             {
-                var colIndex = GetColumnIndexFromCellReference(cell.CellReference);
+                var value = rowValues[colIndex];
+                dataRow[colIndex] = value;
 
-                if (colIndex < dataTable.Columns.Count)
+                if (!string.IsNullOrWhiteSpace(value))
                 {
-                    var value = GetCellValue(cell, sharedStringTable);
-                    dataRow[colIndex] = value;
-
-                    if (!string.IsNullOrWhiteSpace(value))
-                    {
-                        isEmpty = false;
-                    }
+                    isEmpty = false;
                 }
             }
 
@@ -600,57 +558,4 @@ public sealed class ImportFilesBackgroundTask : IBackgroundTask
         => (progressPart?.ImportedCount ?? 0) > 0
             ? ContentTransferEntryStatus.CanceledWithImportedRecords
             : ContentTransferEntryStatus.Canceled;
-
-    private static string GetCellValue(Cell cell, SharedStringTable sharedStringTable)
-    {
-        if (cell?.CellValue == null)
-        {
-            return string.Empty;
-        }
-
-        var value = cell.CellValue.Text;
-
-        if (cell.DataType != null && cell.DataType.Value == CellValues.SharedString)
-        {
-            if (sharedStringTable != null && int.TryParse(value, out var index))
-            {
-                return sharedStringTable.ElementAt(index).InnerText;
-            }
-        }
-
-        return value ?? string.Empty;
-    }
-
-    private static int GetColumnIndexFromCellReference(string cellReference)
-    {
-        if (string.IsNullOrEmpty(cellReference))
-        {
-            return 0;
-        }
-
-        var columnLetters = string.Empty;
-
-        foreach (var character in cellReference)
-        {
-            if (char.IsLetter(character))
-            {
-                columnLetters += character;
-            }
-            else
-            {
-                break;
-            }
-        }
-
-        var columnIndex = 0;
-        var multiplier = 1;
-
-        for (var i = columnLetters.Length - 1; i >= 0; i--)
-        {
-            columnIndex += (columnLetters[i] - 'A' + 1) * multiplier;
-            multiplier *= 26;
-        }
-
-        return columnIndex - 1;
-    }
 }
