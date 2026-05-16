@@ -668,10 +668,10 @@ This template is called when displaying a User Name.
 
 #### User Examples
 
-| Template        | Filename              |
-|-----------------|-----------------------|
-| `UserDisplayName_SummaryAdmin__johndoe`  | `UserDisplayName-johndoe.SummaryAdmin.cshtml`  |
-| `UserDisplayName_SummaryAdmin` | `UserDisplayName.SummaryAdmin.cshtml` |
+| Template                                | Filename                                      |
+|-----------------------------------------|-----------------------------------------------|
+| `UserDisplayName_SummaryAdmin__johndoe` | `UserDisplayName-johndoe.SummaryAdmin.cshtml` |
+| `UserDisplayName_SummaryAdmin`          | `UserDisplayName.SummaryAdmin.cshtml`         |
 
 ### Customizing User Display in Admin Lists
 
@@ -708,16 +708,16 @@ The `UserDisplayName` shape provides a flexible way to display user information 
 
 ##### Tag Helper Parameters
 
-| Parameter | Description | Required |
-|-----------|-------------|----------|
-| `user-name` | The username to display | Yes |
-| `display-type` | The display type for template resolution (e.g., `SummaryAdmin`) | No |
-| `cache-id` | Cache identifier for the rendered output | No (defaults to `"user-display-name"`) |
-| `title` | Tooltip text to display on hover | No |
-| `cache-tag` | Cache tags for cache invalidation | No (automatically includes `user-display-name` and `user-display-name:{username}`) |
-| `cache-context` | Cache context for cache variation | No (automatically includes `username-{username}`) |
-| `cache-fixed-duration` | Fixed cache duration (e.g., `"00:05:00"` for 5 minutes) | No |
-| `cache-sliding-duration` | Sliding cache duration | No |
+| Parameter                | Description                                                     | Required                                                                           |
+|--------------------------|-----------------------------------------------------------------|------------------------------------------------------------------------------------|
+| `user-name`              | The username to display                                         | Yes                                                                                |
+| `display-type`           | The display type for template resolution (e.g., `SummaryAdmin`) | No                                                                                 |
+| `cache-id`               | Cache identifier for the rendered output                        | No (defaults to `"user-display-name"`)                                             |
+| `title`                  | Tooltip text to display on hover                                | No                                                                                 |
+| `cache-tag`              | Cache tags for cache invalidation                               | No (automatically includes `user-display-name` and `user-display-name:{username}`) |
+| `cache-context`          | Cache context for cache variation                               | No (automatically includes `username-{username}`)                                  |
+| `cache-fixed-duration`   | Fixed cache duration (e.g., `"00:05:00"` for 5 minutes)         | No                                                                                 |
+| `cache-sliding-duration` | Sliding cache duration                                          | No                                                                                 |
 
 #### Shape Morphing
 
@@ -798,10 +798,10 @@ This morphing behavior allows you to customize the icon and text independently b
 
 The `UserDisplayName` shape exposes the following properties:
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `Model.UserName` | `string` | The username of the user to display |
-| `Model.Title` | `string` | The title/tooltip text (typically used in the HTML `title` attribute) |
+| Property         | Type     | Description                                                           |
+|------------------|----------|-----------------------------------------------------------------------|
+| `Model.UserName` | `string` | The username of the user to display                                   |
+| `Model.Title`    | `string` | The title/tooltip text (typically used in the HTML `title` attribute) |
 
 !!! note
     The shape uses a dynamic `IShape` type, not a strongly-typed model. Additional properties can be accessed dynamically.

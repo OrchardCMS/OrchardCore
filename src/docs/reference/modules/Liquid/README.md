@@ -70,6 +70,22 @@ Blog
 
 ## String Filters
 
+### `transliterate`
+Convert Unicode text (e.g. Greek, Cyrillic, Arabic, Chinese, etc.) into its closest ASCII/Latin representation using the <https://github.com/anyascii/anyascii> library.
+
+Input
+
+```liquid
+{{ "Ελληνικά" | transliterate }}
+```
+
+Output
+
+```text
+Ellinika
+```
+
+
 ### `slugify`
 
 Convert a text into a string that can be used in a URL.
@@ -85,6 +101,23 @@ Output
 ```text
 this-is-some-text
 ```
+
+There is an option to transliterate (by default `true`) which first transliterates and slugifies afterwards:
+
+```liquid
+{{ "Ελληνικά" | slugify }}
+```
+or 
+```liquid
+{{ "Ελληνικά" | slugify: transliterate: true}}
+```
+
+Output
+
+```text
+ellinika
+```
+
 
 ### `local`
 
@@ -138,6 +171,20 @@ Output
 
 ```text
 Bonjour!
+```
+
+You can pass one or more parameters to a localized string:
+
+Input
+
+```liquid
+{{ "Hello {0}!" | t: "John" }}
+```
+
+Output
+
+```text
+Bonjour John!
 ```
 
 ## Html Filters

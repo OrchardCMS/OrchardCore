@@ -25,8 +25,13 @@ Parcel is the easiest way to build assets so far as it doesn't require any confi
 
     Options 3-4 will automatically install the chosen version manager (if not already present), install the required Node.js version, enable corepack, and restart the build.
 
-    !!! note "Windows"
-        On Windows, if the version manager needs to be installed first, the process will exit after installation and ask you to restart your terminal before re-running the build.
+    !!! warning "Windows - Terminal Restart Required"
+        On Windows, when installing **fnm** or **Volta** for the first time, their executable shims may not be immediately available on the PATH in your current terminal session. If you encounter this issue, you will see one of these messages:
+        
+        - `fnm was just installed but its shims are not yet on PATH in this terminal session.`
+        - `Volta was just installed but its shims are not yet on PATH in this terminal session.`
+        
+        **If you see this message, please restart your terminal** (close and reopen it), then run your command again (e.g., `yarn build`). This is a Windows-specific limitation and necessary only when first installing a version manager.
 
 2. From the root of the repository, run the following commands. Be sure to indeed run **exactly** these, and verify that the Yarn version matches the `packageManager` value in the root `package.json` (currently v4.13.x).
     ```cmd

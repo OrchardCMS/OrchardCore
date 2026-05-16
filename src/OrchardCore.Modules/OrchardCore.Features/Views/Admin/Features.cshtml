@@ -1,6 +1,7 @@
 @using Microsoft.AspNetCore.Html
 @using OrchardCore.Features
 @using OrchardCore.Modules
+
 @model FeaturesViewModel
 @{
     var title = T["Features"];
@@ -49,13 +50,13 @@
         var featureGroups = Model.Features.GroupBy(f => f.Descriptor.Category).OrderBy(o => o.Key).ToArray();
         foreach (var featureGroup in featureGroups)
         {
-            var categoryName = featureGroup.First().Descriptor.Category ?? T["Uncategorized"].Value;
+            var categoryName = featureGroup.FirstOrDefault()?.Descriptor.Category ?? T["Uncategorized"].Value;
             var categoryClassName = string.Format("category {0}", Html.Encode(categoryName.ToString()));
-            if (featureGroup == featureGroups.First())
+            if (featureGroup == featureGroups.FirstOrDefault())
             {
                 categoryClassName += " first";
             }
-            if (featureGroup == featureGroups.Last())
+            if (featureGroup == featureGroups.LastOrDefault())
             {
                 categoryClassName += " last";
             }
@@ -113,10 +114,13 @@
                                                 <div class="d-inline direct-dependencies">
                                                     @foreach (var dependencyId in feature.Descriptor.Dependencies)
                                                     {
-                                                        var dependencyName = Model.Features.Where(f => f.Descriptor.Id == dependencyId)
+                                                        var dependencyName = Model.Features
+                                                            .Where(f => f.Descriptor.Id == dependencyId)
                                                             .OrderBy(f => f.Descriptor.Name)
-                                                            .First().Descriptor.Name;
-                                                        <span class="badge ta-badge">
+                                                            .Select(f => f.Descriptor.Name)
+                                                            .FirstOrDefault() ?? string.Empty;
+
+                                                        <span class="badge ta-badge text-bg-secondary">
                                                             @dependencyName
                                                         </span>
                                                     }
@@ -124,16 +128,21 @@
                                                 @if (!feature.Descriptor.Dependencies.SequenceEqual(dependencies.Select(d => d.Descriptor.Id)))
                                                 {
                                                     <div class="d-inline transitive-dependencies d-none">
-                                                        @foreach (var d in dependencies)
+                                                        @foreach (var d in dependencies.Where(d => !feature.Descriptor.Dependencies.Contains(d.Descriptor.Id)))
                                                         {
                                                             <span class="badge ta-badge">
                                                                 @(string.IsNullOrEmpty(d.Descriptor.Name) ? d.Descriptor.Id : d.Descriptor.Name)
                                                             </span>
                                                         }
                                                     </div>
-                                                    <span class="badge ta-badge d-inline">
-                                                        <a class="text-secondary show-more" href="#">...</a>
-                                                    </span>
+
+                                                    <button class="btn btn-sm btn-outline-secondary badge-show-more"
+                                                            data-bs-toggle="tooltip"
+                                                            data-bs-placement="bottom"
+                                                            data-bs-title="@T["Show indirect dependencies"]">
+                                                        <i class="fa-solid fa-ellipsis"></i>
+                                                        <span class="visually-hidden">@T["Show indirect dependencies"]</span>
+                                                    </button>
                                                 }
 
                                                 @foreach (var d in missingDependencies)
@@ -151,22 +160,22 @@
                                         {
                                             @if (feature.IsEnabled)
                                             {
-                                                <div data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="@T["This feature is automatically enabled based on dependency and cannot be manually disabled."]">
+                                                <span class="d-inline-block" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="@T["This feature is automatically enabled based on dependency and cannot be manually disabled."]">
                                                     <button class="btn btn-danger btn-sm" disabled>@T["Disable"]</button>
-                                                </div>
+                                                </span>
                                             }
                                             else
                                             {
-                                                <div data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="@T["This feature is automatically disabled based on dependency and cannot be manually enabled."]">
+                                                <span class="d-inline-block" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="@T["This feature is automatically disabled based on dependency and cannot be manually enabled."]">
                                                     <button class="btn btn-primary btn-sm" disabled>@T["Enable"]</button>
-                                                </div>
+                                                </span>
                                             }
                                         }
                                         else if (feature.IsEnabled && isAlwaysEnabled)
                                         {
-                                            <div data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="@T["This feature is always enabled and cannot be manually disabled."]">
+                                            <span class="d-inline-block" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="@T["This feature is always enabled and cannot be manually disabled."]">
                                                 <button class="btn btn-danger btn-sm" disabled>@T["Disable"]</button>
-                                            </div>
+                                            </span>
                                         }
                                         else
                                         {
@@ -267,16 +276,14 @@
             $("[name='submit.BulkAction']").click();
         });
 
-        $('.show-more').on('click', function (e) {
+        $('.badge-show-more').on('click', function (e) {
             e.preventDefault();
 
-            var $toogle_parent = $(this).parent();
-            var $direct_dependencies = $toogle_parent.siblings('.direct-dependencies');
-            var $transitive_dependencies = $toogle_parent.prev('.transitive-dependencies')
+            var $toogle = $(this);
+            var $transitive_dependencies = $toogle.prev('.transitive-dependencies')
 
-            $direct_dependencies.toggleClass('d-none');
             $transitive_dependencies.toggleClass('d-none');
-            $toogle_parent.toggleClass('d-none');
+            $toogle.toggleClass('d-none');
         });
     });
 </script>

@@ -94,6 +94,7 @@ public sealed class OrchardTestServer : IAsyncDisposable
 
         builder.Services
             .AddOrchardCore()
+            .AddTenantFeatures("OrchardCore.HealthChecks")
             .AddMvc();
 
         ConfigureServices(builder, appDataPath, instanceId: null, loggerProvider);
@@ -104,7 +105,13 @@ public sealed class OrchardTestServer : IAsyncDisposable
 
         await app.StartAsync();
 
-        return new OrchardTestServer(app, GetListeningAddress(app), loggerProvider.Collector);
+        var address = GetListeningAddress(app);
+
+        // The OrchardCore tenant pipeline initializes lazily on the first request.
+        // Warm up the app now so tests don't race against pipeline initialization.
+        await WarmUpAsync(address, timeoutSeconds: 90);
+
+        return new OrchardTestServer(app, address, loggerProvider.Collector);
     }
 
     public void AssertNoLoggedIssues()
@@ -150,12 +157,16 @@ public sealed class OrchardTestServer : IAsyncDisposable
         var resolvedAppDataPath = Path.IsPathRooted(appDataPath)
             ? appDataPath
             : Path.Combine(builder.Environment.ContentRootPath, appDataPath);
+        var tenantsPath = Path.Combine(resolvedAppDataPath, "tenants.json");
 
         // Override app data path per fixture via PostConfigure (no env var needed).
         builder.Services.PostConfigure<ShellOptions>(options =>
         {
             options.ShellsApplicationDataPath = resolvedAppDataPath;
         });
+
+        // Ensure the per-fixture App_Data path exists before shell initialization persists settings.
+        Directory.CreateDirectory(resolvedAppDataPath);
 
         // Override database config via IConfiguration (higher priority than env vars)
         // so we never need to mutate global environment variables.
@@ -177,9 +188,8 @@ public sealed class OrchardTestServer : IAsyncDisposable
             _currentConnectionString = connectionString;
 
             // Write tenants.json so OrchardCore picks up the per-fixture database.
-            Directory.CreateDirectory(resolvedAppDataPath);
             File.WriteAllText(
-                Path.Combine(resolvedAppDataPath, "tenants.json"),
+                tenantsPath,
                 JsonSerializer.Serialize(new Dictionary<string, object>
                 {
                     ["Default"] = new Dictionary<string, string>
@@ -339,6 +349,38 @@ public sealed class OrchardTestServer : IAsyncDisposable
         return System.Text.RegularExpressions.Regex.Replace(
             connectionString, @"((?:Database|database)\s*=\s*)[^;]+", $"${{1}}{newDbName}",
             System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+    }
+
+    /// <summary>
+    /// Polls the health endpoint until the app returns a successful response, ensuring the
+    /// OrchardCore tenant pipeline has finished its lazy first-request initialization
+    /// before the Playwright tests begin.
+    /// </summary>
+    private static async Task WarmUpAsync(string baseAddress, string healthPath = "/health/live", int timeoutSeconds = 30)
+    {
+        using var client = new HttpClient();
+        var deadline = DateTime.UtcNow.AddSeconds(timeoutSeconds);
+
+        while (DateTime.UtcNow < deadline)
+        {
+            try
+            {
+                var response = await client.GetAsync($"{baseAddress}{healthPath}");
+                if (response.IsSuccessStatusCode)
+                {
+                    return;
+                }
+            }
+            catch
+            {
+                // Server not yet accepting connections — keep waiting.
+            }
+
+            await Task.Delay(500);
+        }
+
+        throw new TimeoutException(
+            $"The application at '{baseAddress}' did not respond successfully at '{healthPath}' within {timeoutSeconds} seconds.");
     }
 
     private static string GetListeningAddress(WebApplication app)

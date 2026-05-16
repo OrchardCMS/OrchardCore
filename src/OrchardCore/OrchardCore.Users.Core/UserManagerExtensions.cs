@@ -66,6 +66,13 @@ public static class UserManagerExtensions
             userNeedUpdate = true;
         }
 
+        if (context.RolesToRemove.Count > 0 || claimsChanged)
+        {
+            // When roles are removed or claims are changed, the security stamp needs to be
+            // updated to invalidate existing authentication sessions.
+            await userManager.UpdateSecurityStampAsync(user);
+        }
+
         return userNeedUpdate;
     }
 }

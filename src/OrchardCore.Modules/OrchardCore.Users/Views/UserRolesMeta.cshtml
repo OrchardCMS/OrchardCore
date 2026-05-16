@@ -8,7 +8,7 @@
 }
 
 <div data-bs-toggle="tooltip" title="@T["The roles this user has"]">
-    @foreach (var roleName in Model.User.RoleNames)
+    @foreach (var roleName in Model.User.RoleNames.OrderBy(r => r))
     {
         if (!roles.TryGetValue(roleName, out var role))
         {
