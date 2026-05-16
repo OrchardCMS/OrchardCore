@@ -39,17 +39,17 @@
                         <label class="@Orchard.GetLabelClasses()">@T["Export scope"]</label>
                         <div class="@Orchard.GetEndClasses()">
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" id="exportAll" name="partialExport" type="radio" value="false" checked="@(!Model.Exporter.PartialExport ? "checked" : null)" />
+                                <input class="form-check-input" id="exportAll" name="partialExport" type="radio" value="false" checked="@(!Model.Exporter.FilteredExport ? "checked" : null)" />
                                 <label class="form-check-label" for="exportAll">@T["Export all published"]</label>
                             </div>
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" id="exportPartial" name="partialExport" type="radio" value="true" checked="@(Model.Exporter.PartialExport ? "checked" : null)" />
-                                <label class="form-check-label" for="exportPartial">@T["Partial Export"]</label>
+                                <input class="form-check-input" id="exportPartial" name="partialExport" type="radio" value="true" checked="@(Model.Exporter.FilteredExport ? "checked" : null)" />
+                                <label class="form-check-label" for="exportPartial">@T["Filtered Export"]</label>
                             </div>
                         </div>
                     </div>
 
-                    <div id="partial-export-filters" style="display: @(Model.Exporter.PartialExport ? "block" : "none");">
+                    <div id="partial-export-filters" style="display: @(Model.Exporter.FilteredExport ? "block" : "none");">
                         <hr />
                         <h6 class="text-muted mb-3">@T["Filter Options"]</h6>
 

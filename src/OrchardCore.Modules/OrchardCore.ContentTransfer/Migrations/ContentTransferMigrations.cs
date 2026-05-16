@@ -11,6 +11,7 @@ public sealed class ContentTransferMigrations : DataMigration
         await SchemaBuilder.CreateMapIndexTableAsync<ContentTransferEntryIndex>(table => table
             .Column<string>("EntryId", column => column.WithLength(26))
             .Column<string>("Status", column => column.NotNull().WithLength(25))
+            .Column<ContentTransferDirection>("Direction")
             .Column<DateTime>("CreatedUtc", column => column.NotNull())
             .Column<string>("ContentType", column => column.WithLength(255))
             .Column<string>("Owner", column => column.WithLength(26))
@@ -35,15 +36,6 @@ public sealed class ContentTransferMigrations : DataMigration
                 "Owner")
         );
 
-        return 1;
-    }
-
-    public async Task<int> UpdateFrom1Async()
-    {
-        await SchemaBuilder.AlterIndexTableAsync<ContentTransferEntryIndex>(table => table
-            .AddColumn<int>("Direction", column => column.NotNull().WithDefault(0))
-        );
-
         await SchemaBuilder.AlterIndexTableAsync<ContentTransferEntryIndex>(table => table
             .CreateIndex("IDX_ContentTransferEntryIndex_Direction",
                 "Direction",
@@ -52,6 +44,6 @@ public sealed class ContentTransferMigrations : DataMigration
                 "DocumentId")
         );
 
-        return 2;
+        return 1;
     }
 }

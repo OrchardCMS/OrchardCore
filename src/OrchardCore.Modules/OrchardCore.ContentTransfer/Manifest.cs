@@ -6,5 +6,6 @@ using OrchardCore.Modules.Manifest;
     Website = ManifestConstants.OrchardCoreWebsite,
     Version = ManifestConstants.OrchardCoreVersion,
     Description = "Provides a way to import and export content from and to Excel files.",
-    Category = "Content Management"
+    Category = "Content Management",
+    Dependencies = ["OrchardCore.Media"]
 )]

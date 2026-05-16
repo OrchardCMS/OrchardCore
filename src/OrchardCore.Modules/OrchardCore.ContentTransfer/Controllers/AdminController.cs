@@ -1,4 +1,5 @@
 using System.Data;
+using System.Net.Http.Headers;
 using System.Security.Claims;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
@@ -25,6 +26,7 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Entities;
+using OrchardCore.Media;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
@@ -53,6 +55,7 @@ public sealed class AdminController : Controller, IUpdateModel
     private readonly IContentImportManager _contentImportManager;
     private readonly IContentItemDisplayManager _contentItemDisplayManager;
     private readonly IContentDefinitionManager _contentDefinitionManager;
+    private readonly IChunkFileUploadService _chunkFileUploadService;
 
     private readonly IStringLocalizer S;
     private readonly IHtmlLocalizer H;
@@ -75,6 +78,7 @@ public sealed class AdminController : Controller, IUpdateModel
         IUpdateModelAccessor updateModelAccessor,
         IContentImportManager contentImportManager,
         IContentItemDisplayManager contentItemDisplayManager,
+        IChunkFileUploadService chunkFileUploadService,
         IClock clock)
     {
         _authorizationService = authorizationService;
@@ -92,6 +96,7 @@ public sealed class AdminController : Controller, IUpdateModel
         _updateModelAccessor = updateModelAccessor;
         _contentImportManager = contentImportManager;
         _contentItemDisplayManager = contentItemDisplayManager;
+        _chunkFileUploadService = chunkFileUploadService;
         _shapeFactory = shapeFactory;
         _pagerOptions = pagerOptions.Value;
         _clock = clock;
@@ -155,8 +160,6 @@ public sealed class AdminController : Controller, IUpdateModel
                     await _notifier.ErrorAsync(H["The file for this transfer entry could not be deleted."]);
                     return RedirectTo(returnUrl);
                 }
-
-                await _session.SaveChangesAsync();
             }
         }
 
@@ -212,7 +215,6 @@ public sealed class AdminController : Controller, IUpdateModel
     [HttpPost]
     [ValidateAntiForgeryToken]
     [ActionName(nameof(Import))]
-    [ContentTransferSizeLimit]
     public async Task<IActionResult> ImportPOST(string contentTypeId)
     {
         if (string.IsNullOrEmpty(contentTypeId))
@@ -239,59 +241,46 @@ public sealed class AdminController : Controller, IUpdateModel
             return NotFound();
         }
 
-        var importContent = new ImportContent()
-        {
-            ContentTypeId = contentTypeId,
-            ContentTypeName = contentTypeDefinition.Name,
-        };
-
-        var shape = await _displayManager.UpdateEditorAsync(importContent, _updateModelAccessor.ModelUpdater, false, string.Empty, string.Empty);
-
-        if (ModelState.IsValid)
-        {
-            var extension = Path.GetExtension(importContent.File.FileName);
-
-            // Create entry in the database
-            var fileName = Guid.NewGuid() + extension;
-
-            var storedFileName = await _contentTransferFileStore.CreateFileFromStreamAsync(fileName, importContent.File.OpenReadStream(), false);
-
-            var entry = new ContentTransferEntry()
+        return await _chunkFileUploadService.ProcessRequestAsync(
+            Request,
+            (_, _, _) => Task.FromResult<IActionResult>(Ok(new { })),
+            async (files) =>
             {
-                EntryId = IdGenerator.GenerateId(),
-                ContentType = contentTypeId,
-                Owner = CurrentUserId(),
-                Author = User.Identity.Name,
-                UploadedFileName = importContent.File.FileName,
-                StoredFileName = storedFileName,
-                Status = ContentTransferEntryStatus.New,
-                Direction = ContentTransferDirection.Import,
-                CreatedUtc = _clock.UtcNow,
-            };
+                var file = files.FirstOrDefault();
 
-            _session.Save(entry);
-            await _session.SaveChangesAsync();
-            await TriggerImportProcessingAsync(entry.EntryId);
+                if (file == null || file.Length == 0)
+                {
+                    return BadRequest(new { error = S["File is required."].Value });
+                }
 
-            await _notifier.SuccessAsync(H["The file was successfully added to the queue and will start processing shortly."]);
+                var extension = Path.GetExtension(file.FileName);
 
-            return RedirectToAction(nameof(List));
-        }
+                if (!string.Equals(extension, ".xlsx", StringComparison.OrdinalIgnoreCase))
+                {
+                    return BadRequest(new { error = S["Only .xlsx files are supported."].Value });
+                }
 
-        var context = new ImportContentContext()
-        {
-            ContentItem = await _contentManager.NewAsync(contentTypeId),
-            ContentTypeDefinition = contentTypeDefinition,
-        };
+                var fileName = Guid.NewGuid() + extension;
+                var storedFileName = await _contentTransferFileStore.CreateFileFromStreamAsync(fileName, file.OpenReadStream(), false);
 
-        var columns = await _contentImportManager.GetColumnsAsync(context);
+                var entry = new ContentTransferEntry()
+                {
+                    EntryId = IdGenerator.GenerateId(),
+                    ContentType = contentTypeId,
+                    Owner = CurrentUserId(),
+                    Author = User.Identity.Name,
+                    UploadedFileName = file.FileName,
+                    StoredFileName = storedFileName,
+                    Status = ContentTransferEntryStatus.New,
+                    Direction = ContentTransferDirection.Import,
+                    CreatedUtc = _clock.UtcNow,
+                };
 
-        var viewModel = new ContentImporterViewModel()
-        {
-            ContentTypeDefinition = contentTypeDefinition,
-            Content = shape,
-            Columns = columns.Where(x => x.Type != ImportColumnType.ExportOnly),
-        };
+                _session.Save(entry);
+                await TriggerImportProcessingAsync(entry.EntryId);
+
+                return Ok(new { success = true });
+            });
 
         return View(viewModel);
     }
@@ -512,7 +501,6 @@ public sealed class AdminController : Controller, IUpdateModel
             }
 
             _session.Save(entry);
-            await _session.SaveChangesAsync();
             await TriggerExportProcessingAsync(entry.EntryId);
 
             await _notifier.InformationAsync(H["The export contains {0} records and has been queued for background processing. You can download it from Bulk Export when it is ready.", totalCount]);
@@ -739,7 +727,6 @@ public sealed class AdminController : Controller, IUpdateModel
         entry.CompletedUtc = _clock.UtcNow;
 
         _session.Save(entry);
-        await _session.SaveChangesAsync();
 
         await _notifier.SuccessAsync(importedCount > 0
             ? H["The import was canceled after some records had already been imported."]
@@ -1067,7 +1054,6 @@ public sealed class AdminController : Controller, IUpdateModel
 
                 if (deletedCount > 0)
                 {
-                    await _session.SaveChangesAsync();
                     await _notifier.SuccessAsync(H["{0} {1} removed successfully.", deletedCount, H.Plural(deletedCount, "entry", "entries")]);
                 }
 

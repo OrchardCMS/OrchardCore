@@ -13,7 +13,7 @@ public class ContentExporterViewModel
     [Required]
     public string ContentTypeId { get; set; }
 
-    public bool PartialExport { get; set; }
+    public bool FilteredExport { get; set; }
 
     public DateTime? CreatedFrom { get; set; }
 
