@@ -7,7 +7,7 @@ namespace OrchardCore.DisplayManagement.Shapes;
 /// </summary>
 public sealed class AlternatesCollection : IEnumerable<string>
 {
-    public static readonly AlternatesCollection Empty = new AlternatesCollection();
+    public static readonly AlternatesCollection Empty = new();
 
     private readonly OrderedDictionary<string, string> _items = new(StringComparer.Ordinal);
 

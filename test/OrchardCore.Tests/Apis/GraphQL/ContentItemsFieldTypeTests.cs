@@ -518,7 +518,7 @@ public class ContentItemsFieldTypeTests : IAsyncLifetime
                 {
                     Name = "Animal",
                 }),
-                Arguments = new QueryArguments()
+                Arguments = new QueryArguments
                 {
                     new QueryArgument<WhereInputObjectGraphType>
                     {
