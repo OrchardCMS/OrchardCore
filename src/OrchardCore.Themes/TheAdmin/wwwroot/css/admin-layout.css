@@ -137,14 +137,15 @@ body:not(.left-sidebar-compact) #ta-left-sidebar [aria-expanded=true] .chevron {
 }
 
 [dir="ltr"] body:not(.left-sidebar-compact) #ta-left-sidebar [aria-expanded=true] .chevron {
-  transform: rotate(90deg);
+  transform: translateY(-50%) rotate(90deg);
 }
 
 [dir="rtl"] body:not(.left-sidebar-compact) #ta-left-sidebar [aria-expanded=true] .chevron {
-  transform: rotate(-90deg);
+  transform: translateY(-50%) rotate(-90deg);
 }
 
 body:not(.left-sidebar-compact) #ta-left-sidebar [aria-expanded=false] .chevron {
+  transform: translateY(-50%);
   transition-duration: 0.2s;
 }
 
@@ -158,7 +159,8 @@ body:not(.left-sidebar-compact) #ta-left-sidebar .collapse.show {
 
 body:not(.left-sidebar-compact) #ta-left-sidebar .chevron {
   position: absolute;
-  top: 38%;
+  top: 50%;
+  line-height: 1;
 }
 
 [dir="ltr"] body:not(.left-sidebar-compact) #ta-left-sidebar .chevron {
@@ -341,6 +343,9 @@ body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav .btn-nostyle {
   color: inherit;
   border: none;
   padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font: inherit;
   cursor: pointer;
   width: 45px;
@@ -622,6 +627,7 @@ body:not(.left-sidebar-compact) #ta-left-sidebar #filter:focus {
 }
 
 .left-sidebar-compact #ta-left-sidebar [aria-expanded=false] .chevron {
+  transform: translateY(-50%);
   transition-duration: 0.2s;
 }
 
@@ -635,7 +641,8 @@ body:not(.left-sidebar-compact) #ta-left-sidebar #filter:focus {
 
 .left-sidebar-compact #ta-left-sidebar .chevron {
   position: absolute;
-  top: 38%;
+  top: 50%;
+  line-height: 1;
 }
 
 [dir="ltr"] .left-sidebar-compact #ta-left-sidebar .chevron {
@@ -1017,6 +1024,9 @@ body:not(.left-sidebar-compact) #ta-left-sidebar #filter:focus {
   color: inherit;
   border: none;
   padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font: inherit;
   cursor: pointer;
   width: 45px;
@@ -1329,12 +1339,8 @@ body:not(.left-sidebar-compact) #ta-left-sidebar #filter:focus {
 }
 
 .left-sidebar-compact #ta-left-sidebar [aria-expanded=true] .chevron {
-  transform: rotate(90deg);
+  transform: translateY(-50%) rotate(90deg);
   transition-duration: 0.2s;
-}
-
-html:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > .item-label {
-  background-color: var(--oc-admin-menu-bg-color, #f8f9fa) !important;
 }
 
 .leftbar-compactor {

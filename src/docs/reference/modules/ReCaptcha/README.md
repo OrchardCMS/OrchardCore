@@ -58,3 +58,20 @@ Display for a reCaptcha challenge if the service is configured.
     ``` html
     <shape type="ReCaptcha" language="en-US" />
     ```
+
+## ReCaptcha Settings Configuration
+
+The `OrchardCore.ReCaptcha` module allows the user to use configuration values to override the settings configured from the admin area by calling the `ConfigureReCaptchaSettings()` extension method on `OrchardCoreBuilder` when initializing the app.
+
+The following configuration values can be customized:
+
+```json
+{
+  "OrchardCore_ReCaptcha": {
+    "SiteKey": "",
+    "SecretKey": "",
+    "ReCaptchaScriptUri": "",
+    "ReCaptchaApiUri": ""
+  }
+}
+```
