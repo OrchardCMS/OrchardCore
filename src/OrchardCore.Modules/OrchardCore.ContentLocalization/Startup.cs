@@ -67,6 +67,7 @@ public sealed class ContentPickerStartup : StartupBase
         services.AddScoped<IContentCulturePickerService, ContentCulturePickerService>();
         services.AddSiteDisplayDriver<ContentCulturePickerSettingsDriver>();
         services.AddSiteDisplayDriver<ContentRequestCultureProviderSettingsDriver>();
+        services.AddSiteDisplayDriver<ContentLocalizationDashboardDriver>();
 
         services.Configure<RequestLocalizationOptions>(options => options.AddInitialRequestCultureProvider(new ContentRequestCultureProvider()));
         services.Configure<CulturePickerOptions>(_shellConfiguration.GetSection("OrchardCore_ContentLocalization_CulturePickerOptions"));
@@ -92,3 +93,9 @@ public sealed class SitemapsStartup : StartupBase
         services.Replace(ServiceDescriptor.Scoped<IContentItemsQueryProvider, LocalizedContentItemsQueryProvider>());
     }
 }
+
+//[Feature("OrchardCore.ContentLocalization.ContentLocalizationDashboard")]
+//public sealed class ContentLocalizationDashboard : StartupBase
+//{
+
+//}

@@ -1,0 +1,35 @@
+@{
+    <h4>Content Localization Dashboard</h4>
+    <div class="card">
+        <h5 class="card-header">@T["Content Culture"]</h5>
+        <div class="card-body">
+            <p class="card-text">@T["Content Culture effectively dictates how localized versions of pages, blogs, or products are grouped, tracked, and queried."]</p>
+            <a href="~/Admin/Settings/ContentRequestCultureProvider" class="btn btn-secondary btn-sm">@T["Content Culture"]</a>
+        </div>
+    </div>
+    <br />
+    <div class="card">
+        <h5 class="card-header">@T["Content Culture Picker"]</h5>
+        <div class="card-body">
+            <p class="card-text">@T["Content Culture Picker provides a frontend language switcher and registers logic to intelligently redirect visitors between different localized versions of content items."]</p>
+            <a href="~/Admin/Settings/ContentCulturePicker" class="btn btn-secondary btn-sm">@T["Content Culture Picker"]</a>
+        </div>
+    </div>
+    <br />
+
+    <div class="card">
+        <h5 class="card-header">@T["Cultures"]</h5>
+        <div class="card-body">
+            <p class="card-text">
+                @T["Cultures manage multi-lingual behavior by enabling both the system admin UI and user-facing content to adapt to different regional languages."]</p>
+            <a href="~/Admin/Settings/localization" class="btn btn-secondary btn-sm">@T["Cultures"]</a>
+        </div>
+    </div>
+}
+<script at="Foot">
+    // Hide the save button on this page
+    let saveButton = document.querySelector('.primaryAction.btn.btn-primary.save');
+    if (saveButton) {
+    saveButton.style.display = 'none';
+    }
+</script>
