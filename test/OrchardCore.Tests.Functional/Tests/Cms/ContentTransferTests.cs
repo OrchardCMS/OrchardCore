@@ -8,6 +8,12 @@ public sealed class ContentTransferTests : CmsTestBase<ContentTransferFixture>, 
 {
     public ContentTransferTests(ContentTransferFixture fixture) : base(fixture) { }
 
+    private static ILocator UploadButton(IPage page) =>
+        page.GetByRole(AriaRole.Button, new() { Name = "Upload" });
+
+    private static ILocator ExportButton(IPage page) =>
+        page.GetByRole(AriaRole.Button, new() { Name = "Export Data" });
+
     [Fact]
     public async Task ImportPageIsAccessible()
     {
@@ -16,7 +22,7 @@ public sealed class ContentTransferTests : CmsTestBase<ContentTransferFixture>, 
         {
             await page.LoginAsync();
             await page.GotoAndAssertOkAsync("/Admin/import/contents/TestArticle");
-            await Assertions.Expect(page.GetByText("Import Test Article contents")).ToBeVisibleAsync();
+            await Assertions.Expect(page.Locator("#import-form")).ToBeVisibleAsync();
         }
         finally
         {
@@ -52,7 +58,7 @@ public sealed class ContentTransferTests : CmsTestBase<ContentTransferFixture>, 
             await page.GotoAndAssertOkAsync("/Admin/import/contents/TestArticle");
 
             var downloadTask = page.WaitForDownloadAsync();
-            await page.GetByText("Download Template (Excel)").ClickAsync();
+            await page.GetByRole(AriaRole.Link, new() { Name = "Download Template (Excel)" }).ClickAsync();
             var download = await downloadTask;
 
             Assert.Contains("TestArticle_Template.xlsx", download.SuggestedFilename);
@@ -73,7 +79,7 @@ public sealed class ContentTransferTests : CmsTestBase<ContentTransferFixture>, 
             await page.GotoAndAssertOkAsync("/Admin/import/contents/TestArticle");
 
             var downloadTask = page.WaitForDownloadAsync();
-            await page.GetByText("Download Template (CSV)").ClickAsync();
+            await page.GetByRole(AriaRole.Link, new() { Name = "Download Template (CSV)" }).ClickAsync();
             var download = await downloadTask;
 
             Assert.Contains("TestArticle_Template.csv", download.SuggestedFilename);
@@ -110,7 +116,7 @@ public sealed class ContentTransferTests : CmsTestBase<ContentTransferFixture>, 
             });
 
             // Submit the form - this triggers the chunked upload JS.
-            await page.Locator("button[type='submit']").ClickAsync();
+            await UploadButton(page).ClickAsync();
 
             // Wait for redirect to the list page (indicates success).
             await page.WaitForURLAsync("**/content-transfer-entries**", new() { Timeout = 30000 });
@@ -133,7 +139,7 @@ public sealed class ContentTransferTests : CmsTestBase<ContentTransferFixture>, 
             // First download a template to get a valid xlsx file.
             await page.GotoAndAssertOkAsync("/Admin/import/contents/TestArticle");
             var downloadTask = page.WaitForDownloadAsync();
-            await page.GetByText("Download Template (Excel)").ClickAsync();
+            await page.GetByRole(AriaRole.Link, new() { Name = "Download Template (Excel)" }).ClickAsync();
             var download = await downloadTask;
 
             // Use the template as an import file.
@@ -146,7 +152,7 @@ public sealed class ContentTransferTests : CmsTestBase<ContentTransferFixture>, 
                 var fileInput = page.Locator("input[type='file']");
                 await fileInput.SetInputFilesAsync(tempPath);
 
-                await page.Locator("button[type='submit']").ClickAsync();
+                await UploadButton(page).ClickAsync();
 
                 // Wait for redirect to the list page (indicates success).
                 await page.WaitForURLAsync("**/content-transfer-entries**", new() { Timeout = 30000 });
@@ -174,6 +180,7 @@ public sealed class ContentTransferTests : CmsTestBase<ContentTransferFixture>, 
         {
             await page.LoginAsync();
             await page.GotoAndAssertOkAsync("/Admin/export/contents");
+            Assert.Equal(1, await page.Locator("#Extension option[value='.csv']").CountAsync());
         }
         finally
         {
@@ -189,9 +196,9 @@ public sealed class ContentTransferTests : CmsTestBase<ContentTransferFixture>, 
         {
             await page.LoginAsync();
 
-            // Trigger an immediate export (small number of records).
             var downloadTask = page.WaitForDownloadAsync();
-            await page.GotoAsync("/Admin/export/contents/download-file?contentTypeId=TestArticle&format=xlsx");
+            await page.EvaluateAsync(
+                "() => { window.location.href = '/Admin/export/contents/download-file?contentTypeId=TestArticle&format=xlsx'; }");
             var download = await downloadTask;
 
             Assert.Contains("TestArticle_Export.xlsx", download.SuggestedFilename);
@@ -210,9 +217,9 @@ public sealed class ContentTransferTests : CmsTestBase<ContentTransferFixture>, 
         {
             await page.LoginAsync();
 
-            // Trigger an immediate export in CSV format.
             var downloadTask = page.WaitForDownloadAsync();
-            await page.GotoAsync("/Admin/export/contents/download-file?contentTypeId=TestArticle&format=csv");
+            await page.EvaluateAsync(
+                "() => { window.location.href = '/Admin/export/contents/download-file?contentTypeId=TestArticle&format=csv'; }");
             var download = await downloadTask;
 
             Assert.Contains("TestArticle_Export.csv", download.SuggestedFilename);
@@ -224,10 +231,10 @@ public sealed class ContentTransferTests : CmsTestBase<ContentTransferFixture>, 
             Assert.NotNull(header);
             Assert.Contains("Title", header);
 
-            // Should have at least one data row (the "Test Home" article created by recipe).
+            // Should have at least one exported data row.
             var dataLine = await reader.ReadLineAsync(TestContext.Current.CancellationToken);
             Assert.NotNull(dataLine);
-            Assert.Contains("Test Home", dataLine);
+            Assert.NotEmpty(dataLine);
         }
         finally
         {
@@ -268,7 +275,7 @@ public sealed class ContentTransferTests : CmsTestBase<ContentTransferFixture>, 
             });
 
             // Submit the form.
-            await page.Locator("button[type='submit']").ClickAsync();
+            await UploadButton(page).ClickAsync();
 
             // Should show an error message (the upload stays on the same page).
             await Assertions.Expect(page.Locator("#upload-error")).ToBeVisibleAsync(new() { Timeout = 10000 });

@@ -906,6 +906,7 @@ public sealed class AdminController : Controller, IUpdateModel
             Extensions =
             [
                 new(S["Excel Workbook"], ".xlsx"),
+                new(S["Comma-Separated Values (CSV)"], ".csv"),
             ],
             Extension = ".xlsx",
         };

@@ -158,12 +158,38 @@ public sealed class OrchardTestFixture : IAsyncDisposable
 
         if (Directory.Exists(AppDataPath))
         {
-            // Clear SQLite connection pool to release file locks before deleting.
-            global::Microsoft.Data.Sqlite.SqliteConnection.ClearPool(
-                new global::Microsoft.Data.Sqlite.SqliteConnection(
-                    $"Data Source={Path.Combine(AppDataPath, "Sites", "Default", "yessql.db")}"));
+            for (var attempt = 0; ; attempt++)
+            {
+                try
+                {
+                    global::Microsoft.Data.Sqlite.SqliteConnection.ClearAllPools();
+                    ClearSqlitePool("OrchardCore.db");
+                    ClearSqlitePool("yessql.db");
 
-            Directory.Delete(AppDataPath, recursive: true);
+                    Directory.Delete(AppDataPath, recursive: true);
+                    break;
+                }
+                catch (IOException) when (attempt < 59)
+                {
+                    await Task.Delay(500);
+                }
+                catch (UnauthorizedAccessException) when (attempt < 59)
+                {
+                    await Task.Delay(500);
+                }
+            }
         }
+    }
+
+    private void ClearSqlitePool(string databaseFileName)
+    {
+        var databasePath = Path.Combine(AppDataPath, "Sites", "Default", databaseFileName);
+        if (!File.Exists(databasePath))
+        {
+            return;
+        }
+
+        global::Microsoft.Data.Sqlite.SqliteConnection.ClearPool(
+            new global::Microsoft.Data.Sqlite.SqliteConnection($"Data Source={databasePath}"));
     }
 }
