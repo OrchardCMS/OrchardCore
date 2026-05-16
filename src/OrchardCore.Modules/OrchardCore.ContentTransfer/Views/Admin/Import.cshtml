@@ -1,9 +1,10 @@
 @using Microsoft.Extensions.Options
 @using OrchardCore.ContentTransfer
+@using OrchardCore.Media
 
 @model ContentImporterViewModel
 
-@inject IOptions<ContentImportOptions> ContentImportOptions
+@inject IOptions<MediaOptions> MediaOptions
 
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
@@ -20,10 +21,17 @@
 <div class="card text-bg-theme mb-3">
     <div class="card-header fw-bold">@T["Import {0} contents", Model.ContentTypeDefinition.DisplayName]</div>
     <div class="card-body">
-        <form asp-route-contentTypeId="@(Model.ContentTypeDefinition.Name)" enctype="multipart/form-data" method="post">
+        <form id="import-form" asp-route-contentTypeId="@(Model.ContentTypeDefinition.Name)" enctype="multipart/form-data" method="post">
 
             @await DisplayAsync(Model.Content)
-            <div class="mb-3 mt-2">
+            <div id="upload-progress" class="mb-3 mt-2" style="display:none;">
+                <div class="progress">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+                </div>
+                <small class="text-muted mt-1 d-block" id="upload-status">@T["Uploading..."]</small>
+            </div>
+            <div id="upload-error" class="alert alert-danger mt-2" style="display:none;"></div>
+            <div class="mb-3 mt-2" id="upload-actions">
 
                 <button type="submit" class="btn btn-primary">@T["Upload"]</button>
             </div>
@@ -37,11 +45,7 @@
     <div class="card-body">
 
         <ul>
-            <li>@T["The uploaded excel file must be in .xls, .xlsx or .csv format."]</li>
-            @if (ContentImportOptions.Value.MaxAllowedFileSizeInBytes > 0)
-            {
-                <li>@T["The uploaded excel file must be less than or equal to {0}MB in size.", ContentImportOptions.Value.GetMaxAllowedSizeInMb()]</li>
-            }
+            <li>@T["The uploaded excel file must be in .xlsx format."]</li>
             <li>@T["The uploaded excel file must contains a single tab and all formats should be cleared."]</li>
             <li>@T["The very first row of the uploaded file must be the column names. The column names and their requirements are defined below."]</li>
             <li>@T["The order of the column in the file is not important as long as it exists. Any column not defined below will be ignored."]</li>
@@ -91,3 +95,136 @@
         </table>
     </div>
 </div>
+
+<script at="Foot">
+    document.addEventListener('DOMContentLoaded', function () {
+        var form = document.getElementById('import-form');
+        var progressContainer = document.getElementById('upload-progress');
+        var progressBar = progressContainer.querySelector('.progress-bar');
+        var uploadStatus = document.getElementById('upload-status');
+        var uploadError = document.getElementById('upload-error');
+        var uploadActions = document.getElementById('upload-actions');
+        var maxChunkSize = @MediaOptions.Value.MaxUploadChunkSize;
+
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            var fileInput = form.querySelector('input[type="file"]');
+            if (!fileInput || !fileInput.files || !fileInput.files.length) {
+                uploadError.textContent = '@T["Please select a file to upload."]';
+                uploadError.style.display = '';
+                return;
+            }
+
+            var file = fileInput.files[0];
+            var url = form.action;
+            var token = form.querySelector('input[name="__RequestVerificationToken"]').value;
+
+            uploadError.style.display = 'none';
+            uploadActions.style.display = 'none';
+            progressContainer.style.display = '';
+
+            if (maxChunkSize > 0 && file.size > maxChunkSize) {
+                uploadChunked(file, url, token, maxChunkSize);
+            } else {
+                uploadWhole(file, url, token);
+            }
+        });
+
+        function uploadWhole(file, url, token) {
+            var formData = new FormData(form);
+            var xhr = new XMLHttpRequest();
+
+            xhr.upload.addEventListener('progress', function (e) {
+                if (e.lengthComputable) {
+                    var percent = Math.round((e.loaded / e.total) * 100);
+                    progressBar.style.width = percent + '%';
+                    progressBar.textContent = percent + '%';
+                    progressBar.setAttribute('aria-valuenow', percent);
+                }
+            });
+
+            xhr.addEventListener('load', function () {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    var response = JSON.parse(xhr.responseText);
+                    if (response.success) {
+                        window.location.href = '@Url.Action("List", "Admin", new { area = ContentTransferConstants.Feature.ModuleId })';
+                    }
+                } else {
+                    showError(xhr);
+                }
+            });
+
+            xhr.addEventListener('error', function () {
+                showError(xhr);
+            });
+
+            xhr.open('POST', url);
+            xhr.send(formData);
+        }
+
+        function uploadChunked(file, url, token, chunkSize) {
+            var uploadId = crypto.randomUUID();
+            var fileSize = file.size;
+            var start = 0;
+
+            function uploadNextChunk() {
+                var end = Math.min(start + chunkSize, fileSize);
+                var chunk = file.slice(start, end);
+
+                var formData = new FormData();
+                formData.append('ImportContentFile.File', new File([chunk], file.name, { type: file.type }));
+                formData.append('__RequestVerificationToken', token);
+                formData.append('__chunkedFileUploadId', uploadId);
+
+                var xhr = new XMLHttpRequest();
+
+                xhr.addEventListener('load', function () {
+                    if (xhr.status >= 200 && xhr.status < 300) {
+                        start = end;
+                        var percent = Math.round((start / fileSize) * 100);
+                        progressBar.style.width = percent + '%';
+                        progressBar.textContent = percent + '%';
+                        progressBar.setAttribute('aria-valuenow', percent);
+
+                        if (start < fileSize) {
+                            uploadStatus.textContent = '@T["Uploading..."]' + ' (' + percent + '%)';
+                            uploadNextChunk();
+                        } else {
+                            var response = JSON.parse(xhr.responseText);
+                            if (response.success) {
+                                window.location.href = '@Url.Action("List", "Admin", new { area = ContentTransferConstants.Feature.ModuleId })';
+                            }
+                        }
+                    } else {
+                        showError(xhr);
+                    }
+                });
+
+                xhr.addEventListener('error', function () {
+                    showError(xhr);
+                });
+
+                xhr.open('POST', url);
+                xhr.setRequestHeader('Content-Range', 'bytes ' + start + '-' + (end - 1) + '/' + fileSize);
+                xhr.send(formData);
+            }
+
+            uploadNextChunk();
+        }
+
+        function showError(xhr) {
+            progressContainer.style.display = 'none';
+            uploadActions.style.display = '';
+            var message = '@T["An error occurred while uploading the file."]';
+            try {
+                var response = JSON.parse(xhr.responseText);
+                if (response.error) {
+                    message = response.error;
+                }
+            } catch (e) { }
+            uploadError.textContent = message;
+            uploadError.style.display = '';
+        }
+    });
+</script>

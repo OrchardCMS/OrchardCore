@@ -1,5 +1,4 @@
 using System.Data;
-using System.Net.Http.Headers;
 using System.Security.Claims;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
@@ -20,7 +19,6 @@ using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.ContentTransfer.Indexes;
 using OrchardCore.ContentTransfer.Models;
-using OrchardCore.ContentTransfer.Services;
 using OrchardCore.ContentTransfer.ViewModels;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -281,8 +279,6 @@ public sealed class AdminController : Controller, IUpdateModel
 
                 return Ok(new { success = true });
             });
-
-        return View(viewModel);
     }
 
     [Admin("import/contents/{contentTypeId}/download-template", "ImportContentDownloadTemplateTemplate")]
