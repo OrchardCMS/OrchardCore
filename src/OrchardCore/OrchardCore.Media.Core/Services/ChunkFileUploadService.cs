@@ -10,7 +10,7 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.Media.Services;
 
-public class ChunkFileUploadService : IChunkFileUploadService
+public sealed class ChunkFileUploadService : IChunkFileUploadService
 {
     private const string UploadIdFormKey = "__chunkedFileUploadId";
     private const string TempFolderPrefix = "ChunkedFileUploads";
