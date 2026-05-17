@@ -436,6 +436,35 @@ Continuing with the `NotifyTask` example, we now need to create the following Ra
 - `NotifyTask.Fields.Thumbnail.cshtml`
 - `NotifyTask.Fields.Edit.cshtml`
 
+## Recipe Configuration
+
+Workflow trimming settings can be configured using the `Settings` recipe step:
+
+```json
+{
+  "steps": [
+    {
+      "name": "settings",
+      "WorkflowTrimmingSettings": {
+        "RetentionDays": 90,
+        "Disabled": false,
+        "Statuses": [
+          "Finished",
+          "Faulted",
+          "Aborted"
+        ]
+      }
+    }
+  ]
+}
+```
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `RetentionDays` | Integer | The number of days to retain workflow instances before trimming. Default: `90`. |
+| `Disabled` | Boolean | Whether automatic workflow trimming is disabled. |
+| `Statuses` | Array of String | The workflow statuses to include in trimming. Values: `Idle`, `Starting`, `Resuming`, `Executing`, `Halted`, `Finished`, `Faulted`, `Aborted`. |
+
 ## Trimming
 
 Old workflow instances can be automatically deleted with the Trimming feature. This is enabled by default and you can configure it (including disabling it) in Settings → Workflow Trimming. Without trimming, workflow instances remain in the database indefinitely.
