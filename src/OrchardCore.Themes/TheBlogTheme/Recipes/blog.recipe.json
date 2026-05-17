@@ -1192,7 +1192,7 @@
             {
               "$type": "OrchardCore.AdminMenu.AdminNodes.LinkAdminNode, OrchardCore.AdminMenu",
               "LinkText": "Blog",
-              "LinkUrl": "[js: (async function() { return `${await variables('adminUrlPrefix')}/Contents/ContentItems/${await variables('blogContentItemId')}/Display`; })()]",
+              "LinkUrl": "[js: (async function() { return `${await variablesAsync('adminUrlPrefix')}/Contents/ContentItems/${await variablesAsync('blogContentItemId')}/Display`; })()]",
               "IconClass": "fas fa-rss",
               "PermissionNames": [],
               "UniqueId": "7b293d57056a4eebb3713f07f12c65d8",
@@ -1211,7 +1211,7 @@
             {
               "$type": "OrchardCore.AdminMenu.AdminNodes.LinkAdminNode, OrchardCore.AdminMenu",
               "LinkText": "Main Menu",
-              "LinkUrl": "[js: (async function() { return `${await variables('adminUrlPrefix')}/Contents/ContentItems/${await variables('blogContentItemId')}/Edit`; })()]",
+              "LinkUrl": "[js: (async function() { return `${await variablesAsync('adminUrlPrefix')}/Contents/ContentItems/${await variablesAsync('blogContentItemId')}/Edit`; })()]",
               "IconClass": "fas fa-sitemap",
               "PermissionNames": [],
               "UniqueId": "5118cecfde834dacb26ac08980f1b5a7",
@@ -1246,7 +1246,7 @@
                 {
                   "$type": "OrchardCore.AdminMenu.AdminNodes.LinkAdminNode, OrchardCore.AdminMenu",
                   "LinkText": "Content Items",
-                  "LinkUrl": "[js: (async function() { return `${await variables('adminUrlPrefix')}/Contents/ContentItems/`; })()]",
+                  "LinkUrl": "[js: (async function() { return `${await variablesAsync('adminUrlPrefix')}/Contents/ContentItems/`; })()]",
                   "IconClass": null,
                   "UniqueId": "7b293d57056a4eebb3713f07f12c65d9",
                   "Enabled": true,
