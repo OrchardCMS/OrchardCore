@@ -106,13 +106,13 @@ var plainText = decrypt(encryptedValue);
 
 #### Content (`OrchardCore.Contents`)
 
-| Function                                                                                     | Description                                                         |
-|----------------------------------------------------------------------------------------------|---------------------------------------------------------------------|
-| `newContentItem(contentTypeName: String): IContent`                                          | Creates a new instance of a ContentType (does not persist)          |
-| `createContentItem(contentTypeName: String, publish: Boolean, properties: Object): IContent` | Creates and persists a new ContentItem. Conditionally publishes it. |
-| `updateContentItem(contentItem: IContent, properties: Object)`                               | Updates an existing content item with the properties                |
-| `deleteContentItem(contentItem: IContent)`                                                   | Deletes an existing content item                                    |
-| `getUrlPrefix(path: String): String`                                                         | Prefixes the path with the Tenant prefix (if specified)             |
+| Function                                                                                                   | Description                                                         |
+|------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------|
+| `newContentItemAsync(contentTypeName: String): Promise<IContent>`                                          | Creates a new instance of a ContentType (does not persist)          |
+| `createContentItemAsync(contentTypeName: String, publish: Boolean, properties: Object): Promise<IContent>` | Creates and persists a new ContentItem. Conditionally publishes it. |
+| `updateContentItemAsync(contentItem: IContent, properties: Object): Promise`                               | Updates an existing content item with the properties                |
+| `deleteContentItemAsync(contentItem: IContent): Promise`                                                   | Deletes an existing content item                                    |
+| `getUrlPrefix(path: String): String`                                                                       | Prefixes the path with the Tenant prefix (if specified)             |
 
 #### Layers (`OrchardCore.Layers`)
 
@@ -126,29 +126,29 @@ var plainText = decrypt(encryptedValue);
 
 #### Queries (`OrchardCore.Queries`)
 
-| Function                                                                                 | Description                      |
-|------------------------------------------------------------------------------------------|----------------------------------|
-| `executeQuery(name: String, parameters: Dictionary<string,object>): IEnumerable<object>` | Returns the result of the query. |
+| Function                                                                                               | Description                      |
+|--------------------------------------------------------------------------------------------------------|----------------------------------|
+| `executeQueryAsync(name: String, parameters: Dictionary<string,object>): Promise<IEnumerable<object>>` | Returns the result of the query. |
 
 #### HTTP (`OrchardCore.Workflows.Http`)
 
-| Function                                               | Description                                                                                                                                                                 |
-|--------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `httpContext(): HttpContext`                           | Returns the `HttpContext` which encapsulates all HTTP-specific information about an individual HTTP request.                                                                |
-| `queryString(name: String): String                     | Array`                                                                                                                                                                      | Returns the entire query string (including the leading `?`) when invoked with no arguments, or the value(s) of the parameter name passed in as an argument. |
-| `responseWrite(text: String): void`                    | Writes the argument string directly to the HTTP response stream.                                                                                                            |
-| `absoluteUrl(relativePath: String): String`            | Returns the absolute URL for the relative path argument.                                                                                                                    |
-| `readBody(): String`                                   | Returns the raw HTTP request body.                                                                                                                                          |
-| `requestForm(name: String): String                     | Array`                                                                                                                                                                      | Returns the value(s) of the form field name passed in as an argument. |
-| `deserializeRequestData(): Dictionary<string, object>` | Deserializes the request data as a Dictionary<string, object> for requests that send JSON or form data. Replaces deprecated queryStringAsJson and requestFormAsJson methods |
+| Function                                                             | Description                                                                                                                                                                 |
+|----------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `httpContext(): HttpContext`                                         | Returns the `HttpContext` which encapsulates all HTTP-specific information about an individual HTTP request.                                                                |
+| `queryString(name: String): String`                                  | Array`                                                                                                                                                                      | Returns the entire query string (including the leading `?`) when invoked with no arguments, or the value(s) of the parameter name passed in as an argument. |
+| `responseWriteAsync(text: String): Promise`                          | Writes the argument string directly to the HTTP response stream.                                                                                                            |
+| `absoluteUrl(relativePath: String): String`                          | Returns the absolute URL for the relative path argument.                                                                                                                    |
+| `readBodyAsync(): Promise<String>`                                   | Returns the raw HTTP request body.                                                                                                                                          |
+| `requestForm(name: String): String`                                  | Array`                                                                                                                                                                      | Returns the value(s) of the form field name passed in as an argument. |
+| `deserializeRequestDataAsync(): Promise<Dictionary<string, object>>` | Deserializes the request data as a Dictionary<string, object> for requests that send JSON or form data. Replaces deprecated queryStringAsJson and requestFormAsJson methods |
 
 #### Recipes (`OrchardCore.Recipes`)
 
-| Function                                           | Description                                                                                                                                                                                                            |
-|----------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `variables()`                                      | Declare variables at the root of a recipe. Ex: `"variables": { "blogContentItemId": "[js:uuid()]" }`  Retrieve a variable value like this: `"ContentItemId": "[js: variables('blogContentItemId')]"`                   |
-| `parameters()`                                     | Retrieves the parameters specified during the setup. Ex: `"Owner": "[js: parameters('AdminUserId')]"` See the available [Setup Recipe parameters](../Setup/README.md#recipe-parameters)                                |
-| `configuration(key: String, defaultValue: String)` | Retrieves the specified configuration setting by its key, optionally providing a default. Ex: `[js: configuration('OrchardCore_Admin:AdminUrlPrefix', 'Admin')]` See [IShellConfiguration](../Configuration/README.md) |
+| Function                                                   | Description                                                                                                                                                                                                            |
+|------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `variablesAsync(): Promise<string>`                        | Declare variables at the root of a recipe. Ex: `"variables": { "blogContentItemId": "[js:uuid()]" }`  Retrieve a variable value like this: `"ContentItemId": "[js: variablesAsync('blogContentItemId')]"`              |
+| `parameters(): string`                                     | Retrieves the parameters specified during the setup. Ex: `"Owner": "[js: parameters('AdminUserId')]"` See the available [Setup Recipe parameters](../Setup/README.md#recipe-parameters)                                |
+| `configuration(key: String, defaultValue: String): string` | Retrieves the specified configuration setting by its key, optionally providing a default. Ex: `[js: configuration('OrchardCore_Admin:AdminUrlPrefix', 'Admin')]` See [IShellConfiguration](../Configuration/README.md) |
 
 #### Workflows (`OrchardCore.Workflows.Http`)
 
