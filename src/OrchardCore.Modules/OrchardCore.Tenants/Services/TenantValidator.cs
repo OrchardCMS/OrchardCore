@@ -139,13 +139,13 @@ public partial class TenantValidator : ITenantValidator
 
         if (ProviderSupportsTablePrefix(model.DatabaseProvider) &&
             !string.IsNullOrWhiteSpace(model.TablePrefix) &&
-            !SqlIdentifierRegex().IsMatch(model.TablePrefix))
+            !TenantDatabasePatternResolver.IsSqlIdentifier(model.TablePrefix))
         {
             errors.Add(new ModelError(nameof(model.TablePrefix), S["The table prefix must be a valid SQL identifier using only letters, numbers, and underscores, and it must start with a letter or underscore."]));
         }
 
         if (!string.IsNullOrWhiteSpace(model.Schema) &&
-            !SqlIdentifierRegex().IsMatch(model.Schema))
+            !TenantDatabasePatternResolver.IsSqlIdentifier(model.Schema))
         {
             errors.Add(new ModelError(nameof(model.Schema), S["The table schema must be a valid SQL identifier using only letters, numbers, and underscores, and it must start with a letter or underscore."]));
         }
@@ -218,7 +218,4 @@ public partial class TenantValidator : ITenantValidator
 
     [GeneratedRegex(@"^\w+$")]
     private static partial Regex TenantNameRuleRegex();
-
-    [GeneratedRegex(@"^[A-Za-z_][A-Za-z0-9_]*$")]
-    private static partial Regex SqlIdentifierRegex();
 }

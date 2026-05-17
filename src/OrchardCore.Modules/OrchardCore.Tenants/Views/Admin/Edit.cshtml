@@ -17,9 +17,13 @@
         <partial name="_TenantInfo" model="Model" />
     </div>
 
-    @if (Model.CanEditDatabasePresets)
+    @if (Model.Recipes is not null)
     {
-        <partial name="_TenantRecipes" model="Model" />
+        @if (Model.CanEditDatabasePresets)
+        {
+            <partial name="_TenantRecipes" model="Model" />
+        }
+
         <partial name="_TenantDatabaseInfo" model="Model" />
     }
 

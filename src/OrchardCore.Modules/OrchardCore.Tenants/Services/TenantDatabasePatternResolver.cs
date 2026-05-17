@@ -71,6 +71,10 @@ public partial class TenantDatabasePatternResolver
         return result;
     }
 
+    internal static bool IsSqlIdentifier(string value) =>
+        !string.IsNullOrWhiteSpace(value) &&
+        SqlIdentifierRegex().IsMatch(value);
+
     private string ResolvePattern(string pattern, ShellSettings shellSettings, string optionDisplayName, out string error)
     {
         error = null;
@@ -106,7 +110,7 @@ public partial class TenantDatabasePatternResolver
             return null;
         }
 
-        if (!SqlIdentifierRegex().IsMatch(value))
+        if (!IsSqlIdentifier(value))
         {
             error = S["The configured {0} must resolve to a valid SQL identifier using only letters, numbers, and underscores, and it must start with a letter or underscore.", optionDisplayName];
             return null;

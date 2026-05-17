@@ -3,9 +3,13 @@
 
 @{
     var selectedProvider = DatabaseProviders.FirstOrDefault(provider => provider.Value == Model.DatabaseProvider);
+    var selectedProviderName = selectedProvider?.Name ?? Model.DatabaseProvider;
     var selectedProviderHasConnectionString = selectedProvider?.HasConnectionString == true;
     var selectedProviderHasTablePrefix = selectedProvider?.HasTablePrefix == true;
     var tablePrefixRequired = !Model.HasTablePrefixPattern && Model.RequireTablePrefix && selectedProviderHasTablePrefix;
+    var displayedConnectionString = Model.DatabaseConfigurationPreset
+        ? OrchardCore.Tenants.Services.TenantConnectionStringRedactor.RedactPassword(Model.ConnectionString)
+        : Model.ConnectionString;
 }
 
 @if (!Model.DatabaseProviderPreset)
@@ -16,7 +20,14 @@
     </h6>
 }
 <div class="row row-cols-1 row-cols-md-2">
-    @if (!Model.DatabaseProviderPreset)
+    @if (Model.DatabaseProviderPreset)
+    {
+        <div class="mb-3 col">
+            <label asp-for="DatabaseProvider" class="form-label">@T["What type of database to use?"]</label>
+            <input value="@selectedProviderName" class="form-control" readonly />
+        </div>
+    }
+    else
     {
         <div class="mb-3 col" asp-validation-class-for="DatabaseProvider">
             <label asp-for="DatabaseProvider" class="form-label">@T["What type of database to use?"]</label>
@@ -32,7 +43,20 @@
 
     @if (Model.HasTablePrefixPattern)
     {
-        <input asp-for="TablePrefix" type="hidden" data-require-table-prefix="false" data-provider-has-table-prefix="@selectedProviderHasTablePrefix.ToString().ToLowerInvariant()" />
+        <div class="mb-3 col tablePrefixField" hidden="@(!selectedProviderHasTablePrefix)">
+            <label asp-for="TablePrefix" class="form-label">@T["Table Prefix"]</label>
+            <input asp-for="TablePrefix" class="form-control" readonly data-require-table-prefix="false" data-provider-has-table-prefix="@selectedProviderHasTablePrefix.ToString().ToLowerInvariant()" />
+            <div class="hint">
+                @if (string.IsNullOrEmpty(Model.ResolvedTablePrefix))
+                {
+                    @T["Generated automatically from the configured tenant table prefix pattern when the tenant is created."]
+                }
+                else
+                {
+                    @T["Generated automatically from the configured tenant table prefix pattern."]
+                }
+            </div>
+        </div>
     }
     else
     {
@@ -51,24 +75,31 @@
     }
 </div>
 
-@if (!Model.DatabaseConfigurationPreset)
-{
-    <div class="row connectionString" asp-validation-class-for="ConnectionString" hidden="@(!selectedProviderHasConnectionString)">
-        <div class="mb-3 col-md-12">
-            <label asp-for="ConnectionString" class="form-label">@T["Connection string"]</label>
+<div class="row connectionString" asp-validation-class-for="ConnectionString" hidden="@(!selectedProviderHasConnectionString)">
+    <div class="mb-3 col-md-12">
+        <label asp-for="ConnectionString" class="form-label">@T["Connection string"]</label>
+        @if (Model.DatabaseConfigurationPreset)
+        {
+            <input id="ConnectionString" value="@displayedConnectionString" class="form-control" readonly data-provider-has-connection-string="@selectedProviderHasConnectionString.ToString().ToLowerInvariant()" data-connection-string-sample="@(selectedProviderHasConnectionString ? T["The connection string to your database instance, e.g. {0}.", selectedProvider?.SampleConnectionString] : string.Empty)" />
+        }
+        else
+        {
             <input asp-for="ConnectionString" class="form-control" data-provider-has-connection-string="@selectedProviderHasConnectionString.ToString().ToLowerInvariant()" data-connection-string-sample="@(selectedProviderHasConnectionString ? T["The connection string to your database instance, e.g. {0}.", selectedProvider?.SampleConnectionString] : string.Empty)" />
             <span asp-validation-for="ConnectionString" class="text-danger"></span>
-            <span id="connectionStringHint" class="text-muted form-text small"></span>
-        </div>
+        }
+        <span id="connectionStringHint" class="text-muted form-text small"></span>
     </div>
+</div>
 
-    <div class="row row-cols-1 row-cols-md-2">
-        <div class="mb-3 col schemaField" asp-validation-class-for="Schema" hidden="@(!selectedProviderHasTablePrefix)">
-            <label asp-for="Schema" class="form-label">@T["Table Schema"]</label>
-            @if (Model.HasSchemaPattern)
-            {
-                <input asp-for="Schema" class="form-control" readonly />
-                <div class="hint">
+<div class="row row-cols-1 row-cols-md-2">
+    <div class="mb-3 col schemaField" asp-validation-class-for="Schema" hidden="@(!selectedProviderHasTablePrefix)">
+        <label asp-for="Schema" class="form-label">@T["Table Schema"]</label>
+        @if (Model.HasSchemaPattern || Model.DatabaseConfigurationPreset)
+        {
+            <input asp-for="Schema" class="form-control" readonly />
+            <div class="hint">
+                @if (Model.HasSchemaPattern)
+                {
                     @if (string.IsNullOrEmpty(Model.ResolvedSchema))
                     {
                         @T["Generated automatically from the configured tenant schema pattern when the tenant is created."]
@@ -77,14 +108,18 @@
                     {
                         @T["Generated automatically from the configured tenant schema pattern."]
                     }
-                </div>
-            }
-            else
-            {
-                <input asp-for="Schema" class="form-control" />
-                <div class="hint">@T["When left blank, the default value on the server will be used."] @T["For example, '{0}' for SQL Server.", "dbo"]</div>
-            }
-            <span asp-validation-for="Schema" class="text-danger"></span>
-        </div>
+                }
+                else
+                {
+                    @T["Configured in the application's root settings."]
+                }
+            </div>
+        }
+        else
+        {
+            <input asp-for="Schema" class="form-control" />
+            <div class="hint">@T["When left blank, the default value on the server will be used."] @T["For example, '{0}' for SQL Server.", "dbo"]</div>
+        }
+        <span asp-validation-for="Schema" class="text-danger"></span>
     </div>
-}
+</div>
