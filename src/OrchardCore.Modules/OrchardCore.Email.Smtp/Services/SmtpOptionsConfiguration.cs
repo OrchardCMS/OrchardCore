@@ -83,7 +83,8 @@ public sealed class SmtpOptionsConfiguration : IConfigureOptions<SmtpOptions>
         catch (Exception e)
         {
             _logger.LogCritical(e, "Unable to parse SMTP pickup directory location.");
-            throw;
+
+            return null;
         }
 
         if (!pickupDirectoryLocation.StartsWith("~/", StringComparison.Ordinal) &&
