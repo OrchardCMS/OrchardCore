@@ -12,7 +12,7 @@ Here are the available SMTP settings
 |---------------------------|-------------------------------------------------------------------------------------------------------------------------------------|
 | `DefaultSender`           | The email of the sender.                                                                                                            |
 | `DeliveryMethod`          | The method for sending the email, `SmtpDeliveryMethod.Network` (online) or `SmtpDeliveryMethod.SpecifiedPickupDirectory` (offline). |
-| `PickupDirectoryLocation` | The directory location for the mailbox (`SmtpDeliveryMethod.SpecifiedPickupDirectory`).                                             |
+| `PickupDirectoryLocation` | The directory location for the mailbox (`SmtpDeliveryMethod.SpecifiedPickupDirectory`). A leading `~/` resolves from `App_Data`, and the path also supports Fluid expressions such as `{{ ShellSettings.Name }}`. |
 | `Host`                    | The SMTP server.                                                                                                                    |
 | `Port`                    | The SMTP port number.                                                                                                               |
 | `AutoSelectEncryption`    | Whether the SMTP select the encryption automatically.                                                                               |
@@ -34,7 +34,7 @@ You may configure the Default SMTP provider by the configuration provider using 
 ```json
 {
   "OrchardCore_Email_Smtp": {
-    "DefaultSender": "",
+    "DefaultSender": "site@example.com",
     "DeliveryMethod": "Network",
     "PickupDirectoryLocation": "",
     "Host": "localhost",
@@ -52,10 +52,25 @@ You may configure the Default SMTP provider by the configuration provider using 
 }
 ```
 
+or
+
+```json
+{
+  "OrchardCore_Email_Smtp": {
+    "DefaultSender": "site@example.com",
+    "DeliveryMethod": "SpecifiedPickupDirectory",
+    "PickupDirectoryLocation": "~/Sites/{{ ShellSettings.Name }}/Emails"
+  }
+}
+```
+
 For more information about configurations, please refer to [Configuration](../../modules/Configuration/README.md).
 
 !!! note
     Configuration of the Default SMTP provider is not possible through Admin Settings. Utilize the configuration provider for the necessary setup. The provider will appear only if the configuration exists.
+
+!!! tip
+    `PickupDirectoryLocation` supports a leading `~/` and resolves it from the configured `App_Data` folder. For example, `~/Emails` maps to `App_Data\Emails`, `~/MyEmails/Etc` maps to `App_Data\MyEmails\Etc`, and `~/Sites/{{ ShellSettings.Name }}/Emails` maps to a tenant-specific folder under `App_Data`.
 
 
 ## Credits

@@ -5,14 +5,16 @@ namespace OrchardCore.Liquid.Abstractions;
 
 public sealed class FluidOptionsParser<TOptions> where TOptions : class
 {
-    // Local instance since it can be discarded once the parsing is over.
-    private readonly FluidParser _fluidParser = new();
+    private readonly FluidParser _fluidParser;
     private readonly ShellSettings _shellSettings;
 
     private TemplateContext _templateContext;
 
-    public FluidOptionsParser(ShellSettings shellSettings)
+    public FluidOptionsParser(
+        FluidParser fluidParser,
+        ShellSettings shellSettings)
     {
+        _fluidParser = fluidParser;
         _shellSettings = shellSettings;
     }
 

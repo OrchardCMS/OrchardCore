@@ -1,3 +1,4 @@
+using Fluid;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
@@ -10,14 +11,17 @@ namespace OrchardCore.Media.AmazonS3.Services;
 internal sealed class AwsImageSharpImageCacheOptionsConfiguration : IConfigureOptions<AwsImageSharpImageCacheOptions>
 {
     private readonly IShellConfiguration _shellConfiguration;
+    private readonly FluidParser _fluidParser;
     private readonly ShellSettings _shellSettings;
     private readonly ILogger _logger;
 
     public AwsImageSharpImageCacheOptionsConfiguration(
+        FluidParser fluidParser,
         IShellConfiguration shellConfiguration,
         ShellSettings shellSettings,
         ILogger<AwsStorageOptionsConfiguration> logger)
     {
+        _fluidParser = fluidParser;
         _shellConfiguration = shellConfiguration;
         _shellSettings = shellSettings;
         _logger = logger;
@@ -27,7 +31,7 @@ internal sealed class AwsImageSharpImageCacheOptionsConfiguration : IConfigureOp
     {
         options.BindConfiguration(AmazonS3Constants.ConfigSections.AmazonS3ImageSharpCache, _shellConfiguration, _logger);
 
-        var parser = new FluidOptionsParser<AwsImageSharpImageCacheOptions>(_shellSettings);
+        var parser = new FluidOptionsParser<AwsImageSharpImageCacheOptions>(_fluidParser, _shellSettings);
 
         try
         {
