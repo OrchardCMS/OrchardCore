@@ -152,7 +152,7 @@
                         <label asp-for="PickupDirectoryLocation" class="form-label">@T["Pickup directory location"]</label>
                         <input asp-for="PickupDirectoryLocation" class="form-control" type="text" />
                         <span asp-validation-for="PickupDirectoryLocation"></span>
-                        <span class="hint">@T[@"! <code>~/</code> resolves from this site's <code>App_Data</code> folder. Examples: <code>~/Emails</code>, <code>~/MyEmails/Etc</code>, or <code>~/Sites/{{ ShellSettings.Name }}/Emails</code>. Absolute paths such as <i>C:\Path\To\This\Site\PickedUpEmail</i> are also supported."]</span>
+                        <span class="hint">@T[@"<code>~/</code> resolves from this site's <code>App_Data</code> folder. Examples: <code>~/Emails</code> or <code>~/Sites/{{ ShellSettings.Name }}/Emails</code>. Absolute paths such as <i>C:\Path\To\This\Site\PickedUpEmail</i> are also supported."]</span>
                     </div>
                 </div>
             </div>
