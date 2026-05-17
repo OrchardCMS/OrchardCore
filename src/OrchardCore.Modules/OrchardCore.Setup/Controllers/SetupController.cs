@@ -178,7 +178,7 @@ public sealed class SetupController : Controller
         catch (Exception ex) when (!ex.IsFatal())
         {
             _logger.LogError(ex, "An error occurred while setting up the tenant '{TenantName}'.", _shellSettings.Name);
-            ModelState.AddModelError(string.Empty, S["An error occurred while initializing the datastore."]);
+            ModelState.AddModelError(string.Empty, S["An error occurred while running the setup. Try again in a few minutes, and if the issue persists, consult the app's operator."]);
             CopyShellSettingsValues(model);
             return View(model);
         }
