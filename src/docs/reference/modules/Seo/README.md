@@ -25,6 +25,27 @@ These default settings aim to provide a basic configuration that ensures search 
 !!! warning
     If the site's [filesystem](../Tenants/README.md#static-file-provider-feature) contains a `robots.txt`, this file will take precedence and the site settings to generate the files will be ignored.
 
+## Recipe Configuration
+
+SEO settings can be configured using the `Settings` recipe step:
+
+```json
+{
+  "name": "Settings",
+  "RobotsSettings": {
+    "AllowAllAgents": true,
+    "DisallowAdmin": true,
+    "AdditionalRules": "Disallow: /private/"
+  }
+}
+```
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `AllowAllAgents` | Boolean | Whether to allow all user agents. Default: `true`. |
+| `DisallowAdmin` | Boolean | Whether to disallow crawling the admin area. Default: `true`. |
+| `AdditionalRules` | String | Additional custom rules appended to the robots.txt file. |
+
 ## Video
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/bDf96bg-mBU" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

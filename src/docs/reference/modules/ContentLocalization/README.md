@@ -79,6 +79,36 @@ Output
 Title
 ```
 
+## Recipe Configuration
+
+Content localization settings can be configured using the `Settings` recipe step:
+
+```json
+{
+  "name": "Settings",
+  "ContentCulturePickerSettings": {
+    "RedirectToHomepage": false,
+    "SetCookie": true
+  },
+  "ContentRequestCultureProviderSettings": {
+    "SetCookie": false
+  }
+}
+```
+
+### ContentCulturePickerSettings
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `RedirectToHomepage` | Boolean | Whether to redirect to the homepage when switching cultures. |
+| `SetCookie` | Boolean | Whether to set a cookie to remember the selected culture. Default: `true`. |
+
+### ContentRequestCultureProviderSettings
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `SetCookie` | Boolean | Whether to set a cookie with the determined culture. |
+
 ## Configuration
 
 The following configuration is used by default and can be customized:

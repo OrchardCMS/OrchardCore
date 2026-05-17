@@ -64,6 +64,40 @@ public class TwilioProviderOptionsConfigurations : IConfigureOptions<SmsProvider
 }
 ```
 
+## Recipe Configuration
+
+SMS settings can be configured using the `Settings` recipe step:
+
+```json
+{
+  "name": "Settings",
+  "SmsSettings": {
+    "DefaultProviderName": "Twilio"
+  },
+  "TwilioSettings": {
+    "IsEnabled": true,
+    "PhoneNumber": "+1234567890",
+    "AccountSID": "your-account-sid",
+    "AuthToken": "your-auth-token"
+  }
+}
+```
+
+### SmsSettings
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `DefaultProviderName` | String | The name of the default SMS provider. |
+
+### TwilioSettings
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `IsEnabled` | Boolean | Whether the Twilio SMS provider is enabled. |
+| `PhoneNumber` | String | The Twilio phone number to send SMS messages from. **Required.** |
+| `AccountSID` | String | The Twilio Account SID. **Required.** |
+| `AuthToken` | String | The Twilio Auth Token. **Required.** |
+
 ## Sending SMS Message
 
 An SMS message can be send by injecting `ISmsService` and invoke the `SendAsync` method. For instance
