@@ -145,9 +145,10 @@ public sealed class AccountController : AccountBaseController
 
                         if (loginResult != null)
                         {
-                            if (IsConfirmEmailSentResult(loginResult) && await AddConfirmEmailErrorAsync(user))
+                            if (loginResult is RedirectToActionResult redirectToActionResult &&
+                                IsConfirmEmailSentResult(redirectToActionResult))
                             {
-                                return View(formShape);
+                                await AddResendEmailConfirmationCodeAsync(redirectToActionResult, user);
                             }
 
                             return loginResult;
@@ -290,25 +291,19 @@ public sealed class AccountController : AccountBaseController
     public IActionResult ChangePasswordConfirmation()
         => View();
 
-    private async Task<bool> AddConfirmEmailErrorAsync(IUser user)
+    private async Task AddResendEmailConfirmationCodeAsync(RedirectToActionResult result, IUser user)
     {
         if (!_registrationOptions.UsersMustValidateEmail || await _userManager.IsEmailConfirmedAsync(user))
         {
-            return false;
+            return;
         }
 
-        ModelState.AddModelError(
-            string.Empty,
-            S["You must confirm your email. A confirmation email was sent when the account was created."]);
-
-        ViewData["ResendEmailConfirmationCode"] = _resendEmailConfirmationProtector.Protect(
+        result.RouteValues ??= [];
+        result.RouteValues["code"] = _resendEmailConfirmationProtector.Protect(
             await _userManager.GetUserIdAsync(user));
-
-        return true;
     }
 
-    private static bool IsConfirmEmailSentResult(IActionResult result)
-        => result is RedirectToActionResult redirectToActionResult &&
-            string.Equals(redirectToActionResult.ActionName, nameof(EmailConfirmationController.ConfirmEmailSent), StringComparison.Ordinal) &&
-            string.Equals(redirectToActionResult.ControllerName, typeof(EmailConfirmationController).ControllerName(), StringComparison.Ordinal);
+    private static bool IsConfirmEmailSentResult(RedirectToActionResult result)
+        => string.Equals(result.ActionName, nameof(EmailConfirmationController.ConfirmEmailSent), StringComparison.Ordinal) &&
+            string.Equals(result.ControllerName, typeof(EmailConfirmationController).ControllerName(), StringComparison.Ordinal);
 }

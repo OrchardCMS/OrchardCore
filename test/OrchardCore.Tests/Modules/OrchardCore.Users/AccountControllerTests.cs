@@ -545,22 +545,41 @@ public class AccountControllerTests
 
         Assert.True(responseFromLoginGet.IsSuccessStatusCode);
 
+        var loginBody = await responseFromLoginGet.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+
+        Assert.DoesNotContain("Send confirmation email", loginBody);
+
+        var responseFromConfirmEmailSentWithoutCode = await context.Client.GetAsync("ConfirmEmailSent", TestContext.Current.CancellationToken);
+
+        Assert.True(responseFromConfirmEmailSentWithoutCode.IsSuccessStatusCode);
+
+        var confirmEmailSentBodyWithoutCode = await responseFromConfirmEmailSentWithoutCode.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+
+        Assert.DoesNotContain("Send confirmation email", confirmEmailSentBodyWithoutCode);
+
         // Act
         var responseFromLoginPost = await context.Client.SendAsync(await CreateLoginRequestMessageAsync(model, responseFromLoginGet), TestContext.Current.CancellationToken);
 
         // Assert
-        Assert.True(responseFromLoginPost.IsSuccessStatusCode);
+        Assert.Equal(HttpStatusCode.Redirect, responseFromLoginPost.StatusCode);
+        Assert.StartsWith($"/{context.TenantName}/ConfirmEmailSent?", responseFromLoginPost.Headers.Location.ToString());
 
-        var body = await responseFromLoginPost.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+        var responseFromConfirmEmailSent = await context.Client.GetAsync(responseFromLoginPost.Headers.Location, TestContext.Current.CancellationToken);
 
-        Assert.Contains("You must confirm your email. A confirmation email was sent when the account was created.", body);
+        Assert.True(responseFromConfirmEmailSent.IsSuccessStatusCode);
+
+        var body = await responseFromConfirmEmailSent.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+
+        Assert.Contains("An email has been sent to you.", body);
         Assert.Contains("Send confirmation email", body);
+        Assert.Contains(">Send confirmation email</a>", body);
+        Assert.DoesNotContain(">Send confirmation email</button>", body);
 
         var resendCode = ExtractResendEmailConfirmationCode(body);
 
         Assert.NotNull(resendCode);
 
-        var responseFromResendPost = await context.Client.SendAsync(await CreateResendEmailConfirmationRequestMessageAsync(resendCode, body, responseFromLoginGet), TestContext.Current.CancellationToken);
+        var responseFromResendPost = await context.Client.SendAsync(await CreateResendEmailConfirmationRequestMessageAsync(resendCode, body, responseFromConfirmEmailSent), TestContext.Current.CancellationToken);
 
         Assert.Equal(HttpStatusCode.Redirect, responseFromResendPost.StatusCode);
         Assert.Equal($"/{context.TenantName}/ConfirmEmailSent", responseFromResendPost.Headers.Location.ToString());
