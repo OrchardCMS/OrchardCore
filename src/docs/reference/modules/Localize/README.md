@@ -178,6 +178,38 @@ extractpo <INTPUT_PATH> <OUTPUT_PATH> [-l|--language {"C#"|"VB"}] [-t|--template
 
 See [JavaScript Localization (`IJSLocalizer`)](javascript-localization.md) for guidance on exposing PO-file-backed translations to JavaScript / TypeScript assets.
 
+## Liquid filters
+
+### `t`
+
+Localizes a string using the current culture.
+
+Input
+
+```liquid
+{{ "Hello!" | t }}
+```
+
+Output
+
+```text
+Bonjour!
+```
+
+You can pass one or more parameters to a localized string:
+
+Input
+
+```liquid
+{{ "Hello {0}!" | t: "John" }}
+```
+
+Output
+
+```text
+Bonjour John!
+```
+
 ## Video
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/cwKa1OA48-4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
