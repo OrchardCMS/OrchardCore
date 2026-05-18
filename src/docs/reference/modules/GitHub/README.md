@@ -23,6 +23,33 @@ If no value is provided, setup Authorization callback URL in GitHub app to use t
 - If you want to enable new users to register to the site through their GitHub account, the `OrchardCore.Users.Registration` feature must be enabled and setup accordingly.
 - An existing user can link his account to his GitHub account through the External Logins link from User menu.
 
+## Recipe Configuration
+
+GitHub authentication settings can be configured using the `Settings` recipe step:
+
+```json
+{
+  "steps": [
+    {
+      "name": "settings",
+      "GitHubAuthenticationSettings": {
+        "ClientID": "your-client-id",
+        "ClientSecret": "your-client-secret",
+        "CallbackPath": "/signin-github",
+        "SaveTokens": false
+      }
+    }
+  ]
+}
+```
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `ClientID` | String | The Client ID from the GitHub OAuth application. **Required.** |
+| `ClientSecret` | String | The Client Secret from the GitHub OAuth application. **Required.** |
+| `CallbackPath` | String | The request path where the user-agent will be returned after authentication. |
+| `SaveTokens` | Boolean | Whether to save the access and refresh tokens. |
+
 ## GitHub Settings Configuration
 
 The `OrchardCore.GitHub` module allows the user to use configuration values to override the settings configured from the admin area by calling the `ConfigureGitHubSettings()` extension method on `OrchardCoreBuilder` when initializing the app.

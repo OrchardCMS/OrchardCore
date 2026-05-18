@@ -323,3 +323,135 @@ A sample of OpenID Connect Client Settings recipe step:
       "ClientSecret": "secret"
 }
 ```
+
+## Settings Recipe Step
+
+All OpenID Connect settings can be configured using the generic `Settings` recipe step:
+
+### Server Settings
+
+```json
+{
+  "steps": [
+    {
+      "name": "settings",
+      "OpenIdServerSettings": {
+        "TestingModeEnabled": false,
+        "TokenFormat": "JsonWebToken",
+        "Authority": "https://www.example.com",
+        "AuthorizationEndpointPath": "/connect/authorize",
+        "LogoutEndpointPath": "/connect/logout",
+        "TokenEndpointPath": "/connect/token",
+        "UserinfoEndpointPath": "/connect/userinfo",
+        "IntrospectionEndpointPath": "/connect/introspect",
+        "RevocationEndpointPath": "/connect/revoke",
+        "EnableTokenEndpoint": true,
+        "EnableAuthorizationEndpoint": true,
+        "EnableLogoutEndpoint": true,
+        "EnableUserInfoEndpoint": true,
+        "EnableIntrospectionEndpoint": false,
+        "EnableRevocationEndpoint": false,
+        "AllowPasswordFlow": false,
+        "AllowClientCredentialsFlow": false,
+        "AllowAuthorizationCodeFlow": true,
+        "AllowRefreshTokenFlow": true,
+        "AllowImplicitFlow": false,
+        "AllowHybridFlow": false,
+        "RequireProofKeyForCodeExchange": true,
+        "UseRollingRefreshTokens": false,
+        "UseReferenceAccessTokens": false
+      }
+    }
+  ]
+}
+```
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `TestingModeEnabled` | Boolean | Whether testing mode is enabled (uses ephemeral signing/encryption keys). |
+| `TokenFormat` | String | The access token format. Values: `DataProtection`, `JsonWebToken`. |
+| `Authority` | String | The authority URL used by Orchard to act as an identity server. |
+| `AuthorizationEndpointPath` | String | Path for the authorization endpoint. |
+| `LogoutEndpointPath` | String | Path for the logout endpoint. |
+| `TokenEndpointPath` | String | Path for the token endpoint. |
+| `UserinfoEndpointPath` | String | Path for the userinfo endpoint. |
+| `IntrospectionEndpointPath` | String | Path for the introspection endpoint. |
+| `RevocationEndpointPath` | String | Path for the revocation endpoint. |
+| `EnableTokenEndpoint` | Boolean | Whether the token endpoint is enabled. |
+| `EnableAuthorizationEndpoint` | Boolean | Whether the authorization endpoint is enabled. |
+| `EnableLogoutEndpoint` | Boolean | Whether the logout endpoint is enabled. |
+| `EnableUserInfoEndpoint` | Boolean | Whether the userinfo endpoint is enabled. |
+| `EnableIntrospectionEndpoint` | Boolean | Whether the introspection endpoint is enabled. |
+| `EnableRevocationEndpoint` | Boolean | Whether the revocation endpoint is enabled. |
+| `AllowPasswordFlow` | Boolean | Whether the Resource Owner Password flow is allowed. |
+| `AllowClientCredentialsFlow` | Boolean | Whether the Client Credentials flow is allowed. |
+| `AllowAuthorizationCodeFlow` | Boolean | Whether the Authorization Code flow is allowed. |
+| `AllowRefreshTokenFlow` | Boolean | Whether the Refresh Token flow is allowed. |
+| `AllowImplicitFlow` | Boolean | Whether the Implicit flow is allowed. |
+| `AllowHybridFlow` | Boolean | Whether the Hybrid flow is allowed. |
+| `RequireProofKeyForCodeExchange` | Boolean | Whether PKCE is required for all clients. |
+| `UseRollingRefreshTokens` | Boolean | Whether to use rolling refresh tokens. |
+| `UseReferenceAccessTokens` | Boolean | Whether to use reference access tokens. |
+
+### Client Settings
+
+```json
+{
+  "steps": [
+    {
+      "name": "settings",
+      "OpenIdClientSettings": {
+        "DisplayName": "External Identity Provider",
+        "Authority": "https://idp.example.com",
+        "ClientId": "your-client-id",
+        "ClientSecret": "your-client-secret",
+        "CallbackPath": "/signin-oidc",
+        "SignedOutCallbackPath": "/signout-callback-oidc",
+        "ResponseType": "code",
+        "ResponseMode": "form_post",
+        "Scopes": "openid profile email"
+      }
+    }
+  ]
+}
+```
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `DisplayName` | String | The display name for the external identity provider. |
+| `Authority` | String | The authority URL of the OpenID Connect provider. **Required.** |
+| `ClientId` | String | The client identifier. **Required.** |
+| `ClientSecret` | String | The client secret. |
+| `CallbackPath` | String | The callback path where the user-agent will be returned. |
+| `SignedOutCallbackPath` | String | The callback path after sign-out. |
+| `SignedOutRedirectUri` | String | The URI to redirect to after sign-out. |
+| `ResponseType` | String | The OAuth 2.0 response type. Values: `code`, `id_token`, `id_token token`, `code id_token`, `code token`, `code id_token token`. |
+| `ResponseMode` | String | The response mode. Values: `form_post`, `fragment`, `query`. |
+| `Scopes` | String | Space-separated list of scopes to request. |
+
+### Validation Settings
+
+```json
+{
+  "steps": [
+    {
+      "name": "settings",
+      "OpenIdValidationSettings": {
+        "Audience": "your-resource-server",
+        "Authority": "https://idp.example.com",
+        "DisableTokenTypeValidation": false,
+        "Tenant": "",
+        "MetadataAddress": ""
+      }
+    }
+  ]
+}
+```
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `Audience` | String | The audience used for token validation. |
+| `Authority` | String | The authority URL for OpenID Connect discovery. |
+| `DisableTokenTypeValidation` | Boolean | Whether to disable access token type validation. |
+| `Tenant` | String | The Orchard tenant for local server validation. |
+| `MetadataAddress` | String | Override the metadata discovery address (for non-standard providers). |

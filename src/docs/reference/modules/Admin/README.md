@@ -135,3 +135,30 @@ public sealed class PersonController : Controller
 ```
 
 In this example, (if the admin prefix remains the default "Admin") you can reach the Index action at `~/Admin/Person` (or by the route name `Person`), because its own action-level attribute took precedence. You can reach Create at `~/Admin/Person/Create` (route name `PersonCreate`) and Edit for the person whose identifier string is "john-doe" at `~/Admin/Person/john-doe` (route name `PersonEdit`).
+
+## Recipe Configuration
+
+The admin settings can be configured using the `Settings` recipe step:
+
+```json
+{
+  "steps": [
+    {
+      "name": "settings",
+      "AdminSettings": {
+        "DisplayThemeToggler": true,
+        "DisplayMenuFilter": true,
+        "DisplayNewMenu": true,
+        "DisplayTitlesInTopbar": true
+      }
+    }
+  ]
+}
+```
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `DisplayThemeToggler` | Boolean | Whether to display the light/dark theme toggler in the admin. |
+| `DisplayMenuFilter` | Boolean | Whether to display the menu filter input in the admin navigation. |
+| `DisplayNewMenu` | Boolean | Whether to display the 'New' menu in the admin navigation. |
+| `DisplayTitlesInTopbar` | Boolean | Whether to display page titles in the top bar. |
