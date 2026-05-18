@@ -36,7 +36,9 @@
     <div class="container px-4 px-lg-5 mb-4">
         <div class="row gx-4 gx-lg-5 justify-content-center">
             <div class="col-md-10 col-lg-8 col-xl-7">
+            <div class="toast-container position-fixed bottom-0 end-0 p-3">
 				{% render_section "Messages", required: false %}
+                </div>
                 {% render_body %}
             </div>
         </div>
@@ -44,6 +46,13 @@
     <footer class="border-top">
         {% render_section "Footer", required: false %}
     </footer>
+    <script>
+            (function() {
+                document.querySelectorAll('.toast:not(.show)').forEach(function(el) {
+                new bootstrap.Toast(el).show();
+                });
+            })();
+        </script>
     {% resources type: "FootScript" %}
 </body>
 </html>

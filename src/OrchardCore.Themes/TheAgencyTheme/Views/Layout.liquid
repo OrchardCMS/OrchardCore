@@ -27,9 +27,18 @@
     </nav>
     <div data-bs-spy="scroll" data-bs-target="#mainNav" data-bs-root-margin="74px 0px -25%" data-bs-smooth-scroll="true">
         {% render_section "Header", required: false %}
+        <div class="toast-container position-fixed bottom-0 end-0 p-3">
         {% render_section "Messages", required: false %}
+        </div>
         {% render_section "Content" %}
         {% render_section "Footer", required: false %}
+        <script>
+            (function() {
+                document.querySelectorAll('.toast:not(.show)').forEach(function(el) {
+                new bootstrap.Toast(el).show();
+                });
+            })();
+        </script>
         {% resources type: "FootScript" %}
     </div>
 </body>

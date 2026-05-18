@@ -20,6 +20,7 @@ public partial class NotifyEntry
 
     public NotifyType Type { get; set; }
     public IHtmlContent Message { get; set; }
+    public int? AutoDismissMs { get; set; }
 
     public string ToHtmlString(HtmlEncoder htmlEncoder)
     {

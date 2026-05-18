@@ -17,7 +17,9 @@
 <body dir="@Orchard.CultureDir()">
     @await RenderSectionAsync("Header", required: false)
     <main class="container">
+        <div class="toast-container position-fixed bottom-0 end-0 p-3">
         @await RenderSectionAsync("Messages", required: false)
+        </div>
         @await RenderBodyAsync()
     </main>
     @await RenderSectionAsync("Footer", required: false)

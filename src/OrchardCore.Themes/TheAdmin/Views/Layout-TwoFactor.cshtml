@@ -40,7 +40,9 @@
     <div class="d-flex align-items-center justify-content-center h-100">
         <div class="container">
             @await RenderSectionAsync("Header", required: false)
+            <div class="toast-container position-fixed bottom-0 end-0 p-3">
             @await RenderSectionAsync("Messages", required: false)
+            </div>
 
             @await RenderBodyAsync()
         </div>

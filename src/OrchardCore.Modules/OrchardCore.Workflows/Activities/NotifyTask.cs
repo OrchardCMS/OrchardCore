@@ -51,6 +51,8 @@ public class NotifyTask : TaskActivity<NotifyTask>
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
         var message = await _expressionEvaluator.EvaluateAsync(Message, workflowContext, _htmlEncoder);
+        // If the notifucation type is an error or warning it should be persistent and shouldn't be dismissed.
+       
 
         // The notification message can contain HTML by design
         await _notifier.AddAsync(NotificationType, new LocalizedHtmlString(nameof(NotifyTask), message));

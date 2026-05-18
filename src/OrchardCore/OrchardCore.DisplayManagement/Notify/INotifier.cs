@@ -20,7 +20,8 @@ public interface INotifier
     /// <remarks>
     /// Added with a default interface implementation for backwards compatibility.
     /// </remarks>
-    ValueTask AddAsync(NotifyType type, LocalizedHtmlString message);
+    ValueTask AddAsync(NotifyType type, LocalizedHtmlString message, int? autoDismissMs = null);
+     
 
     /// <summary>
     /// Get all notifications added.
