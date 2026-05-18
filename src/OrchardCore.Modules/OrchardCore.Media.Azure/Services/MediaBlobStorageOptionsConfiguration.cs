@@ -1,3 +1,4 @@
+using Fluid;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Shell;
@@ -11,10 +12,11 @@ internal sealed class MediaBlobStorageOptionsConfiguration : BlobStorageOptionsC
     private readonly IShellConfiguration _shellConfiguration;
 
     public MediaBlobStorageOptionsConfiguration(
+        FluidParser fluidParser,
         IShellConfiguration shellConfiguration,
         ShellSettings shellSettings,
         ILogger<MediaBlobStorageOptionsConfiguration> logger)
-        : base(shellSettings, logger)
+        : base(fluidParser, shellSettings, logger)
     {
         _shellConfiguration = shellConfiguration;
     }

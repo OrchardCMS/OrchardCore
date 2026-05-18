@@ -109,7 +109,7 @@ public sealed class AzureAISearchIndexManager : IIndexManager
 
             var client = _clientFactory.CreateSearchIndexClient();
 
-            await client.DeleteIndexAsync(context.IndexFullName);
+            await client.DeleteIndexAsync(context.IndexFullName, default(MatchConditions));
 
             await _indexEvents.InvokeAsync((handler, ctx) => handler.RemovedAsync(ctx), context, _logger);
 
@@ -150,7 +150,7 @@ public sealed class AzureAISearchIndexManager : IIndexManager
 
             if (await ExistsAsync(indexProfile.IndexFullName))
             {
-                await client.DeleteIndexAsync(indexProfile.IndexFullName);
+                await client.DeleteIndexAsync(indexProfile.IndexFullName, default(MatchConditions));
             }
 
             var searchIndex = GetSearchIndex(indexProfile);

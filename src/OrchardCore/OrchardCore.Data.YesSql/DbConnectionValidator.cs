@@ -7,6 +7,7 @@ using Npgsql;
 using OrchardCore.Data.YesSql;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Descriptor.Models;
+using OrchardCore.Modules;
 using YesSql;
 using YesSql.Provider.MySql;
 using YesSql.Provider.PostgreSql;
@@ -75,91 +76,104 @@ public class DbConnectionValidator : IDbConnectionValidator
 
         var (factory, sqlDialect) = GetFactoryAndSqlDialect(context.DatabaseProvider, connectionString);
 
-        await using var connection = factory.CreateConnection();
-
-        // Prevent from creating an empty locked 'Sqlite' file.
-        if (provider.Value == DatabaseProviderValue.Sqlite &&
-            connection is SqliteConnection sqliteConnection &&
-            !File.Exists(sqliteConnection.DataSource))
-        {
-            SqliteConnection.ClearPool(sqliteConnection);
-            return DbConnectionValidatorResult.DocumentTableNotFound;
-        }
-
+        var connection = factory.CreateConnection();
         try
         {
-            await connection.OpenAsync();
-        }
-        catch (Exception ex)
-        {
-            if (provider.Value != DatabaseProviderValue.Sqlite)
+            // Prevent from creating an empty locked 'Sqlite' file.
+            if (provider.Value == DatabaseProviderValue.Sqlite &&
+                connection is SqliteConnection sqliteConnection &&
+                !File.Exists(sqliteConnection.DataSource))
             {
-                _logger.LogWarning(ex, "Unable to validate connection string.");
+                SqliteConnection.ClearPool(sqliteConnection);
+                return DbConnectionValidatorResult.DocumentTableNotFound;
+            }
 
-                if (ex is SqlException sqlException
-                    && sqlException.InnerException?.Message == "The certificate chain was issued by an authority that is not trusted.")
+            try
+            {
+                await connection.OpenAsync();
+            }
+            catch (Exception ex)
+            {
+                if (provider.Value != DatabaseProviderValue.Sqlite)
                 {
-                    return DbConnectionValidatorResult.InvalidCertificate;
+                    _logger.LogWarning(ex, "Unable to validate connection string.");
+
+                    if (ex is SqlException sqlException
+                        && sqlException.InnerException?.Message == "The certificate chain was issued by an authority that is not trusted.")
+                    {
+                        return DbConnectionValidatorResult.InvalidCertificate;
+                    }
+
+                    return DbConnectionValidatorResult.InvalidConnection;
                 }
 
-                return DbConnectionValidatorResult.InvalidConnection;
+                return DbConnectionValidatorResult.DocumentTableNotFound;
             }
 
-            return DbConnectionValidatorResult.DocumentTableNotFound;
-        }
+            var tableNameConvention = _tableNameConventionFactory.Create(context.TableOptions);
+            var documentName = tableNameConvention.GetDocumentTable();
 
-        var tableNameConvention = _tableNameConventionFactory.Create(context.TableOptions);
-        var documentName = tableNameConvention.GetDocumentTable();
+            var sqlBuilder = GetSqlBuilder(sqlDialect, context.TablePrefix, context.TableOptions.TableNameSeparator);
 
-        var sqlBuilder = GetSqlBuilder(sqlDialect, context.TablePrefix, context.TableOptions.TableNameSeparator);
-
-        try
-        {
-            var selectCommand = connection.CreateCommand();
-            selectCommand.CommandText = GetDocumentCommandText(sqlBuilder, documentName, context.Schema);
-
-            using var result = await selectCommand.ExecuteReaderAsync();
-            if (!context.ShellName.IsDefaultShellName())
+            try
             {
-                // The 'Document' table exists.
-                return DbConnectionValidatorResult.DocumentTableFound;
+                var selectCommand = connection.CreateCommand();
+                selectCommand.CommandText = GetDocumentCommandText(sqlBuilder, documentName, context.Schema);
+
+                using var result = await selectCommand.ExecuteReaderAsync();
+                if (!context.ShellName.IsDefaultShellName())
+                {
+                    // The 'Document' table exists.
+                    return DbConnectionValidatorResult.DocumentTableFound;
+                }
+
+                var requiredColumnsCount = Enumerable.Range(0, result.FieldCount)
+                    .Select(result.GetName)
+                    .Where(c => _requiredDocumentTableColumns.Contains(c, StringComparer.OrdinalIgnoreCase))
+                    .Count();
+
+                if (requiredColumnsCount != _requiredDocumentTableColumns.Length)
+                {
+                    // The 'Document' table exists with another schema.
+                    return DbConnectionValidatorResult.DocumentTableFound;
+                }
             }
-
-            var requiredColumnsCount = Enumerable.Range(0, result.FieldCount)
-                .Select(result.GetName)
-                .Where(c => _requiredDocumentTableColumns.Contains(c, StringComparer.OrdinalIgnoreCase))
-                .Count();
-
-            if (requiredColumnsCount != _requiredDocumentTableColumns.Length)
+            catch
             {
-                // The 'Document' table exists with another schema.
-                return DbConnectionValidatorResult.DocumentTableFound;
+                // The 'Document' table does not exist.
+                return DbConnectionValidatorResult.DocumentTableNotFound;
             }
-        }
-        catch
-        {
-            // The 'Document' table does not exist.
-            return DbConnectionValidatorResult.DocumentTableNotFound;
-        }
 
-        try
-        {
-            var selectCommand = connection.CreateCommand();
-            selectCommand.CommandText = GetDocumentCommandText(sqlBuilder, documentName, context.Schema, isShellDescriptorDocument: true);
-
-            using var result = await selectCommand.ExecuteReaderAsync();
-            if (!result.HasRows)
+            try
             {
-                // The 'Document' table exists with no 'ShellDescriptor' document.
-                return DbConnectionValidatorResult.ShellDescriptorDocumentNotFound;
+                var selectCommand = connection.CreateCommand();
+                selectCommand.CommandText = GetDocumentCommandText(sqlBuilder, documentName, context.Schema, isShellDescriptorDocument: true);
+
+                using var result = await selectCommand.ExecuteReaderAsync();
+                if (!result.HasRows)
+                {
+                    // The 'Document' table exists with no 'ShellDescriptor' document.
+                    return DbConnectionValidatorResult.ShellDescriptorDocumentNotFound;
+                }
+            }
+            catch
+            {
+            }
+
+            // The 'Document' table exists.
+            return DbConnectionValidatorResult.DocumentTableFound;
+        }
+        finally
+        {
+            try
+            {
+                await connection.DisposeAsync();
+            }
+            catch (Exception ex) when (!ex.IsFatal())
+            {
+                _logger.LogWarning(ex, "An error occurred while disposing the database connection during validation.");
             }
         }
-        catch
-        {
-        }
-
-        // The 'Document' table exists.
-        return DbConnectionValidatorResult.DocumentTableFound;
     }
 
     private static string GetDocumentCommandText(SqlBuilder sqlBuilder, string documentTable, string schema, bool isShellDescriptorDocument = false)
