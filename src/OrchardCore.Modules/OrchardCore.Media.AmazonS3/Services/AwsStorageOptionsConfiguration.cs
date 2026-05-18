@@ -12,7 +12,6 @@ internal sealed class AwsStorageOptionsConfiguration : IConfigureOptions<AwsStor
 {
     private readonly FluidParser _fluidParser;
     private readonly IShellConfiguration _shellConfiguration;
-    private readonly FluidParser _fluidParser;
     private readonly ShellSettings _shellSettings;
     private readonly ILogger _logger;
 

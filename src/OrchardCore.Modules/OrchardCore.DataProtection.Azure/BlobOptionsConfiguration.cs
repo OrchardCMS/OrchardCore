@@ -14,7 +14,6 @@ internal sealed class BlobOptionsConfiguration : IConfigureOptions<BlobOptions>
 {
     private readonly FluidParser _fluidParser;
     private readonly IShellConfiguration _configuration;
-    private readonly FluidParser _fluidParser;
     private readonly ShellOptions _shellOptions;
     private readonly ShellSettings _shellSettings;
     private readonly ILogger _logger;
@@ -22,14 +21,12 @@ internal sealed class BlobOptionsConfiguration : IConfigureOptions<BlobOptions>
     public BlobOptionsConfiguration(
         FluidParser fluidParser,
         IShellConfiguration configuration,
-        FluidParser fluidParser,
         IOptions<ShellOptions> shellOptions,
         ShellSettings shellSettings,
         ILogger<BlobOptionsConfiguration> logger)
     {
         _fluidParser = fluidParser;
         _configuration = configuration;
-        _fluidParser = fluidParser;
         _shellOptions = shellOptions.Value;
         _shellSettings = shellSettings;
         _logger = logger;
