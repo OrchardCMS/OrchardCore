@@ -10,6 +10,7 @@ namespace OrchardCore.Media.AmazonS3.Services;
 
 internal sealed class AwsImageSharpImageCacheOptionsConfiguration : IConfigureOptions<AwsImageSharpImageCacheOptions>
 {
+    private readonly FluidParser _fluidParser;
     private readonly IShellConfiguration _shellConfiguration;
     private readonly FluidParser _fluidParser;
     private readonly ShellSettings _shellSettings;

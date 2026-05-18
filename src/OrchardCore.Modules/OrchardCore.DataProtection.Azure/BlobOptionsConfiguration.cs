@@ -12,6 +12,7 @@ namespace OrchardCore.DataProtection.Azure;
 
 internal sealed class BlobOptionsConfiguration : IConfigureOptions<BlobOptions>
 {
+    private readonly FluidParser _fluidParser;
     private readonly IShellConfiguration _configuration;
     private readonly FluidParser _fluidParser;
     private readonly ShellOptions _shellOptions;
@@ -19,12 +20,14 @@ internal sealed class BlobOptionsConfiguration : IConfigureOptions<BlobOptions>
     private readonly ILogger _logger;
 
     public BlobOptionsConfiguration(
+        FluidParser fluidParser,
         IShellConfiguration configuration,
         FluidParser fluidParser,
         IOptions<ShellOptions> shellOptions,
         ShellSettings shellSettings,
         ILogger<BlobOptionsConfiguration> logger)
     {
+        _fluidParser = fluidParser;
         _configuration = configuration;
         _fluidParser = fluidParser;
         _shellOptions = shellOptions.Value;
