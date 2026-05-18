@@ -343,3 +343,19 @@ For unsupported cultures or missing translations, it will return:
 ```text
 Blog.Content Types
 ```
+
+You can pass one or more parameters to a localized string:
+
+Input
+
+```liquid
+{{ "New {0}" | d: "Content Types", "Article" }}
+```
+
+Output
+
+For `it` culture, it will return:
+
+```text
+New Articolo
+```
