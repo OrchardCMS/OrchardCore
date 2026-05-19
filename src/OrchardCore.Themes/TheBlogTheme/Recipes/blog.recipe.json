@@ -4,7 +4,7 @@
   "description": "Provides a functional Blog with CMS features.",
   "author": "The Orchard Core Team",
   "website": "https://orchardcore.net",
-  "version": "1.0.0-rc2",
+  "version": "1.0.0",
   "issetuprecipe": true,
   "categories": [ "default" ],
   "tags": [ "blog" ],
@@ -38,6 +38,7 @@
         "OrchardCore.Recipes",
         "OrchardCore.Resources",
         "OrchardCore.Roles",
+        "OrchardCore.Security",
         "OrchardCore.Settings",
         "OrchardCore.Themes",
         "OrchardCore.Users",
@@ -50,7 +51,6 @@
         "OrchardCore.ContentFields",
         "OrchardCore.ContentPreview",
         "OrchardCore.Contents",
-        "OrchardCore.Contents.FileContentDefinition",
         "OrchardCore.ContentTypes",
         "OrchardCore.CustomSettings",
         "OrchardCore.Deployment",
@@ -59,13 +59,13 @@
         "OrchardCore.Flows",
         "OrchardCore.Indexing",
         "OrchardCore.Layers",
-        "OrchardCore.Lucene",
         "OrchardCore.Lists",
         "OrchardCore.Markdown",
         "OrchardCore.Media",
         "OrchardCore.Menu",
         "OrchardCore.Placements",
         "OrchardCore.Queries",
+        "OrchardCore.Queries.Sql",
         "OrchardCore.Shortcodes.Templates",
         "OrchardCore.Rules",
         "OrchardCore.Taxonomies",
@@ -83,6 +83,31 @@
       "name": "themes",
       "admin": "TheAdmin",
       "site": "TheBlogTheme"
+    },
+    {
+      "name": "Roles",
+      "Roles": [
+        {
+          "Name": "Moderator",
+          "Description": "Grants users the ability to moderate content.",
+          "Permissions": []
+        },
+        {
+          "Name": "Editor",
+          "Description": "Grants users the ability to edit existing content.",
+          "Permissions": []
+        },
+        {
+          "Name": "Author",
+          "Description": "Grants users the ability to create content.",
+          "Permissions": []
+        },
+        {
+          "Name": "Contributor",
+          "Description": "Grants users the ability to contribute content.",
+          "Permissions": []
+        }
+      ]
     },
     {
       "name": "settings",
@@ -241,13 +266,10 @@
                 "ContentTypePartSettings": {
                   "Position": "1"
                 },
-                "ContentIndexSettings": {
+                "LuceneContentIndexSettings": {
                   "Included": false,
                   "Stored": false,
-                  "Analyzed": false,
-                  "Sanitized": false,
-                  "Tokenized": false,
-                  "Template": null
+                  "Keyword": false
                 },
                 "AutoroutePartSettings": {
                   "AllowCustomPath": true,
@@ -327,7 +349,7 @@
           "Name": "Blockquote",
           "DisplayName": "Blockquote",
           "Settings": {
-            "ContentTypeSettings": {           
+            "ContentTypeSettings": {
               "Draftable": true,
               "Versionable": true,
               "Securable": true,
@@ -396,7 +418,7 @@
           "Name": "RawHtml",
           "DisplayName": "Raw Html",
           "Settings": {
-            "ContentTypeSettings": {           
+            "ContentTypeSettings": {
               "Draftable": true,
               "Versionable": true,
               "Securable": true,
@@ -510,7 +532,7 @@
                   "ManageContainedItemRoutes": true
                 }
               }
-            }           
+            }
           ]
         },
         {
@@ -569,13 +591,10 @@
                   "DisplayName": "Banner Image",
                   "Position": "0"
                 },
-                "ContentIndexSettings": {
+                "LuceneContentIndexSettings": {
                   "Included": false,
                   "Stored": false,
-                  "Analyzed": false,
-                  "Sanitized": false,
-                  "Tokenized": false,
-                  "Template": null
+                  "Keyword": false
                 },
                 "MediaFieldSettings": {
                   "Multiple": false,
@@ -607,20 +626,17 @@
                   "DisplayName": "Banner Image",
                   "Position": "1"
                 },
-                "ContentIndexSettings": {
+                "LuceneContentIndexSettings": {
                   "Included": false,
                   "Stored": false,
-                  "Analyzed": false,
-                  "Sanitized": false,
-                  "Tokenized": false,
-                  "Template": null
+                  "Keyword": false
                 },
                 "MediaFieldSettings": {
                   "Multiple": false,
                   "AllowAnchors": true
                 }
-              }  
-            },              
+              }
+            },
             {
               "FieldName": "TaxonomyField",
               "Name": "Tags",
@@ -631,7 +647,6 @@
                   "DisplayMode": "Tags",
                   "Position": "2"
                 },
-                "ContentIndexSettings": {},
                 "TaxonomyFieldSettings": {
                   "TaxonomyContentItemId": "[js: variables('tagsContentItemId')]"
                 },
@@ -646,7 +661,6 @@
                   "DisplayName": "Category",
                   "Position": "3"
                 },
-                "ContentIndexSettings": {},
                 "TaxonomyFieldSettings": {
                   "TaxonomyContentItemId": "[js: variables('categoriesContentItemId')]",
                   "Unique": true,
@@ -787,68 +801,9 @@
                 },
                 "TextFieldSettings": {
                   "Required": true
-                },
-                "ContentIndexSettings": {}
+                }
               }
             }
-          ]
-        }
-      ]
-    },
-    {
-      // Create the indices before the content items so they are indexed automatically.
-      "name": "lucene-index",
-      "Indices": [
-        {
-          "Search": {
-            "AnalyzerName": "standardanalyzer",
-            "IndexLatest": false,
-            "IndexedContentTypes": [
-              "Article",
-              "Blockquote",
-              "Blog",
-              "BlogPost",
-              "Button",
-              "Container",
-              "Form",
-              "ImageWidget",
-              "Image",
-              "Input",
-              "Label",
-              "LinkMenuItem",
-              "Menu",
-              "Page",
-              "Paragraph",
-              "RawHtml",
-              "Select",
-              "TextArea",
-              "Validation",
-              "ValidationSummary"
-            ]
-          }
-        }
-      ]
-    },
-    {
-      // Create the search settings.
-      "name": "Settings",
-      "LuceneSettings": {
-        "SearchIndex": "Search",
-        "DefaultSearchFields": [
-          "Content.ContentItem.FullText"
-        ]
-      }
-    },
-    {
-      // Create the search index permissions.
-      "name": "Roles",
-      "Roles": [
-        {
-          "Name": "Anonymous",
-          "Description": "Anonymous role",
-          "Permissions": [
-            "ViewContent",
-            "QueryLuceneSearchIndex"
           ]
         }
       ]
@@ -1026,7 +981,7 @@
               "Paths": [
                 "home-bg.jpg"
               ],
-              "MediaTexts":[
+              "MediaTexts": [
                 ""
               ],
               "Anchors": [
@@ -1067,7 +1022,7 @@
               "Paths": [
                 "post-bg.jpg"
               ],
-              "MediaTexts":[
+              "MediaTexts": [
                 ""
               ],
               "Anchors": [
@@ -1084,7 +1039,7 @@
                 "[js: variables('spaceTagContentItemId')]"
               ],
               "TaxonomyContentItemId": "[js: variables('tagsContentItemId')]",
-              "TagNames": [ 
+              "TagNames": [
                 "Earth",
                 "Exploration",
                 "Space"
@@ -1130,7 +1085,7 @@
         {
           "ContentItemId": "[js: uuid()]",
           "ContentType": "RawHtml",
-          "Displaytext": "Footer",
+          "DisplayText": "Footer",
           "Latest": true,
           "Published": true,
           "Owner": "[js: parameters('AdminUserId')]",
@@ -1148,6 +1103,19 @@
           }
         }
       ]
+    },
+    {
+      "name": "MediaProfiles",
+      "MediaProfiles": {
+        "banner": {
+          "Hint": "A banner image (2048px x 600px, cropped)",
+          "Width": 2048,
+          "Height": 600,
+          "Mode": 2,
+          "Format": 0,
+          "Quality": 100
+        }
+      }
     },
     {
       "name": "media",
@@ -1172,7 +1140,7 @@
         {
           "Name": "Always",
           "LayerRule": {
-            "ConditionId":"[js: uuid()]",
+            "ConditionId": "[js: uuid()]",
             "Conditions": [
               {
                 "$type": "OrchardCore.Rules.Models.BooleanCondition, OrchardCore.Rules",
@@ -1181,7 +1149,7 @@
                 "ConditionId": "[js: uuid()]"
               }
             ]
-          },          
+          },
           "Description": "The widgets in this layer are displayed on any page of this site."
         },
         {
@@ -1196,7 +1164,7 @@
                 "ConditionId": "[js: uuid()]"
               }
             ]
-          },          
+          },
           "Description": "The widgets in this layer are only displayed on the homepage."
         }
       ]
@@ -1205,10 +1173,9 @@
       "name": "queries",
       "Queries": [
         {
-          "Source": "Lucene",
+          "Source": "Sql",
           "Name": "RecentBlogPosts",
-          "Index": "Search",
-          "Template": "[file:text('Snippets/recentBlogPosts.json')]",
+          "Template": "SELECT DocumentId FROM ContentItemIndex WHERE ContentType='BlogPost' ORDER BY CreatedUtc DESC LIMIT @limit:3",
           "Schema": "[js:base64('ew0KICAgICJ0eXBlIjogIkNvbnRlbnRJdGVtL0Jsb2dQb3N0Ig0KfQ==')]",
           "ReturnContentItems": true
         }
@@ -1225,7 +1192,7 @@
             {
               "$type": "OrchardCore.AdminMenu.AdminNodes.LinkAdminNode, OrchardCore.AdminMenu",
               "LinkText": "Blog",
-              "LinkUrl": "[js: variables('adminUrlPrefix') + '/Contents/ContentItems/' +  variables('blogContentItemId') + '/Display']",
+              "LinkUrl": "[js: (async function() { return `${await variablesAsync('adminUrlPrefix')}/Contents/ContentItems/${await variablesAsync('blogContentItemId')}/Display`; })()]",
               "IconClass": "fas fa-rss",
               "PermissionNames": [],
               "UniqueId": "7b293d57056a4eebb3713f07f12c65d8",
@@ -1244,7 +1211,7 @@
             {
               "$type": "OrchardCore.AdminMenu.AdminNodes.LinkAdminNode, OrchardCore.AdminMenu",
               "LinkText": "Main Menu",
-              "LinkUrl": "[js: variables('adminUrlPrefix') + '/Contents/ContentItems/' +  variables('menuContentItemId') + '/Edit']",
+              "LinkUrl": "[js: (async function() { return `${await variablesAsync('adminUrlPrefix')}/Contents/ContentItems/${await variablesAsync('blogContentItemId')}/Edit`; })()]",
               "IconClass": "fas fa-sitemap",
               "PermissionNames": [],
               "UniqueId": "5118cecfde834dacb26ac08980f1b5a7",
@@ -1279,7 +1246,7 @@
                 {
                   "$type": "OrchardCore.AdminMenu.AdminNodes.LinkAdminNode, OrchardCore.AdminMenu",
                   "LinkText": "Content Items",
-                  "LinkUrl": "[js: variables('adminUrlPrefix') + '/Contents/ContentItems/']",
+                  "LinkUrl": "[js: (async function() { return `${await variablesAsync('adminUrlPrefix')}/Contents/ContentItems/`; })()]",
                   "IconClass": null,
                   "UniqueId": "7b293d57056a4eebb3713f07f12c65d9",
                   "Enabled": true,
@@ -1287,7 +1254,7 @@
                   "Id": null,
                   "Href": null,
                   "Url": null,
-                  "Position": 0,
+                  "Position": "0",
                   "LinkToFirstChild": true,
                   "LocalNav": false,
                   "Culture": null,
@@ -1295,62 +1262,37 @@
                   "Classes": []
                 },
                 {
-                  "$type": "OrchardCore.AdminMenu.AdminNodes.PlaceholderAdminNode, OrchardCore.AdminMenu",
-                  "LinkText": "Content Types",
-                  "IconClass": null,
-                  "PermissionNames": [],
-                  "UniqueId": "2f1fc33133334a1abf7d1a0516ee8b4e",
+                  "$type": "OrchardCore.Contents.AdminNodes.ContentTypesAdminNode, OrchardCore.Contents",
+                  "ShowAll": false,
+                  "ContentTypes": [
+                    {
+                      "ContentTypeId": "Article"
+                    },
+                    {
+                      "ContentTypeId": "Page"
+                    },
+                    {
+                      "ContentTypeId": "Taxonomy"
+                    }
+                  ],
+                  "UniqueId": "ee18224e1b814c638b0732678b74cfd9",
                   "Enabled": true,
                   "Text": null,
                   "Id": null,
                   "Href": null,
                   "Url": null,
-                  "Position": 1,
-                  "Priority": 50,
+                  "Position": null,
                   "LinkToFirstChild": true,
                   "LocalNav": false,
                   "Culture": null,
-                  "Items": [
-                    {
-                      "$type": "OrchardCore.Contents.AdminNodes.ContentTypesAdminNode, OrchardCore.Contents",
-                      "ShowAll": true,
-                      "IconClass": null,
-                      "ContentTypes": [],
-                      "UniqueId": "ee18224e1b814c638b0732678b74cfd9",
-                      "Enabled": true,
-                      "Text": null,
-                      "Id": null,
-                      "Href": null,
-                      "Url": null,
-                      "Position": null,
-                      "LinkToFirstChild": true,
-                      "LocalNav": false,
-                      "Culture": null,
-                      "Items": [],
-                      "Classes": []
-                    }
-                  ],
+                  "Items": [],
                   "Classes": []
                 }
-              ],
-              "Classes": []
+              ]
             }
           ]
         }
       ]
-    },
-    {
-      "name": "MediaProfiles",
-      "MediaProfiles": {
-        "banner": {
-          "Hint": "A banner image (2048px x 600px, cropped)",
-          "Width": 2048,
-          "Height": 600,
-          "Mode": 2,
-          "Format": 0,
-          "Quality": 100
-        }
-      }
-    }    
+    }
   ]
 }
