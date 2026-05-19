@@ -16,6 +16,7 @@
   <ItemGroup>
     <PackageReference Include="ncrontab" />
     <PackageReference Include="NodaTime" />
+    <PackageReference Include="Fluid.Core" />
   </ItemGroup>
 
   <ItemGroup>

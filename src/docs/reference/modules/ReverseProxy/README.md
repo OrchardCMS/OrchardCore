@@ -2,6 +2,31 @@
 
 Enables configuration of hosting scenarios with a reverse proxy, like which HTTP headers to forward.
 
+## Recipe Configuration
+
+Reverse proxy settings can be configured using the `Settings` recipe step:
+
+```json
+{
+  "steps": [
+    {
+      "name": "settings",
+      "ReverseProxySettings": {
+        "ForwardedHeaders": "All",
+        "KnownNetworks": [],
+        "KnownProxies": []
+      }
+    }
+  ]
+}
+```
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `ForwardedHeaders` | String | The forwarded headers to process. Values: `None`, `XForwardedFor`, `XForwardedHost`, `XForwardedProto`, `All`. |
+| `KnownNetworks` | Array of String | The list of known network addresses. |
+| `KnownProxies` | Array of String | The list of known proxy IP addresses. |
+
 ## Reverse Proxy Settings Configuration
 
 ### Admin Configuration

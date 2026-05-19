@@ -83,7 +83,7 @@ Here is a list of javascript methods provided by Orchard Modules.
 {
   "steps": [
     {
-      "name": "Settings",
+      "name": "settings",
       "Properties": {
         "ApiKey": "[js: protect('MyModule.ApiKey', 'my-secret-value')]"
       }
