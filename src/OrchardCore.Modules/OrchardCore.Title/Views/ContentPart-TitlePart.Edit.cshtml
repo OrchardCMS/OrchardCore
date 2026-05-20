@@ -1,21 +1,23 @@
 @using System.Collections.Generic
+@using OrchardCore
+@using OrchardCore.ContentManagement
 @using OrchardCore.ContentManagement.Metadata.Models
 @using OrchardCore.ContentManagement.Metadata.Settings
-@using OrchardCore.ContentManagement
-@using OrchardCore
+@using OrchardCore.DisplayManagement
 @using OrchardCore.Title.Models
 
 @{
-    ContentTypePartDefinition typePartDefinition = Model.ContentTypePartDefinition;
-    var settings = typePartDefinition.GetSettings<TitlePartSettings>();
-    var shapes = new List<object>();
+    var shapes = Model as IEnumerable<IShape>;
 
-    foreach (var shape in Model)
+    if (shapes is null || !shapes.Any())
     {
-        shapes.Add(shape);
+        return;
     }
 
-    if (settings.Options == TitlePartOptions.GeneratedHidden || shapes.Count == 0)
+    ContentTypePartDefinition typePartDefinition = Model.ContentTypePartDefinition;
+    var settings = typePartDefinition.GetSettings<TitlePartSettings>();
+
+    if (settings.Options == TitlePartOptions.GeneratedHidden)
     {
         return;
     }
