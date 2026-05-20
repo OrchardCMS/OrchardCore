@@ -106,14 +106,14 @@ Provides content type display names for translation.
 
 Provides content field display names for translation.
 
-- **Context**: `Content Fields`
+- **Context**: `Content Fields:{fieldName}`
 - **Strings**: Display names of all content fields
 
 ### Permissions Provider
 
 Provides permission descriptions for translation.
 
-- **Context**: `Permissions`
+- **Context**: `Permissions` or `Permissions:{groupName}`
 - **Strings**: Descriptions of all non-template permissions
 
 ### Search Provider

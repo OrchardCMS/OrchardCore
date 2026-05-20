@@ -46,6 +46,14 @@
         </div>
     </div>
 
+    <div class="mb-3" asp-validation-class-for="RequireEndSessionConfirmation">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" asp-for="RequireEndSessionConfirmation">
+            <label class="form-check-label" asp-for="RequireEndSessionConfirmation">@T["Require logout confirmation"]</label>
+            <span class="hint dashed">@T["When unchecked, end-users are signed out without a confirmation prompt if a valid id_token_hint matching the current session is provided."]</span>
+        </div>
+    </div>
+
     <div class="mb-3" asp-validation-class-for="EnableUserInfoEndpoint">
         <div class="form-check">
             <input type="checkbox" class="form-check-input" asp-for="EnableUserInfoEndpoint">
