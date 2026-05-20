@@ -96,7 +96,7 @@ public sealed class AdminController : Controller
             {
                 var availableFeatures = await featureService.GetAvailableFeatures(model.FeatureIds);
 
-                await featureService.EnableOrDisableFeaturesAsync(availableFeatures, model.BulkAction, force, async (features, isEnabled) => await NotifyAsync(features, isEnabled));
+                await featureService.EnableOrDisableFeaturesAsync(availableFeatures, model.BulkAction, force, async (features, isEnabled) => await NotifyAsync(features.ToArray(), isEnabled));
             });
         }
 
@@ -132,7 +132,7 @@ public sealed class AdminController : Controller
                 return;
             }
 
-            await featureService.EnableOrDisableFeaturesAsync(new[] { feature }, FeaturesBulkAction.Disable, true, async (features, isEnabled) => await NotifyAsync(features, isEnabled));
+            await featureService.EnableOrDisableFeaturesAsync(new[] { feature }, FeaturesBulkAction.Disable, true, async (features, isEnabled) => await NotifyAsync(features.ToArray(), isEnabled));
         });
 
         if (!found)
@@ -165,7 +165,7 @@ public sealed class AdminController : Controller
 
             found = true;
 
-            await featureService.EnableOrDisableFeaturesAsync(new[] { feature }, FeaturesBulkAction.Enable, true, async (features, isEnabled) => await NotifyAsync(features, isEnabled));
+            await featureService.EnableOrDisableFeaturesAsync(new[] { feature }, FeaturesBulkAction.Enable, true, async (features, isEnabled) => await NotifyAsync(features.ToArray(), isEnabled));
         });
 
         if (!found)
@@ -231,11 +231,15 @@ public sealed class AdminController : Controller
         return Url.Action(nameof(Features));
     }
 
-    private async ValueTask NotifyAsync(IEnumerable<IFeatureInfo> features, bool enabled = true)
+    private async ValueTask NotifyAsync(IFeatureInfo[] features, bool enabled = true)
     {
-        foreach (var feature in features)
+        if (enabled)
         {
-            await _notifier.SuccessAsync(H["{0} was {1}.", feature.Name ?? feature.Id, enabled ? "enabled" : "disabled"]);
+            await _notifier.SuccessAsync(H.Plural(features.Length, "The feature {1} was enabled.", "The following features were enabled {1}: ", string.Join(", ", features.Select(f => f.Name ?? f.Id))));
+        }
+        else
+        {
+            await _notifier.SuccessAsync(H.Plural(features.Length, "The feature {1} was disabled.", "The following features were disabled {1}: ", string.Join(", ", features.Select(f => f.Name ?? f.Id))));
         }
     }
 }
