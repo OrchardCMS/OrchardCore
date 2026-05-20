@@ -45,6 +45,8 @@ public class OpenIdServerSettings
 
     public bool RequirePushedAuthorizationRequests { get; set; }
 
+    public bool RequireEndSessionConfirmation { get; set; } = true;
+
     public enum TokenFormat
     {
         DataProtection = 0,

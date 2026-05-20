@@ -518,17 +518,15 @@ public class ContentItemsFieldTypeTests : IAsyncLifetime
                 {
                     Name = "Animal",
                 }),
-#pragma warning disable CA1825 // Avoid unnecessary zero-length array allocations, false positive. 
-                Arguments =
-                [
+                Arguments = new QueryArguments
+                {
                     new QueryArgument<WhereInputObjectGraphType>
                     {
                         Name = "where",
                         Description = "filters the animals",
                         ResolvedType = where,
-                    }
-                ],
-#pragma warning restore CA1825 // Avoid unnecessary zero-length array allocations, false positive. 
+                    },
+                },
             },
             RequestServices = services,
         };
