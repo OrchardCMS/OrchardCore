@@ -287,6 +287,29 @@ public class ZoneShapesTests
         Assert.Equal(string.Empty, html);
     }
 
+    [Fact]
+    public async Task ContentZone_WithoutGrouping_ShouldPreserveExistingPositionOrder()
+    {
+        // Arrange
+        var first = CreateTestShape("First");
+        var second = CreateTestShape("Second");
+        var third = CreateTestShape("Third");
+
+        var zone = new Shape();
+        await zone.AddAsync(third, "3");
+        await zone.AddAsync(first, "1");
+        await zone.AddAsync(second, "2");
+
+        // Act
+        dynamic dynamicZone = zone;
+        var result = await _zoneShapes.ContentZone(_displayHelper, dynamicZone, _shapeFactory);
+
+        // Assert
+        var html = GetHtmlString(result);
+        Assert.True(html.IndexOf("First", StringComparison.Ordinal) < html.IndexOf("Second", StringComparison.Ordinal));
+        Assert.True(html.IndexOf("Second", StringComparison.Ordinal) < html.IndexOf("Third", StringComparison.Ordinal));
+    }
+
     #endregion
 
     #region ContentZone Tests - Tab Grouping
@@ -807,6 +830,40 @@ public class ZoneShapesTests
         var firstShapeIndex = html.IndexOf("<div>TestShape</div>", StringComparison.Ordinal);
         var rowIndex = html.IndexOf("row", StringComparison.Ordinal);
         Assert.True(firstShapeIndex < rowIndex, "Non-column shape should appear before the row");
+    }
+
+    [Fact]
+    public async Task ColumnGrouping_ShouldPreserveExistingPositionOrderForNonColumnItems()
+    {
+        // Arrange
+        var beforeSecond = CreateTestShape("BeforeSecond");
+        var beforeFirst = CreateTestShape("BeforeFirst");
+        var column = CreateShapeWithColumnGrouping("Center", "1", null);
+        var afterSecond = CreateTestShape("AfterSecond");
+        var afterFirst = CreateTestShape("AfterFirst");
+
+        var zone = new Shape();
+        await zone.AddAsync(afterSecond, "5");
+        await zone.AddAsync(column, "3");
+        await zone.AddAsync(beforeSecond, "2");
+        await zone.AddAsync(afterFirst, "4");
+        await zone.AddAsync(beforeFirst, "1");
+
+        var grouping = zone.Cast<object>().ToLookup(_ => "TestGroup").First();
+        var viewModel = new GroupingViewModel
+        {
+            Identifier = "test-id",
+            Grouping = grouping,
+        };
+
+        // Act
+        var result = await _zoneShapes.ColumnGrouping(_displayHelper, viewModel, _shapeFactory);
+
+        // Assert
+        var html = GetHtmlString(result);
+        Assert.True(html.IndexOf("BeforeFirst", StringComparison.Ordinal) < html.IndexOf("BeforeSecond", StringComparison.Ordinal));
+        Assert.True(html.IndexOf("BeforeSecond", StringComparison.Ordinal) < html.IndexOf("row", StringComparison.Ordinal));
+        Assert.True(html.LastIndexOf("AfterFirst", StringComparison.Ordinal) < html.LastIndexOf("AfterSecond", StringComparison.Ordinal));
     }
 
     #endregion

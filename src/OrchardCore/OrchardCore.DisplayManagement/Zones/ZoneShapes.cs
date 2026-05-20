@@ -214,6 +214,7 @@ public class ZoneShapes : IShapeAttributeProvider
     {
         var htmlContentBuilder = new HtmlContentBuilder();
 
+        // Shape.Grouping enumeration already preserves the existing item position ordering.
         var allItems = Shape.Grouping.ToList();
         var hasColumnItems = allItems.Any(x => x is IShape s && s.Metadata.ColumnGrouping.HasValue);
 
@@ -221,8 +222,8 @@ public class ZoneShapes : IShapeAttributeProvider
         {
             // Each column-specified item gets its own column wrapper within a row.
             // Non-column items render outside the row at their natural position.
-            var beforeRow = new List<object>();
-            var afterRow = new List<object>();
+            List<object> beforeRow = null;
+            List<object> afterRow = null;
             var columnItems = new List<IShape>();
             var foundFirstColumnItem = false;
 
@@ -237,19 +238,22 @@ public class ZoneShapes : IShapeAttributeProvider
                 {
                     if (!foundFirstColumnItem)
                     {
-                        beforeRow.Add(item);
+                        (beforeRow ??= []).Add(item);
                     }
                     else
                     {
-                        afterRow.Add(item);
+                        (afterRow ??= []).Add(item);
                     }
                 }
             }
 
             // Render non-column items that appear before the first column item.
-            foreach (var item in beforeRow)
+            if (beforeRow is not null)
             {
-                htmlContentBuilder.AppendHtml(await DisplayAsync.ShapeExecuteAsync((IShape)item));
+                foreach (var item in beforeRow)
+                {
+                    htmlContentBuilder.AppendHtml(await DisplayAsync.ShapeExecuteAsync((IShape)item));
+                }
             }
 
             // Sort column items by their column position.
@@ -297,9 +301,12 @@ public class ZoneShapes : IShapeAttributeProvider
             htmlContentBuilder.AppendHtml(await DisplayAsync.ShapeExecuteAsync(container));
 
             // Render non-column items that appear after the column row.
-            foreach (var item in afterRow)
+            if (afterRow is not null)
             {
-                htmlContentBuilder.AppendHtml(await DisplayAsync.ShapeExecuteAsync((IShape)item));
+                foreach (var item in afterRow)
+                {
+                    htmlContentBuilder.AppendHtml(await DisplayAsync.ShapeExecuteAsync((IShape)item));
+                }
             }
         }
         else
