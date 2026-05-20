@@ -46,6 +46,109 @@ Currently you can filter shapes by:
 }
 ```
 
+The same distinction applies to editors. Content part editors are wrapped in a `ContentPart_Edit` shape, so hiding or moving the whole editor row in the admin UI should target `ContentPart_Edit`, not only the inner part editor shape.
+
+For example, to hide the `Services` named part on the `LandingPage` editor:
+
+```json
+{
+  "ContentPart_Edit": [{
+    "place":"-",
+    "differentiator":"LandingPage-Services"
+  }]
+}
+```
+
+If you target only an inner editor shape such as `BagPart_Edit`, the wrapper may still render unless its child shapes are also removed.
+
+## Differentiator patterns
+
+The differentiator to use depends on **which shape type you are targeting**, not just on the content part or field you are thinking about.
+
+| Shape type | Typical usage | Differentiator pattern | Example |
+|---|---|---|---|
+| `BagPart`, `FlowPart`, `TitlePart` | Part display shape, or inner `XxxPart_Edit` shape from a part driver | `{PartName}` | `Services`, `FlowPart`, `TitlePart` |
+| `ContentPart` | Display wrapper for parts without their own display driver | `{PartName}` | `GalleryPart` |
+| `ContentPart_Edit` | Admin editor wrapper for a content part | `{ContentType}-{PartName}` | `PlacementTest-BagPart`, `LandingPage-Services`, `Article-TitlePart` |
+| `TextField`, `HtmlField`, `ContentPickerField`, etc. | Standard field display/editor shapes | `{PartName}-{FieldName}` | `Article-Subtitle`, `Address-City` |
+| `TextField_Display`, `HtmlField_Display`, etc. | Field display-mode shapes | `{PartName}-{FieldName}-{FieldType}_Display__{DisplayMode}` | `Blog-Subtitle-TextField_Display__Header` |
+
+`PartName` is the name of the attached part. For non-named parts this is usually the part type, such as `BagPart`, `FlowPart`, `WidgetsListPart`, or `TitlePart`. For named parts, use the custom part name such as `Services`.
+
+### Examples by shape type
+
+#### Content part display shapes
+
+To hide a named `Services` BagPart on the front end:
+
+```json
+{
+  "BagPart": [{
+    "differentiator":"Services",
+    "place":"-"
+  }]
+}
+```
+
+To hide a `TitlePart` display shape on the front end:
+
+```json
+{
+  "TitlePart": [{
+    "differentiator":"TitlePart",
+    "place":"-"
+  }]
+}
+```
+
+#### Content part editor wrappers
+
+To hide the whole BagPart editor row on the `PlacementTest` editor:
+
+```json
+{
+  "ContentPart_Edit": [{
+    "differentiator":"PlacementTest-BagPart",
+    "place":"-"
+  }]
+}
+```
+
+To hide the whole FlowPart editor row:
+
+```json
+{
+  "ContentPart_Edit": [{
+    "differentiator":"PlacementTest-FlowPart",
+    "place":"-"
+  }]
+}
+```
+
+To hide the whole WidgetsListPart editor row:
+
+```json
+{
+  "ContentPart_Edit": [{
+    "differentiator":"PlacementTest-WidgetsListPart",
+    "place":"-"
+  }]
+}
+```
+
+To hide the whole TitlePart editor row:
+
+```json
+{
+  "ContentPart_Edit": [{
+    "differentiator":"PlacementTest-TitlePart",
+    "place":"-"
+  }]
+}
+```
+
+Use `ContentPart_Edit` when you want to move or hide the whole editor row, including its label, description, and wrapper. Shapes such as `BagPart_Edit`, `FlowPart_Edit`, or `TitlePart_Edit` only target the inner editor content.
+
 Additional custom filter providers can be added by implementing `IPlacementNodeFilterProvider`.
 
 For shapes that are built from a content item, you can filter by the following built in filter providers:
@@ -126,6 +229,28 @@ Fields have a custom differentiator as their shape is used in many places.
 It is built using the `Part` it's contained in, and the name of the `Field`.  
 For instance, if a field named `MyField` would be added to an `Article` content type, its differentiator would be `Article-MyField`.  
 If a field named `City` was added to an `Address` part then its differentiator would be `Address-City`.
+
+For example, to place a `TextField` named `Subtitle` attached directly to the `Article` content type:
+
+```json
+{
+  "TextField": [{
+    "differentiator":"Article-Subtitle",
+    "place":"Content:2"
+  }]
+}
+```
+
+For a field named `City` attached to an `Address` part:
+
+```json
+{
+  "TextField": [{
+    "differentiator":"Address-City",
+    "place":"Content:3"
+  }]
+}
+```
 
 ### Field Display Modes
 

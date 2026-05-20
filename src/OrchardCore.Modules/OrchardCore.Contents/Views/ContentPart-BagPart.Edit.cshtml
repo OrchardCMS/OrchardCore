@@ -1,3 +1,4 @@
+@using System.Collections.Generic
 @using OrchardCore.ContentManagement.Metadata.Models
 @using OrchardCore.ContentManagement.Metadata.Settings
 @using OrchardCore.ContentManagement
@@ -8,6 +9,18 @@
 @inject IDataLocalizer D
 
 @{
+    var shapes = new List<object>();
+
+    foreach (var shape in Model)
+    {
+        shapes.Add(shape);
+    }
+
+    if (shapes.Count == 0)
+    {
+        return;
+    }
+
     ContentTypePartDefinition typePartDefinition = Model.ContentTypePartDefinition;
     var description = typePartDefinition.Description();
 }
@@ -23,7 +36,7 @@
     </div>
 
     <div class="@Orchard.GetEndClasses()">
-        @foreach (var shape in Model)
+        @foreach (var shape in shapes)
         {
             @await DisplayAsync(shape)
         }

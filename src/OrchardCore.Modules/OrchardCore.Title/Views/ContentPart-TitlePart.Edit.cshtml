@@ -1,3 +1,4 @@
+@using System.Collections.Generic
 @using OrchardCore.ContentManagement.Metadata.Models
 @using OrchardCore.ContentManagement.Metadata.Settings
 @using OrchardCore.ContentManagement
@@ -7,15 +8,21 @@
 @{
     ContentTypePartDefinition typePartDefinition = Model.ContentTypePartDefinition;
     var settings = typePartDefinition.GetSettings<TitlePartSettings>();
-}
+    var shapes = new List<object>();
 
-@if (settings.Options == TitlePartOptions.GeneratedHidden)
-{
-    return;
+    foreach (var shape in Model)
+    {
+        shapes.Add(shape);
+    }
+
+    if (settings.Options == TitlePartOptions.GeneratedHidden || shapes.Count == 0)
+    {
+        return;
+    }
 }
 
 <div class="@Orchard.GetPartWrapperClasses(typePartDefinition)">
-    @foreach (var shape in Model)
+    @foreach (var shape in shapes)
     {
         @await DisplayAsync(shape)
     }
