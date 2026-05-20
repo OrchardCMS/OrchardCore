@@ -1,22 +1,18 @@
+@using System.Collections
 @using System.Collections.Generic
+@using OrchardCore
+@using OrchardCore.ContentManagement
 @using OrchardCore.ContentManagement.Metadata.Models
 @using OrchardCore.ContentManagement.Metadata.Settings
-@using OrchardCore.ContentManagement
 @using OrchardCore.ContentTypes
-@using OrchardCore
 @using OrchardCore.Localization.Data
 
 @inject IDataLocalizer D
 
 @{
-    var shapes = new List<object>();
+    var shapes = Model as IEnumerable<dynamic>;
 
-    foreach (var shape in Model)
-    {
-        shapes.Add(shape);
-    }
-
-    if (shapes.Count == 0)
+    if (shapes is null || !shapes.Any())
     {
         return;
     }
@@ -36,7 +32,7 @@
     </div>
 
     <div class="@Orchard.GetEndClasses()">
-        @foreach (var shape in shapes)
+        @foreach (var shape in Model)
         {
             @await DisplayAsync(shape)
         }
