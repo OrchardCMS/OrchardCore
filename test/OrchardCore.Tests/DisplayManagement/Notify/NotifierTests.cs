@@ -10,7 +10,7 @@ namespace OrchardCore.Tests.DisplayManagement.Notify;
 public class NotifierTests
 {
     [Fact]
-    public async Task SuccessAsync_WithoutMilliseconds_DoesNotSetMilliseconds()
+    public async Task SuccessAsync_WithoutMilliseconds_SetsDefaultMilliseconds()
     {
         var notifier = new Notifier(NullLogger<Notifier>.Instance);
 
@@ -18,6 +18,18 @@ public class NotifierTests
 
         var entry = Assert.Single(notifier.List());
         Assert.Equal(NotifyType.Success, entry.Type);
+        Assert.Equal(5000, entry.Milliseconds);
+    }
+
+    [Fact]
+    public async Task ErrorAsync_WithoutMilliseconds_DoesNotSetMilliseconds()
+    {
+        var notifier = new Notifier(NullLogger<Notifier>.Instance);
+
+        await notifier.ErrorAsync(new LocalizedHtmlString("Problem", "Problem"));
+
+        var entry = Assert.Single(notifier.List());
+        Assert.Equal(NotifyType.Error, entry.Type);
         Assert.Null(entry.Milliseconds);
     }
 

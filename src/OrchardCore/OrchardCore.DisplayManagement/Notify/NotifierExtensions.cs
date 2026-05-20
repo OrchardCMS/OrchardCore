@@ -49,7 +49,7 @@ public static class NotifierExtensions
     /// <param name="notifier">The <see cref="INotifier"/>.</param>
     /// <param name="message">A localized message to display.</param>
     public static ValueTask ErrorAsync(this INotifier notifier, LocalizedHtmlString message)
-        => notifier.AddAsync(NotifyType.Error, message, new NotifyContext { Milliseconds = 3000 });
+        => notifier.AddAsync(NotifyType.Error, message);
 
     /// <summary>
     /// Adds a new UI notification of type Error with an auto-dismiss delay.
@@ -68,7 +68,7 @@ public static class NotifierExtensions
     /// <param name="notifier">The <see cref="INotifier"/>.</param>
     /// <param name="message">A localized message to display.</param>
     public static ValueTask SuccessAsync(this INotifier notifier, LocalizedHtmlString message)
-        => notifier.AddAsync(NotifyType.Success, message, new NotifyContext { Milliseconds = 3000 });
+        => notifier.AddAsync(NotifyType.Success, message, new NotifyContext { Milliseconds = 5000 });
 
     /// <summary>
     /// Adds a new UI notification of type Success with an auto-dismiss delay.
