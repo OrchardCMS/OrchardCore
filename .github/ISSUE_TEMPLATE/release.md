@@ -56,7 +56,7 @@ assignees: ''
 ```
 cd \code\orchardcore
 
-dotnet build -c Release -f net10.0 -p:Version=3.0.0
+dotnet build -c Release -p:Version=3.0.0
 dotnet pack -c Release --no-build -p:Version=3.0.0 -p:TreatWarningsAsErrors=false
 
 mkdir c:\temp\orchardcorefeed
@@ -66,8 +66,8 @@ dotnet new install OrchardCore.ProjectTemplates::3.0.0 --nuget-source c:\temp\or
 
 cd c:\temp\orchardcorefeed
 mkdir occms
-dotnet new occms
 cd occms
+dotnet new occms
 dotnet nuget add source c:\temp\orchardcorefeed
 dotnet run occms
 ```

@@ -1,3 +1,4 @@
+using Fluid;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
@@ -8,13 +9,16 @@ namespace OrchardCore.FileStorage.AzureBlob;
 public abstract class BlobStorageOptionsConfiguration<TOptions> : IConfigureOptions<TOptions>
     where TOptions : BlobStorageOptions
 {
+    private readonly FluidParser _fluidParser;
     private readonly ShellSettings _sellSettings;
     private readonly ILogger _logger;
 
     public BlobStorageOptionsConfiguration(
+        FluidParser fluidParser,
         ShellSettings sellSettings,
         ILogger logger)
     {
+        _fluidParser = fluidParser;
         _sellSettings = sellSettings;
         _logger = logger;
     }
@@ -30,7 +34,7 @@ public abstract class BlobStorageOptionsConfiguration<TOptions> : IConfigureOpti
             return;
         }
 
-        var parser = new FluidOptionsParser<TOptions>(_sellSettings);
+        var parser = new FluidOptionsParser<TOptions>(_fluidParser, _sellSettings);
 
         options.ConnectionString = rawOptions.ConnectionString;
 
