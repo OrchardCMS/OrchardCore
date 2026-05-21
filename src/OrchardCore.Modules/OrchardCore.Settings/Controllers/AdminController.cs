@@ -65,6 +65,7 @@ public sealed class AdminController : Controller
             false,
             groupId);
 
+        // The save button is rendered for every settings group, so require editor content outside the shared actions zone.
         if (!HasEditor(shape))
         {
             return NotFound();
@@ -92,6 +93,7 @@ public sealed class AdminController : Controller
 
         var shape = await _siteSettingsDisplayManager.UpdateEditorAsync(site, _updateModelAccessor.ModelUpdater, false, groupId, string.Empty);
 
+        // The save button is rendered for every settings group, so require editor content outside the shared actions zone.
         if (!HasEditor(shape))
         {
             return NotFound();
