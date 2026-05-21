@@ -60,8 +60,7 @@ public sealed class AdminController : Controller
             site,
             _updateModelAccessor.ModelUpdater,
             false,
-            groupId,
-            string.Empty);
+            groupId);
 
         var hasEditor =
             shape is IZoneHolding zoneHolding &&
