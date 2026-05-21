@@ -6,6 +6,7 @@ using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Localization;
 using OrchardCore.Tests.Stubs;
+using Microsoft.Extensions.Options;
 
 namespace OrchardCore.Tests.DisplayManagement;
 
@@ -14,6 +15,7 @@ public class DefaultDisplayManagerTests
     private readonly ShapeTable _defaultShapeTable;
     private readonly TestShapeBindingsDictionary _additionalBindings;
     private readonly IServiceProvider _serviceProvider;
+    private readonly ShapeRenderingOptions _shapeRenderingOptions = new();
 
     public DefaultDisplayManagerTests()
     {
@@ -38,9 +40,11 @@ public class DefaultDisplayManagerTests
         serviceCollection.AddTransient(typeof(IStringLocalizer<>), typeof(StringLocalizer<>));
 
         serviceCollection.AddLogging();
+        serviceCollection.AddOptions();
 
         serviceCollection.AddSingleton(_defaultShapeTable);
         serviceCollection.AddSingleton(_additionalBindings);
+        serviceCollection.AddSingleton<IOptions<ShapeRenderingOptions>>(Options.Create(_shapeRenderingOptions));
         serviceCollection.AddWebEncoders();
 
         _serviceProvider = serviceCollection.BuildServiceProvider();
@@ -350,6 +354,112 @@ public class DefaultDisplayManagerTests
             BindingName = bindingName,
             BindingAsync = binding,
         };
+    }
+
+    [Fact]
+    public async Task RenderShapeTemplateCommentsWhenEnabled()
+    {
+        _shapeRenderingOptions.WriteShapeDebugInformation = true;
+
+        try
+        {
+            var displayManager = _serviceProvider.GetService<IHtmlDisplay>();
+
+            var shape = new Shape();
+            shape.Metadata.Type = "Foo";
+
+            var descriptor = new ShapeDescriptor
+            {
+                ShapeType = "Foo",
+            };
+            descriptor.Bindings["Foo"] = new ShapeBinding
+            {
+                BindingName = "Foo",
+                BindingSource = "Views/Foo.cshtml",
+                BindingAsync = ctx => Task.FromResult<IHtmlContent>(new HtmlString("Hi there!")),
+            };
+            AddShapeDescriptor(descriptor);
+
+            var result = await displayManager.ExecuteAsync(CreateDisplayContext(shape));
+
+            Assert.Equal("<!--shape-start type:Foo bindings:Foo=>Views/Foo.cshtml (razor)-->Hi there!<!--shape-end type:Foo-->", result.ToString());
+            Assert.Equal("Hi there!", shape.Metadata.ChildContent.ToString());
+        }
+        finally
+        {
+            _shapeRenderingOptions.WriteShapeDebugInformation = false;
+        }
+    }
+
+    [Fact]
+    public async Task RenderAlternateShapeTemplateCommentsUseSelectedBindingWhenEnabled()
+    {
+        _shapeRenderingOptions.WriteShapeDebugInformation = true;
+
+        try
+        {
+            var displayManager = _serviceProvider.GetService<IHtmlDisplay>();
+
+            var shape = new Shape();
+            shape.Metadata.Type = "Foo";
+            shape.Metadata.Alternates.Add("Foo__Alternate");
+
+            var descriptor = new ShapeDescriptor
+            {
+                ShapeType = "Foo",
+            };
+            descriptor.Bindings["Foo"] = new ShapeBinding
+            {
+                BindingName = "Foo",
+                BindingSource = "Views/Foo.cshtml",
+                BindingAsync = ctx => Task.FromResult<IHtmlContent>(new HtmlString("Default")),
+            };
+            descriptor.Bindings["Foo__Alternate"] = new ShapeBinding
+            {
+                BindingName = "Foo__Alternate",
+                BindingSource = "Views/Foo-Alternate.cshtml",
+                BindingAsync = ctx => Task.FromResult<IHtmlContent>(new HtmlString("Alternate")),
+            };
+            AddShapeDescriptor(descriptor);
+
+            var result = await displayManager.ExecuteAsync(CreateDisplayContext(shape));
+
+            Assert.Equal("<!--shape-start type:Foo bindings:Foo__Alternate=>Views/Foo-Alternate.cshtml (razor)-->Alternate<!--shape-end type:Foo-->", result.ToString());
+        }
+        finally
+        {
+            _shapeRenderingOptions.WriteShapeDebugInformation = false;
+        }
+    }
+
+    [Fact]
+    public async Task RenderLiquidShapeTemplateCommentsWhenEnabled()
+    {
+        _shapeRenderingOptions.WriteShapeDebugInformation = true;
+
+        try
+        {
+            var displayManager = _serviceProvider.GetService<IHtmlDisplay>();
+
+            var shape = new Shape();
+            shape.Metadata.Type = "Foo";
+
+            _additionalBindings["Foo"] = new ShapeBinding
+            {
+                BindingName = "Foo",
+                BindingSource = "Templates/Foo.liquid",
+                BindingAsync = ctx => Task.FromResult<IHtmlContent>(new HtmlString("Liquid")),
+            };
+
+            var result = await displayManager.ExecuteAsync(CreateDisplayContext(shape));
+
+            Assert.Equal("<!--shape-start type:Foo bindings:Foo=>Templates/Foo.liquid (liquid)-->Liquid<!--shape-end type:Foo-->", result.ToString());
+        }
+        finally
+        {
+            _additionalBindings.Clear();
+            _shapeRenderingOptions.WriteShapeDebugInformation = false;
+        }
     }
 
     [Fact]
