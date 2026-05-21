@@ -12,7 +12,8 @@ Here are the available SMTP settings
 |---------------------------|-------------------------------------------------------------------------------------------------------------------------------------|
 | `DefaultSender`           | The email of the sender.                                                                                                            |
 | `DeliveryMethod`          | The method for sending the email, `SmtpDeliveryMethod.Network` (online) or `SmtpDeliveryMethod.SpecifiedPickupDirectory` (offline). |
-| `PickupDirectoryLocation` | The directory location for the mailbox (`SmtpDeliveryMethod.SpecifiedPickupDirectory`). A leading `~/` resolves from `App_Data`, and the path also supports Fluid expressions such as `{{ ShellSettings.Name }}`. |
+| `PickupDirectoryLocation` | The tenant-relative directory location for the mailbox (`SmtpDeliveryMethod.SpecifiedPickupDirectory`). Use `/` for the base folder itself or `/Subfolder` for folders beneath it. |
+| `PickupDirectoryLocationBase` | The base directory used to sandbox `PickupDirectoryLocation`. This setting is configuration-only, supports Fluid templates, and defaults to `{{ AppData }}\Sites\{{ ShellSettings.Name }}\Emails`. |
 | `Host`                    | The SMTP server.                                                                                                                    |
 | `Port`                    | The SMTP port number.                                                                                                               |
 | `AutoSelectEncryption`    | Whether the SMTP select the encryption automatically.                                                                               |
@@ -59,7 +60,20 @@ or
   "OrchardCore_Email_Smtp": {
     "DefaultSender": "site@example.com",
     "DeliveryMethod": "SpecifiedPickupDirectory",
-    "PickupDirectoryLocation": "~/Sites/{{ ShellSettings.Name }}/Emails"
+    "PickupDirectoryLocation": "/"
+  }
+}
+```
+
+To move the pickup directory outside the default tenant folder, set `PickupDirectoryLocationBase` in `appsettings.json` or by environment variable:
+
+```json
+{
+  "OrchardCore_Email_Smtp": {
+    "DefaultSender": "site@example.com",
+    "DeliveryMethod": "SpecifiedPickupDirectory",
+    "PickupDirectoryLocationBase": "{{ AppData }}\\Drops\\{{ ShellSettings.Name }}",
+    "PickupDirectoryLocation": "/Outbound"
   }
 }
 ```
@@ -70,7 +84,10 @@ For more information about configurations, please refer to [Configuration](../..
     Configuration of the Default SMTP provider is not possible through Admin Settings. Utilize the configuration provider for the necessary setup. The provider will appear only if the configuration exists.
 
 !!! tip
-    `PickupDirectoryLocation` supports a leading `~/` and resolves it from the configured `App_Data` folder. For example, `~/Emails` maps to `App_Data\Emails`, `~/MyEmails/Etc` maps to `App_Data\MyEmails\Etc`, and `~/Sites/{{ ShellSettings.Name }}/Emails` maps to a tenant-specific folder under `App_Data`.
+    By default, `PickupDirectoryLocationBase` resolves from `{{ AppData }}\Sites\{{ ShellSettings.Name }}\Emails`. `{{ AppData }}` expands to the configured application data folder and `{{ ShellSettings.Name }}` expands to the current tenant name.
+
+!!! warning
+    `PickupDirectoryLocation` is now restricted to `/` or subpaths under `PickupDirectoryLocationBase`. Invalid path characters, absolute paths, and navigation segments are not supported. If you previously used `PickupDirectoryLocation: "C:\\Emails"`, move that value to `PickupDirectoryLocationBase` and use `PickupDirectoryLocation: "/"` or a subfolder such as `"/Outbound"`.
 
 
 ## Recipe Configuration
@@ -116,7 +133,7 @@ SMTP email settings can be configured using the `Settings` recipe step:
 | `ProxyPort` | Integer | The proxy server port. |
 | `IgnoreInvalidSslCertificate` | Boolean | Whether to ignore invalid SSL certificates. |
 | `DeliveryMethod` | String | The delivery method. Values: `Network`, `SpecifiedPickupDirectory`. |
-| `PickupDirectoryLocation` | String | The directory path for storing emails when using the pickup directory delivery method. |
+| `PickupDirectoryLocation` | String | The relative directory path for storing emails when using the pickup directory delivery method. |
 
 ## Credits
 
