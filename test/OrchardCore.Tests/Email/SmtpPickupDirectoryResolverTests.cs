@@ -10,7 +10,7 @@ public class SmtpPickupDirectoryResolverTests
     [Fact]
     public void GetPickupDirectoryLocationBase_UsesDefaultTemplate()
     {
-        var appDataPath = Path.Combine("C:\\App", "App_Data");
+        var appDataPath = GetRootedPath("App", "App_Data");
         var shellSettings = new ShellSettings
         {
             Name = "Default",
@@ -31,7 +31,7 @@ public class SmtpPickupDirectoryResolverTests
     [Fact]
     public void GetPickupDirectoryLocationBase_ExpandsFluidTokens()
     {
-        var appDataPath = Path.Combine("C:\\App", "App_Data");
+        var appDataPath = GetRootedPath("App", "App_Data");
         var shellSettings = new ShellSettings
         {
             Name = "TenantA",
@@ -85,7 +85,7 @@ public class SmtpPickupDirectoryResolverTests
     [Fact]
     public void ConfigurePickupDirectory_AppliesBaseAndResolvedPath()
     {
-        var appDataPath = Path.Combine("C:\\App", "App_Data");
+        var appDataPath = GetRootedPath("App", "App_Data");
         var shellSettings = new ShellSettings
         {
             Name = "Default",
@@ -111,16 +111,20 @@ public class SmtpPickupDirectoryResolverTests
     }
 
     [Theory]
-    [InlineData("/", "C:\\App\\App_Data\\Sites\\Default\\Emails")]
-    [InlineData("/Outbound", "C:\\App\\App_Data\\Sites\\Default\\Emails\\Outbound")]
-    [InlineData("Email/Outbound", "C:\\App\\App_Data\\Sites\\Default\\Emails\\Email\\Outbound")]
-    public void ResolvePickupDirectoryLocation_ResolvesInsideBasePath(string pickupDirectoryLocation, string expectedPath)
+    [InlineData("/", null)]
+    [InlineData("/Outbound", "Outbound")]
+    [InlineData("Email/Outbound", "Email/Outbound")]
+    public void ResolvePickupDirectoryLocation_ResolvesInsideBasePath(string pickupDirectoryLocation, string expectedRelativePath)
     {
-        var basePath = Path.Combine("C:\\App", "App_Data", "Sites", "Default", "Emails");
+        var basePath = GetRootedPath("App", "App_Data", "Sites", "Default", "Emails");
 
         var result = SmtpPickupDirectoryResolver.ResolvePickupDirectoryLocation(basePath, pickupDirectoryLocation);
 
-        Assert.Equal(Path.GetFullPath(expectedPath), result);
+        var expectedPath = string.IsNullOrEmpty(expectedRelativePath)
+            ? basePath
+            : Path.Combine(basePath, expectedRelativePath.Replace('/', Path.DirectorySeparatorChar));
+
+        Assert.Equal(expectedPath, result);
     }
 
     [Theory]
@@ -130,9 +134,12 @@ public class SmtpPickupDirectoryResolverTests
     [InlineData("Emails/../Shared")]
     public void ResolvePickupDirectoryLocation_ThrowsForUnsafeValues(string pickupDirectoryLocation)
     {
-        var basePath = Path.Combine("C:\\App", "App_Data", "Sites", "Default", "Emails");
+        var basePath = GetRootedPath("App", "App_Data", "Sites", "Default", "Emails");
 
         Assert.Throws<InvalidOperationException>(() =>
             SmtpPickupDirectoryResolver.ResolvePickupDirectoryLocation(basePath, pickupDirectoryLocation));
     }
+
+    private static string GetRootedPath(params string[] segments)
+        => Path.GetFullPath(Path.Combine(Path.DirectorySeparatorChar.ToString(), Path.Combine(segments)));
 }

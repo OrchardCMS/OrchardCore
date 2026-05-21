@@ -22,7 +22,7 @@ public class SmtpOptionsConfigurationTests
     [InlineData("Email/Outbound", "Email\\Outbound")]
     public void Configure_ResolvesPickupDirectoryLocationUnderDefaultTenantBase(string pickupDirectoryLocation, string expectedRelativePath)
     {
-        var appDataPath = Path.Combine("C:\\App", "App_Data");
+        var appDataPath = GetRootedPath("App", "App_Data");
         var shellSettings = new ShellSettings
         {
             Name = "Default",
@@ -48,7 +48,7 @@ public class SmtpOptionsConfigurationTests
     [Fact]
     public void Configure_UsesConfiguredPickupDirectoryLocationBaseWithFluidTokens()
     {
-        var appDataPath = Path.Combine("C:\\App", "App_Data");
+        var appDataPath = GetRootedPath("App", "App_Data");
         var shellSettings = new ShellSettings
         {
             Name = "TenantA",
@@ -80,7 +80,7 @@ public class SmtpOptionsConfigurationTests
     [InlineData("\\\\server\\share\\Emails")]
     public void Configure_DisablesPickupDirectoryOutsideConfiguredBase(string pickupDirectoryLocation)
     {
-        var appDataPath = Path.Combine("C:\\App", "App_Data");
+        var appDataPath = GetRootedPath("App", "App_Data");
         var shellSettings = new ShellSettings
         {
             Name = "Default",
@@ -102,7 +102,7 @@ public class SmtpOptionsConfigurationTests
     [Fact]
     public void PostConfigure_ResolvesDefaultPickupDirectoryLocationBase()
     {
-        var appDataPath = Path.Combine("C:\\App", "App_Data");
+        var appDataPath = GetRootedPath("App", "App_Data");
         var shellSettings = new ShellSettings
         {
             Name = "Default",
@@ -132,7 +132,7 @@ public class SmtpOptionsConfigurationTests
     [Fact]
     public void PostConfigure_DisablesDefaultPickupDirectoryLocationOutsideConfiguredBase()
     {
-        var appDataPath = Path.Combine("C:\\App", "App_Data");
+        var appDataPath = GetRootedPath("App", "App_Data");
         var shellSettings = new ShellSettings
         {
             Name = "Default",
@@ -162,7 +162,7 @@ public class SmtpOptionsConfigurationTests
     [Fact]
     public void PostConfigure_UsesSlashRootForConfiguredPickupDirectoryLocation()
     {
-        var appDataPath = Path.Combine("C:\\App", "App_Data");
+        var appDataPath = GetRootedPath("App", "App_Data");
         var shellSettings = new ShellSettings
         {
             Name = "Default",
@@ -226,4 +226,7 @@ public class SmtpOptionsConfigurationTests
             new EphemeralDataProtectionProvider(),
             NullLogger<SmtpOptionsConfiguration>.Instance);
     }
+
+    private static string GetRootedPath(params string[] segments)
+        => Path.GetFullPath(Path.Combine(Path.DirectorySeparatorChar.ToString(), Path.Combine(segments)));
 }

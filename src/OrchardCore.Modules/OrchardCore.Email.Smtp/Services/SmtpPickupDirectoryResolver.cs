@@ -7,6 +7,7 @@ internal static class SmtpPickupDirectoryResolver
 {
     public const string DefaultPickupDirectoryLocation = "/";
     public const string DefaultPickupDirectoryLocationBaseTemplate = @"{{ AppData }}\Sites\{{ ShellSettings.Name }}\Emails";
+    private static readonly char[] _directorySeparators = ['\\', '/'];
 
     private static readonly char[] _invalidPickupDirectoryLocationCharacters =
     [
@@ -47,6 +48,7 @@ internal static class SmtpPickupDirectoryResolver
             : configuredBasePath;
 
         var formattedPickupDirectoryLocationBase = ParseAndFormat(pickupDirectoryLocationBase, fluidParser, shellOptions, shellSettings);
+        formattedPickupDirectoryLocationBase = NormalizeDirectorySeparators(formattedPickupDirectoryLocationBase);
 
         return Path.GetFullPath(formattedPickupDirectoryLocationBase);
     }
@@ -81,6 +83,8 @@ internal static class SmtpPickupDirectoryResolver
             return true;
         }
 
+        pickupDirectoryLocation = pickupDirectoryLocation.Trim();
+
         if (pickupDirectoryLocation.IndexOfAny(_invalidPickupDirectoryLocationCharacters) >= 0 ||
             pickupDirectoryLocation.Contains("{%", StringComparison.Ordinal))
         {
@@ -92,8 +96,15 @@ internal static class SmtpPickupDirectoryResolver
             return false;
         }
 
-        if (Path.IsPathFullyQualified(pickupDirectoryLocation) ||
-            pickupDirectoryLocation.StartsWith(@"\\", StringComparison.Ordinal))
+        if (pickupDirectoryLocation.StartsWith('\\') ||
+            pickupDirectoryLocation.StartsWith("//", StringComparison.Ordinal) ||
+            pickupDirectoryLocation.StartsWith(@"\\", StringComparison.Ordinal) ||
+            IsWindowsDriveQualifiedPath(pickupDirectoryLocation))
+        {
+            return false;
+        }
+
+        if (pickupDirectoryLocation[0] is not '/' && Path.IsPathFullyQualified(pickupDirectoryLocation))
         {
             return false;
         }
@@ -109,7 +120,8 @@ internal static class SmtpPickupDirectoryResolver
         }
 
         pickupDirectoryLocation = pickupDirectoryLocation
-            .Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar)
+            .Replace('\\', Path.DirectorySeparatorChar)
+            .Replace('/', Path.DirectorySeparatorChar)
             .Trim();
 
         if (pickupDirectoryLocation == DefaultPickupDirectoryLocation ||
@@ -123,12 +135,21 @@ internal static class SmtpPickupDirectoryResolver
 
     private static bool ContainsNavigationSegments(string pickupDirectoryLocation)
     {
-        var normalizedPath = pickupDirectoryLocation.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
-
-        return normalizedPath
-            .Split(Path.DirectorySeparatorChar, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+        return pickupDirectoryLocation
+            .Split(_directorySeparators, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
             .Any(segment => segment is "." or "..");
     }
+
+    private static bool IsWindowsDriveQualifiedPath(string pickupDirectoryLocation)
+        => pickupDirectoryLocation.Length >= 3 &&
+            char.IsAsciiLetter(pickupDirectoryLocation[0]) &&
+            pickupDirectoryLocation[1] == ':' &&
+            pickupDirectoryLocation[2] is '\\' or '/';
+
+    private static string NormalizeDirectorySeparators(string path)
+        => path?
+            .Replace('\\', Path.DirectorySeparatorChar)
+            .Replace('/', Path.DirectorySeparatorChar);
 
     private static string ParseAndFormat(string template, FluidParser fluidParser, ShellOptions shellOptions, ShellSettings shellSettings)
     {
