@@ -7,6 +7,7 @@ using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.DisplayManagement.Zones;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Localization;
 using OrchardCore.Settings.ViewModels;
@@ -55,10 +56,26 @@ public sealed class AdminController : Controller
 
         var site = await _siteService.GetSiteSettingsAsync();
 
+        var shape = await _siteSettingsDisplayManager.BuildEditorAsync(
+            site,
+            _updateModelAccessor.ModelUpdater,
+            false,
+            groupId,
+            string.Empty);
+
+        var hasEditor =
+            shape is IZoneHolding zoneHolding &&
+            zoneHolding.Zones.IsNotEmpty("Content");
+
+        if (!hasEditor)
+        {
+            return NotFound();
+        }
+
         var viewModel = new AdminIndexViewModel
         {
             GroupId = groupId,
-            Shape = await _siteSettingsDisplayManager.BuildEditorAsync(site, _updateModelAccessor.ModelUpdater, false, groupId, string.Empty),
+            Shape = shape,
         };
 
         return View(viewModel);
