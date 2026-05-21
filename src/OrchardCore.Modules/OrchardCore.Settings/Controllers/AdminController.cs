@@ -7,6 +7,7 @@ using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Zones;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Localization;
@@ -16,6 +17,8 @@ namespace OrchardCore.Settings.Controllers;
 
 public sealed class AdminController : Controller
 {
+    private const string ActionsZone = "Actions";
+
     private readonly IDisplayManager<ISite> _siteSettingsDisplayManager;
     private readonly IShellReleaseManager _shellReleaseManager;
     private readonly ISiteService _siteService;
@@ -62,11 +65,7 @@ public sealed class AdminController : Controller
             false,
             groupId);
 
-        var hasEditor =
-            shape is IZoneHolding zoneHolding &&
-            zoneHolding.Zones.IsNotEmpty("Content");
-
-        if (!hasEditor)
+        if (!HasEditor(shape))
         {
             return NotFound();
         }
@@ -91,10 +90,17 @@ public sealed class AdminController : Controller
 
         var site = await _siteService.LoadSiteSettingsAsync();
 
+        var shape = await _siteSettingsDisplayManager.UpdateEditorAsync(site, _updateModelAccessor.ModelUpdater, false, groupId, string.Empty);
+
+        if (!HasEditor(shape))
+        {
+            return NotFound();
+        }
+
         var viewModel = new AdminIndexViewModel
         {
             GroupId = groupId,
-            Shape = await _siteSettingsDisplayManager.UpdateEditorAsync(site, _updateModelAccessor.ModelUpdater, false, groupId, string.Empty),
+            Shape = shape,
         };
 
         if (ModelState.IsValid)
@@ -122,5 +128,28 @@ public sealed class AdminController : Controller
         }
 
         return View(viewModel);
+    }
+
+    private static bool HasEditor(IShape shape)
+    {
+        if (shape is not IZoneHolding)
+        {
+            return false;
+        }
+
+        foreach (var zone in shape.Properties)
+        {
+            if (string.Equals(zone.Key, ActionsZone, StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+
+            if (zone.Value is Shape { HasItems: true })
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
