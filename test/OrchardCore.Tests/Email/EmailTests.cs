@@ -243,7 +243,7 @@ public class EmailTests
         var smtp = CreateSmtpService(options);
 
         // Act
-        var result = await smtp.SendAsync(message);
+        var result = await smtp.SendAsync(message, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.True(result.Succeeded);
