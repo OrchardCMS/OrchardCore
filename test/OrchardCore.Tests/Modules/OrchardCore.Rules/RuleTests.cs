@@ -193,7 +193,7 @@ public class RuleTests
             [
                 new JavascriptCondition
                 {
-                    Script = "isAllowedAsync()",
+                    Script = "isAsyncAllowedAsync()",
                 }
             ],
         };
@@ -237,7 +237,7 @@ public class RuleTests
         {
             yield return new GlobalMethod
             {
-                Name = "isAllowedAsync",
+                Name = "isAsyncAllowed",
                 Method = serviceProvider => (Func<bool>)(() => false),
                 AsyncMethod = serviceProvider => (Func<Task<bool>>)(async () =>
                 {
