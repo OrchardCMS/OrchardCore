@@ -124,7 +124,7 @@ Configures core site settings (like homepage route, culture, time zone, etc).
     "Action": "Display",
     "Controller": "Item",
     "Area": "OrchardCore.Contents",
-    "ContentItemId": "[js:variablesAsync('homeId')]"
+    "ContentItemId": "[js:variables('homeId')]"
   },
   "LayerSettings": {
     "Zones": [ "Content", "Footer" ]
@@ -346,7 +346,7 @@ Defines custom workflows to automate user or content events.
   "name": "WorkflowType",
   "data": [
     {
-      "WorkflowTypeId": "[js:variablesAsync('workflowTypeId')]",
+      "WorkflowTypeId": "[js:variables('workflowTypeId')]",
       "Name": "User Registration"
     }
   ]
