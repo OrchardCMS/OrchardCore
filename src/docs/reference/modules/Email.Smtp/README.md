@@ -73,6 +73,51 @@ For more information about configurations, please refer to [Configuration](../..
     `PickupDirectoryLocation` supports a leading `~/` and resolves it from the configured `App_Data` folder. For example, `~/Emails` maps to `App_Data\Emails`, `~/MyEmails/Etc` maps to `App_Data\MyEmails\Etc`, and `~/Sites/{{ ShellSettings.Name }}/Emails` maps to a tenant-specific folder under `App_Data`.
 
 
+## Recipe Configuration
+
+SMTP email settings can be configured using the `Settings` recipe step:
+
+```json
+{
+  "steps": [
+    {
+      "name": "settings",
+      "SmtpSettings": {
+        "IsEnabled": true,
+        "DefaultSender": "noreply@example.com",
+        "Host": "smtp.example.com",
+        "Port": 587,
+        "AutoSelectEncryption": true,
+        "RequireCredentials": true,
+        "UseDefaultCredentials": false,
+        "EncryptionMethod": "StartTls",
+        "UserName": "smtp-user",
+        "Password": "smtp-password",
+        "DeliveryMethod": "Network"
+      }
+    }
+  ]
+}
+```
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `IsEnabled` | Boolean | Whether the SMTP email provider is enabled. |
+| `DefaultSender` | String | The default sender email address. |
+| `Host` | String | The SMTP server hostname. **Required.** |
+| `Port` | Integer | The SMTP server port. Default: `25`. |
+| `AutoSelectEncryption` | Boolean | Whether to automatically select the encryption method. |
+| `RequireCredentials` | Boolean | Whether the SMTP server requires authentication. |
+| `UseDefaultCredentials` | Boolean | Whether to use the default system credentials. |
+| `EncryptionMethod` | String | The encryption method. Values: `None`, `SslTls`, `StartTls`. |
+| `UserName` | String | The username for SMTP authentication. |
+| `Password` | String | The password for SMTP authentication. |
+| `ProxyHost` | String | The proxy server hostname. |
+| `ProxyPort` | Integer | The proxy server port. |
+| `IgnoreInvalidSslCertificate` | Boolean | Whether to ignore invalid SSL certificates. |
+| `DeliveryMethod` | String | The delivery method. Values: `Network`, `SpecifiedPickupDirectory`. |
+| `PickupDirectoryLocation` | String | The directory path for storing emails when using the pickup directory delivery method. |
+
 ## Credits
 
 ### MailKit

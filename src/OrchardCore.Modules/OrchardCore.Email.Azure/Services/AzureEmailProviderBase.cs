@@ -98,7 +98,13 @@ public abstract class AzureEmailProviderBase : IEmailProvider
 
     public abstract LocalizedString DisplayName { get; }
 
-    public virtual async Task<Result> SendAsync(MailMessage message)
+    /// <summary>
+    /// Sends the specified email message by using the configured Azure Communication Services email provider.
+    /// </summary>
+    /// <param name="message">The email message to send.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A <see cref="Result"/> describing whether the email was sent successfully.</returns>
+    public virtual async Task<Result> SendAsync(MailMessage message, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(message);
 
@@ -151,7 +157,7 @@ public abstract class AzureEmailProviderBase : IEmailProvider
         {
             _emailClient ??= new EmailClient(_providerOptions.ConnectionString);
 
-            var result = await _emailClient.SendAsync(WaitUntil.Completed, emailMessage);
+            var result = await _emailClient.SendAsync(WaitUntil.Completed, emailMessage, cancellationToken);
 
             if (result.HasValue)
             {

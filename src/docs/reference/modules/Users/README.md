@@ -75,6 +75,160 @@ If you want to specify custom paths to access the authentication related urls, y
   }
 ```
 
+## Recipe Configuration
+
+User module settings can be configured using the `Settings` recipe step:
+
+### Login Settings
+
+```json
+{
+  "steps": [
+    {
+      "name": "settings",
+      "LoginSettings": {
+        "UseSiteTheme": false,
+        "DisableLocalLogin": false,
+        "AllowChangingUsername": false,
+        "AllowChangingEmail": false,
+        "AllowChangingPhoneNumber": true
+      }
+    }
+  ]
+}
+```
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `UseSiteTheme` | Boolean | Whether to use the site theme for the login page. |
+| `DisableLocalLogin` | Boolean | Whether to disable local username/password login. |
+| `AllowChangingUsername` | Boolean | Whether to allow users to change their username. |
+| `AllowChangingEmail` | Boolean | Whether to allow users to change their email address. |
+| `AllowChangingPhoneNumber` | Boolean | Whether to allow users to change their phone number. Default: `true`. |
+
+### Registration Settings
+
+```json
+{
+  "steps": [
+    {
+      "name": "settings",
+      "RegistrationSettings": {
+        "UsersMustValidateEmail": true,
+        "UsersAreModerated": false,
+        "UseSiteTheme": false
+      }
+    }
+  ]
+}
+```
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `UsersMustValidateEmail` | Boolean | Whether users must validate their email address before activation. |
+| `UsersAreModerated` | Boolean | Whether new user registrations require administrator approval. |
+| `UseSiteTheme` | Boolean | Whether to use the site theme for the registration page. |
+
+### Reset Password Settings
+
+```json
+{
+  "steps": [
+    {
+      "name": "settings",
+      "ResetPasswordSettings": {
+        "AllowResetPassword": true,
+        "UseSiteTheme": false
+      }
+    }
+  ]
+}
+```
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `AllowResetPassword` | Boolean | Whether to allow users to reset their password. |
+| `UseSiteTheme` | Boolean | Whether to use the site theme for the reset password page. |
+
+### Change Email Settings
+
+```json
+{
+  "steps": [
+    {
+      "name": "settings",
+      "ChangeEmailSettings": {
+        "AllowChangeEmail": true
+      }
+    }
+  ]
+}
+```
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `AllowChangeEmail` | Boolean | Whether to allow users to change their email address. |
+
+### External Authentication Settings
+
+```json
+{
+  "steps": [
+    {
+      "name": "settings",
+      "ExternalLoginSettings": {
+        "UseExternalProviderIfOnlyOneDefined": false,
+        "UseScriptToSyncProperties": false,
+        "SyncPropertiesScript": ""
+      },
+      "ExternalRegistrationSettings": {
+        "DisableNewRegistrations": false,
+        "NoPassword": false,
+        "NoUsername": false,
+        "NoEmail": false,
+        "UseScriptToGenerateUsername": false,
+        "GenerateUsernameScript": ""
+      }
+    }
+  ]
+}
+```
+
+### Two-Factor Authentication Settings
+
+```json
+{
+  "steps": [
+    {
+      "name": "settings",
+      "TwoFactorLoginSettings": {
+        "RequireTwoFactorAuthentication": false,
+        "AllowRememberClientTwoFactorAuthentication": true,
+        "NumberOfRecoveryCodesToGenerate": 5,
+        "UseSiteTheme": false
+      },
+      "RoleLoginSettings": {
+        "RequireTwoFactorAuthenticationForSpecificRoles": false,
+        "Roles": [
+          "Administrator"
+        ]
+      },
+      "AuthenticatorAppLoginSettings": {
+        "UseEmailAsAuthenticatorDisplayName": false,
+        "TokenLength": 6
+      },
+      "EmailAuthenticatorLoginSettings": {
+        "Subject": "Your verification code",
+        "Body": "Your code is {{ Code }}"
+      },
+      "SmsAuthenticatorLoginSettings": {
+        "Body": "Your verification code is {{ Code }}"
+      }
+    }
+  ]
+}
+```
+
 ## Videos
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/78m04Inmilw" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

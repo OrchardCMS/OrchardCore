@@ -11,6 +11,7 @@ import { Mode } from "postcss-rtlcss/options";
 import chokidar from "chokidar";
 import { Buffer } from "buffer";
 import process from "node:process";
+import { writeAssetFile } from "./output.mjs";
 
 let action = process.argv[2];
 let mode = action === "build" ? "production" : "development";
@@ -167,7 +168,7 @@ function runSass(config) {
 
                             if (scssResult.css) {
                                 const normalTarget = path.join(dest, path.parse(target).name + ".css");
-                                await fs.outputFile(normalTarget, scssResult.css);
+                                await writeAssetFile(normalTarget, scssResult.css);
                                 console.log(`Tranpiled (${chalk.gray("from")}, ${chalk.cyan("to")})`, chalk.gray(file), chalk.cyan(normalTarget));
 
                                 if (config.generateRTL) {
@@ -177,7 +178,7 @@ function runSass(config) {
 
                                     const result = await postcss([postcssRTLCSS(options)]).process(scssResult.css, { from: file });
 
-                                    await fs.outputFile(normalTarget, result.css);
+                                    await writeAssetFile(normalTarget, result.css);
                                     scssResult.css = result.css;
                                     console.log(`RTL (${chalk.gray("from")}, ${chalk.cyan("to")})`, chalk.gray(normalTarget), chalk.cyan(normalTarget));
                                 }
@@ -190,7 +191,7 @@ function runSass(config) {
 
                                 if (code) {
                                     const minifiedTarget = path.join(dest, path.parse(target).name + ".min.css");
-                                    fs.outputFile(minifiedTarget, code);
+                                    await writeAssetFile(minifiedTarget, code);
                                     console.log(`Minified (${chalk.gray("from")}, ${chalk.cyan("to")})`, chalk.gray(normalTarget), chalk.cyan(minifiedTarget));
                                 }
 

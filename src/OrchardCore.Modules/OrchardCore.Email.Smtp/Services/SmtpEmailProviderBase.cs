@@ -34,7 +34,13 @@ public abstract class SmtpEmailProviderBase : IEmailProvider
 
     public abstract LocalizedString DisplayName { get; }
 
-    public virtual async Task<Result> SendAsync(MailMessage message)
+    /// <summary>
+    /// Sends the specified email message by using the configured SMTP delivery method.
+    /// </summary>
+    /// <param name="message">The email message to send.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A <see cref="Result"/> describing whether the email was sent successfully.</returns>
+    public virtual async Task<Result> SendAsync(MailMessage message, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(message);
 
