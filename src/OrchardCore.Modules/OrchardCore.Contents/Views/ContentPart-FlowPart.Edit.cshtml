@@ -1,17 +1,25 @@
+@using System.Collections
+@using System.Collections.Generic
+@using OrchardCore
+@using OrchardCore.ContentManagement
 @using OrchardCore.ContentManagement.Metadata.Models
 @using OrchardCore.ContentManagement.Metadata.Settings
-@using OrchardCore.ContentManagement
 @using OrchardCore.ContentTypes
-@using OrchardCore
 @using OrchardCore.Localization.Data
 
 @inject IDataLocalizer D
 
 @{
+    var shapes = Model as IEnumerable<IShape>;
+
+    if (shapes is null || !shapes.Any())
+    {
+        return;
+    }
+
     ContentTypePartDefinition typePartDefinition = Model.ContentTypePartDefinition;
     var description = typePartDefinition.Description();
 }
-
 <div class="@Orchard.GetPartWrapperClasses(typePartDefinition)">
     <div class="@Orchard.GetLabelClasses()">
         @D[typePartDefinition.DisplayName(), DataLocalizationContext.ContentType]
@@ -23,7 +31,7 @@
     </div>
 
     <div class="@Orchard.GetEndClasses()">
-        @foreach (var shape in Model)
+        @foreach (var shape in shapes)
         {
             @await DisplayAsync(shape)
         }

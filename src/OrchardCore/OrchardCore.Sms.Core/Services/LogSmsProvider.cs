@@ -22,7 +22,13 @@ public class LogSmsProvider : ISmsProvider
         _logger = logger;
     }
 
-    public Task<Result> SendAsync(SmsMessage message)
+    /// <summary>
+    /// Sends the specified SMS message by writing it to the application logs.
+    /// </summary>
+    /// <param name="message">The SMS message to log.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A successful <see cref="Result"/> after the message is written to the logs.</returns>
+    public Task<Result> SendAsync(SmsMessage message, CancellationToken cancellationToken = default)
     {
         _logger.LogWarning("A message with the body '{Body}' was set to '{PhoneNumber}'.", message.Body, message.To);
 
