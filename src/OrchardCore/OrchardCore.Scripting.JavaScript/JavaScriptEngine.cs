@@ -30,7 +30,6 @@ public sealed class JavaScriptEngine : IScriptingEngine
     public object Evaluate(IScriptingScope scope, string script)
     {
         var jsScope = GetJavaScriptScope(scope);
-        jsScope.UseSyncMethods();
 
         var parsedAst = _memoryCache.GetOrCreate(script, static entry => Engine.PrepareScript((string)entry.Key));
 
@@ -42,7 +41,6 @@ public sealed class JavaScriptEngine : IScriptingEngine
     public async Task<object> EvaluateAsync(IScriptingScope scope, string script, CancellationToken cancellationToken = default)
     {
         var jsScope = GetJavaScriptScope(scope);
-        jsScope.UseAsyncMethods();
 
         var parsedAst = _memoryCache.GetOrCreate(script, static entry => Engine.PrepareScript((string)entry.Key));
 
