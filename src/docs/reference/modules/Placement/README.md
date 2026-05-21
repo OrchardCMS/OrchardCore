@@ -270,6 +270,74 @@ We also specify that the `Content` column will take 9 columns, of the default 12
     By default the columns will break responsively at the `md` breakpoint, and a modifier will be parsed to `col-md-9`.
     If you want to change the breakpoint, you could also specify `Content_lg-9`, which is parsed to `col-lg-9`.
 
+#### Column layout behavior
+
+Each shape with a column modifier (`|ColumnName`) gets its own **column wrapper** inside a Bootstrap **row** (`<div class="row">`). The column name is an arbitrary label used for the CSS class — it has no special meaning (e.g., `|MyCol_4` is the same as `|Sidebar_4` — neither implies left or right positioning).
+
+The column **width** (the number after `_`) maps to Bootstrap's 12-column grid. For example, `_4` means `col-md-4` (4/12 = 1/3 width). If the total widths exceed 12, columns wrap to the next line automatically (standard Bootstrap behavior).
+
+The column **position** (the number after `;`) determines the order of columns within the row.
+
+Shapes **without** a column modifier are rendered as **full-width content outside the row**. Their vertical position relative to the column row is determined by their order in the placement sequence:
+
+- Shapes positioned **before** the first column-specified shape render above the row.
+- Shapes positioned **after** the first column-specified shape render below the row.
+
+**Example: Three equal-width columns with a full-width field below**
+
+``` json
+{
+    "TextField_Edit" : [
+        {
+            "place" : "Parts:1%Details;1|Col_4;1",
+            "differentiator": "MyPart-FieldA"
+        },
+        {
+            "place" : "Parts:1%Details;1|Col_4;2",
+            "differentiator": "MyPart-FieldB"
+        },
+        {
+            "place" : "Parts:1%Details;1|Col_4;3",
+            "differentiator": "MyPart-FieldC"
+        },
+        {
+            "place": "Parts:2%Details;1",
+            "differentiator": "MyPart-FieldD"
+        }
+    ]
+}
+```
+
+This produces:
+
+- A row with three columns, each 4/12 width (1/3): FieldA, FieldB, FieldC side by side.
+- Below the row: FieldD rendered at full width (no column wrapper).
+
+**Example: Two columns with different widths**
+
+``` json
+{
+    "TextField_Edit" : [
+        {
+            "place" : "Parts:1|Sidebar_3;1",
+            "differentiator": "MyPart-FieldA"
+        },
+        {
+            "place" : "Parts:1|Main_9;2",
+            "differentiator": "MyPart-FieldB"
+        }
+    ]
+}
+```
+
+This produces a row with a 3/12 width column (FieldA) and a 9/12 width column (FieldB).
+
+!!! note
+    The column name (e.g., `Col`, `Sidebar`, `Main`) is just an identifier used for CSS targeting via the generated class `column-{name}`. You can use any name — it does not affect positioning. To put multiple fields in separate columns, give each field a column modifier; the position (`;N`) controls their order in the row.
+
+!!! warning
+    All column-specified shapes within the same grouping level (same tab/card) share a single row. If you need multiple separate column rows, place them in different cards.
+
 ### Dynamic part placement
 
 In the following example we place a dynamic part (part without driver, i.e. created in json) `GalleryPart` in a zone called `MyGalleryZone`. When displaying that part inside Content template we would execute:
