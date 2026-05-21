@@ -41,7 +41,7 @@ public sealed class Startup : StartupBase
 
         services.AddSingleton<Redactor>(_ => NullRedactor.Instance);
         services.AddSingleton<Redactor>(_ => ErasingRedactor.Instance);
-        services.AddSingleton<Redactor, HmacRedactor>();
+        services.AddSingleton<Redactor, TenantHmacRedactor>();
         services.AddSingleton<Redactor, RemoveRedactor>();
         services.AddSingleton<Redactor, PartialAsteriskRedactor>();
         
