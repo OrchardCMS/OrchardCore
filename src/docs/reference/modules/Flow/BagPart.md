@@ -47,7 +47,7 @@ _contentDefinitionManager.AlterTypeDefinition("MyContentType", type => type
 When the blocks editor is enabled for a BagPart, additional settings become available in the part editor options:
 
 | Setting          | Description                                                                 |
-| ---------------- | --------------------------------------------------------------------------- |
+|------------------|-----------------------------------------------------------------------------|
 | Add Button Text  | Custom text for the "Add" button. Defaults to "Add Block".                  |
 | Modal Title Text | Custom title for the content type picker modal. Defaults to "Select Block". |
 

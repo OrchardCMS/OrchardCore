@@ -173,7 +173,7 @@ Creates or configures Lucene search indexes.
   },
   {
     // Create the search settings.
-    "name": "Settings",
+    "name": "settings",
     "LuceneSettings": {
       "SearchIndex": "Search",
       "DefaultSearchFields": [

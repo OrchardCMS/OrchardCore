@@ -141,8 +141,12 @@ public sealed class LayerFilter : IAsyncResultFilter
                         Content = widgetContent,
                     };
 
-                    wrapper.Metadata.Alternates.Add("Widget_Wrapper__" + contentItem.ContentType);
-                    wrapper.Metadata.Alternates.Add("Widget_Wrapper__Zone__" + widget.Zone);
+                    // Get cached alternates and add them efficiently
+                    var cachedAlternates = WidgetWrapperAlternatesFactory.GetAlternates(
+                        contentItem.ContentType,
+                        widget.Zone);
+
+                    wrapper.Metadata.Alternates.AddRange(cachedAlternates);
 
                     var contentZone = layout.Zones[widget.Zone];
 

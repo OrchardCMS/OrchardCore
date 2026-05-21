@@ -12,6 +12,12 @@
     <Folder Include="Localization\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="wwwroot\.placeholder">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
   <!-- Watcher include and excludes -->
   <ItemGroup>
       <Watch Include="**\*.cs" Exclude="Recipes\**;Assets\**;node_modules\**\*;**\*.js.map;obj\**\*;bin\**\*" />

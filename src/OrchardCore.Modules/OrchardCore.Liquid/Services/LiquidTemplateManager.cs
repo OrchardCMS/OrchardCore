@@ -8,7 +8,7 @@ using OrchardCore.DisplayManagement.Liquid;
 
 namespace OrchardCore.Liquid.Services;
 
-public class LiquidTemplateManager : ILiquidTemplateManager
+public sealed class LiquidTemplateManager : ILiquidTemplateManager
 {
     private readonly IMemoryCache _memoryCache;
     private readonly LiquidViewParser _liquidViewParser;
@@ -95,23 +95,21 @@ public class LiquidTemplateManager : ILiquidTemplateManager
         return result.RenderAsync(writer, encoder, context, model);
     }
 
-    public LiquidViewTemplate GetCachedTemplate(string source)
+    private IFluidTemplate GetCachedTemplate(string source)
     {
-        var errors = Enumerable.Empty<string>();
-
-        var result = _memoryCache.GetOrCreate(source, (ICacheEntry e) =>
+        var result = _memoryCache.GetOrCreate(source, e =>
         {
             if (!_liquidViewParser.TryParse(source, out var parsed, out var error))
             {
                 // If the source string cannot be parsed, create a template that contains the parser errors
-                _liquidViewParser.TryParse(string.Join(System.Environment.NewLine, errors), out parsed, out error);
+                _liquidViewParser.TryParse(error, out parsed, out error);
             }
 
             // Define a default sliding expiration to prevent the
             // cache from being filled and still apply some micro-caching
             // in case the template is used commonly
             e.SetSlidingExpiration(TimeSpan.FromSeconds(30));
-            return new LiquidViewTemplate(parsed);
+            return parsed;
         });
 
         return result;

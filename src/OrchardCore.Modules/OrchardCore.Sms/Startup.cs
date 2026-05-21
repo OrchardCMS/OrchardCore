@@ -24,7 +24,6 @@ public sealed class Startup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddSmsServices();
-        services.AddPhoneFormatValidator();
 
         if (_hostEnvironment.IsDevelopment())
         {

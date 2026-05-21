@@ -6,16 +6,11 @@ To learn more about ASP.NET Core `IConfiguration` visit <https://docs.microsoft.
 
 Note that while this documentation page explains configuration happening in the root web app project on the example of `OrchardCore.Cms.Web.csproj` if you use Orchard from NuGet packages in your own web app then same is available in that web app project too.
 
-## Config Sources
+## Configuration Sources
 
-Orchard Core supports a hierarchy of Configuration Sources
+Orchard Core built on top of ASP.NET Core Configuration framework, which support a variety of different configuration options. Developers are not limited to using a single configuration source. In fact several may be set up together such that a default configuration is overridden by settings from another source if they are present.
 
-* The `Startup` ASP.NET Core Project, e.g. `OrchardCore.Cms.Web.csproj`, `appsettings.json`, or by environment  `appsettings.Development.json`.
-* Global Tenant Configuration `App_Data/appsettings.json`, or by environment `App_Data/appsettings.Development.json`.
-* Individual Tenant Configuration files located under each Tenant Folder in the `App_Data/Sites/{tenant_name}/appsettings.json` folder. **Note:** These are mutable files, and do not support an Environment version.
-* Environment Variables, or AppSettings as Environment Variables via Azure.
-
-The Configuration Sources are loaded in the above order, and settings lower in the hierarchy will override values configured higher up, i.e. an Global Tenant value will always be overridden by an Environment Variable.
+The Configuration Sources are loaded in the order described in [Configuration Sources Order](#configuration-sources-order) below.
 
 !!! note
     The `IShellConfiguration` patterns in the `appsettings.json` examples below will only work for modules that specifically support such configuration. You can check out the given module's code or documentation to see if this is the case.
@@ -92,6 +87,11 @@ What if you want all tenants to access the same database? The corresponding conf
   "OrchardCore": {
     "ConnectionString": "...",
     "DatabaseProvider": "SqlConnection",
+    "OrchardCore_Tenants": {
+      "RequireTablePrefix": true,
+      "TablePrefixPattern": "{{ ShellSettings.Name }}",
+      "SchemaPattern": "dbo"
+    },
     "Default" : {
       "State": "Uninitialized",
       "TablePrefix": "Default"
@@ -105,7 +105,14 @@ Notes on the above configuration:
 * Be aware that while you can use the same configuration keys for tenants, as demonstrated previously, this is in the root of the `OrchardCore` section.
 * Add the connection string for the database to be used by all tenants.
 * `DatabaseProvider` should correspond to the database engine used, the sample being one for SQL Server.
-* `TablePrefix` needs to be configured to the prefix used by the Default tenant so tables can be separated for each tenant (otherwise just the Default tenant's tables would lack prefixes). Other tenants should then be set up with a different prefix.
+* `Default:TablePrefix` configures the table prefix used by the Default tenant itself so its tables stay isolated from other tenants in the shared database. It does not automatically populate or require prefixes for tenants created later from the admin or API, and by itself it does not lock or hide database provider and connection settings for other tenants.
+* `OrchardCore_Tenants:RequireTablePrefix` can be enabled to require a table prefix whenever a new tenant is created, or an uninitialized tenant is edited, with a database provider that supports table prefixes.
+* For providers that require a connection string, Orchard only treats the root database configuration as preset when both `DatabaseProvider` and `ConnectionString` are configured. Setting only `DatabaseProvider` does not lock setup or tenant database fields and does not bootstrap YesSql for the setup shell.
+* `OrchardCore_Tenants:TablePrefixPattern` can be used to generate each tenant's `TablePrefix` automatically so the admin and API no longer need manual input for it. The pattern uses Fluid syntax with `ShellSettings` in scope, for example `{{ ShellSettings.Name }}`.
+* `OrchardCore_Tenants:SchemaPattern` works the same way for the tenant `Schema`, for example `"dbo"` or `{{ ShellSettings.Name }}`.
+* Pattern-generated and manually entered `TablePrefix` and `Schema` values are validated as SQL identifiers. Use only letters, numbers, and underscores, and start the value with a letter or underscore.
+* When a pattern is configured, Orchard uses the generated value instead of any posted manual value for tenant creation, editing uninitialized tenants, and tenant setup.
+* This shared-database pattern applies to providers such as SQL Server, MySQL, and PostgreSQL. The built-in SQLite provider does not use the root `ConnectionString` setting for tenant data and is not configured as a single shared `.db` file with per-tenant prefixes through this pattern.
 
 This way, the app can be easily moved between environments (like a staging and production one) by configuring the corresponding database's settings in the given environment. Tenants' shell settings won't contain this information, all tenants will use the same, global configuration.
 
@@ -193,18 +200,17 @@ OrchardCore__MyTenant__OrchardCore_Media__MaxFileSize
     To support Linux the underscore `_` is used as a separator, e.g. `OrchardCore_Media`
     `OrchardCore.Media` is supported for backwards compatibility, but users should migrate to the `_` pattern.
 
-### Order of hierarchy
+### Configuration Sources Order
 
 By default an Orchard Core site will use `CreateDefaultBuilder` in the Startup Project's `Program.cs` which will load `IConfiguration` in the following order
 
-1. Startup project `appsettings.json`
-2. Startup project `appsettings.{environment}.json`
-3. User Secrets (if environment is **Development**)
-4. Environment Variables
-5. Command Line Args
-6. `IShellConfiguration` will then add these
-    1. `App_Data/appsettings.json`
-    2. `App_Data/Sites/{tenant_name}/appsettings.json` for the particular tenant
+1. The `Startup` ASP.NET Core Project, e.g. `OrchardCore.Cms.Web.csproj`, `appsettings.json`, or by environment `appsettings.Development.json`.
+2. User Secrets (if environment is **Development**)
+3. Environment Variables, or AppSettings as Environment Variables via Azure.
+4. Command Line Args
+5. `IShellConfiguration` will then add these
+    1. Global Tenant Configuration `App_Data/appsettings.json`
+    2. Individual Tenant Configuration files located under each Tenant Folder in the `App_Data/Sites/{tenant_name}/appsettings.json` folder.
 
 !!! note
     Configurations with the same key that are loaded later take precedence over those which were loaded earlier (last wins).

@@ -13,13 +13,18 @@ public class Zones : Composite
     private readonly Func<ValueTask<IShape>> _zoneFactory;
     private readonly ZoneHolding _parent;
 
-    public bool IsNotEmpty(string name) => this[name] is not ZoneOnDemand;
-
-    public Zones(Func<ValueTask<IShape>> zoneFactory, ZoneHolding parent)
+    public Zones(ZoneHolding parent)
     {
-        _zoneFactory = zoneFactory;
         _parent = parent;
     }
+
+    public Zones(Func<ValueTask<IShape>> zoneFactory, ZoneHolding parent)
+        : this(parent)
+    {
+        _zoneFactory = zoneFactory;
+    }
+
+    public bool IsNotEmpty(string name) => this[name] is not ZoneOnDemand;
 
     public IShape this[string name]
     {
@@ -44,6 +49,8 @@ public class Zones : Composite
     {
         if (!_parent.Properties.TryGetValue(name, out result))
         {
+            // _zoneFactory can be null if the Zones object is created without it, in
+            // which case the parent will be responsible for creating the zone.
             result = new ZoneOnDemand(_zoneFactory, _parent, name);
         }
 

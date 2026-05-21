@@ -30,8 +30,12 @@
         }
         @foreach (var widget in Model.FlowPart.Widgets)
         {
-            var metadata = ((ContentItem)widget).As<FlowMetadata>();
-            var colSize = (int)Math.Round((double)metadata.Size / 100.0 * 12);
+            var widgetContentItem = (ContentItem)widget;
+            var colSize = 1;
+            if (widgetContentItem.TryGet<FlowMetadata>(out var metadata))
+            {
+                colSize = (int)Math.Round((double)metadata.Size / 100.0 * 12);
+            }
 
             dynamic contentCard = await New.ContentCard(
                 CollectionShape: Model,

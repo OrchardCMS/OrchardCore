@@ -34,7 +34,7 @@ internal sealed class ContentIndexProfileDisplayDriver : DisplayDriver<IndexProf
 
         return Initialize<ContentIndexMetadataViewModel>("ContentIndexMetadata_Edit", model =>
         {
-            var metadata = indexProfile.As<ContentIndexMetadata>();
+            var metadata = indexProfile.GetOrCreate<ContentIndexMetadata>();
 
             model.IndexLatest = metadata.IndexLatest;
             model.IndexedContentTypes = metadata.IndexedContentTypes;

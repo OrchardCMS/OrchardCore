@@ -551,6 +551,61 @@ A middleware component returns a 404 NotFound response for unauthenticated acces
 
 The `Cache-Control` header for secured files is set to `no-store` by default, preventing their caching. This can be changed with the `MaxSecureFilesBrowserCacheDays` configuration, [see above](#configuration).
 
+## File Upload Limit
+
+In ASP.NET Core, file upload size limits are enforced at multiple levels — FormOptions, Kestrel/IIS server settings, and sometimes controller-level attributes. By default:
+
+- MultipartBodyLengthLimit (FormOptions) → 128 MB for multipart form sections.
+- Kestrel MaxRequestBodySize → ~28.6 MB (30,000,000 bytes).
+- IIS maxAllowedContentLength → ~28.6 MB unless overridden.
+
+If a file exceeds these limits, you'll get errors like `InvalidDataException`: Multipart body length limit exceeded or HTTP 404.13 in IIS.
+
+To increase the limit, you can use one of the following approaches:
+
+1. IIS content length limit
+
+    ```xml
+    <system.webServer>
+      <security>
+        <requestFiltering>
+          <requestLimits maxAllowedContentLength="50000000" />
+        </requestFiltering>
+      </security>
+    </system.webServer>
+    ```
+
+2. ASP.NET Core Request length limit
+
+    2.1 For application running on IIS
+
+    ```csharp
+    services.Configure<IISServerOptions>(options =>
+    {
+        options.MaxRequestBodySize = 50000000;
+    });
+    ```
+
+    2.2 For application running on Kestrel
+
+    ```csharp
+    services.Configure<KestrelServerOptions>(options =>
+    {
+        options.Limits.MaxRequestBodySize = 50000000;
+    });
+    ```
+
+3. Form's `MultipartBodyLengthLimit`
+
+    ```csharp
+    services.Configure<FormOptions>(options =>
+    {
+        options.ValueLengthLimit = 50000000;
+        options.MultipartBodyLengthLimit = 50000000;
+        options.MultipartHeadersLengthLimit = 50000000;
+    });
+    ```
+
 ## Videos
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/H0jBMH8tj3A" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

@@ -10,7 +10,7 @@ namespace OrchardCore.Queries.Sql;
 /// </summary>
 public class ParlotSqlParser
 {
-public static readonly Parser<StatementList> Statements;
+    public static readonly Parser<StatementList> Statements;
 
     static ParlotSqlParser()
     {
@@ -56,7 +56,7 @@ public static readonly Parser<StatementList> Statements;
         var FALSE = Terms.Keyword("FALSE", caseInsensitive: true);
         var OVER = Terms.Keyword("OVER", caseInsensitive: true);
         var PARTITION = Terms.Keyword("PARTITION", caseInsensitive: true);
-        
+
         // Keywords can't be used as identifiers or function names
         var keywords = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
@@ -86,7 +86,7 @@ public static readonly Parser<StatementList> Statements;
         // Without the keywords check "FROM a WHERE" would interpret "WHERE" as an alias since "AS" is optional
         var identifierNoKeywords = Separated(DOT, simpleIdentifier).When((ctx, parts) => parts.Count > 0 && !keywords.Contains(parts[0]))
             .Then(parts => new Identifier(parts));
-            
+
         // Deferred parsers
         var expression = Deferred<Expression>();
         var selectStatement = Deferred<SelectStatement>();

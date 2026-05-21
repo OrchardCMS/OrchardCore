@@ -28,7 +28,7 @@ public class OpenIdClientService : IOpenIdClientService
     public async Task<OpenIdClientSettings> LoadSettingsAsync()
     {
         var container = await _siteService.LoadSiteSettingsAsync();
-        return container.As<OpenIdClientSettings>();
+        return container.GetOrCreate<OpenIdClientSettings>();
     }
 
     public async Task UpdateSettingsAsync(OpenIdClientSettings settings)

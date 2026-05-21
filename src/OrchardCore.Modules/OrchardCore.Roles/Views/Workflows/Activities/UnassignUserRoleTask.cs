@@ -57,6 +57,9 @@ public class UnassignUserRoleTask : TaskActivity<UnassignUserRoleTask>
                 if (user.RoleNames.Contains(role))
                 {
                     await _userManager.RemoveFromRoleAsync(user, role);
+
+                    // Update the security stamp to invalidate any existing sessions for the user.
+                    await _userManager.UpdateSecurityStampAsync(user);
                 }
             }
 

@@ -3,6 +3,9 @@
 
 @{
     var contentItem = Model.Value.ContentItem;
-    var formElementPart = contentItem.As<FormElementPart>();
+    if (!contentItem.TryGet<FormElementPart>(out var formElementPart))
+    {
+        return;
+    }
 }
 <label id="@formElementPart.Id" for="@Model.Value.For" class="form-label">@contentItem.DisplayText</label>

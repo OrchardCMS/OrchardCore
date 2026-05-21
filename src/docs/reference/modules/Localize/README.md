@@ -174,6 +174,39 @@ Then, you will be able to run this command to generate the .po files:
 extractpo <INTPUT_PATH> <OUTPUT_PATH> [-l|--language {"C#"|"VB"}] [-t|--template {"razor"|"liquid"}]
 ```
 
+## JavaScript Localization
+
+See [JavaScript Localization (`IJSLocalizer`)](javascript-localization.md) for guidance on exposing PO-file-backed translations to JavaScript / TypeScript assets.
+
 ## Video
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/cwKa1OA48-4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+## Recipe Configuration
+
+Localization settings can be configured using the `Settings` recipe step:
+
+```json
+{
+  "steps": [
+    {
+      "name": "settings",
+      "LocalizationSettings": {
+        "DefaultCulture": "en-US",
+        "SupportedCultures": [
+          "en-US",
+          "fr-FR",
+          "es-ES"
+        ],
+        "FallBackToParentCulture": true
+      }
+    }
+  ]
+}
+```
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `DefaultCulture` | String | The default culture for the site (e.g., `en-US`). |
+| `SupportedCultures` | Array of String | The list of supported cultures. |
+| `FallBackToParentCulture` | Boolean | Whether to fall back to the parent culture when a translation is not found. |

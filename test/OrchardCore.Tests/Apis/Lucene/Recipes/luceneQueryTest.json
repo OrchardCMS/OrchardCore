@@ -29,7 +29,7 @@
         "OrchardCore.Contents",
         "OrchardCore.Contents.FileContentDefinition",
         "OrchardCore.Html",
-        "OrchardCore.Search.Lucene",
+        "OrchardCore.Lucene",
         "OrchardCore.Search.Lucene.ContentPicker"
       ]
     },

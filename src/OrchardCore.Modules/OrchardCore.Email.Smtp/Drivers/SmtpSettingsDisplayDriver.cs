@@ -91,7 +91,7 @@ public sealed class SmtpSettingsDisplayDriver : SiteDisplayDriver<SmtpSettings>
 
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-        var emailSettings = site.As<EmailSettings>();
+        var emailSettings = site.GetOrCreate<EmailSettings>();
 
         var hasChanges = model.IsEnabled != settings.IsEnabled;
 

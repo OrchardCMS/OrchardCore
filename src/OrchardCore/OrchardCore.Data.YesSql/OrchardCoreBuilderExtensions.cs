@@ -1,5 +1,4 @@
 using System.Buffers;
-using System.Data;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Data;
@@ -57,7 +56,6 @@ public static class OrchardCoreBuilderExtensions
             services.AddSingleton(sp =>
             {
                 var shellSettings = sp.GetService<ShellSettings>();
-
                 // Before the setup, a 'DatabaseProvider' may be configured without a required 'ConnectionString'.
                 if (shellSettings.IsUninitialized() || shellSettings["DatabaseProvider"] is null)
                 {

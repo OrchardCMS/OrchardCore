@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\OrchardCore\OrchardCore.Application.Mvc.Targets\OrchardCore.Application.Mvc.Targets.csproj" />
+    <ProjectReference Include="..\OrchardCore.Modules\OrchardCore.HealthChecks\OrchardCore.HealthChecks.csproj" />
     <ProjectReference Include="..\OrchardCore.Modules\OrchardCore.Mvc.HelloWorld\OrchardCore.Mvc.HelloWorld.csproj" />
   </ItemGroup>
 

@@ -5,6 +5,7 @@ import './workflow-models';
 
 abstract class WorkflowCanvas {
     private minCanvasHeight: number = 400;
+    protected endpointMap: Array<{ endpoint: any, activityElement: HTMLElement }> = [];
 
     constructor(protected container: HTMLElement, protected workflowType: Workflows.WorkflowType) {
     }
@@ -53,9 +54,11 @@ abstract class WorkflowCanvas {
     protected getSourceEndpointOptions = (activity: Workflows.Activity, outcome: Workflows.Outcome): EndpointOptions => {
         // The definition of source endpoints.
         const paintColor = this.getEndpointColor(activity);
+        const displayName = outcome.displayName || '';
+        
         return {
             endpoint: 'Dot',
-            anchor: 'Continuous',
+            anchor: 'ContinuousRight',
             paintStyle: {
                 stroke: paintColor,
                 fill: paintColor,
@@ -82,6 +85,7 @@ abstract class WorkflowCanvas {
                 outlineStroke: 'white'
             },
             connectorOverlays: [['Label', { location: [3, -1.5], cssClass: 'endpointSourceLabel' }]],
+            overlays: displayName ? [['Label', { label: displayName, cssClass: 'outcome-label', id: 'outcome-label', location: [1.6, 0] }]] : [],
             dragOptions: {},
             uuid: `${activity.id}-${outcome.name}`,
             parameters: {
@@ -140,6 +144,102 @@ abstract class WorkflowCanvas {
         }
 
         $container.height(Math.max(this.minCanvasHeight, newCanvasHeight));
+    };
+
+    protected orientOutcomeLabels = () => {
+        for (const { endpoint, activityElement } of this.endpointMap) {
+            const overlay: any = endpoint.getOverlay ? endpoint.getOverlay('outcome-label') : null;
+            if (!overlay) continue;
+
+            const overlayEl = overlay.getElement ? overlay.getElement() : overlay.canvas;
+            if (!overlayEl) continue;
+
+            // Hide empty labels
+            const labelText = $(overlayEl).text().trim();
+            if (!labelText) {
+                $(overlayEl).hide();
+                continue;
+            }
+
+            const epCanvas = endpoint.canvas;
+            if (!epCanvas) continue;
+
+            const activityRect = activityElement.getBoundingClientRect();
+            const epRect = epCanvas.getBoundingClientRect();
+
+            const activityCenterX = activityRect.left + activityRect.width / 2;
+            const activityCenterY = activityRect.top + activityRect.height / 2;
+            const epCenterX = epRect.left + epRect.width / 2;
+            const epCenterY = epRect.top + epRect.height / 2;
+
+            const dx = epCenterX - activityCenterX;
+            const dy = epCenterY - activityCenterY;
+            const normDx = activityRect.width > 0 ? Math.abs(dx) / (activityRect.width / 2) : 0;
+            const normDy = activityRect.height > 0 ? Math.abs(dy) / (activityRect.height / 2) : 0;
+
+            let face: string;
+            if (normDx > normDy) {
+                face = dx > 0 ? 'right' : 'left';
+            } else {
+                face = dy > 0 ? 'bottom' : 'top';
+            }
+
+            const $ol = $(overlayEl);
+            $ol.show();
+
+            // Measure label width, temporarily showing if hidden.
+            let halfWidth = $ol.outerWidth() / 2;
+            if (halfWidth === 0) {
+                const prevDisplay = overlayEl.style.display;
+                overlayEl.style.display = 'block';
+                halfWidth = $ol.outerWidth() / 2;
+                overlayEl.style.display = prevDisplay;
+            }
+            const labelOffset = Math.max(halfWidth - 6, 0);
+
+            const overlayHtmlElement = overlayEl as HTMLElement;
+            const storedBaseTransform = overlayHtmlElement.dataset.outcomeLabelBaseTransform;
+            const currentTransform = overlayHtmlElement.style.transform || '';
+            const normalizedCurrentTransform = !currentTransform || currentTransform === 'none' ? '' : currentTransform;
+            const baseTransform = storedBaseTransform ?? normalizedCurrentTransform;
+            if (!storedBaseTransform) {
+                overlayHtmlElement.dataset.outcomeLabelBaseTransform = baseTransform;
+            }
+
+            let orientedTransform = '';
+
+            switch (face) {
+                case 'bottom':
+                    orientedTransform = `translateY(${labelOffset}px) rotate(90deg)`;
+                    break;
+                case 'top':
+                    orientedTransform = `translateY(-${labelOffset}px) rotate(-90deg)`;
+                    break;
+                case 'left':
+                    orientedTransform = `translateX(-${labelOffset}px)`;
+                    break;
+                case 'right':
+                    orientedTransform = `translateX(${labelOffset}px)`;
+                    break;
+            }
+
+            const transformPrefix = baseTransform ? `${baseTransform} ` : '';
+            $ol.css({
+                'transform': `${transformPrefix}${orientedTransform}`.trim(),
+                'transform-origin': 'center center'
+            });
+
+            // Ensure left/right outcome badges are vertically centered with the endpoint dot.
+            if (face === 'left' || face === 'right') {
+                const overlayRect = overlayEl.getBoundingClientRect();
+                const overlayCenterY = overlayRect.top + overlayRect.height / 2;
+                const verticalOffset = Math.round((epCenterY - overlayCenterY) * 10) / 10;
+
+                if (Math.abs(verticalOffset) >= 0.5) {
+                    $ol.css('transform', `${transformPrefix}${orientedTransform} translateY(${verticalOffset}px)`.trim());
+                }
+            }
+        }
     };
 }
 

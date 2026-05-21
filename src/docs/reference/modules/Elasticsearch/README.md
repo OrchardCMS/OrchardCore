@@ -1,4 +1,4 @@
-# Elasticsearch (`OrchardCore.Search.Elasticsearch`)
+# Elasticsearch (`OrchardCore.Elasticsearch`)
 
 The Elasticsearch module allows you to manage Elasticsearch indices.
 
@@ -65,7 +65,7 @@ Here is a sample step:
       "Indices": [
         {
           "Search": {
-            "AnalyzerName": "standardanalyzer",
+            "AnalyzerName": "standard",
             "IndexLatest": false,
             "IndexedContentTypes": [
               "Article",

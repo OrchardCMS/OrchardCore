@@ -1,3 +1,4 @@
+using Fluid;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Shell;
@@ -11,10 +12,11 @@ internal sealed class ImageSharpBlobImageCacheOptionsConfiguration : BlobStorage
     private readonly IShellConfiguration _shellConfiguration;
 
     public ImageSharpBlobImageCacheOptionsConfiguration(
+        FluidParser fluidParser,
         IShellConfiguration shellConfiguration,
         ShellSettings shellSettings,
         ILogger<ImageSharpBlobImageCacheOptionsConfiguration> logger)
-         : base(shellSettings, logger)
+         : base(fluidParser, shellSettings, logger)
     {
         _shellConfiguration = shellConfiguration;
     }

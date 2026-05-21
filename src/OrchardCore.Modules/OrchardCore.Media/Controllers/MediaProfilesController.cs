@@ -309,7 +309,7 @@ public sealed class MediaProfilesController : Controller
             return Forbid();
         }
 
-        if (itemIds?.Count() > 0)
+        if (itemIds?.Any() == true)
         {
             var mediaProfilesDocument = await _mediaProfilesManager.LoadMediaProfilesDocumentAsync();
             var checkedContentItems = mediaProfilesDocument.MediaProfiles.Where(x => itemIds.Contains(x.Key));
