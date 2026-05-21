@@ -86,7 +86,7 @@ It's also possible to include a partial JSON snapshot of the `User` object. To p
 - HmacRedactor: Uses "HMAC SHA-256" to encode the data before storing it, as a hash or fingerprint.
 - PartialAsteriskRedactor: Stores the value as string, but the middle characters are redacted. For example `SampleUser` becomes `S********r`.
 
-You can also create your own redactor simply by adding a singleton https://learn.microsoft.com/en-us/dotnet/api/microsoft.extensions.compliance.redaction.redactor service.
+You can also create your own redactor simply by adding a singleton [`Redactor`](https://learn.microsoft.com/dotnet/api/microsoft.extensions.compliance.redaction.redactor) service.
 
 Note that when a user is deleted, all `User` snapshots are cleared out from existing Audit Trail events to comply with regulations about personal information retention.
 
