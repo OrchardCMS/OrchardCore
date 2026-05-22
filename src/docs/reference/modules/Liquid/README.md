@@ -696,6 +696,60 @@ Here is an example of how to use the `TrackingConsent` object in a Liquid templa
 {% endif %}
 ```
 
+## Localization Filters
+
+### `d`
+
+Localizes a dynamic data string using the current culture.
+
+### Parameters
+
+| Property | Example                                | Description   |
+|----------|----------------------------------------|---------------|
+| Context  | The context that the string belongs to | Content Types |
+
+Input
+
+```liquid
+{{ "Blog" | d: "Content Types" }}
+```
+
+Output
+
+For `fr`, `it`, `es` cultures, it will return:
+
+```text
+Blog
+```
+
+For `ar` culture, it will return:
+
+```text
+مدونة
+```
+
+For unsupported cultures or missing translations, it will return:
+
+```text
+Blog.Content Types
+```
+
+You can pass one or more parameters to a localized string:
+
+Input
+
+```liquid
+{{ "New {0}" | d: "Content Types", "Article" }}
+```
+
+Output
+
+For `it` culture, it will return:
+
+```text
+New Articolo
+```
+
 ## Shape Filters
 
 These filters let you create and filter shapes.
