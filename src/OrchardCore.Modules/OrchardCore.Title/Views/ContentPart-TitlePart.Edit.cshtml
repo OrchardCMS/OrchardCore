@@ -1,15 +1,13 @@
-@using System.Collections.Generic
 @using OrchardCore
 @using OrchardCore.ContentManagement
 @using OrchardCore.ContentManagement.Metadata.Models
 @using OrchardCore.ContentManagement.Metadata.Settings
-@using OrchardCore.DisplayManagement
 @using OrchardCore.Title.Models
 
 @{
-    var shapes = Model as IEnumerable<IShape>;
+    var shapes = Model.Items;
 
-    if (shapes is null || !shapes.Any())
+    if (shapes.Count == 0)
     {
         return;
     }
