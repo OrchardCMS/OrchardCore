@@ -180,35 +180,7 @@ See [JavaScript Localization (`IJSLocalizer`)](javascript-localization.md) for g
 
 ## Liquid filters
 
-### `t`
-
-Localizes a string using the current culture.
-
-Input
-
-```liquid
-{{ "Hello!" | t }}
-```
-
-Output
-
-```text
-Bonjour!
-```
-
-You can pass one or more parameters to a localized string:
-
-Input
-
-```liquid
-{{ "Hello {0}!" | t: "John" }}
-```
-
-Output
-
-```text
-Bonjour John!
-```
+For more information on using locaization filters in Liquid templates, see the [Liquid Localization filters documentation](../Liquid/README.md#localization-filters).
 
 ## Video
 

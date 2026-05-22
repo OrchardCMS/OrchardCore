@@ -280,6 +280,38 @@ Renders Shortcodes. Should be combined with the `raw` filter.
 {{ Model.ContentItem.Content.RawHtml.Content.Html | shortcode | raw }}
 ```
 
+## Localization Filters
+
+### `t`
+
+Localizes a string using the current culture.
+
+Input
+
+```liquid
+{{ "Hello!" | t }}
+```
+
+Output
+
+```text
+Bonjour!
+```
+
+You can pass one or more parameters to a localized string:
+
+Input
+
+```liquid
+{{ "Hello {0}!" | t: "John" }}
+```
+
+Output
+
+```text
+Bonjour John!
+```
+
 ## Json Filters
 
 ### `json`
