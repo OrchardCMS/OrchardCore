@@ -308,7 +308,7 @@ public class WorkflowManagerTests
         {
             yield return new GlobalMethod
             {
-                Name = "getValueAsync",
+                Name = "getValue",
                 Method = serviceProvider => (Func<string>)(() => "sync"),
                 AsyncMethod = serviceProvider => (Func<Task<string>>)(async () =>
                 {

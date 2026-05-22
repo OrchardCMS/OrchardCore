@@ -46,6 +46,109 @@ Currently you can filter shapes by:
 }
 ```
 
+The same distinction applies to editors. Content part editors are wrapped in a `ContentPart_Edit` shape, so hiding or moving the whole editor row in the admin UI should target `ContentPart_Edit`, not only the inner part editor shape.
+
+For example, to hide the `Services` named part on the `LandingPage` editor:
+
+```json
+{
+  "ContentPart_Edit": [{
+    "place":"-",
+    "differentiator":"LandingPage-Services"
+  }]
+}
+```
+
+If you target only an inner editor shape such as `BagPart_Edit`, the wrapper may still render unless its child shapes are also removed.
+
+## Differentiator patterns
+
+The differentiator to use depends on **which shape type you are targeting**, not just on the content part or field you are thinking about.
+
+| Shape type | Typical usage | Differentiator pattern | Example |
+|---|---|---|---|
+| `BagPart`, `FlowPart`, `TitlePart` | Part display shape, or inner `XxxPart_Edit` shape from a part driver | `{PartName}` | `Services`, `FlowPart`, `TitlePart` |
+| `ContentPart` | Display wrapper for parts without their own display driver | `{PartName}` | `GalleryPart` |
+| `ContentPart_Edit` | Admin editor wrapper for a content part | `{ContentType}-{PartName}` | `PlacementTest-BagPart`, `LandingPage-Services`, `Article-TitlePart` |
+| `TextField`, `HtmlField`, `ContentPickerField`, etc. | Standard field display/editor shapes | `{PartName}-{FieldName}` | `Article-Subtitle`, `Address-City` |
+| `TextField_Display`, `HtmlField_Display`, etc. | Field display-mode shapes | `{PartName}-{FieldName}-{FieldType}_Display__{DisplayMode}` | `Blog-Subtitle-TextField_Display__Header` |
+
+`PartName` is the name of the attached part. For non-named parts this is usually the part type, such as `BagPart`, `FlowPart`, `WidgetsListPart`, or `TitlePart`. For named parts, use the custom part name such as `Services`.
+
+### Examples by shape type
+
+#### Content part display shapes
+
+To hide a named `Services` BagPart on the front end:
+
+```json
+{
+  "BagPart": [{
+    "differentiator":"Services",
+    "place":"-"
+  }]
+}
+```
+
+To hide a `TitlePart` display shape on the front end:
+
+```json
+{
+  "TitlePart": [{
+    "differentiator":"TitlePart",
+    "place":"-"
+  }]
+}
+```
+
+#### Content part editor wrappers
+
+To hide the whole BagPart editor row on the `PlacementTest` editor:
+
+```json
+{
+  "ContentPart_Edit": [{
+    "differentiator":"PlacementTest-BagPart",
+    "place":"-"
+  }]
+}
+```
+
+To hide the whole FlowPart editor row:
+
+```json
+{
+  "ContentPart_Edit": [{
+    "differentiator":"PlacementTest-FlowPart",
+    "place":"-"
+  }]
+}
+```
+
+To hide the whole WidgetsListPart editor row:
+
+```json
+{
+  "ContentPart_Edit": [{
+    "differentiator":"PlacementTest-WidgetsListPart",
+    "place":"-"
+  }]
+}
+```
+
+To hide the whole TitlePart editor row:
+
+```json
+{
+  "ContentPart_Edit": [{
+    "differentiator":"PlacementTest-TitlePart",
+    "place":"-"
+  }]
+}
+```
+
+Use `ContentPart_Edit` when you want to move or hide the whole editor row, including its label, description, and wrapper. Shapes such as `BagPart_Edit`, `FlowPart_Edit`, or `TitlePart_Edit` only target the inner editor content.
+
 Additional custom filter providers can be added by implementing `IPlacementNodeFilterProvider`.
 
 For shapes that are built from a content item, you can filter by the following built in filter providers:
@@ -126,6 +229,28 @@ Fields have a custom differentiator as their shape is used in many places.
 It is built using the `Part` it's contained in, and the name of the `Field`.  
 For instance, if a field named `MyField` would be added to an `Article` content type, its differentiator would be `Article-MyField`.  
 If a field named `City` was added to an `Address` part then its differentiator would be `Address-City`.
+
+For example, to place a `TextField` named `Subtitle` attached directly to the `Article` content type:
+
+```json
+{
+  "TextField": [{
+    "differentiator":"Article-Subtitle",
+    "place":"Content:2"
+  }]
+}
+```
+
+For a field named `City` attached to an `Address` part:
+
+```json
+{
+  "TextField": [{
+    "differentiator":"Address-City",
+    "place":"Content:3"
+  }]
+}
+```
 
 ### Field Display Modes
 
@@ -269,6 +394,74 @@ We also specify that the `Content` column will take 9 columns, of the default 12
 !!! note
     By default the columns will break responsively at the `md` breakpoint, and a modifier will be parsed to `col-md-9`.
     If you want to change the breakpoint, you could also specify `Content_lg-9`, which is parsed to `col-lg-9`.
+
+#### Column layout behavior
+
+Each shape with a column modifier (`|ColumnName`) gets its own **column wrapper** inside a Bootstrap **row** (`<div class="row">`). The column name is an arbitrary label used for the CSS class — it has no special meaning (e.g., `|MyCol_4` is the same as `|Sidebar_4` — neither implies left or right positioning).
+
+The column **width** (the number after `_`) maps to Bootstrap's 12-column grid. For example, `_4` means `col-md-4` (4/12 = 1/3 width). If the total widths exceed 12, columns wrap to the next line automatically (standard Bootstrap behavior).
+
+The column **position** (the number after `;`) determines the order of columns within the row.
+
+Shapes **without** a column modifier are rendered as **full-width content outside the row**. Their vertical position relative to the column row is determined by their order in the placement sequence:
+
+- Shapes positioned **before** the first column-specified shape render above the row.
+- Shapes positioned **after** the first column-specified shape render below the row.
+
+**Example: Three equal-width columns with a full-width field below**
+
+``` json
+{
+    "TextField_Edit" : [
+        {
+            "place" : "Parts:1%Details;1|Col_4;1",
+            "differentiator": "MyPart-FieldA"
+        },
+        {
+            "place" : "Parts:1%Details;1|Col_4;2",
+            "differentiator": "MyPart-FieldB"
+        },
+        {
+            "place" : "Parts:1%Details;1|Col_4;3",
+            "differentiator": "MyPart-FieldC"
+        },
+        {
+            "place": "Parts:2%Details;1",
+            "differentiator": "MyPart-FieldD"
+        }
+    ]
+}
+```
+
+This produces:
+
+- A row with three columns, each 4/12 width (1/3): FieldA, FieldB, FieldC side by side.
+- Below the row: FieldD rendered at full width (no column wrapper).
+
+**Example: Two columns with different widths**
+
+``` json
+{
+    "TextField_Edit" : [
+        {
+            "place" : "Parts:1|Sidebar_3;1",
+            "differentiator": "MyPart-FieldA"
+        },
+        {
+            "place" : "Parts:1|Main_9;2",
+            "differentiator": "MyPart-FieldB"
+        }
+    ]
+}
+```
+
+This produces a row with a 3/12 width column (FieldA) and a 9/12 width column (FieldB).
+
+!!! note
+    The column name (e.g., `Col`, `Sidebar`, `Main`) is just an identifier used for CSS targeting via the generated class `column-{name}`. You can use any name — it does not affect positioning. To put multiple fields in separate columns, give each field a column modifier; the position (`;N`) controls their order in the row.
+
+!!! warning
+    All column-specified shapes within the same grouping level (same tab/card) share a single row. If you need multiple separate column rows, place them in different cards.
 
 ### Dynamic part placement
 
