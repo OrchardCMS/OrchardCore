@@ -66,7 +66,7 @@ public sealed class AdminController : Controller
             groupId);
 
         // The save button is rendered for every settings group, so require editor content outside the shared actions zone.
-        if (!HasEditor(shape))
+        if (!shape.HasItemsInAnyZone(ActionsZone))
         {
             return NotFound();
         }
@@ -94,7 +94,7 @@ public sealed class AdminController : Controller
         var shape = await _siteSettingsDisplayManager.UpdateEditorAsync(site, _updateModelAccessor.ModelUpdater, false, groupId, string.Empty);
 
         // The save button is rendered for every settings group, so require editor content outside the shared actions zone.
-        if (!HasEditor(shape))
+        if (!shape.HasItemsInAnyZone(ActionsZone))
         {
             return NotFound();
         }
@@ -130,28 +130,5 @@ public sealed class AdminController : Controller
         }
 
         return View(viewModel);
-    }
-
-    private static bool HasEditor(IShape shape)
-    {
-        if (shape is not IZoneHolding)
-        {
-            return false;
-        }
-
-        foreach (var zone in shape.Properties)
-        {
-            if (string.Equals(zone.Key, ActionsZone, StringComparison.OrdinalIgnoreCase))
-            {
-                continue;
-            }
-
-            if (zone.Value is Shape { HasItems: true })
-            {
-                return true;
-            }
-        }
-
-        return false;
     }
 }
