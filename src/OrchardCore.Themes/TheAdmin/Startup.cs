@@ -22,16 +22,5 @@ public sealed class Startup : StartupBase
         services.AddDisplayDriver<Navbar, ToggleThemeNavbarDisplayDriver>();
         services.AddResourceConfiguration<ResourceManagementOptionsConfiguration>();
         services.Configure<TheAdminThemeOptions>(_configuration.GetSection("TheAdminTheme:StyleSettings"));
-
-        services.PostConfigure<TheAdminThemeOptions>(options =>
-        {
-            options.WrapperClasses = "row mb-3";
-            options.LimitedWidthWrapperClasses = "row";
-            options.LimitedWidthClasses = "col-md-6 col-lg-5 col-xxl-4";
-            options.StartClasses = "col-lg-2 col-xl-3";
-            options.EndClasses = "col-lg-10 col-xl-9";
-            options.LabelClasses = "col-form-label text-lg-end col-lg-2 col-xl-3";
-            options.OffsetClasses = "offset-lg-2 offset-xl-3";
-        });
     }
 }
