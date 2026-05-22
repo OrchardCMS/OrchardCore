@@ -5,14 +5,18 @@
 <div asp-validation-summary="All"></div>
 <form asp-action="Edit" method="post" class="no-multisubmit">
     <input type="hidden" asp-for="Id" />
-    <div class="mb-3" asp-validation-class-for="Name">
-        <label asp-for="Name" class="form-label">@T["Name"]</label>
+    <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="Name">
+        <label asp-for="Name" class="@Orchard.GetLabelClasses()">@T["Name"]</label>
+        <div class="@Orchard.GetEndClasses()">
         <input asp-for="Name" class="form-control" autofocus />
         <span asp-validation-for="Name"></span>
+        </div>
     </div>
 
-    <div class="mb-3">
-        <button class="btn btn-primary save" type="submit">@T["Save"]</button>
-        <a class="btn btn-secondary cancel" role="button" asp-route-action="Index">@T["Cancel"]</a>
+    <div class="@Orchard.GetWrapperClasses()">
+        <div class="@Orchard.GetEndClasses(true)">
+            <button class="btn btn-primary save" type="submit">@T["Save"]</button>
+            <a class="btn btn-secondary cancel" role="button" asp-route-action="Index">@T["Cancel"]</a>
+        </div>
     </div>
 </form>

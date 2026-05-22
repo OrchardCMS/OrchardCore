@@ -14,29 +14,37 @@
 
 <form asp-action="Query" method="post" class="no-multisubmit">
     <div asp-validation-summary="All"></div>
-    <div class="mb-3">
-        <label asp-for="Id" class="form-label">@T["Index"]</label>
+    <div class="@Orchard.GetWrapperClasses()">
+        <label asp-for="Id" class="@Orchard.GetLabelClasses()">@T["Index"]</label>
+        <div class="@Orchard.GetEndClasses()">
         <select asp-for="Id" class="form-select" asp-items="Model.Indexes">
             <option value="">@T["Select an index"]</option>
         </select>
         <span class="hint">@T["The Lucene index to search on"]</span>
+        </div>
     </div>
 
-    <div class="mb-3">
-        <label asp-for="DecodedQuery" class="form-label">@T["Query"]</label>
+    <div class="@Orchard.GetWrapperClasses()">
+        <label asp-for="DecodedQuery" class="@Orchard.GetLabelClasses()">@T["Query"]</label>
+        <div class="@Orchard.GetEndClasses()">
         <textarea asp-for="DecodedQuery" rows="12" class="form-control"></textarea>
         <span class="hint">@T["You can use the <a href=\"{0}\">Match All query</a> to search all documents.", Html.Raw(Url.Action("Query", "Admin", new { area = "OrchardCore.Lucene", query = Model.MatchAllQuery, id = Model.Id }))]</span>
         <span class="hint">@T["The search query uses the Elasticsearch format. Some documentation can be found here <a target=\"_blank\" href=\"https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html\">https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html</a>"]</span>
+        </div>
     </div>
 
-    <div class="mb-3">
-        <label asp-for="Parameters" class="form-label">@T["Parameters"]</label>
+    <div class="@Orchard.GetWrapperClasses()">
+        <label asp-for="Parameters" class="@Orchard.GetLabelClasses()">@T["Parameters"]</label>
+        <div class="@Orchard.GetEndClasses()">
         <textarea asp-for="Parameters" rows="6" class="form-control"></textarea>
         <span class="hint">@T["An optional Json object containing the parameter values for this query."]</span>
+        </div>
     </div>
 
-    <div class="mb-3">
-        <button type="submit" class="btn btn-primary">@T["Run Query"]</button>
+    <div class="@Orchard.GetWrapperClasses()">
+        <div class="@Orchard.GetEndClasses(true)">
+            <button type="submit" class="btn btn-primary">@T["Run Query"]</button>
+        </div>
     </div>
 </form>
 
@@ -51,8 +59,10 @@
     var fieldNames = Model.Documents.SelectMany(d => d.Fields.Select(f => f.Name)).Distinct();
     @if (await ShellFeaturesManager.IsFeatureEnabledAsync("OrchardCore.Queries"))
     {
-        <div class="mb-3">
-            <a href="@Url.Action("Create", "Admin", new { area = "OrchardCore.Queries", id = "Lucene", query = Model.DecodedQuery })" class="btn btn-secondary">@T["Save Query"]</a>
+        <div class="@Orchard.GetWrapperClasses()">
+            <div class="@Orchard.GetEndClasses(true)">
+                <a href="@Url.Action("Create", "Admin", new { area = "OrchardCore.Queries", id = "Lucene", query = Model.DecodedQuery })" class="btn btn-secondary">@T["Save Query"]</a>
+            </div>
         </div>
     }
     <div class="table-responsive">

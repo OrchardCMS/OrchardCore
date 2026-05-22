@@ -1,3 +1,4 @@
+@using OrchardCore
 @using OrchardCore.Localization.Data
 @model AdminMenuEditViewModel
 @inject IDataLocalizer D
@@ -10,14 +11,18 @@
 
 <div asp-validation-summary="ModelOnly"></div>
 <form asp-action="Edit" method="post" class="no-multisubmit">
-    <div class="mb-3" asp-validation-class-for="Name">
-        <label asp-for="Name" class="form-label">@T["Name"]</label>
-        <input asp-for="Name" class="form-control" autofocus />
-        <span asp-validation-for="Name" class="text-danger"></span>
+    <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="Name">
+        <label asp-for="Name" class="@Orchard.GetLabelClasses()">@T["Name"]</label>
+        <div class="@Orchard.GetEndClasses()">
+            <input asp-for="Name" class="form-control" autofocus />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
     </div>
-    <div class="mb-3">
-        <button class="btn btn-success save" type="submit">@T["Save"]</button>
-        <a class="btn btn-primary edit-nodes" role="button" asp-route-controller="Node" asp-route-action="List" asp-route-id="@Model.Id">@T["Edit Admin Nodes"] </a>
-        <a class="btn btn-secondary cancel" role="button" asp-route-action="List">@T["Cancel"]</a>
+    <div class="@Orchard.GetWrapperClasses()">
+        <div class="@Orchard.GetEndClasses(true)">
+            <button class="btn btn-success save" type="submit">@T["Save"]</button>
+            <a class="btn btn-primary edit-nodes" role="button" asp-route-controller="Node" asp-route-action="List" asp-route-id="@Model.Id">@T["Edit Admin Nodes"] </a>
+            <a class="btn btn-secondary cancel" role="button" asp-route-action="List">@T["Cancel"]</a>
+        </div>
     </div>
 </form>

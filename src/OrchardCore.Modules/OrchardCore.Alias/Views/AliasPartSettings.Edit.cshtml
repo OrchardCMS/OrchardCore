@@ -1,3 +1,4 @@
+@using OrchardCore
 @model OrchardCore.Alias.Settings.AliasPartSettingsViewModel
 @using OrchardCore.Alias.Settings
 <style asp-name="codemirror"></style>
@@ -10,18 +11,18 @@
 
 <script asp-src="~/OrchardCore.Liquid/codemirror/liquid.js" at="Foot"></script>
 
-<div class="mb-3 row">
-    <div class="col-sm-6">
-        <label asp-for="Options" class="form-label">@T["Options"]</label>
+<div class="@Orchard.GetLimitedWidthWrapperClasses("mb-3")">
+    <label asp-for="Options" class="@Orchard.GetLabelClasses()">@T["Options"]</label>
+    <div class="@Orchard.GetLimitedWidthClasses()">
         <select asp-for="Options" class="form-select">
             <option value="@AliasPartOptions.Editable" selected="@(Model.Options == AliasPartOptions.Editable)">@T["Alias is editable"]</option>
             <option value="@AliasPartOptions.GeneratedDisabled" selected="@(Model.Options == AliasPartOptions.GeneratedDisabled)">@T["Alias is generated and input is disabled"]</option>
         </select>
     </div>
 </div>
-<div class="mb-3 row">
-    <div class="col-large col-12 col-sm-12 col-md-12 col-lg-12 col-xl-9">
-        <label asp-for="Pattern" class="form-label">@T["Pattern"]</label>
+<div class="@Orchard.GetLimitedWidthWrapperClasses("mb-3")">
+    <label asp-for="Pattern" class="@Orchard.GetLabelClasses()">@T["Pattern"]</label>
+    <div class="@Orchard.GetLimitedWidthClasses()">
         <textarea asp-for="Pattern" rows="5" class="form-control"></textarea>
         <span class="hint">@T["The pattern used to render the alias of this content type."]</span>
     </div>

@@ -1,32 +1,38 @@
 @model OrchardCore.ContentFields.Settings.LocalizationSetContentPickerFieldSettings
 @using OrchardCore.ContentManagement
 
-<div class="mb-3">
-    <div class="form-check">
-        <input asp-for="Required" type="checkbox" class="form-check-input">
-        <label class="form-check-label" asp-for="Required">@T["Required"]</label>
-        <span class="hint dashed">@T["Whether to ensure at least one element is selected."]</span>
+<div class="@Orchard.GetWrapperClasses()">
+    <div class="@Orchard.GetEndClasses(true)">
+        <div class="form-check">
+            <input asp-for="Required" type="checkbox" class="form-check-input">
+            <label class="form-check-label" asp-for="Required">@T["Required"]</label>
+            <span class="hint dashed">@T["Whether to ensure at least one element is selected."]</span>
+        </div>
     </div>
 </div>
 
-<div class="mb-3">
-    <div class="form-check">
-        <input asp-for="Multiple" type="checkbox" class="form-check-input">
-        <label class="form-check-label" asp-for="Multiple">@T["Allow multiple"]</label>
-        <span class="hint dashed">@T["Whether to allow multiple elements to be selected."]</span>
+<div class="@Orchard.GetWrapperClasses()">
+    <div class="@Orchard.GetEndClasses(true)">
+        <div class="form-check">
+            <input asp-for="Multiple" type="checkbox" class="form-check-input">
+            <label class="form-check-label" asp-for="Multiple">@T["Allow multiple"]</label>
+            <span class="hint dashed">@T["Whether to allow multiple elements to be selected."]</span>
+        </div>
     </div>
 </div>
 
-<div class="mb-3">
-    <label asp-for="DisplayedContentTypes" class="form-label">@T["Content Types"]</label>
-    <span class="hint">@T["The content types to display. Choose at least one."]</span>
-    @await Component.InvokeAsync("SelectContentTypes", new { selectedContentTypes = Model.DisplayedContentTypes, htmlName = Html.NameFor(m => m.DisplayedContentTypes) })
+<div class="@Orchard.GetWrapperClasses()">
+    <label asp-for="DisplayedContentTypes" class="@Orchard.GetLabelClasses()">@T["Content Types"]</label>
+    <div class="@Orchard.GetEndClasses()">
+        <span class="hint">@T["The content types to display. Choose at least one."]</span>
+        @await Component.InvokeAsync("SelectContentTypes", new { selectedContentTypes = Model.DisplayedContentTypes, htmlName = Html.NameFor(m => m.DisplayedContentTypes) })
+    </div>
 </div>
 
-<div class="mb-3">
-    <div class="w-md-75 w-xl-50 pe-md-3">
-        <label asp-for="Hint" class="form-label">@T["Hint"]</label>
+<div class="@Orchard.GetWrapperClasses()">
+    <label asp-for="Hint" class="@Orchard.GetLabelClasses()">@T["Hint"]</label>
+    <div class="@Orchard.GetEndClasses()">
         <textarea asp-for="Hint" rows="2" class="form-control"></textarea>
+        <span class="hint">@T["The hint text to display for this field on the editor."]</span>
     </div>
-    <span class="hint">@T["The hint text to display for this field on the editor."]</span>
 </div>

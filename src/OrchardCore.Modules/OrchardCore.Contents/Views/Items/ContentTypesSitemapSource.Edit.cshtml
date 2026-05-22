@@ -1,17 +1,26 @@
+@using OrchardCore
 @model ContentTypesSitemapSourceViewModel
 @using OrchardCore.Sitemaps.Models
 <h5>@T["Content Types"]</h5>
 
 @*Panel Switcher*@
-<div class="mb-3 form-check">
-    <input asp-for="IndexAll" class="form-check-input" />
-    <label asp-for="IndexAll" class="form-check-label">@T["Index All Content Types"]</label>
+<div class="@Orchard.GetWrapperClasses()">
+    <div class="@Orchard.GetEndClasses(true)">
+        <div class="form-check">
+            <input asp-for="IndexAll" class="form-check-input" />
+            <label asp-for="IndexAll" class="form-check-label">@T["Index All Content Types"]</label>
+        </div>
+    </div>
 </div>
 
-<div id="ContentTypesSitemapSource_LimitItems_Container" class="mb-3 form-check" style="@(Model.IndexAll ? "display: none" : "")">
-    <input asp-for="LimitItems" class="form-check-input" />
-    <label asp-for="LimitItems" class="form-check-label">@T["Limit Items"]</label>
-    <span class="hint">@T["Limit the amount of content items to provide from this source. Note: Only one content type is selectable when this option is selected."]</span>
+<div id="ContentTypesSitemapSource_LimitItems_Container" class="@Orchard.GetWrapperClasses()" style="@(Model.IndexAll ? "display: none" : "")">
+    <div class="@Orchard.GetEndClasses(true)">
+        <div class="form-check">
+            <input asp-for="LimitItems" class="form-check-input" />
+            <label asp-for="LimitItems" class="form-check-label">@T["Limit Items"]</label>
+            <span class="hint">@T["Limit the amount of content items to provide from this source. Note: Only one content type is selectable when this option is selected."]</span>
+        </div>
+    </div>
 </div>
 
 @*Index All Panel*@
@@ -22,27 +31,31 @@
                 @T["Index All Content Types"]
             </div>
             <div class="card-body">
-                <div class="mb-3" asp-validation-class-for="ChangeFrequency">
-                    <label asp-for="ChangeFrequency" class="form-label">@T["Change Frequency"] </label>
-                    <select asp-for="ChangeFrequency" class="form-select w-25" asp-items="Html.GetEnumSelectList<ChangeFrequency>()"></select>
-                    <span class="hint">@T["The default frequency with which these content types are likely to change."]</span>
+                <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="ChangeFrequency">
+                    <label asp-for="ChangeFrequency" class="@Orchard.GetLabelClasses()">@T["Change Frequency"] </label>
+                    <div class="@Orchard.GetEndClasses()">
+                        <select asp-for="ChangeFrequency" class="form-select w-25" asp-items="Html.GetEnumSelectList<ChangeFrequency>()"></select>
+                        <span class="hint">@T["The default frequency with which these content types are likely to change."]</span>
+                    </div>
                 </div>
-                <div class="mb-3" asp-validation-class-for="Priority">
-                    <label asp-for="Priority" class="form-label">@T["Priority"] </label>
-                    <select asp-for="Priority" class="form-select w-25">
-                        <option value="0">@T["0.0"]</option>
-                        <option value="1">@T["0.1"]</option>
-                        <option value="2">@T["0.2"]</option>
-                        <option value="3">@T["0.3"]</option>
-                        <option value="4">@T["0.4"]</option>
-                        <option value="5">@T["0.5"]</option>
-                        <option value="6">@T["0.6"]</option>
-                        <option value="7">@T["0.7"]</option>
-                        <option value="8">@T["0.8"]</option>
-                        <option value="9">@T["0.9"]</option>
-                        <option value="10">@T["1.0"]</option>
-                    </select>
-                    <span class="hint">@T["The default priority of these content types relative to other content on your site."]</span>
+                <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="Priority">
+                    <label asp-for="Priority" class="@Orchard.GetLabelClasses()">@T["Priority"] </label>
+                    <div class="@Orchard.GetEndClasses()">
+                        <select asp-for="Priority" class="form-select w-25">
+                            <option value="0">@T["0.0"]</option>
+                            <option value="1">@T["0.1"]</option>
+                            <option value="2">@T["0.2"]</option>
+                            <option value="3">@T["0.3"]</option>
+                            <option value="4">@T["0.4"]</option>
+                            <option value="5">@T["0.5"]</option>
+                            <option value="6">@T["0.6"]</option>
+                            <option value="7">@T["0.7"]</option>
+                            <option value="8">@T["0.8"]</option>
+                            <option value="9">@T["0.9"]</option>
+                            <option value="10">@T["1.0"]</option>
+                        </select>
+                        <span class="hint">@T["The default priority of these content types relative to other content on your site."]</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -67,35 +80,43 @@
                             <div class="col-12 col-md-4">
                                 <input type="hidden" name="@Html.NameFor(m => m.ContentTypes[i].ContentTypeName)"
                                        value="@Model.ContentTypes[i].ContentTypeName" />
-                                <div class="mb-3 form-check">
-                                    <input asp-for="ContentTypes[i].IsChecked" type="checkbox" class="form-check-input content-type-checkbox" />
-                                    <label asp-for="ContentTypes[i].IsChecked" class="form-check-label">@Model.ContentTypes[i].ContentTypeDisplayName</label>
+                                <div class="@Orchard.GetWrapperClasses()">
+                                    <div class="@Orchard.GetEndClasses(true)">
+                                        <div class="form-check">
+                                            <input asp-for="ContentTypes[i].IsChecked" type="checkbox" class="form-check-input content-type-checkbox" />
+                                            <label asp-for="ContentTypes[i].IsChecked" class="form-check-label">@Model.ContentTypes[i].ContentTypeDisplayName</label>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-12 col-md-4">
-                                <div class="mb-3" asp-validation-class-for="ContentTypes[i].ChangeFrequency">
-                                    <label asp-for="ContentTypes[i].ChangeFrequency" class="form-label">@T["Change Frequency"] </label>
-                                    <select asp-for="ContentTypes[i].ChangeFrequency" class="form-select" asp-items="Html.GetEnumSelectList<ChangeFrequency>()" disabled="@notChecked"></select>
-                                    <span class="hint">@T["The default frequency these content types are likely to change."]</span>
+                                <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="ContentTypes[i].ChangeFrequency">
+                                    <label asp-for="ContentTypes[i].ChangeFrequency" class="@Orchard.GetLabelClasses()">@T["Change Frequency"] </label>
+                                    <div class="@Orchard.GetEndClasses()">
+                                        <select asp-for="ContentTypes[i].ChangeFrequency" class="form-select" asp-items="Html.GetEnumSelectList<ChangeFrequency>()" disabled="@notChecked"></select>
+                                        <span class="hint">@T["The default frequency these content types are likely to change."]</span>
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-12 col-md-4">
-                                <div class="mb-3" asp-validation-class-for="ContentTypes[i].Priority">
-                                    <label asp-for="ContentTypes[i].Priority" class="form-label">@T["Priority"] </label>
-                                    <select asp-for="ContentTypes[i].Priority" class="form-select" disabled="@notChecked">
-                                        <option value="0">@T["0.0"]</option>
-                                        <option value="1">@T["0.1"]</option>
-                                        <option value="2">@T["0.2"]</option>
-                                        <option value="3">@T["0.3"]</option>
-                                        <option value="4">@T["0.4"]</option>
-                                        <option value="5">@T["0.5"]</option>
-                                        <option value="6">@T["0.6"]</option>
-                                        <option value="7">@T["0.7"]</option>
-                                        <option value="8">@T["0.8"]</option>
-                                        <option value="9">@T["0.9"]</option>
-                                        <option value="10">@T["1.0"]</option>
-                                    </select>
-                                    <span class="hint">@T["The default priority of these content types relative to other content on your site."]</span>
+                                <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="ContentTypes[i].Priority">
+                                    <label asp-for="ContentTypes[i].Priority" class="@Orchard.GetLabelClasses()">@T["Priority"] </label>
+                                    <div class="@Orchard.GetEndClasses()">
+                                        <select asp-for="ContentTypes[i].Priority" class="form-select" disabled="@notChecked">
+                                            <option value="0">@T["0.0"]</option>
+                                            <option value="1">@T["0.1"]</option>
+                                            <option value="2">@T["0.2"]</option>
+                                            <option value="3">@T["0.3"]</option>
+                                            <option value="4">@T["0.4"]</option>
+                                            <option value="5">@T["0.5"]</option>
+                                            <option value="6">@T["0.6"]</option>
+                                            <option value="7">@T["0.7"]</option>
+                                            <option value="8">@T["0.8"]</option>
+                                            <option value="9">@T["0.9"]</option>
+                                            <option value="10">@T["1.0"]</option>
+                                        </select>
+                                        <span class="hint">@T["The default priority of these content types relative to other content on your site."]</span>
+                                    </div>
                                 </div>
                             </div>
                         </li>
@@ -125,46 +146,58 @@
                             <div class="col-12 col-md-3">
                                 <input type="hidden" name="@Html.NameFor(m => m.LimitedContentTypes[i].ContentTypeName)"
                                        value="@Model.LimitedContentTypes[i].ContentTypeName" />
-                                <div class="mb-3 form-check">
-                                    <input type="radio" id="LimitedContentTypes_@i" asp-for="LimitedContentType" value="@Model.LimitedContentTypes[i].ContentTypeName" class="form-check-input content-type-radio" />
-                                    <label for="LimitedContentTypes_@i" class="form-check-label">@Model.LimitedContentTypes[i].ContentTypeDisplayName</label>
+                                <div class="@Orchard.GetWrapperClasses()">
+                                    <div class="@Orchard.GetEndClasses(true)">
+                                        <div class="form-check">
+                                            <input type="radio" id="LimitedContentTypes_@i" asp-for="LimitedContentType" value="@Model.LimitedContentTypes[i].ContentTypeName" class="form-check-input content-type-radio" />
+                                            <label for="LimitedContentTypes_@i" class="form-check-label">@Model.LimitedContentTypes[i].ContentTypeDisplayName</label>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-12 col-md-3 ">
-                                <div class="mb-3" asp-validation-class-for="LimitedContentTypes[i].ChangeFrequency">
-                                    <label asp-for="LimitedContentTypes[i].ChangeFrequency" class="form-label">@T["Change Frequency"] </label>
-                                    <select asp-for="LimitedContentTypes[i].ChangeFrequency" class="form-select" asp-items="Html.GetEnumSelectList<ChangeFrequency>()" disabled="@notChecked"></select>
-                                    <span class="hint">@T["The default frequency these content types are likely to change."]</span>
+                                <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="LimitedContentTypes[i].ChangeFrequency">
+                                    <label asp-for="LimitedContentTypes[i].ChangeFrequency" class="@Orchard.GetLabelClasses()">@T["Change Frequency"] </label>
+                                    <div class="@Orchard.GetEndClasses()">
+                                        <select asp-for="LimitedContentTypes[i].ChangeFrequency" class="form-select" asp-items="Html.GetEnumSelectList<ChangeFrequency>()" disabled="@notChecked"></select>
+                                        <span class="hint">@T["The default frequency these content types are likely to change."]</span>
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-12 col-md-3">
-                                <div class="mb-3" asp-validation-class-for="LimitedContentTypes[i].Priority">
-                                    <label asp-for="LimitedContentTypes[i].Priority" class="form-label">@T["Priority"] </label>
-                                    <select asp-for="LimitedContentTypes[i].Priority" class="form-select" disabled="@notChecked">
-                                        <option value="0">@T["0.0"]</option>
-                                        <option value="1">@T["0.1"]</option>
-                                        <option value="2">@T["0.2"]</option>
-                                        <option value="3">@T["0.3"]</option>
-                                        <option value="4">@T["0.4"]</option>
-                                        <option value="5">@T["0.5"]</option>
-                                        <option value="6">@T["0.6"]</option>
-                                        <option value="7">@T["0.7"]</option>
-                                        <option value="8">@T["0.8"]</option>
-                                        <option value="9">@T["0.9"]</option>
-                                        <option value="10">@T["1.0"]</option>
-                                    </select>
-                                    <span class="hint">@T["The default priority of these content types relative to other content on your site."]</span>
+                                <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="LimitedContentTypes[i].Priority">
+                                    <label asp-for="LimitedContentTypes[i].Priority" class="@Orchard.GetLabelClasses()">@T["Priority"] </label>
+                                    <div class="@Orchard.GetEndClasses()">
+                                        <select asp-for="LimitedContentTypes[i].Priority" class="form-select" disabled="@notChecked">
+                                            <option value="0">@T["0.0"]</option>
+                                            <option value="1">@T["0.1"]</option>
+                                            <option value="2">@T["0.2"]</option>
+                                            <option value="3">@T["0.3"]</option>
+                                            <option value="4">@T["0.4"]</option>
+                                            <option value="5">@T["0.5"]</option>
+                                            <option value="6">@T["0.6"]</option>
+                                            <option value="7">@T["0.7"]</option>
+                                            <option value="8">@T["0.8"]</option>
+                                            <option value="9">@T["0.9"]</option>
+                                            <option value="10">@T["1.0"]</option>
+                                        </select>
+                                        <span class="hint">@T["The default priority of these content types relative to other content on your site."]</span>
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-12 col-md-3 limit-items">
                                 <div class="d-flex flex-column justify-content-center content-types-take-container">
-                                    <div class="mb-3">
-                                        <label asp-for="LimitedContentTypes[i].Skip" class="form-label pr-3">@T["Skip"]</label>
-                                        <input asp-for="LimitedContentTypes[i].Skip" class="form-control w-100" readonly="@notChecked" />
+                                    <div class="@Orchard.GetWrapperClasses()">
+                                        <label asp-for="LimitedContentTypes[i].Skip" class="@Orchard.GetLabelClasses(false, "pr-3")">@T["Skip"]</label>
+                                        <div class="@Orchard.GetEndClasses()">
+                                            <input asp-for="LimitedContentTypes[i].Skip" class="form-control w-100" readonly="@notChecked" />
+                                        </div>
                                     </div>
-                                    <div class="mb-3">
-                                        <label asp-for="LimitedContentTypes[i].Take" class="form-label pr-3">@T["Take"]</label>
-                                        <input asp-for="LimitedContentTypes[i].Take" class="form-control w-100" readonly="@notChecked" />
+                                    <div class="@Orchard.GetWrapperClasses()">
+                                        <label asp-for="LimitedContentTypes[i].Take" class="@Orchard.GetLabelClasses(false, "pr-3")">@T["Take"]</label>
+                                        <div class="@Orchard.GetEndClasses()">
+                                            <input asp-for="LimitedContentTypes[i].Take" class="form-control w-100" readonly="@notChecked" />
+                                        </div>
                                     </div>
                                     <span class="hint">@T["Adjust quantity of content items in sitemap."]</span>
                                 </div>
@@ -232,7 +265,7 @@
                     $(this).find('input:not(.content-type-radio)').each(function () {
                         $(this).prop('readonly', true);
                     });
-                    
+
                     $(this).find('select').each(function () {
                         $(this).prop('disabled', true);
                     });
@@ -250,4 +283,3 @@
 
     });
 </script>
-

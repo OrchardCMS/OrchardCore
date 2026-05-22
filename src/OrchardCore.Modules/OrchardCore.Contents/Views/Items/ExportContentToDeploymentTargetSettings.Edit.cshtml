@@ -1,3 +1,4 @@
+@using OrchardCore
 @using OrchardCore.Deployment
 @model ExportContentToDeploymentTargetSettingsViewModel
 @inject IDeploymentPlanService DeploymentPlanService
@@ -13,9 +14,9 @@
 }
 else
 {
-    <div class="row">
-        <div class="mb-3 col-sm-6">
-            <label asp-for="ExportContentToDeploymentTargetPlanId" class="form-label">@T["Deployment Plan"]</label>
+    <div class="@Orchard.GetLimitedWidthWrapperClasses("mb-3")">
+        <label asp-for="ExportContentToDeploymentTargetPlanId" class="@Orchard.GetLabelClasses()">@T["Deployment Plan"]</label>
+        <div class="@Orchard.GetLimitedWidthClasses()">
             <select asp-for="ExportContentToDeploymentTargetPlanId" class="form-select">
                 @foreach (var exportContentToDeploymentTargetPlan in exportContentToDeploymentTargetPlans)
                 {

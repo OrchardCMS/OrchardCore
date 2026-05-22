@@ -2,9 +2,13 @@
 
 @model SitemapsRobotsSettings
 
-<div class="form-check mb-3" asp-validation-class-for="IncludeSitemaps">
-    <input type="checkbox" class="form-check-input" asp-for="IncludeSitemaps">
-    <span asp-validation-for="IncludeSitemaps"></span>
-    <label class="form-check-label" asp-for="IncludeSitemaps">@T["Include all sitemaps."]</label>
-    <span class="hint dashed">@T["Check to let the system include all sitemaps."]</span>
+<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="IncludeSitemaps">
+    <div class="@Orchard.GetEndClasses(true)">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" asp-for="IncludeSitemaps">
+            <span asp-validation-for="IncludeSitemaps"></span>
+            <label class="form-check-label" asp-for="IncludeSitemaps">@T["Include all sitemaps."]</label>
+            <span class="hint dashed">@T["Check to let the system include all sitemaps."]</span>
+        </div>
+    </div>
 </div>

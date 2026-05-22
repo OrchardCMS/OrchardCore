@@ -1,3 +1,4 @@
+@using OrchardCore
 @model AdminNodeEditViewModel
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Edit Node"])</h1></zone>
@@ -12,13 +13,13 @@
 
     <div class="mb-3">
         <label asp-for="Priority" class="form-label">@T["Selection Priority"]</label>
-        <input asp-for="Priority" class="form-control col-md-2">
+        <input asp-for="Priority" class="form-control w-sm-25">
         <span class="hint">@T["The priority of this link to be displayed as active instead of another one when both are pointing to the same url. The link with the highest value has the active status in the navigation."]</span>
     </div>
 
     <div class="mb-3">
         <label asp-for="Position" class="form-label">@T["Position Order"]</label>
-        <input asp-for="Position" class="form-control col-md-2">
+        <input asp-for="Position" class="form-control w-sm-25">
         <span class="hint">@T["The position order of this link in the admin menu."]</span>
     </div>
 

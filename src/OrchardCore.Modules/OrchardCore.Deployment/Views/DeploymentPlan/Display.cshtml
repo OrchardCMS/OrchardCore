@@ -30,28 +30,32 @@
     </nav>
 </div>
 <form asp-action="DeploymentPlan">
-    @if (Model.Items.Any())
-    {
-        <ul class="list-group" id="stepOrder">
-            @foreach (var item in Model.Items)
+    <div class="@Orchard.GetWrapperClasses()">
+        <div class="@Orchard.GetEndClasses(true)">
+            @if (Model.Items.Any())
             {
-                item.DeploymentPlanId = Model.DeploymentPlan.Id;
+                <ul class="list-group" id="stepOrder">
+                    @foreach (var item in Model.Items)
+                    {
+                        item.DeploymentPlanId = Model.DeploymentPlan.Id;
 
-                <li class="list-group-item">
-                    <div class="d-flex">
-                        <div class="ui-sortable-handle cursor-pointer me-2"><i class="fa-solid fa-up-down-left-right" aria-hidden="true"></i></div>
-                        @await DisplayAsync(item)
-                    </div>
-                </li>
+                        <li class="list-group-item">
+                            <div class="d-flex">
+                                <div class="ui-sortable-handle cursor-pointer me-2"><i class="fa-solid fa-up-down-left-right" aria-hidden="true"></i></div>
+                                @await DisplayAsync(item)
+                            </div>
+                        </li>
+                    }
+                </ul>
             }
-        </ul>
-    }
-    else
-    {
-        <div class="alert alert-info mb-0" role="alert">
-            @T["<strong>Nothing here!</strong> There are no steps on this plan for the moment."]
+            else
+            {
+                <div class="alert alert-info mb-0" role="alert">
+                    @T["<strong>Nothing here!</strong> There are no steps on this plan for the moment."]
+                </div>
+            }
         </div>
-    }
+    </div>
 </form>
 
 <!-- Modal -->
@@ -65,8 +69,10 @@
             <div class="modal-body">
                 <div class="row">
                     <div class="col-sm-3 col-md-3 col-lg-2">
-                        <div class="mb-3">
-                            <input class="form-control" id="search-box" type="search" placeholder="@T["Filter"]" aria-label="@T["Filter"]" autofocus />
+                        <div class="@Orchard.GetWrapperClasses()">
+                            <div class="@Orchard.GetEndClasses(true)">
+                                <input class="form-control" id="search-box" type="search" placeholder="@T["Filter"]" aria-label="@T["Filter"]" autofocus />
+                            </div>
                         </div>
                         <ul class="nav nav-pills flex-column" id="deployment-step-categories">
                             <li class="nav-item">

@@ -1,15 +1,17 @@
 @model OrchardCore.ContentFields.ViewModels.TrumbowygSettingsViewModel
 <div id="@Html.IdFor(m => m)" class="field-editor field-editor-trumbowyg">
-    <div class="mb-3">
-        <div class="form-check">
-            <input type="checkbox" class="form-check-input" asp-for="InsertMediaWithUrl" checked="@Model.InsertMediaWithUrl" />
-            <label class="form-check-label" asp-for="InsertMediaWithUrl">@T["Insert Media with url"]</label>
-            <span class="hint dashed">@T["Whether the url is used when selected from Insert Media (By default, the Shortcode is inserted)."]</span>
+    <div class="@Orchard.GetWrapperClasses()">
+        <div class="@Orchard.GetEndClasses(true)">
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" asp-for="InsertMediaWithUrl" checked="@Model.InsertMediaWithUrl" />
+                <label class="form-check-label" asp-for="InsertMediaWithUrl">@T["Insert Media with url"]</label>
+                <span class="hint dashed">@T["Whether the url is used when selected from Insert Media (By default, the Shortcode is inserted)."]</span>
+            </div>
         </div>
     </div>
-    <div class="mb-3 row">
-        <div class="col-large col-12 col-sm-12 col-md-12 col-lg-12 col-xl-9">
-            <label asp-for="Options" class="form-label">@T["Enter the editor options"]</label>
+    <div class="@Orchard.GetLimitedWidthWrapperClasses("mb-3")">
+        <label asp-for="Options" class="@Orchard.GetLabelClasses()">@T["Enter the editor options"]</label>
+        <div class="@Orchard.GetLimitedWidthClasses()">
             <span class="hint"><a href="https://alex-d.github.io/Trumbowyg/documentation/#basic-options" target="_blank">@T["Documentation for options"]</a></span>
             <textarea asp-for="Options" class="form-control" autofocus="autofocus"></textarea>
         </div>
@@ -27,12 +29,12 @@
             autoRefresh: true,
             lineNumbers: true,
             matchBrackets: true,
-            mode: { name: "javascript" }
-    });
+            mode: { name: "javascript" },
+        });
 @{
-    if (string.IsNullOrEmpty(Model.Options))
-    {
-        string fullOptions = @"{
+        if (string.IsNullOrEmpty(Model.Options))
+        {
+            string fullOptions = @"{
     autogrow: true,
     btns: [
         [""viewHTML""],
@@ -61,9 +63,10 @@
         }
     }
 }";
-<text>editor.setValue(`@Html.Raw(fullOptions)`);
-        </text>
-    }
+<text>
+        editor.setValue(`@Html.Raw(fullOptions)`);
+</text>
+        }
 }
-});
+    });
 </script>

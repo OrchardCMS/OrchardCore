@@ -2,16 +2,20 @@
 
 @model ElasticsearchIndexProfileViewModel
 
-<div class="mb-3" asp-validation-class-for="AnalyzerName">
-    <label asp-for="AnalyzerName" class="form-label">@T["Analyzer"]</label>
+<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="AnalyzerName">
+    <label asp-for="AnalyzerName" class="@Orchard.GetLabelClasses()">@T["Analyzer"]</label>
+    <div class="@Orchard.GetEndClasses()">
     <select asp-for="AnalyzerName" asp-items="Model.Analyzers" class="form-select"></select>
     <span asp-validation-for="AnalyzerName" class="text-danger"></span>
+    </div>
 </div>
 
-<div class="mb-3">
+<div class="@Orchard.GetWrapperClasses()">
+    <div class="@Orchard.GetEndClasses(true)">
     <div class="form-check">
         <input type="checkbox" class="form-check-input" asp-for="StoreSourceData" checked="@Model.StoreSourceData" />
         <label class="form-check-label" asp-for="StoreSourceData">@T["Store Source Data"]</label>
         <span class="hint dashed">@T["Check to store the fields in the index for future retrieval."]</span>
+    </div>
     </div>
 </div>

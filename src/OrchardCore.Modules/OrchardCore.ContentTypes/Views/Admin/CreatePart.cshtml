@@ -4,12 +4,18 @@
 
 <form asp-action="CreatePart">
     @Html.ValidationSummary()
-    <div class="mb-3">
-        <label asp-for="Name" class="form-label">@T["Name"]</label>
-        <input asp-for="Name" class="form-control w-md-75 w-xl-50" autofocus="autofocus" />
-        <span class="hint">@T["Use no spaces or special characters. For example, \"MyCustomPart\""]</span>
+
+    <div class="@Orchard.GetLimitedWidthWrapperClasses("mb-3")">
+        <label asp-for="Name" class="@Orchard.GetLabelClasses()">@T["Name"]</label>
+        <div class="@Orchard.GetLimitedWidthClasses()">
+            <input asp-for="Name" class="form-control" autofocus="autofocus" />
+            <span class="hint">@T["Use no spaces or special characters. For example, \"MyCustomPart\""]</span>
+        </div>
     </div>
-    <div class="mb-3">
-        <button class="btn btn-primary create" type="submit">@T["Create"]</button>
+
+    <div class="@Orchard.GetWrapperClasses()">
+        <div class="@Orchard.GetEndClasses(true)">
+            <button class="btn btn-primary create" type="submit">@T["Create"]</button>
+        </div>
     </div>
 </form>

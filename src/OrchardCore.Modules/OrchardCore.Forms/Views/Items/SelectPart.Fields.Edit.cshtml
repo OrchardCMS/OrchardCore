@@ -75,17 +75,21 @@
                             <button type="button" class="btn-close" aria-label="Close" v-on:click="closeModal(false)"></button>
                         </div>
                         <div class="modal-body">
-                            <div class="mb-3">
-                                <label for="select-options-textarea" class="form-label">@T["Options"]</label>
-                                <textarea id="select-options-textarea" name="select-options-textarea" rows="8" class="form-control"
-                                :class="{ 'is-invalid': !isValid }"
-                                v-model="optionsFormattedList"></textarea>
-                                <span class="hint">@T["A JSON representation of the allowed values, e.g. {0}", "[ { text: 'First option', value: 'option1' }, { text: 'Second option', value: 'option2' } ]"]</span>
+                            <div class="@Orchard.GetWrapperClasses()">
+                                <label for="select-options-textarea" class="@Orchard.GetLabelClasses()">@T["Options"]</label>
+                                <div class="@Orchard.GetEndClasses()">
+                                    <textarea id="select-options-textarea" name="select-options-textarea" rows="8" class="form-control"
+                                    :class="{ 'is-invalid': !isValid }"
+                                    v-model="optionsFormattedList"></textarea>
+                                    <span class="hint">@T["A JSON representation of the allowed values, e.g. {0}", "[ { text: 'First option', value: 'option1' }, { text: 'Second option', value: 'option2' } ]"]</span>
+                                </div>
                             </div>
-                            <div class="mb-3">
-                                <label for="options-default-value" class="form-label">@T["Default value"]</label>
-                                <input id="options-default-value" name="options-default-value" class="form-control" type="text" v-model="defaultValue" />
-                                <span class="hint">@T["(Optional) The value to assign to the select field."]</span>
+                            <div class="@Orchard.GetWrapperClasses()">
+                                <label for="options-default-value" class="@Orchard.GetLabelClasses()">@T["Default value"]</label>
+                                <div class="@Orchard.GetEndClasses()">
+                                    <input id="options-default-value" name="options-default-value" class="form-control" type="text" v-model="defaultValue" />
+                                    <span class="hint">@T["(Optional) The value to assign to the select field."]</span>
+                                </div>
                             </div>
                         </div>
                         <div class="modal-footer">

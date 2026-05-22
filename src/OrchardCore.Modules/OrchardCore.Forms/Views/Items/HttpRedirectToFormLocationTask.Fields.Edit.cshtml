@@ -1,10 +1,13 @@
+@using OrchardCore
 @using OrchardCore.Forms.Activities.ViewModels
 
 @model HttpRedirectToFormLocationTaskViewModel
 
-<div class="mb-3" asp-validation-class-for="FormLocationKey">
-    <label asp-for="FormLocationKey" class="form-label">@T["Form Location Key"]</label>
-    <input type="text" asp-for="FormLocationKey" class="form-control" />
-    <span asp-validation-for="FormLocationKey"></span>
-    <span class="hint">@T["This key name should be equal to the 'Form Location Key' of the HTTP request event. Leave blank if the workflow only handles a single form."]</span>
+<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="FormLocationKey">
+    <label asp-for="FormLocationKey" class="@Orchard.GetLabelClasses()">@T["Form Location Key"]</label>
+    <div class="@Orchard.GetEndClasses()">
+        <input type="text" asp-for="FormLocationKey" class="form-control" />
+        <span asp-validation-for="FormLocationKey"></span>
+        <span class="hint">@T["This key name should be equal to the 'Form Location Key' of the HTTP request event. Leave blank if the workflow only handles a single form."]</span>
+    </div>
 </div>

@@ -83,11 +83,13 @@
 
             if (Model.IsMachineRemembered)
             {
-                <div class="mb-3">
-                    <p class="mb-1">@T["The current device has been saved during the two-factor authentication process."]</p>
-                    <form method="post" asp-action="ForgetTwoFactorClient">
-                        <button type="submit" class="btn btn-sm btn-primary">@T["Forget this device"]</button>
-                    </form>
+                <div class="@Orchard.GetWrapperClasses()">
+                    <div class="@Orchard.GetEndClasses(true)">
+                        <p class="mb-1">@T["The current device has been saved during the two-factor authentication process."]</p>
+                        <form method="post" asp-action="ForgetTwoFactorClient">
+                            <button type="submit" class="btn btn-sm btn-primary">@T["Forget this device"]</button>
+                        </form>
+                    </div>
                 </div>
             }
         }
@@ -95,17 +97,23 @@
         @if (Model.ValidTwoFactorProviders.Count > 1)
         {
             <form method="post">
-                <div class="mb-3">
-                    <label asp-for="PreferredProvider" class="form-label">@T["Preferred Two-Factor Method"]</label>
-                    <select asp-for="PreferredProvider" asp-items="Model.ValidTwoFactorProviders" class="form-select">
-                        @if (string.IsNullOrEmpty(Model.PreferredProvider))
-                        {
-                            <option value="">@T["Select the method"]</option>
-                        }
-                    </select>
+                <div class="@Orchard.GetWrapperClasses()">
+                    <label asp-for="PreferredProvider" class="@Orchard.GetLabelClasses()">@T["Preferred Two-Factor Method"]</label>
+                    <div class="@Orchard.GetEndClasses()">
+                        <select asp-for="PreferredProvider" asp-items="Model.ValidTwoFactorProviders" class="form-select">
+                            @if (string.IsNullOrEmpty(Model.PreferredProvider))
+                            {
+                                <option value="">@T["Select the method"]</option>
+                            }
+                        </select>
+                    </div>
                 </div>
 
-                <button type="submit" class="btn btn-sm btn-primary">@T["Update"]</button>
+                <div class="@Orchard.GetWrapperClasses()">
+                    <div class="@Orchard.GetEndClasses(true)">
+                        <button type="submit" class="btn btn-sm btn-primary">@T["Update"]</button>
+                    </div>
+                </div>
             </form>
         }
     </div>

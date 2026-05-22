@@ -2,34 +2,38 @@
 
 <script asp-name="vuejs" version="2" at="Foot"></script>
 
-<div class="mb-3">
-    <div class="form-check">
-        <input asp-for="Required" type="checkbox" class="form-check-input">
-        <label class="form-check-label" asp-for="Required">@T["Required"]</label>
-        <span class="hint dashed">@T["Whether to ensure at least one element is selected."]</span>
+<div class="@Orchard.GetWrapperClasses()">
+    <div class="@Orchard.GetEndClasses(true)">
+        <div class="form-check">
+            <input asp-for="Required" type="checkbox" class="form-check-input">
+            <label class="form-check-label" asp-for="Required">@T["Required"]</label>
+            <span class="hint dashed">@T["Whether to ensure at least one element is selected."]</span>
+        </div>
     </div>
 </div>
 
-<div class="mb-3">
-    <div class="form-check">
-        <input asp-for="Multiple" type="checkbox" class="form-check-input">
-        <label class="form-check-label" asp-for="Multiple">@T["Allow multiple"]</label>
-        <span class="hint dashed">@T["Whether to allow multiple elements to be selected."]</span>
+<div class="@Orchard.GetWrapperClasses()">
+    <div class="@Orchard.GetEndClasses(true)">
+        <div class="form-check">
+            <input asp-for="Multiple" type="checkbox" class="form-check-input">
+            <label class="form-check-label" asp-for="Multiple">@T["Allow multiple"]</label>
+            <span class="hint dashed">@T["Whether to allow multiple elements to be selected."]</span>
+        </div>
     </div>
 </div>
 
-<div id="userRolesVue" class="mb-3" data-display-all-users="@Model.DisplayAllUsers.ToString().ToLowerInvariant()">
-    <label asp-for="Roles" class="form-label">@T["Roles"]</label>
-    <span class="hint">@T["The roles that a user must belong to. Choose at least one."]</span>
+<div id="userRolesVue" class="@Orchard.GetWrapperClasses()" data-display-all-users="@Model.DisplayAllUsers.ToString().ToLowerInvariant()">
+    <label asp-for="Roles" class="@Orchard.GetLabelClasses()">@T["Roles"]</label>
+    <div class="@Orchard.GetEndClasses()">
+        <span class="hint">@T["The roles that a user must belong to. Choose at least one."]</span>
 
-    <div class="form-check">
-        <input asp-for="DisplayAllUsers" type="checkbox" class="form-check-input" v-model="displayAllUsers">
-        <label class="form-check-label" asp-for="DisplayAllUsers">@T["Display All Users"]</label>
-        <span class="hint dashed">@T["Whether to allow picker to display users from all roles."]</span>
-    </div>
+        <div class="form-check">
+            <input asp-for="DisplayAllUsers" type="checkbox" class="form-check-input" v-model="displayAllUsers">
+            <label class="form-check-label" asp-for="DisplayAllUsers">@T["Display All Users"]</label>
+            <span class="hint dashed">@T["Whether to allow picker to display users from all roles."]</span>
+        </div>
 
-    <div v-show="!displayAllUsers">
-        <div class="mb-3">
+        <div v-show="!displayAllUsers">
             @for (var i = 0; i < Model.Roles.Length; i++)
             {
                 <div class="form-check">
@@ -38,24 +42,24 @@
                     <label class="form-check-label cursor-pointer" asp-for="Roles[i].IsSelected">@Model.Roles[i].Role</label>
                 </div>
             }
-        </div>        
+        </div>
     </div>
 </div>
 
-<div class="mb-3">
-    <div class="w-md-75 w-xl-50 pe-md-3">
-        <label asp-for="Placeholder" class="form-label">@T["Placeholder"]</label>
+<div class="@Orchard.GetWrapperClasses()">
+    <label asp-for="Placeholder" class="@Orchard.GetLabelClasses()">@T["Placeholder"]</label>
+    <div class="@Orchard.GetEndClasses()">
         <input asp-for="Placeholder" class="form-control" />
+        <span class="hint">@T["The placeholder text to display for this field on the editor."]</span>
     </div>
-    <span class="hint">@T["The placeholder text to display for this field on the editor."]</span>
 </div>
 
-<div class="mb-3">
-    <div class="w-md-75 w-xl-50 pe-md-3">
-        <label asp-for="Hint" class="form-label">@T["Hint"]</label>
+<div class="@Orchard.GetWrapperClasses()">
+    <label asp-for="Hint" class="@Orchard.GetLabelClasses()">@T["Hint"]</label>
+    <div class="@Orchard.GetEndClasses()">
         <textarea asp-for="Hint" rows="2" class="form-control"></textarea>
+        <span class="hint">@T["The hint text to display for this field on the editor."]</span>
     </div>
-    <span class="hint">@T["The hint text to display for this field on the editor."]</span>
 </div>
 
 <script at="Foot" depends-on="vuejs:2">
@@ -65,7 +69,7 @@
             displayAllUsers: false
         },
         mounted() {
-            this.displayAllUsers = (this.$el.dataset.displayAllUsers === 'true'); 
+            this.displayAllUsers = (this.$el.dataset.displayAllUsers === 'true');
         }
     });
 </script>

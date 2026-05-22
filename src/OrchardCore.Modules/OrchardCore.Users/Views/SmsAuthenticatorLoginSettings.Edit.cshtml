@@ -2,12 +2,18 @@
 @model SmsAuthenticatorLoginSettings
 
 <fieldset>
-    <legend>@T["SMS Authenticator Settings"]</legend>
+    <div class="@Orchard.GetWrapperClasses()">
+        <div class="@Orchard.GetEndClasses(true)">
+            <legend>@T["SMS Authenticator Settings"]</legend>
+        </div>
+    </div>
 
-    <div class="mb-3" asp-validation-class-for="Body">
-        <span asp-validation-for="Body"></span>
-        <label class="form-check-label" asp-for="Body">@T["Message Body"]</label>
-        <textarea class="form-control" asp-for="Body"></textarea>
-        <span class="hint">@T["The body to the message for sending the verification code. Liquid syntax is supported."]</span>
+    <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="Body">
+        <label class="@Orchard.GetLabelClasses()" asp-for="Body">@T["Message Body"]</label>
+        <div class="@Orchard.GetEndClasses()">
+            <textarea class="form-control" asp-for="Body"></textarea>
+            <span asp-validation-for="Body"></span>
+            <span class="hint">@T["The body to the message for sending the verification code. Liquid syntax is supported."]</span>
+        </div>
     </div>
 </fieldset>

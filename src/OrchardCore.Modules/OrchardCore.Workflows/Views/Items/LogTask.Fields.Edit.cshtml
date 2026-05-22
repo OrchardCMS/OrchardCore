@@ -2,16 +2,20 @@
 @using OrchardCore.Workflows.ViewModels
 @model LogTaskViewModel
 
-<div class="mb-3" asp-validation-class-for="LogLevel">
-    <label asp-for="LogLevel" class="form-label">@T["Log Level"]</label>
-    <select asp-for="LogLevel" class="form-select" asp-items="Html.GetEnumSelectList<LogLevel>()"></select>
-    <span asp-validation-for="LogLevel"></span>
-    <span class="hint">@T["The log level."]</span>
+<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="LogLevel">
+    <label asp-for="LogLevel" class="@Orchard.GetLabelClasses()">@T["Log Level"]</label>
+    <div class="@Orchard.GetEndClasses()">
+        <select asp-for="LogLevel" class="form-select" asp-items="Html.GetEnumSelectList<LogLevel>()"></select>
+        <span asp-validation-for="LogLevel"></span>
+        <span class="hint">@T["The log level."]</span>
+    </div>
 </div>
 
-<div class="mb-3" asp-validation-class-for="Text">
-    <label asp-for="Text" class="form-label">@T["Text"]</label>
-    <input type="text" asp-for="Text" class="form-control code" />
-    <span asp-validation-for="Text"></span>
-    <span class="hint">@T["The text to log. With Liquid support."]</span>
+<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="Text">
+    <label asp-for="Text" class="@Orchard.GetLabelClasses()">@T["Text"]</label>
+    <div class="@Orchard.GetEndClasses()">
+        <input type="text" asp-for="Text" class="form-control code" />
+        <span asp-validation-for="Text"></span>
+        <span class="hint">@T["The text to log. With Liquid support."]</span>
+    </div>
 </div>

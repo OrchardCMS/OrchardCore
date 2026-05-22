@@ -1,3 +1,4 @@
+@using OrchardCore
 @using OrchardCore.Forms.ViewModels
 @using OrchardCore.Forms.Models
 @model ShapeViewModel<FormElementLabelPart>
@@ -14,7 +15,7 @@
 
 @if (Model.Value.Option == LabelOptions.Standard)
 {
-    <label for="@fieldId" class="form-label">@Model.Value.Label</label>
+    <label for="@fieldId" class="@Orchard.GetLabelClasses()">@Model.Value.Label</label>
 }
 else if (Model.Value.Option == LabelOptions.ScreenReaders)
 {

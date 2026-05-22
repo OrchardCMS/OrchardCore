@@ -11,8 +11,10 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <div class="mb-3">
-                    <input class="form-control" id="search-box" type="search" placeholder="@T["Filter"]" aria-label="@T["Filter"]" autofocus />
+                <div class="@Orchard.GetWrapperClasses()">
+                    <div class="@Orchard.GetEndClasses(true)">
+                        <input class="form-control" id="search-box" type="search" placeholder="@T["Filter"]" aria-label="@T["Filter"]" autofocus />
+                    </div>
                 </div>
                 <div id="cards" class="row">
                     <div class="row row-cols-1 row-cols-md-2 g-2">

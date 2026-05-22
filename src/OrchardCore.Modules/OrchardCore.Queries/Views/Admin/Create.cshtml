@@ -11,8 +11,10 @@
 
     @if (Model.Editor.Actions != null)
     {
-        <div class="mb-3">
-            @await DisplayAsync(Model.Editor.Actions)
+        <div class="@Orchard.GetWrapperClasses()">
+            <div class="@Orchard.GetEndClasses(true)">
+                @await DisplayAsync(Model.Editor.Actions)
+            </div>
         </div>
     }
 

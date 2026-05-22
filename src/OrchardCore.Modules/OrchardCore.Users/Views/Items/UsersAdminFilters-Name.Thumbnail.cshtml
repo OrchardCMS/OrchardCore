@@ -4,7 +4,11 @@
 }
 
 <h4 class="card-title">@T["Name"]</h4>
-<pre class="mb-3">@(term?.ToString() ?? "name:...")</pre>
+<div class="@Orchard.GetWrapperClasses()">
+    <div class="@Orchard.GetEndClasses(true)">
+        <pre class="mb-0">@(term?.ToString() ?? "name:...")</pre>
+    </div>
+</div>
 <p>@T["Filters on the name of a user."]</p>
 <div class="d-block text-end">
     <span>

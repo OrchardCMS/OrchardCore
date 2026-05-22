@@ -10,14 +10,17 @@
 <div asp-validation-summary="ModelOnly"></div>
 <form asp-action="Edit" method="post" class="no-multisubmit">
     <input type="hidden" asp-for="SitemapId" />
-    <div class="mb-3" asp-validation-class-for="Name">
-        <label asp-for="Name" class="form-label">@T["Name"]</label>
+    <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="Name">
+        <label asp-for="Name" class="@Orchard.GetLabelClasses()">@T["Name"]</label>
+        <div class="@Orchard.GetEndClasses()">
         <input asp-for="Name" class="form-control" autofocus />
         <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
     </div>
 
-    <div class="mb-3" asp-validation-class-for="Path">
-        <label asp-for="Path" class="form-label">@T["Permalink"]</label>
+    <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="Path">
+        <label asp-for="Path" class="@Orchard.GetLabelClasses()">@T["Permalink"]</label>
+        <div class="@Orchard.GetEndClasses()">
         <div class="input-group">
             @if (!string.IsNullOrWhiteSpace(Site.BaseUrl))
             {
@@ -27,16 +30,23 @@
         </div>
         <span class="hint d-block">@T["The url of the sitemap. Leave empty to auto-generate it."]</span>
         <span asp-validation-for="Path" class="text-danger d-block"></span>
+        </div>
     </div>
 
-    <div class="mb-3 form-check">
-        <input asp-for="Enabled" class="form-check-input" />
-        <label asp-for="Enabled" class="form-check-label">@T["Enabled"]</label>
-        <span class="hint">@T["Uncheck to disable routing to this sitemap."]</span>
+    <div class="@Orchard.GetWrapperClasses()">
+        <div class="@Orchard.GetEndClasses(true)">
+            <div class="form-check">
+            <input asp-for="Enabled" class="form-check-input" />
+            <label asp-for="Enabled" class="form-check-label">@T["Enabled"]</label>
+            <span class="hint">@T["Uncheck to disable routing to this sitemap."]</span>
+            </div>
+        </div>
     </div>
 
-    <div class="mb-3">
-        <button class="btn btn-primary save" type="submit">@T["Save"]</button>
-        <a class="btn btn-secondary cancel" role="button" asp-route-action="List">@T["Cancel"]</a>
+    <div class="@Orchard.GetWrapperClasses()">
+        <div class="@Orchard.GetEndClasses(true)">
+            <button class="btn btn-primary save" type="submit">@T["Save"]</button>
+            <a class="btn btn-secondary cancel" role="button" asp-route-action="List">@T["Cancel"]</a>
+        </div>
     </div>
 </form>

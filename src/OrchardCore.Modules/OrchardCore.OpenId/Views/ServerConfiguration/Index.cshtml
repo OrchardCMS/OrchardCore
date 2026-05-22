@@ -6,7 +6,9 @@
     @Html.ValidationSummary()
     @await DisplayAsync(Model.Content)
 
-    <div class="mb-3">
-        <button class="btn btn-primary" type="submit">@T["Update the server settings and reload the tenant"]</button>
+    <div class="@Orchard.GetWrapperClasses()">
+        <div class="@Orchard.GetEndClasses(true)">
+            <button class="btn btn-primary" type="submit">@T["Update the server settings and reload the tenant"]</button>
+        </div>
     </div>
 </form>

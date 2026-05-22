@@ -29,36 +29,40 @@
 <div asp-validation-summary="All"></div>
 
 <form id="presetForm" asp-action="List">
-    <div class="mb-3">
-        @if (Model.AdminMenu.MenuItems.Any())
-        {
-            var updater = ModelUpdaterAccessor.ModelUpdater;
+    <div class="@Orchard.GetWrapperClasses()">
+        <div class="@Orchard.GetEndClasses(true)">
+            @if (Model.AdminMenu.MenuItems.Any())
+            {
+                var updater = ModelUpdaterAccessor.ModelUpdater;
 
-            <ol id="menu" data-treenode-id="content-preset" class="list-group">
-                @foreach (var menuItem in Model.AdminMenu.MenuItems)
-                {
-                    if (menuItem != null)
+                <ol id="menu" data-treenode-id="content-preset" class="list-group">
+                    @foreach (var menuItem in Model.AdminMenu.MenuItems)
                     {
-                        var adminNodeShape = await MenuItemDisplayManager.BuildDisplayAsync(menuItem, updater, "TreeSummary");
-                        adminNodeShape.Properties["AdminMenuId"] = Model.AdminMenu.Id;
-                        adminNodeShape.Properties["MenuItem"] = menuItem;
-                        adminNodeShape.Properties["Index"] = index++;
+                        if (menuItem != null)
+                        {
+                            var adminNodeShape = await MenuItemDisplayManager.BuildDisplayAsync(menuItem, updater, "TreeSummary");
+                            adminNodeShape.Properties["AdminMenuId"] = Model.AdminMenu.Id;
+                            adminNodeShape.Properties["MenuItem"] = menuItem;
+                            adminNodeShape.Properties["Index"] = index++;
 
-                        @await DisplayAsync(adminNodeShape)
+                            @await DisplayAsync(adminNodeShape)
+                        }
                     }
-                }
-            </ol>
-        }
-        else
-        {
-            <div class="alert alert-info mb-0" role="alert">
-                @T["<strong>Nothing here!</strong> There are no nodes on this tree for the moment."]
-            </div>
-        }
+                </ol>
+            }
+            else
+            {
+                <div class="alert alert-info mb-0" role="alert">
+                    @T["<strong>Nothing here!</strong> There are no nodes on this tree for the moment."]
+                </div>
+            }
+        </div>
     </div>
 
-    <div class="mb-3">
-        <a class="btn btn-secondary" asp-route-controller="menu" asp-route-action="List">@T["Back"]</a>
+    <div class="@Orchard.GetWrapperClasses()">
+        <div class="@Orchard.GetEndClasses(true)">
+            <a class="btn btn-secondary" asp-route-controller="menu" asp-route-action="List">@T["Back"]</a>
+        </div>
     </div>
 </form>
 

@@ -1,16 +1,22 @@
 @model OrchardCore.Demo.ViewModels.EditUserProfileViewModel
 
-<div class="mb-3">
-    <label asp-for="FirstName" class="form-label">@T["First Name"]</label>
-    <input asp-for="FirstName" type="text" class="form-control" placeholder="@T["First Name"]" />
+<div class="@Orchard.GetWrapperClasses()">
+    <label asp-for="FirstName" class="@Orchard.GetLabelClasses()">@T["First Name"]</label>
+    <div class="@Orchard.GetEndClasses()">
+        <input asp-for="FirstName" type="text" class="form-control" placeholder="@T["First Name"]" />
+    </div>
 </div>
 
-<div class="mb-3">
-    <label asp-for="LastName" class="form-label">@T["Last Name"]</label>
-    <input asp-for="LastName" type="text" class="form-control" placeholder="@T["Last Name"]" />
+<div class="@Orchard.GetWrapperClasses()">
+    <label asp-for="LastName" class="@Orchard.GetLabelClasses()">@T["Last Name"]</label>
+    <div class="@Orchard.GetEndClasses()">
+        <input asp-for="LastName" type="text" class="form-control" placeholder="@T["Last Name"]" />
+    </div>
 </div>
 
-<div class="mb-3">
-    <label asp-for="Age" class="form-label">@T["Age"]</label>
-    <input asp-for="Age" type="text" class="form-control" placeholder="@T["Age"]" />
+<div class="@Orchard.GetWrapperClasses()">
+    <label asp-for="Age" class="@Orchard.GetLabelClasses()">@T["Age"]</label>
+    <div class="@Orchard.GetEndClasses()">
+        <input asp-for="Age" type="text" class="form-control" placeholder="@T["Age"]" />
+    </div>
 </div>

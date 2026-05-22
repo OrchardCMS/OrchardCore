@@ -1,25 +1,27 @@
 @model OrchardCore.ContentFields.Settings.BooleanFieldSettings
 
-<div class="mb-3">
-    <div class="w-sm-75 w-lg-75 w-xl-50">
-        <label asp-for="Hint" class="form-label">@T["Hint"]</label>
+<div class="@Orchard.GetWrapperClasses()">
+    <label asp-for="Hint" class="@Orchard.GetLabelClasses()">@T["Hint"]</label>
+    <div class="@Orchard.GetEndClasses()">
         <textarea asp-for="Hint" rows="2" class="form-control"></textarea>
+        <span class="hint">@T["The hint text to display for this field on the editor."]</span>
     </div>
-    <span class="hint">@T["The hint text to display for this field on the editor."]</span>
 </div>
 
-<div class="mb-3">
-    <div class="w-sm-75 w-lg-75 w-xl-50">
-        <label asp-for="Label" class="form-label">@T["Label"]</label>
+<div class="@Orchard.GetWrapperClasses()">
+    <label asp-for="Label" class="@Orchard.GetLabelClasses()">@T["Label"]</label>
+    <div class="@Orchard.GetEndClasses()">
         <input asp-for="Label" class="form-control" />
+        <span class="hint">@T["The text associated to the checkbox."]</span>
     </div>
-    <span class="hint">@T["The text associated to the checkbox."]</span>
 </div>
 
-<div class="mb-3">
-    <div class="form-check">
-        <input asp-for="DefaultValue" type="checkbox" class="form-check-input" />
-        <label class="form-check-label" asp-for="DefaultValue">@T["Default value is true"]</label>
-        <span class="hint dashed">@T["The default value this field will be initialized with when creating a new item."]</span>
+<div class="@Orchard.GetWrapperClasses()">
+    <div class="@Orchard.GetEndClasses(true)">
+        <div class="form-check">
+            <input asp-for="DefaultValue" type="checkbox" class="form-check-input" />
+            <label class="form-check-label" asp-for="DefaultValue">@T["Default value is true"]</label>
+            <span class="hint dashed">@T["The default value this field will be initialized with when creating a new item."]</span>
+        </div>
     </div>
 </div>

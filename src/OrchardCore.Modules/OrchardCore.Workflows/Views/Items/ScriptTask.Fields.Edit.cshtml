@@ -1,19 +1,23 @@
 @using OrchardCore.Workflows.ViewModels
 @model ScriptTaskViewModel
 
-<div class="mb-3" asp-validation-class-for="AvailableOutcomes">
-    <label asp-for="AvailableOutcomes" class="form-label">@T["Available Outcomes"]</label>
-    <input asp-for="AvailableOutcomes" class="form-control" />
-    <span asp-validation-for="AvailableOutcomes"></span>
-    <span class="hint">@T["A comma-separated list of available outcomes."]</span>
+<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="AvailableOutcomes">
+    <label asp-for="AvailableOutcomes" class="@Orchard.GetLabelClasses()">@T["Available Outcomes"]</label>
+    <div class="@Orchard.GetEndClasses()">
+        <input asp-for="AvailableOutcomes" class="form-control" />
+        <span asp-validation-for="AvailableOutcomes"></span>
+        <span class="hint">@T["A comma-separated list of available outcomes."]</span>
+    </div>
 </div>
 
-<div class="mb-3" asp-validation-class-for="Script">
-    <label asp-for="Script" class="form-label">@T["Script"]</label>
-    <div id="@Html.IdFor(x => x.Script)_editor" asp-for="Text" style="min-height: 400px;" class="form-control"></div>
-    <textarea asp-for="Script" hidden>@Html.Raw(Model.Script)</textarea>
-    <span asp-validation-for="Script"></span>
-    <span class="hint">@T["The script to execute. Make sure to call `setOutcome` with any of the specified available outcomes at least once."]</span>
+<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="Script">
+    <label asp-for="Script" class="@Orchard.GetLabelClasses()">@T["Script"]</label>
+    <div class="@Orchard.GetEndClasses()">
+        <div id="@Html.IdFor(x => x.Script)_editor" asp-for="Text" style="min-height: 400px;" class="form-control"></div>
+        <textarea asp-for="Script" hidden>@Html.Raw(Model.Script)</textarea>
+        <span asp-validation-for="Script"></span>
+        <span class="hint">@T["The script to execute. Make sure to call `setOutcome` with any of the specified available outcomes at least once."]</span>
+    </div>
 </div>
 
 <script asp-name="monaco" at="Foot"></script>

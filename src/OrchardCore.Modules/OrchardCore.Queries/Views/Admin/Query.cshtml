@@ -17,46 +17,51 @@
 <div asp-validation-summary="All"></div>
 
 <form asp-action="Query" method="post" class="no-multisubmit">
-    <div class="row">
-        <div class="col-md-6">
-
-            <div class="mb-3">
-                <label asp-for="DecodedQuery" class="form-label">@T["Template"]</label>
-                <textarea asp-for="DecodedQuery" rows="12" class="form-control"></textarea>
-                <span class="hint">@T["You can <a href=\"{0}\">click here</a> to query all content items.", Html.Raw(Url.Action("Query", "Admin", new { area = "OrchardCore.Queries", Query = matchAllQuery }))]</span>
-                <span class="hint">@T["The SQL query uses standard SQL92 syntax and is converted based on the actual database. Tables will be prefixed automatically."]</span>
+    <div class="@Orchard.GetLimitedWidthWrapperClasses()">
+        <div class="@Orchard.GetLimitedWidthClasses()">
+            <div class="@Orchard.GetWrapperClasses()">
+                <label asp-for="DecodedQuery" class="@Orchard.GetLabelClasses()">@T["Template"]</label>
+                <div class="@Orchard.GetEndClasses()">
+                    <textarea asp-for="DecodedQuery" rows="12" class="form-control"></textarea>
+                    <span class="hint">@T["You can <a href=\"{0}\">click here</a> to query all content items.", Html.Raw(Url.Action("Query", "Admin", new { area = "OrchardCore.Queries", Query = matchAllQuery }))]</span>
+                    <span class="hint">@T["The SQL query uses standard SQL92 syntax and is converted based on the actual database. Tables will be prefixed automatically."]</span>
+                </div>
             </div>
         </div>
-        <div class="col-md-6">
 
-            <div class="mb-3">
-                <label asp-for="Parameters" class="form-label">@T["Parameters"]</label>
-                <textarea asp-for="Parameters" rows="1" class="form-control"></textarea>
-                <span class="hint">@T["An optional Json object containing the parameter values for this query."]</span>
+        <div class="@Orchard.GetLimitedWidthClasses()">
+            <div class="@Orchard.GetWrapperClasses()">
+                <label asp-for="Parameters" class="@Orchard.GetLabelClasses()">@T["Parameters"]</label>
+                <div class="@Orchard.GetEndClasses()">
+                    <textarea asp-for="Parameters" rows="1" class="form-control"></textarea>
+                    <span class="hint">@T["An optional Json object containing the parameter values for this query."]</span>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-md-6">
-            <div class="mb-3">
-                <button type="submit" class="btn btn-primary">@T["Query"]</button>
-            </div>
+    <div class="@Orchard.GetLimitedWidthWrapperClasses("mb-3")">
+        <div class="@Orchard.GetLimitedWidthClasses()">
+            <button type="submit" class="btn btn-primary">@T["Query"]</button>
         </div>
     </div>
 </form>
 @if (Model.Elapsed != TimeSpan.Zero)
 {
-    <div class="row">
-        <div class="col-md-6">
-            <div class="mb-3">
-                <label asp-for="RawSql" class="form-label">@T["Final SQL Query"]</label>
-                <textarea asp-for="RawSql" rows="12" class="form-control"></textarea>
-                <span class="hint">@T["The query as it will be executed by the SQL database."]</span>
+    <div class="@Orchard.GetLimitedWidthWrapperClasses()">
+        <div class="@Orchard.GetLimitedWidthClasses()">
+            <div class="@Orchard.GetWrapperClasses()">
+                <label asp-for="RawSql" class="@Orchard.GetLabelClasses()">@T["Final SQL Query"]</label>
+                <div class="@Orchard.GetEndClasses()">
+                    <textarea asp-for="RawSql" rows="12" class="form-control"></textarea>
+                    <span class="hint">@T["The query as it will be executed by the SQL database."]</span>
+                </div>
             </div>
 
-            <div class="mb-3">
-                <a href="@Url.Action("Create", "Admin", new { area = "OrchardCore.Queries", id = "Sql", query = Model.DecodedQuery })" class="btn btn-success">@T["Create"]</a>
+            <div class="@Orchard.GetWrapperClasses()">
+                <div class="@Orchard.GetEndClasses(true)">
+                    <a href="@Url.Action("Create", "Admin", new { area = "OrchardCore.Queries", id = "Sql", query = Model.DecodedQuery })" class="btn btn-success">@T["Create"]</a>
+                </div>
             </div>
         </div>
     </div>

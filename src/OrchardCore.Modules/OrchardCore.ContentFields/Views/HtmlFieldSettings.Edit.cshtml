@@ -1,25 +1,27 @@
 @model OrchardCore.ContentFields.ViewModels.HtmlFieldSettingsViewModel
 
-<div class="mb-3">
-    <div class="w-lg-75 w-xl-50">
-        <label asp-for="Hint" class="form-label">@T["Hint"]</label>
+<div class="@Orchard.GetWrapperClasses()">
+    <label asp-for="Hint" class="@Orchard.GetLabelClasses()">@T["Hint"]</label>
+    <div class="@Orchard.GetEndClasses()">
         <textarea asp-for="Hint" rows="2" class="form-control"></textarea>
+        <span class="hint">@T["The hint text to display for this field on the editor."]</span>
     </div>
-    <span class="hint">@T["The hint text to display for this field on the editor."]</span>
 </div>
 
-<div class="mb-3">
-    <div class="form-check">
-        <input type="checkbox" class="form-check-input" asp-for="SanitizeHtml" checked="@Model.SanitizeHtml" />
-        <label class="form-check-label" asp-for="SanitizeHtml">@T["Sanitize Html"]</label>
-        <span class="hint dashed">
-            @T["Whether the Html is sanitized, e.g. by removing script tags (and more)."]
-            <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/Sanitizer" target="_blank">@T["See documentation"]</a>
-        </span>
-    </div>
-    <div class="form-check">
-        <input type="checkbox" class="form-check-input" asp-for="RenderLiquid" checked="@Model.RenderLiquid" />
-        <label class="form-check-label" asp-for="RenderLiquid">@T["Render Liquid"]</label>
-        <span class="hint dashed">@T["Whether Liquid markup is rendered or displayed raw. Consider using Shortcodes instead."]</span>
+<div class="@Orchard.GetWrapperClasses()">
+    <div class="@Orchard.GetEndClasses(true)">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" asp-for="SanitizeHtml" checked="@Model.SanitizeHtml" />
+            <label class="form-check-label" asp-for="SanitizeHtml">@T["Sanitize Html"]</label>
+            <span class="hint dashed">
+                @T["Whether the Html is sanitized, e.g. by removing script tags (and more)."]
+                <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/Sanitizer" target="_blank">@T["See documentation"]</a>
+            </span>
+        </div>
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" asp-for="RenderLiquid" checked="@Model.RenderLiquid" />
+            <label class="form-check-label" asp-for="RenderLiquid">@T["Render Liquid"]</label>
+            <span class="hint dashed">@T["Whether Liquid markup is rendered or displayed raw. Consider using Shortcodes instead."]</span>
+        </div>
     </div>
 </div>

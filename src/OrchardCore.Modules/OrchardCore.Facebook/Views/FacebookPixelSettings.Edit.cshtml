@@ -1,10 +1,13 @@
+@using OrchardCore
 @using OrchardCore.Facebook.Settings
 
 @model FacebookPixelSettings
 
-<div class="mb-3" asp-validation-class-for="PixelId">
-    <label asp-for="PixelId" class="form-label">@T["Pixel Identifier"]</label>
-    <input asp-for="PixelId" class="form-control" autocomplete="off" />
-    <span asp-validation-for="PixelId"></span>
-    <span class="hint">@T["The Pixel ID found on the Meta Data Sources portal."]</span>
+<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="PixelId">
+    <label asp-for="PixelId" class="@Orchard.GetLabelClasses()">@T["Pixel Identifier"]</label>
+    <div class="@Orchard.GetEndClasses()">
+        <input asp-for="PixelId" class="form-control" autocomplete="off" />
+        <span asp-validation-for="PixelId"></span>
+        <span class="hint">@T["The Pixel ID found on the Meta Data Sources portal."]</span>
+    </div>
 </div>

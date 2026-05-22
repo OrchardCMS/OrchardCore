@@ -1,9 +1,11 @@
 @model HtmlMenuItemPartSettingsViewModel
 
-<div class="mb-3">
-    <div class="form-check">
-        <input type="checkbox" class="form-check-input" asp-for="SanitizeHtml" checked="@Model.SanitizeHtml" />
-        <label class="form-check-label" asp-for="SanitizeHtml">@T["Sanitize Html"]</label>
+<div class="@Orchard.GetWrapperClasses()">
+    <div class="@Orchard.GetEndClasses(true)">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" asp-for="SanitizeHtml" checked="@Model.SanitizeHtml" />
+            <label class="form-check-label" asp-for="SanitizeHtml">@T["Sanitize Html"]</label>
+        </div>
         <span class="hint dashed">
             @T["Whether the Html is sanitized to prevent custom scripts."]
             <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/Sanitizer" target="_blank">@T["See documentation"]</a>

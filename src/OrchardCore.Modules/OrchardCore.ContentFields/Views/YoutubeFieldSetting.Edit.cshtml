@@ -1,41 +1,43 @@
 @model YoutubeFieldSettings
 
-<div class="mb-3">
-    <div class="form-check">
-        <input asp-for="Required" type="checkbox" class="form-check-input">
-        <label class="form-check-label" asp-for="Required">@T["Required"]</label>
-        <span class="hint dashed">@T["Whether a value is required."]</span>
+<div class="@Orchard.GetWrapperClasses()">
+    <div class="@Orchard.GetEndClasses(true)">
+        <div class="form-check">
+            <input asp-for="Required" type="checkbox" class="form-check-input">
+            <label class="form-check-label" asp-for="Required">@T["Required"]</label>
+            <span class="hint dashed">@T["Whether a value is required."]</span>
+        </div>
     </div>
 </div>
 
-<div class="mb-3">
-    <div class="w-md-75 w-xl-50 pe-md-3">
-        <label asp-for="Placeholder" class="form-label">@T["Placeholder"]</label>
+<div class="@Orchard.GetWrapperClasses()">
+    <label asp-for="Placeholder" class="@Orchard.GetLabelClasses()">@T["Placeholder"]</label>
+    <div class="@Orchard.GetEndClasses()">
         <input asp-for="Placeholder" class="form-control" />
+        <span class="hint">@T["The placeholder text to display for this field on the editor."]</span>
     </div>
-    <span class="hint">@T["The placeholder text to display for this field on the editor."]</span>
 </div>
 
-<div class="mb-3">
-    <div class="w-md-75 w-xl-50 pe-md-3">
-        <label asp-for="Hint" class="form-label">@T["Hint"]</label>
+<div class="@Orchard.GetWrapperClasses()">
+    <label asp-for="Hint" class="@Orchard.GetLabelClasses()">@T["Hint"]</label>
+    <div class="@Orchard.GetEndClasses()">
         <textarea asp-for="Hint" rows="2" class="form-control"></textarea>
+        <span class="hint">@T["The hint text to display for this field on the editor."]</span>
     </div>
-    <span class="hint">@T["The hint text to display for this field on the editor."]</span>
 </div>
 
-<div class="mb-3">
-    <div class="w-sm-50 pe-md-3">
-        <label asp-for="Width" class="form-label">@T["Width"]</label>
+<div class="@Orchard.GetWrapperClasses()">
+    <label asp-for="Width" class="@Orchard.GetLabelClasses()">@T["Width"]</label>
+    <div class="@Orchard.GetEndClasses()">
         <input type="number" asp-for="Width" class="form-control" />
+        <span class="hint">@T["The width of the Videobox"]</span>
     </div>
-    <span class="hint">@T["The width of the Videobox"]</span>
 </div>
 
-<div class="mb-3">
-    <div class="w-sm-50 pe-md-3">
-        <label asp-for="Height" class="form-label">@T["Height"]</label>
+<div class="@Orchard.GetWrapperClasses()">
+    <label asp-for="Height" class="@Orchard.GetLabelClasses()">@T["Height"]</label>
+    <div class="@Orchard.GetEndClasses()">
         <input type="number" asp-for="Height" class="form-control" />
+        <span class="hint">@T["The height of the Videobox"]</span>
     </div>
-    <span class="hint">@T["The height of the Videobox"]</span>
 </div>

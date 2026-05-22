@@ -1,3 +1,4 @@
+@using OrchardCore
 @using OrchardCore.Title.Models
 @model OrchardCore.Title.ViewModels.TitlePartSettingsViewModel
 
@@ -11,9 +12,9 @@
 
 <script asp-src="~/OrchardCore.Liquid/codemirror/liquid.js" at="Foot"></script>
 
-<div class="row mb-3">
-    <div class="col-sm-6">
-        <label asp-for="Options" class="form-label">@T["Behavior option"]</label>
+<div class="@Orchard.GetLimitedWidthWrapperClasses("mb-3")">
+    <label asp-for="Options" class="@Orchard.GetLabelClasses()">@T["Behavior option"]</label>
+    <div class="@Orchard.GetLimitedWidthClasses()">
         <select asp-for="Options" class="form-select">
             <option value="@nameof(TitlePartOptions.Editable)" selected="@(Model.Options == TitlePartOptions.Editable)">@T["Title is editable"]</option>
             <option value="@nameof(TitlePartOptions.EditableRequired)" selected="@(Model.Options == TitlePartOptions.EditableRequired)">@T["Title is editable and required"]</option>
@@ -22,28 +23,30 @@
         </select>
     </div>
 </div>
-<div class="mb-3 pb-1">
-    <div class="form-check">
-        <input asp-for="RenderTitle" class="form-check-input" />
-        <label asp-for="RenderTitle" class="form-check-label">@T["Render Title"]</label>
-        <span class="hint dashed">@T["Check to render the title in display views."]</span>
+<div class="@Orchard.GetWrapperClasses("pb-1")">
+    <div class="@Orchard.GetEndClasses(true)">
+        <div class="form-check">
+            <input asp-for="RenderTitle" class="form-check-input" />
+            <label asp-for="RenderTitle" class="form-check-label">@T["Render Title"]</label>
+            <span class="hint dashed">@T["Check to render the title in display views."]</span>
+        </div>
     </div>
 </div>
 
-<div class="row mb-3" id="patternEditor">
-    <div class="col-large col-12 col-sm-12 col-md-12 col-lg-12 col-xl-9">
-        <label asp-for="Pattern" class="form-label">@T["Pattern"]</label>
+<div class="@Orchard.GetLimitedWidthWrapperClasses("mb-3")" id="patternEditor">
+    <label asp-for="Pattern" class="@Orchard.GetLabelClasses()">@T["Pattern"]</label>
+    <div class="@Orchard.GetLimitedWidthClasses()">
         <textarea asp-for="Pattern" rows="5" class="form-control"></textarea>
         <span class="hint">@T["The pattern used to render the title of this content type. With Liquid support."]</span>
     </div>
 </div>
 
-<div class="row mb-3">
-    <div class="w-md-75 w-xl-50 pe-md-3">
-        <label asp-for="Placeholder" class="form-label">@T["Placeholder"]</label>
+<div class="@Orchard.GetLimitedWidthWrapperClasses("mb-3")">
+    <label asp-for="Placeholder" class="@Orchard.GetLabelClasses()">@T["Placeholder"]</label>
+    <div class="@Orchard.GetLimitedWidthClasses()">
         <input asp-for="Placeholder" class="form-control" />
+        <span class="hint">@T["The placeholder text to display for this field on the editor."]</span>
     </div>
-    <span class="hint">@T["The placeholder text to display for this field on the editor."]</span>
 </div>
 
 <script at="Foot">

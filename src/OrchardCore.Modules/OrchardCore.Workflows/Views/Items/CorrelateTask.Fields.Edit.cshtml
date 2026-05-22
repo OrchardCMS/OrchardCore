@@ -2,21 +2,25 @@
 @using OrchardCore.Workflows.ViewModels
 @model CorrelateTaskViewModel
 
-<div class="form-group mb-3" asp-validation-class-for="Syntax">
-    <label asp-for="Syntax" class="form-label">@T["Syntax"]</label>
-    <select asp-for="Syntax" class="form-select">
-        <option value="@nameof(WorkflowScriptSyntax.JavaScript)">@T["JavaScript"]</option>
-        <option value="@nameof(WorkflowScriptSyntax.Liquid)">@T["Liquid"]</option>
-    </select>
-    <span asp-validation-for="Syntax"></span>
+<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="Syntax">
+    <label asp-for="Syntax" class="@Orchard.GetLabelClasses()">@T["Syntax"]</label>
+    <div class="@Orchard.GetEndClasses()">
+        <select asp-for="Syntax" class="form-select">
+            <option value="@nameof(WorkflowScriptSyntax.JavaScript)">@T["JavaScript"]</option>
+            <option value="@nameof(WorkflowScriptSyntax.Liquid)">@T["Liquid"]</option>
+        </select>
+        <span asp-validation-for="Syntax"></span>
+    </div>
 </div>
 
-<div class="mb-3" asp-validation-class-for="Value">
-    <label asp-for="Value" class="form-label">@T["Value"]</label>
-    <textarea asp-for="Value" class="form-control"></textarea>
-    <span asp-validation-for="Value"></span>
-    <span id="liquid_hint" class="hint @(Model.Syntax == WorkflowScriptSyntax.Liquid ? "" : "d-none")">@T["The value to correlate workflow instances with. With Liquid support."]</span>
-    <span id="javascript_hint" class="hint @(Model.Syntax == WorkflowScriptSyntax.JavaScript ? "" : "d-none")">@T["The value to correlate workflow instances with. With JavaScript support."]</span>
+<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="Value">
+    <label asp-for="Value" class="@Orchard.GetLabelClasses()">@T["Value"]</label>
+    <div class="@Orchard.GetEndClasses()">
+        <textarea asp-for="Value" class="form-control"></textarea>
+        <span asp-validation-for="Value"></span>
+        <span id="liquid_hint" class="hint @(Model.Syntax == WorkflowScriptSyntax.Liquid ? "" : "d-none")">@T["The value to correlate workflow instances with. With Liquid support."]</span>
+        <span id="javascript_hint" class="hint @(Model.Syntax == WorkflowScriptSyntax.JavaScript ? "" : "d-none")">@T["The value to correlate workflow instances with. With JavaScript support."]</span>
+    </div>
 </div>
 
 <style asp-name="codemirror"></style>

@@ -1,16 +1,18 @@
 @model SelectRolesViewModel
 
-<div class="mb-3">
-    @for (var i = 0; i < Model.RoleSelections.Count; i++)
-    {
-        var role = Model.RoleSelections[i];
-        var htmlId = Html.IdFor(m => m.RoleSelections[i]);
+<div class="@Orchard.GetWrapperClasses()">
+    <div class="@Orchard.GetEndClasses(true)">
+        @for (var i = 0; i < Model.RoleSelections.Count; i++)
+        {
+            var role = Model.RoleSelections[i];
+            var htmlId = Html.IdFor(m => m.RoleSelections[i]);
 
-        <div class="checkbox form-check">
-            <input id="@htmlId" class="form-check-input" name="@Model.HtmlName" type="checkbox" checked="@role.IsSelected" value="@role.Item" />
-            <label for="@htmlId" class="form-check-label">
+            <div class="checkbox form-check">
+                <input id="@htmlId" class="form-check-input" name="@Model.HtmlName" type="checkbox" checked="@role.IsSelected" value="@role.Item" />
+                <label for="@htmlId" class="form-check-label">
 @role.Item
-            </label>
-        </div>
-    }
+                </label>
+            </div>
+        }
+    </div>
 </div>
