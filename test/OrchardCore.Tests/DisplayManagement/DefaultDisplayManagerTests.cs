@@ -382,7 +382,7 @@ public class DefaultDisplayManagerTests
 
             var result = await displayManager.ExecuteAsync(CreateDisplayContext(shape));
 
-            Assert.Equal("<!--shape-start type:Foo bindings:Foo=>Views/Foo.cshtml (razor)-->Hi there!<!--shape-end type:Foo-->", result.ToString());
+            Assert.Equal("<!--shape-start type:Foo bindings:Foo => Views/Foo.cshtml (razor) -->Hi there!<!--shape-end type:Foo -->", result.ToString());
             Assert.Equal("Hi there!", shape.Metadata.ChildContent.ToString());
         }
         finally
@@ -424,7 +424,7 @@ public class DefaultDisplayManagerTests
 
             var result = await displayManager.ExecuteAsync(CreateDisplayContext(shape));
 
-            Assert.Equal("<!--shape-start type:Foo bindings:Foo__Alternate=>Views/Foo-Alternate.cshtml (razor)-->Alternate<!--shape-end type:Foo-->", result.ToString());
+            Assert.Equal("<!--shape-start type:Foo bindings:Foo__Alternate => Views/Foo-Alternate.cshtml (razor) -->Alternate<!--shape-end type:Foo -->", result.ToString());
         }
         finally
         {
@@ -453,7 +453,7 @@ public class DefaultDisplayManagerTests
 
             var result = await displayManager.ExecuteAsync(CreateDisplayContext(shape));
 
-            Assert.Equal("<!--shape-start type:Foo bindings:Foo=>Templates/Foo.liquid (liquid)-->Liquid<!--shape-end type:Foo-->", result.ToString());
+            Assert.Equal("<!--shape-start type:Foo bindings:Foo => Templates/Foo.liquid (liquid) -->Liquid<!--shape-end type:Foo -->", result.ToString());
         }
         finally
         {
