@@ -16,7 +16,7 @@ public class MediaBlobStorageOptionsConfigurationTests
     [Fact]
     public void ParsesLiquidTemplate_AndLowercasesContainerName()
     {
-        var (config, logger) = CreateConfiguration(new Dictionary<string, string?>
+        var (config, logger) = CreateConfiguration(new Dictionary<string, string>
         {
             ["OrchardCore_Media_Azure:ConnectionString"] = ValidConnectionString,
             ["OrchardCore_Media_Azure:ContainerName"] = "{{ ShellSettings.Name }}-media",
@@ -38,7 +38,7 @@ public class MediaBlobStorageOptionsConfigurationTests
     [InlineData("double--hyphen")]         // consecutive hyphens
     public void InvalidResolvedName_LogsCritical_DoesNotThrow(string rawName)
     {
-        var (config, logger) = CreateConfiguration(new Dictionary<string, string?>
+        var (config, logger) = CreateConfiguration(new Dictionary<string, string>
         {
             ["OrchardCore_Media_Azure:ConnectionString"] = ValidConnectionString,
             ["OrchardCore_Media_Azure:ContainerName"] = rawName,
@@ -56,7 +56,7 @@ public class MediaBlobStorageOptionsConfigurationTests
     public void TooLongName_LogsCritical_DoesNotThrow()
     {
         var rawName = new string('a', 64);
-        var (config, logger) = CreateConfiguration(new Dictionary<string, string?>
+        var (config, logger) = CreateConfiguration(new Dictionary<string, string>
         {
             ["OrchardCore_Media_Azure:ConnectionString"] = ValidConnectionString,
             ["OrchardCore_Media_Azure:ContainerName"] = rawName,
@@ -71,7 +71,7 @@ public class MediaBlobStorageOptionsConfigurationTests
     [Fact]
     public void CreateContainer_RoundTripsFromConfig_WhenFalse()
     {
-        var (config, _) = CreateConfiguration(new Dictionary<string, string?>
+        var (config, _) = CreateConfiguration(new Dictionary<string, string>
         {
             ["OrchardCore_Media_Azure:ConnectionString"] = ValidConnectionString,
             ["OrchardCore_Media_Azure:ContainerName"] = "media",
@@ -87,7 +87,7 @@ public class MediaBlobStorageOptionsConfigurationTests
     [Fact]
     public void RemoveContainer_AndRemoveFilesFromBasePath_RoundTripFromConfig()
     {
-        var (config, _) = CreateConfiguration(new Dictionary<string, string?>
+        var (config, _) = CreateConfiguration(new Dictionary<string, string>
         {
             ["OrchardCore_Media_Azure:ConnectionString"] = ValidConnectionString,
             ["OrchardCore_Media_Azure:ContainerName"] = "media",
@@ -103,7 +103,7 @@ public class MediaBlobStorageOptionsConfigurationTests
     }
 
     private static (MediaBlobStorageOptionsConfiguration Config, ListLogger<MediaBlobStorageOptionsConfiguration> Logger) CreateConfiguration(
-        IDictionary<string, string?> data,
+        IDictionary<string, string> data,
         string shellName = "Default")
     {
         var configuration = new ConfigurationBuilder()
