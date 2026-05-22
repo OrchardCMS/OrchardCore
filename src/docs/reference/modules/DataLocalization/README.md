@@ -308,4 +308,4 @@ To display translated dynamic strings in Razor views, inject `IDataLocalizer`:
 
 ## Liquid filters
 
-For more information on using data locaization filters in Liquid templates, see the [Liquid Localization filters documentation](../../Liquid/README.md#localization-filters).
+For more information on using data locaization filters in Liquid templates, see the [Liquid Localization filters documentation](../Liquid/README.md#localization-filters).
