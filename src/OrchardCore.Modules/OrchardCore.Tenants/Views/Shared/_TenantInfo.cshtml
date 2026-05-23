@@ -1,34 +1,34 @@
 @model EditTenantViewModel
 
-<div class="@Orchard.GetLimitedWidthWrapperClasses("mb-3")">
+<div class="@Orchard.GetWrapperClasses()">
     <label asp-for="Category" class="@Orchard.GetLabelClasses()">@T["Category"]</label>
-    <div class="@Orchard.GetLimitedWidthClasses()">
+    <div class="@Orchard.GetEndClasses()">
         <input asp-for="Category" class="form-control" />
         <span class="hint">@T["The category of the tenant."]</span>
     </div>
 </div>
 
-<div class="@Orchard.GetLimitedWidthWrapperClasses("mb-3")" asp-validation-class-for="RequestUrlPrefix">
+<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="RequestUrlPrefix">
     <label asp-for="RequestUrlPrefix" class="@Orchard.GetLabelClasses()">@T["Url Prefix"]</label>
-    <div class="@Orchard.GetLimitedWidthClasses()">
+    <div class="@Orchard.GetEndClasses()">
         <input asp-for="RequestUrlPrefix" class="form-control" autofocus />
         <span asp-validation-for="RequestUrlPrefix" class="text-danger"></span>
         <span class="hint">@T["(Optional) Example: If prefix is \"site1\", the tenant URL prefix is \"https://orchardcore.net/site1\"."]</span>
     </div>
 </div>
 
-<div class="@Orchard.GetLimitedWidthWrapperClasses("mb-3")" asp-validation-class-for="Description">
+<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="Description">
     <label asp-for="Description" class="@Orchard.GetLabelClasses()">@T["Description"]</label>
-    <div class="@Orchard.GetLimitedWidthClasses()">
+    <div class="@Orchard.GetEndClasses()">
         <input asp-for="Description" class="form-control" autofocus />
         <span asp-validation-for="Description" class="text-danger"></span>
         <span class="hint">@T["The description of the tenant."]</span>
     </div>
 </div>
 
-<div class="@Orchard.GetLimitedWidthWrapperClasses("mb-3")" asp-validation-class-for="RequestUrlHost">
+<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="RequestUrlHost">
     <label asp-for="RequestUrlHost" class="@Orchard.GetLabelClasses()">@T["Hostname"]</label>
-    <div class="@Orchard.GetLimitedWidthClasses()">
+    <div class="@Orchard.GetEndClasses()">
         <input asp-for="RequestUrlHost" class="form-control" autofocus />
         <span asp-validation-for="RequestUrlHost" class="text-danger"></span>
         <span class="hint">@T["Example: If host is \"orchardproject.net\", the tenant site URL is \"https://orchardcore.net/\"."]</span>

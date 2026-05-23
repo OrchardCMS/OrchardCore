@@ -1,8 +1,8 @@
 @model EditTenantViewModel
 
-<div class="@Orchard.GetLimitedWidthWrapperClasses("mb-3")" asp-validation-class-for="RecipeName">
+<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="RecipeName">
     <label asp-for="RecipeName" class="@Orchard.GetLabelClasses()">@T["Recipe"]</label>
-    <div class="@Orchard.GetLimitedWidthClasses()">
+    <div class="@Orchard.GetEndClasses()">
         <select asp-for="RecipeName" class="form-select">
             <option value="">@T["Select a recipe"]</option>
             @foreach (var recipe in Model.Recipes)

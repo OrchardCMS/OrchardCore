@@ -2,13 +2,11 @@
 
 @if (Model.FeatureProfilesItems.Count > 0)
 {
-    <h6>
-        @T["Feature profile"]
-        <span class="text-muted form-text small">@T["Optionally specify which feature profile should be applied to this tenant."]</span>
-    </h6>
-    <div class="row" asp-validation-class-for="FeatureProfiles">
-        <div class="mb-3 col-md-6">
+    <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="FeatureProfiles">
+        <label asp-for="FeatureProfiles" class="@Orchard.GetLabelClasses()">@T["Feature profile"]</label>
+        <div class="@Orchard.GetEndClasses()">
             <select asp-for="FeatureProfiles" asp-items="Model.FeatureProfilesItems" class="form-select"></select>
+            <span class="hint">@T["Optionally specify which feature profile should be applied to this tenant."]</span>
         </div>
     </div>
 }

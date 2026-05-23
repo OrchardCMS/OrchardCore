@@ -22,69 +22,61 @@
 
 @if (Model.DatabaseProviderPreset)
 {
-    <div class="@Orchard.GetLimitedWidthWrapperClasses("mb-3")">
+    <div class="@Orchard.GetWrapperClasses()">
         <label asp-for="DatabaseProvider" class="@Orchard.GetLabelClasses()">@T["What type of database to use?"]</label>
-        <div class="@Orchard.GetLimitedWidthClasses()">
-            <div class="@Orchard.GetEndClasses()">
-                <input value="@selectedProviderName" class="form-control" readonly />
-            </div>
+        <div class="@Orchard.GetEndClasses()">
+            <input value="@selectedProviderName" class="form-control" readonly />
         </div>
     </div>
 }
 else
 {
-    <div class="@Orchard.GetLimitedWidthWrapperClasses("mb-3")">
+    <div class="@Orchard.GetWrapperClasses()">
         <label asp-for="DatabaseProvider" class="@Orchard.GetLabelClasses()">@T["What type of database to use?"]</label>
-        <div class="@Orchard.GetLimitedWidthClasses()" asp-validation-class-for="DatabaseProvider">
-            <div class="@Orchard.GetEndClasses()">
-                <select asp-for="DatabaseProvider" class="form-select">
-                    <option value="" data-connection-string="false">@T["None"]</option>
-                    @foreach (var provider in DatabaseProviders)
-                    {
-                        <option value="@provider.Value" data-connection-string="@provider.HasConnectionString.ToString().ToLower()" data-table-prefix="@provider.HasTablePrefix.ToString().ToLower()" data-connection-string-sample="@T["The connection string to your database instance, e.g. {0}.", provider.SampleConnectionString]">@provider.Name</option>
-                    }
-                </select>
-            </div>
+        <div class="@Orchard.GetEndClasses()" asp-validation-class-for="DatabaseProvider">
+            <select asp-for="DatabaseProvider" class="form-select">
+                <option value="" data-connection-string="false">@T["None"]</option>
+                @foreach (var provider in DatabaseProviders)
+                {
+                    <option value="@provider.Value" data-connection-string="@provider.HasConnectionString.ToString().ToLower()" data-table-prefix="@provider.HasTablePrefix.ToString().ToLower()" data-connection-string-sample="@T["The connection string to your database instance, e.g. {0}.", provider.SampleConnectionString]">@provider.Name</option>
+                }
+            </select>
         </div>
     </div>
 }
 
 @if (Model.HasTablePrefixPattern)
 {
-    <div class="@Orchard.GetLimitedWidthWrapperClasses("mb-3", "tablePrefixField")" hidden="@(!selectedProviderHasTablePrefix)">
+    <div class="@Orchard.GetWrapperClasses("tablePrefixField")" hidden="@(!selectedProviderHasTablePrefix)">
         <label asp-for="TablePrefix" class="@Orchard.GetLabelClasses()">@T["Table Prefix"]</label>
-        <div class="@Orchard.GetLimitedWidthClasses()">
-            <div class="@Orchard.GetEndClasses()">
-                <input asp-for="TablePrefix" class="form-control" readonly data-require-table-prefix="false" data-provider-has-table-prefix="@selectedProviderHasTablePrefix.ToString().ToLowerInvariant()" />
-                <div class="hint">
-                    @if (string.IsNullOrEmpty(Model.ResolvedTablePrefix))
-                    {
-                        @T["Generated automatically from the configured tenant table prefix pattern when the tenant is created."]
-                    }
-                    else
-                    {
-                        @T["Generated automatically from the configured tenant table prefix pattern."]
-                    }
-                </div>
+        <div class="@Orchard.GetEndClasses()">
+            <input asp-for="TablePrefix" class="form-control" readonly data-require-table-prefix="false" data-provider-has-table-prefix="@selectedProviderHasTablePrefix.ToString().ToLowerInvariant()" />
+            <div class="hint">
+                @if (string.IsNullOrEmpty(Model.ResolvedTablePrefix))
+                {
+                    @T["Generated automatically from the configured tenant table prefix pattern when the tenant is created."]
+                }
+                else
+                {
+                    @T["Generated automatically from the configured tenant table prefix pattern."]
+                }
             </div>
         </div>
     </div>
 }
 else
 {
-    <div class="@Orchard.GetLimitedWidthWrapperClasses("mb-3", "tablePrefixField")">
+    <div class="@Orchard.GetWrapperClasses("tablePrefixField")">
         <label asp-for="TablePrefix" class="@Orchard.GetLabelClasses()">@T["Table Prefix"]</label>
-        <div class="@Orchard.GetLimitedWidthClasses()" asp-validation-class-for="TablePrefix">
-            <div class="@Orchard.GetEndClasses()">
-                <input asp-for="TablePrefix" class="form-control" required="@(tablePrefixRequired ? "required" : null)" data-require-table-prefix="@Model.RequireTablePrefix.ToString().ToLowerInvariant()" data-provider-has-table-prefix="@selectedProviderHasTablePrefix.ToString().ToLowerInvariant()" />
-                <span asp-validation-for="TablePrefix" class="text-danger"></span>
-                <div class="hint">
-                    @T["Used to prefix this tenant's database tables when tenants share the same database."]
-                    @if (Model.RequireTablePrefix)
-                    {
-                        @T["This value is required by configuration when the selected database provider supports table prefixes."]
-                    }
-                </div>
+        <div class="@Orchard.GetEndClasses()" asp-validation-class-for="TablePrefix">
+            <input asp-for="TablePrefix" class="form-control" required="@(tablePrefixRequired ? "required" : null)" data-require-table-prefix="@Model.RequireTablePrefix.ToString().ToLowerInvariant()" data-provider-has-table-prefix="@selectedProviderHasTablePrefix.ToString().ToLowerInvariant()" />
+            <span asp-validation-for="TablePrefix" class="text-danger"></span>
+            <div class="hint">
+                @T["Used to prefix this tenant's database tables when tenants share the same database."]
+                @if (Model.RequireTablePrefix)
+                {
+                    @T["This value is required by configuration when the selected database provider supports table prefixes."]
+                }
             </div>
         </div>
     </div>
@@ -106,37 +98,35 @@ else
     </div>
 </div>
 
-<div class="@Orchard.GetLimitedWidthWrapperClasses("mb-3", "schemaField")" hidden="@(!selectedProviderHasTablePrefix)">
+<div class="@Orchard.GetWrapperClasses("schemaField")" hidden="@(!selectedProviderHasTablePrefix)">
     <label asp-for="Schema" class="@Orchard.GetLabelClasses()">@T["Table Schema"]</label>
-    <div class="@Orchard.GetLimitedWidthClasses()" asp-validation-class-for="Schema">
-        <div class="@Orchard.GetEndClasses()">
-            @if (Model.HasSchemaPattern || Model.DatabaseConfigurationPreset)
-            {
-                <input asp-for="Schema" class="form-control" readonly />
-                <div class="hint">
-                    @if (Model.HasSchemaPattern)
+    <div class="@Orchard.GetEndClasses()" asp-validation-class-for="Schema">
+        @if (Model.HasSchemaPattern || Model.DatabaseConfigurationPreset)
+        {
+            <input asp-for="Schema" class="form-control" readonly />
+            <div class="hint">
+                @if (Model.HasSchemaPattern)
+                {
+                    @if (string.IsNullOrEmpty(Model.ResolvedSchema))
                     {
-                        @if (string.IsNullOrEmpty(Model.ResolvedSchema))
-                        {
-                            @T["Generated automatically from the configured tenant schema pattern when the tenant is created."]
-                        }
-                        else
-                        {
-                            @T["Generated automatically from the configured tenant schema pattern."]
-                        }
+                        @T["Generated automatically from the configured tenant schema pattern when the tenant is created."]
                     }
                     else
                     {
-                        @T["Configured in the application's root settings."]
+                        @T["Generated automatically from the configured tenant schema pattern."]
                     }
-                </div>
-            }
-            else
-            {
-                <input asp-for="Schema" class="form-control" />
-                <div class="hint">@T["When left blank, the default value on the server will be used."] @T["For example, '{0}' for SQL Server.", "dbo"]</div>
-            }
-            <span asp-validation-for="Schema" class="text-danger"></span>
-        </div>
+                }
+                else
+                {
+                    @T["Configured in the application's root settings."]
+                }
+            </div>
+        }
+        else
+        {
+            <input asp-for="Schema" class="form-control" />
+            <div class="hint">@T["When left blank, the default value on the server will be used."] @T["For example, '{0}' for SQL Server.", "dbo"]</div>
+        }
+        <span asp-validation-for="Schema" class="text-danger"></span>
     </div>
 </div>

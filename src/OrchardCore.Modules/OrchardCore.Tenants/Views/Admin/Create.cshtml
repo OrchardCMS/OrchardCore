@@ -7,14 +7,12 @@
 <div asp-validation-summary="ModelOnly"></div>
 <form asp-action="Create" method="post" class="no-multisubmit">
 
-    <div class="@Orchard.GetLimitedWidthWrapperClasses("mb-3")">
-        <div class="@Orchard.GetLimitedWidthClasses()" asp-validation-class-for="Name">
-            <label asp-for="Name" class="@Orchard.GetLabelClasses()">@T["Name"]</label>
-            <div class="@Orchard.GetEndClasses()">
-                <input asp-for="Name" class="form-control" autofocus />
-                <span asp-validation-for="Name" class="text-danger"></span>
-                <span class="hint">@T["The name of the tenant."]</span>
-            </div>
+    <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="Name">
+        <label asp-for="Name" class="@Orchard.GetLabelClasses()">@T["Name"]</label>
+        <div class="@Orchard.GetEndClasses()">
+            <input asp-for="Name" class="form-control" autofocus />
+            <span asp-validation-for="Name" class="text-danger"></span>
+            <span class="hint">@T["The name of the tenant."]</span>
         </div>
     </div>
 
