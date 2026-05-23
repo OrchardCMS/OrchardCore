@@ -89,18 +89,18 @@ SMS settings can be configured using the `Settings` recipe step:
 
 ### SmsSettings
 
-| Property | Type | Description |
-|----------|------|-------------|
+| Property              | Type   | Description                           |
+|-----------------------|--------|---------------------------------------|
 | `DefaultProviderName` | String | The name of the default SMS provider. |
 
 ### TwilioSettings
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `IsEnabled` | Boolean | Whether the Twilio SMS provider is enabled. |
-| `PhoneNumber` | String | The Twilio phone number to send SMS messages from. **Required.** |
-| `AccountSID` | String | The Twilio Account SID. **Required.** |
-| `AuthToken` | String | The Twilio Auth Token. **Required.** |
+| Property      | Type    | Description                                                      |
+|---------------|---------|------------------------------------------------------------------|
+| `IsEnabled`   | Boolean | Whether the Twilio SMS provider is enabled.                      |
+| `PhoneNumber` | String  | The Twilio phone number to send SMS messages from. **Required.** |
+| `AccountSID`  | String  | The Twilio Account SID. **Required.**                            |
+| `AuthToken`   | String  | The Twilio Auth Token. **Required.**                             |
 
 ## Sending SMS Message
 

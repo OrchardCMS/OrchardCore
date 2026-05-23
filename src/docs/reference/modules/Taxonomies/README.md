@@ -413,8 +413,8 @@ Taxonomy admin list settings can be configured using the `Settings` recipe step:
 }
 ```
 
-| Property | Type | Description |
-|----------|------|-------------|
+| Property                 | Type            | Description                                                                     |
+|--------------------------|-----------------|---------------------------------------------------------------------------------|
 | `TaxonomyContentItemIds` | Array of String | The content item IDs of taxonomies to use as filters in the admin content list. |
 
 ## Videos

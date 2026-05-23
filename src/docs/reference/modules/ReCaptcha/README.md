@@ -77,12 +77,12 @@ reCAPTCHA settings can be configured using the `Settings` recipe step:
 }
 ```
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `SiteKey` | String | The reCAPTCHA site key. **Required.** |
-| `SecretKey` | String | The reCAPTCHA secret key. **Required.** |
+| Property             | Type   | Description                                  |
+|----------------------|--------|----------------------------------------------|
+| `SiteKey`            | String | The reCAPTCHA site key. **Required.**        |
+| `SecretKey`          | String | The reCAPTCHA secret key. **Required.**      |
 | `ReCaptchaScriptUri` | String | The URI for the reCAPTCHA JavaScript script. |
-| `ReCaptchaApiUri` | String | The URI for the reCAPTCHA verification API. |
+| `ReCaptchaApiUri`    | String | The URI for the reCAPTCHA verification API.  |
 
 ## ReCaptcha Settings Configuration
 

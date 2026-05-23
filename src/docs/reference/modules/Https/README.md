@@ -22,9 +22,9 @@ HTTPS settings can be configured using the `Settings` recipe step:
 }
 ```
 
-| Property | Type | Description |
-|----------|------|-------------|
+| Property                        | Type    | Description                                                      |
+|---------------------------------|---------|------------------------------------------------------------------|
 | `EnableStrictTransportSecurity` | Boolean | Whether to enable HTTP Strict Transport Security (HSTS) headers. |
-| `RequireHttps` | Boolean | Whether to require HTTPS for all requests. |
-| `RequireHttpsPermanent` | Boolean | Whether to use a permanent (301) redirect for HTTPS redirection. |
-| `SslPort` | Integer | The port number for SSL connections. |
+| `RequireHttps`                  | Boolean | Whether to require HTTPS for all requests.                       |
+| `RequireHttpsPermanent`         | Boolean | Whether to use a permanent (301) redirect for HTTPS redirection. |
+| `SslPort`                       | Integer | The port number for SSL connections.                             |
