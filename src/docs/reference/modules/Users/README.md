@@ -98,12 +98,12 @@ User module settings can be configured using the `Settings` recipe step:
 }
 ```
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `UseSiteTheme` | Boolean | Whether to use the site theme for the login page. |
-| `DisableLocalLogin` | Boolean | Whether to disable local username/password login. |
-| `AllowChangingUsername` | Boolean | Whether to allow users to change their username. |
-| `AllowChangingEmail` | Boolean | Whether to allow users to change their email address. |
+| Property                   | Type    | Description                                                           |
+|----------------------------|---------|-----------------------------------------------------------------------|
+| `UseSiteTheme`             | Boolean | Whether to use the site theme for the login page.                     |
+| `DisableLocalLogin`        | Boolean | Whether to disable local username/password login.                     |
+| `AllowChangingUsername`    | Boolean | Whether to allow users to change their username.                      |
+| `AllowChangingEmail`       | Boolean | Whether to allow users to change their email address.                 |
 | `AllowChangingPhoneNumber` | Boolean | Whether to allow users to change their phone number. Default: `true`. |
 
 ### Registration Settings
@@ -123,11 +123,11 @@ User module settings can be configured using the `Settings` recipe step:
 }
 ```
 
-| Property | Type | Description |
-|----------|------|-------------|
+| Property                 | Type    | Description                                                        |
+|--------------------------|---------|--------------------------------------------------------------------|
 | `UsersMustValidateEmail` | Boolean | Whether users must validate their email address before activation. |
-| `UsersAreModerated` | Boolean | Whether new user registrations require administrator approval. |
-| `UseSiteTheme` | Boolean | Whether to use the site theme for the registration page. |
+| `UsersAreModerated`      | Boolean | Whether new user registrations require administrator approval.     |
+| `UseSiteTheme`           | Boolean | Whether to use the site theme for the registration page.           |
 
 ### Reset Password Settings
 
@@ -145,10 +145,10 @@ User module settings can be configured using the `Settings` recipe step:
 }
 ```
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `AllowResetPassword` | Boolean | Whether to allow users to reset their password. |
-| `UseSiteTheme` | Boolean | Whether to use the site theme for the reset password page. |
+| Property             | Type    | Description                                                |
+|----------------------|---------|------------------------------------------------------------|
+| `AllowResetPassword` | Boolean | Whether to allow users to reset their password.            |
+| `UseSiteTheme`       | Boolean | Whether to use the site theme for the reset password page. |
 
 ### Change Email Settings
 
@@ -165,8 +165,8 @@ User module settings can be configured using the `Settings` recipe step:
 }
 ```
 
-| Property | Type | Description |
-|----------|------|-------------|
+| Property           | Type    | Description                                           |
+|--------------------|---------|-------------------------------------------------------|
 | `AllowChangeEmail` | Boolean | Whether to allow users to change their email address. |
 
 ### External Authentication Settings

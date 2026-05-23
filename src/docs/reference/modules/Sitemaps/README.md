@@ -141,8 +141,8 @@ Sitemaps robots settings can be configured using the `Settings` recipe step:
 }
 ```
 
-| Property | Type | Description |
-|----------|------|-------------|
+| Property          | Type    | Description                                                              |
+|-------------------|---------|--------------------------------------------------------------------------|
 | `IncludeSitemaps` | Boolean | Whether to include sitemap URLs in the robots.txt file. Default: `true`. |
 
 ## Video

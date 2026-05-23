@@ -209,8 +209,8 @@ Localization settings can be configured using the `Settings` recipe step:
 }
 ```
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `DefaultCulture` | String | The default culture for the site (e.g., `en-US`). |
-| `SupportedCultures` | Array of String | The list of supported cultures. |
-| `FallBackToParentCulture` | Boolean | Whether to fall back to the parent culture when a translation is not found. |
+| Property                  | Type            | Description                                                                 |
+|---------------------------|-----------------|-----------------------------------------------------------------------------|
+| `DefaultCulture`          | String          | The default culture for the site (e.g., `en-US`).                           |
+| `SupportedCultures`       | Array of String | The list of supported cultures.                                             |
+| `FallBackToParentCulture` | Boolean         | Whether to fall back to the parent culture when a translation is not found. |
