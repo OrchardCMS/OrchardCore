@@ -157,36 +157,6 @@ Output
 Wednesday, 02 August 2017 11:54:48
 ```
 
-### `t`
-
-Localizes a string using the current culture.
-
-Input
-
-```liquid
-{{ "Hello!" | t }}
-```
-
-Output
-
-```text
-Bonjour!
-```
-
-You can pass one or more parameters to a localized string:
-
-Input
-
-```liquid
-{{ "Hello {0}!" | t: "John" }}
-```
-
-Output
-
-```text
-Bonjour John!
-```
-
 ## Html Filters
 
 ### `absolute_url`
@@ -308,6 +278,38 @@ Renders Shortcodes. Should be combined with the `raw` filter.
 
 ```liquid
 {{ Model.ContentItem.Content.RawHtml.Content.Html | shortcode | raw }}
+```
+
+## Localization Filters
+
+### `t`
+
+Localizes a string using the current culture.
+
+Input
+
+```liquid
+{{ "Hello!" | t }}
+```
+
+Output
+
+```text
+Bonjour!
+```
+
+You can pass one or more parameters to a localized string:
+
+Input
+
+```liquid
+{{ "Hello {0}!" | t: "John" }}
+```
+
+Output
+
+```text
+Bonjour John!
 ```
 
 ## Json Filters
