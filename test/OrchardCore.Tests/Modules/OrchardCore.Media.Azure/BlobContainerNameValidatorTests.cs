@@ -9,7 +9,7 @@ public class BlobContainerNameValidatorTests
     [InlineData("media")]
     [InlineData("tenant1-media")]
     [InlineData("a1-b2-c3")]
-    [InlineData("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")] // 63 chars
+    [InlineData("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")] // 63 chars
     public void Valid(string name)
         => Assert.True(BlobContainerNameValidator.IsValid(name));
 
@@ -17,7 +17,7 @@ public class BlobContainerNameValidatorTests
     [InlineData("")]
     [InlineData(null)]
     [InlineData("ab")]                              // too short
-    [InlineData("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")] // 64 chars
+    [InlineData("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")] // 64 chars
     [InlineData("Default-Media")]                   // uppercase
     [InlineData("default_imagecache")]              // underscore
     [InlineData("media.cache")]                     // period
