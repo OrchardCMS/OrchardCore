@@ -26,8 +26,10 @@ public class SlugifyMediaNameNormalizerService : IMediaNameNormalizerService
 
     public string NormalizeFileName(string fileName)
     {
-        return _options.Transliterate
+        var fileNameWithoutExtension = _options.Transliterate
             ? _slugService.SlugifyAndTransliterate(Path.GetFileNameWithoutExtension(fileName))
-            : _slugService.Slugify(Path.GetFileNameWithoutExtension(fileName)) + Path.GetExtension(fileName);
+            : _slugService.Slugify(Path.GetFileNameWithoutExtension(fileName));
+        
+        return fileNameWithoutExtension + Path.GetExtension(fileName);
     }
 }
