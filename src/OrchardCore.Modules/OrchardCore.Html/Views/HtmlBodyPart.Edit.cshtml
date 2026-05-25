@@ -1,5 +1,4 @@
 @model HtmlBodyPartViewModel
-@using OrchardCore
 @{
     var settings = Model.TypePartDefinition.GetSettings<HtmlBodyPartSettings>();
     var culture = await Orchard.GetContentCultureAsync(Model.ContentItem);

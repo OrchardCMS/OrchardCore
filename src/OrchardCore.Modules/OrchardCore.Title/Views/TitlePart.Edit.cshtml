@@ -3,7 +3,6 @@
 @using OrchardCore.Localization
 @using OrchardCore.Title.Models
 @using OrchardCore.Title.ViewModels
-@using OrchardCore
 @{
     var culture = await Orchard.GetContentCultureAsync(Model.TitlePart.ContentItem);
     var isRequired = Model.Settings?.Options == TitlePartOptions.EditableRequired;
