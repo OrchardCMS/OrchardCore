@@ -308,38 +308,4 @@ To display translated dynamic strings in Razor views, inject `IDataLocalizer`:
 
 ## Liquid filters
 
-### `d`
-
-Localizes a dynamic data string using the current culture.
-
-### Parameters
-
-| Property | Example                                | Description   |
-|----------|----------------------------------------|---------------|
-| Context  | The context that the string belongs to | Content Types |
-
-Input
-
-```liquid
-{{ "Blog" | d: "Content Types" }}
-```
-
-Output
-
-For `fr`, `it`, `es` cultures, it will return:
-
-```text
-Blog
-```
-
-For `ar` culture, it will return:
-
-```text
-مدونة
-```
-
-For unsupported cultures or missing translations, it will return:
-
-```text
-Blog.Content Types
-```
+For more information on using data locaization filters in Liquid templates, see the [Liquid Localization filters documentation](../Liquid/README.md#localization-filters).

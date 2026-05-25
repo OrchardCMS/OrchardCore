@@ -44,11 +44,11 @@ SEO settings can be configured using the `Settings` recipe step:
 }
 ```
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `AllowAllAgents` | Boolean | Whether to allow all user agents. Default: `true`. |
-| `DisallowAdmin` | Boolean | Whether to disallow crawling the admin area. Default: `true`. |
-| `AdditionalRules` | String | Additional custom rules appended to the robots.txt file. |
+| Property          | Type    | Description                                                   |
+|-------------------|---------|---------------------------------------------------------------|
+| `AllowAllAgents`  | Boolean | Whether to allow all user agents. Default: `true`.            |
+| `DisallowAdmin`   | Boolean | Whether to disallow crawling the admin area. Default: `true`. |
+| `AdditionalRules` | String  | Additional custom rules appended to the robots.txt file.      |
 
 ## Video
 

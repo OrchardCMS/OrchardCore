@@ -98,12 +98,12 @@ Google module settings can be configured using the `Settings` recipe step:
 }
 ```
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `ClientID` | String | The Client ID from the Google Cloud Console. **Required.** |
-| `ClientSecret` | String | The Client Secret from the Google Cloud Console. **Required.** |
-| `CallbackPath` | String | The request path where the user-agent will be returned after authentication. |
-| `SaveTokens` | Boolean | Whether to save the access and refresh tokens. |
+| Property       | Type    | Description                                                                  |
+|----------------|---------|------------------------------------------------------------------------------|
+| `ClientID`     | String  | The Client ID from the Google Cloud Console. **Required.**                   |
+| `ClientSecret` | String  | The Client Secret from the Google Cloud Console. **Required.**               |
+| `CallbackPath` | String  | The request path where the user-agent will be returned after authentication. |
+| `SaveTokens`   | Boolean | Whether to save the access and refresh tokens.                               |
 
 ### Google Analytics
 
@@ -120,8 +120,8 @@ Google module settings can be configured using the `Settings` recipe step:
 }
 ```
 
-| Property | Type | Description |
-|----------|------|-------------|
+| Property     | Type   | Description                                     |
+|--------------|--------|-------------------------------------------------|
 | `TrackingID` | String | The Google Analytics tracking ID. **Required.** |
 
 ### Google Tag Manager
@@ -139,6 +139,6 @@ Google module settings can be configured using the `Settings` recipe step:
 }
 ```
 
-| Property | Type | Description |
-|----------|------|-------------|
+| Property      | Type   | Description                                        |
+|---------------|--------|----------------------------------------------------|
 | `ContainerID` | String | The Google Tag Manager container ID. **Required.** |
