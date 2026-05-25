@@ -2,9 +2,9 @@
 @using OrchardCore.Forms.ViewModels
 @model FormInputElementPartEditViewModel
 
-<div class="@Orchard.GetWrapperClasses()">
-    <label asp-for="Name" class="@Orchard.GetLabelClasses()">@T["HTML Name"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper">
+    <label asp-for="Name" class="ocat-label">@T["HTML Name"]</label>
+    <div class="ocat-end">
         <input asp-for="Name" type="text" class="form-control content-preview-text content-caption-text" />
         <span class="hint">@T["The valid characters for the HTML input name attribute are letters (a-z, A-Z), digits (0-9), hyphen (-), underscore (_), period (.), and square brackets ([ ])."]</span>
     </div>

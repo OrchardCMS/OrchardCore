@@ -10,15 +10,15 @@
 
 <script asp-src="~/OrchardCore.Liquid/codemirror/liquid.js" at="Foot"></script>
 
-<div class="@Orchard.GetWrapperClasses()">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
         <h3 class="mb-n1">@T["Full-text"]</h3>
         <span class="hint">@T["The full-text content is used in search queries to find content items from free-text searches."]</span>
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
         <div class="border rounded pt-3 ps-3 ps-3">
             <div class="mb-3 form-check">
                 <input type="checkbox" class="form-check-input" asp-for="IncludeDisplayText" checked="@Model.IncludeDisplayText" />

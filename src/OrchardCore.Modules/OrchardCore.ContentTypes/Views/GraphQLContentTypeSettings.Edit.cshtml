@@ -6,8 +6,8 @@
     var hidden = hiddenByDefault ? true : Model.Settings.Hidden;
 }
 
-<div class="@Orchard.GetWrapperClasses()">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
         <div class="form-check">
             <input type="checkbox" class="form-check-input" asp-for="Settings.Hidden" checked="@hidden" asp-is-disabled="@hiddenByDefault" />
             <label class="form-check-label" asp-for="Settings.Hidden">@T["Hide"]</label>

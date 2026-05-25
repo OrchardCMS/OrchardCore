@@ -1,7 +1,7 @@
 @model OrchardCore.Seo.ViewModels.SeoMetaPartSettingsViewModel
 
-<div class="@Orchard.GetWrapperClasses()">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
         <div class="form-check">
             <input type="checkbox" class="form-check-input" asp-for="DisplayKeywords" checked="@Model.DisplayKeywords">
             <label class="form-check-label" asp-for="DisplayKeywords">@T["Display Keywords"]</label>
@@ -10,8 +10,8 @@
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
         <div class="form-check">
             <input type="checkbox" class="form-check-input" asp-for="DisplayCustomMetaTags" checked="@Model.DisplayCustomMetaTags">
             <label class="form-check-label" asp-for="DisplayCustomMetaTags">@T["Display Custom Meta Tags"]</label>
@@ -20,8 +20,8 @@
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
         <div class="form-check">
             <input type="checkbox" class="form-check-input" asp-for="DisplayOpenGraph" checked="@Model.DisplayOpenGraph">
             <label class="form-check-label" asp-for="DisplayOpenGraph">@T["Display Open Graph"]</label>
@@ -30,8 +30,8 @@
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
         <div class="form-check">
             <input type="checkbox" class="form-check-input" asp-for="DisplayTwitter" checked="@Model.DisplayTwitter">
             <label class="form-check-label" asp-for="DisplayTwitter">@T["Display Twitter"]</label>
@@ -40,8 +40,8 @@
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
         <div class="form-check">
             <input type="checkbox" class="form-check-input" asp-for="DisplayGoogleSchema" checked="@Model.DisplayGoogleSchema">
             <label class="form-check-label" asp-for="DisplayGoogleSchema">@T["Display Google Schema"]</label>

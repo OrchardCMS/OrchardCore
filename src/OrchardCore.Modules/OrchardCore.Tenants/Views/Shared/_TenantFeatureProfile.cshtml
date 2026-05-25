@@ -2,9 +2,9 @@
 
 @if (Model.FeatureProfilesItems.Count > 0)
 {
-    <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="FeatureProfiles">
-        <label asp-for="FeatureProfiles" class="@Orchard.GetLabelClasses()">@T["Feature profile"]</label>
-        <div class="@Orchard.GetEndClasses()">
+    <div class="ocat-wrapper" asp-validation-class-for="FeatureProfiles">
+        <label asp-for="FeatureProfiles" class="ocat-label">@T["Feature profile"]</label>
+        <div class="ocat-end">
             <select asp-for="FeatureProfiles" asp-items="Model.FeatureProfilesItems" class="form-select"></select>
             <span class="hint">@T["Optionally specify which feature profile should be applied to this tenant."]</span>
         </div>

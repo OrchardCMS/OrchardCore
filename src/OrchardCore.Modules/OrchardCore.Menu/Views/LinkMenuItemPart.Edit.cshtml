@@ -1,23 +1,23 @@
 @using OrchardCore
 @model LinkMenuItemPartEditViewModel
 
-<div class="@Orchard.GetWrapperClasses()">
-    <label asp-for="Name" class="@Orchard.GetLabelClasses()">@T["Name"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper">
+    <label asp-for="Name" class="ocat-label">@T["Name"]</label>
+    <div class="ocat-end">
         <input asp-for="Name" class="form-control" autofocus />
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()">
-    <label asp-for="Url" class="@Orchard.GetLabelClasses()">@T["Url"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper">
+    <label asp-for="Url" class="ocat-label">@T["Url"]</label>
+    <div class="ocat-end">
         <input asp-for="Url" class="form-control" />
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()">
-    <label asp-for="Target" class="@Orchard.GetLabelClasses()">@T["Target"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper">
+    <label asp-for="Target" class="ocat-label">@T["Target"]</label>
+    <div class="ocat-end">
         <input asp-for="Target" list="targetOptions" class="form-control" />
         <datalist id="targetOptions">
             <option value="_self">@T["Opens the linked document in the same frame as it was clicked (this is default)."]</option>

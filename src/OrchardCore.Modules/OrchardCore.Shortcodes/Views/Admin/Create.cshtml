@@ -38,37 +38,35 @@
 
 <div asp-validation-summary="All"></div>
 <form asp-action="Create" method="post" class="no-multisubmit">
-    <div class="row">
-        <div class="col-12 col-md-6">
-            <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="Name">
-                <label asp-for="Name" class="@Orchard.GetLabelClasses()">@T["Name"]</label>
-                <div class="@Orchard.GetEndClasses()">
+            <div class="ocat-wrapper" asp-validation-class-for="Name">
+                <label asp-for="Name" class="ocat-label">@T["Name"]</label>
+                <div class="ocat-end">
                 <input asp-for="Name" class="form-control" autofocus />
                 <span asp-validation-for="Name"></span>
                 <span class="hint">@T["The name of the shortcode."]</span>
                 </div>
             </div>
 
-            <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="Hint">
-                <label asp-for="Hint" class="@Orchard.GetLabelClasses()">@T["Hint"]</label>
-                <div class="@Orchard.GetEndClasses()">
+            <div class="ocat-wrapper" asp-validation-class-for="Hint">
+                <label asp-for="Hint" class="ocat-label">@T["Hint"]</label>
+                <div class="ocat-end">
                 <input asp-for="Hint" class="form-control" />
                 <span class="hint">@T["The hint for the shortcode."]</span>
                 </div>
             </div>
 
-            <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="Usage">
-                <label asp-for="Usage" class="@Orchard.GetLabelClasses()">@T["Usage"]</label>
-                <div class="@Orchard.GetEndClasses()">
+            <div class="ocat-wrapper" asp-validation-class-for="Usage">
+                <label asp-for="Usage" class="ocat-label">@T["Usage"]</label>
+                <div class="ocat-end">
                 <textarea asp-for="Usage" rows="10" class="form-control"></textarea>
                 <span class="hint">@T["Example usage of the shortcode."]</span>
                 </div>
             </div>
 
             @* Do not move app from here, it is specific to categories, and causes conflicts with codemirror due to dom rewrites. *@
-            <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="SelectedCategories" id="shortcodeCategories" data-categories="@jCategories" data-selected-categories="@jSelectedCategories">
-                <label asp-for="SelectedCategories" class="@Orchard.GetLabelClasses()">@T["Categories"]</label>
-                <div class="@Orchard.GetEndClasses()">
+            <div class="ocat-wrapper" asp-validation-class-for="SelectedCategories" id="shortcodeCategories" data-categories="@jCategories" data-selected-categories="@jSelectedCategories">
+                <label asp-for="SelectedCategories" class="ocat-label">@T["Categories"]</label>
+                <div class="ocat-end">
                 <input class="form-control" asp-for="SelectedCategories" type="hidden" v-bind:value="getSelectedCategories()" />
                 <vue-multiselect v-model="value"
                                  placeholder="@T["Type to search"]"
@@ -94,38 +92,36 @@
                 </div>
             </div>
 
-            <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="DefaultValue">
-                <label asp-for="DefaultValue" class="@Orchard.GetLabelClasses()">@T["Default Shortcode Value"]</label>
-                <div class="@Orchard.GetEndClasses()">
+            <div class="ocat-wrapper" asp-validation-class-for="DefaultValue">
+                <label asp-for="DefaultValue" class="ocat-label">@T["Default Shortcode Value"]</label>
+                <div class="ocat-end">
                 <input asp-for="DefaultValue" class="form-control" />
                 <span class="hint">@T["The default value of the shortcode when selected. Defaults to [name]."]</span>
                 </div>
             </div>
-        </div>
-        <div class="col-12 col-md-6 d-flex align-items-center justify-content-center">
-            <div id="shortcodePreview" style="display: none;">
-                @{
-                    var descriptor = new ShortcodeDescriptor();
-                    var shape = await ShortcodeDescriptorDisplayManager.BuildDisplayAsync(descriptor, null, "SummaryAdmin");
-                    shape.Properties["Actions"] = null;
-                    @await DisplayAsync(shape)
-                }
-            </div>
-        </div>
-        <div class="col-12">
-            <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="Content">
-                <label asp-for="Content" class="@Orchard.GetLabelClasses()">@T["Content"]</label>
-                <div class="@Orchard.GetEndClasses()">
-                <textarea asp-for="Content" rows="10" class="form-control"></textarea>
-                <span asp-validation-for="Content"></span>
-                <span class="hint">@T["The Shortcode Liquid template."]</span>
-                </div>
-            </div>
+
+    <div class="mb-3 d-flex align-items-center justify-content-center">
+        <div id="shortcodePreview" style="display: none;">
+            @{
+                var descriptor = new ShortcodeDescriptor();
+                var shape = await ShortcodeDescriptorDisplayManager.BuildDisplayAsync(descriptor, null, "SummaryAdmin");
+                shape.Properties["Actions"] = null;
+                @await DisplayAsync(shape)
+            }
         </div>
     </div>
 
-    <div class="@Orchard.GetWrapperClasses()">
-        <div class="@Orchard.GetEndClasses(true)">
+    <div class="ocat-wrapper" asp-validation-class-for="Content">
+        <label asp-for="Content" class="ocat-label">@T["Content"]</label>
+        <div class="ocat-end">
+        <textarea asp-for="Content" rows="10" class="form-control"></textarea>
+        <span asp-validation-for="Content"></span>
+        <span class="hint">@T["The Shortcode Liquid template."]</span>
+        </div>
+    </div>
+
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
             <div class="btn-group">
                 <button type="submit" name="submit" class="btn btn-primary save">@T["Save"]</button>
                 <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-reference="parent" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

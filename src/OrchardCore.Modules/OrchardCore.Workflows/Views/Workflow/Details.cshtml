@@ -33,43 +33,43 @@
     <div id="workflow" class="tab-pane active" role="tabpanel" aria-labelledby="workflow-tab">
         <div class="card mb-3 workflow-details">
             <div class="card-body">
-                <div class="@Orchard.GetWrapperClasses()">
-                    <label class="@Orchard.GetLabelClasses()">@T["Workflow ID"]</label>
-                    <div class="@Orchard.GetEndClasses()">
+                <div class="ocat-wrapper">
+                    <label class="ocat-label">@T["Workflow ID"]</label>
+                    <div class="ocat-end">
                         <span>@Model.Workflow.WorkflowId</span>
                     </div>
                 </div>
-                <div class="@Orchard.GetWrapperClasses()">
-                    <label class="@Orchard.GetLabelClasses()">@T["Created"]</label>
-                    <div class="@Orchard.GetEndClasses()">
+                <div class="ocat-wrapper">
+                    <label class="ocat-label">@T["Created"]</label>
+                    <div class="ocat-end">
                         <span>@await LocalClock.ConvertToLocalAsync(Model.Workflow.CreatedUtc)</span>
                     </div>
                 </div>
-                <div class="@Orchard.GetWrapperClasses()">
-                    <label class="@Orchard.GetLabelClasses()">@T["Status"]</label>
-                    <div class="@Orchard.GetEndClasses()">
+                <div class="ocat-wrapper">
+                    <label class="ocat-label">@T["Status"]</label>
+                    <div class="ocat-end">
                         <span>@T.GetLocalizedStatus(Model.Workflow.Status)</span>
                     </div>
                 </div>
                 @if (Model.Workflow.Status == WorkflowStatus.Faulted)
                 {
-                    <div class="@Orchard.GetWrapperClasses()">
-                        <label class="@Orchard.GetLabelClasses()">@T["Fault Message"]</label>
-                        <div class="@Orchard.GetEndClasses()">
+                    <div class="ocat-wrapper">
+                        <label class="ocat-label">@T["Fault Message"]</label>
+                        <div class="ocat-end">
                             <span>@Model.Workflow.FaultMessage</span>
                         </div>
                     </div>
                 }
-                <div class="@Orchard.GetWrapperClasses()">
-                    <label class="@Orchard.GetLabelClasses()">@T["Correlation ID"]</label>
-                    <div class="@Orchard.GetEndClasses()">
+                <div class="ocat-wrapper">
+                    <label class="ocat-label">@T["Correlation ID"]</label>
+                    <div class="ocat-end">
                         <span>@(Model.Workflow.CorrelationId ?? "None")</span>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="@Orchard.GetWrapperClasses()">
-            <div class="@Orchard.GetEndClasses(true)">
+        <div class="ocat-wrapper">
+            <div class="ocat-end-offset">
                 <div class="workflow-container">
                     <div class="workflow-canvas-container">
                         <div class="workflow-canvas" data-workflow-type="@Model.WorkflowTypeJson">
@@ -99,8 +99,8 @@
     </div>
     </div>*@
 </div>
-<div class="@Orchard.GetWrapperClasses()">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
         <a class="btn btn-secondary" asp-route-action="Index" asp-route-workflowTypeId="@Model.WorkflowType.Id">@T["Back"]</a>
         @if (Model.Workflow.Status != WorkflowStatus.Executing
         && Model.Workflow.Status != WorkflowStatus.Halted

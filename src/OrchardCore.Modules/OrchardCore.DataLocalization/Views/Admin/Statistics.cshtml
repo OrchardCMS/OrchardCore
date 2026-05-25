@@ -75,9 +75,9 @@
     <!-- Progress by Category -->
     <fieldset class="mb-3">
         <legend>@T["Progress by Category"]</legend>
-        <div class="@Orchard.GetWrapperClasses()">
-            <label class="@Orchard.GetLabelClasses()" for="selected-culture">@T["Culture"]</label>
-            <div class="@Orchard.GetEndClasses()">
+        <div class="ocat-wrapper">
+            <label class="ocat-label" for="selected-culture">@T["Culture"]</label>
+            <div class="ocat-end">
                 <select id="selected-culture" class="form-select form-select-sm w-auto" v-model="selectedCulture">
                     <option v-for="culture in stats.byCulture" :key="culture.culture" :value="culture.culture">
                         {{ culture.displayName }}
@@ -124,8 +124,8 @@
     </fieldset>
 
     <!-- Action buttons -->
-    <div class="@Orchard.GetWrapperClasses()">
-        <div class="@Orchard.GetEndClasses(true)">
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
             <a class="btn btn-primary" role="button" href="@Url.Action("Index", "Admin", new { area = "OrchardCore.DataLocalization" })">@T["Edit Translations"]</a>
         </div>
     </div>

@@ -1,17 +1,17 @@
 @using OrchardCore.Workflows.Http.ViewModels
 @model HttpRedirectTaskViewModel
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="Location">
-    <label asp-for="Location" class="@Orchard.GetLabelClasses()">@T["Location"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper" asp-validation-class-for="Location">
+    <label asp-for="Location" class="ocat-label">@T["Location"]</label>
+    <div class="ocat-end">
         <input type="text" asp-for="Location" class="form-control code" />
         <span asp-validation-for="Location"></span>
         <span class="hint">@T["The URL to redirect to. With Liquid support."]</span>
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="Permanent">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper" asp-validation-class-for="Permanent">
+    <div class="ocat-end-offset">
         <div class="form-check">
             <input type="checkbox" class="form-check-input" asp-for="Permanent" />
             <label asp-for="Permanent" class="form-check-label">@T["Permanent"]</label>

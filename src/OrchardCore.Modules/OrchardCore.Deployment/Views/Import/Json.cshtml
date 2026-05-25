@@ -9,14 +9,14 @@
 @Html.ValidationSummary()
 
 <form asp-action="Json">
-    <div class="@Orchard.GetWrapperClasses()">
-        <label asp-for="Json" class="@Orchard.GetLabelClasses()">@T["JSON"]</label>
-        <div class="@Orchard.GetEndClasses()">
+    <div class="ocat-wrapper">
+        <label asp-for="Json" class="ocat-label">@T["JSON"]</label>
+        <div class="ocat-end">
             <textarea asp-for="Json" class="form-control" rows="20"></textarea>
         </div>
     </div>
-    <div class="@Orchard.GetWrapperClasses()">
-        <div class="@Orchard.GetEndClasses(true)">
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
             <button class="btn btn-primary import" type="submit">@T["Import"]</button>
         </div>
     </div>

@@ -121,41 +121,37 @@
                 <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/Layers/#rules" target="_blank">@T["See documentation"]</a>
             </span>
         </p>
-        <div class="@Orchard.GetWrapperClasses()">
-            <div class="@Orchard.GetEndClasses(true)">
-                <ul class="list-group">
-                    @foreach (var layer in Model.Layers)
-                    {
-                        <li class="list-group-item">
-                            <div class="properties">
-                                <div class="d-flex flex-wrap">
-                                    <div class="form-check me-auto flex-grow-1">
-                                        <input type="checkbox" class="form-check-input layer-check" id="@layer.Name" value="@layer.Name">
-                                        <label class="form-check-label" for="@layer.Name">@layer.Name</label>
-                                    </div>
-                                    <div>
-                                        <a class="btn btn-primary btn-sm" href="@Url.Action("Edit", "Admin", new { area = "OrchardCore.Layers", name = layer.Name })">@T["Edit"]</a>
-                                        <a class="btn btn-danger btn-sm" href="@Url.Action("Delete", "Admin", new { area = "OrchardCore.Layers", name = layer.Name })" data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
-                                    </div>
+        <div class="mb-3">
+            <ul class="list-group">
+                @foreach (var layer in Model.Layers)
+                {
+                    <li class="list-group-item">
+                        <div class="properties">
+                            <div class="d-flex flex-wrap">
+                                <div class="form-check me-auto flex-grow-1">
+                                    <input type="checkbox" class="form-check-input layer-check" id="@layer.Name" value="@layer.Name">
+                                    <label class="form-check-label" for="@layer.Name">@layer.Name</label>
                                 </div>
                                 <div>
-                                    <span class="hint">@layer.Description</span>
+                                    <a class="btn btn-primary btn-sm" href="@Url.Action("Edit", "Admin", new { area = "OrchardCore.Layers", name = layer.Name })">@T["Edit"]</a>
+                                    <a class="btn btn-danger btn-sm" href="@Url.Action("Delete", "Admin", new { area = "OrchardCore.Layers", name = layer.Name })" data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
                                 </div>
                             </div>
-                        </li>
-                    }
-                </ul>
-            </div>
+                            <div>
+                                <span class="hint">@layer.Description</span>
+                            </div>
+                        </div>
+                    </li>
+                }
+            </ul>
         </div>
         @if (Model.Layers.Count == 0)
         {
             <p class="alert alert-warning">@T["Please <a href=\"{0}\">create a layer</a> before adding Widgets", Url.Action("Create", "Admin", new { area = "OrchardCore.Layers" })]</p>
         }
 
-        <div class="@Orchard.GetWrapperClasses()">
-            <div class="@Orchard.GetEndClasses(true)">
-                <a class="btn btn-primary btn-sm" href="@Url.Action("Create", "Admin", new { area = "OrchardCore.Layers" })">@T["Add"]</a>
-            </div>
+        <div class="mb-3">
+            <a class="btn btn-primary btn-sm" href="@Url.Action("Create", "Admin", new { area = "OrchardCore.Layers" })">@T["Add"]</a>
         </div>
     </div>
 </div>

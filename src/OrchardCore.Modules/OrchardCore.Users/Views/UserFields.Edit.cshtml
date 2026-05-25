@@ -10,9 +10,9 @@
 @if (Model.IsNewRequest)
 {
     <div class="password-generator-wrapper">
-        <div class="@Orchard.GetWrapperClasses()">
-            <label asp-for="Password" class="@Orchard.GetLabelClasses()">@T["Password"]</label>
-            <div class="@Orchard.GetEndClasses()">
+        <div class="ocat-wrapper">
+            <label asp-for="Password" class="ocat-label">@T["Password"]</label>
+            <div class="ocat-end">
                 <div class="input-group col-md-4">
                     <span class="input-group-text password-toggle-button"><span class="toggle-icon fa-solid fa-eye prefix"></span></span>
                     <input asp-for="Password" type="password" class="form-control password-input-field" placeholder="@T["Password"]" autocomplete="new-password" />
@@ -21,9 +21,9 @@
             </div>
         </div>
 
-        <div class="@Orchard.GetWrapperClasses()">
+        <div class="ocat-wrapper">
             <label asp-for="PasswordConfirmation" class="visually-hidden">@T["Password Confirmation"]</label>
-            <div class="@Orchard.GetEndClasses()">
+            <div class="ocat-end">
                 <div class="input-group col-md-4">
                     <span class="input-group-text password-confirmation-toggle-button"><span class="toggle-icon fa-solid fa-eye prefix"></span></span>
                     <input asp-for="PasswordConfirmation" type="password" class="form-control password-confirmation-input-field" autocomplete="new-password" placeholder="@T["Password confirmation"]" />

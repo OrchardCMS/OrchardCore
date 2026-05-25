@@ -2,9 +2,9 @@
 
 @if (Model.Roles.Length > 0)
 {
-    <div class="@Orchard.GetWrapperClasses()">
-        <label class="@Orchard.GetLabelClasses()">@T["Roles"]</label>
-        <div class="@Orchard.GetEndClasses()">
+    <div class="ocat-wrapper">
+        <label class="ocat-label">@T["Roles"]</label>
+        <div class="ocat-end">
             @for (var i = 0; i < Model.Roles.Length; i++)
             {
                 <div class="form-check">

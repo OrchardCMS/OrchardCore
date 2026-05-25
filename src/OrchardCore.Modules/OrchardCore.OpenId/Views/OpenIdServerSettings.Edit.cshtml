@@ -12,14 +12,14 @@
 }
 
 <div class="mb-4">
-    <div class="@Orchard.GetWrapperClasses()">
-        <div class="@Orchard.GetEndClasses(true)">
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
             <h3>@T["Endpoints"]</h3>
         </div>
     </div>
 
-    <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="EnableTokenEndpoint">
-        <div class="@Orchard.GetEndClasses(true)">
+    <div class="ocat-wrapper" asp-validation-class-for="EnableTokenEndpoint">
+        <div class="ocat-end-offset">
             <div class="form-check">
                 <input type="checkbox" class="form-check-input" asp-for="EnableTokenEndpoint">
                 <label class="form-check-label" asp-for="EnableTokenEndpoint">@T["Enable Token Endpoint"]</label>
@@ -28,8 +28,8 @@
         </div>
     </div>
 
-    <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="EnableAuthorizationEndpoint">
-        <div class="@Orchard.GetEndClasses(true)">
+    <div class="ocat-wrapper" asp-validation-class-for="EnableAuthorizationEndpoint">
+        <div class="ocat-end-offset">
             <div class="form-check">
                 <input type="checkbox" class="form-check-input" asp-for="EnableAuthorizationEndpoint">
                 <label class="form-check-label" asp-for="EnableAuthorizationEndpoint">@T["Enable Authorization Endpoint"]</label>
@@ -38,8 +38,8 @@
         </div>
     </div>
 
-    <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="EnablePushedAuthorizationEndpoint">
-        <div class="@Orchard.GetEndClasses(true)">
+    <div class="ocat-wrapper" asp-validation-class-for="EnablePushedAuthorizationEndpoint">
+        <div class="ocat-end-offset">
             <div class="form-check">
                 <input type="checkbox" class="form-check-input" asp-for="EnablePushedAuthorizationEndpoint">
                 <label class="form-check-label" asp-for="EnablePushedAuthorizationEndpoint">@T["Enable Pushed Authorization Endpoint"]</label>
@@ -48,8 +48,8 @@
         </div>
     </div>
 
-    <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="EnableLogoutEndpoint">
-        <div class="@Orchard.GetEndClasses(true)">
+    <div class="ocat-wrapper" asp-validation-class-for="EnableLogoutEndpoint">
+        <div class="ocat-end-offset">
             <div class="form-check">
                 <input type="checkbox" class="form-check-input" asp-for="EnableLogoutEndpoint">
                 <label class="form-check-label" asp-for="EnableLogoutEndpoint">@T["Enable End Session Endpoint"]</label>
@@ -58,8 +58,8 @@
         </div>
     </div>
 
-    <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="RequireEndSessionConfirmation">
-        <div class="@Orchard.GetEndClasses(true)">
+    <div class="ocat-wrapper" asp-validation-class-for="RequireEndSessionConfirmation">
+        <div class="ocat-end-offset">
             <div class="form-check">
                 <input type="checkbox" class="form-check-input" asp-for="RequireEndSessionConfirmation">
                 <label class="form-check-label" asp-for="RequireEndSessionConfirmation">@T["Require logout confirmation"]</label>
@@ -68,8 +68,8 @@
         </div>
     </div>
 
-    <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="EnableUserInfoEndpoint">
-        <div class="@Orchard.GetEndClasses(true)">
+    <div class="ocat-wrapper" asp-validation-class-for="EnableUserInfoEndpoint">
+        <div class="ocat-end-offset">
             <div class="form-check">
                 <input type="checkbox" class="form-check-input" asp-for="EnableUserInfoEndpoint">
                 <label class="form-check-label" asp-for="EnableUserInfoEndpoint">@T["Enable User Info Endpoint"]</label>
@@ -78,8 +78,8 @@
         </div>
     </div>
 
-    <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="EnableIntrospectionEndpoint">
-        <div class="@Orchard.GetEndClasses(true)">
+    <div class="ocat-wrapper" asp-validation-class-for="EnableIntrospectionEndpoint">
+        <div class="ocat-end-offset">
             <div class="form-check">
                 <input type="checkbox" class="form-check-input" asp-for="EnableIntrospectionEndpoint">
                 <label class="form-check-label" asp-for="EnableIntrospectionEndpoint">@T["Enable Introspection Endpoint"]</label>
@@ -88,8 +88,8 @@
         </div>
     </div>
 
-    <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="EnableRevocationEndpoint">
-        <div class="@Orchard.GetEndClasses(true)">
+    <div class="ocat-wrapper" asp-validation-class-for="EnableRevocationEndpoint">
+        <div class="ocat-end-offset">
             <div class="form-check">
                 <input type="checkbox" class="form-check-input" asp-for="EnableRevocationEndpoint">
                 <label class="form-check-label" asp-for="EnableRevocationEndpoint">@T["Enable Revocation Endpoint"]</label>
@@ -100,14 +100,14 @@
 </div>
 
 <div class="mb-4">
-    <div class="@Orchard.GetWrapperClasses()">
-        <div class="@Orchard.GetEndClasses(true)">
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
             <h3>@T["Flows"]</h3>
         </div>
     </div>
 
-    <div class='@Orchard.GetWrapperClasses("collapse")' asp-validation-class-for="AllowAuthorizationCodeFlow">
-        <div class="@Orchard.GetEndClasses(true)">
+    <div class='ocat-wrapper collapse' asp-validation-class-for="AllowAuthorizationCodeFlow">
+        <div class="ocat-end-offset">
             <div class="form-check">
                 <input type="checkbox" class="form-check-input" asp-for="AllowAuthorizationCodeFlow">
                 <label class="form-check-label" asp-for="AllowAuthorizationCodeFlow">@T["Allow Authorization Code Flow"]</label>
@@ -116,8 +116,8 @@
         </div>
     </div>
 
-    <div class='@Orchard.GetWrapperClasses("collapse")' asp-validation-class-for="AllowImplicitFlow">
-        <div class="@Orchard.GetEndClasses(true)">
+    <div class='ocat-wrapper collapse' asp-validation-class-for="AllowImplicitFlow">
+        <div class="ocat-end-offset">
             <div class="form-check">
                 <input type="checkbox" class="form-check-input" asp-for="AllowImplicitFlow">
                 <label class="form-check-label" asp-for="AllowImplicitFlow">@T["Allow Implicit Flow"]</label>
@@ -126,8 +126,8 @@
         </div>
     </div>
 
-    <div class='@Orchard.GetWrapperClasses("collapse")' asp-validation-class-for="AllowHybridFlow">
-        <div class="@Orchard.GetEndClasses(true)">
+    <div class='ocat-wrapper collapse' asp-validation-class-for="AllowHybridFlow">
+        <div class="ocat-end-offset">
             <div class="form-check">
                 <input type="checkbox" class="form-check-input" asp-for="AllowHybridFlow">
                 <label class="form-check-label" asp-for="AllowHybridFlow">@T["Allow Hybrid Flow"]</label>
@@ -136,8 +136,8 @@
         </div>
     </div>
 
-    <div class='@Orchard.GetWrapperClasses("collapse")' asp-validation-class-for="AllowPasswordFlow">
-        <div class="@Orchard.GetEndClasses(true)">
+    <div class='ocat-wrapper collapse' asp-validation-class-for="AllowPasswordFlow">
+        <div class="ocat-end-offset">
             <div class="form-check">
                 <input type="checkbox" class="form-check-input" asp-for="AllowPasswordFlow">
                 <label class="form-check-label" asp-for="AllowPasswordFlow">@T["Allow Password Flow"]</label>
@@ -146,8 +146,8 @@
         </div>
     </div>
 
-    <div class='@Orchard.GetWrapperClasses("collapse")' asp-validation-class-for="AllowRefreshTokenFlow">
-        <div class="@Orchard.GetEndClasses(true)">
+    <div class='ocat-wrapper collapse' asp-validation-class-for="AllowRefreshTokenFlow">
+        <div class="ocat-end-offset">
             <div class="form-check">
                 <input type="checkbox" class="form-check-input" asp-for="AllowRefreshTokenFlow">
                 <label class="form-check-label" asp-for="AllowRefreshTokenFlow">@T["Allow Refresh Token Flow"]</label>
@@ -156,8 +156,8 @@
         </div>
     </div>
 
-    <div class='@Orchard.GetWrapperClasses("collapse")' asp-validation-class-for="AllowClientCredentialsFlow">
-        <div class="@Orchard.GetEndClasses(true)">
+    <div class='ocat-wrapper collapse' asp-validation-class-for="AllowClientCredentialsFlow">
+        <div class="ocat-end-offset">
             <div class="form-check">
                 <input type="checkbox" class="form-check-input" asp-for="AllowClientCredentialsFlow">
                 <label class="form-check-label" asp-for="AllowClientCredentialsFlow">@T["Allow Client Credentials Flow"]</label>
@@ -168,14 +168,14 @@
 </div>
 
 <div class="mb-4">
-    <div class="@Orchard.GetWrapperClasses()">
-        <div class="@Orchard.GetEndClasses(true)">
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
             <h3>@T["Proof Key for Code Exchange"]</h3>
         </div>
     </div>
 
-    <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="RequireProofKeyForCodeExchange">
-        <div class="@Orchard.GetEndClasses(true)">
+    <div class="ocat-wrapper" asp-validation-class-for="RequireProofKeyForCodeExchange">
+        <div class="ocat-end-offset">
             <div class="form-check">
                 <input type="checkbox" class="form-check-input" asp-for="RequireProofKeyForCodeExchange">
                 <label class="form-check-label" asp-for="RequireProofKeyForCodeExchange">@T["Require Proof Key for Code Exchange"]</label>
@@ -188,14 +188,14 @@
 </div>
 
 <div class="mb-4">
-    <div class="@Orchard.GetWrapperClasses()">
-        <div class="@Orchard.GetEndClasses(true)">
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
             <h3>@T["Pushed Authorization Requests"]</h3>
         </div>
     </div>
 
-    <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="RequirePushedAuthorizationRequests">
-        <div class="@Orchard.GetEndClasses(true)">
+    <div class="ocat-wrapper" asp-validation-class-for="RequirePushedAuthorizationRequests">
+        <div class="ocat-end-offset">
             <div class="form-check">
                 <input type="checkbox" class="form-check-input" asp-for="RequirePushedAuthorizationRequests">
                 <label class="form-check-label" asp-for="RequirePushedAuthorizationRequests">@T["Require Pushed Authorization Requests"]</label>
@@ -208,32 +208,32 @@
 </div>
 
 <div class="mb-4">
-    <div class="@Orchard.GetWrapperClasses()">
-        <div class="@Orchard.GetEndClasses(true)">
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
             <h3>@T["Advanced Options"]</h3>
         </div>
     </div>
 
-    <div class="@Orchard.GetWrapperClasses()">
-        <div class="@Orchard.GetEndClasses(true)">
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
             <div class="alert alert-info" role="alert">
                 <p class="mb-0">@T["The following options are optional and intended for advanced use only."]</p>
             </div>
         </div>
     </div>
 
-    <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="Authority">
-        <label asp-for="Authority" class="@Orchard.GetLabelClasses()">@T["Authority"]</label>
-        <div class="@Orchard.GetEndClasses()">
+    <div class="ocat-wrapper" asp-validation-class-for="Authority">
+        <label asp-for="Authority" class="ocat-label">@T["Authority"]</label>
+        <div class="ocat-end">
             <input asp-for="Authority" class="form-control" />
             <span asp-validation-for="Authority"></span>
             <span class="hint">@T["The base URL of the identity server (this site). If not provided, a default value will be automatically generated based on the site host."]</span>
         </div>
     </div>
 
-    <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="EncryptionCertificateStoreLocation">
-        <label asp-for="EncryptionCertificateStoreLocation" class="@Orchard.GetLabelClasses()">@T["Encryption Certificate Store Location"]</label>
-        <div class="@Orchard.GetEndClasses()">
+    <div class="ocat-wrapper" asp-validation-class-for="EncryptionCertificateStoreLocation">
+        <label asp-for="EncryptionCertificateStoreLocation" class="ocat-label">@T["Encryption Certificate Store Location"]</label>
+        <div class="ocat-end">
             <select asp-for="EncryptionCertificateStoreLocation" class="form-select">
                 <option value="">@T["None"]</option>
 
@@ -247,9 +247,9 @@
         </div>
     </div>
 
-    <div id="EncryptionCertificateStoreNameField" class="@Orchard.GetWrapperClasses()" asp-validation-class-for="EncryptionCertificateStoreName">
-        <label asp-for="EncryptionCertificateStoreName" class="@Orchard.GetLabelClasses()">@T["Encryption Certificate Store Name"]</label>
-        <div class="@Orchard.GetEndClasses()">
+    <div id="EncryptionCertificateStoreNameField" class="ocat-wrapper" asp-validation-class-for="EncryptionCertificateStoreName">
+        <label asp-for="EncryptionCertificateStoreName" class="ocat-label">@T["Encryption Certificate Store Name"]</label>
+        <div class="ocat-end">
             <select asp-for="EncryptionCertificateStoreName" class="form-select">
                 <option value="">@T["None"]</option>
 
@@ -263,11 +263,11 @@
         </div>
     </div>
 
-    <div id="EncryptionCertificateThumbprintField" class="@Orchard.GetWrapperClasses()" asp-validation-class-for="EncryptionCertificateThumbprint">
+    <div id="EncryptionCertificateThumbprintField" class="ocat-wrapper" asp-validation-class-for="EncryptionCertificateThumbprint">
         @if (Model.AvailableCertificates.Count != 0)
         {
-            <label asp-for="EncryptionCertificateThumbprint" class="@Orchard.GetLabelClasses()">@T["Encryption Certificate"]</label>
-            <div class="@Orchard.GetEndClasses()">
+            <label asp-for="EncryptionCertificateThumbprint" class="ocat-label">@T["Encryption Certificate"]</label>
+            <div class="ocat-end">
                 <select asp-for="EncryptionCertificateThumbprint" class="form-select">
                     <option value="">@T["None"]</option>
 
@@ -297,15 +297,15 @@
         }
         else
         {
-            <div class="@Orchard.GetEndClasses(true)">
+            <div class="ocat-end-offset">
                 <div class="alert alert-warning" asp-validation-for="CertificateThumbprint">@T["A certificate must be added to your server to set up the OpenID Connect module."]</div>
             </div>
         }
     </div>
 
-    <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="SigningCertificateStoreLocation">
-        <label asp-for="SigningCertificateStoreLocation" class="@Orchard.GetLabelClasses()">@T["Signing Certificate Store Location"]</label>
-        <div class="@Orchard.GetEndClasses()">
+    <div class="ocat-wrapper" asp-validation-class-for="SigningCertificateStoreLocation">
+        <label asp-for="SigningCertificateStoreLocation" class="ocat-label">@T["Signing Certificate Store Location"]</label>
+        <div class="ocat-end">
             <select asp-for="SigningCertificateStoreLocation" class="form-select">
                 <option value="">@T["None"]</option>
 
@@ -319,9 +319,9 @@
         </div>
     </div>
 
-    <div id="SigningCertificateStoreNameField" class="@Orchard.GetWrapperClasses()" asp-validation-class-for="SigningCertificateStoreName">
-        <label asp-for="SigningCertificateStoreName" class="@Orchard.GetLabelClasses()">@T["Signing Certificate Store Name"]</label>
-        <div class="@Orchard.GetEndClasses()">
+    <div id="SigningCertificateStoreNameField" class="ocat-wrapper" asp-validation-class-for="SigningCertificateStoreName">
+        <label asp-for="SigningCertificateStoreName" class="ocat-label">@T["Signing Certificate Store Name"]</label>
+        <div class="ocat-end">
             <select asp-for="SigningCertificateStoreName" class="form-select">
                 <option value="">@T["None"]</option>
 
@@ -335,11 +335,11 @@
         </div>
     </div>
 
-    <div id="SigningCertificateThumbprintField" class="@Orchard.GetWrapperClasses()" asp-validation-class-for="SigningCertificateThumbprint">
+    <div id="SigningCertificateThumbprintField" class="ocat-wrapper" asp-validation-class-for="SigningCertificateThumbprint">
         @if (Model.AvailableCertificates.Count != 0)
         {
-            <label asp-for="SigningCertificateThumbprint" class="@Orchard.GetLabelClasses()">@T["Signing Certificate"]</label>
-            <div class="@Orchard.GetEndClasses()">
+            <label asp-for="SigningCertificateThumbprint" class="ocat-label">@T["Signing Certificate"]</label>
+            <div class="ocat-end">
                 <select asp-for="SigningCertificateThumbprint" class="form-select">
                     <option value="">@T["None"]</option>
 
@@ -369,14 +369,14 @@
         }
         else
         {
-            <div class="@Orchard.GetEndClasses(true)">
+            <div class="ocat-end-offset">
                 <div class="alert alert-warning" asp-validation-for="CertificateThumbprint">@T["You need to add a certificate to your server for setting up OpenID Connect module."]</div>
             </div>
         }
     </div>
 
-    <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="DisableRollingRefreshTokens">
-        <div class="@Orchard.GetEndClasses(true)">
+    <div class="ocat-wrapper" asp-validation-class-for="DisableRollingRefreshTokens">
+        <div class="ocat-end-offset">
             <div class="form-check">
                 <input type="checkbox" class="form-check-input" asp-for="DisableRollingRefreshTokens">
                 <label class="form-check-label" asp-for="DisableRollingRefreshTokens">@T["Disable Rolling Refresh Tokens"]</label>
@@ -385,9 +385,9 @@
         </div>
     </div>
 
-    <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="AccessTokenFormat">
-        <label asp-for="AccessTokenFormat" class="@Orchard.GetLabelClasses()">@T["Token Format"]</label>
-        <div class="@Orchard.GetEndClasses()">
+    <div class="ocat-wrapper" asp-validation-class-for="AccessTokenFormat">
+        <label asp-for="AccessTokenFormat" class="ocat-label">@T["Token Format"]</label>
+        <div class="ocat-end">
             <select asp-for="AccessTokenFormat" class="form-select">
                 <option value="@OpenIdServerSettings.TokenFormat.DataProtection" selected="@(Model.AccessTokenFormat == OpenIdServerSettings.TokenFormat.DataProtection)">
                     @T["ASP.NET Core Data Protection"]
@@ -400,8 +400,8 @@
         </div>
     </div>
 
-    <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="DisableAccessTokenEncryption">
-        <div class="@Orchard.GetEndClasses(true)">
+    <div class="ocat-wrapper" asp-validation-class-for="DisableAccessTokenEncryption">
+        <div class="ocat-end-offset">
             <div class="form-check">
                 <input type="checkbox" class="form-check-input" asp-for="DisableAccessTokenEncryption">
                 <label class="form-check-label" asp-for="DisableAccessTokenEncryption">@T["Disable Access Token Encryption (only for JWT tokens)"]</label>
@@ -410,8 +410,8 @@
         </div>
     </div>
 
-    <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="UseReferenceAccessTokens">
-        <div class="@Orchard.GetEndClasses(true)">
+    <div class="ocat-wrapper" asp-validation-class-for="UseReferenceAccessTokens">
+        <div class="ocat-end-offset">
             <div class="form-check">
                 <input type="checkbox" class="form-check-input" asp-for="UseReferenceAccessTokens">
                 <label class="form-check-label" asp-for="UseReferenceAccessTokens">@T["Use Reference Access Tokens"]</label>

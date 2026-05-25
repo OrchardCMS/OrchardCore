@@ -7,10 +7,10 @@
 
 <input type="hidden" asp-for="Id" />
 
-<div class="@Orchard.GetLimitedWidthWrapperClasses("mb-3")">
-    <div class="@Orchard.GetLimitedWidthClasses()" asp-validation-class-for="Name">
-        <label asp-for="Name" class="@Orchard.GetLabelClasses()">@T["Name"]</label>
-        <div class="@Orchard.GetEndClasses()">
+<div class="ocat-limited-wrapper">
+    <div class="ocat-limited" asp-validation-class-for="Name">
+        <label asp-for="Name" class="ocat-label">@T["Name"]</label>
+        <div class="ocat-end">
             <input asp-for="Name" class="form-control" autofocus />
             <span asp-validation-for="Name"></span>
             <span class="hint">@T["The name of the feature profile."]</span>
@@ -18,9 +18,9 @@
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="FeatureRules">
-    <label asp-for="FeatureRules" class="@Orchard.GetLabelClasses()">@T["Rules"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper" asp-validation-class-for="FeatureRules">
+    <label asp-for="FeatureRules" class="ocat-label">@T["Rules"]</label>
+    <div class="ocat-end">
         <div class="form-control" style="min-height: 400px;">
             <div id="@Html.IdFor(x => x.FeatureRules)_editor" asp-for="FeatureRules" style="min-height: 385px;" dir="@Orchard.CultureDir()" data-schema="@schema"></div>
         </div>
@@ -41,8 +41,8 @@
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
         <div class="btn-group">
             <button type="submit" name="submit" class="btn btn-primary save">@T["Save"]</button>
             <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-reference="parent" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

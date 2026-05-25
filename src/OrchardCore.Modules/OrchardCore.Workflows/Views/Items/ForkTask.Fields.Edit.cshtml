@@ -1,9 +1,9 @@
 @using OrchardCore.Workflows.ViewModels
 @model ForkTaskViewModel
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="Forks">
-    <label asp-for="Forks" class="@Orchard.GetLabelClasses()">@T["Forks"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper" asp-validation-class-for="Forks">
+    <label asp-for="Forks" class="ocat-label">@T["Forks"]</label>
+    <div class="ocat-end">
         <input asp-for="Forks" class="form-control" />
         <span asp-validation-for="Forks"></span>
         <span class="hint">@T["Enter one or more comma-separated fork names."]</span>

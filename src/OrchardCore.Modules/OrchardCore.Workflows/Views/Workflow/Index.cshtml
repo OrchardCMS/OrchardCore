@@ -25,9 +25,8 @@
     <input type="submit" name="submit.BulkAction" class="visually-hidden" />
     <input asp-for="Options.BulkAction" type="hidden" />
 
-    <div class="@Orchard.GetWrapperClasses()">
-        <div class="@Orchard.GetEndClasses(true)">
-            <ul class="list-group with-checkbox">
+    <div class="mb-3">
+        <ul class="list-group with-checkbox">
                 @if (Model.Workflows.Any())
                 {
                     <li class="list-group-item text-bg-theme">
@@ -126,16 +125,13 @@
                         </div>
                     </li>
                 }
-            </ul>
-            @await DisplayAsync(Model.Pager)
-        </div>
+        </ul>
+        @await DisplayAsync(Model.Pager)
     </div>
 </form>
 
-<div class="@Orchard.GetWrapperClasses()">
-    <div class="@Orchard.GetEndClasses(true)">
-        <a class="btn btn-secondary" href="@Model.ReturnUrl">@T["Back"]</a>
-    </div>
+<div class="mb-3">
+    <a class="btn btn-secondary" href="@Model.ReturnUrl">@T["Back"]</a>
 </div>
 
 <script at="Foot">

@@ -8,9 +8,9 @@
 <zone name="Title" position="before"><h1 class="float-start pe-2">@T["Audit Trail"]</h1></zone>
 
 <section>
-    <div class="@Orchard.GetWrapperClasses()">
-        <label asp-for="Categories" class="@Orchard.GetLabelClasses()">@T["Events to record"]</label>
-        <div class="@Orchard.GetEndClasses()">
+    <div class="ocat-wrapper">
+        <label asp-for="Categories" class="ocat-label">@T["Events to record"]</label>
+        <div class="ocat-end">
             <table class="table table-hover">
                 <thead>
                     <tr>
@@ -65,8 +65,8 @@
         </div>
     </div>
 
-    <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="ClientIpAddressAllowed">
-        <div class="@Orchard.GetEndClasses(true)">
+    <div class="ocat-wrapper" asp-validation-class-for="ClientIpAddressAllowed">
+        <div class="ocat-end-offset">
             <div class="form-check">
                 <input asp-for="ClientIpAddressAllowed" class="form-check-input" type="checkbox" />
                 <label asp-for="ClientIpAddressAllowed" class="form-check-label">@T["Allow client IP address"]</label>

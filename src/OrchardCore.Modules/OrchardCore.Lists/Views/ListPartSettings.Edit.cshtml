@@ -1,17 +1,17 @@
 @using OrchardCore
 @model OrchardCore.Lists.ViewModels.ListPartSettingsViewModel
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="PageSize">
-    <label asp-for="PageSize" class="@Orchard.GetLabelClasses()">@T["Page Size"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper" asp-validation-class-for="PageSize">
+    <label asp-for="PageSize" class="ocat-label">@T["Page Size"]</label>
+    <div class="ocat-end">
         <input asp-for="PageSize" class="form-control" />
         <span asp-validation-for="PageSize" class="text-danger"></span>
         <span class="hint">@T["The number of items to display per page."]</span>
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
         <div class="form-check">
             <input type="checkbox" class="form-check-input" asp-for="EnableOrdering">
             <label class="form-check-label" asp-for="EnableOrdering">@T["Enable Ordering"]</label>
@@ -20,16 +20,16 @@
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()">
-    <label asp-for="ContainedContentTypes" class="@Orchard.GetLabelClasses()">@T["Contained Content Types"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper">
+    <label asp-for="ContainedContentTypes" class="ocat-label">@T["Contained Content Types"]</label>
+    <div class="ocat-end">
         <span class="hint">@T["The content types that this list can contain, e.g. Blog Post for a Blog."]</span>
         @await Component.InvokeAsync("SelectContentTypes", new { selectedContentTypes = Model.ContainedContentTypes, htmlName = Html.NameFor(m => m.ContainedContentTypes) })
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
         <div class="form-check">
             <input type="checkbox" class="form-check-input" asp-for="ShowHeader">
             <label class="form-check-label" asp-for="ShowHeader">@T["Show container's header"]</label>
@@ -38,8 +38,8 @@
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
         <div class="form-check">
             <input type="checkbox" class="form-check-input" asp-for="ShowFullPager" />
             <label class="form-check-label" asp-for="ShowFullPager">@T["Show full pager"]</label>

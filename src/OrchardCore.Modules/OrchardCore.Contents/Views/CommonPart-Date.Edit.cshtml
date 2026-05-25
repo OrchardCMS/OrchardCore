@@ -2,11 +2,11 @@
 @using OrchardCore
 @model DateEditorViewModel
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="LocalDateTime">
-    <label asp-for="LocalDateTime" class="@Orchard.GetLabelClasses()">@T["Created"]</label>
-    <div class="@Orchard.GetEndClasses()">
-        <div class="@Orchard.GetLimitedWidthWrapperClasses()">
-            <div class="@Orchard.GetLimitedWidthClasses()">
+<div class="ocat-wrapper" asp-validation-class-for="LocalDateTime">
+    <label asp-for="LocalDateTime" class="ocat-label">@T["Created"]</label>
+    <div class="ocat-end">
+        <div class="ocat-limited-wrapper">
+            <div class="ocat-limited">
                 <input asp-for="LocalDateTime" asp-format="{0:yyyy-MM-ddTHH:mm}" class="form-control" type="datetime-local" />
                 <span asp-validation-for="LocalDateTime"></span>
             </div>

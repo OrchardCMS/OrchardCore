@@ -3,36 +3,36 @@
 @model SiteSettingsViewModel
 @inject OrchardCore.Modules.IClock Clock
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="SiteName">
-    <label asp-for="SiteName" class="@Orchard.GetLabelClasses()">@T["Site name"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper" asp-validation-class-for="SiteName">
+    <label asp-for="SiteName" class="ocat-label">@T["Site name"]</label>
+    <div class="ocat-end">
         <input asp-for="SiteName" class="form-control" />
         <span asp-validation-for="SiteName"></span>
         <span class="hint">@T["The site name."]</span>
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="PageTitleFormat">
-    <label asp-for="PageTitleFormat" class="@Orchard.GetLabelClasses()">@T["Page title format"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper" asp-validation-class-for="PageTitleFormat">
+    <label asp-for="PageTitleFormat" class="ocat-label">@T["Page title format"]</label>
+    <div class="ocat-end">
         <input asp-for="PageTitleFormat" class="form-control" />
         <span asp-validation-for="PageTitleFormat"></span>
         <span class="hint">@T["The default format of page titles."]</span>
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="BaseUrl">
-    <label asp-for="BaseUrl" class="@Orchard.GetLabelClasses()">@T["Base url"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper" asp-validation-class-for="BaseUrl">
+    <label asp-for="BaseUrl" class="ocat-label">@T["Base url"]</label>
+    <div class="ocat-end">
         <input asp-for="BaseUrl" class="form-control" />
         <span asp-validation-for="BaseUrl"></span>
         <span class="hint">@T["Enter the fully qualified base URL of the web site."]</span>
     </div>
 </div>
 
-<div class="@Orchard.GetLimitedWidthWrapperClasses("mb-3")" asp-validation-class-for="TimeZone">
-    <label asp-for="TimeZone" class="@Orchard.GetLabelClasses()">@T["Default Time Zone"]</label>
-    <div class="@Orchard.GetLimitedWidthClasses()">
+<div class="ocat-limited-wrapper" asp-validation-class-for="TimeZone">
+    <label asp-for="TimeZone" class="ocat-label">@T["Default Time Zone"]</label>
+    <div class="ocat-limited">
         <select asp-for="TimeZone" class="form-select">
             <option value="">@T["Local to server"]</option>
             @foreach (var timeZone in Clock.GetTimeZones().OrderBy(t => t.ToString()))
@@ -47,9 +47,9 @@
     </div>
 </div>
 
-<div class="@Orchard.GetLimitedWidthWrapperClasses("mb-3")" asp-validation-class-for="PageSize">
-    <label asp-for="PageSize" class="@Orchard.GetLabelClasses()">@T["Page size"]</label>
-    <div class="@Orchard.GetLimitedWidthClasses()">
+<div class="ocat-limited-wrapper" asp-validation-class-for="PageSize">
+    <label asp-for="PageSize" class="ocat-label">@T["Page size"]</label>
+    <div class="ocat-limited">
         <input asp-for="PageSize" type="number" class="form-control" />
         <span asp-validation-for="PageSize"></span>
         <span class="hint">@T["The default page size."]</span>

@@ -2,72 +2,72 @@
 @using OrchardCore.Email.Workflows.ViewModels
 @model EmailTaskViewModel
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="AuthorExpression">
-    <label asp-for="AuthorExpression" class="@Orchard.GetLabelClasses()">@T["From"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper" asp-validation-class-for="AuthorExpression">
+    <label asp-for="AuthorExpression" class="ocat-label">@T["From"]</label>
+    <div class="ocat-end">
     <input type="text" asp-for="AuthorExpression" class="form-control code" />
     <span asp-validation-for="AuthorExpression"></span>
     <span class="hint">@T["The author's email address that defines who the email is from. Leave blank to use the configured email address. With Liquid support."]</span>
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="SenderExpression">
-    <label asp-for="SenderExpression" class="@Orchard.GetLabelClasses()">@T["Sender"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper" asp-validation-class-for="SenderExpression">
+    <label asp-for="SenderExpression" class="ocat-label">@T["Sender"]</label>
+    <div class="ocat-end">
     <input type="text" asp-for="SenderExpression" class="form-control code" />
     <span asp-validation-for="SenderExpression"></span>
     <span class="hint">@T["The sender's email address. Required if not the same than the \"From\" email address. With Liquid support."]</span>
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="ReplyToExpression">
-    <label asp-for="SenderExpression" class="@Orchard.GetLabelClasses()">@T["ReplyTo"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper" asp-validation-class-for="ReplyToExpression">
+    <label asp-for="SenderExpression" class="ocat-label">@T["ReplyTo"]</label>
+    <div class="ocat-end">
     <input type="text" asp-for="ReplyToExpression" class="form-control code" />
     <span asp-validation-for="ReplyToExpression"></span>
     <span class="hint">@T["The \"reply to\" email address. Required if you want email replies be sent to a different address than the \"From\" address. With Liquid support."]</span>
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="RecipientsExpression">
-    <label asp-for="RecipientsExpression" class="@Orchard.GetLabelClasses()">@T["Recipients"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper" asp-validation-class-for="RecipientsExpression">
+    <label asp-for="RecipientsExpression" class="ocat-label">@T["Recipients"]</label>
+    <div class="ocat-end">
     <input type="text" asp-for="RecipientsExpression" class="form-control code" />
     <span asp-validation-for="RecipientsExpression"></span>
     <span class="hint">@T["The comma-separated list of recipient email addresses. With Liquid support."]</span>
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="CcExpression">
-    <label asp-for="CcExpression" class="@Orchard.GetLabelClasses()">@T["Cc"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper" asp-validation-class-for="CcExpression">
+    <label asp-for="CcExpression" class="ocat-label">@T["Cc"]</label>
+    <div class="ocat-end">
     <input type="text" asp-for="CcExpression" class="form-control code" />
     <span asp-validation-for="CcExpression"></span>
     <span class="hint">@T["The comma-separated list of carbon copy email addresses. With Liquid support."]</span>
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="BccExpression">
-    <label asp-for="BccExpression" class="@Orchard.GetLabelClasses()">@T["Bcc"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper" asp-validation-class-for="BccExpression">
+    <label asp-for="BccExpression" class="ocat-label">@T["Bcc"]</label>
+    <div class="ocat-end">
     <input type="text" asp-for="BccExpression" class="form-control code" />
     <span asp-validation-for="BccExpression"></span>
     <span class="hint">@T["The comma-separated list of blind copy email addresses. With Liquid support."]</span>
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="SubjectExpression">
-    <label asp-for="SubjectExpression" class="@Orchard.GetLabelClasses()">@T["Subject"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper" asp-validation-class-for="SubjectExpression">
+    <label asp-for="SubjectExpression" class="ocat-label">@T["Subject"]</label>
+    <div class="ocat-end">
     <input type="text" asp-for="SubjectExpression" class="form-control code" />
     <span asp-validation-for="SubjectExpression"></span>
     <span class="hint">@T["The subject of the email message. With Liquid support."]</span>
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()">
-    <label class="@Orchard.GetLabelClasses()">@T["Format"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper">
+    <label class="ocat-label">@T["Format"]</label>
+    <div class="ocat-end">
     <select class="form-select" asp-for="BodyFormat">
         <option selected="@(Model.BodyFormat == MailMessageBodyFormat.All)" value="@MailMessageBodyFormat.All">@T["All"]</option>
         <option selected="@(Model.BodyFormat == MailMessageBodyFormat.Text)" value="@MailMessageBodyFormat.Text">@T["Text"]</option>
@@ -77,17 +77,17 @@
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()" id="textBodyDiv">
-    <label asp-for="TextBody" class="@Orchard.GetLabelClasses()">@T["Text Body"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper" id="textBodyDiv">
+    <label asp-for="TextBody" class="ocat-label">@T["Text Body"]</label>
+    <div class="ocat-end">
     <textarea asp-for="TextBody" rows="5" class="form-control"></textarea>
     <span class="hint">@T["The plain text body of the email message. With Liquid support."]</span>
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()" id="htmlBodyDiv">
-    <label asp-for="HtmlBody" class="@Orchard.GetLabelClasses()">@T["HTML Body"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper" id="htmlBodyDiv">
+    <label asp-for="HtmlBody" class="ocat-label">@T["HTML Body"]</label>
+    <div class="ocat-end">
     <textarea asp-for="HtmlBody" rows="5" class="form-control"></textarea>
     <span class="hint">@T["The HTML body of the email message. With Liquid support."]</span>
     </div>

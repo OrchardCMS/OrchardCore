@@ -1,7 +1,7 @@
 @model MarkdownBodyPartSettingsViewModel
 
-<div class="@Orchard.GetWrapperClasses()">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
         <div class="form-check">
             <input type="checkbox" class="form-check-input" asp-for="SanitizeHtml" checked="@Model.SanitizeHtml" />
             <label class="form-check-label" asp-for="SanitizeHtml">@T["Sanitize Html"]</label>
@@ -12,8 +12,8 @@
         </div>
     </div>
 </div>
-<div class="@Orchard.GetWrapperClasses()">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
         <div class="form-check">
             <input type="checkbox" class="form-check-input" asp-for="RenderLiquid" checked="@Model.RenderLiquid" />
             <label class="form-check-label" asp-for="RenderLiquid">@T["Render Liquid"]</label>

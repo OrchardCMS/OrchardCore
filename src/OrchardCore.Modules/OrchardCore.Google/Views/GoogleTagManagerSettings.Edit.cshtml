@@ -1,23 +1,23 @@
 @using OrchardCore.Google.TagManager.ViewModels
 @model GoogleTagManagerSettingsViewModel
 
-<div class="@Orchard.GetWrapperClasses()">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
         <p class="alert alert-secondary">
             <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/Google/#google-tag-manager" target="_blank">@T["See documentation"]</a>
         </p>
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
         <h3>@T["Google Tag Manager Settings"]</h3>
     </div>
 </div>
 
-<div class="@Orchard.GetLimitedWidthWrapperClasses("mb-3")" asp-validation-class-for="ContainerID">
-    <label asp-for="ContainerID" class="@Orchard.GetLabelClasses()">@T["Container ID"]</label>
-    <div class="@Orchard.GetLimitedWidthClasses()">
+<div class="ocat-limited-wrapper" asp-validation-class-for="ContainerID">
+    <label asp-for="ContainerID" class="ocat-label">@T["Container ID"]</label>
+    <div class="ocat-limited">
         <input asp-for="ContainerID" class="form-control" autocomplete="off" />
         <span asp-validation-for="ContainerID"></span>
         <span class="hint">@T["The container ID defined in your Google Tag Manager account."]</span>

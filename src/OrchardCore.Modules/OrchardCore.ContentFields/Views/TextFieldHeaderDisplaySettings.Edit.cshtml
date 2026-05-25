@@ -1,8 +1,8 @@
 @model OrchardCore.ContentFields.ViewModels.HeaderSettingsViewModel
 
-<div class="@Orchard.GetLimitedWidthWrapperClasses("mb-3") field-display field-display-header">
-    <label asp-for="Level" class="@Orchard.GetLabelClasses()">@T["Select the header level to use"]</label>
-    <div class="@Orchard.GetLimitedWidthClasses()">
+<div class="ocat-limited-wrapper field-display field-display-header">
+    <label asp-for="Level" class="ocat-label">@T["Select the header level to use"]</label>
+    <div class="ocat-limited">
         <select asp-for="Level" class="form-select">
             <option value="h1">@T["H1"]</option>
             <option value="h2">@T["H2"]</option>

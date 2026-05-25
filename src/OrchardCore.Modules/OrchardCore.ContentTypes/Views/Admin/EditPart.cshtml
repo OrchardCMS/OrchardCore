@@ -26,8 +26,8 @@
 
     @if (Model.Editor.Shortcuts != null)
     {
-        <div class="@Orchard.GetWrapperClasses()">
-            <div class="@Orchard.GetEndClasses(true)">
+        <div class="ocat-wrapper">
+            <div class="ocat-end-offset">
                 @await DisplayAsync(Model.Editor.Shortcuts)
             </div>
         </div>
@@ -37,8 +37,8 @@
 
     @if (orderedFields.Count > 0 || fields.Count > 0)
     {
-        <div class="@Orchard.GetWrapperClasses()">
-            <div class="@Orchard.GetEndClasses(true)">
+        <div class="ocat-wrapper">
+            <div class="ocat-end-offset">
                 <h3>@T["Fields"]</h3>
 
                 @if (Model.PartDefinition != null)
@@ -79,15 +79,15 @@
         </div>
         @if (fields.Count > 0)
         {
-            <div class="@Orchard.GetWrapperClasses()">
-                <div class="@Orchard.GetEndClasses(true)">
+            <div class="ocat-wrapper">
+                <div class="ocat-end-offset">
                     <a asp-route-action="AddFieldTo" asp-route-id="@Model.PartDefinition.Name" asp-route-returnUrl="@FullRequestPath" class="btn btn-info btn-sm" role="button">@T["Add Field"]</a>
                 </div>
             </div>
         }
     }
-    <div class="@Orchard.GetWrapperClasses()">
-        <div class="@Orchard.GetEndClasses(true)">
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
             <button class="btn btn-primary save" type="submit" name="submit.Save" value="Save">@T["Save"]</button>
             <a role="button" asp-route-action="DeletePart" asp-route-id="@Model.Name" class="btn btn-danger" data-url-af="RemoveUrl UnsafeUrl" data-title="@T["Delete"]" data-message="@T["Are you sure you want to delete this content part?"]" data-ok-text="@T["Ok"]" data-cancel-text="@T["Cancel"]">@T["Delete"]</a>
             <a class="btn btn-secondary cancel" role="button" asp-route-action="ListParts">@T["Cancel"]</a>

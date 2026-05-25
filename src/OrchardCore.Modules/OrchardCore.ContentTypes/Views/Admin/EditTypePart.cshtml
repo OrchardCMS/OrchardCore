@@ -27,17 +27,17 @@
 
     @if (typePart.PartDefinition.IsReusable())
     {
-        <div class="@Orchard.GetLimitedWidthWrapperClasses("mb-3")">
-            <label asp-for="DisplayName" class="@Orchard.GetLabelClasses()">@T["Display Name"]</label>
-            <div class="@Orchard.GetLimitedWidthClasses()">
+        <div class="ocat-limited-wrapper">
+            <label asp-for="DisplayName" class="ocat-label">@T["Display Name"]</label>
+            <div class="ocat-limited">
                 <input asp-for="DisplayName" class="form-control" />
                 <span class="hint">@T["Name of the part as it will be displayed in screens."]</span>
             </div>
         </div>
 
-        <div class="@Orchard.GetLimitedWidthWrapperClasses("mb-3")">
-            <label asp-for="Description" class="@Orchard.GetLabelClasses()">@T["Description"]</label>
-            <div class="@Orchard.GetLimitedWidthClasses()">
+        <div class="ocat-limited-wrapper">
+            <label asp-for="Description" class="ocat-label">@T["Description"]</label>
+            <div class="ocat-limited">
                 <input asp-for="Description" class="form-control" />
                 <span class="hint">@T["The description of the part as it will be displayed in screens."]</span>
             </div>
@@ -48,8 +48,8 @@
     {
         @if (Model.Shape.Shortcuts != null)
         {
-            <div class="@Orchard.GetWrapperClasses()">
-                <div class="@Orchard.GetEndClasses(true)">
+            <div class="ocat-wrapper">
+                <div class="ocat-end-offset">
                     @await DisplayAsync(Model.Shape.Shortcuts)
                 </div>
             </div>
@@ -59,9 +59,9 @@
 
         @if (editorShapes.Any())
         {
-            <div class="@Orchard.GetWrapperClasses()">
-                <label asp-for="Editor" class="@Orchard.GetLabelClasses()">@T["What type of editor should be used?"]</label>
-                <div class="@Orchard.GetEndClasses()">
+            <div class="ocat-wrapper">
+                <label asp-for="Editor" class="ocat-label">@T["What type of editor should be used?"]</label>
+                <div class="ocat-end">
                     <select asp-for="Editor" class="form-select" id="type-part-editor-select">
                         @foreach (var editorShape in editorShapes)
                         {
@@ -80,9 +80,9 @@
 
         @if (displayShapes.Any())
         {
-            <div class="@Orchard.GetWrapperClasses()">
-                <label asp-for="DisplayMode" class="@Orchard.GetLabelClasses()">@T["What type of display mode should be used?"]</label>
-                <div class="@Orchard.GetEndClasses()">
+            <div class="ocat-wrapper">
+                <label asp-for="DisplayMode" class="ocat-label">@T["What type of display mode should be used?"]</label>
+                <div class="ocat-end">
                     <select asp-for="DisplayMode" class="form-select" id="type-part-display-select">
                         @foreach (var displayShape in displayShapes)
                         {
@@ -100,8 +100,8 @@
         </div>
     }
 
-    <div class="@Orchard.GetWrapperClasses()">
-        <div class="@Orchard.GetEndClasses(true)">
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
             <button class="btn btn-primary save" type="submit" name="submit.Save" value="Save">@T["Save"]</button>
             <a class="btn btn-secondary cancel" role="button" asp-route-action="Edit" asp-route-id="@Model.TypePartDefinition.ContentTypeDefinition.Name">@T["Cancel"]</a>
         </div>

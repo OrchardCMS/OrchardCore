@@ -4,9 +4,9 @@
 @{
     var wrapperId = Html.IdFor(m => m);
 }
-<div class="@Orchard.GetWrapperClasses()" id="@wrapperId">
-    <label asp-for="Type" class="@Orchard.GetLabelClasses()">@T["Type"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper" id="@wrapperId">
+    <label asp-for="Type" class="ocat-label">@T["Type"]</label>
+    <div class="ocat-end">
         <select asp-for="Type" class="form-select content-preview-select field-type-select-menu">
             <option value="text">@T["Text"]</option>
             <option value="number">@T["Number"]</option>
@@ -34,17 +34,17 @@
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses("show-for-input")">
-    <label asp-for="Placeholder" class="@Orchard.GetLabelClasses()">@T["Placeholder Text"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper show-for-input">
+    <label asp-for="Placeholder" class="ocat-label">@T["Placeholder Text"]</label>
+    <div class="ocat-end">
         <input asp-for="Placeholder" type="text" class="form-control content-preview-text" />
         <span class="hint">@T["The text to display when the field has no value."]</span>
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()">
-    <label asp-for="DefaultValue" class="@Orchard.GetLabelClasses()">@T["Default Value"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper">
+    <label asp-for="DefaultValue" class="ocat-label">@T["Default Value"]</label>
+    <div class="ocat-end">
         <input asp-for="DefaultValue" type="text" class="form-control content-preview-text" />
         <span class="hint">@T["The default value for this field."]</span>
     </div>

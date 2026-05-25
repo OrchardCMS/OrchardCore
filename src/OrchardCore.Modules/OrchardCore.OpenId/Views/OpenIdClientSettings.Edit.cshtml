@@ -10,45 +10,45 @@
     initializeParametersEditor(document.getElementById('@Html.IdFor(m => m)'), @Html.Raw(Model.Parameters), document.getElementsByClassName('@Html.IdFor(m => m)-ModalBody'));
 </script>
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="DisplayName">
-    <label asp-for="DisplayName" class="@Orchard.GetLabelClasses()">@T["Display Name"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper" asp-validation-class-for="DisplayName">
+    <label asp-for="DisplayName" class="ocat-label">@T["Display Name"]</label>
+    <div class="ocat-end">
         <input asp-for="DisplayName" class="form-control" />
         <span asp-validation-for="DisplayName"></span>
         <span class="hint">@T["User-Friendly Display Name of the identity provider"]</span>
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="Authority">
-    <label asp-for="Authority" class="@Orchard.GetLabelClasses()">@T["Authority"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper" asp-validation-class-for="Authority">
+    <label asp-for="Authority" class="ocat-label">@T["Authority"]</label>
+    <div class="ocat-end">
         <input asp-for="Authority" class="form-control" />
         <span asp-validation-for="Authority"></span>
         <span class="hint">@T["Authority URL for OpenID Connect Requests"]</span>
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="ClientId">
-    <label asp-for="ClientId" class="@Orchard.GetLabelClasses()">@T["ClientId"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper" asp-validation-class-for="ClientId">
+    <label asp-for="ClientId" class="ocat-label">@T["ClientId"]</label>
+    <div class="ocat-end">
         <input asp-for="ClientId" class="form-control" />
         <span asp-validation-for="ClientId"></span>
         <span class="hint">@T["The '{0}' assigned by the identity provider.", "client_id"]</span>
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="CallbackPath">
-    <label asp-for="CallbackPath" class="@Orchard.GetLabelClasses()">@T["CallbackPath"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper" asp-validation-class-for="CallbackPath">
+    <label asp-for="CallbackPath" class="ocat-label">@T["CallbackPath"]</label>
+    <div class="ocat-end">
         <input asp-for="CallbackPath" placeholder="/signin-oidc" class="form-control" />
         <span asp-validation-for="CallbackPath"></span>
         <span class="hint">@T["The request path, relative to the application's base path, where the user-agent will be redirected. The middleware will handle this request upon arrival."]</span>
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="SignedOutCallbackPath">
-    <label asp-for="SignedOutCallbackPath" class="@Orchard.GetLabelClasses()">@T["SignedOut CallbackPath"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper" asp-validation-class-for="SignedOutCallbackPath">
+    <label asp-for="SignedOutCallbackPath" class="ocat-label">@T["SignedOut CallbackPath"]</label>
+    <div class="ocat-end">
         <input asp-for="SignedOutCallbackPath" placeholder="/signout-callback-oidc" class="form-control" />
         <span asp-validation-for="SignedOutCallbackPath"></span>
         <span class="hint">@T["The request path within the application's base path where the user-agent will be redirected after signing out from the identity provider."]</span>
@@ -58,26 +58,26 @@
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="SignedOutRedirectUri">
-    <label asp-for="SignedOutRedirectUri" class="@Orchard.GetLabelClasses()">@T["SignedOut Redirect Uri"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper" asp-validation-class-for="SignedOutRedirectUri">
+    <label asp-for="SignedOutRedirectUri" class="ocat-label">@T["SignedOut Redirect Uri"]</label>
+    <div class="ocat-end">
         <input asp-for="SignedOutRedirectUri" placeholder="/" class="form-control" />
         <span asp-validation-for="SignedOutRedirectUri"></span>
         <span class="hint">@T["The URI to which the user-agent will be redirected after the application signs out from the identity provider. This redirect occurs following the invocation of the SignedOutCallbackPath."]</span>
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="Scopes">
-    <label asp-for="Scopes" class="@Orchard.GetLabelClasses()">@T["Scopes"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper" asp-validation-class-for="Scopes">
+    <label asp-for="Scopes" class="ocat-label">@T["Scopes"]</label>
+    <div class="ocat-end">
         <input asp-for="Scopes" class="form-control" autocomplete="new-password" />
         <span asp-validation-for="Scopes"></span>
         <span class="hint">@T["Request additional scopes beyond '{0}' and '{1}'.", OpenIddictConstants.Scopes.OpenId, OpenIddictConstants.Scopes.Profile]</span>
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="StoreExternalTokens">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper" asp-validation-class-for="StoreExternalTokens">
+    <div class="ocat-end-offset">
         <div class="form-check">
             <input type="checkbox" class="form-check-input" asp-for="StoreExternalTokens">
             <label class="form-check-label" asp-for="StoreExternalTokens">@T["Store tokens?"]</label>
@@ -87,15 +87,15 @@
 </div>
 
 <div class="my-4">
-    <div class="@Orchard.GetWrapperClasses()">
-        <div class="@Orchard.GetEndClasses(true)">
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
             <h3>@T["Code Authentication Flow"]</h3>
             <p>@T["Click <a href=\"{0}\" target=\"_blank\">here</a> for more information about the Authorization Code Flow.", "http://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth"]</p>
         </div>
     </div>
 
-    <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="UseCodeFlow">
-        <div class="@Orchard.GetEndClasses(true)">
+    <div class="ocat-wrapper" asp-validation-class-for="UseCodeFlow">
+        <div class="ocat-end-offset">
             <div class="form-check">
                 <input type="checkbox" class="form-check-input" asp-for="UseCodeFlow">
                 <label class="form-check-label" asp-for="UseCodeFlow">@T["Use 'code' response type"]</label>
@@ -106,15 +106,15 @@
 </div>
 
 <div class="mb-4">
-    <div class="@Orchard.GetWrapperClasses()">
-        <div class="@Orchard.GetEndClasses(true)">
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
             <h3>@T["Hybrid Authentication Flow"]</h3>
             <p>@T["Click <a href=\"{0}\" target=\"_blank\">here</a> for more information about the Hybrid Flow.", "http://openid.net/specs/openid-connect-core-1_0.html#HybridFlowAuth"]</p>
         </div>
     </div>
 
-    <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="UseCodeIdTokenFlow">
-        <div class="@Orchard.GetEndClasses(true)">
+    <div class="ocat-wrapper" asp-validation-class-for="UseCodeIdTokenFlow">
+        <div class="ocat-end-offset">
             <div class="form-check">
                 <input type="checkbox" class="form-check-input" asp-for="UseCodeIdTokenFlow">
                 <label class="form-check-label" asp-for="UseCodeIdTokenFlow">@T["Use <code>{0}</code> response type", "code id_token"]</label>
@@ -123,8 +123,8 @@
         </div>
     </div>
 
-    <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="UseCodeIdTokenTokenFlow">
-        <div class="@Orchard.GetEndClasses(true)">
+    <div class="ocat-wrapper" asp-validation-class-for="UseCodeIdTokenTokenFlow">
+        <div class="ocat-end-offset">
             <div class="form-check">
                 <input type="checkbox" class="form-check-input" asp-for="UseCodeIdTokenTokenFlow">
                 <label class="form-check-label" asp-for="UseCodeIdTokenTokenFlow">@T["Use <code>{0}</code> response type", "code id_token token"]</label>
@@ -133,8 +133,8 @@
         </div>
     </div>
 
-    <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="UseCodeTokenFlow">
-        <div class="@Orchard.GetEndClasses(true)">
+    <div class="ocat-wrapper" asp-validation-class-for="UseCodeTokenFlow">
+        <div class="ocat-end-offset">
             <div class="form-check">
                 <input type="checkbox" class="form-check-input" asp-for="UseCodeTokenFlow">
                 <label class="form-check-label" asp-for="UseCodeTokenFlow">@T["Use <code>{0}</code> response type", "code token"]</label>
@@ -143,9 +143,9 @@
         </div>
     </div>
 
-    <div class="@Orchard.GetWrapperClasses("collapse")" asp-validation-class-for="ClientSecret">
-        <label asp-for="ClientSecret" class="@Orchard.GetLabelClasses()">@T["Client Secret"]</label>
-        <div class="@Orchard.GetEndClasses()">
+    <div class="ocat-wrapper collapse" asp-validation-class-for="ClientSecret">
+        <label asp-for="ClientSecret" class="ocat-label">@T["Client Secret"]</label>
+        <div class="ocat-end">
             <input asp-for="ClientSecret" class="form-control" type="password" autocomplete="new-password" placeholder="@(Model.HasClientSecret ? T["A client secret is securely stored. Provide a new one to replace it."]: T["Set a client secret for your new account."])" />
             <span asp-validation-for="ClientSecret"></span>
             <span class="hint">@T["The '{0}' assigned by the identity provider.", "client_secret"]</span>
@@ -154,15 +154,15 @@
 </div>
 
 <div class="mb-4">
-    <div class="@Orchard.GetWrapperClasses()">
-        <div class="@Orchard.GetEndClasses(true)">
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
             <h3>@T["Implicit Authentication Flow"]</h3>
             <p>@T["Click <a href=\"{0}\" target=\"_blank\">here</a> for more information about the Implicit Flow.", "http://openid.net/specs/openid-connect-core-1_0.html#ImplicitFlowAuth"]</p>
         </div>
     </div>
 
-    <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="UseIdTokenFlow">
-        <div class="@Orchard.GetEndClasses(true)">
+    <div class="ocat-wrapper" asp-validation-class-for="UseIdTokenFlow">
+        <div class="ocat-end-offset">
             <div class="form-check">
                 <input type="checkbox" class="form-check-input" asp-for="UseIdTokenFlow">
                 <label class="form-check-label" asp-for="UseIdTokenFlow">@T["Use <code>{0}</code> response type", "id_token"]</label>
@@ -171,8 +171,8 @@
         </div>
     </div>
 
-    <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="UseIdTokenTokenFlow">
-        <div class="@Orchard.GetEndClasses(true)">
+    <div class="ocat-wrapper" asp-validation-class-for="UseIdTokenTokenFlow">
+        <div class="ocat-end-offset">
             <div class="form-check">
                 <input type="checkbox" class="form-check-input" asp-for="UseIdTokenTokenFlow">
                 <label class="form-check-label" asp-for="UseIdTokenTokenFlow">@T["Use <code>{0}</code> response type", "id_token token"]</label>
@@ -181,9 +181,9 @@
         </div>
     </div>
 
-    <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="ResponseMode">
-        <label asp-for="ResponseMode" class="@Orchard.GetLabelClasses()">@T["Response Mode"]</label>
-        <div class="@Orchard.GetEndClasses()">
+    <div class="ocat-wrapper" asp-validation-class-for="ResponseMode">
+        <label asp-for="ResponseMode" class="ocat-label">@T["Response Mode"]</label>
+        <div class="ocat-end">
             <select asp-for="ResponseMode" class="form-select">
                 <option id="@OpenIdConnectResponseMode.FormPost" value="@OpenIdConnectResponseMode.FormPost">@T[OpenIdConnectResponseMode.FormPost]</option>
                 <option id="@OpenIdConnectResponseMode.Query" value="@OpenIdConnectResponseMode.Query">@T[OpenIdConnectResponseMode.Query]</option>
@@ -237,9 +237,9 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <div class="@Orchard.GetWrapperClasses()">
-                            <label for="parameters-textarea" class="@Orchard.GetLabelClasses()">@T["Parameters"]</label>
-                            <div class="@Orchard.GetEndClasses()">
+                        <div class="ocat-wrapper">
+                            <label for="parameters-textarea" class="ocat-label">@T["Parameters"]</label>
+                            <div class="ocat-end">
                                 <textarea id="parameters-textarea" name="parameters-textarea" rows="8" class="form-control" v-bind:value="JSON.stringify(data.parameters)" v-on:input="data.parameters = JSON.parse($event.target.value)"></textarea>
                                 <span class="hint">@T["A JSON representation of the allowed values, e.g. {0}", "[ { name: 'First parameter', value: 'parameter1' }, { name: 'Second parameter', value: 'parameter2' } ]"]</span>
                             </div>
@@ -255,9 +255,9 @@
     </script>
 
     <div id="@Html.IdFor(m => m)" class="field-editor field-editor-parameters">
-        <div class="@Orchard.GetWrapperClasses()">
-            <label asp-for="Parameters" class="@Orchard.GetLabelClasses()">@T["Advanced Parameters"]</label>
-            <div class="@Orchard.GetEndClasses()">
+        <div class="ocat-wrapper">
+            <label asp-for="Parameters" class="ocat-label">@T["Advanced Parameters"]</label>
+            <div class="ocat-end">
                 <a href="javascript:void(0)" v-on:click="showModal" class="float-end" title="@T["Edit Data"]"><i class="fa-solid fa-pen-to-square" aria-hidden="true"></i></a>
                 <parameters-table :data="sharedState"></parameters-table>
                 <parameters-modal :data="sharedState" v-on:reload-data="reloadData()"></parameters-modal>

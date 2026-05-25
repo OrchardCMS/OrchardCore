@@ -7,12 +7,16 @@
 }
 <zone Name="Title"><h1>@T["Add Parts To \"{0}\"", localizedTypeName]</h1></zone>
 
-@T["Choose the Parts to add to this Content Type."]
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
+        @T["Choose the Parts to add to this Content Type."]
+    </div>
+</div>
 
 <form asp-action="AddPartsTo">
     @Html.ValidationSummary()
-    <div class="@Orchard.GetWrapperClasses()">
-        <div class="@Orchard.GetEndClasses(true)">
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
             <ul class="list-group">
                 @foreach (var partSelection in Model.PartSelections)
                 {
@@ -30,8 +34,8 @@
             </ul>
         </div>
     </div>
-    <div class="@Orchard.GetWrapperClasses()">
-        <div class="@Orchard.GetEndClasses(true)">
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
             <button class="btn btn-primary save" type="submit">@T["Save"]</button>
             <a class="btn btn-secondary cancel" role="button" asp-route-action="Edit" asp-route-id="@Model.Type.Name">@T["Cancel"]</a>
         </div>

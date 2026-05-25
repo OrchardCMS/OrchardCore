@@ -1,9 +1,9 @@
 @using OrchardCore.Workflows.ViewModels
 @model SignalEventViewModel
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="SignalNameExpression">
-    <label asp-for="SignalNameExpression" class="@Orchard.GetLabelClasses()">@T["Name"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper" asp-validation-class-for="SignalNameExpression">
+    <label asp-for="SignalNameExpression" class="ocat-label">@T["Name"]</label>
+    <div class="ocat-end">
         <input type="text" asp-for="SignalNameExpression" class="form-control code" autofocus />
         <span asp-validation-for="SignalNameExpression"></span>
         <span class="hint">@T["The signal name. With Liquid support."]</span>

@@ -2,9 +2,9 @@
 
 @model SmsSettingsViewModel
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="DefaultProvider">
-    <label asp-for="DefaultProvider" class="@Orchard.GetLabelClasses()">@T["Default SMS provider"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper" asp-validation-class-for="DefaultProvider">
+    <label asp-for="DefaultProvider" class="ocat-label">@T["Default SMS provider"]</label>
+    <div class="ocat-end">
         <select asp-for="DefaultProvider" class="form-select" asp-items="Model.Providers">
             <option value="">@T["Select a provider"]</option>
         </select>

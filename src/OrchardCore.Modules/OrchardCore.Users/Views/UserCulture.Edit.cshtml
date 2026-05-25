@@ -1,9 +1,9 @@
 @using OrchardCore.Users.Localization.ViewModels
 @model UserLocalizationViewModel
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="SelectedCulture">
-    <label asp-for="SelectedCulture" class="@Orchard.GetLabelClasses()">@T["Default User Culture"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper" asp-validation-class-for="SelectedCulture">
+    <label asp-for="SelectedCulture" class="ocat-label">@T["Default User Culture"]</label>
+    <div class="ocat-end">
         <select asp-for="SelectedCulture" asp-items="Model.CultureList" class="form-select">
         </select>
         <span asp-validation-for="SelectedCulture"></span>

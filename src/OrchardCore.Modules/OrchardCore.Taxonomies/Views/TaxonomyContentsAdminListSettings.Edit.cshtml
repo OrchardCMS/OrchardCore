@@ -1,9 +1,9 @@
 @using OrchardCore
 @model TaxonomyContentsAdminListSettingsViewModel
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="TaxonomyEntries">
-    <label asp-for="TaxonomyEntries" class="@Orchard.GetLabelClasses()">@T["Taxonomies"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper" asp-validation-class-for="TaxonomyEntries">
+    <label asp-for="TaxonomyEntries" class="ocat-label">@T["Taxonomies"]</label>
+    <div class="ocat-end">
         <span class="hint dashed">@T["The taxonomies to filters in the contents list."]</span>
 
         @for (int i = 0; i < Model.TaxonomyEntries.Length; i++)

@@ -18,24 +18,24 @@
         @Html.HiddenFor(m => m.ShapeType)
     }
 
-    <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="ShapeType">
-        <label asp-for="ShapeType" class="@Orchard.GetLabelClasses()">@T["Shape type"]</label>
-        <div class="@Orchard.GetEndClasses()">
+    <div class="ocat-wrapper" asp-validation-class-for="ShapeType">
+        <label asp-for="ShapeType" class="ocat-label">@T["Shape type"]</label>
+        <div class="ocat-end">
         <input asp-for="ShapeType" asp-is-disabled="!Model.Creating" class="form-control" required autofocus />
         <span asp-validation-for="ShapeType"></span>
         <span class="hint">@T["The type of the shape."]</span>
         </div>
     </div>
 
-    <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="Nodes">
-        <label asp-for="Nodes" class="@Orchard.GetLabelClasses()">@T["Placement rules"]</label>
-        <div class="@Orchard.GetEndClasses()">
+    <div class="ocat-wrapper" asp-validation-class-for="Nodes">
+        <label asp-for="Nodes" class="ocat-label">@T["Placement rules"]</label>
+        <div class="ocat-end">
         <textarea asp-for="Nodes" rows="10" class="form-control"></textarea>
         </div>
     </div>
 
-    <div class="@Orchard.GetWrapperClasses()">
-        <div class="@Orchard.GetEndClasses(true)">
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
             <div class="btn-group">
                 <button type="submit" name="submit" class="btn btn-primary">@T["Save"]</button>
                 <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-reference="parent" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

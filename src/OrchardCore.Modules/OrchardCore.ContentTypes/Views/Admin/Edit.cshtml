@@ -68,8 +68,8 @@
 
     @if (Model.Editor.Shortcuts != null)
     {
-        <div class="@Orchard.GetWrapperClasses()">
-            <div class="@Orchard.GetEndClasses(true)">
+        <div class="ocat-wrapper">
+            <div class="ocat-end-offset">
                 @await DisplayAsync(Model.Editor.Shortcuts)
             </div>
         </div>
@@ -79,8 +79,8 @@
 
     @if (fieldDefinitions.Count > 0 || fields.Count > 0)
     {
-        <div class="@Orchard.GetWrapperClasses()">
-            <div class="@Orchard.GetEndClasses(true)">
+        <div class="ocat-wrapper">
+            <div class="ocat-end-offset">
                 <h3>@T["Fields"]</h3>
 
                 <ul class="list-group sortable" id="fields">
@@ -128,15 +128,15 @@
 
         @if (fields.Count > 0)
         {
-            <div class="@Orchard.GetWrapperClasses()">
-                <div class="@Orchard.GetEndClasses(true)">
+            <div class="ocat-wrapper">
+                <div class="ocat-end-offset">
                     <a asp-route-action="AddFieldTo" asp-route-id="@Model.TypeDefinition.Name" asp-route-returnUrl="@FullRequestPath" class="btn btn-info btn-sm" role="button">@T["Add Field"]</a>
                 </div>
             </div>
         }
     }
-    <div class="@Orchard.GetWrapperClasses()">
-        <div class="@Orchard.GetEndClasses(true)">
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
             <h3>@T["Parts"]</h3>
 
             <ul class="list-group sortable" id="parts">
@@ -192,15 +192,15 @@
         </div>
     </div>
 
-    <div class="@Orchard.GetWrapperClasses()">
-        <div class="@Orchard.GetEndClasses(true)">
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
             <a asp-route-action="AddPartsTo" asp-route-id="@Model.TypeDefinition.Name" class="btn btn-info btn-sm" role="button">@T["Add Parts"]</a>
             <a asp-route-action="AddReusablePartTo" asp-route-id="@Model.TypeDefinition.Name" class="btn btn-info btn-sm" role="button">@T["Add Named Part"]</a>
         </div>
     </div>
 
-    <div class="@Orchard.GetWrapperClasses()">
-        <div class="@Orchard.GetEndClasses(true)">
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
             <div class="btn-group">
                 <button asp-route-action="Edit" class="btn btn-success save" type="submit" name="submit.Save" value="Save">@T["Save"]</button>
                 <button type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-reference="parent" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

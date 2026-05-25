@@ -7,41 +7,41 @@
 <div asp-validation-summary="ModelOnly"></div>
 <form asp-action="Edit" method="post" class="no-multisubmit">
 
-    <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="DisplayName">
-        <label asp-for="DisplayName" class="@Orchard.GetLabelClasses()">@T["Display Name"]</label>
-        <div class="@Orchard.GetEndClasses()">
+    <div class="ocat-wrapper" asp-validation-class-for="DisplayName">
+        <label asp-for="DisplayName" class="ocat-label">@T["Display Name"]</label>
+        <div class="ocat-end">
             <input asp-for="DisplayName" class="form-control" autofocus />
             <span asp-validation-for="DisplayName" class="text-danger"></span>
         </div>
     </div>
 
-    <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="Name">
-        <label asp-for="Name" class="@Orchard.GetLabelClasses()">@T["Name"]</label>
-        <div class="@Orchard.GetEndClasses()">
+    <div class="ocat-wrapper" asp-validation-class-for="Name">
+        <label asp-for="Name" class="ocat-label">@T["Name"]</label>
+        <div class="ocat-end">
             <input asp-for="Name" class="form-control" />
             <span asp-validation-for="Name" class="text-danger"></span>
         </div>
     </div>
 
-    <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="Description">
-        <label asp-for="Description" class="@Orchard.GetLabelClasses()">@T["Description"]</label>
-        <div class="@Orchard.GetEndClasses()">
+    <div class="ocat-wrapper" asp-validation-class-for="Description">
+        <label asp-for="Description" class="ocat-label">@T["Description"]</label>
+        <div class="ocat-end">
             <textarea asp-for="Description" class="form-control"></textarea>
             <span asp-validation-for="Description" class="text-danger"></span>
         </div>
     </div>
 
-    <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="Resources">
-        <label asp-for="Resources" class="@Orchard.GetLabelClasses()">@T["Additional resources (API audiences)"]</label>
-        <div class="@Orchard.GetEndClasses()">
+    <div class="ocat-wrapper" asp-validation-class-for="Resources">
+        <label asp-for="Resources" class="ocat-label">@T["Additional resources (API audiences)"]</label>
+        <div class="ocat-end">
             <input asp-for="Resources" class="form-control" />
             <span class="hint">@T["A space-separated list of values is required. To utilize another active tenant as a resource, specify it using the format <code>{0}{{tenant_name}}</code>.", OpenIdConstants.Prefixes.Tenant]</span>
             <span asp-validation-for="Resources" class="text-danger"></span>
         </div>
     </div>
 
-    <div class="@Orchard.GetWrapperClasses()">
-        <div class="@Orchard.GetEndClasses(true)">
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
             <button class="btn btn-primary save" type="submit">@T["Save"]</button>
             <a class="btn btn-secondary cancel" role="button" asp-route-action="Index">@T["Cancel"]</a>
         </div>

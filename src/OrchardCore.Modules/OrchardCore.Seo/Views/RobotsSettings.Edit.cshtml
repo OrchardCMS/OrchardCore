@@ -4,8 +4,8 @@
 
 @inject IOptions<OrchardCore.Admin.AdminOptions> AdminOptions
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="AllowAllAgents">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper" asp-validation-class-for="AllowAllAgents">
+    <div class="ocat-end-offset">
         <div class="form-check">
             <input type="checkbox" class="form-check-input" asp-for="AllowAllAgents">
             <label class="form-check-label" asp-for="AllowAllAgents">@T["Add a rule to allow all web robots."]</label>
@@ -15,8 +15,8 @@
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="DisallowAdmin">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper" asp-validation-class-for="DisallowAdmin">
+    <div class="ocat-end-offset">
         <div class="form-check">
             <input type="checkbox" class="form-check-input" asp-for="DisallowAdmin">
             <label class="form-check-label" asp-for="DisallowAdmin">@T["Add a rule to disallow web robots to the admin routes."]</label>
@@ -26,9 +26,9 @@
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="AdditionalRules">
-    <label asp-for="AdditionalRules" class="@Orchard.GetLabelClasses()">@T["Additional rules"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper" asp-validation-class-for="AdditionalRules">
+    <label asp-for="AdditionalRules" class="ocat-label">@T["Additional rules"]</label>
+    <div class="ocat-end">
         <textarea asp-for="AdditionalRules" rows="10" class="form-control"></textarea>
         <div class="hint">@T["Optionally, you can include any additional rules."]</div>
     </div>

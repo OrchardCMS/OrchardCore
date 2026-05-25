@@ -3,9 +3,9 @@
 @using OrchardCore.Forms.Models
 @model FormElementValidationPartViewModel
 
-<div class="@Orchard.GetWrapperClasses("show-for-input")">
-    <label asp-for="ValidationOption" class="@Orchard.GetLabelClasses()">@T["Validation option"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper show-for-input">
+    <label asp-for="ValidationOption" class="ocat-label">@T["Validation option"]</label>
+    <div class="ocat-end">
         <select asp-for="ValidationOption" class="form-select content-preview-select">
             <option value="@ValidationOptions.None">@T["None"]</option>
             <option value="@ValidationOptions.Standard">@T["Standard"]</option>

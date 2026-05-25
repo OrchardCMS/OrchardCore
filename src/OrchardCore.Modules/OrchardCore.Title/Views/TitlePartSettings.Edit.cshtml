@@ -12,9 +12,9 @@
 
 <script asp-src="~/OrchardCore.Liquid/codemirror/liquid.js" at="Foot"></script>
 
-<div class="@Orchard.GetLimitedWidthWrapperClasses("mb-3")">
-    <label asp-for="Options" class="@Orchard.GetLabelClasses()">@T["Behavior option"]</label>
-    <div class="@Orchard.GetLimitedWidthClasses()">
+<div class="ocat-limited-wrapper">
+    <label asp-for="Options" class="ocat-label">@T["Behavior option"]</label>
+    <div class="ocat-limited">
         <select asp-for="Options" class="form-select">
             <option value="@nameof(TitlePartOptions.Editable)" selected="@(Model.Options == TitlePartOptions.Editable)">@T["Title is editable"]</option>
             <option value="@nameof(TitlePartOptions.EditableRequired)" selected="@(Model.Options == TitlePartOptions.EditableRequired)">@T["Title is editable and required"]</option>
@@ -23,8 +23,8 @@
         </select>
     </div>
 </div>
-<div class="@Orchard.GetWrapperClasses("pb-1")">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper pb-1">
+    <div class="ocat-end-offset">
         <div class="form-check">
             <input asp-for="RenderTitle" class="form-check-input" />
             <label asp-for="RenderTitle" class="form-check-label">@T["Render Title"]</label>
@@ -33,17 +33,17 @@
     </div>
 </div>
 
-<div class="@Orchard.GetLimitedWidthWrapperClasses("mb-3")" id="patternEditor">
-    <label asp-for="Pattern" class="@Orchard.GetLabelClasses()">@T["Pattern"]</label>
-    <div class="@Orchard.GetLimitedWidthClasses()">
+<div class="ocat-limited-wrapper" id="patternEditor">
+    <label asp-for="Pattern" class="ocat-label">@T["Pattern"]</label>
+    <div class="ocat-limited">
         <textarea asp-for="Pattern" rows="5" class="form-control"></textarea>
         <span class="hint">@T["The pattern used to render the title of this content type. With Liquid support."]</span>
     </div>
 </div>
 
-<div class="@Orchard.GetLimitedWidthWrapperClasses("mb-3")">
-    <label asp-for="Placeholder" class="@Orchard.GetLabelClasses()">@T["Placeholder"]</label>
-    <div class="@Orchard.GetLimitedWidthClasses()">
+<div class="ocat-limited-wrapper">
+    <label asp-for="Placeholder" class="ocat-label">@T["Placeholder"]</label>
+    <div class="ocat-limited">
         <input asp-for="Placeholder" class="form-control" />
         <span class="hint">@T["The placeholder text to display for this field on the editor."]</span>
     </div>

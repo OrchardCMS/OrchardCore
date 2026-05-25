@@ -1,18 +1,18 @@
 @using OrchardCore.Workflows.ViewModels
 @model SetPropertyTaskViewModel
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="PropertyName">
-    <label asp-for="PropertyName" class="@Orchard.GetLabelClasses()">@T["Name"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper" asp-validation-class-for="PropertyName">
+    <label asp-for="PropertyName" class="ocat-label">@T["Name"]</label>
+    <div class="ocat-end">
         <input asp-for="PropertyName" class="form-control" autofocus="autofocus" />
         <span asp-validation-for="PropertyName"></span>
         <span class="hint">@T["The property to set. If the specified property doesn't exist yet, it will be added."]</span>
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="Value">
-    <label asp-for="Value" class="@Orchard.GetLabelClasses()">@T["Value"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper" asp-validation-class-for="Value">
+    <label asp-for="Value" class="ocat-label">@T["Value"]</label>
+    <div class="ocat-end">
         <input type="text" asp-for="Value" class="form-control code" />
         <span asp-validation-for="Value"></span>
         <span class="hint">@T["The value to store in the specified property. With JavaScript support."]</span>

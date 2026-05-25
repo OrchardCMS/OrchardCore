@@ -2,13 +2,13 @@
 @using OrchardCore.Sitemaps.Models
 <h5>@T["Sitemap Custom Path"]</h5>
 
-<div id="index-all-row" class="@Orchard.GetLimitedWidthWrapperClasses()">
-    <div class="@Orchard.GetLimitedWidthClasses()">
+<div id="index-all-row" class="ocat-limited-wrapper">
+    <div class="ocat-limited">
         <div class="card mb-4">
             <div class="card-body">
-                <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="Path">
-                    <label asp-for="Path" class="@Orchard.GetLabelClasses()">@T["Path"] </label>
-                    <div class="@Orchard.GetEndClasses()">
+                <div class="ocat-wrapper" asp-validation-class-for="Path">
+                    <label asp-for="Path" class="ocat-label">@T["Path"] </label>
+                    <div class="ocat-end">
                         <div class="input-group">
                             @if (!string.IsNullOrWhiteSpace(Site.BaseUrl))
                             {
@@ -20,16 +20,16 @@
                         <span class="hint">@T["The path to add to the sitemap. e.g. path/to/something"]</span>
                     </div>
                 </div>
-                <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="ChangeFrequency">
-                    <label asp-for="ChangeFrequency" class="@Orchard.GetLabelClasses()">@T["Change Frequency"] </label>
-                    <div class="@Orchard.GetEndClasses()">
+                <div class="ocat-wrapper" asp-validation-class-for="ChangeFrequency">
+                    <label asp-for="ChangeFrequency" class="ocat-label">@T["Change Frequency"] </label>
+                    <div class="ocat-end">
                         <select asp-for="ChangeFrequency" class="form-select w-25" asp-items="Html.GetEnumSelectList<ChangeFrequency>()"></select>
                         <span class="hint">@T["The default frequency with which this path is likely to change."]</span>
                     </div>
                 </div>
-                <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="Priority">
-                    <label asp-for="Priority" class="@Orchard.GetLabelClasses()">@T["Priority"] </label>
-                    <div class="@Orchard.GetEndClasses()">
+                <div class="ocat-wrapper" asp-validation-class-for="Priority">
+                    <label asp-for="Priority" class="ocat-label">@T["Priority"] </label>
+                    <div class="ocat-end">
                         <select asp-for="Priority" class="form-select w-25">
                             <option value="0">@T["0.0"]</option>
                             <option value="1">@T["0.1"]</option>

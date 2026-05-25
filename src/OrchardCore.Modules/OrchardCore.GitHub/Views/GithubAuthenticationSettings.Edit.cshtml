@@ -1,8 +1,8 @@
 @using OrchardCore.GitHub.ViewModels
 @model GitHubAuthenticationSettingsViewModel
 
-<div class="@Orchard.GetWrapperClasses()">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
         <p class="alert alert-warning" role="alert">
             @T["The website might be restarted upon saving the settings, potentially leading to temporary unresponsiveness during the process."]
             <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/GitHub/#authenticate-with-github" target="_blank">@T["See documentation"]</a>
@@ -12,48 +12,48 @@
 
 @if (Model.HasDecryptionError)
 {
-    <div class="@Orchard.GetWrapperClasses()">
-        <div class="@Orchard.GetEndClasses(true)">
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
             <p class="alert alert-danger">@T["An error occurred while decrypting a setting. Please apply and save."]</p>
         </div>
     </div>
 }
 
-<div class="@Orchard.GetWrapperClasses()">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
         <h3>@T["GitHub Authentication Settings"]</h3>
     </div>
 </div>
 
-<div class="@Orchard.GetLimitedWidthWrapperClasses("mb-3")" asp-validation-class-for="ClientID">
-    <label asp-for="ClientID" class="@Orchard.GetLabelClasses()">@T["Client ID"]</label>
-    <div class="@Orchard.GetLimitedWidthClasses()">
+<div class="ocat-limited-wrapper" asp-validation-class-for="ClientID">
+    <label asp-for="ClientID" class="ocat-label">@T["Client ID"]</label>
+    <div class="ocat-limited">
         <input asp-for="ClientID" class="form-control" />
         <span asp-validation-for="ClientID"></span>
         <span class="hint">@T["The Client ID defined in the general tab of your <a target=\"_blank\" href=\"https://github.com/settings/apps\">GitHub App</a>."]</span>
     </div>
 </div>
 
-<div class="@Orchard.GetLimitedWidthWrapperClasses("mb-3")" asp-validation-class-for="ClientSecret">
-    <label asp-for="ClientSecret" class="@Orchard.GetLabelClasses()">@T["Client secret"]</label>
-    <div class="@Orchard.GetLimitedWidthClasses()">
+<div class="ocat-limited-wrapper" asp-validation-class-for="ClientSecret">
+    <label asp-for="ClientSecret" class="ocat-label">@T["Client secret"]</label>
+    <div class="ocat-limited">
         <input asp-for="ClientSecret" class="form-control" type="password" value="@Model.ClientSecret" autocomplete="off" />
         <span asp-validation-for="ClientSecret"></span>
         <span class="hint">@T["The secret for your app."]</span>
     </div>
 </div>
 
-<div class="@Orchard.GetLimitedWidthWrapperClasses("mb-3")" asp-validation-class-for="CallbackUrl">
-    <label asp-for="CallbackUrl" class="@Orchard.GetLabelClasses()">@T["CallbackPath"]</label>
-    <div class="@Orchard.GetLimitedWidthClasses()">
+<div class="ocat-limited-wrapper" asp-validation-class-for="CallbackUrl">
+    <label asp-for="CallbackUrl" class="ocat-label">@T["CallbackPath"]</label>
+    <div class="ocat-limited">
         <input asp-for="CallbackUrl" class="form-control" placeholder="/signin-github" />
         <span asp-validation-for="CallbackUrl"></span>
         <span class="hint">@T["The request path within the application's base path where the user-agent will be returned. The middleware will process this request when it arrives."]</span>
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="SaveTokens">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper" asp-validation-class-for="SaveTokens">
+    <div class="ocat-end-offset">
         <div class="form-check">
             <input type="checkbox" class="form-check-input" asp-for="SaveTokens">
             <label class="form-check-label" asp-for="SaveTokens">@T["Store tokens"]</label>

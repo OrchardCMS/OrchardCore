@@ -1,7 +1,7 @@
 @model HttpsSettingsViewModel
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="RequireHttps">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper" asp-validation-class-for="RequireHttps">
+    <div class="ocat-end-offset">
         <div class="form-check">
             <input type="checkbox" class="form-check-input" asp-for="RequireHttps" asp-is-disabled="@(!Model.IsHttpsRequest)" />
             <label class="form-check-label" asp-for="RequireHttps">@T["Require HTTPS"]</label>
@@ -10,8 +10,8 @@
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="EnableStrictTransportSecurity">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper" asp-validation-class-for="EnableStrictTransportSecurity">
+    <div class="ocat-end-offset">
         <div class="form-check">
             <input type="checkbox" class="form-check-input" asp-for="EnableStrictTransportSecurity" asp-is-disabled="@(!Model.IsHttpsRequest)" />
             <label class="form-check-label" asp-for="EnableStrictTransportSecurity">@T["Enable HSTS"]</label>
@@ -21,8 +21,8 @@
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="RequireHttpsPermanent">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper" asp-validation-class-for="RequireHttpsPermanent">
+    <div class="ocat-end-offset">
         <div class="form-check">
             <input type="checkbox" class="form-check-input" asp-for="RequireHttpsPermanent" asp-is-disabled="@(!Model.IsHttpsRequest)" />
             <label class="form-check-label" asp-for="RequireHttpsPermanent">@T["Require HTTPS Permanent"]</label>
@@ -31,9 +31,9 @@
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="SslPort">
-    <label asp-for="SslPort" class="@Orchard.GetLabelClasses()">@T["SSL Port"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper" asp-validation-class-for="SslPort">
+    <label asp-for="SslPort" class="ocat-label">@T["SSL Port"]</label>
+    <div class="ocat-end">
         <input asp-for="SslPort" class="form-control" type="number" asp-is-disabled="@(!Model.IsHttpsRequest)" />
         <span asp-validation-for="SslPort"></span>
         <span class="hint">@T["The SSL Port Number, leave empty to let the middleware try to determinate it."]</span>

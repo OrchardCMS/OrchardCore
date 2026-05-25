@@ -1,16 +1,16 @@
 @using OrchardCore.Workflows.Timers
 @model TimerEventViewModel
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="CronExpression">
-    <label asp-for="CronExpression" class="@Orchard.GetLabelClasses()">@T["CRON Expression"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper" asp-validation-class-for="CronExpression">
+    <label asp-for="CronExpression" class="ocat-label">@T["CRON Expression"]</label>
+    <div class="ocat-end">
         <input type="text" asp-for="CronExpression" class="form-control" autofocus />
         <span asp-validation-for="CronExpression"></span>
         <span class="hint">@T["The CRON expression."]</span>
     </div>
 </div>
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="UseLocalTime">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper" asp-validation-class-for="UseLocalTime">
+    <div class="ocat-end-offset">
         <div class="form-check">
             <input type="checkbox" asp-for="UseLocalTime" class="form-check-input" />
             <label asp-for="UseLocalTime" class="form-check-label">@T["Use site time zone"]</label>

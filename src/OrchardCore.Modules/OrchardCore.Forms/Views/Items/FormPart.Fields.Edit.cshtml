@@ -3,17 +3,17 @@
 @using System.Net.Mime
 @model FormPartEditViewModel
 
-<div class="@Orchard.GetWrapperClasses()">
-    <label asp-for="Action" class="@Orchard.GetLabelClasses()">@T["Action"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper">
+    <label asp-for="Action" class="ocat-label">@T["Action"]</label>
+    <div class="ocat-end">
         <input type="text" asp-for="Action" class="form-control content-preview-text" />
         <span class="hint">@T["The URL to submit the form to."]</span>
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()">
-    <label asp-for="Method" class="@Orchard.GetLabelClasses()">@T["Method"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper">
+    <label asp-for="Method" class="ocat-label">@T["Method"]</label>
+    <div class="ocat-end">
         <select asp-for="Method" class="form-select content-preview-select">
             <option value="POST">POST</option>
             <option value="GET">GET</option>
@@ -22,9 +22,9 @@
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()">
-    <label asp-for="EncType" class="@Orchard.GetLabelClasses()">@T["EncType"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper">
+    <label asp-for="EncType" class="ocat-label">@T["EncType"]</label>
+    <div class="ocat-end">
         <select asp-for="EncType" class="form-select content-preview-select">
             <option value="@MediaTypeNames.Application.FormUrlEncoded">@MediaTypeNames.Application.FormUrlEncoded</option>
             <option value="@MediaTypeNames.Multipart.FormData">@MediaTypeNames.Multipart.FormData</option>
@@ -34,8 +34,8 @@
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
         <div class="form-check">
             <input asp-for="EnableAntiForgeryToken" class="form-check-input" />
             <label asp-for="EnableAntiForgeryToken" class="form-check-label">@T["Anti Forgery Token"]</label>
@@ -44,8 +44,8 @@
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
         <div class="form-check">
             <input asp-for="SaveFormLocation" class="form-check-input" />
             <label asp-for="SaveFormLocation" class="form-check-label">@T["Save Form Location"]</label>

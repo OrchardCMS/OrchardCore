@@ -22,8 +22,8 @@
 </div>
 @* do we need antiforgery here ?*@
 <form>
-    <div class="@Orchard.GetWrapperClasses()">
-        <div class="@Orchard.GetEndClasses(true)">
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
             @if (Model.Items.Any())
             {
                 <ul class="list-group">
@@ -45,8 +45,8 @@
             }
         </div>
     </div>
-    <div class="@Orchard.GetWrapperClasses()">
-        <div class="@Orchard.GetEndClasses(true)">
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
             <a class="btn btn-secondary" asp-route-controller="admin" asp-route-action="List">@T["Back"]</a>
         </div>
     </div>

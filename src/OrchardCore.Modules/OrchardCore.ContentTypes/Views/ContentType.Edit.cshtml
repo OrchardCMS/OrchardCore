@@ -1,15 +1,15 @@
 @model ContentTypeViewModel
 
-<div class="@Orchard.GetLimitedWidthWrapperClasses("mb-3")">
-    <label asp-for="Name" class="@Orchard.GetLabelClasses()">@T["Technical Name"]</label>
-    <div class="@Orchard.GetLimitedWidthClasses()">
+<div class="ocat-limited-wrapper">
+    <label asp-for="Name" class="ocat-label">@T["Technical Name"]</label>
+    <div class="ocat-limited">
         <input asp-for="Name" class="form-control" readonly />
         <span class="hint">@T["Technical name of the type."]</span>
     </div>
 </div>
-<div class="@Orchard.GetLimitedWidthWrapperClasses("mb-3")">
-    <label asp-for="DisplayName" class="@Orchard.GetLabelClasses()">@T["Display Name"]</label>
-    <div class="@Orchard.GetLimitedWidthClasses()">
+<div class="ocat-limited-wrapper">
+    <label asp-for="DisplayName" class="ocat-label">@T["Display Name"]</label>
+    <div class="ocat-limited">
         <input asp-for="DisplayName" class="form-control" />
         <span class="hint">@T["Name of the type as it will be displayed on screens."]</span>
     </div>

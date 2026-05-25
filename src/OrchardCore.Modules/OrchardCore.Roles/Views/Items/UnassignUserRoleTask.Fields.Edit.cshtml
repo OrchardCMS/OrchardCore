@@ -3,18 +3,18 @@
 
 @model UnassignUserRoleTaskViewModel
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="UserName">
-    <label asp-for="UserName" class="@Orchard.GetLabelClasses()">@T["UserName"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper" asp-validation-class-for="UserName">
+    <label asp-for="UserName" class="ocat-label">@T["UserName"]</label>
+    <div class="ocat-end">
     <input type="text" asp-for="UserName" class="form-control code" />
     <span asp-validation-for="UserName"></span>
     <span class="hint">@T["The User to update. With Liquid support."]</span>
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="Roles">
-    <label asp-for="Roles" class="@Orchard.GetLabelClasses()">@T["Roles"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper" asp-validation-class-for="Roles">
+    <label asp-for="Roles" class="ocat-label">@T["Roles"]</label>
+    <div class="ocat-end">
     @await Component.InvokeAsync("SelectRoles", new { selectedRoles = Model.Roles, htmlName = Html.NameFor(m => m.Roles), except = new[] { OrchardCoreConstants.Roles.Anonymous, OrchardCoreConstants.Roles.Authenticated } })
     <span asp-validation-for="Roles"></span>
     <span class="hint">@T["The Roles to remove."]</span>

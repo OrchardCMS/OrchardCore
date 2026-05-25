@@ -3,9 +3,9 @@
 
 @model UpdateTwitterStatusTaskViewModel
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="StatusTemplate">
-    <label asp-for="StatusTemplate" class="@Orchard.GetLabelClasses()">@T["Template for updating X (Twitter) status"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper" asp-validation-class-for="StatusTemplate">
+    <label asp-for="StatusTemplate" class="ocat-label">@T["Template for updating X (Twitter) status"]</label>
+    <div class="ocat-end">
         <input type="text" asp-for="StatusTemplate" class="form-control code" />
         <span asp-validation-for="StatusTemplate"></span>
         <span class="hint">@T["The status text of the post."]</span>

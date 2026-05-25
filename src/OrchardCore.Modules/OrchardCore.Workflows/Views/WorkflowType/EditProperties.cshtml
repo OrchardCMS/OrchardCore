@@ -17,17 +17,17 @@
 
     <div class="tab-content" id="tabs">
         <div class="tab-pane fade show active" id="properties" role="tabpanel" aria-labelledby="properties-tab">
-            <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="Name">
-                <label asp-for="Name" class="@Orchard.GetLabelClasses()">@T["Name"]</label>
-                <div class="@Orchard.GetEndClasses()">
+            <div class="ocat-wrapper" asp-validation-class-for="Name">
+                <label asp-for="Name" class="ocat-label">@T["Name"]</label>
+                <div class="ocat-end">
                     <input asp-for="Name" class="form-control" autofocus />
                     <span asp-validation-for="Name" class="text-danger"></span>
                     <div class="hint">@T["The name of the workflow."]</div>
                 </div>
             </div>
 
-            <div class="@Orchard.GetWrapperClasses()">
-                <div class="@Orchard.GetEndClasses(true)">
+            <div class="ocat-wrapper">
+                <div class="ocat-end-offset">
                     <div class="form-check">
                         <input asp-for="IsEnabled" type="checkbox" class="form-check-input">
                         <label class="form-check-label" asp-for="IsEnabled">@T["Enabled"]</label>
@@ -36,8 +36,8 @@
                 </div>
             </div>
 
-            <div class="@Orchard.GetWrapperClasses()">
-                <div class="@Orchard.GetEndClasses(true)">
+            <div class="ocat-wrapper">
+                <div class="ocat-end-offset">
                     <div class="form-check">
                         <input asp-for="IsSingleton" type="checkbox" class="form-check-input">
                         <label class="form-check-label" asp-for="IsSingleton">@T["Single instance"]</label>
@@ -46,8 +46,8 @@
                 </div>
             </div>
 
-            <div class="@Orchard.GetWrapperClasses()">
-                <div class="@Orchard.GetEndClasses(true)">
+            <div class="ocat-wrapper">
+                <div class="ocat-end-offset">
                     <div class="form-check">
                         <input asp-for="DeleteFinishedWorkflows" type="checkbox" class="form-check-input">
                         <label class="form-check-label" asp-for="DeleteFinishedWorkflows">@T["Delete successfully completed workflows"]</label>
@@ -61,17 +61,17 @@
         </div>
 
         <div class="tab-pane fade" id="advanced" role="tabpanel" aria-labelledby="advanced-tab">
-            <div class="@Orchard.GetWrapperClasses()">
-                <label asp-for="LockTimeout" class="@Orchard.GetLabelClasses()">@T["Lock timeout (ms)"]</label>
-                <div class="@Orchard.GetEndClasses()">
+            <div class="ocat-wrapper">
+                <label asp-for="LockTimeout" class="ocat-label">@T["Lock timeout (ms)"]</label>
+                <div class="ocat-end">
                     <input asp-for="LockTimeout" type="number" max="30000" class="form-control">
                     <span class="hint">@T["The timeout in milliseconds to acquire a lock before resuming a given workflow instance of this type atomically. Leave it to zero to not use any locking."]</span>
                 </div>
             </div>
 
-            <div class="@Orchard.GetWrapperClasses()">
-                <label asp-for="LockExpiration" class="@Orchard.GetLabelClasses()">@T["Lock expiration (ms)"]</label>
-                <div class="@Orchard.GetEndClasses()">
+            <div class="ocat-wrapper">
+                <label asp-for="LockExpiration" class="ocat-label">@T["Lock expiration (ms)"]</label>
+                <div class="ocat-end">
                     <input asp-for="LockExpiration" type="number" max="30000" class="form-control">
                     <span class="hint">@T["The expiration in milliseconds of the lock acquired before resuming a workflow instance of this type atomically. Leave it to zero to not use any locking."]</span>
                 </div>
@@ -79,8 +79,8 @@
         </div>
     </div>
 
-    <div class="@Orchard.GetWrapperClasses()">
-        <div class="@Orchard.GetEndClasses(true)">
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
             <button class="btn btn-primary save" type="submit">@T["Save"]</button>
             <a class="btn btn-secondary cancel" role="button" href="@Model.ReturnUrl">@T["Cancel"]</a>
         </div>

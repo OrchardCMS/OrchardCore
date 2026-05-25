@@ -11,25 +11,25 @@
     var taxonomies = await Session.Query<ContentItem, ContentItemIndex>().Where(x => x.ContentType == "Taxonomy" && x.Latest).ListAsync();
 }
 
-<div class="@Orchard.GetWrapperClasses()">
-    <label asp-for="Placeholder" class="@Orchard.GetLabelClasses()">@T["Placeholder"]</label>
-    <div class="@Orchard.GetEndClasses("w-md-75", "w-xl-50", "pe-md-3")">
+<div class="ocat-wrapper">
+    <label asp-for="Placeholder" class="ocat-label">@T["Placeholder"]</label>
+    <div class="ocat-end w-md-75 w-xl-50 pe-md-3">
         <input asp-for="Placeholder" class="form-control" />
         <span class="hint">@T["The placeholder text to display for this field on the editor."]</span>
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()">
-    <label asp-for="Hint" class="@Orchard.GetLabelClasses()">@T["Hint"]</label>
-    <div class="@Orchard.GetEndClasses("w-sm-75", "w-lg-75", "w-xl-50")">
+<div class="ocat-wrapper">
+    <label asp-for="Hint" class="ocat-label">@T["Hint"]</label>
+    <div class="ocat-end w-sm-75 w-lg-75 w-xl-50">
         <textarea asp-for="Hint" rows="2" class="form-control"></textarea>
         <span class="hint">@T["The hint text to display for this field on the editor."]</span>
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()">
-    <label asp-for="TaxonomyContentItemId" class="@Orchard.GetLabelClasses()">@T["Taxonomy"]</label>
-    <div class="@Orchard.GetEndClasses("w-sm-75", "w-lg-75", "w-xl-50")">
+<div class="ocat-wrapper">
+    <label asp-for="TaxonomyContentItemId" class="ocat-label">@T["Taxonomy"]</label>
+    <div class="ocat-end w-sm-75 w-lg-75 w-xl-50">
         <select asp-for="TaxonomyContentItemId" class="form-select">
             <option value="">@T["Select a Taxonomy"]</option>
             @foreach (var taxonomy in taxonomies)
@@ -40,8 +40,8 @@
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
         <div class="form-check">
             <input asp-for="Required" type="checkbox" class="form-check-input" />
             <label class="form-check-label" asp-for="Required">@T["Required"]</label>
@@ -50,8 +50,8 @@
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
         <div class="form-check">
             <input asp-for="Unique" type="checkbox" class="form-check-input" />
             <label class="form-check-label" asp-for="Unique">@T["Unique"]</label>
@@ -60,8 +60,8 @@
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
         <div class="form-check">
             <input asp-for="LeavesOnly" type="checkbox" class="form-check-input" />
             <label class="form-check-label" asp-for="LeavesOnly">@T["Leaves only"]</label>

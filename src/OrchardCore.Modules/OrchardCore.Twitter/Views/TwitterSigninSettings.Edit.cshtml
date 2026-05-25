@@ -1,8 +1,8 @@
 @using OrchardCore.Twitter.Signin.ViewModels
 @model TwitterSigninSettingsViewModel
 
-<div class="@Orchard.GetWrapperClasses()">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
         <p class="alert alert-warning" role="alert">
             @T["The website might be restarted upon saving the settings, potentially leading to temporary unresponsiveness during the process."]
             <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/X/#sign-in-with-x-twitter" target="_blank">@T["See documentation"]</a>
@@ -10,23 +10,23 @@
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
         <h3>@T["Sign in with X (Twitter) Settings"]</h3>
     </div>
 </div>
 
-<div class="@Orchard.GetLimitedWidthWrapperClasses("mb-3")" asp-validation-class-for="CallbackPath">
-    <label asp-for="CallbackPath" class="@Orchard.GetLabelClasses()">@T["CallbackPath"]</label>
-    <div class="@Orchard.GetLimitedWidthClasses()">
+<div class="ocat-limited-wrapper" asp-validation-class-for="CallbackPath">
+    <label asp-for="CallbackPath" class="ocat-label">@T["CallbackPath"]</label>
+    <div class="ocat-limited">
         <input asp-for="CallbackPath" class="form-control" placeholder="/signin-x" />
         <span asp-validation-for="CallbackPath"></span>
         <span class="hint">@T["The request path within the application's base path where the user-agent will be returned. The middleware will process this request when it arrives."]</span>
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="SaveTokens">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper" asp-validation-class-for="SaveTokens">
+    <div class="ocat-end-offset">
         <div class="form-check">
             <input type="checkbox" class="form-check-input" asp-for="SaveTokens">
             <label class="form-check-label" asp-for="SaveTokens">@T["Store tokens"]</label>

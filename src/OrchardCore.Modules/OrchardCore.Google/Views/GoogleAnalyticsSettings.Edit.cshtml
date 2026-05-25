@@ -1,23 +1,23 @@
 @using OrchardCore.Google.Analytics.ViewModels
 @model GoogleAnalyticsSettingsViewModel
 
-<div class="@Orchard.GetWrapperClasses()">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
         <p class="alert alert-secondary">
             <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/Google/#google-analytics" target="_blank">@T["See documentation"]</a>
         </p>
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
         <h3>@T["Google Analytics Settings"]</h3>
     </div>
 </div>
 
-<div class="@Orchard.GetLimitedWidthWrapperClasses("mb-3")" asp-validation-class-for="TrackingID">
-    <label asp-for="TrackingID" class="@Orchard.GetLabelClasses()">@T["Tracking ID"]</label>
-    <div class="@Orchard.GetLimitedWidthClasses()">
+<div class="ocat-limited-wrapper" asp-validation-class-for="TrackingID">
+    <label asp-for="TrackingID" class="ocat-label">@T["Tracking ID"]</label>
+    <div class="ocat-limited">
         <input asp-for="TrackingID" class="form-control" autocomplete="off" />
         <span asp-validation-for="TrackingID"></span>
         <span class="hint">@T["The tracking ID defined in your Google Analytics account."]</span>

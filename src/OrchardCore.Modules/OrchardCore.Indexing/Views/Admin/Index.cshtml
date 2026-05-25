@@ -32,9 +32,8 @@
         </div>
     </div>
 
-    <div class="@Orchard.GetWrapperClasses()">
-        <div class="@Orchard.GetEndClasses(true)">
-            <ul class="list-group with-checkbox" id="rewrite-rules-sortable-list">
+    <div class="mb-3">
+        <ul class="list-group with-checkbox" id="rewrite-rules-sortable-list">
                 @if (Model.Models.Count > 0)
                 {
                     int startIndex = 0;
@@ -94,11 +93,10 @@
                         @T["<strong>Nothing here!</strong> There are no indexes at the moment."]
                     </li>
                 }
-            </ul>
+        </ul>
 
-            <div id="list-alert" class="alert alert-info my-3 d-none text-center" role="alert">
-                @T["Your search returned no results."]
-            </div>
+        <div id="list-alert" class="alert alert-info my-3 d-none text-center" role="alert">
+            @T["Your search returned no results."]
         </div>
     </div>
 </form>

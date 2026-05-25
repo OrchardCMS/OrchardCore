@@ -1,7 +1,7 @@
 @model OrchardCore.Taxonomies.Settings.TaxonomyFieldTagsEditorSettings
 
-<div class="@Orchard.GetWrapperClasses("field-editor", "field-editor-tags")">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper field-editor field-editor-tags">
+    <div class="ocat-end-offset">
         <div class="form-check">
             <input asp-for="Open" type="checkbox" class="form-check-input" />
             <label class="form-check-label" asp-for="Open">@T["Open"]</label>

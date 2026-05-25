@@ -2,18 +2,18 @@
 @using OrchardCore.Workflows.ViewModels
 @model NotifyTaskViewModel
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="NotificationType">
-    <label asp-for="NotificationType" class="@Orchard.GetLabelClasses()">@T["Notification Type"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper" asp-validation-class-for="NotificationType">
+    <label asp-for="NotificationType" class="ocat-label">@T["Notification Type"]</label>
+    <div class="ocat-end">
         <select asp-for="NotificationType" class="form-select" asp-items="Html.GetEnumSelectList<NotifyType>()"></select>
         <span asp-validation-for="NotificationType"></span>
         <span class="hint">@T["The notification type."]</span>
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="Message">
-    <label asp-for="Message" class="@Orchard.GetLabelClasses()">@T["Message"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper" asp-validation-class-for="Message">
+    <label asp-for="Message" class="ocat-label">@T["Message"]</label>
+    <div class="ocat-end">
         <input type="text" asp-for="Message" class="form-control code" />
         <span asp-validation-for="Message"></span>
         <span class="hint">@T["The message to show. With Liquid support."]</span>

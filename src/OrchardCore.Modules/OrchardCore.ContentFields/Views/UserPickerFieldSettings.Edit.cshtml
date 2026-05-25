@@ -2,8 +2,8 @@
 
 <script asp-name="vuejs" version="2" at="Foot"></script>
 
-<div class="@Orchard.GetWrapperClasses()">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
         <div class="form-check">
             <input asp-for="Required" type="checkbox" class="form-check-input">
             <label class="form-check-label" asp-for="Required">@T["Required"]</label>
@@ -12,8 +12,8 @@
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
         <div class="form-check">
             <input asp-for="Multiple" type="checkbox" class="form-check-input">
             <label class="form-check-label" asp-for="Multiple">@T["Allow multiple"]</label>
@@ -22,9 +22,9 @@
     </div>
 </div>
 
-<div id="userRolesVue" class="@Orchard.GetWrapperClasses()" data-display-all-users="@Model.DisplayAllUsers.ToString().ToLowerInvariant()">
-    <label asp-for="Roles" class="@Orchard.GetLabelClasses()">@T["Roles"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div id="userRolesVue" class="ocat-wrapper" data-display-all-users="@Model.DisplayAllUsers.ToString().ToLowerInvariant()">
+    <label asp-for="Roles" class="ocat-label">@T["Roles"]</label>
+    <div class="ocat-end">
         <span class="hint">@T["The roles that a user must belong to. Choose at least one."]</span>
 
         <div class="form-check">
@@ -46,17 +46,17 @@
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()">
-    <label asp-for="Placeholder" class="@Orchard.GetLabelClasses()">@T["Placeholder"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper">
+    <label asp-for="Placeholder" class="ocat-label">@T["Placeholder"]</label>
+    <div class="ocat-end">
         <input asp-for="Placeholder" class="form-control" />
         <span class="hint">@T["The placeholder text to display for this field on the editor."]</span>
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()">
-    <label asp-for="Hint" class="@Orchard.GetLabelClasses()">@T["Hint"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper">
+    <label asp-for="Hint" class="ocat-label">@T["Hint"]</label>
+    <div class="ocat-end">
         <textarea asp-for="Hint" rows="2" class="form-control"></textarea>
         <span class="hint">@T["The hint text to display for this field on the editor."]</span>
     </div>

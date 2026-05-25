@@ -2,24 +2,24 @@
 @model EmailAuthenticatorLoginSettings
 
 <fieldset>
-    <div class="@Orchard.GetWrapperClasses()">
-        <div class="@Orchard.GetEndClasses(true)">
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
             <legend>@T["Email Authenticator Settings"]</legend>
         </div>
     </div>
 
-    <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="Subject">
-        <label class="@Orchard.GetLabelClasses()" asp-for="Subject">@T["Email Subject"]</label>
-        <div class="@Orchard.GetEndClasses()">
+    <div class="ocat-wrapper" asp-validation-class-for="Subject">
+        <label class="ocat-label" asp-for="Subject">@T["Email Subject"]</label>
+        <div class="ocat-end">
             <input type="text" class="form-control" asp-for="Subject" />
             <span asp-validation-for="Subject"></span>
             <span class="hint">@T["The subject to the email for sending the verification code. Liquid syntax is supported."]</span>
         </div>
     </div>
 
-    <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="Body">
-        <label class="@Orchard.GetLabelClasses()" asp-for="Body">@T["Email Body"]</label>
-        <div class="@Orchard.GetEndClasses()">
+    <div class="ocat-wrapper" asp-validation-class-for="Body">
+        <label class="ocat-label" asp-for="Body">@T["Email Body"]</label>
+        <div class="ocat-end">
             <textarea class="form-control" asp-for="Body"></textarea>
             <span asp-validation-for="Body"></span>
             <span class="hint">@T["The body to the email for sending the verification code. Liquid syntax is supported."]</span>

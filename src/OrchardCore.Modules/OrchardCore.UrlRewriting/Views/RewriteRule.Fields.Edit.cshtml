@@ -1,8 +1,8 @@
 @model EditRewriteRuleViewModel
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="Name">
-    <label asp-for="Name" class="@Orchard.GetLabelClasses()">@T["Display Name"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper" asp-validation-class-for="Name">
+    <label asp-for="Name" class="ocat-label">@T["Display Name"]</label>
+    <div class="ocat-end">
     <input type="text" asp-for="Name" class="form-control text-muted" autofocus />
     <span asp-validation-for="Name"></span>
     <span class="hint">@T["A display name for the rule."]</span>

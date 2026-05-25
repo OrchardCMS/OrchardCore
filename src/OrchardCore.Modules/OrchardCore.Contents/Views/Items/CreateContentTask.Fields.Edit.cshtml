@@ -2,17 +2,17 @@
 @using OrchardCore.Contents.Workflows.ViewModels
 @model CreateContentTaskViewModel
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="ContentType">
-    <label asp-for="ContentType" class="@Orchard.GetLabelClasses()">@T["Content Type"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper" asp-validation-class-for="ContentType">
+    <label asp-for="ContentType" class="ocat-label">@T["Content Type"]</label>
+    <div class="ocat-end">
         <select asp-for="ContentType" asp-items="@Model.AvailableContentTypes" class="form-select" asp-validation-class-for="ContentType"></select>
         <span asp-validation-for="ContentType"></span>
         <span class="hint">@T["Select the type of content to create."]</span>
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="Publish">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper" asp-validation-class-for="Publish">
+    <div class="ocat-end-offset">
         <div class="form-check">
             <input type="checkbox" class="form-check-input" asp-for="Publish" />
             <label class="form-check-label" asp-for="Publish">@T["Publish"]</label>
@@ -21,9 +21,9 @@
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="ContentProperties">
-    <label asp-for="ContentProperties" class="@Orchard.GetLabelClasses()">@T["Content Properties"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper" asp-validation-class-for="ContentProperties">
+    <label asp-for="ContentProperties" class="ocat-label">@T["Content Properties"]</label>
+    <div class="ocat-end">
         <textarea asp-for="ContentProperties" class="form-control"></textarea>
         <span asp-validation-for="ContentProperties"></span>
         <span class="hint">@T["Optionally provide values for the content parts, fields and their properties in JSON format. With Liquid support."]</span>

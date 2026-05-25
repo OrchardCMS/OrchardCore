@@ -6,22 +6,22 @@
     <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/Media.AmazonS3/#configuration" target="_blank">@T["See documentation."]</a>
 </p>
 
-<div class="@Orchard.GetWrapperClasses()">
-    <label asp-for="BucketName" class="@Orchard.GetLabelClasses()">@T["Bucket Name"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper">
+    <label asp-for="BucketName" class="ocat-label">@T["Bucket Name"]</label>
+    <div class="ocat-end">
         <code><input type="text" class="form-control-plaintext" value="@Model.BucketName" readonly /></code>
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()">
-    <label asp-for="BasePath" class="@Orchard.GetLabelClasses()">@T["Base Path"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper">
+    <label asp-for="BasePath" class="ocat-label">@T["Base Path"]</label>
+    <div class="ocat-end">
         <code><input type="text" class="form-control-plaintext" value="@Model.BasePath" readonly /></code>
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
         <div class="form-check">
             <input type="checkbox" class="form-check-input" asp-for="CreateBucket" checked="@Model.CreateBucket" disabled />
             <label class="form-check-label" asp-for="CreateBucket">@T["Create Bucket"]</label>

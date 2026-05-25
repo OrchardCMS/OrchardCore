@@ -2,8 +2,8 @@
 @using OrchardCore.Facebook.Login.ViewModels
 @model FacebookLoginSettingsViewModel
 
-<div class="@Orchard.GetWrapperClasses()">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
         <p class="alert alert-warning" role="alert">
             @T["The website might be restarted upon saving the settings, potentially leading to temporary unresponsiveness during the process."]
             <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/Facebook/#facebook-login" target="_blank">@T["See documentation"]</a>
@@ -11,23 +11,23 @@
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
         <h3>@T["Login Settings"]</h3>
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="CallbackPath">
-    <label asp-for="CallbackPath" class="@Orchard.GetLabelClasses()">@T["CallbackPath"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper" asp-validation-class-for="CallbackPath">
+    <label asp-for="CallbackPath" class="ocat-label">@T["CallbackPath"]</label>
+    <div class="ocat-end">
         <input asp-for="CallbackPath" class="form-control" placeholder="/signin-facebook" />
         <span asp-validation-for="CallbackPath"></span>
         <span class="hint">@T["The request path within the application's base path where the user-agent will be returned. The middleware will process this request when it arrives."]</span>
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="SaveTokens">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper" asp-validation-class-for="SaveTokens">
+    <div class="ocat-end-offset">
         <div class="form-check">
             <input type="checkbox" class="form-check-input" asp-for="SaveTokens">
             <label class="form-check-label" asp-for="SaveTokens">@T["Store tokens"]</label>
@@ -36,8 +36,8 @@
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
         <span class="hint">@T["<a href='{0}'>Meta Integration settings</a> must be configured in order to use the Login Feature", @Url.RouteUrl(new { area = "OrchardCore.Settings", controller = "Admin", groupId = OrchardCore.Facebook.FacebookConstants.Features.Core })]</span>
     </div>
 </div>

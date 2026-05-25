@@ -1,9 +1,9 @@
 @model OrchardCore.Elasticsearch.Core.Models.ContentPickerFieldElasticEditorSettings
 
 <div class="field-editor field-editor-elasticsearch">
-    <div class="@Orchard.GetWrapperClasses()">
-        <label asp-for="Index" class="@Orchard.GetLabelClasses()">@T["Index"]</label>
-        <div class="@Orchard.GetEndClasses("w-sm-50")">
+    <div class="ocat-wrapper">
+        <label asp-for="Index" class="ocat-label">@T["Index"]</label>
+        <div class="ocat-end w-sm-50">
             <select asp-for="Index" class="form-select">
                 @foreach (var index in Model.Indices)
                 {

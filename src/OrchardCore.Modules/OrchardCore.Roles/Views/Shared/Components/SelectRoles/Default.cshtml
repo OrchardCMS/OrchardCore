@@ -1,7 +1,7 @@
 @model SelectRolesViewModel
 
-<div class="@Orchard.GetWrapperClasses()">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
         @for (var i = 0; i < Model.RoleSelections.Count; i++)
         {
             var role = Model.RoleSelections[i];

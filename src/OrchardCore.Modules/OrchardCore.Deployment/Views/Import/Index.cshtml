@@ -2,17 +2,13 @@
 <div class="card text-bg-theme mb-3">
     <div class="card-body">
         <form asp-action="Import" enctype="multipart/form-data" class="no-multisubmit">
-            <div class="@Orchard.GetWrapperClasses()">
-                <label for="file" class="@Orchard.GetLabelClasses()">@T["Select a file"]</label>
-                <div class="@Orchard.GetEndClasses()">
+            <div class="mb-3">
+                <label for="file" class="form-label">@T["Select a file"]</label>
                 <input id="file" type="file" name="importedPackage" class="form-control" accept=".zip,.json" />
-                </div>
             </div>
 
-            <div class="@Orchard.GetWrapperClasses()">
-                <div class="@Orchard.GetEndClasses(true)">
-                    <button class="btn btn-primary import" type="submit">@T["Import"]</button>
-                </div>
+            <div class="mb-3">
+                <button class="btn btn-primary import" type="submit">@T["Import"]</button>
             </div>
 
         </form>

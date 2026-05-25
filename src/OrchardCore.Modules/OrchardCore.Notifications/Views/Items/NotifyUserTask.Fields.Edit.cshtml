@@ -1,9 +1,9 @@
 @using OrchardCore
 @model NotifyUserTaskViewModel
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="UserNames">
-    <label asp-for="UserNames" class="@Orchard.GetLabelClasses()">@T["User names"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper" asp-validation-class-for="UserNames">
+    <label asp-for="UserNames" class="ocat-label">@T["User names"]</label>
+    <div class="ocat-end">
         <input type="text" asp-for="UserNames" class="form-control" />
         <span asp-validation-for="UserNames"></span>
         <span class="hint">@T["Please provide a comma separated list of user names. You may use Liquid syntax."]</span>

@@ -3,16 +3,16 @@
 @using OrchardCore.Flows.Models
 @model OrchardCore.Flows.ViewModels.FlowPartSettingsViewModel
 
-<div class="@Orchard.GetWrapperClasses()">
-    <label asp-for="ContainedContentTypes" class="@Orchard.GetLabelClasses()">@T["Restrict Content Types"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper">
+    <label asp-for="ContainedContentTypes" class="ocat-label">@T["Restrict Content Types"]</label>
+    <div class="ocat-end">
         <span class="hint">@T["The content types that this flow can contain."]</span>
         @await Component.InvokeAsync("SelectContentTypes", new { selectedContentTypes = Model.ContainedContentTypes, htmlName = Html.NameFor(m => m.ContainedContentTypes), stereotype = "Widget" })
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
         <div class="form-check">
             <input type="checkbox" class="form-check-input" asp-for="CollapseContainedItems">
             <label class="form-check-label" asp-for="CollapseContainedItems">@T["Collapse Contained Items"]</label>
@@ -21,9 +21,9 @@
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()">
-    <label asp-for="DefaultAlignment" class="@Orchard.GetLabelClasses()">@T["What default alignment should be used?"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper">
+    <label asp-for="DefaultAlignment" class="ocat-label">@T["What default alignment should be used?"]</label>
+    <div class="ocat-end">
         <select asp-for="DefaultAlignment" class="form-select" id="type-part-alignment-select">
             <option value="">@T["Please choose an alignment"]</option>
             @foreach (var alignment in Enum.GetValues(typeof(FlowAlignment)))

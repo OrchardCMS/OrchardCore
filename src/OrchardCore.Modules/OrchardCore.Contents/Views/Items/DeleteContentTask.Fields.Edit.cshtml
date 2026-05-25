@@ -2,9 +2,9 @@
 @using OrchardCore.Contents.Workflows.ViewModels
 @model DeleteContentTaskViewModel
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="Expression">
-    <label asp-for="Expression" class="@Orchard.GetLabelClasses()">@T["Expression"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper" asp-validation-class-for="Expression">
+    <label asp-for="Expression" class="ocat-label">@T["Expression"]</label>
+    <div class="ocat-end">
         <input type="text" asp-for="Expression" class="form-control code" autofocus />
         <span asp-validation-for="Expression"></span>
         <span class="hint">@T["Enter a JavaScript expression that evaluates to the content item (or its 'ContentItemId') to be deleted. For example: input('ContentItem'). If no expression is specified, the workflow's 'ContentItem' input variable or 'ContentItem' property will be used."]</span>

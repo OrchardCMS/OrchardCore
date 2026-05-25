@@ -6,24 +6,24 @@
 <form asp-action="Create">
     @Html.ValidationSummary()
 
-    <div class="@Orchard.GetLimitedWidthWrapperClasses("mb-3")">
-        <label asp-for="DisplayName" class="@Orchard.GetLabelClasses()">@T["Display Name"]</label>
-        <div class="@Orchard.GetLimitedWidthClasses()">
+    <div class="ocat-limited-wrapper">
+        <label asp-for="DisplayName" class="ocat-label">@T["Display Name"]</label>
+        <div class="ocat-limited">
             <input data-displayname="@Html.IdFor(m => m.DisplayName)" asp-for="DisplayName" class="form-control" autofocus />
             <span class="hint">@T["Name of the type as it will be displayed on screens."]</span>
         </div>
     </div>
 
-    <div class="@Orchard.GetLimitedWidthWrapperClasses("mb-3")">
-        <label asp-for="Name" class="@Orchard.GetLabelClasses()">@T["Technical Name"]</label>
-        <div class="@Orchard.GetLimitedWidthClasses()">
+    <div class="ocat-limited-wrapper">
+        <label asp-for="Name" class="ocat-label">@T["Technical Name"]</label>
+        <div class="ocat-limited">
             <input data-name="@Html.IdFor(m => m.DisplayName)" asp-for="Name" class="form-control" />
             <span class="hint">@T["Technical name of the type."]</span>
         </div>
     </div>
 
-    <div class="@Orchard.GetWrapperClasses()">
-        <div class="@Orchard.GetEndClasses(true)">
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
             <button class="btn btn-primary create" type="submit">@T["Create"]</button>
         </div>
     </div>

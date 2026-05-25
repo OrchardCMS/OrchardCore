@@ -1,14 +1,14 @@
 @using OrchardCore.Users.Handlers
 @model OrchardCore.Users.Models.ExternalLoginSettings
 
-<div class="@Orchard.GetWrapperClasses()">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
         <h5>@T["Configuring External Authentication for User Login with Third-Party Providers"]</h5>
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="UseExternalProviderIfOnlyOneDefined">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper" asp-validation-class-for="UseExternalProviderIfOnlyOneDefined">
+    <div class="ocat-end-offset">
         <div class="form-check">
             <input type="checkbox" class="form-check-input" asp-for="UseExternalProviderIfOnlyOneDefined" />
             <span asp-validation-for="UseExternalProviderIfOnlyOneDefined"></span>
@@ -18,8 +18,8 @@
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="UseScriptToSyncProperties">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper" asp-validation-class-for="UseScriptToSyncProperties">
+    <div class="ocat-end-offset">
         <div class="form-check">
             <input type="checkbox" class="form-check-input" asp-for="UseScriptToSyncProperties" />
             <span asp-validation-for="UseScriptToSyncProperties"></span>
@@ -31,14 +31,14 @@
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()" id="doc_editor_wrapper">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper" id="doc_editor_wrapper">
+    <div class="ocat-end-offset">
         <div class="form-control" id="doc_editor" asp-for="Text" style="min-height: 500px;max-width:750px"></div>
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="SyncPropertiesScript" id="SyncRolesScript_wrapper">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper" asp-validation-class-for="SyncPropertiesScript" id="SyncRolesScript_wrapper">
+    <div class="ocat-end-offset">
         <button type="button" class="btn btn-secondary mb-2" onclick="resetScript()">@T["Reset Script"]</button>
         <div id="@Html.IdFor(x => x.SyncPropertiesScript)_editor" asp-for="Text" style="min-height: 400px;" class="form-control"></div>
         <textarea asp-for="SyncPropertiesScript" hidden>@Html.Raw(Model.SyncPropertiesScript)</textarea>

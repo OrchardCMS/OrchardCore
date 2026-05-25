@@ -27,9 +27,9 @@
 
     <!-- Filters -->
     <div class="row g-3">
-        <div class="@Orchard.GetWrapperClasses("col-xl-3", "col-sm-6")">
-            <label class="@Orchard.GetLabelClasses()" for="culture-select">@T["Culture"]</label>
-            <div class="@Orchard.GetEndClasses()">
+        <div class="ocat-wrapper col-xl-3 col-sm-6">
+            <label class="ocat-label" for="culture-select">@T["Culture"]</label>
+            <div class="ocat-end">
                 <select id="culture-select" class="form-select" v-model="currentCulture" @@change="onCultureChange">
                     <option v-for="culture in cultures" :key="culture.name" :value="culture.name">
                         {{ culture.displayName }} ({{ culture.name }})
@@ -37,9 +37,9 @@
                 </select>
             </div>
         </div>
-        <div class="@Orchard.GetWrapperClasses("col-xl-3", "col-sm-6")">
-            <label class="@Orchard.GetLabelClasses()" for="filter-select">@T["Category"]</label>
-            <div class="@Orchard.GetEndClasses()">
+        <div class="ocat-wrapper col-xl-3 col-sm-6">
+            <label class="ocat-label" for="filter-select">@T["Category"]</label>
+            <div class="ocat-end">
                 <select id="filter-select" class="form-select" v-model="categoryFilter">
                     <option value="">@T["All Categories"]</option>
                     <option v-for="provider in providers" :key="provider.name" :value="provider.name">
@@ -48,16 +48,16 @@
                 </select>
             </div>
         </div>
-        <div class="@Orchard.GetWrapperClasses("col-xl-4", "col-sm-8")">
-            <label class="@Orchard.GetLabelClasses()" for="search-box">@T["Search"]</label>
-            <div class="@Orchard.GetEndClasses()">
+        <div class="ocat-wrapper col-xl-4 col-sm-8">
+            <label class="ocat-label" for="search-box">@T["Search"]</label>
+            <div class="ocat-end">
                 <div class="input-group filter-options">
                     <input id="search-box" type="search" class="form-control" v-model="searchQuery" placeholder="@T["Search translations"]" autocomplete="off" />
                 </div>
             </div>
         </div>
-        <div class="@Orchard.GetWrapperClasses("col-xl-2", "col-sm-4")">
-            <div class="@Orchard.GetEndClasses(true)">
+        <div class="col-xl-2 col-sm-4">
+            <div>
                 <div class="form-check">
                     <input class="form-check-input" type="checkbox" id="missing-only-toggle" v-model="showMissingOnly">
                     <label class="form-check-label" for="missing-only-toggle">@T["Missing only"]</label>
@@ -71,8 +71,8 @@
     </div>
 
     <!-- Status indicator -->
-    <div class="@Orchard.GetWrapperClasses()" v-if="isDirty && !isReadOnly">
-        <div class="@Orchard.GetEndClasses(true)">
+    <div class="mb-3" v-if="isDirty && !isReadOnly">
+        <div>
             <span class="badge text-bg-warning">@T["Unsaved changes"]</span>
         </div>
     </div>
@@ -154,8 +154,8 @@
     </div>
 
     <!-- Action buttons -->
-    <div class="@Orchard.GetWrapperClasses()" v-if="!isReadOnly">
-        <div class="@Orchard.GetEndClasses(true)">
+    <div class="mb-3" v-if="!isReadOnly">
+        <div>
             <button type="button" class="btn btn-primary save me-2" @@click="saveTranslations" :disabled="!isDirty || isSaving">
                 <span v-if="isSaving" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
                 @T["Save"]

@@ -2,8 +2,8 @@
 
 <h4>Lucene @T["Index settings"]</h4>
 
-<div class="@Orchard.GetWrapperClasses()">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
         <div class="form-check">
             <input type="checkbox" class="form-check-input" asp-for="LuceneContentIndexSettings.Included" data-bs-toggle="collapse" data-bs-target="#lucene-index-settings" checked="@Model.LuceneContentIndexSettings.Included" />
             <label class="form-check-label" asp-for="LuceneContentIndexSettings.Included">@T["Include this element in the index"]</label>

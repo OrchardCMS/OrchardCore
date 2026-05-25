@@ -59,16 +59,16 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="@Orchard.GetWrapperClasses()">
-                        <label for="options-textarea" class="@Orchard.GetLabelClasses()">@T["Options"]</label>
-                        <div class="@Orchard.GetEndClasses()">
+                    <div class="ocat-wrapper">
+                        <label for="options-textarea" class="ocat-label">@T["Options"]</label>
+                        <div class="ocat-end">
                             <textarea id="options-textarea" name="options-textarea" rows="8" class="form-control" v-bind:value="JSON.stringify(data.options)" v-on:input="data.options = JSON.parse($event.target.value)"></textarea>
                             <span class="hint">@T["A JSON representation of the allowed values, e.g. {0}", "[ { name: 'First option', value: 'option1' }, { name: 'Second option', value: 'option2' } ]"]</span>
                         </div>
                     </div>
-                    <div class="@Orchard.GetWrapperClasses()">
-                        <label for="options-defaultvalue" class="@Orchard.GetLabelClasses()">@T["Default value"]</label>
-                        <div class="@Orchard.GetEndClasses()">
+                    <div class="ocat-wrapper">
+                        <label for="options-defaultvalue" class="ocat-label">@T["Default value"]</label>
+                        <div class="ocat-end">
                             <input id="options-defaultvalue" name="options-defaultvalue" class="form-control" type="text" v-model="data.selected" />
                             <span class="hint">@T["(Optional) The default to assign to the text field."]</span>
                         </div>
@@ -84,9 +84,9 @@
 </script>
 
 <div id="@Html.IdFor(m => m)" class="field-editor field-editor-predefinedlist">
-    <div class="@Orchard.GetLimitedWidthWrapperClasses("mb-3")">
-        <label asp-for="Editor" class="@Orchard.GetLabelClasses()">@T["What type of list editor should be used?"]</label>
-        <div class="@Orchard.GetLimitedWidthClasses()">
+    <div class="ocat-limited-wrapper">
+        <label asp-for="Editor" class="ocat-label">@T["What type of list editor should be used?"]</label>
+        <div class="ocat-limited">
             <select asp-for="Editor" class="form-select">
                 <option value="@nameof(EditorOption.Dropdown)">@T["Drop down list"]</option>
                 <option value="@nameof(EditorOption.Radio)">@T["Radio buttons"]</option>
@@ -94,9 +94,9 @@
         </div>
     </div>
 
-    <div class="@Orchard.GetLimitedWidthWrapperClasses("mb-3")">
-        <label asp-for="Options" class="@Orchard.GetLabelClasses()">@T["Options"]</label>
-        <div class="@Orchard.GetLimitedWidthClasses()">
+    <div class="ocat-limited-wrapper">
+        <label asp-for="Options" class="ocat-label">@T["Options"]</label>
+        <div class="ocat-limited">
             <a href="javascript:void(0)" v-on:click="showModal" class="float-end" title="@T["Edit Data"]"><i class="fa-solid fa-pen-to-square" aria-hidden="true"></i></a>
             <options-table :data="sharedState"></options-table>
             <options-modal :data="sharedState" v-on:reload-data="reloadData()"></options-modal>

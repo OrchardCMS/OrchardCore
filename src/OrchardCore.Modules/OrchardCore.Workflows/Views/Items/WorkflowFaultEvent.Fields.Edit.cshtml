@@ -1,9 +1,9 @@
 @using OrchardCore.Workflows.Models
 @model WorkflowFaultViewModel
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="ErrorFilter" xmlns="http://www.w3.org/1999/html">
-    <label asp-for="ErrorFilter" class="@Orchard.GetLabelClasses()">@T["Trigger Condition"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper" asp-validation-class-for="ErrorFilter" xmlns="http://www.w3.org/1999/html">
+    <label asp-for="ErrorFilter" class="ocat-label">@T["Trigger Condition"]</label>
+    <div class="ocat-end">
         <div id="@Html.IdFor(x => x.ErrorFilter)_editor" asp-for="Text" style="min-height: 400px;" class="form-control"></div>
         <textarea asp-for="ErrorFilter" hidden>@Html.Raw(Model.ErrorFilter)</textarea>
         <span asp-validation-for="ErrorFilter"></span>

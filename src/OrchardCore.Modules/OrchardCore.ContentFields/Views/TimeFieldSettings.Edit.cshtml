@@ -1,7 +1,7 @@
 @model OrchardCore.ContentFields.Settings.TimeFieldSettings
 
-<div class="@Orchard.GetWrapperClasses()">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
         <div class="form-check">
             <input asp-for="Required" type="checkbox" class="form-check-input">
             <label class="form-check-label" asp-for="Required">@T["Required"]</label>
@@ -10,18 +10,18 @@
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()">
-    <label asp-for="Step" class="@Orchard.GetLabelClasses()">@T["Step"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper">
+    <label asp-for="Step" class="ocat-label">@T["Step"]</label>
+    <div class="ocat-end">
         <input asp-for="Step" class="form-control" />
         <span class="hint">@T["The step attribute of the time input allowing to edit seconds and ms."]</span>
         <span class="hint">@T["For seconds use a divisor of 60 e.g. '15', for ms a decimal equal to a divisor of 1000 divided by 1000 e.g. '0.250'."]</span>
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()">
-    <label asp-for="Hint" class="@Orchard.GetLabelClasses()">@T["Hint"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper">
+    <label asp-for="Hint" class="ocat-label">@T["Hint"]</label>
+    <div class="ocat-end">
         <textarea asp-for="Hint" rows="2" class="form-control"></textarea>
         <span class="hint">@T["The hint text to display for this field on the editor."]</span>
     </div>

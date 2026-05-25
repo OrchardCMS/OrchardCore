@@ -1,41 +1,41 @@
 @using OrchardCore
 @model OrchardCore.Seo.ViewModels.SeoMetaPartTwitterViewModel
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="TwitterTitle">
-    <label asp-for="TwitterTitle" class="@Orchard.GetLabelClasses()">@T["Twitter Title"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper" asp-validation-class-for="TwitterTitle">
+    <label asp-for="TwitterTitle" class="ocat-label">@T["Twitter Title"]</label>
+    <div class="ocat-end">
         <input asp-for="TwitterTitle" class="form-control content-preview-text shortcode-modal-input" />
         <span class="hint">@T["The Title is used by default, then the Page Title, or can be overridden here."]</span>
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="TwitterDescription">
-    <label asp-for="TwitterDescription" class="@Orchard.GetLabelClasses()">@T["Twitter Description"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper" asp-validation-class-for="TwitterDescription">
+    <label asp-for="TwitterDescription" class="ocat-label">@T["Twitter Description"]</label>
+    <div class="ocat-end">
         <textarea asp-for="TwitterDescription" class="form-control content-preview-text shortcode-modal-input"></textarea>
         <span class="hint">@T["The Meta Description is used by default, or can be overridden here."]</span>
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="TwitterCard">
-    <label asp-for="TwitterCard" class="@Orchard.GetLabelClasses()">@T["Twitter Card"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper" asp-validation-class-for="TwitterCard">
+    <label asp-for="TwitterCard" class="ocat-label">@T["Twitter Card"]</label>
+    <div class="ocat-end">
         <input asp-for="TwitterCard" class="form-control content-preview-text shortcode-modal-input" />
         <span class="hint">@T["The Social Meta Settings Twitter Card is used by default, or can be overridden here."]</span>
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="TwitterCreator">
-    <label asp-for="TwitterCreator" class="@Orchard.GetLabelClasses()">@T["Twitter Creator"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper" asp-validation-class-for="TwitterCreator">
+    <label asp-for="TwitterCreator" class="ocat-label">@T["Twitter Creator"]</label>
+    <div class="ocat-end">
         <input asp-for="TwitterCreator" class="form-control content-preview-text shortcode-modal-input" />
         <span class="hint">@T["The Social Meta Settings Twitter Creator is used by default, or can be overridden here."]</span>
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="TwitterSite">
-    <label asp-for="TwitterSite" class="@Orchard.GetLabelClasses()">@T["Twitter Site"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper" asp-validation-class-for="TwitterSite">
+    <label asp-for="TwitterSite" class="ocat-label">@T["Twitter Site"]</label>
+    <div class="ocat-end">
         <input asp-for="TwitterSite" class="form-control content-preview-text shortcode-modal-input" />
         <span class="hint">@T["The Social Meta Settings Twitter Site is used by default, or can be overridden here."]</span>
     </div>

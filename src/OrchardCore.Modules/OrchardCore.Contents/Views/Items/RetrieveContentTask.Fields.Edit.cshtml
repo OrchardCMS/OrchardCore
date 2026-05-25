@@ -2,9 +2,9 @@
 @using OrchardCore.Contents.Workflows.ViewModels
 @model RetrieveContentTaskViewModel
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="ContentItemId">
-    <label asp-for="ContentItemId" class="@Orchard.GetLabelClasses()">@T["Content Item ID"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper" asp-validation-class-for="ContentItemId">
+    <label asp-for="ContentItemId" class="ocat-label">@T["Content Item ID"]</label>
+    <div class="ocat-end">
         <input type="text" asp-for="ContentItemId" class="form-control code" autofocus />
         <span asp-validation-for="ContentItemId"></span>
         <span class="hint">@T["Enter a JavaScript expression that evaluates to the Content Item's ID (ContentItemId) to be retrieved. For example: correlationId()."]</span>

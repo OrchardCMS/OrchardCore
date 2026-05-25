@@ -75,18 +75,18 @@
                             <button type="button" class="btn-close" aria-label="Close" v-on:click="closeModal(false)"></button>
                         </div>
                         <div class="modal-body">
-                            <div class="@Orchard.GetWrapperClasses()">
-                                <label for="select-options-textarea" class="@Orchard.GetLabelClasses()">@T["Options"]</label>
-                                <div class="@Orchard.GetEndClasses()">
+                            <div class="ocat-wrapper">
+                                <label for="select-options-textarea" class="ocat-label">@T["Options"]</label>
+                                <div class="ocat-end">
                                     <textarea id="select-options-textarea" name="select-options-textarea" rows="8" class="form-control"
                                     :class="{ 'is-invalid': !isValid }"
                                     v-model="optionsFormattedList"></textarea>
                                     <span class="hint">@T["A JSON representation of the allowed values, e.g. {0}", "[ { text: 'First option', value: 'option1' }, { text: 'Second option', value: 'option2' } ]"]</span>
                                 </div>
                             </div>
-                            <div class="@Orchard.GetWrapperClasses()">
-                                <label for="options-default-value" class="@Orchard.GetLabelClasses()">@T["Default value"]</label>
-                                <div class="@Orchard.GetEndClasses()">
+                            <div class="ocat-wrapper">
+                                <label for="options-default-value" class="ocat-label">@T["Default value"]</label>
+                                <div class="ocat-end">
                                     <input id="options-default-value" name="options-default-value" class="form-control" type="text" v-model="defaultValue" />
                                     <span class="hint">@T["(Optional) The value to assign to the select field."]</span>
                                 </div>
@@ -110,9 +110,9 @@
 }
 <div class="select-part-properties-wrapper" id="@widgetId">
 
-    <div class="@Orchard.GetWrapperClasses("show-for-input")">
-        <label asp-for="Editor" class="@Orchard.GetLabelClasses()">@T["Editor"]</label>
-        <div class="@Orchard.GetEndClasses()">
+    <div class="ocat-wrapper show-for-input">
+        <label asp-for="Editor" class="ocat-label">@T["Editor"]</label>
+        <div class="ocat-end">
             <select asp-for="Editor" class="form-select content-preview-select">
                 <option value="@SelectEditorOption.Dropdown">@T["Dropdown"]</option>
                 <option value="@SelectEditorOption.Checkbox">@T["Checkbox"]</option>
@@ -122,10 +122,10 @@
         </div>
     </div>
 
-    <div class="@Orchard.GetWrapperClasses("field-options-wrapper")" id="@(widgetId)-selectOptions" data-defaultValue="@Model.DefaultValue">
-        <label asp-for="Options" class="@Orchard.GetLabelClasses()">@T["Options"]</label>
+    <div class="ocat-wrapper field-options-wrapper" id="@(widgetId)-selectOptions" data-defaultValue="@Model.DefaultValue">
+        <label asp-for="Options" class="ocat-label">@T["Options"]</label>
 
-        <div class="@Orchard.GetEndClasses()">
+        <div class="ocat-end">
             <input type="hidden" class="field-options-wrapper-initial-default-value" value="@Model.DefaultValue" />
             <div class="d-none field-options-wrapper-initial-options">@Html.Raw(Model.Options)</div>
             <a href="#" v-on:click.prevent.stop="showModal = true" class="float-end" title="@T["Edit Data"]"><i class="fa-solid fa-pen-to-square" aria-hidden="true"></i></a>

@@ -8,8 +8,8 @@
 <script asp-name="codemirror-addon-mode-multiplex" at="Foot"></script>
 <script asp-name="codemirror-mode-xml" at="Foot"></script>
 
-<div class="@Orchard.GetWrapperClasses()">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
         <div class="form-check">
             <input asp-for="AllowChangingUsername" type="checkbox" class="form-check-input">
             <label class="form-check-label" asp-for="AllowChangingUsername">@T["Allow user to change their username"]</label>
@@ -17,8 +17,8 @@
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
         <div class="form-check">
             <input asp-for="AllowChangingEmail" type="checkbox" class="form-check-input">
             <label class="form-check-label" asp-for="AllowChangingEmail">@T["Allow user to change their email address"]</label>
@@ -26,8 +26,8 @@
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
         <div class="form-check">
             <input asp-for="AllowChangingPhoneNumber" type="checkbox" class="form-check-input">
             <label class="form-check-label" asp-for="AllowChangingPhoneNumber">@T["Allow user to change their phone number"]</label>
@@ -35,8 +35,8 @@
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="UseSiteTheme">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper" asp-validation-class-for="UseSiteTheme">
+    <div class="ocat-end-offset">
         <div class="form-check">
             <input type="checkbox" class="form-check-input" asp-for="UseSiteTheme" />
             <span asp-validation-for="UseSiteTheme"></span>
@@ -46,8 +46,8 @@
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="DisableLocalLogin">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper" asp-validation-class-for="DisableLocalLogin">
+    <div class="ocat-end-offset">
         <div class="form-check">
             <input type="checkbox" class="form-check-input" asp-for="DisableLocalLogin" />
             <span asp-validation-for="DisableLocalLogin"></span>

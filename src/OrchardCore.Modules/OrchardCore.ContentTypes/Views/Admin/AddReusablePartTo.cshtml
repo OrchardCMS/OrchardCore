@@ -14,32 +14,32 @@
 
     @if (Model.PartSelections.Any())
     {
-        <div class="@Orchard.GetLimitedWidthWrapperClasses("mb-3")">
-            <label data-displayname="@Html.IdFor(m => m.DisplayName)" asp-for="DisplayName" class="@Orchard.GetLabelClasses()">@T["Display Name"]</label>
-            <div class="@Orchard.GetLimitedWidthClasses()">
+        <div class="ocat-limited-wrapper">
+            <label data-displayname="@Html.IdFor(m => m.DisplayName)" asp-for="DisplayName" class="ocat-label">@T["Display Name"]</label>
+            <div class="ocat-limited">
                 <input asp-for="DisplayName" class="form-control" autofocus />
                 <span class="hint">@T["Name of the reusable part as it will be displayed in screens."]</span>
             </div>
         </div>
 
-        <div class="@Orchard.GetLimitedWidthWrapperClasses("mb-3")">
-            <label asp-for="Name" class="@Orchard.GetLabelClasses()">@T["Technical Name"]</label>
-            <div class="@Orchard.GetLimitedWidthClasses()">
+        <div class="ocat-limited-wrapper">
+            <label asp-for="Name" class="ocat-label">@T["Technical Name"]</label>
+            <div class="ocat-limited">
                 <input data-name="@Html.IdFor(m => m.DisplayName)" asp-for="Name" class="form-control" />
                 <span class="hint">@T["Technical name of the reusable part."]</span>
             </div>
         </div>
 
-        <div class="@Orchard.GetLimitedWidthWrapperClasses("mb-3")">
-            <label asp-for="Description" class="@Orchard.GetLabelClasses()">@T["Description"]</label>
-            <div class="@Orchard.GetLimitedWidthClasses()">
+        <div class="ocat-limited-wrapper">
+            <label asp-for="Description" class="ocat-label">@T["Description"]</label>
+            <div class="ocat-limited">
                 <input asp-for="Description" class="form-control" />
                 <span class="hint">@T["Description of the reusable part."]</span>
             </div>
         </div>
 
-        <div class="@Orchard.GetLimitedWidthWrapperClasses("mb-3")">
-            <div class="@Orchard.GetLimitedWidthClasses()">
+        <div class="ocat-limited-wrapper">
+            <div class="ocat-limited">
                 <ul class="list-group">
                     @foreach (var partSelection in Model.PartSelections)
                     {
@@ -64,8 +64,8 @@
         <p class="alert alert-warning">@T["There are no available named parts."]</p>
     }
 
-    <div class="@Orchard.GetWrapperClasses()">
-        <div class="@Orchard.GetEndClasses(true)">
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
             @if (Model.PartSelections.Any())
             {
                 <button class="btn btn-primary save" type="submit">@T["Save"]</button>

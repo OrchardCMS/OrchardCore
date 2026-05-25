@@ -8,8 +8,8 @@
         <input type="hidden" asp-for="ActivityId" />
         @await DisplayAsync(Model.ActivityEditor)
 
-        <div class="@Orchard.GetWrapperClasses()">
-            <div class="@Orchard.GetEndClasses(true)">
+        <div class="ocat-wrapper">
+            <div class="ocat-end-offset">
                 <button class="btn btn-primary save" type="submit">@T["Save"]</button>
                 <a class="btn btn-secondary cancel" role="button" href="@Model.ReturnUrl">@T["Cancel"]</a>
             </div>

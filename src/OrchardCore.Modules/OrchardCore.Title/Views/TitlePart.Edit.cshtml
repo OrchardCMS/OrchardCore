@@ -9,9 +9,9 @@
     var isRequired = Model.Settings?.Options == TitlePartOptions.EditableRequired;
 }
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="Title">
-    <label asp-for="Title" class="@Orchard.GetLabelClasses(inputRequired: isRequired)">@T["Title"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper" asp-validation-class-for="Title">
+    <label asp-for="Title" class="ocat-label @(isRequired ? "ocat-label-required" : "")">@T["Title"]</label>
+    <div class="ocat-end">
         <input asp-for="Title" class="form-control content-preview-text content-caption-text" placeholder="@Model.Settings.Placeholder" disabled="@(Model.Settings?.Options == TitlePartOptions.GeneratedDisabled)" autofocus="autofocus" dir="@culture.GetLanguageDirection()" />
         <span asp-validation-for="Title"></span>
         @if (!string.IsNullOrWhiteSpace(Model.Settings?.Pattern) && Model.Settings?.Options == TitlePartOptions.GeneratedDisabled)

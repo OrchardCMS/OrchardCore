@@ -3,9 +3,9 @@
     var term = Model.Value.FilterResult.FirstOrDefault(x => x.TermName == "stereotype");
 }
 
-<div class="@Orchard.GetWrapperClasses()">
-    <h4 class="card-title @Orchard.GetLabelClasses()">@T["Content Type Stereotype"]</h4>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper">
+    <h4 class="card-title ocat-label">@T["Content Type Stereotype"]</h4>
+    <div class="ocat-end">
         <pre>@(term?.ToString() ?? "stereotype:...")</pre>
     </div>
 </div>

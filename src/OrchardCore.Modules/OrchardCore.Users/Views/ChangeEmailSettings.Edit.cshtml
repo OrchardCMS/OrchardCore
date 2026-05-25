@@ -1,7 +1,7 @@
 @model OrchardCore.Users.Models.ChangeEmailSettings
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="AllowChangeEmail">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper" asp-validation-class-for="AllowChangeEmail">
+    <div class="ocat-end-offset">
         <div class="form-check">
             <input type="checkbox" class="form-check-input" asp-for="AllowChangeEmail" />
             <span asp-validation-for="AllowChangeEmail"></span>

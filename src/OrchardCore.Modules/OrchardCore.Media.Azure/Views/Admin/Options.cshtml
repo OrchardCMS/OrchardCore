@@ -6,9 +6,9 @@
     <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/Media.Azure/#configuration" target="_blank">@T["See documentation"]</a>
 </p>
 
-<div class="@Orchard.GetWrapperClasses()">
-    <label asp-for="ConnectionString" class="@Orchard.GetLabelClasses()">@T["Connection String"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper">
+    <label asp-for="ConnectionString" class="ocat-label">@T["Connection String"]</label>
+    <div class="ocat-end">
         <code>
             @if (!string.IsNullOrEmpty(Model.ConnectionString))
             {
@@ -22,22 +22,22 @@
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()">
-    <label asp-for="ContainerName" class="@Orchard.GetLabelClasses()">@T["Container Name"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper">
+    <label asp-for="ContainerName" class="ocat-label">@T["Container Name"]</label>
+    <div class="ocat-end">
         <code><input type="text" class="form-control-plaintext" value="@Model.ContainerName" readonly /></code>
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()">
-    <label asp-for="BasePath" class="@Orchard.GetLabelClasses()">@T["Base Path"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper">
+    <label asp-for="BasePath" class="ocat-label">@T["Base Path"]</label>
+    <div class="ocat-end">
         <code><input type="text" class="form-control-plaintext" value="@Model.BasePath" readonly /></code>
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
         <div class="form-check">
             <input type="checkbox" class="form-check-input" asp-for="CreateContainer" checked="@Model.CreateContainer" disabled />
             <label class="form-check-label" asp-for="CreateContainer">@T["Create Container"]</label>
@@ -46,8 +46,8 @@
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
         <div class="form-check">
             <input type="checkbox" class="form-check-input" asp-for="RemoveContainer" checked="@Model.RemoveContainer" disabled />
             <label class="form-check-label" asp-for="RemoveContainer">@T["Remove Container"]</label>
@@ -56,8 +56,8 @@
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
         <div class="form-check">
             <input type="checkbox" class="form-check-input" asp-for="RemoveFilesFromBasePath" checked="@Model.RemoveFilesFromBasePath" disabled />
             <label class="form-check-label" asp-for="RemoveFilesFromBasePath">@T["Remove Files From Base Path"]</label>

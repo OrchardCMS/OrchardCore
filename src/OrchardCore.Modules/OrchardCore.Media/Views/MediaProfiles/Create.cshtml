@@ -5,9 +5,9 @@
 
 <div asp-validation-summary="All"></div>
 <form asp-action="Create" method="post" class="no-multisubmit">
-    <div class="@Orchard.GetWrapperClasses("form-g")" asp-validation-class-for="Name">
-        <label asp-for="Name" class="@Orchard.GetLabelClasses()">@T["Name"]</label>
-        <div class="@Orchard.GetEndClasses("w-100")">
+    <div class="ocat-wrapper form-g" asp-validation-class-for="Name">
+        <label asp-for="Name" class="ocat-label">@T["Name"]</label>
+        <div class="ocat-end w-100">
             <div class="w-100 w-lg-75 w-xl-50">
                 <input asp-for="Name" class="form-control" autofocus />
                 <span asp-validation-for="Name"></span>
@@ -16,9 +16,9 @@
         </div>
     </div>
 
-    <div class="@Orchard.GetWrapperClasses("form-g")" asp-validation-class-for="Hint">
-        <label asp-for="Hint" class="@Orchard.GetLabelClasses()">@T["Hint"]</label>
-        <div class="@Orchard.GetEndClasses("w-100")">
+    <div class="ocat-wrapper form-g" asp-validation-class-for="Hint">
+        <label asp-for="Hint" class="ocat-label">@T["Hint"]</label>
+        <div class="ocat-end w-100">
             <div class="w-100 w-lg-75 w-xl-50">
                 <textarea asp-for="Hint" rows="2" class="form-control"></textarea>
                 <span asp-validation-for="Hint"></span>
@@ -27,9 +27,9 @@
         </div>
     </div>
 
-    <div class="@Orchard.GetWrapperClasses("form-g")" asp-validation-class-for="SelectedWidth">
-        <label asp-for="SelectedWidth" class="@Orchard.GetLabelClasses()">@T["Width"]</label>
-        <div class="@Orchard.GetEndClasses("w-100")">
+    <div class="ocat-wrapper form-g" asp-validation-class-for="SelectedWidth">
+        <label asp-for="SelectedWidth" class="ocat-label">@T["Width"]</label>
+        <div class="ocat-end w-100">
             <div class="w-100 w-lg-75 w-xl-50">
                 <select asp-for="SelectedWidth" asp-items="@Model.AvailableWidths" class="form-select content-preview-select" asp-validation-class-for="SelectedWidth"></select>
                 <span asp-validation-for="SelectedWidth"></span>
@@ -40,9 +40,9 @@
         </div>
     </div>
 
-    <div class="@Orchard.GetWrapperClasses("form-g")" asp-validation-class-for="SelectedHeight">
-        <label asp-for="SelectedHeight" class="@Orchard.GetLabelClasses()">@T["Height"]</label>
-        <div class="@Orchard.GetEndClasses("w-100")">
+    <div class="ocat-wrapper form-g" asp-validation-class-for="SelectedHeight">
+        <label asp-for="SelectedHeight" class="ocat-label">@T["Height"]</label>
+        <div class="ocat-end w-100">
             <div class="w-100 w-lg-75 w-xl-50">
                 <select asp-for="SelectedHeight" asp-items="@Model.AvailableHeights" class="form-select content-preview-select" asp-validation-class-for="SelectedHeight"></select>
                 <span asp-validation-for="SelectedHeight"></span>
@@ -53,9 +53,9 @@
         </div>
     </div>
 
-    <div class="@Orchard.GetWrapperClasses("form-g")" asp-validation-class-for="SelectedMode">
-        <label asp-for="SelectedMode" class="@Orchard.GetLabelClasses()">@T["Resize Mode"]</label>
-        <div class="@Orchard.GetEndClasses("w-100")">
+    <div class="ocat-wrapper form-g" asp-validation-class-for="SelectedMode">
+        <label asp-for="SelectedMode" class="ocat-label">@T["Resize Mode"]</label>
+        <div class="ocat-end w-100">
             <div class="w-100 w-lg-75 w-xl-50">
                 <select asp-for="SelectedMode" asp-items="Model.AvailableResizeModes" class="form-select content-preview-select" asp-validation-class-for="SelectedMode"></select>
                 <span asp-validation-for="SelectedMode"></span>
@@ -64,9 +64,9 @@
         </div>
     </div>
 
-    <div class="@Orchard.GetWrapperClasses("form-g")" asp-validation-class-for="BackgroundColor" style="@(Model.SelectedMode == ResizeMode.Pad || Model.SelectedMode == ResizeMode.BoxPad ? "" : "display: none;")">
-        <label asp-for="BackgroundColor" class="@Orchard.GetLabelClasses()">@T["Background Color"]</label>
-        <div class="@Orchard.GetEndClasses("w-100")">
+    <div class="ocat-wrapper form-g" asp-validation-class-for="BackgroundColor" style="@(Model.SelectedMode == ResizeMode.Pad || Model.SelectedMode == ResizeMode.BoxPad ? "" : "display: none;")">
+        <label asp-for="BackgroundColor" class="ocat-label">@T["Background Color"]</label>
+        <div class="ocat-end w-100">
             <div class="w-100 w-lg-75 w-xl-50">
                 <input type="text" asp-for="BackgroundColor" class="form-control" />
                 <span asp-validation-for="BackgroundColor"></span>
@@ -75,9 +75,9 @@
         </div>
     </div>
 
-    <div class="@Orchard.GetWrapperClasses("form-g")" asp-validation-class-for="SelectedFormat">
-        <label asp-for="SelectedFormat" class="@Orchard.GetLabelClasses()">@T["Format"]</label>
-        <div class="@Orchard.GetEndClasses("w-100")">
+    <div class="ocat-wrapper form-g" asp-validation-class-for="SelectedFormat">
+        <label asp-for="SelectedFormat" class="ocat-label">@T["Format"]</label>
+        <div class="ocat-end w-100">
             <div class="w-100 w-lg-75 w-xl-50">
                 <select asp-for="SelectedFormat" asp-items="Model.AvailableFormats" class="form-select content-preview-select" asp-validation-class-for="SelectedFormat"></select>
                 <span asp-validation-for="SelectedFormat"></span>
@@ -86,9 +86,9 @@
         </div>
     </div>
 
-    <div class="@Orchard.GetWrapperClasses("form-g")" asp-validation-class-for="Quality">
-        <label asp-for="Quality" class="@Orchard.GetLabelClasses()">@T["Quality"]</label>
-        <div class="@Orchard.GetEndClasses("w-100")">
+    <div class="ocat-wrapper form-g" asp-validation-class-for="Quality">
+        <label asp-for="Quality" class="ocat-label">@T["Quality"]</label>
+        <div class="ocat-end w-100">
             <div class="w-100 w-lg-75 w-xl-50">
                 <input asp-for="Quality" class="form-control" min="1" max="100" />
                 <span asp-validation-for="Quality"></span>
@@ -97,8 +97,8 @@
         </div>
     </div>
 
-    <div class="@Orchard.GetWrapperClasses("form-g")">
-        <div class="@Orchard.GetEndClasses(true)">
+    <div class="ocat-wrapper form-g">
+        <div class="ocat-end-offset">
             <div class="btn-group">
                 <button type="submit" name="submit" class="btn btn-success save">@T["Save"]</button>
                 <button type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-reference="parent" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

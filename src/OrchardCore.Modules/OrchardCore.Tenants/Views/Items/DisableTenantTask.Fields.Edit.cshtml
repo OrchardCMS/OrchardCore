@@ -1,9 +1,9 @@
 @using OrchardCore.Tenants.Workflows.ViewModels
 @model DisableTenantTaskViewModel
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="TenantNameExpression">
-    <label asp-for="TenantNameExpression" class="@Orchard.GetLabelClasses()">@T["Tenant name"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper" asp-validation-class-for="TenantNameExpression">
+    <label asp-for="TenantNameExpression" class="ocat-label">@T["Tenant name"]</label>
+    <div class="ocat-end">
         <input type="text" asp-for="TenantNameExpression" class="form-control code" autofocus />
         <span asp-validation-for="TenantNameExpression"></span>
         <span class="hint">@T["Select the name of the tenant to disable."]</span>

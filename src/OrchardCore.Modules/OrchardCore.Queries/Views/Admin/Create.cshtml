@@ -11,8 +11,8 @@
 
     @if (Model.Editor.Actions != null)
     {
-        <div class="@Orchard.GetWrapperClasses()">
-            <div class="@Orchard.GetEndClasses(true)">
+        <div class="ocat-wrapper">
+            <div class="ocat-end-offset">
                 @await DisplayAsync(Model.Editor.Actions)
             </div>
         </div>

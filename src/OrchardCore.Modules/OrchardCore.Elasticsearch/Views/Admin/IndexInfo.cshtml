@@ -2,11 +2,11 @@
 
 <h2>@T["Elasticsearch index information"]</h2>
 
-<div class="@Orchard.GetLimitedWidthWrapperClasses("mb-4")">
-    <div class="@Orchard.GetLimitedWidthClasses()">
-        <div class="@Orchard.GetWrapperClasses()">
-            <label asp-for="IndexInfo" class="@Orchard.GetLabelClasses()">@T["Info for '{0}' index.", Model.IndexDisplayText]</label>
-            <div class="@Orchard.GetEndClasses()">
+<div class="ocat-limited-wrapper">
+    <div class="ocat-limited">
+        <div class="ocat-wrapper">
+            <label asp-for="IndexInfo" class="ocat-label">@T["Info for '{0}' index.", Model.IndexDisplayText]</label>
+            <div class="ocat-end">
                 <div class="form-control">
                     <div id="@Html.IdFor(x => x.IndexInfo)_editor" style="min-height: 400px;" dir="@Orchard.CultureDir()" data-schema='@Model.IndexInfo'></div>
                 </div>

@@ -2,9 +2,9 @@
 @using OrchardCore.Workflows.ViewModels
 @model CorrelateTaskViewModel
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="Syntax">
-    <label asp-for="Syntax" class="@Orchard.GetLabelClasses()">@T["Syntax"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper" asp-validation-class-for="Syntax">
+    <label asp-for="Syntax" class="ocat-label">@T["Syntax"]</label>
+    <div class="ocat-end">
         <select asp-for="Syntax" class="form-select">
             <option value="@nameof(WorkflowScriptSyntax.JavaScript)">@T["JavaScript"]</option>
             <option value="@nameof(WorkflowScriptSyntax.Liquid)">@T["Liquid"]</option>
@@ -13,9 +13,9 @@
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="Value">
-    <label asp-for="Value" class="@Orchard.GetLabelClasses()">@T["Value"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper" asp-validation-class-for="Value">
+    <label asp-for="Value" class="ocat-label">@T["Value"]</label>
+    <div class="ocat-end">
         <textarea asp-for="Value" class="form-control"></textarea>
         <span asp-validation-for="Value"></span>
         <span id="liquid_hint" class="hint @(Model.Syntax == WorkflowScriptSyntax.Liquid ? "" : "d-none")">@T["The value to correlate workflow instances with. With Liquid support."]</span>

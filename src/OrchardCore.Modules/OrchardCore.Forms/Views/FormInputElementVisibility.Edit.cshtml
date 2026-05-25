@@ -5,9 +5,9 @@
 
 @model FormInputElementVisibilityViewModel
 
-<div class="@Orchard.GetWrapperClasses()">
-    <label asp-for="Action" class="@Orchard.GetLabelClasses()">@T["Action"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper">
+    <label asp-for="Action" class="ocat-label">@T["Action"]</label>
+    <div class="ocat-end">
         <select asp-for="Action" asp-items="Model.Actions" class="form-select"></select>
         <span class="hint">@T["The action to take when the condition is met."]</span>
     </div>

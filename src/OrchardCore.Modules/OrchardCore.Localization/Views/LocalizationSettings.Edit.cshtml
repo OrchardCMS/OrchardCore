@@ -79,17 +79,17 @@
     </div>
 </script>
 
-<div class="@Orchard.GetWrapperClasses()">
-    <label class="@Orchard.GetLabelClasses()">@T["Define which cultures are supported by the site."]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper">
+    <label class="ocat-label">@T["Define which cultures are supported by the site."]</label>
+    <div class="ocat-end">
         <div id="@Html.IdFor(m => m)" class="field-editor field-editor-predefinedlist">
             <options-table :data="supportedCultures" :default-value="defaultCulture" :selectedCulture="selectedCulture" :list="allCultures"></options-table>
         </div>
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="FallBackToParentCultures">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper" asp-validation-class-for="FallBackToParentCultures">
+    <div class="ocat-end-offset">
         <div class="form-check">
             <input type="checkbox" class="form-check-input" asp-for="FallBackToParentCultures" />
             <label class="form-check-label" asp-for="FallBackToParentCultures">@T["Fall back to parent culture(s)"]</label>

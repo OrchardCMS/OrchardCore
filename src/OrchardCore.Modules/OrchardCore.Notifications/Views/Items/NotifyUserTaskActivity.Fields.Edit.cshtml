@@ -1,44 +1,44 @@
 @using OrchardCore
 @model NotifyUserTaskActivityViewModel
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="Subject">
-    <label asp-for="Subject" class="@Orchard.GetLabelClasses()">@T["Subject"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper" asp-validation-class-for="Subject">
+    <label asp-for="Subject" class="ocat-label">@T["Subject"]</label>
+    <div class="ocat-end">
         <input type="text" asp-for="Subject" class="form-control" />
         <span asp-validation-for="Subject"></span>
         <span class="hint">@T["You may use Liquid syntax."]</span>
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="Summary">
-    <label asp-for="Summary" class="@Orchard.GetLabelClasses()">@T["Summary"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper" asp-validation-class-for="Summary">
+    <label asp-for="Summary" class="ocat-label">@T["Summary"]</label>
+    <div class="ocat-end">
         <textarea asp-for="Summary" rows="3" class="form-control"></textarea>
         <span asp-validation-for="Summary"></span>
         <span class="hint">@T["You may use Liquid syntax. Html is supported."]</span>
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="TextBody">
-    <label asp-for="TextBody" class="@Orchard.GetLabelClasses()">@T["Text Body"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper" asp-validation-class-for="TextBody">
+    <label asp-for="TextBody" class="ocat-label">@T["Text Body"]</label>
+    <div class="ocat-end">
         <textarea asp-for="TextBody" rows="5" class="form-control"></textarea>
         <span asp-validation-for="TextBody"></span>
         <span class="hint">@T["This optional text body does not support HTML. You may use Liquid syntax."]</span>
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="HtmlBody">
-    <label asp-for="HtmlBody" class="@Orchard.GetLabelClasses()">@T["HTML Body"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper" asp-validation-class-for="HtmlBody">
+    <label asp-for="HtmlBody" class="ocat-label">@T["HTML Body"]</label>
+    <div class="ocat-end">
         <textarea asp-for="HtmlBody" rows="10" class="form-control"></textarea>
         <span asp-validation-for="HtmlBody"></span>
         <span class="hint">@T["HTML message will only be sent if the notification provider supports it. You may use Liquid syntax."]</span>
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
         <div class="form-check">
             <input asp-for="IsHtmlPreferred" type="checkbox" class="form-check-input" />
             <label class="form-check-label" asp-for="IsHtmlPreferred">@T["Use HTML Body when possible"]</label>

@@ -3,9 +3,9 @@
     var term = Model.Value.FilterResult.FirstOrDefault(x => x.TermName == "sort");
 }
 
-<div class="@Orchard.GetWrapperClasses()">
-    <h4 class="card-title @Orchard.GetLabelClasses()">@T["Sort"]</h4>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper">
+    <h4 class="card-title ocat-label">@T["Sort"]</h4>
+    <div class="ocat-end">
         <pre>@(term?.ToString() ?? "sort:...")</pre>
     </div>
 </div>

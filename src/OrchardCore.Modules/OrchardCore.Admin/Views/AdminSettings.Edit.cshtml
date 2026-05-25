@@ -1,7 +1,7 @@
 @model OrchardCore.Admin.ViewModels.AdminSettingsViewModel
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="DisplayThemeToggler">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper" asp-validation-class-for="DisplayThemeToggler">
+    <div class="ocat-end-offset">
         <div class="form-check">
             <input asp-for="DisplayThemeToggler" class="form-check-input" type="checkbox" />
             <label asp-for="DisplayThemeToggler" class="form-check-label">@T["Enable theme toggler"]</label>
@@ -10,8 +10,8 @@
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="DisplayMenuFilter">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper" asp-validation-class-for="DisplayMenuFilter">
+    <div class="ocat-end-offset">
         <div class="form-check">
             <input asp-for="DisplayMenuFilter" class="form-check-input" type="checkbox" />
             <label asp-for="DisplayMenuFilter" class="form-check-label">@T["Enable Admin Menu filter"]</label>
@@ -20,8 +20,8 @@
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="DisplayNewMenu">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper" asp-validation-class-for="DisplayNewMenu">
+    <div class="ocat-end-offset">
         <div class="form-check">
             <input asp-for="DisplayNewMenu" class="form-check-input" type="checkbox" />
             <label asp-for="DisplayNewMenu" class="form-check-label">@T["Display New menu"]</label>
@@ -30,8 +30,8 @@
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="DisplayTitlesInTopbar">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper" asp-validation-class-for="DisplayTitlesInTopbar">
+    <div class="ocat-end-offset">
         <div class="form-check">
             <input asp-for="DisplayTitlesInTopbar" class="form-check-input" type="checkbox" />
             <label asp-for="DisplayTitlesInTopbar" class="form-check-label">@T["Display titles in top bar"]</label>

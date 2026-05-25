@@ -3,8 +3,8 @@
 
 @model RegisterUserTaskViewModel
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="SendConfirmationEmail">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper" asp-validation-class-for="SendConfirmationEmail">
+    <div class="ocat-end-offset">
         <div class="form-check">
             <input type="checkbox" asp-for="SendConfirmationEmail" class="form-check-input" />
             <label asp-for="SendConfirmationEmail" class="form-check-label">@T["Send confirmation email"]</label>
@@ -13,26 +13,26 @@
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="ConfirmationEmailSubject">
-    <label asp-for="ConfirmationEmailSubject" class="@Orchard.GetLabelClasses()">@T["Subject for confirmation email"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper" asp-validation-class-for="ConfirmationEmailSubject">
+    <label asp-for="ConfirmationEmailSubject" class="ocat-label">@T["Subject for confirmation email"]</label>
+    <div class="ocat-end">
         <input type="text" asp-for="ConfirmationEmailSubject" class="form-control code" />
         <span asp-validation-for="ConfirmationEmailSubject"></span>
         <span class="hint">@T["The subject of the message. Supports Liquid syntax."]</span>
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="ConfirmationEmailTemplate">
-    <label asp-for="ConfirmationEmailTemplate" class="@Orchard.GetLabelClasses()">@T["Template for confirmation email"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper" asp-validation-class-for="ConfirmationEmailTemplate">
+    <label asp-for="ConfirmationEmailTemplate" class="ocat-label">@T["Template for confirmation email"]</label>
+    <div class="ocat-end">
         <input type="text" asp-for="ConfirmationEmailTemplate" class="form-control code" />
         <span asp-validation-for="ConfirmationEmailTemplate"></span>
         <span class="hint">@T["The message to send. Access email confirmation url with Workflow.Properties.EmailConfirmationUrl liquid property."]</span>
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="RequireModeration">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper" asp-validation-class-for="RequireModeration">
+    <div class="ocat-end-offset">
         <div class="form-check">
             <input type="checkbox" asp-for="RequireModeration" class="form-check-input" />
             <label asp-for="RequireModeration" class="form-check-label">@T["Users must be approved before they can log in"]</label>

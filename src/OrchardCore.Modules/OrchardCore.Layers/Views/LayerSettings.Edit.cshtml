@@ -1,8 +1,8 @@
 @model OrchardCore.Layers.ViewModels.LayerSettingsViewModel
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="Zones">
-    <label asp-for="Zones" class="@Orchard.GetLabelClasses()">@T["Available zones for Layers"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper" asp-validation-class-for="Zones">
+    <label asp-for="Zones" class="ocat-label">@T["Available zones for Layers"]</label>
+    <div class="ocat-end">
         <input asp-for="Zones" class="form-control" type="text" />
         <span asp-validation-for="Zones"></span>
         <span class="hint">

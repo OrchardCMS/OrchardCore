@@ -2,9 +2,9 @@
 
 @if (Model.Indexes?.Count > 0)
 {
-    <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="DefaultIndexProfileName">
-        <label asp-for="DefaultIndexProfileName" class="@Orchard.GetLabelClasses()">@T["Default search index"]</label>
-        <div class="@Orchard.GetEndClasses()">
+    <div class="ocat-wrapper" asp-validation-class-for="DefaultIndexProfileName">
+        <label asp-for="DefaultIndexProfileName" class="ocat-label">@T["Default search index"]</label>
+        <div class="ocat-end">
             <select asp-for="DefaultIndexProfileName" asp-items="Model.Indexes" class="form-select">
                 <option value="">@T["Select a default index"]</option>
             </select>
@@ -13,9 +13,9 @@
         </div>
     </div>
 
-    <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="Placeholder">
-        <label asp-for="Placeholder" class="@Orchard.GetLabelClasses()">@T["Placeholder"]</label>
-        <div class="@Orchard.GetEndClasses()">
+    <div class="ocat-wrapper" asp-validation-class-for="Placeholder">
+        <label asp-for="Placeholder" class="ocat-label">@T["Placeholder"]</label>
+        <div class="ocat-end">
             <input type="text" class="form-control" asp-for="Placeholder" />
             <span class="hint">@T["The placeholder text to use in the search bar."]</span>
         </div>

@@ -1,8 +1,8 @@
 @model OrchardCore.ContentFields.Settings.LinkFieldSettings
 @using OrchardCore.ContentFields.Settings
 
-<div class="@Orchard.GetWrapperClasses()">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
         <div class="form-check">
             <input type="checkbox" class="form-check-input" asp-for="Required" checked="@Model.Required" />
             <label class="form-check-label" asp-for="Required">@T["Required"]</label>
@@ -10,9 +10,9 @@
         </div>
     </div>
 </div>
-<div class="@Orchard.GetWrapperClasses()">
-    <label asp-for="LinkTextMode" class="@Orchard.GetLabelClasses()">@T["Text"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper">
+    <label asp-for="LinkTextMode" class="ocat-label">@T["Text"]</label>
+    <div class="ocat-end">
         <select asp-for="LinkTextMode" class="form-select">
             <option value="@LinkTextMode.Optional" selected="@(Model.LinkTextMode == LinkTextMode.Optional)">@T["Text is optional"]</option>
             <option value="@LinkTextMode.Required" selected="@(Model.LinkTextMode == LinkTextMode.Required)">@T["Text is required"]</option>
@@ -22,49 +22,49 @@
     </div>
 </div>
 <div class="row">
-    <div class="@Orchard.GetWrapperClasses("col-md-6")">
-        <label asp-for="Hint" class="@Orchard.GetLabelClasses()">@T["Hint for the url"]</label>
-        <div class="@Orchard.GetEndClasses()">
+    <div class="ocat-wrapper col-md-6">
+        <label asp-for="Hint" class="ocat-label">@T["Hint for the url"]</label>
+        <div class="ocat-end">
             <input asp-for="Hint" type="text" class="form-control" />
             <span class="hint">@T["The hint text to display for the url on the editor."]</span>
         </div>
     </div>
-    <div class="@Orchard.GetWrapperClasses("col-md-6")">
-        <label asp-for="HintLinkText" class="@Orchard.GetLabelClasses()">@T["Hint for the text"]</label>
-        <div class="@Orchard.GetEndClasses()">
+    <div class="ocat-wrapper col-md-6">
+        <label asp-for="HintLinkText" class="ocat-label">@T["Hint for the text"]</label>
+        <div class="ocat-end">
             <input asp-for="HintLinkText" type="text" class="form-control" />
             <span class="hint">@T["The hint text to display for the text of the link on the editor."]</span>
         </div>
     </div>
 </div>
 <div class="row">
-    <div class="@Orchard.GetWrapperClasses("col-md-6")">
-        <label asp-for="UrlPlaceholder" class="@Orchard.GetLabelClasses()">@T["Watermark for the url"]</label>
-        <div class="@Orchard.GetEndClasses()">
+    <div class="ocat-wrapper col-md-6">
+        <label asp-for="UrlPlaceholder" class="ocat-label">@T["Watermark for the url"]</label>
+        <div class="ocat-end">
             <input asp-for="UrlPlaceholder" type="text" class="form-control" />
             <span class="hint">@T["A hint (placeholder) to display when the input of the url is empty."]</span>
         </div>
     </div>
-    <div class="@Orchard.GetWrapperClasses("col-md-6")">
-        <label asp-for="TextPlaceholder" class="@Orchard.GetLabelClasses()">@T["Watermark for the text"]</label>
-        <div class="@Orchard.GetEndClasses()">
+    <div class="ocat-wrapper col-md-6">
+        <label asp-for="TextPlaceholder" class="ocat-label">@T["Watermark for the text"]</label>
+        <div class="ocat-end">
             <input asp-for="TextPlaceholder" type="text" class="form-control" />
             <span class="hint">@T["A hint (placeholder) to display when the input of the text is empty."]</span>
         </div>
     </div>
 </div>
 <div class="row">
-    <div class="@Orchard.GetWrapperClasses("col-md-6")">
-        <label asp-for="DefaultUrl" class="@Orchard.GetLabelClasses()">@T["Default value of the url"]</label>
-        <div class="@Orchard.GetEndClasses()">
+    <div class="ocat-wrapper col-md-6">
+        <label asp-for="DefaultUrl" class="ocat-label">@T["Default value of the url"]</label>
+        <div class="ocat-end">
             <input asp-for="DefaultUrl" type="text" class="form-control" />
             <span class="hint">@T["A valid url proposed when creating a content item."]</span>
             <span asp-validation-for="DefaultUrl" class="text-danger"></span>
         </div>
     </div>
-    <div class="@Orchard.GetWrapperClasses("col-md-6")">
-        <label asp-for="DefaultText" class="@Orchard.GetLabelClasses()">@T["Default value of the text"]</label>
-        <div class="@Orchard.GetEndClasses()">
+    <div class="ocat-wrapper col-md-6">
+        <label asp-for="DefaultText" class="ocat-label">@T["Default value of the text"]</label>
+        <div class="ocat-end">
             <input asp-for="DefaultText" type="text" class="form-control" />
             <span class="hint">@T["The default link text proposed when creating a content item."]</span>
             <span asp-validation-for="DefaultText" class="text-danger"></span>
@@ -73,9 +73,9 @@
 </div>
 
 <div class="row">
-    <div class="@Orchard.GetWrapperClasses("col-md-6")">
-        <label asp-for="DefaultTarget" class="@Orchard.GetLabelClasses()">@T["Default value of the Target"]</label>
-        <div class="@Orchard.GetEndClasses()">
+    <div class="ocat-wrapper col-md-6">
+        <label asp-for="DefaultTarget" class="ocat-label">@T["Default value of the Target"]</label>
+        <div class="ocat-end">
             <input asp-for="DefaultTarget" list="targetOptions" class="form-control" />
             <datalist id="targetOptions">
                 <option value="_self">@T["Opens the linked document in the same frame as it was clicked (default)."]</option>

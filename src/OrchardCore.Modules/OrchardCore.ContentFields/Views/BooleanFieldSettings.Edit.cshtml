@@ -1,23 +1,23 @@
 @model OrchardCore.ContentFields.Settings.BooleanFieldSettings
 
-<div class="@Orchard.GetWrapperClasses()">
-    <label asp-for="Hint" class="@Orchard.GetLabelClasses()">@T["Hint"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper">
+    <label asp-for="Hint" class="ocat-label">@T["Hint"]</label>
+    <div class="ocat-end">
         <textarea asp-for="Hint" rows="2" class="form-control"></textarea>
         <span class="hint">@T["The hint text to display for this field on the editor."]</span>
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()">
-    <label asp-for="Label" class="@Orchard.GetLabelClasses()">@T["Label"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper">
+    <label asp-for="Label" class="ocat-label">@T["Label"]</label>
+    <div class="ocat-end">
         <input asp-for="Label" class="form-control" />
         <span class="hint">@T["The text associated to the checkbox."]</span>
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
         <div class="form-check">
             <input asp-for="DefaultValue" type="checkbox" class="form-check-input" />
             <label class="form-check-label" asp-for="DefaultValue">@T["Default value is true"]</label>

@@ -3,17 +3,17 @@
 
 @model EditIndexProfileViewModel
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="IndexName">
-    <label asp-for="IndexName" class="@Orchard.GetLabelClasses()">@T["Index Name"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper" asp-validation-class-for="IndexName">
+    <label asp-for="IndexName" class="ocat-label">@T["Index Name"]</label>
+    <div class="ocat-end">
     <input asp-for="IndexName" class="form-control" asp-is-disabled="!Model.IsNew" />
     <span asp-validation-for="IndexName" class="text-danger"></span>
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()">
-    <label asp-for="Name" class="@Orchard.GetLabelClasses()">@T["Name"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper">
+    <label asp-for="Name" class="ocat-label">@T["Name"]</label>
+    <div class="ocat-end">
     <input asp-for="Name" class="form-control" />
     <span asp-validation-for="Name" class="text-danger"></span>
     <span class="hint">@T["A unique name for the index."]</span>

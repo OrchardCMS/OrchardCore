@@ -1,36 +1,36 @@
 @using OrchardCore.Workflows.ViewModels
 @model ForLoopTaskViewModel
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="FromExpression">
-    <label asp-for="FromExpression" class="@Orchard.GetLabelClasses()">@T["From Expression"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper" asp-validation-class-for="FromExpression">
+    <label asp-for="FromExpression" class="ocat-label">@T["From Expression"]</label>
+    <div class="ocat-end">
         <input type="text" asp-for="FromExpression" class="form-control code" />
         <span asp-validation-for="FromExpression"></span>
         <span class="hint">@T["The start value. With JavaScript support."]</span>
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="ToExpression">
-    <label asp-for="ToExpression" class="@Orchard.GetLabelClasses()">@T["To Expression"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper" asp-validation-class-for="ToExpression">
+    <label asp-for="ToExpression" class="ocat-label">@T["To Expression"]</label>
+    <div class="ocat-end">
         <input type="text" asp-for="ToExpression" class="form-control code" />
         <span asp-validation-for="ToExpression"></span>
         <span class="hint">@T["The end value. With JavaScript support."]</span>
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="StepExpression">
-    <label asp-for="StepExpression" class="@Orchard.GetLabelClasses()">@T["Step Expression"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper" asp-validation-class-for="StepExpression">
+    <label asp-for="StepExpression" class="ocat-label">@T["Step Expression"]</label>
+    <div class="ocat-end">
         <input type="text" asp-for="StepExpression" class="form-control code" />
         <span asp-validation-for="StepExpression"></span>
         <span class="hint">@T["The loop Step value. With JavaScript support."]</span>
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="LoopVariableName">
-    <label asp-for="LoopVariableName" class="@Orchard.GetLabelClasses()">@T["Looping Variable"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper" asp-validation-class-for="LoopVariableName">
+    <label asp-for="LoopVariableName" class="ocat-label">@T["Looping Variable"]</label>
+    <div class="ocat-end">
         <input type="text" asp-for="LoopVariableName" class="form-control" />
         <span asp-validation-for="LoopVariableName"></span>
         <span class="hint">@T["The name of the looping variable. The current value of each iteration is set to a property with this name as well as the last result."]</span>

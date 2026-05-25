@@ -1,13 +1,13 @@
 @model OrchardCore.Users.Models.AuthenticatorAppLoginSettings
 
 <fieldset>
-    <div class="@Orchard.GetWrapperClasses()">
-        <div class="@Orchard.GetEndClasses(true)">
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
             <legend>@T["Authenticator App Settings"]</legend>
         </div>
     </div>
-    <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="UseEmailAsAuthenticatorDisplayName">
-        <div class="@Orchard.GetEndClasses(true)">
+    <div class="ocat-wrapper" asp-validation-class-for="UseEmailAsAuthenticatorDisplayName">
+        <div class="ocat-end-offset">
             <div class="form-check">
                 <input type="checkbox" class="form-check-input" asp-for="UseEmailAsAuthenticatorDisplayName" />
                 <span asp-validation-for="UseEmailAsAuthenticatorDisplayName"></span>

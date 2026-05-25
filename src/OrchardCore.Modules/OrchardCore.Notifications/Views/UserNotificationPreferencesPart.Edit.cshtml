@@ -4,10 +4,10 @@
     var methodsHtmlId = Html.IdFor(x => x.Methods);
 }
 
-<div class="@Orchard.GetWrapperClasses()">
-    <label asp-for="Methods" class="@Orchard.GetLabelClasses()">@T["Notification Methods"]</label>
+<div class="ocat-wrapper">
+    <label asp-for="Methods" class="ocat-label">@T["Notification Methods"]</label>
 
-    <div class="@Orchard.GetEndClasses()">
+    <div class="ocat-end">
         <span class="hint">
             @T["Select all notification methods to receive."]
         </span>

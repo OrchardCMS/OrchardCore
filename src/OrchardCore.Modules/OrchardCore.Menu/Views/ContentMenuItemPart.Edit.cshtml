@@ -1,15 +1,15 @@
 @using OrchardCore
 @model ContentMenuItemPartEditViewModel
 
-<div class="@Orchard.GetWrapperClasses()">
-    <label asp-for="Name" class="@Orchard.GetLabelClasses()">@T["Name"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper">
+    <label asp-for="Name" class="ocat-label">@T["Name"]</label>
+    <div class="ocat-end">
         <input asp-for="Name" class="form-control" autofocus />
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
         <div class="form-check">
             <input asp-for="CheckContentPermissions" type="checkbox" class="form-check-input">
             <label class="form-check-label" asp-for="CheckContentPermissions">@T["Check content permissions"]</label>

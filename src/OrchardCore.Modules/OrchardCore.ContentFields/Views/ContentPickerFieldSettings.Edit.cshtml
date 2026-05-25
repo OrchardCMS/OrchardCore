@@ -10,8 +10,8 @@
 <script asp-name="codemirror-mode-xml" at="Foot"></script>
 <script asp-src="~/OrchardCore.Liquid/codemirror/liquid.js" at="Foot"></script>
 
-<div class="@Orchard.GetWrapperClasses()">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
         <div class="form-check">
             <input asp-for="Required" type="checkbox" class="form-check-input">
             <label class="form-check-label" asp-for="Required">@T["Required"]</label>
@@ -20,8 +20,8 @@
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
         <div class="form-check">
             <input asp-for="Multiple" type="checkbox" class="form-check-input">
             <label class="form-check-label" asp-for="Multiple">@T["Allow multiple"]</label>
@@ -30,9 +30,9 @@
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()">
-    <label asp-for="Source" class="@Orchard.GetLabelClasses()">@T["Contained Content Types"]</label>
-    <div class="@Orchard.GetEndClasses()" id="@Html.IdFor(x => x.Source)">
+<div class="ocat-wrapper">
+    <label asp-for="Source" class="ocat-label">@T["Contained Content Types"]</label>
+    <div class="ocat-end" id="@Html.IdFor(x => x.Source)">
         <div class="form-check">
             <input class="form-check-input" type="radio" asp-for="Source" id="SourceAll" value="@ContentPickerSettingType.AllTypes" checked="@(Model.Source == ContentPickerSettingType.AllTypes)">
             <label for="SourceAll" class="form-check-label">
@@ -54,41 +54,41 @@
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()" id="StereotypesContainer">
-    <label asp-for="Stereotypes" class="@Orchard.GetLabelClasses()">@T["Stereotypes"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper" id="StereotypesContainer">
+    <label asp-for="Stereotypes" class="ocat-label">@T["Stereotypes"]</label>
+    <div class="ocat-end">
         <input asp-for="Stereotypes" class="form-control medium" />
         <span class="hint">@T["The Stereotypes of the content types that this field can contain. You may define multiple Stereotypes using the comma (,) as a separator"]</span>
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()" id="ContentTypesContainer">
-    <label asp-for="DisplayedContentTypes" class="@Orchard.GetLabelClasses()">@T["Content Types"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper" id="ContentTypesContainer">
+    <label asp-for="DisplayedContentTypes" class="ocat-label">@T["Content Types"]</label>
+    <div class="ocat-end">
         <span class="hint">@T["The content types to display. Choose at least one."]</span>
         @await Component.InvokeAsync("SelectContentTypes", new { selectedContentTypes = Model.DisplayedContentTypes, htmlName = Html.NameFor(m => m.DisplayedContentTypes) })
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()">
-    <label asp-for="Placeholder" class="@Orchard.GetLabelClasses()">@T["Placeholder"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper">
+    <label asp-for="Placeholder" class="ocat-label">@T["Placeholder"]</label>
+    <div class="ocat-end">
         <input asp-for="Placeholder" class="form-control" />
         <span class="hint">@T["The placeholder text to display for this field on the editor."]</span>
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()">
-    <label asp-for="Hint" class="@Orchard.GetLabelClasses()">@T["Hint"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper">
+    <label asp-for="Hint" class="ocat-label">@T["Hint"]</label>
+    <div class="ocat-end">
         <textarea asp-for="Hint" rows="2" class="form-control"></textarea>
         <span class="hint">@T["The hint text to display for this field on the editor."]</span>
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()">
-    <label asp-for="TitlePattern" class="@Orchard.GetLabelClasses()">@T["Title Pattern"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper">
+    <label asp-for="TitlePattern" class="ocat-label">@T["Title Pattern"]</label>
+    <div class="ocat-end">
         <textarea asp-for="TitlePattern" rows="5" class="form-control"></textarea>
         <span class="hint">@T["The pattern used to render the title in content picker. With Liquid support."]</span>
     </div>

@@ -9,17 +9,17 @@
 
 <div asp-validation-summary="ModelOnly"></div>
 <form asp-action="Create" method="post" class="no-multisubmit">
-    <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="Name">
-        <label asp-for="Name" class="@Orchard.GetLabelClasses()">@T["Name"]</label>
-        <div class="@Orchard.GetEndClasses()">
+    <div class="ocat-wrapper" asp-validation-class-for="Name">
+        <label asp-for="Name" class="ocat-label">@T["Name"]</label>
+        <div class="ocat-end">
         <input asp-for="Name" class="form-control" autofocus />
         <span asp-validation-for="Name" class="text-danger"></span>
         </div>
     </div>
 
-    <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="Path">
-        <label asp-for="Path" class="@Orchard.GetLabelClasses()">@T["Permalink"]</label>
-        <div class="@Orchard.GetEndClasses()">
+    <div class="ocat-wrapper" asp-validation-class-for="Path">
+        <label asp-for="Path" class="ocat-label">@T["Permalink"]</label>
+        <div class="ocat-end">
         <div class="input-group">
             @if (!string.IsNullOrWhiteSpace(Site.BaseUrl))
             {
@@ -32,8 +32,8 @@
         </div>
     </div>
 
-    <div class="@Orchard.GetWrapperClasses()">
-        <div class="@Orchard.GetEndClasses(true)">
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
             <div class="form-check">
             <input asp-for="Enabled" class="form-check-input" />
             <label asp-for="Enabled" class="form-check-label">@T["Enabled"]</label>
@@ -43,8 +43,8 @@
     </div>
 
     <fieldset>
-        <div class="@Orchard.GetWrapperClasses()">
-            <div class="@Orchard.GetEndClasses(true)">
+        <div class="ocat-wrapper">
+            <div class="ocat-end-offset">
                 <button class="btn btn-primary create" type="submit">@T["Create"]</button>
                 <a class="btn btn-secondary cancel" role="button" asp-route-action="List">@T["Cancel"]</a>
             </div>

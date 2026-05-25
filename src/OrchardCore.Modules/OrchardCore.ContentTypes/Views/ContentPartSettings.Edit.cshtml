@@ -1,33 +1,33 @@
 @using OrchardCore.ContentManagement.Metadata.Settings
 @model ContentPartSettingsViewModel
 
-<div class="@Orchard.GetLimitedWidthWrapperClasses("mb-3")">
-    <label asp-for="ContentPartDefinition.Name" class="@Orchard.GetLabelClasses()">@T["Technical Name"]</label>
-    <div class="@Orchard.GetLimitedWidthClasses()">
+<div class="ocat-limited-wrapper">
+    <label asp-for="ContentPartDefinition.Name" class="ocat-label">@T["Technical Name"]</label>
+    <div class="ocat-limited">
         <input asp-for="ContentPartDefinition.Name" class="form-control" readonly />
         <span class="hint">@T["Technical name of the part."]</span>
     </div>
 </div>
 
-<div class="@Orchard.GetLimitedWidthWrapperClasses("mb-3")">
-    <label asp-for="DisplayName" class="@Orchard.GetLabelClasses()">@T["Display Name"]</label>
-    <div class="@Orchard.GetLimitedWidthClasses()">
+<div class="ocat-limited-wrapper">
+    <label asp-for="DisplayName" class="ocat-label">@T["Display Name"]</label>
+    <div class="ocat-limited">
         <input asp-for="DisplayName" class="form-control" placeholder="@Model.ContentPartDefinition.DisplayName()" />
         <span class="hint">@T["Name of the part as it will be displayed in screens. Leave empty to use defaults."]</span>
     </div>
 </div>
 
-<div class="@Orchard.GetLimitedWidthWrapperClasses("mb-3")">
-    <label asp-for="Description" class="@Orchard.GetLabelClasses()">@T["Description"]</label>
-    <div class="@Orchard.GetLimitedWidthClasses()">
+<div class="ocat-limited-wrapper">
+    <label asp-for="Description" class="ocat-label">@T["Description"]</label>
+    <div class="ocat-limited">
         @Html.ValidationMessageFor(m => m.Description)
         <input asp-for="Description" class="form-control" />
         <span class="hint">@T["Optionally provide a description for this part."]</span>
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
         <div class="form-check">
             <input type="checkbox" class="form-check-input" asp-for="Attachable">
             <label class="form-check-label" asp-for="Attachable">@T["Attachable"]</label>
@@ -36,8 +36,8 @@
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
         <div class="form-check">
             <input type="checkbox" class="form-check-input" asp-for="Reusable">
             <label class="form-check-label" asp-for="Reusable">@T["Reusable"]</label>

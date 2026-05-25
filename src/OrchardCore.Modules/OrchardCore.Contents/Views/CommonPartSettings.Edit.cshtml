@@ -1,7 +1,7 @@
 @model OrchardCore.Contents.ViewModels.CommonPartSettingsViewModel
 
-<div class="@Orchard.GetWrapperClasses()">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
         <div class="form-check">
             <input type="checkbox" class="form-check-input" asp-for="DisplayDateEditor" checked="@Model.DisplayDateEditor">
             <label class="form-check-label" asp-for="DisplayDateEditor">@T["Display date editor"]</label>
@@ -9,8 +9,8 @@
         </div>
     </div>
 </div>
-<div class="@Orchard.GetWrapperClasses()">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
         <div class="form-check">
             <input type="checkbox" class="form-check-input" asp-for="DisplayOwnerEditor" checked="@Model.DisplayOwnerEditor">
             <label class="form-check-label" asp-for="DisplayOwnerEditor">@T["Display owner editor"]</label>

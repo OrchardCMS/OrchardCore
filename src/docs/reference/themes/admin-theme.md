@@ -2,71 +2,35 @@
 
 Orchard Core provides specific attributes and services to manage Admin Themes within your modules.
 
-## Style Settings for `TheAdmin` Theme
+## OCAT CSS Classes for Admin Editors
 
-The `TheAdmin` theme supports configurable style settings that allow you to make the admin editor layout responsive. By customizing these settings, you can control the alignment and width of labels, inputs, and wrappers across all admin editor views.
+The Admin Theme uses a set of CSS classes prefixed with `ocat-` (Orchard Core Admin Theme) to style form editors. These classes decouple the HTML structure from any specific CSS framework, allowing theme authors to restyle the admin without modifying Razor views.
 
-### Configuration
+By default, the `ocat-*` classes render a stacked (vertical) form layout equivalent to Bootstrap's default form styling. To create alternative layouts (e.g., horizontal forms), override the `ocat-*` classes in your custom admin theme's SCSS/CSS.
 
-Add the following settings to your `appsettings.json` file:
+### Available OCAT Classes
 
-```json
-{
-  "OrchardCore": {
-    "TheAdminTheme": {
-      "StyleSettings": {
-        "WrapperClasses": "row mb-3",
-        "LimitedWidthWrapperClasses": "row",
-        "LimitedWidthClasses": "col-md-6 col-lg-5 col-xxl-4",
-        "StartClasses": "col-lg-2 col-xl-3",
-        "EndClasses": "col-lg-10 col-xl-9",
-        "LabelClasses": "col-form-label text-lg-end col-lg-2 col-xl-3",
-        "OffsetClasses": "offset-lg-2 offset-xl-3"
-      }
-    }
-  }
-}
-```
+| CSS Class | Purpose | Default Style |
+|-----------|---------|---------------|
+| `ocat-wrapper` | Outer wrapper for each form field group | `margin-bottom: 1rem` |
+| `ocat-label` | Label element styling | Same as Bootstrap `.form-label` |
+| `ocat-label-required` | Additional class for required field labels | Appends red `*` indicator |
+| `ocat-end` | Container for the input and hint content | _(no additional styles)_ |
+| `ocat-end-offset` | Container for input content when no label exists (e.g., standalone checkboxes) | _(no additional styles)_ |
+| `ocat-start` | Leading element container (for push/alignment) | _(no additional styles)_ |
+| `ocat-limited-wrapper` | Wrapper for limited-width fields (dropdowns, numbers) | Stacked field wrapper with `margin-bottom: 1rem` |
+| `ocat-limited` | Constrains input width for limited-width fields | `100%`, then `50%` at `md`, `33.333%` at `lg`, `25%` at `xxl` |
 
-With these settings applied, the admin editor adopts a horizontal form layout where labels are aligned to the left (or right-aligned on large screens) and inputs are positioned in a dedicated column to the right.
+### Using OCAT Classes in Custom Views
 
-### Settings Reference
-
-| Setting | Default | Description |
-|---------|---------|-------------|
-| `WrapperClasses` | `mb-3` | CSS classes applied to each field's outer wrapper element. |
-| `LimitedWidthWrapperClasses` | _(empty)_ | CSS classes for the wrapper of limited-width fields (e.g., dropdowns, number inputs). |
-| `LimitedWidthClasses` | _(empty)_ | CSS classes constraining the width of limited-width field inputs. |
-| `StartClasses` | _(empty)_ | CSS classes for the starting section, used to push elements to the end. |
-| `EndClasses` | _(empty)_ | CSS classes for the ending section where inputs and hints are placed. |
-| `LabelClasses` | `form-label` | CSS classes for label elements. |
-| `OffsetClasses` | _(empty)_ | CSS classes used to offset content that has no label (e.g., standalone checkboxes). |
-
-### Available Helpers
-
-The following Razor helpers are available for use in admin editor views:
-
-| Helper | Description |
-|--------|-------------|
-| `Orchard.GetWrapperClasses(params string[] additionalClasses)` | Gets the CSS classes for a field wrapper element. |
-| `Orchard.GetLabelClasses(bool inputRequired, params string[] additionalClasses)` | Gets the CSS classes for a label element. |
-| `Orchard.GetEndClasses(params string[] additionalClasses)` | Gets the CSS classes for the input/content container. |
-| `Orchard.GetEndClasses(bool withOffset, params string[] additionalClasses)` | Gets the CSS classes for the input container with an optional offset (for elements without a label). |
-| `Orchard.GetStartClasses(params string[] additionalClasses)` | Gets the CSS classes for a starting section. |
-| `Orchard.GetOffsetClasses(params string[] additionalClasses)` | Gets the offset classes to align elements without a label. |
-| `Orchard.GetLimitedWidthWrapperClasses(params string[] additionalClasses)` | Gets the CSS classes for the limited-width field wrapper. |
-| `Orchard.GetLimitedWidthClasses(params string[] additionalClasses)` | Gets the CSS classes for limiting the width of an input (e.g., number fields, dropdowns). |
-
-### Using Helpers in Custom Views
-
-When building custom admin editor views, use the style helpers so your views align with the configured theme settings.
+When building custom admin editor views, use the `ocat-*` classes so your views work with any admin theme.
 
 **Standard field pattern:**
 
 ```html
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="Title">
-    <label asp-for="Title" class="@Orchard.GetLabelClasses()">@T["Title"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper" asp-validation-class-for="Title">
+    <label asp-for="Title" class="ocat-label">@T["Title"]</label>
+    <div class="ocat-end">
         <input asp-for="Title" class="form-control" />
         <span asp-validation-for="Title"></span>
         <span class="hint">@T["The title of the item."]</span>
@@ -74,11 +38,23 @@ When building custom admin editor views, use the style helpers so your views ali
 </div>
 ```
 
+**Required field pattern:**
+
+```html
+<div class="ocat-wrapper" asp-validation-class-for="Name">
+    <label asp-for="Name" class="ocat-label ocat-label-required">@T["Name"]</label>
+    <div class="ocat-end">
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name"></span>
+    </div>
+</div>
+```
+
 **Checkbox pattern (no label column):**
 
 ```html
-<div class="@Orchard.GetWrapperClasses()">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
         <div class="form-check">
             <input type="checkbox" class="form-check-input" asp-for="IsEnabled" />
             <label class="form-check-label" asp-for="IsEnabled">@T["Enable feature"]</label>
@@ -91,39 +67,99 @@ When building custom admin editor views, use the style helpers so your views ali
 **Limited-width field pattern (for dropdowns, number inputs):**
 
 ```html
-<div class="@Orchard.GetLimitedWidthWrapperClasses("mb-3")">
-    <label asp-for="PageSize" class="@Orchard.GetLabelClasses()">@T["Page size"]</label>
-    <div class="@Orchard.GetLimitedWidthClasses()">
+<div class="ocat-limited-wrapper">
+    <label asp-for="PageSize" class="ocat-label">@T["Page size"]</label>
+    <div class="ocat-limited">
         <input asp-for="PageSize" type="number" class="form-control" />
         <span class="hint">@T["The default page size."]</span>
     </div>
 </div>
 ```
 
-### Screenshots
+### Creating a Horizontal Form Layout
 
-With the configuration above applied, admin editors display with a horizontal form layout:
+To achieve a horizontal form layout, override the `ocat-*` classes in your custom admin theme CSS or SCSS. Here's a pure CSS example:
+
+```css
+/* Horizontal form layout for admin editors */
+.ocat-wrapper {
+    --ocat-gutter-x: 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    margin-right: calc(-0.5 * var(--ocat-gutter-x));
+    margin-left: calc(-0.5 * var(--ocat-gutter-x));
+    margin-bottom: 1rem;
+}
+
+.ocat-wrapper > *,
+.ocat-limited-wrapper > * {
+    box-sizing: border-box;
+    flex-shrink: 0;
+    width: 100%;
+    max-width: 100%;
+    padding-right: calc(var(--ocat-gutter-x) * 0.5);
+    padding-left: calc(var(--ocat-gutter-x) * 0.5);
+}
+
+.ocat-label {
+    flex: 0 0 auto;
+    width: 25%;
+    padding-top: calc(0.375rem + var(--bs-border-width));
+    padding-bottom: calc(0.375rem + var(--bs-border-width));
+    text-align: end;
+}
+
+.ocat-end {
+    flex: 0 0 auto;
+    width: 75%;
+}
+
+.ocat-end-offset {
+    flex: 0 0 auto;
+    width: 75%;
+    margin-inline-start: 25%;
+}
+
+.ocat-start {
+    flex: 0 0 auto;
+    width: 25%;
+}
+
+.ocat-limited-wrapper {
+    --ocat-gutter-x: 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    margin-right: calc(-0.5 * var(--ocat-gutter-x));
+    margin-left: calc(-0.5 * var(--ocat-gutter-x));
+    margin-bottom: 1rem;
+}
+
+.ocat-limited {
+    flex: 0 0 auto;
+    max-width: 33.333%;
+    width: 33.333%;
+}
+```
+
+With these styles applied, admin editors display with a horizontal form layout:
 
 ![content-fields](https://user-images.githubusercontent.com/24724371/195202615-d61a13f4-3b8e-4b6c-ab91-720fdf6e4d2e.gif)
 
 ![content-parts](https://user-images.githubusercontent.com/24724371/195202640-1f7c7dcf-191e-4246-9690-5a7a2bf8c03f.gif)
 
-### Programmatic Configuration
+### Content Part & Field Wrapper Classes
 
-You can also configure the style settings in code using `PostConfigure`:
+For content parts and fields, render the wrapper classes directly in the view instead of using helper methods:
 
-```csharp
-services.PostConfigure<TheAdminThemeOptions>(options =>
-{
-    options.WrapperClasses = "row mb-3";
-    options.LimitedWidthWrapperClasses = "row";
-    options.LimitedWidthClasses = "col-md-6 col-lg-5 col-xxl-4";
-    options.StartClasses = "col-lg-2 col-xl-3";
-    options.EndClasses = "col-lg-10 col-xl-9";
-    options.LabelClasses = "col-form-label text-lg-end col-lg-2 col-xl-3";
-    options.OffsetClasses = "offset-lg-2 offset-xl-3";
-});
-```
+- `ocat-wrapper content-part-wrapper content-part-wrapper-{part-name}` for parts
+- `ocat-wrapper field-wrapper field-wrapper-{part-name}-{field-name}` for fields
+
+If the part or field is a named part, also append the named-part-specific class:
+
+- `content-part-wrapper-{named-part-name}` for parts
+- `field-wrapper-{named-part-name}-{field-name}` for fields
+
+These classes enable targeted styling of specific content type editors without relying on C# helper extensions.
 
 ## The `[Admin]` Attribute
 
@@ -133,7 +169,7 @@ To ensure a controller or a specific action uses the Admin Theme, decorate it wi
 using OrchardCore.Admin;
 
 [Admin]
-public class MyCustomAdminController : Controller
+public sealed class MyCustomAdminController : Controller
 {
     // All actions in this controller will render using the Admin Theme
     public IActionResult Index()
@@ -146,7 +182,7 @@ public class MyCustomAdminController : Controller
 You can also apply it to specific actions if the rest of the controller should use the front-end theme:
 
 ```csharp
-public class SettingsController : Controller
+public sealed class SettingsController : Controller
 {
     [Admin]
     public IActionResult AdminSettings()
@@ -177,7 +213,7 @@ The **IThemeService** allows you to programmatically manage and discover themes.
 Example Usage
 
 ```csharp
-public class MyService
+public sealed class MyService
 {
     private readonly IThemeService _themeService;
 

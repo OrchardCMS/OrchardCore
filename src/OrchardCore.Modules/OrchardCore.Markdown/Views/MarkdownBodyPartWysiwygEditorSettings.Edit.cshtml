@@ -2,9 +2,9 @@
 @model OrchardCore.Markdown.ViewModels.MarkdownFieldWysiwygEditorSettingsViewModel
 
 <div id="@Html.IdFor(m => m)" class="type-part-editor type-part-editor-wysiwyg">
-    <div class="@Orchard.GetLimitedWidthWrapperClasses("mb-3")">
-        <label asp-for="Options" class="@Orchard.GetLabelClasses()">@T["Enter the editor options"]</label>
-        <div class="@Orchard.GetLimitedWidthClasses()">
+    <div class="ocat-limited-wrapper">
+        <label asp-for="Options" class="ocat-label">@T["Enter the editor options"]</label>
+        <div class="ocat-limited">
             <span class="hint"><a href="https://github.com/Ionaru/easy-markdown-editor#configuration" target="_blank">@T["Documentation for options"]</a></span>
             <textarea asp-for="Options" class="form-control" autofocus="autofocus"></textarea>
         </div>

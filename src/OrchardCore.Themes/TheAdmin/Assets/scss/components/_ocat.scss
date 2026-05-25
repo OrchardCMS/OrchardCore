@@ -1,0 +1,66 @@
+// Orchard Core Admin Theme (OCAT) CSS Classes
+// These classes provide the default admin form layout styles.
+// Override these in a custom theme to change the admin editor layout
+// without modifying any Razor views.
+//
+// Example: To create a horizontal form layout, override these classes
+// in your custom admin theme:
+//
+//   .ocat-wrapper { --ocat-gutter-x: 1.5rem; display: flex; flex-wrap: wrap; margin-right: calc(-0.5 * var(--ocat-gutter-x)); margin-left: calc(-0.5 * var(--ocat-gutter-x)); margin-bottom: 1rem; }
+//   .ocat-wrapper > *, .ocat-limited-wrapper > * { box-sizing: border-box; flex-shrink: 0; width: 100%; max-width: 100%; padding-right: calc(var(--ocat-gutter-x) * 0.5); padding-left: calc(var(--ocat-gutter-x) * 0.5); }
+//   .ocat-label { text-align: end; flex: 0 0 25%; max-width: 25%; padding-top: calc(.375rem + 1px); }
+//   .ocat-end { flex: 0 0 75%; max-width: 75%; }
+//   .ocat-end-offset { margin-left: 25%; flex: 0 0 75%; max-width: 75%; }
+//   .ocat-start { flex: 0 0 25%; max-width: 25%; }
+//   .ocat-limited-wrapper { --ocat-gutter-x: 1.5rem; display: flex; flex-wrap: wrap; margin-right: calc(-0.5 * var(--ocat-gutter-x)); margin-left: calc(-0.5 * var(--ocat-gutter-x)); margin-bottom: 1rem; }
+//   .ocat-limited { flex: 0 0 auto; width: 33.333%; max-width: 33.333%; }
+
+.ocat-wrapper {
+    margin-bottom: 1rem;
+}
+
+.ocat-label {
+    display: inline-block;
+    margin-bottom: 0.25rem;
+}
+
+.ocat-label-required::after {
+    color: var(--bs-danger-text-emphasis);
+    content: " *";
+}
+
+.ocat-end {
+    // Default: no additional layout constraints (stacked form).
+}
+
+.ocat-end-offset {
+    // Default: no offset in stacked layout.
+}
+
+.ocat-start {
+    // Default: no start column in stacked layout.
+}
+
+.ocat-limited-wrapper {
+    margin-bottom: 1rem;
+}
+
+.ocat-limited {
+    width: 100%;
+    max-width: 100%;
+
+    @media (min-width: 768px) {
+        width: 50%;
+        max-width: 50%;
+    }
+
+    @media (min-width: 992px) {
+        width: 33.33333333%;
+        max-width: 33.333%;
+    }
+
+    @media (min-width: 1400px) {
+        width: 25%;
+        max-width: 25%;
+    }
+}

@@ -3,9 +3,9 @@
 @using OrchardCore.Security.ViewModels
 @model SecuritySettingsViewModel
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="ReferrerPolicy">
-    <label asp-for="ReferrerPolicy" class="@Orchard.GetLabelClasses()">@T["Referrer Policy"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper" asp-validation-class-for="ReferrerPolicy">
+    <label asp-for="ReferrerPolicy" class="ocat-label">@T["Referrer Policy"]</label>
+    <div class="ocat-end">
         <select asp-for="ReferrerPolicy" class="form-select">
             <option value="@ReferrerPolicyValue.NoReferrer" selected="@(Model.ReferrerPolicy == ReferrerPolicyValue.NoReferrer)">
                 @T["No referrer"]

@@ -16,25 +16,25 @@
 <form asp-action="AddFieldTo" asp-route-returnUrl="@ViewData["returnUrl"]">
     @Html.ValidationSummary()
 
-    <div class="@Orchard.GetLimitedWidthWrapperClasses("mb-3")">
-        <label asp-for="DisplayName" class="@Orchard.GetLabelClasses()">@T["Display Name"]</label>
-        <div class="@Orchard.GetLimitedWidthClasses()">
+    <div class="ocat-limited-wrapper">
+        <label asp-for="DisplayName" class="ocat-label">@T["Display Name"]</label>
+        <div class="ocat-limited">
             <input data-displayname="@Html.IdFor(m => m.DisplayName)" asp-for="DisplayName" class="form-control" autofocus />
             <span class="hint">@T["Name of the field as it will be displayed in screens."]</span>
         </div>
     </div>
 
-    <div class="@Orchard.GetLimitedWidthWrapperClasses("mb-3")">
-        <label asp-for="Name" class="@Orchard.GetLabelClasses()">@T["Technical Name"]</label>
-        <div class="@Orchard.GetLimitedWidthClasses()">
+    <div class="ocat-limited-wrapper">
+        <label asp-for="Name" class="ocat-label">@T["Technical Name"]</label>
+        <div class="ocat-limited">
             <input data-name="@Html.IdFor(m => m.DisplayName)" asp-for="Name" class="form-control" />
             <span class="hint">@T["Technical name of the field."]</span>
         </div>
     </div>
 
-    <div class="@Orchard.GetLimitedWidthWrapperClasses("mb-3")">
-        <label asp-for="FieldTypeName" class="@Orchard.GetLabelClasses()">@T["Field Type"]</label>
-        <div class="@Orchard.GetLimitedWidthClasses()">
+    <div class="ocat-limited-wrapper">
+        <label asp-for="FieldTypeName" class="ocat-label">@T["Field Type"]</label>
+        <div class="ocat-limited">
             <ul class="list-group">
                 @for (var i = 0; i < Model.Fields.Count; i++)
                 {
@@ -49,8 +49,8 @@
         </div>
     </div>
 
-    <div class="@Orchard.GetWrapperClasses()">
-        <div class="@Orchard.GetEndClasses(true)">
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
             <button class="btn btn-primary save" type="submit">@T["Save"]</button>
             @if (Url.IsLocalUrl(returnUrl))
             {

@@ -1,7 +1,7 @@
 @model OrchardCore.ContentLocalization.Models.ContentCulturePickerSettings
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="SetCookie">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper" asp-validation-class-for="SetCookie">
+    <div class="ocat-end-offset">
         <div class="form-check">
             <input type="checkbox" class="form-check-input" asp-for="SetCookie" />
             <span asp-validation-for="SetCookie"></span>
@@ -10,8 +10,8 @@
         <span class="hint dashed">@T["Sets the localization cookie when switching cultures using the ContentCulturePicker"]</span>
     </div>
 </div>
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="RedirectToHomepage">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper" asp-validation-class-for="RedirectToHomepage">
+    <div class="ocat-end-offset">
         <div class="form-check">
             <input type="checkbox" class="form-check-input" asp-for="RedirectToHomepage" />
             <span asp-validation-for="RedirectToHomepage"></span>
