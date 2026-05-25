@@ -91,6 +91,6 @@ Layer settings can be configured using the `Settings` recipe step:
 }
 ```
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `Zones` | Array of String | The list of available zones for widget placement. |
+| Property | Type            | Description                                       |
+|----------|-----------------|---------------------------------------------------|
+| `Zones`  | Array of String | The list of available zones for widget placement. |

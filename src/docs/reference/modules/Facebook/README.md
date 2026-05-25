@@ -92,21 +92,21 @@ Facebook settings can be configured using the `Settings` recipe step:
 
 ### Core Settings
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `AppId` | String | The Facebook Application ID. **Required.** |
-| `AppSecret` | String | The Facebook Application Secret. **Required.** |
-| `FBInit` | Boolean | Whether to initialize the Facebook JavaScript SDK on the frontend. |
-| `FBInitParams` | String | Additional parameters for `FB.init()` call. |
-| `SdkJs` | String | The name of the SDK JavaScript file to load. **Required.** |
-| `Version` | String | The Facebook Graph API version to use (e.g., `v3.2`). |
+| Property       | Type    | Description                                                        |
+|----------------|---------|--------------------------------------------------------------------|
+| `AppId`        | String  | The Facebook Application ID. **Required.**                         |
+| `AppSecret`    | String  | The Facebook Application Secret. **Required.**                     |
+| `FBInit`       | Boolean | Whether to initialize the Facebook JavaScript SDK on the frontend. |
+| `FBInitParams` | String  | Additional parameters for `FB.init()` call.                        |
+| `SdkJs`        | String  | The name of the SDK JavaScript file to load. **Required.**         |
+| `Version`      | String  | The Facebook Graph API version to use (e.g., `v3.2`).              |
 
 ### Login Settings
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `CallbackPath` | String | The request path where the user-agent will be returned after authentication. |
-| `SaveTokens` | Boolean | Whether to save the access and refresh tokens. |
+| Property       | Type    | Description                                                                  |
+|----------------|---------|------------------------------------------------------------------------------|
+| `CallbackPath` | String  | The request path where the user-agent will be returned after authentication. |
+| `SaveTokens`   | Boolean | Whether to save the access and refresh tokens.                               |
 
 ## Meta Settings Configuration
 
