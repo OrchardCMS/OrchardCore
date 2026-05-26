@@ -178,6 +178,10 @@ extractpo <INTPUT_PATH> <OUTPUT_PATH> [-l|--language {"C#"|"VB"}] [-t|--template
 
 See [JavaScript Localization (`IJSLocalizer`)](javascript-localization.md) for guidance on exposing PO-file-backed translations to JavaScript / TypeScript assets.
 
+## Liquid filters
+
+For more information on using locaization filters in Liquid templates, see the [Liquid Localization filters documentation](../Liquid/README.md#localization-filters).
+
 ## Video
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/cwKa1OA48-4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
@@ -205,8 +209,8 @@ Localization settings can be configured using the `Settings` recipe step:
 }
 ```
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `DefaultCulture` | String | The default culture for the site (e.g., `en-US`). |
-| `SupportedCultures` | Array of String | The list of supported cultures. |
-| `FallBackToParentCulture` | Boolean | Whether to fall back to the parent culture when a translation is not found. |
+| Property                  | Type            | Description                                                                 |
+|---------------------------|-----------------|-----------------------------------------------------------------------------|
+| `DefaultCulture`          | String          | The default culture for the site (e.g., `en-US`).                           |
+| `SupportedCultures`       | Array of String | The list of supported cultures.                                             |
+| `FallBackToParentCulture` | Boolean         | Whether to fall back to the parent culture when a translation is not found. |

@@ -117,23 +117,23 @@ SMTP email settings can be configured using the `Settings` recipe step:
 }
 ```
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `IsEnabled` | Boolean | Whether the SMTP email provider is enabled. |
-| `DefaultSender` | String | The default sender email address. |
-| `Host` | String | The SMTP server hostname. **Required.** |
-| `Port` | Integer | The SMTP server port. Default: `25`. |
-| `AutoSelectEncryption` | Boolean | Whether to automatically select the encryption method. |
-| `RequireCredentials` | Boolean | Whether the SMTP server requires authentication. |
-| `UseDefaultCredentials` | Boolean | Whether to use the default system credentials. |
-| `EncryptionMethod` | String | The encryption method. Values: `None`, `SslTls`, `StartTls`. |
-| `UserName` | String | The username for SMTP authentication. |
-| `Password` | String | The password for SMTP authentication. |
-| `ProxyHost` | String | The proxy server hostname. |
-| `ProxyPort` | Integer | The proxy server port. |
-| `IgnoreInvalidSslCertificate` | Boolean | Whether to ignore invalid SSL certificates. |
-| `DeliveryMethod` | String | The delivery method. Values: `Network`, `SpecifiedPickupDirectory`. |
-| `PickupDirectoryLocation` | String | The relative directory path for storing emails when using the pickup directory delivery method. |
+| Property                      | Type    | Description                                                                                     |
+|-------------------------------|---------|-------------------------------------------------------------------------------------------------|
+| `IsEnabled`                   | Boolean | Whether the SMTP email provider is enabled.                                                     |
+| `DefaultSender`               | String  | The default sender email address.                                                               |
+| `Host`                        | String  | The SMTP server hostname. **Required.**                                                         |
+| `Port`                        | Integer | The SMTP server port. Default: `25`.                                                            |
+| `AutoSelectEncryption`        | Boolean | Whether to automatically select the encryption method.                                          |
+| `RequireCredentials`          | Boolean | Whether the SMTP server requires authentication.                                                |
+| `UseDefaultCredentials`       | Boolean | Whether to use the default system credentials.                                                  |
+| `EncryptionMethod`            | String  | The encryption method. Values: `None`, `SslTls`, `StartTls`.                                    |
+| `UserName`                    | String  | The username for SMTP authentication.                                                           |
+| `Password`                    | String  | The password for SMTP authentication.                                                           |
+| `ProxyHost`                   | String  | The proxy server hostname.                                                                      |
+| `ProxyPort`                   | Integer | The proxy server port.                                                                          |
+| `IgnoreInvalidSslCertificate` | Boolean | Whether to ignore invalid SSL certificates.                                                     |
+| `DeliveryMethod`              | String  | The delivery method. Values: `Network`, `SpecifiedPickupDirectory`.                             |
+| `PickupDirectoryLocation`     | String  | The relative directory path for storing emails when using the pickup directory delivery method. |
 
 ## Credits
 

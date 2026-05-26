@@ -122,6 +122,6 @@ Email settings can be configured using the `Settings` recipe step:
 }
 ```
 
-| Property | Type | Description |
-|----------|------|-------------|
+| Property              | Type   | Description                             |
+|-----------------------|--------|-----------------------------------------|
 | `DefaultProviderName` | String | The name of the default email provider. |

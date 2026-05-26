@@ -43,12 +43,12 @@ GitHub authentication settings can be configured using the `Settings` recipe ste
 }
 ```
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `ClientID` | String | The Client ID from the GitHub OAuth application. **Required.** |
-| `ClientSecret` | String | The Client Secret from the GitHub OAuth application. **Required.** |
-| `CallbackPath` | String | The request path where the user-agent will be returned after authentication. |
-| `SaveTokens` | Boolean | Whether to save the access and refresh tokens. |
+| Property       | Type    | Description                                                                  |
+|----------------|---------|------------------------------------------------------------------------------|
+| `ClientID`     | String  | The Client ID from the GitHub OAuth application. **Required.**               |
+| `ClientSecret` | String  | The Client Secret from the GitHub OAuth application. **Required.**           |
+| `CallbackPath` | String  | The request path where the user-agent will be returned after authentication. |
+| `SaveTokens`   | Boolean | Whether to save the access and refresh tokens.                               |
 
 ## GitHub Settings Configuration
 
