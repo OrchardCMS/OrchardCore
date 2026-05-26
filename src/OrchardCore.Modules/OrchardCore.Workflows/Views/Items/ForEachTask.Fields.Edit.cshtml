@@ -1,11 +1,28 @@
+@using OrchardCore.Workflows.Models
 @using OrchardCore.Workflows.ViewModels
 @model ForEachTaskViewModel
 
-<div class="mb-3" asp-validation-class-for="EnumerableExpression">
+<div class="mb-3" asp-validation-class-for="Syntax">
+    <label asp-for="Syntax" class="form-label">@T["Syntax"]</label>
+    <select asp-for="Syntax" class="form-select">
+        <option value="@nameof(WorkflowScriptSyntax.JavaScript)">@T["JavaScript"]</option>
+        <option value="@nameof(WorkflowScriptSyntax.Liquid)">@T["Liquid"]</option>
+    </select>
+    <span asp-validation-for="Syntax"></span>
+</div>
+
+<div id="@(Html.IdFor(m => m.EnumerableExpression))_group" class="mb-3 @(Model.Syntax == WorkflowScriptSyntax.JavaScript ? "" : "d-none")" asp-validation-class-for="EnumerableExpression">
     <label asp-for="EnumerableExpression" class="form-label">@T["Enumerable Expression"]</label>
     <input type="text" asp-for="EnumerableExpression" class="form-control code" />
     <span asp-validation-for="EnumerableExpression"></span>
-    <span class="hint">@T["The list to iterate. With JavaScript support."]</span>
+    <span class="hint">@T["The JavaScript list to iterate. Example: {0}", "input(\"Items\")"]</span>
+</div>
+
+<div id="@(Html.IdFor(m => m.LiquidEnumerableExpression))_group" class="mb-3 @(Model.Syntax == WorkflowScriptSyntax.Liquid ? "" : "d-none")" asp-validation-class-for="LiquidEnumerableExpression">
+    <label asp-for="LiquidEnumerableExpression" class="form-label">@T["Enumerable Expression"]</label>
+    <input type="text" asp-for="LiquidEnumerableExpression" class="form-control code" />
+    <span asp-validation-for="LiquidEnumerableExpression"></span>
+    <span class="hint">@T["The Liquid list to iterate. Render a JSON array or comma-separated list. Example: {0}", "{{ Workflow.Properties.Items | json }}"]</span>
 </div>
 
 <div class="mb-3" asp-validation-class-for="LoopVariableName">
@@ -14,3 +31,20 @@
     <span asp-validation-for="LoopVariableName"></span>
     <span class="hint">@T["The name of the looping variable. The current value of each iteration is set to a property with this name as well as the last result."]</span>
 </div>
+
+<script at="Foot">
+    document.addEventListener('DOMContentLoaded', () => {
+        const syntaxElement = document.getElementById('@Html.IdFor(m => m.Syntax)');
+        const javaScriptGroup = document.getElementById('@($"{Html.IdFor(m => m.EnumerableExpression)}_group")');
+        const liquidGroup = document.getElementById('@($"{Html.IdFor(m => m.LiquidEnumerableExpression)}_group")');
+
+        const toggleEditors = () => {
+            const useLiquid = syntaxElement.value === '@nameof(WorkflowScriptSyntax.Liquid)';
+            javaScriptGroup.classList.toggle('d-none', useLiquid);
+            liquidGroup.classList.toggle('d-none', !useLiquid);
+        };
+
+        syntaxElement.addEventListener('change', toggleEditors);
+        toggleEditors();
+    });
+</script>
