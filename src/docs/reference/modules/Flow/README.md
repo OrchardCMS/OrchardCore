@@ -32,6 +32,40 @@ And if you'd like to use the same template for Flow parts that have items and Fl
 }
 ```
 
+## Placement
+
+For front-end placement, the `FlowPart` display shape uses the part name as its differentiator.
+
+For example, to hide a standard `FlowPart` on the front end:
+
+```json
+{
+    "FlowPart": [
+        {
+            "differentiator": "FlowPart",
+            "place": "-"
+        }
+    ]
+}
+```
+
+To hide or move the **editor** in the admin UI, target the `ContentPart_Edit` wrapper shape instead of `FlowPart_Edit`. The wrapper differentiator is `{ContentType}-{PartName}`.
+
+For example, to hide the `FlowPart` editor row on a `LandingPage` content type:
+
+```json
+{
+    "ContentPart_Edit": [
+        {
+            "differentiator": "LandingPage-FlowPart",
+            "place": "-"
+        }
+    ]
+}
+```
+
+`FlowPart_Edit` only targets the inner editor shape. Use `ContentPart_Edit` when you need to hide or move the whole editor row, including its wrapper, label, and description.
+
 ## Blocks Editor
 
 The blocks editor provides an alternative editor for FlowPart and BagPart that uses a modal-based content type picker instead of the standard dropdown menu. Content types displayed in the picker can be organised with categories and thumbnails. See [Content Type Settings for Block Pickers](../ContentTypes/README.md#content-type-settings-for-block-pickers) for configuration details.

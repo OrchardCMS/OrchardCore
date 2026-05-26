@@ -75,3 +75,70 @@ The following configuration values can be customized:
 ```
 
 For more information please refer to [Configuration](../Configuration/README.md).
+
+## Recipe Configuration
+
+Google module settings can be configured using the `Settings` recipe step:
+
+### Google Authentication
+
+```json
+{
+  "steps": [
+    {
+      "name": "settings",
+      "GoogleAuthenticationSettings": {
+        "ClientID": "your-client-id.apps.googleusercontent.com",
+        "ClientSecret": "your-client-secret",
+        "CallbackPath": "/signin-google",
+        "SaveTokens": false
+      }
+    }
+  ]
+}
+```
+
+| Property       | Type    | Description                                                                  |
+|----------------|---------|------------------------------------------------------------------------------|
+| `ClientID`     | String  | The Client ID from the Google Cloud Console. **Required.**                   |
+| `ClientSecret` | String  | The Client Secret from the Google Cloud Console. **Required.**               |
+| `CallbackPath` | String  | The request path where the user-agent will be returned after authentication. |
+| `SaveTokens`   | Boolean | Whether to save the access and refresh tokens.                               |
+
+### Google Analytics
+
+```json
+{
+  "steps": [
+    {
+      "name": "settings",
+      "GoogleAnalyticsSettings": {
+        "TrackingID": "G-XXXXXXXXXX"
+      }
+    }
+  ]
+}
+```
+
+| Property     | Type   | Description                                     |
+|--------------|--------|-------------------------------------------------|
+| `TrackingID` | String | The Google Analytics tracking ID. **Required.** |
+
+### Google Tag Manager
+
+```json
+{
+  "steps": [
+    {
+      "name": "settings",
+      "GoogleTagManagerSettings": {
+        "ContainerID": "GTM-XXXXXXX"
+      }
+    }
+  ]
+}
+```
+
+| Property      | Type   | Description                                        |
+|---------------|--------|----------------------------------------------------|
+| `ContainerID` | String | The Google Tag Manager container ID. **Required.** |

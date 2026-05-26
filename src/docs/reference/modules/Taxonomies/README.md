@@ -394,6 +394,29 @@ Provides taxonomy filters in the admin contents list.
 
 When listing taxonomy items in the front end, you can use the `IContentTaxonomyListFilter` to filter content items by taxonomy terms or manipulate the query.
 
+## Recipe Configuration
+
+Taxonomy admin list settings can be configured using the `Settings` recipe step:
+
+```json
+{
+  "steps": [
+    {
+      "name": "settings",
+      "TaxonomyContentsAdminListSettings": {
+        "TaxonomyContentItemIds": [
+          "4k2v5q8m1nh3y9x6p0w7r2t4jz"
+        ]
+      }
+    }
+  ]
+}
+```
+
+| Property                 | Type            | Description                                                                     |
+|--------------------------|-----------------|---------------------------------------------------------------------------------|
+| `TaxonomyContentItemIds` | Array of String | The content item IDs of taxonomies to use as filters in the admin content list. |
+
 ## Videos
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/DpaN02c2sDI" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

@@ -58,3 +58,45 @@ Display for a reCaptcha challenge if the service is configured.
     ``` html
     <shape type="ReCaptcha" language="en-US" />
     ```
+
+## Recipe Configuration
+
+reCAPTCHA settings can be configured using the `Settings` recipe step:
+
+```json
+{
+  "steps": [
+    {
+      "name": "settings",
+      "ReCaptchaSettings": {
+        "SiteKey": "your-site-key",
+        "SecretKey": "your-secret-key"
+      }
+    }
+  ]
+}
+```
+
+| Property             | Type   | Description                                  |
+|----------------------|--------|----------------------------------------------|
+| `SiteKey`            | String | The reCAPTCHA site key. **Required.**        |
+| `SecretKey`          | String | The reCAPTCHA secret key. **Required.**      |
+| `ReCaptchaScriptUri` | String | The URI for the reCAPTCHA JavaScript script. |
+| `ReCaptchaApiUri`    | String | The URI for the reCAPTCHA verification API.  |
+
+## ReCaptcha Settings Configuration
+
+The `OrchardCore.ReCaptcha` module allows the user to use configuration values to override the settings configured from the admin area by calling the `ConfigureReCaptchaSettings()` extension method on `OrchardCoreBuilder` when initializing the app.
+
+The following configuration values can be customized:
+
+```json
+{
+  "OrchardCore_ReCaptcha": {
+    "SiteKey": "",
+    "SecretKey": "",
+    "ReCaptchaScriptUri": "",
+    "ReCaptchaApiUri": ""
+  }
+}
+```

@@ -1,13 +1,20 @@
+@using OrchardCore
+@using OrchardCore.ContentManagement
 @using OrchardCore.ContentManagement.Metadata.Models
 @using OrchardCore.ContentManagement.Metadata.Settings
-@using OrchardCore.ContentManagement
 @using OrchardCore.ContentTypes
-@using OrchardCore
 @using OrchardCore.Localization.Data
 
 @inject IDataLocalizer D
 
 @{
+    var shapes = Model.Items;
+
+    if (shapes.Count == 0)
+    {
+        return;
+    }
+
     ContentPart contentPart = Model.ContentPart;
     ContentTypePartDefinition typePartDefinition = Model.ContentTypePartDefinition;
     var description = typePartDefinition.Description();
@@ -27,15 +34,15 @@
         </div>
 
         <div class="@Orchard.GetEndClasses()">
-            @foreach (var shape in Model)
+            @foreach (var shape in shapes)
             {
                 @await DisplayAsync(shape)
             }
         </div>
     }
     else
-    {   
-        foreach (var shape in Model)
+    {
+        foreach (var shape in shapes)
         {
             @await DisplayAsync(shape)
         }

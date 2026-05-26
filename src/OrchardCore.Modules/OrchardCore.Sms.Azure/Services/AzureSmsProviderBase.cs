@@ -30,7 +30,13 @@ public abstract class AzureSmsProviderBase : ISmsProvider
 
     public abstract LocalizedString Name { get; }
 
-    public virtual async Task<Result> SendAsync(SmsMessage message)
+    /// <summary>
+    /// Sends the specified SMS message by using the configured Azure Communication Services SMS provider.
+    /// </summary>
+    /// <param name="message">The SMS message to send.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A <see cref="Result"/> describing whether the SMS was sent successfully.</returns>
+    public virtual async Task<Result> SendAsync(SmsMessage message, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(message);
 
@@ -82,7 +88,7 @@ public abstract class AzureSmsProviderBase : ISmsProvider
                 senderNumber = message.From;
             }
 
-            var response = await _smsClient.SendAsync(senderNumber, message.To, message.Body);
+            var response = await _smsClient.SendAsync(senderNumber, message.To, message.Body, options: default, cancellationToken);
 
             if (response.Value.Successful)
             {
