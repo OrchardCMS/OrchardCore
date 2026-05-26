@@ -72,3 +72,8 @@
         </div>
     }
 </div>
+
+@if (Model.Actions != null && hasReturnUrl)
+{
+    @Html.Hidden("returnUrl", returnUrl)
+}
