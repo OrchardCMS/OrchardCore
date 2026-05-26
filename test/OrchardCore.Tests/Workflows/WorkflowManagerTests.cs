@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Text.Json.Nodes;
 using Fluid;
+using Fluid.Values;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Liquid;
 using OrchardCore.Json;
@@ -487,6 +488,7 @@ public class WorkflowManagerTests
         services.Configure<LiquidViewOptions>(_ => { });
         services.Configure<TemplateOptions>(options =>
         {
+            options.MemberAccessStrategy.Register<LiquidPropertyAccessor, FluidValue>((obj, name) => obj.GetValueAsync(name));
             options.MemberAccessStrategy.Register<WorkflowExecutionContext>();
             options.MemberAccessStrategy.Register<WorkflowExecutionContext, LiquidPropertyAccessor>("Input", (obj, context) => new LiquidPropertyAccessor((LiquidTemplateContext)context, (name, context) => LiquidWorkflowExpressionEvaluator.ToFluidValue(obj.Input, name, context)));
             options.MemberAccessStrategy.Register<WorkflowExecutionContext, LiquidPropertyAccessor>("Output", (obj, context) => new LiquidPropertyAccessor((LiquidTemplateContext)context, (name, context) => LiquidWorkflowExpressionEvaluator.ToFluidValue(obj.Output, name, context)));
