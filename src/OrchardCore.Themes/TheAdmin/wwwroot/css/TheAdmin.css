@@ -223,11 +223,6 @@ a:hover {
     height: 1.75rem;
   }
 
-  .sticky-buttons .action-bar .has-filter .form-control-feedback,
-  .sticky-buttons .second-action-bar .has-filter .form-control-feedback {
-    top: 0.1rem;
-  }
-
   [dir="ltr"] .sticky-buttons .action-bar .has-filter .form-control-feedback,
   [dir="ltr"] .sticky-buttons .second-action-bar .has-filter .form-control-feedback {
     left: 3.75rem;
