@@ -102,15 +102,15 @@ Content localization settings can be configured using the `Settings` recipe step
 
 ### ContentCulturePickerSettings
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `RedirectToHomepage` | Boolean | Whether to redirect to the homepage when switching cultures. |
-| `SetCookie` | Boolean | Whether to set a cookie to remember the selected culture. Default: `true`. |
+| Property             | Type    | Description                                                                |
+|----------------------|---------|----------------------------------------------------------------------------|
+| `RedirectToHomepage` | Boolean | Whether to redirect to the homepage when switching cultures.               |
+| `SetCookie`          | Boolean | Whether to set a cookie to remember the selected culture. Default: `true`. |
 
 ### ContentRequestCultureProviderSettings
 
-| Property | Type | Description |
-|----------|------|-------------|
+| Property    | Type    | Description                                          |
+|-------------|---------|------------------------------------------------------|
 | `SetCookie` | Boolean | Whether to set a cookie with the determined culture. |
 
 ## Configuration

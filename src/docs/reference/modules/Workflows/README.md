@@ -459,11 +459,11 @@ Workflow trimming settings can be configured using the `Settings` recipe step:
 }
 ```
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `RetentionDays` | Integer | The number of days to retain workflow instances before trimming. Default: `90`. |
-| `Disabled` | Boolean | Whether automatic workflow trimming is disabled. |
-| `Statuses` | Array of String | The workflow statuses to include in trimming. Values: `Idle`, `Starting`, `Resuming`, `Executing`, `Halted`, `Finished`, `Faulted`, `Aborted`. |
+| Property        | Type            | Description                                                                                                                                    |
+|-----------------|-----------------|------------------------------------------------------------------------------------------------------------------------------------------------|
+| `RetentionDays` | Integer         | The number of days to retain workflow instances before trimming. Default: `90`.                                                                |
+| `Disabled`      | Boolean         | Whether automatic workflow trimming is disabled.                                                                                               |
+| `Statuses`      | Array of String | The workflow statuses to include in trimming. Values: `Idle`, `Starting`, `Resuming`, `Executing`, `Halted`, `Finished`, `Faulted`, `Aborted`. |
 
 ## Trimming
 
