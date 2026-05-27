@@ -123,6 +123,13 @@ public static class StringExtensions
             return string.Empty;
         }
 
+        // Decoding must happen before the tags are stripped to strip out all tags from the final result. This prevents
+        // XSS by way of encoded HTML (e.g. "&lt;img src=x onerror=alert(1)&gt;").
+        if (htmlDecode)
+        {
+            html = WebUtility.HtmlDecode(html);
+        }
+
         var result = new char[html.Length];
 
         var cursor = 0;
@@ -148,11 +155,6 @@ public static class StringExtensions
         }
 
         var stringResult = new string(result, 0, cursor);
-
-        if (htmlDecode)
-        {
-            stringResult = WebUtility.HtmlDecode(stringResult);
-        }
 
         return stringResult;
     }
