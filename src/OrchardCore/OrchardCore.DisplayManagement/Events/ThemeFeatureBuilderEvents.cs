@@ -16,7 +16,7 @@ public class ThemeFeatureBuilderEvents : FeatureBuilderEvents
         {
             var extensionInfo = new ThemeExtensionInfo(context.ExtensionInfo);
 
-            if (extensionInfo.HasBaseTheme())
+            if (extensionInfo.HasBaseTheme() && context.FeatureId == context.ExtensionInfo.Id)
             {
                 context.FeatureDependencyIds = context
                     .FeatureDependencyIds
