@@ -62,7 +62,10 @@ public class FeatureService
                 EnabledByDependencyOnly = moduleFeatureInfo.EnabledByDependencyOnly,
                 IsAlwaysEnabled = alwaysEnabledFeatures.Contains(moduleFeatureInfo),
                 EnabledDependentFeatures = dependentFeatures.Where(x => x.Id != moduleFeatureInfo.Id && enabledFeatures.Contains(x)).ToList(),
-                FeatureDependencies = featureDependencies.Where(d => d.Id != moduleFeatureInfo.Id).ToList(),
+                // Exclude the feature itself and any theme-type features from the dependency list
+                // shown on the Features admin page.  Theme dependencies are managed separately
+                // through the Themes admin page and should not appear as missing module dependencies.
+                FeatureDependencies = featureDependencies.Where(d => d.Id != moduleFeatureInfo.Id && !d.IsTheme()).ToList(),
             };
 
             moduleFeatures.Add(moduleFeature);

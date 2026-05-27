@@ -24,6 +24,55 @@ public class FeaturesProvider : IFeaturesProvider
         var features = manifestInfo.ModuleInfo.Features;
         if (features.Count > 0)
         {
+            // When explicit [Feature] attributes are present but none of them carries the
+            // extension's own Id, the extension is missing a "main" feature.  Without it
+            // IsTheme() can never return true (it requires featureInfo.Id == featureInfo.Extension.Id),
+            // and the Themes admin page cannot find the theme.  Modules avoid this because they
+            // always include their own Id as the first explicit [Feature]; themes historically did
+            // not.  Synthesize the main feature from the module-level metadata — exactly as the
+            // else-branch does for single-feature extensions — and prepend it so it remains first.
+            if (!features.Any(f => f.Id == extensionInfo.Id))
+            {
+                var mainContext = new FeatureBuildingContext
+                {
+                    FeatureId = extensionInfo.Id,
+                    FeatureName = manifestInfo.Name,
+                    Category = manifestInfo.ModuleInfo.Categorize(),
+                    Description = manifestInfo.ModuleInfo.Describe(),
+                    ExtensionInfo = extensionInfo,
+                    ManifestInfo = manifestInfo,
+                    Priority = manifestInfo.ModuleInfo.Prioritize(),
+                    FeatureDependencyIds = manifestInfo.ModuleInfo.Dependencies,
+                    DefaultTenantOnly = manifestInfo.ModuleInfo.DefaultTenantOnly,
+                    IsAlwaysEnabled = manifestInfo.ModuleInfo.IsAlwaysEnabled,
+                    EnabledByDependencyOnly = manifestInfo.ModuleInfo.EnabledByDependencyOnly,
+                };
+
+                foreach (var builder in _featureBuilderEvents)
+                {
+                    builder.Building(mainContext);
+                }
+
+                var mainFeatureInfo = new FeatureInfo(
+                    mainContext.FeatureId,
+                    mainContext.FeatureName,
+                    mainContext.Priority,
+                    mainContext.Category,
+                    mainContext.Description,
+                    mainContext.ExtensionInfo,
+                    mainContext.FeatureDependencyIds,
+                    mainContext.DefaultTenantOnly,
+                    mainContext.IsAlwaysEnabled,
+                    mainContext.EnabledByDependencyOnly);
+
+                foreach (var builder in _featureBuilderEvents)
+                {
+                    builder.Built(mainFeatureInfo);
+                }
+
+                featuresInfos.Add(mainFeatureInfo);
+            }
+
             foreach (var feature in features)
             {
                 if (string.IsNullOrWhiteSpace(feature.Id))
