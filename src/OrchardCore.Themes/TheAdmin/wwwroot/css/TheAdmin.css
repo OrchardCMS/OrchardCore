@@ -165,7 +165,7 @@ a:hover {
 
 /* Import the components files */
 .action-bar {
-  top: 3.3rem;
+  top: var(--oc-top-nav-height);
   z-index: var(--oc-action-bar-zindex);
 }
 
