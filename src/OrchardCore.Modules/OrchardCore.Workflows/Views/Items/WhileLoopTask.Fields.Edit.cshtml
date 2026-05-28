@@ -27,7 +27,7 @@
     <div class="ocat-end">
         <input type="text" asp-for="LiquidConditionExpression" class="form-control code" />
         <span asp-validation-for="LiquidConditionExpression"></span>
-        <span class="hint">@T["A Liquid expression that evaluates to true or false. Example: {0}", "{{ Workflow.Properties.Count > 0 }}"]</span>
+        <span class="hint">@T["A Liquid template that renders true or false. Example: {0}", "{{ Workflow.Properties.Count > 0 }}"]</span>
     </div>
 </div>
 
