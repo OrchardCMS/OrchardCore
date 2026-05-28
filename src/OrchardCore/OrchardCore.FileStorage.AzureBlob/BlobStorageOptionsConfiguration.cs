@@ -53,6 +53,19 @@ public abstract class BlobStorageOptionsConfiguration<TOptions> : IConfigureOpti
                 }
                 throw;
             }
+
+            if (!BlobContainerNameValidator.IsValid(options.ContainerName))
+            {
+                if (_logger.IsEnabled(LogLevel.Critical))
+                {
+                    _logger.LogCritical(
+                        "The resolved container name '{ContainerName}' for {OptionName} is not a valid Azure Blob container name. " +
+                        "Container names must be 3-63 characters, lowercase letters, digits and single hyphens, and start and end with a letter or digit. " +
+                        "See https://learn.microsoft.com/rest/api/storageservices/naming-and-referencing-containers--blobs--and-metadata.",
+                        options.ContainerName,
+                        typeof(TOptions).Name);
+                }
+            }
         }
 
         if (!string.IsNullOrWhiteSpace(rawOptions.BasePath))
