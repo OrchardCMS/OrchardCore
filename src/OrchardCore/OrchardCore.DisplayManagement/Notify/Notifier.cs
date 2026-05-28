@@ -14,13 +14,21 @@ public class Notifier : INotifier
     }
 
     public ValueTask AddAsync(NotifyType type, LocalizedHtmlString message)
+        => AddAsync(type, message, context: null);
+
+    public ValueTask AddAsync(NotifyType type, LocalizedHtmlString message, NotifyContext context)
     {
         if (_logger.IsEnabled(LogLevel.Information))
         {
             _logger.LogInformation("Notification '{NotificationType}' with message '{NotificationMessage}'", type, message);
         }
 
-        _entries.Add(new NotifyEntry { Type = type, Message = message });
+        _entries.Add(new NotifyEntry
+        {
+            Type = type,
+            Message = message,
+            Milliseconds = context?.Milliseconds,
+        });
 
         return ValueTask.CompletedTask;
     }

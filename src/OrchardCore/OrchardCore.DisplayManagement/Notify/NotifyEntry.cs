@@ -19,7 +19,10 @@ public partial class NotifyEntry
     private (HtmlEncoder HtmlEncoder, string Message) _cache;
 
     public NotifyType Type { get; set; }
+
     public IHtmlContent Message { get; set; }
+
+    public int? Milliseconds { get; set; }
 
     public string ToHtmlString(HtmlEncoder htmlEncoder)
     {
