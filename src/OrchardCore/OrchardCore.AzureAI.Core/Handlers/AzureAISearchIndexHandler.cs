@@ -51,6 +51,11 @@ public sealed class AzureAISearchIndexHandler : IndexProfileHandlerBase
             }
         }
 
+        if (data[nameof(metadata.VectorSearch)] is { } vectorSearch)
+        {
+            metadata.VectorSearch = vectorSearch.ToObject<AzureAISearchVectorSearchOptions>();
+        }
+
         indexProfile.Put(metadata);
 
         return Task.CompletedTask;
