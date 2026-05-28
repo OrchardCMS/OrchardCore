@@ -183,8 +183,8 @@ public sealed class MediaFileItemType : ObjectGraphType<MediaFileItem>
                         autoorient: autoorient);
                 }
 
-                // Encode spaces as %20 to ensure the URL is valid, as GraphQL does not automatically encode them.
-                return assetUrl?.Replace(" ", "%20");
+                // The value is already url-encoded
+                return assetUrl;
             });
 
         Field<StringGraphType>("mediaText")
