@@ -8,8 +8,12 @@
 
 @if (Model.Providers.Count == 0)
 {
-    <div class="alert alert-warning" role="alert">
-        @T["No email providers are currently enabled."]
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
+            <div class="alert alert-warning" role="alert">
+                @T["No email providers are currently enabled."]
+            </div>
+        </div>
     </div>
 
     return;

@@ -2,30 +2,54 @@
 
 @model IndexProfileDeploymentStepViewModel
 
-<h5>@T["Index Profiles"]</h5>
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
+        <h5>@T["Index Profiles"]</h5>
+    </div>
+</div>
 
-<div class="mb-3">
-    <div class="form-check">
-        <input class="form-check-input" asp-for="IncludeAll" data-bs-toggle="collapse" role="button" data-bs-target="#data-source-list" aria-expanded="false" aria-controls="data-source-list" />
-        <label class="form-check-label" asp-for="IncludeAll">@T["Include all index profiles"]</label>
+<div class="ocat-wrapper" asp-validation-class-for="IncludeAll">
+    <div class="ocat-end-offset">
+        <div class="form-check">
+            <input class="form-check-input" asp-for="IncludeAll" data-bs-toggle="collapse" role="button" data-bs-target="#data-source-list" aria-expanded="false" aria-controls="data-source-list" />
+            <label class="form-check-label" asp-for="IncludeAll">@T["Include all index profiles"]</label>
+        </div>
     </div>
 </div>
 
 @{
     var dataSourceListClasses = $"collapse{(Model.IncludeAll ? string.Empty : " show")}";
+    var hasIndexProfiles = Model.Indexes?.Length > 0;
 }
 
 <div id="data-source-list" class="@dataSourceListClasses">
-    <div class="hint mb-1">@T["The index profiles to export as part of the plan."]</div>
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
+            <span class="hint">@T["The index profiles to export as part of the plan."]</span>
+        </div>
+    </div>
 
-    <div>
-        @for (var i = 0; i < Model.Indexes.Length; i++)
-        {
-            <div class="form-check">
-                <input type="hidden" asp-for="Indexes[i].Value" />
-                <input asp-for="Indexes[i].Selected" type="checkbox" class="form-check-input">
-                <label class="form-check-label" asp-for="Indexes[i].Selected">@Model.Indexes[i].Text</label>
-            </div>
-        }
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
+            <span asp-validation-for="Indexes"></span>
+
+            @if (hasIndexProfiles)
+            {
+                @for (var i = 0; i < Model.Indexes.Length; i++)
+                {
+                    <div class="form-check">
+                        <input type="hidden" asp-for="Indexes[i].Value" />
+                        <input asp-for="Indexes[i].Selected" type="checkbox" class="form-check-input">
+                        <label class="form-check-label" asp-for="Indexes[i].Selected">@Model.Indexes[i].Text</label>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="alert alert-warning" role="alert">
+                    @T["No index profiles are available."]
+                </div>
+            }
+        </div>
     </div>
 </div>

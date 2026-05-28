@@ -20,17 +20,21 @@
     </div>
 </div>
 
-<div class="ocat-end-offset">
-    <div class="alert alert-warning" role="alert">
-        @T["SQL queries are Liquid templates. Never inject user input with Liquid output expressions like '{{ input }}'. Use SQL parameters (for example '@name' or '@name:default') passed in by the caller for user-provided values."]
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
+        <div class="alert alert-warning" role="alert">
+            @T["SQL queries are Liquid templates. Never inject user input with Liquid output expressions like '{{ input }}'. Use SQL parameters (for example '@name' or '@name:default') passed in by the caller for user-provided values."]
+        </div>
     </div>
 </div>
 
 @if (Model.HasLiquidOutputExpressions)
 {
-    <div class="ocat-end-offset">
-        <div class="alert alert-warning" role="alert">
-            @T["Potentially unsafe Liquid output expressions ('{{ ... }}') were detected in this query template. This can lead to SQL injection if untrusted input is rendered directly into SQL."]
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
+            <div class="alert alert-warning" role="alert">
+                @T["Potentially unsafe Liquid output expressions ('{{ ... }}') were detected in this query template. This can lead to SQL injection if untrusted input is rendered directly into SQL."]
+            </div>
         </div>
     </div>
 }

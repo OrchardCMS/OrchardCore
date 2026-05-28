@@ -103,22 +103,22 @@ public sealed class ProductIndexProfileHandler : IndexProfileHandlerBase
             },
         });
 
-        metadata.VectorSearch = new AzureAISearchVectorSearchOptions
+        metadata.VectorSearchMappings = new VectorSearchMappings
         {
             Profiles =
             [
-                new AzureAISearchVectorSearchProfile
+                new VectorSearchProfileMap
                 {
-                    Name = "products-vector",
-                    AlgorithmConfigurationName = "products-vector-hnsw",
+                    Name = "default",
+                    AlgorithmConfigurationName = "products-vector",
                 },
             ],
             Algorithms =
             [
-                new AzureAISearchVectorSearchAlgorithm
+                new VectorSearchAlgorithmMap
                 {
-                    Name = "products-vector-hnsw",
-                    Kind = AzureAISearchVectorSearchAlgorithm.HnswKind,
+                    Name = "products-vector",
+                    Kind = VectorSearchAlgorithmMap.HnswKind,
                 },
             ],
         };
@@ -149,7 +149,7 @@ documentIndex.Set(
 ```
 
 !!! note
-    If a vector field doesn't specify `VectorSearchConfiguration`, Orchard Core uses the first configured profile from `AzureAISearchIndexMetadata.VectorSearch.Profiles`. If no profile is configured, it falls back to the built-in default profile and algorithm.
+    If a vector field doesn't specify `VectorSearchConfiguration`, Orchard Core uses the first configured profile from `AzureAISearchIndexMetadata.VectorSearchMappings.Profiles`. If no profile is configured, it falls back to the built-in default profile and algorithm.
 
 ### Querying vector fields
 

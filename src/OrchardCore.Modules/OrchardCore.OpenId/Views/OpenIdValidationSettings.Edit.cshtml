@@ -1,11 +1,15 @@
 @using OrchardCore.OpenId.ViewModels
 @model OpenIdValidationSettingsViewModel
 
-<p class="alert alert-warning">
-    @T["To be able to validate tokens issued by a separate tenant, " +
-            "you must register a custom scope in the server options " +
-            "of the tenant hosting the authorization server."]
-</p>
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
+        <p class="alert alert-warning">
+            @T["To be able to validate tokens issued by a separate tenant, " +
+                    "you must register a custom scope in the server options " +
+                    "of the tenant hosting the authorization server."]
+        </p>
+    </div>
+</div>
 
 <div class="ocat-wrapper" asp-validation-class-for="Tenant">
     <label asp-for="Tenant" class="ocat-label">@T["Authorization server tenant"]</label>

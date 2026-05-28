@@ -55,7 +55,7 @@ The `ocat-*` CSS class system was introduced in OrchardCore to provide a consist
 
 **Element:** `<div>`  
 **Purpose:** Right-column content with no left-column label. Visually aligns the content with `ocat-end` elements.  
-**Use when:** The field has no separate label (e.g., checkboxes where the label is inline with the input).
+**Use when:** The field has no separate label (e.g., checkboxes where the label is inline with the input), or when a standalone alert, legend, or section heading belongs in the form flow.
 
 ```html
 <div class="ocat-end-offset">
@@ -74,7 +74,9 @@ The `ocat-*` CSS class system was introduced in OrchardCore to provide a consist
 3. **Checkboxes/toggles** use `ocat-end-offset` (no `ocat-label`) to keep alignment.
 4. **Validation spans** (`<span asp-validation-for="...">`) always go inside `ocat-end` or `ocat-end-offset`.
 5. **Hint spans** (`<span class="hint">`) always go inside `ocat-end` or `ocat-end-offset`.
-6. **Dynamic visibility** (show/hide based on selection): add `d-none` to `ocat-wrapper` directly, not to an inner wrapper:
+6. **Standalone alerts, legends, and section headings** in edit forms should use their own `ocat-wrapper` + `ocat-end-offset` row.
+7. **Never mix** `ocat-end` and `ocat-end-offset` in the same row; choose one based on whether the row has a left-column label.
+8. **Dynamic visibility** (show/hide based on selection): add `d-none` to `ocat-wrapper` directly, not to an inner wrapper:
 
 ```html
 <div id="myField_group" class="ocat-wrapper @(Model.IsAdvanced ? "" : "d-none")" asp-validation-class-for="MyField">
@@ -95,6 +97,8 @@ The `ocat-*` CSS class system was introduced in OrchardCore to provide a consist
 | Input directly inside `ocat-wrapper` | Input inside `<div class="ocat-end">` |
 | `<span class="hint">` directly in `ocat-wrapper` | `<span class="hint">` inside `ocat-end` |
 | Checkbox inside `ocat-end` (with label in left column) | Checkbox inside `ocat-end-offset` (no left label) |
+| Standalone alert or headline directly in the form flow | Standalone alert or headline inside `ocat-wrapper` + `ocat-end-offset` |
+| Row containing both `ocat-end` and `ocat-end-offset` | Row containing exactly one of the two wrappers |
 
 ## File Locations
 

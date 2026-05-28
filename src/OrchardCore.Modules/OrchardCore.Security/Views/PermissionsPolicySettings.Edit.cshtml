@@ -153,7 +153,7 @@
                             </div>
                         </td>
                         <td>
-                            <div class="form-group mb-0">
+                            <div class="mb-0">
                                 <input class="form-control d-@(originType == PermissionsPolicyOriginValue.Self ? "block" : "none")" id="@(key)AllowedOrigins" placeholder="https://www.domain.com https://www.another.domain.com" value="@allowedOrigins" oninput="changeAllowedOrigins(this)" />
                                 <input id="@Html.IdFor(m => m.PermissionsPolicy[key])" name="@Html.NameFor(m => m.PermissionsPolicy[key])" type="hidden" value="@originType" />
                             </div>

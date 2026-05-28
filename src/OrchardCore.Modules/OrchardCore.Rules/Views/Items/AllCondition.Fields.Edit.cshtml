@@ -1,6 +1,10 @@
 @model AllConditionViewModel
 
-<h5>@T["All"]</h5>
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
+        <h5>@T["All"]</h5>
+    </div>
+</div>
 
 <div class="ocat-wrapper" asp-validation-class-for="DisplayText">
     <label asp-for="DisplayText" class="ocat-label">@T["Name"]</label>

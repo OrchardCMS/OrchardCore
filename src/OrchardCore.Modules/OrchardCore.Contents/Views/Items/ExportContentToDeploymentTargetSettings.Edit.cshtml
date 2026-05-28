@@ -9,7 +9,11 @@
 
 @if (!exportContentToDeploymentTargetPlans.Any())
 {
-    <p class="alert alert-warning">@T["No export content to deployment target plans found. Create a deployment plan and add a Export content to deployment target step to it."]</p>
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
+            <p class="alert alert-warning">@T["No export content to deployment target plans found. Create a deployment plan and add a Export content to deployment target step to it."]</p>
+        </div>
+    </div>
 }
 else
 {
