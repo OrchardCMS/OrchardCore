@@ -51,6 +51,7 @@
   </Folder>
   <Folder Name="/scripts/Bloom/components/">
     <File Path=".scripts/bloom/components/password-strength.ts" />
+    <File Path=".scripts/bloom/components/phone-input.ts" />
   </Folder>
   <Folder Name="/scripts/Bloom/helpers/">
     <File Path=".scripts/bloom/helpers/globals.ts" />
@@ -74,6 +75,7 @@
     <Project Path="src/OrchardCore.Modules/OrchardCore.Alias/OrchardCore.Alias.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.ArchiveLater/OrchardCore.ArchiveLater.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Autoroute/OrchardCore.Autoroute.csproj" />
+    <Project Path="src/OrchardCore.Modules/OrchardCore.CommonShapes/OrchardCore.CommonShapes.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.ContentFields/OrchardCore.ContentFields.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.ContentLocalization/OrchardCore.ContentLocalization.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.ContentPreview/OrchardCore.ContentPreview.csproj" />

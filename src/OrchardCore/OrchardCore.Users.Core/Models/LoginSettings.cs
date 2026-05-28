@@ -14,4 +14,5 @@ public class LoginSettings
 
     [DefaultValue(true)]
     public bool AllowChangingPhoneNumber { get; set; } = true;
+
 }

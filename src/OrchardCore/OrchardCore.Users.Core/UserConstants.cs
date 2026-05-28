@@ -21,5 +21,7 @@ public static class UserConstants
         public const string ExternalAuthentication = "OrchardCore.Users.ExternalAuthentication";
 
         public const string ResetPassword = "OrchardCore.Users.ResetPassword";
+
+        public const string Phone = "OrchardCore.Users.Phone";
     }
 }
