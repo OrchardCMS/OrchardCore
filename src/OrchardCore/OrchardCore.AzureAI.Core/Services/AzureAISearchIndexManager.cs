@@ -233,7 +233,7 @@ public sealed class AzureAISearchIndexManager : IIndexManager
         }
 
         var vectorSearch = new VectorSearch();
-        var configuredVectorSearch = metadata.VectorSearch;
+        var configuredVectorSearch = metadata.VectorSearchMappings;
         var configuredProfiles = GetConfiguredProfiles(configuredVectorSearch);
         var configuredAlgorithms = GetConfiguredAlgorithms(configuredVectorSearch);
         var addedProfiles = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -262,7 +262,7 @@ public sealed class AzureAISearchIndexManager : IIndexManager
             var algorithmName = CreateDefaultVectorSearchAlgorithmName(profileName);
 
             EnsureAlgorithm(vectorSearch, configuredAlgorithms, addedAlgorithms, algorithmName);
-            vectorSearch.Profiles.Add(new VectorSearchProfile(profileName, algorithmName));
+            vectorSearch.Profiles.Add(new Azure.Search.Documents.Indexes.Models.VectorSearchProfile(profileName, algorithmName));
         }
 
         return vectorSearch.Profiles.Count > 0 ? vectorSearch : null;
@@ -270,7 +270,7 @@ public sealed class AzureAISearchIndexManager : IIndexManager
 
     private static void EnsureAlgorithm(
         VectorSearch vectorSearch,
-        Dictionary<string, AzureAISearchVectorSearchAlgorithm> configuredAlgorithms,
+        Dictionary<string, VectorSearchAlgorithmMap> configuredAlgorithms,
         HashSet<string> addedAlgorithms,
         string algorithmName)
     {
@@ -288,9 +288,9 @@ public sealed class AzureAISearchIndexManager : IIndexManager
         vectorSearch.Algorithms.Add(new HnswAlgorithmConfiguration(algorithmName));
     }
 
-    private static VectorSearchProfile CreateVectorSearchProfile(AzureAISearchVectorSearchProfile profile, string algorithmName)
+    private static Azure.Search.Documents.Indexes.Models.VectorSearchProfile CreateVectorSearchProfile(Models.VectorSearchProfileMap profile, string algorithmName)
     {
-        var vectorSearchProfile = new VectorSearchProfile(profile.Name, algorithmName);
+        var vectorSearchProfile = new Azure.Search.Documents.Indexes.Models.VectorSearchProfile(profile.Name, algorithmName);
 
         if (!string.IsNullOrWhiteSpace(profile.VectorizerName))
         {
@@ -305,35 +305,35 @@ public sealed class AzureAISearchIndexManager : IIndexManager
         return vectorSearchProfile;
     }
 
-    private static VectorSearchAlgorithmConfiguration CreateVectorSearchAlgorithm(AzureAISearchVectorSearchAlgorithm algorithm)
+    private static VectorSearchAlgorithmConfiguration CreateVectorSearchAlgorithm(VectorSearchAlgorithmMap algorithm)
     {
-        if (string.IsNullOrWhiteSpace(algorithm.Kind) || algorithm.Kind.EqualsOrdinalIgnoreCase(AzureAISearchVectorSearchAlgorithm.HnswKind))
+        if (string.IsNullOrWhiteSpace(algorithm.Kind) || algorithm.Kind.EqualsOrdinalIgnoreCase(VectorSearchAlgorithmMap.HnswKind))
         {
             var hnswConfiguration = new HnswAlgorithmConfiguration(algorithm.Name);
 
-            if (algorithm.HnswParameters is not null)
+            if (algorithm.HnswParametersMap is not null)
             {
                 hnswConfiguration.Parameters = new HnswParameters
                 {
-                    M = algorithm.HnswParameters.M,
-                    EfConstruction = algorithm.HnswParameters.EfConstruction,
-                    EfSearch = algorithm.HnswParameters.EfSearch,
-                    Metric = ToVectorSearchAlgorithmMetric(algorithm.HnswParameters.Metric),
+                    M = algorithm.HnswParametersMap.M,
+                    EfConstruction = algorithm.HnswParametersMap.EfConstruction,
+                    EfSearch = algorithm.HnswParametersMap.EfSearch,
+                    Metric = ToVectorSearchAlgorithmMetric(algorithm.HnswParametersMap.Metric),
                 };
             }
 
             return hnswConfiguration;
         }
 
-        if (algorithm.Kind.EqualsOrdinalIgnoreCase(AzureAISearchVectorSearchAlgorithm.ExhaustiveKnnKind))
+        if (algorithm.Kind.EqualsOrdinalIgnoreCase(VectorSearchAlgorithmMap.ExhaustiveKnnKind))
         {
             var exhaustiveKnnConfiguration = new ExhaustiveKnnAlgorithmConfiguration(algorithm.Name);
 
-            if (algorithm.ExhaustiveKnnParameters is not null)
+            if (algorithm.ExhaustiveKnnParametersMap is not null)
             {
                 exhaustiveKnnConfiguration.Parameters = new ExhaustiveKnnParameters
                 {
-                    Metric = ToVectorSearchAlgorithmMetric(algorithm.ExhaustiveKnnParameters.Metric),
+                    Metric = ToVectorSearchAlgorithmMetric(algorithm.ExhaustiveKnnParametersMap.Metric),
                 };
             }
 
@@ -353,28 +353,28 @@ public sealed class AzureAISearchIndexManager : IIndexManager
             return vectorInfo.VectorSearchConfiguration;
         }
 
-        var configuredProfileName = GetConfiguredProfiles(metadata.VectorSearch).FirstOrDefault()?.Name;
+        var configuredProfileName = GetConfiguredProfiles(metadata.VectorSearchMappings).FirstOrDefault()?.Name;
 
         return string.IsNullOrWhiteSpace(configuredProfileName)
-            ? AzureAISearchVectorSearchOptions.DefaultProfileName
+            ? VectorSearchMappings.DefaultProfileName
             : configuredProfileName;
     }
 
-    private static AzureAISearchVectorSearchProfile[] GetConfiguredProfiles(AzureAISearchVectorSearchOptions vectorSearch)
+    private static VectorSearchProfileMap[] GetConfiguredProfiles(VectorSearchMappings vectorSearch)
         => vectorSearch?.Profiles?
             .Where(x => x is not null && !string.IsNullOrWhiteSpace(x.Name))
             .ToArray()
             ?? [];
 
-    private static Dictionary<string, AzureAISearchVectorSearchAlgorithm> GetConfiguredAlgorithms(AzureAISearchVectorSearchOptions vectorSearch)
+    private static Dictionary<string, VectorSearchAlgorithmMap> GetConfiguredAlgorithms(VectorSearchMappings vectorSearch)
         => vectorSearch?.Algorithms?
             .Where(x => x is not null && !string.IsNullOrWhiteSpace(x.Name))
             .ToDictionary(x => x.Name, StringComparer.OrdinalIgnoreCase)
             ?? [];
 
     private static string CreateDefaultVectorSearchAlgorithmName(string profileName)
-        => profileName.EqualsOrdinalIgnoreCase(AzureAISearchVectorSearchOptions.DefaultProfileName)
-            ? AzureAISearchVectorSearchOptions.DefaultAlgorithmName
+        => profileName.EqualsOrdinalIgnoreCase(VectorSearchMappings.DefaultProfileName)
+            ? VectorSearchMappings.DefaultAlgorithmName
             : $"{profileName}-algorithm";
 
     private static SearchFieldTemplate GetSearchFieldTemplate(AzureAISearchIndexMap indexMap, AzureAISearchIndexMetadata metadata, string analyzerName)

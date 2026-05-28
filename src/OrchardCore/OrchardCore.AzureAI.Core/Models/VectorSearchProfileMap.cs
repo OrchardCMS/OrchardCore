@@ -1,6 +1,6 @@
 namespace OrchardCore.AzureAI.Models;
 
-public sealed class AzureAISearchVectorSearchProfile
+public sealed class VectorSearchProfileMap
 {
     public string Name { get; set; }
 

@@ -72,9 +72,9 @@ public sealed class AzureAISearchIndexDeploymentSource
                 { "Properties", index.Properties?.DeepClone() },
             };
 
-            if (indexMetadata.VectorSearch is not null)
+            if (indexMetadata.VectorSearchMappings is not null)
             {
-                indexInfo[nameof(indexMetadata.VectorSearch)] = JObject.FromObject(indexMetadata.VectorSearch);
+                indexInfo[nameof(indexMetadata.VectorSearchMappings)] = JObject.FromObject(indexMetadata.VectorSearchMappings);
             }
 
             var exportingContext = new IndexProfileExportingContext(index, indexInfo);

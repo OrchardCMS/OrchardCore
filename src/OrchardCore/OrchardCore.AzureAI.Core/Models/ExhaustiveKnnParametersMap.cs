@@ -1,6 +1,6 @@
 namespace OrchardCore.AzureAI.Models;
 
-public sealed class AzureAISearchExhaustiveKnnParameters
+public sealed class ExhaustiveKnnParametersMap
 {
     public string Metric { get; set; }
 }

@@ -1,6 +1,6 @@
 namespace OrchardCore.AzureAI.Models;
 
-public sealed class AzureAISearchVectorSearchAlgorithm
+public sealed class VectorSearchAlgorithmMap
 {
     public const string HnswKind = "hnsw";
     public const string ExhaustiveKnnKind = "exhaustiveKnn";
@@ -9,7 +9,7 @@ public sealed class AzureAISearchVectorSearchAlgorithm
 
     public string Kind { get; set; } = HnswKind;
 
-    public AzureAISearchHnswParameters HnswParameters { get; set; }
+    public HnswParametersMap HnswParametersMap { get; set; }
 
-    public AzureAISearchExhaustiveKnnParameters ExhaustiveKnnParameters { get; set; }
+    public ExhaustiveKnnParametersMap ExhaustiveKnnParametersMap { get; set; }
 }

@@ -1,4 +1,3 @@
-using System.Reflection;
 using Azure.Search.Documents.Indexes.Models;
 using OrchardCore.AzureAI;
 using OrchardCore.AzureAI.Models;
@@ -44,7 +43,7 @@ public class VectorSearchIndexTests
     {
         var indexProfile = CreateIndexProfile();
         var metadata = indexProfile.GetOrCreate<AzureAISearchIndexMetadata>();
-        metadata.VectorSearch = new AzureAISearchVectorSearchOptions();
+        metadata.VectorSearchMappings = new VectorSearchMappings();
 
         metadata.IndexMappings.Add(new AzureAISearchIndexMap("embedding", DocumentIndex.Types.Vector)
         {
@@ -56,17 +55,17 @@ public class VectorSearchIndexTests
             },
         });
 
-        metadata.VectorSearch.Algorithms.Add(new AzureAISearchVectorSearchAlgorithm
+        metadata.VectorSearchMappings.Algorithms.Add(new VectorSearchAlgorithmMap
         {
             Name = "semantic-algorithm",
             Kind = "exhaustiveKnn",
-            ExhaustiveKnnParameters = new AzureAISearchExhaustiveKnnParameters
+            ExhaustiveKnnParametersMap = new ExhaustiveKnnParametersMap
             {
                 Metric = "cosine",
             },
         });
 
-        metadata.VectorSearch.Profiles.Add(new AzureAISearchVectorSearchProfile
+        metadata.VectorSearchMappings.Profiles.Add(new VectorSearchProfileMap
         {
             Name = "semantic-profile",
             AlgorithmConfigurationName = "semantic-algorithm",
@@ -90,7 +89,7 @@ public class VectorSearchIndexTests
     {
         var indexProfile = CreateIndexProfile();
         var metadata = indexProfile.GetOrCreate<AzureAISearchIndexMetadata>();
-        metadata.VectorSearch = new AzureAISearchVectorSearchOptions();
+        metadata.VectorSearchMappings = new VectorSearchMappings();
 
         metadata.IndexMappings.Add(new AzureAISearchIndexMap("embedding", DocumentIndex.Types.Vector)
         {
@@ -101,7 +100,7 @@ public class VectorSearchIndexTests
             },
         });
 
-        metadata.VectorSearch.Profiles.Add(new AzureAISearchVectorSearchProfile
+        metadata.VectorSearchMappings.Profiles.Add(new global::OrchardCore.AzureAI.Models.VectorSearchProfileMap
         {
             Name = "semantic-profile",
         });

@@ -1,6 +1,6 @@
 namespace OrchardCore.AzureAI.Models;
 
-public sealed class AzureAISearchHnswParameters
+public sealed class HnswParametersMap
 {
     public int? M { get; set; }
 
