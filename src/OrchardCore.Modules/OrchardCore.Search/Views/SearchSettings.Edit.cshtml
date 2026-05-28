@@ -2,23 +2,26 @@
 
 @if (Model.Indexes?.Count > 0)
 {
-    <div class="mb-3" asp-validation-class-for="DefaultIndexProfileName">
-        <label asp-for="DefaultIndexProfileName" class="form-label">@T["Default search index"]</label>
-        <select asp-for="DefaultIndexProfileName" asp-items="Model.Indexes" class="form-select">
-            <option value="">@T["Select a default index"]</option>
-        </select>
-        <span asp-validation-for="DefaultIndexProfileName"></span>
-        <span class="hint">@T["The default index to use for the search page."]</span>
+    <div class="ocat-wrapper" asp-validation-class-for="DefaultIndexProfileName">
+        <label asp-for="DefaultIndexProfileName" class="ocat-label">@T["Default search index"]</label>
+        <div class="ocat-end">
+            <select asp-for="DefaultIndexProfileName" asp-items="Model.Indexes" class="form-select">
+                <option value="">@T["Select a default index"]</option>
+            </select>
+            <span asp-validation-for="DefaultIndexProfileName"></span>
+            <span class="hint">@T["The default index to use for the search page."]</span>
+        </div>
     </div>
 
-    <div class="mb-3" asp-validation-class-for="Placeholder">
-        <label asp-for="Placeholder" class="form-label">@T["Placeholder"]</label>
-        <input type="text" class="form-control" asp-for="Placeholder" />
-        <span class="hint">@T["The placeholder text to use in the search bar."]</span>
+    <div class="ocat-wrapper" asp-validation-class-for="Placeholder">
+        <label asp-for="Placeholder" class="ocat-label">@T["Placeholder"]</label>
+        <div class="ocat-end">
+            <input type="text" class="form-control" asp-for="Placeholder" />
+            <span class="hint">@T["The placeholder text to use in the search bar."]</span>
+        </div>
     </div>
 }
 else
 {
     <div class="alert alert-warning">@T["No available indexes. Add at least one index to search."]</div>
 }
-

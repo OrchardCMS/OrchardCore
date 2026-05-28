@@ -11,9 +11,9 @@
     <input type="hidden" asp-for="DeploymentStepType" />
 
     <div class="mb-3">
-        <button class="btn btn-primary save" type="submit">@T["Save"]</button>
+        <button class="btn btn-primary btn-sm save" type="submit">@T["Save"]</button>
 
-        <a class="btn btn-danger delete"
+        <a class="btn btn-danger btn-sm delete"
            role="button"
            asp-action="Delete"
            asp-controller="Step"
@@ -21,7 +21,7 @@
            asp-route-stepId="@Model.DeploymentStepId"
            data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
 
-        <a class="btn btn-secondary cancel"
+        <a class="btn btn-secondary btn-sm cancel"
            role="button"
            asp-route-action="Display"
            asp-route-controller="DeploymentPlan"

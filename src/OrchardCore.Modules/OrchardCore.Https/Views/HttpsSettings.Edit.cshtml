@@ -1,34 +1,41 @@
 @model HttpsSettingsViewModel
 
-<div class="mb-3" asp-validation-class-for="RequireHttps">
-    <div class="form-check">
-        <input type="checkbox" class="form-check-input" asp-for="RequireHttps" asp-is-disabled="@(!Model.IsHttpsRequest)" />
-        <label class="form-check-label" asp-for="RequireHttps">@T["Require HTTPS"]</label>
-        <span class="hint dashed">@T["Require HTTPS for all requests"]</span>
+<div class="ocat-wrapper" asp-validation-class-for="RequireHttps">
+    <div class="ocat-end-offset">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" asp-for="RequireHttps" asp-is-disabled="@(!Model.IsHttpsRequest)" />
+            <label class="form-check-label" asp-for="RequireHttps">@T["Require HTTPS"]</label>
+            <span class="hint dashed">@T["Require HTTPS for all requests"]</span>
+        </div>
     </div>
 </div>
 
-<div class="mb-3" asp-validation-class-for="EnableStrictTransportSecurity">
-    <div class="form-check">
-        <input type="checkbox" class="form-check-input" asp-for="EnableStrictTransportSecurity" asp-is-disabled="@(!Model.IsHttpsRequest)" />
-        <label class="form-check-label" asp-for="EnableStrictTransportSecurity">@T["Enable HSTS"]</label>
-        <span class="hint dashed">@T["Indicates to browsers that connecting without transport security (e.g SSL or TLS) isn't allowed."]</span>
-    </div>
-
-    <div class="alert alert-danger">@T["This option should be enabled with caution, as it may prevent users from connecting if HTTPS was later disabled or wasn't available."]</div>
-</div>
-
-<div class="mb-3" asp-validation-class-for="RequireHttpsPermanent">
-    <div class="form-check">
-        <input type="checkbox" class="form-check-input" asp-for="RequireHttpsPermanent" asp-is-disabled="@(!Model.IsHttpsRequest)" />
-        <label class="form-check-label" asp-for="RequireHttpsPermanent">@T["Require HTTPS Permanent"]</label>
-        <span class="hint dashed">@T["Specifies whether a permanent redirect, 308 Moved Permanently, should be used instead of a temporary redirect, 307 Found, when redirecting to HTTPS"]</span>
+<div class="ocat-wrapper" asp-validation-class-for="EnableStrictTransportSecurity">
+    <div class="ocat-end-offset">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" asp-for="EnableStrictTransportSecurity" asp-is-disabled="@(!Model.IsHttpsRequest)" />
+            <label class="form-check-label" asp-for="EnableStrictTransportSecurity">@T["Enable HSTS"]</label>
+            <span class="hint dashed">@T["Indicates to browsers that connecting without transport security (e.g SSL or TLS) isn't allowed."]</span>
+        </div>
+        <div class="alert alert-danger">@T["This option should be enabled with caution, as it may prevent users from connecting if HTTPS was later disabled or wasn't available."]</div>
     </div>
 </div>
 
-<div class="mb-3" asp-validation-class-for="SslPort">
-    <label asp-for="SslPort" class="form-label">@T["SSL Port"]</label>
-    <input asp-for="SslPort" class="form-control" type="number" asp-is-disabled="@(!Model.IsHttpsRequest)" />
-    <span asp-validation-for="SslPort"></span>
-    <span class="hint">@T["The SSL Port Number, leave empty to let the middleware try to determinate it."]</span>
+<div class="ocat-wrapper" asp-validation-class-for="RequireHttpsPermanent">
+    <div class="ocat-end-offset">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" asp-for="RequireHttpsPermanent" asp-is-disabled="@(!Model.IsHttpsRequest)" />
+            <label class="form-check-label" asp-for="RequireHttpsPermanent">@T["Require HTTPS Permanent"]</label>
+            <span class="hint dashed">@T["Specifies whether a permanent redirect, 308 Moved Permanently, should be used instead of a temporary redirect, 307 Found, when redirecting to HTTPS"]</span>
+        </div>
+    </div>
+</div>
+
+<div class="ocat-wrapper" asp-validation-class-for="SslPort">
+    <label asp-for="SslPort" class="ocat-label">@T["SSL Port"]</label>
+    <div class="ocat-end">
+        <input asp-for="SslPort" class="form-control" type="number" asp-is-disabled="@(!Model.IsHttpsRequest)" />
+        <span asp-validation-for="SslPort"></span>
+        <span class="hint">@T["The SSL Port Number, leave empty to let the middleware try to determinate it."]</span>
+    </div>
 </div>

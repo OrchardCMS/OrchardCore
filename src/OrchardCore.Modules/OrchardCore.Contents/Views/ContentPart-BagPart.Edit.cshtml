@@ -1,9 +1,8 @@
-@using OrchardCore
-@using OrchardCore.ContentManagement
 @using OrchardCore.ContentManagement.Metadata.Models
 @using OrchardCore.ContentManagement.Metadata.Settings
 @using OrchardCore.ContentTypes
 @using OrchardCore.Localization.Data
+@using OrchardCore.Mvc.Utilities
 
 @inject IDataLocalizer D
 
@@ -19,8 +18,8 @@
     var description = typePartDefinition.Description();
 }
 
-<div class="@Orchard.GetPartWrapperClasses(typePartDefinition)">
-    <div class="@Orchard.GetLabelClasses()">
+<div class="ocat-wrapper content-part-wrapper @($"content-part-wrapper-{typePartDefinition.PartDefinition.Name.HtmlClassify()}" + (typePartDefinition.IsNamedPart() ? $" content-part-wrapper-{typePartDefinition.Name.HtmlClassify()}" : string.Empty))">
+    <div class="ocat-label">
         @D[typePartDefinition.DisplayName(), DataLocalizationContext.ContentType]
 
         @if (!string.IsNullOrEmpty(description))
@@ -29,7 +28,7 @@
         }
     </div>
 
-    <div class="@Orchard.GetEndClasses()">
+    <div class="ocat-end">
         @foreach (var shape in shapes)
         {
             @await DisplayAsync(shape)

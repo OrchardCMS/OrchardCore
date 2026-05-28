@@ -30,28 +30,30 @@
     </nav>
 </div>
 <form asp-action="DeploymentPlan">
-    @if (Model.Items.Any())
-    {
-        <ul class="list-group" id="stepOrder">
-            @foreach (var item in Model.Items)
-            {
-                item.DeploymentPlanId = Model.DeploymentPlan.Id;
+    <div class="mb-3">
+        @if (Model.Items.Any())
+        {
+            <ul class="list-group" id="stepOrder">
+                @foreach (var item in Model.Items)
+                {
+                    item.DeploymentPlanId = Model.DeploymentPlan.Id;
 
-                <li class="list-group-item">
-                    <div class="d-flex">
-                        <div class="ui-sortable-handle cursor-pointer me-2"><i class="fa-solid fa-up-down-left-right" aria-hidden="true"></i></div>
-                        @await DisplayAsync(item)
-                    </div>
-                </li>
-            }
-        </ul>
-    }
-    else
-    {
-        <div class="alert alert-info mb-0" role="alert">
-            @T["<strong>Nothing here!</strong> There are no steps on this plan for the moment."]
-        </div>
-    }
+                    <li class="list-group-item">
+                        <div class="d-flex">
+                            <div class="ui-sortable-handle cursor-pointer me-2"><i class="fa-solid fa-up-down-left-right" aria-hidden="true"></i></div>
+                            @await DisplayAsync(item)
+                        </div>
+                    </li>
+                }
+            </ul>
+        }
+        else
+        {
+            <div class="alert alert-info mb-0" role="alert">
+                @T["<strong>Nothing here!</strong> There are no steps on this plan for the moment."]
+            </div>
+        }
+    </div>
 </form>
 
 <!-- Modal -->

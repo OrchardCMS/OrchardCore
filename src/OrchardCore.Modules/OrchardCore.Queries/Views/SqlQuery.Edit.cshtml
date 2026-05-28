@@ -9,30 +9,38 @@
 <script asp-name="codemirror-mode-sql" at="Foot"></script>
 <script asp-name="codemirror-addon-hint-sql-hint" at="Foot"></script>
 
-<div class="mb-3">
-    <div class="form-check">
-        <input type="checkbox" class="form-check-input" asp-for="ReturnDocuments" checked="@Model.ReturnDocuments" />
-        <label class="form-check-label" asp-for="ReturnDocuments">@T["Return Documents"]</label>
-        <span class="hint dashed">@T["Check to return the corresponding documents."]</span>
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" asp-for="ReturnDocuments" checked="@Model.ReturnDocuments" />
+            <label class="form-check-label" asp-for="ReturnDocuments">@T["Return Documents"]</label>
+            <span class="hint dashed">@T["Check to return the corresponding documents."]</span>
+        </div>
+        <span class="hint">@T["When checked, the result has to be a list of document ids."]</span>
     </div>
-    <span class="hint">@T["When checked, the result has to be a list of document ids."]</span>
 </div>
 
-<div class="mb-3">
+<div class="ocat-end-offset">
     <div class="alert alert-warning" role="alert">
         @T["SQL queries are Liquid templates. Never inject user input with Liquid output expressions like '{{ input }}'. Use SQL parameters (for example '@name' or '@name:default') passed in by the caller for user-provided values."]
     </div>
+</div>
 
-    @if (Model.HasLiquidOutputExpressions)
-    {
+@if (Model.HasLiquidOutputExpressions)
+{
+    <div class="ocat-end-offset">
         <div class="alert alert-warning" role="alert">
             @T["Potentially unsafe Liquid output expressions ('{{ ... }}') were detected in this query template. This can lead to SQL injection if untrusted input is rendered directly into SQL."]
         </div>
-    }
+    </div>
+}
 
-    <label asp-for="Query" class="form-label">@T["Query"]</label>
-    <textarea asp-for="Query" rows="12" class="form-control"></textarea>
-    <span class="hint">@T["The SQL query to execute."]</span>
+<div class="ocat-wrapper">
+    <label asp-for="Query" class="ocat-label">@T["Query"]</label>
+    <div class="ocat-end">
+        <textarea asp-for="Query" rows="12" class="form-control"></textarea>
+        <span class="hint">@T["The SQL query to execute."]</span>
+    </div>
 </div>
 
 <script at="Foot">

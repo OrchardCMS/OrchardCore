@@ -15,8 +15,10 @@
     return;
 }
 
-<div class="mb-3" asp-validation-class-for="DefaultProvider">
-    <label asp-for="DefaultProvider" class="form-label">@T["Default provider"]</label>
-    <select asp-for="DefaultProvider" class="form-select" asp-items="Model.Providers"></select>
-    <span asp-validation-for="DefaultProvider"></span>
+<div class="ocat-wrapper" asp-validation-class-for="DefaultProvider">
+    <label asp-for="DefaultProvider" class="ocat-label">@T["Default provider"]</label>
+    <div class="ocat-end">
+        <select asp-for="DefaultProvider" class="form-select" asp-items="Model.Providers"></select>
+        <span asp-validation-for="DefaultProvider"></span>
+    </div>
 </div>
