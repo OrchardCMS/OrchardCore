@@ -13,9 +13,9 @@
 }
 else
 {
-    <div class="row">
-        <div class="mb-3 col-sm-6">
-            <label asp-for="ExportContentToDeploymentTargetPlanId" class="form-label">@T["Deployment Plan"]</label>
+    <div class="ocat-limited-wrapper">
+        <label asp-for="ExportContentToDeploymentTargetPlanId" class="ocat-label">@T["Deployment Plan"]</label>
+        <div class="ocat-limited">
             <select asp-for="ExportContentToDeploymentTargetPlanId" class="form-select">
                 @foreach (var exportContentToDeploymentTargetPlan in exportContentToDeploymentTargetPlans)
                 {

@@ -2,34 +2,42 @@
 @using OrchardCore.Workflows.ViewModels
 @model ForEachTaskViewModel
 
-<div class="mb-3" asp-validation-class-for="Syntax">
-    <label asp-for="Syntax" class="form-label">@T["Syntax"]</label>
-    <select asp-for="Syntax" class="form-select">
-        <option value="@nameof(WorkflowScriptSyntax.JavaScript)">@T["JavaScript"]</option>
-        <option value="@nameof(WorkflowScriptSyntax.Liquid)">@T["Liquid"]</option>
-    </select>
-    <span asp-validation-for="Syntax"></span>
+<div class="ocat-wrapper" asp-validation-class-for="Syntax">
+    <label asp-for="Syntax" class="ocat-label">@T["Syntax"]</label>
+    <div class="ocat-end">
+        <select asp-for="Syntax" class="form-select">
+            <option value="@nameof(WorkflowScriptSyntax.JavaScript)">@T["JavaScript"]</option>
+            <option value="@nameof(WorkflowScriptSyntax.Liquid)">@T["Liquid"]</option>
+        </select>
+        <span asp-validation-for="Syntax"></span>
+    </div>
 </div>
 
-<div id="@(Html.IdFor(m => m.EnumerableExpression))_group" class="mb-3 @(Model.Syntax == WorkflowScriptSyntax.JavaScript ? "" : "d-none")" asp-validation-class-for="EnumerableExpression">
-    <label asp-for="EnumerableExpression" class="form-label">@T["Enumerable Expression"]</label>
-    <input type="text" asp-for="EnumerableExpression" class="form-control code" />
-    <span asp-validation-for="EnumerableExpression"></span>
-    <span class="hint">@T["The JavaScript list to iterate. Example: {0}", "input(\"Items\")"]</span>
+<div id="@(Html.IdFor(m => m.EnumerableExpression))_group" class="ocat-wrapper @(Model.Syntax == WorkflowScriptSyntax.JavaScript ? "" : "d-none")" asp-validation-class-for="EnumerableExpression">
+    <label asp-for="EnumerableExpression" class="ocat-label">@T["Enumerable Expression"]</label>
+    <div class="ocat-end">
+        <input type="text" asp-for="EnumerableExpression" class="form-control code" />
+        <span asp-validation-for="EnumerableExpression"></span>
+        <span class="hint">@T["The JavaScript list to iterate. Example: {0}", "input(\"Items\")"]</span>
+    </div>
 </div>
 
-<div id="@(Html.IdFor(m => m.LiquidEnumerableExpression))_group" class="mb-3 @(Model.Syntax == WorkflowScriptSyntax.Liquid ? "" : "d-none")" asp-validation-class-for="LiquidEnumerableExpression">
-    <label asp-for="LiquidEnumerableExpression" class="form-label">@T["Enumerable Expression"]</label>
-    <input type="text" asp-for="LiquidEnumerableExpression" class="form-control code" />
-    <span asp-validation-for="LiquidEnumerableExpression"></span>
-    <span class="hint">@T["The Liquid list to iterate. Render a JSON array or comma-separated list. Example: {0}", "{{ Workflow.Properties.Items | json }}"]</span>
+<div id="@(Html.IdFor(m => m.LiquidEnumerableExpression))_group" class="ocat-wrapper @(Model.Syntax == WorkflowScriptSyntax.Liquid ? "" : "d-none")" asp-validation-class-for="LiquidEnumerableExpression">
+    <label asp-for="LiquidEnumerableExpression" class="ocat-label">@T["Enumerable Expression"]</label>
+    <div class="ocat-end">
+        <input type="text" asp-for="LiquidEnumerableExpression" class="form-control code" />
+        <span asp-validation-for="LiquidEnumerableExpression"></span>
+        <span class="hint">@T["The Liquid list to iterate. Render a JSON array or comma-separated list. Example: {0}", "{{ Workflow.Properties.Items | json }}"]</span>
+    </div>
 </div>
 
-<div class="mb-3" asp-validation-class-for="LoopVariableName">
-    <label asp-for="LoopVariableName" class="form-label">@T["Looping Variable"]</label>
-    <input type="text" asp-for="LoopVariableName" class="form-control" />
-    <span asp-validation-for="LoopVariableName"></span>
-    <span class="hint">@T["The name of the looping variable. The current value of each iteration is set to a property with this name as well as the last result."]</span>
+<div class="ocat-wrapper" asp-validation-class-for="LoopVariableName">
+    <label asp-for="LoopVariableName" class="ocat-label">@T["Looping Variable"]</label>
+    <div class="ocat-end">
+        <input type="text" asp-for="LoopVariableName" class="form-control" />
+        <span asp-validation-for="LoopVariableName"></span>
+        <span class="hint">@T["The name of the looping variable. The current value of each iteration is set to a property with this name as well as the last result."]</span>
+    </div>
 </div>
 
 <script at="Foot">

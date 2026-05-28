@@ -7,29 +7,37 @@
 }
 <zone Name="Title"><h1>@T["Add Parts To \"{0}\"", localizedTypeName]</h1></zone>
 
-@T["Choose the Parts to add to this Content Type."]
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
+        @T["Choose the Parts to add to this Content Type."]
+    </div>
+</div>
 
 <form asp-action="AddPartsTo">
     @Html.ValidationSummary()
-    <div class="mb-3">
-        <ul class="list-group">
-            @foreach (var partSelection in Model.PartSelections)
-            {
-                <li class="list-group-item list-group-item-action">
-                    <div class="form-check">
-                        <input type="checkbox" class="form-check-input" asp-for="PartSelections[i].IsSelected">
-                        <label class="form-check-label" asp-for="PartSelections[i].IsSelected">@partSelection.PartDisplayName</label>
-                        <span class="hint dashed">@partSelection.PartDescription</span>
-                    </div>
-                    <input asp-for="PartSelections[i].IsSelected" type="hidden" />
-                    <input asp-for="PartSelections[i].PartName" type="hidden" />
-                </li>
-                i++;
-            }
-        </ul>
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
+            <ul class="list-group">
+                @foreach (var partSelection in Model.PartSelections)
+                {
+                    <li class="list-group-item list-group-item-action">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" asp-for="PartSelections[i].IsSelected">
+                            <label class="form-check-label" asp-for="PartSelections[i].IsSelected">@partSelection.PartDisplayName</label>
+                            <span class="hint dashed">@partSelection.PartDescription</span>
+                        </div>
+                        <input asp-for="PartSelections[i].IsSelected" type="hidden" />
+                        <input asp-for="PartSelections[i].PartName" type="hidden" />
+                    </li>
+                    i++;
+                }
+            </ul>
+        </div>
     </div>
-    <div class="mb-3">
-        <button class="btn btn-primary save" type="submit">@T["Save"]</button>
-        <a class="btn btn-secondary cancel" role="button" asp-route-action="Edit" asp-route-id="@Model.Type.Name">@T["Cancel"]</a>
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
+            <button class="btn btn-primary save" type="submit">@T["Save"]</button>
+            <a class="btn btn-secondary cancel" role="button" asp-route-action="Edit" asp-route-id="@Model.Type.Name">@T["Cancel"]</a>
+        </div>
     </div>
 </form>

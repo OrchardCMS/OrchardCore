@@ -2,20 +2,20 @@
 
 <h5>@T["Content type"]</h5>
 
-<div class="mb-3" asp-validation-class-for="SelectedOperation">
-    <div class="w-sm-75 w-lg-75 w-xl-50">
-        <label asp-for="SelectedOperation" class="form-label">@T["Operation"]</label>
+<div class="ocat-wrapper" asp-validation-class-for="SelectedOperation">
+    <label asp-for="SelectedOperation" class="ocat-label">@T["Operation"]</label>
+    <div class="ocat-end w-sm-75 w-lg-75 w-xl-50">
         @await Component.InvokeAsync("SelectStringOperation", new { selectedOperation = Model.SelectedOperation, htmlName = Html.NameFor(m => m.SelectedOperation) })
         <span asp-validation-for="SelectedOperation"></span>
+        <span class="hint">@T["Select the rule operator."]</span>
     </div>
-    <span class="hint">@T["Select the rule operator."]</span>
 </div>
 
-<div class="mb-3" asp-validation-class-for="Value">
-    <div class="w-sm-75 w-lg-75 w-xl-50">
-        <label asp-for="Value" class="form-label">@T["Value"]</label>
+<div class="ocat-wrapper" asp-validation-class-for="Value">
+    <label asp-for="Value" class="ocat-label">@T["Value"]</label>
+    <div class="ocat-end w-sm-75 w-lg-75 w-xl-50">
         <input asp-for="Value" class="form-control" type="text" />
         <span asp-validation-for="Value"></span>
+        <span class="hint">@T["The value for the operation."]</span>
     </div>
-    <span class="hint">@T["The value for the operation."]</span>
 </div>
