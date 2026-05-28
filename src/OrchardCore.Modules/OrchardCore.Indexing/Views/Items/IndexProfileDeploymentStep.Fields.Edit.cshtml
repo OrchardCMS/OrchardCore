@@ -2,18 +2,20 @@
 
 @model IndexProfileDeploymentStepViewModel
 
-<h5 class="mb-3">@T["Index Profiles"]</h5>
+<h5>@T["Index Profiles"]</h5>
 
 <div class="mb-3">
     <div class="form-check">
-        <label class="form-check-label">
-            <input class="form-check-input" asp-for="IncludeAll" data-bs-toggle="collapse" role="button" data-bs-target="#data-source-list" aria-expanded="false" aria-controls="data-source-list" />
-            @T["Include all index profiles"]
-        </label>
+        <input class="form-check-input" asp-for="IncludeAll" data-bs-toggle="collapse" role="button" data-bs-target="#data-source-list" aria-expanded="false" aria-controls="data-source-list" />
+        <label class="form-check-label" asp-for="IncludeAll">@T["Include all index profiles"]</label>
     </div>
 </div>
 
-<div id="data-source-list" class="mb-3 collapse@(Model.IncludeAll ? string.Empty : " show")">
+@{
+    var dataSourceListClasses = $"collapse{(Model.IncludeAll ? string.Empty : " show")}";
+}
+
+<div id="data-source-list" class="@dataSourceListClasses">
     <div class="hint mb-1">@T["The index profiles to export as part of the plan."]</div>
 
     <div>

@@ -162,6 +162,63 @@ a:hover {
 }
 
 /* Import the components files */
+.ocat-wrapper {
+  margin-bottom: 1rem;
+}
+
+.ocat-label {
+  display: inline-block;
+  margin-bottom: 0.25rem;
+}
+
+.ocat-label-required::after {
+  color: var(--bs-danger-text-emphasis);
+  content: " *";
+}
+
+/*
+.ocat-end {
+    // Default: no additional layout constraints (stacked form).
+}
+
+.ocat-end-offset {
+    // Default: no offset in stacked layout.
+}
+
+.ocat-start {
+    // Default: no start column in stacked layout.
+}
+*/
+.ocat-limited-wrapper {
+  margin-bottom: 1rem;
+}
+
+.ocat-limited {
+  width: 100%;
+  max-width: 100%;
+}
+
+@media (min-width: 768px) {
+  .ocat-limited {
+    width: 50%;
+    max-width: 50%;
+  }
+}
+
+@media (min-width: 992px) {
+  .ocat-limited {
+    width: 33.33333333%;
+    max-width: 33.333%;
+  }
+}
+
+@media (min-width: 1400px) {
+  .ocat-limited {
+    width: 25%;
+    max-width: 25%;
+  }
+}
+
 .action-bar {
   top: 3.3rem;
   z-index: var(--oc-action-bar-zindex);

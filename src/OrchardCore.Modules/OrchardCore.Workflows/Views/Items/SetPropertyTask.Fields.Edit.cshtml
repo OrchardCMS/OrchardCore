@@ -1,16 +1,20 @@
 @using OrchardCore.Workflows.ViewModels
 @model SetPropertyTaskViewModel
 
-<div class="mb-3" asp-validation-class-for="PropertyName">
-    <label asp-for="PropertyName" class="form-label">@T["Name"]</label>
-    <input asp-for="PropertyName" class="form-control" autofocus="autofocus" />
-    <span asp-validation-for="PropertyName"></span>
-    <span class="hint">@T["The property to set. If the specified property doesn't exist yet, it will be added."]</span>
+<div class="ocat-wrapper" asp-validation-class-for="PropertyName">
+    <label asp-for="PropertyName" class="ocat-label">@T["Name"]</label>
+    <div class="ocat-end">
+        <input asp-for="PropertyName" class="form-control" autofocus="autofocus" />
+        <span asp-validation-for="PropertyName"></span>
+        <span class="hint">@T["The property to set. If the specified property doesn't exist yet, it will be added."]</span>
+    </div>
 </div>
 
-<div class="mb-3" asp-validation-class-for="Value">
-    <label asp-for="Value" class="form-label">@T["Value"]</label>
-    <input type="text" asp-for="Value" class="form-control code" />
-    <span asp-validation-for="Value"></span>
-    <span class="hint">@T["The value to store in the specified property. With JavaScript support."]</span>
+<div class="ocat-wrapper" asp-validation-class-for="Value">
+    <label asp-for="Value" class="ocat-label">@T["Value"]</label>
+    <div class="ocat-end">
+        <input type="text" asp-for="Value" class="form-control code" />
+        <span asp-validation-for="Value"></span>
+        <span class="hint">@T["The value to store in the specified property. With JavaScript support."]</span>
+    </div>
 </div>
