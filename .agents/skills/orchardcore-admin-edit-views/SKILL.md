@@ -1,6 +1,7 @@
 ---
 name: orchardcore-admin-edit-views
 description: Creates and updates OrchardCore admin edit views using the ocat-* CSS class conventions. Use when creating or modifying Edit view files (*.Edit.cshtml, *.Fields.Edit.cshtml) to ensure correct layout and styling.
+status: completed
 ---
 
 # OrchardCore Admin Edit Views
@@ -23,6 +24,26 @@ The `ocat-*` CSS classes provide a standardized two-column layout for admin form
 | `ocat-label-required` | `<label>` | Add alongside `ocat-label` to mark a field as required |
 | `ocat-end` | `<div>` | Wraps the input, validation, and hint in the right column |
 | `ocat-end-offset` | `<div>` | Right-column content with no left label (e.g., checkboxes) |
+| `ocat-limited-wrapper` | `<div>` | Outer row for limited-width controls such as short text, numbers, selects, or small settings inputs |
+| `ocat-limited` | `<div>` | Constrains the control width inside `ocat-limited-wrapper` |
+
+## Choosing the Right Wrapper
+
+Use this decision guide when creating or updating admin edit views:
+
+| Scenario | Preferred Pattern |
+|----------|-------------------|
+| Standard full-width field row | `ocat-wrapper` + `ocat-label` + `ocat-end` |
+| Standalone checkbox/toggle row with no left label | `ocat-wrapper` + `ocat-end-offset` |
+| Top-level limited-width field row (small text, number, select, token, path, port, etc.) | `ocat-limited-wrapper` + `ocat-label` + `ocat-limited` |
+| Content part / content field editor that already needs wrapper classes like `field-wrapper-*` or `content-part-wrapper-*` | Keep the outer `ocat-wrapper`, then place `ocat-limited-wrapper` inside `ocat-end` |
+
+### Wrapper Selection Rules
+
+1. Use `ocat-wrapper` for the default admin edit-view row structure.
+2. Use `ocat-limited-wrapper` when the field should stay visually narrow instead of stretching the full editor width.
+3. If the outer row also needs Orchard-specific wrapper classes such as `field-wrapper-*` or `content-part-wrapper-*`, do **not** replace that outer row with `ocat-limited-wrapper`; keep the outer `ocat-wrapper` and nest `ocat-limited-wrapper` inside `ocat-end`.
+4. Do **not** use legacy helpers or Bootstrap-only layout classes like `mb-3`, `form-group`, `form-label`, `@Orchard.GetWrapperClasses()`, or `@Orchard.GetLimitedWidthWrapperClasses()`.
 
 ### Standard Field Structure
 
@@ -139,6 +160,55 @@ Use `ocat-end-offset` when there is no label in the left column (e.g., for check
 </div>
 ```
 
+### Limited-Width Field Row
+
+Use this when the whole row is a compact admin field, such as a page size, port, callback path, or select list:
+
+```html
+<div class="ocat-limited-wrapper" asp-validation-class-for="PageSize">
+    <label asp-for="PageSize" class="ocat-label">@T["Page size"]</label>
+    <div class="ocat-limited">
+        <input asp-for="PageSize" type="number" class="form-control" />
+        <span asp-validation-for="PageSize"></span>
+        <span class="hint">@T["The default page size."]</span>
+    </div>
+</div>
+```
+
+### Limited-Width Select Row
+
+```html
+<div class="ocat-limited-wrapper" asp-validation-class-for="TimeZone">
+    <label asp-for="TimeZone" class="ocat-label">@T["Default Time Zone"]</label>
+    <div class="ocat-limited">
+        <select asp-for="TimeZone" class="form-select">
+            <option value="">@T["Local to server"]</option>
+        </select>
+        <span asp-validation-for="TimeZone"></span>
+        <span class="hint">@T["Determines the default time zone."]</span>
+    </div>
+</div>
+```
+
+### Limited-Width Control Inside a Field Wrapper
+
+Use this when the editor already needs a content field or content part wrapper on the outer row:
+
+```html
+<div class="@($"ocat-wrapper field-wrapper field-wrapper-{Model.PartFieldDefinition.PartDefinition.Name.HtmlClassify()}-{Model.PartFieldDefinition.Name.HtmlClassify()}")">
+    <label asp-for="Value" class="ocat-label">@T["Value"]</label>
+    <div class="ocat-end">
+        <div class="ocat-limited-wrapper">
+            <div class="ocat-limited">
+                <input asp-for="Value" class="form-control" />
+                <span asp-validation-for="Value"></span>
+            </div>
+        </div>
+        <span class="hint">@T["Use a compact editor width while preserving the field wrapper row."]</span>
+    </div>
+</div>
+```
+
 ### Conditional Fields with JavaScript/Liquid Syntax Selector
 
 For fields that support both JavaScript and Liquid syntax, use the syntax selector pattern with toggling `d-none`:
@@ -215,6 +285,9 @@ When updating existing views, apply these replacements:
 | `<label ... class="form-label">` | `<label ... class="ocat-label">` |
 | Input/select/textarea directly inside wrapper | Wrap in `<div class="ocat-end">` |
 | Checkbox with label inside wrapper | Wrap in `<div class="ocat-end-offset"><div class="form-check">` |
+| `@Orchard.GetLimitedWidthWrapperClasses()` | `ocat-limited-wrapper` |
+| `@Orchard.GetLimitedWidthClasses()` | `ocat-limited` |
+| Limited-width content field row using `field-wrapper-*` | Keep outer `ocat-wrapper field-wrapper-*`, nest `ocat-limited-wrapper` inside `ocat-end` |
 
 ## Complete Edit View Example
 
