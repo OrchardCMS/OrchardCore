@@ -84,20 +84,18 @@ public sealed class ProductIndexProfileHandler : IndexProfileHandlerBase
             IsKey = true,
             IsFilterable = true,
             IsSortable = true,
-            IsCollection = false,
         });
 
         metadata.IndexMappings.Add(new AzureAISearchIndexMap("title", Types.Text)
         {
             IndexingKey = "Title",
             IsSearchable = true,
-            IsCollection = false,
         });
 
         metadata.IndexMappings.Add(new AzureAISearchIndexMap("embedding", Types.Vector)
         {
-            IndexingKey = "Embedding",
-            IsCollection = true,
+            AzureFieldKey = "Embedding",
+            IsSearchable = true,
             VectorInfo = new AzureAISearchIndexMapVectorInfo
             {
                 Dimensions = 1536,
@@ -133,7 +131,7 @@ public sealed class ProductIndexProfileHandler : IndexProfileHandlerBase
 When building each document, write the embedding with `DocumentIndex.Set(...)`:
 
 ```csharp
-documentIndex.Set("embedding", embedding, embedding.Length, DocumentIndexOptions.None);
+documentIndex.Set("embedding", embedding, embedding.Length, DocumentIndexOptions.Store);
 ```
 
 If you want a specific vector field to use a different vector search profile, pass the profile name in the entry metadata:
@@ -143,7 +141,7 @@ documentIndex.Set(
     "embedding",
     embedding,
     embedding.Length,
-    DocumentIndexOptions.None,
+    DocumentIndexOptions.Store,
     new Dictionary<string, object>
     {
         ["VectorSearchConfiguration"] = "products-vector",
