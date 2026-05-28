@@ -168,7 +168,7 @@
                 <div class="ocat-limited">
                     <input asp-for="PickupDirectoryLocation" class="form-control" type="text" />
                     <span asp-validation-for="PickupDirectoryLocation"></span>
-                    <span class="hint">@T[@"E.g. <i>C:\Path\To\This\Site\PickedUpEmail</i> to place emails in a <i>PickedUpEmail</i> directory on the C drive."]</span>
+                    <span class="hint">@T[@"Use <code>/</code> for the tenant's default pickup folder or a subfolder such as <code>/Outbound</code>. The configured base path defaults to <code>{{ AppData }}\Sites\{{ ShellSettings.Name }}\Emails</code>, is expanded from configuration only, and mail stays sandboxed under that folder."]</span>
                 </div>
             </div>
         </div>

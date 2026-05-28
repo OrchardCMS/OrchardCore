@@ -190,6 +190,8 @@ public abstract class SmtpEmailProviderBase : IEmailProvider
 
     private static Task SendOfflineMessageAsync(MimeMessage message, string pickupDirectory)
     {
+        Directory.CreateDirectory(pickupDirectory);
+
         var mailPath = Path.Combine(pickupDirectory, Guid.NewGuid().ToString() + EmailExtension);
 
         return message.WriteToAsync(mailPath, CancellationToken.None);
