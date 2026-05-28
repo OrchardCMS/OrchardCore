@@ -235,11 +235,11 @@ public sealed class AdminController : Controller
     {
         if (enabled)
         {
-            await _notifier.SuccessAsync(H.Plural(features.Length, "The feature {1} was enabled.", "The following features were enabled {1}: ", string.Join(", ", features.Select(f => f.Name ?? f.Id))));
+            await _notifier.SuccessAsync(H.Plural(features.Length, "The feature {1} was enabled.", "The following features were enabled: {1}.", string.Join(", ", features.Select(f => f.Name ?? f.Id))));
         }
         else
         {
-            await _notifier.SuccessAsync(H.Plural(features.Length, "The feature {1} was disabled.", "The following features were disabled {1}: ", string.Join(", ", features.Select(f => f.Name ?? f.Id))));
+            await _notifier.SuccessAsync(H.Plural(features.Length, "The feature {1} was disabled.", "The following features were disabled: {1}.", string.Join(", ", features.Select(f => f.Name ?? f.Id))));
         }
     }
 }
