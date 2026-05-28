@@ -1,30 +1,69 @@
+@using OrchardCore.Workflows.Models
 @using OrchardCore.Workflows.ViewModels
 @model ForLoopTaskViewModel
 
-<div class="ocat-wrapper" asp-validation-class-for="FromExpression">
+<div class="ocat-wrapper" asp-validation-class-for="Syntax">
+    <label asp-for="Syntax" class="ocat-label">@T["Syntax"]</label>
+    <div class="ocat-end">
+        <select asp-for="Syntax" class="form-select">
+            <option value="@nameof(WorkflowScriptSyntax.JavaScript)">@T["JavaScript"]</option>
+            <option value="@nameof(WorkflowScriptSyntax.Liquid)">@T["Liquid"]</option>
+        </select>
+        <span asp-validation-for="Syntax"></span>
+    </div>
+</div>
+
+<div id="@(Html.IdFor(m => m.FromExpression))_group" class="ocat-wrapper @(Model.Syntax == WorkflowScriptSyntax.JavaScript ? "" : "d-none")" asp-validation-class-for="FromExpression">
     <label asp-for="FromExpression" class="ocat-label">@T["From Expression"]</label>
     <div class="ocat-end">
         <input type="text" asp-for="FromExpression" class="form-control code" />
         <span asp-validation-for="FromExpression"></span>
-        <span class="hint">@T["The start value. With JavaScript support."]</span>
+        <span class="hint">@T["The JavaScript start value. Example: {0}", "0"]</span>
     </div>
 </div>
 
-<div class="ocat-wrapper" asp-validation-class-for="ToExpression">
+<div id="@(Html.IdFor(m => m.LiquidFromExpression))_group" class="ocat-wrapper @(Model.Syntax == WorkflowScriptSyntax.Liquid ? "" : "d-none")" asp-validation-class-for="LiquidFromExpression">
+    <label asp-for="LiquidFromExpression" class="ocat-label">@T["From Expression"]</label>
+    <div class="ocat-end">
+        <input type="text" asp-for="LiquidFromExpression" class="form-control code" />
+        <span asp-validation-for="LiquidFromExpression"></span>
+        <span class="hint">@T["The Liquid start value. Example: {0}", "{{ Workflow.Properties.Start }}"]</span>
+    </div>
+</div>
+
+<div id="@(Html.IdFor(m => m.ToExpression))_group" class="ocat-wrapper @(Model.Syntax == WorkflowScriptSyntax.JavaScript ? "" : "d-none")" asp-validation-class-for="ToExpression">
     <label asp-for="ToExpression" class="ocat-label">@T["To Expression"]</label>
     <div class="ocat-end">
         <input type="text" asp-for="ToExpression" class="form-control code" />
         <span asp-validation-for="ToExpression"></span>
-        <span class="hint">@T["The end value. With JavaScript support."]</span>
+        <span class="hint">@T["The JavaScript end value. Example: {0}", "10"]</span>
     </div>
 </div>
 
-<div class="ocat-wrapper" asp-validation-class-for="StepExpression">
+<div id="@(Html.IdFor(m => m.LiquidToExpression))_group" class="ocat-wrapper @(Model.Syntax == WorkflowScriptSyntax.Liquid ? "" : "d-none")" asp-validation-class-for="LiquidToExpression">
+    <label asp-for="LiquidToExpression" class="ocat-label">@T["To Expression"]</label>
+    <div class="ocat-end">
+        <input type="text" asp-for="LiquidToExpression" class="form-control code" />
+        <span asp-validation-for="LiquidToExpression"></span>
+        <span class="hint">@T["The Liquid end value. Example: {0}", "{{ Workflow.Properties.End }}"]</span>
+    </div>
+</div>
+
+<div id="@(Html.IdFor(m => m.StepExpression))_group" class="ocat-wrapper @(Model.Syntax == WorkflowScriptSyntax.JavaScript ? "" : "d-none")" asp-validation-class-for="StepExpression">
     <label asp-for="StepExpression" class="ocat-label">@T["Step Expression"]</label>
     <div class="ocat-end">
         <input type="text" asp-for="StepExpression" class="form-control code" />
         <span asp-validation-for="StepExpression"></span>
-        <span class="hint">@T["The loop Step value. With JavaScript support."]</span>
+        <span class="hint">@T["The JavaScript step value. Example: {0}", "1"]</span>
+    </div>
+</div>
+
+<div id="@(Html.IdFor(m => m.LiquidStepExpression))_group" class="ocat-wrapper @(Model.Syntax == WorkflowScriptSyntax.Liquid ? "" : "d-none")" asp-validation-class-for="LiquidStepExpression">
+    <label asp-for="LiquidStepExpression" class="ocat-label">@T["Step Expression"]</label>
+    <div class="ocat-end">
+        <input type="text" asp-for="LiquidStepExpression" class="form-control code" />
+        <span asp-validation-for="LiquidStepExpression"></span>
+        <span class="hint">@T["The Liquid step value. Example: {0}", "{{ Workflow.Properties.Step }}"]</span>
     </div>
 </div>
 
@@ -36,3 +75,34 @@
         <span class="hint">@T["The name of the looping variable. The current value of each iteration is set to a property with this name as well as the last result."]</span>
     </div>
 </div>
+
+<script at="Foot">
+    document.addEventListener('DOMContentLoaded', () => {
+        const syntaxElement = document.getElementById('@Html.IdFor(m => m.Syntax)');
+        const javaScriptGroups = [
+            document.getElementById('@($"{Html.IdFor(m => m.FromExpression)}_group")'),
+            document.getElementById('@($"{Html.IdFor(m => m.ToExpression)}_group")'),
+            document.getElementById('@($"{Html.IdFor(m => m.StepExpression)}_group")')
+        ];
+        const liquidGroups = [
+            document.getElementById('@($"{Html.IdFor(m => m.LiquidFromExpression)}_group")'),
+            document.getElementById('@($"{Html.IdFor(m => m.LiquidToExpression)}_group")'),
+            document.getElementById('@($"{Html.IdFor(m => m.LiquidStepExpression)}_group")')
+        ];
+
+        const toggleEditors = () => {
+            const useLiquid = syntaxElement.value === '@nameof(WorkflowScriptSyntax.Liquid)';
+
+            for (const group of javaScriptGroups) {
+                group.classList.toggle('d-none', useLiquid);
+            }
+
+            for (const group of liquidGroups) {
+                group.classList.toggle('d-none', !useLiquid);
+            }
+        };
+
+        syntaxElement.addEventListener('change', toggleEditors);
+        toggleEditors();
+    });
+</script>
