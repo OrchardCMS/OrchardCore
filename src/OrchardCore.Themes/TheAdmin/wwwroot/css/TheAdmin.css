@@ -28,6 +28,8 @@
   /* Action bar should always be less than dropdown menu */
   --oc-action-bar-zindex: 980;
   --oc-second-action-bar-zindex: 983;
+  --oc-action-bar-bottom-zindex: 980;
+  --oc-action-bar-bottom-height: 0px;
   /* Undefined Bootstrap variables */
   --bs-dropdown-zindex: 1000;
   --bs-zindex-fixed: 1030;
@@ -220,12 +222,102 @@ a:hover {
 }
 
 .action-bar {
-  top: 3.3rem;
+  top: var(--oc-top-nav-height);
   z-index: var(--oc-action-bar-zindex);
 }
 
 .second-action-bar {
   z-index: var(--oc-second-action-bar-zindex);
+}
+
+.action-bar-bottom {
+  position: fixed !important;
+  bottom: 0;
+  z-index: var(--oc-action-bar-bottom-zindex);
+  margin-left: 1rem;
+  margin-right: 1rem;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  background-color: var(--bs-body-bg);
+}
+
+[dir="ltr"] .action-bar-bottom {
+  left: var(--oc-start-navigation-width);
+  transition: left 0.2s ease-in-out;
+  right: 0;
+}
+
+[dir="rtl"] .action-bar-bottom {
+  right: var(--oc-start-navigation-width);
+  transition: right 0.2s ease-in-out;
+  left: 0;
+}
+
+@media (max-width: 767.98px) {
+  .action-bar-bottom .btn, .action-bar-bottom .button,
+  .action-bar-bottom .form-control {
+    font-size: 0.875rem;
+    padding: 0.25rem 0.5rem;
+  }
+
+  .action-bar-bottom .action-bar-toggle {
+    flex-shrink: 0;
+  }
+
+  .action-bar-bottom .action-bar-toggle::after {
+    content: "";
+    display: inline-block;
+    border-top: 0;
+    border-right: 0.4em solid transparent;
+    border-bottom: 0.4em solid;
+    border-left: 0.4em solid transparent;
+    vertical-align: 0.255em;
+  }
+
+  .action-bar-bottom .action-bar-toggle[aria-expanded=true]::after {
+    border-top: 0.4em solid;
+    border-bottom: 0;
+  }
+
+  .action-bar-bottom:has(.action-bar-toggle[aria-expanded=false]) .action-bar-collapsible {
+    display: none;
+  }
+
+  .action-bar-bottom:not(:has(.action-bar-collapsible)) .action-bar-toggle {
+    display: none;
+  }
+
+  .action-bar-bottom .action-bar-collapsible.collapsing {
+    height: auto !important;
+    transition: none !important;
+    overflow: visible !important;
+  }
+}
+
+@media (max-width: 575.98px) {
+  [dir="ltr"] .action-bar-bottom {
+    left: var(--oc-start-navigation-width-when-compact, 48);
+    transition: left 0.5s ease-in-out;
+  }
+
+  [dir="rtl"] .action-bar-bottom {
+    right: var(--oc-start-navigation-width-when-compact, 48);
+    transition: right 0.5s ease-in-out;
+  }
+}
+
+@media (max-width: 767.98px) {
+  [dir="ltr"] .left-sidebar-compact .action-bar-bottom {
+    left: var(--oc-start-navigation-width-when-compact, 48);
+  }
+
+  [dir="rtl"] .left-sidebar-compact .action-bar-bottom {
+    right: var(--oc-start-navigation-width-when-compact, 48);
+  }
+}
+
+.ta-content:has(.action-bar-bottom) {
+  padding-bottom: var(--oc-action-bar-bottom-height);
 }
 
 .ta-badge {

@@ -1,5 +1,7 @@
-import "./menu";
-import "./resizeDetector";
+import "./sidebar";
+import "./sidebarBreakpointDetector";
+import "./actionBar";
+import "./actionGroup";
 ///<reference path="@types/bootstrap/index.d.ts" />
 
 function confirmDialog({ callback, ...options }: { callback: (response: boolean) => void; [key: string]: any }) {
