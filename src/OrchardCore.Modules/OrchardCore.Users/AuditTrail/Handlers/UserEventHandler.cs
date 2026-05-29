@@ -56,7 +56,7 @@ public class UserEventHandler : UserEventHandlerBase, ILoginFormEvent
         _serviceProvider = serviceProvider;
         _session = session;
         _siteService = siteService;
-        _redactors = redactors;
+        _redactors = redactors.Where(redactor => redactor is not null);
     }
 
     public Task LoggedInAsync(IUser user)

@@ -84,7 +84,7 @@ It's also possible to include a partial JSON snapshot of the `User` object. To p
 - Store: Stores the value of the property as string.
 - ErasingRedactor: Stores an empty sting instead of the value. This is to indicate that the property exists for the `User` object in question.
 - PartialAsteriskRedactor: Stores the value as string, but the middle characters are redacted. For example `SampleUser` becomes `S********r`.
-- TenantHmacRedactor: Uses "HMAC SHA-256" to encode the data before storing it, as a hash or fingerprint. It uses the tenant ID as the salt, so hashes between two different tenants can't be correlated.
+- HmacRedactor: Uses "HMAC SHA-256" to encode the data before storing it, as a hash or fingerprint. This redactor is only available when both `HmacRedactorOptions.Key` and `HmacRedactorOptions.KeyId` are configured.
 
 You can also create your own redactor simply by adding a singleton [`Redactor`](https://learn.microsoft.com/dotnet/api/microsoft.extensions.compliance.redaction.redactor) service.
 

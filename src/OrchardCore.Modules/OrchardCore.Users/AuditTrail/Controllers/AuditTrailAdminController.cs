@@ -32,7 +32,7 @@ public sealed class AuditTrailAdminController : Controller
         _authorizationService = authorizationService;
         _siteService = siteService;
         _customUserSettingsService = customUserSettingsServices.FirstOrDefault();
-        _redactors = redactors;
+        _redactors = redactors.Where(redactor => redactor is not null);
     }
 
     public async Task<ActionResult> Index()
