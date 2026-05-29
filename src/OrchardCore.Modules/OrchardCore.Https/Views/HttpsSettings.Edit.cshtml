@@ -17,6 +17,11 @@
             <label class="form-check-label" asp-for="EnableStrictTransportSecurity">@T["Enable HSTS"]</label>
             <span class="hint dashed">@T["Indicates to browsers that connecting without transport security (e.g SSL or TLS) isn't allowed."]</span>
         </div>
+    </div>
+</div>
+
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
         <div class="alert alert-danger">@T["This option should be enabled with caution, as it may prevent users from connecting if HTTPS was later disabled or wasn't available."]</div>
     </div>
 </div>

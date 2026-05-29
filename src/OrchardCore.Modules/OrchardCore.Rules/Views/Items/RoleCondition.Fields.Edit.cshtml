@@ -1,6 +1,10 @@
 @model RoleConditionViewModel
 
-<h5>@T["Role"]</h5>
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
+        <h5>@T["Role"]</h5>
+    </div>
+</div>
 
 <div class="ocat-wrapper" asp-validation-class-for="SelectedOperation">
     <label asp-for="SelectedOperation" class="ocat-label">@T["Operation"]</label>

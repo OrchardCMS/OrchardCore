@@ -35,6 +35,7 @@ Use this decision guide when creating or updating admin edit views:
 |----------|-------------------|
 | Standard full-width field row | `ocat-wrapper` + `ocat-label` + `ocat-end` |
 | Standalone checkbox/toggle row with no left label | `ocat-wrapper` + `ocat-end-offset` |
+| Standalone alert, notice, legend, or section headline in the form flow | `ocat-wrapper` + `ocat-end-offset` |
 | Top-level limited-width field row (small text, number, select, token, path, port, etc.) | `ocat-limited-wrapper` + `ocat-label` + `ocat-limited` |
 | Content part / content field editor that already needs wrapper classes like `field-wrapper-*` or `content-part-wrapper-*` | Keep the outer `ocat-wrapper`, then place `ocat-limited-wrapper` inside `ocat-end` |
 
@@ -44,6 +45,8 @@ Use this decision guide when creating or updating admin edit views:
 2. Use `ocat-limited-wrapper` when the field should stay visually narrow instead of stretching the full editor width.
 3. If the outer row also needs Orchard-specific wrapper classes such as `field-wrapper-*` or `content-part-wrapper-*`, do **not** replace that outer row with `ocat-limited-wrapper`; keep the outer `ocat-wrapper` and nest `ocat-limited-wrapper` inside `ocat-end`.
 4. Do **not** use legacy helpers or Bootstrap-only layout classes like `mb-3`, `form-group`, `form-label`, `@Orchard.GetWrapperClasses()`, or `@Orchard.GetLimitedWidthWrapperClasses()`.
+5. Alerts, notices, `<legend>`, and section headings that are part of the edit form but have no left-column label should use their own `ocat-wrapper` + `ocat-end-offset` row.
+6. A single row should use **either** `ocat-end` **or** `ocat-end-offset`, never both.
 
 ### Standard Field Structure
 
@@ -140,6 +143,21 @@ Use `ocat-end-offset` when there is no label in the left column (e.g., for check
             <label asp-for="IsEnabled" class="form-check-label">@T["Enable feature"]</label>
         </div>
         <span class="hint dashed">@T["Check to enable this feature."]</span>
+    </div>
+</div>
+```
+
+### Headline / Alert Row (No Left Label)
+
+Use this for standalone form guidance, warnings, legends, or section headers:
+
+```html
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
+        <h5>@T["Section heading"]</h5>
+        <div class="alert alert-warning" role="alert">
+            @T["Important information for editors."]
+        </div>
     </div>
 </div>
 ```
@@ -285,6 +303,8 @@ When updating existing views, apply these replacements:
 | `<label ... class="form-label">` | `<label ... class="ocat-label">` |
 | Input/select/textarea directly inside wrapper | Wrap in `<div class="ocat-end">` |
 | Checkbox with label inside wrapper | Wrap in `<div class="ocat-end-offset"><div class="form-check">` |
+| Standalone headline or alert directly in the form flow | Wrap in `<div class="ocat-wrapper"><div class="ocat-end-offset">...</div></div>` |
+| Mixing `ocat-end` and `ocat-end-offset` in one row | Choose one wrapper based on whether there is a left-column label |
 | `@Orchard.GetLimitedWidthWrapperClasses()` | `ocat-limited-wrapper` |
 | `@Orchard.GetLimitedWidthClasses()` | `ocat-limited` |
 | Limited-width content field row using `field-wrapper-*` | Keep outer `ocat-wrapper field-wrapper-*`, nest `ocat-limited-wrapper` inside `ocat-end` |

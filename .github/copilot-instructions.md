@@ -17,6 +17,7 @@ This applies to admin-facing Razor edit views such as:
 | Standard admin field row | `ocat-wrapper` + `ocat-label` + `ocat-end` |
 | Required field label | `ocat-label ocat-label-required` |
 | Checkbox or toggle with no left-column label | `ocat-wrapper` + `ocat-end-offset` |
+| Standalone alert, notice, or section headline inside an edit form | `ocat-wrapper` + `ocat-end-offset` |
 | Limited-width row for short text, numbers, selects, paths, IDs, ports, or compact settings inputs | `ocat-limited-wrapper` + `ocat-label` + `ocat-limited` |
 
 ### Standard field example
@@ -64,8 +65,24 @@ If the row also needs Orchard-specific wrapper classes such as `field-wrapper-*`
 </div>
 ```
 
+### Standalone alert or headline row
+
+Use `ocat-end-offset` for alerts, notices, legends, and headings that belong to the form but do not have a left-column label:
+
+```cshtml
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
+        <h5>@T["Section heading"]</h5>
+        <div class="alert alert-warning" role="alert">
+            @T["Important guidance for this form section."]
+        </div>
+    </div>
+</div>
+```
+
 ### Avoid
 
 - `mb-3`, `form-group`, or `form-label` as the row layout pattern
 - Legacy helper methods such as `@Orchard.GetWrapperClasses()` or `@Orchard.GetLimitedWidthWrapperClasses()`
 - Full-width `ocat-wrapper` rows for inputs that should clearly remain compact unless the existing view already follows that pattern intentionally
+- Mixing `ocat-end` and `ocat-end-offset` in the same row; choose exactly one based on whether the row has a left-column label

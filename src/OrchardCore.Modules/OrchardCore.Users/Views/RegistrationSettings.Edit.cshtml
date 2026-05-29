@@ -9,7 +9,11 @@
 <script asp-name="codemirror-addon-mode-multiplex" at="Foot"></script>
 <script asp-name="codemirror-mode-xml" at="Foot"></script>
 
-<div class="alert alert-warning collapse" id="warnEmailValidation">@T["The users whose email address has not been confirmed will not be able to login or reset their password."]</div>
+<div class="ocat-wrapper collapse" id="warnEmailValidation">
+    <div class="ocat-end-offset">
+        <div class="alert alert-warning">@T["The users whose email address has not been confirmed will not be able to login or reset their password."]</div>
+    </div>
+</div>
 
 <div class="ocat-wrapper" asp-validation-class-for="UsersMustValidateEmail">
     <div class="ocat-end-offset">

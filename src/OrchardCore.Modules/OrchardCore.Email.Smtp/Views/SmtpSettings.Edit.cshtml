@@ -163,9 +163,9 @@
                 </div>
             </div>
 
-            <div class="ocat-limited-wrapper" asp-validation-class-for="PickupDirectoryLocation">
+            <div class="ocat-wrapper" asp-validation-class-for="PickupDirectoryLocation">
                 <label asp-for="PickupDirectoryLocation" class="ocat-label">@T["Pickup directory location"]</label>
-                <div class="ocat-limited">
+                <div class="ocat-end">
                     <input asp-for="PickupDirectoryLocation" class="form-control" type="text" />
                     <span asp-validation-for="PickupDirectoryLocation"></span>
                     <span class="hint">@T[@"Use <code>/</code> for the tenant's default pickup folder or a subfolder such as <code>/Outbound</code>. The configured base path defaults to <code>{{ AppData }}\Sites\{{ ShellSettings.Name }}\Emails</code>, is expanded from configuration only, and mail stays sandboxed under that folder."]</span>
@@ -185,30 +185,37 @@
     </div>
 </div>
 
-<script at="Foot" depends-on="jQuery">
-    $(function () {
-        function showSelectedCollapse() {
-            var val = $(this).val();
-            var option = $("option", this).filter(function (i, el) { return $(el).val() == val; });
-            var target = option.data("bs-target");
-            if (target) {
-                $(target).collapse("show");
+<script at="Foot">
+    document.addEventListener('DOMContentLoaded', function () {
+        const deliveryMethod = document.getElementById('@Html.IdFor(m => m.DeliveryMethod)');
+        const autoSelectEncryption = document.getElementById('@Html.IdFor(m => m.AutoSelectEncryption)');
+        const encryptionMethod = document.getElementById('@Html.IdFor(m => m.EncryptionMethod)');
+
+        const showSelectedCollapse = () => {
+            const option = deliveryMethod?.selectedOptions?.[0];
+            const target = option?.dataset.bsTarget;
+
+            if (!target) {
+                return;
             }
-        }
 
-        function showEncryptionMethod() {
-            var target = $('#@Html.IdFor(m => m.EncryptionMethod)');
-            if (target.length) {
-                target.prop('disabled', this.checked);
+            const collapseElement = document.querySelector(target);
+
+            if (collapseElement) {
+                bootstrap.Collapse.getOrCreateInstance(collapseElement).show();
             }
-        }
+        };
 
-        $("#@Html.IdFor(m => m.DeliveryMethod)")
-            .change(showSelectedCollapse)
-            .each(showSelectedCollapse);
+        const showEncryptionMethod = () => {
+            if (encryptionMethod && autoSelectEncryption) {
+                encryptionMethod.disabled = autoSelectEncryption.checked;
+            }
+        };
 
-        $("#@Html.IdFor(m => m.AutoSelectEncryption)")
-            .change(showEncryptionMethod)
-            .each(showEncryptionMethod);
+        deliveryMethod?.addEventListener('change', showSelectedCollapse);
+        showSelectedCollapse();
+
+        autoSelectEncryption?.addEventListener('change', showEncryptionMethod);
+        showEncryptionMethod();
     });
 </script>
