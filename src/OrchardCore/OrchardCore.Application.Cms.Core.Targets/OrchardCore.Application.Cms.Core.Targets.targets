@@ -18,7 +18,7 @@
     <Folder Include="Localization\" />
   </ItemGroup>
 
-  <Target Name="EnsureWwwRootExists" BeforeTargets="Build;Publish">
+  <Target Name="EnsureRequiredDirectoriesExist" BeforeTargets="Build;Publish">
     <MakeDir Directories="$(MSBuildProjectDirectory)\wwwroot;$(MSBuildProjectDirectory)\Localization" />
   </Target>
 
