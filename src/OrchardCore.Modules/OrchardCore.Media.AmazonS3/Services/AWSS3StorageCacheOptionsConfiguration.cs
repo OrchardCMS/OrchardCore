@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Options;
 using OrchardCore.FileStorage.AmazonS3;
-using SixLabors.ImageSharp.Web.Caching.AWS;
+using SixLabors.ImageSharp.Web.AWS.Caching;
 
 namespace OrchardCore.Media.AmazonS3.Services;
 

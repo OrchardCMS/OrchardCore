@@ -18,8 +18,8 @@ using OrchardCore.Media.Events;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
+using SixLabors.ImageSharp.Web.AWS.Caching;
 using SixLabors.ImageSharp.Web.Caching;
-using SixLabors.ImageSharp.Web.Caching.AWS;
 
 namespace OrchardCore.Media.AmazonS3;
 

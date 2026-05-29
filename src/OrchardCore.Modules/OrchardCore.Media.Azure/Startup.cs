@@ -17,8 +17,8 @@ using OrchardCore.Media.Events;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
+using SixLabors.ImageSharp.Web.Azure.Caching;
 using SixLabors.ImageSharp.Web.Caching;
-using SixLabors.ImageSharp.Web.Caching.Azure;
 
 namespace OrchardCore.Media.Azure;
 

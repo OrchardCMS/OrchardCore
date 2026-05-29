@@ -38,6 +38,9 @@
     <Copyright>Orchard Core Community and Contributors</Copyright>
     <Authors>Orchard Core Community and Contributors</Authors>
     <Owners>Orchard Core Community and Contributors</Owners>
+
+    <!-- ImageSharp license file. See https://sixlabors.com/posts/licence-enforcement-changes/ for details. -->
+    <SixLaborsLicenseFile>$(MSBuildThisFileDirectory)/sixlabors.lic</SixLaborsLicenseFile>
   </PropertyGroup>
 
   <ItemGroup>
