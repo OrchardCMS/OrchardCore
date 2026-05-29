@@ -156,9 +156,9 @@ The admin settings can be configured using the `Settings` recipe step:
 }
 ```
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `DisplayThemeToggler` | Boolean | Whether to display the light/dark theme toggler in the admin. |
-| `DisplayMenuFilter` | Boolean | Whether to display the menu filter input in the admin navigation. |
-| `DisplayNewMenu` | Boolean | Whether to display the 'New' menu in the admin navigation. |
-| `DisplayTitlesInTopbar` | Boolean | Whether to display page titles in the top bar. |
+| Property                | Type    | Description                                                       |
+|-------------------------|---------|-------------------------------------------------------------------|
+| `DisplayThemeToggler`   | Boolean | Whether to display the light/dark theme toggler in the admin.     |
+| `DisplayMenuFilter`     | Boolean | Whether to display the menu filter input in the admin navigation. |
+| `DisplayNewMenu`        | Boolean | Whether to display the 'New' menu in the admin navigation.        |
+| `DisplayTitlesInTopbar` | Boolean | Whether to display page titles in the top bar.                    |

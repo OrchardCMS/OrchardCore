@@ -1,25 +1,26 @@
 @model MarkdownFieldSettingsViewModel
-
-<div class="mb-3">
-    <div class="w-lg-75 w-xl-50">
-        <label asp-for="Hint" class="form-label">@T["Hint"]</label>
+<div class="ocat-wrapper">
+    <label asp-for="Hint" class="ocat-label">@T["Hint"]</label>
+    <div class="ocat-end">
         <textarea asp-for="Hint" rows="2" class="form-control"></textarea>
         <span class="hint">@T["The hint text to display for this field on the editor."]</span>
     </div>
 </div>
 
-<div class="mb-3">
-    <div class="form-check">
-        <input type="checkbox" class="form-check-input" asp-for="SanitizeHtml" checked="@Model.SanitizeHtml" />
-        <label class="form-check-label" asp-for="SanitizeHtml">@T["Sanitize Html"]</label>
-        <span class="hint dashed">
-            @T["Whether the Html output from Markdown is sanitized, e.g. by removing script tags (and more)."]
-            <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/Sanitizer" target="_blank">@T["See documentation"]</a>
-        </span>
-    </div>
-    <div class="form-check">
-        <input type="checkbox" class="form-check-input" asp-for="RenderLiquid" checked="@Model.RenderLiquid" />
-        <label class="form-check-label" asp-for="RenderLiquid">@T["Render Liquid"]</label>
-        <span class="hint dashed">@T["Whether Liquid markup is rendered or displayed raw. NOTE: Liquid support for Markdown Fields will be removed in version 4.0; if you want to continue using Liquid, migrate your content to use Liquid Part. Consider using Shortcodes instead."]</span>
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" asp-for="SanitizeHtml" checked="@Model.SanitizeHtml" />
+            <label class="form-check-label" asp-for="SanitizeHtml">@T["Sanitize Html"]</label>
+            <span class="hint dashed">
+                @T["Whether the Html output from Markdown is sanitized, e.g. by removing script tags (and more)."]
+                <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/Sanitizer" target="_blank">@T["See documentation"]</a>
+            </span>
+        </div>
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" asp-for="RenderLiquid" checked="@Model.RenderLiquid" />
+            <label class="form-check-label" asp-for="RenderLiquid">@T["Render Liquid"]</label>
+            <span class="hint dashed">@T["Whether Liquid markup is rendered or displayed raw. NOTE: Liquid support for Markdown Fields will be removed in version 4.0; if you want to continue using Liquid, migrate your content to use Liquid Part. Consider using Shortcodes instead."]</span>
+        </div>
     </div>
 </div>

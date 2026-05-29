@@ -80,6 +80,7 @@ public sealed class Startup : StartupBase
         services.AddActivity<WhileLoopTask, WhileLoopTaskDisplayDriver>();
         services.AddActivity<IfElseTask, IfElseTaskDisplayDriver>();
         services.AddActivity<ScriptTask, ScriptTaskDisplayDriver>();
+        services.AddActivity<LiquidTask, LiquidTaskDisplayDriver>();
         services.AddActivity<LogTask, LogTaskDisplayDriver>();
 
         services.AddRecipeExecutionStep<WorkflowTypeStep>();

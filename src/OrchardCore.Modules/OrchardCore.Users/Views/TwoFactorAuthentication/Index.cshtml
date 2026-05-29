@@ -95,17 +95,21 @@
         @if (Model.ValidTwoFactorProviders.Count > 1)
         {
             <form method="post">
-                <div class="mb-3">
-                    <label asp-for="PreferredProvider" class="form-label">@T["Preferred Two-Factor Method"]</label>
-                    <select asp-for="PreferredProvider" asp-items="Model.ValidTwoFactorProviders" class="form-select">
-                        @if (string.IsNullOrEmpty(Model.PreferredProvider))
-                        {
-                            <option value="">@T["Select the method"]</option>
-                        }
-                    </select>
+                <div class="ocat-wrapper">
+                    <label asp-for="PreferredProvider" class="ocat-label">@T["Preferred Two-Factor Method"]</label>
+                    <div class="ocat-end">
+                        <select asp-for="PreferredProvider" asp-items="Model.ValidTwoFactorProviders" class="form-select">
+                            @if (string.IsNullOrEmpty(Model.PreferredProvider))
+                            {
+                                <option value="">@T["Select the method"]</option>
+                            }
+                        </select>
+                    </div>
                 </div>
 
-                <button type="submit" class="btn btn-sm btn-primary">@T["Update"]</button>
+                <div class="mb-3">
+                    <button type="submit" class="btn btn-sm btn-primary">@T["Update"]</button>
+                </div>
             </form>
         }
     </div>

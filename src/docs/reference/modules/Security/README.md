@@ -42,12 +42,12 @@ Security settings can be configured using the `Settings` recipe step:
 }
 ```
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `ContentTypeOptions` | String | The X-Content-Type-Options header value. |
-| `ReferrerPolicy` | String | The Referrer-Policy header value. |
+| Property                | Type   | Description                                                       |
+|-------------------------|--------|-------------------------------------------------------------------|
+| `ContentTypeOptions`    | String | The X-Content-Type-Options header value.                          |
+| `ReferrerPolicy`        | String | The Referrer-Policy header value.                                 |
 | `ContentSecurityPolicy` | Object | The Content-Security-Policy header directives as key-value pairs. |
-| `PermissionsPolicy` | Object | The Permissions-Policy header directives as key-value pairs. |
+| `PermissionsPolicy`     | Object | The Permissions-Policy header directives as key-value pairs.      |
 
 ## Security Settings Configuration
 
