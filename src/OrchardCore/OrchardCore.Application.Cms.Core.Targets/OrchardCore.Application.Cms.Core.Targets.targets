@@ -13,12 +13,13 @@
     </ResolvedFileToPublish>
   </ItemGroup>
 
-  <Target Name="MakeWebRootFolder" BeforeTargets="MakeLocalizationFolder" Condition="!Exists('wwwroot/.placeholder')">
-    <WriteLinesToFile Lines="" Encoding="Unicode" File="wwwroot/.placeholder" />
-  </Target>
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
+    <Folder Include="Localization\" />
+  </ItemGroup>
 
-  <Target Name="MakeLocalizationFolder" BeforeTargets="Build" Condition="!Exists('Localization/.placeholder')">
-    <WriteLinesToFile Lines="" Encoding="Unicode" File="Localization/.placeholder" />
+  <Target Name="EnsureWwwRootExists" BeforeTargets="Build;Publish">
+    <MakeDir Directories="$(MSBuildProjectDirectory)\wwwroot;$(MSBuildProjectDirectory)\Localization" />
   </Target>
 
   <Target
