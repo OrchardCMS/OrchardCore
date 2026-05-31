@@ -8,7 +8,6 @@ using OrchardCore.Cors.Settings;
 using OrchardCore.Cors.ViewModels;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Shell;
-using CorsConstants = Microsoft.AspNetCore.Cors.Infrastructure.CorsConstants;
 
 namespace OrchardCore.Cors.Controllers;
 
@@ -98,12 +97,13 @@ public sealed class AdminController : Controller
 
         var corsPolicies = new List<CorsPolicySetting>();
 
-        // If "allow origin" and "allow credentials" are both true, issue a warning about CORS functionality. Inform the user.
+        // If "allow any origin (including '*')" and "allow credentials" are both true, issue a warning. Inform the user.
         var policyWarnings = new List<string>();
 
         foreach (var settingViewModel in model.Policies)
         {
-            if (IsAnyOriginAllowed(settingViewModel) && settingViewModel.AllowCredentials)
+            if (CorsSettingsHelper.IsAnyOriginAllowed(settingViewModel.AllowAnyOrigin, settingViewModel.AllowedOrigins)
+                && settingViewModel.AllowCredentials)
             {
                 policyWarnings.Add(settingViewModel.Name);
             }
@@ -127,7 +127,7 @@ public sealed class AdminController : Controller
 
         if (policyWarnings.Count > 0)
         {
-            await _notifier.WarningAsync(H["Specifying AllowAnyOrigin and AllowCredentials is an insecure configuration and can result in cross-site request forgery. The CORS service returns an invalid CORS response when an app is configured with both methods.<br /><strong>Affected policies: {0} </strong><br />Refer to docs: <a href='https://learn.microsoft.com/en-us/aspnet/core/security/cors' target='_blank'>https://learn.microsoft.com/en-us/aspnet/core/security/cors</a>.", string.Join(", ", policyWarnings)]);
+            await _notifier.WarningAsync(H["Specifying any origin (including '*') and AllowCredentials is an insecure configuration and can result in cross-site request forgery. The CORS service returns an invalid CORS response when an app is configured with both methods.<br /><strong>Affected policies: {0} </strong><br />Refer to docs: <a href='https://learn.microsoft.com/en-us/aspnet/core/security/cors' target='_blank'>https://learn.microsoft.com/en-us/aspnet/core/security/cors</a>.", string.Join(", ", policyWarnings)]);
 
             return View(model);
         }
@@ -145,9 +145,4 @@ public sealed class AdminController : Controller
 
         return View(model);
     }
-
-    private static bool IsAnyOriginAllowed(CorsPolicyViewModel corsPolicyViewModel)
-      => corsPolicyViewModel.AllowAnyOrigin
-          || corsPolicyViewModel.AllowedOrigins?.Any(origin =>
-              string.Equals(origin?.Trim(), CorsConstants.AnyOrigin, StringComparison.Ordinal)) == true;
 }
