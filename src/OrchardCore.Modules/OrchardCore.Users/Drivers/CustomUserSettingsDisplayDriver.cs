@@ -5,6 +5,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Users.Models;
@@ -34,6 +35,37 @@ public sealed class CustomUserSettingsDisplayDriver : DisplayDriver<User>
         _httpContextAccessor = httpContextAccessor;
     }
 
+    public override async Task<IDisplayResult> DisplayAsync(User user, BuildDisplayContext context)
+    {
+        if (!string.Equals(context.DisplayType, OrchardCoreConstants.DisplayType.SummaryAdmin, StringComparison.OrdinalIgnoreCase))
+        {
+            return null;
+        }
+
+        var contentTypeDefinitions = await GetContentTypeDefinitionsAsync();
+        if (!contentTypeDefinitions.Any())
+        {
+            return null;
+        }
+
+        var results = new List<IDisplayResult>();
+        var userClaim = _httpContextAccessor.HttpContext.User;
+
+        foreach (var contentTypeDefinition in contentTypeDefinitions)
+        {
+            results.Add(Initialize<CustomUserSettingsEditViewModel>("CustomUserSettings", async model =>
+                {
+                    var contentItem = await GetUserSettingsAsync(user, contentTypeDefinition);
+                    model.Shape = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, updater: null, OrchardCoreConstants.DisplayType.SummaryAdmin);
+                })
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, PlacementInfo.HiddenLocation)
+                .Differentiator($"CustomUserSettings-{contentTypeDefinition.Name}")
+                .RenderWhen(() => _authorizationService.AuthorizeAsync(userClaim, CustomUserSettingsPermissions.CreatePermissionForType(contentTypeDefinition))));
+        }
+
+        return Combine(results);
+    }
+
     public override async Task<IDisplayResult> EditAsync(User user, BuildEditorContext context)
     {
         var contentTypeDefinitions = await GetContentTypeDefinitionsAsync();
@@ -51,7 +83,7 @@ public sealed class CustomUserSettingsDisplayDriver : DisplayDriver<User>
                 {
                     var isNew = false;
                     var contentItem = await GetUserSettingsAsync(user, contentTypeDefinition, () => isNew = true);
-                    model.Editor = await _contentItemDisplayManager.BuildEditorAsync(contentItem, context.Updater, isNew, context.GroupId, Prefix);
+                    model.Shape = await _contentItemDisplayManager.BuildEditorAsync(contentItem, context.Updater, isNew, context.GroupId, Prefix);
                 })
                 .Location($"Content:10#{contentTypeDefinition.DisplayName}")
                 .Differentiator($"CustomUserSettings-{contentTypeDefinition.Name}")
