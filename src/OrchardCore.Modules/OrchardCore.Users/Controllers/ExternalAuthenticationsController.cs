@@ -625,6 +625,10 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
 
         if (result.Succeeded)
         {
+            // Invalidate previous sessions and refresh the current sign-in with the new stamp.
+            await _userManager.UpdateSecurityStampAsync(user);
+            await _signInManager.RefreshSignInAsync(user);
+
             await _loginFormEvents.InvokeAsync((e, user) => e.LoggedInAsync(user), user, _logger);
 
             var identityResult = await _signInManager.UpdateExternalAuthenticationTokensAsync(info);

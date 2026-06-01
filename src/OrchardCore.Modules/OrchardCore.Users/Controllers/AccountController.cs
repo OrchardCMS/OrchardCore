@@ -139,6 +139,9 @@ public sealed class AccountController : AccountBaseController
                         }
                     }
 
+                    // Invalidate previous sessions by updating the security stamp before sign-in.
+                    await _userManager.UpdateSecurityStampAsync(user);
+
                     result = await _signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, lockoutOnFailure: true);
 
                     if (result.Succeeded)
@@ -149,7 +152,6 @@ public sealed class AccountController : AccountBaseController
 
                         return await LoggedInActionResultAsync(user, returnUrl);
                     }
-
                 }
 
                 if (result.RequiresTwoFactor)
@@ -194,6 +196,14 @@ public sealed class AccountController : AccountBaseController
     [HttpPost]
     public async Task<IActionResult> LogOff(string returnUrl = null)
     {
+        // Invalidate all existing sessions by updating the security stamp.
+        // This ensures that any previously captured tokens are immediately rejected.
+        var currentUser = await _userManager.GetUserAsync(HttpContext.User);
+        if (currentUser != null)
+        {
+            await _userManager.UpdateSecurityStampAsync(currentUser);
+        }
+
         await _signInManager.SignOutAsync();
 
         _logger.LogInformation(4, "User logged out.");

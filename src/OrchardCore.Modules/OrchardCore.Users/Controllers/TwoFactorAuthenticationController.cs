@@ -124,6 +124,10 @@ public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationB
 
             if (result.Succeeded)
             {
+                // Invalidate previous sessions and refresh the current sign-in with the new stamp.
+                await UserManager.UpdateSecurityStampAsync(user);
+                await SignInManager.RefreshSignInAsync(user);
+
                 await _loginFormEvents.InvokeAsync((e, user) => e.LoggedInAsync(user), user, _logger);
 
                 return await LoggedInActionResultAsync(user, model.ReturnUrl);
@@ -185,6 +189,10 @@ public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationB
 
             if (result.Succeeded)
             {
+                // Invalidate previous sessions and refresh the current sign-in with the new stamp.
+                await UserManager.UpdateSecurityStampAsync(user);
+                await SignInManager.RefreshSignInAsync(user);
+
                 await _loginFormEvents.InvokeAsync((e, user) => e.LoggedInAsync(user), user, _logger);
 
                 return await LoggedInActionResultAsync(user, model.ReturnUrl);
