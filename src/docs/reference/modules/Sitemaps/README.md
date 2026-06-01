@@ -124,6 +124,27 @@ To clear the cache manually use the _Tools -> Search Engine Optimization -> Site
 
 When both `SEO` and `Sitemaps` features are enabled and no `robots.txt` file is found on the filesystem, the sitemap indexes and sitemaps are added to the `robots.txt` file by default. This can be changed by navigating to **Settings** → **Search** → **Search Engine Optimization** → **Robots**.
 
+## Recipe Configuration
+
+Sitemaps robots settings can be configured using the `Settings` recipe step:
+
+```json
+{
+  "steps": [
+    {
+      "name": "settings",
+      "SitemapsRobotsSettings": {
+        "IncludeSitemaps": true
+      }
+    }
+  ]
+}
+```
+
+| Property          | Type    | Description                                                              |
+|-------------------|---------|--------------------------------------------------------------------------|
+| `IncludeSitemaps` | Boolean | Whether to include sitemap URLs in the robots.txt file. Default: `true`. |
+
 ## Video
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/fG_rFD0wffw" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

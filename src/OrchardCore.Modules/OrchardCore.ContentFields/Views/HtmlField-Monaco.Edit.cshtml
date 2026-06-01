@@ -10,9 +10,9 @@
     string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), DataLocalizationContext.ContentField(Model.PartFieldDefinition.PartDefinition.Name)];
 }
 
-<div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.Html)_FieldWrapper">
-    <label asp-for="Html" class="@Orchard.GetLabelClasses()">@localizedFieldName</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper field-wrapper @($"field-wrapper-{Model.PartFieldDefinition.PartDefinition.Name.HtmlClassify()}-{Model.PartFieldDefinition.Name.HtmlClassify()}" + (Model.PartFieldDefinition.IsNamedPart() ? $" field-wrapper-{Model.PartFieldDefinition.ContentTypePartDefinition.Name.HtmlClassify()}-{Model.PartFieldDefinition.Name.HtmlClassify()}" : string.Empty))" id="@Html.IdFor(x => x.Html)_FieldWrapper">
+    <label asp-for="Html" class="ocat-label">@localizedFieldName</label>
+    <div class="ocat-end">
         @await DisplayAsync(await New.ShortcodeModal())
         <div id="@Html.IdFor(x => x.Html)_editor" asp-for="Text" style="min-height: 400px;" class="form-control" dir="@culture.GetLanguageDirection()"></div>
         <textarea asp-for="Html" hidden>@Html.Raw(Model.Html)</textarea>

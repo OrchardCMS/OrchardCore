@@ -8,11 +8,16 @@ namespace OrchardCore.Workflows.Activities;
 public class ForLoopTask : TaskActivity<ForLoopTask>
 {
     private readonly IWorkflowScriptEvaluator _scriptEvaluator;
+    private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
     protected readonly IStringLocalizer S;
 
-    public ForLoopTask(IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<ForLoopTask> localizer)
+    public ForLoopTask(
+        IWorkflowScriptEvaluator scriptEvaluator,
+        IWorkflowExpressionEvaluator expressionEvaluator,
+        IStringLocalizer<ForLoopTask> localizer)
     {
         _scriptEvaluator = scriptEvaluator;
+        _expressionEvaluator = expressionEvaluator;
         S = localizer;
     }
 
@@ -29,6 +34,12 @@ public class ForLoopTask : TaskActivity<ForLoopTask>
         set => SetProperty(value);
     }
 
+    public WorkflowExpression<string> LiquidFrom
+    {
+        get => GetProperty(() => new WorkflowExpression<string>("0"));
+        set => SetProperty(value);
+    }
+
     /// <summary>
     /// An expression evaluating to the end value.
     /// </summary>
@@ -38,12 +49,30 @@ public class ForLoopTask : TaskActivity<ForLoopTask>
         set => SetProperty(value);
     }
 
+    public WorkflowExpression<string> LiquidTo
+    {
+        get => GetProperty(() => new WorkflowExpression<string>("10"));
+        set => SetProperty(value);
+    }
+
     /// <summary>
     /// An expression evaluating to the end value.
     /// </summary>
     public WorkflowExpression<double> Step
     {
         get => GetProperty(() => new WorkflowExpression<double>("1"));
+        set => SetProperty(value);
+    }
+
+    public WorkflowExpression<string> LiquidStep
+    {
+        get => GetProperty(() => new WorkflowExpression<string>("1"));
+        set => SetProperty(value);
+    }
+
+    public WorkflowScriptSyntax Syntax
+    {
+        get => GetProperty(() => WorkflowScriptSyntax.JavaScript);
         set => SetProperty(value);
     }
 
@@ -72,20 +101,9 @@ public class ForLoopTask : TaskActivity<ForLoopTask>
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
-        if (!double.TryParse(From.Expression, out var from))
-        {
-            from = await _scriptEvaluator.EvaluateAsync(From, workflowContext);
-        }
-
-        if (!double.TryParse(To.Expression, out var to))
-        {
-            to = await _scriptEvaluator.EvaluateAsync(To, workflowContext);
-        }
-
-        if (!double.TryParse(Step.Expression, out var step))
-        {
-            step = await _scriptEvaluator.EvaluateAsync(Step, workflowContext);
-        }
+        var from = await EvaluateFromAsync(workflowContext);
+        var to = await EvaluateToAsync(workflowContext);
+        var step = await EvaluateStepAsync(workflowContext);
 
         if (Index < from)
         {
@@ -104,5 +122,38 @@ public class ForLoopTask : TaskActivity<ForLoopTask>
             Index = from;
             return Outcomes("Done");
         }
+    }
+
+    private async Task<double> EvaluateFromAsync(WorkflowExecutionContext workflowContext)
+    {
+        return Syntax switch
+        {
+            WorkflowScriptSyntax.Liquid => double.Parse(await _expressionEvaluator.EvaluateAsync(LiquidFrom, workflowContext, null)),
+            WorkflowScriptSyntax.JavaScript when double.TryParse(From.Expression, out var from) => from,
+            WorkflowScriptSyntax.JavaScript => await _scriptEvaluator.EvaluateAsync(From, workflowContext),
+            _ => throw new NotSupportedException($"The syntax {Syntax} isn't supported for ForLoopTask.")
+        };
+    }
+
+    private async Task<double> EvaluateToAsync(WorkflowExecutionContext workflowContext)
+    {
+        return Syntax switch
+        {
+            WorkflowScriptSyntax.Liquid => double.Parse(await _expressionEvaluator.EvaluateAsync(LiquidTo, workflowContext, null)),
+            WorkflowScriptSyntax.JavaScript when double.TryParse(To.Expression, out var to) => to,
+            WorkflowScriptSyntax.JavaScript => await _scriptEvaluator.EvaluateAsync(To, workflowContext),
+            _ => throw new NotSupportedException($"The syntax {Syntax} isn't supported for ForLoopTask.")
+        };
+    }
+
+    private async Task<double> EvaluateStepAsync(WorkflowExecutionContext workflowContext)
+    {
+        return Syntax switch
+        {
+            WorkflowScriptSyntax.Liquid => double.Parse(await _expressionEvaluator.EvaluateAsync(LiquidStep, workflowContext, null)),
+            WorkflowScriptSyntax.JavaScript when double.TryParse(Step.Expression, out var step) => step,
+            WorkflowScriptSyntax.JavaScript => await _scriptEvaluator.EvaluateAsync(Step, workflowContext),
+            _ => throw new NotSupportedException($"The syntax {Syntax} isn't supported for ForLoopTask.")
+        };
     }
 }

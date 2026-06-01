@@ -1,9 +1,9 @@
 @model OrchardCore.Markdown.ViewModels.MarkdownFieldWysiwygEditorSettingsViewModel
 
 <div id="@Html.IdFor(m => m)" class="type-part-editor type-part-editor-wysiwyg">
-    <div class="mb-3 row">
-        <div class="col-large col-12 col-sm-12 col-md-12 col-lg-12 col-xl-9">
-            <label asp-for="Options" class="form-label">@T["Enter the editor options"]</label>
+    <div class="ocat-limited-wrapper">
+        <label asp-for="Options" class="ocat-label">@T["Enter the editor options"]</label>
+        <div class="ocat-limited">
             <span class="hint"><a href="https://github.com/Ionaru/easy-markdown-editor#configuration" target="_blank">@T["Documentation for options"]</a></span>
             <textarea asp-for="Options" class="form-control" autofocus="autofocus"></textarea>
         </div>
@@ -21,12 +21,12 @@
             autoRefresh: true,
             lineNumbers: true,
             matchBrackets: true,
-            mode: { name: "javascript" }
-    });
+            mode: { name: "javascript" },
+        });
 @{
-    if (string.IsNullOrEmpty(Model.Options))
-    {
-        string fullOptions = @"{
+        if (string.IsNullOrEmpty(Model.Options))
+        {
+            string fullOptions = @"{
     toolbar: [
         ""guide"", ""|"",
         ""undo"", ""redo"", ""|"",
@@ -42,9 +42,10 @@
     ],
     spellChecker: false
 }";
-<text>editor.setValue(`@Html.Raw(fullOptions)`);
-        </text>
-    }
+<text>
+        editor.setValue(`@Html.Raw(fullOptions)`);
+</text>
+        }
 }
-});
+    });
 </script>

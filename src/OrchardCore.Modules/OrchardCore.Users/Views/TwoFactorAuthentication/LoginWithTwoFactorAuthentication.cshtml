@@ -39,9 +39,9 @@
                 <input asp-for="RememberMe" type="hidden" />
                 <input asp-for="CurrentProvider" type="hidden" />
 
-                <div class="form-floating mb-3">
-                    <input asp-for="VerificationCode" class="form-control" autocomplete="off" />
+                <div class="mb-3" asp-validation-class-for="VerificationCode">
                     <label asp-for="VerificationCode" class="form-label">@T["Verification code"]</label>
+                    <input asp-for="VerificationCode" class="form-control" autocomplete="off" />
                     <span asp-validation-for="VerificationCode" class="text-danger"></span>
                 </div>
                 @if (Model.AllowRememberDevice)

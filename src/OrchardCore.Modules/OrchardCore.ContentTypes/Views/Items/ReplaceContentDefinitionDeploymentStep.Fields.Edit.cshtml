@@ -13,28 +13,30 @@
     var avaParts = allParts.Where(x => !allTypes.Any(y => y.Name == x.Name));
 }
 
-<h5>@T["Replace Content Definitions"]</h5>
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
+        <h5>@T["Replace Content Definitions"]</h5>
+    </div>
+</div>
 
-<div class="mb-3 mt-4 mb-5">
-    <div class="row">
-        <div class="col">
-            <div class="form-check">
-                <input type="checkbox" class="form-check-input" asp-for="IncludeAll" data-reverseToggle=".cdsel">
-                <label class="form-check-label" asp-for="IncludeAll">@T["Include all content types and parts definitions."]</label>
-            </div>
+<div class="ocat-wrapper" asp-validation-class-for="IncludeAll">
+    <div class="ocat-end-offset">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" asp-for="IncludeAll" data-reverseToggle=".cdsel">
+            <label class="form-check-label" asp-for="IncludeAll">@T["Include all content types and parts definitions."]</label>
         </div>
     </div>
 </div>
 
-<div class="cdsel mt-4 mb-5 @(Model.IncludeAll ? "collapse" : "show")">
-    <div class="row mb-3">
-        <div class="col">
-            <h6>Content Types</h6>
+<div class="cdsel @(Model.IncludeAll ? "collapse" : "show")">
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
+            <h6>@T["Content Types"]</h6>
             <span class="hint">@T["The content types to add as part of the plan."]</span>
         </div>
     </div>
-    <div class="row mb-2">
-        <div class="col">
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
             <ul class="list-group">
                 @foreach (var contentTypeDefinition in allTypes)
                 {
@@ -53,7 +55,7 @@
                             <label class="form-check-label" for="@(Html.IdFor(m => m.ContentTypes) + "_" + ctypename)">@D[contentTypeDefinition.DisplayName, "Content Types"]</label>
                         </div>
 
-                        <ul class="list-group @(checkd??false ? "" : "collapse")" id="sub_@ctypename">
+                        <ul class="list-group @(checkd ?? false ? "" : "collapse")" id="sub_@ctypename">
                             @foreach (var part in contentTypeDefinition.Parts.Where(x => x.Name != ctypename))
                             {
                                 var partName = part.PartDefinition.Name;
@@ -83,15 +85,15 @@
     </div>
 </div>
 
-<div class="cdsel mt-4 mb-5 @(Model.IncludeAll ? "collapse" : "show")">
-    <div class="row mb-3">
-        <div class="col">
-            <h6>Content Parts</h6>
+<div class="cdsel @(Model.IncludeAll ? "collapse" : "show")">
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
+            <h6>@T["Content Parts"]</h6>
             <span class="hint">@T["The content parts to add as part of the plan."]</span>
         </div>
     </div>
-    <div class="row mb-2">
-        <div class="col">
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
             <ul class="list-group">
                 @foreach (var contentPartDefinition in avaParts)
                 {

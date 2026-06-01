@@ -1,3 +1,4 @@
+using Fluid;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
@@ -176,6 +177,8 @@ public static class ServiceCollectionExtensions
 
             services.Configure<CultureOptions>(configuration.GetSection("OrchardCore_Localization_CultureOptions"));
         });
+
+        services.AddSingleton(new FluidParser());
     }
 
     private static void AddShellServices(OrchardCoreBuilder builder)

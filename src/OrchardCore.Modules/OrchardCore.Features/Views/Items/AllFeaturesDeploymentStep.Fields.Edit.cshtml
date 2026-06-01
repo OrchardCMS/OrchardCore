@@ -1,11 +1,17 @@
 @model AllFeaturesDeploymentStepViewModel
 
-<h5>@T["All Features"]</h5>
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
+        <h5>@T["All Features"]</h5>
+    </div>
+</div>
 
-<div class="mb-3">
-    <div class="form-check">
-        <input type="checkbox" class="form-check-input" asp-for="IgnoreDisabledFeatures" />
-        <label class="form-check-label" asp-for="IgnoreDisabledFeatures">@T["Ignore disabled features"]</label>
+<div class="ocat-wrapper" asp-validation-class-for="IgnoreDisabledFeatures">
+    <div class="ocat-end-offset">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" asp-for="IgnoreDisabledFeatures" />
+            <label class="form-check-label" asp-for="IgnoreDisabledFeatures">@T["Ignore disabled features"]</label>
+        </div>
         <span class="hint">@T["Check if the disabled features have to be ignored."]</span>
     </div>
 </div>

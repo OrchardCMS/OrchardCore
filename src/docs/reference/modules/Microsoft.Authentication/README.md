@@ -95,6 +95,52 @@ The Microsoft Entra ID can be set during recipes using the settings step. Here i
 - If you want to enable new users to register to the site through their Microsoft Account and/or Microsoft Microsoft Entra ID login, the `OrchardCore.Users.Registration` feature must be enabled and setup accordingly.
 - Apart from during login, existing users can link their account to their Microsoft Account and/or Microsoft Microsoft Entra ID login through the External Logins link from User menu.
 
+### Settings Recipe Step
+
+Both Microsoft Account and Microsoft Entra ID settings can also be configured using the generic `Settings` recipe step:
+
+```json
+{
+  "steps": [
+    {
+      "name": "settings",
+      "MicrosoftAccountSettings": {
+        "AppId": "your-app-id",
+        "AppSecret": "your-app-secret",
+        "CallbackPath": "/signin-microsoft",
+        "SaveTokens": false
+      },
+      "AzureADSettings": {
+        "DisplayName": "Orchard Core AD App",
+        "AppId": "your-app-id",
+        "TenantId": "your-tenant-id",
+        "CallbackPath": "/signin-oidc",
+        "SaveTokens": false
+      }
+    }
+  ]
+}
+```
+
+#### Microsoft Account Settings
+
+| Property       | Type    | Description                                                                  |
+|----------------|---------|------------------------------------------------------------------------------|
+| `AppId`        | String  | The Application ID from the Application Registration Portal. **Required.**   |
+| `AppSecret`    | String  | The Application Secret. **Required.**                                        |
+| `CallbackPath` | String  | The request path where the user-agent will be returned after authentication. |
+| `SaveTokens`   | Boolean | Whether to save the access and refresh tokens.                               |
+
+#### Microsoft Entra ID Settings
+
+| Property       | Type    | Description                                                                                |
+|----------------|---------|--------------------------------------------------------------------------------------------|
+| `DisplayName`  | String  | The display name shown on the login screen.                                                |
+| `AppId`        | String  | The Application (client) ID from the Azure Portal. **Required.**                           |
+| `TenantId`     | String  | The Directory (tenant) ID. Use `common` or `organizations` for multi-tenant. **Required.** |
+| `CallbackPath` | String  | The request path where the user-agent will be returned after authentication.               |
+| `SaveTokens`   | Boolean | Whether to save the access and refresh tokens.                                             |
+
 ## Microsoft Account & Microsoft Entra ID (Azure Active Directory) Settings Configuration
 
 The `OrchardCore.Microsoft.Authentication` module allows the user to use configuration values to override the settings configured from the admin area by calling the `ConfigureMicrosoftAccountSettings()` or `ConfigureAzureADSettings()` extension methods on `OrchardCoreBuilder` when initializing the app.
