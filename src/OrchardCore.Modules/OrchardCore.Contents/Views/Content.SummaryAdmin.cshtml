@@ -7,7 +7,7 @@
 }
 
 <div class="row">
-    <div class="col-lg col-12 title d-flex align-items-center">
+    <div class="col title d-flex align-items-center">
         <div class="selectors-container d-flex">
             @if (Model.Selectors != null)
             {
@@ -54,8 +54,8 @@
             }
         </div>
     </div>
-    <div class="col-lg-auto col-12 d-flex justify-content-end">
-        <div class="actions">
+    <div class="col-auto d-flex justify-content-end">
+        <div class="actions d-flex flex-column flex-md-row align-items-end align-items-md-center gap-1">
             @if (Model.Actions != null)
             {
                 @await DisplayAsync(Model.Actions)
