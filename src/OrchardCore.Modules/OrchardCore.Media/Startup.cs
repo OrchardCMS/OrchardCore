@@ -169,6 +169,7 @@ public sealed class Startup : StartupBase
             .UseDisplayDriver<MediaFieldDisplayDriver>()
             .AddHandler<AttachedMediaFieldHandler>();
         services.AddScoped<IContentPartFieldDefinitionDisplayDriver, MediaFieldSettingsDriver>();
+        services.AddScoped<IContentPartFieldDefinitionDisplayDriver, MediaFieldAttachedEditorSettingsDriver>();
         services.AddScoped<AttachedMediaFieldFileService, AttachedMediaFieldFileService>();
         services.AddScoped<IContentHandler, AttachedMediaFieldContentHandler>();
         services.AddScoped<IModularTenantEvents, TempDirCleanerService>();

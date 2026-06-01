@@ -98,8 +98,9 @@ public sealed class MediaFieldDisplayDriver : ContentFieldDisplayDriver<MediaFie
         {
             try
             {
+                var attachedSettings = context.PartFieldDefinition.GetSettings<MediaFieldAttachedEditorSettings>();
                 field.SetAttachedFileNames(items.Where(i => !i.IsRemoved).Select(i => i.AttachedFileName).ToArray());
-                await _attachedMediaFieldFileService.HandleFilesOnFieldUpdateAsync(items, context.ContentPart.ContentItem);
+                await _attachedMediaFieldFileService.HandleFilesOnFieldUpdateAsync(items, context.ContentPart.ContentItem, attachedSettings?.Folder);
             }
             catch (AggregateException e)
             {

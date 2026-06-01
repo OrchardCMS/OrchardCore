@@ -551,6 +551,42 @@ A middleware component returns a 404 NotFound response for unauthenticated acces
 
 The `Cache-Control` header for secured files is set to `no-store` by default, preventing their caching. This can be changed with the `MaxSecureFilesBrowserCacheDays` configuration, [see above](#configuration).
 
+### Restricting Media Access Per Field Using Folders
+
+When using the Secure Media feature with the **Attached** media field editor, you can configure a specific upload folder for the field. This ensures all files uploaded through that field are stored in a designated folder, enabling folder-based permission control.
+
+#### Configuration
+
+1. Add a Media Field to your content type.
+2. Set the editor to **Attached**.
+3. In the editor settings, specify an **Upload folder** name (e.g., `confidential-reports`).
+
+When an upload folder is configured, all files uploaded via that field will be stored in the specified folder instead of the default `mediafields/{ContentType}/{ContentItemId}/` path.
+
+#### Example: Restricting Documents by Content Type
+
+Suppose you have two content types:
+
+- **PublicArticle** with a Media Field for public images.
+- **InternalReport** with a Media Field for confidential documents.
+
+To restrict access to the internal documents:
+
+1. Edit the **InternalReport** content type's Media Field.
+2. Set the editor to **Attached** and configure the upload folder to `internal-reports`.
+3. Enable the **Secure Media** feature.
+4. In the Roles admin, grant the `View media content in folder 'internal-reports'` permission only to roles that should access internal reports (e.g., `Manager`).
+5. For the **PublicArticle** Media Field, either leave the folder empty (files go to the default path under `mediafields/`) or set a folder like `public-images` and grant the view permission to `Anonymous`.
+
+This way, users with the `Agent` role who can view Public Articles will not be able to access media uploaded to the `internal-reports` folder, even if they obtain the URL.
+
+#### Notes
+
+- The folder name is sanitized to prevent invalid characters, path traversal, and reserved names.
+- Reserved folder names (`_Users`, `mediafields`) cannot be used.
+- The folder is automatically created in the media store when the first file is uploaded.
+- When a content item is cloned, files are copied to the same configured folder (they share the folder by design).
+
 ## File Upload Limit
 
 In ASP.NET Core, file upload size limits are enforced at multiple levels — FormOptions, Kestrel/IIS server settings, and sometimes controller-level attributes. By default:

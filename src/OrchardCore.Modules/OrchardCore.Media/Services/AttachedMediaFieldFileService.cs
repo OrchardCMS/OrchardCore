@@ -39,7 +39,13 @@ public class AttachedMediaFieldFileService
     /// <param name="paths">The paths of the files to copy.</param>
     /// <param name="contentItem">The content item to which the files belong.</param>
     /// <returns>The updated paths of the copied files.</returns>
-    public async Task<string[]> CopyFilesAsync(string[] paths, ContentItem contentItem)
+    public Task<string[]> CopyFilesAsync(string[] paths, ContentItem contentItem)
+        => CopyFilesAsync(paths, contentItem, destinationFolder: null);
+
+    /// <summary>
+    /// Copies the files to the specified destination folder, or to a content-item-specific folder if not specified.
+    /// </summary>
+    public async Task<string[]> CopyFilesAsync(string[] paths, ContentItem contentItem, string destinationFolder)
     {
         var updatedPaths = (string[])paths.Clone();
         for (var i = 0; i < paths.Length; i++)
@@ -57,7 +63,9 @@ public class AttachedMediaFieldFileService
                 continue;
             }
 
-            var targetDir = GetContentItemFolder(contentItem);
+            var targetDir = !string.IsNullOrEmpty(destinationFolder)
+                ? destinationFolder
+                : GetContentItemFolder(contentItem);
             var finalFileName = sourceFileInfo.Name;
             var finalFilePath = _fileStore.Combine(targetDir, finalFileName);
 
@@ -88,7 +96,13 @@ public class AttachedMediaFieldFileService
     /// <summary>
     /// Moves uploaded files to a folder specific for the content item.
     /// </summary>
-    public async Task HandleFilesOnFieldUpdateAsync(List<EditMediaFieldItemInfo> items, ContentItem contentItem)
+    public Task HandleFilesOnFieldUpdateAsync(List<EditMediaFieldItemInfo> items, ContentItem contentItem)
+        => HandleFilesOnFieldUpdateAsync(items, contentItem, destinationFolder: null);
+
+    /// <summary>
+    /// Moves uploaded files to the specified destination folder, or to a content-item-specific folder if not specified.
+    /// </summary>
+    public async Task HandleFilesOnFieldUpdateAsync(List<EditMediaFieldItemInfo> items, ContentItem contentItem, string destinationFolder)
     {
         ArgumentNullException.ThrowIfNull(items);
 
@@ -101,7 +115,7 @@ public class AttachedMediaFieldFileService
 
         await RemoveTemporaryAsync(items);
 
-        await MoveNewFilesToContentItemDirAndUpdatePathsAsync(items, contentItem);
+        await MoveNewFilesToContentItemDirAndUpdatePathsAsync(items, contentItem, destinationFolder);
     }
 
     /// <summary>
@@ -127,7 +141,7 @@ public class AttachedMediaFieldFileService
     }
 
     // Newly added files
-    private async Task MoveNewFilesToContentItemDirAndUpdatePathsAsync(List<EditMediaFieldItemInfo> items, ContentItem contentItem)
+    private async Task MoveNewFilesToContentItemDirAndUpdatePathsAsync(List<EditMediaFieldItemInfo> items, ContentItem contentItem, string destinationFolder)
     {
         // Copy to a list to allow removing files from the original items argument.
         var itemToParse = items.Where(i => !i.IsRemoved && !string.IsNullOrEmpty(i.Path)).ToList();
@@ -141,7 +155,9 @@ public class AttachedMediaFieldFileService
                 continue;
             }
 
-            var targetDir = GetContentItemFolder(contentItem);
+            var targetDir = !string.IsNullOrEmpty(destinationFolder)
+                ? destinationFolder
+                : GetContentItemFolder(contentItem);
             var finalFileName = (await GetFileHashAsync(item.Path)) + GetFileExtension(item.Path);
             var finalFilePath = _fileStore.Combine(targetDir, finalFileName);
 
