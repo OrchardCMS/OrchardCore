@@ -42,6 +42,46 @@ public interface IFileStore
     IAsyncEnumerable<IFileStoreEntry> GetDirectoryContentAsync(string path = null, bool includeSubDirectories = false);
 
     /// <summary>
+    /// Enumerates only the files (not directories) in a given directory within the file store.
+    /// </summary>
+    /// <param name="path">The path of the directory to enumerate, or <c>null</c> to enumerate the root of the file store.</param>
+    /// <returns>The list of files in the given directory.</returns>
+    /// <remarks>
+    /// Default implementation filters <see cref="GetDirectoryContentAsync"/>. Implementations
+    /// may override this to avoid enumerating directories for better performance.
+    /// </remarks>
+    async IAsyncEnumerable<IFileStoreEntry> GetFilesAsync(string path = null)
+    {
+        await foreach (var entry in GetDirectoryContentAsync(path))
+        {
+            if (!entry.IsDirectory)
+            {
+                yield return entry;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Enumerates only the subdirectories in a given directory within the file store.
+    /// </summary>
+    /// <param name="path">The path of the directory to enumerate, or <c>null</c> to enumerate the root of the file store.</param>
+    /// <returns>The list of subdirectories in the given directory.</returns>
+    /// <remarks>
+    /// Default implementation filters <see cref="GetDirectoryContentAsync"/>. Implementations
+    /// may override this to avoid enumerating files for better performance.
+    /// </remarks>
+    async IAsyncEnumerable<IFileStoreEntry> GetDirectoriesAsync(string path = null)
+    {
+        await foreach (var entry in GetDirectoryContentAsync(path))
+        {
+            if (entry.IsDirectory)
+            {
+                yield return entry;
+            }
+        }
+    }
+
+    /// <summary>
     /// Creates a directory in the file store if it doesn't already exist.
     /// </summary>
     /// <param name="path">The path of the directory to be created.</param>
@@ -109,7 +149,7 @@ public interface IFileStore
     Task<string> CreateFileFromStreamAsync(string path, Stream inputStream, bool overwrite = false);
 
     /// <summary>
-    /// Calculates the free space available in this file store. 
+    /// Calculates the free space available in this file store.
     /// </summary>
     /// <returns>The usable space in bytes, or <see langword="null"/> if the space is unlimited.</returns>
     Task<long?> GetPermittedStorageAsync() => Task.FromResult<long?>(null);
