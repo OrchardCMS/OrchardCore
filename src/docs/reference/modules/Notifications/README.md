@@ -30,10 +30,10 @@ Available Options and Their Definitions:
 
 ## Notification Methods
 
-There are many methods to send notifications to a user (e.x., Email, Web Push, Mobile Push, SMS, etc.) Any notification sent will be centralized in the notification center before being dispatched to users according to their specified preferences.
+There are many methods to send notifications to a user (e.g., Email, Web Push, Mobile Push, SMS, etc.). Any notification sent will be centralized in the notification center before being dispatched to users according to their specified preferences.
 
 !!! info
-When multiple notification methods are enabled, the user can opt-in/out any method they wishes to receive by editing their profile.
+When multiple notification methods are enabled, the user can opt in/out of any method they wish to receive by editing their profile.
 
 ### Email Notifications
 
@@ -44,14 +44,14 @@ When using `Email Notifications` feature, you must also configure the [Email Ser
 
 ### SMS Notifications
 
-The `SMS Notifications` feature offers a means to inform users by dispatching notifications through phone via SMS provider.
+The `SMS Notifications` feature offers a means to inform users by dispatching notifications by phone via an SMS provider.
 
 !!! note
 When using `SMS Notifications` feature, you must also configure the [SMS Services](../Sms/README.md).
 
 ## Adding Custom Notification Provider
 
-To add a new notification method like `Web Push`, `Mobile Push` or `SMS`, you can simply implement the `INotificationMethodProvider` interface. Then, register your new implementation. For example, in the `Email Notifications` feature we register the email notification provider like this
+To add a new notification method like `Web Push`, `Mobile Push`, or `SMS`, you can simply implement the `INotificationMethodProvider` interface. Then, register your new implementation. For example, in the `Email Notifications` feature, we register the email notification provider like this:
 
 ```csharp
 [Feature("OrchardCore.Notifications.Email")]
@@ -66,7 +66,7 @@ public class EmailNotificationsStartup : StartupBase
 
 ## How to send a notification
 
-You can send notification to a user via code by injecting `INotificationService` then calling the `SendAsync(...)` method. Alternatively, you can use workflows to notify a user about an event that took place.
+You can send a notification to a user via code by injecting `INotificationService`, then calling the `SendAsync(...)` method. Alternatively, you can use workflows to notify a user about an event that took place.
 
 ```csharp
 using OrchardCore.Notifications;

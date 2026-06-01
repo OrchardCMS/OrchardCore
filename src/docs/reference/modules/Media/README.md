@@ -224,13 +224,13 @@ To use [Image Anchors](#image-anchors), use the `GetAnchors` helper extension me
 
 ### Razor image resizing tag helpers
 
-To use the image tag helpers add `@addTagHelper *, OrchardCore.Media` to `_ViewImports.cshtml`, and take a direct reference to the `OrchardCore.Media` nuget package.
+To use the image tag helpers, add `@addTagHelper *, OrchardCore.Media` to `_ViewImports.cshtml`, and take a direct reference to the `OrchardCore.Media` NuGet package.
 
 `asset-src` is used to obtain the correct URL for the asset and set the `src` attribute. Width, height, resize mode, quality and format can be set using `img-width`, `img-height`, `img-resize-mode`, `img-quality`, and `img-format` respectively. e.g.:
 
 `<img asset-src="Model.Paths[0]" alt="..." img-width="100" img-height="240" img-resize-mode="Crop" img-quality="50" img-format="Jpg" />`
 
-Alternatively the Asset Url can be resolved independently and the `src` attribute used:
+Alternatively the Asset URL can be resolved independently and the `src` attribute used:
 
 `<img src="@Orchard.AssetUrl(Model.Paths[0])" alt="..." img-width="100" img-height="240" img-resize-mode="Crop" img-quality="50" img-format="Jpg" />`
 
@@ -260,7 +260,7 @@ To use a [Image Anchor](#image-anchors) set the `asset-src` property and the `im
 
 `<img asset-src="Model.Paths[0]" alt="..." asp-append-version="true" />`
 
-Alternatively the Asset Url can be resolved independently and the `src` attribute used:
+Alternatively the Asset URL can be resolved independently and the `src` attribute used:
 
 `<img src="@Orchard.AssetUrl(Model.Paths[0])" alt="..." asp-append-version="true" />`
 
@@ -427,11 +427,11 @@ services.Configure<StaticFileOptions>(o => ...);
 
 ## Media Profiles
 
-Media profiles allow you to defined preset image resizing and formatting commands.
+Media profiles allow you to define preset image resizing and formatting commands.
 
 You can create a media profile from the _Media -> Profiles_ menu.
 
-When specifying a media profile with either the liquid, razor helper, or tag helper you provide the profile name, and any additional commands which you want to apply to the media item.
+When specifying a media profile with either the Liquid, Razor helper, or tag helper, you provide the profile name and any additional commands which you want to apply to the media item.
 
 === "Liquid"
 
@@ -518,7 +518,15 @@ When the query string is signed with a token any width, height value may be used
 Media can be optionally indexed for search as well if files are referenced via Media Fields. The following data can be indexed for each file referenced from a Media Field:
 
 - Media Text
-- Textual content of PDF files
+- Text extracted from additional file formats when the corresponding indexing feature is enabled
+
+File extraction is available through explicit features:
+
+- `OrchardCore.Media.Indexing.Pdf` for `.pdf`
+- `OrchardCore.Media.Indexing.Text` for `.txt` and `.md`
+- `OrchardCore.Media.Indexing.OpenXML` for `.docx` and `.pptx`
+
+Enable the feature that corresponds to the file types you want to extract and index.
 
 !!! note
     Standalone files, i.e. files that are just uploaded to the Media Library but never referenced from a content item via a Media Field, can't be indexed.
@@ -616,7 +624,13 @@ To increase the limit, you can use one of the following approaches:
 
 ## Media Indexing
 
-The `Media Indexing` feature extends the media indexing capability to also encompass searching within files with the following extensions `.txt`, `.md`, `.docx`, and `.pptx`.
+The base `Media Indexing` feature indexes media text stored by media fields. Additional file extraction is enabled by feature:
+
+| Feature | File types |
+|---|---|
+| `OrchardCore.Media.Indexing.Pdf` | `.pdf` |
+| `OrchardCore.Media.Indexing.Text` | `.txt`, `.md` |
+| `OrchardCore.Media.Indexing.OpenXML` | `.docx`, `.pptx` |
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/BQHUlvPFRR4" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 

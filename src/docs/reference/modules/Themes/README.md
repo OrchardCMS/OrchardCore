@@ -5,7 +5,7 @@ It also explains the fundamental theming concepts, namely __Shapes__, __Alternat
 
 ## Goals
 
-Let's assume we want to add a portfolio section to our Blog where we could list all the projects we are working on, and be able to manage these projects individually, as opposed to having an static page where we would have to copy-paste the HTML for each project.
+Let's assume we want to add a portfolio section to our Blog where we could list all the projects we are working on, and be able to manage these projects individually, as opposed to having a static page where we would have to copy-paste the HTML for each project.
 
 The portfolio should have its own URL like `/portfolio`, and should display the projects in a predefined order.
 
@@ -56,7 +56,7 @@ Now we can configure the `Portfolio` content type to only accept `Project` conte
 
 Click __Edit__ for the __Bag__ part. Check __Project__ and click __Save__.
 
-Click __Edit__ for the __Autoroute__ part. Enter `{{ ContentItem | display_text | slugify }}` and check __Allow custom path__. Click __Save__. This will generate a customizable url or used what the user defines.
+Click __Edit__ for the __Autoroute__ part. Enter `{{ ContentItem | display_text | slugify }}` and check __Allow custom path__. Click __Save__. This will generate a customizable URL or use the one the user defines.
 
 Take the time to drag and drop the __Title__ part at the top of the list such that it will appear first in the editor. Then click __Save__.
 
@@ -68,7 +68,7 @@ Click on __New__, then __Portfolio__.
 
 Give it a title like `My Project`.
 
-In __Permalink__ enter `portfolio`. This will be the url to display this content item.
+In __Permalink__ enter `portfolio`. This will be the URL to display this content item.
 
 As you click on __Add Item__ you'll notice that only __Project__ is available as configured in the `Bag` part for `Portfolio`.
 
@@ -84,9 +84,9 @@ At that point it already looks like something that could be shipped, and all the
 
 ### Loading the portfolio from the database
 
-When the url `/portfolio` is requested, a custom action is called to render the content item that is associated with this URL.  
-The URL got associated with the portfolio thanks to the __Autoroute__ part that provides this mechanism.  
-The autoroute registers a custom URL and stores the associated content item id.  
+When the URL `/portfolio` is requested, a custom action is called to render the content item that is associated with this URL.
+The URL is associated with the portfolio thanks to the __Autoroute__ part that provides this mechanism.
+The autoroute registers a custom URL and stores the associated content item ID.
 At this point the action will issue a database request to load the portfolio in its entirety, including the projects, as this is how it was modeled with the __Bag__ part.
 
 ### How a Content Item is displayed

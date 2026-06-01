@@ -4,11 +4,11 @@ Orchard Core extends ASP.NET Core `IConfiguration` with `IShellConfiguration` to
 
 To learn more about ASP.NET Core `IConfiguration` visit <https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration>.
 
-Note that while this documentation page explains configuration happening in the root web app project on the example of `OrchardCore.Cms.Web.csproj` if you use Orchard from NuGet packages in your own web app then same is available in that web app project too.
+Note that while this documentation page explains configuration in the root web app project by using `OrchardCore.Cms.Web.csproj` as an example, if you use Orchard from NuGet packages in your own web app, the same is available in that web app project too.
 
 ## Configuration Sources
 
-Orchard Core built on top of ASP.NET Core Configuration framework, which support a variety of different configuration options. Developers are not limited to using a single configuration source. In fact several may be set up together such that a default configuration is overridden by settings from another source if they are present.
+Orchard Core is built on top of the ASP.NET Core configuration framework, which supports a variety of different configuration options. Developers are not limited to using a single configuration source. In fact, several may be set up together such that a default configuration is overridden by settings from another source if they are present.
 
 The Configuration Sources are loaded in the order described in [Configuration Sources Order](#configuration-sources-order) below.
 
@@ -173,8 +173,8 @@ These settings can also be located in an `App_Data/appsettings.json` folder (not
 
 ### `IShellConfiguration` in the Individual Tenants Folder
 
-These settings are mutable and written during the setup for the Tenant. For this reason reading from Environment Name is not supported.
-Additionally these `appsettings.json` files do not need the `OrchardCore` section
+These settings are mutable and written during the setup for the tenant. For this reason, reading from Environment Name is not supported.
+Additionally, these `appsettings.json` files do not need the `OrchardCore` section.
 
 ```json
 {
