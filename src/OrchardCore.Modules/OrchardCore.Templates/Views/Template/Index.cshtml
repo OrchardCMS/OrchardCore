@@ -21,7 +21,7 @@ else
     <input asp-for="Options.BulkAction" type="hidden" />
     <input type="submit" name="submit.BulkAction" class="visually-hidden" />
 
-    <div class="card text-bg-theme mb-3 position-sticky action-bar" style="position: relative; top: 0;">
+    <div class="card text-bg-theme mb-3 position-sticky action-bar">
         <div class="card-body">
             <div class="row gx-3">
                 <div class="col">
@@ -45,8 +45,13 @@ else
                         <div class="form-check my-1">
                             <input type="checkbox" class="form-check-input" id="select-all">
                             <label class="form-check-label" for="select-all" id="select-all-label" title="@T["Select All"]"></label>
-                            <label id="items" for="select-all">@T.Plural(Model.Templates.Count, "{0} item", "{0} items")<span class="text-muted" title="@T["Items {0} to {1}", startIndex, endIndex]">@T.Plural((int)Model.Pager.TotalItemCount, " / {0} item in total", " / {0} items in total")</span></label>
-                            <label id="selected-items" class="text-muted" for="select-all"></label>
+                            <label id="items" for="select-all" class="d-inline">
+                                @T.Plural(Model.Templates.Count, "{0} item", "{0} items")
+                                <span class="text-muted" title="@T["Items {0} to {1}", startIndex, endIndex]">
+                                    @T.Plural((int)Model.Pager.TotalItemCount, " / {0} item in total", " / {0} items in total")
+                                </span>
+                            </label>
+                            <label id="selected-items" class="d-inline text-muted" for="select-all"></label>
                         </div>
                     </div>
                     <div class="col-auto">
@@ -67,20 +72,24 @@ else
             @foreach (var entry in Model.Templates)
             {
                 <li class="list-group-item">
-                    <div class="form-check float-start">
-                        <input type="checkbox" class="form-check-input" value="@entry.Name" name="itemIds" id="itemIds-@entry.Name">
-                        <label class="form-check-label" for="itemIds-@entry.Name">&nbsp;</label>
-                    </div>
-                    <div class="w-100">
-                        <div class="float-end">
-                            <a asp-action="Edit" asp-route-name="@entry.Name" asp-route-admintemplates="@Model.Options.AdminTemplates" asp-route-returnUrl="@FullRequestPath" class="btn btn-primary btn-sm">@T["Edit"]</a>
-                            <a asp-action="Delete" asp-route-name="@entry.Name" asp-route-admintemplates="@Model.Options.AdminTemplates" asp-route-returnUrl="@FullRequestPath" class="btn btn-danger btn-sm" data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+                    <div class="w-100 d-flex align-items-center gap-1">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" value="@entry.Name" name="itemIds" id="itemIds-@entry.Name">
+                            <label class="form-check-label" for="itemIds-@entry.Name">
+                                <span class="visually-hidden">@T["Select template {0}", @entry.Name]</span>
+                            </label>
                         </div>
-                        <a asp-action="Edit" asp-route-name="@entry.Name" asp-route-admintemplates="@Model.Options.AdminTemplates" asp-route-returnUrl="@FullRequestPath">@entry.Name</a>
-                        @if (!string.IsNullOrWhiteSpace(entry.Template.Description))
-                        {
-                            <span class="hint dashed">@entry.Template.Description</span>
-                        }
+                        <span class="flex-grow-1 min-w-0 text-truncate">
+                            <a asp-action="Edit" asp-route-name="@entry.Name" asp-route-admintemplates="@Model.Options.AdminTemplates" asp-route-returnUrl="@FullRequestPath" title="@entry.Name">
+                                @entry.Name
+                            </a>
+                            @if (!string.IsNullOrWhiteSpace(entry.Template.Description))
+                            {
+                                <span class="hint dashed">@entry.Template.Description</span>
+                            }
+                        </span>
+                        <a asp-action="Edit" asp-route-name="@entry.Name" asp-route-admintemplates="@Model.Options.AdminTemplates" asp-route-returnUrl="@FullRequestPath" class="btn btn-primary btn-sm flex-shrink-1">@T["Edit"]</a>
+                        <a asp-action="Delete" asp-route-name="@entry.Name" asp-route-admintemplates="@Model.Options.AdminTemplates" asp-route-returnUrl="@FullRequestPath" class="btn btn-danger btn-sm flex-shrink-1" data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
                     </div>
                 </li>
             }
@@ -89,7 +98,7 @@ else
         {
             <li class="list-group-item">
                 <div class="alert alert-info mb-0" role="alert">
-                    @T["<strong>Nothing here!</strong> There are no templates for the moment."]
+                    @T["<strong>Nothing here!</strong> There are no templates at the moment."]
                     <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/Templates" target="_blank">@T["See documentation"]</a>
                 </div>
             </li>
