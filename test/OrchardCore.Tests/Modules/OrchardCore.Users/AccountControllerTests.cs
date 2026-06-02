@@ -495,6 +495,27 @@ public class AccountControllerTests
     }
 
     [Fact]
+    public async Task Login_WhenRateLimitExceeded_ReturnsTooManyRequests()
+    {
+        // Arrange
+        var context = await GetSiteContextAsync(new RegistrationSettings());
+
+        var loginGet = await context.Client.GetAsync("Login", TestContext.Current.CancellationToken);
+        Assert.True(loginGet.IsSuccessStatusCode);
+
+        // Act
+        HttpResponseMessage response = null;
+
+        for (var i = 0; i < 11; i++)
+        {
+            response = await context.Client.SendAsync(await CreateLoginRequestMessageAsync("missing-user", "Password1!", loginGet), TestContext.Current.CancellationToken);
+        }
+
+        // Assert
+        Assert.Equal(HttpStatusCode.TooManyRequests, response.StatusCode);
+    }
+
+    [Fact]
     public async Task Login_WhenUserDisabledUnderModeration_DefersToModerationHandler()
     {
         // Arrange

@@ -318,6 +318,65 @@ public class OpenIdAuthenticationTests
         });
     }
 
+    [Fact]
+    public async Task OpenId_PasswordGrant_WhenRateLimitExceeded_ReturnsTooManyRequests()
+    {
+        var context = new SiteContext();
+
+        await context.InitializeAsync();
+
+        const string clientId = "password-flow-client";
+
+        var recipe = new JsonObject
+        {
+            ["steps"] = new JsonArray
+            {
+                new JsonObject
+                {
+                    { "name", "Feature" },
+                    { "enable", new JsonArray(
+                        "OrchardCore.Users",
+                        "OrchardCore.OpenId.Server",
+                        "OrchardCore.OpenId.Validation",
+                        "OrchardCore.OpenId") },
+                },
+                new JsonObject
+                {
+                    { "name", "OpenIdServerSettings" },
+                    { "EnableTokenEndpoint", true },
+                    { "AllowPasswordFlow", true },
+                },
+                new JsonObject
+                {
+                    { "name", "OpenIdApplication" },
+                    { "ClientId", clientId },
+                    { "DisplayName", "Password Flow Test Application" },
+                    { "Type", "public" },
+                    { "AllowPasswordFlow", true },
+                },
+            },
+        };
+
+        await RecipeHelpers.RunRecipeAsync(context, recipe);
+
+        HttpResponseMessage response = null;
+
+        for (var i = 0; i < 11; i++)
+        {
+            var request = HttpRequestHelper.CreatePostMessage("connect/token", new Dictionary<string, string>
+            {
+                { "client_id", clientId },
+                { "grant_type", "password" },
+                { "username", "admin" },
+                { "password", "WrongPassword01_" },
+            });
+
+            response = await context.Client.SendAsync(request, CancellationToken.None);
+        }
+
+        Assert.Equal(HttpStatusCode.TooManyRequests, response.StatusCode);
+    }
+
     private static async Task ExchangeCodeForTokenAsync(HttpClient httpClient, string authorizationCode, string clientId, string redirectUri, string codeVerifier, ConcurrentBag<string> tokens)
     {
         var data = new Dictionary<string, string>()

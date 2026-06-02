@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using System.Threading.RateLimiting;
 using System.Web;
 using Fluid;
 using Fluid.Values;
@@ -34,7 +35,6 @@ using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings.Deployment;
 using OrchardCore.Setup.Events;
-using OrchardCore.Sms;
 using OrchardCore.Users.Commands;
 using OrchardCore.Users.Controllers;
 using OrchardCore.Users.Core.Services;
@@ -57,7 +57,6 @@ public sealed class Startup : StartupBase
 {
     private static readonly string _accountControllerName = typeof(AccountController).ControllerName();
     private static readonly string _emailConfirmationControllerName = typeof(EmailConfirmationController).ControllerName();
-
     private readonly string _tenantName;
 
     private UserOptions _userOptions;
@@ -111,6 +110,13 @@ public sealed class Startup : StartupBase
             options.LoginPath = "/" + userOptions.Value.LoginPath;
             options.LogoutPath = "/" + userOptions.Value.LogoffPath;
             options.AccessDeniedPath = "/Error/403";
+        });
+
+        services.AddRateLimiter(options =>
+        {
+            options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+            options.AddPolicy(UserRateLimiterPolicyNames.PasswordAuthentication, CreateSlidingWindowPolicy(10));
+            options.AddPolicy(UserRateLimiterPolicyNames.PasswordRecovery, CreateSlidingWindowPolicy(5));
         });
 
         services.AddTransient<IPostConfigureOptions<SecurityStampValidatorOptions>, ConfigureSecurityStampOptions>();
@@ -237,8 +243,21 @@ public sealed class Startup : StartupBase
             }
         );
 
+        builder.UseRateLimiter();
         builder.UseAuthorization();
     }
+
+    private static Func<HttpContext, RateLimitPartition<string>> CreateSlidingWindowPolicy(int permitLimit)
+        => context => RateLimitPartition.GetSlidingWindowLimiter(
+            partitionKey: context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+            factory: _ => new SlidingWindowRateLimiterOptions
+            {
+                PermitLimit = permitLimit,
+                Window = TimeSpan.FromMinutes(1),
+                SegmentsPerWindow = 6,
+                QueueLimit = 0,
+                AutoReplenishment = true,
+            });
 }
 
 [Feature(UserConstants.Features.ExternalAuthentication)]

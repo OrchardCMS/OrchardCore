@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -22,7 +23,6 @@ namespace OrchardCore.Users.Controllers;
 [Authorize]
 public sealed class AccountController : AccountBaseController
 {
-    private readonly IPasswordAuthenticationTimingService _passwordAuthenticationTimingService;
     private readonly IUserService _userService;
     private readonly SignInManager<IUser> _signInManager;
     private readonly UserManager<IUser> _userManager;
@@ -38,7 +38,6 @@ public sealed class AccountController : AccountBaseController
     internal readonly IStringLocalizer S;
 
     public AccountController(
-        IPasswordAuthenticationTimingService passwordAuthenticationTimingService,
         IUserService userService,
         SignInManager<IUser> signInManager,
         UserManager<IUser> userManager,
@@ -52,7 +51,6 @@ public sealed class AccountController : AccountBaseController
         IDisplayManager<LoginForm> loginFormDisplayManager,
         IUpdateModelAccessor updateModelAccessor)
     {
-        _passwordAuthenticationTimingService = passwordAuthenticationTimingService;
         _signInManager = signInManager;
         _userManager = userManager;
         _userService = userService;
@@ -99,6 +97,7 @@ public sealed class AccountController : AccountBaseController
     }
 
     [HttpPost]
+    [EnableRateLimiting(UserRateLimiterPolicyNames.PasswordAuthentication)]
     [AllowAnonymous]
     [ActionName(nameof(Login))]
     public async Task<IActionResult> LoginPOST(string returnUrl = null)
@@ -169,21 +168,11 @@ public sealed class AccountController : AccountBaseController
 
                 if (result.IsLockedOut)
                 {
-                    await _passwordAuthenticationTimingService.DelayFailedAuthenticationAsync(HttpContext.RequestAborted);
                     ModelState.AddModelError(string.Empty, S["The account is locked out"]);
                     await _loginFormEvents.InvokeAsync((e, user) => e.IsLockedOutAsync(user), user, _logger);
 
                     return View();
                 }
-            }
-            else
-            {
-                await _passwordAuthenticationTimingService.MitigateUnknownUserAsync(model.Password, HttpContext.RequestAborted);
-            }
-
-            if (user != null)
-            {
-                await _passwordAuthenticationTimingService.DelayFailedAuthenticationAsync(HttpContext.RequestAborted);
             }
 
             ModelState.AddModelError(string.Empty, S["Invalid login attempt."]);
