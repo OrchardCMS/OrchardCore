@@ -31,7 +31,7 @@ dotnet sln add ./BlazorCms
 
 ![Setup Default Orchard Core site](./images/image-002.PNG)
 
-- Once the setup is complete, log in to the admin and create a new content type as following. (By navigating to `Content` -> `Content Definition` -> `Content Types`) 
+- Once the setup is complete, log in to the admin and create a new content type as following. (By navigating to `Design` -> `Content Definition` -> `Content Types`) 
     - Create a 'MarkdownPage' content type.
     - Add Parts 
         - TitlePart

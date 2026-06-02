@@ -173,7 +173,7 @@ Let's create a new content type named `Blog Post` and add some necessary content
 - From the running website, open the url `/admin`.
 - In the login screen, enter the user credentials that were used during the setup.
 - You are presented with the administrative side of the site.
-- In the left menu, select __Content Definition__ then __Content Types__.
+- In the left menu, select __Design__ then __Content Definition__ then __Content Types__.
 - Click on __Create new type__ in the top right corner
 - In __Display Name__ enter `Blog Post`. The __Technical Name__ will be generated automatically with the value `BlogPost`, like this:
 
@@ -319,7 +319,7 @@ Even though we can load blog posts from their Content Item Id, this is not user 
 
 In Orchard Core CMS the __Alias Part__ allows to provide a custom user friendly text to identify a content item.
 
-- In the admin section of the site, open __Content Definition__ > __Content Types__ > __Blog Post__
+- In the admin section of the site, open __Design__ > __Content Definition__ > __Content Types__ > __Blog Post__
 - At the bottom of the page, select __Add Parts__
 - Select __Alias__ and click __Save__
 - Move __Alias__ under __Title__ and save

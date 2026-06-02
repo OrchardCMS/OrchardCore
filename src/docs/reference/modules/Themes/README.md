@@ -34,7 +34,7 @@ This article will explain how to do it with a `BagPart` as it will provide the b
 - a `Text` field to store the link to the project;
 - a `Markdown` part to provide a description in markdown format.
 
-In the admin, select __Content Definition__ then __Content Types__ and create a new type named `Project`. Click __Create__.
+In the admin, select __Design__ then __Content Definition__ then __Content Types__ and create a new type named `Project`. Click __Create__.
 
 Select __Title__ and __Markdown__ for the parts we can add already, then click __Save__.
 
@@ -48,7 +48,7 @@ Take the time to drag and drop the __Title__ part at the top of the list such th
 
 At that point you could already create all the Project content items you want very easily. However we need to create a `Portfolio` type to contain and organize them.
 
-In the admin, select __Content Definition__ then __Content Types__ and create a new type named `Portfolio`. Click __Create__.
+In the admin, select __Design__ then __Content Definition__ then __Content Types__ and create a new type named `Portfolio`. Click __Create__.
 
 Select __Title__, __Autoroute__ and __Bag__, then click __Save__.
 
