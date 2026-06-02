@@ -474,6 +474,35 @@ public class AccountControllerTests
     }
 
     [Fact]
+    public async Task Register_WhenRateLimitExceeded_ReturnsTooManyRequests()
+    {
+        // Arrange
+        var context = await GetSiteContextAsync(new RegistrationSettings());
+
+        var registerGet = await context.Client.GetAsync("Register", TestContext.Current.CancellationToken);
+        Assert.True(registerGet.IsSuccessStatusCode);
+
+        // Act
+        HttpResponseMessage response = null;
+
+        for (var i = 0; i < 4; i++)
+        {
+            var model = new RegisterViewModel()
+            {
+                UserName = $"RateLimitUser{i}",
+                Email = $"ratelimit{i}@orchardcore.com",
+                Password = "Password1!",
+                ConfirmPassword = "Password1!",
+            };
+
+            response = await context.Client.SendAsync(await CreateRequestMessageAsync(model, registerGet), TestContext.Current.CancellationToken);
+        }
+
+        // Assert
+        Assert.Equal(HttpStatusCode.TooManyRequests, response.StatusCode);
+    }
+
+    [Fact]
     public async Task Login_WhenUsernameIsInvalid_ReturnsGenericError()
     {
         // Arrange

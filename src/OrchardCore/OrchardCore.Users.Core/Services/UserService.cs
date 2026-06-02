@@ -24,6 +24,7 @@ public sealed class UserService : IUserService
     private readonly RegistrationOptions _registrationOptions;
     private readonly ISiteService _siteService;
     private readonly IEnumerable<IUserEventHandler> _handlers;
+    private readonly PasswordTimingNormalizationService _timingNormalization;
     private readonly ILogger _logger;
 
     internal readonly IStringLocalizer S;
@@ -37,6 +38,7 @@ public sealed class UserService : IUserService
         IOptions<RegistrationOptions> registrationOptions,
         ISiteService siteService,
         IEnumerable<IUserEventHandler> handlers,
+        PasswordTimingNormalizationService timingNormalization,
         ILogger<UserService> logger,
         IStringLocalizer<UserService> stringLocalizer)
     {
@@ -48,6 +50,7 @@ public sealed class UserService : IUserService
         _registrationOptions = registrationOptions.Value;
         _siteService = siteService;
         _handlers = handlers;
+        _timingNormalization = timingNormalization;
         _logger = logger;
         S = stringLocalizer;
     }
@@ -77,6 +80,11 @@ public sealed class UserService : IUserService
         var user = await GetUserAsync(usernameOrEmail);
         if (user == null)
         {
+            // Perform a dummy hash verification so the response time is
+            // indistinguishable from a real password check, preventing
+            // username enumeration via timing analysis.
+            _timingNormalization.NormalizeResponseTime();
+
             reportError(string.Empty, S["The specified username/password couple is invalid."]);
             return null;
         }

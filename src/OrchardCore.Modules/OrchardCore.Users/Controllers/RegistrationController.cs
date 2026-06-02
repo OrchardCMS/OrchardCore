@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -51,6 +52,7 @@ public sealed class RegistrationController : Controller
     [HttpPost]
     [AllowAnonymous]
     [ActionName(nameof(Register))]
+    [EnableRateLimiting(UserRateLimiterPolicyNames.UserRegistration)]
     public async Task<IActionResult> RegisterPOST(string returnUrl = null)
     {
         var model = new RegisterUserForm();

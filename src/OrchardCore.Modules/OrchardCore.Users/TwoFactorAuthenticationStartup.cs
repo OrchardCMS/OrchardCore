@@ -33,6 +33,13 @@ public sealed class TwoFactorAuthenticationStartup : StartupBase
             options.Filters.Add<TwoFactorAuthenticationAuthorizationFilter>();
         });
 
+        services.AddRateLimiter(options =>
+        {
+            options.AddPolicy(UserRateLimiterPolicyNames.TwoFactorAuthentication, RateLimiterPolicyHelpers.CreateSlidingWindowPolicy(5));
+            options.AddPolicy(UserRateLimiterPolicyNames.TwoFactorRecovery, RateLimiterPolicyHelpers.CreateSlidingWindowPolicy(3));
+            options.AddPolicy(UserRateLimiterPolicyNames.TwoFactorCodeSend, RateLimiterPolicyHelpers.CreateFixedWindowPolicy(2, TimeSpan.FromMinutes(1)));
+        });
+
         services.AddDisplayDriver<User, UserTwoFactorDisplayDriver>();
         services.AddScoped<IUserClaimsProvider, TwoFactorAuthenticationClaimsProvider>();
         services.AddDisplayDriver<UserMenu, TwoFactorUserMenuDisplayDriver>();

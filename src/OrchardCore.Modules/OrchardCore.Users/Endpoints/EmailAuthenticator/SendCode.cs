@@ -20,6 +20,7 @@ public static class SendCode
     {
         builder.MapPost("TwoFactor-Authenticator/EmailSendCode", HandleAsync<T>)
             .AllowAnonymous()
+            .RequireRateLimiting(UserRateLimiterPolicyNames.TwoFactorCodeSend)
             .WithName(RouteName)
             .DisableAntiforgery();
 

@@ -274,6 +274,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
 
     [HttpPost]
     [AllowAnonymous]
+    [EnableRateLimiting(UserRateLimiterPolicyNames.UserRegistration)]
     public async Task<IActionResult> RegisterExternalLogin(RegisterExternalLoginViewModel model, string returnUrl = null)
     {
         var settings = await _siteService.GetSettingsAsync<ExternalRegistrationSettings>();

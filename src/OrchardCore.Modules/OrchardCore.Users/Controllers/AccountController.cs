@@ -33,6 +33,7 @@ public sealed class AccountController : AccountBaseController
     private readonly IDisplayManager<LoginForm> _loginFormDisplayManager;
     private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly INotifier _notifier;
+    private readonly PasswordTimingNormalizationService _timingNormalization;
 
     internal readonly IHtmlLocalizer H;
     internal readonly IStringLocalizer S;
@@ -49,7 +50,8 @@ public sealed class AccountController : AccountBaseController
         IOptions<RegistrationOptions> registrationOptions,
         INotifier notifier,
         IDisplayManager<LoginForm> loginFormDisplayManager,
-        IUpdateModelAccessor updateModelAccessor)
+        IUpdateModelAccessor updateModelAccessor,
+        PasswordTimingNormalizationService timingNormalization)
     {
         _signInManager = signInManager;
         _userManager = userManager;
@@ -61,6 +63,7 @@ public sealed class AccountController : AccountBaseController
         _notifier = notifier;
         _loginFormDisplayManager = loginFormDisplayManager;
         _updateModelAccessor = updateModelAccessor;
+        _timingNormalization = timingNormalization;
 
         H = htmlLocalizer;
         S = stringLocalizer;
@@ -173,6 +176,13 @@ public sealed class AccountController : AccountBaseController
 
                     return View();
                 }
+            }
+            else
+            {
+                // Perform a dummy hash verification so the response time is
+                // indistinguishable from a real password check, preventing
+                // username enumeration attack via timing analysis.
+                _timingNormalization.NormalizeResponseTime();
             }
 
             ModelState.AddModelError(string.Empty, S["Invalid login attempt."]);

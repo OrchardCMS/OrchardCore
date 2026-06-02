@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -94,6 +95,7 @@ public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationB
     [HttpPost]
     [AllowAnonymous]
     [ActionName(nameof(LoginWithTwoFactorAuthentication))]
+    [EnableRateLimiting(UserRateLimiterPolicyNames.TwoFactorAuthentication)]
     public async Task<IActionResult> LoginWithTwoFactorAuthenticationPost(LoginWithTwoFactorAuthenticationViewModel model)
     {
         var user = await SignInManager.GetTwoFactorAuthenticationUserAsync();
@@ -167,6 +169,7 @@ public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationB
 
     [HttpPost]
     [AllowAnonymous]
+    [EnableRateLimiting(UserRateLimiterPolicyNames.TwoFactorRecovery)]
     public async Task<IActionResult> LoginWithRecoveryCode(LoginWithRecoveryCodeViewModel model)
     {
         if (ModelState.IsValid)

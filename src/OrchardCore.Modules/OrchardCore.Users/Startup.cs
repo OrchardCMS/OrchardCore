@@ -1,5 +1,4 @@
 using System.Security.Claims;
-using System.Threading.RateLimiting;
 using System.Web;
 using Fluid;
 using Fluid.Values;
@@ -115,8 +114,7 @@ public sealed class Startup : StartupBase
         services.AddRateLimiter(options =>
         {
             options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
-            options.AddPolicy(UserRateLimiterPolicyNames.PasswordAuthentication, CreateSlidingWindowPolicy(10));
-            options.AddPolicy(UserRateLimiterPolicyNames.PasswordRecovery, CreateSlidingWindowPolicy(5));
+            options.AddPolicy(UserRateLimiterPolicyNames.PasswordAuthentication, RateLimiterPolicyHelpers.CreateSlidingWindowPolicy(10));
         });
 
         services.AddTransient<IPostConfigureOptions<SecurityStampValidatorOptions>, ConfigureSecurityStampOptions>();
@@ -247,17 +245,6 @@ public sealed class Startup : StartupBase
         builder.UseAuthorization();
     }
 
-    private static Func<HttpContext, RateLimitPartition<string>> CreateSlidingWindowPolicy(int permitLimit)
-        => context => RateLimitPartition.GetSlidingWindowLimiter(
-            partitionKey: context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
-            factory: _ => new SlidingWindowRateLimiterOptions
-            {
-                PermitLimit = permitLimit,
-                Window = TimeSpan.FromMinutes(1),
-                SegmentsPerWindow = 6,
-                QueueLimit = 0,
-                AutoReplenishment = true,
-            });
 }
 
 [Feature(UserConstants.Features.ExternalAuthentication)]
@@ -465,6 +452,11 @@ public sealed class RegistrationStartup : StartupBase
             o.MemberAccessStrategy.Register<ConfirmEmailViewModel>();
         });
 
+        services.AddRateLimiter(options =>
+        {
+            options.AddPolicy(UserRateLimiterPolicyNames.UserRegistration, RateLimiterPolicyHelpers.CreateSlidingWindowPolicy(3));
+        });
+
         services.AddDisplayDriver<User, UserRegistrationAdminDisplayDriver>();
         services.AddSiteDisplayDriver<RegistrationSettingsDisplayDriver>();
         services.AddNavigationProvider<RegistrationAdminMenu>();
@@ -541,6 +533,11 @@ public sealed class ResetPasswordStartup : StartupBase
         services.Configure<TemplateOptions>(o =>
         {
             o.MemberAccessStrategy.Register<LostPasswordViewModel>();
+        });
+
+        services.AddRateLimiter(options =>
+        {
+            options.AddPolicy(UserRateLimiterPolicyNames.PasswordRecovery, RateLimiterPolicyHelpers.CreateSlidingWindowPolicy(5));
         });
 
         services.AddSiteDisplayDriver<ResetPasswordSettingsDisplayDriver>();
