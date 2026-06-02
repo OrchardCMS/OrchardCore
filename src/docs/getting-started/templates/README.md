@@ -1,6 +1,6 @@
 # Code Generation Templates
 
-Orchard Core Templates uses `dotnet new` template configurations for creating new websites, themes and modules from the command shell.
+Orchard Core Templates use `dotnet new` template configurations for creating new websites, themes and modules from the command shell.
 
 More information about `dotnet new` can be found at <https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-new>
 
@@ -22,7 +22,7 @@ dotnet new install OrchardCore.ProjectTemplates@2.2.1-* --nuget-source https://n
 
 ### From Command Shell (automated way)
 
-#### Generate an Orchard Cms Web Application
+#### Generate an Orchard CMS Web Application
 
 ```CMD
 dotnet new occms
@@ -30,7 +30,7 @@ dotnet new occms
 
 The above command will use the default options.
 
-You can pass the following CLI parameters to setup options:
+You can pass the following CLI parameters for setup options:
 
 ```CMD
 Orchard Core Cms Web App (C#)
@@ -73,7 +73,7 @@ Now that we created a new Web Application we need to add proper dependencies so 
 Orchard Core can be added through two distinct NuGet meta packages: `OrchardCore.Application.Cms.Core.Targets` and `OrchardCore.Application.Cms.Targets`. For additional information regarding these packages, please refer to [this link](../starter-recipes.md). You must add one of these NuGet packages in your Web Application.
 
 !!! note
-    If you want to use the `preview` packages, [configure the OrchardCore Preview url in your Package sources](../preview-package-source.md)
+    If you want to use the `preview` packages, [configure the OrchardCore Preview URL in your Package sources](../preview-package-source.md)
 
 ![image](../assets/images/templates/orchard-screencast-2.gif)
 
@@ -117,7 +117,7 @@ dotnet new ocmodulecms
 
 The above command will use the default options.
 
-You can pass the following CLI parameters to setup options:
+You can pass the following CLI parameters for setup options:
 
 ```CMD
 Orchard Core Module (C#)
@@ -156,7 +156,7 @@ Fire up Visual Studio, open Orchard Core solution file (`.sln`), select `Orchard
 For marking this new Class Library as an Orchard Module, we will now need to reference `OrchardCore.Module.Targets` NuGet package.
 
 !!! note
-    If you want to use the `preview` packages, [configure the OrchardCore Preview url in your Package sources](../preview-package-source.md)
+    If you want to use the `preview` packages, [configure the OrchardCore Preview URL in your Package sources](../preview-package-source.md)
 
 Each of these `*.Targets` NuGet packages are used to mark a Class Library as a specific Orchard Core functionality.  
 `OrchardCore.Module.Targets` is the one we are interested in for now.  
