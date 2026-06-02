@@ -15,21 +15,65 @@ public class ZoneShapes : IShapeAttributeProvider
 
     [Shape]
 #pragma warning disable CA1822 // Mark members as static
-    public async Task<IHtmlContent> Zone(IDisplayHelper DisplayAsync, IEnumerable<object> Shape)
+    public Task<IHtmlContent> Zone(IDisplayHelper DisplayAsync, IEnumerable<object> Shape)
 #pragma warning restore CA1822 // Mark members as static
     {
         var htmlContentBuilder = new HtmlContentBuilder();
-        foreach (var item in Shape)
+
+        var enumerator = Shape.GetEnumerator();
+        var disposeEnumerator = true;
+
+        try
         {
-            htmlContentBuilder.AppendHtml(await DisplayAsync.ShapeExecuteAsync((IShape)item));
+            while (enumerator.MoveNext())
+            {
+                var item = enumerator.Current;
+
+                var task = DisplayAsync.ShapeExecuteAsync((IShape)item);
+
+                if (!task.IsCompletedSuccessfully)
+                {
+                    disposeEnumerator = false;  
+                    return ZoneAwaited(enumerator, task, htmlContentBuilder, DisplayAsync);
+                }
+
+                htmlContentBuilder.AppendHtml(task.Result);
+            }
+
+            return Task.FromResult<IHtmlContent>(htmlContentBuilder);
+        }
+        finally
+        {
+            if (disposeEnumerator)
+            {
+                enumerator.Dispose();
+            }
         }
 
-        return htmlContentBuilder;
+        static async Task<IHtmlContent> ZoneAwaited(IEnumerator<object> enumerator, Task<IHtmlContent> task, HtmlContentBuilder htmlContentBuilder, IDisplayHelper displayAsync)
+        {
+            using (enumerator)
+            {
+                while (true)
+                {
+                    htmlContentBuilder.AppendHtml(await task);
+
+                    if (!enumerator.MoveNext())
+                    {
+                        return htmlContentBuilder;
+                    }
+
+                    var item = enumerator.Current;
+
+                    task = displayAsync.ShapeExecuteAsync((IShape)item);
+                }
+            }
+        }
     }
 
     [Shape]
 #pragma warning disable CA1822 // Mark members as static
-    public async Task<IHtmlContent> ContentZone(IDisplayHelper DisplayAsync, dynamic Shape, IShapeFactory ShapeFactory)
+    public Task<IHtmlContent> ContentZone(IDisplayHelper DisplayAsync, dynamic Shape, IShapeFactory ShapeFactory)
 #pragma warning restore CA1822 // Mark members as static
     {
         var htmlContentBuilder = new HtmlContentBuilder();
@@ -46,87 +90,135 @@ public class ZoneShapes : IShapeAttributeProvider
         // When there is no grouping metadata on any shapes just render the Zone.
         if (!isGrouped)
         {
-            foreach (var item in shapes)
+            var enumerator = shapes.GetEnumerator();
+            var disposeEnumerator = true;
+
+            try
             {
-                htmlContentBuilder.AppendHtml(await DisplayAsync.ShapeExecuteAsync((IShape)item));
+                while (enumerator.MoveNext())
+                {
+                    var item = enumerator.Current;
+
+                    var task = DisplayAsync.ShapeExecuteAsync((IShape)item);
+
+                    if (!task.IsCompletedSuccessfully)
+                    {
+                        disposeEnumerator = false;
+                        return ContentZoneAwaited(enumerator, task, htmlContentBuilder, DisplayAsync);
+                    }
+
+                    htmlContentBuilder.AppendHtml(task.Result);
+                }
+
+                return Task.FromResult<IHtmlContent>(htmlContentBuilder);
+            }
+            finally
+            {
+                if (disposeEnumerator)
+                {
+                    enumerator.Dispose();
+                }
+            }
+        }
+
+        return ContentZoneGroupedAsync(DisplayAsync, Shape, ShapeFactory, shapes, htmlContentBuilder);
+
+        static async Task<IHtmlContent> ContentZoneAwaited(IEnumerator<object> enumerator, Task<IHtmlContent> task, HtmlContentBuilder htmlContentBuilder, IDisplayHelper displayAsync)
+        {
+            using (enumerator)
+            {
+                while (true)
+                {
+                    htmlContentBuilder.AppendHtml(await task);
+
+                    if (!enumerator.MoveNext())
+                    {
+                        return htmlContentBuilder;
+                    }
+
+                    var item = enumerator.Current;
+
+                    task = displayAsync.ShapeExecuteAsync((IShape)item);
+                }
+            }
+        }
+
+        static async Task<IHtmlContent> ContentZoneGroupedAsync(IDisplayHelper displayAsync, dynamic shape, IShapeFactory shapeFactory, IEnumerable<object> shapes, HtmlContentBuilder htmlContentBuilder)
+        {
+            var identifier = shape.Identifier ?? string.Empty;
+
+            var groupings = shapes.ToLookup(shape =>
+            {
+                if (shape is IShape s)
+                {
+                    var tabGrouping = s.Metadata.TabGrouping;
+                    if (!tabGrouping.HasValue)
+                    {
+                        return ContentKey;
+                    }
+
+                    return tabGrouping.Name;
+                }
+
+                return ContentKey;
+            });
+
+            // Process Tabs first, then Cards, then Columns.
+            if (groupings.Count > 1)
+            {
+                var orderedGroupings = groupings.OrderBy(grouping =>
+                {
+                    var firstGroupWithModifier = grouping.FirstOrDefault(group => group is IShape shape &&
+                        !string.IsNullOrEmpty(shape.Metadata.TabGrouping.Position));
+
+                    if (firstGroupWithModifier is IShape shape)
+                    {
+                        return shape.Metadata.TabGrouping.Position;
+                    }
+
+                    return null;
+                }, FlatPositionComparer.Instance).ToArray();
+
+                var container = await shapeFactory.CreateAsync<GroupingsViewModel>("TabContainer", m =>
+                {
+                    m.Identifier = identifier;
+                    m.Groupings = orderedGroupings;
+                });
+
+                container.Classes.Add("accordion");
+
+                foreach (var orderedGrouping in orderedGroupings)
+                {
+                    var groupingShape = await shapeFactory.CreateAsync<GroupingViewModel>("Tab", m =>
+                    {
+                        m.Identifier = identifier;
+                        m.Grouping = orderedGrouping;
+                    });
+
+                    foreach (var item in orderedGrouping)
+                    {
+                        await groupingShape.AddAsync(item);
+                    }
+
+                    await container.AddAsync(groupingShape);
+                }
+
+                htmlContentBuilder.AppendHtml(await displayAsync.ShapeExecuteAsync(container));
+            }
+            else if (groupings.Count == 1)
+            {
+                // Evaluate for cards.
+                var cardGrouping = await shapeFactory.CreateAsync<GroupingViewModel>("CardGrouping", m =>
+                {
+                    m.Identifier = identifier;
+                    m.Grouping = groupings.ElementAt(0);
+                });
+
+                htmlContentBuilder.AppendHtml(await displayAsync.ShapeExecuteAsync(cardGrouping));
             }
 
             return htmlContentBuilder;
         }
-
-        var identifier = Shape.Identifier ?? string.Empty;
-
-        var groupings = shapes.ToLookup(shape =>
-        {
-            if (shape is IShape s)
-            {
-                var tabGrouping = s.Metadata.TabGrouping;
-                if (!tabGrouping.HasValue)
-                {
-                    return ContentKey;
-                }
-
-                return tabGrouping.Name;
-            }
-
-            return ContentKey;
-        });
-
-        // Process Tabs first, then Cards, then Columns.
-        if (groupings.Count > 1)
-        {
-            var orderedGroupings = groupings.OrderBy(grouping =>
-            {
-                var firstGroupWithModifier = grouping.FirstOrDefault(group => group is IShape shape &&
-                    !string.IsNullOrEmpty(shape.Metadata.TabGrouping.Position));
-
-                if (firstGroupWithModifier is IShape shape)
-                {
-                    return shape.Metadata.TabGrouping.Position;
-                }
-
-                return null;
-            }, FlatPositionComparer.Instance).ToArray();
-
-            var container = await ShapeFactory.CreateAsync<GroupingsViewModel>("TabContainer", m =>
-            {
-                m.Identifier = identifier;
-                m.Groupings = orderedGroupings;
-            });
-
-            container.Classes.Add("accordion");
-
-            foreach (var orderedGrouping in orderedGroupings)
-            {
-                var groupingShape = await ShapeFactory.CreateAsync<GroupingViewModel>("Tab", m =>
-                {
-                    m.Identifier = identifier;
-                    m.Grouping = orderedGrouping;
-                });
-
-                foreach (var item in orderedGrouping)
-                {
-                    await groupingShape.AddAsync(item);
-                }
-
-                await container.AddAsync(groupingShape);
-            }
-
-            htmlContentBuilder.AppendHtml(await DisplayAsync.ShapeExecuteAsync(container));
-        }
-        else if (groupings.Count == 1)
-        {
-            // Evaluate for cards.
-            var cardGrouping = await ShapeFactory.CreateAsync<GroupingViewModel>("CardGrouping", m =>
-            {
-                m.Identifier = identifier;
-                m.Grouping = groupings.ElementAt(0);
-            });
-
-            htmlContentBuilder.AppendHtml(await DisplayAsync.ShapeExecuteAsync(cardGrouping));
-        }
-
-        return htmlContentBuilder;
     }
 
     [Shape]
