@@ -50,6 +50,7 @@ public static class UsersServiceCollectionExtensions
         services.AddIndexProvider<UserByLoginInfoIndexProvider>();
         services.AddIndexProvider<UserByClaimIndexProvider>();
 
+        services.AddScoped<IPasswordAuthenticationTimingService, PasswordAuthenticationTimingService>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IUserClaimsPrincipalFactory<IUser>, DefaultUserClaimsPrincipalProviderFactory>();
         services.AddScoped<IUserEventHandler, UserDisabledEventHandler>();

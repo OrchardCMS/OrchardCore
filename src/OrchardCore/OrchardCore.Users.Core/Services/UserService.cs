@@ -16,6 +16,7 @@ namespace OrchardCore.Users.Services;
 /// </summary>
 public sealed class UserService : IUserService
 {
+    private readonly IPasswordAuthenticationTimingService _passwordAuthenticationTimingService;
     private readonly SignInManager<IUser> _signInManager;
     private readonly UserManager<IUser> _userManager;
     private readonly IdentityOptions _identityOptions;
@@ -29,6 +30,7 @@ public sealed class UserService : IUserService
     internal readonly IStringLocalizer S;
 
     public UserService(
+        IPasswordAuthenticationTimingService passwordAuthenticationTimingService,
         SignInManager<IUser> signInManager,
         UserManager<IUser> userManager,
         IOptions<IdentityOptions> identityOptions,
@@ -40,6 +42,7 @@ public sealed class UserService : IUserService
         ILogger<UserService> logger,
         IStringLocalizer<UserService> stringLocalizer)
     {
+        _passwordAuthenticationTimingService = passwordAuthenticationTimingService;
         _signInManager = signInManager;
         _userManager = userManager;
         _identityOptions = identityOptions.Value;
@@ -77,6 +80,7 @@ public sealed class UserService : IUserService
         var user = await GetUserAsync(usernameOrEmail);
         if (user == null)
         {
+            await _passwordAuthenticationTimingService.MitigateUnknownUserAsync(password);
             reportError(string.Empty, S["The specified username/password couple is invalid."]);
             return null;
         }
@@ -85,11 +89,13 @@ public sealed class UserService : IUserService
 
         if (result.IsLockedOut)
         {
+            await _passwordAuthenticationTimingService.DelayFailedAuthenticationAsync();
             reportError(string.Empty, S["The user is locked out."]);
             return null;
         }
         else if (result.IsNotAllowed)
         {
+            await _passwordAuthenticationTimingService.DelayFailedAuthenticationAsync();
             reportError(string.Empty, S["The specified user is not allowed to sign in."]);
             return null;
         }
@@ -100,11 +106,12 @@ public sealed class UserService : IUserService
         }
         else if (!result.Succeeded)
         {
+            await _passwordAuthenticationTimingService.DelayFailedAuthenticationAsync();
             reportError(string.Empty, S["The specified username/password couple is invalid."]);
             return null;
         }
 
-        if (!(user as User).IsEnabled)
+        if (user is User u && !u.IsEnabled)
         {
             reportError(string.Empty, S["The specified user is not allowed to sign in."]);
 

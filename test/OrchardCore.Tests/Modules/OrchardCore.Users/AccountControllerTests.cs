@@ -474,6 +474,27 @@ public class AccountControllerTests
     }
 
     [Fact]
+    public async Task Login_WhenUsernameIsInvalid_ReturnsGenericError()
+    {
+        // Arrange
+        var context = await GetSiteContextAsync(new RegistrationSettings());
+
+        var loginGet = await context.Client.GetAsync("Login", TestContext.Current.CancellationToken);
+        Assert.True(loginGet.IsSuccessStatusCode);
+
+        // Act
+        var loginPost = await context.Client.SendAsync(await CreateLoginRequestMessageAsync("missing-user", "Password1!", loginGet), TestContext.Current.CancellationToken);
+        var body = await loginPost.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+
+        // Assert
+        Assert.True(loginPost.IsSuccessStatusCode);
+        Assert.Contains("Invalid login attempt.", body);
+
+        var cookies = CookiesHelper.ExtractCookies(loginPost);
+        Assert.DoesNotContain("orchauth_" + context.TenantName, cookies.Keys);
+    }
+
+    [Fact]
     public async Task Login_WhenUserDisabledUnderModeration_DefersToModerationHandler()
     {
         // Arrange
