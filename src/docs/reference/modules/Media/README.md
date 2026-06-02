@@ -551,41 +551,31 @@ A middleware component returns a 404 NotFound response for unauthenticated acces
 
 The `Cache-Control` header for secured files is set to `no-store` by default, preventing their caching. This can be changed with the `MaxSecureFilesBrowserCacheDays` configuration, [see above](#configuration).
 
-### Restricting Media Access Per Field Using Folders
+### Standard Editor vs. Attached Editor
 
-When using the Secure Media feature with the **Attached** media field editor, you can configure a specific upload folder for the field. This ensures all files uploaded through that field are stored in a designated folder, enabling folder-based permission control.
+Media Fields support two common editing patterns with different storage and authorization behavior.
 
-#### Configuration
+#### Standard editor
 
-1. Add a Media Field to your content type.
-2. Set the editor to **Attached**.
-3. In the editor settings, specify an **Upload folder** name (e.g., `confidential-reports`).
+The **Standard** editor is the default editor. It doesn't upload files into a content-item-specific folder. Instead, it lets editors select files that already exist in the Media Library.
 
-When an upload folder is configured, all files uploaded via that field will be stored in the specified folder instead of the default `mediafields/{ContentType}/{ContentItemId}/` path.
+When the **Secure Media** feature is enabled, access to those files is governed by media folder permissions such as the root media permission, first-level folder permissions, and the own/others media permissions where applicable.
 
-#### Example: Restricting Documents by Content Type
+Use the **Standard** editor when you want multiple content items to reference shared media library assets.
 
-Suppose you have two content types:
+#### Attached editor
 
-- **PublicArticle** with a Media Field for public images.
-- **InternalReport** with a Media Field for confidential documents.
+Unlike the **Standard** editor, the **Attached** editor uploads files as part of the content item editing flow. Orchard Core stores those files under:
 
-To restrict access to the internal documents:
+`mediafields/{ContentType}/{ContentItemId}/`
 
-1. Edit the **InternalReport** content type's Media Field.
-2. Set the editor to **Attached** and configure the upload folder to `internal-reports`.
-3. Enable the **Secure Media** feature.
-4. In the Roles admin, grant the `View media content in folder 'internal-reports'` permission only to roles that should access internal reports (e.g., `Manager`).
-5. For the **PublicArticle** Media Field, either leave the folder empty (files go to the default path under `mediafields/`) or set a folder like `public-images` and grant the view permission to `Anonymous`.
+For new uploads, the stored file name is hash-based, while cloned content items copy the files into the cloned item's own `mediafields/{ContentType}/{ContentItemId}/` folder.
 
-This way, users with the `Agent` role who can view Public Articles will not be able to access media uploaded to the `internal-reports` folder, even if they obtain the URL.
+When the **Secure Media** feature is enabled, files under `mediafields/` automatically inherit the `ViewContent` permission of the associated content item. In other words, access to an attached file follows access to the content item that owns it.
 
-#### Notes
+This means you don't need to grant separate folder permissions for attached uploads. If a user can't view the content item, Secure Media also prevents access to the attached file URL.
 
-- The folder name is sanitized to prevent invalid characters, path traversal, and reserved names.
-- Reserved folder names (`_Users`, `mediafields`) cannot be used.
-- The folder is automatically created in the media store when the first file is uploaded.
-- When a content item is cloned, files are copied to the same configured folder (they share the folder by design).
+Use the **Attached** editor when the file should belong to a specific content item and automatically follow that item's `ViewContent` permission.
 
 ## File Upload Limit
 

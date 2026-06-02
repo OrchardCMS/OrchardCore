@@ -4,7 +4,6 @@ using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Media.Fields;
 using OrchardCore.Media.Services;
-using OrchardCore.Media.Settings;
 
 namespace OrchardCore.Media.Handlers;
 
@@ -23,8 +22,7 @@ public class AttachedMediaFieldHandler : ContentFieldHandler<MediaField>
         {
             var mediaFieldNodePath = (field.Content.Node as JsonNode).GetPath();
 
-            var attachedSettings = context.ContentPartFieldDefinition.GetSettings<MediaFieldAttachedEditorSettings>();
-            var updatedPaths = await _attachedMediaFieldFileService.CopyFilesAsync(field.Paths, context.CloneContentItem, attachedSettings?.Folder);
+            var updatedPaths = await _attachedMediaFieldFileService.CopyFilesAsync(field.Paths, context.CloneContentItem);
 
             var mediaFieldNode = (context.CloneContentItem.Content as JsonDynamicObject).SelectNode(mediaFieldNodePath);
 
