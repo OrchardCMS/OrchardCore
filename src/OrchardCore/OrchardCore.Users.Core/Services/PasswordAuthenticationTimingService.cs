@@ -6,6 +6,10 @@ namespace OrchardCore.Users.Services;
 
 public sealed class PasswordAuthenticationTimingService : IPasswordAuthenticationTimingService
 {
+    // These are intentionally just a bounded jitter window, not protocol-defined magic numbers.
+    // The goal is to add enough variance on failed password authentication to make username-based
+    // timing differences harder to measure, without adding an excessive delay that would noticeably
+    // degrade the user experience for normal failed logins.
     private static readonly TimeSpan _minimumDelay = TimeSpan.FromMilliseconds(175);
     private static readonly TimeSpan _maximumDelay = TimeSpan.FromMilliseconds(425);
 
