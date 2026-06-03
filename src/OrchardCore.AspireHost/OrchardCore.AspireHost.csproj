@@ -13,7 +13,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../OrchardCore.Cms.Web/OrchardCore.Cms.Web.csproj" />
+    <ProjectReference Include="../OrchardCore.Cms.Web/OrchardCore.Cms.Web.csproj"
+                      ReferenceOutputAssembly="false"
+                      SkipGetTargetFrameworkProperties="true"
+                      SetTargetFramework="TargetFramework=$(DefaultTargetFramework)" />
   </ItemGroup>
 
 </Project>
