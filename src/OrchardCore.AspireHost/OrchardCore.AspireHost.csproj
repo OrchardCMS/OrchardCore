@@ -1,7 +1,8 @@
 ﻿<Project Sdk="Aspire.AppHost.Sdk/13.4.1">
 
   <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
+    <TargetFramework Condition="'$(DefaultTargetFramework)' == ''">net10.0</TargetFramework>
+    <TargetFrameworks>$(CommonTargetFrameworks)</TargetFrameworks>
     <OutputType>Exe</OutputType>
     <IsAspireHost>true</IsAspireHost>
     <IsPackable>false</IsPackable>
