@@ -4,7 +4,7 @@ Here you can find some guidelines and graphic assets for Orchard Core's branding
 
 # Branding Guidelines
 
-When referring to Orchard Core please use one of the logo variations, without altering anything apart from the resolution (so don't change the colors, aspect ratio, graphics, or anything else). Further information on how to use these assets and colors see the [Branding Guidelines (PDF)](assets/orchard-core-branding-guidelines.pdf) (and [here's the AI version](assets/orchard-core-branding-guidelines.ai)).
+When referring to Orchard Core, please use one of the logo variations, without altering anything apart from the resolution (so don't change the colors, aspect ratio, graphics, or anything else). For further information on how to use these assets and colors, see the [Branding Guidelines (PDF)](assets/orchard-core-branding-guidelines.pdf) (and [here's the AI version](assets/orchard-core-branding-guidelines.ai)).
 
 # Logo Variations
 
@@ -32,7 +32,7 @@ Other formats:
 
 ## Light Logo
 
-The background of this logo in the below display is set to black so it's actually visible but otherwise it has a transparent background.
+The background of this logo in the display below is set to black so it's actually visible, but otherwise it has a transparent background.
 
 <img src="assets/logo/light/orchard-core-logo-light.png" alt="Light Orchard Core logo" style="background-color: #000;">
 
@@ -65,7 +65,7 @@ Other formats:
 
 ## Light Symbol Logo
 
-The background of this logo in the below display is set to black so it's actually visible but otherwise it has a transparent background.
+The background of this logo in the display below is set to black so it's actually visible, but otherwise it has a transparent background.
 
 <img src="assets/logo/symbol/light/orchard-core-symbol-logo-light.png" alt="Light Orchard Core symbol logo" style="background-color: #000;">
 
