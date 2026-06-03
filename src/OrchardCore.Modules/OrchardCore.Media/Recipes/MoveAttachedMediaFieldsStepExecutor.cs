@@ -79,7 +79,7 @@ public sealed class MoveAttachedMediaFieldsStepExecutor
 
     private async Task ProcessContentTypeAsync(string contentType, AttachedMediaFieldDefinition[] attachedFields)
     {
-        var documentId = 0l;
+        var documentId = 0L;
 
         for (var skip = 0; ; skip += BatchSize)
         {
