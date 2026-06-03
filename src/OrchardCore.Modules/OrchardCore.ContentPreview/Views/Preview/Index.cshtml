@@ -29,25 +29,18 @@
     let iframe = document.getElementById('iframe');
     let previewRenderTimer = null, previewRendering, previewRenderData, initialized, renderPreviewUrl;
 
-    function setIframeTheme(win, stored, value) {
-        var resolved = value;
-        if (value === 'auto') {
-            resolved = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-        }
-
+    function setIframeTheme(win, storageKey, value) {
+        var resolved = value === 'auto'
+            ? window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+            : value;
+        if (storageKey) localStorage.setItem(storageKey, value);
         document.documentElement.setAttribute('data-bs-theme', resolved);
         win.document.documentElement.setAttribute('data-bs-theme', resolved);
-
-        if (stored) {
-            localStorage.setItem(stored, value);
-        }
-
         win.document.querySelectorAll('[data-bs-theme-value]').forEach(function (btn) {
             var isActive = btn.getAttribute('data-bs-theme-value') === value;
             btn.classList.toggle('active', isActive);
             btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
         });
-
         var activeIcon = win.document.querySelector('.theme-icon-active');
         if (activeIcon) {
             var activeBtn = win.document.querySelector('[data-bs-theme-value="' + value + '"]');
@@ -60,27 +53,15 @@
 
     function setupIframeTheme(win) {
         if (!win || !win.document || !win.document.documentElement) return;
-
         var tenant = document.documentElement.getAttribute('data-tenant') || 'Default';
         var storageKey = tenant + '-theme';
         var stored = localStorage.getItem(storageKey);
-        var initial = stored || 'auto';
-
-        setIframeTheme(win, null, initial);
-
+        setIframeTheme(win, null, stored || 'auto');
         win.document.addEventListener('click', function (ev) {
             var toggle = ev.target.closest('[data-bs-theme-value]');
             if (!toggle) return;
-
             var value = toggle.getAttribute('data-bs-theme-value');
-            if (!value) return;
-
-            setIframeTheme(win, storageKey, value);
-
-            var themeSwitcher = win.document.getElementById('bd-theme');
-            if (themeSwitcher) {
-                themeSwitcher.focus();
-            }
+            if (value) setIframeTheme(win, storageKey, value);
         });
     }
 
@@ -131,7 +112,7 @@
                 iframe.contentWindow.document.open();
                 iframe.contentWindow.document.write(previewRenderData);
                 iframe.contentWindow.document.close();
-                setupIframeTheme(iframe.contentWindow);
+                setupIframeTheme(this.contentWindow);
             }
             initialized = true;
         }
@@ -162,10 +143,11 @@
                         iframe.contentWindow.document.open();
                         iframe.contentWindow.document.write(data);
                         iframe.contentWindow.document.close();
-                        setupIframeTheme(iframe.contentWindow);
                         previewRenderData = data;
+                        setupIframeTheme(iframe.contentWindow);
                     }
                     $(serverErrorWarning).hide();
+                    previewRendering = false;
                 })
                 .fail(function (data) {
                     if (data.responseJSON && data.responseJSON.errors) {
