@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using OpenIddict.Abstractions;
 using OpenIddict.Server.AspNetCore;
 using OrchardCore.Modules;
+using OrchardCore.OpenId.Abstractions.Handlers;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 
 namespace OrchardCore.OpenId.Controllers;
@@ -16,6 +17,13 @@ namespace OrchardCore.OpenId.Controllers;
 [Feature(OpenIdConstants.Features.Server), SkipStatusCodePages]
 public sealed class UserInfoController : Controller
 {
+    private readonly IEnumerable<IUserInfoClaimsProvider> _providers;
+
+    public UserInfoController(IEnumerable<IUserInfoClaimsProvider> providers)
+    {
+        _providers = providers;
+    }
+
     // GET/POST: /connect/userinfo
     [AcceptVerbs("GET", "POST")]
     [IgnoreAntiforgeryToken]
@@ -152,6 +160,12 @@ public sealed class UserInfoController : Controller
 
         // Note: the complete list of standard claims supported by the OpenID Connect specification
         // can be found here: http://openid.net/specs/openid-connect-core-1_0.html#StandardClaims
+
+        var context = new UserInfoClaimsContext(principal, claims);
+        foreach (var provider in _providers)
+        {
+            await provider.PopulateAsync(context);
+        }
 
         return Ok(claims);
     }
