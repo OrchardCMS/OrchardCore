@@ -52,9 +52,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\OrchardCore.Cms.Web\OrchardCore.Cms.Web.csproj" />
+    <ProjectReference Include="..\..\src\OrchardCore.Modules\OrchardCore.Antivirus.ClamAV\OrchardCore.Antivirus.ClamAV.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore.Modules\OrchardCore.DynamicCache\OrchardCore.DynamicCache.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Apis.GraphQL.Abstractions\OrchardCore.Apis.GraphQL.Abstractions.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Apis.GraphQL.Client\OrchardCore.Apis.GraphQL.Client.csproj" />
+    <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Media.Core\OrchardCore.Media.Core.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.SourceGenerators\OrchardCore.SourceGenerators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
 

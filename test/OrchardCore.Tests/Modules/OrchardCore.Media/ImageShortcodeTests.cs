@@ -46,6 +46,7 @@ public class ImageShortcodeTests
             cdnBaseUrl,
             [],
             [],
+            new NullAntivirusScanner(),
             Mock.Of<ILogger<DefaultMediaFileStore>>());
 
         var fileVersionProvider = Mock.Of<IFileVersionProvider>();

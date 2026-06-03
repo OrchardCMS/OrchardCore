@@ -17,6 +17,7 @@ public class DefaultMediaFileStore : IMediaFileStore
     private readonly string _cdnBaseUrl;
     private readonly IEnumerable<IMediaEventHandler> _mediaEventHandlers;
     private readonly IEnumerable<IMediaCreatingEventHandler> _mediaCreatingEventHandlers;
+    private readonly IAntivirusScanner _antivirusScanner;
     private readonly ILogger _logger;
 
     private bool _requestBasePathValidated;
@@ -27,6 +28,7 @@ public class DefaultMediaFileStore : IMediaFileStore
         string cdnBaseUrl,
         IEnumerable<IMediaEventHandler> mediaEventHandlers,
         IEnumerable<IMediaCreatingEventHandler> mediaCreatingEventHandlers,
+        IAntivirusScanner antivirusScanner,
         ILogger<DefaultMediaFileStore> logger)
     {
         _fileStore = fileStore;
@@ -39,6 +41,7 @@ public class DefaultMediaFileStore : IMediaFileStore
 
         _mediaEventHandlers = mediaEventHandlers;
         _mediaCreatingEventHandlers = mediaCreatingEventHandlers;
+        _antivirusScanner = antivirusScanner;
         _logger = logger;
     }
 
@@ -192,6 +195,15 @@ public class DefaultMediaFileStore : IMediaFileStore
                     }
                 }
 
+                var scannedStream = await ScanAsync(context.Path, outputStream);
+
+                if (scannedStream != outputStream && outputStream != inputStream)
+                {
+                    outputStream.Dispose();
+                }
+
+                outputStream = scannedStream;
+
                 await ValidateAvailableStorageAsync(outputStream.Length);
 
                 return await _fileStore.CreateFileFromStreamAsync(context.Path, outputStream, overwrite);
@@ -204,9 +216,21 @@ public class DefaultMediaFileStore : IMediaFileStore
         }
         else
         {
-            await ValidateAvailableStorageAsync(inputStream.Length);
+            var scannedStream = await ScanAsync(path, inputStream);
 
-            return await _fileStore.CreateFileFromStreamAsync(path, inputStream, overwrite);
+            try
+            {
+                await ValidateAvailableStorageAsync(scannedStream.Length);
+
+                return await _fileStore.CreateFileFromStreamAsync(path, scannedStream, overwrite);
+            }
+            finally
+            {
+                if (scannedStream != inputStream)
+                {
+                    scannedStream.Dispose();
+                }
+            }
         }
     }
 
@@ -261,5 +285,66 @@ public class DefaultMediaFileStore : IMediaFileStore
                 $"storage space, but only {FileSizeHelpers.FormatAsBytes(storageLimit)} is available. Try uploading " +
                 $"a file that fits the available space, or delete some unnecessary files.");
         }
+    }
+
+    private async Task<Stream> ScanAsync(string path, Stream stream)
+    {
+        if (_antivirusScanner is NullAntivirusScanner)
+        {
+            return stream;
+        }
+
+        var scanStream = stream;
+
+        if (scanStream.CanSeek)
+        {
+            scanStream.Position = 0;
+        }
+        else
+        {
+            scanStream = await CreateTemporarySeekableStreamAsync(scanStream);
+        }
+
+        try
+        {
+            var result = await _antivirusScanner.ScanAsync(
+                new AntivirusScanContext(path, scanStream.Length),
+                scanStream);
+
+            if (!result.IsClean)
+            {
+                throw new AntivirusScanningException(result.Message ?? $"The uploaded file '{Path.GetFileName(path)}' was rejected by the anti-virus scanner.");
+            }
+
+            scanStream.Position = 0;
+
+            return scanStream;
+        }
+        catch
+        {
+            if (scanStream != stream)
+            {
+                scanStream.Dispose();
+            }
+
+            throw;
+        }
+    }
+
+    private static async Task<Stream> CreateTemporarySeekableStreamAsync(Stream stream)
+    {
+        var tempFilePath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+        var tempStream = new FileStream(
+            tempFilePath,
+            FileMode.CreateNew,
+            FileAccess.ReadWrite,
+            FileShare.None,
+            81920,
+            FileOptions.Asynchronous | FileOptions.DeleteOnClose);
+
+        await stream.CopyToAsync(tempStream);
+        tempStream.Position = 0;
+
+        return tempStream;
     }
 }

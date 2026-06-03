@@ -65,6 +65,7 @@
   </Folder>
   <Folder Name="/src/">
     <Project DefaultStartup="true" Path="src/OrchardCore.Cms.Web/OrchardCore.Cms.Web.csproj" />
+    <Project Path="src/OrchardCore.AspireHost/OrchardCore.AspireHost.csproj" />
   </Folder>
   <Folder Name="/src/OrchardCore.Frameworks/">
     <Project Path="src/OrchardCore/OrchardCore.Mvc.Core/OrchardCore.Mvc.Core.csproj" />
@@ -116,6 +117,7 @@
     <Project Path="src/OrchardCore.Modules/OrchardCore.XmlRpc/OrchardCore.XmlRpc.csproj" />
   </Folder>
   <Folder Name="/src/OrchardCore.Modules/">
+    <Project Path="src/OrchardCore.Modules/OrchardCore.Antivirus.ClamAV/OrchardCore.Antivirus.ClamAV.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Admin/OrchardCore.Admin.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.AdminDashboard/OrchardCore.AdminDashboard.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Apis.GraphQL/OrchardCore.Apis.GraphQL.csproj" />

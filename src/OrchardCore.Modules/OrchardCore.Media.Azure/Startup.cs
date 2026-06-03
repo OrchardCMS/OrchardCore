@@ -95,6 +95,7 @@ public sealed class Startup : Modules.StartupBase
                 var contentTypeProvider = serviceProvider.GetRequiredService<IContentTypeProvider>();
                 var mediaEventHandlers = serviceProvider.GetServices<IMediaEventHandler>();
                 var mediaCreatingEventHandlers = serviceProvider.GetServices<IMediaCreatingEventHandler>();
+                var fileUploadScanner = serviceProvider.GetRequiredService<IAntivirusScanner>();
                 var logger = serviceProvider.GetRequiredService<ILogger<DefaultMediaFileStore>>();
 
                 var fileStore = new BlobFileStore(blobStorageOptions, clock, contentTypeProvider);
@@ -109,7 +110,7 @@ public sealed class Startup : Modules.StartupBase
                     mediaUrlBase = fileStore.Combine(originalPathBase.Value, mediaUrlBase);
                 }
 
-                return new DefaultMediaFileStore(fileStore, mediaUrlBase, mediaOptions.CdnBaseUrl, mediaEventHandlers, mediaCreatingEventHandlers, logger);
+                return new DefaultMediaFileStore(fileStore, mediaUrlBase, mediaOptions.CdnBaseUrl, mediaEventHandlers, mediaCreatingEventHandlers, fileUploadScanner, logger);
             }));
 
             services.AddSingleton<IMediaEventHandler, DefaultMediaFileStoreCacheEventHandler>();

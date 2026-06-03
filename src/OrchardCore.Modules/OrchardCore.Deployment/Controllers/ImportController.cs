@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using OrchardCore.FileStorage;
 using OrchardCore.Admin;
 using OrchardCore.Deployment.Services;
 using OrchardCore.Deployment.ViewModels;
@@ -23,6 +24,7 @@ public sealed class ImportController : Controller
     private readonly IAuthorizationService _authorizationService;
     private readonly INotifier _notifier;
     private readonly ILogger _logger;
+    private readonly IAntivirusScanner _fileUploadScanner;
 
     internal readonly IHtmlLocalizer H;
     internal readonly IStringLocalizer S;
@@ -30,6 +32,7 @@ public sealed class ImportController : Controller
     public ImportController(
         IDeploymentManager deploymentManager,
         IAuthorizationService authorizationService,
+        IAntivirusScanner fileUploadScanner,
         INotifier notifier,
         ILogger<ImportController> logger,
         IHtmlLocalizer<ImportController> htmlLocalizer,
@@ -38,6 +41,7 @@ public sealed class ImportController : Controller
     {
         _deploymentManager = deploymentManager;
         _authorizationService = authorizationService;
+        _fileUploadScanner = fileUploadScanner;
         _notifier = notifier;
         _logger = logger;
         H = htmlLocalizer;
@@ -69,9 +73,12 @@ public sealed class ImportController : Controller
 
             try
             {
+                await using var uploadedStream = importedPackage.OpenReadStream();
+                await using var scannedStream = await CreateScannedStreamAsync(importedPackage.FileName, importedPackage.ContentType, uploadedStream);
+
                 using (var stream = new FileStream(tempArchiveName, FileMode.Create))
                 {
-                    await importedPackage.CopyToAsync(stream);
+                    await scannedStream.CopyToAsync(stream);
                 }
 
                 if (importedPackage.FileName.EndsWith(".zip"))
@@ -185,5 +192,66 @@ public sealed class ImportController : Controller
         }
 
         return View(model);
+    }
+
+    private async Task<Stream> CreateScannedStreamAsync(string fileName, string contentType, Stream stream)
+    {
+        if (_fileUploadScanner is NullAntivirusScanner)
+        {
+            return stream;
+        }
+
+        var scanStream = stream;
+
+        if (scanStream.CanSeek)
+        {
+            scanStream.Position = 0;
+        }
+        else
+        {
+            scanStream = await CreateTemporarySeekableStreamAsync(scanStream);
+        }
+
+        try
+        {
+            var result = await _fileUploadScanner.ScanAsync(
+                new AntivirusScanContext(fileName, scanStream.Length, contentType),
+                scanStream);
+
+            if (!result.IsClean)
+            {
+                throw new AntivirusScanningException(result.Message ?? $"The uploaded file '{fileName}' was rejected by the anti-virus scanner.");
+            }
+
+            scanStream.Position = 0;
+
+            return scanStream;
+        }
+        catch
+        {
+            if (scanStream != stream)
+            {
+                scanStream.Dispose();
+            }
+
+            throw;
+        }
+    }
+
+    private static async Task<Stream> CreateTemporarySeekableStreamAsync(Stream stream)
+    {
+        var tempFilePath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+        var tempStream = new FileStream(
+            tempFilePath,
+            FileMode.CreateNew,
+            FileAccess.ReadWrite,
+            FileShare.None,
+            81920,
+            FileOptions.Asynchronous | FileOptions.DeleteOnClose);
+
+        await stream.CopyToAsync(tempStream);
+        tempStream.Position = 0;
+
+        return tempStream;
     }
 }

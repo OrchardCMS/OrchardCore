@@ -35,6 +35,7 @@ public class AssetUrlShortcodeTests
             cdnBaseUrl,
             [],
             [],
+            new NullAntivirusScanner(),
             Mock.Of<ILogger<DefaultMediaFileStore>>());
 
         var defaultHttpContext = new DefaultHttpContext();

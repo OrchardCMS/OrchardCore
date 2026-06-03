@@ -110,4 +110,8 @@
     <PackageVersion Include="System.IO.Hashing" Version="10.0.8" />
     <PackageVersion Include="System.Text.Json" Version="10.0.8" />
   </ItemGroup>
+  <ItemGroup>
+    <!-- Aspire Packages -->
+    <PackageVersion Include="Aspire.Hosting.AppHost" Version="13.4.1" />
+  </ItemGroup>
 </Project>

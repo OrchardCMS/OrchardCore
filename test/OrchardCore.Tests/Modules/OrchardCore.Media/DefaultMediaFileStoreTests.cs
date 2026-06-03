@@ -21,6 +21,7 @@ public class DefaultMediaFileStoreTests
             "",
             [],
             [],
+            new NullAntivirusScanner(),
             Mock.Of<ILogger<DefaultMediaFileStore>>());
 
         var result = store.MapPathToPublicUrl(path);
@@ -39,6 +40,7 @@ public class DefaultMediaFileStoreTests
             cdnBaseUrl,
             [],
             [],
+            new NullAntivirusScanner(),
             Mock.Of<ILogger<DefaultMediaFileStore>>());
 
         var result = store.MapPathToPublicUrl(path);
@@ -63,6 +65,7 @@ public class DefaultMediaFileStoreTests
             "",
             new List<IMediaEventHandler>(),
             new List<IMediaCreatingEventHandler>(),
+            new NullAntivirusScanner(),
             loggerMock.Object);
 
         // Act
@@ -95,6 +98,7 @@ public class DefaultMediaFileStoreTests
             "",
             new List<IMediaEventHandler>(),
             new[] { handlerMock.Object },
+            new NullAntivirusScanner(),
             loggerMock.Object);
 
         // Act
@@ -135,6 +139,7 @@ public class DefaultMediaFileStoreTests
             "",
             new List<IMediaEventHandler>(),
             new[] { handler1.Object, handler2.Object },
+            new NullAntivirusScanner(),
             loggerMock.Object);
 
         // Act
@@ -175,6 +180,7 @@ public class DefaultMediaFileStoreTests
             "",
             [handler.Object],
             [],
+            new NullAntivirusScanner(),
             loggerMock.Object);
 
         // Act
@@ -187,5 +193,166 @@ public class DefaultMediaFileStoreTests
             "You tried to upload a file that requires 200 B of storage space, but only 150 B is available. Try " +
             "uploading a file that fits the available space, or delete some unnecessary files.";
         Assert.Equal(expectedMessage, exception.Message);
+    }
+
+    [Fact]
+    public async Task CreateFileFromStreamAsync_ScannerResetsStreamBeforeSaving()
+    {
+        var fileStoreMock = new Mock<IFileStore>();
+        var loggerMock = new Mock<ILogger<DefaultMediaFileStore>>();
+        var scannerMock = new Mock<IAntivirusScanner>();
+        var inputStream = new MemoryStream("hello world"u8.ToArray());
+
+        scannerMock
+            .Setup(x => x.ScanAsync(It.IsAny<AntivirusScanContext>(), inputStream))
+            .ReturnsAsync(AntivirusResult.Clean)
+            .Callback<AntivirusScanContext, Stream>((_, stream) =>
+            {
+                while (stream.ReadByte() != -1)
+                {
+                }
+            });
+
+        fileStoreMock
+            .Setup(x => x.CreateFileFromStreamAsync("test.txt", It.IsAny<Stream>(), false))
+            .ReturnsAsync("result")
+            .Callback<string, Stream, bool>((_, stream, _) =>
+            {
+                using var copy = new MemoryStream();
+                stream.CopyTo(copy);
+                Assert.Equal("hello world"u8.ToArray(), copy.ToArray());
+            });
+
+        var store = new DefaultMediaFileStore(
+            fileStoreMock.Object,
+            "",
+            "",
+            [],
+            [],
+            scannerMock.Object,
+            loggerMock.Object);
+
+        await store.CreateFileFromStreamAsync("test.txt", inputStream);
+    }
+
+    [Fact]
+    public async Task CreateFileFromStreamAsync_ScannerRejectsUnsafeFile()
+    {
+        var fileStoreMock = new Mock<IFileStore>(MockBehavior.Strict);
+        var loggerMock = new Mock<ILogger<DefaultMediaFileStore>>();
+        var scannerMock = new Mock<IAntivirusScanner>();
+        var inputStream = new MemoryStream("hello world"u8.ToArray());
+
+        scannerMock
+            .Setup(x => x.ScanAsync(It.IsAny<AntivirusScanContext>(), inputStream))
+            .ReturnsAsync(AntivirusResult.Unsafe("The uploaded file was rejected by the anti-virus scanner.", "EICAR-Test-File"));
+
+        var store = new DefaultMediaFileStore(
+            fileStoreMock.Object,
+            "",
+            "",
+            [],
+            [],
+            scannerMock.Object,
+            loggerMock.Object);
+
+        var exception = await Assert.ThrowsAsync<AntivirusScanningException>(() =>
+            store.CreateFileFromStreamAsync("test.txt", inputStream));
+
+        Assert.Equal("The uploaded file was rejected by the anti-virus scanner.", exception.Message);
+    }
+
+    [Fact]
+    public async Task CreateFileFromStreamAsync_ScannerBuffersNonSeekableStreams()
+    {
+        var fileStoreMock = new Mock<IFileStore>();
+        var loggerMock = new Mock<ILogger<DefaultMediaFileStore>>();
+        var scannerMock = new Mock<IAntivirusScanner>();
+        using var baseStream = new MemoryStream("hello world"u8.ToArray());
+        using var inputStream = new NonSeekableReadStream(baseStream);
+
+        scannerMock
+            .Setup(x => x.ScanAsync(It.IsAny<AntivirusScanContext>(), It.IsAny<Stream>()))
+            .ReturnsAsync(AntivirusResult.Clean)
+            .Callback<AntivirusScanContext, Stream>((_, stream) =>
+            {
+                Assert.True(stream.CanSeek);
+                while (stream.ReadByte() != -1)
+                {
+                }
+            });
+
+        fileStoreMock
+            .Setup(x => x.CreateFileFromStreamAsync("test.txt", It.IsAny<Stream>(), false))
+            .ReturnsAsync("result")
+            .Callback<string, Stream, bool>((_, stream, _) =>
+            {
+                Assert.True(stream.CanSeek);
+
+                using var copy = new MemoryStream();
+                stream.CopyTo(copy);
+                Assert.Equal("hello world"u8.ToArray(), copy.ToArray());
+            });
+
+        var store = new DefaultMediaFileStore(
+            fileStoreMock.Object,
+            "",
+            "",
+            [],
+            [],
+            scannerMock.Object,
+            loggerMock.Object);
+
+        await store.CreateFileFromStreamAsync("test.txt", inputStream);
+    }
+
+    private sealed class NonSeekableReadStream : Stream
+    {
+        private readonly Stream _innerStream;
+
+        public NonSeekableReadStream(Stream innerStream)
+        {
+            _innerStream = innerStream;
+        }
+
+        public override bool CanRead => _innerStream.CanRead;
+
+        public override bool CanSeek => false;
+
+        public override bool CanWrite => false;
+
+        public override long Length => throw new NotSupportedException();
+
+        public override long Position
+        {
+            get => throw new NotSupportedException();
+            set => throw new NotSupportedException();
+        }
+
+        public override void Flush() => _innerStream.Flush();
+
+        public override int Read(byte[] buffer, int offset, int count) => _innerStream.Read(buffer, offset, count);
+
+        public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
+
+        public override void SetLength(long value) => throw new NotSupportedException();
+
+        public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
+
+        public override async ValueTask DisposeAsync()
+        {
+            await _innerStream.DisposeAsync();
+            await base.DisposeAsync();
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _innerStream.Dispose();
+            }
+
+            base.Dispose(disposing);
+        }
     }
 }
