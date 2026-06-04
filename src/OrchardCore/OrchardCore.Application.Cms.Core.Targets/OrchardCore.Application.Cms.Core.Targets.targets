@@ -13,15 +13,19 @@
     </ResolvedFileToPublish>
   </ItemGroup>
 
-  <Target Name="EnsureWwwRootExists" BeforeTargets="Build;Publish">
-    <MakeDir Directories="$(MSBuildProjectDirectory)\wwwroot" />
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
+    <Folder Include="Localization\" />
+  </ItemGroup>
+
+  <Target Name="EnsureRequiredDirectoriesExist" BeforeTargets="Build;Publish">
+    <MakeDir Directories="$(MSBuildProjectDirectory)\wwwroot;$(MSBuildProjectDirectory)\Localization" />
   </Target>
 
   <Target
     Name="CopyPackageTranslationFiles"
     AfterTargets="Build">
     <Message Text="Copying translation files: $(MSBuildProjectName)" Importance="high" />
-    <MakeDir Directories="$(MSBuildProjectDirectory)\Localization" Condition="'@(PackageTranslationFiles)' != ''" />
     <Copy
       SourceFiles="%(PackageTranslationFiles.FullPath)"
       DestinationFolder="Localization\%(RecursiveDir)"
