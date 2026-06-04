@@ -106,20 +106,7 @@ This is the same as `<shape type="MyShape" prop-foo="1" prop-bar="a" prop-conten
 
 You can instruct Orchard Core to write HTML comments around rendered shapes. This makes it easier to determine which Razor or Liquid template produced a specific fragment in the final page output.
 
-Enable it during startup:
-
-```csharp
-services
-    .AddOrchardCms()
-    .EnableShapeDebugInformation();
-```
-
-You can also enable it directly through options:
-
-```csharp
-services.Configure<ShapeRenderingOptions>(options =>
-    options.WriteShapeDebugInformation = true);
-```
+Enable it per site from **Settings** -> **Debugging** by checking **Write shape debug information**. The setting is disabled by default.
 
 When enabled, rendered shapes are wrapped with comments similar to the following:
 
