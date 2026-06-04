@@ -19,9 +19,9 @@ public static class NotifierExtensions
     /// <seealso cref="INotifier.AddAsync(NotifyType, LocalizedHtmlString, NotifyContext)"/>
     /// <param name="notifier">The <see cref="INotifier"/>.</param>
     /// <param name="message">A localized message to display.</param>
-    /// <param name="milliseconds">The auto-dismiss delay in milliseconds.</param>
-    public static ValueTask InformationAsync(this INotifier notifier, LocalizedHtmlString message, int milliseconds)
-        => notifier.AddAsync(NotifyType.Information, message, new NotifyContext { Milliseconds = milliseconds });
+    /// <param name="dismissalMilliseconds">The auto-dismiss delay in milliseconds.</param>
+    public static ValueTask InformationAsync(this INotifier notifier, LocalizedHtmlString message, int dismissalMilliseconds)
+        => notifier.AddAsync(NotifyType.Information, message, new NotifyContext { DismissalMilliseconds = dismissalMilliseconds });
 
     /// <summary>
     /// Adds a new UI notification of type Warning.
@@ -38,9 +38,9 @@ public static class NotifierExtensions
     /// <seealso cref="INotifier.AddAsync(NotifyType, LocalizedHtmlString, NotifyContext)"/>
     /// <param name="notifier">The <see cref="INotifier"/>.</param>
     /// <param name="message">A localized message to display.</param>
-    /// <param name="milliseconds">The auto-dismiss delay in milliseconds.</param>
-    public static ValueTask WarningAsync(this INotifier notifier, LocalizedHtmlString message, int milliseconds)
-        => notifier.AddAsync(NotifyType.Warning, message, new NotifyContext { Milliseconds = milliseconds });
+    /// <param name="dismissalMilliseconds">The auto-dismiss delay in milliseconds.</param>
+    public static ValueTask WarningAsync(this INotifier notifier, LocalizedHtmlString message, int dismissalMilliseconds)
+        => notifier.AddAsync(NotifyType.Warning, message, new NotifyContext { DismissalMilliseconds = dismissalMilliseconds });
 
     /// <summary>
     /// Adds a new UI notification of type Error.
@@ -57,9 +57,9 @@ public static class NotifierExtensions
     /// <seealso cref="INotifier.AddAsync(NotifyType, LocalizedHtmlString, NotifyContext)"/>
     /// <param name="notifier">The <see cref="INotifier"/>.</param>
     /// <param name="message">A localized message to display.</param>
-    /// <param name="milliseconds">The auto-dismiss delay in milliseconds.</param>
-    public static ValueTask ErrorAsync(this INotifier notifier, LocalizedHtmlString message, int milliseconds)
-        => notifier.AddAsync(NotifyType.Error, message, new NotifyContext { Milliseconds = milliseconds });
+    /// <param name="dismissalMilliseconds">The auto-dismiss delay in milliseconds.</param>
+    public static ValueTask ErrorAsync(this INotifier notifier, LocalizedHtmlString message, int dismissalMilliseconds)
+        => notifier.AddAsync(NotifyType.Error, message, new NotifyContext { DismissalMilliseconds = dismissalMilliseconds });
 
     /// <summary>
     /// Adds a new UI notification of type Success.
@@ -68,7 +68,7 @@ public static class NotifierExtensions
     /// <param name="notifier">The <see cref="INotifier"/>.</param>
     /// <param name="message">A localized message to display.</param>
     public static ValueTask SuccessAsync(this INotifier notifier, LocalizedHtmlString message)
-        => notifier.AddAsync(NotifyType.Success, message, new NotifyContext { Milliseconds = 5000 });
+        => notifier.AddAsync(NotifyType.Success, message, new NotifyContext { DismissalMilliseconds = 5000 });
 
     /// <summary>
     /// Adds a new UI notification of type Success with an auto-dismiss delay.
@@ -76,7 +76,7 @@ public static class NotifierExtensions
     /// <seealso cref="INotifier.AddAsync(NotifyType, LocalizedHtmlString, NotifyContext)"/>
     /// <param name="notifier">The <see cref="INotifier"/>.</param>
     /// <param name="message">A localized message to display.</param>
-    /// <param name="milliseconds">The auto-dismiss delay in milliseconds.</param>
-    public static ValueTask SuccessAsync(this INotifier notifier, LocalizedHtmlString message, int milliseconds)
-        => notifier.AddAsync(NotifyType.Success, message, new NotifyContext { Milliseconds = milliseconds });
+    /// <param name="dismissalMilliseconds">The auto-dismiss delay in milliseconds.</param>
+    public static ValueTask SuccessAsync(this INotifier notifier, LocalizedHtmlString message, int dismissalMilliseconds)
+        => notifier.AddAsync(NotifyType.Success, message, new NotifyContext { DismissalMilliseconds = dismissalMilliseconds });
 }

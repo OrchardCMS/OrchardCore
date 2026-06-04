@@ -27,7 +27,7 @@ public class Notifier : INotifier
         {
             Type = type,
             Message = message,
-            Milliseconds = context?.Milliseconds,
+            DismissalMilliseconds = context?.DismissalMilliseconds,
         });
 
         return ValueTask.CompletedTask;
