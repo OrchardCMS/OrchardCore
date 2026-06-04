@@ -9,3 +9,16 @@
   border: none;
   padding: 0;
 }
+
+#menu ol.menu-item-links:empty {
+  margin: 0;
+  padding: 0;
+  min-height: 0;
+}
+
+body.menu-dragging #menu ol.menu-item-links:empty {
+  min-height: 1.5rem;
+  margin-left: 1.5rem;
+  border: 1px dashed var(--bs-border-color, #ccc);
+  border-radius: 0.25rem;
+}
