@@ -10,8 +10,8 @@
     The shape is created from MenuPartDisplayDriver
 *@
 
-<script asp-src="~/OrchardCore.Menu/Scripts/menu.js" at="Foot" depends-on="jQuery-ui"></script>
-<style asp-src="~/OrchardCore.Menu/Styles/menu.min.css" debug-src="~/OrchardCore.Menu/Styles/menu.css" depends-on="jQuery-ui"></style>
+<script asp-src="~/OrchardCore.Menu/Scripts/menu.js" at="Foot" depends-on="Sortable"></script>
+<style asp-src="~/OrchardCore.Menu/Styles/menu.min.css" debug-src="~/OrchardCore.Menu/Styles/menu.css"></style>
 @using OrchardCore.ContentManagement.Metadata.Settings
 
 @{
@@ -34,7 +34,7 @@
         </div>
         @if (items.Count > 0)
         {
-            <ol id="menu" class="list-group mt-3">
+            <ol id="menu" class="list-group mt-3" data-hierarchy-input="@Html.IdFor(m => m.Hierarchy)" data-leave-message="@T["You have reordered the navigation."]">
                 @foreach (var menuItem in items)
                 {
                     if (Model.MenuItemContentTypes.Any(c => c.Name == menuItem.ContentType))
@@ -82,11 +82,9 @@
 </div>
 
 <input asp-for="Hierarchy" type="hidden" value="" />
-<div id="msg-leave" style="display:none" data>@T["You have reordered the navigation."]</div>
 
 <script at="Foot">
     var menuItemId;
-    var confirmLeave;
 
     $('#modalMenuItems').on('show.bs.modal', function (event) {
         var button = $(event.relatedTarget) // Button that triggered the modal
@@ -101,29 +99,5 @@
             href += '&menuitemid=' + menuItemId;
             link.attr('href', href);
         }
-    });
-
-    $(function () {
-        $('#menu')
-            .nestedSortable({
-                handle: 'div.menu-item-title',
-                items: 'li.menu-item',
-                toleranceElement: '> div.menu-item-title',
-                relocate: function () {
-                    confirmLeave = true;
-                    $('#@Html.IdFor(m => m.Hierarchy)').attr('value', JSON.stringify($('#menu').nestedSortable('toHierarchy')));
-                }
-            });
-
-        window.onbeforeunload = function () {
-            if (confirmLeave) {
-                return $('#msg-leave').text();
-            }
-        }
-
-        $('#menu').closest("form").on('submit', function (e) {
-            confirmLeave = false;
-            window.onbeforeunload = function () { };
-        });
     });
 </script>
