@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using OpenIddict.Abstractions;
 using OpenIddict.Server.AspNetCore;
+using Microsoft.Extensions.Logging;
 using OrchardCore.Modules;
 using OrchardCore.OpenId.Abstractions.Handlers;
 using static OpenIddict.Abstractions.OpenIddictConstants;
@@ -17,11 +18,13 @@ namespace OrchardCore.OpenId.Controllers;
 [Feature(OpenIdConstants.Features.Server), SkipStatusCodePages]
 public sealed class UserInfoController : Controller
 {
-    private readonly IEnumerable<IUserInfoClaimsProvider> _providers;
+    private readonly IEnumerable<IUserInfoClaimsProvider> _claimsProviders;
+    private readonly ILogger _logger;
 
-    public UserInfoController(IEnumerable<IUserInfoClaimsProvider> providers)
+    public UserInfoController(IEnumerable<IUserInfoClaimsProvider> claimsProviders, ILogger<UserInfoController> logger)
     {
-        _providers = providers;
+        _claimsProviders = claimsProviders;
+        _logger = logger;
     }
 
     // GET/POST: /connect/userinfo
@@ -162,10 +165,7 @@ public sealed class UserInfoController : Controller
         // can be found here: http://openid.net/specs/openid-connect-core-1_0.html#StandardClaims
 
         var context = new UserInfoClaimsContext(principal, claims);
-        foreach (var provider in _providers)
-        {
-            await provider.PopulateAsync(context);
-        }
+        await _claimsProviders.InvokeAsync((claimsProvider, ctx) => claimsProvider.GenerateAsync(ctx), context, _logger);
 
         return Ok(claims);
     }

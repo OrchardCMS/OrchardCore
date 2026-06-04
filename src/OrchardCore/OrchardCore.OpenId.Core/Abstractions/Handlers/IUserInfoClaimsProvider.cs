@@ -12,10 +12,10 @@ namespace OrchardCore.OpenId.Abstractions.Handlers;
 public interface IUserInfoClaimsProvider
 {
     /// <summary>
-    /// Populates the userinfo claims dictionary with additional entries.
+    /// Generates additional claims and adds them to the userinfo claims dictionary.
     /// </summary>
     /// <param name="context">
     /// The context carrying the authenticated principal and the claims dictionary being built.
     /// </param>
-    Task PopulateAsync(UserInfoClaimsContext context);
+    Task GenerateAsync(UserInfoClaimsContext context);
 }
