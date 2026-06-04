@@ -31,8 +31,8 @@ internal sealed class HttpsSettingsMigrations : DataMigration
             strictTransportSecurityValue.TryGetValue<bool>(out var enableStrictTransportSecurity))
         {
             settingsObject[nameof(HttpsSettings.StrictTransportSecurityMode)] = enableStrictTransportSecurity
-                ? HttpStrictTransportSecurityMode.Enabled.ToString()
-                : HttpStrictTransportSecurityMode.Disabled.ToString();
+                ? nameof(HttpStrictTransportSecurityMode.Enabled)
+                : nameof(HttpStrictTransportSecurityMode.Disabled);
 
             requiresUpdate = true;
         }
