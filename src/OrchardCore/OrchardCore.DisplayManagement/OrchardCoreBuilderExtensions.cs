@@ -31,9 +31,9 @@ namespace Microsoft.Extensions.DependencyInjection;
 public static class OrchardCoreBuilderExtensions
 {
     /// <summary>
-    /// Enables HTML comments that identify the shape bindings used to render output.
+    /// Enables HTML comments in rendered output that identify the shape bindings used during rendering.
     /// </summary>
-    public static OrchardCoreBuilder AddShapeDebugInformation(this OrchardCoreBuilder builder)
+    public static OrchardCoreBuilder EnableShapeDebugInformation(this OrchardCoreBuilder builder)
     {
         return builder.ConfigureServices(services =>
             services.Configure<ShapeRenderingOptions>(options => options.WriteShapeDebugInformation = true));
