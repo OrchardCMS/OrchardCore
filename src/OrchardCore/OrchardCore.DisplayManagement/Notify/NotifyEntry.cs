@@ -22,7 +22,7 @@ public partial class NotifyEntry
 
     public IHtmlContent Message { get; set; }
 
-    public int? Milliseconds { get; set; }
+    public int? DismissalMilliseconds { get; set; }
 
     public string ToHtmlString(HtmlEncoder htmlEncoder)
     {

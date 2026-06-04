@@ -18,7 +18,7 @@ public class NotifierTests
 
         var entry = Assert.Single(notifier.List());
         Assert.Equal(NotifyType.Success, entry.Type);
-        Assert.Equal(5000, entry.Milliseconds);
+        Assert.Equal(5000, entry.DismissalMilliseconds);
     }
 
     [Fact]
@@ -30,7 +30,7 @@ public class NotifierTests
 
         var entry = Assert.Single(notifier.List());
         Assert.Equal(NotifyType.Error, entry.Type);
-        Assert.Null(entry.Milliseconds);
+        Assert.Null(entry.DismissalMilliseconds);
     }
 
     [Fact]
@@ -42,7 +42,7 @@ public class NotifierTests
 
         var entry = Assert.Single(notifier.List());
         Assert.Equal(NotifyType.Success, entry.Type);
-        Assert.Equal(3000, entry.Milliseconds);
+        Assert.Equal(3000, entry.DismissalMilliseconds);
     }
 
     [Fact]
@@ -55,7 +55,7 @@ public class NotifierTests
         {
             Type = NotifyType.Warning,
             Message = new HtmlString("<strong>Heads up</strong>"),
-            Milliseconds = 3000,
+            DismissalMilliseconds = 3000,
         };
 
         var json = JsonSerializer.Serialize(entry, options);
@@ -64,7 +64,7 @@ public class NotifierTests
         Assert.Contains(@"""Milliseconds"":3000", json);
         Assert.NotNull(result);
         Assert.Equal(NotifyType.Warning, result.Type);
-        Assert.Equal(3000, result.Milliseconds);
+        Assert.Equal(3000, result.DismissalMilliseconds);
         Assert.Equal("<strong>Heads up</strong>", result.ToHtmlString(HtmlEncoder.Default));
     }
 }
