@@ -111,7 +111,7 @@ Enable it during startup:
 ```csharp
 services
     .AddOrchardCms()
-    .AddShapeDebugInformation();
+    .EnableShapeDebugInformation();
 ```
 
 You can also enable it directly through options:
@@ -124,7 +124,7 @@ services.Configure<ShapeRenderingOptions>(options =>
 When enabled, rendered shapes are wrapped with comments similar to the following:
 
 ```html
-<!--shape-start type:Menu bindings:Menu__Main=>Themes/Contoso/Views/Menu-Main.cshtml (razor)-->
+<!--shape-start type:Menu bindings:Menu__Main => Themes/Contoso/Views/Menu-Main.cshtml (razor) -->
 ...
 <!--shape-end type:Menu-->
 ```
@@ -185,4 +185,3 @@ Tag helper example:
 
 ### Related Articles
 - [Placement](../Placement/README.md)
-

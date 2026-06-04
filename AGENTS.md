@@ -465,11 +465,11 @@ public sealed class AdminMenu : AdminNavigationProvider
 
 1. Follow existing code style and conventions
 2. Include unit tests for new functionality
-3. Update documentation if adding new features
+3. Update the canonical documentation page when adding or changing user-facing features, public APIs, configuration, stereotypes, or extension points, and keep the docs aligned with the shipped code and behavior
 4. Run asset build if modifying CSS/JS: `yarn build`
 5. Ensure all tests pass: `dotnet test`
 6. Link related GitHub issues using `Fixes #IssueId`
-7. Add release notes for significant changes in `src/docs/releases/`
+7. Add release notes for significant changes in `src/docs/releases/`, but do not rely on release notes as the only documentation for a feature; release notes describe what changed, while the canonical docs describe the current behavior without transitional or versioned wording
 
 ## Useful Commands
 
@@ -500,3 +500,92 @@ yarn check
 - [Discord Community](https://orchardcore.net/discord)
 - [Issue Tracker](https://github.com/OrchardCMS/OrchardCore/issues)
 - [API Reference](https://docs.orchardcore.net/en/latest/reference/)
+
+## Admin Edit View Conventions
+
+When creating or updating Orchard Core admin edit views, always use the `ocat-*` admin theme classes so the UI stays consistent across the site and works with custom admin theme overrides.
+
+This applies to admin-facing Razor edit views such as:
+
+- `*.Edit.cshtml`
+- `*.Fields.Edit.cshtml`
+- Admin editor templates rendered in the admin theme
+
+### Required patterns
+
+| Scenario | Required structure |
+|---|---|
+| Standard admin field row (default for all inputs) | `ocat-wrapper` + `ocat-label` + `ocat-end` |
+| Required field label | `ocat-label ocat-label-required` |
+| Checkbox or toggle with no left-column label | `ocat-wrapper` + `ocat-end-offset` |
+| Standalone alert, notice, or section headline inside an edit form | `ocat-wrapper` + `ocat-end-offset` |
+| Limited-width row **only** for `type="number"` inputs or when the user explicitly requests compact width | `ocat-limited-wrapper` + `ocat-label` + `ocat-limited` |
+
+> **Default rule:** Always use the standard `ocat-wrapper` + `ocat-label` + `ocat-end` pattern unless the input is a `type="number"` field or the user explicitly asks for limited/compact width.
+
+### Standard field example
+
+```cshtml
+<div class="ocat-wrapper" asp-validation-class-for="DisplayText">
+    <label asp-for="DisplayText" class="ocat-label">@T["Display text"]</label>
+    <div class="ocat-end">
+        <input asp-for="DisplayText" class="form-control" />
+        <span asp-validation-for="DisplayText"></span>
+        <span class="hint">@T["Shown to editors in the admin UI."]</span>
+    </div>
+</div>
+```
+
+### Limited-width field example (number inputs)
+
+```cshtml
+<div class="ocat-limited-wrapper" asp-validation-class-for="PageSize">
+    <label asp-for="PageSize" class="ocat-label">@T["Page size"]</label>
+    <div class="ocat-limited">
+        <input asp-for="PageSize" type="number" class="form-control" />
+        <span asp-validation-for="PageSize"></span>
+        <span class="hint">@T["The default page size."]</span>
+    </div>
+</div>
+```
+
+### Limited-width field inside a content field or content part wrapper
+
+If the row also needs Orchard-specific wrapper classes such as `field-wrapper-*` or `content-part-wrapper-*`, keep the outer `ocat-wrapper` and place the compact control inside `ocat-end`:
+
+```cshtml
+<div class="ocat-wrapper field-wrapper @($"field-wrapper-{Model.PartFieldDefinition.PartDefinition.Name.HtmlClassify()}-{Model.PartFieldDefinition.Name.HtmlClassify()}")">
+    <label asp-for="Value" class="ocat-label">@T["Value"]</label>
+    <div class="ocat-end">
+        <div class="ocat-limited-wrapper">
+            <div class="ocat-limited">
+                <input asp-for="Value" class="form-control" />
+                <span asp-validation-for="Value"></span>
+            </div>
+        </div>
+        <span class="hint">@T["Keeps a compact editor width without losing the field wrapper row."]</span>
+    </div>
+</div>
+```
+
+### Standalone alert or headline row
+
+Use `ocat-end-offset` for alerts, notices, legends, and headings that belong to the form but do not have a left-column label:
+
+```cshtml
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
+        <h5>@T["Section heading"]</h5>
+        <div class="alert alert-warning" role="alert">
+            @T["Important guidance for this form section."]
+        </div>
+    </div>
+</div>
+```
+
+### Avoid
+
+- `mb-3`, `form-group`, or `form-label` as the row layout pattern
+- Legacy helper methods such as `@Orchard.GetWrapperClasses()` or `@Orchard.GetLimitedWidthWrapperClasses()`
+- Using `ocat-limited-wrapper` for text inputs, selects, paths, IDs, or other non-number fields unless the user explicitly requests compact width
+- Mixing `ocat-end` and `ocat-end-offset` in the same row; choose exactly one based on whether the row has a left-column label

@@ -357,7 +357,7 @@ For instance if a field has two selected terms, there will be two records with a
 
 ## Tags
 
-Tags are a editor and display mode option for taxonomies to allow tagging of content items while editing.
+Tags are an editor and display mode option for taxonomies to allow tagging of content items while editing.
 
 When using the `Tags` mode the display text property of the tag is stored as well as the `TermContentItemId`.
 

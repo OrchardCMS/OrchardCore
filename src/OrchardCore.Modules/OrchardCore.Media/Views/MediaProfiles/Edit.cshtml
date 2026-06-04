@@ -82,6 +82,16 @@
         </div>
     </div>
 
+    <div class="ocat-wrapper form-g">
+        <div class="ocat-end-offset">
+            <div class="form-check">
+                <input asp-for="AutoOrient" class="form-check-input" />
+                <label asp-for="AutoOrient" class="form-check-label">@T["Auto Orient"]</label>
+            </div>
+            <span class="hint">@T["Automatically orient the image based on EXIF metadata. Enabled by default."]</span>
+        </div>
+    </div>
+
     <div class="ocat-wrapper">
         <div class="ocat-end-offset">
             <div class="btn-group">

@@ -27,7 +27,7 @@ To enable the blocks editor for a BagPart, set the **Editor** option to `Blocks`
 
 This can be done in the admin UI:
 
-1. Navigate to **Content Definition** → **Content Types**
+1. Navigate to **Design** → **Content Definition** → **Content Types**
 2. Edit the content type containing the BagPart
 3. Click **Edit** on the BagPart
 4. Set the **Editor** field to `Blocks`

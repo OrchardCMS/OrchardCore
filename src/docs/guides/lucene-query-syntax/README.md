@@ -75,7 +75,7 @@ To search, type the field name (e.g., Subtitle) followed by a colon ":".
 `Subtitle:What is Lorem Ipsum?`
 
 
-![text field searche](images/text-field.PNG)
+![text field search](images/text-field.PNG)
 
 
 ## Wildcard Searches
@@ -114,5 +114,4 @@ The search will find terms that begin with "type" and end with "ing" or "service
 `/type.*ing?/`
 
 ![regular expressions](images/regular-expresions.PNG)
-
 
