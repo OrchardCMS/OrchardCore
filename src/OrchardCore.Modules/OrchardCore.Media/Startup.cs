@@ -172,8 +172,10 @@ public sealed class Startup : StartupBase
         services.AddScoped<AttachedMediaFieldFileService, AttachedMediaFieldFileService>();
         services.AddScoped<IContentHandler, AttachedMediaFieldContentHandler>();
         services.AddScoped<IModularTenantEvents, TempDirCleanerService>();
+        services.AddScoped<MoveAttachedMediaFieldsStepExecutor>();
         services.AddDataMigration<Migrations>();
         services.AddRecipeExecutionStep<MediaStep>();
+        services.AddRecipeExecutionStep<MoveAttachedMediaFieldsStep>();
 
         // MIME types
         services.TryAddSingleton<IContentTypeProvider, FileExtensionContentTypeProvider>();
