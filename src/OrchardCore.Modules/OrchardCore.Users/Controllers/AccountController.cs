@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -100,7 +99,6 @@ public sealed class AccountController : AccountBaseController
     }
 
     [HttpPost]
-    [EnableRateLimiting(UserRateLimiterPolicyNames.PasswordAuthentication)]
     [AllowAnonymous]
     [ActionName(nameof(Login))]
     public async Task<IActionResult> LoginPOST(string returnUrl = null)

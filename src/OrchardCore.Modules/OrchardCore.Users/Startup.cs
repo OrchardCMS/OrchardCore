@@ -28,6 +28,7 @@ using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
+using OrchardCore.RateLimits;
 using OrchardCore.Recipes;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Security;
@@ -109,12 +110,6 @@ public sealed class Startup : StartupBase
             options.LoginPath = "/" + userOptions.Value.LoginPath;
             options.LogoutPath = "/" + userOptions.Value.LogoffPath;
             options.AccessDeniedPath = "/Error/403";
-        });
-
-        services.AddRateLimiter(options =>
-        {
-            options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
-            options.AddPolicy(UserRateLimiterPolicyNames.PasswordAuthentication, RateLimiterPolicyHelpers.CreateSlidingWindowPolicy(10));
         });
 
         services.AddTransient<IPostConfigureOptions<SecurityStampValidatorOptions>, ConfigureSecurityStampOptions>();
@@ -241,10 +236,19 @@ public sealed class Startup : StartupBase
             }
         );
 
-        builder.UseRateLimiter();
         builder.UseAuthorization();
     }
 
+}
+
+[RequireFeatures("OrchardCore.RateLimits")]
+public sealed class RateLimitsStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.Configure<RateLimitsOptions>(options =>
+            options.AddRouteRateLimit(RateLimitRouteNames.Login, HttpMethods.Post, RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(UserRateLimiterPolicyNames.PasswordAuthentication, 10)));
+    }
 }
 
 [Feature(UserConstants.Features.ExternalAuthentication)]
@@ -278,6 +282,20 @@ public sealed class ExternalAuthenticationStartup : StartupBase
                 action = nameof(ExternalAuthenticationsController.ExternalLogins),
             }
         );
+    }
+}
+
+[Feature(UserConstants.Features.ExternalAuthentication)]
+[RequireFeatures("OrchardCore.RateLimits")]
+public sealed class ExternalAuthenticationRateLimitsStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.Configure<RateLimitsOptions>(options =>
+        {
+            options.AddRouteRateLimit(RateLimitRouteNames.RegisterExternalLogin, HttpMethods.Post, RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(UserRateLimiterPolicyNames.UserRegistration, 3));
+            options.AddRouteRateLimit(RateLimitRouteNames.LinkExternalLogin, HttpMethods.Post, RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(UserRateLimiterPolicyNames.PasswordAuthentication, 10));
+        });
     }
 }
 
@@ -452,11 +470,6 @@ public sealed class RegistrationStartup : StartupBase
             o.MemberAccessStrategy.Register<ConfirmEmailViewModel>();
         });
 
-        services.AddRateLimiter(options =>
-        {
-            options.AddPolicy(UserRateLimiterPolicyNames.UserRegistration, RateLimiterPolicyHelpers.CreateSlidingWindowPolicy(3));
-        });
-
         services.AddDisplayDriver<User, UserRegistrationAdminDisplayDriver>();
         services.AddSiteDisplayDriver<RegistrationSettingsDisplayDriver>();
         services.AddNavigationProvider<RegistrationAdminMenu>();
@@ -506,6 +519,17 @@ public sealed class RegistrationStartup : StartupBase
 }
 
 [Feature(UserConstants.Features.UserRegistration)]
+[RequireFeatures("OrchardCore.RateLimits")]
+public sealed class RegistrationRateLimitsStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.Configure<RateLimitsOptions>(options =>
+            options.AddRouteRateLimit(RateLimitRouteNames.Register, HttpMethods.Post, RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(UserRateLimiterPolicyNames.UserRegistration, 3)));
+    }
+}
+
+[Feature(UserConstants.Features.UserRegistration)]
 [RequireFeatures("OrchardCore.Deployment")]
 public sealed class RegistrationDeploymentStartup : StartupBase
 {
@@ -533,11 +557,6 @@ public sealed class ResetPasswordStartup : StartupBase
         services.Configure<TemplateOptions>(o =>
         {
             o.MemberAccessStrategy.Register<LostPasswordViewModel>();
-        });
-
-        services.AddRateLimiter(options =>
-        {
-            options.AddPolicy(UserRateLimiterPolicyNames.PasswordRecovery, RateLimiterPolicyHelpers.CreateSlidingWindowPolicy(5));
         });
 
         services.AddSiteDisplayDriver<ResetPasswordSettingsDisplayDriver>();
@@ -590,6 +609,20 @@ public sealed class ResetPasswordStartup : StartupBase
                 action = nameof(ResetPasswordController.ResetPasswordConfirmation),
             }
         );
+    }
+}
+
+[Feature(UserConstants.Features.ResetPassword)]
+[RequireFeatures("OrchardCore.RateLimits")]
+public sealed class ResetPasswordRateLimitsStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.Configure<RateLimitsOptions>(options =>
+        {
+            options.AddRouteRateLimit(RateLimitRouteNames.ForgotPassword, HttpMethods.Post, RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(UserRateLimiterPolicyNames.PasswordRecovery, 5));
+            options.AddRouteRateLimit(RateLimitRouteNames.ResetPassword, HttpMethods.Post, RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(UserRateLimiterPolicyNames.PasswordRecovery, 5));
+        });
     }
 }
 

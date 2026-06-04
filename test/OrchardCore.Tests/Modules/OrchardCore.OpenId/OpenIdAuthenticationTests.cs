@@ -336,6 +336,7 @@ public class OpenIdAuthenticationTests
                     { "name", "Feature" },
                     { "enable", new JsonArray(
                         "OrchardCore.Users",
+                        "OrchardCore.RateLimits",
                         "OrchardCore.OpenId.Server",
                         "OrchardCore.OpenId.Validation",
                         "OrchardCore.OpenId") },

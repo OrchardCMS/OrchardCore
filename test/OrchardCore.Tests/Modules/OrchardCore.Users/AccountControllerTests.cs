@@ -477,7 +477,7 @@ public class AccountControllerTests
     public async Task Register_WhenRateLimitExceeded_ReturnsTooManyRequests()
     {
         // Arrange
-        var context = await GetSiteContextAsync(new RegistrationSettings());
+        var context = await GetSiteContextAsync(new RegistrationSettings(), enableRateLimits: true);
 
         var registerGet = await context.Client.GetAsync("Register", TestContext.Current.CancellationToken);
         Assert.True(registerGet.IsSuccessStatusCode);
@@ -527,7 +527,7 @@ public class AccountControllerTests
     public async Task Login_WhenRateLimitExceeded_ReturnsTooManyRequests()
     {
         // Arrange
-        var context = await GetSiteContextAsync(new RegistrationSettings());
+        var context = await GetSiteContextAsync(new RegistrationSettings(), enableRateLimits: true);
 
         var loginGet = await context.Client.GetAsync("Login", TestContext.Current.CancellationToken);
         Assert.True(loginGet.IsSuccessStatusCode);
@@ -612,7 +612,7 @@ public class AccountControllerTests
         return HttpRequestHelper.CreatePostMessageWithCookies("Login", data, response);
     }
 
-    private static async Task<SiteContext> GetSiteContextAsync(RegistrationSettings settings, bool enableRegistrationFeature = true, bool requireUniqueEmail = true, bool enableExternalAuthentication = false)
+    private static async Task<SiteContext> GetSiteContextAsync(RegistrationSettings settings, bool enableRegistrationFeature = true, bool requireUniqueEmail = true, bool enableExternalAuthentication = false, bool enableRateLimits = false)
     {
         var context = new SiteContext();
 
@@ -646,6 +646,11 @@ public class AccountControllerTests
             if (enableExternalAuthentication)
             {
                 featureIds.Add(UserConstants.Features.ExternalAuthentication);
+            }
+
+            if (enableRateLimits)
+            {
+                featureIds.Add("OrchardCore.RateLimits");
             }
 
             recipeSteps.Add(new JsonObject

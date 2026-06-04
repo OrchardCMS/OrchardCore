@@ -56,7 +56,7 @@ public class TwoFactorSendCodeEndpointTests
                 new JsonObject
                 {
                     { "name", "feature" },
-                    { "enable", new JsonArray(featureId) },
+                    { "enable", new JsonArray(featureId, "OrchardCore.RateLimits") },
                 },
             },
         };

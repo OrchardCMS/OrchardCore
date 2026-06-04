@@ -288,7 +288,7 @@ public static class ServiceCollectionExtensions
             };
 
             app.UseStaticFiles(options);
-        });
+        }, order: OrchardCoreConstants.ConfigureOrder.StaticFiles);
     }
 
     /// <summary>

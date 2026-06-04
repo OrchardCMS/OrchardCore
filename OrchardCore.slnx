@@ -100,6 +100,7 @@
     <Project Path="src/OrchardCore.Modules/OrchardCore.Placements/OrchardCore.Placements.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.PublishLater/OrchardCore.PublishLater.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Queries/OrchardCore.Queries.csproj" />
+    <Project Path="src/OrchardCore.Modules/OrchardCore.RateLimits/OrchardCore.RateLimits.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Rules/OrchardCore.Rules.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.AzureAI/OrchardCore.AzureAI.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Elasticsearch/OrchardCore.Elasticsearch.csproj" />
@@ -238,6 +239,7 @@
     <Project Path="src/OrchardCore/OrchardCore.OpenId.Core/OrchardCore.OpenId.Core.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Queries.Abstractions/OrchardCore.Queries.Abstractions.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Queries.Core/OrchardCore.Queries.Core.csproj" />
+    <Project Path="src/OrchardCore/OrchardCore.RateLimits.Core/OrchardCore.RateLimits.Core.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.ReCaptcha.Core/OrchardCore.ReCaptcha.Core.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Recipes.Abstractions/OrchardCore.Recipes.Abstractions.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Recipes.Core/OrchardCore.Recipes.Core.csproj" />

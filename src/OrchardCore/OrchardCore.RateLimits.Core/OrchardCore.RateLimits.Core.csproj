@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Title>OrchardCore RateLimits Core</Title>
+    <Description>
+      $(OCFrameworkDescription)
+
+      Provides shared rate-limit option types and helpers for Orchard Core.
+    </Description>
+    <PackageTags>$(PackageTags) OrchardCoreFramework Security</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OrchardCore.Infrastructure.Abstractions\OrchardCore.Infrastructure.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>

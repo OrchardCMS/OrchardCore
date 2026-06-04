@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+    <Title>OrchardCore RateLimits</Title>
+    <Description>
+      $(OCCMSDescription)
+
+      Provides global and route-based rate limiting for Orchard Core applications.
+    </Description>
+    <PackageTags>$(PackageTags) OrchardCoreCMS Security</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.RateLimits.Core\OrchardCore.RateLimits.Core.csproj" />
+  </ItemGroup>
+
+</Project>

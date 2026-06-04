@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -72,7 +71,6 @@ public sealed class ResetPasswordController : Controller
 
     [HttpPost]
     [AllowAnonymous]
-    [EnableRateLimiting(UserRateLimiterPolicyNames.PasswordRecovery)]
     [ActionName(nameof(ForgotPassword))]
     public async Task<IActionResult> ForgotPasswordPOST()
     {
@@ -143,7 +141,6 @@ public sealed class ResetPasswordController : Controller
 
     [HttpPost]
     [AllowAnonymous]
-    [EnableRateLimiting(UserRateLimiterPolicyNames.PasswordRecovery)]
     [ActionName(nameof(ResetPassword))]
     public async Task<IActionResult> ResetPasswordPOST()
     {

@@ -56,7 +56,7 @@ public class TwoFactorAuthenticationControllerTests
                 new JsonObject
                 {
                     { "name", "feature" },
-                    { "enable", new JsonArray(UserConstants.Features.AuthenticatorApp) },
+                    { "enable", new JsonArray(UserConstants.Features.AuthenticatorApp, "OrchardCore.RateLimits") },
                 },
             },
         };

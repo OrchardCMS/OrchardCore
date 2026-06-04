@@ -52,7 +52,7 @@ public sealed class FileProviderStartup : StartupBase
     private const string AssetsPath = "wwwroot";
 
     // Run after other middlewares.
-    public override int Order => 10;
+    public override int Order => OrchardCoreConstants.ConfigureOrder.FileProvider;
 
     public override void ConfigureServices(IServiceCollection services)
     {

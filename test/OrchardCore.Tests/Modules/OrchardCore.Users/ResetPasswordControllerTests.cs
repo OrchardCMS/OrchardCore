@@ -62,7 +62,7 @@ public class ResetPasswordControllerTests
                 new JsonObject
                 {
                     { "name", "feature" },
-                    { "enable", new JsonArray(UserConstants.Features.ResetPassword) },
+                    { "enable", new JsonArray(UserConstants.Features.ResetPassword, "OrchardCore.RateLimits") },
                 },
             },
         };
