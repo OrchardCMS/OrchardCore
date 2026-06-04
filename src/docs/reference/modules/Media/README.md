@@ -224,13 +224,13 @@ To use [Image Anchors](#image-anchors), use the `GetAnchors` helper extension me
 
 ### Razor image resizing tag helpers
 
-To use the image tag helpers add `@addTagHelper *, OrchardCore.Media` to `_ViewImports.cshtml`, and take a direct reference to the `OrchardCore.Media` nuget package.
+To use the image tag helpers, add `@addTagHelper *, OrchardCore.Media` to `_ViewImports.cshtml`, and take a direct reference to the `OrchardCore.Media` NuGet package.
 
 `asset-src` is used to obtain the correct URL for the asset and set the `src` attribute. Width, height, resize mode, quality and format can be set using `img-width`, `img-height`, `img-resize-mode`, `img-quality`, and `img-format` respectively. e.g.:
 
 `<img asset-src="Model.Paths[0]" alt="..." img-width="100" img-height="240" img-resize-mode="Crop" img-quality="50" img-format="Jpg" />`
 
-Alternatively the Asset Url can be resolved independently and the `src` attribute used:
+Alternatively the Asset URL can be resolved independently and the `src` attribute used:
 
 `<img src="@Orchard.AssetUrl(Model.Paths[0])" alt="..." img-width="100" img-height="240" img-resize-mode="Crop" img-quality="50" img-format="Jpg" />`
 
@@ -260,7 +260,7 @@ To use a [Image Anchor](#image-anchors) set the `asset-src` property and the `im
 
 `<img asset-src="Model.Paths[0]" alt="..." asp-append-version="true" />`
 
-Alternatively the Asset Url can be resolved independently and the `src` attribute used:
+Alternatively the Asset URL can be resolved independently and the `src` attribute used:
 
 `<img src="@Orchard.AssetUrl(Model.Paths[0])" alt="..." asp-append-version="true" />`
 
@@ -427,11 +427,11 @@ services.Configure<StaticFileOptions>(o => ...);
 
 ## Media Profiles
 
-Media profiles allow you to defined preset image resizing and formatting commands.
+Media profiles allow you to define preset image resizing and formatting commands.
 
 You can create a media profile from the _Media -> Profiles_ menu.
 
-When specifying a media profile with either the liquid, razor helper, or tag helper you provide the profile name, and any additional commands which you want to apply to the media item.
+When specifying a media profile with either the Liquid, Razor helper, or tag helper, you provide the profile name and any additional commands which you want to apply to the media item.
 
 === "Liquid"
 
@@ -518,7 +518,15 @@ When the query string is signed with a token any width, height value may be used
 Media can be optionally indexed for search as well if files are referenced via Media Fields. The following data can be indexed for each file referenced from a Media Field:
 
 - Media Text
-- Textual content of PDF files
+- Text extracted from additional file formats when the corresponding indexing feature is enabled
+
+File extraction is available through explicit features:
+
+- `OrchardCore.Media.Indexing.Pdf` for `.pdf`
+- `OrchardCore.Media.Indexing.Text` for `.txt` and `.md`
+- `OrchardCore.Media.Indexing.OpenXML` for `.docx` and `.pptx`
+
+Enable the feature that corresponds to the file types you want to extract and index.
 
 !!! note
     Standalone files, i.e. files that are just uploaded to the Media Library but never referenced from a content item via a Media Field, can't be indexed.
@@ -551,6 +559,124 @@ A middleware component returns a 404 NotFound response for unauthenticated acces
 
 The `Cache-Control` header for secured files is set to `no-store` by default, preventing their caching. This can be changed with the `MaxSecureFilesBrowserCacheDays` configuration, [see above](#configuration).
 
+### Standard, Gallery, and Attached editors
+
+Media Fields support three common editing patterns with different editing experiences, storage behavior, and authorization behavior.
+
+#### Standard editor
+
+The **Standard** editor is the default editor. It doesn't upload files into a content-item-specific folder. Instead, it lets editors select files that already exist in the Media Library.
+
+When the **Secure Media** feature is enabled, access to those files is governed by media folder permissions such as the root media permission, first-level folder permissions, and the own/others media permissions where applicable.
+
+Use the **Standard** editor when you want multiple content items to reference shared media library assets.
+
+#### Gallery editor
+
+The **Gallery** editor also works with files that already exist in the Media Library instead of uploading them into a content-item-specific folder. It provides a gallery-oriented editing experience that is helpful when editors need to review, reorder, and manage multiple selected media items visually.
+
+Because the stored paths still point to Media Library assets, the **Gallery** editor follows the same **Secure Media** authorization model as the **Standard** editor. Access is still governed by media folder permissions rather than the owning content item's `ViewContent` permission.
+
+Use the **Gallery** editor when you want shared Media Library assets like the **Standard** editor, but with a more visual multi-item gallery editing experience.
+
+#### Attached editor
+
+Unlike the **Standard** and **Gallery** editors, the **Attached** editor uploads files as part of the content item editing flow. Orchard Core stores those files under:
+
+`mediafields/{ContentType}/{ContentItemId}/`
+
+For new uploads, the stored file name is hash-based, while cloned content items copy the files into the cloned item's own `mediafields/{ContentType}/{ContentItemId}/` folder.
+
+When the **Secure Media** feature is enabled, files under `mediafields/` automatically inherit the `ViewContent` permission of the associated content item. In other words, access to an attached file follows access to the content item that owns it.
+
+This means you don't need to grant separate folder permissions for attached uploads. If a user can't view the content item, Secure Media also prevents access to the attached file URL.
+
+Use the **Attached** editor when the file should belong to a specific content item and automatically follow that item's `ViewContent` permission.
+
+### Recipe step: move-attached-media-fields
+
+If you switch an existing Media Field from the **Standard** or **Gallery** editor to the **Attached** editor, existing field values still point to their current Media Library paths until you migrate them.
+
+Use the `move-attached-media-fields` recipe step to move those referenced files into the attached media location and update the stored field paths on the affected content items.
+
+The step:
+
+- inspects content definitions for Media Fields that use the **Attached** editor,
+- processes either the specified content types or all content types when no filter is provided,
+- updates both latest and published versions of each content item,
+- runs in an HTTP background job, and
+- saves changes in batches of 50 content items.
+
+Example:
+
+```json
+{
+  "steps": [
+   {
+      "name": "move-attached-media-fields",
+      "ContentTypes": [ "Article", "Report" ]
+    }
+  ]
+}
+```
+
+Omit `ContentTypes` to evaluate every content type that contains a Media Field configured with the **Attached** editor.
+
+## File Upload Limit
+
+In ASP.NET Core, file upload size limits are enforced at multiple levels — FormOptions, Kestrel/IIS server settings, and sometimes controller-level attributes. By default:
+
+- MultipartBodyLengthLimit (FormOptions) → 128 MB for multipart form sections.
+- Kestrel MaxRequestBodySize → ~28.6 MB (30,000,000 bytes).
+- IIS maxAllowedContentLength → ~28.6 MB unless overridden.
+
+If a file exceeds these limits, you'll get errors like `InvalidDataException`: Multipart body length limit exceeded or HTTP 404.13 in IIS.
+
+To increase the limit, you can use one of the following approaches:
+
+1. IIS content length limit
+
+    ```xml
+    <system.webServer>
+      <security>
+        <requestFiltering>
+          <requestLimits maxAllowedContentLength="50000000" />
+        </requestFiltering>
+      </security>
+    </system.webServer>
+    ```
+
+2. ASP.NET Core Request length limit
+
+    2.1 For application running on IIS
+
+    ```csharp
+    services.Configure<IISServerOptions>(options =>
+    {
+        options.MaxRequestBodySize = 50000000;
+    });
+    ```
+
+    2.2 For application running on Kestrel
+
+    ```csharp
+    services.Configure<KestrelServerOptions>(options =>
+    {
+        options.Limits.MaxRequestBodySize = 50000000;
+    });
+    ```
+
+3. Form's `MultipartBodyLengthLimit`
+
+    ```csharp
+    services.Configure<FormOptions>(options =>
+    {
+        options.ValueLengthLimit = 50000000;
+        options.MultipartBodyLengthLimit = 50000000;
+        options.MultipartHeadersLengthLimit = 50000000;
+    });
+    ```
+
 ## Videos
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/H0jBMH8tj3A" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
@@ -561,7 +687,13 @@ The `Cache-Control` header for secured files is set to `no-store` by default, pr
 
 ## Media Indexing
 
-The `Media Indexing` feature extends the media indexing capability to also encompass searching within files with the following extensions `.txt`, `.md`, `.docx`, and `.pptx`.
+The base `Media Indexing` feature indexes media text stored by media fields. Additional file extraction is enabled by feature:
+
+| Feature | File types |
+|---|---|
+| `OrchardCore.Media.Indexing.Pdf` | `.pdf` |
+| `OrchardCore.Media.Indexing.Text` | `.txt`, `.md` |
+| `OrchardCore.Media.Indexing.OpenXML` | `.docx`, `.pptx` |
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/BQHUlvPFRR4" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 

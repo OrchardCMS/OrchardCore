@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Localization;
 using OrchardCore.Deployment;
 
 namespace OrchardCore.Facebook.Deployment;
@@ -10,5 +11,11 @@ public class FacebookLoginDeploymentStep : DeploymentStep
     public FacebookLoginDeploymentStep()
     {
         Name = "Facebook Login";
+    }
+
+    public FacebookLoginDeploymentStep(IStringLocalizer<FacebookLoginDeploymentStep> S)
+        : this()
+    {
+        Category = S["Meta"];
     }
 }

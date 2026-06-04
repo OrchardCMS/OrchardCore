@@ -166,13 +166,16 @@ public sealed class Startup : StartupBase
 
         // Media Field
         services.AddContentField<MediaField>()
-            .UseDisplayDriver<MediaFieldDisplayDriver>();
+            .UseDisplayDriver<MediaFieldDisplayDriver>()
+            .AddHandler<AttachedMediaFieldHandler>();
         services.AddScoped<IContentPartFieldDefinitionDisplayDriver, MediaFieldSettingsDriver>();
         services.AddScoped<AttachedMediaFieldFileService, AttachedMediaFieldFileService>();
         services.AddScoped<IContentHandler, AttachedMediaFieldContentHandler>();
         services.AddScoped<IModularTenantEvents, TempDirCleanerService>();
+        services.AddScoped<MoveAttachedMediaFieldsStepExecutor>();
         services.AddDataMigration<Migrations>();
         services.AddRecipeExecutionStep<MediaStep>();
+        services.AddRecipeExecutionStep<MoveAttachedMediaFieldsStep>();
 
         // MIME types
         services.TryAddSingleton<IContentTypeProvider, FileExtensionContentTypeProvider>();
@@ -190,8 +193,7 @@ public sealed class Startup : StartupBase
         services.AddScoped<IMediaNameNormalizerService, NullMediaNameNormalizerService>();
 
         services.AddScoped<IUserAssetFolderNameProvider, DefaultUserAssetFolderNameProvider>();
-        services.AddSingleton<IChunkFileUploadService, ChunkFileUploadService>();
-        services.AddSingleton<IBackgroundTask, ChunkFileUploadBackgroundTask>();
+        services.AddChunkFileUploadServices();
     }
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -245,6 +247,8 @@ public sealed class MediaSlugifyStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.AddTransient<IConfigureOptions<MediaSlugifyOptions>, MediaSlugifyOptionsConfiguration>();
+
         // Media Name Normalizer
         services.AddScoped<IMediaNameNormalizerService, SlugifyMediaNameNormalizerService>();
     }

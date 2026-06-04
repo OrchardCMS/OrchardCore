@@ -56,6 +56,18 @@ You can disable this by unchecking the `Sanitize HTML` setting, or further confi
 
 When rendering content directly you can disable sanitization by passing a boolean to the helper.
 
+!!! note
+    In case you need to bypass sanitization for a specific markdown extension, you can add its related attributes to the sanitizer's allowed attributes.
+    For example, you can allow the `autoidentifiers` extension by allowing the `id` attribute as follows:
+
+    ```csharp
+    builder.Services
+        .AddOrchardCms()
+        .ConfigureServices(tenantServices => 
+            tenantServices.ConfigureHtmlSanitizer(sanitizer => sanitizer.AllowedAttributes.Add("id")
+        );
+    ```
+
 ## Editors
 
 The __Markdown Part__ editor can be different for each content type. In the __Markdown Part__ settings of a
@@ -130,7 +142,13 @@ By default this helper will also sanitize the Markdown.
 To disable sanitization:
 
 ```csharp
-@await Orchard.MarkdownToHtmlAsync((string)Model.ContentItem.Content.MarkdownParagraph.Content.Markdown, false)
+@await Orchard.MarkdownToHtmlAsync((string)Model.ContentItem.Content.MarkdownParagraph.Content.Markdown, sanitize: false)
+```
+
+Liquid code included in the Markdown can be rendered before the Markdown is converted into HTML. To enable this, set the `renderLiquid` parameter to `true`:
+
+```csharp
+@await Orchard.MarkdownToHtmlAsync((string)Model.ContentItem.Content.MarkdownParagraph.Content.Markdown, renderLiquid: true)
 ```
 
 ## Markdown Configuration

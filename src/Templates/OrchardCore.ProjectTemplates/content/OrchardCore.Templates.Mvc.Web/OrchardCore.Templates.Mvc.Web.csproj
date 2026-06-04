@@ -11,6 +11,10 @@
     <Folder Include="wwwroot\" />
   </ItemGroup>
 
+  <Target Name="EnsureWwwRootExists" BeforeTargets="Build;Publish">
+    <MakeDir Directories="$(MSBuildProjectDirectory)\wwwroot" />
+  </Target>
+
   <ItemGroup>
     <PackageReference Include="OrchardCore.Application.Mvc.Targets" Version="$(TemplateOrchardPackageVersion)" />
   </ItemGroup>

@@ -30,7 +30,89 @@ public class AttachedMediaFieldFileService
     }
 
     public string MediaFieldsFolder { get; }
+
     public string MediaFieldsTempSubFolder { get; }
+
+    /// <summary>
+    /// Copies the files to a folder specific for the content item.
+    /// </summary>
+    /// <param name="paths">The paths of the files to copy.</param>
+    /// <param name="contentItem">The content item to which the files belong.</param>
+    /// <returns>The updated paths of the copied files.</returns>
+    public async Task<string[]> CopyFilesAsync(string[] paths, ContentItem contentItem)
+    {
+        var updatedPaths = (string[])paths.Clone();
+        for (var i = 0; i < paths.Length; i++)
+        {
+            var path = paths[i];
+            if (string.IsNullOrEmpty(path))
+            {
+                continue;
+            }
+
+            var sourceFileInfo = await _fileStore.GetFileInfoAsync(path);
+            if (sourceFileInfo == null)
+            {
+                // File not found — keep the reference so the user can see which files are missing.
+                continue;
+            }
+
+            var targetDir = GetContentItemFolder(contentItem);
+            var finalFileName = sourceFileInfo.Name;
+            var finalFilePath = _fileStore.Combine(targetDir, finalFileName);
+
+            await _fileStore.TryCreateDirectoryAsync(targetDir);
+
+            if (await _fileStore.GetFileInfoAsync(finalFilePath) is null)
+            {
+                await _fileStore.CopyFileAsync(path, finalFilePath);
+            }
+
+            updatedPaths[i] = finalFilePath;
+        }
+
+        return updatedPaths;
+    }
+
+    /// <summary>
+    /// Moves an existing file into the content item's attached media folder using the attached editor naming convention.
+    /// </summary>
+    public async Task<string> MoveFileToContentItemFolderAsync(string path, ContentItem contentItem)
+    {
+        if (string.IsNullOrEmpty(path))
+        {
+            return path;
+        }
+
+        var sourceFileInfo = await _fileStore.GetFileInfoAsync(path);
+        if (sourceFileInfo == null)
+        {
+            // File not found — keep the reference so the user can see which files are missing.
+            return path;
+        }
+
+        var targetDir = GetContentItemFolder(contentItem);
+        var finalFileName = (await GetFileHashAsync(path)) + GetFileExtension(path);
+        var finalFilePath = _fileStore.Combine(targetDir, finalFileName);
+
+        if (string.Equals(_fileStore.NormalizePath(path), finalFilePath, StringComparison.OrdinalIgnoreCase))
+        {
+            return path;
+        }
+
+        await _fileStore.TryCreateDirectoryAsync(targetDir);
+
+        if (await _fileStore.GetFileInfoAsync(finalFilePath) is null)
+        {
+            await _fileStore.MoveFileAsync(path, finalFilePath);
+        }
+        else
+        {
+            await _fileStore.TryDeleteFileAsync(path);
+        }
+
+        return finalFilePath;
+    }
 
     /// <summary>
     /// Removes the assets attached to a content item through an attached media field.
@@ -122,11 +204,6 @@ public class AttachedMediaFieldFileService
 
     }
 
-    private string GetContentItemFolder(ContentItem contentItem)
-    {
-        return _fileStore.Combine(MediaFieldsFolder, contentItem.ContentType, contentItem.ContentItemId);
-    }
-
     private async Task<string> GetFileHashAsync(string filePath)
     {
         using var fs = await _fileStore.GetFileStreamAsync(filePath);
@@ -153,4 +230,7 @@ public class AttachedMediaFieldFileService
             await _fileStore.TryDeleteDirectoryAsync(previousDirPath);
         }
     }
+
+    internal string GetContentItemFolder(ContentItem contentItem)
+        => _fileStore.Combine(MediaFieldsFolder, contentItem.ContentType, contentItem.ContentItemId);
 }

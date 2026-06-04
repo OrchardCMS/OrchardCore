@@ -12,6 +12,10 @@
     <Folder Include="Localization\" />
   </ItemGroup>
 
+  <Target Name="EnsureWwwRootExists" BeforeTargets="Build;Publish">
+    <MakeDir Directories="$(MSBuildProjectDirectory)\wwwroot;$(MSBuildProjectDirectory)\Localization" />
+  </Target>
+
   <!-- Watcher include and excludes -->
   <ItemGroup>
       <Watch Include="**\*.cs" Exclude="Recipes\**;Assets\**;node_modules\**\*;**\*.js.map;obj\**\*;bin\**\*" />

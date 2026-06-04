@@ -3,7 +3,7 @@ namespace OrchardCore.Media.Core.Helpers;
 public static class FileSizeHelpers
 {
     private static string[] _fileSizeUnits = ["KB", "MB", "GB", "TB", "PB", "EB"];
-    
+
     /// <summary>
     /// Formats <paramref name="bytes"/> as text, matching the closest byte unit. For example "1050" becomes "1.02 KB". 
     /// </summary>
@@ -15,7 +15,7 @@ public static class FileSizeHelpers
             new { Value = (decimal)bytes, Unit = "B" },
             (item, unit) => item.Value > 1024 ? new { Value = item.Value / 1024, Unit = unit } : item);
 
-        var multiplier = (decimal)Math.Pow(10, digits); 
+        var multiplier = (decimal)Math.Pow(10, digits);
 
         return $"{Math.Floor(result.Value * multiplier) / multiplier} {result.Unit}";
     }

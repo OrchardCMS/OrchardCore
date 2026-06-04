@@ -1,4 +1,5 @@
 @using OrchardCore.ContentManagement.Metadata.Models
+@using OrchardCore.ContentTypes
 @using OrchardCore.Localization
 @using OrchardCore.Flows.Models
 @using OrchardCore.Localization.Data
@@ -9,7 +10,7 @@
 @{
     ContentItem contentItem = Model.ContentItem;
     var contentTypeDefinition = await ContentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
-    var contentTypeDisplayText = D[contentTypeDefinition.DisplayName, "Content Types"];
+    var contentTypeDisplayText = D[contentTypeDefinition.DisplayName, DataLocalizationContext.ContentType];
     var contentItemDisplayText = contentItem.ContentItem.DisplayText;
     var widgetContentTypes = (IEnumerable<ContentTypeDefinition>)Model.ContainedContentTypes;
 
@@ -64,7 +65,7 @@
                                        data-contenttypes-name="@Model.ContentTypesName"
                                        data-contentitems-name="@Model.ContentItemsName"
                                        data-widget-type="@type.Name"
-                                       href="javascript:;">@D[type.DisplayName, "Content Types"]</a>
+                                       href="javascript:;">@D[type.DisplayName, DataLocalizationContext.ContentType]</a>
                                 </li>
                             }
                         </ul>

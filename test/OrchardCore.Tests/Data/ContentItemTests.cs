@@ -178,7 +178,7 @@ public class ContentItemTests
     {
         var contentItem = CreateContentItemWithMyPart();
         JsonNode contentItemJson = contentItem.Content;
-        JsonNode contentPartJson = contentItem.As<MyPart>().Content;
+        JsonNode contentPartJson = contentItem.GetOrCreate<MyPart>().Content;
 
         // The content part should be selectable from the content item.
         var selectedItemNode = contentItemJson.SelectNode("MyPart");
@@ -215,7 +215,7 @@ public class ContentItemTests
     {
         var contentItem = CreateContentItemWithMyPart();
         contentItem.Alter<MyPart>(x => x.Text = "test");
-        Assert.Equal("test", contentItem.As<MyPart>().Text);
+        Assert.Equal("test", contentItem.GetOrCreate<MyPart>().Text);
         Assert.True(contentItem.Content.Remove("MyPart"));
     }
 

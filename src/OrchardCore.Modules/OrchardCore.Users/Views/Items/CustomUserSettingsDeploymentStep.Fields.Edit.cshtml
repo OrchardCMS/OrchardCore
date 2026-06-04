@@ -1,29 +1,31 @@
 @model CustomUserSettingsDeploymentStepViewModel
 
-<h5>@T["Custom User Settings"]</h5>
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
+        <h5>@T["Custom User Settings"]</h5>
+    </div>
+</div>
 
-<div class="mb-3 mt-4 mb-5">
-    <div class="row">
-        <div class="col">
-            <div class="form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="IncludeAll" role="button" data-bs-toggle="collapse" data-bs-target=".collapse"
-                        aria-expanded="false"/>
-                    @T["Include all custom user settings."]
-                </label>
-            </div>
+<div class="ocat-wrapper" asp-validation-class-for="IncludeAll">
+    <div class="ocat-end-offset">
+        <div class="form-check">
+            <label class="form-check-label">
+                <input class="form-check-input" asp-for="IncludeAll" role="button" data-bs-toggle="collapse" data-bs-target=".collapse"
+                    aria-expanded="false"/>
+                @T["Include all custom user settings."]
+            </label>
         </div>
     </div>
 </div>
 
-<div class="collapse mt-4 mb-5 @(Model.IncludeAll ? String.Empty : "show")">
-    <div class="row">
-        <div class="col-small">
+<div class="collapse @(Model.IncludeAll ? String.Empty : "show")">
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
             <span class="hint">@T["The custom user settings to add as part of the plan."]</span>
         </div>
     </div>
-    <div class="row">
-        <div class="col-small">
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
             <ul class="list-group">
                 @foreach (var settingsTypeName in Model.AllSettingsTypeNames)
                 {

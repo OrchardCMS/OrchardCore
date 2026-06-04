@@ -118,5 +118,9 @@
         padding: 0.1rem 0.4rem;
         border-radius: var(--bs-border-radius, 2px);
         white-space: nowrap;
+
+        &:empty {
+            display: none !important;
+        }
     }
 }

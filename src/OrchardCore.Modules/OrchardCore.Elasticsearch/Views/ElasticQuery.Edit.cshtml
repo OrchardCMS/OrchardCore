@@ -1,0 +1,39 @@
+@model ElasticQueryViewModel
+
+<style asp-name="codemirror"></style>
+<script asp-name="codemirror" at="Foot"></script>
+<script asp-name="codemirror-mode-javascript" at="Foot"></script>
+
+<div class="ocat-wrapper">
+    <label asp-for="Index" class="ocat-label">@T["Index"]</label>
+    <div class="ocat-end">
+    <select asp-for="Index" class="form-select" asp-items="Model.Indexes">
+        <option value="">@T["Select an index"]</option>
+    </select>
+    <span class="hint">@T["The Elasticsearch index to search on"]</span>
+    </div>
+</div>
+
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" asp-for="ReturnContentItems" checked="@Model.ReturnContentItems" />
+        <label class="form-check-label" asp-for="ReturnContentItems">@T["Return Content Items"]</label>
+        <span class="hint dashed">@T["Check to return the corresponding content items."]</span>
+    </div>
+    </div>
+</div>
+
+<div class="ocat-wrapper">
+    <label asp-for="Query" class="ocat-label">@T["Query"]</label>
+    <div class="ocat-end">
+    <textarea asp-for="Query" rows="12" class="form-control"></textarea>
+    <span class="hint">@T["The search query uses the Elasticsearch format. Some documentation can be found here <a target=\"_blank\" href=\"https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html\">https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html</a>"]</span>
+    </div>
+</div>
+
+<script at="Foot">
+    $(function () {
+        CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Query)'), { mode: "javascript", json: true, lineNumbers: true, viewportMargin: Infinity });
+    });
+</script>

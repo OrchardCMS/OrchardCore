@@ -11,6 +11,7 @@ internal sealed class MediaCommands
     public const string FormatCommand = "format";
     public const string BackgroundColorCommand = "bgcolor";
     public const string QualityCommand = "quality";
+    public const string AutoOrientCommand = "autoorient";
 
     // Backing properties (null means "not set").
     public string? Width { get; set; }
@@ -20,6 +21,7 @@ internal sealed class MediaCommands
     public string? Format { get; set; }
     public string? BackgroundColor { get; set; }
     public string? Quality { get; set; }
+    public string? AutoOrient { get; set; }
 
     public MediaCommands() { }
 
@@ -49,6 +51,9 @@ internal sealed class MediaCommands
                     break;
                 case BackgroundColorCommand:
                     BackgroundColor = value;
+                    break;
+                case AutoOrientCommand:
+                    AutoOrient = value;
                     break;
                 default:
                     // Unknown keys are ignored.
@@ -86,6 +91,10 @@ internal sealed class MediaCommands
         if (!string.IsNullOrWhiteSpace(Quality))
         {
             yield return new KeyValuePair<string, string>(QualityCommand, Quality);
+        }
+        if (!string.IsNullOrWhiteSpace(AutoOrient))
+        {
+            yield return new KeyValuePair<string, string>(AutoOrientCommand, AutoOrient);
         }
     }
 }

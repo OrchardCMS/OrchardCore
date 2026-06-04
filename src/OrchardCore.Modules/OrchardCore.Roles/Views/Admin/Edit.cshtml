@@ -35,10 +35,12 @@
 <form asp-action="@(Model.IsCloning ? "Clone" : "Edit")" asp-route-id="@ViewContext.HttpContext.Request.RouteValues["id"]" method="post" class="no-multisubmit">
     @if (Model.IsCloning)
     {
-        <div class="mb-3" asp-validation-class-for="Name">
-            <label asp-for="Name" class="form-label">@T["Role name"]</label>
+        <div class="ocat-wrapper" asp-validation-class-for="Name">
+            <label asp-for="Name" class="ocat-label">@T["Role name"]</label>
+            <div class="ocat-end">
             <input asp-for="Name" class="form-control" autofocus />
             <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
         </div>
     }
     <div class="mb-3" asp-validation-class-for="RoleDescription">
@@ -72,7 +74,7 @@
 
             @foreach (var group in Model.RoleCategoryPermissions.OrderBy(x => x.Key.Title).ThenBy(x => x.Key.Source))
             {
-                var permissionsContext = $"Permissions;{group.Key.Title}";
+                var permissionsContext = $"Permissions{Constants.ContextSeparator}{group.Key.Title}";
                 <fieldset class="permissions-list">
                     <legend>
                         <span>@D[group.Key.Title, permissionsContext]</span>
@@ -126,9 +128,11 @@
             }
         </div>
     }
-    <div class="mb-3">
-        <button class="btn btn-primary save" type="submit">@T["Save"]</button>
-        <a class="btn btn-secondary cancel" role="button" asp-route-action="Index">@T["Cancel"]</a>
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
+            <button class="btn btn-primary save" type="submit">@T["Save"]</button>
+            <a class="btn btn-secondary cancel" role="button" asp-route-action="Index">@T["Cancel"]</a>
+        </div>
     </div>
 </form>
 

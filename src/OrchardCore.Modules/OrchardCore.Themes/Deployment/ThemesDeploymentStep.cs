@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Localization;
 using OrchardCore.Deployment;
 
 namespace OrchardCore.Themes.Deployment;
@@ -10,5 +11,11 @@ public class ThemesDeploymentStep : DeploymentStep
     public ThemesDeploymentStep()
     {
         Name = "Themes";
+    }
+
+    public ThemesDeploymentStep(IStringLocalizer<ThemesDeploymentStep> S)
+        : this()
+    {
+        Category = S["Theming"];
     }
 }

@@ -1,4 +1,3 @@
-using OrchardCore.Tests.Modules.OrchardCore.Users;
 using OrchardCore.Users;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;

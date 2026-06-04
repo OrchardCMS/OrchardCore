@@ -1,6 +1,4 @@
 @using System.Text.Json
-@using OrchardCore
-
 @model MenuItemPermissionViewModel
 
 @{
@@ -11,10 +9,10 @@
 <script asp-name="menu-permission-picker" asp-src="~/OrchardCore.Menu/Scripts/menu-permission-picker.min.js" debug-src="~/OrchardCore.Menu/Scripts/menu-permission-picker.js" at="Foot" depends-on="vuejs:2,vue-multiselect:2"></script>
 <style asp-name="menu-permission-picker" asp-src="~/OrchardCore.Menu/Styles/menu-permission-picker.min.css" debug-src="~/OrchardCore.Menu/Styles/menu-permission-picker.css" depends-on="vue-multiselect:2"></style>
 
-<div class="@Orchard.GetWrapperClasses()">
+<div class="ocat-wrapper">
 
-    <label asp-for="SelectedPermissionNames" class="@Orchard.GetLabelClasses()">@T["Permissions"]</label>
-    <div class="@Orchard.GetEndClasses()">
+    <label asp-for="SelectedPermissionNames" class="ocat-label">@T["Permissions"]</label>
+    <div class="ocat-end">
         <div id="PermissionPicker" class="vue-multiselect" data-selected-items="@selectedItems" data-all-items="@allItems" v-cloak>
 
             <ul class="mb-1 list-group w-xl-50 permission-picker-default__list" v-show="arrayOfItems.length">
@@ -29,7 +27,7 @@
                 </li>
             </ul>
 
-            <div class="mb-3">
+            <div>
                 <div class="w-xl-50">
                     <input asp-for="SelectedPermissionNames" type="hidden" v-model="selectedNames" />
                     <vue-multiselect v-model="value"

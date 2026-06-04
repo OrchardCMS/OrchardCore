@@ -162,6 +162,63 @@ a:hover {
 }
 
 /* Import the components files */
+.ocat-wrapper {
+  margin-bottom: 1rem;
+}
+
+.ocat-label {
+  display: inline-block;
+  margin-bottom: 0.25rem;
+}
+
+.ocat-label-required::after {
+  color: var(--bs-danger-text-emphasis);
+  content: " *";
+}
+
+/*
+.ocat-end {
+    // Default: no additional layout constraints (stacked form).
+}
+
+.ocat-end-offset {
+    // Default: no offset in stacked layout.
+}
+
+.ocat-start {
+    // Default: no start column in stacked layout.
+}
+*/
+.ocat-limited-wrapper {
+  margin-bottom: 1rem;
+}
+
+.ocat-limited {
+  width: 100%;
+  max-width: 100%;
+}
+
+@media (min-width: 768px) {
+  .ocat-limited {
+    width: 50%;
+    max-width: 50%;
+  }
+}
+
+@media (min-width: 992px) {
+  .ocat-limited {
+    width: 33.33333333%;
+    max-width: 33.333%;
+  }
+}
+
+@media (min-width: 1400px) {
+  .ocat-limited {
+    width: 25%;
+    max-width: 25%;
+  }
+}
+
 .action-bar {
   top: 3.3rem;
   z-index: var(--oc-action-bar-zindex);
@@ -172,8 +229,20 @@ a:hover {
 }
 
 .ta-badge {
+  --ta-badge-extra-padding: var(--bs-border-width);
   border-radius: var(--bs-border-radius-pill) !important;
+  padding: calc(var(--bs-badge-padding-y) + var(--ta-badge-extra-padding)) calc(var(--bs-badge-padding-x) + var(--ta-badge-extra-padding));
+}
+
+.ta-badge:not(.text-bg-primary, .text-bg-secondary, .text-bg-success, .text-bg-danger, .text-bg-warning, .text-bg-info, .text-bg-light, .text-bg-dark) {
+  --ta-badge-extra-padding: 0px;
   border: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color) !important;
+}
+
+.badge-show-more {
+  --bs-btn-font-size: 0.75em;
+  --bs-btn-padding-y: 0;
+  --bs-btn-padding-x: 0.25rem;
 }
 
 @keyframes bs-notify-fadeOut {
@@ -994,29 +1063,44 @@ input[type=password]::-ms-clear {
   display: none;
 }
 
+.has-filter,
+.has-search {
+  position: relative;
+}
+
 .has-filter .form-control,
 .has-search .form-control {
   color: var(--bs-body-color);
 }
 
-[dir="ltr"] .has-filter .form-control,
-[dir="ltr"] .has-search .form-control {
+[dir="ltr"] .has-filter .form-control {
   padding-left: 2rem;
 }
 
-[dir="rtl"] .has-filter .form-control,
-[dir="rtl"] .has-search .form-control {
+[dir="rtl"] .has-filter .form-control {
   padding-right: 2rem;
+}
+
+[dir="ltr"] .has-search .form-control {
+  padding-left: 2.5rem;
+}
+
+[dir="rtl"] .has-search .form-control {
+  padding-right: 2.5rem;
 }
 
 .has-filter .form-control-feedback,
 .has-search .form-control-feedback {
   position: absolute;
+  top: 50%;
   z-index: 10;
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 1rem;
-  height: 2rem;
-  line-height: 1rem;
+  height: 1rem;
+  line-height: 1;
+  transform: translateY(-50%);
   text-align: center;
   pointer-events: none;
   color: var(--bs-secondary);
@@ -1024,24 +1108,20 @@ input[type=password]::-ms-clear {
 
 [dir="ltr"] .has-filter .form-control-feedback,
 [dir="ltr"] .has-search .form-control-feedback {
-  left: 1.75rem;
+  left: 1rem;
 }
 
 [dir="rtl"] .has-filter .form-control-feedback,
 [dir="rtl"] .has-search .form-control-feedback {
-  right: 1.75rem;
-}
-
-.has-filter .form-control-feedback {
-  top: 0.25rem;
+  right: 1rem;
 }
 
 [dir="ltr"] .has-filter .form-control-feedback {
-  left: 4.25rem;
+  left: 4.5rem;
 }
 
 [dir="rtl"] .has-filter .form-control-feedback {
-  right: 4.25rem;
+  right: 4.5rem;
 }
 
 [dir="ltr"] [dir=rtl] .has-filter .form-control-feedback {
@@ -1053,26 +1133,21 @@ input[type=password]::-ms-clear {
 }
 
 [dir="ltr"] .has-search .form-control-feedback {
-  left: 1.75rem;
+  left: 1rem;
 }
 
 [dir="rtl"] .has-search .form-control-feedback {
-  right: 1.75rem;
-}
-
-.has-search:not(.input-group) .form-control-feedback,
-.has-filter:not(.input-group) .form-control-feedback {
-  top: 1.25rem;
+  right: 1rem;
 }
 
 [dir="ltr"] .has-search:not(.input-group) .form-control-feedback,
 [dir="ltr"] .has-filter:not(.input-group) .form-control-feedback {
-  left: 1.75rem;
+  left: 1rem;
 }
 
 [dir="rtl"] .has-search:not(.input-group) .form-control-feedback,
 [dir="rtl"] .has-filter:not(.input-group) .form-control-feedback {
-  right: 1.75rem;
+  right: 1rem;
 }
 
 .has-filter .btn:not(.show), .has-filter .button:not(.show) {

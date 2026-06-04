@@ -19,34 +19,42 @@ public class SecureMediaMiddleware
         _assetsRequestPath = mediaOptions.Value.AssetsRequestPath;
     }
 
-    public async Task Invoke(HttpContext context, IAuthorizationService authorizationService, IAuthenticationService authenticationService)
+    public Task Invoke(HttpContext context, IAuthorizationService authorizationService, IAuthenticationService authenticationService)
     {
         var validateAssetsRequestPath = context.Request.Path.StartsWithNormalizedSegments(_assetsRequestPath, StringComparison.OrdinalIgnoreCase, out var subPath);
         if (!validateAssetsRequestPath)
         {
-            await _next(context);
-
-            return;
+            return _next(context);
         }
 
-        if (!(context.User.Identity?.IsAuthenticated ?? false))
-        {
-            // Allow bearer (API) authentication too.
-            var authenticateResult = await authenticationService.AuthenticateAsync(context, "Api");
+        return Awaited(context, authorizationService, authenticationService, _next, subPath);
 
-            if (authenticateResult.Succeeded)
+        static async Task Awaited(
+            HttpContext context,
+            IAuthorizationService authorizationService,
+            IAuthenticationService authenticationService,
+            RequestDelegate next,
+            PathString subPath)
+        {
+            if (!(context.User.Identity?.IsAuthenticated ?? false))
             {
-                context.User = authenticateResult.Principal;
-            }
-        }
+                // Allow bearer (API) authentication too.
+                var authenticateResult = await authenticationService.AuthenticateAsync(context, "Api");
 
-        if (await authorizationService.AuthorizeAsync(context.User, MediaPermissions.ViewMedia, (object)subPath.ToString()))
-        {
-            await _next(context);
-        }
-        else
-        {
-            context.Response.StatusCode = StatusCodes.Status404NotFound;
+                if (authenticateResult.Succeeded)
+                {
+                    context.User = authenticateResult.Principal;
+                }
+            }
+
+            if (await authorizationService.AuthorizeAsync(context.User, MediaPermissions.ViewMedia, (object)subPath.ToString()))
+            {
+                await next(context);
+            }
+            else
+            {
+                context.Response.StatusCode = StatusCodes.Status404NotFound;
+            }
         }
     }
 }

@@ -19,7 +19,7 @@ There are different ways to create sites and modules for Orchard Core. You can l
 
 You can install the latest released templates using this command:
 
-```dotnet new install OrchardCore.ProjectTemplates::2.2.1-*```
+```dotnet new install OrchardCore.ProjectTemplates@2.2.1-*```
 
 !!! note
     To use the development branch of the template add `--nuget-source https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json`
@@ -181,7 +181,7 @@ Application started. Press Ctrl+C to shut down.
 
 Open a browser on <https://localhost:5001>
 
-If you have not already setup your site, select __Blank Site__ as the recipe, and use __SQLite__ as the database.
+If you have not already set up your site, select __Blank Site__ as the recipe, and use __SQLite__ as the database.
 
 Once your site is ready, you should see a __The page could not be found.__ message which is expected for a __Blank Site__ recipe.
 

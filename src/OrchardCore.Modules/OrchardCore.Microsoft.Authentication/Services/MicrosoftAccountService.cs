@@ -25,7 +25,7 @@ public class MicrosoftAccountService : IMicrosoftAccountService
     public async Task<MicrosoftAccountSettings> LoadSettingsAsync()
     {
         var container = await _siteService.LoadSiteSettingsAsync();
-        return container.As<MicrosoftAccountSettings>();
+        return container.GetOrCreate<MicrosoftAccountSettings>();
     }
 
     public async Task UpdateSettingsAsync(MicrosoftAccountSettings settings)

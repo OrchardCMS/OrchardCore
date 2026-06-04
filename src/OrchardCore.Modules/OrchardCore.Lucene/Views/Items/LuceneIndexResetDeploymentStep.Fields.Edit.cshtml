@@ -1,0 +1,43 @@
+@model LuceneIndexResetDeploymentStepViewModel
+
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
+        <h5>@T["Reset Lucene Search Indices"]</h5>
+    </div>
+</div>
+
+<div class="ocat-wrapper" asp-validation-class-for="IncludeAll">
+    <div class="ocat-end-offset">
+        <div class="form-check">
+            <input class="form-check-input" asp-for="IncludeAll" data-bs-toggle="collapse" role="button" data-bs-target="#indexes-list" aria-expanded="false" aria-controls="indexes-list" />
+            <label class="form-check-label" asp-for="IncludeAll">@T["Include all Lucene search indices."]</label>
+        </div>
+    </div>
+</div>
+
+<div id="indexes-list" class="collapse @(Model.IncludeAll ? string.Empty : "show")">
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
+            <span class="hint">@T["The Lucene Search Indices to reset as part of the plan."]</span>
+        </div>
+    </div>
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
+            <ul class="list-group">
+                @foreach (var indexName in Model.AllIndexNames)
+                {
+                    var isChecked = Model.IndexNames?.Contains(indexName);
+
+                    <li class="list-group-item">
+                        <div class="form-check">
+                            <label class="form-check-label">
+                                <input class="form-check-input" type="checkbox" name="@Html.NameFor(m => m.IndexNames)" value="@indexName" checked="@isChecked">
+                                @indexName
+                            </label>
+                        </div>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+</div>

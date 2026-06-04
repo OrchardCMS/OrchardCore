@@ -1,5 +1,12 @@
+@using OrchardCore
+@using OrchardCore.AdminMenu
+@using OrchardCore.AdminMenu.Services
+@using OrchardCore.Localization.Data
 @model ShapeViewModel<PlaceholderAdminNode>
-
+@inject IDataLocalizer D
+@{
+    string localizedAdminMenuItemLinkText = D[Model.Value.LinkText, OrchardCore.AdminMenu.DataLocalizationContext.AdminMenu(Model.Value.MenuName)];
+}
 <div class="@(Model.Value.Enabled ? "" : "disabled")">
-    <span>@Model.Value.LinkText <span class="text-muted dashed">@T["Placeholder"]</span></span>
+    <span>@localizedAdminMenuItemLinkText <span class="text-muted dashed">@T["Placeholder"]</span></span>
 </div>

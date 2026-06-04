@@ -92,6 +92,9 @@
   border-radius: var(--bs-border-radius, 2px);
   white-space: nowrap;
 }
+.workflow-canvas .outcome-label:empty {
+  display: none !important;
+}
 
 .modal-activities h4.card-title .svg-inline--fa {
   margin-right: 0.5em;

@@ -1,4 +1,6 @@
+@using OrchardCore.Localization.Data
 @model AdminMenuListViewModel
+@inject IDataLocalizer D
 @{
     int startIndex = (Model.Pager.Page - 1) * (Model.Pager.PageSize) + 1;
     int endIndex = startIndex + Model.AdminMenu.Count - 1;
@@ -80,7 +82,7 @@
                             </ul>
                         </div>
                     </div>
-                    <a asp-controller="Node" asp-action="List" asp-route-id="@entry.AdminMenu.Id" class="tree-name-link">@entry.AdminMenu.Name</a>
+                    <a asp-controller="Node" asp-action="List" asp-route-id="@entry.AdminMenu.Id" class="tree-name-link">@D[entry.AdminMenu.Name, "Admin Menus"]</a>
                 </li>
             }
         }

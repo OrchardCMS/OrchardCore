@@ -31,5 +31,6 @@ public class DataLocalizedString
 
     public bool ResourceNotFound { get; }
 
-    public override string ToString() => $"{Context}.{Name}";
+    /// <inheritdoc/>
+    public override string ToString() => Value;
 }

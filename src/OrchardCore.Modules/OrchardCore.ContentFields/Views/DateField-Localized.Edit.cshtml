@@ -1,18 +1,19 @@
 @model OrchardCore.ContentFields.ViewModels.EditDateFieldViewModel
+@using OrchardCore.ContentFields
 @using OrchardCore.Localization.Data
 @inject IDataLocalizer D
 @{
     var settings = Model.PartFieldDefinition.GetSettings<DateFieldSettings>();
     var language = Orchard.CultureName().Split('-')[0];
     var datepickerId = Html.IdFor(m => m.Value);
-    string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), $"Content Fields{Constants.ContextSeparator}{Model.PartFieldDefinition.PartDefinition.Name}"];
+    string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), DataLocalizationContext.ContentField(Model.PartFieldDefinition.PartDefinition.Name)];
 }
 
-<div class="@Orchard.GetWrapperClasses()">
-    <label asp-for="Value" class="@Orchard.GetLabelClasses(inputRequired: settings.Required)">@localizedFieldName</label>
-    <div class="@Orchard.GetEndClasses()">
-        <div class="@Orchard.GetLimitedWidthWrapperClasses()">
-            <div class="@Orchard.GetLimitedWidthClasses()">
+<div class="ocat-wrapper">
+    <label asp-for="Value" class="ocat-label @(settings.Required ? "ocat-label-required" : "")">@localizedFieldName</label>
+    <div class="ocat-end">
+        <div class="ocat-limited-wrapper">
+            <div class="ocat-limited">
                 <input asp-for="Value" type="text" class="form-control content-preview-select datepicker" />
                 <span asp-validation-for="Value"></span>
             </div>

@@ -45,7 +45,7 @@ public class WorkflowTrimmingService : IWorkflowTrimmingService
         {
             return 0;
         }
-        
+
         var workflowInstances = await _session
             .Query<Workflow, WorkflowIndex>(x => x.WorkflowStatus.IsIn(settings.Statuses) && x.CreatedUtc <= dateThreshold)
             .OrderBy(x => x.Id)

@@ -23,6 +23,7 @@ public class ImageResizeTagHelper : TagHelper
     private const string ImageProfileAttributeName = ImageSizeAttributePrefix + "profile";
     private const string ImageAnchorAttributeName = ImageSizeAttributePrefix + "anchor";
     private const string ImageBackgroundColorAttributeName = ImageSizeAttributePrefix + "bgcolor";
+    private const string ImageAutoOrientAttributeName = ImageSizeAttributePrefix + "autoorient";
 
     private readonly IMediaProfileService _mediaProfileService;
     private readonly MediaOptions _mediaOptions;
@@ -52,6 +53,9 @@ public class ImageResizeTagHelper : TagHelper
 
     [HtmlAttributeName(ImageBackgroundColorAttributeName)]
     public string ImageBackgroundColor { get; set; }
+
+    [HtmlAttributeName(ImageAutoOrientAttributeName)]
+    public bool? ImageAutoOrient { get; set; }
 
     [HtmlAttributeName("src")]
     public string Src { get; set; }
@@ -87,7 +91,7 @@ public class ImageResizeTagHelper : TagHelper
             queryStringParams = await _mediaProfileService.GetMediaProfileCommands(ImageProfile);
         }
 
-        var resizedSrc = ImageSharpUrlFormatter.GetImageResizeUrl(imgSrc, queryStringParams, ImageWidth, ImageHeight, ResizeMode, ImageQuality, ImageFormat, ImageAnchor, ImageBackgroundColor);
+        var resizedSrc = ImageSharpUrlFormatter.GetImageResizeUrl(imgSrc, queryStringParams, ImageWidth, ImageHeight, ResizeMode, ImageQuality, ImageFormat, ImageAnchor, ImageBackgroundColor, ImageAutoOrient);
 
         if (_mediaOptions.UseTokenizedQueryString)
         {

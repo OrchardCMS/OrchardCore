@@ -5,30 +5,29 @@
     var allDeploymentPlanNames = Model.AllDeploymentPlanNames;
 }
 
-<h5>@T["Deployment Plans"]</h5>
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
+        <h5>@T["Deployment Plans"]</h5>
+    </div>
+</div>
 
-<div class="mb-3 mt-4 mb-5">
-    <div class="row">
-        <div class="col">
-            <div class="form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="IncludeAll"
-                           data-reverseToggle=".dpsel" />
-                    @T["Include all deployment plans."]
-                </label>
-            </div>
+<div class="ocat-wrapper" asp-validation-class-for="IncludeAll">
+    <div class="ocat-end-offset">
+        <div class="form-check">
+            <input class="form-check-input" asp-for="IncludeAll" data-reverseToggle=".dpsel" />
+            <label class="form-check-label" asp-for="IncludeAll">@T["Include all deployment plans."]</label>
         </div>
     </div>
 </div>
 
-<div class="dpsel mt-4 mb-5 @(Model.IncludeAll ? "collapse" : "show")">
-    <div class="row">
-        <div class="col-small col-12 col-sm-9 col-md-6 col-lg-3 col-xl-3">
+<div class="dpsel @(Model.IncludeAll ? "collapse" : "show")">
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
             <span class="hint">@T["The deployment plans to add as part of the plan."]</span>
         </div>
     </div>
-    <div class="row">
-        <div class="col-small col-12 col-sm-9 col-md-6 col-lg-3 col-xl-3">
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
             <ul class="list-group">
                 @foreach (var deploymentPlanName in allDeploymentPlanNames)
                 {

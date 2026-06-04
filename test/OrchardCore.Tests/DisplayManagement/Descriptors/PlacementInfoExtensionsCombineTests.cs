@@ -1,5 +1,4 @@
 using OrchardCore.DisplayManagement.Descriptors;
-using OrchardCore.DisplayManagement.Shapes;
 
 namespace OrchardCore.Tests.DisplayManagement.Descriptors;
 

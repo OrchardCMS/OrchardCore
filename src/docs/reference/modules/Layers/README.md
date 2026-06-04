@@ -69,3 +69,28 @@ You must have declared the corresponding zones as sections in your theme:
 ## Video
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/NCvytsdED_o" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+## Recipe Configuration
+
+Layer settings can be configured using the `Settings` recipe step:
+
+```json
+{
+  "steps": [
+    {
+      "name": "settings",
+      "LayerSettings": {
+        "Zones": [
+          "Content",
+          "Footer",
+          "Header"
+        ]
+      }
+    }
+  ]
+}
+```
+
+| Property | Type            | Description                                       |
+|----------|-----------------|---------------------------------------------------|
+| `Zones`  | Array of String | The list of available zones for widget placement. |

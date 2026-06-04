@@ -1,11 +1,11 @@
 # Modules Reference
 
-This is a comprehensive reference for the modules and their features available in Orchard Core. Under each of these pages, you'll find an overview of the given module with documentation on how to use and extend them.
+This is a comprehensive reference for the modules and their features available in Orchard Core. Under each of these pages, you'll find an overview of the given module with documentation on how to use and extend it.
 
 Check out the reference pages for each module under the following categories in the menu:
 
 - CMS Modules: Modules that contain content management features that all interact with content items in some way. E.g. the base content management module, the media management module, or modules related to search and indexing are here.
-- Core Modules: Modules that usually provide some fundamental features for a web app which is not connected to content management, or framework-like functionality that you can build on. These modules include e.g. user and role management, or the UI localization and background task management infrastructure.
+- Core Modules: Modules that usually provide some fundamental features for a web app that is not connected to content management, or framework-like functionality that you can build on. These modules include e.g. user and role management, or the UI localization and background task management infrastructure.
 
 The above distinction is also present in the Orchard Core source code with solution folders. However, this is just a logical categorization and technically all the modules are alike.
 
@@ -16,6 +16,7 @@ Here's a categorized overview of all built-in Orchard Core features at a glance.
 ### Admin
 
 - [Admin](modules/Admin/README.md)
+- [Admin Theme Conventions](themes/admin-theme.md)
 - [Admin Dashboard](modules/AdminDashboard/README.md)
 - [Admin Menu](modules/AdminMenu/README.md)
 - [Custom Settings](modules/CustomSettings/README.md)
@@ -31,16 +32,16 @@ Here's a categorized overview of all built-in Orchard Core features at a glance.
 ### Authentication and User Management
 
 - Authentication:
-  - [Microsoft](modules/Microsoft.Authentication/README.md)
-  - [Facebook](modules/Facebook/README.md)
-  - [X (Twitter)](modules/X/README.md)
-  - [GitHub](modules/GitHub/README.md)
-  - [Google](modules/Google/README.md)
+    - [Microsoft](modules/Microsoft.Authentication/README.md)
+    - [Facebook](modules/Facebook/README.md)
+    - [X (Twitter)](modules/X/README.md)
+    - [GitHub](modules/GitHub/README.md)
+    - [Google](modules/Google/README.md)
 - Users:
-  - [Overview](modules/Users/README.md)
-  - [Custom User Settings](modules/Users/CustomUserSettings/README.md)
-  - [Notifications](modules/Notifications/README.md)
-  - [Ticket store](modules/Users/TicketStore.md)
+    - [Overview](modules/Users/README.md)
+    - [Custom User Settings](modules/Users/CustomUserSettings/README.md)
+    - [Notifications](modules/Notifications/README.md)
+    - [Ticket Store](modules/Users/TicketStore.md)
 - [OpenId](modules/OpenId/README.md)
 - [Roles](modules/Roles/README.md)
 
@@ -49,28 +50,28 @@ Here's a categorized overview of all built-in Orchard Core features at a glance.
 - [Contents](modules/Contents/README.md)
 - [Content Types](modules/ContentTypes/README.md)
 - Content Parts:
-  - [Add Parts to your Content](modules/ContentParts/README.md)
-  - [Title](modules/Title/README.md)
-  - [Autoroute](modules/Autoroute/README.md)
-  - [Alias](modules/Alias/README.md)
-  - [Archive Later](modules/ArchiveLater/README.md)
-  - [Html](modules/Html/README.md)
-  - [Markdown](modules/Markdown/README.md)
-  - [List](modules/Lists/README.md)
-  - [Flow](modules/Flow/README.md)
-  - [Bag](modules/Flow/BagPart.md)
-  - [Publish Later](modules/PublishLater/README.md)
-  - [SEO Meta](modules/Seo/README.md)
+    - [Add Parts to your Content](modules/ContentParts/README.md)
+    - [Title](modules/Title/README.md)
+    - [Autoroute](modules/Autoroute/README.md)
+    - [Alias](modules/Alias/README.md)
+    - [Archive Later](modules/ArchiveLater/README.md)
+    - [Html](modules/Html/README.md)
+    - [Markdown](modules/Markdown/README.md)
+    - [List](modules/Lists/README.md)
+    - [Flow](modules/Flow/README.md)
+    - [Bag](modules/Flow/BagPart.md)
+    - [Publish Later](modules/PublishLater/README.md)
+    - [SEO Meta](modules/Seo/README.md)
 - [Content Fields](modules/ContentFields/README.md)
 - [Content Preview](modules/ContentPreview/README.md)
 - [Taxonomies](modules/Taxonomies/README.md)
 - [Feeds](modules/Feeds/README.md)
 - [Forms](modules/Forms/README.md)
 - Media:
-  - [Media](modules/Media/README.md)
-  - [Media Slugify](modules/Media.Slugify/README.md)
-  - [Media Amazon S3](modules/Media.AmazonS3/README.md)
-  - [Media Azure](modules/Media.Azure/README.md)
+    - [Media](modules/Media/README.md)
+    - [Media Slugify](modules/Media.Slugify/README.md)
+    - [Media Amazon S3](modules/Media.AmazonS3/README.md)
+    - [Media Azure](modules/Media.Azure/README.md)
 - [XML-RPC](modules/XmlRpc/README.md)
 - [Shortcodes](modules/Shortcodes/README.md)
 
@@ -82,6 +83,7 @@ Here's a categorized overview of all built-in Orchard Core features at a glance.
 - [Templates](modules/Templates/README.md)
 - [Placements](modules/Placements/README.md)
 - [Themes](modules/Themes/README.md)
+- [Admin Theme Conventions](themes/admin-theme.md)
 - [Liquid](modules/Liquid/README.md)
 - [Resources](modules/Resources/README.md)
 - [Rules](modules/Rules/README.md)
@@ -124,7 +126,7 @@ Here's a categorized overview of all built-in Orchard Core features at a glance.
 - [Deployment](modules/Deployment/README.md)
 - [Diagnostics](modules/Diagnostics/README.md)
 - [Remote Deployment](modules/Deployment.Remote/README.md)
-- [Sms](modules/Sms/README.md)
+- [SMS](modules/Sms/README.md)
 - [Azure Communication SMS](modules/Sms.Azure/README.md)
 
 ### Localization

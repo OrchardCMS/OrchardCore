@@ -1,4 +1,5 @@
 @model OrchardCore.ContentFields.ViewModels.EditLinkFieldViewModel
+@using OrchardCore.ContentFields
 @using OrchardCore.Mvc.Utilities
 @using OrchardCore.Localization.Data
 @inject IDataLocalizer D
@@ -8,12 +9,12 @@
     var urlClass = settings.Required ? "required" : null;
     var textClass = settings.LinkTextMode == LinkTextMode.Required ? "required" : null;
     var useFormFloating = string.IsNullOrWhiteSpace(settings.UrlPlaceholder) || string.IsNullOrWhiteSpace(settings.TextPlaceholder);
-    string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), $"Content Fields{Constants.ContextSeparator}{Model.PartFieldDefinition.PartDefinition.Name}"];
+    string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), DataLocalizationContext.ContentField(Model.PartFieldDefinition.PartDefinition.Name)];
 }
 
-<div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.Text)_FieldWrapper">
-    <label asp-for="Url" class="@Orchard.GetLabelClasses(inputRequired: settings.Required)">@localizedFieldName</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="@($"ocat-wrapper field-wrapper field-wrapper-{Model.PartFieldDefinition.PartDefinition.Name.HtmlClassify()}-{Model.PartFieldDefinition.Name.HtmlClassify()}" + (Model.PartFieldDefinition.IsNamedPart() ? $" field-wrapper-{Model.PartFieldDefinition.ContentTypePartDefinition.Name.HtmlClassify()}-{Model.PartFieldDefinition.Name.HtmlClassify()}" : string.Empty))" id="@Html.IdFor(x => x.Text)_FieldWrapper">
+    <label asp-for="Url" class="ocat-label @(settings.Required ? "ocat-label-required" : "")">@localizedFieldName</label>
+    <div class="ocat-end">
         <div class="row">
             <div class="col-md-6" asp-validation-class-for="Url">
                 <div class="@(useFormFloating ? "form-floating" : string.Empty)">
@@ -50,10 +51,10 @@
         </div>
         <div class="row">
             <div class="col-md-6" asp-validation-class-for="Target">
-                <label asp-for="Target" class="@Orchard.GetLabelClasses()">
+                <label asp-for="Target" class="ocat-label">
                     @T["Target"]
                 </label>
-                <div class="@Orchard.GetEndClasses()">
+                <div class="ocat-end">
                     <input asp-for="Target" list="targetOptions" class="form-control" />
                     <datalist id="targetOptions">
                         <option value="_self">@T["Opens the linked document in the same frame as it was clicked (default)."]</option>

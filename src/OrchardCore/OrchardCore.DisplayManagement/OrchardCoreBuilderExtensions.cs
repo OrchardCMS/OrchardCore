@@ -31,6 +31,15 @@ namespace Microsoft.Extensions.DependencyInjection;
 public static class OrchardCoreBuilderExtensions
 {
     /// <summary>
+    /// Enables HTML comments in rendered output that identify the shape bindings used during rendering.
+    /// </summary>
+    public static OrchardCoreBuilder EnableShapeDebugInformation(this OrchardCoreBuilder builder)
+    {
+        return builder.ConfigureServices(services =>
+            services.Configure<ShapeRenderingOptions>(options => options.WriteShapeDebugInformation = true));
+    }
+
+    /// <summary>
     /// Adds host and tenant level services for managing themes.
     /// </summary>
     public static OrchardCoreBuilder AddTheming(this OrchardCoreBuilder builder)
@@ -82,6 +91,7 @@ public static class OrchardCoreBuilderExtensions
 
                 services.AddScoped(typeof(IDisplayManager<>), typeof(DisplayManager<>));
                 services.AddScoped<IHtmlDisplay, DefaultHtmlDisplay>();
+                services.AddOptions<ShapeRenderingOptions>();
                 services.AddScoped<ILayoutAccessor, LayoutAccessor>();
                 services.AddScoped<IThemeManager, ThemeManager>();
                 services.AddScoped<IPageTitleBuilder, PageTitleBuilder>();

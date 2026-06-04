@@ -17,7 +17,7 @@ public class MenuItemContentTypeBuilder : IContentTypeBuilder
 
         contentItemType
             .Field<MenuItemsListQueryObjectType>(nameof(MenuItemsListPart).ToFieldName())
-            .Resolve(context => context.Source.As<MenuItemsListPart>());
+            .Resolve(context => context.Source.TryGet<MenuItemsListPart>(out var menuItemsListPart) ? menuItemsListPart : null);
 
         contentItemType.Interface<MenuItemInterface>();
     }

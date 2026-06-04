@@ -40,6 +40,24 @@ public class DataMigrationManagerTests
     }
 
     [Fact]
+    public async Task UpdateAsync_ShouldExecuteStaticDataMigration_CreateAndUpdateMethods()
+    {
+        // Arrange
+        StaticMigration1.Reset();
+        StaticMigration2.Reset();
+
+        var migrationManager = GetDataMigrationManager([new StaticMigration1(), new StaticMigration2()]);
+
+        // Act
+        await migrationManager.UpdateAsync("TestFeature");
+
+        // Assert
+        Assert.True(StaticMigration1.CreateCalled);
+        Assert.Equal(2, StaticMigration1.UpdateFromCalls);
+        Assert.True(StaticMigration2.CreateCalled);
+    }
+
+    [Fact]
     public async Task Uninstall_ShouldExecuteDataMigration_UninstallMethod()
     {
         // Arrange
@@ -53,6 +71,23 @@ public class DataMigrationManagerTests
         // Assert
         Assert.True(migration1.UninstallCalled);
         Assert.True(migration2.UninstallCalled);
+    }
+
+    [Fact]
+    public async Task Uninstall_ShouldExecuteStaticDataMigration_UninstallMethod()
+    {
+        // Arrange
+        StaticUninstallMigration1.Reset();
+        StaticUninstallMigration2.Reset();
+
+        var migrationManager = GetDataMigrationManager([new StaticUninstallMigration1(), new StaticUninstallMigration2()]);
+
+        // Act
+        await migrationManager.Uninstall("TestFeature");
+
+        // Assert
+        Assert.True(StaticUninstallMigration1.UninstallCalled);
+        Assert.True(StaticUninstallMigration2.UninstallCalled);
     }
 
     private static DataMigrationManager GetDataMigrationManager(IEnumerable<DataMigration> dataMigrations)
@@ -119,9 +154,7 @@ public class DataMigrationManagerTests
             return Task.FromResult(3);
         }
 
-#pragma warning disable CA1822 // Mark members as static
-        public int UpdateFromInvalid() => 0;
-#pragma warning restore CA1822 // Mark members as static
+        public static int UpdateFromInvalid() => 0;
 
         public void Uninstall() => UninstallCalled = true;
     }
@@ -142,6 +175,77 @@ public class DataMigrationManagerTests
         }
 
         public Task UninstallAsync()
+        {
+            UninstallCalled = true;
+
+            return Task.CompletedTask;
+        }
+    }
+
+    private sealed class StaticMigration1 : DataMigration
+    {
+        public static bool CreateCalled { get; private set; }
+
+        public static int UpdateFromCalls { get; private set; }
+
+        public static void Reset()
+        {
+            CreateCalled = false;
+            UpdateFromCalls = 0;
+        }
+
+        public static int Create()
+        {
+            CreateCalled = true;
+
+            return 1;
+        }
+
+        public static int UpdateFrom1()
+        {
+            ++UpdateFromCalls;
+
+            return 2;
+        }
+
+        public static Task<int> UpdateFrom2Async()
+        {
+            ++UpdateFromCalls;
+
+            return Task.FromResult(3);
+        }
+    }
+
+    private sealed class StaticMigration2 : DataMigration
+    {
+        public static bool CreateCalled { get; private set; }
+
+        public static void Reset() => CreateCalled = false;
+
+        public static Task<int> CreateAsync()
+        {
+            CreateCalled = true;
+
+            return Task.FromResult(1);
+        }
+    }
+
+    private sealed class StaticUninstallMigration1 : DataMigration
+    {
+        public static bool UninstallCalled { get; private set; }
+
+        public static void Reset() => UninstallCalled = false;
+
+        public static void Uninstall() => UninstallCalled = true;
+    }
+
+    private sealed class StaticUninstallMigration2 : DataMigration
+    {
+        public static bool UninstallCalled { get; private set; }
+
+        public static void Reset() => UninstallCalled = false;
+
+        public static Task UninstallAsync()
         {
             UninstallCalled = true;
 

@@ -163,6 +163,7 @@ public sealed class MediaProfilesController : Controller
                 Format = model.SelectedFormat,
                 Quality = model.Quality,
                 BackgroundColor = model.BackgroundColor,
+                AutoOrient = model.AutoOrient,
             };
 
             await _mediaProfilesManager.UpdateMediaProfileAsync(model.Name, mediaProfile);
@@ -213,6 +214,7 @@ public sealed class MediaProfilesController : Controller
             SelectedFormat = mediaProfile.Format,
             Quality = mediaProfile.Quality,
             BackgroundColor = mediaProfile.BackgroundColor,
+            AutoOrient = mediaProfile.AutoOrient,
         };
 
         BuildViewModel(model);
@@ -257,6 +259,7 @@ public sealed class MediaProfilesController : Controller
                 Format = model.SelectedFormat,
                 Quality = model.Quality,
                 BackgroundColor = model.BackgroundColor,
+                AutoOrient = model.AutoOrient,
             };
 
             await _mediaProfilesManager.RemoveMediaProfileAsync(sourceName);
@@ -309,7 +312,7 @@ public sealed class MediaProfilesController : Controller
             return Forbid();
         }
 
-        if (itemIds?.Count() > 0)
+        if (itemIds?.Any() == true)
         {
             var mediaProfilesDocument = await _mediaProfilesManager.LoadMediaProfilesDocumentAsync();
             var checkedContentItems = mediaProfilesDocument.MediaProfiles.Where(x => itemIds.Contains(x.Key));

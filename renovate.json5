@@ -112,6 +112,14 @@
             ],
             enabled: false,
         },
+        // Not updating to ImageSharp v4 yet, see https://github.com/orgs/OrchardCMS/discussions/19306.
+        {
+            matchPackageNames: [
+                '/^SixLabors\\.ImageSharp.*$/',
+            ],
+            matchUpdateTypes: ['major'],
+            enabled: false,
+        },
 
         // Groups of packages that we want to update together.
         {
@@ -171,6 +179,11 @@
             ],
         },
     ],
+    // Delay updates to try to avoid supply chain attacks by increasing the chance they're discovered.
+    minimumReleaseAge: '15 days',
+    // Without timestamp-optional, Renovate wouldn't update dependencies of package managers that don't provide
+    // timestamps, like GitHub Actions.
+    minimumReleaseAgeBehaviour: 'timestamp-optional',
     // With GitHub Actions, concurrency is not really an issue.
     prHourlyLimit: 0,
     // Between 0:00 and 6:00 UTC on Sundays. Large time window to ensure that Renovate runs at least once then:

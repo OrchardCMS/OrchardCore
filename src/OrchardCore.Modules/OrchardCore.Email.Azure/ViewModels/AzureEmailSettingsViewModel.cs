@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-
 namespace OrchardCore.Email.Azure.ViewModels;
 
 public class AzureEmailSettingsViewModel

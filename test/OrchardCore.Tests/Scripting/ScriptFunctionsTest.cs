@@ -3,8 +3,42 @@ using OrchardCore.Scripting;
 using OrchardCore.Tests.Apis.Context;
 
 namespace OrchardCore.Tests.Scripting;
+
 public class ScriptFunctionsTest
 {
+    [Fact]
+    public async Task TheScriptingManagerShouldEvaluateAsyncGlobalMethods()
+    {
+        using var context = new SiteContext();
+        await context.InitializeAsync();
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            var syncMethodInvoked = false;
+            var asyncMethod = new GlobalMethod
+            {
+                Name = "getValue",
+                Method = sp => (Func<string>)(() =>
+                {
+                    syncMethodInvoked = true;
+                    return "sync";
+                }),
+                AsyncMethod = sp => (Func<Task<string>>)(async () =>
+                {
+                    await Task.Yield();
+                    return "async";
+                }),
+            };
+
+            var scriptingManager = scope.ServiceProvider.GetRequiredService<IScriptingManager>();
+
+            Assert.Equal("async", await scriptingManager.EvaluateAsync("js:getValueAsync()", null, null, [new TestGlobalMethodProvider(asyncMethod)]));
+            Assert.False(syncMethodInvoked);
+
+            Assert.Equal("sync", await scriptingManager.EvaluateAsync("js:getValue()", null, null, [new TestGlobalMethodProvider(asyncMethod)]));
+            Assert.True(syncMethodInvoked);
+        });
+    }
+
     [Fact]
     public async Task TheScriptingEngineShouldBeAbleToHandleJsonObject()
     {
@@ -84,5 +118,20 @@ public class ScriptFunctionsTest
 
             return Task.CompletedTask;
         });
+    }
+
+    private sealed class TestGlobalMethodProvider : IGlobalMethodProvider
+    {
+        private readonly GlobalMethod _method;
+
+        public TestGlobalMethodProvider(GlobalMethod method)
+        {
+            _method = method;
+        }
+
+        public IEnumerable<GlobalMethod> GetMethods()
+        {
+            yield return _method;
+        }
     }
 }

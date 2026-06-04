@@ -55,7 +55,10 @@ public sealed class TagController : Controller, IUpdateModel
             return NotFound();
         }
 
-        var part = taxonomy.As<TaxonomyPart>();
+        if (!taxonomy.TryGet<TaxonomyPart>(out var part))
+        {
+            return NotFound();
+        }
 
         // Create tag term but only run content handlers not content item display manager update editor.
         // This creates empty parts, if parts are attached to the tag term, with empty data.

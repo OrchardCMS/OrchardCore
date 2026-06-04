@@ -31,6 +31,7 @@ public class DisplayManager<TModel> : BaseDisplayManager, IDisplayManager<TModel
     public async Task<IShape> BuildDisplayAsync(TModel model, IUpdateModel updater, string displayType = null, string group = null)
     {
         var actualShapeType = typeof(TModel).Name;
+        var modelTypeName = model.GetType().Name;
 
         var actualDisplayType = string.IsNullOrEmpty(displayType) ? OrchardCoreConstants.DisplayType.Detail : displayType;
 
@@ -43,7 +44,7 @@ public class DisplayManager<TModel> : BaseDisplayManager, IDisplayManager<TModel
         var shape = await CreateContentShapeAsync(actualShapeType);
 
         // This provides a way to default a safe default and customize for each model type
-        shape.Metadata.Alternates.Add($"{actualShapeType}__{model.GetType().Name}");
+        shape.Metadata.Alternates.AddRange(DisplayManagerAlternatesFactory.GetDisplayAlternates(actualShapeType, modelTypeName));
 
         var context = new BuildDisplayContext(
             shape,
@@ -71,12 +72,12 @@ public class DisplayManager<TModel> : BaseDisplayManager, IDisplayManager<TModel
     public async Task<IShape> BuildEditorAsync(TModel model, IUpdateModel updater, bool isNew, string group, string htmlPrefix)
     {
         var actualShapeType = typeof(TModel).Name + "_Edit";
+        var modelTypeName = model.GetType().Name;
 
         var shape = await CreateContentShapeAsync(actualShapeType);
 
         // This provides a way to default a safe default and customize for each model type
-        shape.Metadata.Alternates.Add($"{model.GetType().Name}_Edit");
-        shape.Metadata.Alternates.Add($"{actualShapeType}__{model.GetType().Name}");
+        shape.Metadata.Alternates.AddRange(DisplayManagerAlternatesFactory.GetEditorAlternates(actualShapeType, modelTypeName));
 
         var context = new BuildEditorContext(
             shape,
@@ -105,12 +106,12 @@ public class DisplayManager<TModel> : BaseDisplayManager, IDisplayManager<TModel
     public async Task<IShape> UpdateEditorAsync(TModel model, IUpdateModel updater, bool isNew, string group, string htmlPrefix)
     {
         var actualShapeType = typeof(TModel).Name + "_Edit";
+        var modelTypeName = model.GetType().Name;
 
         var shape = await CreateContentShapeAsync(actualShapeType);
 
         // This provides a way to default a safe default and customize for each model type
-        shape.Metadata.Alternates.Add($"{model.GetType().Name}_Edit");
-        shape.Metadata.Alternates.Add($"{actualShapeType}__{model.GetType().Name}");
+        shape.Metadata.Alternates.AddRange(DisplayManagerAlternatesFactory.GetEditorAlternates(actualShapeType, modelTypeName));
 
         var context = new UpdateEditorContext(
             shape,

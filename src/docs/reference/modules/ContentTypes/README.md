@@ -11,7 +11,7 @@ The editor returns the selection as a `string[]` on the model.
 #### Parameters
 
 | Parameter               | Type       | Description                                                                            |
-| ----------------------- | ---------- | -------------------------------------------------------------------------------------- |
+|-------------------------|------------|----------------------------------------------------------------------------------------|
 | `selectedContentTypes`  | `string[]` | The list of content types that should be marked as selected when rendering the editor. |
 | `htmlName`              | `string`   | The name of the model property to bind the result to.                                  |
 | `stereotype` (optional) | `string`   | A stereotype name to filter the list of content types available to select.             |
@@ -179,7 +179,7 @@ public sealed class ProductController : Controller
             return NotFoundObjectResult();
         }
 
-        var productPart = product.As<Product>();
+        var productPart = product.GetOrCreate<Product>();
 
         // you'll get exceptions if any of these Fields are null
         // the null-conditional operator (?) should be used for any fields which aren't required
@@ -200,7 +200,7 @@ public sealed class ProductController : Controller
             return NotFoundObjectResult();
         }
 
-        var productPart = product.As<Product>();
+        var productPart = product.GetOrCreate<Product>();
         productPart.Price.Value = price;
 
         product.Apply(productPart) //apply modified part to a content item
@@ -229,7 +229,7 @@ Content types can be configured with a category and thumbnail for use in block p
 
 Content types can be organized into categories. To set a category:
 
-1. Navigate to **Content Definition** → **Content Types**
+1. Navigate to **Design** → **Content Definition** → **Content Types**
 2. Edit the content type
 3. In the **Content Type Settings** section, set the **Category** field
 
@@ -247,7 +247,7 @@ Content types with the same category are grouped together in the picker's sideba
 
 Content types can display a thumbnail image in block pickers. To set a thumbnail:
 
-1. Navigate to **Content Definition** → **Content Types**
+1. Navigate to **Design** → **Content Definition** → **Content Types**
 2. Edit the content type
 3. In the **Content Type Settings** section, set the **Thumbnail Path** field to an image path (e.g., `/media/thumbnails/my-widget.png`)
 
