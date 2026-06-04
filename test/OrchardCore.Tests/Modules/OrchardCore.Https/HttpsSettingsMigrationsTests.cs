@@ -26,7 +26,7 @@ public class HttpsSettingsMigrationsTests
 
         Assert.Equal(1, version);
         Assert.Equal(
-            HttpStrictTransportSecurityMode.Enabled.ToString(),
+            nameof(HttpStrictTransportSecurityMode.Enabled),
             site.Properties[nameof(HttpsSettings)]?[nameof(HttpsSettings.StrictTransportSecurityMode)]?.GetValue<string>());
         Assert.Null(site.Properties[nameof(HttpsSettings)]?[LegacyEnableStrictTransportSecurityKey]);
         siteService.Verify(service => service.UpdateSiteSettingsAsync(site), Times.Once);
@@ -38,7 +38,7 @@ public class HttpsSettingsMigrationsTests
         var site = new SiteSettings();
         site.Properties[nameof(HttpsSettings)] = new JsonObject
         {
-            [nameof(HttpsSettings.StrictTransportSecurityMode)] = HttpStrictTransportSecurityMode.Disabled.ToString(),
+            [nameof(HttpsSettings.StrictTransportSecurityMode)] = nameof(HttpStrictTransportSecurityMode.Disabled),
             [LegacyEnableStrictTransportSecurityKey] = true,
         };
 
@@ -50,7 +50,7 @@ public class HttpsSettingsMigrationsTests
 
         Assert.Equal(1, version);
         Assert.Equal(
-            HttpStrictTransportSecurityMode.Disabled.ToString(),
+            nameof(HttpStrictTransportSecurityMode.Disabled),
             site.Properties[nameof(HttpsSettings)]?[nameof(HttpsSettings.StrictTransportSecurityMode)]?.GetValue<string>());
         Assert.Null(site.Properties[nameof(HttpsSettings)]?[LegacyEnableStrictTransportSecurityKey]);
         siteService.Verify(service => service.UpdateSiteSettingsAsync(site), Times.Once);
