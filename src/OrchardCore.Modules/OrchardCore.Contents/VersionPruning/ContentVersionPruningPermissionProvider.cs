@@ -2,7 +2,7 @@ using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Contents.VersionPruning;
 
-public sealed class Permissions : IPermissionProvider
+internal sealed class ContentVersionPruningPermissionProvider : IPermissionProvider
 {
     private readonly IEnumerable<Permission> _allPermissions =
     [

@@ -41,7 +41,6 @@ public sealed class ContentVersionPruningSettingsDisplayDriver : SiteDisplayDriv
             model.VersionsToKeep = settings.VersionsToKeep;
             model.Disabled = settings.Disabled;
             model.ContentTypes = settings.ContentTypes;
-            model.LastRunUtc = settings.LastRunUtc;
         }).Location("Content:5")
         .OnGroup(GroupId);
     }

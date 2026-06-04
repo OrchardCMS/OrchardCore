@@ -7,5 +7,4 @@ public class ContentVersionPruningSettingsViewModel
     public string[] ContentTypes { get; set; } = [];
 
     public bool Disabled { get; set; }
-    public DateTime? LastRunUtc { get; set; }
 }

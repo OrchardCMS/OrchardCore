@@ -14,7 +14,7 @@ public class ContentVersionPruningSettings
     public int VersionsToKeep { get; set; } = 1;
 
     /// <summary>
-    /// The content types to prune. When empty, all content types are pruned.
+    /// The content types to prune. When empty, no content types are pruned.
     /// </summary>
     public string[] ContentTypes { get; set; } = [];
 
@@ -22,9 +22,4 @@ public class ContentVersionPruningSettings
     /// Whether the pruning background task is disabled.
     /// </summary>
     public bool Disabled { get; set; }
-
-    /// <summary>
-    /// The last time the pruning task was run.
-    /// </summary>
-    public DateTime? LastRunUtc { get; set; }
 }

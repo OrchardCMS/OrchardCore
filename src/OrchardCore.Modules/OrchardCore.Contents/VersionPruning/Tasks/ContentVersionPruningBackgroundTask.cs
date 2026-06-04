@@ -3,7 +3,6 @@ using Microsoft.Extensions.Logging;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.Contents.VersionPruning.Models;
 using OrchardCore.Contents.VersionPruning.Services;
-using OrchardCore.Entities;
 using OrchardCore.Modules;
 using OrchardCore.Settings;
 
@@ -32,25 +31,16 @@ public sealed class ContentVersionPruningBackgroundTask : IBackgroundTask
 
         try
         {
-            var clock = serviceProvider.GetRequiredService<IClock>();
             var pruningService = serviceProvider.GetRequiredService<IContentVersionPruningService>();
 
             logger.LogDebug("Starting content version pruning.");
 
-            var pruned = await pruningService.PruneVersionsAsync(settings);
+            var pruned = await pruningService.PruneVersionsAsync(settings, cancellationToken);
 
             if (logger.IsEnabled(LogLevel.Debug))
             {
                 logger.LogDebug("Content version pruning completed. {PrunedCount} versions were deleted.", pruned);
             }
-
-            var container = await siteService.LoadSiteSettingsAsync();
-            container.Alter<ContentVersionPruningSettings>(nameof(ContentVersionPruningSettings), settings =>
-            {
-                settings.LastRunUtc = clock.UtcNow;
-            });
-
-            await siteService.UpdateSiteSettingsAsync(container);
         }
         catch (Exception ex) when (!ex.IsFatal())
         {
