@@ -12,14 +12,14 @@ NPM package aliasing allows you to install multiple versions of the same package
 {
   "dependencies": {
     "vue": "3.5.13",              // Latest version
-    "vue-2.6.14": "npm:vue@2.6.14" // Alias for older version
+    "vue-2.7.16": "npm:vue@2.7.16" // Alias for older version
   }
 }
 ```
 
 This installs both versions into `node_modules/`:
 - `node_modules/vue/` (version 3.5.13)
-- `node_modules/vue-2.6.14/` (version 2.6.14)
+- `node_modules/vue-2.7.16/` (version 2.7.16)
 
 ## Benefits
 
@@ -81,7 +81,7 @@ yarn build
 {
   "dependencies": {
     "vue": "3.5.13",
-    "vue-2.6.14": "npm:vue@2.6.14"
+    "vue-2.7.16": "npm:vue@2.7.16"
   }
 }
 ```
@@ -92,8 +92,8 @@ Assets.json:
   {
     "action": "copy",
     "name": "vue2",
-    "source": "node_modules/vue-2.6.14/dist/*.js",
-    "dest": "wwwroot/Vendor/vue-2.6.14/"
+    "source": "node_modules/vue-2.7.16/dist/*.js",
+    "dest": "wwwroot/Vendor/vue-2.7.16/"
   },
   {
     "action": "copy",
@@ -138,7 +138,7 @@ If you have existing manually vendored packages:
 src/OrchardCore.Modules/YourModule/
 ├── Assets/
 │   └── Vendor/
-│       ├── vue-2.6.14/     ← Manually copied
+│       ├── vue-2.7.16/     ← Manually copied
 │       └── bootstrap-4.6.1/ ← Manually copied
 └── Assets.json
 ```
@@ -148,8 +148,8 @@ Assets.json:
 {
   "action": "copy",
   "name": "vue2",
-  "source": "Assets/Vendor/vue-2.6.14/dist/*.js",
-  "dest": "wwwroot/Vendor/vue-2.6.14/"
+  "source": "Assets/Vendor/vue-2.7.16/dist/*.js",
+  "dest": "wwwroot/Vendor/vue-2.7.16/"
 }
 ```
 
@@ -166,7 +166,7 @@ package.json:
 ```json
 {
   "dependencies": {
-    "vue-2.6.14": "npm:vue@2.6.14"
+    "vue-2.7.16": "npm:vue@2.7.16"
   }
 }
 ```
@@ -176,8 +176,8 @@ Assets.json:
 {
   "action": "copy",
   "name": "vue2",
-  "source": "node_modules/vue-2.6.14/dist/*.js",
-  "dest": "wwwroot/Vendor/vue-2.6.14/"
+  "source": "node_modules/vue-2.7.16/dist/*.js",
+  "dest": "wwwroot/Vendor/vue-2.7.16/"
 }
 ```
 
@@ -229,10 +229,10 @@ yarn install
 **Solution:** Check your alias name matches the path in Assets.json:
 ```json
 // package.json
-"vue-2.6.14": "npm:vue@2.6.14"
+"vue-2.7.16": "npm:vue@2.7.16"
 
 // Assets.json - alias name must match folder name
-"source": "node_modules/vue-2.6.14/dist/*.js"
+"source": "node_modules/vue-2.7.16/dist/*.js"
 ```
 
 ### Workspace Dependency Conflicts
@@ -265,8 +265,8 @@ Both versions will be installed and available.
 
 Include the version number in the alias name for clarity:
 ```json
-"vue-2.6.14": "npm:vue@2.6.14"  // ✅ Good
-"vue2": "npm:vue@2.6.14"        // ⚠️ Less clear
+"vue-2.7.16": "npm:vue@2.7.16"  // ✅ Good
+"vue2": "npm:vue@2.7.16"        // ⚠️ Less clear
 ```
 
 ### 2. Document Required Versions
@@ -277,7 +277,7 @@ Add comments in package.json to explain why legacy versions are needed:
   "dependencies": {
     "vue": "3.5.13",
     // Required for legacy admin components - DO NOT REMOVE
-    "vue-2.6.14": "npm:vue@2.6.14"
+    "vue-2.7.16": "npm:vue@2.7.16"
   }
 }
 ```

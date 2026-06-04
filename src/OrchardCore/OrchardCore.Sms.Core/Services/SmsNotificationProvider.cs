@@ -29,7 +29,7 @@ public class SmsNotificationProvider : INotificationMethodProvider
     /// <param name="message">The notification message to send.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A <see cref="Result"/> describing whether the SMS notification was sent successfully.</returns>
-    public async Task<Result> TrySendAsync(object notify, INotificationMessage message, CancellationToken cancellationToken = default)
+    public async Task<Result> SendAsync(object notify, INotificationMessage message, CancellationToken cancellationToken = default)
     {
         var user = notify as User;
 
