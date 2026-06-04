@@ -1,8 +1,4 @@
-using System.Text.Encodings.Web;
 using System.Text.Json;
-using Microsoft.AspNetCore.Html;
-using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.Extensions.Logging.Abstractions;
 using OrchardCore.DisplayManagement.Notify;
 
 namespace OrchardCore.Tests.DisplayManagement.Notify;
@@ -61,7 +57,7 @@ public class NotifierTests
         var json = JsonSerializer.Serialize(entry, options);
         var result = JsonSerializer.Deserialize<NotifyEntry>(json, options);
 
-        Assert.Contains(@"""Milliseconds"":3000", json);
+        Assert.Contains(@"""DismissalMilliseconds"":3000", json);
         Assert.NotNull(result);
         Assert.Equal(NotifyType.Warning, result.Type);
         Assert.Equal(3000, result.DismissalMilliseconds);
