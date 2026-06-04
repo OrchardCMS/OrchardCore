@@ -1,6 +1,5 @@
 using System.Text.Json.Nodes;
 using Moq;
-using OrchardCore.Https;
 using OrchardCore.Https.Settings;
 using OrchardCore.Settings;
 
@@ -8,13 +7,15 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Https;
 
 public class HttpsSettingsMigrationsTests
 {
+    private const string LegacyEnableStrictTransportSecurityKey = "EnableStrictTransportSecurity";
+
     [Fact]
     public async Task CreateAsyncMigratesLegacyHstsSetting()
     {
         var site = new SiteSettings();
         site.Properties[nameof(HttpsSettings)] = new JsonObject
         {
-            [nameof(HttpsSettings.EnableStrictTransportSecurity)] = true,
+            [LegacyEnableStrictTransportSecurityKey] = true,
         };
 
         var siteService = new Mock<ISiteService>();
@@ -27,7 +28,7 @@ public class HttpsSettingsMigrationsTests
         Assert.Equal(
             HttpStrictTransportSecurityMode.Enabled.ToString(),
             site.Properties[nameof(HttpsSettings)]?[nameof(HttpsSettings.StrictTransportSecurityMode)]?.GetValue<string>());
-        Assert.Null(site.Properties[nameof(HttpsSettings)]?[nameof(HttpsSettings.EnableStrictTransportSecurity)]);
+        Assert.Null(site.Properties[nameof(HttpsSettings)]?[LegacyEnableStrictTransportSecurityKey]);
         siteService.Verify(service => service.UpdateSiteSettingsAsync(site), Times.Once);
     }
 
@@ -38,7 +39,7 @@ public class HttpsSettingsMigrationsTests
         site.Properties[nameof(HttpsSettings)] = new JsonObject
         {
             [nameof(HttpsSettings.StrictTransportSecurityMode)] = HttpStrictTransportSecurityMode.Disabled.ToString(),
-            [nameof(HttpsSettings.EnableStrictTransportSecurity)] = true,
+            [LegacyEnableStrictTransportSecurityKey] = true,
         };
 
         var siteService = new Mock<ISiteService>();
@@ -51,13 +52,13 @@ public class HttpsSettingsMigrationsTests
         Assert.Equal(
             HttpStrictTransportSecurityMode.Disabled.ToString(),
             site.Properties[nameof(HttpsSettings)]?[nameof(HttpsSettings.StrictTransportSecurityMode)]?.GetValue<string>());
-        Assert.Null(site.Properties[nameof(HttpsSettings)]?[nameof(HttpsSettings.EnableStrictTransportSecurity)]);
+        Assert.Null(site.Properties[nameof(HttpsSettings)]?[LegacyEnableStrictTransportSecurityKey]);
         siteService.Verify(service => service.UpdateSiteSettingsAsync(site), Times.Once);
     }
 
     private static async Task<int> InvokeCreateAsync(ISiteService siteService)
     {
-        var migrationType = typeof(Startup).Assembly.GetType("OrchardCore.Https.Migrations.HttpsSettingsMigrations");
+        var migrationType = typeof(HttpsSettings).Assembly.GetType("OrchardCore.Https.Migrations.HttpsSettingsMigrations");
         if (migrationType is null)
         {
             throw new InvalidOperationException("Unable to locate the HTTPS settings migration type.");
