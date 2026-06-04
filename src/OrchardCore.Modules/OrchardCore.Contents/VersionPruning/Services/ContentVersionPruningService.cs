@@ -12,7 +12,12 @@ public class ContentVersionPruningService : IContentVersionPruningService
 {
     // The number of versions deleted before changes are flushed to the database, so the
     // session's unit of work doesn't grow unbounded on sites with a large version history.
-    private const int BatchSize = 100;
+    private const int DeletionBatchSize = 100;
+
+    // The number of content items whose versions are loaded per query. Loading several items
+    // at once reduces the number of round-trips compared to querying one item at a time, while
+    // still bounding how many versions are materialized in memory.
+    private const int ContentItemBatchSize = 20;
 
     private readonly ISession _session;
     private readonly IClock _clock;
@@ -45,36 +50,39 @@ public class ContentVersionPruningService : IContentVersionPruningService
 
         var deleted = 0;
 
-        foreach (var contentItemId in candidateItemIds)
+        foreach (var itemIdsBatch in candidateItemIds.Chunk(ContentItemBatchSize))
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            // Load every archived version of this content item so the "keep N newest" rule is
-            // evaluated over the full set, not only the aged versions.
+            // Load every archived version for this batch of content items in a single query so the
+            // "keep N newest" rule is evaluated over the full set, not only the aged versions.
             var versions = await _session
                 .Query<ContentItem, ContentItemIndex>(x =>
-                    x.ContentItemId == contentItemId &&
+                    x.ContentItemId.IsIn(itemIdsBatch) &&
                     !x.Latest &&
                     !x.Published)
                 .ListAsync(cancellationToken);
 
-            var toDelete = ContentVersionPruningSelector.SelectForDeletion(versions, settings.VersionsToKeep, threshold);
-
-            foreach (var version in toDelete)
+            foreach (var group in versions.GroupBy(x => x.ContentItemId))
             {
-                try
-                {
-                    _session.Delete(version);
-                    deleted++;
+                var toDelete = ContentVersionPruningSelector.SelectForDeletion(group, settings.VersionsToKeep, threshold);
 
-                    if (deleted % BatchSize == 0)
-                    {
-                        await _session.FlushAsync(cancellationToken);
-                    }
-                }
-                catch (Exception ex)
+                foreach (var version in toDelete)
                 {
-                    _logger.LogError(ex, "Failed to prune content item {ContentItemId} version {ContentItemVersionId}.", version.ContentItemId, version.ContentItemVersionId);
+                    try
+                    {
+                        _session.Delete(version);
+                        deleted++;
+
+                        if (deleted % DeletionBatchSize == 0)
+                        {
+                            await _session.FlushAsync(cancellationToken);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Failed to prune content item {ContentItemId} version {ContentItemVersionId}.", version.ContentItemId, version.ContentItemVersionId);
+                    }
                 }
             }
         }
@@ -101,7 +109,7 @@ public class ContentVersionPruningService : IContentVersionPruningService
                 .OrderBy(x => x.ContentItemId)
                 .ThenBy(x => x.DocumentId)
                 .Skip(processed)
-                .Take(BatchSize)
+                .Take(ContentItemBatchSize)
                 .ListAsync(cancellationToken);
 
             var count = 0;
@@ -117,7 +125,7 @@ public class ContentVersionPruningService : IContentVersionPruningService
 
             processed += count;
 
-            if (count < BatchSize)
+            if (count < ContentItemBatchSize)
             {
                 break;
             }

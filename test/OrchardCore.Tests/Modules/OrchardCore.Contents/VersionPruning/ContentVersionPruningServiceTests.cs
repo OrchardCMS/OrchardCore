@@ -176,7 +176,7 @@ public class ContentVersionPruningServiceTests : IAsyncLifetime
     [Fact]
     public async Task PruneVersionsAsync_ProcessesMoreThanOneBatch()
     {
-        // Exercises the batching/flush path with more candidates than the internal batch size.
+        // Exercises the deletion batching/flush path with more candidates than the internal batch size.
         const int versionCount = 250;
         var versions = new ContentItem[versionCount];
         for (var i = 0; i < versionCount; i++)
@@ -197,6 +197,39 @@ public class ContentVersionPruningServiceTests : IAsyncLifetime
 
         Assert.Equal(versionCount, deleted);
         Assert.Empty(await GetRemainingVersionIdsAsync());
+    }
+
+    [Fact]
+    public async Task PruneVersionsAsync_ProcessesManyContentItemsAcrossBatches()
+    {
+        // Spans more content items than the per-query content item batch size to verify that the
+        // "keep N newest" rule is correctly applied per item across batch boundaries.
+        const int itemCount = 45;
+        var versions = new List<ContentItem>();
+        for (var i = 0; i < itemCount; i++)
+        {
+            var id = $"item-{i:D3}";
+            versions.Add(Version(id, $"{id}-v1", "Blog", _now.AddDays(-90)));
+            versions.Add(Version(id, $"{id}-v2", "Blog", _now.AddDays(-80)));
+        }
+
+        await SaveVersionsAsync([.. versions]);
+
+        var settings = new ContentVersionPruningSettings
+        {
+            RetentionDays = 30,
+            VersionsToKeep = 1,
+            ContentTypes = ["Blog"],
+        };
+
+        var deleted = await RunPruningAsync(settings);
+
+        // Each item keeps its single newest archived version and deletes the older one.
+        Assert.Equal(itemCount, deleted);
+
+        var remaining = await GetRemainingVersionIdsAsync();
+        Assert.Equal(itemCount, remaining.Count);
+        Assert.All(remaining, id => Assert.EndsWith("-v2", id));
     }
 
     private async Task<int> RunPruningAsync(ContentVersionPruningSettings settings)
