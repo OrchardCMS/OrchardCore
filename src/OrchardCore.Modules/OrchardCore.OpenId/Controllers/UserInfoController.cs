@@ -164,7 +164,7 @@ public sealed class UserInfoController : Controller
         // Note: the complete list of standard claims supported by the OpenID Connect specification
         // can be found here: http://openid.net/specs/openid-connect-core-1_0.html#StandardClaims
 
-        var context = new UserInfoClaimsContext(principal, claims);
+        var context = new UserInfoClaimsContext(principal.Identity as ClaimsIdentity, claims);
         await _claimsProviders.InvokeAsync((claimsProvider, ctx) => claimsProvider.GenerateAsync(ctx), context, _logger);
 
         return Ok(claims);
