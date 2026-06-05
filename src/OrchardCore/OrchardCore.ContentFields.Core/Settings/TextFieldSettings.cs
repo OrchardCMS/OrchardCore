@@ -21,7 +21,7 @@ public class TextFieldSettings : FieldSettings
     public int MinLength { get; set; }
 
     /// <summary>
-    /// The maximum number of characters allowed. A value of <c>0</c> means no maximum.
+    /// Gets or sets the maximum number of characters allowed. A value of <c>0</c> means no maximum.
     /// </summary>
     public int MaxLength { get; set; }
 }
