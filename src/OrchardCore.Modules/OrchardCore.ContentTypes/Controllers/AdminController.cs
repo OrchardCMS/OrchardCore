@@ -359,7 +359,7 @@ public sealed class AdminController : Controller
             await _contentDefinitionService.AddPartToTypeAsync(partToAdd, typeViewModel.Name);
         }
 
-        await _notifier.SuccessAsync(H.Plural(partsToAdd.Length, "The \"{1}\" part has been added.", "The following parts have been added: {1}.", string.Join(", ", partsToAdd)));
+        await _notifier.SuccessAsync(H.Plural(partsToAdd.Count(), "The \"{1}\" part has been added.", "The following parts have been added: {1}.", string.Join(", ", partsToAdd)));
 
         if (!ModelState.IsValid)
         {
