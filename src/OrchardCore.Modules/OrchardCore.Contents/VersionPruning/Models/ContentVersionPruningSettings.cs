@@ -1,6 +1,6 @@
 namespace OrchardCore.Contents.VersionPruning.Models;
 
-public class ContentVersionPruningSettings
+public sealed class ContentVersionPruningSettings
 {
     /// <summary>
     /// The number of days after which non-latest, non-published content item versions are deleted.
