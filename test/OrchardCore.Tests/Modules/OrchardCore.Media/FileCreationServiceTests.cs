@@ -24,7 +24,7 @@ public class FileCreationServiceTests
         var service = new FileCreationService([firstHandler.Object, secondHandler.Object]);
 
         await Assert.ThrowsAsync<InvalidOperationException>(() =>
-            service.CreateAsync(new FileCreatingContext("file.txt"), originalStream));
+            service.CreateAsync(new FileCreatingContext("file.txt"), originalStream, TestContext.Current.CancellationToken));
 
         Assert.True(replacementStream.IsDisposed);
         Assert.False(originalStream.IsDisposed);

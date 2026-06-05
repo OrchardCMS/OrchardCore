@@ -33,14 +33,14 @@ public class ClamAvFileEventHandlerTests
         await using var baseStream = new MemoryStream("hello world"u8.ToArray());
         await using var inputStream = new NonSeekableReadStream(baseStream);
 
-        var result = await handler.CreatingAsync(new FileCreatingContext("folder/test.txt"), inputStream);
+        var result = await handler.CreatingAsync(new FileCreatingContext("folder/test.txt"), inputStream, TestContext.Current.CancellationToken);
 
         Assert.True(result.Succeeded);
         Assert.NotSame(inputStream, result.Stream);
         Assert.True(result.Stream.CanSeek);
 
         using var copy = new MemoryStream();
-        await result.Stream.CopyToAsync(copy);
+        await result.Stream.CopyToAsync(copy, TestContext.Current.CancellationToken);
         Assert.Equal("hello world"u8.ToArray(), copy.ToArray());
     }
 
@@ -51,7 +51,7 @@ public class ClamAvFileEventHandlerTests
         using var factory = CreateFactory();
         var handler = CreateHandler(server.Port, factory);
 
-        var result = await handler.CreatingAsync(new FileCreatingContext("folder/test.txt"), new MemoryStream("hello world"u8.ToArray()));
+        var result = await handler.CreatingAsync(new FileCreatingContext("folder/test.txt"), new MemoryStream("hello world"u8.ToArray()), TestContext.Current.CancellationToken);
 
         Assert.False(result.Succeeded);
         Assert.Equal("The uploaded file 'test.txt' was rejected because ClamAV detected 'Eicar-Test-Signature'.", result.ErrorMessage);
@@ -65,7 +65,7 @@ public class ClamAvFileEventHandlerTests
         var handler = CreateHandler(server.Port, factory);
 
         var exception = await Assert.ThrowsAsync<AntivirusScanningException>(() =>
-            handler.CreatingAsync(new FileCreatingContext("folder/test.txt"), new MemoryStream("hello world"u8.ToArray())));
+            handler.CreatingAsync(new FileCreatingContext("folder/test.txt"), new MemoryStream("hello world"u8.ToArray()), TestContext.Current.CancellationToken));
 
         Assert.Equal("The ClamAV antivirus scanner returned an unexpected response while scanning 'test.txt': INSTREAM size limit exceeded. ERROR", exception.Message);
     }
@@ -83,7 +83,7 @@ public class ClamAvFileEventHandlerTests
             NullLogger<ClamAvFileEventHandler>.Instance);
 
         var exception = await Assert.ThrowsAsync<AntivirusScanningException>(() =>
-            handler.CreatingAsync(new FileCreatingContext("folder/test.txt"), new MemoryStream("hello world"u8.ToArray())));
+            handler.CreatingAsync(new FileCreatingContext("folder/test.txt"), new MemoryStream("hello world"u8.ToArray()), TestContext.Current.CancellationToken));
 
         Assert.Equal("The ClamAV antivirus scanner is enabled but the host setting is missing.", exception.Message);
     }
@@ -95,8 +95,8 @@ public class ClamAvFileEventHandlerTests
         using var factory = CreateFactory();
         var handler = CreateHandler(server.Port, factory);
 
-        var firstResult = await handler.CreatingAsync(new FileCreatingContext("folder/first.txt"), new MemoryStream("first"u8.ToArray()));
-        var secondResult = await handler.CreatingAsync(new FileCreatingContext("folder/second.txt"), new MemoryStream("second"u8.ToArray()));
+        var firstResult = await handler.CreatingAsync(new FileCreatingContext("folder/first.txt"), new MemoryStream("first"u8.ToArray()), TestContext.Current.CancellationToken);
+        var secondResult = await handler.CreatingAsync(new FileCreatingContext("folder/second.txt"), new MemoryStream("second"u8.ToArray()), TestContext.Current.CancellationToken);
         var requests = await server.Completion;
 
         Assert.True(firstResult.Succeeded);
