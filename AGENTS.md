@@ -243,6 +243,13 @@ The project uses:
 - `AnalysisLevel` set to `latest-Recommended`
 - Specific CA rules are suppressed (see `Directory.Build.props`)
 
+### Documentation
+
+- Update the canonical page under `src\docs` whenever a change affects user-facing behavior, configuration, setup, public APIs, stereotypes, or extension points.
+- Add or update XML `<summary>` documentation for new or modified public interfaces, domain models, enums, and other public members that are part of the change.
+- Document each enum member individually when its behavior is relevant to users or downstream developers.
+- When XML documentation already exists, revise the existing block in place and keep `<param>` tags accurate and in signature order.
+
 ## Database Patterns
 
 ### YesSql Usage
