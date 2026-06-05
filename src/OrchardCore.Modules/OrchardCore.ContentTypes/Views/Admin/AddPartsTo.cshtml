@@ -3,6 +3,7 @@
 @inject IDataLocalizer D
 @{
     int i = 0;
+    var hasSelectedParts = Model.PartSelections.Any(x => x.IsSelected);
     string localizedTypeName = D[Model.Type.DisplayName, "Content Types"];
 }
 <zone Name="Title"><h1>@T["Add Parts To \"{0}\"", localizedTypeName]</h1></zone>
@@ -21,10 +22,13 @@
                 @foreach (var partSelection in Model.PartSelections)
                 {
                     <li class="list-group-item list-group-item-action">
-                        <div class="form-check">
-                            <input type="checkbox" class="form-check-input" asp-for="PartSelections[i].IsSelected">
-                            <label class="form-check-label" asp-for="PartSelections[i].IsSelected">@partSelection.PartDisplayName</label>
-                            <span class="hint dashed">@partSelection.PartDescription</span>
+                        <div class="d-flex align-items-start justify-content-between gap-3">
+                            <div class="form-check flex-grow-1">
+                                <input type="checkbox" class="form-check-input" asp-for="PartSelections[i].IsSelected">
+                                <label class="form-check-label" asp-for="PartSelections[i].IsSelected">@partSelection.PartDisplayName</label>
+                                <span class="hint dashed">@partSelection.PartDescription</span>
+                            </div>
+                            <button class="btn btn-secondary btn-sm" type="submit" name="submit.AddAndConfigure" value="@partSelection.PartName">@T["Add &amp; Configure"]</button>
                         </div>
                         <input asp-for="PartSelections[i].IsSelected" type="hidden" />
                         <input asp-for="PartSelections[i].PartName" type="hidden" />
@@ -36,8 +40,22 @@
     </div>
     <div class="ocat-wrapper">
         <div class="ocat-end-offset">
-            <button class="btn btn-primary save" type="submit">@T["Save"]</button>
+            <button id="add-selected-parts-button" class="btn btn-primary save" type="submit" name="submit.Save" value="Save" hidden="@(!hasSelectedParts)">@T["Add Selected Parts"]</button>
             <a class="btn btn-secondary cancel" role="button" asp-route-action="Edit" asp-route-id="@Model.Type.Name">@T["Cancel"]</a>
         </div>
     </div>
 </form>
+
+<script at="Foot">
+    document.addEventListener('DOMContentLoaded', function () {
+        const addSelectedPartsButton = document.getElementById('add-selected-parts-button');
+        const partSelectionCheckboxes = document.querySelectorAll('input[type="checkbox"][name$=".IsSelected"]');
+
+        const updateAddSelectedPartsButton = () => {
+            addSelectedPartsButton.hidden = !Array.from(partSelectionCheckboxes).some((checkbox) => checkbox.checked);
+        };
+
+        partSelectionCheckboxes.forEach((checkbox) => checkbox.addEventListener('change', updateAddSelectedPartsButton));
+        updateAddSelectedPartsButton();
+    });
+</script>

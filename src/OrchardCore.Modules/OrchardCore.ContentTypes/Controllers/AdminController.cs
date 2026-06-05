@@ -304,7 +304,7 @@ public sealed class AdminController : Controller
     }
 
     [HttpPost, ActionName("AddPartsTo")]
-    public async Task<ActionResult> AddPartsToPOST(string id)
+    public async Task<ActionResult> AddPartsToPOST(string id, [Bind(Prefix = "submit.AddAndConfigure")] string submitAddAndConfigure)
     {
         if (!await _authorizationService.AuthorizeAsync(User, ContentTypesPermissions.EditContentTypes))
         {
@@ -324,12 +324,42 @@ public sealed class AdminController : Controller
             return await AddPartsTo(id);
         }
 
-        var partsToAdd = viewModel.PartSelections.Where(ps => ps.IsSelected).Select(ps => ps.PartName);
+        if (!string.IsNullOrEmpty(submitAddAndConfigure))
+        {
+            var typePartNames = new HashSet<string>(typeViewModel.TypeDefinition.Parts.Select(p => p.IsNamedPart() ? p.Name : p.PartDefinition.Name));
+            var partToConfigure = (await GetPartsAsync(metadataPartsOnly: false))
+                .FirstOrDefault(cpd =>
+                    cpd.PartDefinition != null &&
+                    cpd.PartDefinition.GetSettings<ContentPartSettings>().Attachable &&
+                    !typePartNames.Contains(cpd.Name, StringComparer.OrdinalIgnoreCase) &&
+                    string.Equals(cpd.Name, submitAddAndConfigure, StringComparison.OrdinalIgnoreCase));
+
+            if (partToConfigure == null)
+            {
+                ModelState.AddModelError(string.Empty, S["The selected part is no longer available."]);
+                await _documentStore.CancelAsync();
+                return await AddPartsTo(id);
+            }
+
+            await _contentDefinitionService.AddPartToTypeAsync(partToConfigure.Name, typeViewModel.Name);
+            await _notifier.SuccessAsync(H["The \"{0}\" part has been added.", partToConfigure.DisplayName]);
+
+            return RedirectToAction(nameof(EditTypePart), new { id, name = partToConfigure.Name });
+        }
+
+        var partsToAdd = viewModel.PartSelections.Where(ps => ps.IsSelected).Select(ps => ps.PartName).ToArray();
+
+        if (!partsToAdd.Any())
+        {
+            return NotFound();
+        }
+
         foreach (var partToAdd in partsToAdd)
         {
             await _contentDefinitionService.AddPartToTypeAsync(partToAdd, typeViewModel.Name);
-            await _notifier.SuccessAsync(H["The \"{0}\" part has been added.", partToAdd]);
         }
+
+        await _notifier.SuccessAsync(H.Plural(partsToAdd.Length, "The \"{1}\" part has been added.", "The following parts have been added: {1}.", string.Join(", ", partsToAdd)));
 
         if (!ModelState.IsValid)
         {
@@ -341,8 +371,9 @@ public sealed class AdminController : Controller
     }
 
     [HttpPost, ActionName("AddReusablePartTo")]
-    public async Task<ActionResult> AddReusablePartToPOST(string id)
+    public async Task<ActionResult> AddReusablePartToPOST(string id, [Bind(Prefix = "submit.Save")] string submitSave)
     {
+        var saveAndConfigure = submitSave == "SaveAndConfigure";
         if (!await _authorizationService.AuthorizeAsync(User, ContentTypesPermissions.EditContentTypes))
         {
             return Forbid();
@@ -410,6 +441,11 @@ public sealed class AdminController : Controller
         await _contentDefinitionService.AddReusablePartToTypeAsync(viewModel.Name, viewModel.DisplayName, viewModel.Description, partToAdd, typeViewModel.Name);
 
         await _notifier.SuccessAsync(H["The \"{0}\" part has been added.", partToAdd]);
+
+        if (saveAndConfigure)
+        {
+            return RedirectToAction(nameof(EditTypePart), new { id, name = viewModel.Name });
+        }
 
         return RedirectToAction(nameof(Edit), new { id });
     }
@@ -641,8 +677,9 @@ public sealed class AdminController : Controller
     }
 
     [HttpPost, ActionName("AddFieldTo")]
-    public async Task<ActionResult> AddFieldToPOST(AddFieldViewModel viewModel, string id, string returnUrl = null)
+    public async Task<ActionResult> AddFieldToPOST(AddFieldViewModel viewModel, string id, string returnUrl = null, [Bind(Prefix = "submit.Save")] string submitSave = null)
     {
+        var saveAndConfigure = submitSave == "SaveAndConfigure";
         if (!await _authorizationService.AuthorizeAsync(User, ContentTypesPermissions.EditContentTypes))
         {
             return Forbid();
@@ -712,13 +749,23 @@ public sealed class AdminController : Controller
 
         await _notifier.SuccessAsync(H["The field \"{0}\" has been added.", viewModel.DisplayName]);
 
+        if (saveAndConfigure)
+        {
+            return RedirectToAction(nameof(EditField), new
+            {
+                id,
+                name = viewModel.Name,
+                returnUrl = !string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl) ? returnUrl : null,
+            });
+        }
+
         if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
         {
             return this.Redirect(returnUrl, true);
         }
         else
         {
-            return RedirectToAction(nameof(EditField), new { id, viewModel.Name });
+            return RedirectToAction(nameof(EditField), new { id, name = viewModel.Name });
         }
     }
 
