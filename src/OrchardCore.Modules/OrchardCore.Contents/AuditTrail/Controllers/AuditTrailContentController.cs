@@ -26,7 +26,6 @@ public sealed class AuditTrailContentController : Controller
     private readonly IAuthorizationService _authorizationService;
     private readonly IContentItemDisplayManager _contentItemDisplayManager;
     private readonly INotifier _notifier;
-    private readonly ILogger _logger;
 
     internal readonly IHtmlLocalizer H;
 
@@ -37,8 +36,7 @@ public sealed class AuditTrailContentController : Controller
         IAuthorizationService authorizationService,
         IContentItemDisplayManager contentItemDisplayManager,
         INotifier notifier,
-        IHtmlLocalizer<AuditTrailContentController> htmlLocalizer,
-        ILogger<AuditTrailContentController> logger)
+        IHtmlLocalizer<AuditTrailContentController> htmlLocalizer)
     {
         _session = session;
         _contentManager = contentManager;
@@ -47,7 +45,6 @@ public sealed class AuditTrailContentController : Controller
         _contentItemDisplayManager = contentItemDisplayManager;
         _notifier = notifier;
         H = htmlLocalizer;
-        _logger = logger;
     }
 
     public async Task<ActionResult> Display(string auditTrailEventId)
