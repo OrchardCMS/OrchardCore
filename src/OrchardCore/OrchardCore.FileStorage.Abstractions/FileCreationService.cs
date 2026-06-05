@@ -3,11 +3,11 @@ namespace OrchardCore.FileStorage;
 /// <summary>
 /// Coordinates <see cref="IFileEventHandler"/> instances for user-uploaded files.
 /// </summary>
-public sealed class FileEventService
+public sealed class FileCreationService
 {
     private readonly IEnumerable<IFileEventHandler> _handlers;
 
-    public FileEventService(IEnumerable<IFileEventHandler> handlers)
+    public FileCreationService(IEnumerable<IFileEventHandler> handlers)
     {
         _handlers = handlers;
     }
@@ -17,7 +17,7 @@ public sealed class FileEventService
     /// The caller owns the original <paramref name="stream"/> and should dispose the returned
     /// <see cref="FileCreatingResult"/> to clean up any replacement stream created by handlers.
     /// </summary>
-    public async Task<FileCreatingResult> ProcessAsync(
+    public async Task<FileCreatingResult> CreateAsync(
         FileCreatingContext context,
         Stream stream,
         CancellationToken cancellationToken = default)

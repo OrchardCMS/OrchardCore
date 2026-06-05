@@ -23,7 +23,7 @@ public class DefaultMediaFileStoreTests
             "",
             [],
             [],
-            CreateFileEventService(),
+            CreateFileCreationService(),
             Mock.Of<ILogger<DefaultMediaFileStore>>());
 
         var result = store.MapPathToPublicUrl(path);
@@ -42,7 +42,7 @@ public class DefaultMediaFileStoreTests
             cdnBaseUrl,
             [],
             [],
-            CreateFileEventService(),
+            CreateFileCreationService(),
             Mock.Of<ILogger<DefaultMediaFileStore>>());
 
         var result = store.MapPathToPublicUrl(path);
@@ -71,7 +71,7 @@ public class DefaultMediaFileStoreTests
             "",
             new List<IMediaEventHandler>(),
             new List<IMediaCreatingEventHandler>(),
-            CreateFileEventService(),
+            CreateFileCreationService(),
             loggerMock.Object);
 
         // Act
@@ -104,7 +104,7 @@ public class DefaultMediaFileStoreTests
             "",
             new List<IMediaEventHandler>(),
             new[] { handlerMock.Object },
-            CreateFileEventService(),
+            CreateFileCreationService(),
             loggerMock.Object);
 
         // Act
@@ -149,7 +149,7 @@ public class DefaultMediaFileStoreTests
             "",
             new List<IMediaEventHandler>(),
             new[] { handler1.Object, handler2.Object },
-            CreateFileEventService(),
+            CreateFileCreationService(),
             loggerMock.Object);
 
         // Act
@@ -190,7 +190,7 @@ public class DefaultMediaFileStoreTests
             "",
             [handler.Object],
             [],
-            CreateFileEventService(),
+            CreateFileCreationService(),
             loggerMock.Object);
 
         // Act
@@ -238,7 +238,7 @@ public class DefaultMediaFileStoreTests
             "",
             [],
             [],
-            CreateFileEventService(handlerMock.Object),
+            CreateFileCreationService(handlerMock.Object),
             loggerMock.Object);
 
         await store.CreateFileFromStreamAsync("test.txt", inputStream);
@@ -266,7 +266,7 @@ public class DefaultMediaFileStoreTests
             "",
             [],
             [],
-            CreateFileEventService(handlerMock.Object),
+            CreateFileCreationService(handlerMock.Object),
             loggerMock.Object);
 
         var exception = await Assert.ThrowsAsync<FileStoreException>(() =>
@@ -302,7 +302,7 @@ public class DefaultMediaFileStoreTests
             "",
             [],
             [],
-            CreateFileEventService(handlerMock.Object),
+            CreateFileCreationService(handlerMock.Object),
             loggerMock.Object);
 
         await store.CreateFileFromStreamAsync("test.txt", inputStream);
@@ -310,6 +310,6 @@ public class DefaultMediaFileStoreTests
         handlerMock.Verify(x => x.CreatedAsync(fileInfoMock.Object, It.IsAny<CancellationToken>()), Times.Once);
     }
 
-    private static FileEventService CreateFileEventService(params IFileEventHandler[] handlers)
+    private static FileCreationService CreateFileCreationService(params IFileEventHandler[] handlers)
         => new(handlers);
 }

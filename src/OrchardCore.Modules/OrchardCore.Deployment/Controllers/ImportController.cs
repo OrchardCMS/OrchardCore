@@ -24,7 +24,7 @@ public sealed class ImportController : Controller
     private readonly IAuthorizationService _authorizationService;
     private readonly INotifier _notifier;
     private readonly ILogger _logger;
-    private readonly FileEventService _fileEventService;
+    private readonly FileCreationService _fileCreationService;
 
     internal readonly IHtmlLocalizer H;
     internal readonly IStringLocalizer S;
@@ -32,7 +32,7 @@ public sealed class ImportController : Controller
     public ImportController(
         IDeploymentManager deploymentManager,
         IAuthorizationService authorizationService,
-        FileEventService fileEventService,
+        FileCreationService fileCreationService,
         INotifier notifier,
         ILogger<ImportController> logger,
         IHtmlLocalizer<ImportController> htmlLocalizer,
@@ -41,7 +41,7 @@ public sealed class ImportController : Controller
     {
         _deploymentManager = deploymentManager;
         _authorizationService = authorizationService;
-        _fileEventService = fileEventService;
+        _fileCreationService = fileCreationService;
         _notifier = notifier;
         _logger = logger;
         H = htmlLocalizer;
@@ -74,7 +74,7 @@ public sealed class ImportController : Controller
             try
             {
                 await using var uploadedStream = importedPackage.OpenReadStream();
-                await using var fileCreatingResult = await _fileEventService.ProcessAsync(
+                await using var fileCreatingResult = await _fileCreationService.CreateAsync(
                     new FileCreatingContext(importedPackage.FileName, importedPackage.Length, importedPackage.ContentType),
                     uploadedStream,
                     HttpContext.RequestAborted);

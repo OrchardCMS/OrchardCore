@@ -17,7 +17,7 @@ public class DefaultMediaFileStore : IMediaFileStore
     private readonly string _cdnBaseUrl;
     private readonly IEnumerable<IMediaEventHandler> _mediaEventHandlers;
     private readonly IEnumerable<IMediaCreatingEventHandler> _mediaCreatingEventHandlers;
-    private readonly FileEventService _fileEventService;
+    private readonly FileCreationService _fileCreationService;
     private readonly ILogger _logger;
 
     private bool _requestBasePathValidated;
@@ -28,7 +28,7 @@ public class DefaultMediaFileStore : IMediaFileStore
         string cdnBaseUrl,
         IEnumerable<IMediaEventHandler> mediaEventHandlers,
         IEnumerable<IMediaCreatingEventHandler> mediaCreatingEventHandlers,
-        FileEventService fileEventService,
+        FileCreationService fileCreationService,
         ILogger<DefaultMediaFileStore> logger)
     {
         _fileStore = fileStore;
@@ -41,7 +41,7 @@ public class DefaultMediaFileStore : IMediaFileStore
 
         _mediaEventHandlers = mediaEventHandlers;
         _mediaCreatingEventHandlers = mediaCreatingEventHandlers;
-        _fileEventService = fileEventService;
+        _fileCreationService = fileCreationService;
         _logger = logger;
     }
 
@@ -264,7 +264,7 @@ public class DefaultMediaFileStore : IMediaFileStore
 
     private async Task<string> CreateFileAsync(FileCreatingContext fileCreatingContext, Stream stream, bool overwrite)
     {
-        await using var fileCreatingResult = await _fileEventService.ProcessAsync(fileCreatingContext, stream);
+        await using var fileCreatingResult = await _fileCreationService.CreateAsync(fileCreatingContext, stream);
 
         if (!fileCreatingResult.Succeeded)
         {
@@ -276,7 +276,7 @@ public class DefaultMediaFileStore : IMediaFileStore
         var createdPath = await _fileStore.CreateFileFromStreamAsync(fileCreatingContext.Path, fileCreatingResult.Stream, overwrite);
         var fileInfo = await _fileStore.GetFileInfoAsync(createdPath);
 
-        await _fileEventService.CreatedAsync(fileInfo);
+        await _fileCreationService.CreatedAsync(fileInfo);
 
         return createdPath;
     }

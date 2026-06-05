@@ -70,6 +70,7 @@ Here's a categorized overview of all built-in Orchard Core features at a glance.
 - Media:
     - [Media](modules/Media/README.md)
     - [Media Slugify](modules/Media.Slugify/README.md)
+    - [Antivirus](modules/Antivirus/README.md)
     - [Media Amazon S3](modules/Media.AmazonS3/README.md)
     - [Media Azure](modules/Media.Azure/README.md)
 - [XML-RPC](modules/XmlRpc/README.md)

@@ -1,23 +1,23 @@
 # File Upload Security
 
-When your feature accepts a user-uploaded file and stores it outside Orchard Core's built-in media flow, use `FileEventService` to run the shared pre-storage security pipeline.
+When your feature accepts a user-uploaded file and stores it outside Orchard Core's built-in media flow, use `FileCreationService` to run the shared pre-storage security pipeline.
 
 This ensures every `IFileEventHandler` can inspect or replace the stream before the file is written permanently. If any handler returns a failed `FileCreatingResult`, the upload must be aborted and the file must not be stored.
 
-## When to use `FileEventService`
+## When to use `FileCreationService`
 
-Use `FileEventService` in custom controllers, admin endpoints, APIs, recipe importers, or background flows that:
+Use `FileCreationService` in custom controllers, admin endpoints, APIs, recipe importers, or background flows that:
 
 - accept a file from a user;
 - write that file to disk, cloud storage, or another permanent store; and
 - do **not** already go through `IMediaFileStore.CreateFileFromStreamAsync()`.
 
 !!! note
-    `DefaultMediaFileStore` already uses `FileEventService` internally. If your code uploads through `IMediaFileStore`, do not call the service a second time.
+    `DefaultMediaFileStore` already uses `FileCreationService` internally. If your code uploads through `IMediaFileStore`, do not call the service a second time.
 
 ## Core types
 
-- `FileEventService`: runs `CreatingAsync()` before storage and `CreatedAsync()` after storage succeeds.
+- `FileCreationService`: runs `CreatingAsync()` before storage and `CreatedAsync()` after storage succeeds.
 - `FileCreatingContext`: describes the file being processed.
 - `FileCreatingResult`: returns the stream that should continue through the pipeline and whether creation should proceed.
 - `IFileEventHandler`: participates in the upload pipeline.
@@ -25,16 +25,16 @@ Use `FileEventService` in custom controllers, admin endpoints, APIs, recipe impo
 ## Ownership and cleanup
 
 - The original upload stream stays owned by the caller.
-- If a handler replaces the stream, `FileEventService` disposes the superseded intermediate stream.
-- The `FileCreatingResult` returned from `ProcessAsync()` owns the final replacement stream when one was created, so callers should use `await using` and keep that result alive for as long as they need the processed stream.
-- If `ProcessAsync()` returns a failed result, dispose that result the same way and abort the upload without storing the file.
+- If a handler replaces the stream, `FileCreationService` disposes the superseded intermediate stream.
+- The `FileCreatingResult` returned from `CreateAsync()` owns the final replacement stream when one was created, so callers should use `await using` and keep that result alive for as long as they need the processed stream.
+- If `CreateAsync()` returns a failed result, dispose that result the same way and abort the upload without storing the file.
 - After the file has been written permanently, disposing `FileCreatingResult` cleans up any temporary replacement stream used during the upload pipeline.
 
 Because cleanup is modeled through stream disposal, handlers normally do **not** need a separate `FailedAsync()` callback. A handler that creates a temporary stream should return that stream and let the service/result lifecycle clean it up.
 
-## Using `FileEventService`
+## Using `FileCreationService`
 
-Call `ProcessAsync()` before writing the file. If the returned result did not succeed, abort the request. Only call `CreatedAsync()` after the file was stored successfully.
+Call `CreateAsync()` before writing the file. If the returned result did not succeed, abort the request. Only call `CreatedAsync()` after the file was stored successfully.
 
 ```csharp
 using Microsoft.AspNetCore.Http;
@@ -42,21 +42,21 @@ using OrchardCore.FileStorage;
 
 public sealed class CustomUploadService
 {
-    private readonly FileEventService _fileEventService;
+    private readonly FileCreationService _fileCreationService;
     private readonly IFileStore _fileStore;
 
     public CustomUploadService(
-        FileEventService fileEventService, 
+        FileCreationService fileCreationService,
         IFileStore fileStore)
     {
-        _fileEventService = fileEventService;
+        _fileCreationService = fileCreationService;
         _fileStore = fileStore;
     }
 
     public async Task<string> UploadAsync(IFormFile file, CancellationToken cancellationToken)
     {
         await using var uploadedStream = file.OpenReadStream();
-        await using var fileCreatingResult = await _fileEventService.ProcessAsync(
+        await using var fileCreatingResult = await _fileCreationService.CreateAsync(
             new FileCreatingContext(file.FileName, file.Length, file.ContentType),
             uploadedStream,
             cancellationToken);
@@ -70,7 +70,7 @@ public sealed class CustomUploadService
         var path = await _fileStore.CreateFileFromStreamAsync(file.FileName, fileCreatingResult.Stream);
         var fileInfo = await _fileStore.GetFileInfoAsync(path);
 
-        await _fileEventService.CreatedAsync(fileInfo, cancellationToken);
+        await _fileCreationService.CreatedAsync(fileInfo, cancellationToken);
 
         return path;
     }
@@ -110,4 +110,4 @@ public sealed class RejectExecutableFileEventHandler : IFileEventHandler
 
 ## Security guidance
 
-Always run `FileEventService` before any permanent write. Do not save the uploaded file first and scan it afterward, since a failed scan must abort the upload before the file is persisted.
+Always run `FileCreationService` before any permanent write. Do not save the uploaded file first and scan it afterward, since a failed scan must abort the upload before the file is persisted.

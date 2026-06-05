@@ -23,7 +23,7 @@ public sealed class ImportRemoteInstanceController : Controller
     private readonly INotifier _notifier;
     private readonly ILogger _logger;
     private readonly IDataProtector _dataProtector;
-    private readonly FileEventService _fileEventService;
+    private readonly FileCreationService _fileCreationService;
 
     internal readonly IHtmlLocalizer H;
     internal readonly IStringLocalizer S;
@@ -32,14 +32,14 @@ public sealed class ImportRemoteInstanceController : Controller
         IDataProtectionProvider dataProtectionProvider,
         RemoteClientService remoteClientService,
         IDeploymentManager deploymentManager,
-        FileEventService fileEventService,
+        FileCreationService fileCreationService,
         INotifier notifier,
         IHtmlLocalizer<ImportRemoteInstanceController> htmlLocalizer,
         IStringLocalizer<ImportRemoteInstanceController> stringLocalizer,
         ILogger<ImportRemoteInstanceController> logger)
     {
         _deploymentManager = deploymentManager;
-        _fileEventService = fileEventService;
+        _fileCreationService = fileCreationService;
         _notifier = notifier;
         _logger = logger;
         _remoteClientService = remoteClientService;
@@ -81,7 +81,7 @@ public sealed class ImportRemoteInstanceController : Controller
         try
         {
             await using var uploadedStream = model.Content.OpenReadStream();
-            await using var fileCreatingResult = await _fileEventService.ProcessAsync(
+            await using var fileCreatingResult = await _fileCreationService.CreateAsync(
                 new FileCreatingContext(model.Content.FileName, model.Content.Length, model.Content.ContentType),
                 uploadedStream,
                 HttpContext.RequestAborted);

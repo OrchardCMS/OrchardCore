@@ -1,6 +1,10 @@
-# ClamAV (`OrchardCore.Antivirus.ClamAV`)
+# Antivirus (`OrchardCore.Antivirus`)
 
-The ClamAV module scans files with a `clamd` service before Orchard Core stores or imports them.
+The Antivirus module provides features that inspect uploaded files before Orchard Core stores or imports them permanently.
+
+## ClamAV feature (`OrchardCore.Antivirus.ClamAV`)
+
+The ClamAV feature scans files with a `clamd` service before Orchard Core stores or imports them.
 
 When the feature is enabled, uploads fail closed:
 
@@ -8,9 +12,9 @@ When the feature is enabled, uploads fail closed:
 - Scanner connectivity, timeout, or protocol failures also reject the upload.
 - The ClamAV connection is reused per configuration to avoid creating a new TCP client for every scan.
 
-The scanner is wired through Orchard Core's file event handling abstractions, so uploads can be validated before storage without coupling media and deployment flows to a scanner-specific interface. ClamAV participates in that flow as an `IFileEventHandler`, and `FileEventService` aborts the upload when ClamAV returns a failed `FileCreatingResult`.
+The scanner is wired through Orchard Core's file event handling abstractions, so uploads can be validated before storage without coupling media and deployment flows to a scanner-specific interface. ClamAV participates in that flow as an `IFileEventHandler`, and `FileCreationService` aborts the upload when ClamAV returns a failed `FileCreatingResult`.
 
-## Configuration
+### Configuration
 
 Configure the ClamAV connection in application configuration. The settings key remains `OrchardCore_Antivirus_ClamAV` for compatibility:
 
@@ -36,7 +40,7 @@ OrchardCore__Antivirus_ClamAV__ConnectTimeoutSeconds=5
 OrchardCore__Antivirus_ClamAV__TransferTimeoutSeconds=30
 ```
 
-## Usage
+### Usage
 
 1. Configure the ClamAV settings.
 2. Enable the `ClamAV Antivirus Scanner` feature (`OrchardCore.Antivirus.ClamAV`).
@@ -46,9 +50,9 @@ If the feature is enabled without a valid ClamAV connection, uploads are rejecte
 
 This feature integrates with the shared file upload security pipeline through `IFileEventHandler`, so uploads can be rejected before Orchard Core stores them permanently.
 
-See [File Upload Security](../../core/file-upload-security.md) for the canonical guidance on invoking `FileEventService` in custom upload flows and aborting rejected files before they are stored.
+See [File Upload Security](../../core/file-upload-security.md) for the canonical guidance on invoking `FileCreationService` in custom upload flows and aborting rejected files before they are stored.
 
-## Notes
+### Notes
 
 - The currently audited upload surfaces covered by this change are media uploads plus deployment package imports, both local and remote.
 - Media uploads are scanned before storage because they flow through `DefaultMediaFileStore`.

@@ -3,10 +3,10 @@ using OrchardCore.Infrastructure;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Media;
 
-public class FileEventServiceTests
+public class FileCreationServiceTests
 {
     [Fact]
-    public async Task ProcessAsync_DisposesReplacementStream_WhenLaterHandlerThrows()
+    public async Task CreateAsync_DisposesReplacementStream_WhenLaterHandlerThrows()
     {
         var originalStream = new TrackingStream();
         var replacementStream = new TrackingStream();
@@ -21,17 +21,17 @@ public class FileEventServiceTests
             .Setup(x => x.CreatingAsync(It.IsAny<FileCreatingContext>(), replacementStream, It.IsAny<CancellationToken>()))
             .ThrowsAsync(new InvalidOperationException("Handler failure."));
 
-        var service = new FileEventService([firstHandler.Object, secondHandler.Object]);
+        var service = new FileCreationService([firstHandler.Object, secondHandler.Object]);
 
         await Assert.ThrowsAsync<InvalidOperationException>(() =>
-            service.ProcessAsync(new FileCreatingContext("file.txt"), originalStream));
+            service.CreateAsync(new FileCreatingContext("file.txt"), originalStream));
 
         Assert.True(replacementStream.IsDisposed);
         Assert.False(originalStream.IsDisposed);
     }
 
     [Fact]
-    public async Task ProcessAsync_ReturnedFailedResult_DisposesReplacementStream()
+    public async Task CreateAsync_ReturnedFailedResult_DisposesReplacementStream()
     {
         var originalStream = new TrackingStream();
         var replacementStream = new TrackingStream();
@@ -49,9 +49,9 @@ public class FileEventServiceTests
                 Message = new LocalizedString("Rejected", "The file was rejected."),
             }));
 
-        var service = new FileEventService([firstHandler.Object, secondHandler.Object]);
+        var service = new FileCreationService([firstHandler.Object, secondHandler.Object]);
 
-        await using (var result = await service.ProcessAsync(new FileCreatingContext("file.txt"), originalStream, TestContext.Current.CancellationToken))
+        await using (var result = await service.CreateAsync(new FileCreatingContext("file.txt"), originalStream, TestContext.Current.CancellationToken))
         {
             Assert.False(result.Succeeded);
             Assert.Same(replacementStream, result.Stream);

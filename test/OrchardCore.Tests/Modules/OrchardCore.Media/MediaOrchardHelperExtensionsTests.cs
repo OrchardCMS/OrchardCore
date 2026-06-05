@@ -43,7 +43,7 @@ public class MediaOrchardHelperExtensionsTests
             "",
             [],
             [],
-            new FileEventService([]),
+            new FileCreationService([]),
             Mock.Of<ILogger<DefaultMediaFileStore>>());
 
         var mediaProfileServiceMock = new Mock<IMediaProfileService>();
