@@ -78,17 +78,15 @@ public sealed class FlowPartDisplayDriver : ContentPartDisplayDriver<FlowPart>
         return Initialize<FlowPartEditViewModel>(GetEditorShapeType(context), async model =>
         {
             var containedContentTypes = await GetContainedContentTypesAsync(context.TypePartDefinition);
-            var notify = false;
-
             var existingWidgets = new List<ContentItem>();
+            var invalidWidgetDescriptions = new List<string>();
 
             foreach (var widget in flowPart.Widgets)
             {
                 if (!containedContentTypes.Any(c => c.Name == widget.ContentType))
                 {
                     _logger.LogWarning("The Widget content item with id {ContentItemId} has no matching {ContentType} content type definition.", widget.ContentItem.ContentItemId, widget.ContentItem.ContentType);
-                    await _notifier.WarningAsync(H["The Widget content item with id {0} has no matching {1} content type definition.", widget.ContentItem.ContentItemId, widget.ContentItem.ContentType]);
-                    notify = true;
+                    invalidWidgetDescriptions.Add($"{widget.ContentItem.ContentItemId} ({widget.ContentType})");
                 }
                 else
                 {
@@ -98,9 +96,13 @@ public sealed class FlowPartDisplayDriver : ContentPartDisplayDriver<FlowPart>
 
             flowPart.Widgets = existingWidgets;
 
-            if (notify)
+            if (invalidWidgetDescriptions.Count > 0)
             {
-                await _notifier.WarningAsync(H["Publishing this content item may erase created content. Fix any content type issues beforehand."]);
+                await _notifier.WarningAsync(H.Plural(
+                    invalidWidgetDescriptions.Count,
+                    "The widget content item {1} has no matching content type definition. Publishing this content item may erase created content. Fix any content type issues beforehand.",
+                    "The following widget content items have no matching content type definitions: {1}. Publishing this content item may erase created content. Fix any content type issues beforehand.",
+                    string.Join(", ", invalidWidgetDescriptions)));
             }
 
             model.FlowPart = flowPart;

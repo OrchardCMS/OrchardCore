@@ -113,12 +113,14 @@ public sealed class AuditTrailContentController : Controller
 
         if (!result.Succeeded)
         {
-            await _notifier.WarningAsync(H["'{0}' was not restored, the version is not valid.", contentItem.DisplayText]);
-
-            foreach (var error in result.Errors)
+            var errorMessages = result.Errors.Select(error => error.ErrorMessage).ToArray();
+            if (errorMessages.Length > 0)
             {
-                // Pass ErrorMessage as an argument to ensure it is encoded
-                await _notifier.WarningAsync(new LocalizedHtmlString(nameof(AuditTrailContentController.Restore), "{0}", false, error.ErrorMessage));
+                await _notifier.WarningAsync(H.Plural(errorMessages.Length, "'{1}' was not restored, the version is not valid. {2}", "'{1}' was not restored, the version is not valid. Errors: {2}", contentItem.DisplayText, string.Join(", ", errorMessages)));
+            }
+            else
+            {
+                await _notifier.WarningAsync(H["'{0}' was not restored, the version is not valid.", contentItem.DisplayText]);
             }
 
             return RedirectToAction("Index", "Admin", new { area = "OrchardCore.AuditTrail" });
