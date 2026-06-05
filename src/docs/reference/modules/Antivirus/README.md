@@ -6,7 +6,7 @@ The Antivirus module provides features that inspect uploaded files before Orchar
 
 The ClamAV feature scans files with a `clamd` service before Orchard Core stores or imports them.
 
-When the feature is enabled, uploads fail closed:
+When the feature is enabled, uploads fail:
 
 - Malware detections are rejected before storage.
 - Scanner connectivity, timeout, or protocol failures also reject the upload.
