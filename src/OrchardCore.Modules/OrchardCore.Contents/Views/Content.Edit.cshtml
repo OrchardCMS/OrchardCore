@@ -20,14 +20,16 @@
 
         @if (Model.Actions != null)
         {
-            <div class="mt-3 border-top action-bar-bottom">
+            <div class="mt-3 text-bg-theme border-top action-bar-bottom">
                 <div class="edit-item-actions d-flex align-items-start gap-2">
                     <button type="button"
                             class="btn btn-sm btn-outline-secondary action-bar-toggle d-md-none collapsed"
                             aria-expanded="false"
                             aria-label="@T["Toggle actions"]"
                             data-bs-toggle="collapse"
-                            data-bs-target=".action-bar-collapsible"></button>
+                            data-bs-target=".action-bar-collapsible">
+                            <span class="visually-hidden">@T["Show / Hide additional actions"]</span>
+                        </button>
                     <div class="action-bar-actions flex-grow-1 text-end">
                         @await DisplayAsync(Model.Actions)
                         @{
