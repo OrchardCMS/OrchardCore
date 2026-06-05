@@ -15,7 +15,7 @@ public sealed class ResourceManagementOptionsConfiguration
 
     // Versions
     private const string CodeMirrorVersion = "5.65.7";
-    private const string MonacoEditorVersion = "0.46.0";
+    private const string MonacoEditorVersion = "0.52.2";
 
     // URLs
     private const string CloudflareUrl = "https://cdnjs.cloudflare.com/ajax/libs/";
@@ -187,43 +187,43 @@ public sealed class ResourceManagementOptionsConfiguration
             .DefineScript("jQuery-ui")
             .SetDependencies("jQuery")
             .SetUrl(
-                "~/OrchardCore.Resources/Vendor/jquery-ui-1.12.1/jquery-ui.min.js",
-                "~/OrchardCore.Resources/Vendor/jquery-ui-1.12.1/jquery-ui.js"
+                "~/OrchardCore.Resources/Vendor/jquery-ui-1.14.2/jquery-ui.min.js",
+                "~/OrchardCore.Resources/Vendor/jquery-ui-1.14.2/jquery-ui.js"
             )
             .SetCdn(
-                "https://code.jquery.com/ui/1.12.1/jquery-ui.min.js",
-                "https://code.jquery.com/ui/1.12.1/jquery-ui.js"
+                "https://code.jquery.com/ui/1.14.2/jquery-ui.min.js",
+                "https://code.jquery.com/ui/1.14.2/jquery-ui.js"
             )
             .SetCdnIntegrity(
-                "sha384-Dziy8F2VlJQLMShA6FHWNul/veM9bCkRUaLqr199K94ntO5QUrLJBEbYegdSkkqX",
-                "sha384-JPbtLYL10d/Z1crlc6GGGGM3PavCzzoUJ1UxH0bXHOfguWHQ6XAWrIzW+MBGGXe5"
+                "sha384-tBcEcHGtNy7/Mx08+YxuvQ6v6s0N2jgehtFiT+bLtGwTj/txXtB/L5GqXfggm5sS",
+                "sha384-sLsvouCXvbq3gcmJ2ByNHuPgQqCFvM1zxo0tilJPdEbKHcTG7M+F/9TU/VEEEIwf"
             )
-            .SetVersion("1.12.1");
+            .SetVersion("1.14.2");
 
         manifest
             .DefineStyle("jQuery-ui")
             .SetUrl(
-                "~/OrchardCore.Resources/Vendor/jquery-ui-1.12.1/Styles/jquery-ui.min.css",
-                "~/OrchardCore.Resources/Vendor/jquery-ui-1.12.1/Styles/jquery-ui.css"
+                "~/OrchardCore.Resources/Vendor/jquery-ui-1.14.2/Styles/jquery-ui.min.css",
+                "~/OrchardCore.Resources/Vendor/jquery-ui-1.14.2/Styles/jquery-ui.css"
             )
             .SetCdn(
-                "https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.min.css",
-                "https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css"
+                "https://code.jquery.com/ui/1.14.2/themes/base/jquery-ui.min.css",
+                "https://code.jquery.com/ui/1.14.2/themes/base/jquery-ui.css"
             )
             .SetCdnIntegrity(
-                "sha384-kcAOn9fN4XSd+TGsNu2OQKSuV5ngOwt7tg73O4EpaD91QXvrfgvf0MR7/2dUjoI6",
-                "sha384-xewr6kSkq3dBbEtB6Z/3oFZmknWn7nHqhLVLrYgzEFRbU/DHSxW7K3B44yWUN60D"
+                "sha384-U+0bB1oWRPqiRvCXEOkzg9QYIFdnYIg3x1AUPHhQXiKJsWa9jYCmZ6aXn4+FPqw6",
+                "sha384-pUvA/6DQjteMxpaV6uGxZ1QuYrFLJgrLMvBWf06VcJIg6ky/Y5m3UZJlrv11V1I+"
             )
-            .SetVersion("1.12.1");
+            .SetVersion("1.14.2");
 
         manifest
             .DefineScript("jQuery-ui-i18n")
             .SetDependencies("jQuery-ui")
             .SetUrl(
-                "~/OrchardCore.Resources/Vendor/jquery-ui-1.12.1/jquery-ui-i18n.min.js",
-                "~/OrchardCore.Resources/Vendor/jquery-ui-1.12.1/jquery-ui-i18n.js"
+                "~/OrchardCore.Resources/Vendor/jquery-ui-1.14.2/jquery-ui-i18n.min.js",
+                "~/OrchardCore.Resources/Vendor/jquery-ui-1.14.2/jquery-ui-i18n.js"
             )
-            .SetVersion("1.12.1");
+            .SetVersion("1.14.2");
 
         manifest
             .DefineScript("jQuery.nestedSortable")
@@ -1108,18 +1108,18 @@ public sealed class ResourceManagementOptionsConfiguration
         manifest
             .DefineScript("vuejs")
             .SetUrl(
-                "~/OrchardCore.Resources/Vendor/vue-2.6.14/vue.min.js",
-                "~/OrchardCore.Resources/Vendor/vue-2.6.14/vue.js"
+                "~/OrchardCore.Resources/Vendor/vue-2.7.16/vue.min.js",
+                "~/OrchardCore.Resources/Vendor/vue-2.7.16/vue.js"
             )
             .SetCdn(
-                "https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js",
-                "https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"
+                "https://cdn.jsdelivr.net/npm/vue@2.7.16/dist/vue.min.js",
+                "https://cdn.jsdelivr.net/npm/vue@2.7.16/dist/vue.js"
             )
             .SetCdnIntegrity(
-                "sha384-ULpZhk1pvhc/UK5ktA9kwb2guy9ovNSTyxPNHANnA35YjBQgdwI+AhLkixDvdlw4",
-                "sha384-t1tHLsbM7bYMJCXlhr0//00jSs7ZhsAhxgm191xFsyzvieTMCbUWKMhFg9I6ci8q"
+                "sha384-YVYXhPGIH/Gmcr0W5Rin4PcpcsG1a4pcdUUod1CnbDEJut7XiUaJtSlNKeRLJBPk",
+                "sha384-smVS78N63G0uFpVH9bKdb+2YIW7Q9eFrle79imo+AWW6YLluQxAEK7kxLOt1bNex"
             )
-            .SetVersion("2.6.14");
+            .SetVersion("2.7.16");
 
         manifest
             .DefineScript("vuejs")

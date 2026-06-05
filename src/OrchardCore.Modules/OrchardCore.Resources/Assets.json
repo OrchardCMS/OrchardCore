@@ -251,8 +251,8 @@
   {
     "action": "copy",
     "name": "vue2",
-    "source": "node_modules/vue-2.6.14/dist/*.js",
-    "dest": "wwwroot/Vendor/vue-2.6.14/",
+    "source": "node_modules/vue-2.7.16/dist/*.js",
+    "dest": "wwwroot/Vendor/vue-2.7.16/",
     "tags": [ "resources", "js" ]
   },
   {
@@ -491,9 +491,9 @@
   },
   {
     "action": "copy",
-    "name": "jquery-ui-1.12.1",
-    "source": "Assets/Vendor/jquery-ui-1.12.1/**",
-    "dest": "wwwroot/Vendor/jquery-ui-1.12.1/",
+    "name": "jquery-ui-1.14.2",
+    "source": "Assets/Vendor/jquery-ui-1.14.2/**",
+    "dest": "wwwroot/Vendor/jquery-ui-1.14.2/",
     "tags": [ "resources", "js", "css" ]
   },
   {
