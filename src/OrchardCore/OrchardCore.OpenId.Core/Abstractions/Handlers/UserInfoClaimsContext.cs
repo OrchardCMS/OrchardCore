@@ -5,17 +5,17 @@ namespace OrchardCore.OpenId.Abstractions.Handlers;
 
 public class UserInfoClaimsContext
 {
-    public UserInfoClaimsContext(ClaimsIdentity identity, IDictionary<string, object> claims)
+    public UserInfoClaimsContext(ClaimsPrincipal principal, IDictionary<string, object> claims)
     {
-        Identity = identity;
+        Principal = principal;
         Claims = claims;
     }
 
     /// <summary>
-    /// Gets the <see cref="ClaimsIdentity"/> from the authenticated principal.
-    /// Implementations can read claims directly from this identity.
+    /// Gets the <see cref="ClaimsPrincipal"/> representing the authenticated user.
+    /// Implementations can read claims and scopes directly from this principal.
     /// </summary>
-    public ClaimsIdentity Identity { get; }
+    public ClaimsPrincipal Principal { get; }
 
     public IDictionary<string, object> Claims { get; }
 }
