@@ -30,8 +30,6 @@ Use `FileCreationService` in custom controllers, admin endpoints, APIs, recipe i
 - If `CreateAsync()` returns a failed result, dispose that result the same way and abort the upload without storing the file.
 - After the file has been written permanently, disposing `FileCreatingResult` cleans up any temporary replacement stream used during the upload pipeline.
 
-Because cleanup is modeled through stream disposal, handlers normally do **not** need a separate `FailedAsync()` callback. A handler that creates a temporary stream should return that stream and let the service/result lifecycle clean it up.
-
 ## Using `FileCreationService`
 
 Call `CreateAsync()` before writing the file. If the returned result did not succeed, abort the request. Only call `CreatedAsync()` after the file was stored successfully.
