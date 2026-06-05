@@ -1,17 +1,18 @@
-# ClamAV Antivirus Scanner (`OrchardCore.Antivirus.ClamAV`)
+# ClamAV (`OrchardCore.Antivirus.ClamAV`)
 
-The ClamAV Antivirus Scanner module scans files with a `clamd` service before Orchard Core stores or imports them.
+The ClamAV module scans files with a `clamd` service before Orchard Core stores or imports them.
 
 When the feature is enabled, uploads fail closed:
 
 - Malware detections are rejected before storage.
 - Scanner connectivity, timeout, or protocol failures also reject the upload.
+- The ClamAV connection is reused per configuration to avoid creating a new TCP client for every scan.
 
-The scanner is wired through the reusable `IAntivirusScanner` abstraction, so custom modules can replace it with another implementation when they need a different anti-virus provider.
+The scanner is wired through Orchard Core's file event handling abstractions, so uploads can be validated before storage without coupling media and deployment flows to a scanner-specific interface. ClamAV participates in that flow as an `IFileEventHandler`, and `FileEventService` aborts the upload when ClamAV returns a failed `FileCreatingResult`.
 
 ## Configuration
 
-Configure the ClamAV connection in application configuration:
+Configure the ClamAV connection in application configuration. The settings key remains `OrchardCore_Antivirus_ClamAV` for compatibility:
 
 ```json
 {
@@ -38,10 +39,14 @@ OrchardCore__Antivirus_ClamAV__TransferTimeoutSeconds=30
 ## Usage
 
 1. Configure the ClamAV settings.
-2. Enable the `ClamAV Antivirus Scanner` feature.
+2. Enable the `ClamAV Antivirus Scanner` feature (`OrchardCore.Antivirus.ClamAV`).
 3. Ensure a reachable `clamd` instance is running.
 
 If the feature is enabled without a valid ClamAV connection, uploads are rejected until the scanner can verify them.
+
+This feature integrates with the shared file upload security pipeline through `IFileEventHandler`, so uploads can be rejected before Orchard Core stores them permanently.
+
+See [File Upload Security](../../core/file-upload-security.md) for the canonical guidance on invoking `FileEventService` in custom upload flows and aborting rejected files before they are stored.
 
 ## Notes
 

@@ -7,22 +7,26 @@ namespace OrchardCore.Infrastructure;
 /// </summary>
 public class Result
 {
+    private static readonly ResultError[] _emptyErrors = [];
     private static readonly Result _success = new Result { Succeeded = true };
-    private readonly List<ResultError> _errors = [];
+    private IEnumerable<ResultError> _errors = _emptyErrors;
 
-    private Result()
+    protected Result()
     {
+    }
+
+    protected Result(bool succeeded)
+    {
+        Succeeded = succeeded;
     }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Result"/> class with the specified success status and errors.
     /// </summary>
-    /// <param name="succeeded">Indicates whether the operation succeeded.</param>
     /// <param name="errors">The errors that occurred during the operation.</param>
-    protected Result(bool succeeded, List<ResultError> errors)
+    protected Result(IEnumerable<ResultError> errors)
     {
-        Succeeded = succeeded;
-        _errors = errors;
+        _errors = errors ?? _emptyErrors;
     }
 
     /// <summary>
@@ -48,7 +52,7 @@ public class Result
     /// <param name="value">The value returned by the operation.</param>
     /// <returns>A successful result instance with the specified value.</returns>
     public static Result<TValue> Success<TValue>(TValue value)
-        => new Result<TValue>(value, true, []);
+        => new Result<TValue>(value);
 
     /// <summary>
     /// Returns a failed result instance with the specified errors.
@@ -57,12 +61,7 @@ public class Result
     /// <returns>A failed result instance with the specified errors.</returns>
     public static Result Failed(params IEnumerable<ResultError> errors)
     {
-        var result = new Result();
-
-        if (errors is not null)
-        {
-            result._errors.AddRange(errors);
-        }
+        var result = new Result(errors);
 
         return result;
     }
@@ -91,5 +90,5 @@ public class Result
     /// <param name="errors">The errors that occurred during the operation.</param>
     /// <returns>A failed result instance with the specified error message.</returns>
     public static Result<TValue> Failed<TValue>(params ResultError[] errors)
-        => new Result<TValue>(default, false, errors.ToList());
+        => new Result<TValue>(default, errors);
 }

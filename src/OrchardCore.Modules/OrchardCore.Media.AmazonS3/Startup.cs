@@ -103,7 +103,7 @@ public sealed class Startup : Modules.StartupBase
                 var mediaOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>().Value;
                 var mediaEventHandlers = serviceProvider.GetServices<IMediaEventHandler>();
                 var mediaCreatingEventHandlers = serviceProvider.GetServices<IMediaCreatingEventHandler>();
-                var antivirusScanner = serviceProvider.GetRequiredService<IAntivirusScanner>();
+                var fileEventService = serviceProvider.GetRequiredService<FileEventService>();
                 var clock = serviceProvider.GetRequiredService<IClock>();
                 var logger = serviceProvider.GetRequiredService<ILogger<DefaultMediaFileStore>>();
                 var amazonS3Client = serviceProvider.GetService<IAmazonS3>();
@@ -127,7 +127,7 @@ public sealed class Startup : Modules.StartupBase
                     mediaOptions.CdnBaseUrl,
                     mediaEventHandlers,
                     mediaCreatingEventHandlers,
-                    antivirusScanner,
+                    fileEventService,
                     logger);
             }));
 

@@ -7,11 +7,11 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using OrchardCore.FileStorage;
 using OrchardCore.Deployment.Remote.Services;
 using OrchardCore.Deployment.Remote.ViewModels;
 using OrchardCore.Deployment.Services;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.FileStorage;
 using OrchardCore.Recipes.Models;
 
 namespace OrchardCore.Deployment.Remote.Controllers;
@@ -23,7 +23,7 @@ public sealed class ImportRemoteInstanceController : Controller
     private readonly INotifier _notifier;
     private readonly ILogger _logger;
     private readonly IDataProtector _dataProtector;
-    private readonly IAntivirusScanner _fileUploadScanner;
+    private readonly FileEventService _fileEventService;
 
     internal readonly IHtmlLocalizer H;
     internal readonly IStringLocalizer S;
@@ -32,14 +32,14 @@ public sealed class ImportRemoteInstanceController : Controller
         IDataProtectionProvider dataProtectionProvider,
         RemoteClientService remoteClientService,
         IDeploymentManager deploymentManager,
-        IAntivirusScanner fileUploadScanner,
+        FileEventService fileEventService,
         INotifier notifier,
         IHtmlLocalizer<ImportRemoteInstanceController> htmlLocalizer,
         IStringLocalizer<ImportRemoteInstanceController> stringLocalizer,
         ILogger<ImportRemoteInstanceController> logger)
     {
         _deploymentManager = deploymentManager;
-        _fileUploadScanner = fileUploadScanner;
+        _fileEventService = fileEventService;
         _notifier = notifier;
         _logger = logger;
         _remoteClientService = remoteClientService;
@@ -81,11 +81,19 @@ public sealed class ImportRemoteInstanceController : Controller
         try
         {
             await using var uploadedStream = model.Content.OpenReadStream();
-            await using var scannedStream = await CreateScannedStreamAsync(model.Content.FileName, model.Content.ContentType, uploadedStream);
+            await using var fileCreatingResult = await _fileEventService.ProcessAsync(
+                new FileCreatingContext(model.Content.FileName, model.Content.Length, model.Content.ContentType),
+                uploadedStream,
+                HttpContext.RequestAborted);
 
-            using (var fs = System.IO.File.Create(tempArchiveName))
+            if (!fileCreatingResult.Succeeded)
             {
-                await scannedStream.CopyToAsync(fs);
+                return StatusCode((int)HttpStatusCode.BadRequest, fileCreatingResult.ErrorMessage ?? $"The uploaded file '{model.Content.FileName}' was rejected.");
+            }
+
+            await using (var fs = System.IO.File.Create(tempArchiveName))
+            {
+                await fileCreatingResult.Stream.CopyToAsync(fs, HttpContext.RequestAborted);
             }
 
             ZipFile.ExtractToDirectory(tempArchiveName, tempArchiveFolder);
@@ -118,66 +126,5 @@ public sealed class ImportRemoteInstanceController : Controller
         }
 
         return Ok();
-    }
-
-    private async Task<Stream> CreateScannedStreamAsync(string fileName, string contentType, Stream stream)
-    {
-        if (_fileUploadScanner is NullAntivirusScanner)
-        {
-            return stream;
-        }
-
-        var scanStream = stream;
-
-        if (scanStream.CanSeek)
-        {
-            scanStream.Position = 0;
-        }
-        else
-        {
-            scanStream = await CreateTemporarySeekableStreamAsync(scanStream);
-        }
-
-        try
-        {
-            var result = await _fileUploadScanner.ScanAsync(
-                new AntivirusScanContext(fileName, scanStream.Length, contentType),
-                scanStream);
-
-            if (!result.IsClean)
-            {
-                throw new AntivirusScanningException(result.Message ?? $"The uploaded file '{fileName}' was rejected by the anti-virus scanner.");
-            }
-
-            scanStream.Position = 0;
-
-            return scanStream;
-        }
-        catch
-        {
-            if (scanStream != stream)
-            {
-                scanStream.Dispose();
-            }
-
-            throw;
-        }
-    }
-
-    private static async Task<Stream> CreateTemporarySeekableStreamAsync(Stream stream)
-    {
-        var tempFilePath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-        var tempStream = new FileStream(
-            tempFilePath,
-            FileMode.CreateNew,
-            FileAccess.ReadWrite,
-            FileShare.None,
-            81920,
-            FileOptions.Asynchronous | FileOptions.DeleteOnClose);
-
-        await stream.CopyToAsync(tempStream);
-        tempStream.Position = 0;
-
-        return tempStream;
     }
 }

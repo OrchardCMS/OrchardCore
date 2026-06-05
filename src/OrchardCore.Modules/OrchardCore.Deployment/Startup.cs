@@ -22,7 +22,7 @@ public sealed class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.TryAddSingleton<IAntivirusScanner, NullAntivirusScanner>();
+        services.TryAddSingleton<FileEventService>();
         services.AddDeploymentServices();
 
         services.AddNavigationProvider<AdminMenu>();

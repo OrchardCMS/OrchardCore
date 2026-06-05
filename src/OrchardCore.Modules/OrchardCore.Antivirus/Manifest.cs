@@ -10,6 +10,6 @@ using OrchardCore.Modules.Manifest;
 [assembly: Feature(
     Id = "OrchardCore.Antivirus.ClamAV",
     Name = "ClamAV Antivirus Scanner",
-    Description = "Scans files with ClamAV before Orchard Core stores or imports them.",
+    Description = "Scans files with ClamAV before Orchard Core stores them.",
     Category = "Security"
 )]

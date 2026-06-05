@@ -1,0 +1,81 @@
+using OrchardCore.FileStorage;
+using OrchardCore.Infrastructure;
+
+namespace OrchardCore.Tests.Modules.OrchardCore.Media;
+
+public class FileEventServiceTests
+{
+    [Fact]
+    public async Task ProcessAsync_DisposesReplacementStream_WhenLaterHandlerThrows()
+    {
+        var originalStream = new TrackingStream();
+        var replacementStream = new TrackingStream();
+
+        var firstHandler = new Mock<IFileEventHandler>();
+        firstHandler
+            .Setup(x => x.CreatingAsync(It.IsAny<FileCreatingContext>(), originalStream, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(FileCreatingResult.Success(replacementStream));
+
+        var secondHandler = new Mock<IFileEventHandler>();
+        secondHandler
+            .Setup(x => x.CreatingAsync(It.IsAny<FileCreatingContext>(), replacementStream, It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new InvalidOperationException("Handler failure."));
+
+        var service = new FileEventService([firstHandler.Object, secondHandler.Object]);
+
+        await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            service.ProcessAsync(new FileCreatingContext("file.txt"), originalStream));
+
+        Assert.True(replacementStream.IsDisposed);
+        Assert.False(originalStream.IsDisposed);
+    }
+
+    [Fact]
+    public async Task ProcessAsync_ReturnedFailedResult_DisposesReplacementStream()
+    {
+        var originalStream = new TrackingStream();
+        var replacementStream = new TrackingStream();
+
+        var firstHandler = new Mock<IFileEventHandler>();
+        firstHandler
+            .Setup(x => x.CreatingAsync(It.IsAny<FileCreatingContext>(), originalStream, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(FileCreatingResult.Success(replacementStream));
+
+        var secondHandler = new Mock<IFileEventHandler>();
+        secondHandler
+            .Setup(x => x.CreatingAsync(It.IsAny<FileCreatingContext>(), replacementStream, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(FileCreatingResult.Failed(replacementStream, new ResultError
+            {
+                Message = new LocalizedString("Rejected", "The file was rejected."),
+            }));
+
+        var service = new FileEventService([firstHandler.Object, secondHandler.Object]);
+
+        await using (var result = await service.ProcessAsync(new FileCreatingContext("file.txt"), originalStream, TestContext.Current.CancellationToken))
+        {
+            Assert.False(result.Succeeded);
+            Assert.Same(replacementStream, result.Stream);
+            Assert.False(replacementStream.IsDisposed);
+        }
+
+        Assert.True(replacementStream.IsDisposed);
+        Assert.False(originalStream.IsDisposed);
+    }
+
+    private sealed class TrackingStream : MemoryStream
+    {
+        public bool IsDisposed { get; private set; }
+
+        protected override void Dispose(bool disposing)
+        {
+            IsDisposed = true;
+            base.Dispose(disposing);
+        }
+
+        public override async ValueTask DisposeAsync()
+        {
+            IsDisposed = true;
+            await base.DisposeAsync();
+        }
+    }
+}

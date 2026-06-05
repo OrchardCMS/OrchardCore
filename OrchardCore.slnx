@@ -117,7 +117,7 @@
     <Project Path="src/OrchardCore.Modules/OrchardCore.XmlRpc/OrchardCore.XmlRpc.csproj" />
   </Folder>
   <Folder Name="/src/OrchardCore.Modules/">
-    <Project Path="src/OrchardCore.Modules/OrchardCore.Antivirus.ClamAV/OrchardCore.Antivirus.ClamAV.csproj" />
+    <Project Path="src/OrchardCore.Modules/OrchardCore.Antivirus/OrchardCore.Antivirus.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Admin/OrchardCore.Admin.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.AdminDashboard/OrchardCore.AdminDashboard.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Apis.GraphQL/OrchardCore.Apis.GraphQL.csproj" />

@@ -17,7 +17,7 @@ public class DefaultMediaFileStore : IMediaFileStore
     private readonly string _cdnBaseUrl;
     private readonly IEnumerable<IMediaEventHandler> _mediaEventHandlers;
     private readonly IEnumerable<IMediaCreatingEventHandler> _mediaCreatingEventHandlers;
-    private readonly IAntivirusScanner _antivirusScanner;
+    private readonly FileEventService _fileEventService;
     private readonly ILogger _logger;
 
     private bool _requestBasePathValidated;
@@ -28,7 +28,7 @@ public class DefaultMediaFileStore : IMediaFileStore
         string cdnBaseUrl,
         IEnumerable<IMediaEventHandler> mediaEventHandlers,
         IEnumerable<IMediaCreatingEventHandler> mediaCreatingEventHandlers,
-        IAntivirusScanner antivirusScanner,
+        FileEventService fileEventService,
         ILogger<DefaultMediaFileStore> logger)
     {
         _fileStore = fileStore;
@@ -41,7 +41,7 @@ public class DefaultMediaFileStore : IMediaFileStore
 
         _mediaEventHandlers = mediaEventHandlers;
         _mediaCreatingEventHandlers = mediaCreatingEventHandlers;
-        _antivirusScanner = antivirusScanner;
+        _fileEventService = fileEventService;
         _logger = logger;
     }
 
@@ -195,18 +195,7 @@ public class DefaultMediaFileStore : IMediaFileStore
                     }
                 }
 
-                var scannedStream = await ScanAsync(context.Path, outputStream);
-
-                if (scannedStream != outputStream && outputStream != inputStream)
-                {
-                    outputStream.Dispose();
-                }
-
-                outputStream = scannedStream;
-
-                await ValidateAvailableStorageAsync(outputStream.Length);
-
-                return await _fileStore.CreateFileFromStreamAsync(context.Path, outputStream, overwrite);
+                return await CreateFileAsync(new FileCreatingContext(context.Path), outputStream, overwrite);
             }
             finally
             {
@@ -216,21 +205,7 @@ public class DefaultMediaFileStore : IMediaFileStore
         }
         else
         {
-            var scannedStream = await ScanAsync(path, inputStream);
-
-            try
-            {
-                await ValidateAvailableStorageAsync(scannedStream.Length);
-
-                return await _fileStore.CreateFileFromStreamAsync(path, scannedStream, overwrite);
-            }
-            finally
-            {
-                if (scannedStream != inputStream)
-                {
-                    scannedStream.Dispose();
-                }
-            }
+            return await CreateFileAsync(new FileCreatingContext(path), inputStream, overwrite);
         }
     }
 
@@ -287,64 +262,22 @@ public class DefaultMediaFileStore : IMediaFileStore
         }
     }
 
-    private async Task<Stream> ScanAsync(string path, Stream stream)
+    private async Task<string> CreateFileAsync(FileCreatingContext fileCreatingContext, Stream stream, bool overwrite)
     {
-        if (_antivirusScanner is NullAntivirusScanner)
+        await using var fileCreatingResult = await _fileEventService.ProcessAsync(fileCreatingContext, stream);
+
+        if (!fileCreatingResult.Succeeded)
         {
-            return stream;
+            throw new FileStoreException(fileCreatingResult.ErrorMessage ?? $"The file '{fileCreatingContext.FileName}' was rejected.");
         }
 
-        var scanStream = stream;
+        await ValidateAvailableStorageAsync(fileCreatingResult.Stream.Length);
 
-        if (scanStream.CanSeek)
-        {
-            scanStream.Position = 0;
-        }
-        else
-        {
-            scanStream = await CreateTemporarySeekableStreamAsync(scanStream);
-        }
+        var createdPath = await _fileStore.CreateFileFromStreamAsync(fileCreatingContext.Path, fileCreatingResult.Stream, overwrite);
+        var fileInfo = await _fileStore.GetFileInfoAsync(createdPath);
 
-        try
-        {
-            var result = await _antivirusScanner.ScanAsync(
-                new AntivirusScanContext(path, scanStream.Length),
-                scanStream);
+        await _fileEventService.CreatedAsync(fileInfo);
 
-            if (!result.IsClean)
-            {
-                throw new AntivirusScanningException(result.Message ?? $"The uploaded file '{Path.GetFileName(path)}' was rejected by the anti-virus scanner.");
-            }
-
-            scanStream.Position = 0;
-
-            return scanStream;
-        }
-        catch
-        {
-            if (scanStream != stream)
-            {
-                scanStream.Dispose();
-            }
-
-            throw;
-        }
-    }
-
-    private static async Task<Stream> CreateTemporarySeekableStreamAsync(Stream stream)
-    {
-        var tempFilePath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-        var tempStream = new FileStream(
-            tempFilePath,
-            FileMode.CreateNew,
-            FileAccess.ReadWrite,
-            FileShare.None,
-            81920,
-            FileOptions.Asynchronous | FileOptions.DeleteOnClose);
-
-        await stream.CopyToAsync(tempStream);
-        tempStream.Position = 0;
-
-        return tempStream;
+        return createdPath;
     }
 }

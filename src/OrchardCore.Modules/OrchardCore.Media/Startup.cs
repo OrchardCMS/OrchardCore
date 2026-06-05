@@ -87,7 +87,7 @@ public sealed class Startup : StartupBase
         services.AddResourceConfiguration<ResourceManagementOptionsConfiguration>();
 
         services.AddTransient<IConfigureOptions<MediaOptions>, MediaOptionsConfiguration>();
-        services.TryAddSingleton<IAntivirusScanner, NullAntivirusScanner>();
+        services.TryAddSingleton<FileEventService>();
 
         services.AddSingleton<IMediaFileProvider>(serviceProvider =>
         {
@@ -116,7 +116,7 @@ public sealed class Startup : StartupBase
             var mediaOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>().Value;
             var mediaEventHandlers = serviceProvider.GetServices<IMediaEventHandler>();
             var mediaCreatingEventHandlers = serviceProvider.GetServices<IMediaCreatingEventHandler>();
-            var fileUploadScanner = serviceProvider.GetRequiredService<IAntivirusScanner>();
+            var fileEventService = serviceProvider.GetRequiredService<FileEventService>();
             var fileSystemStoreLogger = serviceProvider.GetRequiredService<ILogger<FileSystemStore>>();
             var defaultMediaFileStoreLogger = serviceProvider.GetRequiredService<ILogger<DefaultMediaFileStore>>();
 
@@ -134,7 +134,7 @@ public sealed class Startup : StartupBase
                 mediaUrlBase = fileStore.Combine(originalPathBase.Value, mediaUrlBase);
             }
 
-            return new DefaultMediaFileStore(fileStore, mediaUrlBase, mediaOptions.CdnBaseUrl, mediaEventHandlers, mediaCreatingEventHandlers, fileUploadScanner, defaultMediaFileStoreLogger);
+            return new DefaultMediaFileStore(fileStore, mediaUrlBase, mediaOptions.CdnBaseUrl, mediaEventHandlers, mediaCreatingEventHandlers, fileEventService, defaultMediaFileStoreLogger);
         });
 
         services.AddPermissionProvider<PermissionProvider>();

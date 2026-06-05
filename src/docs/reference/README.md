@@ -91,6 +91,7 @@ Here's a categorized overview of all built-in Orchard Core features at a glance.
 
 ### Extensibility
 
+- [File Upload Security](core/file-upload-security.md)
 - [Auto Setup](modules/AutoSetup/README.md)
 - [GraphQL](modules/Apis.GraphQL/README.md)
 - [GraphQL queries](modules/Apis.GraphQL.Abstractions/README.md)
