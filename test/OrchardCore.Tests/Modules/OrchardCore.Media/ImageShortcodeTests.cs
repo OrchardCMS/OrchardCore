@@ -42,7 +42,6 @@ public class ImageShortcodeTests
 
         var fileStore = new DefaultMediaFileStore(
             Mock.Of<IFileStore>(),
-            CreateServicesProvider(),
             "/media",
             cdnBaseUrl,
             [],
@@ -66,9 +65,4 @@ public class ImageShortcodeTests
         var processed = await processor.ProcessAsync(text);
         Assert.Equal(expected, processed);
     }
-
-    private static ServiceProvider CreateServicesProvider()
-        => new ServiceCollection()
-            .AddTransient<FileCreationService>()
-            .BuildServiceProvider();
 }

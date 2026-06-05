@@ -31,7 +31,6 @@ public class AssetUrlShortcodeTests
     {
         var fileStore = new DefaultMediaFileStore(
             Mock.Of<IFileStore>(),
-            CreateServicesProvider(),
             "/media",
             cdnBaseUrl,
             [],
@@ -64,9 +63,4 @@ public class AssetUrlShortcodeTests
         var sanitized = sanitizer.Sanitize(text);
         Assert.Equal(expected, sanitized);
     }
-
-    private static ServiceProvider CreateServicesProvider()
-        => new ServiceCollection()
-            .AddTransient<FileCreationService>()
-            .BuildServiceProvider();
 }

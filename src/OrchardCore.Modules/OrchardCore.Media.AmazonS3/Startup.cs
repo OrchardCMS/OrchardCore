@@ -122,7 +122,6 @@ public sealed class Startup : Modules.StartupBase
                 }
 
                 return new DefaultMediaFileStore(fileStore,
-                    serviceProvider,
                     mediaUrlBase,
                     mediaOptions.CdnBaseUrl,
                     mediaEventHandlers,

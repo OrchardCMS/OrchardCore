@@ -133,7 +133,7 @@ public sealed class Startup : StartupBase
                 mediaUrlBase = fileStore.Combine(originalPathBase.Value, mediaUrlBase);
             }
 
-            return new DefaultMediaFileStore(fileStore, serviceProvider, mediaUrlBase, mediaOptions.CdnBaseUrl, mediaEventHandlers, mediaCreatingEventHandlers, defaultMediaFileStoreLogger);
+            return new DefaultMediaFileStore(fileStore, mediaUrlBase, mediaOptions.CdnBaseUrl, mediaEventHandlers, mediaCreatingEventHandlers, defaultMediaFileStoreLogger);
         });
 
         services.AddPermissionProvider<PermissionProvider>();
