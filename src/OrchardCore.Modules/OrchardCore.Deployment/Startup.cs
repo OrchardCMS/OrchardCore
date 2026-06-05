@@ -22,7 +22,7 @@ public sealed class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.TryAddSingleton<FileCreationService>();
+        services.TryAddTransient<FileCreationService>();
         services.AddDeploymentServices();
 
         services.AddNavigationProvider<AdminMenu>();

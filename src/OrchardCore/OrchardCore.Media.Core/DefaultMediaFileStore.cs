@@ -13,35 +13,35 @@ namespace OrchardCore.Media.Core;
 public class DefaultMediaFileStore : IMediaFileStore
 {
     private readonly IFileStore _fileStore;
+    private readonly IServiceProvider _serviceProvider;
     private string _requestBasePath;
     private readonly string _cdnBaseUrl;
     private readonly IEnumerable<IMediaEventHandler> _mediaEventHandlers;
     private readonly IEnumerable<IMediaCreatingEventHandler> _mediaCreatingEventHandlers;
-    private readonly FileCreationService _fileCreationService;
     private readonly ILogger _logger;
 
     private bool _requestBasePathValidated;
 
     public DefaultMediaFileStore(
         IFileStore fileStore,
+        IServiceProvider serviceProvider,
         string requestBasePath,
         string cdnBaseUrl,
         IEnumerable<IMediaEventHandler> mediaEventHandlers,
         IEnumerable<IMediaCreatingEventHandler> mediaCreatingEventHandlers,
-        FileCreationService fileCreationService,
         ILogger<DefaultMediaFileStore> logger)
     {
         _fileStore = fileStore;
+        _serviceProvider = serviceProvider;
 
         // Ensure trailing slash removed.
         _requestBasePath = requestBasePath.TrimEnd('/');
 
         // Media options configuration ensures any trailing slash is removed.
         _cdnBaseUrl = cdnBaseUrl;
-
         _mediaEventHandlers = mediaEventHandlers;
         _mediaCreatingEventHandlers = mediaCreatingEventHandlers;
-        _fileCreationService = fileCreationService;
+        _mediaCreatingEventHandlers = mediaCreatingEventHandlers;
         _logger = logger;
     }
 
@@ -163,11 +163,23 @@ public class DefaultMediaFileStore : IMediaFileStore
 
     public virtual async Task<string> CreateFileFromStreamAsync(string path, Stream inputStream, bool overwrite = false)
     {
+        var fileCreationService = _serviceProvider.GetRequiredService<FileCreationService>();
+
+        var fileCreatingContext = new FileCreatingContext(path);
+
+        await using var fileCreatingResult = await fileCreationService.CreateAsync(fileCreatingContext, inputStream);
+
+        if (!fileCreatingResult.Succeeded)
+        {
+            throw new FileStoreException(fileCreatingResult.ErrorMessage ?? $"The file '{fileCreatingContext.FileName}' was rejected.");
+        }
+
+        var outputStream = fileCreatingResult.Stream;
+
         if (_mediaCreatingEventHandlers.Any())
         {
-            // Follows https://rules.sonarsource.com/csharp/RSPEC-3966
-            // Assumes that each stream should be disposed of only once by its caller.
-            var outputStream = inputStream;
+            var mediaInputStream = outputStream;
+
             try
             {
                 var context = new MediaCreatingContext
@@ -188,25 +200,25 @@ public class DefaultMediaFileStore : IMediaFileStore
                     }
                     finally
                     {
-                        if (creatingStream != outputStream && creatingStream != inputStream)
+                        if (creatingStream != outputStream && creatingStream != mediaInputStream)
                         {
                             creatingStream.Dispose();
                         }
                     }
                 }
 
-                return await CreateFileAsync(new FileCreatingContext(context.Path), outputStream, overwrite);
+                return await CreateFileAsync(fileCreationService, fileCreatingContext, outputStream, overwrite);
             }
             finally
             {
-                // This disposes the last outputStream.
-                outputStream?.Dispose();
+                if (outputStream != mediaInputStream)
+                {
+                    outputStream?.Dispose();
+                }
             }
         }
-        else
-        {
-            return await CreateFileAsync(new FileCreatingContext(path), inputStream, overwrite);
-        }
+
+        return await CreateFileAsync(fileCreationService, fileCreatingContext, outputStream, overwrite);
     }
 
     public virtual string MapPathToPublicUrl(string path)
@@ -262,21 +274,14 @@ public class DefaultMediaFileStore : IMediaFileStore
         }
     }
 
-    private async Task<string> CreateFileAsync(FileCreatingContext fileCreatingContext, Stream stream, bool overwrite)
+    private async Task<string> CreateFileAsync(FileCreationService fileCreationService, FileCreatingContext fileCreatingContext, Stream stream, bool overwrite)
     {
-        await using var fileCreatingResult = await _fileCreationService.CreateAsync(fileCreatingContext, stream);
+        await ValidateAvailableStorageAsync(stream.Length);
 
-        if (!fileCreatingResult.Succeeded)
-        {
-            throw new FileStoreException(fileCreatingResult.ErrorMessage ?? $"The file '{fileCreatingContext.FileName}' was rejected.");
-        }
-
-        await ValidateAvailableStorageAsync(fileCreatingResult.Stream.Length);
-
-        var createdPath = await _fileStore.CreateFileFromStreamAsync(fileCreatingContext.Path, fileCreatingResult.Stream, overwrite);
+        var createdPath = await _fileStore.CreateFileFromStreamAsync(fileCreatingContext.Path, stream, overwrite);
         var fileInfo = await _fileStore.GetFileInfoAsync(createdPath);
 
-        await _fileCreationService.CreatedAsync(fileInfo);
+        await fileCreationService.CreatedAsync(fileInfo);
 
         return createdPath;
     }

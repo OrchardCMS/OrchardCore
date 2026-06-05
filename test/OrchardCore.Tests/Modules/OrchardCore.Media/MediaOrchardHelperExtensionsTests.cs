@@ -39,11 +39,11 @@ public class MediaOrchardHelperExtensionsTests
     {
         var fileStore = new DefaultMediaFileStore(
             Mock.Of<IFileStore>(),
+            CreateServicesProvider(),
             "/media",
             "",
             [],
             [],
-            new FileCreationService([]),
             Mock.Of<ILogger<DefaultMediaFileStore>>());
 
         var mediaProfileServiceMock = new Mock<IMediaProfileService>();
@@ -73,4 +73,9 @@ public class MediaOrchardHelperExtensionsTests
 
         public HttpContext HttpContext { get; }
     }
+
+    private static ServiceProvider CreateServicesProvider()
+        => new ServiceCollection()
+            .AddTransient<FileCreationService>()
+            .BuildServiceProvider();
 }

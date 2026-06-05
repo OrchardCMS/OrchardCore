@@ -87,7 +87,7 @@ public sealed class Startup : StartupBase
         services.AddResourceConfiguration<ResourceManagementOptionsConfiguration>();
 
         services.AddTransient<IConfigureOptions<MediaOptions>, MediaOptionsConfiguration>();
-        services.TryAddSingleton<FileCreationService>();
+        services.TryAddTransient<FileCreationService>();
 
         services.AddSingleton<IMediaFileProvider>(serviceProvider =>
         {
@@ -116,7 +116,6 @@ public sealed class Startup : StartupBase
             var mediaOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>().Value;
             var mediaEventHandlers = serviceProvider.GetServices<IMediaEventHandler>();
             var mediaCreatingEventHandlers = serviceProvider.GetServices<IMediaCreatingEventHandler>();
-            var fileCreationService = serviceProvider.GetRequiredService<FileCreationService>();
             var fileSystemStoreLogger = serviceProvider.GetRequiredService<ILogger<FileSystemStore>>();
             var defaultMediaFileStoreLogger = serviceProvider.GetRequiredService<ILogger<DefaultMediaFileStore>>();
 
@@ -134,7 +133,7 @@ public sealed class Startup : StartupBase
                 mediaUrlBase = fileStore.Combine(originalPathBase.Value, mediaUrlBase);
             }
 
-            return new DefaultMediaFileStore(fileStore, mediaUrlBase, mediaOptions.CdnBaseUrl, mediaEventHandlers, mediaCreatingEventHandlers, fileCreationService, defaultMediaFileStoreLogger);
+            return new DefaultMediaFileStore(fileStore, serviceProvider, mediaUrlBase, mediaOptions.CdnBaseUrl, mediaEventHandlers, mediaCreatingEventHandlers, defaultMediaFileStoreLogger);
         });
 
         services.AddPermissionProvider<PermissionProvider>();

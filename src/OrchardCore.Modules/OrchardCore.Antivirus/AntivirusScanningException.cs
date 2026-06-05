@@ -1,4 +1,6 @@
-namespace OrchardCore.FileStorage;
+using OrchardCore.FileStorage;
+
+namespace OrchardCore.Antivirus;
 
 public class AntivirusScanningException : FileStoreException
 {

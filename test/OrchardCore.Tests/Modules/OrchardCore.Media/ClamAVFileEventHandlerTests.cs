@@ -1,5 +1,6 @@
 using System.Buffers.Binary;
 using System.Net.Sockets;
+using OrchardCore.Antivirus;
 using OrchardCore.Antivirus.ClamAV;
 using OrchardCore.FileStorage;
 

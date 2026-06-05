@@ -14,7 +14,7 @@ public sealed class Startup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddHttpClient();
-        services.TryAddSingleton<FileCreationService>();
+        services.TryAddTransient<FileCreationService>();
 
         services.AddNavigationProvider<AdminMenu>();
         services.AddScoped<RemoteInstanceService>();

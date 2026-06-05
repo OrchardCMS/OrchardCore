@@ -103,7 +103,6 @@ public sealed class Startup : Modules.StartupBase
                 var mediaOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>().Value;
                 var mediaEventHandlers = serviceProvider.GetServices<IMediaEventHandler>();
                 var mediaCreatingEventHandlers = serviceProvider.GetServices<IMediaCreatingEventHandler>();
-                var fileCreationService = serviceProvider.GetRequiredService<FileCreationService>();
                 var clock = serviceProvider.GetRequiredService<IClock>();
                 var logger = serviceProvider.GetRequiredService<ILogger<DefaultMediaFileStore>>();
                 var amazonS3Client = serviceProvider.GetService<IAmazonS3>();
@@ -123,11 +122,11 @@ public sealed class Startup : Modules.StartupBase
                 }
 
                 return new DefaultMediaFileStore(fileStore,
+                    serviceProvider,
                     mediaUrlBase,
                     mediaOptions.CdnBaseUrl,
                     mediaEventHandlers,
                     mediaCreatingEventHandlers,
-                    fileCreationService,
                     logger);
             }));
 
