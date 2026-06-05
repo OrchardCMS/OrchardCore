@@ -16,7 +16,7 @@ public class TextFieldSettings : FieldSettings
     public string Placeholder { get; set; } = string.Empty;
 
     /// <summary>
-    /// The minimum number of characters allowed. A value of <c>0</c> means no minimum.
+    /// Gets or sets the minimum number of characters allowed. A value of <c>0</c> means no minimum.
     /// </summary>
     public int MinLength { get; set; }
 
