@@ -347,7 +347,7 @@ public sealed class AdminController : Controller
             return RedirectToAction(nameof(EditTypePart), new { id, name = partToConfigure.Name });
         }
 
-        var partsToAdd = viewModel.PartSelections.Where(ps => ps.IsSelected).Select(ps => ps.PartName).ToArray();
+        var partsToAdd = viewModel.PartSelections.Where(ps => ps.IsSelected).Select(ps => ps.PartName);
 
         if (!partsToAdd.Any())
         {
