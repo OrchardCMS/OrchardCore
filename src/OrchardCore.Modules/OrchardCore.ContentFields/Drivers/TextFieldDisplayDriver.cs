@@ -53,6 +53,18 @@ public sealed class TextFieldDisplayDriver : ContentFieldDisplayDriver<TextField
             context.Updater.ModelState.AddModelError(Prefix, nameof(field.Text), S["A value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
         }
 
+        var length = field.Text?.Length ?? 0;
+
+        if (settings.MinLength > 0 && length > 0 && length < settings.MinLength)
+        {
+            context.Updater.ModelState.AddModelError(Prefix, nameof(field.Text), S["{0} must be at least {1} characters long.", context.PartFieldDefinition.DisplayName(), settings.MinLength]);
+        }
+
+        if (settings.MaxLength > 0 && length > settings.MaxLength)
+        {
+            context.Updater.ModelState.AddModelError(Prefix, nameof(field.Text), S["{0} can't be longer than {1} characters.", context.PartFieldDefinition.DisplayName(), settings.MaxLength]);
+        }
+
         return Edit(field, context);
     }
 }
