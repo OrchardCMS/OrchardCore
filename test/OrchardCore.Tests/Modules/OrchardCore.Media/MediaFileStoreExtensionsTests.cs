@@ -12,6 +12,7 @@ public class MediaFileStoreExtensionsTests
     [Fact]
     public async Task CreateFileFromStreamAsync_FileEventHandlerCanReplaceStreamBeforeSaving()
     {
+        var cancellationToken = TestContext.Current.CancellationToken;
         var mediaFileStoreMock = new Mock<IMediaFileStore>();
         var inputStream = new MemoryStream("ignored"u8.ToArray());
         var replacementStream = new MemoryStream("hello world"u8.ToArray());
@@ -37,12 +38,13 @@ public class MediaFileStoreExtensionsTests
 
         var fileCreationService = CreateFileCreationService(handlerMock.Object);
 
-        await mediaFileStoreMock.Object.CreateFileFromStreamAsync(fileCreationService, "test.txt", inputStream);
+        await mediaFileStoreMock.Object.CreateFileFromStreamAsync(fileCreationService, "test.txt", inputStream, cancellationToken: cancellationToken);
     }
 
     [Fact]
     public async Task CreateFileFromStreamAsync_FileEventHandlerCanRejectFile()
     {
+        var cancellationToken = TestContext.Current.CancellationToken;
         var mediaFileStoreMock = new Mock<IMediaFileStore>(MockBehavior.Strict);
         var inputStream = new MemoryStream("hello world"u8.ToArray());
         var handlerMock = new Mock<IFileEventHandler>();
@@ -57,7 +59,7 @@ public class MediaFileStoreExtensionsTests
         var fileCreationService = CreateFileCreationService(handlerMock.Object);
 
         var exception = await Assert.ThrowsAsync<FileStoreException>(() =>
-            mediaFileStoreMock.Object.CreateFileFromStreamAsync(fileCreationService, "test.txt", inputStream));
+            mediaFileStoreMock.Object.CreateFileFromStreamAsync(fileCreationService, "test.txt", inputStream, cancellationToken: cancellationToken));
 
         Assert.Equal("The uploaded file was rejected by the anti-virus scanner.", exception.Message);
     }
@@ -65,6 +67,7 @@ public class MediaFileStoreExtensionsTests
     [Fact]
     public async Task CreateFileFromStreamAsync_FileEventHandlersRunCreatedAfterTheFileIsStored()
     {
+        var cancellationToken = TestContext.Current.CancellationToken;
         var mediaFileStoreMock = new Mock<IMediaFileStore>();
         var inputStream = new MemoryStream("hello world"u8.ToArray());
         var fileInfoMock = new Mock<IFileStoreEntry>();
@@ -84,7 +87,7 @@ public class MediaFileStoreExtensionsTests
 
         var fileCreationService = CreateFileCreationService(handlerMock.Object);
 
-        await mediaFileStoreMock.Object.CreateFileFromStreamAsync(fileCreationService, "test.txt", inputStream);
+        await mediaFileStoreMock.Object.CreateFileFromStreamAsync(fileCreationService, "test.txt", inputStream, cancellationToken: cancellationToken);
 
         handlerMock.Verify(x => x.CreatedAsync(fileInfoMock.Object, It.IsAny<CancellationToken>()), Times.Once);
     }
@@ -92,6 +95,7 @@ public class MediaFileStoreExtensionsTests
     [Fact]
     public async Task CreateFileFromStreamAsync_FileEventHandlersRunBeforeMediaCreatingHandlers()
     {
+        var cancellationToken = TestContext.Current.CancellationToken;
         var fileStoreMock = new Mock<IFileStore>();
         var loggerMock = new Mock<ILogger<DefaultMediaFileStore>>();
         var inputStream = new MemoryStream("hello world"u8.ToArray());
@@ -133,7 +137,7 @@ public class MediaFileStoreExtensionsTests
 
         var fileCreationService = CreateFileCreationService(fileHandlerMock.Object);
 
-        await mediaFileStore.CreateFileFromStreamAsync(fileCreationService, "test.txt", inputStream);
+        await mediaFileStore.CreateFileFromStreamAsync(fileCreationService, "test.txt", inputStream, cancellationToken: cancellationToken);
 
         Assert.Equal(["file", "media"], calls);
     }
@@ -141,6 +145,7 @@ public class MediaFileStoreExtensionsTests
     [Fact]
     public async Task CreateFileFromStreamAsync_FileEventHandlerRejectionStopsMediaProcessing()
     {
+        var cancellationToken = TestContext.Current.CancellationToken;
         var loggerMock = new Mock<ILogger<DefaultMediaFileStore>>();
         var inputStream = new MemoryStream("hello world"u8.ToArray());
         var fileHandlerMock = new Mock<IFileEventHandler>();
@@ -164,7 +169,7 @@ public class MediaFileStoreExtensionsTests
         var fileCreationService = CreateFileCreationService(fileHandlerMock.Object);
 
         var exception = await Assert.ThrowsAsync<FileStoreException>(() =>
-            mediaFileStore.CreateFileFromStreamAsync(fileCreationService, "test.txt", inputStream));
+            mediaFileStore.CreateFileFromStreamAsync(fileCreationService, "test.txt", inputStream, cancellationToken: cancellationToken));
 
         Assert.Equal("Rejected before media processing.", exception.Message);
         mediaHandlerMock.VerifyNoOtherCalls();
@@ -173,6 +178,7 @@ public class MediaFileStoreExtensionsTests
     [Fact]
     public async Task CreateFileFromStreamAsync_FileEventReplacementStreamLivesThroughMediaProcessingAndStorage()
     {
+        var cancellationToken = TestContext.Current.CancellationToken;
         var fileStoreMock = new Mock<IFileStore>();
         var loggerMock = new Mock<ILogger<DefaultMediaFileStore>>();
         var inputStream = new TrackingStream("ignored"u8.ToArray());
@@ -217,7 +223,7 @@ public class MediaFileStoreExtensionsTests
 
         var fileCreationService = CreateFileCreationService(handlerMock.Object);
 
-        await mediaFileStore.CreateFileFromStreamAsync(fileCreationService, "test.txt", inputStream);
+        await mediaFileStore.CreateFileFromStreamAsync(fileCreationService, "test.txt", inputStream, cancellationToken: cancellationToken);
 
         Assert.False(inputStream.IsDisposed);
         Assert.True(scannedStream.IsDisposed);
