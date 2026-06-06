@@ -32,12 +32,14 @@ extra:
   social:
     - icon: fontawesome/solid/leaf
       link: https://orchardcore.net
-    - icon: fontawesome/brands/github-alt
+    - icon: fontawesome/brands/github
       link: https://github.com/OrchardCMS/OrchardCore
     - icon: fontawesome/brands/discord
       link: https://orchardcore.net/discord
-    - icon: fontawesome/brands/twitter
+    - icon: fontawesome/brands/x-twitter
       link: https://twitter.com/OrchardCMS
+    - icon: fontawesome/brands/linkedin
+      link: https://www.linkedin.com/groups/13605669/
 
 # Repository
 repo_name: OrchardCMS/OrchardCore
