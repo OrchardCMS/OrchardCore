@@ -1,4 +1,43 @@
 <div class="alert alert-primary">
     <h4>@T["Welcome to Orchard Core"]</h4>
-    <p class="mb-0">@T["Feel free to browse the menu and discover all its possibilities."]</p>
+    <p class="mb-0">@T["Your site is ready. Get started with the actions below, or browse the menu to discover all its possibilities."]</p>
+</div>
+
+<div class="row">
+    <div class="col-md-3 mb-3">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title"><i class="fa-solid fa-file-lines" aria-hidden="true"></i> @T["Create content"]</h5>
+                <p class="card-text">@T["Add pages, blog posts, and other content items."]</p>
+                <a asp-action="List" asp-controller="Admin" asp-route-area="OrchardCore.Contents" class="btn btn-sm btn-primary">@T["Go to content"]</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title"><i class="fa-solid fa-palette" aria-hidden="true"></i> @T["Customize theme"]</h5>
+                <p class="card-text">@T["Install and configure current theme for your site."]</p>
+                <a asp-action="Index" asp-controller="Admin" asp-route-area="OrchardCore.Themes" class="btn btn-sm btn-primary">@T["Manage themes"]</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title"><i class="fa-solid fa-users" aria-hidden="true"></i> @T["Manage users"]</h5>
+                <p class="card-text">@T["Add users and assign roles and permissions."]</p>
+                <a asp-action="Index" asp-controller="Admin" asp-route-area="OrchardCore.Users" class="btn btn-sm btn-primary">@T["Go to users"]</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title"><i class="fa-solid fa-book" aria-hidden="true"></i> @T["Learn more"]</h5>
+                <p class="card-text">@T["Read the documentation and join the community."]</p>
+                <a href="https://docs.orchardcore.net" target="_blank" rel="noopener" class="btn btn-sm btn-secondary">@T["Documentation"]</a>
+            </div>
+        </div>
+    </div>
 </div>
