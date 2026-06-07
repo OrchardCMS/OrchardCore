@@ -82,6 +82,7 @@ A printable 3D model of the Orchard Core symbol logo is available below.
 ![Orchard Core 3D logo](assets/stl/OrchardCoreLogo3D.png)
 
 - [STL](assets/stl/OrchardCoreLogo3D.stl)
+- [Orca Slicer project file](assets/stl/OrchardCoreLogo3D.3mf) that contains the model with colored surfaces.
 
 # Fonts
 
