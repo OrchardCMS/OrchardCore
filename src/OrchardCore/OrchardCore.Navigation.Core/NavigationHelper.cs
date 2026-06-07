@@ -102,9 +102,13 @@ public static class NavigationHelper
         // Strip query string from the menu item href to get a pure path for comparison.
         var hrefSpan = menuItem.Href.AsSpan();
         var queryIndex = hrefSpan.IndexOf('?');
-        var hrefPath = (queryIndex >= 0 ? hrefSpan[..queryIndex] : hrefSpan).ToString();
+        var hrefPath = RemovePathBase(
+            (queryIndex >= 0 ? hrefSpan[..queryIndex] : hrefSpan).ToString(),
+            viewContext.HttpContext.Request.PathBase);
 
-        var requestPath = viewContext.HttpContext.Request.Path.Value ?? "/";
+        var requestPath = RemovePathBase(
+            viewContext.HttpContext.Request.Path.Value ?? "/",
+            viewContext.HttpContext.Request.PathBase);
         var segmentCount = hrefPath.Split('/', StringSplitOptions.RemoveEmptyEntries).Length;
 
         if (requestPath.Equals(hrefPath, StringComparison.OrdinalIgnoreCase))
@@ -119,6 +123,11 @@ public static class NavigationHelper
             // Deeper prefix = higher score, ensuring the most specific ancestor wins.
             menuItemShape.Score += segmentCount;
         }
+        else if (IsAncestorPath(requestPath, hrefPath))
+        {
+            // Ancestor paths (e.g. "/Admin" while evaluating "/Admin/Features") are not
+            // within the menu item branch and should not reuse a stale clicked hash.
+        }
         else
         {
             // No URL match — fall back to the selectedNavHash stored in the admin preferences
@@ -132,6 +141,47 @@ public static class NavigationHelper
         }
 
         menuItemShape.Selected = menuItemShape.Score > 0;
+    }
+
+    private static string RemovePathBase(string path, PathString pathBase)
+    {
+        if (!pathBase.HasValue || pathBase == PathString.Empty)
+        {
+            return path;
+        }
+
+        var pathBaseValue = pathBase.Value.TrimEnd('/');
+
+        if (path.Equals(pathBaseValue, StringComparison.OrdinalIgnoreCase))
+        {
+            return "/";
+        }
+
+        if (path.StartsWith(pathBaseValue + "/", StringComparison.OrdinalIgnoreCase))
+        {
+            return path[pathBaseValue.Length..];
+        }
+
+        return path;
+    }
+
+    private static bool IsAncestorPath(string requestPath, string hrefPath)
+    {
+        var normalizedRequestPath = requestPath.AsSpan().TrimEnd('/');
+        var normalizedHrefPath = hrefPath.AsSpan().TrimEnd('/');
+
+        if (normalizedRequestPath.IsEmpty)
+        {
+            normalizedRequestPath = "/";
+        }
+
+        if (normalizedHrefPath.IsEmpty || normalizedRequestPath.Length >= normalizedHrefPath.Length)
+        {
+            return false;
+        }
+
+        return normalizedHrefPath[normalizedRequestPath.Length] == '/'
+            && normalizedHrefPath.StartsWith(normalizedRequestPath, StringComparison.OrdinalIgnoreCase);
     }
 
     /// <summary>
