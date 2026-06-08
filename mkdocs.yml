@@ -217,6 +217,7 @@ nav:
               - Resources: reference/modules/Resources/README.md
               - Rules: reference/modules/Rules/README.md
               - Search, Indexing, Querying:
+                  - Search: reference/modules/Search/README.md
                   - Azure AI Search: reference/modules/AzureAISearch/README.md
                   - Elasticsearch: reference/modules/Elasticsearch/README.md
                   - Indexing: reference/modules/Indexing/README.md
@@ -258,6 +259,7 @@ nav:
               - Configuration: reference/modules/Configuration/README.md
               - Cors: reference/modules/Cors/README.md
               - Custom Settings: reference/modules/CustomSettings/README.md
+              - Settings: reference/modules/Settings/README.md
               - Deployment: reference/modules/Deployment/README.md
               - Placement: reference/modules/Placement/README.md
               - Data: reference/modules/Data/README.md
