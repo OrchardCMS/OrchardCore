@@ -1,0 +1,10 @@
+@using OrchardCore.Exam.Models
+@model dynamic
+
+<div class="question question-true-false">
+    <p class="stem">@Model.QuestionPart.Stem <span class="badge">(@Model.QuestionPart.Score pts)</span></p>
+    <ul class="options">
+        <li><label><input type="radio" name="q-@Model.ContentItem.ContentItemId" value="true" /> True</label></li>
+        <li><label><input type="radio" name="q-@Model.ContentItem.ContentItemId" value="false" /> False</label></li>
+    </ul>
+</div>

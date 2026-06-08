@@ -1,0 +1,19 @@
+@using OrchardCore.Exam.Models
+@model dynamic
+
+<div class="exam-paper-part">
+    <p>Generation Mode: @Model.GenerationMode</p>
+    <p>Total Score: @Model.TotalScore</p>
+    <p>Duration: @Model.Duration minutes</p>
+    <p>Display Mode: @Model.DisplayMode</p>
+    @if (Model.Sections != null)
+    {
+        <h6>Sections</h6>
+        <ul>
+            @foreach (var section in Model.Sections)
+            {
+                <li>@section.Title - @section.QuestionIds.Count questions, @section.ScorePerQuestion pts each</li>
+            }
+        </ul>
+    }
+</div>

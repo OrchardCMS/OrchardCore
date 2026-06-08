@@ -1,0 +1,15 @@
+@using OrchardCore.Exam.Models
+@model dynamic
+
+<div id="exam-container" data-record-id="@Model.RecordId" data-display-mode="@Model.DisplayMode">
+    <h2>Exam</h2>
+    <div id="exam-progress"></div>
+    <div id="exam-questions"></div>
+    <div id="exam-nav">
+        <button id="btn-prev" class="btn btn-secondary" style="display:none">Previous</button>
+        <button id="btn-next" class="btn btn-secondary">Next</button>
+        <button id="btn-submit" class="btn btn-primary" style="display:none">Submit</button>
+    </div>
+</div>
+
+<script src="~/OrchardCore.Exam/scripts/exam.js"></script>

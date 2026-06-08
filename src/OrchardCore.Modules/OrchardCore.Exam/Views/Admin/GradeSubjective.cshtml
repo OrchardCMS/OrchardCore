@@ -1,0 +1,44 @@
+@using OrchardCore.ContentManagement
+@using OrchardCore.Exam.Models
+@using OrchardCore.Exam.Services
+@model IEnumerable<ContentItem>
+
+@{
+    var recordId = ViewBag.RecordId as string;
+    var record = ViewBag.Record as ContentItem;
+    var recordPart = record?.Get<ExamRecordPart>(nameof(ExamRecordPart));
+    var questions = Model.ToList();
+}
+
+<h1>Grade Subjective Questions</h1>
+<p>Record: @recordId</p>
+
+<form method="post" action="/admin/exam/grade/@recordId">
+    @for (var i = 0; i < questions.Count; i++)
+    {
+        var question = questions[i];
+        var qPart = question.Get<QuestionPart>(nameof(QuestionPart));
+        if (qPart == null) continue;
+        var answer = recordPart?.Answers.FirstOrDefault(a => a.QuestionId == question.ContentItemId);
+
+        <div class="card mb-3">
+            <div class="card-header">@qPart.QuestionType - @question.DisplayText</div>
+            <div class="card-body">
+                <p><strong>Stem:</strong> @qPart.Stem</p>
+                <p><strong>Student Answer:</strong> @(answer?.Answer ?? "No answer")</p>
+                <p><strong>Correct Answer:</strong> @qPart.Answer</p>
+                <input type="hidden" name="Grades[@i].QuestionId" value="@question.ContentItemId" />
+                <div class="form-group">
+                    <label>Score</label>
+                    <input type="number" name="Grades[@i].Score" class="form-control" value="0" min="0" max="@qPart.Score" />
+                </div>
+                <div class="form-group">
+                    <label>Comment</label>
+                    <input type="text" name="Grades[@i].Comment" class="form-control" />
+                </div>
+            </div>
+        </div>
+    }
+
+    <button type="submit" class="btn btn-primary">Submit Grades</button>
+</form>

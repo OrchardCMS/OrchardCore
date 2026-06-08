@@ -1,0 +1,10 @@
+@using OrchardCore.Exam.Models
+@model dynamic
+
+<div class="exam-assignment-part">
+    <p>Mode: @Model.AssignmentMode</p>
+    <p>Paper ID: @Model.ExamPaperContentItemId</p>
+    @if (Model.StartTime != null) { <p>Start: @Model.StartTime</p> }
+    @if (Model.EndTime != null) { <p>End: @Model.EndTime</p> }
+    <p>Max Attempts: @Model.MaxAttempts</p>
+</div>
