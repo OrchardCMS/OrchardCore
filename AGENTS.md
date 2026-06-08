@@ -161,6 +161,14 @@ The following skills are available in `.agents/skills/` for guided workflows:
 | `orchardcore-recipe-creator` | Create setup recipes | Provisioning a tenant: features, themes, content, roles, settings |
 | `orchardcore-asset-manager` | Build/manage frontend assets | Modifying SCSS, JS, TS, Vue or troubleshooting the asset pipeline |
 | `orchardcore-admin-edit-views` | Build admin edit views | Creating/updating `*.Edit.cshtml` with `ocat-*` classes |
+| `orchardcore-data-migration` | Write data migrations | Altering content definitions, index tables, patching content items |
+| `orchardcore-display-management` | Control rendering | placement.json, drivers, shapes, zones, alternates, editor layouts |
+| `orchardcore-workflow-activity` | Custom workflow activities | New workflow task/event, outcomes, activity editor, input/output |
+| `orchardcore-query-indexing` | Queries & search indexing | SQL/Lucene queries, index profiles, index handlers, search |
+| `orchardcore-localization` | Localize apps & content | IStringLocalizer S/T/H, PO files, content translation, cultures |
+| `orchardcore-tenants` | Multi-tenancy | Shells, creating tenants, tenant scopes, feature profiles, isolation |
+| `orchardcore-unit-test` | Write & run tests | xUnit, SiteContext integration, Moq, Playwright functional |
+| `orchardcore-docs-writer` | Author docs | MkDocs pages, module README, nav, admonitions, redirects |
 | `orchardcore-tester` | Browser-based testing | Testing features via Playwright automation |
 
 These skills provide step-by-step guidance, code templates, and references for common tasks.
