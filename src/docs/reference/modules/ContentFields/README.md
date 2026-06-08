@@ -43,7 +43,7 @@ Fields support different editors for input and display modes for output:
 You can create custom editors and display modes by following the patterns in the "Creating Custom Fields" section.
 
 !!! note
-    The `MediaField`'s `Attached` editor is documented in the Media module. It stores files under `mediafields/` and requires the `ManageAttachedMediaFieldsFolder` permission.
+    The `MediaField`'s `Attached` editor is documented in the [Media module](../Media/README.md). It stores files under `mediafields/` and requires the `ManageAttachedMediaFieldsFolder` permission.
 
 ## Usage
 
