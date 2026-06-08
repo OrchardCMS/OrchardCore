@@ -100,7 +100,7 @@ public override IDisplayResult Display(ProductPart part, BuildPartDisplayContext
 
 ## Zones and the layout tree
 
-Shapes nest. The top-level shape is the **Layout**, which exposes named **zones** — `Header`, `Navigation`, `Content`, `Footer`, and any you define. Rendering a zone renders the ordered shapes placed into it, each of which may itself contain more zones.
+Shapes nest. The top-level shape is the **Layout**, which exposes named **zones** — `Header`, `Navigation`, `Content`, `Footer`, and any you define. A zone is kind of a container for shapes, a place to put (*place*) shapes into. Rendering a zone renders the ordered shapes placed into it, each of which may itself contain more zones.
 
 ```
 Layout
