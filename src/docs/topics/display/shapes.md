@@ -1,6 +1,6 @@
 # What is a Shape?
 
-If you come to Orchard Core from classic ASP.NET MVC, the first thing that surprises you is that there are almost no fixed view models. A page is not a single strongly-typed `Model` rendered by a single `.cshtml`. Instead, the page is a **tree of shapes** — small, dynamic objects that each know how they want to be displayed, assembled at runtime and rendered into HTML.
+If you come to Orchard Core from classic ASP.NET MVC Core, the first thing that surprises you is that there are almost no fixed view models. A page is not a single strongly-typed `Model` rendered by a single `.cshtml`. Instead, the page is a **tree of shapes** — small, dynamic objects that each know how they want to be displayed, assembled at runtime and rendered into HTML.
 
 Shapes are the single most important concept in Orchard Core's UI layer. Once they click, the whole theming and customization story makes sense. This page explains what a shape is, how the rendering pipeline turns it into HTML, and why alternates and placement give you so much control without touching code.
 
