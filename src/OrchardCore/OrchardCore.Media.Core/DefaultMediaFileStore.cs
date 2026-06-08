@@ -38,7 +38,6 @@ public class DefaultMediaFileStore : IMediaFileStore
         _cdnBaseUrl = cdnBaseUrl;
         _mediaEventHandlers = mediaEventHandlers;
         _mediaCreatingEventHandlers = mediaCreatingEventHandlers;
-        _mediaCreatingEventHandlers = mediaCreatingEventHandlers;
         _logger = logger;
     }
 
