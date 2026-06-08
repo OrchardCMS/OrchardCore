@@ -1,0 +1,29 @@
+@using OrchardCore.Exam.Models
+@using OrchardCore.Exam.ViewModels
+@model QuestionPartEditViewModel
+
+<div class="form-group">
+    <label asp-for="QuestionType">Question Type</label>
+    <select asp-for="QuestionType" asp-items="Html.GetEnumSelectList<QuestionType>()" class="form-control"></select>
+</div>
+<div class="form-group">
+    <label asp-for="Stem">Stem</label>
+    <textarea asp-for="Stem" class="form-control" rows="3"></textarea>
+</div>
+<div class="form-group">
+    <label asp-for="Answer">Answer</label>
+    <input asp-for="Answer" class="form-control" />
+    <span class="hint">For MultipleChoice, use comma-separated indices (e.g., 0,2). For TrueFalse, use true/false.</span>
+</div>
+<div class="form-group">
+    <label asp-for="Analysis">Analysis</label>
+    <textarea asp-for="Analysis" class="form-control" rows="2"></textarea>
+</div>
+<div class="form-group">
+    <label asp-for="Score">Score</label>
+    <input asp-for="Score" class="form-control" type="number" />
+</div>
+<div class="form-group">
+    <label asp-for="CategoryTermId">Category Term ID</label>
+    <input asp-for="CategoryTermId" class="form-control" />
+</div>

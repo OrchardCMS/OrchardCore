@@ -1,0 +1,12 @@
+@using OrchardCore.Exam.Models
+@using OrchardCore.Exam.Services
+@model dynamic
+
+<div class="exam-record-part">
+    <p>Status: @Model.Status</p>
+    <p>Start: @Model.StartTime</p>
+    @if (Model.SubmitTime != null) { <p>Submit: @Model.SubmitTime</p> }
+    <p>Objective Score: @Model.ObjectiveScore</p>
+    @if (Model.SubjectiveScore != null) { <p>Subjective Score: @Model.SubjectiveScore</p> }
+    <p>Total Score: @Model.TotalScore</p>
+</div>

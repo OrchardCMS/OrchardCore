@@ -1,0 +1,28 @@
+@using OrchardCore.Exam.Models
+@using OrchardCore.Exam.ViewModels
+@model ExamAssignmentPartEditViewModel
+
+<div class="form-group">
+    <label asp-for="ExamPaperContentItemId">Exam Paper Content Item ID</label>
+    <input asp-for="ExamPaperContentItemId" class="form-control" />
+</div>
+<div class="form-group">
+    <label asp-for="AssignmentMode">Assignment Mode</label>
+    <select asp-for="AssignmentMode" asp-items="Html.GetEnumSelectList<AssignmentMode>()" class="form-control"></select>
+</div>
+<div class="form-group">
+    <label asp-for="StartTime">Start Time</label>
+    <input asp-for="StartTime" class="form-control" type="datetime-local" />
+</div>
+<div class="form-group">
+    <label asp-for="EndTime">End Time</label>
+    <input asp-for="EndTime" class="form-control" type="datetime-local" />
+</div>
+<div class="form-group">
+    <label asp-for="MaxAttempts">Max Attempts</label>
+    <input asp-for="MaxAttempts" class="form-control" type="number" />
+</div>
+<div class="form-group">
+    <label asp-for="DisplayMode">Display Mode</label>
+    <select asp-for="DisplayMode" asp-items="Html.GetEnumSelectList<DisplayMode>()" class="form-control"></select>
+</div>

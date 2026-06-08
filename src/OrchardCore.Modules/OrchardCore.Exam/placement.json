@@ -1,0 +1,16 @@
+{
+  "QuestionPart": [
+    { "place": "Detail", "displayType": "Detail", "position": "5" },
+    { "place": "Summary", "displayType": "Summary", "position": "5" }
+  ],
+  "ExamPaperPart": [
+    { "place": "Detail", "displayType": "Detail", "position": "5" },
+    { "place": "Summary", "displayType": "Summary", "position": "5" }
+  ],
+  "ExamAssignmentPart": [
+    { "place": "Detail", "displayType": "Detail", "position": "5" }
+  ],
+  "ExamRecordPart": [
+    { "place": "Detail", "displayType": "Detail", "position": "5" }
+  ]
+}

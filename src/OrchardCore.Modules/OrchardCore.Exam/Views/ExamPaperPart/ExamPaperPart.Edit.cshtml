@@ -1,0 +1,30 @@
+@using OrchardCore.Exam.Models
+@using OrchardCore.Exam.ViewModels
+@model ExamPaperPartEditViewModel
+
+<div class="form-group">
+    <label asp-for="GenerationMode">Generation Mode</label>
+    <select asp-for="GenerationMode" asp-items="Html.GetEnumSelectList<GenerationMode>()" class="form-control"></select>
+</div>
+<div class="form-group">
+    <label asp-for="Duration">Duration (minutes)</label>
+    <input asp-for="Duration" class="form-control" type="number" />
+</div>
+<div class="form-group">
+    <label asp-for="DisplayMode">Display Mode</label>
+    <select asp-for="DisplayMode" asp-items="Html.GetEnumSelectList<DisplayMode>()" class="form-control"></select>
+</div>
+<div class="form-group">
+    <label asp-for="TotalScore">Total Score</label>
+    <input asp-for="TotalScore" class="form-control" type="number" readonly />
+</div>
+<div class="form-group">
+    <label asp-for="SectionsJson">Sections (JSON)</label>
+    <textarea asp-for="SectionsJson" class="form-control" rows="6"></textarea>
+    <span class="hint">JSON array of sections with Title, QuestionIds, ScorePerQuestion</span>
+</div>
+<div class="form-group">
+    <label asp-for="SectionRulesJson">Section Rules (JSON)</label>
+    <textarea asp-for="SectionRulesJson" class="form-control" rows="6"></textarea>
+    <span class="hint">JSON array of rules with CategoryTermId, QuestionType, Count, ScorePerQuestion</span>
+</div>

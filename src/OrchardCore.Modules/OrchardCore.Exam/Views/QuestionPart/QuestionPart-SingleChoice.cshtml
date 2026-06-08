@@ -1,0 +1,12 @@
+@using OrchardCore.Exam.Models
+@model dynamic
+
+<div class="question question-single-choice">
+    <p class="stem">@Model.QuestionPart.Stem <span class="badge">(@Model.QuestionPart.Score pts)</span></p>
+    <ul class="options">
+        @for (var i = 0; i < Model.QuestionPart.Options.Count; i++)
+        {
+            <li><label><input type="radio" name="q-@Model.ContentItem.ContentItemId" value="@i" /> @((char)('A' + i)). @Model.QuestionPart.Options[i]</label></li>
+        }
+    </ul>
+</div>

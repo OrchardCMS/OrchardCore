@@ -1,0 +1,7 @@
+@using OrchardCore.Exam.Models
+@model dynamic
+
+<div class="question question-short-answer">
+    <p class="stem">@Model.QuestionPart.Stem <span class="badge">(@Model.QuestionPart.Score pts)</span></p>
+    <textarea name="q-@Model.ContentItem.ContentItemId" class="form-control" rows="4" placeholder="Your answer"></textarea>
+</div>

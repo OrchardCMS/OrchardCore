@@ -1,0 +1,42 @@
+@using OrchardCore.ContentManagement
+@using OrchardCore.Exam.Models
+@model IEnumerable<ContentItem>
+
+@{
+    var records = Model.ToList();
+}
+
+<h1>Exam Records</h1>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Student</th>
+            <th>Status</th>
+            <th>Start Time</th>
+            <th>Submit Time</th>
+            <th>Score</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var record in records)
+        {
+            var part = record.Get<ExamRecordPart>(nameof(ExamRecordPart));
+            if (part == null) continue;
+            <tr>
+                <td>@part.UserId</td>
+                <td>@part.Status</td>
+                <td>@part.StartTime</td>
+                <td>@(part.SubmitTime?.ToString() ?? "-")</td>
+                <td>@part.TotalScore</td>
+                <td>
+                    @if (part.Status == ExamRecordStatus.Submitted)
+                    {
+                        <a href="/admin/exam/grade/@record.ContentItemId" class="btn btn-sm btn-primary">Grade</a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

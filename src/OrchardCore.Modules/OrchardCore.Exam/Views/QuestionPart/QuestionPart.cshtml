@@ -1,0 +1,16 @@
+@using OrchardCore.Exam.Models
+@model dynamic
+
+<div class="question-part">
+    <h5>@Model.QuestionPart.QuestionType</h5>
+    <p>@Model.QuestionPart.Stem</p>
+    @if (Model.QuestionPart.Options != null)
+    {
+        <ul>
+            @for (var i = 0; i < Model.QuestionPart.Options.Count; i++)
+            {
+                <li>@((char)('A' + i)). @Model.QuestionPart.Options[i]</li>
+            }
+        </ul>
+    }
+</div>
