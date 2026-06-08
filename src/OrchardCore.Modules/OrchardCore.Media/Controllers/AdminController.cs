@@ -163,7 +163,8 @@ public sealed class AdminController : Controller
 
     public async Task<ActionResult<object>> GetMediaItem(string path)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaFolder, (object)path)
+        if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMedia)
+            || !await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaFolder, (object)path)
             || (HttpContext.IsSecureMediaEnabled() && !await _authorizationService.AuthorizeAsync(User, MediaPermissions.ViewMedia, (object)(path ?? string.Empty))))
         {
             return Forbid();
@@ -188,7 +189,8 @@ public sealed class AdminController : Controller
     [MediaSizeLimit]
     public async Task<IActionResult> Upload(string path, string extensions)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaFolder, (object)path)
+        if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMedia)
+            || !await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaFolder, (object)path)
             || (HttpContext.IsSecureMediaEnabled() && !await _authorizationService.AuthorizeAsync(User, MediaPermissions.ViewMedia, (object)(path ?? string.Empty))))
         {
             return Forbid();
