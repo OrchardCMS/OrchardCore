@@ -585,7 +585,7 @@ The `UseExactMatch` option in the `ContentsAdminListFilterOptions` class modifie
 
 ## Content Version Pruning
 
-The `Content Version Pruning` feature (`OrchardCore.Contents.VersionPruning`) provides a background task that periodically deletes old **archived** content item versions — versions that are neither the *latest* nor the *published* one. On sites that are edited often, every save or publish leaves the previous version behind in the database. Over time these accumulate, growing the storage footprint and slowing version-history queries. Pruning keeps that history bounded.
+The `Content Version Pruning` feature (`OrchardCore.Contents.VersionPruning`) provides a background task that periodically deletes old **archived** content item versions — versions that are neither the *latest* nor the *published* one. On sites that are edited often, every save or publish leaves the previous version behind in the database. Over time, these accumulate, growing the storage footprint and slowing version-history queries. Pruning keeps that history bounded.
 
 The latest draft and the published version of an item are **never** deleted; only superseded (archived) versions are eligible.
 
