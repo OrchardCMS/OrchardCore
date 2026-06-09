@@ -7,11 +7,14 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Entities;
+using OrchardCore.Modules;
 using OrchardCore.RateLimits;
-using OrchardCore.RateLimits.Settings;
-using OrchardCore.Settings;
+using OrchardCore.RateLimits.Core;
+using OrchardCore.RateLimits.Models;
+using OrchardCore.RateLimits.Services;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.RateLimits;
 
@@ -23,13 +26,11 @@ public class RateLimiterMiddlewareTests
         using var staticAssetDirectory = new StaticAssetDirectory();
         using var host = await CreateHostAsync(
             staticAssetDirectory.Path,
-            globalOptions: new GlobalRateLimitOptions
-            {
-                PermitLimit = 1,
-                Window = TimeSpan.FromMinutes(1),
-            },
             configureRouteLimits: null,
-            rateLimitsSettings: null,
+            publishedPolicies:
+            [
+                CreateGlobalFixedWindowPolicy("Global", 1, 60),
+            ],
             cancellationToken: TestContext.Current.CancellationToken);
 
         var client = host.GetTestClient();
@@ -58,11 +59,6 @@ public class RateLimiterMiddlewareTests
         using var staticAssetDirectory = new StaticAssetDirectory();
         using var host = await CreateHostAsync(
             staticAssetDirectory.Path,
-            globalOptions: new GlobalRateLimitOptions
-            {
-                PermitLimit = 10,
-                Window = TimeSpan.FromMinutes(1),
-            },
             configureRouteLimits: options =>
             {
                 options.AddRouteRateLimit(
@@ -73,7 +69,10 @@ public class RateLimiterMiddlewareTests
                         1,
                         TimeSpan.FromSeconds(5)));
             },
-            rateLimitsSettings: null,
+            publishedPolicies:
+            [
+                CreateGlobalFixedWindowPolicy("Global", 10, 60),
+            ],
             cancellationToken: TestContext.Current.CancellationToken);
 
         var client = host.GetTestClient();
@@ -90,30 +89,16 @@ public class RateLimiterMiddlewareTests
     }
 
     [Fact]
-    public async Task ShouldApplyRouteSpecificLimitsWithoutGlobalLimiterWhenDisabledInSiteSettings()
+    public async Task ShouldApplyRouteSpecificPoliciesWithoutGlobalPolicies()
     {
         using var staticAssetDirectory = new StaticAssetDirectory();
         using var host = await CreateHostAsync(
             staticAssetDirectory.Path,
-            globalOptions: new GlobalRateLimitOptions
-            {
-                PermitLimit = 1,
-                Window = TimeSpan.FromMinutes(1),
-            },
-            configureRouteLimits: options =>
-            {
-                options.AddRouteRateLimit(
-                    "TenantLimitedRoute",
-                    HttpMethods.Get,
-                    RateLimitPartitionHelpers.CreateFixedWindowPerIpPolicy(
-                        "tenant-limited",
-                        1,
-                        TimeSpan.FromSeconds(5)));
-            },
-            rateLimitsSettings: new RateLimitsSettings
-            {
-                EnableGlobalRateLimiter = false,
-            },
+            configureRouteLimits: null,
+            publishedPolicies:
+            [
+                CreateRouteFixedWindowPolicy("TenantLimitedPolicy", "TenantLimitedRoute", 1, 60),
+            ],
             cancellationToken: TestContext.Current.CancellationToken);
 
         var client = host.GetTestClient();
@@ -132,9 +117,8 @@ public class RateLimiterMiddlewareTests
 
     private static async Task<IHost> CreateHostAsync(
         string staticAssetPath,
-        GlobalRateLimitOptions globalOptions,
         Action<RateLimitsOptions> configureRouteLimits,
-        RateLimitsSettings rateLimitsSettings,
+        IEnumerable<RateLimitPolicy> publishedPolicies,
         CancellationToken cancellationToken)
     {
         var builder = Host.CreateDefaultBuilder()
@@ -146,13 +130,15 @@ public class RateLimiterMiddlewareTests
                     services.AddRouting();
                     services.AddRateLimiter();
                     services.AddTransient<IConfigureOptions<RateLimiterOptions>, RateLimiterOptionsConfigurations>();
-                    services.AddSingleton<ISiteService>(CreateSiteService(rateLimitsSettings));
-                    services.Configure<GlobalRateLimitOptions>(options =>
-                    {
-                        options.PermitLimit = globalOptions.PermitLimit;
-                        options.Window = globalOptions.Window;
-                        options.QueueLimit = globalOptions.QueueLimit;
-                    });
+                    services.AddSingleton(CreatePolicyStore(publishedPolicies ?? []));
+                    services.AddSingleton(new FixedWindowRateLimiterSource(Mock.Of<IStringLocalizer<FixedWindowRateLimiterSource>>()));
+                    services.AddSingleton(new SlidingWindowRateLimiterSource(Mock.Of<IStringLocalizer<SlidingWindowRateLimiterSource>>()));
+                    services.AddSingleton(new ConcurrencyRateLimiterSource(Mock.Of<IStringLocalizer<ConcurrencyRateLimiterSource>>()));
+                    services.AddSingleton(new TokenBucketRateLimiterSource(Mock.Of<IStringLocalizer<TokenBucketRateLimiterSource>>()));
+                    services.AddKeyedSingleton<IRateLimiterSource>(FixedWindowRateLimiterSource.SourceName, static (sp, _) => sp.GetRequiredService<FixedWindowRateLimiterSource>());
+                    services.AddKeyedSingleton<IRateLimiterSource>(SlidingWindowRateLimiterSource.SourceName, static (sp, _) => sp.GetRequiredService<SlidingWindowRateLimiterSource>());
+                    services.AddKeyedSingleton<IRateLimiterSource>(ConcurrencyRateLimiterSource.SourceName, static (sp, _) => sp.GetRequiredService<ConcurrencyRateLimiterSource>());
+                    services.AddKeyedSingleton<IRateLimiterSource>(TokenBucketRateLimiterSource.SourceName, static (sp, _) => sp.GetRequiredService<TokenBucketRateLimiterSource>());
 
                     if (configureRouteLimits != null)
                     {
@@ -181,20 +167,56 @@ public class RateLimiterMiddlewareTests
                 });
             });
 
-        var host = await builder.StartAsync(cancellationToken);
-        return host;
+        return await builder.StartAsync(cancellationToken);
     }
 
-    private static ISiteService CreateSiteService(RateLimitsSettings settings)
+    private static IRateLimitPolicyStore CreatePolicyStore(IEnumerable<RateLimitPolicy> publishedPolicies)
     {
-        var siteSettings = new SiteSettings();
+        return Mock.Of<IRateLimitPolicyStore>(store =>
+            store.GetPublishedPoliciesAsync() == Task.FromResult(publishedPolicies));
+    }
 
-        if (settings != null)
+    private static RateLimitPolicy CreateGlobalFixedWindowPolicy(string name, int permitLimit, int windowSeconds)
+    {
+        var limiter = CreateFixedWindowLimiter(permitLimit, windowSeconds);
+
+        return new RateLimitPolicy
         {
-            siteSettings.Put(settings);
-        }
+            Name = name,
+            Scope = RateLimitPolicyScope.Global,
+            Limiters = [limiter],
+        };
+    }
 
-        return Mock.Of<ISiteService>(service => service.GetSiteSettingsAsync() == Task.FromResult<ISite>(siteSettings));
+    private static RateLimitPolicy CreateRouteFixedWindowPolicy(string name, string routeName, int permitLimit, int windowSeconds)
+    {
+        var limiter = CreateFixedWindowLimiter(permitLimit, windowSeconds);
+
+        return new RateLimitPolicy
+        {
+            Name = name,
+            Scope = RateLimitPolicyScope.Route,
+            RouteName = routeName,
+            Limiters = [limiter],
+        };
+    }
+
+    private static RateLimitLimiter CreateFixedWindowLimiter(int permitLimit, int windowSeconds)
+    {
+        var limiter = new RateLimitLimiter
+        {
+            Id = IdGenerator.GenerateId(),
+            Source = FixedWindowRateLimiterSource.SourceName,
+        };
+
+        limiter.Put(new FixedWindowRateLimiterData
+        {
+            PermitLimit = permitLimit,
+            QueueLimit = 0,
+            WindowSeconds = windowSeconds,
+        });
+
+        return limiter;
     }
 
     private sealed class StaticAssetDirectory : IDisposable

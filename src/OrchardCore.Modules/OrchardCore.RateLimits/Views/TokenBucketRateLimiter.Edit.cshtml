@@ -1,0 +1,46 @@
+@model OrchardCore.RateLimits.ViewModels.TokenBucketRateLimiterViewModel
+
+<div class="ocat-limited-wrapper" asp-validation-class-for="TokenLimit">
+    <label asp-for="TokenLimit" class="ocat-label">@T["Token limit"]</label>
+    <div class="ocat-limited">
+        <input asp-for="TokenLimit" type="number" min="1" class="form-control" />
+        <span asp-validation-for="TokenLimit"></span>
+        <span class="hint">@T["The maximum number of tokens the bucket can hold."]</span>
+    </div>
+</div>
+
+<div class="ocat-limited-wrapper" asp-validation-class-for="TokensPerPeriod">
+    <label asp-for="TokensPerPeriod" class="ocat-label">@T["Tokens per period"]</label>
+    <div class="ocat-limited">
+        <input asp-for="TokensPerPeriod" type="number" min="1" class="form-control" />
+        <span asp-validation-for="TokensPerPeriod"></span>
+        <span class="hint">@T["How many tokens are added every replenishment period."]</span>
+    </div>
+</div>
+
+<div class="ocat-limited-wrapper" asp-validation-class-for="ReplenishmentPeriodSeconds">
+    <label asp-for="ReplenishmentPeriodSeconds" class="ocat-label">@T["Replenishment seconds"]</label>
+    <div class="ocat-limited">
+        <input asp-for="ReplenishmentPeriodSeconds" type="number" min="1" class="form-control" />
+        <span asp-validation-for="ReplenishmentPeriodSeconds"></span>
+        <span class="hint">@T["How often the bucket refills in seconds."]</span>
+    </div>
+</div>
+
+<div class="ocat-limited-wrapper" asp-validation-class-for="QueueLimit">
+    <label asp-for="QueueLimit" class="ocat-label">@T["Queue limit"]</label>
+    <div class="ocat-limited">
+        <input asp-for="QueueLimit" type="number" min="0" class="form-control" />
+        <span asp-validation-for="QueueLimit"></span>
+        <span class="hint">@T["Additional queued requests allowed when no token is available."]</span>
+    </div>
+</div>
+
+<div class="ocat-limited-wrapper" asp-validation-class-for="QueueProcessingOrder">
+    <label asp-for="QueueProcessingOrder" class="ocat-label">@T["Queue processing order"]</label>
+    <div class="ocat-limited">
+        <select asp-for="QueueProcessingOrder" asp-items="Model.QueueProcessingOrders" class="form-select"></select>
+        <span asp-validation-for="QueueProcessingOrder"></span>
+        <span class="hint">@T["Determines whether the queue serves the oldest or newest request first."]</span>
+    </div>
+</div>

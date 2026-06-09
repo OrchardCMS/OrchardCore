@@ -1,0 +1,24 @@
+@model OrchardCore.Infrastructure.Entities.ModelViewModel
+
+@{
+    var sourceId = ViewContext.HttpContext.Request.Query["id"];
+}
+
+<zone Name="Title"><h1>@RenderTitleSegments(T["Add Limiter"])</h1></zone>
+
+<form asp-action="Create" method="post" class="no-multisubmit">
+    <input type="hidden" name="id" value="@sourceId" />
+    <div class="ocat-wrapper">
+        <label class="ocat-label">@T["Limiter type"]</label>
+        <div class="ocat-end">
+            <span>@Model.DisplayName</span>
+        </div>
+    </div>
+
+    @await DisplayAsync(Model.Editor)
+
+    <div class="mt-4 d-flex gap-1">
+        <button class="btn btn-primary" type="submit">@T["Add Limiter"]</button>
+        <a asp-action="Edit" asp-controller="Admin" asp-route-policyId="@ViewContext.RouteData.Values["policyId"]" class="btn btn-secondary">@T["Cancel"]</a>
+    </div>
+</form>

@@ -1,0 +1,37 @@
+@model OrchardCore.RateLimits.ViewModels.SlidingWindowRateLimiterViewModel
+
+<div class="ocat-limited-wrapper" asp-validation-class-for="PermitLimit">
+    <label asp-for="PermitLimit" class="ocat-label">@T["Permit limit"]</label>
+    <div class="ocat-limited">
+        <input asp-for="PermitLimit" type="number" min="1" class="form-control" />
+        <span asp-validation-for="PermitLimit"></span>
+        <span class="hint">@T["The number of requests allowed across the full window."]</span>
+    </div>
+</div>
+
+<div class="ocat-limited-wrapper" asp-validation-class-for="WindowSeconds">
+    <label asp-for="WindowSeconds" class="ocat-label">@T["Window seconds"]</label>
+    <div class="ocat-limited">
+        <input asp-for="WindowSeconds" type="number" min="1" class="form-control" />
+        <span asp-validation-for="WindowSeconds"></span>
+        <span class="hint">@T["How long the sliding window lasts in seconds."]</span>
+    </div>
+</div>
+
+<div class="ocat-limited-wrapper" asp-validation-class-for="SegmentsPerWindow">
+    <label asp-for="SegmentsPerWindow" class="ocat-label">@T["Segments per window"]</label>
+    <div class="ocat-limited">
+        <input asp-for="SegmentsPerWindow" type="number" min="1" class="form-control" />
+        <span asp-validation-for="SegmentsPerWindow"></span>
+        <span class="hint">@T["How many slices are tracked inside each window."]</span>
+    </div>
+</div>
+
+<div class="ocat-limited-wrapper" asp-validation-class-for="QueueLimit">
+    <label asp-for="QueueLimit" class="ocat-label">@T["Queue limit"]</label>
+    <div class="ocat-limited">
+        <input asp-for="QueueLimit" type="number" min="0" class="form-control" />
+        <span asp-validation-for="QueueLimit"></span>
+        <span class="hint">@T["Additional queued requests allowed after the limit is reached."]</span>
+    </div>
+</div>

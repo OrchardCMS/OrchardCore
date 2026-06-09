@@ -1,0 +1,15 @@
+@model dynamic
+
+<div class="w-100">
+    @if (Model.Actions != null)
+    {
+        <div class="float-end">
+            @await DisplayAsync(Model.Actions)
+        </div>
+    }
+
+    @if (Model.Content != null)
+    {
+        @await DisplayAsync(Model.Content)
+    }
+</div>

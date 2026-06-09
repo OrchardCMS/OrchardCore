@@ -1,0 +1,23 @@
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.RateLimits.Models
+
+@model ShapeViewModel<RateLimitLimiter>
+
+@{
+    var policyId = ViewContext.RouteData.Values["policyId"];
+}
+
+<div class="d-flex gap-1">
+    <a asp-action="Edit"
+       asp-controller="Limiter"
+       asp-route-policyId="@policyId"
+       asp-route-limiterId="@Model.Value.Id"
+       class="btn btn-primary btn-sm">@T["Edit"]</a>
+
+    <a asp-action="Delete"
+       asp-controller="Limiter"
+       asp-route-policyId="@policyId"
+       asp-route-limiterId="@Model.Value.Id"
+       class="btn btn-danger btn-sm"
+       data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+</div>

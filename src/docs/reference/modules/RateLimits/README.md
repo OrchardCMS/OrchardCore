@@ -4,125 +4,117 @@ The Rate Limits module centralizes ASP.NET Core request rate limiting for Orchar
 
 When the feature is enabled, it can:
 
-- apply a global per-IP rate limit to tenant requests;
-- apply stricter limits to specific named routes;
-- let administrators disable the global limiter from site settings while keeping route-specific limits;
-- let individual Orchard Core features contribute their own route-specific limits through `RateLimitsOptions`.
+- apply tenant-specific published rate-limit policies;
+- let administrators keep draft changes without reloading the tenant;
+- publish one or many policies with a single tenant reload;
+- keep feature-contributed named-route limits active as read-only built-in limits.
 
-Static assets are intentionally excluded from the global limiter because Orchard registers static-file middleware before `UseRateLimiter()`. This keeps page assets such as scripts, stylesheets, and images from consuming request budgets.
+Static assets are intentionally excluded because Orchard registers static-file middleware before `UseRateLimiter()`. Scripts, stylesheets, and images therefore do not consume request budgets.
 
-## What it does
+## Tenant policies
 
-`OrchardCore.RateLimits` configures `Microsoft.AspNetCore.RateLimiting` once for the tenant and builds a chained global limiter with two stages:
+The module adds **Tools** -> **Rate Limits**, where administrators can manage tenant policies.
 
-1. A route-specific limiter that checks the current endpoint's route name and optional HTTP method.
-2. A global fixed-window limiter that applies to all remaining tenant requests by remote IP address.
+Each policy has:
 
-If no route-specific rule matches, the request falls through to the global limiter.
+- a **draft** version used for editing;
+- an optional **published** version enforced at runtime;
+- one target type: **Global**, **Route**, or **Endpoint**;
+- an optional description;
+- owner and author metadata;
+- one or more limiters.
 
-## Site settings
+Saving edits updates only the draft. Publishing copies the draft into the published version and reloads the tenant shell once.
 
-The module also adds a **Settings** -> **Security** -> **Rate Limits** page with an **Enable the global rate limiter** toggle.
+The admin UI includes:
 
-- Enabled by default, which preserves the existing behavior.
-- When disabled, Orchard Core stops applying the tenant-wide fixed-window limiter and keeps only route-specific limits.
-- Saving a change requests a tenant shell reload so the middleware is rebuilt with the updated setting.
+- policy search on the index page;
+- inline **Publish** actions for policies that currently have a draft;
+- a draft editor with **Save Draft** and **Save & Publish** actions;
+- an accordion that shows the published version when a published snapshot exists;
+- a warning that publishing restarts the website.
 
-## Global configuration
+### Policy types
 
-The global limiter is configured from the `RateLimits:Global` section under the Orchard Core configuration root:
+| Type | Matches |
+|------|---------|
+| `Global` | Every tenant request |
+| `Route` | A named route from `IRouteNameMetadata` or `IEndpointNameMetadata` |
+| `Endpoint` | Requests whose path starts with the configured path |
 
-```json
-{
-  "OrchardCore": {
-    "RateLimits": {
-      "Global": {
-        "PermitLimit": 150,
-        "Window": "00:01:00",
-        "QueueLimit": 0
-      }
-    }
-  }
-}
-```
+### Limiter types
 
-### Defaults
+The admin UI currently supports these limiter sources:
 
-| Property | Default | Description |
-|----------|---------|-------------|
-| `PermitLimit` | `150` | Maximum requests allowed during each window for a single remote IP address. |
-| `Window` | `00:01:00` | The fixed-window duration used by the global limiter. |
-| `QueueLimit` | `0` | Number of queued requests allowed after the limit is reached. |
+- `FixedWindow`
+- `SlidingWindow`
+- `Concurrency`
+- `TokenBucket`
 
-### Environment variables
+Multiple limiters can be added to the same policy. When a published policy matches a request, every limiter on that policy is applied.
 
-The same settings can be overridden with environment variables:
+## Built-in route limits
 
-```text
-OrchardCore__RateLimits__Global__PermitLimit=150
-OrchardCore__RateLimits__Global__Window=00:01:00
-OrchardCore__RateLimits__Global__QueueLimit=0
-```
-
-As with other Orchard Core configuration, tenant-specific overrides may also be provided through shell configuration sources. See the [Configuration](../Configuration/README.md) documentation for details.
-
-## Route-specific limits
-
-Features can contribute route-specific limits by configuring `RateLimitsOptions`.
+Features can continue to contribute named-route limits in code through `RateLimitsOptions`. These built-in limits stay active and are shown in the admin UI as read-only entries.
 
 ```csharp
-using Microsoft.AspNetCore.Http;
-using OrchardCore.Modules;
-using OrchardCore.RateLimits;
-
-[RequireFeatures("OrchardCore.Users", "OrchardCore.RateLimits")]
-public sealed class RateLimitsStartup : StartupBase
+services.Configure<RateLimitsOptions>(options =>
 {
-    public override void ConfigureServices(IServiceCollection services)
-    {
-        services.Configure<RateLimitsOptions>(options =>
-        {
-            options.AddRouteRateLimit(
-                routeName: "Login",
-                httpMethod: HttpMethods.Post,
-                partitioner: RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(
-                    policyName: "password-authentication",
-                    permitLimit: 10));
-        });
-    }
-}
+    options.AddRouteRateLimit(
+        routeName: "Login",
+        httpMethod: HttpMethods.Post,
+        partitioner: RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(
+            policyName: "password-authentication",
+            permitLimit: 10));
+});
 ```
 
-### Route matching
-
-Route-specific limits are matched by:
+Built-in route limits are matched by:
 
 - route name; and
 - optional HTTP method.
 
 Matching by both values prevents `GET` and `POST` actions that share the same route name from unintentionally sharing the same limiter.
 
-The module supports both:
+## Seeding the default global policy
+
+When the feature runs with this policy-based model for the first time, Orchard seeds a published **Default Global Policy** with a fixed-window limiter using these defaults:
+
+- permit limit: `150`
+- window seconds: `60`
+- queue limit: `0`
+
+After the seed runs, tenant administrators can edit, publish, or replace that policy in the UI.
+
+## Recipes and deployment plans
+
+Rate limit policies can also be moved between tenants with recipes and deployment plans.
+
+- The recipe step name is `CreateOrUpdateRateLimitPolicies`.
+- The deployment UI exposes **All Rate Limit Policies**, which exports every stored policy entry.
+- Setup-style recipe exports stamp policy owner and author values with the tenant admin parameters.
+
+The initial default global policy is seeded through a migration recipe stored under the module's `Migrations` folder.
+
+## Route names
+
+Route policies can target:
 
 - MVC route names from `IRouteNameMetadata`; and
-- endpoint names from `IEndpointNameMetadata`, such as minimal API routes using `.WithName(...)`.
+- endpoint names from `IEndpointNameMetadata`, such as minimal API routes defined with `.WithName(...)`.
+
+The admin editor lists the route names currently exposed by enabled features in the tenant, and route policies include a **Select a route** option for an empty initial selection.
 
 ## Security considerations
 
-Rate limiting is a defensive control that helps reduce abuse, especially on high-risk endpoints such as:
+Rate limiting is a defensive control that helps reduce abuse on high-risk endpoints such as:
 
 - username/password sign-in;
 - registration;
 - password reset;
 - token issuance;
-- two-factor authentication code submission or delivery.
+- two-factor code submission or delivery.
 
-This improves security by making automated credential stuffing, brute-force attempts, and repetitive token or code requests more expensive for an attacker.
+This makes automated credential stuffing, brute-force attempts, and repetitive token or code requests more expensive for an attacker.
 
-Rate limiting is not a replacement for authentication, authorization, captcha, lockout, or monitoring. It should be used together with the other security features that Orchard Core and ASP.NET Core provide.
-
-## Orchard Core integration
-
-The module is designed so that Orchard Core features can add their own limits without directly registering rate-limiter middleware. For example, the Users and OpenID features contribute limits for named routes such as login, registration, password reset, two-factor flows, and token endpoints when `OrchardCore.RateLimits` is enabled.
-
-This keeps rate-limit policy registration centralized while still allowing features to protect their own endpoints.
+Rate limiting is not a replacement for authentication, authorization, captcha, lockout, or monitoring. Use it together with the other security features that Orchard Core and ASP.NET Core provide.

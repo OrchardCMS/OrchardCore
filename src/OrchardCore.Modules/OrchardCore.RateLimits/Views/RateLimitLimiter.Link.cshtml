@@ -1,0 +1,17 @@
+@model dynamic
+
+<div class="col">
+    <div class="card h-100">
+        <div class="card-body">
+            <h5 class="mb-1">@Model.Source.DisplayName</h5>
+            <p class="mb-0 text-muted">@Model.Source.Description</p>
+        </div>
+        <div class="card-footer text-sm-end">
+            <a class="btn btn-primary btn-sm"
+               asp-action="Create"
+               asp-controller="Limiter"
+               asp-route-policyId="@Model.PolicyId"
+               asp-route-id="@Model.Source.Name">@T["Add"]</a>
+        </div>
+    </div>
+</div>

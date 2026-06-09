@@ -1,0 +1,12 @@
+@model OrchardCore.RateLimits.ViewModels.RateLimitPolicyEditViewModel
+
+<zone Name="Title"><h1>@RenderTitleSegments(T["New Rate Limit Policy"])</h1></zone>
+
+<form asp-action="Create" method="post" class="no-multisubmit">
+    @await Html.PartialAsync("RateLimitPolicy.Fields", Model)
+
+    <div class="mt-4 d-flex gap-1">
+        <button class="btn btn-primary" type="submit">@T["Save and Continue"]</button>
+        <a asp-action="Index" class="btn btn-secondary">@T["Cancel"]</a>
+    </div>
+</form>

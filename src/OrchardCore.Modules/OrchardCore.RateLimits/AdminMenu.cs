@@ -2,18 +2,10 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
 using OrchardCore.RateLimits.Core;
-using OrchardCore.RateLimits.Drivers;
-
 namespace OrchardCore.RateLimits;
 
 internal sealed class AdminMenu : AdminNavigationProvider
 {
-    private static readonly RouteValueDictionary _routeValues = new()
-    {
-        { "area", "OrchardCore.Settings" },
-        { "groupId", RateLimitsSettingsDisplayDriver.GroupId },
-    };
-
     internal readonly IStringLocalizer S;
 
     public AdminMenu(IStringLocalizer<AdminMenu> stringLocalizer)
@@ -26,13 +18,11 @@ internal sealed class AdminMenu : AdminNavigationProvider
         if (NavigationHelper.UseLegacyFormat())
         {
             builder
-                .Add(S["Security"], security => security
-                    .Add(S["Settings"], S["Settings"].PrefixPosition(), settings => settings
-                        .Add(S["Rate Limits"], S["Rate Limits"].PrefixPosition(), rateLimits => rateLimits
-                            .Action("Index", "Admin", _routeValues)
-                            .Permission(RateLimitsPermissions.ManageRateLimits)
-                            .LocalNav()
-                        )
+                .Add(S["Tools"], tools => tools
+                    .Add(S["Rate Limits"], S["Rate Limits"].PrefixPosition(), rateLimits => rateLimits
+                        .Action("Index", "Admin", "OrchardCore.RateLimits")
+                        .Permission(RateLimitsPermissions.ManageRateLimits)
+                        .LocalNav()
                     )
                 );
 
@@ -40,13 +30,11 @@ internal sealed class AdminMenu : AdminNavigationProvider
         }
 
         builder
-            .Add(S["Settings"], settings => settings
-                .Add(S["Security"], S["Security"].PrefixPosition(), security => security
-                    .Add(S["Rate Limits"], S["Rate Limits"].PrefixPosition(), rateLimits => rateLimits
-                        .Action("Index", "Admin", _routeValues)
-                        .Permission(RateLimitsPermissions.ManageRateLimits)
-                        .LocalNav()
-                    )
+            .Add(S["Tools"], tools => tools
+                .Add(S["Rate Limits"], S["Rate Limits"].PrefixPosition(), rateLimits => rateLimits
+                    .Action("Index", "Admin", "OrchardCore.RateLimits")
+                    .Permission(RateLimitsPermissions.ManageRateLimits)
+                    .LocalNav()
                 )
             );
 

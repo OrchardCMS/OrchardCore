@@ -1,0 +1,19 @@
+@model OrchardCore.Infrastructure.Entities.ModelViewModel
+
+<zone Name="Title"><h1>@RenderTitleSegments(T["Edit Limiter"])</h1></zone>
+
+<form asp-action="Edit" method="post" class="no-multisubmit">
+    <div class="ocat-wrapper">
+        <label class="ocat-label">@T["Limiter type"]</label>
+        <div class="ocat-end">
+            <span>@Model.DisplayName</span>
+        </div>
+    </div>
+
+    @await DisplayAsync(Model.Editor)
+
+    <div class="mt-4 d-flex gap-1">
+        <button class="btn btn-primary" type="submit">@T["Save"]</button>
+        <a asp-action="Edit" asp-controller="Admin" asp-route-policyId="@ViewContext.RouteData.Values["policyId"]" class="btn btn-secondary">@T["Back"]</a>
+    </div>
+</form>

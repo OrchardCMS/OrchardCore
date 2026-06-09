@@ -10,6 +10,6 @@ using OrchardCore.Modules.Manifest;
 [assembly: Feature(
     Id = "OrchardCore.RateLimits",
     Name = "Rate Limits",
-    Description = "Provides configurable global and route-based rate limiting.",
+    Description = "Provides a way to manage rate limiting to the website.",
     Category = "Security"
 )]
