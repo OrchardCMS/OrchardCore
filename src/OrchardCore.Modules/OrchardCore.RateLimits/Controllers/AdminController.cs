@@ -1,15 +1,18 @@
 using System.Security.Claims;
+using System.Globalization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Routing;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Infrastructure.Entities;
+using OrchardCore.Navigation;
 using OrchardCore.RateLimits.Core;
 using OrchardCore.RateLimits.Models;
 using OrchardCore.RateLimits.Services;
@@ -63,7 +66,11 @@ public sealed class AdminController : Controller
     }
 
     [Admin("RateLimits", "RateLimits.Index")]
-    public async Task<IActionResult> Index(string searchText = null)
+    public async Task<IActionResult> Index(
+        string searchText = null,
+        PagerParameters pagerParameters = null,
+        [FromServices] IOptions<PagerOptions> pagerOptions = null,
+        [FromServices] IShapeFactory shapeFactory = null)
     {
         if (!await _authorizationService.AuthorizeAsync(User, RateLimitsPermissions.ManageRateLimits))
         {
@@ -78,14 +85,30 @@ public sealed class AdminController : Controller
             entries = entries.Where(x => SearchMatches(x, searchText));
         }
 
+        var pager = new Pager(pagerParameters, pagerOptions.Value.GetPageSize());
+        var orderedEntries = entries
+            .OrderBy(x => x.Draft?.Name ?? x.Published?.Name, StringComparer.OrdinalIgnoreCase)
+            .ToArray();
+        var totalCount = orderedEntries.Length;
+        var pagedEntries = orderedEntries
+            .Skip(pager.GetStartIndex())
+            .Take(pager.PageSize)
+            .ToArray();
+
+        RouteData routeData = null;
+
+        if (!string.IsNullOrWhiteSpace(searchText))
+        {
+            routeData = new RouteData();
+            routeData.Values[nameof(searchText)] = searchText;
+        }
+
         var model = new RateLimitsIndexViewModel
         {
             SearchText = searchText,
             Policies =
             [
-                .. entries
-                    .OrderBy(x => x.Draft?.Name ?? x.Published?.Name, StringComparer.OrdinalIgnoreCase)
-                    .Select(BuildPolicyEntry),
+                .. pagedEntries.Select(BuildPolicyEntry),
             ],
             BuiltInRouteLimits = BuildBuiltInRouteLimits(),
             BulkActions =
@@ -93,6 +116,9 @@ public sealed class AdminController : Controller
                 new SelectListItem(H["Publish"].Value, nameof(RateLimitPolicyBulkAction.Publish)),
                 new SelectListItem(H["Delete"].Value, nameof(RateLimitPolicyBulkAction.Remove)),
             ],
+            Pager = totalCount > pager.PageSize
+                ? await shapeFactory.PagerAsync(pager, totalCount, routeData)
+                : null,
         };
 
         return View(model);
@@ -214,7 +240,7 @@ public sealed class AdminController : Controller
     [HttpPost]
     [FormValueRequired("submit.BulkAction")]
     [ActionName(nameof(Index))]
-    public async Task<IActionResult> IndexPost(RateLimitsBulkActionViewModel model, IEnumerable<string> policyIds)
+    public async Task<IActionResult> IndexPost(RateLimitsIndexViewModel model, IEnumerable<string> policyIds)
     {
         if (!await _authorizationService.AuthorizeAsync(User, RateLimitsPermissions.ManageRateLimits))
         {
@@ -313,7 +339,7 @@ public sealed class AdminController : Controller
                 model.PublishedLimiters.Add(new ModelEntry<RateLimitLimiter>
                 {
                     Model = limiter,
-                    Shape = await _displayManager.BuildDisplayAsync(limiter, updater: null, displayType: OrchardCoreConstants.DisplayType.Summary),
+                    Shape = await _displayManager.BuildDisplayAsync(limiter, updater: null, displayType: OrchardCoreConstants.DisplayType.SummaryAdmin),
                 });
             }
         }
@@ -533,8 +559,8 @@ public sealed class AdminController : Controller
         return policy?.Scope switch
         {
             RateLimitPolicyScope.Global => H["Applies to every tenant request."].Value,
-            RateLimitPolicyScope.Route => H["Matches the route name '{0}'.", policy.RouteName].Value,
-            RateLimitPolicyScope.Endpoint => H["Matches requests starting with '{0}'.", policy.Path].Value,
+            RateLimitPolicyScope.Route => string.Format(CultureInfo.CurrentCulture, H["Matches the route name '{0}'."].Value, policy.RouteName),
+            RateLimitPolicyScope.Endpoint => string.Format(CultureInfo.CurrentCulture, H["Matches requests starting with '{0}'."].Value, policy.Path),
             _ => string.Empty,
         };
     }

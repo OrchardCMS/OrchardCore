@@ -25,7 +25,7 @@
 </form>
 
 <form asp-action="Index" method="post" class="no-multisubmit">
-    <input asp-for="@(new OrchardCore.RateLimits.ViewModels.RateLimitsBulkActionViewModel().BulkAction)" type="hidden" name="BulkAction" />
+    <input asp-for="BulkAction" type="hidden" />
     <input type="submit" name="submit.BulkAction" class="visually-hidden" />
 
     <ul class="list-group with-checkbox">
@@ -142,6 +142,11 @@
 <form asp-action="Publish" method="post" id="publish-policy-form" class="d-none">
     <input type="hidden" name="policyId" id="publish-policy-id" />
 </form>
+
+@if (Model.Pager is not null)
+{
+    @await DisplayAsync(Model.Pager)
+}
 
 <div class="card mt-4">
     <div class="card-header">

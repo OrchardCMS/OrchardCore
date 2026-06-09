@@ -91,12 +91,6 @@ public sealed class SlidingWindowRateLimiterDisplayDriver : DisplayDriver<RateLi
                 model.Name = _source.Name;
                 model.DisplayName = _source.DisplayName.Value;
                 model.Description = _source.Describe(limiter);
-            }).Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Content:5"),
-            Initialize<RateLimiterSourceViewModel>("SlidingWindowRateLimiter_Summary", model =>
-            {
-                model.Name = _source.Name;
-                model.DisplayName = _source.DisplayName.Value;
-                model.Description = _source.Describe(limiter);
-            }).Location(OrchardCoreConstants.DisplayType.Summary, "Content:5"));
+            }).Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Content:5"));
     }
 }

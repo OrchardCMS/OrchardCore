@@ -99,13 +99,7 @@ public sealed class TokenBucketRateLimiterDisplayDriver : DisplayDriver<RateLimi
                 model.Name = _source.Name;
                 model.DisplayName = _source.DisplayName.Value;
                 model.Description = _source.Describe(limiter);
-            }).Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Content:5"),
-            Initialize<RateLimiterSourceViewModel>("TokenBucketRateLimiter_Summary", model =>
-            {
-                model.Name = _source.Name;
-                model.DisplayName = _source.DisplayName.Value;
-                model.Description = _source.Describe(limiter);
-            }).Location(OrchardCoreConstants.DisplayType.Summary, "Content:5"));
+            }).Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Content:5"));
     }
 
     private SelectListItem[] GetQueueProcessingOrders()
