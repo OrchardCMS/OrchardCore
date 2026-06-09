@@ -152,12 +152,22 @@ OrchardCore/
 
 ## Available Skills
 
-The following skills are available in `.skills/` for guided workflows:
+The following skills are available in `.agents/skills/` for guided workflows:
 
 | Skill | Description | Use When |
 |-------|-------------|----------|
 | `orchardcore-module-creator` | Create new modules | Adding modules, content parts, fields, handlers |
 | `orchardcore-theme-creator` | Create new themes | Adding themes, layouts, frontend assets |
+| `orchardcore-data-migration` | Write data migrations | Altering content definitions, index tables, patching content items |
+| `orchardcore-display-management` | Control rendering | placement.json, drivers, shapes, zones, alternates, editor layouts |
+| `orchardcore-workflow-activity` | Custom workflow activities | New workflow task/event, outcomes, activity editor, input/output |
+| `orchardcore-query-indexing` | Queries & search indexing | SQL/Lucene queries, index profiles, index handlers, search |
+| `orchardcore-localization` | Localize apps & content | IStringLocalizer S/T/H, PO files, content translation, cultures |
+| `orchardcore-tenants` | Multi-tenancy | Shells, creating tenants, tenant scopes, feature profiles, isolation |
+| `orchardcore-unit-test` | Write & run tests | xUnit, SiteContext integration, Moq, Playwright functional |
+| `orchardcore-docs-writer` | Author docs | MkDocs pages, module README, nav, admonitions, redirects |
+| `orchardcore-asset-manager` | Build frontend assets | Modifying SCSS, JS, TS, Vue; asset build failures |
+| `orchardcore-admin-edit-views` | Create admin edit views | Editing `*.Edit.cshtml` with `ocat-*` conventions |
 | `orchardcore-tester` | Browser-based testing | Testing features via Playwright automation |
 
 These skills provide step-by-step guidance, code templates, and references for common tasks.
