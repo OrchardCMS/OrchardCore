@@ -28,7 +28,7 @@
                     .OrderBy(item => item.Text)
                     .ToArray();
                 <input asp-for="UserSnapshotProperties[i].Name" hidden>
-                <label asp-for="UserSnapshotProperties[i].Redactor" class="@Orchard.GetLabelClasses()">@name</label>
+                <label asp-for="UserSnapshotProperties[i].Redactor" class="ocat-label">@name</label>
                 <select asp-for="UserSnapshotProperties[i].Redactor" class="form-select" asp-items="@items"></select>
                 <span asp-validation-for="UserSnapshotProperties[i].Redactor"></span>
             }
