@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Options;
+using OrchardCore.RateLimits.Settings;
+using OrchardCore.Settings;
 
 namespace OrchardCore.RateLimits;
 
@@ -10,13 +12,16 @@ public sealed class RateLimiterOptionsConfigurations : IConfigureOptions<RateLim
 {
     private readonly GlobalRateLimitOptions _globalRateLimitOptions;
     private readonly RateLimitsOptions _rateLimitsOptions;
+    private readonly ISiteService _siteService;
 
     public RateLimiterOptionsConfigurations(
         IOptions<GlobalRateLimitOptions> globalRateLimitOptions,
-        IOptions<RateLimitsOptions> rateLimitsOptions)
+        IOptions<RateLimitsOptions> rateLimitsOptions,
+        ISiteService siteService)
     {
         _globalRateLimitOptions = globalRateLimitOptions.Value;
         _rateLimitsOptions = rateLimitsOptions.Value;
+        _siteService = siteService;
     }
 
     public void Configure(RateLimiterOptions options)
@@ -46,7 +51,11 @@ public sealed class RateLimiterOptionsConfigurations : IConfigureOptions<RateLim
                     AutoReplenishment = true,
                 }));
 
-        options.GlobalLimiter = PartitionedRateLimiter.CreateChained(routeLimiter, globalLimiter);
+        var settings = _siteService.GetSettings<RateLimitsSettings>();
+
+        options.GlobalLimiter = settings.EnableGlobalRateLimiter
+            ? PartitionedRateLimiter.CreateChained(routeLimiter, globalLimiter)
+            : routeLimiter;
     }
 
     private RouteRateLimit FindRouteRateLimit(HttpContext context)

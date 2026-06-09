@@ -1,0 +1,14 @@
+@using OrchardCore.RateLimits.ViewModels
+
+@model RateLimitsSettingsViewModel
+
+<div class="ocat-wrapper" asp-validation-class-for="EnableGlobalRateLimiter">
+    <div class="ocat-end-offset">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" asp-for="EnableGlobalRateLimiter" />
+            <label asp-for="EnableGlobalRateLimiter" class="form-check-label">@T["Enable the global rate limiter"]</label>
+        </div>
+        <span asp-validation-for="EnableGlobalRateLimiter"></span>
+        <span class="hint dashed">@T["When enabled, all site requests use the global per-IP limiter in addition to any route-specific limits. When disabled, only route-specific rate limits remain active."]</span>
+    </div>
+</div>

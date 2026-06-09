@@ -6,6 +6,7 @@ When the feature is enabled, it can:
 
 - apply a global per-IP rate limit to tenant requests;
 - apply stricter limits to specific named routes;
+- let administrators disable the global limiter from site settings while keeping route-specific limits;
 - let individual Orchard Core features contribute their own route-specific limits through `RateLimitsOptions`.
 
 Static assets are intentionally excluded from the global limiter because Orchard registers static-file middleware before `UseRateLimiter()`. This keeps page assets such as scripts, stylesheets, and images from consuming request budgets.
@@ -18,6 +19,14 @@ Static assets are intentionally excluded from the global limiter because Orchard
 2. A global fixed-window limiter that applies to all remaining tenant requests by remote IP address.
 
 If no route-specific rule matches, the request falls through to the global limiter.
+
+## Site settings
+
+The module also adds a **Settings** -> **Security** -> **Rate Limits** page with an **Enable the global rate limiter** toggle.
+
+- Enabled by default, which preserves the existing behavior.
+- When disabled, Orchard Core stops applying the tenant-wide fixed-window limiter and keeps only route-specific limits.
+- Saving a change requests a tenant shell reload so the middleware is rebuilt with the updated setting.
 
 ## Global configuration
 

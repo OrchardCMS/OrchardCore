@@ -8,7 +8,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using OrchardCore.Entities;
 using OrchardCore.RateLimits;
+using OrchardCore.RateLimits.Settings;
+using OrchardCore.Settings;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.RateLimits;
 
@@ -26,7 +29,8 @@ public class RateLimiterMiddlewareTests
                 Window = TimeSpan.FromMinutes(1),
             },
             configureRouteLimits: null,
-            TestContext.Current.CancellationToken);
+            rateLimitsSettings: null,
+            cancellationToken: TestContext.Current.CancellationToken);
 
         var client = host.GetTestClient();
 
@@ -69,7 +73,8 @@ public class RateLimiterMiddlewareTests
                         1,
                         TimeSpan.FromSeconds(5)));
             },
-            TestContext.Current.CancellationToken);
+            rateLimitsSettings: null,
+            cancellationToken: TestContext.Current.CancellationToken);
 
         var client = host.GetTestClient();
 
@@ -84,10 +89,52 @@ public class RateLimiterMiddlewareTests
         Assert.Equal("other-tenant-response", await otherTenantResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
     }
 
+    [Fact]
+    public async Task ShouldApplyRouteSpecificLimitsWithoutGlobalLimiterWhenDisabledInSiteSettings()
+    {
+        using var staticAssetDirectory = new StaticAssetDirectory();
+        using var host = await CreateHostAsync(
+            staticAssetDirectory.Path,
+            globalOptions: new GlobalRateLimitOptions
+            {
+                PermitLimit = 1,
+                Window = TimeSpan.FromMinutes(1),
+            },
+            configureRouteLimits: options =>
+            {
+                options.AddRouteRateLimit(
+                    "TenantLimitedRoute",
+                    HttpMethods.Get,
+                    RateLimitPartitionHelpers.CreateFixedWindowPerIpPolicy(
+                        "tenant-limited",
+                        1,
+                        TimeSpan.FromSeconds(5)));
+            },
+            rateLimitsSettings: new RateLimitsSettings
+            {
+                EnableGlobalRateLimiter = false,
+            },
+            cancellationToken: TestContext.Current.CancellationToken);
+
+        var client = host.GetTestClient();
+
+        var firstLimitedResponse = await client.GetAsync("/tenant/limited", TestContext.Current.CancellationToken);
+        var secondLimitedResponse = await client.GetAsync("/tenant/limited", TestContext.Current.CancellationToken);
+        var firstOtherResponse = await client.GetAsync("/tenant/other", TestContext.Current.CancellationToken);
+        var secondOtherResponse = await client.GetAsync("/tenant/other", TestContext.Current.CancellationToken);
+
+        Assert.Equal(HttpStatusCode.OK, firstLimitedResponse.StatusCode);
+        Assert.Equal(HttpStatusCode.TooManyRequests, secondLimitedResponse.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, firstOtherResponse.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, secondOtherResponse.StatusCode);
+        Assert.Equal("other-tenant-response", await secondOtherResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
+    }
+
     private static async Task<IHost> CreateHostAsync(
         string staticAssetPath,
         GlobalRateLimitOptions globalOptions,
         Action<RateLimitsOptions> configureRouteLimits,
+        RateLimitsSettings rateLimitsSettings,
         CancellationToken cancellationToken)
     {
         var builder = Host.CreateDefaultBuilder()
@@ -99,6 +146,7 @@ public class RateLimiterMiddlewareTests
                     services.AddRouting();
                     services.AddRateLimiter();
                     services.AddTransient<IConfigureOptions<RateLimiterOptions>, RateLimiterOptionsConfigurations>();
+                    services.AddSingleton<ISiteService>(CreateSiteService(rateLimitsSettings));
                     services.Configure<GlobalRateLimitOptions>(options =>
                     {
                         options.PermitLimit = globalOptions.PermitLimit;
@@ -135,6 +183,18 @@ public class RateLimiterMiddlewareTests
 
         var host = await builder.StartAsync(cancellationToken);
         return host;
+    }
+
+    private static ISiteService CreateSiteService(RateLimitsSettings settings)
+    {
+        var siteSettings = new SiteSettings();
+
+        if (settings != null)
+        {
+            siteSettings.Put(settings);
+        }
+
+        return Mock.Of<ISiteService>(service => service.GetSiteSettingsAsync() == Task.FromResult<ISite>(siteSettings));
     }
 
     private sealed class StaticAssetDirectory : IDisposable

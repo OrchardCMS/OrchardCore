@@ -1,5 +1,8 @@
 using Microsoft.AspNetCore.RateLimiting;
+using OrchardCore.Entities;
 using OrchardCore.RateLimits;
+using OrchardCore.RateLimits.Settings;
+using OrchardCore.Settings;
 using OrchardCore.Users.Endpoints.EmailAuthenticator;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.RateLimits;
@@ -71,12 +74,45 @@ public class RateLimiterOptionsConfigurationsTests
         Assert.False(secondLease.IsAcquired);
     }
 
+    [Fact]
+    public async Task ShouldNotApplyGlobalLimitWhenDisabledInSiteSettings()
+    {
+        var cancellationToken = TestContext.Current.CancellationToken;
+        var globalOptions = Options.Create(new GlobalRateLimitOptions
+        {
+            PermitLimit = 1,
+        });
+
+        var options = Configure(
+            globalOptions,
+            Options.Create(new RateLimitsOptions()),
+            new RateLimitsSettings
+            {
+                EnableGlobalRateLimiter = false,
+            });
+
+        using var firstLease = await options.GlobalLimiter.AcquireAsync(CreateHttpContext("AnyRoute", HttpMethods.Get), 1, cancellationToken);
+        using var secondLease = await options.GlobalLimiter.AcquireAsync(CreateHttpContext("AnyRoute", HttpMethods.Get), 1, cancellationToken);
+
+        Assert.True(firstLease.IsAcquired);
+        Assert.True(secondLease.IsAcquired);
+    }
+
     private static RateLimiterOptions Configure(
         IOptions<GlobalRateLimitOptions> globalOptions,
-        IOptions<RateLimitsOptions> rateLimitsOptions)
+        IOptions<RateLimitsOptions> rateLimitsOptions,
+        RateLimitsSettings settings = null)
     {
+        var siteSettings = new SiteSettings();
+
+        if (settings != null)
+        {
+            siteSettings.Put(settings);
+        }
+
+        var siteService = Mock.Of<ISiteService>(service => service.GetSiteSettingsAsync() == Task.FromResult<ISite>(siteSettings));
         var options = new RateLimiterOptions();
-        new RateLimiterOptionsConfigurations(globalOptions, rateLimitsOptions).Configure(options);
+        new RateLimiterOptionsConfigurations(globalOptions, rateLimitsOptions, siteService).Configure(options);
         return options;
     }
 
