@@ -1833,6 +1833,14 @@
 });
 
 
+function getTenantName() {
+    return document.documentElement.getAttribute('data-tenant') || 'default';
+}
+
+function getTenantStorageKey(key) {
+    return getTenantName() + '-' + key;
+}
+
 // <upload> component
 Vue.component('upload', {
     template: '\
@@ -2810,12 +2818,14 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                         self.selectedMedias = [];
                     });
 
-                    if (!localStorage.getItem('mediaApplicationPrefs')) {
+                    var mediaApplicationPrefsKey = getTenantStorageKey('mediaApplicationPrefs');
+
+                    if (!localStorage.getItem(mediaApplicationPrefsKey)) {
                         self.selectedFolder = root;
                         return;
                     }
 
-                    self.currentPrefs = JSON.parse(localStorage.getItem('mediaApplicationPrefs'));
+                    self.currentPrefs = JSON.parse(localStorage.getItem(mediaApplicationPrefsKey));
                 },
                 computed: {
                     isHome: function () {
@@ -2895,7 +2905,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                 },
                 watch: {
                     currentPrefs: function (newPrefs) {
-                        localStorage.setItem('mediaApplicationPrefs', JSON.stringify(newPrefs));
+                        localStorage.setItem(getTenantStorageKey('mediaApplicationPrefs'), JSON.stringify(newPrefs));
                     },
                     selectedFolder: function (newFolder) {
                         this.mediaFilter = '';
@@ -3442,7 +3452,7 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
         created: function () {
             var self = this;
 
-            self.currentPrefs = JSON.parse(localStorage.getItem('mediaFieldPrefs'));
+            self.currentPrefs = JSON.parse(localStorage.getItem(getTenantStorageKey('mediaFieldPrefs')));
         },
         computed: {
             paths: {
@@ -3782,7 +3792,7 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
                 }
             },
             currentPrefs: function (newPrefs) {
-                localStorage.setItem('mediaFieldPrefs', JSON.stringify(newPrefs));
+                localStorage.setItem(getTenantStorageKey('mediaFieldPrefs'), JSON.stringify(newPrefs));
             }
         }
     }));
@@ -3790,6 +3800,10 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
 
 
 const MEDIA_FIELD_GALLERY = "mediaFieldGallery_";
+
+function getMediaFieldGalleryStorageKey(idPrefix) {
+    return getTenantStorageKey(MEDIA_FIELD_GALLERY + idPrefix);
+}
 
 Vue.component("mediaFieldGalleryListItem", {
     template:
@@ -4122,13 +4136,15 @@ Vue.component("mediaFieldGalleryContainer", {
     },
     methods: {
         getLocalStorageState: function getLocalStorageState() {
-            if (localStorage.getItem(MEDIA_FIELD_GALLERY + this.idPrefix)) {
+            const key = getMediaFieldGalleryStorageKey(this.idPrefix);
+
+            if (localStorage.getItem(key)) {
                 try {
-                    const state = JSON.parse(localStorage.getItem(MEDIA_FIELD_GALLERY + this.idPrefix));
+                    const state = JSON.parse(localStorage.getItem(key));
                     this.size = state.size || "lg";
                     this.gridView = !this.allowMultiple ? true : state.gridView ?? false;
                 } catch (e) {
-                    localStorage.removeItem(MEDIA_FIELD_GALLERY + this.idPrefix);
+                    localStorage.removeItem(key);
                 }
             }
         },
@@ -4137,7 +4153,7 @@ Vue.component("mediaFieldGalleryContainer", {
                 size: this.size,
                 gridView: this.gridView,
             });
-            localStorage.setItem(MEDIA_FIELD_GALLERY + this.idPrefix, parsed);
+            localStorage.setItem(getMediaFieldGalleryStorageKey(this.idPrefix), parsed);
         },
         initSortable: function initSortable() {
             if (this.allowMultiple && this.$refs.mediaContainer && this.mediaItemsNoDuplicates.length > 0) {
@@ -4281,7 +4297,7 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple,
         created: function () {
             var self = this;
 
-            self.currentPrefs = JSON.parse(localStorage.getItem('mediaFieldPrefs'));
+            self.currentPrefs = JSON.parse(localStorage.getItem(getTenantStorageKey('mediaFieldPrefs')));
         },
         computed: {
             paths: {
@@ -4538,7 +4554,7 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple,
                 }
             },            
             currentPrefs: function (newPrefs) {
-                localStorage.setItem('mediaFieldPrefs', JSON.stringify(newPrefs));
+                localStorage.setItem(getTenantStorageKey('mediaFieldPrefs'), JSON.stringify(newPrefs));
             }
         }
     }));
