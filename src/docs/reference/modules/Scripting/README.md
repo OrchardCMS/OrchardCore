@@ -121,7 +121,7 @@ var plainText = decrypt(encryptedValue);
 | `isHomepage(): Boolean`          | Returns true if the current request Url is the current homepage                                                                      |
 | `isAnonymous(): Boolean`         | Returns true if there is no authenticated user on the current request                                                                |
 | `isAuthenticated(): Boolean`     | Returns true if there is an authenticated user on the current request                                                                |
-| `url(url: String): Boolean`      | Returns true if the current url matches the provided url. Add a `*` to the end of the url parameter to match any url that start with |
+| `url(url: String): Boolean`      | Returns true if the current URL matches the provided URL. Add a `*` to the end of the URL parameter to match any URL that starts with the provided value. |
 | `culture(name: String): Boolean` | Returns true if the current culture name or the current culture's parent name matches the `name` argument                            |
 
 #### Queries (`OrchardCore.Queries`)

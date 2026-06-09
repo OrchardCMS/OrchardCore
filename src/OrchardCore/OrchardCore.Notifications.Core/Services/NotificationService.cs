@@ -48,7 +48,7 @@ public class NotificationService : INotificationService
         {
             await _notificationEvents.InvokeAsync((handler, service, context, token) => handler.SendingAsync(service, context, token), provider, notificationContext, cancellationToken, _logger);
 
-            var result = await provider.TrySendAsync(notify, message, cancellationToken);
+            var result = await provider.SendAsync(notify, message, cancellationToken);
 
             if (result.Succeeded)
             {
