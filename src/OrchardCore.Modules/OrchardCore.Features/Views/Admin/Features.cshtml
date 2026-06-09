@@ -314,8 +314,8 @@
         function applyFilters() {
             const search = (searchBox?.value ?? '').trim().toLowerCase();
             const selectedVisibility = Array.from(visibilityFilter?.selectedOptions ?? []).map((opt) => opt.value);
-            const hideOnDemandFeatures = selectedVisibility.includes('on-demand');
-            const hideAlwaysEnabledFeatures = selectedVisibility.includes('always-enabled');
+            const hideOnDemandFeatures = !selectedVisibility.includes('on-demand');
+            const hideAlwaysEnabledFeatures = !selectedVisibility.includes('always-enabled');
             const selectedStatus = statusFilter?.value ?? 'any';
 
             featureItems.forEach((featureItem) => {
