@@ -139,29 +139,29 @@ public sealed class Startup : Modules.StartupBase
     }
 }
 
-[Feature("OrchardCore.Media.Azure.ImageSharpImageCache")]
-public sealed class ImageSharpAzureBlobCacheStartup : Modules.StartupBase
+[Feature("OrchardCore.Media.Azure.ImageCache")]
+public sealed class MediaAzureImageCacheStartup : Modules.StartupBase
 {
     private readonly IShellConfiguration _configuration;
     private readonly ILogger _logger;
 
-    public ImageSharpAzureBlobCacheStartup(
+    public MediaAzureImageCacheStartup(
         IShellConfiguration configuration,
-        ILogger<ImageSharpAzureBlobCacheStartup> logger)
+        ILogger<MediaAzureImageCacheStartup> logger)
     {
         _configuration = configuration;
         _logger = logger;
     }
 
     public override int Order
-        => OrchardCoreConstants.ConfigureOrder.AzureImageSharpCache;
+        => OrchardCoreConstants.ConfigureOrder.AzureResizedImageCache;
 
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddTransient<IConfigureOptions<ImageSharpBlobImageCacheOptions>, ImageSharpBlobImageCacheOptionsConfiguration>();
+        services.AddTransient<IConfigureOptions<MediaBlobImageCacheOptions>, MediaBlobImageCacheOptionsConfiguration>();
 
         // Only replace the default local cache implementation if options are valid.
-        var section = _configuration.GetSection("OrchardCore_Media_Azure_ImageSharp_Cache");
+        var section = _configuration.GetSection("OrchardCore_Media_Azure_Image_Cache");
         var connectionString = section.GetValue<string>(nameof(MediaBlobStorageOptions.ConnectionString));
         var containerName = section.GetValue<string>(nameof(MediaBlobStorageOptions.ContainerName));
 
@@ -172,7 +172,7 @@ public sealed class ImageSharpAzureBlobCacheStartup : Modules.StartupBase
 
         services.Replace(ServiceDescriptor.Singleton<IResizedImageCache, AzureBlobResizedImageCache>());
 
-        services.AddScoped<IModularTenantEvents, ImageSharpBlobImageCacheTenantEvents>();
+        services.AddScoped<IModularTenantEvents, MediaBlobImageCacheTenantEvents>();
     }
 
     private bool CheckOptions(string connectionString, string containerName)

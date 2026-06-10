@@ -137,28 +137,28 @@ public sealed class Startup : Modules.StartupBase
         => PathExtensions.Combine(hostingEnvironment.WebRootPath, shellSettings.Name, assetsPath);
 }
 
-[Feature("OrchardCore.Media.AmazonS3.ImageSharpImageCache")]
-public sealed class ImageSharpAmazonS3CacheStartup : Modules.StartupBase
+[Feature("OrchardCore.Media.AmazonS3.ImageCache")]
+public sealed class MediaAmazonS3ImageCacheStartup : Modules.StartupBase
 {
     private readonly IShellConfiguration _configuration;
     private readonly ILogger _logger;
 
-    public ImageSharpAmazonS3CacheStartup(
+    public MediaAmazonS3ImageCacheStartup(
         IShellConfiguration configuration,
-        ILogger<ImageSharpAmazonS3CacheStartup> logger)
+        ILogger<MediaAmazonS3ImageCacheStartup> logger)
     {
         _configuration = configuration;
         _logger = logger;
     }
 
     public override int Order
-        => OrchardCoreConstants.ConfigureOrder.ImageSharpCache;
+        => OrchardCoreConstants.ConfigureOrder.ResizedImageCache;
 
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddTransient<IConfigureOptions<AwsImageSharpImageCacheOptions>, AwsImageSharpImageCacheOptionsConfiguration>();
+        services.AddTransient<IConfigureOptions<AwsMediaImageCacheOptions>, AwsMediaImageCacheOptionsConfiguration>();
 
-        var storeOptions = new AwsStorageOptions().BindConfiguration(AmazonS3Constants.ConfigSections.AmazonS3ImageSharpCache, _configuration, _logger);
+        var storeOptions = new AwsStorageOptions().BindConfiguration(AmazonS3Constants.ConfigSections.AmazonS3ImageCache, _configuration, _logger);
         var validationErrors = storeOptions.Validate().ToList();
         var stringBuilder = new StringBuilder();
 
@@ -181,7 +181,7 @@ public sealed class ImageSharpAmazonS3CacheStartup : Modules.StartupBase
 
             services.Replace(ServiceDescriptor.Singleton<IResizedImageCache, AWSS3ResizedImageCache>());
 
-            services.AddScoped<IModularTenantEvents, ImageSharpS3ImageCacheBucketTenantEvents>();
+            services.AddScoped<IModularTenantEvents, AwsS3MediaImageCacheTenantEvents>();
         }
     }
 }

@@ -20,11 +20,11 @@ internal sealed class AzureBlobResizedImageCache : IResizedImageCache
         (".bmp",  "image/bmp"),
     ];
 
-    private readonly ImageSharpBlobImageCacheOptions _options;
+    private readonly MediaBlobImageCacheOptions _options;
     private readonly ILogger _logger;
 
     public AzureBlobResizedImageCache(
-        IOptions<ImageSharpBlobImageCacheOptions> options,
+        IOptions<MediaBlobImageCacheOptions> options,
         ILogger<AzureBlobResizedImageCache> logger)
     {
         _options = options.Value;

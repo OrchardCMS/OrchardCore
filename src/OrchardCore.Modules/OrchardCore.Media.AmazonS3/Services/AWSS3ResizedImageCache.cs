@@ -20,12 +20,12 @@ internal sealed class AWSS3ResizedImageCache : IResizedImageCache
         (".bmp",  "image/bmp"),
     ];
 
-    private readonly AwsImageSharpImageCacheOptions _options;
+    private readonly AwsMediaImageCacheOptions _options;
     private readonly IAmazonS3 _s3Client;
     private readonly ILogger _logger;
 
     public AWSS3ResizedImageCache(
-        IOptions<AwsImageSharpImageCacheOptions> options,
+        IOptions<AwsMediaImageCacheOptions> options,
         IAmazonS3 s3Client,
         ILogger<AWSS3ResizedImageCache> logger)
     {
