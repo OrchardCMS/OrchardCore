@@ -43,25 +43,27 @@ public sealed class MenuPartDisplayDriver : ContentPartDisplayDriver<MenuPart>
                 .Where(t => t.StereotypeEquals("MenuItem"))
                 .ToArray();
 
-            var notify = false;
-
             var menuItems = part.ContentItem.TryGet<MenuItemsListPart>(out var menuItemsListPart)
                 ? menuItemsListPart.MenuItems
                 : [];
+            var invalidMenuItemDescriptions = new List<string>();
 
             foreach (var menuItem in menuItems)
             {
                 if (!menuItemContentTypes.Any(c => c.Name == menuItem.ContentType))
                 {
                     _logger.LogWarning("The menu item content item with id {ContentItemId} has no matching {ContentType} content type definition.", menuItem.ContentItem.ContentItemId, menuItem.ContentItem.ContentType);
-                    await _notifier.WarningAsync(H["The menu item content item with id {0} has no matching {1} content type definition.", menuItem.ContentItem.ContentItemId, menuItem.ContentItem.ContentType]);
-                    notify = true;
+                    invalidMenuItemDescriptions.Add($"{menuItem.ContentItem.ContentItemId} ({menuItem.ContentType})");
                 }
             }
 
-            if (notify)
+            if (invalidMenuItemDescriptions.Count > 0)
             {
-                await _notifier.WarningAsync(H["Publishing this content item may erase created content. Fix any content type issues beforehand."]);
+                await _notifier.WarningAsync(H.Plural(
+                    invalidMenuItemDescriptions.Count,
+                    "The menu item content item {1} has no matching content type definition. Publishing this content item may erase created content. Fix any content type issues beforehand.",
+                    "The following menu item content items have no matching content type definitions: {1}. Publishing these content items may erase created content. Fix any content type issues beforehand.",
+                    string.Join(", ", invalidMenuItemDescriptions)));
             }
 
             model.MenuPart = part;
