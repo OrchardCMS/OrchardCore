@@ -36,7 +36,10 @@ internal sealed class AWSS3ResizedImageCache : IResizedImageCache
 
     public async Task<(Stream Content, string ContentType)?> GetAsync(string cacheKey, CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrEmpty(_options.BucketName)) return null;
+        if (string.IsNullOrEmpty(_options.BucketName))
+        {
+            return null;
+        }
 
         foreach (var (ext, contentType) in _formats)
         {
@@ -62,7 +65,10 @@ internal sealed class AWSS3ResizedImageCache : IResizedImageCache
 
     public async Task SetAsync(string cacheKey, Stream image, string contentType, TimeSpan maxAge, CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrEmpty(_options.BucketName)) return;
+        if (string.IsNullOrEmpty(_options.BucketName))
+        {
+            return;
+        }
 
         var ext = ContentTypeToExtension(contentType);
         var key = GetObjectKey(cacheKey, ext);
@@ -88,7 +94,10 @@ internal sealed class AWSS3ResizedImageCache : IResizedImageCache
 
     public async Task ClearAsync(CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrEmpty(_options.BucketName)) return;
+        if (string.IsNullOrEmpty(_options.BucketName))
+        {
+            return;
+        }
 
         try
         {
@@ -129,7 +138,10 @@ internal sealed class AWSS3ResizedImageCache : IResizedImageCache
 
     public async Task ClearStaleAsync(TimeSpan maxAge, CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrEmpty(_options.BucketName)) return;
+        if (string.IsNullOrEmpty(_options.BucketName))
+        {
+            return;
+        }
 
         var cutoff = DateTime.UtcNow - maxAge;
         var prefix = string.IsNullOrEmpty(_options.BasePath) ? string.Empty : _options.BasePath.TrimEnd('/') + '/';

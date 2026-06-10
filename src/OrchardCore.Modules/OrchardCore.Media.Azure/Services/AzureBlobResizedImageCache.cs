@@ -33,7 +33,10 @@ internal sealed class AzureBlobResizedImageCache : IResizedImageCache
 
     public async Task<(Stream Content, string ContentType)?> GetAsync(string cacheKey, CancellationToken cancellationToken = default)
     {
-        if (!_options.IsConfigured()) return null;
+        if (!_options.IsConfigured())
+        {
+            return null;
+        }
 
         var container = GetContainerClient();
         foreach (var (ext, contentType) in _formats)
@@ -61,7 +64,10 @@ internal sealed class AzureBlobResizedImageCache : IResizedImageCache
 
     public async Task SetAsync(string cacheKey, Stream image, string contentType, TimeSpan maxAge, CancellationToken cancellationToken = default)
     {
-        if (!_options.IsConfigured()) return;
+        if (!_options.IsConfigured())
+        {
+            return;
+        }
 
         var ext = ContentTypeToExtension(contentType);
         var blobName = GetBlobName(cacheKey, ext);
@@ -85,7 +91,10 @@ internal sealed class AzureBlobResizedImageCache : IResizedImageCache
 
     public async Task ClearAsync(CancellationToken cancellationToken = default)
     {
-        if (!_options.IsConfigured()) return;
+        if (!_options.IsConfigured())
+        {
+            return;
+        }
 
         try
         {
@@ -104,7 +113,10 @@ internal sealed class AzureBlobResizedImageCache : IResizedImageCache
 
     public async Task ClearStaleAsync(TimeSpan maxAge, CancellationToken cancellationToken = default)
     {
-        if (!_options.IsConfigured()) return;
+        if (!_options.IsConfigured())
+        {
+            return;
+        }
 
         var cutoff = DateTimeOffset.UtcNow - maxAge;
         try

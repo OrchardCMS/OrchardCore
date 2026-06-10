@@ -72,7 +72,9 @@ internal sealed class MediaImageProcessingMiddleware : IMiddleware
 
         // If the format is not explicitly requested, default to the source file's format.
         if (string.IsNullOrEmpty(commands.Format))
+        {
             commands.Format = ExtensionToFormat(ext);
+        }
 
         var cacheKey = PhysicalFileSystemResizedImageCache.ComputeCacheKey(
             _shellSettings.Name,
@@ -83,7 +85,7 @@ internal sealed class MediaImageProcessingMiddleware : IMiddleware
         var cached = await _cache.GetAsync(cacheKey, context.RequestAborted);
         if (cached.HasValue)
         {
-            await ServeAsync(context, cached.Value.Content, cached.Value.ContentType, mediaOptions, isNewResult: false);
+            await ServeAsync(context, cached.Value.Content, cached.Value.ContentType, mediaOptions);
             return;
         }
 
@@ -121,11 +123,11 @@ internal sealed class MediaImageProcessingMiddleware : IMiddleware
                 context.RequestAborted);
 
             result.Output.Position = 0;
-            await ServeAsync(context, result.Output, result.ContentType, mediaOptions, isNewResult: true);
+            await ServeAsync(context, result.Output, result.ContentType, mediaOptions);
         }
     }
 
-    private static async Task ServeAsync(HttpContext context, Stream content, string contentType, MediaOptions options, bool isNewResult)
+    private static async Task ServeAsync(HttpContext context, Stream content, string contentType, MediaOptions options)
     {
         var response = context.Response;
         response.ContentType = contentType;
@@ -140,7 +142,9 @@ internal sealed class MediaImageProcessingMiddleware : IMiddleware
         response.Headers.CacheControl = cacheControl;
 
         if (content.CanSeek)
+        {
             response.ContentLength = content.Length - content.Position;
+        }
 
         await content.CopyToAsync(response.Body, context.RequestAborted);
     }

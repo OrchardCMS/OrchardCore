@@ -25,7 +25,9 @@ internal sealed class MediaCommandParser
     {
         var query = context.Request.Query;
         if (query.Count == 0)
+        {
             return null;
+        }
 
         var commands = new MediaCommands();
         var rawCommandPairs = new List<KeyValuePair<string, string>>(query.Count);
@@ -52,11 +54,15 @@ internal sealed class MediaCommandParser
 
         // Nothing useful was parsed.
         if (rawCommandPairs.Count == 0 && string.IsNullOrEmpty(versionValue))
+        {
             return null;
+        }
 
         // Only a version command → no processing, just cache-busting.
         if (rawCommandPairs.Count == 0 && !string.IsNullOrEmpty(versionValue))
+        {
             return null;
+        }
 
         var mediaOptions = _mediaOptions.Value;
 
@@ -92,7 +98,9 @@ internal sealed class MediaCommandParser
 
         // Default to max mode when no mode is specified.
         if (string.IsNullOrEmpty(commands.ResizeMode))
+        {
             commands.ResizeMode = "max";
+        }
 
         // Return null if no meaningful processing remains after validation.
         if (string.IsNullOrEmpty(commands.Width) &&

@@ -43,7 +43,9 @@ internal sealed class PhysicalFileSystemResizedImageCache : IResizedImageCache
         {
             var path = Path.Combine(dir, cacheKey + ext);
             if (!File.Exists(path))
+            {
                 continue;
+            }
 
             try
             {
@@ -74,14 +76,18 @@ internal sealed class PhysicalFileSystemResizedImageCache : IResizedImageCache
         catch (IOException ex)
         {
             if (_logger.IsEnabled(LogLevel.Warning))
+            {
                 _logger.LogWarning(ex, "Could not write resized image cache entry at '{Path}'.", path);
+            }
         }
     }
 
     public Task ClearAsync(CancellationToken cancellationToken = default)
     {
         if (!Directory.Exists(_cacheRoot))
+        {
             return Task.CompletedTask;
+        }
 
         try
         {
@@ -98,7 +104,9 @@ internal sealed class PhysicalFileSystemResizedImageCache : IResizedImageCache
     public Task ClearStaleAsync(TimeSpan maxAge, CancellationToken cancellationToken = default)
     {
         if (!Directory.Exists(_cacheRoot))
+        {
             return Task.CompletedTask;
+        }
 
         var cutoff = DateTime.UtcNow - maxAge;
 
@@ -107,13 +115,17 @@ internal sealed class PhysicalFileSystemResizedImageCache : IResizedImageCache
             foreach (var file in Directory.EnumerateFiles(_cacheRoot, "*", _enumOptions))
             {
                 if (cancellationToken.IsCancellationRequested)
+                {
                     break;
+                }
 
                 try
                 {
                     var info = new FileInfo(file);
                     if (info.Exists && info.LastWriteTimeUtc < cutoff)
+                    {
                         info.Delete();
+                    }
                 }
                 catch (IOException)
                 {
