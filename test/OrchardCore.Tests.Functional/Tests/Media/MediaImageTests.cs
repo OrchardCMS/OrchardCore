@@ -67,7 +67,7 @@ public sealed class MediaImageTests : CmsTestBase<BlogFixture>, IClassFixture<Bl
 
         foreach (var src in srcs)
         {
-            Assert.Contains("token=", src,
+            Assert.True(src.Contains("token=", StringComparison.Ordinal),
                 $"Image URL rendered with resize params must include a security token: {src}");
         }
     }
@@ -97,7 +97,7 @@ public sealed class MediaImageTests : CmsTestBase<BlogFixture>, IClassFixture<Bl
             Assert.NotNull(response);
             Assert.True(response!.Ok,
                 $"Expected resized image URL to return HTTP 200, got {response.Status}: {src}");
-            Assert.StartsWith("image/", response.Headers.GetValueOrDefault("content-type", ""),
+            Assert.True(response.Headers.GetValueOrDefault("content-type", "").StartsWith("image/", StringComparison.OrdinalIgnoreCase),
                 $"Expected image content-type for {src}");
             await imgPage.CloseAsync();
         }
