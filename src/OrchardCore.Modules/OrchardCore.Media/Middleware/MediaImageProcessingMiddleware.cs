@@ -1,9 +1,11 @@
 #nullable enable
 
+using System.Globalization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Media.Core.Processing;
 using OrchardCore.Media.Models;
 using OrchardCore.Media.Processing;
 using OrchardCore.Media.Services;
@@ -85,7 +87,9 @@ internal sealed class MediaImageProcessingMiddleware : IMiddleware
 
         // The output format is fully determined here, so the cache file extension and content type
         // are known before the cache lookup.
-        var fileExtension = MediaResizingConstants.ContentTypeToExtension(FormatToContentType(commands.Format));
+        var format = MediaResizingConstants.ParseFormat(commands.Format);
+        var contentType = MediaResizingConstants.FormatToContentType(format);
+        var fileExtension = MediaResizingConstants.ContentTypeToExtension(contentType);
 
         // Include the optional version token ("v") in the cache key so that replacing the source
         // file (which changes the version) produces a new cache entry instead of serving a stale
@@ -123,8 +127,9 @@ internal sealed class MediaImageProcessingMiddleware : IMiddleware
         ImageProcessingResult result;
         try
         {
+            var engineCommands = BuildEngineCommands(commands, format);
             using var source = fileInfo.CreateReadStream();
-            result = await _engine.ProcessAsync(source, commands, context.RequestAborted);
+            result = await _engine.ProcessAsync(source, engineCommands, context.RequestAborted);
         }
         catch (Exception ex)
         {
@@ -188,11 +193,64 @@ internal sealed class MediaImageProcessingMiddleware : IMiddleware
         _      => "jpg",
     };
 
-    private static string FormatToContentType(string? format) => format?.ToLowerInvariant() switch
+    // Maps the validated, string-based request commands to the engine-agnostic, typed command set
+    // consumed by IImageProcessingEngine. Parsing happens once here so engines never touch raw
+    // query values.
+    private static ImageProcessingCommands BuildEngineCommands(MediaCommands commands, Format format)
     {
-        "png"  => MediaResizingConstants.PngContentType,
-        "gif"  => MediaResizingConstants.GifContentType,
-        "webp" => MediaResizingConstants.WebpContentType,
-        _      => MediaResizingConstants.JpegContentType,
-    };
+        var engineCommands = new ImageProcessingCommands
+        {
+            Format = format,
+            BackgroundColor = string.IsNullOrEmpty(commands.BackgroundColor) ? null : commands.BackgroundColor,
+            AutoOrient = !string.Equals(commands.AutoOrient, "false", StringComparison.OrdinalIgnoreCase),
+        };
+
+        if (int.TryParse(commands.Width, NumberStyles.Integer, CultureInfo.InvariantCulture, out var width) && width > 0)
+        {
+            engineCommands.Width = width;
+        }
+
+        if (int.TryParse(commands.Height, NumberStyles.Integer, CultureInfo.InvariantCulture, out var height) && height > 0)
+        {
+            engineCommands.Height = height;
+        }
+
+        if (int.TryParse(commands.Quality, NumberStyles.Integer, CultureInfo.InvariantCulture, out var quality))
+        {
+            engineCommands.Quality = quality;
+        }
+
+        if (Enum.TryParse<ResizeMode>(commands.ResizeMode, ignoreCase: true, out var mode))
+        {
+            engineCommands.ResizeMode = mode;
+        }
+
+        var (focalX, focalY) = ParseFocalPoint(commands.ResizeFocalPoint);
+        engineCommands.FocalPointX = focalX;
+        engineCommands.FocalPointY = focalY;
+
+        return engineCommands;
+    }
+
+    private static (float? X, float? Y) ParseFocalPoint(string? focalPoint)
+    {
+        if (string.IsNullOrEmpty(focalPoint))
+        {
+            return (null, null);
+        }
+
+        var comma = focalPoint.IndexOf(',');
+        if (comma < 1)
+        {
+            return (null, null);
+        }
+
+        if (float.TryParse(focalPoint.AsSpan(0, comma), NumberStyles.Float, CultureInfo.InvariantCulture, out var x) &&
+            float.TryParse(focalPoint.AsSpan(comma + 1), NumberStyles.Float, CultureInfo.InvariantCulture, out var y))
+        {
+            return (Math.Clamp(x, 0f, 1f), Math.Clamp(y, 0f, 1f));
+        }
+
+        return (null, null);
+    }
 }

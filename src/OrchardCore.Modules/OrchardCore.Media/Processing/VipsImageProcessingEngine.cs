@@ -1,12 +1,13 @@
 #nullable enable
 
-using System.Globalization;
 using NetVips;
 using OrchardCore.Media.Core.Processing;
-using OrchardCore.Media.Models;
 
 namespace OrchardCore.Media.Processing;
 
+/// <summary>
+/// The default <see cref="IImageProcessingEngine"/>, backed by libvips through NetVips.
+/// </summary>
 internal sealed class VipsImageProcessingEngine : IImageProcessingEngine
 {
     // Used as an "unbounded" axis when only one dimension is constrained. Media dimensions
@@ -15,7 +16,7 @@ internal sealed class VipsImageProcessingEngine : IImageProcessingEngine
 
     public Task<ImageProcessingResult> ProcessAsync(
         Stream input,
-        MediaCommands commands,
+        ImageProcessingCommands commands,
         CancellationToken cancellationToken = default)
     {
         var buffer = ReadAllBytes(input);
@@ -24,13 +25,11 @@ internal sealed class VipsImageProcessingEngine : IImageProcessingEngine
         return Task.Run(() => Process(buffer, commands), cancellationToken);
     }
 
-    private static ImageProcessingResult Process(byte[] buffer, MediaCommands commands)
+    private static ImageProcessingResult Process(byte[] buffer, ImageProcessingCommands commands)
     {
-        int.TryParse(commands.Width, NumberStyles.Integer, CultureInfo.InvariantCulture, out var width);
-        int.TryParse(commands.Height, NumberStyles.Integer, CultureInfo.InvariantCulture, out var height);
-
-        // Auto-orientation is on by default; it can be disabled with autoorient=false.
-        var autoOrient = !string.Equals(commands.AutoOrient, "false", StringComparison.OrdinalIgnoreCase);
+        var width = commands.Width ?? 0;
+        var height = commands.Height ?? 0;
+        var autoOrient = commands.AutoOrient;
 
         var (formatString, contentType) = ResolveFormat(commands);
 
@@ -45,7 +44,7 @@ internal sealed class VipsImageProcessingEngine : IImageProcessingEngine
         };
     }
 
-    private static Image Resize(byte[] buffer, MediaCommands commands, int width, int height, bool autoOrient)
+    private static Image Resize(byte[] buffer, ImageProcessingCommands commands, int width, int height, bool autoOrient)
     {
         if (width == 0 && height == 0)
         {
@@ -54,14 +53,10 @@ internal sealed class VipsImageProcessingEngine : IImageProcessingEngine
             return autoOrient ? source.Autorot() : source.Copy();
         }
 
-        var mode = Enum.TryParse<ResizeMode>(commands.ResizeMode, ignoreCase: true, out var m)
-            ? m
-            : ResizeMode.Max;
-
-        return mode switch
+        return commands.ResizeMode switch
         {
             ResizeMode.Stretch => ApplyStretch(buffer, width, height, autoOrient),
-            ResizeMode.Crop    => ApplyCrop(buffer, width, height, commands.ResizeFocalPoint, autoOrient),
+            ResizeMode.Crop    => ApplyCrop(buffer, width, height, commands.FocalPointX, commands.FocalPointY, autoOrient),
             ResizeMode.Pad     => ApplyPad(buffer, width, height, commands.BackgroundColor, autoOrient, boxPad: false),
             ResizeMode.BoxPad  => ApplyPad(buffer, width, height, commands.BackgroundColor, autoOrient, boxPad: true),
             ResizeMode.Min     => ApplyMax(buffer, width, height, autoOrient),
@@ -110,11 +105,11 @@ internal sealed class VipsImageProcessingEngine : IImageProcessingEngine
             kernel: Enums.Kernel.Lanczos3);
     }
 
-    private static Image ApplyCrop(byte[] buffer, int width, int height, string? focalPoint, bool autoOrient)
+    private static Image ApplyCrop(byte[] buffer, int width, int height, float? focalX, float? focalY, bool autoOrient)
     {
         // Fast path: both dimensions known and a centered crop — let libvips cover-and-crop
         // during shrink-on-load.
-        if (width > 0 && height > 0 && string.IsNullOrEmpty(focalPoint))
+        if (width > 0 && height > 0 && focalX is null && focalY is null)
         {
             return Image.ThumbnailBuffer(
                 buffer,
@@ -139,7 +134,8 @@ internal sealed class VipsImageProcessingEngine : IImageProcessingEngine
         var cropW = Math.Min(targetWidth, scaled.Width);
         var cropH = Math.Min(targetHeight, scaled.Height);
 
-        var (fx, fy) = ParseFocalPoint(focalPoint);
+        var fx = Math.Clamp(focalX ?? 0.5f, 0f, 1f);
+        var fy = Math.Clamp(focalY ?? 0.5f, 0f, 1f);
         var left = (int)(fx * scaled.Width - cropW / 2.0);
         var top = (int)(fy * scaled.Height - cropH / 2.0);
 
@@ -184,28 +180,6 @@ internal sealed class VipsImageProcessingEngine : IImageProcessingEngine
         return thumb.Embed(x, y, canvasWidth, canvasHeight, extend: Enums.Extend.Background, background: background);
     }
 
-    private static (float x, float y) ParseFocalPoint(string? fp)
-    {
-        if (string.IsNullOrEmpty(fp))
-        {
-            return (0.5f, 0.5f);
-        }
-
-        var comma = fp.IndexOf(',');
-        if (comma < 1)
-        {
-            return (0.5f, 0.5f);
-        }
-
-        if (float.TryParse(fp.AsSpan(0, comma), NumberStyles.Float, CultureInfo.InvariantCulture, out var x) &&
-            float.TryParse(fp.AsSpan(comma + 1), NumberStyles.Float, CultureInfo.InvariantCulture, out var y))
-        {
-            return (Math.Clamp(x, 0f, 1f), Math.Clamp(y, 0f, 1f));
-        }
-
-        return (0.5f, 0.5f);
-    }
-
     // Builds a background pixel matching the image's band layout so Embed never fails on
     // grayscale (1), grayscale+alpha (2), RGB (3) or RGBA (4) images.
     private static double[] BuildBackground(string? hex, int bands)
@@ -244,20 +218,20 @@ internal sealed class VipsImageProcessingEngine : IImageProcessingEngine
             Convert.ToInt32(hex[4..6], 16));
     }
 
-    private static (string FormatString, string ContentType) ResolveFormat(MediaCommands commands)
+    private static (string FormatString, string ContentType) ResolveFormat(ImageProcessingCommands commands)
     {
-        int.TryParse(commands.Quality, NumberStyles.Integer, CultureInfo.InvariantCulture, out var quality);
+        var quality = commands.Quality ?? 0;
         if (quality is <= 0 or > 100)
         {
             quality = 85;
         }
 
-        return commands.Format?.ToLowerInvariant() switch
+        return commands.Format switch
         {
-            "png"  => (".png", MediaResizingConstants.PngContentType),
-            "gif"  => (".gif", MediaResizingConstants.GifContentType),
-            "webp" => ($".webp[Q={quality}]", MediaResizingConstants.WebpContentType),
-            _      => ($".jpg[Q={quality}]", MediaResizingConstants.JpegContentType),
+            Format.Png  => (".png", MediaResizingConstants.PngContentType),
+            Format.Gif  => (".gif", MediaResizingConstants.GifContentType),
+            Format.WebP => ($".webp[Q={quality}]", MediaResizingConstants.WebpContentType),
+            _           => ($".jpg[Q={quality}]", MediaResizingConstants.JpegContentType),
         };
     }
 

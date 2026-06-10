@@ -1,3 +1,5 @@
+using OrchardCore.Media.Core.Processing;
+
 namespace OrchardCore.Media;
 
 /// <summary>
@@ -11,6 +13,31 @@ public static class MediaResizingConstants
     public const string PngContentType = "image/png";
     public const string WebpContentType = "image/webp";
     public const string GifContentType = "image/gif";
+
+    /// <summary>
+    /// Parses a requested format name (for example <c>png</c> or <c>webp</c>) into a
+    /// <see cref="Format"/>. Unknown or unsupported names return <see cref="Format.Undefined"/>,
+    /// which engines treat as the default JPEG output.
+    /// </summary>
+    public static Format ParseFormat(string format) => format?.ToLowerInvariant() switch
+    {
+        "png" => Format.Png,
+        "gif" => Format.Gif,
+        "webp" => Format.WebP,
+        "jpg" or "jpeg" => Format.Jpg,
+        _ => Format.Undefined,
+    };
+
+    /// <summary>
+    /// Maps an output <see cref="Format"/> to its content type. Unsupported formats fall back to JPEG.
+    /// </summary>
+    public static string FormatToContentType(Format format) => format switch
+    {
+        Format.Png => PngContentType,
+        Format.WebP => WebpContentType,
+        Format.Gif => GifContentType,
+        _ => JpegContentType,
+    };
 
     /// <summary>
     /// Maps a resized-image content type to the file extension (including the leading dot) used
