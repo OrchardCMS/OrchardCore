@@ -62,7 +62,7 @@ public sealed class MenuPartDisplayDriver : ContentPartDisplayDriver<MenuPart>
                 await _notifier.WarningAsync(H.Plural(
                     invalidMenuItemDescriptions.Count,
                     "The menu item content item {1} has no matching content type definition. Publishing this content item may erase created content. Fix any content type issues beforehand.",
-                    "The following menu item content items have no matching content type definitions: {1}. Publishing this content item may erase created content. Fix any content type issues beforehand.",
+                    "The following menu item content items have no matching content type definitions: {1}. Publishing these content items may erase created content. Fix any content type issues beforehand.",
                     string.Join(", ", invalidMenuItemDescriptions)));
             }
 
