@@ -113,7 +113,7 @@ worldwide, and each of these will maintain their own cache, so while a local CDN
 another PoP may not, until it is requested. At this stage the Media Cache will, if necessary, refetch the
 asset from Azure Blog Storage, on the fly, and provide it to the CDN PoP.
 
-CDN providers also clear their caches at pre-determined times of their own devising, so while CDN’s
+CDN providers also clear their caches at pre-determined times of their own devising, so while CDN's
 are a valuable caching and performance asset, it is important that they are always be able to
 re-fetch the source file, as and when required, which the Media Cache Module will automatically handle.
 

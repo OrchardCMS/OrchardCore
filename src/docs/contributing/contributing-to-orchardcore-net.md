@@ -1,10 +1,10 @@
-# Contributing orchardcore.net
+# Contributing to orchardcore.net
 
 Did you know that Orchard Core's official website, [orchardcore.net](https://orchardcore.net), is also an open-source project? And, of course, it's built using Orchard Core itself!
 
 ## How to start
 
-To start, just clone the [Orchard Core Website repository](https://github.com/OrchardCMS/OrchardCore.Website). Instructions on working with the app are available in its Readme. Happy coding!
+To start, just clone the [Orchard Core Website repository](https://github.com/OrchardCMS/OrchardCore.Website). Instructions on working with the app are available in its README. Happy coding!
 
 
 !!! tip

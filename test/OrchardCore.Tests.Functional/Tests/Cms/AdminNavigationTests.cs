@@ -37,6 +37,26 @@ public sealed class AdminNavigationTests : CmsTestBase<BlogFixture>, IClassFixtu
         await page.CloseAsync();
     }
 
+    [Fact]
+    public async Task AdminRootShouldNotKeepPreviousMenuItemActive()
+    {
+        var page = await Fixture.CreatePageAsync();
+        await page.LoginAsync();
+
+        await page.GotoAndAssertOkAsync("/Admin/Features");
+
+        var featuresLink = page.Locator("#adminMenu a[data-admin-hash][href^=\"/Admin/Features\"]").First;
+        var activeFeaturesItem = featuresLink.Locator("xpath=ancestor::li[1][contains(concat(' ', normalize-space(@class), ' '), ' active ')]");
+
+        await Assertions.Expect(activeFeaturesItem).ToHaveCountAsync(1);
+
+        await page.GotoAndAssertOkAsync("/Admin");
+
+        await Assertions.Expect(activeFeaturesItem).ToHaveCountAsync(0);
+
+        await page.CloseAsync();
+    }
+
     private static JsonNode ParseAndDecodeCookieJson(string value)
     {
         var raw = value;

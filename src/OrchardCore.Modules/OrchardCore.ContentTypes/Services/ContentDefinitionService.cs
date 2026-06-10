@@ -142,7 +142,10 @@ public class ContentDefinitionService : IContentDefinitionService
 
     public async Task AddPartToTypeAsync(string partName, string typeName)
     {
-        await _contentDefinitionManager.AlterTypeDefinitionAsync(typeName, typeBuilder => typeBuilder.WithPart(partName));
+        var typeDefinition = await _contentDefinitionManager.LoadTypeDefinitionAsync(typeName);
+        var position = GetPartPosition(typeDefinition, partName);
+
+        await _contentDefinitionManager.AlterTypeDefinitionAsync(typeName, typeBuilder => typeBuilder.WithPart(partName, partBuilder => partBuilder.WithPosition(position)));
         var context = new ContentPartAttachedContext
         {
             ContentTypeName = typeName,
@@ -154,11 +157,15 @@ public class ContentDefinitionService : IContentDefinitionService
 
     public async Task AddReusablePartToTypeAsync(string name, string displayName, string description, string partName, string typeName)
     {
+        var typeDefinition = await _contentDefinitionManager.LoadTypeDefinitionAsync(typeName);
+        var position = GetPartPosition(typeDefinition, name);
+
         await _contentDefinitionManager.AlterTypeDefinitionAsync(typeName, typeBuilder => typeBuilder
             .WithPart(name, partName, partBuilder =>
             {
                 partBuilder.WithDisplayName(displayName);
                 partBuilder.WithDescription(description);
+                partBuilder.WithPosition(position);
             })
         );
 
@@ -282,9 +289,10 @@ public class ContentDefinitionService : IContentDefinitionService
         }
 
         fieldName = fieldName.ToSafeName();
+        var position = GetFieldPosition(partDefinition, fieldName);
 
         await _contentDefinitionManager.AlterPartDefinitionAsync(partName,
-            partBuilder => partBuilder.WithField(fieldName, fieldBuilder => fieldBuilder.OfType(fieldTypeName).WithDisplayName(displayName)));
+            partBuilder => partBuilder.WithField(fieldName, fieldBuilder => fieldBuilder.OfType(fieldTypeName).WithDisplayName(displayName).MergeSettings<ContentPartFieldSettings>(x => x.Position = position)));
 
         _contentDefinitionEventHandlers.Invoke((handler, context) => handler.ContentFieldAttached(context), new ContentFieldAttachedContext
         {
@@ -468,6 +476,49 @@ public class ContentDefinitionService : IContentDefinitionService
         }
 
         return displayName;
+    }
+
+    private static string GetPartPosition(ContentTypeDefinition typeDefinition, string partName)
+    {
+        var existingPartDefinition = typeDefinition?.Parts.FirstOrDefault(part => string.Equals(part.Name, partName, StringComparison.OrdinalIgnoreCase));
+        var existingPosition = existingPartDefinition?.GetSettings<ContentTypePartSettings>().Position;
+
+        if (!string.IsNullOrWhiteSpace(existingPosition))
+        {
+            return existingPosition;
+        }
+
+        return GetNextPosition(typeDefinition?.Parts.Select(part => part.GetSettings<ContentTypePartSettings>().Position));
+    }
+
+    private static string GetFieldPosition(ContentPartDefinition partDefinition, string fieldName)
+    {
+        var existingFieldDefinition = partDefinition?.Fields.FirstOrDefault(field => string.Equals(field.Name, fieldName, StringComparison.OrdinalIgnoreCase));
+        var existingPosition = existingFieldDefinition?.GetSettings<ContentPartFieldSettings>().Position;
+
+        if (!string.IsNullOrWhiteSpace(existingPosition))
+        {
+            return existingPosition;
+        }
+
+        return GetNextPosition(partDefinition?.Fields.Select(field => field.GetSettings<ContentPartFieldSettings>().Position));
+    }
+
+    private static string GetNextPosition(IEnumerable<string> positions)
+    {
+        var nextPosition = 0;
+        var currentIndex = 0;
+
+        if (positions != null)
+        {
+            foreach (var position in positions)
+            {
+                nextPosition = Math.Max(nextPosition, int.TryParse(position, out var parsedPosition) ? parsedPosition + 1 : currentIndex + 1);
+                currentIndex++;
+            }
+        }
+
+        return nextPosition.ToString();
     }
 
     private static string VersionName(string name)

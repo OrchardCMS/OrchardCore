@@ -54,8 +54,9 @@ If no value is provided, setup Callback URL in Google API to use the default pat
 
 ## Users Registration
 
-+ If you want to enable new users to register to the site through their Google account, the `OrchardCore.Users.Registration` feature must be enabled and setup accordingly.
-+ An existing user can link his account to his Google account through the External Logins link from User menu.
+- Enable the `OrchardCore.Users.Registration` feature when you also want local site registration.
+- New external-user creation and profile generation are controlled from the Users module's [`ExternalRegistrationSettings`](../Users/README.md#external-authentication-settings).
+- An existing user can link the account through the External Logins link from the user menu.
 
 ## Google Settings Configuration
 
