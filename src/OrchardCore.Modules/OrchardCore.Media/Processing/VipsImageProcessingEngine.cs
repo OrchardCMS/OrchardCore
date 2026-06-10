@@ -59,11 +59,22 @@ internal sealed class VipsImageProcessingEngine : IImageProcessingEngine
     }
 
     private static Image ApplyMax(Image image, int width, int height)
-        => image.ThumbnailImage(
-            width > 0 ? width : int.MaxValue,
+    {
+        // thumbnail_image requires a positive width. When only height is constrained,
+        // derive a width from the aspect ratio so libvips scales by height instead.
+        if (width == 0)
+        {
+            width = height > 0
+                ? (int)Math.Ceiling((double)image.Width * height / image.Height)
+                : image.Width;
+        }
+
+        return image.ThumbnailImage(
+            width,
             height: height > 0 ? height : null,
             size: Enums.Size.Down,
             crop: Enums.Interesting.None);
+    }
 
     private static Image ApplyMin(Image image, int width, int height)
     {
