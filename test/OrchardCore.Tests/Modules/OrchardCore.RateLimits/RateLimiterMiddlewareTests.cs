@@ -89,7 +89,7 @@ public class RateLimiterMiddlewareTests
     }
 
     [Fact]
-    public async Task ShouldApplyRouteSpecificPoliciesWithoutGlobalPolicies()
+    public async Task ShouldApplyEndpointSpecificPoliciesWithoutGlobalPolicies()
     {
         using var staticAssetDirectory = new StaticAssetDirectory();
         using var host = await CreateHostAsync(
@@ -97,7 +97,7 @@ public class RateLimiterMiddlewareTests
             configureRouteLimits: null,
             publishedPolicies:
             [
-                CreateRouteFixedWindowPolicy("TenantLimitedPolicy", "TenantLimitedRoute", 1, 60),
+                CreateEndpointFixedWindowPolicy("TenantLimitedPolicy", "/tenant/limited", 1, 60),
             ],
             cancellationToken: TestContext.Current.CancellationToken);
 
@@ -172,8 +172,11 @@ public class RateLimiterMiddlewareTests
 
     private static IRateLimitPolicyStore CreatePolicyStore(IEnumerable<RateLimitPolicy> publishedPolicies)
     {
-        return Mock.Of<IRateLimitPolicyStore>(store =>
-            store.GetPublishedPoliciesAsync() == Task.FromResult(publishedPolicies));
+        var store = new Mock<IRateLimitPolicyStore>();
+        store.Setup(x => x.GetAllAsync(PolicyVersion.Published)).Returns(() =>
+            ValueTask.FromResult<IReadOnlyCollection<RateLimitPolicy>>([.. publishedPolicies]));
+
+        return store.Object;
     }
 
     private static RateLimitPolicy CreateGlobalFixedWindowPolicy(string name, int permitLimit, int windowSeconds)
@@ -188,15 +191,15 @@ public class RateLimiterMiddlewareTests
         };
     }
 
-    private static RateLimitPolicy CreateRouteFixedWindowPolicy(string name, string routeName, int permitLimit, int windowSeconds)
+    private static RateLimitPolicy CreateEndpointFixedWindowPolicy(string name, string path, int permitLimit, int windowSeconds)
     {
         var limiter = CreateFixedWindowLimiter(permitLimit, windowSeconds);
 
         return new RateLimitPolicy
         {
             Name = name,
-            Scope = RateLimitPolicyScope.Route,
-            RouteName = routeName,
+            Scope = RateLimitPolicyScope.Endpoint,
+            Path = path,
             Limiters = [limiter],
         };
     }

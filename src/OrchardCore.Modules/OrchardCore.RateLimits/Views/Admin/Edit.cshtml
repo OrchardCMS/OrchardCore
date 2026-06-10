@@ -1,8 +1,11 @@
+@using OrchardCore.RateLimits.Models
 @model OrchardCore.RateLimits.ViewModels.RateLimitPolicyEditViewModel
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Edit Rate Limit Policy"])</h1></zone>
 
 <form asp-action="Edit" asp-route-policyId="@Model.PolicyId" method="post" class="no-multisubmit">
+    @Html.ValidationSummary()
+
     @await Html.PartialAsync("RateLimitPolicy.Fields", Model)
 
     <div class="ocat-wrapper">
@@ -15,7 +18,7 @@
 
     <div class="card mt-4">
         <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">@T["Draft limiters"]</h5>
+            <h5 class="mb-0">@(Model.Status == OrchardCore.RateLimits.Models.RateLimitPolicyStatus.PublishedWithDraft ? T["Draft limiters"] : T["Limiters"])</h5>
             <button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modalAddLimiter">@T["Add Limiter"]</button>
         </div>
         <div class="card-body">
@@ -35,7 +38,7 @@
         </div>
     </div>
 
-    @if (Model.PublishedLimiters.Count > 0)
+    @if (Model.Status == RateLimitPolicyStatus.PublishedWithDraft && Model.PublishedLimiters.Count > 0)
     {
         <div class="accordion mt-4" id="published-version-accordion">
             <div class="accordion-item">
@@ -73,7 +76,7 @@
                 }
                 else if (Model.Status == OrchardCore.RateLimits.Models.RateLimitPolicyStatus.Published)
                 {
-                    @T["The draft matches the published version."]
+                    @T["This policy is currently published. Save a draft to make changes without restarting the website."]
                 }
                 else
                 {
@@ -81,8 +84,8 @@
                 }
             </p>
             <div class="d-flex gap-1 flex-wrap">
-                <button class="btn btn-primary" type="submit" name="submit.Save">@T["Save Draft"]</button>
-                <button class="btn btn-success" type="submit" name="submit.Publish">@T["Save & Publish"]</button>
+                <button class="btn btn-primary" type="submit" name="submit.Save" value="submit.Save">@T["Save Draft"]</button>
+                <button class="btn btn-success" type="submit" name="submit.Publish" value="submit.Publish">@T["Save & Publish"]</button>
                 <a asp-action="Index" class="btn btn-secondary">@T["Cancel"]</a>
             </div>
         </div>

@@ -1,12 +1,13 @@
-using System.Security.Claims;
 using System.Globalization;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
@@ -18,7 +19,6 @@ using OrchardCore.RateLimits.Models;
 using OrchardCore.RateLimits.Services;
 using OrchardCore.RateLimits.ViewModels;
 using OrchardCore.Routing;
-
 namespace OrchardCore.RateLimits.Controllers;
 
 [Admin("RateLimits/{action}/{policyId?}", "RateLimits.{action}")]
@@ -36,32 +36,32 @@ public sealed class AdminController : Controller
     private readonly IServiceProvider _serviceProvider;
     private readonly INotifier _notifier;
     private readonly IRateLimitPolicyStore _policyStore;
-    private readonly IRateLimitRouteNameProvider _routeNameProvider;
     private readonly IShellReleaseManager _shellReleaseManager;
     private readonly RateLimitsOptions _rateLimitsOptions;
     private readonly IDisplayManager<RateLimitLimiter> _displayManager;
 
+    internal readonly IStringLocalizer S;
     internal readonly IHtmlLocalizer H;
 
     public AdminController(
         IAuthorizationService authorizationService,
         IDisplayManager<RateLimitLimiter> displayManager,
-        IHtmlLocalizer<AdminController> htmlLocalizer,
         INotifier notifier,
         IRateLimitPolicyStore policyStore,
-        IRateLimitRouteNameProvider routeNameProvider,
         IServiceProvider serviceProvider,
         IShellReleaseManager shellReleaseManager,
-        IOptions<RateLimitsOptions> rateLimitsOptions)
+        IOptions<RateLimitsOptions> rateLimitsOptions,
+        IStringLocalizer<AdminController> stringLocalizer,
+        IHtmlLocalizer<AdminController> htmlLocalizer)
     {
         _authorizationService = authorizationService;
         _displayManager = displayManager;
         _notifier = notifier;
         _policyStore = policyStore;
-        _routeNameProvider = routeNameProvider;
         _serviceProvider = serviceProvider;
         _shellReleaseManager = shellReleaseManager;
         _rateLimitsOptions = rateLimitsOptions.Value;
+        S = stringLocalizer;
         H = htmlLocalizer;
     }
 
@@ -77,20 +77,19 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        var document = await _policyStore.GetAsync();
-        var entries = document.Policies.AsEnumerable();
+        IEnumerable<RateLimitPolicy> policies = await GetCurrentPoliciesAsync();
 
         if (!string.IsNullOrWhiteSpace(searchText))
         {
-            entries = entries.Where(x => SearchMatches(x, searchText));
+            policies = policies.Where(x => SearchMatches(x, searchText));
         }
 
         var pager = new Pager(pagerParameters, pagerOptions.Value.GetPageSize());
-        var orderedEntries = entries
-            .OrderBy(x => x.Draft?.Name ?? x.Published?.Name, StringComparer.OrdinalIgnoreCase)
+        var orderedPolicies = policies
+            .OrderBy(x => x.Name, StringComparer.OrdinalIgnoreCase)
             .ToArray();
-        var totalCount = orderedEntries.Length;
-        var pagedEntries = orderedEntries
+        var totalCount = orderedPolicies.Length;
+        var pagedPolicies = orderedPolicies
             .Skip(pager.GetStartIndex())
             .Take(pager.PageSize)
             .ToArray();
@@ -108,13 +107,13 @@ public sealed class AdminController : Controller
             SearchText = searchText,
             Policies =
             [
-                .. pagedEntries.Select(BuildPolicyEntry),
+                .. pagedPolicies.Select(BuildPolicyEntry),
             ],
             BuiltInRouteLimits = BuildBuiltInRouteLimits(),
             BulkActions =
             [
-                new SelectListItem(H["Publish"].Value, nameof(RateLimitPolicyBulkAction.Publish)),
-                new SelectListItem(H["Delete"].Value, nameof(RateLimitPolicyBulkAction.Remove)),
+                new SelectListItem(S["Publish Drafts"], nameof(RateLimitPolicyBulkAction.Publish)),
+                new SelectListItem(S["Delete"], nameof(RateLimitPolicyBulkAction.Remove)),
             ],
             Pager = totalCount > pager.PageSize
                 ? await shapeFactory.PagerAsync(pager, totalCount, routeData)
@@ -143,22 +142,23 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        ValidatePolicy(model, null, await _policyStore.GetAsync());
+        ValidatePolicy(model, null, await GetCurrentPoliciesAsync());
 
         if (!ModelState.IsValid)
         {
-            model.RouteNames = CreateRouteSelectList(model.RouteName);
             model.PolicyScopes = CreatePolicyScopeList();
             model.LimiterSources = BuildLimiterSources();
             return View(model);
         }
 
-        var policyId = IdGenerator.GenerateId();
-        await _policyStore.SaveDraftAsync(policyId, ToPolicy(model));
+        var policy = ToPolicy(model);
+        policy.PolicyId = IdGenerator.GenerateId();
+
+        await _policyStore.CreateAsync(policy);
 
         await _notifier.SuccessAsync(H["Policy created successfully."]);
 
-        return RedirectToAction(nameof(Edit), new { policyId });
+        return RedirectToAction(nameof(Edit), new { policyId = policy.PolicyId });
     }
 
     public async Task<IActionResult> Edit(string policyId)
@@ -168,13 +168,13 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        var entry = await _policyStore.FindAsync(policyId);
-        if (entry is null)
+        var policy = await GetEditablePolicyAsync(policyId);
+        if (policy is null)
         {
             return NotFound();
         }
 
-        return View(await CreateEditViewModelAsync(RateLimitPolicyStore.Clone(entry)));
+        return View(await CreateEditViewModelAsync(policy, await GetPublishedPolicyAsync(policyId)));
     }
 
     [HttpPost]
@@ -197,18 +197,18 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        var entry = await _policyStore.FindAsync(policyId);
-        if (entry is null)
+        var policy = await GetEditablePolicyAsync(policyId);
+        if (policy is null)
         {
             return NotFound();
         }
 
-        await _policyStore.PublishAsync([policyId]);
+        await _policyStore.PublishAsync([policy]);
         _shellReleaseManager.RequestRelease();
 
         await _notifier.SuccessAsync(H["Policy published successfully."]);
 
-        return RedirectToAction(nameof(Edit), new { policyId });
+        return RedirectToAction(nameof(Index));
     }
 
     [HttpPost]
@@ -219,18 +219,14 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        var entry = await _policyStore.FindAsync(policyId);
-        if (entry is null)
+        var policy = await GetEditablePolicyAsync(policyId);
+        if (policy is null)
         {
             return NotFound();
         }
 
-        await _policyStore.DeleteAsync(policyId);
-
-        if (entry.Published is not null)
-        {
-            _shellReleaseManager.RequestRelease();
-        }
+        await _policyStore.DeleteAsync(policy);
+        _shellReleaseManager.RequestRelease();
 
         await _notifier.SuccessAsync(H["Policy deleted successfully."]);
 
@@ -257,28 +253,48 @@ public sealed class AdminController : Controller
         switch (model.BulkAction)
         {
             case RateLimitPolicyBulkAction.Publish:
-                await _policyStore.PublishAsync(ids);
+                var policiesToPublish = (await GetCurrentPoliciesAsync())
+                    .Where(x => ids.Contains(x.PolicyId, StringComparer.Ordinal))
+                    .ToArray();
+
+                var published = await _policyStore.PublishAsync(policiesToPublish);
+
+                if (published.Count == 0)
+                {
+                    await _notifier.WarningAsync(H["No policies were published. Make sure the selected policies have drafts."]);
+                    break;
+                }
+
                 _shellReleaseManager.RequestRelease();
                 await _notifier.SuccessAsync(H["Policies published successfully."]);
+
                 break;
 
             case RateLimitPolicyBulkAction.Remove:
                 {
-                    var entries = (await _policyStore.GetAsync()).Policies
+                    var policies = (await GetCurrentPoliciesAsync())
                         .Where(x => ids.Contains(x.PolicyId, StringComparer.Ordinal))
                         .ToArray();
 
-                    foreach (var entry in entries)
+                    var totalDeleted = 0;
+
+                    foreach (var policy in policies)
                     {
-                        await _policyStore.DeleteAsync(entry.PolicyId);
+                        if (await _policyStore.DeleteAsync(policy))
+                        {
+                            totalDeleted++;
+                        }
                     }
 
-                    if (entries.Any(static x => x.Published is not null))
+                    if (totalDeleted == 0)
                     {
-                        _shellReleaseManager.RequestRelease();
+                        await _notifier.WarningAsync(H["No policies were deleted."]);
+                        break;
                     }
 
-                    await _notifier.SuccessAsync(H["Policies deleted successfully."]);
+                    _shellReleaseManager.RequestRelease();
+                    await _notifier.SuccessAsync(H.Plural(totalDeleted, "{1} policy was deleted successfully.", "{1} policies were deleted successfully.", totalDeleted));
+
                     break;
                 }
 
@@ -289,42 +305,39 @@ public sealed class AdminController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    private RateLimitPolicyEntryViewModel BuildPolicyEntry(RateLimitPolicyEntry entry)
+    private RateLimitPolicyEntryViewModel BuildPolicyEntry(RateLimitPolicy policy)
     {
-        var draft = entry.Draft ?? entry.Published;
-
         return new RateLimitPolicyEntryViewModel
         {
-            PolicyId = entry.PolicyId,
-            Policy = draft,
-            Name = draft?.Name,
-            Description = draft?.Description,
-            TargetDescription = DescribeTarget(draft),
-            Status = RateLimitPolicyStore.GetStatus(entry),
-            PublishedUtc = entry.PublishedUtc,
-            HasDraft = entry.Draft is not null,
+            PolicyId = policy.PolicyId,
+            Policy = policy,
+            Name = policy.Name,
+            Description = policy.Description,
+            TargetDescription = DescribeTarget(policy),
+            Status = policy.Status,
+            PublishedUtc = policy.PublishedUtc,
+            HasDraft = policy.Status != RateLimitPolicyStatus.Published,
         };
     }
 
-    private async Task<RateLimitPolicyEditViewModel> CreateEditViewModelAsync(RateLimitPolicyEntry entry)
+    private async Task<RateLimitPolicyEditViewModel> CreateEditViewModelAsync(RateLimitPolicy policy, RateLimitPolicy publishedPolicy)
     {
-        var draft = entry.Draft ?? entry.Published ?? new RateLimitPolicy();
         var model = CreateEditViewModel();
-        model.PolicyId = entry.PolicyId;
-        model.Policy = draft;
-        model.Name = draft.Name;
-        model.Description = draft.Description;
-        model.Scope = draft.Scope;
-        model.RouteName = draft.RouteName;
-        model.Path = draft.Path;
-        model.Status = RateLimitPolicyStore.GetStatus(entry);
-        model.PublishedUtc = entry.PublishedUtc;
-        model.PublishedTargetDescription = entry.Published is null ? null : DescribeTarget(entry.Published);
+        model.PolicyId = policy.PolicyId;
+        model.Policy = policy;
+        model.Name = policy.Name;
+        model.Description = policy.Description;
+        model.Scope = policy.Scope;
+        model.Path = policy.Path;
+        model.Status = policy.Status;
+        model.PublishedUtc = publishedPolicy?.PublishedUtc ?? policy.PublishedUtc;
+        model.PublishedTargetDescription = publishedPolicy is null ? null : DescribeTarget(publishedPolicy);
 
-        foreach (var limiter in draft.Limiters)
+        foreach (var limiter in policy.Limiters)
         {
             var shape = await _displayManager.BuildDisplayAsync(limiter, updater: null, displayType: OrchardCoreConstants.DisplayType.SummaryAdmin);
-            shape.Properties["PolicyId"] = entry.PolicyId;
+            shape.Properties["PolicyId"] = policy.PolicyId;
+            shape.Properties["CanManage"] = true;
             model.DraftLimiters.Add(new ModelEntry<RateLimitLimiter>
             {
                 Model = limiter,
@@ -332,9 +345,9 @@ public sealed class AdminController : Controller
             });
         }
 
-        if (entry.Published is not null)
+        if (policy.Status == RateLimitPolicyStatus.PublishedWithDraft && publishedPolicy is not null)
         {
-            foreach (var limiter in entry.Published.Limiters)
+            foreach (var limiter in publishedPolicy.Limiters)
             {
                 model.PublishedLimiters.Add(new ModelEntry<RateLimitLimiter>
                 {
@@ -354,42 +367,48 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        var entry = await _policyStore.FindAsync(policyId);
-        if (entry is null)
+        var draftPolicy = await _policyStore.FindByIdAsync(policyId, PolicyVersion.Draft);
+        var publishedPolicy = await _policyStore.FindByIdAsync(policyId, PolicyVersion.Published);
+        var existingPolicy = CreateCurrentPolicy(draftPolicy, publishedPolicy);
+        if (existingPolicy is null)
         {
             return NotFound();
         }
 
-        ValidatePolicy(model, policyId, await _policyStore.GetAsync());
+        ValidatePolicy(model, policyId, await GetCurrentPoliciesAsync());
 
         if (!ModelState.IsValid)
         {
-            var invalidModel = await CreateEditViewModelAsync(RateLimitPolicyStore.Clone(entry));
+            var invalidModel = await CreateEditViewModelAsync(
+                existingPolicy,
+                publishedPolicy);
             invalidModel.Name = model.Name;
             invalidModel.Description = model.Description;
             invalidModel.Scope = model.Scope;
-            invalidModel.RouteName = model.RouteName;
             invalidModel.Path = model.Path;
             return View("Edit", invalidModel);
         }
 
-        var updated = ToPolicy(model, entry.Draft ?? entry.Published);
-        updated.Limiters.AddRange(entry.Draft?.Limiters.Select(RateLimitPolicyStore.Clone) ?? []);
+        var updated = ToPolicy(model, existingPolicy);
+        updated.PolicyId = policyId;
+        updated.Status = existingPolicy.Status;
+        updated.PublishedUtc = existingPolicy.PublishedUtc;
+        updated.Limiters.AddRange(existingPolicy.Limiters);
 
-        await _policyStore.SaveDraftAsync(policyId, updated);
+        await _policyStore.UpdateAsync(updated);
 
         if (publish)
         {
-            await _policyStore.PublishAsync([policyId]);
+            await _policyStore.PublishAsync([updated]);
             _shellReleaseManager.RequestRelease();
             await _notifier.SuccessAsync(H["Policy saved and published successfully."]);
-        }
-        else
-        {
-            await _notifier.SuccessAsync(H["Policy draft updated successfully."]);
+
+            return RedirectToAction(nameof(Index));
         }
 
-        return RedirectToAction(nameof(Edit), new { policyId });
+        await _notifier.SuccessAsync(H["Policy draft updated successfully."]);
+
+        return RedirectToAction(nameof(Index));
     }
 
     private RateLimitPolicyEditViewModel CreateEditViewModel()
@@ -397,38 +416,37 @@ public sealed class AdminController : Controller
         return new()
         {
             PolicyScopes = CreatePolicyScopeList(),
-            RouteNames = CreateRouteSelectList(),
             LimiterSources = BuildLimiterSources(),
         };
     }
 
-    private void ValidatePolicy(RateLimitPolicyEditViewModel model, string currentPolicyId, RateLimitPolicyDocument document)
+    private void ValidatePolicy(RateLimitPolicyEditViewModel model, string currentPolicyId, IEnumerable<RateLimitPolicy> policies)
     {
         if (string.IsNullOrWhiteSpace(model.Name))
         {
-            ModelState.AddModelError(nameof(model.Name), H["The policy name is required."].Value);
+            ModelState.AddModelError(nameof(model.Name), S["The policy name is required."]);
         }
-        else if (document.Policies.Any(x =>
+        else if (policies.Any(x =>
             !string.Equals(x.PolicyId, currentPolicyId, StringComparison.Ordinal) &&
-            string.Equals(x.Draft?.Name ?? x.Published?.Name, model.Name, StringComparison.OrdinalIgnoreCase)))
+            string.Equals(x.Name, model.Name, StringComparison.OrdinalIgnoreCase)))
         {
-            ModelState.AddModelError(nameof(model.Name), H["A policy with the same name already exists."].Value);
+            ModelState.AddModelError(nameof(model.Name), S["A policy with the same name already exists."]);
         }
 
-        if (model.Scope == RateLimitPolicyScope.Route && string.IsNullOrWhiteSpace(model.RouteName))
+        if (model.Scope != RateLimitPolicyScope.Global && model.Scope != RateLimitPolicyScope.Endpoint)
         {
-            ModelState.AddModelError(nameof(model.RouteName), H["A route name is required for route policies."].Value);
+            ModelState.AddModelError(nameof(model.Scope), S["The selected policy type is invalid."]);
         }
 
         if (model.Scope == RateLimitPolicyScope.Endpoint)
         {
             if (string.IsNullOrWhiteSpace(model.Path))
             {
-                ModelState.AddModelError(nameof(model.Path), H["A request path is required for endpoint policies."].Value);
+                ModelState.AddModelError(nameof(model.Path), S["A request path is required for endpoint policies."]);
             }
             else if (!model.Path.StartsWith('/'))
             {
-                ModelState.AddModelError(nameof(model.Path), H["The request path must start with '/'."].Value);
+                ModelState.AddModelError(nameof(model.Path), S["The request path must start with '/'."]);
             }
         }
     }
@@ -437,13 +455,14 @@ public sealed class AdminController : Controller
     {
         return new()
         {
+            PolicyId = existingPolicy?.PolicyId,
             Name = model.Name?.Trim(),
             Description = model.Description?.Trim(),
             OwnerId = existingPolicy?.OwnerId ?? User.FindFirstValue(ClaimTypes.NameIdentifier),
             Author = existingPolicy?.Author ?? User.Identity?.Name,
             Scope = model.Scope,
-            RouteName = model.Scope == RateLimitPolicyScope.Route ? model.RouteName : null,
             Path = model.Scope == RateLimitPolicyScope.Endpoint ? model.Path?.Trim() : null,
+            PublishedUtc = existingPolicy?.PublishedUtc,
         };
     }
 
@@ -451,28 +470,8 @@ public sealed class AdminController : Controller
     {
         return
         [
-            new SelectListItem(H["Global"].Value, nameof(RateLimitPolicyScope.Global)),
-            new SelectListItem(H["Route"].Value, nameof(RateLimitPolicyScope.Route)),
-            new SelectListItem(H["Endpoint"].Value, nameof(RateLimitPolicyScope.Endpoint)),
-        ];
-    }
-
-    private List<SelectListItem> CreateRouteSelectList(string selectedRouteName = null)
-    {
-        var routeNames = _routeNameProvider.GetRouteNames().ToList();
-
-        if (!string.IsNullOrWhiteSpace(selectedRouteName) &&
-            !routeNames.Contains(selectedRouteName, StringComparer.OrdinalIgnoreCase))
-        {
-            routeNames.Add(selectedRouteName);
-        }
-
-        return
-        [
-            new SelectListItem(H["Select a route"].Value, string.Empty, string.IsNullOrWhiteSpace(selectedRouteName)),
-            .. routeNames
-                .Order(StringComparer.OrdinalIgnoreCase)
-                .Select(routeName => new SelectListItem(routeName, routeName, string.Equals(routeName, selectedRouteName, StringComparison.OrdinalIgnoreCase))),
+            new SelectListItem(S["Global"], nameof(RateLimitPolicyScope.Global)),
+            new SelectListItem(S["Endpoint"], nameof(RateLimitPolicyScope.Endpoint)),
         ];
     }
 
@@ -495,56 +494,58 @@ public sealed class AdminController : Controller
 
     private List<BuiltInRouteRateLimitViewModel> BuildBuiltInRouteLimits()
     {
-        var routes = _routeNameProvider.GetRoutes().ToLookup(static x => x.Name, StringComparer.OrdinalIgnoreCase);
-
-        return
-        [
-            .. _rateLimitsOptions.RouteRateLimits
-                .OrderBy(x => x.RouteName, StringComparer.OrdinalIgnoreCase)
-                .Select(x =>
-                {
-                    var route = FindMatchingRoute(routes[x.RouteName], x.HttpMethods);
-
-                    return new BuiltInRouteRateLimitViewModel
-                    {
-                        Path = route?.Path ?? "/" + x.RouteName,
-                        RouteName = x.RouteName,
-                        Methods = x.HttpMethods.Count == 0 ? [H["Any"].Value] : [.. x.HttpMethods],
-                    };
-                }),
-        ];
+        return _rateLimitsOptions.RouteRateLimits
+            .OrderBy(x => x.RouteName, StringComparer.OrdinalIgnoreCase)
+            .Select(x => new BuiltInRouteRateLimitViewModel
+            {
+                RouteName = x.RouteName,
+                Methods = x.HttpMethods.Count == 0 ? [S["Any"]] : [.. x.HttpMethods],
+            }).ToList();
     }
 
-    private static RateLimitRouteInfo FindMatchingRoute(IEnumerable<RateLimitRouteInfo> routes, IReadOnlyList<string> methods)
+    private async Task<List<RateLimitPolicy>> GetCurrentPoliciesAsync()
     {
-        foreach (var route in routes)
-        {
-            if (route.Methods.Count == 0 && methods.Count == 0)
-            {
-                return route;
-            }
+        var draftPolicies = await _policyStore.GetAllAsync(PolicyVersion.Draft);
+        var publishedPolicies = await _policyStore.GetAllAsync(PolicyVersion.Published);
 
-            if (route.Methods.Count == methods.Count &&
-                route.Methods.All(method => methods.Contains(method, StringComparer.OrdinalIgnoreCase)))
-            {
-                return route;
-            }
-        }
+        var draftsById = draftPolicies.ToDictionary(x => x.PolicyId, StringComparer.Ordinal);
+        var publishedById = publishedPolicies.ToDictionary(x => x.PolicyId, StringComparer.Ordinal);
 
-        return routes.FirstOrDefault();
+        return draftsById.Keys
+            .Concat(publishedById.Keys)
+            .Distinct(StringComparer.Ordinal)
+            .Select(policyId =>
+            {
+                draftsById.TryGetValue(policyId, out var draftPolicy);
+                publishedById.TryGetValue(policyId, out var publishedPolicy);
+
+                return CreateCurrentPolicy(draftPolicy, publishedPolicy);
+            })
+            .Where(static policy => policy is not null)
+            .ToList();
     }
 
-    private static bool SearchMatches(RateLimitPolicyEntry entry, string searchText)
+    private async Task<RateLimitPolicy> GetEditablePolicyAsync(string policyId)
     {
-        var policy = entry.Draft ?? entry.Published;
-        if (policy is null)
+        var draftPolicy = await _policyStore.FindByIdAsync(policyId, PolicyVersion.Draft);
+        if (draftPolicy is not null)
         {
-            return false;
+            return draftPolicy;
         }
 
+        return await GetPublishedPolicyAsync(policyId);
+    }
+
+    private async Task<RateLimitPolicy> GetPublishedPolicyAsync(string policyId)
+        => await _policyStore.FindByIdAsync(policyId, PolicyVersion.Published);
+
+    private static RateLimitPolicy CreateCurrentPolicy(RateLimitPolicy draftPolicy, RateLimitPolicy publishedPolicy)
+        => draftPolicy ?? publishedPolicy;
+
+    private static bool SearchMatches(RateLimitPolicy policy, string searchText)
+    {
         return Contains(policy.Name, searchText)
             || Contains(policy.Description, searchText)
-            || Contains(policy.RouteName, searchText)
             || Contains(policy.Path, searchText);
     }
 
@@ -558,9 +559,8 @@ public sealed class AdminController : Controller
     {
         return policy?.Scope switch
         {
-            RateLimitPolicyScope.Global => H["Applies to every tenant request."].Value,
-            RateLimitPolicyScope.Route => string.Format(CultureInfo.CurrentCulture, H["Matches the route name '{0}'."].Value, policy.RouteName),
-            RateLimitPolicyScope.Endpoint => string.Format(CultureInfo.CurrentCulture, H["Matches requests starting with '{0}'."].Value, policy.Path),
+            RateLimitPolicyScope.Global => S["Applies to every tenant request."],
+            RateLimitPolicyScope.Endpoint => string.Format(CultureInfo.CurrentCulture, S["Matches requests starting with '{0}'."], policy.Path),
             _ => string.Empty,
         };
     }

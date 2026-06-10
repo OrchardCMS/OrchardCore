@@ -1,7 +1,7 @@
 @model dynamic
 
 <div class="w-100">
-    @if (Model.Actions != null)
+    @if (Model.Actions != null && (Model.CanManage as bool? ?? false))
     {
         <div class="float-end">
             @await DisplayAsync(Model.Actions)

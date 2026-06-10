@@ -30,7 +30,7 @@ public sealed class Startup : StartupBase
         services.AddDataMigration<GlobalRateLimitsMigrations>();
         services.AddTransient<IConfigureOptions<RateLimiterOptions>, RateLimiterOptionsConfigurations>();
         services.AddSingleton<IRateLimitPolicyStore, RateLimitPolicyStore>();
-        services.AddSingleton<IRateLimitRouteNameProvider, RateLimitRouteNameProvider>();
+        services.AddDisplayDriver<RateLimitLimiter, RateLimitLimiterDisplayDriver>();
 
         services.AddKeyedSingleton<IRateLimiterSource, FixedWindowRateLimiterSource>(FixedWindowRateLimiterSource.SourceName)
             .AddDisplayDriver<RateLimitLimiter, FixedWindowRateLimiterDisplayDriver>();

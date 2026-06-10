@@ -174,8 +174,11 @@ public class RateLimiterOptionsConfigurationsTests
 
     private static IRateLimitPolicyStore CreatePolicyStore(IEnumerable<RateLimitPolicy> publishedPolicies)
     {
-        return Mock.Of<IRateLimitPolicyStore>(store =>
-            store.GetPublishedPoliciesAsync() == Task.FromResult(publishedPolicies));
+        var store = new Mock<IRateLimitPolicyStore>();
+        store.Setup(x => x.GetAllAsync(PolicyVersion.Published)).Returns(() =>
+            ValueTask.FromResult<IReadOnlyCollection<RateLimitPolicy>>([.. publishedPolicies]));
+
+        return store.Object;
     }
 
     private static ServiceProvider CreateServiceProvider()

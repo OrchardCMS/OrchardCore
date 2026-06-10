@@ -9,12 +9,21 @@ using OrchardCore.RateLimits.Models;
 
 namespace OrchardCore.RateLimits;
 
+/// <summary>
+/// Configures the ASP.NET Core rate-limiter pipeline for Orchard Core tenant policies and built-in route limits.
+/// </summary>
 public sealed class RateLimiterOptionsConfigurations : IConfigureOptions<RateLimiterOptions>
 {
     private readonly RateLimitsOptions _rateLimitsOptions;
     private readonly IRateLimitPolicyStore _policyStore;
     private readonly IServiceProvider _serviceProvider;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RateLimiterOptionsConfigurations"/> class.
+    /// </summary>
+    /// <param name="rateLimitsOptions">The built-in route rate-limit options.</param>
+    /// <param name="policyStore">The policy store that provides published policies.</param>
+    /// <param name="serviceProvider">The service provider used to resolve limiter sources.</param>
     public RateLimiterOptionsConfigurations(
         IOptions<RateLimitsOptions> rateLimitsOptions,
         IRateLimitPolicyStore policyStore,
@@ -25,6 +34,10 @@ public sealed class RateLimiterOptionsConfigurations : IConfigureOptions<RateLim
         _serviceProvider = serviceProvider;
     }
 
+    /// <summary>
+    /// Configures the chained tenant limiter used for the current shell.
+    /// </summary>
+    /// <param name="options">The rate-limiter options to configure.</param>
     public void Configure(RateLimiterOptions options)
     {
         options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
@@ -43,7 +56,7 @@ public sealed class RateLimiterOptionsConfigurations : IConfigureOptions<RateLim
             }),
         };
 
-        var policies = _policyStore.GetPublishedPoliciesAsync().GetAwaiter().GetResult();
+        var policies = _policyStore.GetAllAsync(PolicyVersion.Published).AsTask().GetAwaiter().GetResult();
 
         foreach (var policy in policies)
         {
@@ -114,7 +127,6 @@ public sealed class RateLimiterOptionsConfigurations : IConfigureOptions<RateLim
         => policy.Scope switch
         {
             RateLimitPolicyScope.Global => true,
-            RateLimitPolicyScope.Route => string.Equals(policy.RouteName, GetEndpointRouteName(context), StringComparison.OrdinalIgnoreCase),
             RateLimitPolicyScope.Endpoint => !string.IsNullOrWhiteSpace(policy.Path) && context.Request.Path.StartsWithSegments(policy.Path, StringComparison.OrdinalIgnoreCase),
             _ => false,
         };

@@ -9,7 +9,6 @@ using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Infrastructure.Entities;
 using OrchardCore.RateLimits.Core;
 using OrchardCore.RateLimits.Models;
-using OrchardCore.RateLimits.Services;
 
 namespace OrchardCore.RateLimits.Controllers;
 
@@ -50,8 +49,7 @@ public sealed class LimiterController : Controller
             return Forbid();
         }
 
-        var entry = await _policyStore.FindAsync(policyId);
-        if (entry is null)
+        if (await GetEditablePolicyAsync(policyId) is null)
         {
             return NotFound();
         }
@@ -86,9 +84,9 @@ public sealed class LimiterController : Controller
             return Forbid();
         }
 
-        var entry = await _policyStore.FindAsync(policyId);
+        var policy = await GetEditablePolicyAsync(policyId);
 
-        if (entry is null)
+        if (policy is null)
         {
             return NotFound();
         }
@@ -116,10 +114,9 @@ public sealed class LimiterController : Controller
             return View(model);
         }
 
-        var updatedPolicy = RateLimitPolicyStore.Clone(entry.Draft ?? entry.Published);
-        updatedPolicy.Limiters.Add(limiter);
+        policy.Limiters.Add(limiter);
 
-        await _policyStore.SaveDraftAsync(policyId, updatedPolicy);
+        await _policyStore.UpdateAsync(policy);
 
         await _notifier.SuccessAsync(H["Limiter added successfully."]);
 
@@ -133,9 +130,9 @@ public sealed class LimiterController : Controller
             return Forbid();
         }
 
-        var (entry, limiter, source) = await GetDraftLimiterAsync(policyId, limiterId);
+        var (policy, limiter, source) = await GetDraftLimiterAsync(policyId, limiterId);
 
-        if (entry is null || limiter is null || source is null)
+        if (policy is null || limiter is null || source is null)
         {
             return NotFound();
         }
@@ -158,18 +155,16 @@ public sealed class LimiterController : Controller
             return Forbid();
         }
 
-        var (entry, originalLimiter, source) = await GetDraftLimiterAsync(policyId, limiterId);
-        if (entry is null || originalLimiter is null || source is null)
+        var (policy, originalLimiter, source) = await GetDraftLimiterAsync(policyId, limiterId);
+        if (policy is null || originalLimiter is null || source is null)
         {
             return NotFound();
         }
 
-        var limiterToUpdate = RateLimitPolicyStore.Clone(originalLimiter);
-
         var model = new ModelViewModel
         {
             DisplayName = source.DisplayName.Value,
-            Editor = await _displayManager.UpdateEditorAsync(limiterToUpdate, _updateModelAccessor.ModelUpdater, isNew: false),
+            Editor = await _displayManager.UpdateEditorAsync(originalLimiter, _updateModelAccessor.ModelUpdater, isNew: false),
         };
 
         if (!ModelState.IsValid)
@@ -177,10 +172,7 @@ public sealed class LimiterController : Controller
             return View(model);
         }
 
-        var updatedPolicy = RateLimitPolicyStore.Clone(entry.Draft ?? entry.Published);
-        var index = updatedPolicy.Limiters.FindIndex(x => string.Equals(x.Id, limiterId, StringComparison.Ordinal));
-        updatedPolicy.Limiters[index] = limiterToUpdate;
-        await _policyStore.SaveDraftAsync(policyId, updatedPolicy);
+        await _policyStore.UpdateAsync(policy);
 
         await _notifier.SuccessAsync(H["Limiter updated successfully."]);
 
@@ -195,31 +187,29 @@ public sealed class LimiterController : Controller
             return Forbid();
         }
 
-        var (entry, limiter, _) = await GetDraftLimiterAsync(policyId, limiterId);
-        if (entry is null || limiter is null)
+        var (policy, limiter, _) = await GetDraftLimiterAsync(policyId, limiterId);
+        if (policy is null || limiter is null)
         {
             return NotFound();
         }
 
-        var updatedPolicy = RateLimitPolicyStore.Clone(entry.Draft ?? entry.Published);
-        updatedPolicy.Limiters.RemoveAll(x => string.Equals(x.Id, limiterId, StringComparison.Ordinal));
-        await _policyStore.SaveDraftAsync(policyId, updatedPolicy);
+        policy.Limiters.RemoveAll(x => string.Equals(x.Id, limiterId, StringComparison.Ordinal));
+        await _policyStore.UpdateAsync(policy);
 
         await _notifier.SuccessAsync(H["Limiter removed successfully."]);
 
         return RedirectToAction(nameof(AdminController.Edit), "Admin", new { policyId });
     }
 
-    private async Task<(RateLimitPolicyEntry Entry, RateLimitLimiter Limiter, IRateLimiterSource Source)> GetDraftLimiterAsync(string policyId, string limiterId)
+    private async Task<(RateLimitPolicy Policy, RateLimitLimiter Limiter, IRateLimiterSource Source)> GetDraftLimiterAsync(string policyId, string limiterId)
     {
-        var entry = await _policyStore.FindAsync(policyId);
-        if (entry is null)
+        var policy = await GetEditablePolicyAsync(policyId);
+        if (policy is null)
         {
             return default;
         }
 
-        var policy = entry.Draft ?? entry.Published;
-        var limiter = policy?.Limiters.FirstOrDefault(x => string.Equals(x.Id, limiterId, StringComparison.Ordinal));
+        var limiter = policy.Limiters.FirstOrDefault(x => string.Equals(x.Id, limiterId, StringComparison.Ordinal));
         if (limiter is null)
         {
             return default;
@@ -231,6 +221,17 @@ public sealed class LimiterController : Controller
             return default;
         }
 
-        return (entry, limiter, source);
+        return (policy, limiter, source);
+    }
+
+    private async Task<RateLimitPolicy> GetEditablePolicyAsync(string policyId)
+    {
+        var draftPolicy = await _policyStore.FindByIdAsync(policyId, PolicyVersion.Draft);
+        if (draftPolicy is not null)
+        {
+            return draftPolicy;
+        }
+
+        return await _policyStore.FindByIdAsync(policyId, PolicyVersion.Published);
     }
 }

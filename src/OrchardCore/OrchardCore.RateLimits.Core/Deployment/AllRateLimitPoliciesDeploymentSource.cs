@@ -7,35 +7,46 @@ using OrchardCore.RateLimits.Recipes;
 
 namespace OrchardCore.RateLimits.Deployment;
 
+/// <summary>
+/// Exports all rate-limit policies into a deployment plan step.
+/// </summary>
 public sealed class AllRateLimitPoliciesDeploymentSource : DeploymentSourceBase<AllRateLimitPoliciesDeploymentStep>
 {
     private readonly IRateLimitPolicyStore _policyStore;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AllRateLimitPoliciesDeploymentSource"/> class.
+    /// </summary>
+    /// <param name="policyStore">The policy store used to read current and published policies.</param>
     public AllRateLimitPoliciesDeploymentSource(IRateLimitPolicyStore policyStore)
     {
         _policyStore = policyStore;
     }
 
+    /// <summary>
+    /// Adds all stored rate-limit policies to the deployment result.
+    /// </summary>
+    /// <param name="step">The deployment step being executed.</param>
+    /// <param name="result">The deployment result to populate.</param>
     protected override async Task ProcessAsync(AllRateLimitPoliciesDeploymentStep step, DeploymentPlanResult result)
     {
-        var document = await _policyStore.GetAsync();
-        var policies = new JsonArray();
-
-        foreach (var entry in document.Policies)
+        var draftPolicies = new JsonArray();
+        foreach (var policy in await _policyStore.GetAllAsync(PolicyVersion.Draft))
         {
-            policies.Add(new JsonObject
-            {
-                [nameof(entry.PolicyId)] = entry.PolicyId,
-                [nameof(entry.Draft)] = SerializePolicy(entry.Draft),
-                [nameof(entry.Published)] = SerializePolicy(entry.Published),
-                [nameof(entry.PublishedUtc)] = entry.PublishedUtc,
-            });
+            draftPolicies.Add(SerializePolicy(policy));
+        }
+
+        var publishedPolicies = new JsonArray();
+        foreach (var policy in await _policyStore.GetAllAsync(PolicyVersion.Published))
+        {
+            publishedPolicies.Add(SerializePolicy(policy));
         }
 
         result.Steps.Add(new JsonObject
         {
             ["name"] = CreateOrUpdateRateLimitPoliciesStep.StepKey,
-            ["policies"] = policies,
+            ["draftPolicies"] = draftPolicies,
+            ["publishedPolicies"] = publishedPolicies,
         });
     }
 

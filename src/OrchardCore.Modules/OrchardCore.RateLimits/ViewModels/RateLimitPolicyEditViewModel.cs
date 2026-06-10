@@ -17,8 +17,6 @@ public class RateLimitPolicyEditViewModel
 
     public RateLimitPolicyScope Scope { get; set; }
 
-    public string RouteName { get; set; }
-
     public string Path { get; set; }
 
     public RateLimitPolicyStatus Status { get; set; }
@@ -35,9 +33,6 @@ public class RateLimitPolicyEditViewModel
 
     [BindNever]
     public IList<RateLimiterSourceViewModel> LimiterSources { get; set; } = [];
-
-    [BindNever]
-    public IEnumerable<SelectListItem> RouteNames { get; set; } = [];
 
     [BindNever]
     public IEnumerable<SelectListItem> PolicyScopes { get; set; } = [];

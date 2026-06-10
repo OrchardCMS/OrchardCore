@@ -6,19 +6,32 @@ using OrchardCore.RateLimits.Models;
 
 namespace OrchardCore.RateLimits.Services;
 
+/// <summary>
+/// Creates token-bucket rate-limit partitions for policy limiters.
+/// </summary>
 public sealed class TokenBucketRateLimiterSource : RateLimiterSourceBase<TokenBucketRateLimiterData>
 {
+    /// <summary>
+    /// The persisted source name for token-bucket limiters.
+    /// </summary>
     public const string SourceName = "TokenBucket";
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TokenBucketRateLimiterSource"/> class.
+    /// </summary>
+    /// <param name="stringLocalizer">The string localizer used by the source.</param>
     public TokenBucketRateLimiterSource(IStringLocalizer<TokenBucketRateLimiterSource> stringLocalizer)
         : base(stringLocalizer)
     {
     }
 
+    /// <inheritdoc />
     public override string Name => SourceName;
 
+    /// <inheritdoc />
     public override LocalizedString DisplayName => S["Token bucket"];
 
+    /// <inheritdoc />
     public override LocalizedString Description => S["Accumulates tokens over time and spends them per request per IP."];
 
     protected override RateLimitPartition<string> CreatePartition(string policyName, HttpContext context, TokenBucketRateLimiterData model)

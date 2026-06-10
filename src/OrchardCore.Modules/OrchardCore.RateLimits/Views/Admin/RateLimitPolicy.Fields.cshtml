@@ -1,3 +1,4 @@
+@using OrchardCore.RateLimits.Models
 @model OrchardCore.RateLimits.ViewModels.RateLimitPolicyEditViewModel
 
 <div class="ocat-wrapper" asp-validation-class-for="Name">
@@ -23,20 +24,11 @@
     <div class="ocat-end">
         <select asp-for="Scope" asp-items="Model.PolicyScopes" class="form-select"></select>
         <span asp-validation-for="Scope"></span>
-        <span class="hint">@T["Global applies everywhere, Route uses a named route, and Endpoint matches a request path prefix."]</span>
+        <span class="hint">@T["Global applies everywhere, and Endpoint matches a request path prefix."]</span>
     </div>
 </div>
 
-<div id="@(Html.IdFor(m => m.RouteName))_group" class="ocat-wrapper @(Model.Scope == OrchardCore.RateLimits.Models.RateLimitPolicyScope.Route ? string.Empty : "d-none")" asp-validation-class-for="RouteName">
-    <label asp-for="RouteName" class="ocat-label">@T["Route name"]</label>
-    <div class="ocat-end">
-        <select asp-for="RouteName" asp-items="Model.RouteNames" class="form-select"></select>
-        <span asp-validation-for="RouteName"></span>
-        <span class="hint">@T["Select one of the route names currently exposed by enabled features."]</span>
-    </div>
-</div>
-
-<div id="@(Html.IdFor(m => m.Path))_group" class="ocat-wrapper @(Model.Scope == OrchardCore.RateLimits.Models.RateLimitPolicyScope.Endpoint ? string.Empty : "d-none")" asp-validation-class-for="Path">
+<div id="@(Html.IdFor(m => m.Path))_group" class="ocat-wrapper @(Model.Scope == RateLimitPolicyScope.Endpoint ? string.Empty : "d-none")" asp-validation-class-for="Path">
     <label asp-for="Path" class="ocat-label">@T["Request path"]</label>
     <div class="ocat-end">
         <input asp-for="Path" class="form-control" />
@@ -48,17 +40,15 @@
 <script at="Foot">
     document.addEventListener('DOMContentLoaded', () => {
         const scopeElement = document.getElementById('@Html.IdFor(m => m.Scope)');
-        const routeGroup = document.getElementById('@($"{Html.IdFor(m => m.RouteName)}_group")');
         const pathGroup = document.getElementById('@($"{Html.IdFor(m => m.Path)}_group")');
 
-        if (!scopeElement || !routeGroup || !pathGroup) {
+        if (!scopeElement || !pathGroup) {
             return;
         }
 
         const updateScopeFields = () => {
             const scope = scopeElement.value;
-            routeGroup.classList.toggle('d-none', scope !== '@OrchardCore.RateLimits.Models.RateLimitPolicyScope.Route');
-            pathGroup.classList.toggle('d-none', scope !== '@OrchardCore.RateLimits.Models.RateLimitPolicyScope.Endpoint');
+            pathGroup.classList.toggle('d-none', scope !== '@RateLimitPolicyScope.Endpoint');
         };
 
         scopeElement.addEventListener('change', updateScopeFields);

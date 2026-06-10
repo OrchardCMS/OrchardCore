@@ -6,19 +6,32 @@ using OrchardCore.RateLimits.Models;
 
 namespace OrchardCore.RateLimits.Services;
 
+/// <summary>
+/// Creates sliding-window rate-limit partitions for policy limiters.
+/// </summary>
 public sealed class SlidingWindowRateLimiterSource : RateLimiterSourceBase<SlidingWindowRateLimiterData>
 {
+    /// <summary>
+    /// The persisted source name for sliding-window limiters.
+    /// </summary>
     public const string SourceName = "SlidingWindow";
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SlidingWindowRateLimiterSource"/> class.
+    /// </summary>
+    /// <param name="stringLocalizer">The string localizer used by the source.</param>
     public SlidingWindowRateLimiterSource(IStringLocalizer<SlidingWindowRateLimiterSource> stringLocalizer)
         : base(stringLocalizer)
     {
     }
 
+    /// <inheritdoc />
     public override string Name => SourceName;
 
+    /// <inheritdoc />
     public override LocalizedString DisplayName => S["Sliding window"];
 
+    /// <inheritdoc />
     public override LocalizedString Description => S["Limits requests per IP across overlapping time segments."];
 
     protected override RateLimitPartition<string> CreatePartition(string policyName, HttpContext context, SlidingWindowRateLimiterData model)
