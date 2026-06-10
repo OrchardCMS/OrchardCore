@@ -17,8 +17,6 @@ using OrchardCore.Media.Events;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
-using SixLabors.ImageSharp.Web.Caching;
-using SixLabors.ImageSharp.Web.Caching.Azure;
 
 namespace OrchardCore.Media.Azure;
 
@@ -161,9 +159,8 @@ public sealed class ImageSharpAzureBlobCacheStartup : Modules.StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddTransient<IConfigureOptions<ImageSharpBlobImageCacheOptions>, ImageSharpBlobImageCacheOptionsConfiguration>();
-        services.AddTransient<IConfigureOptions<AzureBlobStorageCacheOptions>, AzureBlobStorageCacheOptionsConfiguration>();
 
-        // Only replace default implementation if options are valid.
+        // Only replace the default local cache implementation if options are valid.
         var section = _configuration.GetSection("OrchardCore_Media_Azure_ImageSharp_Cache");
         var connectionString = section.GetValue<string>(nameof(MediaBlobStorageOptions.ConnectionString));
         var containerName = section.GetValue<string>(nameof(MediaBlobStorageOptions.ContainerName));
@@ -173,10 +170,7 @@ public sealed class ImageSharpAzureBlobCacheStartup : Modules.StartupBase
             return;
         }
 
-        // Following https://docs.sixlabors.com/articles/imagesharp.web/imagecaches.html we'd use
-        // SetCache<AzureBlobStorageCache>() but that's only available on IImageSharpBuilder after AddImageSharp(),
-        // what happens in OrchardCore.Media. Thus, an explicit Replace() is necessary.
-        services.Replace(ServiceDescriptor.Singleton<IImageCache, AzureBlobStorageCache>());
+        services.Replace(ServiceDescriptor.Singleton<IResizedImageCache, AzureBlobResizedImageCache>());
 
         services.AddScoped<IModularTenantEvents, ImageSharpBlobImageCacheTenantEvents>();
     }

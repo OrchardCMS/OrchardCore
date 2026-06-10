@@ -2,7 +2,6 @@ using OrchardCore.Media;
 using OrchardCore.Media.Processing;
 using OrchardCore.Settings;
 using OrchardCore.Tests.Utilities;
-using SixLabors.ImageSharp.Web.Processors;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Media;
 
@@ -140,8 +139,6 @@ public class MediaTokenTests
         services.AddMemoryCache();
 
         services.AddSingleton(mockSiteService);
-        services.AddSingleton<IImageWebProcessor, TokenCommandProcessor>();
-        services.AddSingleton<IImageWebProcessor, ResizeWebProcessor>();
         services.AddScoped<IMediaTokenService, MediaTokenService>();
         services.AddTransient<IConfigureOptions<MediaTokenOptions>, MediaTokenOptionsConfiguration>();
 

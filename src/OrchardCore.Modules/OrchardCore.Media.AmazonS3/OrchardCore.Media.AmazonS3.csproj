@@ -26,8 +26,5 @@
     <ProjectReference Include="..\OrchardCore.Media\OrchardCore.Media.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="SixLabors.ImageSharp.Web.Providers.AWS" />
-  </ItemGroup>
 
 </Project>

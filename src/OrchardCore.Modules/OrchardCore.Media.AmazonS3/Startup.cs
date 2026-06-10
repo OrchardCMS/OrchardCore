@@ -18,8 +18,6 @@ using OrchardCore.Media.Events;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
-using SixLabors.ImageSharp.Web.Caching;
-using SixLabors.ImageSharp.Web.Caching.AWS;
 
 namespace OrchardCore.Media.AmazonS3;
 
@@ -159,7 +157,6 @@ public sealed class ImageSharpAmazonS3CacheStartup : Modules.StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddTransient<IConfigureOptions<AwsImageSharpImageCacheOptions>, AwsImageSharpImageCacheOptionsConfiguration>();
-        services.AddTransient<IConfigureOptions<AWSS3StorageCacheOptions>, AWSS3StorageCacheOptionsConfiguration>();
 
         var storeOptions = new AwsStorageOptions().BindConfiguration(AmazonS3Constants.ConfigSections.AmazonS3ImageSharpCache, _configuration, _logger);
         var validationErrors = storeOptions.Validate().ToList();
@@ -172,20 +169,17 @@ public sealed class ImageSharpAmazonS3CacheStartup : Modules.StartupBase
                 stringBuilder.Append(error.ErrorMessage);
             }
 
-            _logger.LogError("S3 ImageSharp Image Cache configuration validation failed with errors: {Errors} fallback to local file storage.", stringBuilder);
+            _logger.LogError("S3 Media Image Cache configuration validation failed with errors: {Errors} — falling back to local file storage.", stringBuilder);
         }
         else
         {
             if (_logger.IsEnabled(LogLevel.Information))
             {
                 _logger.LogInformation(
-                    "Starting with ImageSharp Image Cache configuration. BucketName: {BucketName}; BasePath: {BasePath}", storeOptions.BucketName, storeOptions.BasePath);
+                    "Starting with S3 Media Image Cache configuration. BucketName: {BucketName}; BasePath: {BasePath}", storeOptions.BucketName, storeOptions.BasePath);
             }
 
-            // Following https://docs.sixlabors.com/articles/imagesharp.web/imagecaches.html we'd use
-            // SetCache<AWSS3StorageCache>() but that's only available on IImageSharpBuilder after AddImageSharp(),
-            // what happens in OrchardCore.Media. Thus, an explicit Replace() is necessary.
-            services.Replace(ServiceDescriptor.Singleton<IImageCache, AWSS3StorageCache>());
+            services.Replace(ServiceDescriptor.Singleton<IResizedImageCache, AWSS3ResizedImageCache>());
 
             services.AddScoped<IModularTenantEvents, ImageSharpS3ImageCacheBucketTenantEvents>();
         }
