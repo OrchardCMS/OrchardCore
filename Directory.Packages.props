@@ -63,6 +63,9 @@
     <PackageVersion Include="NetVips.Native" Version="8.15.2" />
     <PackageVersion Include="StackExchange.Redis" Version="2.13.1" />
     <PackageVersion Include="StyleCop.Analyzers" Version="1.1.118" />
+    <PackageVersion Include="Testcontainers" Version="4.12.0" />
+    <PackageVersion Include="Testcontainers.Azurite" Version="4.12.0" />
+    <PackageVersion Include="Testcontainers.LocalStack" Version="4.12.0" />
     <PackageVersion Include="xunit.v3.mtp-v2" Version="3.2.2" />
     <PackageVersion Include="YesSql" Version="5.4.7" />
     <PackageVersion Include="YesSql.Abstractions" Version="5.4.7" />

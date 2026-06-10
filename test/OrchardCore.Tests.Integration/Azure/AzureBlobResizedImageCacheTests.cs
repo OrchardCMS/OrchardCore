@@ -1,30 +1,30 @@
 #nullable enable
 
-using Amazon.S3;
-using Amazon.S3.Model;
+using Azure.Storage.Blobs;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
-using OrchardCore.FileStorage.AmazonS3;
-using OrchardCore.Media.AmazonS3.Services;
+using OrchardCore.Media.Azure;
+using OrchardCore.Media.Azure.Services;
 using OrchardCore.Tests.Integration.Infrastructure;
 using Xunit;
 
-namespace OrchardCore.Tests.Integration.AmazonS3;
+namespace OrchardCore.Tests.Integration.Azure;
 
 /// <summary>
-/// Integration tests for <see cref="AWSS3ResizedImageCache"/> that run against a LocalStack
-/// S3 emulator started automatically by Testcontainers. The tests are skipped when Docker
-/// is not available.
+/// Integration tests for <see cref="AzureBlobResizedImageCache"/> that run against an Azurite
+/// Azure Storage emulator started automatically by Testcontainers. The tests are skipped when
+/// Docker is not available.
 /// </summary>
-[Collection(LocalStackCollection.Name)]
-public sealed class AWSS3ResizedImageCacheTests : IAsyncLifetime
+[Collection(AzuriteCollection.Name)]
+public sealed class AzureBlobResizedImageCacheTests : IAsyncLifetime
 {
-    private readonly LocalStackFixture _fixture;
-    private AmazonS3Client _s3Client = null!;
-    private string _bucketName = null!;
-    private AWSS3ResizedImageCache _cache = null!;
+    private readonly AzuriteFixture _fixture;
+    private string _connectionString = null!;
+    private string _containerName = null!;
+    private BlobContainerClient _containerClient = null!;
+    private AzureBlobResizedImageCache _cache = null!;
 
-    public AWSS3ResizedImageCacheTests(LocalStackFixture fixture) => _fixture = fixture;
+    public AzureBlobResizedImageCacheTests(AzuriteFixture fixture) => _fixture = fixture;
 
     public async ValueTask InitializeAsync()
     {
@@ -33,47 +33,36 @@ public sealed class AWSS3ResizedImageCacheTests : IAsyncLifetime
             return;
         }
 
-        _bucketName = $"img-cache-{Guid.NewGuid():N}";
-        _s3Client = _fixture.CreateClient();
+        _connectionString = _fixture.ConnectionString;
+        _containerName = $"img-cache-{Guid.NewGuid():N}";
 
-        await _s3Client.PutBucketAsync(new PutBucketRequest { BucketName = _bucketName });
+        _containerClient = new BlobServiceClient(_connectionString).GetBlobContainerClient(_containerName);
+        await _containerClient.CreateIfNotExistsAsync();
+
         _cache = CreateCache();
     }
 
     public async ValueTask DisposeAsync()
     {
-        if (_s3Client is not null && _bucketName is not null)
+        if (_containerClient is not null)
         {
             try
             {
-                var list = await _s3Client.ListObjectsV2Async(
-                    new ListObjectsV2Request { BucketName = _bucketName });
-
-                if (list.S3Objects.Count > 0)
-                {
-                    await _s3Client.DeleteObjectsAsync(new DeleteObjectsRequest
-                    {
-                        BucketName = _bucketName,
-                        Objects = list.S3Objects.Select(o => new KeyVersion { Key = o.Key }).ToList(),
-                    });
-                }
-
-                await _s3Client.DeleteBucketAsync(_bucketName);
+                await _containerClient.DeleteIfExistsAsync();
             }
             catch { /* best-effort cleanup */ }
-
-            _s3Client.Dispose();
         }
     }
 
-    private AWSS3ResizedImageCache CreateCache(string? bucket = null, string basePath = "")
+    private AzureBlobResizedImageCache CreateCache(string basePath = "")
     {
-        var options = Options.Create(new AwsMediaImageCacheOptions
+        var options = Options.Create(new MediaBlobImageCacheOptions
         {
-            BucketName = bucket ?? _bucketName,
+            ConnectionString = _connectionString,
+            ContainerName = _containerName,
             BasePath = basePath,
         });
-        return new AWSS3ResizedImageCache(options, _s3Client, NullLogger<AWSS3ResizedImageCache>.Instance);
+        return new AzureBlobResizedImageCache(options, NullLogger<AzureBlobResizedImageCache>.Instance);
     }
 
     private static MemoryStream FakeImage(string content = "image-bytes")
@@ -155,7 +144,7 @@ public sealed class AWSS3ResizedImageCacheTests : IAsyncLifetime
     [DockerFact]
     public async Task Clear_EmptyCache_Succeeds()
     {
-        // ClearAsync on an empty bucket must not throw.
+        // ClearAsync on an empty container must not throw.
         await _cache.ClearAsync();
     }
 
@@ -165,7 +154,7 @@ public sealed class AWSS3ResizedImageCacheTests : IAsyncLifetime
         using var a = FakeImage("a");
         using var b = FakeImage("b");
         await _cache.SetAsync("key-a", a, "image/jpeg", TimeSpan.FromDays(1));
-        await _cache.SetAsync("key-b", b, "image/png",  TimeSpan.FromDays(1));
+        await _cache.SetAsync("key-b", b, "image/png", TimeSpan.FromDays(1));
 
         await _cache.ClearAsync();
 
@@ -199,7 +188,7 @@ public sealed class AWSS3ResizedImageCacheTests : IAsyncLifetime
         using var img = FakeImage("fresh");
         await _cache.SetAsync("fresh-key", img, "image/jpeg", TimeSpan.FromDays(1));
 
-        // maxAge = 1 h → cutoff = UtcNow − 1 h; objects just uploaded are newer.
+        // maxAge = 1 h → cutoff = UtcNow − 1 h; blobs just uploaded are newer.
         await _cache.ClearStaleAsync(TimeSpan.FromHours(1));
 
         var result = await _cache.GetAsync("fresh-key", ".jpg");
@@ -214,7 +203,7 @@ public sealed class AWSS3ResizedImageCacheTests : IAsyncLifetime
         await _cache.SetAsync("stale-key", img, "image/jpeg", TimeSpan.FromDays(1));
 
         // maxAge = −1 s → cutoff = UtcNow + 1 s (slightly in the future).
-        // Every object's LastModified < UtcNow + 1 s, so all are deleted.
+        // Every blob's LastModified < UtcNow + 1 s, so all are deleted.
         await _cache.ClearStaleAsync(TimeSpan.FromSeconds(-1));
 
         Assert.Null(await _cache.GetAsync("stale-key", ".jpg"));
