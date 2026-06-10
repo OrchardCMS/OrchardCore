@@ -101,7 +101,7 @@ public sealed class FlowPartDisplayDriver : ContentPartDisplayDriver<FlowPart>
                 await _notifier.WarningAsync(H.Plural(
                     invalidWidgetDescriptions.Count,
                     "The widget content item {1} has no matching content type definition. Publishing this content item may erase created content. Fix any content type issues beforehand.",
-                    "The following widget content items have no matching content type definitions: {1}. Publishing this content item may erase created content. Fix any content type issues beforehand.",
+                    "The following widget content items have no matching content type definitions: {1}. Publishing these content items may erase created content. Fix any content type issues beforehand.",
                     string.Join(", ", invalidWidgetDescriptions)));
             }
 
