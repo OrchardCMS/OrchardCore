@@ -43,25 +43,31 @@ internal sealed class MediaImageProcessingMiddleware : IMiddleware
         _logger = logger;
     }
 
-    public async Task InvokeAsync(HttpContext context, RequestDelegate next)
+    public Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
-        var mediaOptions = _mediaOptions.Value;
         var requestPath = context.Request.Path;
 
-        // Only handle requests under the media assets path.
-        if (!requestPath.StartsWithSegments(mediaOptions.AssetsRequestPath, StringComparison.OrdinalIgnoreCase, out var remaining))
+        // Only handle requests under the media assets path. This is the common case for most
+        // requests, so the cheap checks are kept in this non-async method and the request delegate
+        // is returned directly to avoid allocating an async state machine for non-image requests.
+        if (!requestPath.StartsWithSegments(_mediaOptions.Value.AssetsRequestPath, StringComparison.OrdinalIgnoreCase, out var remaining))
         {
-            await next(context);
-            return;
+            return next(context);
         }
 
         // Only handle image file requests.
         var ext = Path.GetExtension(remaining.Value);
         if (string.IsNullOrEmpty(ext) || !_imageExtensions.Contains(ext))
         {
-            await next(context);
-            return;
+            return next(context);
         }
+
+        return ProcessRequestAsync(context, next, remaining, ext);
+    }
+
+    private async Task ProcessRequestAsync(HttpContext context, RequestDelegate next, PathString remaining, string ext)
+    {
+        var mediaOptions = _mediaOptions.Value;
 
         // Parse and validate resize commands from the query string.
         var commands = _commandParser.Parse(context);
