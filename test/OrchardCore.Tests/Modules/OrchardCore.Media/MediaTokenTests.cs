@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.WebUtilities;
 using OrchardCore.Media;
 using OrchardCore.Media.Processing;
 using OrchardCore.Settings;
@@ -126,6 +127,39 @@ public class MediaTokenTests
         var tokenizedPath1 = mts1.AddTokenToPath(path);
         var tokenizedPath2 = mts2.AddTokenToPath(path);
         Assert.Equal(tokenizedPath1, tokenizedPath2);
+    }
+
+    [Fact]
+    public void ShouldExcludeVersionFromTokenButPreserveItInPath()
+    {
+        var serviceProvider = CreateServiceProvider();
+        var mediaTokenService = serviceProvider.GetRequiredService<IMediaTokenService>();
+
+        var withVersion = mediaTokenService.AddTokenToPath("/media/blog.jpg?width=100&height=100&v=abc123");
+        var withoutVersion = mediaTokenService.AddTokenToPath("/media/blog.jpg?width=100&height=100");
+
+        // The version cache-buster must remain on the URL.
+        Assert.Contains("v=abc123", withVersion);
+
+        // The version must not influence the token, so both URLs carry the same token.
+        var tokenWithVersion = ExtractToken(withVersion);
+        var tokenWithoutVersion = ExtractToken(withoutVersion);
+        Assert.Equal(tokenWithoutVersion, tokenWithVersion);
+
+        // The token validates against the real processing commands, which never include "v".
+        // This is the regression guard for versioned + tokenized URLs silently dropping resizing.
+        var commands = new[]
+        {
+            KeyValuePair.Create("width", "100"),
+            KeyValuePair.Create("height", "100"),
+        };
+        Assert.True(mediaTokenService.TryValidateToken(commands, tokenWithVersion));
+    }
+
+    private static string ExtractToken(string url)
+    {
+        var query = QueryHelpers.ParseQuery(url[(url.IndexOf('?') + 1)..]);
+        return query["token"].ToString();
     }
 
     private ServiceProvider CreateServiceProvider()

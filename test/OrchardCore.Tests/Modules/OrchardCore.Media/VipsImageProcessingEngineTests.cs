@@ -173,6 +173,81 @@ public sealed class VipsImageProcessingEngineTests
     }
 
     [Fact]
+    public async Task Process_PadMode_RgbaSource_ProducesExactDimensions()
+    {
+        // A 4-band (RGBA) source must pad without a band-count mismatch on the background color.
+        using var rgba = Image.Black(200, 100, bands: 4);
+        using var input = new MemoryStream(rgba.WriteToBuffer(".png"));
+
+        var commands = new MediaCommands
+        {
+            Width = "100",
+            Height = "200",
+            ResizeMode = "pad",
+            BackgroundColor = "ffffff",
+        };
+        var (w, h) = await GetOutputPngDimensionsAsync(_engine, input, commands, TestContext.Current.CancellationToken);
+        Assert.Equal(100, w);
+        Assert.Equal(200, h);
+    }
+
+    [Fact]
+    public async Task Process_PadMode_GrayscaleSource_ProducesExactDimensions()
+    {
+        // A single-band (grayscale) source must pad without a band-count mismatch.
+        using var gray = Image.Black(200, 100, bands: 1);
+        using var input = new MemoryStream(gray.WriteToBuffer(".png"));
+
+        var commands = new MediaCommands
+        {
+            Width = "100",
+            Height = "200",
+            ResizeMode = "pad",
+            BackgroundColor = "808080",
+        };
+        var (w, h) = await GetOutputPngDimensionsAsync(_engine, input, commands, TestContext.Current.CancellationToken);
+        Assert.Equal(100, w);
+        Assert.Equal(200, h);
+    }
+
+    [Fact]
+    public async Task Process_BoxPadMode_ProducesExactDimensions()
+    {
+        using var input = CreateTestPng(200, 100);
+        var commands = new MediaCommands
+        {
+            Width = "100",
+            Height = "200",
+            ResizeMode = "boxpad",
+            BackgroundColor = "ffffff",
+        };
+        var (w, h) = await GetOutputPngDimensionsAsync(_engine, input, commands, TestContext.Current.CancellationToken);
+        Assert.Equal(100, w);
+        Assert.Equal(200, h);
+    }
+
+    [Fact]
+    public async Task Process_AutoOrientDisabled_ProducesOutput()
+    {
+        using var input = CreateTestPng(200, 100);
+        var commands = new MediaCommands { Width = "100", ResizeMode = "max", AutoOrient = "false" };
+        var (w, h) = await GetOutputPngDimensionsAsync(_engine, input, commands, TestContext.Current.CancellationToken);
+        Assert.Equal(100, w);
+        Assert.Equal(50, h);
+    }
+
+    [Fact]
+    public async Task Process_BmpFormat_FallsBackToJpeg()
+    {
+        // bmp is no longer supported (libvips has no native BMP saver); the engine falls back to JPEG.
+        using var input = CreateTestPng(100, 50);
+        var commands = new MediaCommands { Width = "50", Format = "bmp" };
+        using var result = await _engine.ProcessAsync(input, commands, TestContext.Current.CancellationToken);
+        Assert.Equal("image/jpeg", result.ContentType);
+        Assert.True(result.Output.Length > 0);
+    }
+
+    [Fact]
     public async Task Process_OutputIsNonEmpty()
     {
         using var input = CreateTestPng(100, 50);

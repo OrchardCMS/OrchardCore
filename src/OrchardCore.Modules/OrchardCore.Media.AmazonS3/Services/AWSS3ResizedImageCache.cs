@@ -11,15 +11,6 @@ namespace OrchardCore.Media.AmazonS3.Services;
 
 internal sealed class AWSS3ResizedImageCache : IResizedImageCache
 {
-    private static readonly (string Extension, string ContentType)[] _formats =
-    [
-        (".jpg",  "image/jpeg"),
-        (".png",  "image/png"),
-        (".webp", "image/webp"),
-        (".gif",  "image/gif"),
-        (".bmp",  "image/bmp"),
-    ];
-
     private readonly AwsMediaImageCacheOptions _options;
     private readonly IAmazonS3 _s3Client;
     private readonly ILogger _logger;
@@ -34,30 +25,27 @@ internal sealed class AWSS3ResizedImageCache : IResizedImageCache
         _logger = logger;
     }
 
-    public async Task<(Stream Content, string ContentType)?> GetAsync(string cacheKey, CancellationToken cancellationToken = default)
+    public async Task<(Stream Content, string ContentType)?> GetAsync(string cacheKey, string fileExtension, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrEmpty(_options.BucketName))
         {
             return null;
         }
 
-        foreach (var (ext, contentType) in _formats)
+        var key = GetObjectKey(cacheKey, fileExtension);
+        try
         {
-            var key = GetObjectKey(cacheKey, ext);
-            try
-            {
-                var response = await _s3Client.GetObjectAsync(_options.BucketName, key, cancellationToken);
-                return (response.ResponseStream, contentType);
-            }
-            catch (AmazonS3Exception ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
-            {
-                // Not found — try next format.
-            }
-            catch (Exception ex)
-            {
-                _logger.LogWarning(ex, "Error reading S3 cached object '{Key}'.", key);
-                return null;
-            }
+            var response = await _s3Client.GetObjectAsync(_options.BucketName, key, cancellationToken);
+
+            return (response.ResponseStream, MediaResizingConstants.ExtensionToContentType(fileExtension));
+        }
+        catch (AmazonS3Exception ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+        {
+            // Not found — cache miss.
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Error reading S3 cached object '{Key}'.", key);
         }
 
         return null;
@@ -70,7 +58,7 @@ internal sealed class AWSS3ResizedImageCache : IResizedImageCache
             return;
         }
 
-        var ext = ContentTypeToExtension(contentType);
+        var ext = MediaResizingConstants.ContentTypeToExtension(contentType);
         var key = GetObjectKey(cacheKey, ext);
 
         try
@@ -192,13 +180,4 @@ internal sealed class AWSS3ResizedImageCache : IResizedImageCache
         var subDir = cacheKey.Length >= 2 ? cacheKey[..2] : "xx";
         return $"{prefix}{subDir}/{cacheKey}{extension}";
     }
-
-    private static string ContentTypeToExtension(string contentType) => contentType switch
-    {
-        "image/png"  => ".png",
-        "image/webp" => ".webp",
-        "image/gif"  => ".gif",
-        "image/bmp"  => ".bmp",
-        _            => ".jpg",
-    };
 }

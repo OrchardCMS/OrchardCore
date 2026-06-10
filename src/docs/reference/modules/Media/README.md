@@ -120,7 +120,7 @@ The quality used when compressing the image.
 
 The image format to use when processing the output of an image.
 
-Supported formats include `bmp`, `gif`, `jpg`, `png`, `tga`.
+Supported formats include `gif`, `jpg`, `png`, and `webp`.
 
 Can be combined with the `quality` argument to convert an image to a `JPG` and reduce the quality.
 
@@ -410,11 +410,7 @@ To configure the `StaticFileOptions` in more detail, including event handlers, f
 services.PostConfigure<MediaOptions>(o => ...);
 ```
 
-To configure the `ImageSharpMiddleware` in more detail, including event handlers, apply:
-
-```
-services.PostConfigure<ImageSharpMiddlewareOptions>(o => ...);
-```
+On-demand image resizing is performed by a built-in middleware backed by [NetVips](https://github.com/kleisauke/net-vips) (a managed binding over the native [libvips](https://www.libvips.org/) library). Resized images are produced by the `IImageProcessingEngine` service and stored through an `IResizedImageCache` implementation, so no additional middleware configuration is required.
 
 !!! note
     The Media Library `StaticFileOptions` configuration is separated from the configuration for static files contained in module `wwwroot` folders.

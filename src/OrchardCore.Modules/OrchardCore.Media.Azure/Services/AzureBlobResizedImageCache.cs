@@ -11,15 +11,6 @@ namespace OrchardCore.Media.Azure.Services;
 
 internal sealed class AzureBlobResizedImageCache : IResizedImageCache
 {
-    private static readonly (string Extension, string ContentType)[] _formats =
-    [
-        (".jpg",  "image/jpeg"),
-        (".png",  "image/png"),
-        (".webp", "image/webp"),
-        (".gif",  "image/gif"),
-        (".bmp",  "image/bmp"),
-    ];
-
     private readonly MediaBlobImageCacheOptions _options;
     private readonly ILogger _logger;
 
@@ -31,7 +22,7 @@ internal sealed class AzureBlobResizedImageCache : IResizedImageCache
         _logger = logger;
     }
 
-    public async Task<(Stream Content, string ContentType)?> GetAsync(string cacheKey, CancellationToken cancellationToken = default)
+    public async Task<(Stream Content, string ContentType)?> GetAsync(string cacheKey, string fileExtension, CancellationToken cancellationToken = default)
     {
         if (!_options.IsConfigured())
         {
@@ -39,24 +30,21 @@ internal sealed class AzureBlobResizedImageCache : IResizedImageCache
         }
 
         var container = GetContainerClient();
-        foreach (var (ext, contentType) in _formats)
+        var blobName = GetBlobName(cacheKey, fileExtension);
+        var blob = container.GetBlobClient(blobName);
+        try
         {
-            var blobName = GetBlobName(cacheKey, ext);
-            var blob = container.GetBlobClient(blobName);
-            try
-            {
-                var response = await blob.DownloadStreamingAsync(cancellationToken: cancellationToken);
-                return (response.Value.Content, contentType);
-            }
-            catch (RequestFailedException ex) when (ex.Status == 404)
-            {
-                // Not found — try next format.
-            }
-            catch (Exception ex)
-            {
-                _logger.LogWarning(ex, "Error reading cached blob '{BlobName}'.", blobName);
-                return null;
-            }
+            var response = await blob.DownloadStreamingAsync(cancellationToken: cancellationToken);
+
+            return (response.Value.Content, MediaResizingConstants.ExtensionToContentType(fileExtension));
+        }
+        catch (RequestFailedException ex) when (ex.Status == 404)
+        {
+            // Not found — cache miss.
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Error reading cached blob '{BlobName}'.", blobName);
         }
 
         return null;
@@ -69,7 +57,7 @@ internal sealed class AzureBlobResizedImageCache : IResizedImageCache
             return;
         }
 
-        var ext = ContentTypeToExtension(contentType);
+        var ext = MediaResizingConstants.ContentTypeToExtension(contentType);
         var blobName = GetBlobName(cacheKey, ext);
         var container = GetContainerClient();
         var blob = container.GetBlobClient(blobName);
@@ -146,13 +134,4 @@ internal sealed class AzureBlobResizedImageCache : IResizedImageCache
         var subDir = cacheKey.Length >= 2 ? cacheKey[..2] : "xx";
         return $"{prefix}{subDir}/{cacheKey}{extension}";
     }
-
-    private static string ContentTypeToExtension(string contentType) => contentType switch
-    {
-        "image/png"  => ".png",
-        "image/webp" => ".webp",
-        "image/gif"  => ".gif",
-        "image/bmp"  => ".bmp",
-        _            => ".jpg",
-    };
 }

@@ -1,10 +1,7 @@
 #nullable enable
 
-using System.Security.Cryptography;
-using System.Text;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
 
 namespace OrchardCore.Media.Services;
@@ -12,15 +9,6 @@ namespace OrchardCore.Media.Services;
 internal sealed class PhysicalFileSystemResizedImageCache : IResizedImageCache
 {
     internal const string CacheFolder = "media-cache";
-
-    private static readonly (string Extension, string ContentType)[] _formats =
-    [
-        (".jpg",  "image/jpeg"),
-        (".png",  "image/png"),
-        (".webp", "image/webp"),
-        (".gif",  "image/gif"),
-        (".bmp",  "image/bmp"),
-    ];
 
     private static readonly EnumerationOptions _enumOptions = new() { RecurseSubdirectories = true };
 
@@ -36,21 +24,16 @@ internal sealed class PhysicalFileSystemResizedImageCache : IResizedImageCache
         _logger = logger;
     }
 
-    public Task<(Stream Content, string ContentType)?> GetAsync(string cacheKey, CancellationToken cancellationToken = default)
+    public Task<(Stream Content, string ContentType)?> GetAsync(string cacheKey, string fileExtension, CancellationToken cancellationToken = default)
     {
-        var dir = GetCacheDir(cacheKey);
-        foreach (var (ext, contentType) in _formats)
+        var path = Path.Combine(GetCacheDir(cacheKey), cacheKey + fileExtension);
+        if (File.Exists(path))
         {
-            var path = Path.Combine(dir, cacheKey + ext);
-            if (!File.Exists(path))
-            {
-                continue;
-            }
-
             try
             {
                 Stream stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, useAsync: true);
-                return Task.FromResult<(Stream, string)?>(( stream, contentType ));
+
+                return Task.FromResult<(Stream, string)?>((stream, MediaResizingConstants.ExtensionToContentType(fileExtension)));
             }
             catch (IOException)
             {
@@ -63,15 +46,24 @@ internal sealed class PhysicalFileSystemResizedImageCache : IResizedImageCache
 
     public async Task SetAsync(string cacheKey, Stream image, string contentType, TimeSpan maxAge, CancellationToken cancellationToken = default)
     {
-        var ext = ContentTypeToExtension(contentType);
+        var ext = MediaResizingConstants.ContentTypeToExtension(contentType);
         var dir = GetCacheDir(cacheKey);
         Directory.CreateDirectory(dir);
 
         var path = Path.Combine(dir, cacheKey + ext);
+
+        // Write to a unique temp file and atomically move it into place. This avoids sharing
+        // violations when several requests for the same not-yet-cached image are processed
+        // concurrently (cache-stampede), and never serves a partially written file.
+        var tempPath = path + '.' + Path.GetRandomFileName() + ".tmp";
         try
         {
-            await using var file = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.None, 4096, useAsync: true);
-            await image.CopyToAsync(file, cancellationToken);
+            await using (var file = new FileStream(tempPath, FileMode.CreateNew, FileAccess.Write, FileShare.None, 4096, useAsync: true))
+            {
+                await image.CopyToAsync(file, cancellationToken);
+            }
+
+            File.Move(tempPath, path, overwrite: true);
         }
         catch (IOException ex)
         {
@@ -79,6 +71,8 @@ internal sealed class PhysicalFileSystemResizedImageCache : IResizedImageCache
             {
                 _logger.LogWarning(ex, "Could not write resized image cache entry at '{Path}'.", path);
             }
+
+            TryDeleteTempFile(tempPath);
         }
     }
 
@@ -144,27 +138,18 @@ internal sealed class PhysicalFileSystemResizedImageCache : IResizedImageCache
     private string GetCacheDir(string cacheKey)
         => Path.Combine(_cacheRoot, cacheKey.Length >= 2 ? cacheKey[..2] : "xx");
 
-    private static string ContentTypeToExtension(string contentType) => contentType switch
+    private void TryDeleteTempFile(string tempPath)
     {
-        "image/png"  => ".png",
-        "image/webp" => ".webp",
-        "image/gif"  => ".gif",
-        "image/bmp"  => ".bmp",
-        _            => ".jpg",
-    };
-
-    internal static string ComputeCacheKey(string tenantName, string path, IEnumerable<KeyValuePair<string, string>> commands)
-    {
-        var builder = new StringBuilder();
-        builder.Append(tenantName).Append('|').Append(path).Append('|');
-
-        foreach (var (key, value) in commands.OrderBy(p => p.Key, StringComparer.OrdinalIgnoreCase))
+        try
         {
-            builder.Append(key).Append('=').Append(value).Append('&');
+            if (File.Exists(tempPath))
+            {
+                File.Delete(tempPath);
+            }
         }
-
-        var raw = Encoding.UTF8.GetBytes(builder.ToString());
-        var hash = SHA256.HashData(raw);
-        return Convert.ToHexStringLower(hash);
+        catch (IOException)
+        {
+            // Best-effort cleanup; a stale temp file is collected by ClearStaleAsync.
+        }
     }
 }

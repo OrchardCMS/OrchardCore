@@ -14,6 +14,10 @@ public class MediaTokenService : IMediaTokenService
 {
     private const string TokenCacheKeyPrefix = "MediaToken:";
 
+    // Commands that participate in the HMAC token. The version ("v") and token commands are
+    // intentionally excluded: "v" is a cache-buster appended after tokenization, and including it
+    // here would make the generated token disagree with the validated commands (which never
+    // include "v"), silently dropping all processing on versioned URLs.
     private static readonly HashSet<string> _knownCommands = new(StringComparer.OrdinalIgnoreCase)
     {
         MediaCommands.WidthCommand,
@@ -24,8 +28,6 @@ public class MediaTokenService : IMediaTokenService
         MediaCommands.BackgroundColorCommand,
         MediaCommands.QualityCommand,
         MediaCommands.AutoOrientCommand,
-        MediaCommands.TokenCommand,
-        MediaCommands.VersionCommand,
     };
 
     private readonly IMemoryCache _memoryCache;
@@ -51,10 +53,9 @@ public class MediaTokenService : IMediaTokenService
             ParseQuery(path[(pathIndex + 1)..], out processingCommands, out otherCommands);
         }
 
-        // If no commands or only a version command, don't tokenize.
-        if (processingCommands is null
-            || processingCommands.Count == 0
-            || (processingCommands.Count == 1 && processingCommands.ContainsKey(MediaCommands.VersionCommand)))
+        // If there are no processing commands (for example only a version "v" cache-buster), there
+        // is nothing to tokenize. The "v" value is preserved via otherCommands in the returned path.
+        if (processingCommands is null || processingCommands.Count == 0)
         {
             return path;
         }

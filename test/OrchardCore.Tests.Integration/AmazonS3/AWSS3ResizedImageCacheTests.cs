@@ -91,7 +91,7 @@ public sealed class AWSS3ResizedImageCacheTests : IAsyncLifetime
     [S3MockFact]
     public async Task Get_NonExistentKey_ReturnsNull()
     {
-        var result = await _cache.GetAsync("no-such-key");
+        var result = await _cache.GetAsync("no-such-key", ".jpg");
         Assert.Null(result);
     }
 
@@ -105,7 +105,7 @@ public sealed class AWSS3ResizedImageCacheTests : IAsyncLifetime
 
         await _cache.SetAsync("jpeg-key", input, "image/jpeg", TimeSpan.FromDays(1));
 
-        var result = await _cache.GetAsync("jpeg-key");
+        var result = await _cache.GetAsync("jpeg-key", ".jpg");
         Assert.NotNull(result);
         using var stream = result!.Value.Content;
         Assert.Equal("image/jpeg", result.Value.ContentType);
@@ -118,7 +118,7 @@ public sealed class AWSS3ResizedImageCacheTests : IAsyncLifetime
         using var input = FakeImage();
         await _cache.SetAsync("png-key", input, "image/png", TimeSpan.FromDays(1));
 
-        var result = await _cache.GetAsync("png-key");
+        var result = await _cache.GetAsync("png-key", ".png");
         Assert.NotNull(result);
         result!.Value.Content.Dispose();
         Assert.Equal("image/png", result.Value.ContentType);
@@ -130,7 +130,7 @@ public sealed class AWSS3ResizedImageCacheTests : IAsyncLifetime
         using var input = FakeImage();
         await _cache.SetAsync("webp-key", input, "image/webp", TimeSpan.FromDays(1));
 
-        var result = await _cache.GetAsync("webp-key");
+        var result = await _cache.GetAsync("webp-key", ".webp");
         Assert.NotNull(result);
         result!.Value.Content.Dispose();
         Assert.Equal("image/webp", result.Value.ContentType);
@@ -145,7 +145,7 @@ public sealed class AWSS3ResizedImageCacheTests : IAsyncLifetime
         await _cache.SetAsync("ow-key", v1, "image/jpeg", TimeSpan.FromDays(1));
         await _cache.SetAsync("ow-key", v2, "image/jpeg", TimeSpan.FromDays(1));
 
-        var result = await _cache.GetAsync("ow-key");
+        var result = await _cache.GetAsync("ow-key", ".jpg");
         Assert.NotNull(result);
         using var stream = result!.Value.Content;
         Assert.Equal("v2", await ReadContentAsync(stream));
@@ -170,8 +170,8 @@ public sealed class AWSS3ResizedImageCacheTests : IAsyncLifetime
 
         await _cache.ClearAsync();
 
-        Assert.Null(await _cache.GetAsync("key-a"));
-        Assert.Null(await _cache.GetAsync("key-b"));
+        Assert.Null(await _cache.GetAsync("key-a", ".jpg"));
+        Assert.Null(await _cache.GetAsync("key-b", ".png"));
     }
 
     [S3MockFact]
@@ -187,9 +187,9 @@ public sealed class AWSS3ResizedImageCacheTests : IAsyncLifetime
 
         await cacheA.ClearAsync();
 
-        Assert.Null(await cacheA.GetAsync("shared-key"));
-        Assert.NotNull(await cacheB.GetAsync("shared-key"));
-        (await cacheB.GetAsync("shared-key"))?.Content.Dispose();
+        Assert.Null(await cacheA.GetAsync("shared-key", ".jpg"));
+        Assert.NotNull(await cacheB.GetAsync("shared-key", ".jpg"));
+        (await cacheB.GetAsync("shared-key", ".jpg"))?.Content.Dispose();
     }
 
     // ── ClearStale ───────────────────────────────────────────────────────────
@@ -203,7 +203,7 @@ public sealed class AWSS3ResizedImageCacheTests : IAsyncLifetime
         // maxAge = 1 h → cutoff = UtcNow − 1 h; objects just uploaded are newer.
         await _cache.ClearStaleAsync(TimeSpan.FromHours(1));
 
-        var result = await _cache.GetAsync("fresh-key");
+        var result = await _cache.GetAsync("fresh-key", ".jpg");
         Assert.NotNull(result);
         result!.Value.Content.Dispose();
     }
@@ -218,6 +218,6 @@ public sealed class AWSS3ResizedImageCacheTests : IAsyncLifetime
         // Every object's LastModified < UtcNow + 1 s, so all are deleted.
         await _cache.ClearStaleAsync(TimeSpan.FromSeconds(-1));
 
-        Assert.Null(await _cache.GetAsync("stale-key"));
+        Assert.Null(await _cache.GetAsync("stale-key", ".jpg"));
     }
 }

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Media.Models;
 using OrchardCore.Media.Processing;
 using OrchardCore.Media.Services;
 
@@ -13,7 +14,7 @@ internal sealed class MediaImageProcessingMiddleware : IMiddleware
 {
     private static readonly HashSet<string> _imageExtensions = new(StringComparer.OrdinalIgnoreCase)
     {
-        ".jpg", ".jpeg", ".png", ".gif", ".webp", ".bmp", ".tga",
+        ".jpg", ".jpeg", ".png", ".gif", ".webp",
     };
 
     private readonly IMediaFileProvider _mediaFileProvider;
@@ -76,15 +77,30 @@ internal sealed class MediaImageProcessingMiddleware : IMiddleware
             commands.Format = ExtensionToFormat(ext);
         }
 
-        var cacheKey = PhysicalFileSystemResizedImageCache.ComputeCacheKey(
+        // The output format is fully determined here, so the cache file extension and content type
+        // are known before the cache lookup.
+        var fileExtension = MediaResizingConstants.ContentTypeToExtension(FormatToContentType(commands.Format));
+
+        // Include the optional version token ("v") in the cache key so that replacing the source
+        // file (which changes the version) produces a new cache entry instead of serving a stale
+        // resized image.
+        var keyCommands = commands.GetValues();
+        var versionValue = context.Request.Query[MediaCommands.VersionCommand].ToString();
+        if (!string.IsNullOrEmpty(versionValue))
+        {
+            keyCommands = keyCommands.Append(new KeyValuePair<string, string>(MediaCommands.VersionCommand, versionValue));
+        }
+
+        var cacheKey = ResizedImageCacheKey.Compute(
             _shellSettings.Name,
             remaining.Value!,
-            commands.GetValues());
+            keyCommands);
 
         // Try the cache first.
-        var cached = await _cache.GetAsync(cacheKey, context.RequestAborted);
+        var cached = await _cache.GetAsync(cacheKey, fileExtension, context.RequestAborted);
         if (cached.HasValue)
         {
+            // ServeAsync owns and disposes the cached content stream.
             await ServeAsync(context, cached.Value.Content, cached.Value.ContentType, mediaOptions);
             return;
         }
@@ -123,30 +139,38 @@ internal sealed class MediaImageProcessingMiddleware : IMiddleware
                 context.RequestAborted);
 
             result.Output.Position = 0;
+
+            // ServeAsync disposes the stream; the surrounding `using` disposing the result again
+            // is a harmless no-op on the already-disposed MemoryStream.
             await ServeAsync(context, result.Output, result.ContentType, mediaOptions);
         }
     }
 
     private static async Task ServeAsync(HttpContext context, Stream content, string contentType, MediaOptions options)
     {
-        var response = context.Response;
-        response.ContentType = contentType;
-
-        // Apply cache-control header.
-        var cacheControl = context.IsSecureMediaRequested()
-            ? options.MaxSecureFilesBrowserCacheDays == 0
-                ? "no-store"
-                : $"public, must-revalidate, max-age={TimeSpan.FromDays(options.MaxSecureFilesBrowserCacheDays).TotalSeconds}"
-            : $"public, max-age={TimeSpan.FromDays(options.MaxBrowserCacheDays).TotalSeconds}";
-
-        response.Headers.CacheControl = cacheControl;
-
-        if (content.CanSeek)
+        // Take ownership of the content stream so it is always released, including on the cache-hit
+        // hot path where the stream is a physical FileStream or a remote network stream.
+        await using (content)
         {
-            response.ContentLength = content.Length - content.Position;
-        }
+            var response = context.Response;
+            response.ContentType = contentType;
 
-        await content.CopyToAsync(response.Body, context.RequestAborted);
+            // Apply cache-control header.
+            var cacheControl = context.IsSecureMediaRequested()
+                ? options.MaxSecureFilesBrowserCacheDays == 0
+                    ? "no-store"
+                    : $"public, must-revalidate, max-age={TimeSpan.FromDays(options.MaxSecureFilesBrowserCacheDays).TotalSeconds}"
+                : $"public, max-age={TimeSpan.FromDays(options.MaxBrowserCacheDays).TotalSeconds}";
+
+            response.Headers.CacheControl = cacheControl;
+
+            if (content.CanSeek)
+            {
+                response.ContentLength = content.Length - content.Position;
+            }
+
+            await content.CopyToAsync(response.Body, context.RequestAborted);
+        }
     }
 
     private static string ExtensionToFormat(string ext) => ext.TrimStart('.').ToLowerInvariant() switch
@@ -155,7 +179,14 @@ internal sealed class MediaImageProcessingMiddleware : IMiddleware
         "png"  => "png",
         "gif"  => "gif",
         "webp" => "webp",
-        "bmp"  => "bmp",
         _      => "jpg",
+    };
+
+    private static string FormatToContentType(string? format) => format?.ToLowerInvariant() switch
+    {
+        "png"  => MediaResizingConstants.PngContentType,
+        "gif"  => MediaResizingConstants.GifContentType,
+        "webp" => MediaResizingConstants.WebpContentType,
+        _      => MediaResizingConstants.JpegContentType,
     };
 }
