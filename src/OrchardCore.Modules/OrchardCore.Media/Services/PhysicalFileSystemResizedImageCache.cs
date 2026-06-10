@@ -138,7 +138,7 @@ internal sealed class PhysicalFileSystemResizedImageCache : IResizedImageCache
     private string GetCacheDir(string cacheKey)
         => Path.Combine(_cacheRoot, cacheKey.Length >= 2 ? cacheKey[..2] : "xx");
 
-    private void TryDeleteTempFile(string tempPath)
+    private static void TryDeleteTempFile(string tempPath)
     {
         try
         {
