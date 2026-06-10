@@ -583,6 +583,36 @@ Now, when a user searches for a product's serial number in the administration UI
 The `UseExactMatch` option in the `ContentsAdminListFilterOptions` class modifies the default search behavior by enclosing searched terms within quotation marks, creating an exact match search by default, this unless if the search text explicitly uses 'OR' or 'AND' operators.
 
 
+## Content Version Pruning
+
+The `Content Version Pruning` feature (`OrchardCore.Contents.VersionPruning`) provides a background task that periodically deletes old **archived** content item versions — versions that are neither the *latest* nor the *published* one. On sites that are edited often, every save or publish leaves the previous version behind in the database. Over time, these accumulate, growing the storage footprint and slowing version-history queries. Pruning keeps that history bounded.
+
+The latest draft and the published version of an item are **never** deleted; only superseded (archived) versions are eligible.
+
+### Settings
+
+Enable the feature, then configure it under **Configuration** → **Settings** → **Content Version Pruning** (requires the `Manage Content Version Pruning settings` permission, granted to the `Administrator` role by default).
+
+| Setting                              | Default | Description                                                                                                                                  |
+|--------------------------------------|---------|--------------------------------------------------------------------------------------------------------------------------------------------|
+| **Disable**                          | `false` | Disables the pruning task while leaving the feature enabled.                                                                                |
+| **Retention period (days)**          | `30`    | Archived versions whose `ModifiedUtc` is older than this many days are eligible for deletion.                                               |
+| **Archived versions to keep per item** | `1`   | The number of most-recent archived versions always retained per content item, regardless of age. Set to `0` to disable this protection.     |
+| **Content types to prune**           | *(none)*| The content types whose archived versions are pruned. When no type is selected, **nothing** is pruned.                                      |
+
+### How it works
+
+A background task — *Content Version Pruning Background Task* — runs on a daily schedule (`0 0 * * *`). It is **disabled by default**; enable it under **Configuration** → **Tasks** → **Background Tasks** in addition to enabling the feature and selecting content types. When it runs, it:
+
+1. Skips entirely if the **Disable** setting is on, or if no content types are selected.
+2. Computes a retention threshold of `now - RetentionDays`.
+3. For each selected content item, orders its archived versions newest-first by `ModifiedUtc` (versions with no `ModifiedUtc` sort last), always keeps the newest **Archived versions to keep** of them, and from the remainder deletes those modified before the threshold (or with no modification date).
+
+Deletions are flushed in batches to keep the unit of work bounded, and a failure to delete one version is logged and skipped without aborting the run.
+
+!!! warning
+    Pruned versions are permanently removed from the database and cannot be restored. Choose a retention period and version-keep count that match your audit and rollback needs before enabling the task.
+
 ## Videos
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/j6xuupq9FYY" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
