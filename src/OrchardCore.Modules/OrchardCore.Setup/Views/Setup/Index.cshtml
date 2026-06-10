@@ -9,13 +9,12 @@
 @inject Microsoft.Extensions.Options.IOptions<IdentityOptions> IdentityOptions
 @inject IOptions<RequestLocalizationOptions> LocOptions
 @inject OrchardCore.IOrchardHelper Orchard
-@inject OrchardCore.Modules.IClock Clock
+@inject OrchardCore.Modules.ITimeZoneSelectListProvider TimeZoneSelectListProvider
 @model OrchardCore.Setup.ViewModels.SetupViewModel
 
 @{
     // The Setup Layout is a standard MVC layout do that it doesn't use Shapes.
     Layout = "../_Layout.cshtml";
-    var localTimeZone = Clock.GetSystemTimeZone();
     var defaultRecipe = Model.Recipes.FirstOrDefault(x => x.Name == Model.RecipeName) ?? Model.Recipes.FirstOrDefault();
     var options = IdentityOptions.Value;
     var passwordOptions = new HtmlContentBuilder();
@@ -150,14 +149,7 @@
         }
         <div class="mb-3 col-md-4" asp-validation-class-for="SiteTimeZone">
             <label asp-for="SiteTimeZone" class="form-label">@T["Default Time Zone"]</label>
-            <select asp-for="SiteTimeZone" class="form-select">
-                @foreach (var timeZone in Clock.GetTimeZones())
-                {
-                    <option value="@timeZone.TimeZoneId" selected="@(timeZone.TimeZoneId == localTimeZone.TimeZoneId)">
-                        @timeZone
-                    </option>
-                }
-            </select>
+            <select asp-for="SiteTimeZone" class="form-select" asp-items="TimeZoneSelectListProvider.GetTimeZoneSelectListItems()"></select>
             <span asp-validation-for="SiteTimeZone"></span>
             <span class="text-muted form-text small">@T["Determines the default time zone used when displaying and editing dates and times."]</span>
         </div>
