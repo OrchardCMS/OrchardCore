@@ -115,6 +115,14 @@
                                                 data-title="@T["Publish Draft"]"
                                                 data-message="@T["Are you sure you want to publish this draft? This website will restart after publishing."]">@T["Publish Draft"]</button>
                                     }
+                                    @if (entry.HasPublished)
+                                    {
+                                        <button type="button"
+                                                class="btn btn-warning btn-sm"
+                                                data-unpublish-policy-id="@entry.PolicyId"
+                                                data-title="@T["Unpublish Policy"]"
+                                                data-message="@T["Are you sure you want to unpublish this policy? This website will restart after unpublishing it."]">@T["Unpublish"]</button>
+                                    }
                                     <button type="button"
                                             class="btn btn-danger btn-sm"
                                             data-delete-policy-id="@entry.PolicyId"
@@ -153,6 +161,10 @@
     <input type="hidden" name="policyId" id="publish-policy-id" />
 </form>
 
+<form asp-action="Unpublish" method="post" id="unpublish-policy-form" class="d-none">
+    <input type="hidden" name="policyId" id="unpublish-policy-id" />
+</form>
+
 @if (Model.Pager is not null)
 {
     @await DisplayAsync(Model.Pager)
@@ -176,14 +188,13 @@
                     <li class="list-group-item px-0">
                         <div class="summary d-flex flex-column flex-md-row align-items-md-center gap-1">
                             <div class="me-2">
-                                <strong>@route.RouteName</strong>
+                                <strong>@route.Path</strong>
                             </div>
                             <div class="tags d-flex gap-1 flex-wrap">
                                 @foreach (var method in route.Methods)
                                 {
                                     <span class="badge ta-badge bg-primary-subtle text-primary-emphasis">@method</span>
                                 }
-                                <span class="badge ta-badge bg-secondary-subtle text-secondary-emphasis">@T["Built-in"]</span>
                             </div>
                         </div>
                     </li>
@@ -205,6 +216,8 @@
         const deletePolicyId = document.getElementById('delete-policy-id');
         const publishPolicyForm = document.getElementById('publish-policy-form');
         const publishPolicyId = document.getElementById('publish-policy-id');
+        const unpublishPolicyForm = document.getElementById('unpublish-policy-form');
+        const unpublishPolicyId = document.getElementById('unpublish-policy-id');
 
         const getCheckboxes = () => [...document.querySelectorAll('input[name="policyIds"]')];
         const updateSelection = () => {
@@ -283,6 +296,22 @@
 
                         publishPolicyId.value = button.dataset.publishPolicyId;
                         publishPolicyForm.submit();
+                    }
+                });
+            });
+        }
+
+        for (const button of document.querySelectorAll('[data-unpublish-policy-id]')) {
+            button.addEventListener('click', () => {
+                confirmDialog({
+                    ...button.dataset,
+                    callback: (confirmed) => {
+                        if (!confirmed) {
+                            return;
+                        }
+
+                        unpublishPolicyId.value = button.dataset.unpublishPolicyId;
+                        unpublishPolicyForm.submit();
                     }
                 });
             });

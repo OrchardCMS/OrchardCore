@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.AspNetCore.Routing.Patterns;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
@@ -38,6 +39,7 @@ public sealed class AdminController : Controller
     private readonly IRateLimitPolicyStore _policyStore;
     private readonly IShellReleaseManager _shellReleaseManager;
     private readonly RateLimitsOptions _rateLimitsOptions;
+    private readonly EndpointDataSource _endpointDataSource;
     private readonly IDisplayManager<RateLimitLimiter> _displayManager;
 
     internal readonly IStringLocalizer S;
@@ -50,6 +52,7 @@ public sealed class AdminController : Controller
         IRateLimitPolicyStore policyStore,
         IServiceProvider serviceProvider,
         IShellReleaseManager shellReleaseManager,
+        EndpointDataSource endpointDataSource,
         IOptions<RateLimitsOptions> rateLimitsOptions,
         IStringLocalizer<AdminController> stringLocalizer,
         IHtmlLocalizer<AdminController> htmlLocalizer)
@@ -60,6 +63,7 @@ public sealed class AdminController : Controller
         _policyStore = policyStore;
         _serviceProvider = serviceProvider;
         _shellReleaseManager = shellReleaseManager;
+        _endpointDataSource = endpointDataSource;
         _rateLimitsOptions = rateLimitsOptions.Value;
         S = stringLocalizer;
         H = htmlLocalizer;
@@ -212,6 +216,31 @@ public sealed class AdminController : Controller
     }
 
     [HttpPost]
+    public async Task<IActionResult> Unpublish(string policyId)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, RateLimitsPermissions.ManageRateLimits))
+        {
+            return Forbid();
+        }
+
+        var policy = await GetPublishedPolicyAsync(policyId);
+        if (policy is null)
+        {
+            return NotFound();
+        }
+
+        if (!await _policyStore.UnpublishAsync(policy))
+        {
+            return NotFound();
+        }
+
+        _shellReleaseManager.RequestRelease();
+        await _notifier.SuccessAsync(H["Policy unpublished successfully."]);
+
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpPost]
     public async Task<IActionResult> Delete(string policyId)
     {
         if (!await _authorizationService.AuthorizeAsync(User, RateLimitsPermissions.ManageRateLimits))
@@ -317,6 +346,7 @@ public sealed class AdminController : Controller
             Status = policy.Status,
             PublishedUtc = policy.PublishedUtc,
             HasDraft = policy.Status != RateLimitPolicyStatus.Published,
+            HasPublished = policy.Status != RateLimitPolicyStatus.Draft,
         };
     }
 
@@ -494,13 +524,79 @@ public sealed class AdminController : Controller
 
     private List<BuiltInRouteRateLimitViewModel> BuildBuiltInRouteLimits()
     {
+        var endpointsByName = _endpointDataSource.Endpoints
+            .OfType<RouteEndpoint>()
+            .ToLookup(
+                static endpoint => endpoint.Metadata.GetMetadata<IRouteNameMetadata>()?.RouteName
+                    ?? endpoint.Metadata.GetMetadata<IEndpointNameMetadata>()?.EndpointName,
+                StringComparer.OrdinalIgnoreCase);
+
         return _rateLimitsOptions.RouteRateLimits
             .OrderBy(x => x.RouteName, StringComparer.OrdinalIgnoreCase)
             .Select(x => new BuiltInRouteRateLimitViewModel
             {
-                RouteName = x.RouteName,
+                Path = FormatPath(FindMatchingEndpoint(endpointsByName[x.RouteName], x.HttpMethods))
+                    ?? x.RouteName,
                 Methods = x.HttpMethods.Count == 0 ? [S["Any"]] : [.. x.HttpMethods],
             }).ToList();
+    }
+
+    private static RouteEndpoint FindMatchingEndpoint(IEnumerable<RouteEndpoint> endpoints, IReadOnlyList<string> methods)
+    {
+        foreach (var endpoint in endpoints)
+        {
+            var endpointMethods = endpoint.Metadata.GetMetadata<IHttpMethodMetadata>()?.HttpMethods?
+                .Where(static method => !string.IsNullOrWhiteSpace(method))
+                .ToArray() ?? [];
+
+            if (endpointMethods.Length == 0 && methods.Count == 0)
+            {
+                return endpoint;
+            }
+
+            if (endpointMethods.Length == methods.Count &&
+                endpointMethods.All(method => methods.Contains(method, StringComparer.OrdinalIgnoreCase)))
+            {
+                return endpoint;
+            }
+        }
+
+        return endpoints.FirstOrDefault();
+    }
+
+    private static string FormatPath(RouteEndpoint endpoint)
+    {
+        if (endpoint is null)
+        {
+            return null;
+        }
+
+        var path = endpoint.RoutePattern.RawText;
+        if (string.IsNullOrWhiteSpace(path))
+        {
+            path = string.Concat(endpoint.RoutePattern.PathSegments.Select(FormatSegment));
+        }
+
+        if (string.IsNullOrWhiteSpace(path))
+        {
+            return null;
+        }
+
+        return path.StartsWith('/') ? path : "/" + path;
+    }
+
+    private static string FormatSegment(RoutePatternPathSegment segment)
+        => "/" + string.Concat(segment.Parts.Select(FormatPart));
+
+    private static string FormatPart(RoutePatternPart part)
+    {
+        return part switch
+        {
+            RoutePatternLiteralPart literal => literal.Content,
+            RoutePatternSeparatorPart separator => separator.Content,
+            RoutePatternParameterPart parameter => "{" + parameter.Name + "}",
+            _ => part.ToString(),
+        };
     }
 
     private async Task<List<RateLimitPolicy>> GetCurrentPoliciesAsync()

@@ -85,7 +85,7 @@
             </p>
             <div class="d-flex gap-1 flex-wrap">
                 <button class="btn btn-primary" type="submit" name="submit.Save" value="submit.Save">@T["Save Draft"]</button>
-                <button class="btn btn-success" type="submit" name="submit.Publish" value="submit.Publish">@T["Save & Publish"]</button>
+                <button class="btn btn-success" type="submit" name="submit.Publish" value="submit.Publish" data-confirm-publish="true">@T["Save & Publish"]</button>
                 <a asp-action="Index" class="btn btn-secondary">@T["Cancel"]</a>
             </div>
         </div>
@@ -99,6 +99,28 @@
                 <h5 class="modal-title" id="available-limiter-types-title">@T["Available Limiter Types"]</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
+
+            <script at="Foot">
+                document.addEventListener('DOMContentLoaded', () => {
+                    for (const button of document.querySelectorAll('[data-confirm-publish]')) {
+                        button.addEventListener('click', (event) => {
+                            event.preventDefault();
+
+                            confirmDialog({
+                                title: '@T["Save & Publish"]',
+                                message: '@T["Are you sure you want to save and publish this policy? This website will restart after publishing."]',
+                                callback: (confirmed) => {
+                                    if (!confirmed) {
+                                        return;
+                                    }
+
+                                    button.form?.requestSubmit(button);
+                                }
+                            });
+                        });
+                    }
+                });
+            </script>
             <div class="modal-body">
                 <div class="row row-cols-1 row-cols-md-2 g-3">
                     @foreach (var source in Model.LimiterSources)

@@ -140,6 +140,33 @@ public sealed class RateLimitPolicyStore : IRateLimitPolicyStore
         return publishedPolicies;
     }
 
+    /// <inheritdoc />
+    public async ValueTask<bool> UnpublishAsync(RateLimitPolicy policy)
+    {
+        ArgumentNullException.ThrowIfNull(policy);
+        ArgumentException.ThrowIfNullOrEmpty(policy.PolicyId);
+
+        var document = await _documentManager.GetOrCreateMutableAsync();
+        var publishedPolicy = FindPublished(document, policy.PolicyId);
+        if (publishedPolicy is null)
+        {
+            return false;
+        }
+
+        if (FindDraft(document, policy.PolicyId) is null)
+        {
+            var draftPolicy = Clone(publishedPolicy);
+            draftPolicy.PublishedUtc = null;
+            Upsert(document.DraftPolicies, draftPolicy);
+        }
+
+        document.PublishedPolicies.RemoveAll(x => string.Equals(x.PolicyId, policy.PolicyId, StringComparison.Ordinal));
+
+        await _documentManager.UpdateAsync(document);
+
+        return true;
+    }
+
     /// <summary>
     /// Finds the draft policy with the specified identifier in the provided document.
     /// </summary>

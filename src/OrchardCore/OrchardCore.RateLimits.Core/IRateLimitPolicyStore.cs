@@ -47,4 +47,11 @@ public interface IRateLimitPolicyStore
     /// <param name="policies">The draft policies to publish.</param>
     /// <returns>The published policies created by the operation.</returns>
     ValueTask<IReadOnlyCollection<RateLimitPolicy>> PublishAsync(IEnumerable<RateLimitPolicy> policies);
+
+    /// <summary>
+    /// Unpublishes the specified policy while preserving an editable draft.
+    /// </summary>
+    /// <param name="policy">The policy to unpublish.</param>
+    /// <returns><c>true</c> when the policy was unpublished; otherwise <c>false</c>.</returns>
+    ValueTask<bool> UnpublishAsync(RateLimitPolicy policy);
 }

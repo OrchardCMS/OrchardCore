@@ -19,4 +19,6 @@ public class RateLimitPolicyEntryViewModel
     public DateTime? PublishedUtc { get; set; }
 
     public bool HasDraft { get; set; }
+
+    public bool HasPublished { get; set; }
 }
