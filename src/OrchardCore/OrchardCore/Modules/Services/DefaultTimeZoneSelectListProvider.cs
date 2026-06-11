@@ -15,7 +15,7 @@ public sealed class DefaultTimeZoneSelectListProvider : ITimeZoneSelectListProvi
     public ValueTask<IReadOnlyList<KeyValuePair<string, string>>> GetTimeZoneSelectListAsync(CancellationToken cancellationToken = default)
     {
         _items ??= _clock.GetTimeZones()
-            .Select(timeZone => new KeyValuePair<string, string>(timeZone.TimeZoneId, timeZone.TimeZoneId))
+            .Select(timeZone => new KeyValuePair<string, string>(timeZone.TimeZoneId, timeZone.ToString()))
             .OrderBy(item => item.Value, StringComparer.Ordinal)
             .ToArray();
 
