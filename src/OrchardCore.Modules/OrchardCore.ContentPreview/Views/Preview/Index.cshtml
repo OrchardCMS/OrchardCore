@@ -6,7 +6,10 @@
 <script asp-name="js-cookie" at="Foot"></script>
 <script asp-name="jQuery" at="Foot"></script>
 
-<iframe id="iframe" title="iframe" style="position:fixed; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%; border:none; margin:0; padding:0; overflow:hidden; z-index:999990;">
+<iframe id="iframe-a" title="iframe" style="position:fixed; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%; border:none; margin:0; padding:0; overflow:hidden; z-index:999990;">
+    Your browser doesn't support iframes
+</iframe>
+<iframe id="iframe-b" title="iframe" style="position:fixed; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%; border:none; margin:0; padding:0; overflow:hidden; z-index:999990; visibility:hidden;">
     Your browser doesn't support iframes
 </iframe>
 
@@ -26,12 +29,63 @@
 <resources type="Footer" />
 
 <script>
-    let iframe = document.getElementById('iframe');
-    let previewRenderTimer = null, previewRendering, previewRenderData, renderPreviewUrl;
+    let activeFrame = document.getElementById('iframe-a');
+    let stagingFrame = document.getElementById('iframe-b');
+    let previewRenderTimer = null, previewRendering, renderPreviewUrl;
+    let lastHeadHTML = null;
+
+    function handleFrameLoad() {
+        if (this === stagingFrame) {
+            var scrollY = activeFrame.contentWindow ? activeFrame.contentWindow.scrollY : 0;
+            if (scrollY > 0 && this.contentWindow) {
+                this.contentWindow.scrollTo(0, scrollY);
+            }
+            stagingFrame.style.visibility = 'visible';
+            activeFrame.style.visibility = 'hidden';
+            var tmp = activeFrame;
+            activeFrame = stagingFrame;
+            stagingFrame = tmp;
+        }
+        previewRendering = false;
+    }
+
+    activeFrame.addEventListener('load', handleFrameLoad);
+    stagingFrame.addEventListener('load', handleFrameLoad);
+
+    function applyPreview(data) {
+        var newDoc = new DOMParser().parseFromString(data, 'text/html');
+        var newHeadHTML = newDoc.head.innerHTML;
+        var iframeDoc = activeFrame.contentDocument;
+
+        if (lastHeadHTML !== null && newHeadHTML === lastHeadHTML && iframeDoc && iframeDoc.body) {
+            // Head is unchanged (common case: typing in the editor).
+            // Update body in-place: no navigation, no scroll reset, no flicker.
+            var scrollY = activeFrame.contentWindow ? activeFrame.contentWindow.scrollY : 0;
+
+            Array.from(newDoc.documentElement.attributes).forEach(function (attr) {
+                iframeDoc.documentElement.setAttribute(attr.name, attr.value);
+            });
+            iframeDoc.body.innerHTML = newDoc.body.innerHTML;
+            Array.from(newDoc.body.attributes).forEach(function (attr) {
+                iframeDoc.body.setAttribute(attr.name, attr.value);
+            });
+
+            if (activeFrame.contentWindow) {
+                activeFrame.contentWindow.scrollTo(0, scrollY);
+            }
+            previewRendering = false;
+        } else {
+            // Head changed or first load: full reload via staging frame so that
+            // DOMContentLoaded fires and all scripts reinitialise correctly.
+            lastHeadHTML = newHeadHTML;
+            stagingFrame.srcdoc = data;
+        }
+    }
 
     $(function () {
         var previewEventTimer = null;
         renderPreviewUrl = document.getElementById('renderPreviewUrl').getAttribute('data-value');
+
         $(window).on('storage', function (ev) {
             if (ev.key.indexOf('contentpreview:not-connected:') !== -1) {
                 $(notConnectedWarning).show();
@@ -67,10 +121,6 @@
         }
     });
 
-    iframe.onload = function () {
-        previewRendering = false;
-    }
-
     function renderPreview(value) {
         if (previewRendering) {
             // Defer the last rendering
@@ -91,10 +141,7 @@
 
             $.post(renderPreviewUrl, formData)
                 .done(function (data) {
-                    if (iframe) {
-                        previewRenderData = data;
-                        iframe.srcdoc = data;
-                    }
+                    applyPreview(data);
                     $(serverErrorWarning).hide();
                 })
                 .fail(function (data) {
