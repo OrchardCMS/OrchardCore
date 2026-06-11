@@ -20,7 +20,7 @@
     var passwordOptions = new HtmlContentBuilder();
     IHtmlContent separator = HtmlString.Empty;
     string passwordRegex = "";
-    var timeZoneSelectList = await TimeZoneSelectListProvider.GetTimeZoneSelectList();
+    var timeZoneSelectList = await TimeZoneSelectListProvider.GetTimeZoneSelectListAsync();
 
     if (options.Password.RequireNonAlphanumeric)
     {

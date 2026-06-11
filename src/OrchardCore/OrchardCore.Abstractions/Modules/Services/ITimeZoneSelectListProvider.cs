@@ -10,5 +10,5 @@ public interface ITimeZoneSelectListProvider
     /// <summary>
     /// Gets the available time zone items sorted for display.
     /// </summary>
-    ValueTask<IReadOnlyList<SelectListItem>> GetTimeZoneSelectList();
+    ValueTask<IReadOnlyList<SelectListItem>> GetTimeZoneSelectListAsync();
 }

@@ -1,7 +1,7 @@
 @model SiteSettingsViewModel
 @inject OrchardCore.Modules.ITimeZoneSelectListProvider TimeZoneSelectListProvider
 @{
-    var timeZoneSelectList = await TimeZoneSelectListProvider.GetTimeZoneSelectList();
+    var timeZoneSelectList = await TimeZoneSelectListProvider.GetTimeZoneSelectListAsync();
 }
 
 <div class="ocat-wrapper" asp-validation-class-for="SiteName">

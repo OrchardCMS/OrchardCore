@@ -18,7 +18,7 @@ public class TimeZoneSelectListProviderTests
         var provider = new DefaultTimeZoneSelectListProvider(clock.Object);
 
         // Act
-        var items = await provider.GetTimeZoneSelectList();
+        var items = await provider.GetTimeZoneSelectListAsync();
 
         // Assert
         Assert.Collection(
