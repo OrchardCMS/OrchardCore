@@ -1,12 +1,10 @@
-using Microsoft.AspNetCore.Mvc.Rendering;
-
 namespace OrchardCore.Modules.Services;
 
 public sealed class DefaultTimeZoneSelectListProvider : ITimeZoneSelectListProvider
 {
     private readonly IClock _clock;
 
-    private SelectListItem[] _selectListItems;
+    private KeyValuePair<string, string>[] _items;
 
     public DefaultTimeZoneSelectListProvider(IClock clock)
     {
@@ -14,17 +12,13 @@ public sealed class DefaultTimeZoneSelectListProvider : ITimeZoneSelectListProvi
     }
 
     /// <inheritdoc/>
-    public ValueTask<IReadOnlyList<SelectListItem>> GetTimeZoneSelectListAsync()
+    public ValueTask<IReadOnlyList<KeyValuePair<string, string>>> GetTimeZoneSelectListAsync(CancellationToken cancellationToken = default)
     {
-        _selectListItems ??= _clock.GetTimeZones()
-            .Select(timeZone => new SelectListItem
-            {
-                Value = timeZone.TimeZoneId,
-                Text = timeZone.ToString(),
-            })
-            .OrderBy(item => item.Text, StringComparer.Ordinal)
+        _items ??= _clock.GetTimeZones()
+            .Select(timeZone => new KeyValuePair<string, string>(timeZone.TimeZoneId, timeZone.TimeZoneId))
+            .OrderBy(item => item.Value, StringComparer.Ordinal)
             .ToArray();
 
-        return ValueTask.FromResult<IReadOnlyList<SelectListItem>>(_selectListItems);
+        return ValueTask.FromResult<IReadOnlyList<KeyValuePair<string, string>>>(_items);
     }
 }
