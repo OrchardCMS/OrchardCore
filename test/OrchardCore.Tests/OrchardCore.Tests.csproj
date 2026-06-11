@@ -11,45 +11,7 @@
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
-
-  <ItemGroup>
-    <None Include="xunit.runner.json" CopyToOutputDirectory="PreserveNewest" />
-    <None Include="..\..\src\OrchardCore.Cms.Web\NLog.config" CopyToOutputDirectory="PreserveNewest" />
-    <None Include="..\..\src\OrchardCore.Cms.Web\*.json" CopyToOutputDirectory="PreserveNewest" />
-    <None Include="..\..\src\OrchardCore.Cms.Web\wwwroot\**\*" Link="wwwroot\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="Apis\Lucene\Recipes\luceneQueryTest.json" />
-    <None Remove="Apis\GraphQL\ContentManagement\Recipes\DynamicContentTypeQueryTest.json" />
-    <None Remove="Modules\OrchardCore.OpenId\RecipeFiles\app-recipe1.json" />
-    <None Remove="Modules\OrchardCore.OpenId\RecipeFiles\app-recipe2.json" />
-    <None Remove="Modules\OrchardCore.OpenId\RecipeFiles\app-recipe3.json" />
-    <None Remove="Modules\OrchardCore.OpenId\RecipeFiles\scope-recipe.json" />
-    <None Remove="Recipes\RecipeFiles\recipe1.json" />
-    <None Remove="Recipes\RecipeFiles\recipe2.json" />
-    <None Remove="Recipes\RecipeFiles\recipe3.json" />
-    <None Remove="Recipes\RecipeFiles\recipe4.json" />
-    <None Remove="Recipes\RecipeFiles\recipe5.json" />
-    <None Remove="Recipes\RecipeFiles\recipe6.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="Localization\PoFiles\*.po" />
-    <EmbeddedResource Include="Apis\Lucene\Recipes\luceneQueryTest.json" />
-    <EmbeddedResource Include="Apis\GraphQL\ContentManagement\Recipes\DynamicContentTypeQueryTest.json" />
-    <EmbeddedResource Include="Modules\OrchardCore.OpenId\RecipeFiles\app-recipe3.json" />
-    <EmbeddedResource Include="Modules\OrchardCore.OpenId\RecipeFiles\app-recipe2.json" />
-    <EmbeddedResource Include="Modules\OrchardCore.OpenId\RecipeFiles\app-recipe1.json" />
-    <EmbeddedResource Include="Modules\OrchardCore.OpenId\RecipeFiles\scope-recipe.json" />
-    <EmbeddedResource Include="Recipes\RecipeFiles\recipe1.json" />
-    <EmbeddedResource Include="Recipes\RecipeFiles\recipe2.json" />
-    <EmbeddedResource Include="Recipes\RecipeFiles\recipe3.json" />
-    <EmbeddedResource Include="Recipes\RecipeFiles\recipe4.json" />
-    <EmbeddedResource Include="Recipes\RecipeFiles\recipe5.json" />
-    <EmbeddedResource Include="Recipes\RecipeFiles\recipe6.json" />
-  </ItemGroup>
-
+ 
   <ItemGroup>
     <ProjectReference Include="..\..\src\OrchardCore.Cms.Web\OrchardCore.Cms.Web.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore.Modules\OrchardCore.DynamicCache\OrchardCore.DynamicCache.csproj" />
@@ -75,12 +37,6 @@
 
   <ItemGroup>
     <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="Localization\*\OrchardCore.Tests.po">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
   <Import Project="..\..\src\OrchardCore.Build\OrchardCore.Commons.targets" />
