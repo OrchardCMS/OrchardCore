@@ -28,3 +28,14 @@ using OrchardCore.Modules.Manifest;
     ],
     Category = "Hosting"
 )]
+
+[assembly: Feature(
+    Id = "OrchardCore.Media.Azure.ImageSharpImageCache",
+    Name = "Azure Media Image Cache (Obsolete)",
+    Description = "Obsolete legacy feature ID kept for backwards compatibility. Enables OrchardCore.Media.Azure.ImageCache automatically.",
+    Dependencies =
+    [
+        "OrchardCore.Media.Azure.ImageCache"
+    ],
+    Category = "Hosting"
+)]

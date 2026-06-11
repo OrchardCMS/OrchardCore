@@ -6,8 +6,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.Data.Migration;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
+using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.FileStorage;
 using OrchardCore.FileStorage.AzureBlob;
 using OrchardCore.Media.Azure.Services;
@@ -194,5 +196,38 @@ public sealed class MediaAzureImageCacheStartup : Modules.StartupBase
         }
 
         return optionsAreValid;
+    }
+}
+
+// Keeps the renamed feature enabled on sites that had the legacy
+// "OrchardCore.Media.Azure.ImageSharpImageCache" feature enabled before the rename. The legacy
+// feature depends on the new one, and this migration explicitly enables the new feature so it
+// remains active in its own right once the obsolete feature is removed.
+[Feature("OrchardCore.Media.Azure.ImageSharpImageCache")]
+public sealed class LegacyImageCacheFeatureStartup : Modules.StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddDataMigration<LegacyImageCacheFeatureMigrations>();
+    }
+}
+
+internal sealed class LegacyImageCacheFeatureMigrations : DataMigration
+{
+    public static int Create()
+    {
+        ShellScope.AddDeferredTask(async scope =>
+        {
+            var featuresManager = scope.ServiceProvider.GetRequiredService<IShellFeaturesManager>();
+
+            if (await featuresManager.IsFeatureEnabledAsync("OrchardCore.Media.Azure.ImageCache"))
+            {
+                return;
+            }
+
+            await featuresManager.EnableFeaturesAsync("OrchardCore.Media.Azure.ImageCache");
+        });
+
+        return 1;
     }
 }
