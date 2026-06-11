@@ -18,7 +18,7 @@ $(function () {
 });
 
 $(function () {
-    var previewButton, contentItemType, previewId, previewContentItemId, previewContentItemVersionId, draftUrl, form, channel, draftTimer;
+    var previewButton, contentItemType, previewId, previewContentItemId, previewContentItemVersionId, draftUrl, form, channel, draftTimer, currentXHR;
 
     previewButton = document.getElementById('previewButton');
     contentItemType = $(document.getElementById('contentItemType')).data('value');
@@ -37,25 +37,35 @@ $(function () {
     };
 
     function sendDraft() {
+        // Cancel any in-flight request so stale responses don't overwrite a newer preview.
+        if (currentXHR) {
+            currentXHR.abort();
+            currentXHR = null;
+        }
+
         var formData = form.serializeArray();
         formData.push({ name: 'ContentItemType', value: contentItemType });
         formData.push({ name: 'PreviewContentItemId', value: previewContentItemId });
         formData.push({ name: 'PreviewContentItemVersionId', value: previewContentItemVersionId });
 
-        $.post(draftUrl, $.param(formData))
+        currentXHR = $.post(draftUrl, $.param(formData))
             .done(function (data) {
+                currentXHR = null;
                 channel.postMessage({ type: 'token', previewUrl: data.previewUrl });
             })
             .fail(function (data) {
-                if (data.responseJSON && data.responseJSON.errors) {
+                currentXHR = null;
+                if (data.statusText !== 'abort' && data.responseJSON && data.responseJSON.errors) {
                     channel.postMessage({ type: 'error', errors: data.responseJSON.errors });
                 }
             });
     }
 
+    // 500ms debounce: collapses rapid keystrokes (e.g. from a WYSIWYG editor) into a
+    // single draft submission after the user pauses, preventing server spam.
     $(document).on('contentpreview:render', function () {
         clearTimeout(draftTimer);
-        draftTimer = setTimeout(sendDraft, 150);
+        draftTimer = setTimeout(sendDraft, 500);
     });
 
     $(window).on('unload', function () {
