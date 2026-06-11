@@ -38,23 +38,15 @@
             var active = getActive();
             var staging = getStaging();
 
-            // Restore scroll as percentage so the scrollbar thumb stays in place
-            // even when the page height changes slightly between updates.
-            var activeWin = active.contentWindow;
-            if (activeWin) {
-                var maxScroll = activeWin.document.documentElement.scrollHeight - activeWin.innerHeight;
-                if (maxScroll > 0) {
-                    var scrollPercent = activeWin.scrollY / maxScroll;
-                    var stagingWin = staging.contentWindow;
-                    if (stagingWin) {
-                        var stagingMax = stagingWin.document.documentElement.scrollHeight - stagingWin.innerHeight;
-                        stagingWin.scrollTo(0, scrollPercent * stagingMax);
-                    }
-                }
+            // Restore the exact pixel scroll position on the hidden staging frame before
+            // bringing it to the front. Because the swap is instantaneous (z-index only,
+            // no animation), the user never sees the staging frame scroll — they just see
+            // the new content already at the right position after the swap.
+            var scrollY = active.contentWindow ? active.contentWindow.scrollY : 0;
+            if (scrollY > 0 && staging.contentWindow) {
+                staging.contentWindow.scrollTo(0, scrollY);
             }
 
-            // Bring staging to front, send active to back.
-            // Using only z-index (no visibility) so scrollTo above takes effect reliably.
             staging.style.zIndex = '999990';
             active.style.zIndex = '999989';
             activeIdx = 1 - activeIdx;
