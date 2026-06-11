@@ -27,7 +27,7 @@
 
 <script>
     let iframe = document.getElementById('iframe');
-    let previewRenderTimer = null, previewRendering, previewRenderData, initialized, renderPreviewUrl;
+    let previewRenderTimer = null, previewRendering, previewRenderData, renderPreviewUrl;
 
     $(function () {
         var previewEventTimer = null;
@@ -68,17 +68,6 @@
     });
 
     iframe.onload = function () {
-        // The iframe may not be well setup after the first loading and then on the first editor update
-        // we may lose the scrolling position. A workaround is to re-fetch the page once after or to add
-        // here a delay that really block the thread before exiting. Here, we just rewrite the document.
-        if (!initialized) {
-            if (this.contentWindow) {
-                iframe.contentWindow.document.open();
-                iframe.contentWindow.document.write(previewRenderData);
-                iframe.contentWindow.document.close();
-            }
-            initialized = true;
-        }
         previewRendering = false;
     }
 
@@ -102,11 +91,9 @@
 
             $.post(renderPreviewUrl, formData)
                 .done(function (data) {
-                    if (iframe && iframe.contentWindow) {
-                        iframe.contentWindow.document.open();
-                        iframe.contentWindow.document.write(data);
-                        iframe.contentWindow.document.close();
+                    if (iframe) {
                         previewRenderData = data;
+                        iframe.srcdoc = data;
                     }
                     $(serverErrorWarning).hide();
                 })
