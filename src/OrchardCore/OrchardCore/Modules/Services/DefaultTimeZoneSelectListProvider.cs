@@ -12,13 +12,13 @@ public sealed class DefaultTimeZoneSelectListProvider : ITimeZoneSelectListProvi
     }
 
     /// <inheritdoc/>
-    public ValueTask<IReadOnlyList<KeyValuePair<string, string>>> GetTimeZoneSelectListAsync(CancellationToken cancellationToken = default)
+    public ValueTask<IEnumerable<KeyValuePair<string, string>>> GetTimeZoneSelectListAsync(CancellationToken cancellationToken = default)
     {
         _items ??= _clock.GetTimeZones()
             .Select(timeZone => new KeyValuePair<string, string>(timeZone.TimeZoneId, timeZone.ToString()))
             .OrderBy(item => item.Value, StringComparer.Ordinal)
             .ToArray();
 
-        return ValueTask.FromResult<IReadOnlyList<KeyValuePair<string, string>>>(_items);
+        return ValueTask.FromResult<IEnumerable<KeyValuePair<string, string>>>(_items);
     }
 }

@@ -8,5 +8,5 @@ public interface ITimeZoneSelectListProvider
     /// <summary>
     /// Gets the available time zone items sorted for display.
     /// </summary>
-    ValueTask<IReadOnlyList<KeyValuePair<string, string>>> GetTimeZoneSelectListAsync(CancellationToken cancellationToken = default);
+    ValueTask<IEnumerable<KeyValuePair<string, string>>> GetTimeZoneSelectListAsync(CancellationToken cancellationToken = default);
 }
