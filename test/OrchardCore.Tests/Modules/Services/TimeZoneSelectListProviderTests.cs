@@ -3,7 +3,7 @@ namespace OrchardCore.Modules.Services.Tests;
 public class TimeZoneSelectListProviderTests
 {
     [Fact]
-    public void GetTimeZoneSelectListItems_MapsAndSortsTimeZones()
+    public async Task GetTimeZoneSelectList_MapsAndSortsTimeZones()
     {
         // Arrange
         var clock = new Mock<IClock>();
@@ -18,7 +18,7 @@ public class TimeZoneSelectListProviderTests
         var provider = new DefaultTimeZoneSelectListProvider(clock.Object);
 
         // Act
-        var items = provider.GetTimeZoneSelectListItems();
+        var items = await provider.GetTimeZoneSelectList();
 
         // Assert
         Assert.Collection(

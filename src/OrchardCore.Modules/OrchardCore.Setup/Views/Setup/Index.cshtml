@@ -20,6 +20,7 @@
     var passwordOptions = new HtmlContentBuilder();
     IHtmlContent separator = HtmlString.Empty;
     string passwordRegex = "";
+    var timeZoneSelectList = await TimeZoneSelectListProvider.GetTimeZoneSelectList();
 
     if (options.Password.RequireNonAlphanumeric)
     {
@@ -149,7 +150,7 @@
         }
         <div class="mb-3 col-md-4" asp-validation-class-for="SiteTimeZone">
             <label asp-for="SiteTimeZone" class="form-label">@T["Default Time Zone"]</label>
-            <select asp-for="SiteTimeZone" class="form-select" asp-items="TimeZoneSelectListProvider.GetTimeZoneSelectListItems()"></select>
+            <select asp-for="SiteTimeZone" class="form-select" asp-items="timeZoneSelectList"></select>
             <span asp-validation-for="SiteTimeZone"></span>
             <span class="text-muted form-text small">@T["Determines the default time zone used when displaying and editing dates and times."]</span>
         </div>

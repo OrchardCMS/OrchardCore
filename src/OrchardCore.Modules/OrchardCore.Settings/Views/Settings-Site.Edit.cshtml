@@ -1,5 +1,8 @@
 @model SiteSettingsViewModel
 @inject OrchardCore.Modules.ITimeZoneSelectListProvider TimeZoneSelectListProvider
+@{
+    var timeZoneSelectList = await TimeZoneSelectListProvider.GetTimeZoneSelectList();
+}
 
 <div class="ocat-wrapper" asp-validation-class-for="SiteName">
     <label asp-for="SiteName" class="ocat-label">@T["Site name"]</label>
@@ -31,7 +34,7 @@
 <div class="ocat-limited-wrapper" asp-validation-class-for="TimeZone">
     <label asp-for="TimeZone" class="ocat-label">@T["Default Time Zone"]</label>
     <div class="ocat-limited">
-        <select asp-for="TimeZone" class="form-select" asp-items="TimeZoneSelectListProvider.GetTimeZoneSelectListItems()">
+        <select asp-for="TimeZone" class="form-select" asp-items="timeZoneSelectList">
             <option value="">@T["Local to server"]</option>
         </select>
         <span asp-validation-for="TimeZone"></span>

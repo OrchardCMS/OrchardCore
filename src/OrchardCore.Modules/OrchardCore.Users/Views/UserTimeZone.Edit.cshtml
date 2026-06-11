@@ -1,10 +1,13 @@
 @model UserTimeZoneViewModel
 @inject OrchardCore.Modules.ITimeZoneSelectListProvider TimeZoneSelectListProvider
+@{
+    var timeZoneSelectList = await TimeZoneSelectListProvider.GetTimeZoneSelectList();
+}
 
 <div class="ocat-wrapper" asp-validation-class-for="TimeZoneId">
     <label asp-for="TimeZoneId" class="ocat-label">@T["Default Time Zone"]</label>
     <div class="ocat-end">
-        <select asp-for="TimeZoneId" class="form-select" asp-items="TimeZoneSelectListProvider.GetTimeZoneSelectListItems()">
+        <select asp-for="TimeZoneId" class="form-select" asp-items="timeZoneSelectList">
             <option value="">@T["Use site's time zone"]</option>
         </select>
         <span asp-validation-for="TimeZoneId"></span>

@@ -12,12 +12,13 @@ public sealed class DefaultTimeZoneSelectListProvider : ITimeZoneSelectListProvi
     }
 
     /// <inheritdoc/>
-    public IReadOnlyList<SelectListItem> GetTimeZoneSelectListItems()
-        => [.. _clock.GetTimeZones()
-            .Select(timeZone => new SelectListItem
-            {
-                Value = timeZone.TimeZoneId,
-                Text = timeZone.ToString(),
-            })
-            .OrderBy(item => item.Text, StringComparer.Ordinal)];
+    public ValueTask<IReadOnlyList<SelectListItem>> GetTimeZoneSelectList()
+        => ValueTask.FromResult<IReadOnlyList<SelectListItem>>(
+            [.. _clock.GetTimeZones()
+                .Select(timeZone => new SelectListItem
+                {
+                    Value = timeZone.TimeZoneId,
+                    Text = timeZone.ToString(),
+                })
+                .OrderBy(item => item.Text, StringComparer.Ordinal)]);
 }
