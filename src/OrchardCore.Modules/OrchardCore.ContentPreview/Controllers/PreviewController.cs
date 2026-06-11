@@ -1,10 +1,13 @@
 using System.Diagnostics;
+using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.Extensions.Caching.Distributed;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
+using OrchardCore.ContentPreview.Models;
 using OrchardCore.Contents;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Modules;
@@ -13,12 +16,18 @@ namespace OrchardCore.ContentPreview.Controllers;
 
 public sealed class PreviewController : Controller
 {
+    private static readonly DistributedCacheEntryOptions _draftCacheOptions = new()
+    {
+        AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+    };
+
     private readonly IContentManager _contentManager;
     private readonly IContentManagerSession _contentManagerSession;
     private readonly IContentItemDisplayManager _contentItemDisplayManager;
     private readonly IAuthorizationService _authorizationService;
     private readonly IClock _clock;
     private readonly IUpdateModelAccessor _updateModelAccessor;
+    private readonly IDistributedCache _distributedCache;
 
     public PreviewController(
         IContentManager contentManager,
@@ -26,7 +35,8 @@ public sealed class PreviewController : Controller
         IContentManagerSession contentManagerSession,
         IAuthorizationService authorizationService,
         IClock clock,
-        IUpdateModelAccessor updateModelAccessor)
+        IUpdateModelAccessor updateModelAccessor,
+        IDistributedCache distributedCache)
     {
         _authorizationService = authorizationService;
         _clock = clock;
@@ -34,6 +44,7 @@ public sealed class PreviewController : Controller
         _contentManager = contentManager;
         _contentManagerSession = contentManagerSession;
         _updateModelAccessor = updateModelAccessor;
+        _distributedCache = distributedCache;
     }
 
     public IActionResult Index()
@@ -42,7 +53,7 @@ public sealed class PreviewController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> Render()
+    public async Task<IActionResult> Draft()
     {
         if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.PreviewContent))
         {
@@ -93,25 +104,61 @@ public sealed class PreviewController : Controller
         }
 
         var previewAspect = await _contentManager.PopulateAspectAsync(contentItem, new PreviewAspect());
-
-        if (!string.IsNullOrEmpty(previewAspect.PreviewUrl))
+        var previewUrl = previewAspect.PreviewUrl;
+        if (!string.IsNullOrEmpty(previewUrl) && !previewUrl.StartsWith('/'))
         {
-            // The PreviewPart is configured, we need to set the fake content item.
-            _contentManagerSession.Store(contentItem);
+            previewUrl = "/" + previewUrl;
+        }
 
-            if (!previewAspect.PreviewUrl.StartsWith('/'))
-            {
-                previewAspect.PreviewUrl = "/" + previewAspect.PreviewUrl;
-            }
+        var token = Guid.NewGuid().ToString("N");
+        var draft = new PreviewDraft
+        {
+            ContentItem = contentItem,
+            PreviewUrl = previewUrl,
+        };
 
-            Request.HttpContext.Items["PreviewPath"] = previewAspect.PreviewUrl;
+        await _distributedCache.SetAsync(
+            "contentpreview:" + token,
+            JsonSerializer.SerializeToUtf8Bytes(draft),
+            _draftCacheOptions);
 
+        return Ok(new { previewUrl = Url.Action("Display", "Preview", new { area = "OrchardCore.ContentPreview", token }) });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Display(string token)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.PreviewContent))
+        {
+            return this.ChallengeOrForbid();
+        }
+
+        var cached = await _distributedCache.GetAsync("contentpreview:" + token);
+        if (cached == null)
+        {
+            return NotFound();
+        }
+
+        var draft = JsonSerializer.Deserialize<PreviewDraft>(cached);
+        var contentItem = draft.ContentItem;
+
+        // Mark request as a `Preview` request so that drivers / handlers or underlying services can be aware of an active preview mode.
+        HttpContext.Features.Set(new ContentPreviewFeature());
+
+        // The PreviewPart is configured, we need to set the fake content item.
+        _contentManagerSession.Store(contentItem);
+
+        if (!string.IsNullOrEmpty(draft.PreviewUrl))
+        {
+            // PreviewStartupFilter will intercept this after the pipeline and re-execute
+            // the pipeline with Request.Path set to the configured preview URL, rendering
+            // the actual content page with the draft content item in session.
+            Request.HttpContext.Items["PreviewPath"] = draft.PreviewUrl;
             return Ok();
         }
 
         var model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, _updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.Detail);
-
-        return View(model);
+        return View("Render", model);
     }
 }
 

@@ -17,47 +17,49 @@ $(function () {
         });
 });
 
-
 $(function () {
-    
-    var previewButton, contentItemType, previewId, previewContentItemId, previewContentItemVersionId, form, formData;
+    var previewButton, contentItemType, previewId, previewContentItemId, previewContentItemVersionId, draftUrl, form, channel, draftTimer;
 
     previewButton = document.getElementById('previewButton');
     contentItemType = $(document.getElementById('contentItemType')).data('value');
     previewId = $(document.getElementById('previewId')).data('value');
     previewContentItemId = $(document.getElementById('previewContentItemId')).data('value');
     previewContentItemVersionId = $(document.getElementById('previewContentItemVersionId')).data('value');
+    draftUrl = $(document.getElementById('draftUrl')).data('value');
     form = $(previewButton).closest('form');
+    channel = new BroadcastChannel('contentpreview-' + previewId);
 
-    sendFormData = function () {
+    // When the preview window signals it is ready, send the current draft immediately.
+    channel.onmessage = function (ev) {
+        if (ev.data && ev.data.type === 'ready') {
+            sendDraft();
+        }
+    };
 
-        formData = form.serializeArray(); // convert form to array
-        formData.push({ name: "ContentItemType", value: contentItemType });
-        formData.push({ name: "PreviewId", value: previewId });
-        formData.push({ name: "PreviewContentItemId", value: previewContentItemId });
-        formData.push({ name: "PreviewContentItemVersionId", value: previewContentItemVersionId });
+    function sendDraft() {
+        var formData = form.serializeArray();
+        formData.push({ name: 'ContentItemType', value: contentItemType });
+        formData.push({ name: 'PreviewContentItemId', value: previewContentItemId });
+        formData.push({ name: 'PreviewContentItemVersionId', value: previewContentItemVersionId });
 
-        // store the form data to pass it in the event handler
-        localStorage.setItem('contentpreview:' + previewId, JSON.stringify($.param(formData)));
+        $.post(draftUrl, $.param(formData))
+            .done(function (data) {
+                channel.postMessage({ type: 'token', previewUrl: data.previewUrl });
+            })
+            .fail(function (data) {
+                if (data.responseJSON && data.responseJSON.errors) {
+                    channel.postMessage({ type: 'error', errors: data.responseJSON.errors });
+                }
+            });
     }
 
     $(document).on('contentpreview:render', function () {
-        sendFormData();
+        clearTimeout(draftTimer);
+        draftTimer = setTimeout(sendDraft, 150);
     });
 
-
-    $(window).on('storage', function (ev) {
-        if (ev.originalEvent.key != 'contentpreview:ready:' + previewId) return; // ignore other keys
-
-        // triggered by the preview window the first time it is loaded in order
-        // to pre-render the view even if no contentpreview:render is already sent
-        sendFormData();
-    });    
-
     $(window).on('unload', function () {
-        localStorage.removeItem('contentpreview:' + previewId);
-        // this will raise an event in the preview window to notify that the live preview is no longer active.
-        localStorage.setItem('contentpreview:not-connected:' + previewId, '');
-        localStorage.removeItem('contentpreview:not-connected:' + previewId);
+        channel.postMessage({ type: 'disconnected' });
+        channel.close();
     });
 });
