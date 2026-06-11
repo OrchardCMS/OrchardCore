@@ -69,10 +69,6 @@
                     navigating = true;
                     getStaging().src = ev.data.previewUrl;
                     break;
-                case 'html':
-                    navigating = true;
-                    getStaging().srcdoc = ev.data.html;
-                    break;
                 case 'error':
                     if (ev.data.errors) {
                         var ul = document.querySelector('#serverErrorWarning ul');

@@ -52,12 +52,7 @@ $(function () {
             .done(function (data) {
                 currentXHR = null;
                 if (data.previewUrl) {
-                    // Content type has a configured preview URL: navigate the staging iframe
-                    // to the real frontend page (full theme, scripts, DOMContentLoaded).
                     channel.postMessage({ type: 'token', previewUrl: data.previewUrl });
-                } else if (data.html) {
-                    // No preview URL: server rendered the shape directly in one round trip.
-                    channel.postMessage({ type: 'html', html: data.html });
                 }
             })
             .fail(function (data) {
@@ -68,11 +63,11 @@ $(function () {
             });
     }
 
-    // 500ms debounce: collapses rapid keystrokes (e.g. from a WYSIWYG editor) into a
-    // single draft submission after the user pauses, preventing server spam.
+    // 150ms debounce collapses rapid keystrokes; in-flight request cancellation handles
+    // stale responses so a short window is safe.
     $(document).on('contentpreview:render', function () {
         clearTimeout(draftTimer);
-        draftTimer = setTimeout(sendDraft, 500);
+        draftTimer = setTimeout(sendDraft, 150);
     });
 
     $(window).on('unload', function () {
