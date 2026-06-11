@@ -23,6 +23,7 @@ internal sealed class MediaImageProcessingMiddleware : IMiddleware
     private readonly IImageProcessingEngine _engine;
     private readonly IResizedImageCache _cache;
     private readonly MediaCommandParser _commandParser;
+    private readonly SingleFlight<string, string> _singleFlight;
     private readonly IOptions<MediaOptions> _mediaOptions;
     private readonly ShellSettings _shellSettings;
     private readonly ILogger _logger;
@@ -32,6 +33,7 @@ internal sealed class MediaImageProcessingMiddleware : IMiddleware
         IImageProcessingEngine engine,
         IResizedImageCache cache,
         MediaCommandParser commandParser,
+        SingleFlight<string, string> singleFlight,
         IOptions<MediaOptions> mediaOptions,
         ShellSettings shellSettings,
         ILogger<MediaImageProcessingMiddleware> logger)
@@ -40,6 +42,7 @@ internal sealed class MediaImageProcessingMiddleware : IMiddleware
         _engine = engine;
         _cache = cache;
         _commandParser = commandParser;
+        _singleFlight = singleFlight;
         _mediaOptions = mediaOptions;
         _shellSettings = shellSettings;
         _logger = logger;
@@ -123,38 +126,69 @@ internal sealed class MediaImageProcessingMiddleware : IMiddleware
             return;
         }
 
-        // Process the image.
-        ImageProcessingResult result;
-        try
+        // Coalesce concurrent cold-cache requests for the same key so the expensive transform runs
+        // only once. The single worker processes the image and writes it to the cache; every waiter
+        // (including the worker) then serves its own independent stream read back from the cache.
+        // The factory returns the produced content type, or null when the source file is missing or
+        // processing failed. CancellationToken.None is used for the shared work so that one caller
+        // aborting its request does not fail the operation for the other waiters.
+        var produced = await _singleFlight.ScheduleAsync(cacheKey, async _ =>
         {
-            var engineCommands = BuildEngineCommands(commands, format);
-            using var source = fileInfo.CreateReadStream();
-            result = await _engine.ProcessAsync(source, engineCommands, context.RequestAborted);
-        }
-        catch (Exception ex)
+            // Another worker may have populated the cache after our initial probe but before we
+            // acquired the single-flight slot; re-check so we do not reprocess needlessly.
+            var existing = await _cache.GetAsync(cacheKey, fileExtension, CancellationToken.None);
+            if (existing.HasValue)
+            {
+                existing.Value.Content.Dispose();
+                return existing.Value.ContentType;
+            }
+
+            ImageProcessingResult result;
+            try
+            {
+                var engineCommands = BuildEngineCommands(commands, format);
+                using var source = fileInfo.CreateReadStream();
+                result = await _engine.ProcessAsync(source, engineCommands, CancellationToken.None);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error processing image '{Path}'.", remaining.Value);
+                return null;
+            }
+
+            using (result)
+            {
+                result.Output.Position = 0;
+                await _cache.SetAsync(
+                    cacheKey,
+                    result.Output,
+                    result.ContentType,
+                    TimeSpan.FromDays(mediaOptions.MaxCacheDays),
+                    CancellationToken.None);
+            }
+
+            return result.ContentType;
+        });
+
+        if (produced is null)
         {
-            _logger.LogError(ex, "Error processing image '{Path}'.", remaining.Value);
+            // The source file disappeared or processing failed.
             await next(context);
             return;
         }
 
-        using (result)
+        // Serve from the cache the single worker populated.
+        var entry = await _cache.GetAsync(cacheKey, fileExtension, context.RequestAborted);
+        if (!entry.HasValue)
         {
-            // Store in cache.
-            result.Output.Position = 0;
-            await _cache.SetAsync(
-                cacheKey,
-                result.Output,
-                result.ContentType,
-                TimeSpan.FromDays(mediaOptions.MaxCacheDays),
-                context.RequestAborted);
-
-            result.Output.Position = 0;
-
-            // ServeAsync disposes the stream; the surrounding `using` disposing the result again
-            // is a harmless no-op on the already-disposed MemoryStream.
-            await ServeAsync(context, result.Output, result.ContentType, mediaOptions);
+            // The entry was evicted between being written and read back (very rare).
+            _logger.LogWarning("Resized image cache entry for '{Path}' was missing immediately after processing.", remaining.Value);
+            await next(context);
+            return;
         }
+
+        // ServeAsync owns and disposes the cached content stream.
+        await ServeAsync(context, entry.Value.Content, entry.Value.ContentType, mediaOptions);
     }
 
     private static async Task ServeAsync(HttpContext context, Stream content, string contentType, MediaOptions options)

@@ -133,6 +133,10 @@ public sealed class Startup : StartupBase
         services.AddSingleton<IImageProcessingEngine, VipsImageProcessingEngine>();
         services.AddSingleton<IResizedImageCache, PhysicalFileSystemResizedImageCache>();
         services.AddSingleton<MediaCommandParser>();
+        // Shared single-flight instance so concurrent cold-cache requests for the same resized image
+        // coalesce into a single transform (cache-stampede protection). Must be a singleton because
+        // the middleware itself is transient.
+        services.AddSingleton<SingleFlight<string, string>>();
         services.AddTransient<MediaImageProcessingMiddleware>();
 
         services.AddScoped<MediaTokenSettingsUpdater>();
