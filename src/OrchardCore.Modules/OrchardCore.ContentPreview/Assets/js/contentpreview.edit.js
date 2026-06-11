@@ -63,11 +63,11 @@ $(function () {
             });
     }
 
-    // 150ms debounce collapses rapid keystrokes; in-flight request cancellation handles
-    // stale responses so a short window is safe.
+    // 500ms debounce: collapses rapid keystrokes (e.g. from a WYSIWYG editor) into a
+    // single draft submission after the user pauses, preventing server spam.
     $(document).on('contentpreview:render', function () {
         clearTimeout(draftTimer);
-        draftTimer = setTimeout(sendDraft, 150);
+        draftTimer = setTimeout(sendDraft, 500);
     });
 
     $(window).on('unload', function () {
