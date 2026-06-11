@@ -87,6 +87,37 @@ public sealed class VipsImageProcessingEngineTests
         Assert.Equal(80, h);
     }
 
+    [Theory]
+    [InlineData(200, 100, 50, null, 50, 100)]  // width-only: height is left unchanged
+    [InlineData(200, 100, null, 40, 200, 40)]  // height-only: width is left unchanged
+    public async Task Process_StretchMode_SingleAxis_LeavesOtherAxisUnchanged(
+        int srcW, int srcH, int? reqW, int? reqH, int expW, int expH)
+    {
+        using var input = CreateTestPng(srcW, srcH);
+        var commands = new ImageProcessingCommands { Width = reqW, Height = reqH, ResizeMode = ResizeMode.Stretch };
+        var (w, h) = await GetOutputPngDimensionsAsync(_engine, input, commands, TestContext.Current.CancellationToken);
+        Assert.Equal(expW, w);
+        Assert.Equal(expH, h);
+    }
+
+    [Fact]
+    public async Task Process_CropMode_WithFocalPoint_SingleAxis_LeavesOtherAxisUnchanged()
+    {
+        using var input = CreateTestPng(200, 100);
+        var commands = new ImageProcessingCommands
+        {
+            Width = 80,
+            ResizeMode = ResizeMode.Crop,
+            FocalPointX = 0.25f,
+            FocalPointY = 0.75f,
+        };
+        var (w, h) = await GetOutputPngDimensionsAsync(_engine, input, commands, TestContext.Current.CancellationToken);
+
+        // Width is constrained; the height axis is left at the source size.
+        Assert.Equal(80, w);
+        Assert.Equal(100, h);
+    }
+
     [Fact]
     public async Task Process_PadMode_ProducesExactDimensions()
     {

@@ -48,8 +48,14 @@ internal sealed class VipsImageProcessingEngine : IImageProcessingEngine
     {
         if (width == 0 && height == 0)
         {
-            // No resize requested — just decode (honoring orientation) and re-encode.
-            using var source = Image.NewFromBuffer(buffer);
+            // No resize requested — decode and re-encode (for example a format-only conversion).
+            // There is no size reduction to gain from shrink-on-load, but when orientation is not
+            // being applied the whole decode -> encode is a single top-to-bottom pass, so sequential
+            // access lets the loader stream it instead of buffering the full-resolution bitmap.
+            // Auto-orientation can rotate a quarter turn, which needs random access, so keep the
+            // default access in that case.
+            var access = autoOrient ? Enums.Access.Random : Enums.Access.Sequential;
+            using var source = Image.NewFromBuffer(buffer, access: access);
             return autoOrient ? source.Autorot() : source.Copy();
         }
 
@@ -79,30 +85,27 @@ internal sealed class VipsImageProcessingEngine : IImageProcessingEngine
 
     private static Image ApplyStretch(byte[] buffer, int width, int height, bool autoOrient)
     {
-        if (width > 0 && height > 0)
+        var targetWidth = width;
+        var targetHeight = height;
+
+        // A single missing axis means "leave that axis unchanged". Fill it from the (oriented)
+        // source size — read cheaply from the header — so the resample can still happen through
+        // shrink-on-load instead of a full-resolution decode.
+        if (width == 0 || height == 0)
         {
-            // Force resampling to the exact dimensions, ignoring aspect ratio.
-            return Image.ThumbnailBuffer(
-                buffer,
-                width,
-                height: height,
-                size: Enums.Size.Force,
-                noRotate: !autoOrient,
-                crop: Enums.Interesting.None);
+            var (sourceWidth, sourceHeight) = GetOrientedSize(buffer, autoOrient);
+            targetWidth = width > 0 ? width : sourceWidth;
+            targetHeight = height > 0 ? height : sourceHeight;
         }
 
-        // A single missing axis means "leave that axis unchanged", which requires the
-        // source dimensions — decode and resample per axis.
-        using var source = Image.NewFromBuffer(buffer);
-        using var oriented = autoOrient ? source.Autorot() : source.Copy();
-
-        var targetWidth = width > 0 ? width : oriented.Width;
-        var targetHeight = height > 0 ? height : oriented.Height;
-
-        return oriented.Resize(
-            (double)targetWidth / oriented.Width,
-            vscale: (double)targetHeight / oriented.Height,
-            kernel: Enums.Kernel.Lanczos3);
+        // Force resampling to the exact dimensions, ignoring aspect ratio.
+        return Image.ThumbnailBuffer(
+            buffer,
+            targetWidth,
+            height: targetHeight,
+            size: Enums.Size.Force,
+            noRotate: !autoOrient,
+            crop: Enums.Interesting.None);
     }
 
     private static Image ApplyCrop(byte[] buffer, int width, int height, float? focalX, float? focalY, bool autoOrient)
@@ -120,16 +123,28 @@ internal sealed class VipsImageProcessingEngine : IImageProcessingEngine
                 crop: Enums.Interesting.Centre);
         }
 
-        // Focal-point (or single-axis) crop: decode, scale to cover, then extract.
-        using var source = Image.NewFromBuffer(buffer);
-        using var oriented = autoOrient ? source.Autorot() : source.Copy();
+        // Focal-point (or single-axis) crop: scale to cover, then extract. The cover scale is
+        // computed from the (oriented) source size read cheaply from the header, so the scaling
+        // happens through shrink-on-load rather than a full-resolution decode.
+        var (sourceWidth, sourceHeight) = GetOrientedSize(buffer, autoOrient);
 
-        var targetWidth = width > 0 ? width : oriented.Width;
-        var targetHeight = height > 0 ? height : oriented.Height;
+        var targetWidth = width > 0 ? width : sourceWidth;
+        var targetHeight = height > 0 ? height : sourceHeight;
 
         // Scale to cover: the larger axis ratio determines the scale.
-        var scale = Math.Max((double)targetWidth / oriented.Width, (double)targetHeight / oriented.Height);
-        using var scaled = scale == 1.0 ? oriented.Copy() : oriented.Resize(scale, kernel: Enums.Kernel.Lanczos3);
+        var scale = Math.Max((double)targetWidth / sourceWidth, (double)targetHeight / sourceHeight);
+        var scaledWidth = Math.Max(1, (int)Math.Round(sourceWidth * scale));
+        var scaledHeight = Math.Max(1, (int)Math.Round(sourceHeight * scale));
+
+        // Size.Force to the covered dimensions resamples uniformly (both axes share the cover
+        // scale) and lets the loader shrink on decode when scaling down.
+        using var scaled = Image.ThumbnailBuffer(
+            buffer,
+            scaledWidth,
+            height: scaledHeight,
+            size: Enums.Size.Force,
+            noRotate: !autoOrient,
+            crop: Enums.Interesting.None);
 
         var cropW = Math.Min(targetWidth, scaled.Width);
         var cropH = Math.Min(targetHeight, scaled.Height);
@@ -216,6 +231,30 @@ internal sealed class VipsImageProcessingEngine : IImageProcessingEngine
             Convert.ToInt32(hex[0..2], 16),
             Convert.ToInt32(hex[2..4], 16),
             Convert.ToInt32(hex[4..6], 16));
+    }
+
+    // Reads the source dimensions from the encoded header without decoding the pixels, then
+    // accounts for an EXIF orientation that rotates the image a quarter turn (which swaps the
+    // logical width and height). Used to derive shrink-on-load targets for the crop and stretch
+    // paths so they never need a full-resolution decode.
+    private static (int Width, int Height) GetOrientedSize(byte[] buffer, bool autoOrient)
+    {
+        using var probe = Image.NewFromBuffer(buffer, access: Enums.Access.Sequential);
+
+        var width = probe.Width;
+        var height = probe.Height;
+
+        if (autoOrient && Array.IndexOf(probe.GetFields(), "orientation") >= 0)
+        {
+            // EXIF orientations 5-8 rotate by 90/270 degrees, swapping width and height.
+            var orientation = (int)probe.Get("orientation");
+            if (orientation is >= 5 and <= 8)
+            {
+                (width, height) = (height, width);
+            }
+        }
+
+        return (width, height);
     }
 
     private static (string FormatString, string ContentType) ResolveFormat(ImageProcessingCommands commands)
