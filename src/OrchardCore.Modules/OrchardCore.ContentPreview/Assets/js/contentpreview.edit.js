@@ -51,7 +51,14 @@ $(function () {
         currentXHR = $.post(draftUrl, $.param(formData))
             .done(function (data) {
                 currentXHR = null;
-                channel.postMessage({ type: 'token', previewUrl: data.previewUrl });
+                if (data.previewUrl) {
+                    // Content type has a configured preview URL: navigate the staging iframe
+                    // to the real frontend page (full theme, scripts, DOMContentLoaded).
+                    channel.postMessage({ type: 'token', previewUrl: data.previewUrl });
+                } else if (data.html) {
+                    // No preview URL: server rendered the shape directly in one round trip.
+                    channel.postMessage({ type: 'html', html: data.html });
+                }
             })
             .fail(function (data) {
                 currentXHR = null;

@@ -1,4 +1,6 @@
 using System.Diagnostics;
+using System.Text;
+using System.Text.Encodings.Web;
 using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,6 +11,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentPreview.Models;
 using OrchardCore.Contents;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Modules;
 
@@ -18,7 +21,7 @@ public sealed class PreviewController : Controller
 {
     private static readonly DistributedCacheEntryOptions _draftCacheOptions = new()
     {
-        AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+        AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5),
     };
 
     private readonly IContentManager _contentManager;
@@ -28,6 +31,8 @@ public sealed class PreviewController : Controller
     private readonly IClock _clock;
     private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly IDistributedCache _distributedCache;
+    private readonly IDisplayHelper _displayHelper;
+    private readonly HtmlEncoder _htmlEncoder;
 
     public PreviewController(
         IContentManager contentManager,
@@ -36,7 +41,9 @@ public sealed class PreviewController : Controller
         IAuthorizationService authorizationService,
         IClock clock,
         IUpdateModelAccessor updateModelAccessor,
-        IDistributedCache distributedCache)
+        IDistributedCache distributedCache,
+        IDisplayHelper displayHelper,
+        HtmlEncoder htmlEncoder)
     {
         _authorizationService = authorizationService;
         _clock = clock;
@@ -45,6 +52,8 @@ public sealed class PreviewController : Controller
         _contentManagerSession = contentManagerSession;
         _updateModelAccessor = updateModelAccessor;
         _distributedCache = distributedCache;
+        _displayHelper = displayHelper;
+        _htmlEncoder = htmlEncoder;
     }
 
     public IActionResult Index()
@@ -105,24 +114,42 @@ public sealed class PreviewController : Controller
 
         var previewAspect = await _contentManager.PopulateAspectAsync(contentItem, new PreviewAspect());
         var previewUrl = previewAspect.PreviewUrl;
-        if (!string.IsNullOrEmpty(previewUrl) && !previewUrl.StartsWith('/'))
+
+        if (!string.IsNullOrEmpty(previewUrl))
         {
-            previewUrl = "/" + previewUrl;
+            // Content type has a configured preview URL (e.g. a blog post at /blog/my-post).
+            // Cache the draft so the Display action can restore it and let PreviewStartupFilter
+            // serve the real frontend page with the correct theme and scripts.
+            if (!previewUrl.StartsWith('/'))
+            {
+                previewUrl = "/" + previewUrl;
+            }
+
+            var token = Guid.NewGuid().ToString("N");
+            var draft = new PreviewDraft { ContentItem = contentItem, PreviewUrl = previewUrl };
+
+            await _distributedCache.SetAsync(
+                "contentpreview:" + token,
+                JsonSerializer.SerializeToUtf8Bytes(draft),
+                _draftCacheOptions);
+
+            return Ok(new { previewUrl = Url.Action("Display", "Preview", new { area = "OrchardCore.ContentPreview", token }) });
         }
 
-        var token = Guid.NewGuid().ToString("N");
-        var draft = new PreviewDraft
+        // No preview URL configured: render the shape directly here (same pipeline as the
+        // GraphQL `render` field) and return the HTML so the preview window can load it via
+        // srcdoc in one round trip, without a separate GET to /Preview/Display.
+        var model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, _updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.Detail);
+        var htmlContent = await _displayHelper.ShapeExecuteAsync(model);
+        var sb = new StringBuilder();
+        sb.Append("<!DOCTYPE html><html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"></head><body>");
+        using (var sw = new StringWriter(sb))
         {
-            ContentItem = contentItem,
-            PreviewUrl = previewUrl,
-        };
+            htmlContent.WriteTo(sw, _htmlEncoder);
+        }
+        sb.Append("</body></html>");
 
-        await _distributedCache.SetAsync(
-            "contentpreview:" + token,
-            JsonSerializer.SerializeToUtf8Bytes(draft),
-            _draftCacheOptions);
-
-        return Ok(new { previewUrl = Url.Action("Display", "Preview", new { area = "OrchardCore.ContentPreview", token }) });
+        return Ok(new { html = sb.ToString() });
     }
 
     [HttpGet]
