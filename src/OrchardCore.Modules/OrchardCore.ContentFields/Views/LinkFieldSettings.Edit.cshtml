@@ -76,8 +76,8 @@
     <div class="ocat-wrapper col-md-6">
         <label asp-for="DefaultTarget" class="ocat-label">@T["Default value of the Target"]</label>
         <div class="ocat-end">
-            <input asp-for="DefaultTarget" list="targetOptions" class="form-control" />
-            <datalist id="targetOptions">
+            <input asp-for="DefaultTarget" list="@Html.IdFor(m => m.DefaultTarget)_targetOptions" class="form-control" />
+            <datalist id="@Html.IdFor(m => m.DefaultTarget)_targetOptions">
                 <option value="_self">@T["Opens the linked document in the same frame as it was clicked (default)."]</option>
                 <option value="_blank">@T["Opens the linked document in a new window or tab."]</option>
                 <option value="_parent">@T["Opens the linked document in the parent frame."]</option>

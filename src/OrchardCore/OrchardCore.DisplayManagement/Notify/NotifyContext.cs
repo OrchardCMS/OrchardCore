@@ -3,7 +3,7 @@ namespace OrchardCore.DisplayManagement.Notify;
 public sealed class NotifyContext
 {
     /// <summary>
-    /// Total Milliseconds to auto dismiss the alert.
+    /// Total milliseconds to auto dismiss the alert. Keep null to not auto dismiss.
     /// </summary>
-    public int? Milliseconds { get; set; }
+    public int? DismissalMilliseconds { get; set; }
 }

@@ -49,13 +49,17 @@ This ensures user names are rendered consistently while making use of OrchardCor
 
 ## Two-factor Authentication
 
-Starting with version 1.7, OrchardCore is shipped with everything you need to secure your app with two-factor authentication. To use two-factor authentication, simply enable "Two-Factor Email Method" and/or "Two-Factor Authenticator App Method" features. You can configure the process based on your need by navigating to `Settings` → `Security` → `User Login`. Click on the "Two-Factor Authentication" tab and update the settings as needed.
+Orchard Core includes the features needed to secure your app with two-factor authentication. To use two-factor authentication, enable "Two-Factor Email Method" and/or "Two-Factor Authenticator App Method". Configure the process from `Settings` → `Security` → `User Login` on the "Two-Factor Authentication" tab.
 
 ## User Localization
 
 The feature adds the ability to configure the culture per user from the admin UI.
 
 This feature adds a `RequestCultureProvider` to retrieve the current user culture from its claims. This feature will set a new user claim with a `CultureClaimType` named "culture". It also has a culture option to fall back to other ASP.NET Request Culture Providers by simply setting the user culture to "Use site's culture" which will also be the selected default value.
+
+## Time zone select list customization
+
+The **User Time Zone** editor uses the shared `ITimeZoneSelectListProvider` service for its `<select>` items. Replace `DefaultTimeZoneSelectListProvider` if you need different labels, ordering, or filtering for time zone options across Orchard Core.
 
 ## Custom Paths
 

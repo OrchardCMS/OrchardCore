@@ -339,7 +339,7 @@ This template is called when a content part is rendered for a given stereo type,
 
 ### `[Stereotype]_[DisplayType]__[PartType]__[PartName]`
 
-This template is called when a content part is a re-usable named part and rendered for a given stereotype, with or without a given display type.
+This template is called when a content part is a reusable named part and rendered for a given stereotype, with or without a given display type.
 
 #### Stereotype with Part Type Examples
 
@@ -350,7 +350,7 @@ This template is called when a content part is a re-usable named part and render
 
 ### `[Stereotype]_[DisplayType]__[PartType]__[ShapeType]`
 
-This template is called when a custom shape type is rendered  for a given stereotype type, with or without a given display type.
+This template is called when a custom shape type is rendered for a given stereotype type, with or without a given display type.
 
 #### Stereotype with Part Name and Shape Examples
 
@@ -361,7 +361,7 @@ This template is called when a custom shape type is rendered  for a given stereo
 
 ### `[Stereotype]_[DisplayType]__[PartType]__[PartName]__[ShapeType]`
 
-This template is called for re-usable named content part with  custom shape type and rendered for a given stereotype type, with or without a given display type.
+This template is called for a reusable named content part with a custom shape type and rendered for a given stereotype type, with or without a given display type.
 
 #### Stereotype with Part Name and Custom Shape Examples
 

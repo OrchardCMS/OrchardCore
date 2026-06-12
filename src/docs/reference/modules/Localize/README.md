@@ -23,8 +23,8 @@ PO files are found at these locations:
 
 `[CultureName]` can be either the culture neutral part, e.g. `fr`, or the full one, e.g. `fr-CA`.
 
-It is suggested to put your localization files in the `/Localization/` folder if you are using docker.  
-Especially if mounting a volume at `/App_Data/` as mounting hides pre-existing files.
+It is suggested to put your localization files in the `/Localization/` folder if you are using Docker.
+Especially if mounting a volume at `/App_Data/`, as mounting hides pre-existing files.
 
 !!! note
     If you edit a .po file, you need to restart the application to make your change effective.
