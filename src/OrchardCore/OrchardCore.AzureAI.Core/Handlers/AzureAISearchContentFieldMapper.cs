@@ -95,7 +95,6 @@ public sealed class AzureAISearchContentFieldMapper
                 indexMap.VectorInfo = new AzureAISearchIndexMapVectorInfo
                 {
                     Dimensions = entry.Dimensions,
-                    VectorSearchConfiguration = "default",
                 };
 
                 if (entry.Metadata?.TryGetValue("VectorSearchConfiguration", out var vectorSearchConfig) == true &&

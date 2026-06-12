@@ -1,6 +1,6 @@
 # Creating an Orchard Core CMS website
 
-In this guide you will setup Orchard Core as a Content Management System from a project template.
+In this guide you will set up Orchard Core as a Content Management System from a project template.
 
 ## What you will need
 
@@ -26,7 +26,7 @@ This creates a new Orchard Core CMS project in a folder named `MySite`.
 
 ## Setting up the site
 
-The application has been created by the template, but it has not been setup yet.
+The application has been created by the template, but it has not been set up yet.
 
 Run the application by executing this command:
 

@@ -237,11 +237,14 @@ public sealed class AdminController : Controller
         {
             await _documentStore.CancelAsync();
 
-            await _notifier.ErrorAsync(H["Could not delete this role."]);
-
-            foreach (var error in result.Errors)
+            var errorDescriptions = result.Errors.Select(error => error.Description).ToArray();
+            if (errorDescriptions.Length > 0)
             {
-                await _notifier.ErrorAsync(new LocalizedHtmlString(error.Description, error.Description));
+                await _notifier.ErrorAsync(H.Plural(errorDescriptions.Length, "Could not delete this role. {1}", "Could not delete this role. Errors: {1}", string.Join(", ", errorDescriptions)));
+            }
+            else
+            {
+                await _notifier.ErrorAsync(H["Could not delete this role."]);
             }
         }
 

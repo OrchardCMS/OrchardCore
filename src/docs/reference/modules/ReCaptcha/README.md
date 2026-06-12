@@ -39,7 +39,7 @@ you can create your own implementation of the IDetectRobots interface and it wil
 
 ## Using with a form post with Content-Type = "application/json" from a javascript framework
 
-The ReCaptcha api uses the data-callback attribute to return the token generated when validating the ReCaptcha widget. This allows to post that token from an Angular, Vue.js form post. If you want to validate the ReCaptcha from the Workflow task you will need to pass the token in the header of your request as "g-recaptcha-response".
+The ReCaptcha API uses the data-callback attribute to return the token generated when validating the ReCaptcha widget. This allows posting that token from an Angular or Vue.js form post. If you want to validate the ReCaptcha from the Workflow task, you will need to pass the token in the header of your request as "g-recaptcha-response".
 
 ## Shapes
 
@@ -58,3 +58,45 @@ Display for a reCaptcha challenge if the service is configured.
     ``` html
     <shape type="ReCaptcha" language="en-US" />
     ```
+
+## Recipe Configuration
+
+reCAPTCHA settings can be configured using the `Settings` recipe step:
+
+```json
+{
+  "steps": [
+    {
+      "name": "settings",
+      "ReCaptchaSettings": {
+        "SiteKey": "your-site-key",
+        "SecretKey": "your-secret-key"
+      }
+    }
+  ]
+}
+```
+
+| Property             | Type   | Description                                  |
+|----------------------|--------|----------------------------------------------|
+| `SiteKey`            | String | The reCAPTCHA site key. **Required.**        |
+| `SecretKey`          | String | The reCAPTCHA secret key. **Required.**      |
+| `ReCaptchaScriptUri` | String | The URI for the reCAPTCHA JavaScript script. |
+| `ReCaptchaApiUri`    | String | The URI for the reCAPTCHA verification API.  |
+
+## ReCaptcha Settings Configuration
+
+The `OrchardCore.ReCaptcha` module allows the user to use configuration values to override the settings configured from the admin area by calling the `ConfigureReCaptchaSettings()` extension method on `OrchardCoreBuilder` when initializing the app.
+
+The following configuration values can be customized:
+
+```json
+{
+  "OrchardCore_ReCaptcha": {
+    "SiteKey": "",
+    "SecretKey": "",
+    "ReCaptchaScriptUri": "",
+    "ReCaptchaApiUri": ""
+  }
+}
+```

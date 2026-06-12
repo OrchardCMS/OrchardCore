@@ -3,8 +3,12 @@
     var term = Model.Value.FilterResult.FirstOrDefault(x => x.TermName == "sort");
 }
 
-<h4 class="card-title">@T["Sort"]</h4>
-<pre class="mb-3">@(term?.ToString() ?? "sort:...")</pre>
+<div class="ocat-wrapper">
+    <h4 class="card-title ocat-label">@T["Sort"]</h4>
+    <div class="ocat-end">
+        <pre>@(term?.ToString() ?? "sort:...")</pre>
+    </div>
+</div>
 <p>@T["Orders by a content item value."]</p>
 <div class="d-block text-end">
     <span>

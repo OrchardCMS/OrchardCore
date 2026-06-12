@@ -29,12 +29,12 @@ Enabling UseCdn will configure the `IResourceManager` to provide any scripts or 
 
 ### `ResourceDebugMode`
 
-When enabled will serve scripts or styles, that have a CDN configured, or a debug-src, from the local server in non minified format.  
+When enabled, this will serve scripts or styles that have a CDN configured, or a debug-src, from the local server in non-minified format.
 This will also disable the `CdnBaseUrl` prepending.
 
 ### `CdnBaseUrl`
 
-When supplied this will prepend local resources served via the `IResourceManager` or Tag Helpers with the absolute url provided. This will be disabled in `ResourceDebugMode`
+When supplied, this will prepend local resources served via the `IResourceManager` or Tag Helpers with the absolute URL provided. This will be disabled in `ResourceDebugMode`.
 
 ## Named Resources
 
@@ -46,8 +46,8 @@ The `OrchardCore.Resources` module provides some commonly used ones:
 |-----------------------|--------|--------------|---------------|
 | jQuery                | Script | 3.7.1        | -             |
 | jQuery.slim           | Script | 3.7.1        | -             |
-| jQuery-ui             | Script | 1.12.1       | jQuery        |
-| jQuery-ui-i18n        | Script | 1.12.1       | jQuery-ui     |
+| jQuery-ui             | Script | 1.14.2       | jQuery        |
+| jQuery-ui-i18n        | Script | 1.14.2       | jQuery-ui     |
 | jquery.easing         | Script | 1.4.1        | -             |
 | jquery-resizable-dom  | Script | 0.35.0       | -             |
 | js-cookie             | Script | 3.0.5        | -             |
@@ -68,8 +68,8 @@ The `OrchardCore.Resources` module provides some commonly used ones:
 | trumbowyg             | Script | 2.28.0       | -             |
 | vue-multiselect       | Script | 2.1.6        | -             |
 | vuedraggable          | Script | 2.24.3       | Sortable      |
-| monaco-loader         | Script | 0.46.0       | -             |
-| monaco                | Script | 0.46.0       | monaco-loader |
+| monaco-loader         | Script | 0.52.2       | -             |
+| monaco                | Script | 0.52.2       | monaco-loader |
 | nouislider            | Script | 15.6.1       | -             |
 | nouislider            | Style  | 15.6.1       | -             |
 
@@ -188,7 +188,7 @@ This will use the latest available version between `3.4` and `3.5`. If the versi
 settings.UseAppendVersion(true);
 ```
 
-This will append a version string that is calculated at runtime as an SHA256 hash of the file, the calculation cached, and appended to the url as part of the query string, e.g. `my-script.js?v=eER9OO6zWGKaIq1RlNjImsrWN9y2oTgQKg2TrJnDUWk`
+This will append a version string that is calculated at runtime as an SHA256 hash of the file, with the calculation cached, and appended to the URL as part of the query string, e.g. `my-script.js?v=eER9OO6zWGKaIq1RlNjImsrWN9y2oTgQKg2TrJnDUWk`
 
 #### Register custom script
 

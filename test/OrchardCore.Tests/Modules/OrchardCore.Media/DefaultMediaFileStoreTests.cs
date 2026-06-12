@@ -6,6 +6,46 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media;
 
 public class DefaultMediaFileStoreTests
 {
+    [Theory]
+    [InlineData("foo bar.jpg", "/media/foo%20bar.jpg")]
+    [InlineData("my folder/foo bar.jpg", "/media/my%20folder/foo%20bar.jpg")]
+    [InlineData("bàr.jpeg", "/media/b%C3%A0r.jpeg")]
+    [InlineData("日本語.jpg", "/media/%E6%97%A5%E6%9C%AC%E8%AA%9E.jpg")]
+    [InlineData("simple.jpg", "/media/simple.jpg")]
+    [InlineData("sub/dir/file.jpg", "/media/sub/dir/file.jpg")]
+    public void MapPathToPublicUrl_ReturnsUrlEncodedPath(string path, string expected)
+    {
+        var store = new DefaultMediaFileStore(
+            Mock.Of<IFileStore>(),
+            "/media",
+            "",
+            [],
+            [],
+            Mock.Of<ILogger<DefaultMediaFileStore>>());
+
+        var result = store.MapPathToPublicUrl(path);
+
+        Assert.Equal(expected, result);
+    }
+
+    [Theory]
+    [InlineData("https://cdn.example.com", "foo bar.jpg", "https://cdn.example.com/media/foo%20bar.jpg")]
+    [InlineData("https://cdn.example.com", "bàr.jpeg", "https://cdn.example.com/media/b%C3%A0r.jpeg")]
+    public void MapPathToPublicUrl_WithCdnBaseUrl_ReturnsUrlEncodedPath(string cdnBaseUrl, string path, string expected)
+    {
+        var store = new DefaultMediaFileStore(
+            Mock.Of<IFileStore>(),
+            "/media",
+            cdnBaseUrl,
+            [],
+            [],
+            Mock.Of<ILogger<DefaultMediaFileStore>>());
+
+        var result = store.MapPathToPublicUrl(path);
+
+        Assert.Equal(expected, result);
+    }
+
     [Fact]
     public async Task CreateFileFromStreamAsync_NoHandlers_CallsFileStoreDirectly()
     {
