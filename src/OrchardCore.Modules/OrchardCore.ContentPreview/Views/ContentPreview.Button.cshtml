@@ -4,7 +4,7 @@
 
 @{
     ContentItem contentItem = Model.ContentItem;
-    var previewId = Guid.NewGuid();
+    var previewId = contentItem.ContentItemId;
     var hasPreviewPermission = await AuthorizationService.AuthorizeAsync(User, CommonPermissions.PreviewContent, contentItem);
 }
 

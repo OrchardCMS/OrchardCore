@@ -18,7 +18,7 @@ $(function () {
 });
 
 $(function () {
-    var previewButton, contentItemType, previewId, previewContentItemId, previewContentItemVersionId, draftUrl, form, channel, draftTimer, currentXHR;
+    var previewButton, contentItemType, previewId, previewContentItemId, previewContentItemVersionId, draftUrl, form, channel, draftTimer, currentXHR, currentToken;
 
     previewButton = document.getElementById('previewButton');
     contentItemType = $(document.getElementById('contentItemType')).data('value');
@@ -47,11 +47,13 @@ $(function () {
         formData.push({ name: 'ContentItemType', value: contentItemType });
         formData.push({ name: 'PreviewContentItemId', value: previewContentItemId });
         formData.push({ name: 'PreviewContentItemVersionId', value: previewContentItemVersionId });
+        formData.push({ name: 'PreviewToken', value: currentToken });
 
         currentXHR = $.post(draftUrl, $.param(formData))
             .done(function (data) {
                 currentXHR = null;
                 if (data.previewUrl) {
+                    currentToken = data.token;
                     channel.postMessage({ type: 'token', previewUrl: data.previewUrl });
                 }
             })

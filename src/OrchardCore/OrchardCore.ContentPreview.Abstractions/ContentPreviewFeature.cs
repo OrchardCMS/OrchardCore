@@ -5,5 +5,7 @@ namespace OrchardCore.ContentPreview;
 /// </summary>
 public class ContentPreviewFeature
 {
+    public static readonly ContentPreviewFeature Instance = new();
+
     public bool Previewing { get; set; } = true;
 }

@@ -18,7 +18,7 @@ public sealed class PreviewController : Controller
 {
     private static readonly DistributedCacheEntryOptions _draftCacheOptions = new()
     {
-        AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5),
+        SlidingExpiration = TimeSpan.FromMinutes(5),
     };
 
     private readonly IContentManager _contentManager;
@@ -61,7 +61,7 @@ public sealed class PreviewController : Controller
         }
 
         // Mark request as a `Preview` request so that drivers / handlers or underlying services can be aware of an active preview mode.
-        HttpContext.Features.Set(new ContentPreviewFeature());
+        HttpContext.Features.Set(ContentPreviewFeature.Instance);
 
         var contentItemType = Request.Form["ContentItemType"];
         var contentItem = await _contentManager.NewAsync(contentItemType);
@@ -115,7 +115,12 @@ public sealed class PreviewController : Controller
         // configured preview URL, PreviewStartupFilter will serve the real frontend page
         // (full theme, scripts, data-tenant, etc.). For types without one, Display renders
         // the shape through the MVC pipeline so _Layout.cshtml is applied correctly.
-        var token = Guid.NewGuid().ToString("N");
+        //
+        // Reuse the caller's token when provided so the preview URL stays stable across
+        // saves — this prevents the preview window from losing its BroadcastChannel
+        // connection and keeps the token alive via sliding expiration.
+        var existingToken = (string)Request.Form["PreviewToken"];
+        var token = string.IsNullOrEmpty(existingToken) ? Guid.NewGuid().ToString("N") : existingToken;
         var draft = new PreviewDraft { ContentItem = contentItem, PreviewUrl = previewUrl };
 
         await _distributedCache.SetAsync(
@@ -123,7 +128,7 @@ public sealed class PreviewController : Controller
             JsonSerializer.SerializeToUtf8Bytes(draft),
             _draftCacheOptions);
 
-        return Ok(new { previewUrl = Url.Action("Display", "Preview", new { area = "OrchardCore.ContentPreview", token }) });
+        return Ok(new { previewUrl = Url.Action("Display", "Preview", new { area = "OrchardCore.ContentPreview", token }), token });
     }
 
     [HttpGet]
@@ -140,11 +145,24 @@ public sealed class PreviewController : Controller
             return NotFound();
         }
 
-        var draft = JsonSerializer.Deserialize<PreviewDraft>(cached);
-        var contentItem = draft.ContentItem;
+        PreviewDraft draft;
+        try
+        {
+            draft = JsonSerializer.Deserialize<PreviewDraft>(cached);
+        }
+        catch
+        {
+            return NotFound();
+        }
+
+        var contentItem = draft?.ContentItem;
+        if (contentItem == null)
+        {
+            return NotFound();
+        }
 
         // Mark request as a `Preview` request so that drivers / handlers or underlying services can be aware of an active preview mode.
-        HttpContext.Features.Set(new ContentPreviewFeature());
+        HttpContext.Features.Set(ContentPreviewFeature.Instance);
 
         // The PreviewPart is configured, we need to set the fake content item.
         _contentManagerSession.Store(contentItem);
