@@ -34,7 +34,7 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple,
         created: function () {
             var self = this;
 
-            self.currentPrefs = JSON.parse(localStorage.getItem('mediaFieldPrefs'));
+            self.currentPrefs = JSON.parse(localStorage.getItem(getTenantStorageKey('mediaFieldPrefs')));
         },
         computed: {
             paths: {
@@ -291,7 +291,7 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple,
                 }
             },            
             currentPrefs: function (newPrefs) {
-                localStorage.setItem('mediaFieldPrefs', JSON.stringify(newPrefs));
+                localStorage.setItem(getTenantStorageKey('mediaFieldPrefs'), JSON.stringify(newPrefs));
             }
         }
     }));
