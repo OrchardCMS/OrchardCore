@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace OrchardCore.Users.ViewModels;
 
@@ -13,4 +14,7 @@ public class LoginViewModel
     public string Password { get; set; }
 
     public bool RememberMe { get; set; }
+
+    [BindNever]
+    public bool AllowRememberMe { get; set; }
 }

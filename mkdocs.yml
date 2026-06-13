@@ -32,12 +32,14 @@ extra:
   social:
     - icon: fontawesome/solid/leaf
       link: https://orchardcore.net
-    - icon: fontawesome/brands/github-alt
+    - icon: fontawesome/brands/github
       link: https://github.com/OrchardCMS/OrchardCore
     - icon: fontawesome/brands/discord
       link: https://orchardcore.net/discord
-    - icon: fontawesome/brands/twitter
+    - icon: fontawesome/brands/x-twitter
       link: https://twitter.com/OrchardCMS
+    - icon: fontawesome/brands/linkedin
+      link: https://www.linkedin.com/groups/13605669/
 
 # Repository
 repo_name: OrchardCMS/OrchardCore
@@ -216,6 +218,7 @@ nav:
               - Resources: reference/modules/Resources/README.md
               - Rules: reference/modules/Rules/README.md
               - Search, Indexing, Querying:
+                  - Search: reference/modules/Search/README.md
                   - Azure AI Search: reference/modules/AzureAISearch/README.md
                   - Elasticsearch: reference/modules/Elasticsearch/README.md
                   - Indexing: reference/modules/Indexing/README.md
@@ -258,6 +261,7 @@ nav:
               - Configuration: reference/modules/Configuration/README.md
               - Cors: reference/modules/Cors/README.md
               - Custom Settings: reference/modules/CustomSettings/README.md
+              - Settings: reference/modules/Settings/README.md
               - Deployment: reference/modules/Deployment/README.md
               - Placement: reference/modules/Placement/README.md
               - Data: reference/modules/Data/README.md
@@ -344,6 +348,7 @@ nav:
       - Contributing code: contributing/contributing-code.md
       - Contributing documentation: contributing/contributing-documentation.md
       - Reviewing pull requests: contributing/reviewing-pull-requests.md
+      - Using agent skills: contributing/using-skills.md
       - Benchmarking: contributing/benchmarking.md
       - Contributing to orchardcore.net: contributing/contributing-to-orchardcore-net.md
       - Developer Meetings: contributing/meetings.md
