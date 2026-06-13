@@ -1,13 +1,12 @@
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore;
-using OrchardCore.Localization;
+
+namespace OrchardCore.Localization;
 
 /// <summary>
 /// Provides extension methods for <see cref="IOrchardHelper"/> related to JavaScript localization.
 /// </summary>
-#pragma warning disable CA1050 // Declare types in namespaces
 public static class LocalizationOrchardHelperExtensions
-#pragma warning restore CA1050 // Declare types in namespaces
 {
     /// <summary>
     /// Returns a merged dictionary of JavaScript localizations for the specified groups by aggregating all
