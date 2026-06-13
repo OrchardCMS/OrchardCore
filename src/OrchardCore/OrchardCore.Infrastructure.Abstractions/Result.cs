@@ -92,4 +92,15 @@ public class Result
     /// <returns>A failed result instance with the specified error message.</returns>
     public static Result<TValue> Failed<TValue>(params ResultError[] errors)
         => new Result<TValue>(default, false, errors.ToList());
+
+    /// <summary>
+    /// Returns a failed result instance with the specified error message.
+    /// </summary>
+    /// <typeparam name="TValue">The type of the value returned by the operation.</typeparam>
+    /// <param name="error">The error message.</param>
+    /// <returns>A failed result instance with the specified error message.</returns>
+    public static Result<TValue> Failed<TValue>(LocalizedString error) => Failed<TValue>(new ResultError
+    {
+        Message = error,
+    });
 }
