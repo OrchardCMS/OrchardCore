@@ -68,6 +68,7 @@
                 case 'token':
                     navigating = true;
                     getStaging().src = ev.data.previewUrl;
+                    document.getElementById('notConnectedWarning').style.display = 'none';
                     break;
                 case 'error':
                     if (ev.data.errors) {
