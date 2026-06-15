@@ -210,6 +210,11 @@ public static class LiquidTemplateContextExtensions
 
             context.IsInitialized = true;
         }
+    }
+    
+    internal static async ValueTask EnterScopeAsync(this LiquidTemplateContext context, ViewContext viewContext, object model)
+    {
+        await context.InitializeAsync(viewContext);
 
         context.EnterChildScope();
 
