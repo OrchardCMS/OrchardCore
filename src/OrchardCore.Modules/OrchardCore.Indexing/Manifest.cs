@@ -20,5 +20,5 @@ using OrchardCore.Modules.Manifest;
     Id = IndexingConstants.Feature.Worker,
     Description = "Provides a background task to keep indexes in sync with the latest content item update",
     Category = "Indexing",
-    Dependencies = [IndexingConstants.Feature.Area, "OrchardCore.Contents"]
+    Dependencies = [IndexingConstants.Feature.Area, "OrchardCore.Contents", "OrchardCore.BackgroundTasks"]
 )]

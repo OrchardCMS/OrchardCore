@@ -13,7 +13,7 @@ using OrchardCore.Modules.Manifest;
     Id = "OrchardCore.Workflows",
     Name = "Workflows",
     Description = "The Workflows module provides tools and APIs to create custom workflows",
-    Dependencies = ["OrchardCore.Liquid", "OrchardCore.Scripting"],
+    Dependencies = ["OrchardCore.Liquid", "OrchardCore.Scripting", "OrchardCore.BackgroundTasks"],
     Category = "Workflows"
 )]
 
@@ -29,7 +29,7 @@ using OrchardCore.Modules.Manifest;
     Id = "OrchardCore.Workflows.Timers",
     Name = "Timer Workflows Activities",
     Description = "Provides timer-based services and activities.",
-    Dependencies = ["OrchardCore.Workflows"],
+    Dependencies = ["OrchardCore.Workflows", "OrchardCore.BackgroundTasks"],
     Category = "Workflows"
 )]
 

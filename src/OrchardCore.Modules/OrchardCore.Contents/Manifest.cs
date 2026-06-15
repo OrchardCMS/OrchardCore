@@ -23,7 +23,7 @@ using OrchardCore.Modules.Manifest;
     Id = "OrchardCore.Contents.VersionPruning",
     Name = "Content Version Pruning",
     Description = "Provides a background task to prune old content item versions.",
-    Dependencies = ["OrchardCore.Contents"],
+    Dependencies = ["OrchardCore.Contents", "OrchardCore.BackgroundTasks"],
     Category = "Content Management"
 )]
 

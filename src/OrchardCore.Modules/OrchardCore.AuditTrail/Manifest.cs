@@ -12,5 +12,6 @@ using OrchardCore.Modules.Manifest;
     Id = "OrchardCore.AuditTrail",
     Name = "Audit Trail",
     Description = "Provides a log for recording and viewing back-end changes.",
-    Category = "Security"
+    Category = "Security",
+    Dependencies = ["OrchardCore.BackgroundTasks"]
 )]

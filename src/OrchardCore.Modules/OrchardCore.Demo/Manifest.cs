@@ -17,6 +17,7 @@ using OrchardCore.Users;
     [
         UserConstants.Features.Users,
         "OrchardCore.Contents",
+        "OrchardCore.BackgroundTasks"
     ]
 )]
 
