@@ -33,22 +33,13 @@ public class SetupService : ISetupService
     private readonly IHostApplicationLifetime _applicationLifetime;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IDbConnectionValidator _dbConnectionValidator;
+    private readonly ISetupTracker _setupTracker;
     private readonly string _applicationName;
     private IEnumerable<RecipeDescriptor> _recipes;
 
     /// <summary>
     /// Creates a new instance of <see cref="SetupService"/>.
     /// </summary>
-    /// <param name="shellHost">The <see cref="IShellHost"/>.</param>
-    /// <param name="hostingEnvironment">The <see cref="IHostEnvironment"/>.</param>
-    /// <param name="shellContextFactory">The <see cref="IShellContextFactory"/>.</param>
-    /// <param name="setupUserIdGenerator">The <see cref="ISetupUserIdGenerator"/>.</param>
-    /// <param name="recipeHarvesters">A list of <see cref="IRecipeHarvester"/>s.</param>
-    /// <param name="logger">The <see cref="ILogger"/>.</param>
-    /// <param name="stringLocalizer">The <see cref="IStringLocalizer"/>.</param>
-    /// <param name="applicationLifetime">The <see cref="IHostApplicationLifetime"/>.</param>
-    /// <param name="httpContextAccessor">The <see cref="IHttpContextAccessor"/>.</param>
-    /// <param name="dbConnectionValidator">The <see cref="IDbConnectionValidator"/>.</param>
     public SetupService(
         IShellHost shellHost,
         IHostEnvironment hostingEnvironment,
@@ -59,7 +50,8 @@ public class SetupService : ISetupService
         IStringLocalizer<SetupService> stringLocalizer,
         IHostApplicationLifetime applicationLifetime,
         IHttpContextAccessor httpContextAccessor,
-        IDbConnectionValidator dbConnectionValidator)
+        IDbConnectionValidator dbConnectionValidator,
+        ISetupTracker setupTracker)
     {
         _shellHost = shellHost;
         _applicationName = hostingEnvironment.ApplicationName;
@@ -71,6 +63,7 @@ public class SetupService : ISetupService
         _applicationLifetime = applicationLifetime;
         _httpContextAccessor = httpContextAccessor;
         _dbConnectionValidator = dbConnectionValidator;
+        _setupTracker = setupTracker;
     }
 
     /// <inheritdoc />
@@ -88,14 +81,20 @@ public class SetupService : ISetupService
     /// <inheritdoc />
     public async Task<string> SetupAsync(SetupContext context)
     {
-        var initialState = context.ShellSettings.State;
+        if (!await _setupTracker.TryMarkSetupStartedAsync(context.ShellSettings))
+        {
+            context.Errors.Add(string.Empty, S["Setup is already in progress for this tenant."]);
+            return null;
+        }
+
         try
         {
             var executionId = await SetupInternalAsync(context);
 
             if (context.Errors.Count > 0)
             {
-                context.ShellSettings.State = initialState;
+                // Always reset to Uninitialized on failure so the tenant can be retried or removed.
+                context.ShellSettings.AsUninitialized();
                 await _shellHost.ReloadShellContextAsync(context.ShellSettings, eventSource: false);
             }
 
@@ -103,10 +102,15 @@ public class SetupService : ISetupService
         }
         catch
         {
-            context.ShellSettings.State = initialState;
+            // Always reset to Uninitialized on failure so the tenant can be retried or removed.
+            context.ShellSettings.AsUninitialized();
             await _shellHost.ReloadShellContextAsync(context.ShellSettings, eventSource: false);
 
             throw;
+        }
+        finally
+        {
+            await _setupTracker.MarkSetupCompletedAsync(context.ShellSettings);
         }
     }
 
@@ -196,7 +200,20 @@ public class SetupService : ISetupService
                 context.Errors.Add(string.Empty, S["The security certificate on the server is from a non-trusted source (the certificate issuing authority isn't listed as a trusted authority in Trusted Root Certification Authorities on the client machine). In a development environment, you have the option to use the '{0}' parameter in your connection string to bypass the validation performed by the certificate authority.", "TrustServerCertificate=True"]);
                 break;
             case DbConnectionValidatorResult.DocumentTableFound:
-                context.Errors.Add(string.Empty, S["The provided database, table prefix and schema are already in use."]);
+                // For non-default shells, the Document table may exist from a previous failed setup attempt.
+                // Since tenant creation already validates database/prefix uniqueness, we allow the setup to
+                // proceed and overwrite the partially created tables from the earlier attempt.
+                if (context.ShellSettings.IsDefaultShell())
+                {
+                    context.Errors.Add(string.Empty, S["The provided database, table prefix and schema are already in use."]);
+                }
+                else
+                {
+                    _logger.LogWarning(
+                        "The Document table already exists for tenant '{TenantName}'. This may indicate a previous failed setup attempt. Proceeding with setup.",
+                        context.ShellSettings.Name);
+                }
+
                 break;
         }
 

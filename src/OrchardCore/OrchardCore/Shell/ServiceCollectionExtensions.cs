@@ -32,6 +32,7 @@ public static class ServiceCollectionExtensions
         }
 
         services.AddSingleton<IRunningShellTable, RunningShellTable>();
+        services.AddSingleton<ISetupTracker, SetupTracker>();
 
         services.AddHostedService<DistributedShellHostedService>();
 

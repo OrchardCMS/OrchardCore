@@ -35,9 +35,15 @@ public static class ShellSettingsExtensions
     public static bool IsInitialized(this ShellSettings settings) => settings.IsRunning() || settings.IsDisabled();
 
     /// <summary>
-    /// Whether the tenant is removable or not.
+    /// Whether the tenant is removable or not. A tenant can be removed when it is uninitialized or disabled.
     /// </summary>
     public static bool IsRemovable(this ShellSettings settings) => settings.IsUninitialized() || settings.IsDisabled();
+
+    /// <summary>
+    /// Whether the tenant can be set up. A tenant can be set up when it is uninitialized
+    /// or still in the initializing state (indicating a previous setup attempt failed).
+    /// </summary>
+    public static bool IsSetupable(this ShellSettings settings) => settings.IsUninitialized() || settings.IsInitializing();
 
     /// <summary>
     /// Whether or not the tenant configuration has not been disposed.

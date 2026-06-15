@@ -119,7 +119,7 @@ public sealed class AdminController : Controller
                    ShellSettings = settings,
                };
 
-               if (settings.IsUninitialized() && !string.IsNullOrEmpty(settings["Secret"]))
+               if (settings.IsSetupable() && !string.IsNullOrEmpty(settings["Secret"]))
                {
                    entry.Token = dataProtector.Protect(settings["Secret"], _clock.UtcNow.Add(new TimeSpan(24, 0, 0)));
                }
@@ -472,7 +472,7 @@ public sealed class AdminController : Controller
 
         // The user can change the 'preset' database information only if the
         // tenant has not been initialized yet
-        if (shellSettings.IsUninitialized())
+        if (shellSettings.IsSetupable())
         {
             var recipeCollections = await Task.WhenAll(_recipeHarvesters.Select(x => x.HarvestRecipesAsync()));
             var recipes = recipeCollections.SelectMany(x => x).Where(x => x.IsSetupRecipe).OrderBy(r => r.DisplayName).ToArray();
@@ -509,7 +509,7 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
-        if (shellSettings.IsUninitialized())
+        if (shellSettings.IsSetupable())
         {
             model.ConnectionString = TenantConnectionStringRedactor.RestoreIfRedacted(shellSettings["ConnectionString"], model.ConnectionString);
         }
@@ -545,7 +545,7 @@ public sealed class AdminController : Controller
 
                 // The user can change the 'preset' database information only if the
                 // tenant has not been initialized yet
-                if (shellSettings.IsUninitialized())
+                if (shellSettings.IsSetupable())
                 {
                     shellSettings["DatabaseProvider"] = model.DatabaseProvider;
                     shellSettings["TablePrefix"] = model.TablePrefix;
@@ -570,7 +570,7 @@ public sealed class AdminController : Controller
 
         // The user can change the 'preset' database information only if the
         // tenant has not been initialized yet
-        if (shellSettings.IsUninitialized())
+        if (shellSettings.IsSetupable())
         {
             model.DatabaseProvider = shellSettings["DatabaseProvider"];
             model.TablePrefix = shellSettings["TablePrefix"];
@@ -703,7 +703,7 @@ public sealed class AdminController : Controller
 
         if (!shellSettings.IsRemovable())
         {
-            await _notifier.ErrorAsync(H["You can only remove a 'Disabled' or 'Uninitialized' tenant."]);
+            await _notifier.ErrorAsync(H["You can only remove a 'Disabled', 'Uninitialized', or 'Initializing' tenant."]);
             return RedirectToAction(nameof(Index));
         }
 

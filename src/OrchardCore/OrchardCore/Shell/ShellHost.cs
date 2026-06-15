@@ -376,7 +376,7 @@ public sealed class ShellHost : IShellHost, IDisposable, IAsyncDisposable
     /// <summary>
     /// Creates a shell context based on shell settings.
     /// </summary>
-    private Task<ShellContext> CreateShellContextAsync(ShellSettings settings)
+    private async Task<ShellContext> CreateShellContextAsync(ShellSettings settings)
     {
         if (settings.IsUninitialized())
         {
@@ -385,7 +385,7 @@ public sealed class ShellHost : IShellHost, IDisposable, IAsyncDisposable
                 _logger.LogDebug("Creating shell context for tenant '{TenantName}' setup", settings.Name);
             }
 
-            return _shellContextFactory.CreateSetupContextAsync(settings);
+            return await _shellContextFactory.CreateSetupContextAsync(settings);
         }
         else if (settings.IsDisabled())
         {
@@ -394,16 +394,48 @@ public sealed class ShellHost : IShellHost, IDisposable, IAsyncDisposable
                 _logger.LogDebug("Creating disabled shell context for tenant '{TenantName}'", settings.Name);
             }
 
-            return Task.FromResult(new ShellContext { Settings = settings });
+            return new ShellContext { Settings = settings };
         }
         else if (settings.IsRunning() || settings.IsInitializing())
         {
+            // A tenant in Running or Initializing state must have a DatabaseProvider configured.
+            // If it's missing, the tenant is in a corrupted state from a failed setup.
+            if (settings["DatabaseProvider"] is null)
+            {
+                if (string.IsNullOrEmpty(settings["ConnectionString"]))
+                {
+                    // No connection string means SQLite (the only OC provider that uses file-based storage).
+                    _logger.LogWarning(
+                        "Tenant '{TenantName}' is in '{State}' state but has no database provider configured. " +
+                        "Recovering with 'Sqlite' provider.",
+                        settings.Name,
+                        settings.State);
+
+                    settings["DatabaseProvider"] = "Sqlite";
+                    await _shellSettingsManager.SaveSettingsAsync(settings);
+                }
+                else
+                {
+                    // Has a connection string but no provider — can't safely determine the provider.
+                    _logger.LogError(
+                        "Tenant '{TenantName}' is in '{State}' state with a connection string but no database provider. " +
+                        "Resetting to 'Uninitialized' to allow setup retry.",
+                        settings.Name,
+                        settings.State);
+
+                    settings.AsUninitialized();
+                    await _shellSettingsManager.SaveSettingsAsync(settings);
+
+                    return await _shellContextFactory.CreateSetupContextAsync(settings);
+                }
+            }
+
             if (_logger.IsEnabled(LogLevel.Debug))
             {
                 _logger.LogDebug("Creating shell context for tenant '{TenantName}'", settings.Name);
             }
 
-            return _shellContextFactory.CreateShellContextAsync(settings);
+            return await _shellContextFactory.CreateShellContextAsync(settings);
         }
         else
         {
@@ -508,7 +540,7 @@ public sealed class ShellHost : IShellHost, IDisposable, IAsyncDisposable
     private bool CanReleaseShell(ShellSettings settings) => !settings.IsDisabled() || !IsShellActive(settings);
 
     /// <summary>
-    /// Checks if a shell can be removed, throws an exception if the shell is neither uninitialized nor disabled.
+    /// Checks if a shell can be removed, throws an exception if the shell is not in a removable state.
     /// </summary>
     private void CheckCanRemoveShell(ShellSettings settings)
     {
@@ -521,7 +553,7 @@ public sealed class ShellHost : IShellHost, IDisposable, IAsyncDisposable
         if (!settings.IsRemovable() || IsShellActive(settings))
         {
             throw new InvalidOperationException(
-                $"The tenant '{settings.Name}' can't be removed as it is neither uninitialized nor disabled.");
+                $"The tenant '{settings.Name}' can't be removed as it is not in a removable state (Uninitialized or Disabled).");
         }
     }
 

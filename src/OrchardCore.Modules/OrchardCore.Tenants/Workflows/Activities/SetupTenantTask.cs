@@ -133,7 +133,7 @@ public class SetupTenantTask : TenantTask
             return Outcomes("Failed");
         }
 
-        if (!shellSettings.IsUninitialized())
+        if (!shellSettings.IsSetupable())
         {
             return Outcomes("Failed");
         }
