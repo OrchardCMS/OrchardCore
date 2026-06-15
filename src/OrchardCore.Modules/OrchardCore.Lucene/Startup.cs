@@ -42,7 +42,6 @@ public sealed class Startup : StartupBase
         services.TryAddScoped<ILuceneSearchQueryService, LuceneSearchQueryService>();
         services.AddNavigationProvider<AdminMenu>();
         services.AddPermissionProvider<Permissions>();
-        services.AddDataMigration<PermissionMigrations>();
 
         services.Configure<LuceneOptions>(o =>
             o.Analyzers.Add(new LuceneAnalyzer(LuceneConstants.DefaultAnalyzer,
@@ -87,6 +86,10 @@ public sealed class ContentsStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddDataMigration<IndexingMigrations>();
+
+        // Register after IndexingMigrations so its deferred task, which rewrites obsolete per-index role
+        // permissions to the new dynamic permissions, runs after the index profiles have been created.
+        services.AddDataMigration<PermissionMigrations>();
 
         services
             .AddIndexProfileHandler<LuceneContentIndexProfileHandler>()
