@@ -201,7 +201,7 @@ internal sealed class AzureAISearchIndexSettingsMigrations : DataMigration
                     {
                         var map = indexMapping.ToObject<AzureAISearchIndexMap>();
 
-                        if (azureMetadata.IndexMappings.Any(map => map.AzureFieldKey.EqualsOrdinalIgnoreCase(map.AzureFieldKey)))
+                        if (azureMetadata.IndexMappings.Any(existing => existing.AzureFieldKey.EqualsOrdinalIgnoreCase(map.AzureFieldKey)))
                         {
                             continue;
                         }
