@@ -185,7 +185,7 @@ public static class LiquidViewTemplateExtensions
 
 public static class LiquidTemplateContextExtensions
 {
-    internal static async ValueTask EnterScopeAsync(this LiquidTemplateContext context, ViewContext viewContext, object model)
+    public static async ValueTask InitializeAsync(this LiquidTemplateContext context, ViewContext viewContext)
     {
         if (!context.IsInitialized)
         {
