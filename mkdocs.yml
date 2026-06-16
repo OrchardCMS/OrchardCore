@@ -347,6 +347,7 @@ nav:
       - Contributing code: contributing/contributing-code.md
       - Contributing documentation: contributing/contributing-documentation.md
       - Reviewing pull requests: contributing/reviewing-pull-requests.md
+      - Using agent skills: contributing/using-skills.md
       - Benchmarking: contributing/benchmarking.md
       - Contributing to orchardcore.net: contributing/contributing-to-orchardcore-net.md
       - Developer Meetings: contributing/meetings.md
