@@ -11,9 +11,9 @@ public class LiquidViewTemplateWorkflowExecutionContextHandler : WorkflowExecuti
 {
     public override async Task EvaluatingExpressionAsync(WorkflowExecutionExpressionContext context)
     {
-        if (context.TemplateContext is LiquidTemplateContext liquidTemplateContext &&
-            liquidTemplateContext.Services.GetRequiredService<ViewContextAccessor>()?.ViewContext is { } viewContext)
+        if (context.TemplateContext is LiquidTemplateContext liquidTemplateContext)
         {
+            var viewContext = liquidTemplateContext.Services.GetRequiredService<ViewContextAccessor>()?.ViewContext;
             await liquidTemplateContext.InitializeAsync(viewContext);
         }
     }
