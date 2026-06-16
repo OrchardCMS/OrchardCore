@@ -16,9 +16,7 @@ public class CoreShapes : IShapeAttributeProvider
     }
 
     [Shape]
-#pragma warning disable CA1822 // Mark members as static
-    public async Task<IHtmlContent> List(Shape shape, DisplayContext displayContext, IEnumerable<object> Items,
-#pragma warning restore CA1822 // Mark members as static
+    public static async Task<IHtmlContent> List(Shape shape, DisplayContext displayContext, IEnumerable<object> Items,
         string ItemTagName,
         IEnumerable<string> ItemClasses,
         IDictionary<string, string> ItemAttributes,
@@ -99,9 +97,7 @@ public class CoreShapes : IShapeAttributeProvider
     }
 
     [Shape]
-#pragma warning disable CA1822 // Mark members as static
-    public IHtmlContent Message(IShape Shape)
-#pragma warning restore CA1822 // Mark members as static
+    public static IHtmlContent Message(IShape Shape)
     {
         var tagBuilder = Shape.GetTagBuilder("div");
         var type = Shape.Properties["Type"].ToString().ToLowerInvariant();
