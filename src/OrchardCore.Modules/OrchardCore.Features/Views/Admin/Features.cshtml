@@ -132,7 +132,7 @@
                             data-is-always-enabled="@isAlwaysEnabled.ToString().ToLowerInvariant()"
                             data-is-enabled="@feature.IsEnabled.ToString().ToLowerInvariant()">
                             <div class="row g-0 d-flex align-items-center">
-                                <div class="col-md-11">
+                                <div class="col">
                                     @if ((showEnable && !feature.IsEnabled) || (showDisable && feature.IsEnabled))
                                     {
                                         <div class="form-check mb-1">
@@ -159,7 +159,7 @@
                                                         .Select(f => f.Descriptor.Name)
                                                         .FirstOrDefault() ?? string.Empty;
 
-                                                    <span class="badge ta-badge font-weight-normal">
+                                                    <span class="badge ta-badge text-bg-secondary font-weight-normal">
                                                         @dependencyName
                                                     </span>
                                                 }
@@ -169,7 +169,7 @@
                                                 <div class="d-inline transitive-dependencies d-none">
                                                     @foreach (var d in dependencies.Where(d => !feature.Descriptor.Dependencies.Contains(d.Descriptor.Id)))
                                                     {
-                                                        <span class="badge ta-badge">
+                                                        <span class="badge ta-badge font-weight-normal">
                                                             @(string.IsNullOrEmpty(d.Descriptor.Name) ? d.Descriptor.Id : d.Descriptor.Name)
                                                         </span>
                                                     }
@@ -186,14 +186,14 @@
 
                                             @foreach (var d in missingDependencies)
                                             {
-                                                <span class="badge text-bg-warning">
+                                                <span class="badge text-bg-warning font-weight-normal">
                                                     @d
                                                 </span>
                                             }
                                         </div>
                                     }
                                 </div>
-                                <div class="col-md-1 text-end">
+                                <div class="col text-end">
                                     @if (feature.Descriptor.EnabledByDependencyOnly)
                                     {
                                         @if (feature.IsEnabled)
