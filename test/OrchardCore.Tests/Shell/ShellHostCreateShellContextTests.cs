@@ -32,12 +32,12 @@ public class ShellHostCreateShellContextTests
     }
 
     [Fact]
-    public async Task RunningTenant_WithoutDatabaseProvider_AndNoConnectionString_RecoversSqlite()
+    public async Task RunningTenant_WithoutDatabaseProvider_ButWithSqliteSettings_RecoversSqlite()
     {
-        // Arrange - A Running tenant missing DatabaseProvider but with no ConnectionString
-        // should be recovered to Sqlite (since it's the only file-based provider).
+        // Arrange - A Running tenant missing DatabaseProvider but with SQLite-style settings
+        // should be recovered to Sqlite.
         var settings = new ShellSettings { Name = "TestTenant" }.AsRunning();
-        // Explicitly no DatabaseProvider and no ConnectionString set.
+        settings["DatabaseName"] = "TestTenant.db";
 
         var shellContextFactory = new Mock<IShellContextFactory>();
         shellContextFactory
@@ -58,6 +58,35 @@ public class ShellHostCreateShellContextTests
         Assert.NotNull(context);
         Assert.Equal("Sqlite", settings["DatabaseProvider"]);
         shellSettingsManager.Verify(x => x.SaveSettingsAsync(settings), Times.Once);
+        shellContextFactory.Verify(x => x.CreateShellContextAsync(settings), Times.Once);
+        shellContextFactory.Verify(x => x.CreateSetupContextAsync(It.IsAny<ShellSettings>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task RunningTenant_WithoutDatabaseConfiguration_DoesNotRecoverSqlite()
+    {
+        // Arrange - Provider-less apps can intentionally run without a database.
+        var settings = new ShellSettings { Name = "TestTenant" }.AsRunning();
+
+        var shellContextFactory = new Mock<IShellContextFactory>();
+        shellContextFactory
+            .Setup(x => x.CreateShellContextAsync(It.IsAny<ShellSettings>()))
+            .ReturnsAsync(new ShellContext { Settings = settings });
+
+        var shellSettingsManager = new Mock<IShellSettingsManager>();
+        shellSettingsManager
+            .Setup(x => x.SaveSettingsAsync(It.IsAny<ShellSettings>()))
+            .Returns(Task.CompletedTask);
+
+        var shellHost = CreateShellHost(shellContextFactory.Object, shellSettingsManager.Object);
+
+        // Act
+        var context = await shellHost.GetOrCreateShellContextAsync(settings);
+
+        // Assert
+        Assert.NotNull(context);
+        Assert.Null(settings["DatabaseProvider"]);
+        shellSettingsManager.Verify(x => x.SaveSettingsAsync(It.IsAny<ShellSettings>()), Times.Never);
         shellContextFactory.Verify(x => x.CreateShellContextAsync(settings), Times.Once);
         shellContextFactory.Verify(x => x.CreateSetupContextAsync(It.IsAny<ShellSettings>()), Times.Never);
     }
@@ -120,6 +149,7 @@ public class ShellHostCreateShellContextTests
     {
         // Arrange - Empty string is equivalent to no connection string (SQLite uses file-based path).
         var settings = new ShellSettings { Name = "TestTenant" }.AsRunning();
+        settings["DatabaseName"] = "TestTenant.db";
         settings["ConnectionString"] = "";
         // No DatabaseProvider set.
 

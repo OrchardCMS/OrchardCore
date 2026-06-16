@@ -398,9 +398,11 @@ public sealed class ShellHost : IShellHost, IDisposable, IAsyncDisposable
         }
         else if (settings.IsRunning() || settings.IsInitializing())
         {
-            // A tenant in Running or Initializing state must have a DatabaseProvider configured.
-            // If it's missing, the tenant is in a corrupted state from a failed setup.
-            if (settings["DatabaseProvider"] is null)
+            // A tenant in Running or Initializing state normally has a database provider configured.
+            // If it's missing but other database settings exist, the tenant is in a corrupted state
+            // from a failed setup or partial configuration save. Provider-less apps like the MVC
+            // sample intentionally run without a data store, so they should be left untouched.
+            if (settings["DatabaseProvider"] is null && HasDatabaseConfiguration(settings))
             {
                 if (string.IsNullOrEmpty(settings["ConnectionString"]))
                 {
@@ -442,6 +444,12 @@ public sealed class ShellHost : IShellHost, IDisposable, IAsyncDisposable
             throw new InvalidOperationException("Unexpected shell state for " + settings.Name);
         }
     }
+
+    private static bool HasDatabaseConfiguration(ShellSettings settings) =>
+        !string.IsNullOrEmpty(settings["ConnectionString"]) ||
+        !string.IsNullOrEmpty(settings["DatabaseName"]) ||
+        !string.IsNullOrEmpty(settings["TablePrefix"]) ||
+        !string.IsNullOrEmpty(settings["Schema"]);
 
     /// <summary>
     /// Creates a transient shell for the default tenant's setup.
