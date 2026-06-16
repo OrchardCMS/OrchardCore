@@ -117,7 +117,7 @@
                             .Where(d => !Model.Features.Any(f => f.Descriptor.Id == d.Id));
                         var showDisable = !feature.Descriptor.EnabledByDependencyOnly && !isAlwaysEnabled && categoryName != "Core" && featureName != Application.ModuleName;
                         var showEnable = !feature.Descriptor.EnabledByDependencyOnly && !missingDependencies.Any() && featureId != "OrchardCore.Setup" && featureId != "OrchardCore.AutoSetup";
-                        var featureSearchText = string.Join(" ", [
+                        var featureSearchText = string.Join(" ", (string[])[
                             categoryName,
                             featureName,
                             featureId,
