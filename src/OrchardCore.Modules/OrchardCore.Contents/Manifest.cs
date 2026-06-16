@@ -20,6 +20,14 @@ using OrchardCore.Modules.Manifest;
 )]
 
 [assembly: Feature(
+    Id = "OrchardCore.Contents.VersionPruning",
+    Name = "Content Version Pruning",
+    Description = "Provides a background task to prune old content item versions.",
+    Dependencies = ["OrchardCore.Contents"],
+    Category = "Content Management"
+)]
+
+[assembly: Feature(
     Id = "OrchardCore.Contents.FileContentDefinition",
     Name = "File Content Definition",
     Description = "Stores Content Definition in a local file.",

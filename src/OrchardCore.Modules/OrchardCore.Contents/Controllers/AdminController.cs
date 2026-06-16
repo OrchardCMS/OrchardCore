@@ -793,12 +793,15 @@ public sealed class AdminController : Controller, IUpdateModel
     {
         var options = new List<SelectListItem>();
 
-        foreach (var contentTypeDefinition in contentTypeDefinitions)
+        var userId = CurrentUserId();
+
+        // Always sort the content types by their display name to make UX selection easier.
+        foreach (var contentTypeDefinition in contentTypeDefinitions.OrderBy(x => x.DisplayName))
         {
             // Allows non creatable types to be created by another admin page.
             var creatable = contentTypeDefinition.IsCreatable() || canCreateSelectedContentType;
 
-            if (creatable && await _authorizationService.AuthorizeContentTypeAsync(User, CommonPermissions.EditContent, contentTypeDefinition, CurrentUserId()))
+            if (creatable && await _authorizationService.AuthorizeContentTypeAsync(User, CommonPermissions.EditContent, contentTypeDefinition, userId))
             {
                 // Populate the creatable types.
                 options.Add(new SelectListItem(contentTypeDefinition.DisplayName, contentTypeDefinition.Name));
