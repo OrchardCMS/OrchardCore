@@ -61,9 +61,10 @@ public class DisplayUrlFilter : ILiquidFilter
             routeValues = contentItemMetadata.DisplayRouteValues;
         }
 
-        var urlHelper = _urlHelperFactory.GetUrlHelper(context.ViewContext);
-
-        var linkUrl = urlHelper.RouteUrl(routeValues);
+        // LinkGenerator is less accurate so only use it if a view context couldn't be produced. 
+        var linkUrl = context.ViewContext is ActionContext actionContext
+            ? _urlHelperFactory.GetUrlHelper(actionContext).RouteUrl(routeValues)
+            : _linkGenerator.GetPathByRouteValues(_httpContextAccessor.HttpContext, string.Empty, routeValues);
 
         return new StringValue(linkUrl);
     }
