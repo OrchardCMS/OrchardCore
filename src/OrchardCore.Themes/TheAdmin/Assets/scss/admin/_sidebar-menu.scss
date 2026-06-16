@@ -197,8 +197,12 @@ body:not(.left-sidebar-compact) {
                 outline: none;
             }
 
-            > ul > li > figure > figcaption > .item-label {
+            > ul > li > figure > figcaption {
                 height: 48px;
+            }
+
+            > ul > li > figure > figcaption > .item-label {
+                height: 100%;
             }
             //for accessibility testing
             /*.btn-nostyle:focus, .btn-nostyle:active {

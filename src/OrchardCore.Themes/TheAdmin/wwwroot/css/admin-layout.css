@@ -353,8 +353,12 @@ body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav .btn-nostyle {
   outline: none;
 }
 
-body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav > ul > li > figure > figcaption > .item-label {
+body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav > ul > li > figure > figcaption {
   height: 48px;
+}
+
+body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav > ul > li > figure > figcaption > .item-label {
+  height: 100%;
 }
 body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav {
   /*.btn-nostyle:focus, .btn-nostyle:active {
