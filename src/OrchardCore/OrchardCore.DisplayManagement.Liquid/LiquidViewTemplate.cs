@@ -189,6 +189,14 @@ public static class LiquidTemplateContextExtensions
     {
         if (!context.IsInitialized)
         {
+            // Try to create fallback view context if none exists. This only works if an HTTP context is available.
+            if (viewContext == null &&
+                context.Services.GetRequiredService<IHttpContextAccessor>().HttpContext is { } httpContext &&
+                await httpContext.GetActionContextAsync() is { } actionContext)
+            {
+                viewContext = LiquidViewTemplateExtensions.GetViewContext(actionContext);
+            }
+            
             var localClock = context.Services.GetRequiredService<ILocalClock>();
 
             // Configure Fluid with the time zone to represent local date and times
