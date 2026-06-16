@@ -289,6 +289,7 @@ body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav > ul.menu-admin .item
   flex-shrink: 0;
   font-size: 22px;
   width: var(--oc-start-navigation-width-when-compact);
+  text-align: center;
 }
 
 body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav > ul.menu-admin .item-label > span.icon svg {
@@ -453,13 +454,13 @@ body:not(.left-sidebar-compact) #ta-left-sidebar li.has-items.active > figure > 
 
 [dir="ltr"] body:not(.left-sidebar-compact) #ta-left-sidebar li.has-items.active > figure > figcaption > .item-label::before {
   border-left: 3px solid;
-  border-left-color: rgba(0, 0, 0, 0.1);
+  border-left-color: var(--oc-selected-indicator-color);
   left: 0;
 }
 
 [dir="rtl"] body:not(.left-sidebar-compact) #ta-left-sidebar li.has-items.active > figure > figcaption > .item-label::before {
   border-right: 3px solid;
-  border-right-color: rgba(0, 0, 0, 0.1);
+  border-right-color: var(--oc-selected-indicator-color);
   right: 0;
 }
 
@@ -754,6 +755,7 @@ body:not(.left-sidebar-compact) #ta-left-sidebar #filter:focus {
   padding: 0 5px;
   flex-shrink: 0;
   font-size: 16px;
+  width: 37px;
 }
 
 .left-sidebar-compact #ta-left-sidebar #left-nav > ul .item-label > span.icon svg {
@@ -827,6 +829,7 @@ body:not(.left-sidebar-compact) #ta-left-sidebar #filter:focus {
   color: var(--oc-admin-menu-item-font-color);
   background-color: var(--oc-admin-menu-bg-color);
   width: var(--oc-start-navigation-width-when-compact);
+  text-align: center;
 }
 
 .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li.has-items.active > figure > figcaption > .item-label::before {

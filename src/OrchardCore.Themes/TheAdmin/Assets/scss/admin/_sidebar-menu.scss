@@ -147,6 +147,7 @@ body:not(.left-sidebar-compact) {
                             flex-shrink: 0;
                             font-size: 22px;
                             width: var(--oc-start-navigation-width-when-compact);
+                            text-align: center;
 
                             svg {
                                 width: 35px;
@@ -252,7 +253,7 @@ body:not(.left-sidebar-compact) {
 
         li.has-items.active > figure > figcaption > .item-label::before {
             border-left: 3px solid;
-            border-left-color: rgba(0, 0, 0, 0.1);
+            border-left-color: var(--oc-selected-indicator-color);
             bottom: 0;
             content: "";
             left: 0;
@@ -488,6 +489,7 @@ body:not(.left-sidebar-compact) {
                         padding: 0 5px;
                         flex-shrink: 0;
                         font-size: 16px;
+                        width: 37px;
 
                         svg {
                             width: 35px;
@@ -555,6 +557,7 @@ body:not(.left-sidebar-compact) {
                     color: var(--oc-admin-menu-item-font-color);
                     background-color: var(--oc-admin-menu-bg-color);
                     width: var(--oc-start-navigation-width-when-compact);
+                    text-align: center;
                 }
 
                 > li.has-items.active > figure > figcaption > .item-label::before {

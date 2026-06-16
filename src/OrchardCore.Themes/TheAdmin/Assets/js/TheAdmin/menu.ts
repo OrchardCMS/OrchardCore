@@ -83,7 +83,7 @@ const unSetCompactStatus = () => {
 
     // resetting what we disabled for compact state
     $('#left-nav ul.menu-admin > li > figure > ul').addClass('collapse');
-    $('#left-nav ul.menu-admin > li > figure > figcaption .item-label').attr('data-bs-toggle', 'collapse');
+    $('#left-nav ul.menu-admin > li > figure > figcaption > button.item-label').attr('data-bs-toggle', 'collapse');
     $('#left-nav li.has-items').removeClass("visible");
     $('#left-nav > ul > li').css("transition", "");
 
