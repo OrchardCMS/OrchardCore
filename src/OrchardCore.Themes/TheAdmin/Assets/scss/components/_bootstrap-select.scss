@@ -1,4 +1,4 @@
-@import "../../../../../../node_modules/bootstrap-select/sass/bootstrap-select";
+@import "../../../../../../node_modules/@crestapps/bootstrap-select/sass/bootstrap-select";
 
 .multiselect__content-wrapper ul {
     padding-left: unset;
@@ -11,6 +11,7 @@ html[dir="rtl"] .bootstrap-select .bs-ok-default:after {
 }
 
 .bootstrap-select .popover-header {
+    display: block;
     padding: 0.5rem 1rem;
     margin-bottom: 0;
     border-bottom: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color) !important;
@@ -18,15 +19,33 @@ html[dir="rtl"] .bootstrap-select .bs-ok-default:after {
 
 .bootstrap-select {
     .popover-header {
+        .btn-close,
         .close {
             border: 0;
-            background: none;
             box-shadow: none;
             border-radius: 0;
-            float: right !important;
-            padding-top: 0px;
-            padding-right: 0px;
-            background: unset;
+        }
+
+        .close {
+            background: none;
+            padding-top: 0;
+            padding-inline-end: 0;
+            font-size: 0.95rem;
+            line-height: 1;
+        }
+
+        .btn-close {
+            float: right;
+            opacity: 1;
+            margin: 0 0 0 0.5rem;
+            padding: 0.25rem;
+            background-position: center;
+            background-size: 0.75rem;
         }
     }
+}
+
+html[dir="rtl"] .bootstrap-select .popover-header .btn-close {
+    float: left;
+    margin: 0 0.5rem 0 0;
 }
