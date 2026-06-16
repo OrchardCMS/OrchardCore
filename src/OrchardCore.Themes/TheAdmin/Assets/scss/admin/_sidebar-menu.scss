@@ -197,8 +197,8 @@ body:not(.left-sidebar-compact) {
                 outline: none;
             }
 
-            > li > figure > figcaption > .item-label {
-                width: 100%;
+            > ul > li > figure > figcaption > .item-label {
+                height: 48px;
             }
             //for accessibility testing
             /*.btn-nostyle:focus, .btn-nostyle:active {
