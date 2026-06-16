@@ -2,9 +2,12 @@ using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Implementation;
+using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Modules;
 
 namespace OrchardCore.DisplayManagement.Shapes;
+
+#pragma warning disable CA1822 // Mark members as static
 
 [Feature(Application.DefaultFeatureId)]
 public class CoreShapes : IShapeAttributeProvider
@@ -16,9 +19,7 @@ public class CoreShapes : IShapeAttributeProvider
     }
 
     [Shape]
-#pragma warning disable CA1822 // Mark members as static
     public async Task<IHtmlContent> List(Shape shape, DisplayContext displayContext, IEnumerable<object> Items,
-#pragma warning restore CA1822 // Mark members as static
         string ItemTagName,
         IEnumerable<string> ItemClasses,
         IDictionary<string, string> ItemAttributes,
@@ -99,9 +100,28 @@ public class CoreShapes : IShapeAttributeProvider
     }
 
     [Shape]
-#pragma warning disable CA1822 // Mark members as static
+    public async Task<IHtmlContent> NotifyMessages(IShape shape, IDisplayHelper displayAsync, IShapeFactory shapeFactory)
+    {
+        if (!shape.Properties.TryGetValue("Entries", out var value) ||
+            value is not IEnumerable<NotifyEntry> messages)
+        {
+            return HtmlString.Empty;
+        }
+
+        var htmlContentBuilder = new HtmlContentBuilder();
+
+        foreach (var entry in messages)
+        {
+            var messageShape = await shapeFactory.CreateAsync("Message", Arguments.From(entry));
+
+            htmlContentBuilder.AppendHtml(await displayAsync.ShapeExecuteAsync(messageShape));
+        }
+
+        return htmlContentBuilder;
+    }
+
+    [Shape]
     public IHtmlContent Message(IShape Shape)
-#pragma warning restore CA1822 // Mark members as static
     {
         var tagBuilder = Shape.GetTagBuilder("div");
         var type = Shape.Properties["Type"].ToString().ToLowerInvariant();
@@ -113,6 +133,8 @@ public class CoreShapes : IShapeAttributeProvider
         return tagBuilder;
     }
 }
+
+#pragma warning restore CA1822 // Mark members as static
 
 public class CoreShapesTableProvider : ShapeTableProvider
 {
