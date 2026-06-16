@@ -8,7 +8,7 @@
 @inject ISetupTracker SetupTracker
 
 @{
-    var isSetupInProgress = Model.Value.ShellSettings.IsSetupable() || Model.Value.ShellSettings.IsRemovable()
+    var isSetupInProgress = Model.Value.ShellSettings.IsSetupReady() || Model.Value.ShellSettings.IsRemovable()
         ? await SetupTracker.IsSetupInProgressAsync(Model.Value.ShellSettings)
         : false;
 }
@@ -26,7 +26,7 @@
 {
     <a asp-action="Enable" asp-route-id="@Model.Value.Name" class="btn btn-success btn-sm enable" data-url-af="UnsafeUrl">@T["Enable"]</a>
 }
-@if (Model.Value.ShellSettings.IsSetupable())
+@if (Model.Value.ShellSettings.IsSetupReady())
 {
     @if (isSetupInProgress)
     {

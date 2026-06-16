@@ -32,11 +32,6 @@ public class DocumentStore : IDocumentStore
             return loaded as T;
         }
 
-        if (_session is null)
-        {
-            return await (factoryAsync?.Invoke() ?? Task.FromResult((T)null)) ?? new T();
-        }
-
         var document = await _session.Query<T>().FirstOrDefaultAsync()
             ?? await (factoryAsync?.Invoke() ?? Task.FromResult((T)null))
             ?? new T();
@@ -55,11 +50,6 @@ public class DocumentStore : IDocumentStore
             return (false, loaded as T);
         }
 
-        if (_session is null)
-        {
-            return (true, await (factoryAsync?.Invoke() ?? Task.FromResult((T)null)) ?? new T());
-        }
-
         var document = await _session.Query<T>().FirstOrDefaultAsync();
         if (document is not null)
         {
@@ -73,11 +63,6 @@ public class DocumentStore : IDocumentStore
     /// <inheritdoc />
     public async Task UpdateAsync<T>(T document, Func<T, Task> updateCache, bool checkConcurrency = false)
     {
-        if (_session is null)
-        {
-            return;
-        }
-
         await _session.SaveAsync(document, checkConcurrency);
 
         AfterCommitSuccess<T>(() =>

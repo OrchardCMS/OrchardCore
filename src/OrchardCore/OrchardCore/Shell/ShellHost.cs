@@ -398,6 +398,8 @@ public sealed class ShellHost : IShellHost, IDisposable, IAsyncDisposable
         }
         else if (settings.IsRunning() || settings.IsInitializing())
         {
+            await settings.EnsureConfigurationAsync();
+
             // A tenant in Running or Initializing state normally has a database provider configured.
             // If it's missing but other database settings exist, the tenant is in a corrupted state
             // from a failed setup or partial configuration save. Provider-less apps like the MVC

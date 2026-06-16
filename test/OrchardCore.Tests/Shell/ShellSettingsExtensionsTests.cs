@@ -29,13 +29,13 @@ public class ShellSettingsExtensionsTests
     [InlineData(TenantState.Disabled, false)]
     [InlineData(TenantState.Running, false)]
     [InlineData(TenantState.Invalid, false)]
-    public void IsSetupable_ShouldReturnExpectedResult(TenantState state, bool expectedSetupable)
+    public void IsSetupReady_ShouldReturnExpectedResult(TenantState state, bool expectedSetupable)
     {
         // Arrange
         var settings = new ShellSettings { Name = "TestTenant", State = state };
 
         // Act
-        var result = settings.IsSetupable();
+        var result = settings.IsSetupReady();
 
         // Assert
         Assert.Equal(expectedSetupable, result);
@@ -53,32 +53,32 @@ public class ShellSettingsExtensionsTests
     }
 
     [Fact]
-    public void IsSetupable_ShouldAllowRetryForInitializingTenant()
+    public void IsSetupReady_ShouldAllowRetryForInitializingTenant()
     {
         // Arrange - A tenant stuck in Initializing state after a failed setup.
         var settings = new ShellSettings { Name = "StuckTenant" }.AsInitializing();
 
         // Act & Assert - Should be setupable so the setup can be retried.
-        Assert.True(settings.IsSetupable());
+        Assert.True(settings.IsSetupReady());
     }
 
     [Fact]
-    public void IsSetupable_ShouldNotAllowSetupForRunningTenant()
+    public void IsSetupReady_ShouldNotAllowSetupForRunningTenant()
     {
         // Arrange
         var settings = new ShellSettings { Name = "RunningTenant" }.AsRunning();
 
         // Act & Assert
-        Assert.False(settings.IsSetupable());
+        Assert.False(settings.IsSetupReady());
     }
 
     [Fact]
-    public void IsSetupable_ShouldNotAllowSetupForDisabledTenant()
+    public void IsSetupReady_ShouldNotAllowSetupForDisabledTenant()
     {
         // Arrange
         var settings = new ShellSettings { Name = "DisabledTenant" }.AsDisabled();
 
         // Act & Assert
-        Assert.False(settings.IsSetupable());
+        Assert.False(settings.IsSetupReady());
     }
 }

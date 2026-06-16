@@ -207,7 +207,7 @@ public sealed class TenantApiController : ControllerBase
                 shellSettings.RequestUrlHost = model.RequestUrlHost;
                 shellSettings["FeatureProfile"] = string.Join(',', model.FeatureProfiles ?? []);
 
-                if (shellSettings.IsSetupable())
+                if (shellSettings.IsSetupReady())
                 {
                     shellSettings["DatabaseProvider"] = model.DatabaseProvider;
                     shellSettings["TablePrefix"] = model.TablePrefix;
@@ -370,7 +370,7 @@ public sealed class TenantApiController : ControllerBase
             return Created(GetEncodedUrl(shellSettings, null), null);
         }
 
-        if (!shellSettings.IsSetupable())
+        if (!shellSettings.IsSetupReady())
         {
             return BadRequest(S["The tenant can't be setup."]);
         }
