@@ -1,4 +1,4 @@
-﻿<Project Sdk="Aspire.AppHost.Sdk/13.4.1">
+﻿<Project Sdk="Aspire.AppHost.Sdk/13.4.4">
 
   <PropertyGroup>
     <TargetFramework>$(DefaultTargetFramework)</TargetFramework>

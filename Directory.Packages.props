@@ -2,7 +2,6 @@
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
-    <AspireAppHostVersion>$([System.Text.RegularExpressions.Regex]::Match($([System.IO.File]::ReadAllText('$(MSBuildThisFileDirectory)global.json')), '&quot;Aspire\.AppHost\.Sdk&quot;\s*:\s*&quot;([^&quot;]+)&quot;').Groups[1].Value)</AspireAppHostVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="AnyAscii" Version="0.3.3" />
@@ -113,6 +112,10 @@
   </ItemGroup>
   <ItemGroup>
     <!-- Aspire Packages -->
-    <PackageVersion Include="Aspire.Hosting.AppHost" Version="13.4.1" />
+    <PackageVersion Include="Aspire.Hosting.AppHost" Version="13.4.4" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- Transitive Packages -->
+    <PackageVersion Include="MessagePack" Version="3.1.7" />
   </ItemGroup>
 </Project>

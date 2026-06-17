@@ -27,7 +27,11 @@ public static class MediaFileStoreExtensions
 
         var fileCreatingContext = new FileCreatingContext(path, length, contentType);
 
-        await using var fileCreatingResult = await fileCreationService.CreateAsync(fileCreatingContext, stream, cancellationToken);
+        await using var fileCreatingResult = await fileCreationService.CreateAsync(
+            fileCreatingContext,
+            stream,
+            leaveOpen: true,
+            cancellationToken);
 
         if (!fileCreatingResult.Succeeded)
         {
