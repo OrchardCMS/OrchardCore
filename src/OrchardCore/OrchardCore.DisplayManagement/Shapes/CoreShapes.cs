@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Implementation;
+using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Modules;
 
 namespace OrchardCore.DisplayManagement.Shapes;
@@ -94,6 +95,27 @@ public class CoreShapes : IShapeAttributeProvider
         }
 
         return listTagBuilder;
+    }
+
+    [Shape]
+    public static async Task<IHtmlContent> NotifyMessages(IShape shape, IDisplayHelper displayAsync, IShapeFactory shapeFactory)
+    {
+        if (!shape.Properties.TryGetValue("Entries", out var value) ||
+            value is not IEnumerable<NotifyEntry> messages)
+        {
+            return HtmlString.Empty;
+        }
+
+        var htmlContentBuilder = new HtmlContentBuilder();
+
+        foreach (var entry in messages)
+        {
+            var messageShape = await shapeFactory.CreateAsync("Message", Arguments.From(entry));
+
+            htmlContentBuilder.AppendHtml(await displayAsync.ShapeExecuteAsync(messageShape));
+        }
+
+        return htmlContentBuilder;
     }
 
     [Shape]
