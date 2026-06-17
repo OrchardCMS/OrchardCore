@@ -458,14 +458,14 @@ public sealed class ResourceManagementOptionsConfiguration
                 "~/OrchardCore.Resources/Vendor/CrestApps/bootstrap-select/bootstrap-select.css"
             )
             .SetCdn(
-                "https://cdn.jsdelivr.net/npm/@crestapps/bootstrap-select@1.1.2/dist/css/bootstrap-select.min.css",
-                "https://cdn.jsdelivr.net/npm/@crestapps/bootstrap-select@1.1.2/dist/css/bootstrap-select.css"
+                "https://cdn.jsdelivr.net/npm/@crestapps/bootstrap-select@1.2.0/dist/css/bootstrap-select.min.css",
+                "https://cdn.jsdelivr.net/npm/@crestapps/bootstrap-select@1.2.0/dist/css/bootstrap-select.css"
             )
             .SetCdnIntegrity(
-                "sha384-oozZB5/jB+8J04fFLJz/RnHM6xMkyFKylkstv8pSEBJyLiSTrCNHTfMbgLtZJXMU",
-                "sha384-Idzh3EdDce8Z1GCUM428WZt6WPs5iqKMkKVqhNwG8MaGyEjrkxAE0JpGkZfF4tCJ"
+                "sha384-KzDBkgwkXTEVA1Iau40dlucVaS6DPnf0aPwxQyJAqrl7KO6DYv5pEC2AJlbO8OuQ",
+                "sha384-mixE2uOPb0SAd5Ojzb7TrFn3AawxOTutuGyL/Aq6gPkY/6CRfKq0dycrROKHJDT5"
             )
-            .SetVersion("1.1.2");
+            .SetVersion("1.2.0");
 
         manifest
             .DefineScript("bootstrap-select")
@@ -475,14 +475,14 @@ public sealed class ResourceManagementOptionsConfiguration
                 "~/OrchardCore.Resources/Vendor/CrestApps/bootstrap-select/bootstrap-select.js"
             )
             .SetCdn(
-                "https://cdn.jsdelivr.net/npm/@crestapps/bootstrap-select@1.1.2/dist/js/bootstrap-select.min.js",
-                "https://cdn.jsdelivr.net/npm/@crestapps/bootstrap-select@1.1.2/dist/js/bootstrap-select.js"
+                "https://cdn.jsdelivr.net/npm/@crestapps/bootstrap-select@1.2.0/dist/js/bootstrap-select.min.js",
+                "https://cdn.jsdelivr.net/npm/@crestapps/bootstrap-select@1.2.0/dist/js/bootstrap-select.js"
             )
             .SetCdnIntegrity(
-                "sha384-4Um721QCPi8onhS0KLFguO0siWaJ5mZTjsbn8X3X8i/PPImCW5Cp9Kl3p3qyHTU8",
-                "sha384-rlNrXEYfrqIHAT1FbB1cg2I/rzBKg1eP1o+Lk00Y5XWmS5H1P01s9QwUOOjytO9D"
+                "sha384-R7aQ+h/YwfYWxwVbXnRupt5dDCEB+GFE5kGRXdMRqqTb8a44gKz4FhiTVCIl1utj",
+                "sha384-OoRqHGsY2f8cxSKpRli5U/ioHYo5CO4Nqz9+jMhs/Ah3slKOn36MzgaO3Dixk2D0"
             )
-            .SetVersion("1.1.2");
+            .SetVersion("1.2.0");
 
         //
 

@@ -2,7 +2,7 @@
   "name": "@orchardcore/theadmin",
   "version": "1.0.0",
   "dependencies": {
-    "@crestapps/bootstrap-select": "1.1.2",
+    "@crestapps/bootstrap-select": "1.2.0",
     "@popperjs/core": "2.11.8",
     "@types/jquery": "3.5.32",
     "@types/js-cookie": "^3.0.6",

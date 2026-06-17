@@ -1,12 +1,11 @@
 /*!
- * Bootstrap-select v1.1.2 (https://github.com/CrestApps/crestapps-bootstrap-select)
+ * Bootstrap-select v1.2.0 (https://github.com/CrestApps/bootstrap-select)
  *
  * CrestApps fork (vanilla JavaScript, Bootstrap 5+) of snapappointments/bootstrap-select
  * Copyright 2012-2018 SnapAppointments, LLC (original work)
  * Fork modifications Copyright 2024-2026 CrestApps
- * Licensed under MIT (https://github.com/CrestApps/crestapps-bootstrap-select/blob/main/LICENSE)
+ * Licensed under MIT (https://github.com/CrestApps/bootstrap-select/blob/main/LICENSE)
  */
-
 (function (factory) {
   if (typeof define === 'function' && define.amd) {
     // AMD. Register as an anonymous module.
@@ -25,6 +24,11 @@
     factory(typeof window !== 'undefined' ? window.bootstrap : undefined);
   }
 }(function (bootstrap) {
+  var __SELECTPICKER_EXPOSE_GLOBAL__ = true;
+
+/* eslint-disable no-unused-vars */
+// Shared ordered source fragment consumed by the Grunt JS build.
+
 'use strict';
 
 // Resolve Bootstrap's Dropdown component (Bootstrap 5+). It may be provided
@@ -269,6 +273,10 @@ function getAttributesObject (element) {
   return attributesObject;
 }
 
+
+/* eslint-disable no-unused-vars */
+// Shared ordered source fragment consumed by the Grunt JS build.
+
 // <editor-fold desc="Search / string utilities">
 function stringSearch (li, searchString, method, normalize) {
   var stringTypes = [
@@ -432,6 +440,10 @@ var createEscaper = function (map) {
 
 var htmlEscape = createEscaper(escapeMap);
 // </editor-fold>
+
+
+/* eslint-disable no-undef, no-unused-vars */
+// Shared ordered source fragment consumed by the Grunt JS build.
 
 // <editor-fold desc="Constants">
 var keyCodeMap = {
@@ -740,6 +752,10 @@ function stripRemovedOptions (source) {
   return result;
 }
 
+
+/* eslint-disable no-undef */
+// Shared ordered source fragment consumed by the Grunt JS build.
+
 class Selectpicker {
   constructor (element, options) {
     if (typeof element === 'string') {
@@ -979,11 +995,15 @@ class Selectpicker {
   }
 
   createDropdown () {
-    // If we are multiple or showTick option is set, then add the show-tick class
-    var showTick = (this.multiple || this.options.showTick) ? ' show-tick' : '',
+    // Multiple selects always show an indicator. Single selects also need the
+    // indicator column when selectionIndicator is enabled.
+    var usesSelectionIndicator = this.options.selectionIndicator === 'checkbox',
+        showTick = (this.multiple || this.options.showTick || usesSelectionIndicator) ? ' show-tick' : '',
         showSelectedTags = this.options.showSelectedTags ? ' show-selected-tags' : '',
         selectedItemsStyle = this.options.selectedItemsStyle === 'list' ? ' selected-items-style-list' : '',
-        selectionIndicator = this.options.selectionIndicator === 'checkbox' ? ' selection-indicator-checkbox' : '',
+        selectionIndicator = usesSelectionIndicator
+          ? (this.multiple ? ' selection-indicator-checkbox' : ' selection-indicator-radio')
+          : '',
         multiselectable = this.multiple ? ' aria-multiselectable="true"' : '',
         autofocus = this.autofocus ? ' autofocus' : '',
         liveSearchPlaceholder = this.options.liveSearchPlaceholder;
@@ -1003,8 +1023,8 @@ class Selectpicker {
     if (this.options.header) {
       header =
           '<div class="' + classNames.POPOVERHEADER + '">' +
+            '<span class="popover-header-text">' + this.options.header + '</span>' +
             '<button type="button" class="btn-close" aria-label="Close"></button>' +
-              this.options.header +
           '</div>';
     }
 
@@ -1088,6 +1108,9 @@ class Selectpicker {
     return createFromHTML(drop);
   }
 
+
+/* eslint-disable no-undef */
+// Shared ordered source fragment consumed by the Grunt JS build.
   // runs when the dropdown is about to be shown
   onShow () {
     if (this.options.liveSearch && this.searchbox.value) {
@@ -1450,6 +1473,10 @@ class Selectpicker {
     return updateIndex;
   }
 
+
+
+/* eslint-disable no-undef */
+// Shared ordered source fragment consumed by the Grunt JS build.
   fetchData (callback, type, page, searchValue) {
     page = page || 1;
     type = type || 'data';
@@ -1659,7 +1686,7 @@ class Selectpicker {
         mainElements = [],
         widestOptionLength = 0;
 
-    if (that.options.showTick || that.multiple) {
+    if (that.options.showTick || that.multiple || that.options.selectionIndicator === 'checkbox') {
       elementTemplates.checkMark.className = this.options.selectionIndicator === 'checkbox'
         ? 'check-mark bs-selection-indicator'
         : this.options.iconBase + ' ' + that.options.tickIcon + ' check-mark';
@@ -1757,6 +1784,9 @@ class Selectpicker {
     }
   }
 
+
+/* eslint-disable no-undef */
+// Shared ordered source fragment consumed by the Grunt JS build.
   findLis () {
     return this.menuInner.querySelectorAll('.inner > li');
   }
@@ -2198,6 +2228,10 @@ class Selectpicker {
     }
   }
 
+
+
+/* eslint-disable no-undef */
+// Shared ordered source fragment consumed by the Grunt JS build.
   liHeight (refresh) {
     if (!refresh && (this.options.size === false || Object.keys(this.sizeInfo).length)) return;
 
@@ -2688,6 +2722,10 @@ class Selectpicker {
     }
   }
 
+
+
+/* eslint-disable no-undef */
+// Shared ordered source fragment consumed by the Grunt JS build.
   clickListener () {
     var that = this;
 
@@ -3118,6 +3156,10 @@ class Selectpicker {
     return element.value;
   }
 
+
+
+/* eslint-disable no-undef */
+// Shared ordered source fragment consumed by the Grunt JS build.
   val (value) {
     var element = this.element;
 
@@ -3575,7 +3617,7 @@ class Selectpicker {
 var instanceMap = new WeakMap();
 
 Selectpicker.NAME = 'selectpicker';
-Selectpicker.VERSION = '1.1.2';
+Selectpicker.VERSION = '1.2.0';
 
 // user-provided global defaults (set via Selectpicker.setDefaults, used by i18n files)
 Selectpicker.defaults = null;
@@ -3693,67 +3735,83 @@ Selectpicker.getOrCreateInstance = function (element, options) {
   return new Selectpicker(element, typeof options === 'object' ? options : {});
 };
 
+// Runtime wiring lives in js/bootstrap-select.runtime.js so each distribution
+// can choose whether it should expose a browser global or stay module-scoped.
+
+
+/* global Selector, __SELECTPICKER_EXPOSE_GLOBAL__ */
+
 // <editor-fold desc="Keyboard handling and auto-initialization">
 var KEYDOWN_SELECTOR = '.bootstrap-select [' + Selector.DATA_TOGGLE + '], .bootstrap-select [role="listbox"], .bootstrap-select .bs-searchbox input';
 
-// Handle keyboard navigation ourselves. This listener runs in the capture
-// phase on `window` so it executes before Bootstrap's `document`-level
-// (capture-phase, delegated) dropdown keydown handler and prevents it from
-// processing bootstrap-select's custom menu (which would otherwise error on
-// relocated/container menus and conflict with our own navigation). This
-// replaces the upstream approach of unbinding Bootstrap's global handler.
-window.addEventListener('keydown', function (e) {
-  var target = e.target;
-  if (!target || !target.closest) return;
+function initSelectpickerRuntime (Selectpicker, exposeGlobal) {
+  if (typeof window === 'undefined' || typeof document === 'undefined') return;
 
-  // Any keydown originating inside a bootstrap-select widget (or its relocated
-  // menu container) must not reach Bootstrap's dropdown keydown handler.
-  var widget = target.closest('.bootstrap-select, .bs-container');
-  if (!widget) return;
+  // Handle keyboard navigation ourselves. This listener runs in the capture
+  // phase on `window` so it executes before Bootstrap's `document`-level
+  // (capture-phase, delegated) dropdown keydown handler and prevents it from
+  // processing bootstrap-select's custom menu (which would otherwise error on
+  // relocated/container menus and conflict with our own navigation). This
+  // replaces the upstream approach of unbinding Bootstrap's global handler.
+  window.addEventListener('keydown', function (e) {
+    var target = e.target;
+    if (!target || !target.closest) return;
 
-  e.stopImmediatePropagation();
+    // Any keydown originating inside a bootstrap-select widget (or its
+    // relocated menu container) must not reach Bootstrap's dropdown keydown
+    // handler.
+    var widget = target.closest('.bootstrap-select, .bs-container');
+    if (!widget) return;
 
-  var trigger = target.closest(KEYDOWN_SELECTOR);
-  if (!trigger) return;
+    e.stopImmediatePropagation();
 
-  var instance;
-  for (var node = trigger; node; node = node.parentElement) {
-    if (node.bootstrapSelectInstance) {
-      instance = node.bootstrapSelectInstance;
-      break;
+    var trigger = target.closest(KEYDOWN_SELECTOR);
+    if (!trigger) return;
+
+    var instance;
+    for (var node = trigger; node; node = node.parentElement) {
+      if (node.bootstrapSelectInstance) {
+        instance = node.bootstrapSelectInstance;
+        break;
+      }
     }
-  }
 
-  if (instance) instance._keydown(e, trigger);
-}, true);
+    if (instance) instance._keydown(e, trigger);
+  }, true);
 
-document.addEventListener('focusin', function (e) {
-  var target = e.target;
-  if (target && target.closest && target.closest(KEYDOWN_SELECTOR)) {
-    e.stopPropagation();
-  }
-});
-
-function initAll () {
-  var selects = document.querySelectorAll('.selectpicker');
-  Array.prototype.forEach.call(selects, function (select) {
-    Selectpicker.getOrCreateInstance(select);
+  document.addEventListener('focusin', function (e) {
+    var target = e.target;
+    if (target && target.closest && target.closest(KEYDOWN_SELECTOR)) {
+      e.stopPropagation();
+    }
   });
+
+  function initAll () {
+    var selects = document.querySelectorAll('.selectpicker');
+    Array.prototype.forEach.call(selects, function (select) {
+      Selectpicker.getOrCreateInstance(select);
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAll);
+  } else {
+    initAll();
+  }
+
+  if (exposeGlobal) {
+    window.Selectpicker = Selectpicker;
+  }
 }
 
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initAll);
-} else {
-  initAll();
-}
+initSelectpickerRuntime(
+  Selectpicker,
+  typeof __SELECTPICKER_EXPOSE_GLOBAL__ === 'undefined' ? true : __SELECTPICKER_EXPOSE_GLOBAL__
+);
 // </editor-fold>
-
-if (typeof window !== 'undefined') {
-  window.Selectpicker = Selectpicker;
-}
 
 return Selectpicker;
 
-}));
 
+}));
 //# sourceMappingURL=bootstrap-select.js.map
