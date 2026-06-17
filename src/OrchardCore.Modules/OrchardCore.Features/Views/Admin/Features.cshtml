@@ -159,7 +159,7 @@
                                                         .Select(f => f.Descriptor.Name)
                                                         .FirstOrDefault() ?? string.Empty;
 
-                                                    <span class="badge ta-badge text-bg-secondary font-weight-normal">
+                                                    <span class="badge ta-badge font-weight-normal">
                                                         @dependencyName
                                                     </span>
                                                 }
@@ -169,7 +169,7 @@
                                                 <div class="d-inline transitive-dependencies d-none">
                                                     @foreach (var d in dependencies.Where(d => !feature.Descriptor.Dependencies.Contains(d.Descriptor.Id)))
                                                     {
-                                                        <span class="badge ta-badge font-weight-normal">
+                                                        <span class="badge ta-badge font-weight-normal fst-italic">
                                                             @(string.IsNullOrEmpty(d.Descriptor.Name) ? d.Descriptor.Id : d.Descriptor.Name)
                                                         </span>
                                                     }
