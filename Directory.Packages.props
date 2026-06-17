@@ -112,6 +112,8 @@
   </ItemGroup>
   <ItemGroup>
     <!-- Aspire Packages -->
+    <!-- When updating Aspire package versions, also update the corresponding SDK version in '<Project Sdk="Aspire.AppHost.Sdk/13.4.4">' 
+    within 'src/OrchardCore.AspireHost/OrchardCore.AspireHost.csproj. -->
     <PackageVersion Include="Aspire.Hosting.AppHost" Version="13.4.4" />
   </ItemGroup>
   <ItemGroup>
