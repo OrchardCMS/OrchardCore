@@ -35,7 +35,7 @@ public class DisplayUrlFilter : ILiquidFilter
 
     public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext context)
     {
-        if (_httpContextAccessor.HttpContext == null)
+        if (_httpContextAccessor.HttpContext is not { } httpContext)
         {
             return new StringValue(string.Empty);
         }
@@ -64,7 +64,7 @@ public class DisplayUrlFilter : ILiquidFilter
         // LinkGenerator is less accurate so only use it if a view context couldn't be produced. 
         var linkUrl = context.ViewContext is ActionContext actionContext
             ? _urlHelperFactory.GetUrlHelper(actionContext).RouteUrl(routeValues)
-            : _linkGenerator.GetPathByRouteValues(_httpContextAccessor.HttpContext, string.Empty, routeValues);
+            : _linkGenerator.GetPathByRouteValues(httpContext, string.Empty, routeValues);
 
         return new StringValue(linkUrl);
     }
