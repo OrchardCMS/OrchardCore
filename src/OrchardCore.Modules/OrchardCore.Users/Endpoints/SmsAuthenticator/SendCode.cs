@@ -23,7 +23,7 @@ public static class SendCode
         builder.MapPost("TwoFactor-Authenticator/SmsSendCode", HandleAsync<T>)
             .AllowAnonymous()
             .WithName(RouteName)
-            .WithRateLimitGroup(OrchardCore.Users.UserRateLimiterPolicyNames.TwoFactorCodeSend)
+            .WithRateLimitGroup(UserRateLimiterPolicyNames.TwoFactorCodeSend)
             .DisableAntiforgery();
 
         return builder;
