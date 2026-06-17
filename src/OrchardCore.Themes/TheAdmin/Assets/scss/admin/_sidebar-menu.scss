@@ -732,7 +732,6 @@ body:not(.left-sidebar-compact) {
             background: rgba(0, 0, 0, 0.05);
             color: rgba(var(--oc-admin-menu-item-font-color-active), 0.9) !important;
             font-weight: 600;
-            padding-left: (2 * $link-padding-left + 16) !important;
         }
 
         li.active > figure > ul > li.active > .item-label::before {
@@ -835,14 +834,9 @@ body:not(.left-sidebar-compact) {
         li > figure ul > li > figure ul > li {
             background: rgba(0, 0, 0, 0.1);
         }
-        // third level indent
+        // third level items: same indent as second level (no extra nesting in compact flyout)
         li > figure ul > li > figure ul > li > figure > figcaption > a {
             color: var(--oc-admin-menu-item-font-color-active);
-            padding-left: 3 * $link-padding-left !important;
-        }
-
-        li > figure ul > li > figure ul > .active > a {
-            padding-left: (3 * $link-padding-left - 4) !important;
         }
 
         .footer {
