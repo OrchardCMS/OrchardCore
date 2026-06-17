@@ -27,6 +27,7 @@ assignees: ''
       - Highlights and goals of the release.
       - Prerequisites for running the new version.
       - Upgrade steps and any breaking changes.
+  - **Update Analyzer Release Tracking Files**: For analyzer projects (for example, `src/OrchardCore/OrchardCore.SourceGenerators`), move the rules being released from `AnalyzerReleases.Unshipped.md` to `AnalyzerReleases.Shipped.md`. Keep `AnalyzerReleases.Unshipped.md` checked in and reserve it for rules that have not shipped yet.
   - **Update Documentation Navigation**: Add the release notes page to `mkdocs.yml` navigation and remove it from `not_in_nav`.
   - **Version Mentions**: Update all references to the new version throughout the documentation, including:
     - [Status in the root README](https://docs.orchardcore.net/en/latest/#status)

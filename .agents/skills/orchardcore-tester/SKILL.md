@@ -11,7 +11,16 @@ This skill guides you through testing OrchardCore CMS features using browser aut
 
 - OrchardCore repository (working directory)
 - .NET SDK 10.0+ installed
-- `playwright-cli` skill available
+- `playwright-cli` skill available, with a browser engine installed.
+  On macOS (or any machine without Chrome) use webkit:
+  ```bash
+  playwright-cli --browser webkit install
+  ```
+  Then pass `--browser webkit` on the first `open` of a session. See
+  `references/playwright-cli.md`.
+
+> The examples below show PowerShell and bash. The repo targets macOS/.NET 10;
+> bash works everywhere. Use whichever matches your shell.
 
 ## Core Workflow
 
@@ -19,9 +28,41 @@ Testing an OrchardCore feature follows these steps:
 
 1. **Build** the application
 2. **Run** the application server (background)
-3. **Setup** a test site (if needed)
+3. **Setup** a test site (AutoSetup is the recommended unattended path)
 4. **Test** the feature via browser
 5. **Verify** results and clean up
+
+## TL;DR (fastest reliable path)
+
+```bash
+# 1. build
+dotnet build src/OrchardCore.Cms.Web -c Debug -f net10.0
+
+# 2. fresh state + pick a port
+rm -rf src/OrchardCore.Cms.Web/App_Data
+PORT=$(( (RANDOM % 1000) + 5000 )); echo -n $PORT > .orchardcore-port
+
+# 3. run with AutoSetup (provisions Default tenant on first request, no wizard)
+cd src/OrchardCore.Cms.Web
+OrchardCore__OrchardCore_AutoSetup__AutoSetupPath= \
+OrchardCore__OrchardCore_AutoSetup__Tenants__0__ShellName=Default \
+OrchardCore__OrchardCore_AutoSetup__Tenants__0__SiteName=TestSite \
+OrchardCore__OrchardCore_AutoSetup__Tenants__0__SiteTimeZone=America/Los_Angeles \
+OrchardCore__OrchardCore_AutoSetup__Tenants__0__AdminUsername=admin \
+OrchardCore__OrchardCore_AutoSetup__Tenants__0__AdminEmail=admin@test.com \
+OrchardCore__OrchardCore_AutoSetup__Tenants__0__AdminPassword=Password1! \
+OrchardCore__OrchardCore_AutoSetup__Tenants__0__DatabaseProvider=Sqlite \
+OrchardCore__OrchardCore_AutoSetup__Tenants__0__RecipeName=Blog \
+dotnet run -f net10.0 --no-build --urls "http://localhost:$PORT" > autosetup-console.log 2>&1 &
+cd ../..
+
+# 4. trigger + confirm
+curl -s -o /dev/null "http://localhost:$PORT/"
+grep -m1 "successfully provisioned" src/OrchardCore.Cms.Web/autosetup-console.log
+```
+
+Then log in (see Step 4 — the login password field needs the native-setter
+workaround). Full AutoSetup details and gotchas: `references/autosetup.md`.
 
 ## Step 1: Build
 
@@ -91,28 +132,69 @@ if (Test-Path ".orchardcore-pid") {
 }
 ```
 
+```bash
+# bash: find the process actually listening on the port and kill it.
+# (Backgrounding dotnet via a subshell makes $! unreliable, so resolve by port.)
+PORT=$(cat .orchardcore-port)
+PID=$(lsof -ti tcp:$PORT -sTCP:LISTEN | head -1)
+[ -n "$PID" ] && kill "$PID" && echo "Stopped OrchardCore (PID: $PID)"
+rm -f .orchardcore-pid
+```
+
 ## Step 3: Setup Test Site
 
-**Check if setup is needed**: Navigate to the app URL - if you see a setup wizard, the site needs setup.
+A fresh `App_Data` is uninitialized, so the site must be provisioned. There are
+two paths.
 
-**Reset for fresh setup** (optional):
+### Option A — AutoSetup (recommended, unattended)
+
+Provision the `Default` tenant from configuration on first request — **no
+browser, no wizard**. `OrchardCore.Cms.Web` already wires AutoSetup in
+(`Program.cs` → `.AddSetupFeatures("OrchardCore.AutoSetup")`); you just supply
+env vars when starting the app (see the TL;DR above, or run them inline with
+`dotnet run` from Step 2).
+
+Key rules (full details in `references/autosetup.md`):
+
+- Prefix is `OrchardCore__OrchardCore_AutoSetup__Tenants__0__<Option>` — `__` is
+  the separator, the single `_` in `OrchardCore_AutoSetup` is **literal**.
+- **No quotes around values** in bash inline-env form (quotes become part of the
+  value and corrupt the admin password/email).
+- `SiteTimeZone` is **required** (e.g. `America/Los_Angeles`).
+
+Confirm success with the log line:
+
+```
+The AutoSetup successfully provisioned the site 'TestSite'.
+```
+
+```bash
+grep -m1 "successfully provisioned" src/OrchardCore.Cms.Web/autosetup-console.log
+```
+
+### Option B — Interactive setup wizard (browser)
+
+Start the app **without** AutoSetup env vars, then drive the wizard with
+`playwright-cli`. The plain inputs (Site Name, User Name, Email) fill normally,
+but the **password and confirmation fields cannot be filled with `fill`/`type`**
+— use the native-setter `eval` workaround. Full step-by-step:
+`references/setup-wizard.md`. Quick shape:
+
+```bash
+PORT=$(cat .orchardcore-port)
+playwright-cli --browser webkit open "http://localhost:$PORT/"
+playwright-cli snapshot
+# fill <sitename>, <username>, <email>; pick Blog from the recipe dropdown
+# set passwords via native setter (see below / setup-wizard.md), then click Finish Setup
+```
+
+**Reset for fresh setup**:
+```bash
+rm -rf src/OrchardCore.Cms.Web/App_Data
+```
 ```powershell
 Remove-Item -Recurse -Force src/OrchardCore.Cms.Web/App_Data
 ```
-
-**Setup workflow**:
-```bash
-# Get the port
-$port = Get-Content ".orchardcore-port"
-
-playwright-cli open http://localhost:$port
-playwright-cli snapshot
-# Fill: Site Name = "Test Site", Recipe = "Blog", Username = "admin", 
-# Email = "admin@test.com", Password = "Password1!"
-# Click "Finish Setup"
-```
-
-See `references/setup-wizard.md` for detailed field mapping.
 
 ## Step 4: Test Features
 
@@ -120,14 +202,31 @@ See `references/setup-wizard.md` for detailed field mapping.
 
 ### Login to Admin
 
+The username fills normally, but the **login password field
+(`input[name="LoginForm.Password"]`) cannot be filled with `fill`/`type`** — use
+the native-setter `eval` (same limitation as the setup wizard; see
+`references/playwright-cli.md`).
+
 ```bash
-playwright-cli open http://localhost:$port/Login
-playwright-cli snapshot
-# Fill username: admin, password: Password1!
-# Click login button
-playwright-cli open http://localhost:$port/Admin
-playwright-cli snapshot
+PORT=$(cat .orchardcore-port)
+playwright-cli --browser webkit open "http://localhost:$PORT/Login"
+playwright-cli snapshot                       # get the username/login-button refs
+
+# username: plain fill works
+playwright-cli fill <username-ref> "admin"
+
+# password: fill is a no-op here — set it via the native setter + events
+playwright-cli eval '((p)=>{var s=Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype,"value").set; s.call(p,"Password1!"); p.dispatchEvent(new Event("input",{bubbles:true})); p.dispatchEvent(new Event("change",{bubbles:true})); return p.value.length})(document.querySelector("input[name=\"LoginForm.Password\"]"))'
+
+# submit, then confirm /Admin loads (does NOT redirect back to /Login)
+playwright-cli click <login-button-ref>
+playwright-cli open "http://localhost:$PORT/Admin"
+playwright-cli eval 'window.location.pathname'   # -> "/Admin" when authenticated
 ```
+
+> The `eval` prints a benign `result is not a function` message (it returns a
+> number); the value is still set — verify with
+> `playwright-cli eval 'document.querySelector("input[name=\"LoginForm.Password\"]").value'`.
 
 ### Common Test Scenarios
 
@@ -207,8 +306,10 @@ See `references/debugging.md` for more debugging techniques.
 
 ## References
 
+- `references/autosetup.md` - **Unattended AutoSetup** (env-var recipe, gotchas, troubleshooting)
+- `references/playwright-cli.md` - playwright-cli specifics: browser install, `eval` constraint, the password-field workaround
+- `references/setup-wizard.md` - Interactive browser setup wizard (with password workaround)
 - `references/admin-navigation.md` - Admin URLs and UI patterns
-- `references/setup-wizard.md` - Site setup details
 - `references/common-features.md` - Feature-specific testing guides
 - `references/debugging.md` - Log files and troubleshooting
 - `AGENTS.md` (repo root) - Build and development instructions
