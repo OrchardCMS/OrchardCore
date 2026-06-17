@@ -20,6 +20,7 @@ using OrchardCore.RateLimits.Models;
 using OrchardCore.RateLimits.Services;
 using OrchardCore.RateLimits.ViewModels;
 using OrchardCore.Routing;
+
 namespace OrchardCore.RateLimits.Controllers;
 
 [Admin("RateLimits/{action}/{policyId?}", "RateLimits.{action}")]
@@ -116,7 +117,8 @@ public sealed class AdminController : Controller
             BuiltInRouteLimits = BuildBuiltInRouteLimits(),
             BulkActions =
             [
-                new SelectListItem(S["Publish Drafts"], nameof(RateLimitPolicyBulkAction.Publish)),
+                new SelectListItem(S["Enable"], nameof(RateLimitPolicyBulkAction.Enable)),
+                new SelectListItem(S["Disable"], nameof(RateLimitPolicyBulkAction.Disable)),
                 new SelectListItem(S["Delete"], nameof(RateLimitPolicyBulkAction.Remove)),
             ],
             Pager = totalCount > pager.PageSize
@@ -152,13 +154,21 @@ public sealed class AdminController : Controller
         {
             model.PolicyScopes = CreatePolicyScopeList();
             model.LimiterSources = BuildLimiterSources();
+            model.InitialIsEnabled = false;
+            model.EnabledUtc = null;
             return View(model);
         }
 
         var policy = ToPolicy(model);
         policy.PolicyId = IdGenerator.GenerateId();
+        policy.EnabledUtc = model.IsEnabled ? DateTime.UtcNow : null;
 
         await _policyStore.CreateAsync(policy);
+
+        if (ShouldReloadPolicy(wasEnabled: false, isEnabled: policy.IsEnabled))
+        {
+            _shellReleaseManager.RequestRelease();
+        }
 
         await _notifier.SuccessAsync(H["Policy created successfully."]);
 
@@ -172,70 +182,74 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        var policy = await GetEditablePolicyAsync(policyId);
+        var policy = await GetCurrentPolicyAsync(policyId);
         if (policy is null)
         {
             return NotFound();
         }
 
-        return View(await CreateEditViewModelAsync(policy, await GetPublishedPolicyAsync(policyId)));
+        return View(await CreateEditViewModelAsync(policy));
     }
 
     [HttpPost]
     [ActionName(nameof(Edit))]
-    [FormValueRequired("submit.Save")]
     public async Task<IActionResult> EditPost(string policyId, RateLimitPolicyEditViewModel model)
-        => await SavePolicyAsync(policyId, model, publish: false);
+        => await SavePolicyAsync(policyId, model);
 
     [HttpPost]
-    [ActionName(nameof(Edit))]
-    [FormValueRequired("submit.Publish")]
-    public async Task<IActionResult> EditAndPublishPost(string policyId, RateLimitPolicyEditViewModel model)
-        => await SavePolicyAsync(policyId, model, publish: true);
-
-    [HttpPost]
-    public async Task<IActionResult> Publish(string policyId)
+    public async Task<IActionResult> Enable(string policyId)
     {
         if (!await _authorizationService.AuthorizeAsync(User, RateLimitsPermissions.ManageRateLimits))
         {
             return Forbid();
         }
 
-        var policy = await GetEditablePolicyAsync(policyId);
+        var policy = await GetCurrentPolicyAsync(policyId);
         if (policy is null)
         {
             return NotFound();
         }
 
-        await _policyStore.PublishAsync([policy]);
-        _shellReleaseManager.RequestRelease();
+        if (!policy.IsEnabled && !await _policyStore.SetStatusAsync(policyId, true))
+        {
+            return NotFound();
+        }
 
-        await _notifier.SuccessAsync(H["Policy published successfully."]);
+        if (!policy.IsEnabled)
+        {
+            _shellReleaseManager.RequestRelease();
+        }
+
+        await _notifier.SuccessAsync(H["Policy enabled successfully."]);
 
         return RedirectToAction(nameof(Index));
     }
 
     [HttpPost]
-    public async Task<IActionResult> Unpublish(string policyId)
+    public async Task<IActionResult> Disable(string policyId)
     {
         if (!await _authorizationService.AuthorizeAsync(User, RateLimitsPermissions.ManageRateLimits))
         {
             return Forbid();
         }
 
-        var policy = await GetPublishedPolicyAsync(policyId);
+        var policy = await GetCurrentPolicyAsync(policyId);
         if (policy is null)
         {
             return NotFound();
         }
 
-        if (!await _policyStore.UnpublishAsync(policy))
+        if (policy.IsEnabled && !await _policyStore.SetStatusAsync(policyId, false))
         {
             return NotFound();
         }
 
-        _shellReleaseManager.RequestRelease();
-        await _notifier.SuccessAsync(H["Policy unpublished successfully."]);
+        if (policy.IsEnabled)
+        {
+            _shellReleaseManager.RequestRelease();
+        }
+
+        await _notifier.SuccessAsync(H["Policy disabled successfully."]);
 
         return RedirectToAction(nameof(Index));
     }
@@ -248,14 +262,18 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        var policy = await GetEditablePolicyAsync(policyId);
+        var policy = await GetCurrentPolicyAsync(policyId);
         if (policy is null)
         {
             return NotFound();
         }
 
         await _policyStore.DeleteAsync(policy);
-        _shellReleaseManager.RequestRelease();
+
+        if (policy.IsEnabled)
+        {
+            _shellReleaseManager.RequestRelease();
+        }
 
         await _notifier.SuccessAsync(H["Policy deleted successfully."]);
 
@@ -279,39 +297,71 @@ public sealed class AdminController : Controller
             return RedirectToAction(nameof(Index));
         }
 
+        var policies = (await GetCurrentPoliciesAsync())
+            .Where(x => ids.Contains(x.PolicyId, StringComparer.Ordinal))
+            .ToArray();
+
         switch (model.BulkAction)
         {
-            case RateLimitPolicyBulkAction.Publish:
-                var policiesToPublish = (await GetCurrentPoliciesAsync())
-                    .Where(x => ids.Contains(x.PolicyId, StringComparer.Ordinal))
-                    .ToArray();
-
-                var published = await _policyStore.PublishAsync(policiesToPublish);
-
-                if (published.Count == 0)
+            case RateLimitPolicyBulkAction.Enable:
                 {
-                    await _notifier.WarningAsync(H["No policies were published. Make sure the selected policies have drafts."]);
+                    var totalChanged = 0;
+
+                    foreach (var policy in policies.Where(x => !x.IsEnabled))
+                    {
+                        if (await _policyStore.SetStatusAsync(policy.PolicyId, true))
+                        {
+                            totalChanged++;
+                        }
+                    }
+
+                    if (totalChanged == 0)
+                    {
+                        await _notifier.WarningAsync(H["No policies were enabled."]);
+                        break;
+                    }
+
+                    _shellReleaseManager.RequestRelease();
+                    await _notifier.SuccessAsync(H.Plural(totalChanged, "{1} policy was enabled successfully.", "{1} policies were enabled successfully.", totalChanged));
+
                     break;
                 }
 
-                _shellReleaseManager.RequestRelease();
-                await _notifier.SuccessAsync(H["Policies published successfully."]);
+            case RateLimitPolicyBulkAction.Disable:
+                {
+                    var totalChanged = 0;
 
-                break;
+                    foreach (var policy in policies.Where(x => x.IsEnabled))
+                    {
+                        if (await _policyStore.SetStatusAsync(policy.PolicyId, false))
+                        {
+                            totalChanged++;
+                        }
+                    }
+
+                    if (totalChanged == 0)
+                    {
+                        await _notifier.WarningAsync(H["No policies were disabled."]);
+                        break;
+                    }
+
+                    _shellReleaseManager.RequestRelease();
+                    await _notifier.SuccessAsync(H.Plural(totalChanged, "{1} policy was disabled successfully.", "{1} policies were disabled successfully.", totalChanged));
+
+                    break;
+                }
 
             case RateLimitPolicyBulkAction.Remove:
                 {
-                    var policies = (await GetCurrentPoliciesAsync())
-                        .Where(x => ids.Contains(x.PolicyId, StringComparer.Ordinal))
-                        .ToArray();
-
                     var totalDeleted = 0;
+                    var shouldReload = false;
 
                     foreach (var policy in policies)
                     {
                         if (await _policyStore.DeleteAsync(policy))
                         {
                             totalDeleted++;
+                            shouldReload |= policy.IsEnabled;
                         }
                     }
 
@@ -321,7 +371,11 @@ public sealed class AdminController : Controller
                         break;
                     }
 
-                    _shellReleaseManager.RequestRelease();
+                    if (shouldReload)
+                    {
+                        _shellReleaseManager.RequestRelease();
+                    }
+
                     await _notifier.SuccessAsync(H.Plural(totalDeleted, "{1} policy was deleted successfully.", "{1} policies were deleted successfully.", totalDeleted));
 
                     break;
@@ -344,13 +398,12 @@ public sealed class AdminController : Controller
             Description = policy.Description,
             TargetDescription = DescribeTarget(policy),
             Status = policy.Status,
-            PublishedUtc = policy.PublishedUtc,
-            HasDraft = policy.Status != RateLimitPolicyStatus.Published,
-            HasPublished = policy.Status != RateLimitPolicyStatus.Draft,
+            EnabledUtc = policy.EnabledUtc,
+            IsEnabled = policy.IsEnabled,
         };
     }
 
-    private async Task<RateLimitPolicyEditViewModel> CreateEditViewModelAsync(RateLimitPolicy policy, RateLimitPolicy publishedPolicy)
+    private async Task<RateLimitPolicyEditViewModel> CreateEditViewModelAsync(RateLimitPolicy policy)
     {
         var model = CreateEditViewModel();
         model.PolicyId = policy.PolicyId;
@@ -359,47 +412,34 @@ public sealed class AdminController : Controller
         model.Description = policy.Description;
         model.Scope = policy.Scope;
         model.Path = policy.Path;
+        model.IsEnabled = policy.IsEnabled;
+        model.InitialIsEnabled = policy.IsEnabled;
         model.Status = policy.Status;
-        model.PublishedUtc = publishedPolicy?.PublishedUtc ?? policy.PublishedUtc;
-        model.PublishedTargetDescription = publishedPolicy is null ? null : DescribeTarget(publishedPolicy);
+        model.EnabledUtc = policy.EnabledUtc;
 
         foreach (var limiter in policy.Limiters)
         {
             var shape = await _displayManager.BuildDisplayAsync(limiter, updater: null, displayType: OrchardCoreConstants.DisplayType.SummaryAdmin);
             shape.Properties["PolicyId"] = policy.PolicyId;
             shape.Properties["CanManage"] = true;
-            model.DraftLimiters.Add(new ModelEntry<RateLimitLimiter>
+            model.Limiters.Add(new ModelEntry<RateLimitLimiter>
             {
                 Model = limiter,
                 Shape = shape,
             });
         }
 
-        if (policy.Status == RateLimitPolicyStatus.PublishedWithDraft && publishedPolicy is not null)
-        {
-            foreach (var limiter in publishedPolicy.Limiters)
-            {
-                model.PublishedLimiters.Add(new ModelEntry<RateLimitLimiter>
-                {
-                    Model = limiter,
-                    Shape = await _displayManager.BuildDisplayAsync(limiter, updater: null, displayType: OrchardCoreConstants.DisplayType.SummaryAdmin),
-                });
-            }
-        }
-
         return model;
     }
 
-    private async Task<IActionResult> SavePolicyAsync(string policyId, RateLimitPolicyEditViewModel model, bool publish)
+    private async Task<IActionResult> SavePolicyAsync(string policyId, RateLimitPolicyEditViewModel model)
     {
         if (!await _authorizationService.AuthorizeAsync(User, RateLimitsPermissions.ManageRateLimits))
         {
             return Forbid();
         }
 
-        var draftPolicy = await _policyStore.FindByIdAsync(policyId, PolicyVersion.Draft);
-        var publishedPolicy = await _policyStore.FindByIdAsync(policyId, PolicyVersion.Published);
-        var existingPolicy = CreateCurrentPolicy(draftPolicy, publishedPolicy);
+        var existingPolicy = await GetCurrentPolicyAsync(policyId);
         if (existingPolicy is null)
         {
             return NotFound();
@@ -409,34 +449,33 @@ public sealed class AdminController : Controller
 
         if (!ModelState.IsValid)
         {
-            var invalidModel = await CreateEditViewModelAsync(
-                existingPolicy,
-                publishedPolicy);
+            var invalidModel = await CreateEditViewModelAsync(existingPolicy);
             invalidModel.Name = model.Name;
             invalidModel.Description = model.Description;
             invalidModel.Scope = model.Scope;
             invalidModel.Path = model.Path;
+            invalidModel.IsEnabled = model.IsEnabled;
+            invalidModel.Status = RateLimitPolicyStore.GetStatus(model.IsEnabled);
+            invalidModel.EnabledUtc = model.IsEnabled ? existingPolicy.EnabledUtc : null;
             return View("Edit", invalidModel);
         }
 
         var updated = ToPolicy(model, existingPolicy);
         updated.PolicyId = policyId;
-        updated.Status = existingPolicy.Status;
-        updated.PublishedUtc = existingPolicy.PublishedUtc;
+        updated.Status = RateLimitPolicyStore.GetStatus(updated.IsEnabled);
+        updated.EnabledUtc = updated.IsEnabled
+            ? existingPolicy.IsEnabled ? existingPolicy.EnabledUtc ?? DateTime.UtcNow : DateTime.UtcNow
+            : null;
         updated.Limiters.AddRange(existingPolicy.Limiters);
 
         await _policyStore.UpdateAsync(updated);
 
-        if (publish)
+        if (ShouldReloadPolicy(existingPolicy.IsEnabled, updated.IsEnabled))
         {
-            await _policyStore.PublishAsync([updated]);
             _shellReleaseManager.RequestRelease();
-            await _notifier.SuccessAsync(H["Policy saved and published successfully."]);
-
-            return RedirectToAction(nameof(Index));
         }
 
-        await _notifier.SuccessAsync(H["Policy draft updated successfully."]);
+        await _notifier.SuccessAsync(H["Policy saved successfully."]);
 
         return RedirectToAction(nameof(Index));
     }
@@ -492,7 +531,8 @@ public sealed class AdminController : Controller
             Author = existingPolicy?.Author ?? User.Identity?.Name,
             Scope = model.Scope,
             Path = model.Scope == RateLimitPolicyScope.Endpoint ? model.Path?.Trim() : null,
-            PublishedUtc = existingPolicy?.PublishedUtc,
+            IsEnabled = model.IsEnabled,
+            EnabledUtc = existingPolicy?.EnabledUtc,
         };
     }
 
@@ -600,43 +640,10 @@ public sealed class AdminController : Controller
     }
 
     private async Task<List<RateLimitPolicy>> GetCurrentPoliciesAsync()
-    {
-        var draftPolicies = await _policyStore.GetAllAsync(PolicyVersion.Draft);
-        var publishedPolicies = await _policyStore.GetAllAsync(PolicyVersion.Published);
+        => [.. await _policyStore.GetAllAsync(PolicyVersion.Current)];
 
-        var draftsById = draftPolicies.ToDictionary(x => x.PolicyId, StringComparer.Ordinal);
-        var publishedById = publishedPolicies.ToDictionary(x => x.PolicyId, StringComparer.Ordinal);
-
-        return draftsById.Keys
-            .Concat(publishedById.Keys)
-            .Distinct(StringComparer.Ordinal)
-            .Select(policyId =>
-            {
-                draftsById.TryGetValue(policyId, out var draftPolicy);
-                publishedById.TryGetValue(policyId, out var publishedPolicy);
-
-                return CreateCurrentPolicy(draftPolicy, publishedPolicy);
-            })
-            .Where(static policy => policy is not null)
-            .ToList();
-    }
-
-    private async Task<RateLimitPolicy> GetEditablePolicyAsync(string policyId)
-    {
-        var draftPolicy = await _policyStore.FindByIdAsync(policyId, PolicyVersion.Draft);
-        if (draftPolicy is not null)
-        {
-            return draftPolicy;
-        }
-
-        return await GetPublishedPolicyAsync(policyId);
-    }
-
-    private async Task<RateLimitPolicy> GetPublishedPolicyAsync(string policyId)
-        => await _policyStore.FindByIdAsync(policyId, PolicyVersion.Published);
-
-    private static RateLimitPolicy CreateCurrentPolicy(RateLimitPolicy draftPolicy, RateLimitPolicy publishedPolicy)
-        => draftPolicy ?? publishedPolicy;
+    private async Task<RateLimitPolicy> GetCurrentPolicyAsync(string policyId)
+        => await _policyStore.FindByIdAsync(policyId, PolicyVersion.Current);
 
     private static bool SearchMatches(RateLimitPolicy policy, string searchText)
     {
@@ -650,6 +657,9 @@ public sealed class AdminController : Controller
         return !string.IsNullOrWhiteSpace(value) &&
             value.Contains(searchText, StringComparison.OrdinalIgnoreCase);
     }
+
+    private static bool ShouldReloadPolicy(bool wasEnabled, bool isEnabled)
+        => wasEnabled || isEnabled;
 
     private string DescribeTarget(RateLimitPolicy policy)
     {

@@ -27,7 +27,7 @@ public class RateLimiterMiddlewareTests
         using var host = await CreateHostAsync(
             staticAssetDirectory.Path,
             configureRouteLimits: null,
-            publishedPolicies:
+            enabledPolicies:
             [
                 CreateGlobalFixedWindowPolicy("Global", 1, 60),
             ],
@@ -69,7 +69,7 @@ public class RateLimiterMiddlewareTests
                         1,
                         TimeSpan.FromSeconds(5)));
             },
-            publishedPolicies:
+            enabledPolicies:
             [
                 CreateGlobalFixedWindowPolicy("Global", 10, 60),
             ],
@@ -95,7 +95,7 @@ public class RateLimiterMiddlewareTests
         using var host = await CreateHostAsync(
             staticAssetDirectory.Path,
             configureRouteLimits: null,
-            publishedPolicies:
+            enabledPolicies:
             [
                 CreateEndpointFixedWindowPolicy("TenantLimitedPolicy", "/tenant/limited", 1, 60),
             ],
@@ -118,7 +118,7 @@ public class RateLimiterMiddlewareTests
     private static async Task<IHost> CreateHostAsync(
         string staticAssetPath,
         Action<RateLimitsOptions> configureRouteLimits,
-        IEnumerable<RateLimitPolicy> publishedPolicies,
+        IEnumerable<RateLimitPolicy> enabledPolicies,
         CancellationToken cancellationToken)
     {
         var builder = Host.CreateDefaultBuilder()
@@ -130,7 +130,7 @@ public class RateLimiterMiddlewareTests
                     services.AddRouting();
                     services.AddRateLimiter();
                     services.AddTransient<IConfigureOptions<RateLimiterOptions>, RateLimiterOptionsConfigurations>();
-                    services.AddSingleton(CreatePolicyStore(publishedPolicies ?? []));
+                    services.AddSingleton(CreatePolicyStore(enabledPolicies ?? []));
                     services.AddSingleton(new FixedWindowRateLimiterSource(Mock.Of<IStringLocalizer<FixedWindowRateLimiterSource>>()));
                     services.AddSingleton(new SlidingWindowRateLimiterSource(Mock.Of<IStringLocalizer<SlidingWindowRateLimiterSource>>()));
                     services.AddSingleton(new ConcurrencyRateLimiterSource(Mock.Of<IStringLocalizer<ConcurrencyRateLimiterSource>>()));
@@ -170,11 +170,11 @@ public class RateLimiterMiddlewareTests
         return await builder.StartAsync(cancellationToken);
     }
 
-    private static IRateLimitPolicyStore CreatePolicyStore(IEnumerable<RateLimitPolicy> publishedPolicies)
+    private static IRateLimitPolicyStore CreatePolicyStore(IEnumerable<RateLimitPolicy> enabledPolicies)
     {
         var store = new Mock<IRateLimitPolicyStore>();
-        store.Setup(x => x.GetAllAsync(PolicyVersion.Published)).Returns(() =>
-            ValueTask.FromResult<IReadOnlyCollection<RateLimitPolicy>>([.. publishedPolicies]));
+        store.Setup(x => x.GetAllAsync(PolicyVersion.Enabled)).Returns(() =>
+            ValueTask.FromResult<IReadOnlyCollection<RateLimitPolicy>>([.. enabledPolicies.Where(static policy => policy.IsEnabled)]));
 
         return store.Object;
     }
@@ -186,6 +186,8 @@ public class RateLimiterMiddlewareTests
         return new RateLimitPolicy
         {
             Name = name,
+            IsEnabled = true,
+            EnabledUtc = DateTime.UtcNow,
             Scope = RateLimitPolicyScope.Global,
             Limiters = [limiter],
         };
@@ -198,6 +200,8 @@ public class RateLimiterMiddlewareTests
         return new RateLimitPolicy
         {
             Name = name,
+            IsEnabled = true,
+            EnabledUtc = DateTime.UtcNow,
             Scope = RateLimitPolicyScope.Endpoint,
             Path = path,
             Limiters = [limiter],

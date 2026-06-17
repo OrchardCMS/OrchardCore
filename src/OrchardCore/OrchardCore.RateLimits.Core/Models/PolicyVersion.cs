@@ -6,12 +6,12 @@ namespace OrchardCore.RateLimits.Models;
 public enum PolicyVersion
 {
     /// <summary>
-    /// The editable draft version of a policy.
+    /// The current editable version of a policy.
     /// </summary>
-    Draft = 0,
+    Current = 0,
 
     /// <summary>
-    /// The published version of a policy that is enforced at runtime.
+    /// The enabled version of a policy that is enforced at runtime.
     /// </summary>
-    Published = 1,
+    Enabled = 1,
 }

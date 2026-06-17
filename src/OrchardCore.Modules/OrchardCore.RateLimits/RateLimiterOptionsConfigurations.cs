@@ -22,7 +22,7 @@ public sealed class RateLimiterOptionsConfigurations : IConfigureOptions<RateLim
     /// Initializes a new instance of the <see cref="RateLimiterOptionsConfigurations"/> class.
     /// </summary>
     /// <param name="rateLimitsOptions">The built-in route rate-limit options.</param>
-    /// <param name="policyStore">The policy store that provides published policies.</param>
+    /// <param name="policyStore">The policy store that provides enabled policies.</param>
     /// <param name="serviceProvider">The service provider used to resolve limiter sources.</param>
     public RateLimiterOptionsConfigurations(
         IOptions<RateLimitsOptions> rateLimitsOptions,
@@ -56,7 +56,7 @@ public sealed class RateLimiterOptionsConfigurations : IConfigureOptions<RateLim
             }),
         };
 
-        var policies = _policyStore.GetAllAsync(PolicyVersion.Published).AsTask().GetAwaiter().GetResult();
+        var policies = _policyStore.GetAllAsync(PolicyVersion.Enabled).AsTask().GetAwaiter().GetResult();
 
         foreach (var policy in policies)
         {

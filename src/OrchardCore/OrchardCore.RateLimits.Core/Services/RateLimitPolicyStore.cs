@@ -1,4 +1,3 @@
-using System.Text.Json;
 using OrchardCore.Documents;
 using OrchardCore.RateLimits.Core;
 using OrchardCore.RateLimits.Models;
@@ -6,7 +5,7 @@ using OrchardCore.RateLimits.Models;
 namespace OrchardCore.RateLimits.Services;
 
 /// <summary>
-/// Stores draft and published rate-limit policies in the tenant document store.
+/// Stores rate-limit policies in the tenant document store.
 /// </summary>
 public sealed class RateLimitPolicyStore : IRateLimitPolicyStore
 {
@@ -30,8 +29,8 @@ public sealed class RateLimitPolicyStore : IRateLimitPolicyStore
 
         return version switch
         {
-            PolicyVersion.Draft => CreateDraftPolicy(FindDraft(document, policyId), FindPublished(document, policyId)),
-            PolicyVersion.Published => CreatePublishedPolicy(FindPublished(document, policyId)),
+            PolicyVersion.Current => FindCurrent(document, policyId),
+            PolicyVersion.Enabled => FindEnabled(document, policyId),
             _ => null,
         };
     }
@@ -43,12 +42,8 @@ public sealed class RateLimitPolicyStore : IRateLimitPolicyStore
 
         return version switch
         {
-            PolicyVersion.Draft => document.DraftPolicies
-                .Select(draft => CreateDraftPolicy(draft, FindPublished(document, draft.PolicyId)))
-                .ToArray(),
-            PolicyVersion.Published => document.PublishedPolicies
-                .Select(CreatePublishedPolicy)
-                .ToArray(),
+            PolicyVersion.Current => [.. GetCurrentPolicies(document).Values],
+            PolicyVersion.Enabled => [.. GetEnabledPolicies(document).Values],
             _ => [],
         };
     }
@@ -61,10 +56,7 @@ public sealed class RateLimitPolicyStore : IRateLimitPolicyStore
         policy.PolicyId ??= IdGenerator.GenerateId();
 
         var document = await _documentManager.GetOrCreateMutableAsync();
-        var clonedDraft = Clone(policy);
-        clonedDraft.PublishedUtc = null;
-
-        Upsert(document.DraftPolicies, clonedDraft);
+        Upsert(document.Policies, CloneForStorage(policy));
 
         await _documentManager.UpdateAsync(document);
     }
@@ -76,10 +68,7 @@ public sealed class RateLimitPolicyStore : IRateLimitPolicyStore
         ArgumentException.ThrowIfNullOrEmpty(policy.PolicyId);
 
         var document = await _documentManager.GetOrCreateMutableAsync();
-        var clonedDraft = Clone(policy);
-        clonedDraft.PublishedUtc = null;
-
-        Upsert(document.DraftPolicies, clonedDraft);
+        Upsert(document.Policies, CloneForStorage(policy));
 
         await _documentManager.UpdateAsync(document);
     }
@@ -94,9 +83,7 @@ public sealed class RateLimitPolicyStore : IRateLimitPolicyStore
         ArgumentException.ThrowIfNullOrEmpty(policyId);
 
         var document = await _documentManager.GetOrCreateMutableAsync();
-        var removed = document.DraftPolicies.RemoveAll(x => string.Equals(x.PolicyId, policyId, StringComparison.Ordinal)) > 0;
-
-        removed |= document.PublishedPolicies.RemoveAll(x => string.Equals(x.PolicyId, policyId, StringComparison.Ordinal)) > 0;
+        var removed = document.Policies.RemoveAll(x => string.Equals(x.PolicyId, policyId, StringComparison.Ordinal)) > 0;
 
         await _documentManager.UpdateAsync(document);
 
@@ -104,174 +91,118 @@ public sealed class RateLimitPolicyStore : IRateLimitPolicyStore
     }
 
     /// <inheritdoc />
-    public async ValueTask<IReadOnlyCollection<RateLimitPolicy>> PublishAsync(IEnumerable<RateLimitPolicy> policies)
+    public async ValueTask<bool> SetStatusAsync(string policyId, bool isEnabled)
     {
-        ArgumentNullException.ThrowIfNull(policies);
-
-        var ids = policies
-            .Where(static policy => policy is not null)
-            .Select(static policy => policy.PolicyId)
-            .Where(static policyId => !string.IsNullOrWhiteSpace(policyId))
-            .Distinct(StringComparer.Ordinal)
-            .ToHashSet(StringComparer.Ordinal);
-
-        if (ids.Count == 0)
-        {
-            return [];
-        }
+        ArgumentException.ThrowIfNullOrEmpty(policyId);
 
         var document = await _documentManager.GetOrCreateMutableAsync();
-        var publishedUtc = DateTime.UtcNow;
-        var publishedPolicies = new List<RateLimitPolicy>();
-
-        foreach (var draft in document.DraftPolicies.Where(x => ids.Contains(x.PolicyId)).ToArray())
-        {
-            var publishedPolicy = Clone(draft);
-            publishedPolicy.PublishedUtc = publishedUtc;
-
-            Upsert(document.PublishedPolicies, publishedPolicy);
-            publishedPolicies.Add(Clone(publishedPolicy));
-        }
-
-        document.DraftPolicies.RemoveAll(x => ids.Contains(x.PolicyId));
-
-        await _documentManager.UpdateAsync(document);
-
-        return publishedPolicies;
-    }
-
-    /// <inheritdoc />
-    public async ValueTask<bool> UnpublishAsync(RateLimitPolicy policy)
-    {
-        ArgumentNullException.ThrowIfNull(policy);
-        ArgumentException.ThrowIfNullOrEmpty(policy.PolicyId);
-
-        var document = await _documentManager.GetOrCreateMutableAsync();
-        var publishedPolicy = FindPublished(document, policy.PolicyId);
-        if (publishedPolicy is null)
+        var policy = FindCurrent(document, policyId);
+        if (policy is null)
         {
             return false;
         }
 
-        if (FindDraft(document, policy.PolicyId) is null)
-        {
-            var draftPolicy = Clone(publishedPolicy);
-            draftPolicy.PublishedUtc = null;
-            Upsert(document.DraftPolicies, draftPolicy);
-        }
-
-        document.PublishedPolicies.RemoveAll(x => string.Equals(x.PolicyId, policy.PolicyId, StringComparison.Ordinal));
-
+        policy.IsEnabled = isEnabled;
+        policy.EnabledUtc = isEnabled ? DateTime.UtcNow : null;
+        Upsert(document.Policies, CloneForStorage(policy));
         await _documentManager.UpdateAsync(document);
 
         return true;
     }
 
     /// <summary>
-    /// Finds the draft policy with the specified identifier in the provided document.
+    /// Finds the current policy with the specified identifier in the provided document.
     /// </summary>
     /// <param name="document">The policy document to search.</param>
     /// <param name="policyId">The policy identifier.</param>
-    /// <returns>The matching draft policy, or <c>null</c> when none exists.</returns>
-    public static RateLimitPolicy FindDraft(RateLimitPolicyDocument document, string policyId)
+    /// <returns>The matching current policy, or <c>null</c> when none exists.</returns>
+    public static RateLimitPolicy FindCurrent(RateLimitPolicyDocument document, string policyId)
     {
         ArgumentNullException.ThrowIfNull(document);
         ArgumentException.ThrowIfNullOrEmpty(policyId);
 
-        return document.DraftPolicies.FirstOrDefault(x => string.Equals(x.PolicyId, policyId, StringComparison.Ordinal));
+        return document.Policies.FirstOrDefault(x => string.Equals(x.PolicyId, policyId, StringComparison.Ordinal)) is { } policy
+            ? CreateCurrentPolicy(policy)
+            : null;
     }
 
     /// <summary>
-    /// Finds the published policy with the specified identifier in the provided document.
+    /// Finds the enabled policy with the specified identifier in the provided document.
     /// </summary>
     /// <param name="document">The policy document to search.</param>
     /// <param name="policyId">The policy identifier.</param>
-    /// <returns>The matching published policy, or <c>null</c> when none exists.</returns>
-    public static RateLimitPolicy FindPublished(RateLimitPolicyDocument document, string policyId)
+    /// <returns>The matching enabled policy, or <c>null</c> when none exists.</returns>
+    public static RateLimitPolicy FindEnabled(RateLimitPolicyDocument document, string policyId)
     {
         ArgumentNullException.ThrowIfNull(document);
         ArgumentException.ThrowIfNullOrEmpty(policyId);
 
-        return document.PublishedPolicies.FirstOrDefault(x => string.Equals(x.PolicyId, policyId, StringComparison.Ordinal));
+        return document.Policies.FirstOrDefault(x => string.Equals(x.PolicyId, policyId, StringComparison.Ordinal)) is { IsEnabled: true } policy
+            ? CreateCurrentPolicy(policy)
+            : null;
     }
 
     /// <summary>
-    /// Enumerates the draft and published policy pairs contained in the specified document.
+    /// Enumerates the current and enabled policy pairs contained in the specified document.
     /// </summary>
     /// <param name="document">The policy document to inspect.</param>
-    /// <returns>The policy identifier with its draft and published snapshots.</returns>
-    public static IEnumerable<(string PolicyId, RateLimitPolicy Draft, RateLimitPolicy Published)> GetPolicies(RateLimitPolicyDocument document)
+    /// <returns>The policy identifier with its current and enabled snapshots.</returns>
+    public static IEnumerable<(string PolicyId, RateLimitPolicy Current, RateLimitPolicy Enabled)> GetPolicies(RateLimitPolicyDocument document)
     {
         ArgumentNullException.ThrowIfNull(document);
 
-        return document.DraftPolicies.Select(static x => x.PolicyId)
-            .Concat(document.PublishedPolicies.Select(static x => x.PolicyId))
+        return GetCurrentPolicies(document).Keys
+            .Concat(GetEnabledPolicies(document).Keys)
             .Distinct(StringComparer.Ordinal)
-            .Select(policyId => (policyId, FindDraft(document, policyId), FindPublished(document, policyId)));
+            .Select(policyId => (policyId, FindCurrent(document, policyId), FindEnabled(document, policyId)));
     }
 
     /// <summary>
-    /// Computes the status of a policy from its draft and published snapshots.
+    /// Computes the status of a policy from its enabled state.
     /// </summary>
-    /// <param name="draft">The draft policy.</param>
-    /// <param name="published">The published policy.</param>
+    /// <param name="isEnabled"><c>true</c> when the policy is enabled.</param>
     /// <returns>The computed policy status.</returns>
-    public static RateLimitPolicyStatus GetStatus(RateLimitPolicy draft, RateLimitPolicy published)
+    public static RateLimitPolicyStatus GetStatus(bool isEnabled)
+        => isEnabled ? RateLimitPolicyStatus.Enabled : RateLimitPolicyStatus.Disabled;
+
+    private static Dictionary<string, RateLimitPolicy> GetCurrentPolicies(RateLimitPolicyDocument document)
     {
-        if (published is null)
-        {
-            return RateLimitPolicyStatus.Draft;
-        }
-
-        if (draft is null)
-        {
-            return RateLimitPolicyStatus.Published;
-        }
-
-        return AreEquivalent(draft, published)
-            ? RateLimitPolicyStatus.Published
-            : RateLimitPolicyStatus.PublishedWithDraft;
+        return document.Policies
+            .Select(CreateCurrentPolicy)
+            .Where(static policy => policy is not null)
+            .ToDictionary(x => x.PolicyId, StringComparer.Ordinal);
     }
 
-    /// <summary>
-    /// Determines whether two policies are equivalent for publish-status comparisons.
-    /// </summary>
-    /// <param name="left">The first policy.</param>
-    /// <param name="right">The second policy.</param>
-    /// <returns><c>true</c> if the policies are equivalent; otherwise <c>false</c>.</returns>
-    public static bool AreEquivalent(RateLimitPolicy left, RateLimitPolicy right)
+    private static Dictionary<string, RateLimitPolicy> GetEnabledPolicies(RateLimitPolicyDocument document)
     {
-        if (left is null || right is null)
-        {
-            return left == right;
-        }
-
-        return JsonSerializer.Serialize(left, JOptions.Default) == JsonSerializer.Serialize(right, JOptions.Default);
+        return document.Policies
+            .Where(static policy => policy is not null && policy.IsEnabled)
+            .Select(CreateCurrentPolicy)
+            .Where(static policy => policy is not null)
+            .ToDictionary(x => x.PolicyId, StringComparer.Ordinal);
     }
 
-    private static RateLimitPolicy CreateDraftPolicy(RateLimitPolicy draft, RateLimitPolicy published)
+    private static RateLimitPolicy CreateCurrentPolicy(RateLimitPolicy policy)
     {
-        if (draft is null)
+        if (policy is null)
         {
             return null;
         }
 
-        var currentPolicy = Clone(draft);
-        currentPolicy.Status = GetStatus(draft, published);
-        currentPolicy.PublishedUtc = published?.PublishedUtc ?? draft.PublishedUtc;
+        var clonedPolicy = Clone(policy);
+        clonedPolicy.Status = GetStatus(clonedPolicy.IsEnabled);
 
-        return currentPolicy;
+        return clonedPolicy;
     }
 
-    private static RateLimitPolicy CreatePublishedPolicy(RateLimitPolicy published)
+    private static RateLimitPolicy CloneForStorage(RateLimitPolicy policy)
     {
-        if (published is null)
-        {
-            return null;
-        }
+        var clonedPolicy = Clone(policy);
+        clonedPolicy.Status = default;
+        clonedPolicy.EnabledUtc = clonedPolicy.IsEnabled
+            ? clonedPolicy.EnabledUtc ?? DateTime.UtcNow
+            : null;
 
-        var clonedPolicy = Clone(published);
-        clonedPolicy.Status = RateLimitPolicyStatus.Published;
         return clonedPolicy;
     }
 
@@ -286,7 +217,8 @@ public sealed class RateLimitPolicyStore : IRateLimitPolicyStore
             Author = policy.Author,
             Scope = policy.Scope,
             Path = policy.Path,
-            PublishedUtc = policy.PublishedUtc,
+            IsEnabled = policy.IsEnabled,
+            EnabledUtc = policy.EnabledUtc,
             Status = policy.Status,
             Limiters = [.. policy.Limiters.Select(Clone)],
         };

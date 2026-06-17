@@ -8,7 +8,7 @@ using OrchardCore.Recipes.Services;
 namespace OrchardCore.RateLimits.Recipes;
 
 /// <summary>
-/// Imports draft and published rate-limit policies from a recipe step.
+/// Imports rate-limit policies from a recipe step.
 /// </summary>
 public sealed class CreateOrUpdateRateLimitPoliciesStep : NamedRecipeStepHandler
 {
@@ -36,27 +36,25 @@ public sealed class CreateOrUpdateRateLimitPoliciesStep : NamedRecipeStepHandler
     }
 
     /// <summary>
-    /// Imports draft and published policies from the current recipe step.
+    /// Imports policies from the current recipe step.
     /// </summary>
     /// <param name="context">The recipe execution context.</param>
     protected override async Task HandleAsync(RecipeExecutionContext context)
     {
-        var draftPolicies = context.Step["draftPolicies"]?.AsArray();
-        var publishedPolicies = context.Step["publishedPolicies"]?.AsArray();
+        var policies = context.Step["policies"]?.AsArray();
 
-        if (draftPolicies is null && publishedPolicies is null)
+        if (policies is null)
         {
-            context.Errors.Add(S["At least one of 'draftPolicies' or 'publishedPolicies' is required."]);
+            context.Errors.Add(S["The 'policies' array is required."]);
             return;
         }
 
         var existingPolicies = await GetCurrentPoliciesAsync();
 
-        await ImportPoliciesAsync(draftPolicies, existingPolicies, context, PolicyVersion.Draft);
-        await ImportPoliciesAsync(publishedPolicies, existingPolicies, context, PolicyVersion.Published);
+        await ImportPoliciesAsync(policies, existingPolicies, context);
     }
 
-    private async Task ImportPoliciesAsync(JsonArray policies, List<RateLimitPolicy> existingPolicies, RecipeExecutionContext context, PolicyVersion version)
+    private async Task ImportPoliciesAsync(JsonArray policies, List<RateLimitPolicy> existingPolicies, RecipeExecutionContext context)
     {
         if (policies is null)
         {
@@ -71,8 +69,18 @@ public sealed class CreateOrUpdateRateLimitPoliciesStep : NamedRecipeStepHandler
                 continue;
             }
 
+            if (!policy.IsEnabled)
+            {
+                policy.EnabledUtc = null;
+            }
+
             var existing = FindExistingPolicy(policy, existingPolicies);
+
             policy.PolicyId = existing?.PolicyId ?? policy.PolicyId ?? IdGenerator.GenerateId();
+
+            policy.EnabledUtc = policy.IsEnabled
+                ? policy.EnabledUtc ?? existing?.EnabledUtc ?? DateTime.UtcNow
+                : null;
 
             if (existing is null)
             {
@@ -83,12 +91,7 @@ public sealed class CreateOrUpdateRateLimitPoliciesStep : NamedRecipeStepHandler
                 await _policyStore.UpdateAsync(policy);
             }
 
-            if (version == PolicyVersion.Published)
-            {
-                await _policyStore.PublishAsync([policy]);
-            }
-
-            Upsert(existingPolicies, await GetCurrentPolicyAsync(policy.PolicyId));
+            Upsert(existingPolicies, await _policyStore.FindByIdAsync(policy.PolicyId, PolicyVersion.Current));
         }
     }
 
@@ -119,49 +122,7 @@ public sealed class CreateOrUpdateRateLimitPoliciesStep : NamedRecipeStepHandler
     }
 
     private async Task<List<RateLimitPolicy>> GetCurrentPoliciesAsync()
-    {
-        var draftPolicies = await _policyStore.GetAllAsync(PolicyVersion.Draft);
-        var publishedPolicies = await _policyStore.GetAllAsync(PolicyVersion.Published);
-
-        return MergePolicies(draftPolicies, publishedPolicies);
-    }
-
-    private async Task<RateLimitPolicy> GetCurrentPolicyAsync(string policyId)
-    {
-        var draftPolicy = await _policyStore.FindByIdAsync(policyId, PolicyVersion.Draft);
-        var publishedPolicy = await _policyStore.FindByIdAsync(policyId, PolicyVersion.Published);
-
-        return CreateCurrentPolicy(draftPolicy, publishedPolicy);
-    }
-
-    private static List<RateLimitPolicy> MergePolicies(IEnumerable<RateLimitPolicy> draftPolicies, IEnumerable<RateLimitPolicy> publishedPolicies)
-    {
-        var draftsById = draftPolicies.ToDictionary(x => x.PolicyId, StringComparer.Ordinal);
-        var publishedById = publishedPolicies.ToDictionary(x => x.PolicyId, StringComparer.Ordinal);
-
-        return draftsById.Keys
-            .Concat(publishedById.Keys)
-            .Distinct(StringComparer.Ordinal)
-            .Select(policyId =>
-            {
-                draftsById.TryGetValue(policyId, out var draftPolicy);
-                publishedById.TryGetValue(policyId, out var publishedPolicy);
-
-                return CreateCurrentPolicy(draftPolicy, publishedPolicy);
-            })
-            .Where(static policy => policy is not null)
-            .ToList();
-    }
-
-    private static RateLimitPolicy CreateCurrentPolicy(RateLimitPolicy draftPolicy, RateLimitPolicy publishedPolicy)
-    {
-        if (draftPolicy is not null)
-        {
-            return draftPolicy;
-        }
-
-        return publishedPolicy;
-    }
+        => [.. await _policyStore.GetAllAsync(PolicyVersion.Current)];
 
     private static RateLimitPolicy FindExistingPolicy(RateLimitPolicy policy, IEnumerable<RateLimitPolicy> existingPolicies)
     {

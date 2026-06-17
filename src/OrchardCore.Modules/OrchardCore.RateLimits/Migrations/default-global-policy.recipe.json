@@ -2,12 +2,13 @@
   "steps": [
     {
       "name": "CreateOrUpdateRateLimitPolicies",
-      "publishedPolicies": [
+      "policies": [
         {
           "PolicyId": "[js: uuid()]",
           "Name": "Default Global Policy",
           "OwnerId": "[js: parameters('AdminUserId')]",
           "Author": "[js: parameters('AdminUsername')]",
+          "IsEnabled": true,
           "Scope": "Global",
           "Limiters": [
             {

@@ -6,17 +6,12 @@ namespace OrchardCore.RateLimits.Models;
 public enum RateLimitPolicyStatus
 {
     /// <summary>
-    /// The policy has a draft but no published version.
+    /// The policy is stored but not currently enforced.
     /// </summary>
-    Draft = 0,
+    Disabled = 0,
 
     /// <summary>
-    /// The policy has a published version and no draft changes.
+    /// The policy is currently enforced at runtime.
     /// </summary>
-    Published = 1,
-
-    /// <summary>
-    /// The policy has a published version and separate draft changes.
-    /// </summary>
-    PublishedWithDraft = 2,
+    Enabled = 1,
 }

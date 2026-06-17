@@ -37,7 +37,7 @@ public class RateLimiterOptionsConfigurationsTests
         var rateLimitsOptions = new RateLimitsOptions();
         rateLimitsOptions.AddRouteRateLimit("Login", HttpMethods.Post, RateLimitPartitionHelpers.CreateFixedWindowPerIpPolicy("login", 1, TimeSpan.FromMinutes(1)));
 
-        var options = Configure(rateLimitsOptions, publishedPolicies:
+        var options = Configure(rateLimitsOptions, enabledPolicies:
         [
             CreateGlobalFixedWindowPolicy("Global", 2, 60),
         ]);
@@ -68,13 +68,13 @@ public class RateLimiterOptionsConfigurationsTests
     }
 
     [Fact]
-    public async Task ShouldApplyPublishedGlobalPolicy()
+    public async Task ShouldApplyEnabledGlobalPolicy()
     {
         var cancellationToken = TestContext.Current.CancellationToken;
 
         var options = Configure(
             new RateLimitsOptions(),
-            publishedPolicies:
+            enabledPolicies:
             [
                 CreateGlobalFixedWindowPolicy("Global", 1, 60),
             ]);
@@ -87,10 +87,14 @@ public class RateLimiterOptionsConfigurationsTests
     }
 
     [Fact]
-    public async Task ShouldIgnoreUnpublishedDraftPolicies()
+    public async Task ShouldIgnoreDisabledPolicies()
     {
         var cancellationToken = TestContext.Current.CancellationToken;
-        var options = Configure(new RateLimitsOptions());
+        var disabledPolicy = CreateGlobalFixedWindowPolicy("Disabled", 1, 60);
+        disabledPolicy.IsEnabled = false;
+        disabledPolicy.EnabledUtc = null;
+
+        var options = Configure(new RateLimitsOptions(), [disabledPolicy]);
 
         using var firstLease = await options.GlobalLimiter.AcquireAsync(CreateHttpContext("AnyRoute", HttpMethods.Get), 1, cancellationToken);
         using var secondLease = await options.GlobalLimiter.AcquireAsync(CreateHttpContext("AnyRoute", HttpMethods.Get), 1, cancellationToken);
@@ -100,7 +104,7 @@ public class RateLimiterOptionsConfigurationsTests
     }
 
     [Fact]
-    public async Task ShouldApplyPublishedEndpointPolicy()
+    public async Task ShouldApplyEnabledEndpointPolicy()
     {
         var cancellationToken = TestContext.Current.CancellationToken;
         var policy = CreateGlobalFixedWindowPolicy("Api", 1, 60);
@@ -121,7 +125,7 @@ public class RateLimiterOptionsConfigurationsTests
     }
 
     [Fact]
-    public async Task ShouldHandlePublishedPoliciesWithStringifiedNumericLimiterValues()
+    public async Task ShouldHandleEnabledPoliciesWithStringifiedNumericLimiterValues()
     {
         var cancellationToken = TestContext.Current.CancellationToken;
         var limiter = new RateLimitLimiter
@@ -141,11 +145,13 @@ public class RateLimiterOptionsConfigurationsTests
 
         var options = Configure(
             new RateLimitsOptions(),
-            publishedPolicies:
+            enabledPolicies:
             [
                 new RateLimitPolicy
                 {
                     Name = "Global",
+                    IsEnabled = true,
+                    EnabledUtc = DateTime.UtcNow,
                     Scope = RateLimitPolicyScope.Global,
                     Limiters = [limiter],
                 },
@@ -160,23 +166,23 @@ public class RateLimiterOptionsConfigurationsTests
 
     private static RateLimiterOptions Configure(
         RateLimitsOptions rateLimitsOptions,
-        IEnumerable<RateLimitPolicy> publishedPolicies = null)
+        IEnumerable<RateLimitPolicy> enabledPolicies = null)
     {
         var options = new RateLimiterOptions();
         using var serviceProvider = CreateServiceProvider();
         new RateLimiterOptionsConfigurations(
             Options.Create(rateLimitsOptions),
-            CreatePolicyStore(publishedPolicies ?? []),
+            CreatePolicyStore(enabledPolicies ?? []),
             serviceProvider).Configure(options);
 
         return options;
     }
 
-    private static IRateLimitPolicyStore CreatePolicyStore(IEnumerable<RateLimitPolicy> publishedPolicies)
+    private static IRateLimitPolicyStore CreatePolicyStore(IEnumerable<RateLimitPolicy> enabledPolicies)
     {
         var store = new Mock<IRateLimitPolicyStore>();
-        store.Setup(x => x.GetAllAsync(PolicyVersion.Published)).Returns(() =>
-            ValueTask.FromResult<IReadOnlyCollection<RateLimitPolicy>>([.. publishedPolicies]));
+        store.Setup(x => x.GetAllAsync(PolicyVersion.Enabled)).Returns(() =>
+            ValueTask.FromResult<IReadOnlyCollection<RateLimitPolicy>>([.. enabledPolicies.Where(static policy => policy.IsEnabled)]));
 
         return store.Object;
     }
@@ -215,6 +221,8 @@ public class RateLimiterOptionsConfigurationsTests
         return new RateLimitPolicy
         {
             Name = name,
+            IsEnabled = true,
+            EnabledUtc = DateTime.UtcNow,
             Scope = RateLimitPolicyScope.Global,
             Limiters = [limiter],
         };

@@ -19,17 +19,16 @@ public class RateLimitPolicyEditViewModel
 
     public string Path { get; set; }
 
+    public bool IsEnabled { get; set; }
+
+    public bool InitialIsEnabled { get; set; }
+
     public RateLimitPolicyStatus Status { get; set; }
 
-    public DateTime? PublishedUtc { get; set; }
-
-    public string PublishedTargetDescription { get; set; }
+    public DateTime? EnabledUtc { get; set; }
 
     [BindNever]
-    public IList<ModelEntry<RateLimitLimiter>> DraftLimiters { get; set; } = [];
-
-    [BindNever]
-    public IList<ModelEntry<RateLimitLimiter>> PublishedLimiters { get; set; } = [];
+    public IList<ModelEntry<RateLimitLimiter>> Limiters { get; set; } = [];
 
     [BindNever]
     public IList<RateLimiterSourceViewModel> LimiterSources { get; set; } = [];

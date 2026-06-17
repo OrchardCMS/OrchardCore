@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 namespace OrchardCore.RateLimits.Models;
 
 /// <summary>
-/// Represents a draft or published rate-limit policy.
+/// Represents a tenant rate-limit policy.
 /// </summary>
 public sealed class RateLimitPolicy
 {
@@ -43,12 +43,17 @@ public sealed class RateLimitPolicy
     public string Path { get; set; }
 
     /// <summary>
-    /// Gets or sets the UTC timestamp when the policy was last published.
+    /// Gets or sets a value indicating whether the policy is currently enabled.
     /// </summary>
-    public DateTime? PublishedUtc { get; set; }
+    public bool IsEnabled { get; set; }
 
     /// <summary>
-    /// Gets or sets the computed policy status for the current draft and published state.
+    /// Gets or sets the UTC timestamp when the policy was last enabled.
+    /// </summary>
+    public DateTime? EnabledUtc { get; set; }
+
+    /// <summary>
+    /// Gets or sets the computed policy status for the current enabled state.
     /// </summary>
     [JsonIgnore]
     public RateLimitPolicyStatus Status { get; set; }

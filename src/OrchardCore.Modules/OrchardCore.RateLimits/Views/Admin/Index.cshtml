@@ -52,10 +52,12 @@
                                     <li><a class="dropdown-item"
                                            href="javascript:void(0)"
                                            data-action="@item.Value"
-                                           data-title="@(item.Value == nameof(OrchardCore.RateLimits.ViewModels.RateLimitPolicyBulkAction.Publish) ? T["Publish Drafts"] : T["Bulk Action"])"
-                                           data-message="@(item.Value == nameof(OrchardCore.RateLimits.ViewModels.RateLimitPolicyBulkAction.Publish)
-                                               ? T["Are you sure you want to publish the selected policy drafts? This website will restart after publishing."]
-                                               : T["Are you sure you want to delete the selected policies? This website will restart after deleting them."])">@item.Text</a></li>
+                                           data-title="@(item.Value == nameof(OrchardCore.RateLimits.ViewModels.RateLimitPolicyBulkAction.Enable) ? T["Enable Policies"] : item.Value == nameof(OrchardCore.RateLimits.ViewModels.RateLimitPolicyBulkAction.Disable) ? T["Disable Policies"] : T["Delete Policies"])"
+                                           data-message="@(item.Value == nameof(OrchardCore.RateLimits.ViewModels.RateLimitPolicyBulkAction.Enable)
+                                               ? T["Are you sure you want to enable the selected policies? This website will restart after the policy status changes."]
+                                               : item.Value == nameof(OrchardCore.RateLimits.ViewModels.RateLimitPolicyBulkAction.Disable)
+                                                   ? T["Are you sure you want to disable the selected policies? This website will restart after the policy status changes."]
+                                                   : T["Are you sure you want to delete the selected policies? If any selected policy is enabled, this website will restart after deletion."])">@item.Text</a></li>
                                 }
                             </ul>
                         </div>
@@ -65,7 +67,7 @@
 
             @foreach (var entry in Model.Policies)
             {
-                var publishedUtc = entry.PublishedUtc?.ToString("yyyy-MM-ddTHH:mm:sszzz", CultureInfo.InvariantCulture);
+                var enabledUtc = entry.EnabledUtc?.ToString("yyyy-MM-ddTHH:mm:sszzz", CultureInfo.InvariantCulture);
                 <li class="list-group-item">
                     <div class="d-flex gap-3">
                         <div class="form-check mt-1">
@@ -80,15 +82,15 @@
                                             <h5 class="mb-0">@entry.Name</h5>
                                         </div>
                                         <div class="tags me-1">
-                                            <span class="badge ta-badge text-bg-@(entry.Status == OrchardCore.RateLimits.Models.RateLimitPolicyStatus.Draft ? "warning" : entry.Status == OrchardCore.RateLimits.Models.RateLimitPolicyStatus.Published ? "success" : "info")">
-                                                @(entry.Status == OrchardCore.RateLimits.Models.RateLimitPolicyStatus.Draft ? T["Draft"] : entry.Status == OrchardCore.RateLimits.Models.RateLimitPolicyStatus.Published ? T["Published"] : T["Published + Draft"])
+                                            <span class="badge ta-badge text-bg-@(entry.IsEnabled ? "success" : "secondary")">
+                                                @(entry.IsEnabled ? T["Enabled"] : T["Disabled"])
                                             </span>
                                         </div>
-                                        @if (entry.PublishedUtc is not null)
+                                        @if (entry.EnabledUtc is not null)
                                         {
                                             <div class="metadata me-1">
-                                                <span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@await DisplayAsync(await New.DateTime(Utc: entry.PublishedUtc, Format: "g"))">
-                                                    <i class="fa-solid fa-calendar text-secondary" aria-hidden="true"></i> <time datetime="@publishedUtc">@await DisplayAsync(await New.Timespan(Utc: entry.PublishedUtc))</time>
+                                                <span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@await DisplayAsync(await New.DateTime(Utc: entry.EnabledUtc, Format: "g"))">
+                                                    <i class="fa-solid fa-calendar text-secondary" aria-hidden="true"></i> <time datetime="@enabledUtc">@await DisplayAsync(await New.Timespan(Utc: entry.EnabledUtc))</time>
                                                 </span>
                                             </div>
                                         }
@@ -107,27 +109,29 @@
                                 </div>
                                 <div class="d-flex gap-1">
                                     <a asp-action="Edit" asp-route-policyId="@entry.PolicyId" class="btn btn-primary btn-sm">@T["Edit"]</a>
-                                    @if (entry.HasDraft)
-                                    {
-                                        <button type="button"
-                                                class="btn btn-success btn-sm"
-                                                data-publish-policy-id="@entry.PolicyId"
-                                                data-title="@T["Publish Draft"]"
-                                                data-message="@T["Are you sure you want to publish this draft? This website will restart after publishing."]">@T["Publish Draft"]</button>
-                                    }
-                                    @if (entry.HasPublished)
+                                    @if (entry.IsEnabled)
                                     {
                                         <button type="button"
                                                 class="btn btn-warning btn-sm"
-                                                data-unpublish-policy-id="@entry.PolicyId"
-                                                data-title="@T["Unpublish Policy"]"
-                                                data-message="@T["Are you sure you want to unpublish this policy? This website will restart after unpublishing it."]">@T["Unpublish"]</button>
+                                                data-disable-policy-id="@entry.PolicyId"
+                                                data-title="@T["Disable Policy"]"
+                                                data-message="@T["Are you sure you want to disable this policy? This website will restart after disabling it."]">@T["Disable"]</button>
+                                    }
+                                    else
+                                    {
+                                        <button type="button"
+                                                class="btn btn-success btn-sm"
+                                                data-enable-policy-id="@entry.PolicyId"
+                                                data-title="@T["Enable Policy"]"
+                                                data-message="@T["Are you sure you want to enable this policy? This website will restart after enabling it."]">@T["Enable"]</button>
                                     }
                                     <button type="button"
                                             class="btn btn-danger btn-sm"
                                             data-delete-policy-id="@entry.PolicyId"
                                             data-title="@T["Delete Policy"]"
-                                            data-message="@T["Are you sure you want to delete this policy? This website will restart after deleting the policy."]">@T["Delete"]</button>
+                                            data-message="@(entry.IsEnabled
+                                                ? T["Are you sure you want to delete this enabled policy? This website will restart after deleting it."]
+                                                : T["Are you sure you want to delete this disabled policy?"])">@T["Delete"]</button>
                                 </div>
                             </div>
                         </div>
@@ -157,12 +161,12 @@
     <input type="hidden" name="policyId" id="delete-policy-id" />
 </form>
 
-<form asp-action="Publish" method="post" id="publish-policy-form" class="d-none">
-    <input type="hidden" name="policyId" id="publish-policy-id" />
+<form asp-action="Enable" method="post" id="enable-policy-form" class="d-none">
+    <input type="hidden" name="policyId" id="enable-policy-id" />
 </form>
 
-<form asp-action="Unpublish" method="post" id="unpublish-policy-form" class="d-none">
-    <input type="hidden" name="policyId" id="unpublish-policy-id" />
+<form asp-action="Disable" method="post" id="disable-policy-form" class="d-none">
+    <input type="hidden" name="policyId" id="disable-policy-id" />
 </form>
 
 @if (Model.Pager is not null)
@@ -214,10 +218,10 @@
         const submit = document.querySelector('[name="submit.BulkAction"]');
         const deletePolicyForm = document.getElementById('delete-policy-form');
         const deletePolicyId = document.getElementById('delete-policy-id');
-        const publishPolicyForm = document.getElementById('publish-policy-form');
-        const publishPolicyId = document.getElementById('publish-policy-id');
-        const unpublishPolicyForm = document.getElementById('unpublish-policy-form');
-        const unpublishPolicyId = document.getElementById('unpublish-policy-id');
+        const enablePolicyForm = document.getElementById('enable-policy-form');
+        const enablePolicyId = document.getElementById('enable-policy-id');
+        const disablePolicyForm = document.getElementById('disable-policy-form');
+        const disablePolicyId = document.getElementById('disable-policy-id');
 
         const getCheckboxes = () => [...document.querySelectorAll('input[name="policyIds"]')];
         const updateSelection = () => {
@@ -285,7 +289,7 @@
             });
         }
 
-        for (const button of document.querySelectorAll('[data-publish-policy-id]')) {
+        for (const button of document.querySelectorAll('[data-enable-policy-id]')) {
             button.addEventListener('click', () => {
                 confirmDialog({
                     ...button.dataset,
@@ -294,14 +298,14 @@
                             return;
                         }
 
-                        publishPolicyId.value = button.dataset.publishPolicyId;
-                        publishPolicyForm.submit();
+                        enablePolicyId.value = button.dataset.enablePolicyId;
+                        enablePolicyForm.submit();
                     }
                 });
             });
         }
 
-        for (const button of document.querySelectorAll('[data-unpublish-policy-id]')) {
+        for (const button of document.querySelectorAll('[data-disable-policy-id]')) {
             button.addEventListener('click', () => {
                 confirmDialog({
                     ...button.dataset,
@@ -310,8 +314,8 @@
                             return;
                         }
 
-                        unpublishPolicyId.value = button.dataset.unpublishPolicyId;
-                        unpublishPolicyForm.submit();
+                        disablePolicyId.value = button.dataset.disablePolicyId;
+                        disablePolicyForm.submit();
                     }
                 });
             });

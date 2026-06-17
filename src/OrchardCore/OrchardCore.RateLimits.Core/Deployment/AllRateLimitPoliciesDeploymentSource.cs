@@ -17,7 +17,7 @@ public sealed class AllRateLimitPoliciesDeploymentSource : DeploymentSourceBase<
     /// <summary>
     /// Initializes a new instance of the <see cref="AllRateLimitPoliciesDeploymentSource"/> class.
     /// </summary>
-    /// <param name="policyStore">The policy store used to read current and published policies.</param>
+    /// <param name="policyStore">The policy store used to read current policies.</param>
     public AllRateLimitPoliciesDeploymentSource(IRateLimitPolicyStore policyStore)
     {
         _policyStore = policyStore;
@@ -30,43 +30,12 @@ public sealed class AllRateLimitPoliciesDeploymentSource : DeploymentSourceBase<
     /// <param name="result">The deployment result to populate.</param>
     protected override async Task ProcessAsync(AllRateLimitPoliciesDeploymentStep step, DeploymentPlanResult result)
     {
-        var draftPolicies = new JsonArray();
-        foreach (var policy in await _policyStore.GetAllAsync(PolicyVersion.Draft))
-        {
-            draftPolicies.Add(SerializePolicy(policy));
-        }
-
-        var publishedPolicies = new JsonArray();
-        foreach (var policy in await _policyStore.GetAllAsync(PolicyVersion.Published))
-        {
-            publishedPolicies.Add(SerializePolicy(policy));
-        }
+        var policies = await _policyStore.GetAllAsync(PolicyVersion.Current);
 
         result.Steps.Add(new JsonObject
         {
             ["name"] = CreateOrUpdateRateLimitPoliciesStep.StepKey,
-            ["draftPolicies"] = draftPolicies,
-            ["publishedPolicies"] = publishedPolicies,
+            ["policies"] = JsonSerializer.SerializeToNode(policies),
         });
-    }
-
-    private static JsonObject SerializePolicy(RateLimitPolicy policy)
-    {
-        if (policy is null)
-        {
-            return null;
-        }
-
-        var node = JsonSerializer.SerializeToNode(policy)?.AsObject();
-
-        if (node is null)
-        {
-            return null;
-        }
-
-        node[nameof(RateLimitPolicy.OwnerId)] = "[js: parameters('AdminUserId')]";
-        node[nameof(RateLimitPolicy.Author)] = "[js: parameters('AdminUsername')]";
-
-        return node;
     }
 }

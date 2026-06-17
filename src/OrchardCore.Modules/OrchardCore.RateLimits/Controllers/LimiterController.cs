@@ -130,7 +130,7 @@ public sealed class LimiterController : Controller
             return Forbid();
         }
 
-        var (policy, limiter, source) = await GetDraftLimiterAsync(policyId, limiterId);
+        var (policy, limiter, source) = await GetLimiterAsync(policyId, limiterId);
 
         if (policy is null || limiter is null || source is null)
         {
@@ -155,7 +155,7 @@ public sealed class LimiterController : Controller
             return Forbid();
         }
 
-        var (policy, originalLimiter, source) = await GetDraftLimiterAsync(policyId, limiterId);
+        var (policy, originalLimiter, source) = await GetLimiterAsync(policyId, limiterId);
         if (policy is null || originalLimiter is null || source is null)
         {
             return NotFound();
@@ -187,7 +187,7 @@ public sealed class LimiterController : Controller
             return Forbid();
         }
 
-        var (policy, limiter, _) = await GetDraftLimiterAsync(policyId, limiterId);
+        var (policy, limiter, _) = await GetLimiterAsync(policyId, limiterId);
         if (policy is null || limiter is null)
         {
             return NotFound();
@@ -201,7 +201,7 @@ public sealed class LimiterController : Controller
         return RedirectToAction(nameof(AdminController.Edit), "Admin", new { policyId });
     }
 
-    private async Task<(RateLimitPolicy Policy, RateLimitLimiter Limiter, IRateLimiterSource Source)> GetDraftLimiterAsync(string policyId, string limiterId)
+    private async Task<(RateLimitPolicy Policy, RateLimitLimiter Limiter, IRateLimiterSource Source)> GetLimiterAsync(string policyId, string limiterId)
     {
         var policy = await GetEditablePolicyAsync(policyId);
         if (policy is null)
@@ -225,13 +225,5 @@ public sealed class LimiterController : Controller
     }
 
     private async Task<RateLimitPolicy> GetEditablePolicyAsync(string policyId)
-    {
-        var draftPolicy = await _policyStore.FindByIdAsync(policyId, PolicyVersion.Draft);
-        if (draftPolicy is not null)
-        {
-            return draftPolicy;
-        }
-
-        return await _policyStore.FindByIdAsync(policyId, PolicyVersion.Published);
-    }
+        => await _policyStore.FindByIdAsync(policyId, PolicyVersion.Current);
 }

@@ -1,4 +1,3 @@
-@using OrchardCore.RateLimits.Models
 @model OrchardCore.RateLimits.ViewModels.RateLimitPolicyEditViewModel
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Edit Rate Limit Policy"])</h1></zone>
@@ -11,25 +10,25 @@
     <div class="ocat-wrapper">
         <div class="ocat-end-offset">
             <div class="alert alert-warning mb-0" role="alert">
-                @T["Publishing a policy will restart the website."]
+                @T["Saving changes to an enabled policy, or changing its enabled state, will restart the website."]
             </div>
         </div>
     </div>
 
     <div class="card mt-4">
         <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">@(Model.Status == OrchardCore.RateLimits.Models.RateLimitPolicyStatus.PublishedWithDraft ? T["Draft limiters"] : T["Limiters"])</h5>
+            <h5 class="mb-0">@T["Limiters"]</h5>
             <button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modalAddLimiter">@T["Add Limiter"]</button>
         </div>
         <div class="card-body">
-            @if (Model.DraftLimiters.Count == 0)
+            @if (Model.Limiters.Count == 0)
             {
-                <div class="alert alert-info mb-0" role="alert">@T["Add one or more limiters before publishing this policy."]</div>
+                <div class="alert alert-info mb-0" role="alert">@T["Add one or more limiters before enabling this policy."]</div>
             }
             else
             {
                 <ul class="list-group">
-                    @foreach (var limiter in Model.DraftLimiters)
+                    @foreach (var limiter in Model.Limiters)
                     {
                         <li class="list-group-item">@await DisplayAsync(limiter.Shape)</li>
                     }
@@ -38,54 +37,24 @@
         </div>
     </div>
 
-    @if (Model.Status == RateLimitPolicyStatus.PublishedWithDraft && Model.PublishedLimiters.Count > 0)
-    {
-        <div class="accordion mt-4" id="published-version-accordion">
-            <div class="accordion-item">
-                <h2 class="accordion-header" id="published-version-heading">
-                    <button class="accordion-button collapsed"
-                            type="button"
-                            data-bs-toggle="collapse"
-                            data-bs-target="#published-version"
-                            aria-expanded="false"
-                            aria-controls="published-version">
-                        @T["Published version"]
-                    </button>
-                </h2>
-                <div id="published-version" class="accordion-collapse collapse" aria-labelledby="published-version-heading" data-bs-parent="#published-version-accordion">
-                    <div class="accordion-body">
-                        <p class="text-muted">@Model.PublishedTargetDescription</p>
-                        <ul class="list-group">
-                            @foreach (var limiter in Model.PublishedLimiters)
-                            {
-                                <li class="list-group-item">@await DisplayAsync(limiter.Shape)</li>
-                            }
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-    }
-
     <div class="ocat-wrapper mt-4">
         <div class="ocat-end-offset">
             <p class="mb-3">
-                @if (Model.Status == OrchardCore.RateLimits.Models.RateLimitPolicyStatus.Draft)
+                @if (Model.IsEnabled)
                 {
-                    @T["This policy only exists as a draft. Publish it to start enforcing it."]
+                    @T["This policy is enabled. Saving changes will restart the website so the updated policy is reloaded."]
                 }
-                else if (Model.Status == OrchardCore.RateLimits.Models.RateLimitPolicyStatus.Published)
+                else if (Model.InitialIsEnabled)
                 {
-                    @T["This policy is currently published. Save a draft to make changes without restarting the website."]
+                    @T["This policy is currently enabled. Disabling and saving it will restart the website so it stops being enforced."]
                 }
                 else
                 {
-                    @T["The draft differs from the published version. Publish to apply the pending changes."]
+                    @T["This policy is disabled. You can save changes without restarting the website until you enable it."]
                 }
             </p>
             <div class="d-flex gap-1 flex-wrap">
-                <button class="btn btn-primary" type="submit" name="submit.Save" value="submit.Save">@T["Save Draft"]</button>
-                <button class="btn btn-success" type="submit" name="submit.Publish" value="submit.Publish" data-confirm-publish="true">@T["Save & Publish"]</button>
+                <button class="btn btn-primary" type="submit" data-confirm-save="true">@T["Save"]</button>
                 <a asp-action="Index" class="btn btn-secondary">@T["Cancel"]</a>
             </div>
         </div>
@@ -102,13 +71,24 @@
 
             <script at="Foot">
                 document.addEventListener('DOMContentLoaded', () => {
-                    for (const button of document.querySelectorAll('[data-confirm-publish]')) {
-                        button.addEventListener('click', (event) => {
-                            event.preventDefault();
+                    const enabledInput = document.getElementById('@Html.IdFor(m => m.IsEnabled)');
+                    const initialIsEnabled = @Model.InitialIsEnabled.ToString().ToLowerInvariant();
 
+                    for (const button of document.querySelectorAll('[data-confirm-save]')) {
+                        button.addEventListener('click', (event) => {
+                            if (!enabledInput) {
+                                return;
+                            }
+
+                            const shouldRestart = initialIsEnabled || enabledInput.checked;
+                            if (!shouldRestart) {
+                                return;
+                            }
+
+                            event.preventDefault();
                             confirmDialog({
-                                title: '@T["Save & Publish"]',
-                                message: '@T["Are you sure you want to save and publish this policy? This website will restart after publishing."]',
+                                title: '@T["Save Policy"]',
+                                message: '@T["Are you sure you want to save this policy? This website will restart after saving because the active rate-limit configuration will change."]',
                                 callback: (confirmed) => {
                                     if (!confirmed) {
                                         return;

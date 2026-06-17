@@ -19,6 +19,25 @@
     </div>
 </div>
 
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
+        <div class="form-check">
+            <input asp-for="IsEnabled" class="form-check-input" />
+            <label asp-for="IsEnabled" class="form-check-label">@T["Enable this policy"]</label>
+        </div>
+        <span class="hint">
+            @if (Model.InitialIsEnabled)
+            {
+                @T["This policy is currently enabled. Saving changes will restart the website."]
+            }
+            else
+            {
+                @T["Disabled policies can be edited without restarting the website. Enabling the policy applies it at runtime after the website restarts."]
+            }
+        </span>
+    </div>
+</div>
+
 <div class="ocat-wrapper" asp-validation-class-for="Scope">
     <label asp-for="Scope" class="ocat-label">@T["Policy type"]</label>
     <div class="ocat-end">

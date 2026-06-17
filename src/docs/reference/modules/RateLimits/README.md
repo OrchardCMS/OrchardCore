@@ -4,9 +4,9 @@ The Rate Limits module centralizes ASP.NET Core request rate limiting for Orchar
 
 When the feature is enabled, it can:
 
-- apply tenant-specific published rate-limit policies;
-- let administrators keep draft changes without reloading the tenant;
-- publish one or many policies with a single tenant reload;
+- apply tenant-specific enabled rate-limit policies;
+- let administrators edit disabled policies without reloading the tenant;
+- enable or disable one or many policies with a single tenant reload;
 - keep feature-contributed named-route limits active as read-only built-in limits.
 
 Static assets are intentionally excluded because Orchard registers static-file middleware before `UseRateLimiter()`. Scripts, stylesheets, and images therefore do not consume request budgets.
@@ -17,22 +17,22 @@ The module adds **Tools** -> **Rate Limits**, where administrators can manage te
 
 Each policy has:
 
-- a **draft** version used for editing;
-- an optional **published** version enforced at runtime;
+- a single editable document;
+- an **enabled** flag that determines whether it is enforced at runtime;
 - one target type: **Global** or **Endpoint**;
 - an optional description;
 - owner and author metadata;
 - one or more limiters.
 
-Saving **Save Draft** updates only the draft. **Save & Publish** updates the draft, publishes it immediately, clears the draft snapshot, and reloads the tenant shell once. Publishing a draft from the policy list also clears the draft after it becomes the published version.
+Saving a disabled policy updates it without reloading the tenant. Saving an enabled policy, enabling a disabled policy, or disabling an enabled policy reloads the tenant shell once so the active rate-limit configuration is refreshed.
 
 The admin UI includes:
 
 - policy search on the index page;
-- inline **Publish Draft** actions for policies that currently have a draft;
-- a draft editor with **Save Draft** and **Save & Publish** actions;
-- a published comparison section when a published snapshot exists;
-- a warning that publishing restarts the tenant shell.
+- inline **Enable** and **Disable** actions;
+- an editor with a single **Save** action;
+- a warning when saving affects active policies;
+- bulk enable, disable, and delete actions.
 
 ### Policy types
 
@@ -53,7 +53,7 @@ Endpoint policies must start with `/`.
 
 ## Limiter sources
 
-Each policy can contain one or more limiter sources. When a published policy matches a request, every limiter on that policy is applied.
+Each policy can contain one or more limiter sources. When an enabled policy matches a request, every limiter on that policy is applied.
 
 ## Choosing a limiter source
 
@@ -185,20 +185,20 @@ Matching by both values prevents `GET` and `POST` actions that share the same ro
 
 ## Seeding the default global policy
 
-When the feature runs with this policy-based model for the first time, Orchard seeds a published **Default Global Policy** with a fixed-window limiter using these defaults:
+When the feature runs with this policy-based model for the first time, Orchard seeds an enabled **Default Global Policy** with a fixed-window limiter using these defaults:
 
 - permit limit: `150`
 - window seconds: `60`
 - queue limit: `0`
 
-After the seed runs, tenant administrators can edit, publish, or replace that policy in the UI.
+After the seed runs, tenant administrators can edit, enable, disable, or replace that policy in the UI.
 
 ## Recipes and deployment plans
 
 Rate limit policies can also be moved between tenants with recipes and deployment plans.
 
 - The recipe step name is `CreateOrUpdateRateLimitPolicies`.
-- Recipe payloads use `draftPolicies` and `publishedPolicies` arrays.
+- Recipe payloads use a `policies` array.
 - The deployment UI exposes **All Rate Limit Policies**, which exports every stored policy.
 - Setup-style recipe exports stamp policy owner and author values with the tenant admin parameters.
 
