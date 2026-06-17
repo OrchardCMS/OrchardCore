@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.ContentFields.Fields;
+using OrchardCore.Users;
 using OrchardCore.Users.GraphQL;
 using OrchardCore.Users.Indexes;
 using OrchardCore.Users.Models;
@@ -27,6 +28,7 @@ public class UserPickerFieldQueryObjectType : ObjectGraphType<UserPickerField>
         Field<ListGraphType<UserType>, IEnumerable<User>>("users")
             .Description(S["the user items"])
             .PagingArguments()
+            .RequirePermission(UsersPermissions.ViewUsers)
             .ResolveAsync(resolve =>
             {
                 var userLoader = GetOrAddUserProfileByIdDataLoader(resolve);
