@@ -27,7 +27,7 @@ public class FileCreationServiceTests
             service.CreateAsync(new FileCreatingContext("file.txt"), originalStream, TestContext.Current.CancellationToken));
 
         Assert.True(replacementStream.IsDisposed);
-        Assert.False(originalStream.IsDisposed);
+        Assert.True(originalStream.IsDisposed);
     }
 
     [Fact]
@@ -59,6 +59,25 @@ public class FileCreationServiceTests
         }
 
         Assert.True(replacementStream.IsDisposed);
+        Assert.True(originalStream.IsDisposed);
+    }
+
+    [Fact]
+    public async Task CreateAsync_LeavesOriginalStreamOpen_WhenRequested()
+    {
+        var originalStream = new TrackingStream();
+        var service = new FileCreationService([]);
+
+        await using (var result = await service.CreateAsync(
+            new FileCreatingContext("file.txt"),
+            originalStream,
+            leaveOpen: true,
+            cancellationToken: TestContext.Current.CancellationToken))
+        {
+            Assert.True(result.Succeeded);
+            Assert.Same(originalStream, result.Stream);
+        }
+
         Assert.False(originalStream.IsDisposed);
     }
 

@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 
 namespace OrchardCore.Antivirus.ClamAV;
 
-public sealed class ClamAvConnectionFactory : IDisposable
+internal sealed class ClamAvConnectionFactory : IDisposable
 {
     private static readonly ConcurrentDictionary<string, Lazy<ClamAvConnection>> _connections = new();
     private static volatile int _registered;

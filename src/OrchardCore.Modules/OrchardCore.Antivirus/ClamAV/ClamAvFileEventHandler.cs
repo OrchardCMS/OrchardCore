@@ -7,7 +7,7 @@ using OrchardCore.Infrastructure;
 
 namespace OrchardCore.Antivirus.ClamAV;
 
-public sealed class ClamAvFileEventHandler : IFileEventHandler
+internal sealed class ClamAvFileEventHandler : IFileEventHandler
 {
     private readonly ClamAvOptions _options;
     private readonly ClamAvConnectionFactory _connectionFactory;

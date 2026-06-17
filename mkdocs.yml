@@ -57,6 +57,7 @@ validation:
 not_in_nav: |
   samples/
   releases/3.0.0.md
+  releases/4.0.0.md
   llms.txt
 
 # Extensions

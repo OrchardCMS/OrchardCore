@@ -24,11 +24,12 @@ Use `FileCreationService` in custom controllers, admin endpoints, APIs, recipe i
 
 ## Ownership and cleanup
 
-- The original upload stream stays owned by the caller.
+- By default, `FileCreationService.CreateAsync()` owns the original upload stream and disposes the final stream when the returned `FileCreatingResult` is disposed.
+- Pass `leaveOpen: true` when you need to keep the original upload stream owned by the caller.
 - If a handler replaces the stream, `FileCreationService` disposes the superseded intermediate stream.
-- The `FileCreatingResult` returned from `CreateAsync()` owns the final replacement stream when one was created, so callers should use `await using` and keep that result alive for as long as they need the processed stream.
+- The `FileCreatingResult` returned from `CreateAsync()` owns the final stream it returns, so callers should use `await using` and keep that result alive for as long as they need the processed stream.
 - If `CreateAsync()` returns a failed result, dispose that result the same way and abort the upload without storing the file.
-- After the file has been written permanently, disposing `FileCreatingResult` cleans up any temporary replacement stream used during the upload pipeline.
+- After the file has been written permanently, disposing `FileCreatingResult` cleans up any stream owned by the upload pipeline.
 
 ## Using `FileCreationService`
 

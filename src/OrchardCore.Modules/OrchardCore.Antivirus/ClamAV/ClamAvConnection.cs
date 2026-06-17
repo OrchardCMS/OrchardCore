@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 
 namespace OrchardCore.Antivirus.ClamAV;
 
-public sealed class ClamAvConnection : IDisposable
+internal sealed class ClamAvConnection : IDisposable
 {
     private const int BufferSize = 81920;
     private static readonly byte[] _scanCommand = "nINSTREAM\n"u8.ToArray();

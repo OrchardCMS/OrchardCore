@@ -14,18 +14,32 @@ public sealed class FileCreationService
 
     /// <summary>
     /// Runs the pre-create pipeline and returns the stream that should be stored.
-    /// The caller owns the original <paramref name="stream"/> and should dispose the returned
-    /// <see cref="FileCreatingResult"/> to clean up any replacement stream created by handlers.
+    /// By default, the returned <see cref="FileCreatingResult"/> owns the final stream and disposes it
+    /// when the result is disposed.
+    /// </summary>
+    public Task<FileCreatingResult> CreateAsync(
+        FileCreatingContext context,
+        Stream stream,
+        CancellationToken cancellationToken = default)
+        => CreateAsync(context, stream, leaveOpen: false, cancellationToken);
+
+    /// <summary>
+    /// Runs the pre-create pipeline and returns the stream that should be stored.
+    /// By default, the returned <see cref="FileCreatingResult"/> owns the final stream and disposes it
+    /// when the result is disposed. Set <paramref name="leaveOpen"/> to <see langword="true"/> to keep
+    /// the original <paramref name="stream"/> owned by the caller when handlers do not replace it.
     /// </summary>
     public async Task<FileCreatingResult> CreateAsync(
         FileCreatingContext context,
         Stream stream,
+        bool leaveOpen = false,
         CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(context);
         ArgumentNullException.ThrowIfNull(stream);
 
         var currentStream = stream;
+        var ownsOriginalStream = !leaveOpen;
 
         try
         {
@@ -41,22 +55,33 @@ public sealed class FileCreationService
 
                 currentStream = result.Stream ?? creatingStream;
 
-                if (creatingStream != currentStream && creatingStream != stream)
+                if (creatingStream != currentStream)
                 {
-                    await creatingStream.DisposeAsync();
+                    if (creatingStream == stream)
+                    {
+                        if (ownsOriginalStream)
+                        {
+                            await creatingStream.DisposeAsync();
+                            ownsOriginalStream = false;
+                        }
+                    }
+                    else
+                    {
+                        await creatingStream.DisposeAsync();
+                    }
                 }
 
                 if (!result.Succeeded)
                 {
-                    return FileCreatingResult.Create(currentStream, currentStream != stream, result.Errors.ToList());
+                    return FileCreatingResult.Create(currentStream, OwnsResultStream(stream, currentStream, ownsOriginalStream), result.Errors.ToList());
                 }
             }
 
-            return FileCreatingResult.Create(currentStream, currentStream != stream);
+            return FileCreatingResult.Create(currentStream, OwnsResultStream(stream, currentStream, ownsOriginalStream));
         }
         catch
         {
-            if (currentStream != stream)
+            if (OwnsResultStream(stream, currentStream, ownsOriginalStream))
             {
                 await currentStream.DisposeAsync();
             }
@@ -82,4 +107,7 @@ public sealed class FileCreationService
             await handler.CreatedAsync(fileInfo, cancellationToken);
         }
     }
+
+    private static bool OwnsResultStream(Stream originalStream, Stream currentStream, bool ownsOriginalStream)
+        => currentStream is not null && (currentStream != originalStream || ownsOriginalStream);
 }
