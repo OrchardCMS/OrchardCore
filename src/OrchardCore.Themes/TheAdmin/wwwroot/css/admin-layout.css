@@ -764,6 +764,7 @@ body:not(.left-sidebar-compact) #ta-left-sidebar #filter:focus {
   flex-shrink: 0;
   font-size: 16px;
   width: 37px;
+  text-align: center;
 }
 
 .left-sidebar-compact #ta-left-sidebar #left-nav > ul .item-label > span.icon svg {
@@ -774,6 +775,7 @@ body:not(.left-sidebar-compact) #ta-left-sidebar #filter:focus {
   flex-shrink: 0;
   font-size: 16px;
   width: 37px;
+  text-align: center;
 }
 
 .left-sidebar-compact #ta-left-sidebar #left-nav > ul .item-label > span.title {
@@ -915,6 +917,14 @@ body:not(.left-sidebar-compact) #ta-left-sidebar #filter:focus {
 
 [dir="rtl"] .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li > figure > ul {
   right: var(--oc-start-navigation-width-when-compact);
+}
+
+[dir="ltr"] .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li > figure > ul li .item-label {
+  padding-left: 0px !important;
+}
+
+[dir="rtl"] .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li > figure > ul li .item-label {
+  padding-right: 0px !important;
 }
 
 .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li > figure > ul li .item-label:hover {

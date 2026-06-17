@@ -499,6 +499,7 @@ body:not(.left-sidebar-compact) {
                         flex-shrink: 0;
                         font-size: 16px;
                         width: 37px;
+                        text-align: center;
 
                         svg {
                             width: 35px;
@@ -509,6 +510,7 @@ body:not(.left-sidebar-compact) {
                         flex-shrink: 0;
                         font-size: 16px;
                         width: 37px;
+                        text-align: center;
                     }
 
                     > span.title {
@@ -628,6 +630,10 @@ body:not(.left-sidebar-compact) {
                     overflow-y: auto;
                     scrollbar-width: thin;
                     scrollbar-color: var(--oc-scrollbar-color) var(--oc-admin-menu-bg-color);
+                }
+
+                > li > figure > ul li .item-label {
+                    padding-left: 0px !important;
                 }
 
                 > li > figure > ul li .item-label:hover {
