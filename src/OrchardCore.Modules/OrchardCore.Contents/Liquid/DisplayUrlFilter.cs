@@ -62,7 +62,7 @@ public class DisplayUrlFilter : ILiquidFilter
         }
 
         // LinkGenerator is less accurate so only use it if a view context couldn't be produced. 
-        var linkUrl = context.ViewContext is ActionContext actionContext
+        var linkUrl = context.ViewContext is ActionContext { RouteData.Routers.Count: > 0 } actionContext
             ? _urlHelperFactory.GetUrlHelper(actionContext).RouteUrl(routeValues)
             : _linkGenerator.GetPathByRouteValues(httpContext, string.Empty, routeValues);
 
