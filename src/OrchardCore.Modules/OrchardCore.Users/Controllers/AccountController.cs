@@ -11,6 +11,7 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
+using OrchardCore.RateLimits;
 using OrchardCore.Settings;
 using OrchardCore.Users.Events;
 using OrchardCore.Users.Models;
@@ -101,6 +102,7 @@ public sealed class AccountController : AccountBaseController
     [HttpPost]
     [AllowAnonymous]
     [ActionName(nameof(Login))]
+    [RateLimitGroup(UserRateLimiterPolicyNames.PasswordAuthentication)]
     public async Task<IActionResult> LoginPOST(string returnUrl = null)
     {
         var loginSettings = await _siteService.GetSettingsAsync<LoginSettings>();

@@ -108,12 +108,12 @@ public sealed class TokenBucketRateLimiterDisplayDriver : DisplayDriver<RateLimi
         [
             new SelectListItem
             {
-                Text = S["Oldest First"],
+                Text = S["Oldest first (first come, first served)"],
                 Value = nameof(QueueProcessingOrder.OldestFirst),
             },
             new SelectListItem
             {
-                Text = S["Newest First"],
+                Text = S["Newest first (latest request first)"],
                 Value = nameof(QueueProcessingOrder.NewestFirst),
             },
         ];

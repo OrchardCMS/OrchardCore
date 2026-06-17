@@ -32,7 +32,7 @@ public sealed class ConcurrencyRateLimiterSource : RateLimiterSourceBase<Concurr
     public override LocalizedString DisplayName => S["Concurrency"];
 
     /// <inheritdoc />
-    public override LocalizedString Description => S["Limits concurrent in-flight requests per IP."];
+    public override LocalizedString Description => S["Limits how many matching requests can run at the same time, which is useful for expensive operations."];
 
     protected override RateLimitPartition<string> CreatePartition(string policyName, HttpContext context, ConcurrencyRateLimiterData model)
     {

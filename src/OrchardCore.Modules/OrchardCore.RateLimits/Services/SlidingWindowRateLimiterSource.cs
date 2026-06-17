@@ -32,7 +32,7 @@ public sealed class SlidingWindowRateLimiterSource : RateLimiterSourceBase<Slidi
     public override LocalizedString DisplayName => S["Sliding window"];
 
     /// <inheritdoc />
-    public override LocalizedString Description => S["Limits requests per IP across overlapping time segments."];
+    public override LocalizedString Description => S["Spreads a request limit across a rolling time period so traffic is smoothed instead of resetting all at once."];
 
     protected override RateLimitPartition<string> CreatePartition(string policyName, HttpContext context, SlidingWindowRateLimiterData model)
     {

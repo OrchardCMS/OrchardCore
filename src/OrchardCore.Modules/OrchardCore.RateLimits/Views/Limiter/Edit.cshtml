@@ -1,13 +1,11 @@
-@model OrchardCore.Infrastructure.Entities.ModelViewModel
+@model OrchardCore.RateLimits.ViewModels.RateLimiterEditorViewModel
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Edit Limiter"])</h1></zone>
+<zone Name="Title"><h1>@RenderTitleSegments(T["Edit '{0}' Limiter", Model.DisplayName])</h1></zone>
 
 <form asp-action="Edit" method="post" class="no-multisubmit">
-    <div class="ocat-wrapper">
-        <label class="ocat-label">@T["Limiter type"]</label>
-        <div class="ocat-end">
-            <span>@Model.DisplayName</span>
-        </div>
+    <div class="alert alert-info" role="alert">
+        <span>@Model.Description</span>
+        <a class="seedoc" href="@Model.DocumentationUrl" target="_blank">@T["Learn more"]</a>
     </div>
 
     @await DisplayAsync(Model.Editor)

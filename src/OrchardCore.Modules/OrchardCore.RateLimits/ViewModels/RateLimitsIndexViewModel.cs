@@ -13,6 +13,8 @@ public class RateLimitsIndexViewModel
 
     public IList<BuiltInRouteRateLimitViewModel> BuiltInRouteLimits { get; set; } = [];
 
+    public IList<BuiltInGroupRateLimitViewModel> BuiltInGroupLimits { get; set; } = [];
+
     public IList<SelectListItem> BulkActions { get; set; } = [];
 
     [BindNever]

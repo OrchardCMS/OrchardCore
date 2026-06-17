@@ -32,7 +32,7 @@ public sealed class FixedWindowRateLimiterSource : RateLimiterSourceBase<FixedWi
     public override LocalizedString DisplayName => S["Fixed window"];
 
     /// <inheritdoc />
-    public override LocalizedString Description => S["Limits requests per IP across a fixed time window."];
+    public override LocalizedString Description => S["Allows a set number of requests during each time period, then resets the count all at once."];
 
     protected override RateLimitPartition<string> CreatePartition(string policyName, HttpContext context, FixedWindowRateLimiterData model)
     {

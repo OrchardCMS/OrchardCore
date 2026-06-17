@@ -68,6 +68,24 @@ public class RateLimiterOptionsConfigurationsTests
     }
 
     [Fact]
+    public async Task ShouldApplyCustomGroupLimitToMatchingEndpointGroup()
+    {
+        var cancellationToken = TestContext.Current.CancellationToken;
+        var rateLimitsOptions = new RateLimitsOptions();
+        rateLimitsOptions.AddGroupRateLimit("authentication", RateLimitPartitionHelpers.CreateFixedWindowPerIpPolicy("authentication", 1, TimeSpan.FromMinutes(1)));
+
+        var options = Configure(rateLimitsOptions);
+
+        using var firstLease = await options.GlobalLimiter.AcquireAsync(CreateHttpContext("Login", HttpMethods.Post, metadata: new RateLimitGroupAttribute("authentication")), 1, cancellationToken);
+        using var secondLease = await options.GlobalLimiter.AcquireAsync(CreateHttpContext("Login", HttpMethods.Post, metadata: new RateLimitGroupAttribute("authentication")), 1, cancellationToken);
+        using var thirdLease = await options.GlobalLimiter.AcquireAsync(CreateHttpContext("Login", HttpMethods.Post, metadata: new RateLimitGroupAttribute("registration")), 1, cancellationToken);
+
+        Assert.True(firstLease.IsAcquired);
+        Assert.False(secondLease.IsAcquired);
+        Assert.True(thirdLease.IsAcquired);
+    }
+
+    [Fact]
     public async Task ShouldApplyEnabledGlobalPolicy()
     {
         var cancellationToken = TestContext.Current.CancellationToken;
@@ -122,6 +140,25 @@ public class RateLimiterOptionsConfigurationsTests
         Assert.False(secondLease.IsAcquired);
         Assert.True(thirdLease.IsAcquired);
         Assert.True(fourthLease.IsAcquired);
+    }
+
+    [Fact]
+    public async Task ShouldApplyEnabledGroupPolicyToAnyMatchingGroup()
+    {
+        var cancellationToken = TestContext.Current.CancellationToken;
+        var policy = CreateGlobalFixedWindowPolicy("Authentication", 1, 60);
+        policy.Scope = RateLimitPolicyScope.Group;
+        policy.GroupName = "authentication";
+
+        var options = Configure(new RateLimitsOptions(), [policy]);
+
+        using var firstLease = await options.GlobalLimiter.AcquireAsync(CreateHttpContext("AnyRoute", HttpMethods.Get, metadata: new RateLimitGroupAttribute("users", "authentication")), 1, cancellationToken);
+        using var secondLease = await options.GlobalLimiter.AcquireAsync(CreateHttpContext("AnyRoute", HttpMethods.Get, metadata: new RateLimitGroupAttribute("authentication")), 1, cancellationToken);
+        using var thirdLease = await options.GlobalLimiter.AcquireAsync(CreateHttpContext("AnyRoute", HttpMethods.Get, metadata: new RateLimitGroupAttribute("users")), 1, cancellationToken);
+
+        Assert.True(firstLease.IsAcquired);
+        Assert.False(secondLease.IsAcquired);
+        Assert.True(thirdLease.IsAcquired);
     }
 
     [Fact]
@@ -228,15 +265,21 @@ public class RateLimiterOptionsConfigurationsTests
         };
     }
 
-    private static DefaultHttpContext CreateHttpContext(string routeName, string httpMethod, string path = "/")
+    private static DefaultHttpContext CreateHttpContext(string routeName, string httpMethod, string path = "/", params object[] metadata)
     {
         var context = new DefaultHttpContext();
         context.Request.Method = httpMethod;
         context.Request.Path = path;
         context.Connection.RemoteIpAddress = IPAddress.Parse("127.0.0.1");
+
+        var allMetadata = new List<object>(metadata ?? [])
+        {
+            new RouteNameMetadata(routeName),
+        };
+
         context.SetEndpoint(new Endpoint(
             _ => Task.CompletedTask,
-            new EndpointMetadataCollection(new RouteNameMetadata(routeName)),
+            new EndpointMetadataCollection([.. allMetadata]),
             routeName));
 
         return context;

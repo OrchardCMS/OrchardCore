@@ -97,7 +97,9 @@ public sealed class CreateOrUpdateRateLimitPoliciesStep : NamedRecipeStepHandler
 
     private bool ValidatePolicy(RateLimitPolicy policy, RecipeExecutionContext context)
     {
-        if (policy.Scope != RateLimitPolicyScope.Global && policy.Scope != RateLimitPolicyScope.Endpoint)
+        if (policy.Scope != RateLimitPolicyScope.Global &&
+            policy.Scope != RateLimitPolicyScope.Endpoint &&
+            policy.Scope != RateLimitPolicyScope.Group)
         {
             context.Errors.Add(S["The policy '{0}' has an unsupported scope.", policy.Name ?? policy.PolicyId ?? string.Empty]);
             return false;
@@ -116,6 +118,12 @@ public sealed class CreateOrUpdateRateLimitPoliciesStep : NamedRecipeStepHandler
                 context.Errors.Add(S["The endpoint policy '{0}' must use a request path that starts with '/'.", policy.Name ?? policy.PolicyId ?? string.Empty]);
                 return false;
             }
+        }
+
+        if (policy.Scope == RateLimitPolicyScope.Group && string.IsNullOrWhiteSpace(policy.GroupName))
+        {
+            context.Errors.Add(S["The group policy '{0}' must define a rate-limit group.", policy.Name ?? policy.PolicyId ?? string.Empty]);
+            return false;
         }
 
         return true;

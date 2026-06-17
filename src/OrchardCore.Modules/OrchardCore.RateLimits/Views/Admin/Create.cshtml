@@ -6,36 +6,20 @@
     @Html.ValidationSummary()
     @await Html.PartialAsync("RateLimitPolicy.Fields", Model)
 
-    <div class="mt-4 d-flex gap-1">
-        <button class="btn btn-primary" type="submit" data-confirm-save="true">@T["Save and Continue"]</button>
-        <a asp-action="Index" class="btn btn-secondary">@T["Cancel"]</a>
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
+            <div class="alert alert-info mb-0" role="alert">
+                @T["New policies are created as disabled drafts. Add limiters, save your changes, then enable the policy from the policies list when it is ready to publish."]
+            </div>
+        </div>
+    </div>
+
+    <div class="ocat-wrapper mt-4">
+        <div class="ocat-end-offset">
+            <div class="d-flex gap-1">
+                <button class="btn btn-primary" type="submit">@T["Save and Continue"]</button>
+                <a asp-action="Index" class="btn btn-secondary">@T["Cancel"]</a>
+            </div>
+        </div>
     </div>
 </form>
-
-<script at="Foot">
-    document.addEventListener('DOMContentLoaded', () => {
-        const enabledInput = document.getElementById('@Html.IdFor(m => m.IsEnabled)');
-
-        for (const button of document.querySelectorAll('[data-confirm-save]')) {
-            button.addEventListener('click', (event) => {
-                if (!enabledInput?.checked) {
-                    return;
-                }
-
-                event.preventDefault();
-
-                confirmDialog({
-                    title: '@T["Save Policy"]',
-                    message: '@T["Are you sure you want to save this enabled policy? This website will restart after saving because the active rate-limit configuration will change."]',
-                    callback: (confirmed) => {
-                        if (!confirmed) {
-                            return;
-                        }
-
-                        button.form?.requestSubmit(button);
-                    }
-                });
-            });
-        }
-    });
-</script>

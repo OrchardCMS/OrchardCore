@@ -12,6 +12,7 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Entities;
 using OrchardCore.Modules;
+using OrchardCore.RateLimits;
 using OrchardCore.Settings;
 using OrchardCore.Users.Events;
 using OrchardCore.Users.Models;
@@ -94,6 +95,7 @@ public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationB
     [HttpPost]
     [AllowAnonymous]
     [ActionName(nameof(LoginWithTwoFactorAuthentication))]
+    [RateLimitGroup(UserRateLimiterPolicyNames.TwoFactorAuthentication)]
     public async Task<IActionResult> LoginWithTwoFactorAuthenticationPost(LoginWithTwoFactorAuthenticationViewModel model)
     {
         var user = await SignInManager.GetTwoFactorAuthenticationUserAsync();
@@ -167,6 +169,7 @@ public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationB
 
     [HttpPost]
     [AllowAnonymous]
+    [RateLimitGroup(UserRateLimiterPolicyNames.TwoFactorRecovery)]
     public async Task<IActionResult> LoginWithRecoveryCode(LoginWithRecoveryCodeViewModel model)
     {
         if (ModelState.IsValid)

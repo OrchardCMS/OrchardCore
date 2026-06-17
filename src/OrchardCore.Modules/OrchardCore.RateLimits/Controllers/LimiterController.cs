@@ -6,15 +6,18 @@ using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Infrastructure.Entities;
 using OrchardCore.RateLimits.Core;
 using OrchardCore.RateLimits.Models;
+using OrchardCore.RateLimits.Services;
+using OrchardCore.RateLimits.ViewModels;
 
 namespace OrchardCore.RateLimits.Controllers;
 
 [Admin("RateLimits/Limiter/{action}/{policyId}/{limiterId?}", "RateLimits.Limiter.{action}")]
 public sealed class LimiterController : Controller
 {
+    private const string PublishedPolicyLimiterMessage = "This policy is enabled and cannot be modified. To modify it, disable it first or create another policy.";
+
     private readonly IAuthorizationService _authorizationService;
     private readonly IDisplayManager<RateLimitLimiter> _displayManager;
     private readonly INotifier _notifier;
@@ -49,9 +52,16 @@ public sealed class LimiterController : Controller
             return Forbid();
         }
 
-        if (await GetEditablePolicyAsync(policyId) is null)
+        var policy = await GetEditablePolicyAsync(policyId);
+        if (policy is null)
         {
             return NotFound();
+        }
+
+        if (!CanModifyLimiters(policy))
+        {
+            await _notifier.WarningAsync(H[PublishedPolicyLimiterMessage]);
+            return RedirectToAction(nameof(AdminController.Edit), "Admin", new { policyId });
         }
 
         var source = _serviceProvider.GetKeyedService<IRateLimiterSource>(id);
@@ -66,9 +76,11 @@ public sealed class LimiterController : Controller
             Source = source.Name,
         };
 
-        var model = new ModelViewModel
+        var model = new RateLimiterEditorViewModel
         {
             DisplayName = source.DisplayName.Value,
+            Description = source.Description.Value,
+            DocumentationUrl = GetLimiterDocumentationUrl(source.Name),
             Editor = await _displayManager.BuildEditorAsync(limiter, _updateModelAccessor.ModelUpdater, isNew: true),
         };
 
@@ -91,6 +103,12 @@ public sealed class LimiterController : Controller
             return NotFound();
         }
 
+        if (!CanModifyLimiters(policy))
+        {
+            await _notifier.WarningAsync(H[PublishedPolicyLimiterMessage]);
+            return RedirectToAction(nameof(AdminController.Edit), "Admin", new { policyId });
+        }
+
         var source = _serviceProvider.GetKeyedService<IRateLimiterSource>(id);
         if (source is null)
         {
@@ -103,9 +121,11 @@ public sealed class LimiterController : Controller
             Source = source.Name,
         };
 
-        var model = new ModelViewModel
+        var model = new RateLimiterEditorViewModel
         {
             DisplayName = source.DisplayName.Value,
+            Description = source.Description.Value,
+            DocumentationUrl = GetLimiterDocumentationUrl(source.Name),
             Editor = await _displayManager.UpdateEditorAsync(limiter, _updateModelAccessor.ModelUpdater, isNew: true),
         };
 
@@ -137,9 +157,17 @@ public sealed class LimiterController : Controller
             return NotFound();
         }
 
-        var model = new ModelViewModel
+        if (!CanModifyLimiters(policy))
+        {
+            await _notifier.WarningAsync(H[PublishedPolicyLimiterMessage]);
+            return RedirectToAction(nameof(AdminController.Edit), "Admin", new { policyId });
+        }
+
+        var model = new RateLimiterEditorViewModel
         {
             DisplayName = source.DisplayName.Value,
+            Description = source.Description.Value,
+            DocumentationUrl = GetLimiterDocumentationUrl(source.Name),
             Editor = await _displayManager.BuildEditorAsync(limiter, _updateModelAccessor.ModelUpdater, isNew: false),
         };
 
@@ -161,9 +189,17 @@ public sealed class LimiterController : Controller
             return NotFound();
         }
 
-        var model = new ModelViewModel
+        if (!CanModifyLimiters(policy))
+        {
+            await _notifier.WarningAsync(H[PublishedPolicyLimiterMessage]);
+            return RedirectToAction(nameof(AdminController.Edit), "Admin", new { policyId });
+        }
+
+        var model = new RateLimiterEditorViewModel
         {
             DisplayName = source.DisplayName.Value,
+            Description = source.Description.Value,
+            DocumentationUrl = GetLimiterDocumentationUrl(source.Name),
             Editor = await _displayManager.UpdateEditorAsync(originalLimiter, _updateModelAccessor.ModelUpdater, isNew: false),
         };
 
@@ -191,6 +227,12 @@ public sealed class LimiterController : Controller
         if (policy is null || limiter is null)
         {
             return NotFound();
+        }
+
+        if (!CanModifyLimiters(policy))
+        {
+            await _notifier.WarningAsync(H[PublishedPolicyLimiterMessage]);
+            return RedirectToAction(nameof(AdminController.Edit), "Admin", new { policyId });
         }
 
         policy.Limiters.RemoveAll(x => string.Equals(x.Id, limiterId, StringComparison.Ordinal));
@@ -226,4 +268,21 @@ public sealed class LimiterController : Controller
 
     private async Task<RateLimitPolicy> GetEditablePolicyAsync(string policyId)
         => await _policyStore.FindByIdAsync(policyId, PolicyVersion.Current);
+
+    private static bool CanModifyLimiters(RateLimitPolicy policy)
+        => !(policy?.IsEnabled ?? false);
+
+    private static string GetLimiterDocumentationUrl(string sourceName)
+    {
+        var fragment = sourceName switch
+        {
+            FixedWindowRateLimiterSource.SourceName => "#fixed-window",
+            SlidingWindowRateLimiterSource.SourceName => "#sliding-window",
+            ConcurrencyRateLimiterSource.SourceName => "#concurrency",
+            TokenBucketRateLimiterSource.SourceName => "#token-bucket",
+            _ => string.Empty,
+        };
+
+        return $"{OrchardCore.Admin.Constants.DocsUrl}reference/modules/RateLimits/{fragment}";
+    }
 }

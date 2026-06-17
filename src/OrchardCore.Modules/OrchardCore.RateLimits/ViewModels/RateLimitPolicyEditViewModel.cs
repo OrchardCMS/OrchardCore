@@ -19,6 +19,8 @@ public class RateLimitPolicyEditViewModel
 
     public string Path { get; set; }
 
+    public string GroupName { get; set; }
+
     public bool IsEnabled { get; set; }
 
     public bool InitialIsEnabled { get; set; }
@@ -35,4 +37,13 @@ public class RateLimitPolicyEditViewModel
 
     [BindNever]
     public IEnumerable<SelectListItem> PolicyScopes { get; set; } = [];
+
+    [BindNever]
+    public IEnumerable<SelectListItem> AvailableGroups { get; set; } = [];
+
+    [BindNever]
+    public bool AreLimiterChangesAllowed { get; set; }
+
+    [BindNever]
+    public string PublishedPolicyLimiterMessage { get; set; }
 }

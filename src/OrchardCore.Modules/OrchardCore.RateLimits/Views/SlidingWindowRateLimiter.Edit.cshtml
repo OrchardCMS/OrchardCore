@@ -5,7 +5,7 @@
     <div class="ocat-limited">
         <input asp-for="PermitLimit" type="number" min="1" class="form-control" />
         <span asp-validation-for="PermitLimit"></span>
-        <span class="hint">@T["The number of requests allowed across the full window."]</span>
+        <span class="hint">@T["How many requests are allowed across the full rolling window before extra requests are delayed or rejected."]</span>
     </div>
 </div>
 
@@ -14,7 +14,7 @@
     <div class="ocat-limited">
         <input asp-for="WindowSeconds" type="number" min="1" class="form-control" />
         <span asp-validation-for="WindowSeconds"></span>
-        <span class="hint">@T["How long the sliding window lasts in seconds."]</span>
+        <span class="hint">@T["How far back Orchard looks when counting requests. For example, 60 means the last minute of traffic is considered."]</span>
     </div>
 </div>
 
@@ -23,7 +23,7 @@
     <div class="ocat-limited">
         <input asp-for="SegmentsPerWindow" type="number" min="1" class="form-control" />
         <span asp-validation-for="SegmentsPerWindow"></span>
-        <span class="hint">@T["How many slices are tracked inside each window."]</span>
+        <span class="hint">@T["How many smaller slices Orchard tracks inside the window. More slices make the limit recover more gradually instead of all at once."]</span>
     </div>
 </div>
 
@@ -32,6 +32,6 @@
     <div class="ocat-limited">
         <input asp-for="QueueLimit" type="number" min="0" class="form-control" />
         <span asp-validation-for="QueueLimit"></span>
-        <span class="hint">@T["Additional queued requests allowed after the limit is reached."]</span>
+        <span class="hint">@T["How many extra requests can wait after the limit is reached. Use 0 to reject extras immediately instead of making them wait."]</span>
     </div>
 </div>

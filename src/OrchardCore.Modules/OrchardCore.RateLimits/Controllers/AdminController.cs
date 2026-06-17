@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -26,6 +27,8 @@ namespace OrchardCore.RateLimits.Controllers;
 [Admin("RateLimits/{action}/{policyId?}", "RateLimits.{action}")]
 public sealed class AdminController : Controller
 {
+    private const string PublishedPolicyLimiterMessage = "This policy is enabled and cannot be modified. To modify it, disable it first or create another policy.";
+
     private static readonly string[] _rateLimiterSourceNames =
     [
         FixedWindowRateLimiterSource.SourceName,
@@ -115,6 +118,7 @@ public sealed class AdminController : Controller
                 .. pagedPolicies.Select(BuildPolicyEntry),
             ],
             BuiltInRouteLimits = BuildBuiltInRouteLimits(),
+            BuiltInGroupLimits = BuildBuiltInGroupLimits(),
             BulkActions =
             [
                 new SelectListItem(S["Enable"], nameof(RateLimitPolicyBulkAction.Enable)),
@@ -148,12 +152,15 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        ValidatePolicy(model, null, await GetCurrentPoliciesAsync());
+        ValidatePolicy(model, null, existingPolicy: null, await GetCurrentPoliciesAsync());
 
         if (!ModelState.IsValid)
         {
             model.PolicyScopes = CreatePolicyScopeList();
             model.LimiterSources = BuildLimiterSources();
+            model.AvailableGroups = BuildAvailableGroupList(model.GroupName);
+            model.AreLimiterChangesAllowed = true;
+            model.PublishedPolicyLimiterMessage = S[PublishedPolicyLimiterMessage];
             model.InitialIsEnabled = false;
             model.EnabledUtc = null;
             return View(model);
@@ -405,23 +412,24 @@ public sealed class AdminController : Controller
 
     private async Task<RateLimitPolicyEditViewModel> CreateEditViewModelAsync(RateLimitPolicy policy)
     {
-        var model = CreateEditViewModel();
+        var model = CreateEditViewModel(policy.GroupName);
         model.PolicyId = policy.PolicyId;
         model.Policy = policy;
         model.Name = policy.Name;
         model.Description = policy.Description;
         model.Scope = policy.Scope;
         model.Path = policy.Path;
+        model.GroupName = policy.GroupName;
         model.IsEnabled = policy.IsEnabled;
         model.InitialIsEnabled = policy.IsEnabled;
+        model.AreLimiterChangesAllowed = AreLimiterChangesAllowed(policy);
         model.Status = policy.Status;
         model.EnabledUtc = policy.EnabledUtc;
 
         foreach (var limiter in policy.Limiters)
         {
             var shape = await _displayManager.BuildDisplayAsync(limiter, updater: null, displayType: OrchardCoreConstants.DisplayType.SummaryAdmin);
-            shape.Properties["PolicyId"] = policy.PolicyId;
-            shape.Properties["CanManage"] = true;
+            ApplyLimiterShapeState(shape, policy.PolicyId, model.AreLimiterChangesAllowed, model.PublishedPolicyLimiterMessage);
             model.Limiters.Add(new ModelEntry<RateLimitLimiter>
             {
                 Model = limiter,
@@ -445,18 +453,19 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
-        ValidatePolicy(model, policyId, await GetCurrentPoliciesAsync());
+        ValidatePolicy(model, policyId, existingPolicy, await GetCurrentPoliciesAsync());
 
         if (!ModelState.IsValid)
         {
             var invalidModel = await CreateEditViewModelAsync(existingPolicy);
             invalidModel.Name = model.Name;
             invalidModel.Description = model.Description;
-            invalidModel.Scope = model.Scope;
-            invalidModel.Path = model.Path;
-            invalidModel.IsEnabled = model.IsEnabled;
-            invalidModel.Status = RateLimitPolicyStore.GetStatus(model.IsEnabled);
-            invalidModel.EnabledUtc = model.IsEnabled ? existingPolicy.EnabledUtc : null;
+            invalidModel.Scope = existingPolicy.IsEnabled ? existingPolicy.Scope : model.Scope;
+            invalidModel.Path = existingPolicy.IsEnabled ? existingPolicy.Path : model.Path;
+            invalidModel.GroupName = existingPolicy.IsEnabled ? existingPolicy.GroupName : model.GroupName;
+            invalidModel.IsEnabled = existingPolicy.IsEnabled;
+            invalidModel.Status = RateLimitPolicyStore.GetStatus(existingPolicy.IsEnabled);
+            invalidModel.EnabledUtc = existingPolicy.EnabledUtc;
             return View("Edit", invalidModel);
         }
 
@@ -480,17 +489,24 @@ public sealed class AdminController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    private RateLimitPolicyEditViewModel CreateEditViewModel()
+    private RateLimitPolicyEditViewModel CreateEditViewModel(string selectedGroup = null)
     {
         return new()
         {
             PolicyScopes = CreatePolicyScopeList(),
+            AvailableGroups = BuildAvailableGroupList(selectedGroup),
             LimiterSources = BuildLimiterSources(),
+            AreLimiterChangesAllowed = true,
+            PublishedPolicyLimiterMessage = S[PublishedPolicyLimiterMessage],
         };
     }
 
-    private void ValidatePolicy(RateLimitPolicyEditViewModel model, string currentPolicyId, IEnumerable<RateLimitPolicy> policies)
+    private void ValidatePolicy(RateLimitPolicyEditViewModel model, string currentPolicyId, RateLimitPolicy existingPolicy, IEnumerable<RateLimitPolicy> policies)
     {
+        var effectiveScope = existingPolicy?.IsEnabled == true ? existingPolicy.Scope : model.Scope;
+        var effectivePath = existingPolicy?.IsEnabled == true ? existingPolicy.Path : model.Path;
+        var effectiveGroupName = existingPolicy?.IsEnabled == true ? existingPolicy.GroupName : model.GroupName;
+
         if (string.IsNullOrWhiteSpace(model.Name))
         {
             ModelState.AddModelError(nameof(model.Name), S["The policy name is required."]);
@@ -502,26 +518,35 @@ public sealed class AdminController : Controller
             ModelState.AddModelError(nameof(model.Name), S["A policy with the same name already exists."]);
         }
 
-        if (model.Scope != RateLimitPolicyScope.Global && model.Scope != RateLimitPolicyScope.Endpoint)
+        if (effectiveScope != RateLimitPolicyScope.Global &&
+            effectiveScope != RateLimitPolicyScope.Endpoint &&
+            effectiveScope != RateLimitPolicyScope.Group)
         {
             ModelState.AddModelError(nameof(model.Scope), S["The selected policy type is invalid."]);
         }
 
-        if (model.Scope == RateLimitPolicyScope.Endpoint)
+        if (effectiveScope == RateLimitPolicyScope.Endpoint)
         {
-            if (string.IsNullOrWhiteSpace(model.Path))
+            if (string.IsNullOrWhiteSpace(effectivePath))
             {
                 ModelState.AddModelError(nameof(model.Path), S["A request path is required for endpoint policies."]);
             }
-            else if (!model.Path.StartsWith('/'))
+            else if (!effectivePath.StartsWith('/'))
             {
                 ModelState.AddModelError(nameof(model.Path), S["The request path must start with '/'."]);
             }
+        }
+
+        if (effectiveScope == RateLimitPolicyScope.Group && string.IsNullOrWhiteSpace(effectiveGroupName))
+        {
+            ModelState.AddModelError(nameof(model.GroupName), S["A rate-limit group is required for group policies."]);
         }
     }
 
     private RateLimitPolicy ToPolicy(RateLimitPolicyEditViewModel model, RateLimitPolicy existingPolicy = null)
     {
+        var keepTargetConfiguration = existingPolicy?.IsEnabled ?? false;
+
         return new()
         {
             PolicyId = existingPolicy?.PolicyId,
@@ -529,9 +554,14 @@ public sealed class AdminController : Controller
             Description = model.Description?.Trim(),
             OwnerId = existingPolicy?.OwnerId ?? User.FindFirstValue(ClaimTypes.NameIdentifier),
             Author = existingPolicy?.Author ?? User.Identity?.Name,
-            Scope = model.Scope,
-            Path = model.Scope == RateLimitPolicyScope.Endpoint ? model.Path?.Trim() : null,
-            IsEnabled = model.IsEnabled,
+            Scope = keepTargetConfiguration ? existingPolicy.Scope : model.Scope,
+            Path = keepTargetConfiguration
+                ? existingPolicy.Path
+                : model.Scope == RateLimitPolicyScope.Endpoint ? model.Path?.Trim() : null,
+            GroupName = keepTargetConfiguration
+                ? existingPolicy.GroupName
+                : model.Scope == RateLimitPolicyScope.Group ? model.GroupName?.Trim() : null,
+            IsEnabled = existingPolicy?.IsEnabled ?? false,
             EnabledUtc = existingPolicy?.EnabledUtc,
         };
     }
@@ -542,7 +572,33 @@ public sealed class AdminController : Controller
         [
             new SelectListItem(S["Global"], nameof(RateLimitPolicyScope.Global)),
             new SelectListItem(S["Endpoint"], nameof(RateLimitPolicyScope.Endpoint)),
+            new SelectListItem(S["Group"], nameof(RateLimitPolicyScope.Group)),
         ];
+    }
+
+    private List<SelectListItem> BuildAvailableGroupList(string selectedGroup = null)
+    {
+        var groups = _endpointDataSource.Endpoints
+            .SelectMany(GetRateLimitGroups)
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .OrderBy(static groupName => groupName, StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+        if (!string.IsNullOrWhiteSpace(selectedGroup) &&
+            !groups.Contains(selectedGroup, StringComparer.OrdinalIgnoreCase))
+        {
+            groups.Add(selectedGroup);
+            groups = [.. groups.OrderBy(static groupName => groupName, StringComparer.OrdinalIgnoreCase)];
+        }
+
+        var items = new List<SelectListItem>
+        {
+            new(S["Select a group"], string.Empty),
+        };
+
+        items.AddRange(groups.Select(groupName => new SelectListItem(groupName, groupName)));
+
+        return items;
     }
 
     private List<RateLimiterSourceViewModel> BuildLimiterSources()
@@ -558,6 +614,7 @@ public sealed class AdminController : Controller
                     Name = x.Name,
                     DisplayName = x.DisplayName.Value,
                     Description = x.Description.Value,
+                    DocumentationUrl = GetLimiterDocumentationUrl(x.Name),
                 }),
         ];
     }
@@ -579,6 +636,21 @@ public sealed class AdminController : Controller
                     ?? x.RouteName,
                 Methods = x.HttpMethods.Count == 0 ? [S["Any"]] : [.. x.HttpMethods],
             }).ToList();
+    }
+
+    private List<BuiltInGroupRateLimitViewModel> BuildBuiltInGroupLimits()
+    {
+        return
+        [
+            .. _rateLimitsOptions.GroupRateLimits
+                .GroupBy(static x => x.GroupName, StringComparer.OrdinalIgnoreCase)
+                .OrderBy(x => x.Key, StringComparer.OrdinalIgnoreCase)
+                .Select(x => new BuiltInGroupRateLimitViewModel
+                {
+                    GroupName = x.Key,
+                    LimiterCount = x.Count(),
+                }),
+        ];
     }
 
     private static RouteEndpoint FindMatchingEndpoint(IEnumerable<RouteEndpoint> endpoints, IReadOnlyList<string> methods)
@@ -649,7 +721,8 @@ public sealed class AdminController : Controller
     {
         return Contains(policy.Name, searchText)
             || Contains(policy.Description, searchText)
-            || Contains(policy.Path, searchText);
+            || Contains(policy.Path, searchText)
+            || Contains(policy.GroupName, searchText);
     }
 
     private static bool Contains(string value, string searchText)
@@ -659,7 +732,7 @@ public sealed class AdminController : Controller
     }
 
     private static bool ShouldReloadPolicy(bool wasEnabled, bool isEnabled)
-        => wasEnabled || isEnabled;
+        => wasEnabled != isEnabled;
 
     private string DescribeTarget(RateLimitPolicy policy)
     {
@@ -667,7 +740,67 @@ public sealed class AdminController : Controller
         {
             RateLimitPolicyScope.Global => S["Applies to every tenant request."],
             RateLimitPolicyScope.Endpoint => string.Format(CultureInfo.CurrentCulture, S["Matches requests starting with '{0}'."], policy.Path),
+            RateLimitPolicyScope.Group => string.Format(CultureInfo.CurrentCulture, S["Matches endpoints in the '{0}' group."], policy.GroupName),
             _ => string.Empty,
         };
+    }
+
+    private static IEnumerable<string> GetRateLimitGroups(Endpoint endpoint)
+        => endpoint?.Metadata
+            .OfType<IRateLimitGroupMetadata>()
+            .SelectMany(static metadata => metadata.GroupNames)
+            .Where(static groupName => !string.IsNullOrWhiteSpace(groupName))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+        ?? [];
+
+    private static bool AreLimiterChangesAllowed(RateLimitPolicy policy)
+        => !(policy?.IsEnabled ?? false);
+
+    private static string GetLimiterDocumentationUrl(string sourceName)
+    {
+        var fragment = sourceName switch
+        {
+            FixedWindowRateLimiterSource.SourceName => "#fixed-window",
+            SlidingWindowRateLimiterSource.SourceName => "#sliding-window",
+            ConcurrencyRateLimiterSource.SourceName => "#concurrency",
+            TokenBucketRateLimiterSource.SourceName => "#token-bucket",
+            _ => string.Empty,
+        };
+
+        return $"{Constants.DocsUrl}reference/modules/RateLimits/{fragment}";
+    }
+
+    private static void ApplyLimiterShapeState(IShape shape, string policyId, bool areLimiterChangesAllowed, string publishedPolicyLimiterMessage)
+    {
+        if (shape is null)
+        {
+            return;
+        }
+
+        var visited = new HashSet<IShape>();
+        ApplyLimiterShapeState(shape, policyId, areLimiterChangesAllowed, publishedPolicyLimiterMessage, visited);
+    }
+
+    private static void ApplyLimiterShapeState(IShape shape, string policyId, bool areLimiterChangesAllowed, string publishedPolicyLimiterMessage, ISet<IShape> visited)
+    {
+        if (shape is null || !visited.Add(shape))
+        {
+            return;
+        }
+
+        shape.Properties["PolicyId"] = policyId;
+        shape.Properties["CanManage"] = true;
+        shape.Properties["AreLimiterChangesAllowed"] = areLimiterChangesAllowed;
+        shape.Properties["PublishedPolicyLimiterMessage"] = publishedPolicyLimiterMessage;
+
+        foreach (var childShape in shape.Properties.Values.OfType<IShape>())
+        {
+            ApplyLimiterShapeState(childShape, policyId, areLimiterChangesAllowed, publishedPolicyLimiterMessage, visited);
+        }
+
+        foreach (var childShape in shape.Items.OfType<IShape>())
+        {
+            ApplyLimiterShapeState(childShape, policyId, areLimiterChangesAllowed, publishedPolicyLimiterMessage, visited);
+        }
     }
 }

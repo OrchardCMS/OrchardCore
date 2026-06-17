@@ -56,6 +56,19 @@ public sealed class RateLimiterOptionsConfigurations : IConfigureOptions<RateLim
             }),
         };
 
+        foreach (var groupRateLimit in _rateLimitsOptions.GroupRateLimits)
+        {
+            limiters.Add(PartitionedRateLimiter.Create<HttpContext, string>(context =>
+            {
+                if (!EndpointBelongsToGroup(context, groupRateLimit.GroupName))
+                {
+                    return RateLimitPartition.GetNoLimiter(groupRateLimit.GroupName);
+                }
+
+                return groupRateLimit.Partitioner(context);
+            }));
+        }
+
         var policies = _policyStore.GetAllAsync(PolicyVersion.Enabled).AsTask().GetAwaiter().GetResult();
 
         foreach (var policy in policies)
@@ -128,6 +141,27 @@ public sealed class RateLimiterOptionsConfigurations : IConfigureOptions<RateLim
         {
             RateLimitPolicyScope.Global => true,
             RateLimitPolicyScope.Endpoint => !string.IsNullOrWhiteSpace(policy.Path) && context.Request.Path.StartsWithSegments(policy.Path, StringComparison.OrdinalIgnoreCase),
+            RateLimitPolicyScope.Group => !string.IsNullOrWhiteSpace(policy.GroupName) && EndpointBelongsToGroup(context, policy.GroupName),
             _ => false,
         };
+
+    private static bool EndpointBelongsToGroup(HttpContext context, string groupName)
+    {
+        if (string.IsNullOrWhiteSpace(groupName))
+        {
+            return false;
+        }
+
+        return GetEndpointGroupNames(context).Contains(groupName, StringComparer.OrdinalIgnoreCase);
+    }
+
+    private static string[] GetEndpointGroupNames(HttpContext context)
+    {
+        return context.GetEndpoint()?.Metadata
+            .OfType<IRateLimitGroupMetadata>()
+            .SelectMany(static metadata => metadata.GroupNames)
+            .Where(static groupName => !string.IsNullOrWhiteSpace(groupName))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToArray() ?? [];
+    }
 }

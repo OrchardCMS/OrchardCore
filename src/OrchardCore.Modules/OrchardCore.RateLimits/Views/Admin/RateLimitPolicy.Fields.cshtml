@@ -1,6 +1,10 @@
 @using OrchardCore.RateLimits.Models
 @model OrchardCore.RateLimits.ViewModels.RateLimitPolicyEditViewModel
 
+@{
+    var isTargetLocked = Model.InitialIsEnabled;
+}
+
 <div class="ocat-wrapper" asp-validation-class-for="Name">
     <label asp-for="Name" class="ocat-label ocat-label-required">@T["Policy name"]</label>
     <div class="ocat-end">
@@ -19,40 +23,71 @@
     </div>
 </div>
 
-<div class="ocat-wrapper">
-    <div class="ocat-end-offset">
-        <div class="form-check">
-            <input asp-for="IsEnabled" class="form-check-input" />
-            <label asp-for="IsEnabled" class="form-check-label">@T["Enable this policy"]</label>
-        </div>
-        <span class="hint">
-            @if (Model.InitialIsEnabled)
-            {
-                @T["This policy is currently enabled. Saving changes will restart the website."]
-            }
-            else
-            {
-                @T["Disabled policies can be edited without restarting the website. Enabling the policy applies it at runtime after the website restarts."]
-            }
-        </span>
-    </div>
-</div>
+<input asp-for="IsEnabled" type="hidden" />
 
 <div class="ocat-wrapper" asp-validation-class-for="Scope">
     <label asp-for="Scope" class="ocat-label">@T["Policy type"]</label>
     <div class="ocat-end">
-        <select asp-for="Scope" asp-items="Model.PolicyScopes" class="form-select"></select>
+        @if (isTargetLocked)
+        {
+            <input asp-for="Scope" type="hidden" />
+        }
+        <select asp-for="Scope" asp-items="Model.PolicyScopes" class="form-select" disabled="@isTargetLocked"></select>
         <span asp-validation-for="Scope"></span>
-        <span class="hint">@T["Global applies everywhere, and Endpoint matches a request path prefix."]</span>
+        <span class="hint">
+            @if (isTargetLocked)
+            {
+                @T["The policy type is read-only while this policy is enabled. Disable it first to retarget the policy."]
+            }
+            else
+            {
+                @T["Global applies everywhere, Endpoint matches a request path prefix, and Group matches endpoints assigned to a named rate-limit group."]
+            }
+        </span>
     </div>
 </div>
 
 <div id="@(Html.IdFor(m => m.Path))_group" class="ocat-wrapper @(Model.Scope == RateLimitPolicyScope.Endpoint ? string.Empty : "d-none")" asp-validation-class-for="Path">
     <label asp-for="Path" class="ocat-label">@T["Request path"]</label>
     <div class="ocat-end">
-        <input asp-for="Path" class="form-control" />
+        @if (isTargetLocked)
+        {
+            <input asp-for="Path" type="hidden" />
+        }
+        <input asp-for="Path" class="form-control" readonly="@isTargetLocked" />
         <span asp-validation-for="Path"></span>
-        <span class="hint">@T["Matches requests that start with this path, for example '/api/' or '/users/login'."]</span>
+        <span class="hint">
+            @if (isTargetLocked)
+            {
+                @T["The request path is read-only while this policy is enabled. Disable it first to change endpoint targeting."]
+            }
+            else
+            {
+                @T["Matches requests that start with this path, for example '/api/' or '/users/login'."]
+            }
+        </span>
+    </div>
+</div>
+
+<div id="@(Html.IdFor(m => m.GroupName))_group" class="ocat-wrapper @(Model.Scope == RateLimitPolicyScope.Group ? string.Empty : "d-none")" asp-validation-class-for="GroupName">
+    <label asp-for="GroupName" class="ocat-label">@T["Rate-limit group"]</label>
+    <div class="ocat-end">
+        @if (isTargetLocked)
+        {
+            <input asp-for="GroupName" type="hidden" />
+        }
+        <select asp-for="GroupName" asp-items="Model.AvailableGroups" class="form-select" disabled="@isTargetLocked"></select>
+        <span asp-validation-for="GroupName"></span>
+        <span class="hint">
+            @if (isTargetLocked)
+            {
+                @T["The group target is read-only while this policy is enabled. Disable it first to choose a different group."]
+            }
+            else
+            {
+                @T["Choose a group declared on one or more endpoints with the RateLimitGroup attribute or WithRateLimitGroups()."]
+            }
+        </span>
     </div>
 </div>
 
@@ -60,14 +95,20 @@
     document.addEventListener('DOMContentLoaded', () => {
         const scopeElement = document.getElementById('@Html.IdFor(m => m.Scope)');
         const pathGroup = document.getElementById('@($"{Html.IdFor(m => m.Path)}_group")');
+        const rateLimitGroup = document.getElementById('@($"{Html.IdFor(m => m.GroupName)}_group")');
 
-        if (!scopeElement || !pathGroup) {
+        if (!scopeElement || !pathGroup || !rateLimitGroup) {
             return;
         }
 
         const updateScopeFields = () => {
+            if (@isTargetLocked.ToString().ToLowerInvariant()) {
+                return;
+            }
+
             const scope = scopeElement.value;
             pathGroup.classList.toggle('d-none', scope !== '@RateLimitPolicyScope.Endpoint');
+            rateLimitGroup.classList.toggle('d-none', scope !== '@RateLimitPolicyScope.Group');
         };
 
         scopeElement.addEventListener('change', updateScopeFields);

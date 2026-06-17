@@ -217,6 +217,7 @@ public sealed class RateLimitPolicyStore : IRateLimitPolicyStore
             Author = policy.Author,
             Scope = policy.Scope,
             Path = policy.Path,
+            GroupName = policy.GroupName,
             IsEnabled = policy.IsEnabled,
             EnabledUtc = policy.EnabledUtc,
             Status = policy.Status,

@@ -5,7 +5,7 @@
     <div class="ocat-limited">
         <input asp-for="TokenLimit" type="number" min="1" class="form-control" />
         <span asp-validation-for="TokenLimit"></span>
-        <span class="hint">@T["The maximum number of tokens the bucket can hold."]</span>
+        <span class="hint">@T["The bucket size. This is the largest burst of requests a client can use at once before it must wait for tokens to refill."]</span>
     </div>
 </div>
 
@@ -14,7 +14,7 @@
     <div class="ocat-limited">
         <input asp-for="TokensPerPeriod" type="number" min="1" class="form-control" />
         <span asp-validation-for="TokensPerPeriod"></span>
-        <span class="hint">@T["How many tokens are added every replenishment period."]</span>
+        <span class="hint">@T["How many requests' worth of capacity are added back each refill period."]</span>
     </div>
 </div>
 
@@ -23,7 +23,7 @@
     <div class="ocat-limited">
         <input asp-for="ReplenishmentPeriodSeconds" type="number" min="1" class="form-control" />
         <span asp-validation-for="ReplenishmentPeriodSeconds"></span>
-        <span class="hint">@T["How often the bucket refills in seconds."]</span>
+        <span class="hint">@T["How often Orchard adds tokens back. For example, 10 with 5 tokens per period adds 5 more tokens every 10 seconds."]</span>
     </div>
 </div>
 
@@ -32,7 +32,7 @@
     <div class="ocat-limited">
         <input asp-for="QueueLimit" type="number" min="0" class="form-control" />
         <span asp-validation-for="QueueLimit"></span>
-        <span class="hint">@T["Additional queued requests allowed when no token is available."]</span>
+        <span class="hint">@T["How many extra requests can wait when the bucket is empty. Use 0 to reject extras immediately instead of making them wait."]</span>
     </div>
 </div>
 
@@ -41,6 +41,6 @@
     <div class="ocat-limited">
         <select asp-for="QueueProcessingOrder" asp-items="Model.QueueProcessingOrders" class="form-select"></select>
         <span asp-validation-for="QueueProcessingOrder"></span>
-        <span class="hint">@T["Determines whether the queue serves the oldest or newest request first."]</span>
+        <span class="hint">@T["Choose whether waiting requests are handled in arrival order or whether the newest waiting request gets the next token first."]</span>
     </div>
 </div>

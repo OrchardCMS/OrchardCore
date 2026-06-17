@@ -179,31 +179,58 @@
         <h5 class="mb-0">@T["Read-only Policies"]</h5>
     </div>
     <div class="card-body">
-        @if (Model.BuiltInRouteLimits.Count == 0)
+        @if (Model.BuiltInRouteLimits.Count == 0 && Model.BuiltInGroupLimits.Count == 0)
         {
             <p class="mb-0 text-muted">@T["No read-only policies are currently registered by enabled features."]</p>
         }
         else
         {
             <p class="text-muted">@T["These policies are set by features and are read-only."]</p>
-            <ul class="list-group list-group-flush">
-                @foreach (var route in Model.BuiltInRouteLimits)
-                {
-                    <li class="list-group-item px-0">
-                        <div class="summary d-flex flex-column flex-md-row align-items-md-center gap-1">
-                            <div class="me-2">
-                                <strong>@route.Path</strong>
+
+            @if (Model.BuiltInRouteLimits.Count > 0)
+            {
+                <h6>@T["Route limits"]</h6>
+                <ul class="list-group list-group-flush">
+                    @foreach (var route in Model.BuiltInRouteLimits)
+                    {
+                        <li class="list-group-item px-0">
+                            <div class="summary d-flex flex-column flex-md-row align-items-md-center gap-1">
+                                <div class="me-2">
+                                    <strong>@route.Path</strong>
+                                </div>
+                                <div class="tags d-flex gap-1 flex-wrap">
+                                    @foreach (var method in route.Methods)
+                                    {
+                                        <span class="badge ta-badge bg-primary-subtle text-primary-emphasis">@method</span>
+                                    }
+                                </div>
                             </div>
-                            <div class="tags d-flex gap-1 flex-wrap">
-                                @foreach (var method in route.Methods)
-                                {
-                                    <span class="badge ta-badge bg-primary-subtle text-primary-emphasis">@method</span>
-                                }
+                        </li>
+                    }
+                </ul>
+            }
+
+            @if (Model.BuiltInGroupLimits.Count > 0)
+            {
+                <h6 class="mt-4">@T["Group limits"]</h6>
+                <ul class="list-group list-group-flush">
+                    @foreach (var group in Model.BuiltInGroupLimits)
+                    {
+                        <li class="list-group-item px-0">
+                            <div class="summary d-flex flex-column flex-md-row align-items-md-center gap-1">
+                                <div class="me-2">
+                                    <strong>@group.GroupName</strong>
+                                </div>
+                                <div class="tags d-flex gap-1 flex-wrap">
+                                    <span class="badge ta-badge bg-primary-subtle text-primary-emphasis">
+                                        @T.Plural(group.LimiterCount, "{0} limiter", "{0} limiters")
+                                    </span>
+                                </div>
                             </div>
-                        </div>
-                    </li>
-                }
-            </ul>
+                        </li>
+                    }
+                </ul>
+            }
         }
     </div>
 </div>

@@ -32,7 +32,7 @@ public sealed class TokenBucketRateLimiterSource : RateLimiterSourceBase<TokenBu
     public override LocalizedString DisplayName => S["Token bucket"];
 
     /// <inheritdoc />
-    public override LocalizedString Description => S["Accumulates tokens over time and spends them per request per IP."];
+    public override LocalizedString Description => S["Allows short bursts of traffic while steadily refilling capacity over time."];
 
     protected override RateLimitPartition<string> CreatePartition(string policyName, HttpContext context, TokenBucketRateLimiterData model)
     {

@@ -115,6 +115,36 @@ public class RateLimiterMiddlewareTests
         Assert.Equal("other-tenant-response", await secondOtherResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
     }
 
+    [Fact]
+    public async Task ShouldApplyGroupSpecificPoliciesToGroupedEndpoints()
+    {
+        using var staticAssetDirectory = new StaticAssetDirectory();
+        using var host = await CreateHostAsync(
+            staticAssetDirectory.Path,
+            configureRouteLimits: options =>
+            {
+                options.AddGroupRateLimit(
+                    "tenant-authentication",
+                    RateLimitPartitionHelpers.CreateFixedWindowPerIpPolicy(
+                        "tenant-authentication",
+                        1,
+                        TimeSpan.FromSeconds(5)));
+            },
+            enabledPolicies: [],
+            cancellationToken: TestContext.Current.CancellationToken);
+
+        var client = host.GetTestClient();
+
+        var firstGroupedResponse = await client.GetAsync("/tenant/grouped", TestContext.Current.CancellationToken);
+        var secondGroupedResponse = await client.GetAsync("/tenant/grouped", TestContext.Current.CancellationToken);
+        var otherTenantResponse = await client.GetAsync("/tenant/other", TestContext.Current.CancellationToken);
+
+        Assert.Equal(HttpStatusCode.OK, firstGroupedResponse.StatusCode);
+        Assert.Equal(HttpStatusCode.TooManyRequests, secondGroupedResponse.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, otherTenantResponse.StatusCode);
+        Assert.Equal("other-tenant-response", await otherTenantResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
+    }
+
     private static async Task<IHost> CreateHostAsync(
         string staticAssetPath,
         Action<RateLimitsOptions> configureRouteLimits,
@@ -161,6 +191,9 @@ public class RateLimiterMiddlewareTests
                     {
                         endpoints.MapGet("/tenant/limited", () => Results.Text("tenant-response"))
                             .WithName("TenantLimitedRoute");
+                        endpoints.MapGet("/tenant/grouped", () => Results.Text("tenant-grouped-response"))
+                            .WithName("TenantGroupedRoute")
+                            .WithRateLimitGroups("tenant-authentication", "tenant-shared");
                         endpoints.MapGet("/tenant/other", () => Results.Text("other-tenant-response"))
                             .WithName("OtherTenantRoute");
                     });

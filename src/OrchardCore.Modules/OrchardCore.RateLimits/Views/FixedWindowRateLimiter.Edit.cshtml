@@ -5,7 +5,7 @@
     <div class="ocat-limited">
         <input asp-for="PermitLimit" type="number" min="1" class="form-control" />
         <span asp-validation-for="PermitLimit"></span>
-        <span class="hint">@T["The number of requests allowed during each window."]</span>
+        <span class="hint">@T["How many requests can succeed during one full window before extra requests are delayed or rejected."]</span>
     </div>
 </div>
 
@@ -14,7 +14,7 @@
     <div class="ocat-limited">
         <input asp-for="WindowSeconds" type="number" min="1" class="form-control" />
         <span asp-validation-for="WindowSeconds"></span>
-        <span class="hint">@T["How long each fixed window lasts in seconds."]</span>
+        <span class="hint">@T["How long one window lasts. For example, 60 means the count resets every minute."]</span>
     </div>
 </div>
 
@@ -23,6 +23,6 @@
     <div class="ocat-limited">
         <input asp-for="QueueLimit" type="number" min="0" class="form-control" />
         <span asp-validation-for="QueueLimit"></span>
-        <span class="hint">@T["Additional queued requests allowed after the limit is reached."]</span>
+        <span class="hint">@T["How many extra requests can wait after the limit is reached. Use 0 to reject extras immediately instead of making them wait."]</span>
     </div>
 </div>

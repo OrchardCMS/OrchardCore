@@ -14,4 +14,9 @@ public enum RateLimitPolicyScope
     /// Matches requests whose path starts with the configured prefix.
     /// </summary>
     Endpoint = 1,
+
+    /// <summary>
+    /// Matches endpoints assigned to the configured rate-limit group.
+    /// </summary>
+    Group = 2,
 }

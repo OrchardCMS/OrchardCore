@@ -5,7 +5,7 @@
     <div class="ocat-limited">
         <input asp-for="PermitLimit" type="number" min="1" class="form-control" />
         <span asp-validation-for="PermitLimit"></span>
-        <span class="hint">@T["The number of requests that can run at the same time."]</span>
+        <span class="hint">@T["How many matching requests can run at the same time. For example, 3 means a fourth request must wait or be rejected."]</span>
     </div>
 </div>
 
@@ -14,7 +14,7 @@
     <div class="ocat-limited">
         <input asp-for="QueueLimit" type="number" min="0" class="form-control" />
         <span asp-validation-for="QueueLimit"></span>
-        <span class="hint">@T["Additional queued requests allowed while permits are busy."]</span>
+        <span class="hint">@T["How many extra requests can wait for a free slot while all running slots are busy. Use 0 to reject extras immediately."]</span>
     </div>
 </div>
 
@@ -23,6 +23,6 @@
     <div class="ocat-limited">
         <select asp-for="QueueProcessingOrder" asp-items="Model.QueueProcessingOrders" class="form-select"></select>
         <span asp-validation-for="QueueProcessingOrder"></span>
-        <span class="hint">@T["Determines whether the queue serves the oldest or newest request first."]</span>
+        <span class="hint">@T["Choose whether waiting requests are handled in arrival order or whether the newest waiting request gets the next free slot first."]</span>
     </div>
 </div>

@@ -43,6 +43,11 @@ public sealed class RateLimitPolicy
     public string Path { get; set; }
 
     /// <summary>
+    /// Gets or sets the rate-limit group matched by group policies.
+    /// </summary>
+    public string GroupName { get; set; }
+
+    /// <summary>
     /// Gets or sets a value indicating whether the policy is currently enabled.
     /// </summary>
     public bool IsEnabled { get; set; }
