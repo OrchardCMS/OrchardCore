@@ -36,6 +36,12 @@ $(function () {
         }
     };
 
+    // Announce that this editor is connected. An already-open preview window replies with
+    // a 'ready' message, which triggers a draft send. This re-establishes the connection
+    // after the editor page reloads (e.g. "Save and continue") without the user having to
+    // edit a field first, and clears the "Preview Disconnected" banner automatically.
+    channel.postMessage({ type: 'hello' });
+
     function sendDraft() {
         // Cancel any in-flight request so stale responses don't overwrite a newer preview.
         if (currentXHR) {
@@ -72,7 +78,10 @@ $(function () {
         draftTimer = setTimeout(sendDraft, 500);
     });
 
-    $(window).on('unload', function () {
+    // 'pagehide' is the modern, reliable replacement for the deprecated 'unload' event;
+    // it fires on navigation away (including when the page enters the bfcache), letting us
+    // notify the preview window that the editor is disconnecting.
+    $(window).on('pagehide', function () {
         channel.postMessage({ type: 'disconnected' });
         channel.close();
     });

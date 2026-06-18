@@ -125,7 +125,7 @@ public sealed class PreviewController : Controller
 
         await _distributedCache.SetAsync(
             "contentpreview:" + token,
-            JsonSerializer.SerializeToUtf8Bytes(draft),
+            JsonSerializer.SerializeToUtf8Bytes(draft, JOptions.Default),
             _draftCacheOptions);
 
         return Ok(new { previewUrl = Url.Action("Display", "Preview", new { area = "OrchardCore.ContentPreview", token }), token });
@@ -148,7 +148,7 @@ public sealed class PreviewController : Controller
         PreviewDraft draft;
         try
         {
-            draft = JsonSerializer.Deserialize<PreviewDraft>(cached);
+            draft = JsonSerializer.Deserialize<PreviewDraft>(cached, JOptions.Default);
         }
         catch
         {

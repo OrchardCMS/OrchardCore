@@ -65,6 +65,11 @@
         channel.onmessage = function (ev) {
             if (!ev.data) return;
             switch (ev.data.type) {
+                case 'hello':
+                    // The editor (re)connected. Re-announce readiness so it sends the
+                    // current draft, which restores the preview after an editor reload.
+                    channel.postMessage({ type: 'ready' });
+                    break;
                 case 'token':
                     navigating = true;
                     getStaging().src = ev.data.previewUrl;
