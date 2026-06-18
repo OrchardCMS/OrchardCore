@@ -288,8 +288,19 @@
             const featureGroupSelectAllLabel = featureGroup.querySelector('.feature-group-select-all-label');
             const featureGroupSelectAllText = featureGroup.querySelector('.feature-group-select-all-text');
 
-            featureGroupToggleContainer.classList.toggle('d-none', !hasVisibleFeatureCheckboxes);
-            featureGroupSelectAllCheckbox.disabled = !hasVisibleFeatureCheckboxes;
+            const isHidden = !hasVisibleFeatureCheckboxes;
+            featureGroupToggleContainer.classList.toggle('d-none', isHidden);
+
+            let nextListItem = featureGroupToggleContainer.closest('li')?.nextElementSibling;
+            while (nextListItem && nextListItem.tagName !== 'LI') {
+                nextListItem = nextListItem.nextElementSibling;
+            }
+
+            if (nextListItem) {
+                nextListItem.classList.toggle('first-child-visible', isHidden);
+            }
+
+            featureGroupSelectAllCheckbox.disabled = isHidden;
             featureGroupSelectAllCheckbox.checked = allVisibleFeatureCheckboxesChecked;
             featureGroupSelectAllCheckbox.indeterminate = hasAnyVisibleFeatureCheckboxChecked && !allVisibleFeatureCheckboxesChecked;
 
