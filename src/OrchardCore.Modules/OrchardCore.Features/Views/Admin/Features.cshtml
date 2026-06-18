@@ -132,7 +132,7 @@
                             data-is-always-enabled="@isAlwaysEnabled.ToString().ToLowerInvariant()"
                             data-is-enabled="@feature.IsEnabled.ToString().ToLowerInvariant()">
                             <div class="row g-0 d-flex align-items-center">
-                                <div class="col">
+                                <div class="col overflow-hidden">
                                     @if ((showEnable && !feature.IsEnabled) || (showDisable && feature.IsEnabled))
                                     {
                                         <div class="form-check mb-1">
@@ -167,9 +167,10 @@
                                             @if (!feature.Descriptor.Dependencies.SequenceEqual(dependencies.Select(d => d.Descriptor.Id)))
                                             {
                                                 <div class="d-inline transitive-dependencies d-none">
+                                                    <span class="d-none d-md-inline fw-light">|</span>
                                                     @foreach (var d in dependencies.Where(d => !feature.Descriptor.Dependencies.Contains(d.Descriptor.Id)))
                                                     {
-                                                        <span class="badge ta-badge font-weight-normal fst-italic">
+                                                        <span class="badge ta-badge fw-normal">
                                                             @(string.IsNullOrEmpty(d.Descriptor.Name) ? d.Descriptor.Id : d.Descriptor.Name)
                                                         </span>
                                                     }
@@ -186,14 +187,14 @@
 
                                             @foreach (var d in missingDependencies)
                                             {
-                                                <span class="badge text-bg-warning font-weight-normal">
+                                                <span class="badge text-bg-warning fw-normal">
                                                     @d
                                                 </span>
                                             }
                                         </div>
                                     }
                                 </div>
-                                <div class="col text-end">
+                                <div class="col-auto text-end ms-2">
                                     @if (feature.Descriptor.EnabledByDependencyOnly)
                                     {
                                         @if (feature.IsEnabled)
