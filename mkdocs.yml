@@ -302,6 +302,7 @@ nav:
       - Libraries: reference/libraries/README.md
       - Glossary: reference/glossary/README.md
   - Releases Notes:
+      - 4.0.0: releases/4.0.0.md
       - 3.0.0: releases/3.0.0.md
       - 2.2.1: releases/2.2.1.md
       - 2.2.0: releases/2.2.0.md
