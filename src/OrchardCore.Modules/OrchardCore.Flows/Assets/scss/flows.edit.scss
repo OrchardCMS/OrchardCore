@@ -88,6 +88,10 @@
     opacity: 0.5;
     transition: 0.3s opacity;
 
+    &:has(.dropdown-menu.show) {
+        opacity: 1;
+    }
+
     > .btn-group {
         margin: 0 auto;
         bottom: 17px;

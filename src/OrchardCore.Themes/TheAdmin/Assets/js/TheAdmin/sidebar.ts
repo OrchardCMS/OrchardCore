@@ -45,8 +45,8 @@ $(document).on("click", function(event) {
 var subMenuArray = new Array();
 
 const setCompactStatus = (explicit) => {
-    // This if is to avoid that when sliding from expanded to compact the 
-    // underliyng ul is visible while shrinking. It is ugly.    
+    // This if is to avoid that when sliding from expanded to compact the
+    // underliyng ul is visible while shrinking. It is ugly.
     if (!$('body').hasClass('left-sidebar-compact')) {
         var labels = $('#left-nav ul.menu-admin > li > figure > figcaption > .item-label');
         labels.css('background-color', 'transparent');
@@ -55,7 +55,13 @@ const setCompactStatus = (explicit) => {
         }, 200);
     }
 
+    // Transfer scroll position from expanded scroller (.menu-admin) to compact scroller (#left-nav)
+    const menuAdmin = document.querySelector<HTMLElement>('#left-nav ul.menu-admin');
+    const savedScroll = menuAdmin ? menuAdmin.scrollTop : 0;
+
     $('body').addClass('left-sidebar-compact');
+
+    if (leftNav) leftNav.scrollTop = savedScroll;
 
     // When leftbar is expanded  all ul tags are collapsed.
     // When leftbar is compacted we don't want the first level collapsed. 
@@ -78,13 +84,19 @@ const setCompactStatus = (explicit) => {
 }
 
 const unSetCompactStatus = () => {
+    // Transfer scroll position from compact scroller (#left-nav) to expanded scroller (.menu-admin)
+    const savedScroll = leftNav ? leftNav.scrollTop : 0;
+
     $('body').removeClass('left-sidebar-compact');
 
     // resetting what we disabled for compact state
     $('#left-nav ul.menu-admin > li > figure > ul').addClass('collapse');
-    $('#left-nav ul.menu-admin > li > figure > figcaption .item-label').attr('data-bs-toggle', 'collapse');
+    $('#left-nav ul.menu-admin > li > figure > figcaption > button.item-label').attr('data-bs-toggle', 'collapse');
     $('#left-nav li.has-items').removeClass("visible");
     $('#left-nav > ul > li').css("transition", "");
+
+    const menuAdmin = document.querySelector<HTMLElement>('#left-nav ul.menu-admin');
+    if (menuAdmin) menuAdmin.scrollTop = savedScroll;
 
     setCompactExplicit(false);
     persistAdminPreferences();
