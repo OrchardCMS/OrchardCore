@@ -454,35 +454,35 @@ public sealed class ResourceManagementOptionsConfiguration
         manifest
             .DefineStyle("bootstrap-select")
             .SetUrl(
-                "~/OrchardCore.Resources/Styles/bootstrap-select.min.css",
-                "~/OrchardCore.Resources/Styles/bootstrap-select.css"
+                "~/OrchardCore.Resources/Vendor/CrestApps/bootstrap-select/bootstrap-select.min.css",
+                "~/OrchardCore.Resources/Vendor/CrestApps/bootstrap-select/bootstrap-select.css"
             )
             .SetCdn(
-                "https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/css/bootstrap-select.min.css",
-                "https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/css/bootstrap-select.css"
+                "https://cdn.jsdelivr.net/npm/@crestapps/bootstrap-select@1.2.0/dist/css/bootstrap-select.min.css",
+                "https://cdn.jsdelivr.net/npm/@crestapps/bootstrap-select@1.2.0/dist/css/bootstrap-select.css"
             )
             .SetCdnIntegrity(
-                "sha384-xF1Y2i6HgC34+4EWddbDhlQuru7cLSKRcPT3hoL3mPoKoV+624vVSZJmegPX77vS",
-                "sha384-DtuOZ7LbR+xAYzDGD4YLpe9eiAayUBwZRqAcoy+RepIoV53tAoJbXnr4AX1xTJ43"
+                "sha384-KzDBkgwkXTEVA1Iau40dlucVaS6DPnf0aPwxQyJAqrl7KO6DYv5pEC2AJlbO8OuQ",
+                "sha384-mixE2uOPb0SAd5Ojzb7TrFn3AawxOTutuGyL/Aq6gPkY/6CRfKq0dycrROKHJDT5"
             )
-            .SetVersion("1.14.0");
+            .SetVersion("1.2.0");
 
         manifest
             .DefineScript("bootstrap-select")
-            .SetDependencies("jQuery", "bootstrap")
+            .SetDependencies("bootstrap")
             .SetUrl(
-                "~/OrchardCore.Resources/Scripts/bootstrap-select.min.js",
-                "~/OrchardCore.Resources/Scripts/bootstrap-select.js"
+                "~/OrchardCore.Resources/Vendor/CrestApps/bootstrap-select/bootstrap-select.min.js",
+                "~/OrchardCore.Resources/Vendor/CrestApps/bootstrap-select/bootstrap-select.js"
             )
             .SetCdn(
-                "https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/js/bootstrap-select.min.js",
-                "https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/js/bootstrap-select.js"
+                "https://cdn.jsdelivr.net/npm/@crestapps/bootstrap-select@1.2.0/dist/js/bootstrap-select.min.js",
+                "https://cdn.jsdelivr.net/npm/@crestapps/bootstrap-select@1.2.0/dist/js/bootstrap-select.js"
             )
             .SetCdnIntegrity(
-                "sha384-0O3sg2SQIGn4393xwamQISjphC8DIXjCzlhj1gPAMC5xGg+2perF5Mehr5njv0fZ",
-                "sha384-2b0aLFg/Ejp4OF57nW0BUqNzm259RHYYMf/mpKClBijsEH2P+4ea2oWAq0twd8L0"
+                "sha384-R7aQ+h/YwfYWxwVbXnRupt5dDCEB+GFE5kGRXdMRqqTb8a44gKz4FhiTVCIl1utj",
+                "sha384-OoRqHGsY2f8cxSKpRli5U/ioHYo5CO4Nqz9+jMhs/Ah3slKOn36MzgaO3Dixk2D0"
             )
-            .SetVersion("1.14.0");
+            .SetVersion("1.2.0");
 
         //
 

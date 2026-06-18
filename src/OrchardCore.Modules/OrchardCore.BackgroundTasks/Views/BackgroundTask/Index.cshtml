@@ -84,16 +84,19 @@
 <script asp-name="bootstrap-select" at="Foot"></script>
 
 <script at="Foot">
-    $(function () {
-        $('.selectpicker').selectpicker();
-        $('.selectpicker').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
-            $("[name='submit.Filter']").click();
-        });
-        $(".filter-options select, .filter-options input").on("change", function () {
-            $("[name='submit.Filter']").click();
+    document.addEventListener('DOMContentLoaded', function () {
+        const submitFilterButton = document.querySelector("[name='submit.Filter']");
+
+        document.querySelectorAll('.selectpicker').forEach((element) => {
+            element.addEventListener('changed.bs.select', () => submitFilterButton?.click());
         });
 
-        var filters = $(".filter");
-        filters.show();
+        document.querySelectorAll('.filter-options select, .filter-options input').forEach((element) => {
+            element.addEventListener('change', () => submitFilterButton?.click());
+        });
+
+        document.querySelectorAll('.filter').forEach((element) => {
+            element.style.display = '';
+        });
     });
 </script>

@@ -134,18 +134,19 @@
     <a class="btn btn-secondary" href="@Model.ReturnUrl">@T["Back"]</a>
 </div>
 
-<script at="Foot">
+<script at="Foot" depends-on="jQuery">
     $(function () {
-        $('.selectpicker').selectpicker();
-        $('.selectpicker').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
-            $("[name='submit.Filter']").click();
-        });
+        const submitFilterButton = document.querySelector("[name='submit.Filter']");
         var actions = $("#actions");
         var items = $("#items");
         var filters = $(".filter");
         var selectAllCtrl = $("#select-all");
         var selectedItems = $("#selected-items");
         var itemsCheckboxes = $(":checkbox[name='itemIds']");
+
+        document.querySelectorAll('.selectpicker').forEach((element) => {
+            element.addEventListener('changed.bs.select', () => submitFilterButton?.click());
+        });
 
         $(".filter-options input").on("change", function () {
             $("[name='submit.Filter']").click();
