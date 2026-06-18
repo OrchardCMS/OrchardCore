@@ -139,7 +139,9 @@ public sealed class AccountController : AccountBaseController
                         }
                     }
 
-                    result = await _signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, lockoutOnFailure: true);
+                    var rememberMe = loginSettings.AllowRememberMe && model.RememberMe;
+
+                    result = await _signInManager.PasswordSignInAsync(user, model.Password, rememberMe, lockoutOnFailure: true);
 
                     if (result.Succeeded)
                     {

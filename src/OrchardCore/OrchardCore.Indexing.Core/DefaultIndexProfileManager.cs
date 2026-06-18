@@ -147,7 +147,6 @@ public sealed class DefaultIndexProfileManager : IIndexProfileManager
         await _handlers.InvokeAsync((handler, ctx) => handler.CreatingAsync(ctx), creatingContext, _logger);
 
         await _store.CreateAsync(index);
-        await _store.SaveChangesAsync();
 
         var createdContext = new CreatedContext<IndexProfile>(index);
         await _handlers.InvokeAsync((handler, ctx) => handler.CreatedAsync(ctx), createdContext, _logger);
@@ -161,7 +160,6 @@ public sealed class DefaultIndexProfileManager : IIndexProfileManager
         await _handlers.InvokeAsync((handler, ctx) => handler.UpdatingAsync(ctx), updatingContext, _logger);
 
         await _store.UpdateAsync(index);
-        await _store.SaveChangesAsync();
 
         var updatedContext = new UpdatedContext<IndexProfile>(index);
         await _handlers.InvokeAsync((handler, ctx) => handler.UpdatedAsync(ctx), updatedContext, _logger);

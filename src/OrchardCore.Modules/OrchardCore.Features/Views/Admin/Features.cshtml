@@ -64,8 +64,8 @@
                 <div class="col col-md-auto text-end">
                     <div class="btn-group filter">
                         <select id="visibility-filter" class="selectpicker show-tick nosubmit me-2" multiple data-header="@T["Filter by visibility"]" data-selected-text-format="static" data-width="fit" title="@T["Visibility"]" data-style="btn-sm">
-                            <option value="on-demand" selected>@T["On demand"]</option>
-                            <option value="always-enabled" selected>@T["Always enabled"]</option>
+                            <option value="on-demand" selected>@T["Hide on demand"]</option>
+                            <option value="always-enabled" selected>@T["Hide always enabled"]</option>
                         </select>
                         <select id="status-filter" class="selectpicker show-tick nosubmit" data-header="@T["Filter by status"]" data-selected-text-format="static" data-width="fit" title="@T["Status"]" data-style="btn-sm">
                             <option value="any" selected>@T["Any status"]</option>
@@ -159,7 +159,7 @@
                                                         .Select(f => f.Descriptor.Name)
                                                         .FirstOrDefault() ?? string.Empty;
 
-                                                    <span class="badge ta-badge font-weight-normal">
+                                                    <span class="badge ta-badge fw-normal">
                                                         @dependencyName
                                                     </span>
                                                 }

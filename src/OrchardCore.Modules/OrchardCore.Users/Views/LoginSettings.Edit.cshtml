@@ -11,6 +11,15 @@
 <div class="ocat-wrapper">
     <div class="ocat-end-offset">
         <div class="form-check">
+            <input asp-for="AllowRememberMe" type="checkbox" class="form-check-input">
+            <label class="form-check-label" asp-for="AllowRememberMe">@T["Allow user to be remembered during login"]</label>
+        </div>
+    </div>
+</div>
+
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
+        <div class="form-check">
             <input asp-for="AllowChangingUsername" type="checkbox" class="form-check-input">
             <label class="form-check-label" asp-for="AllowChangingUsername">@T["Allow user to change their username"]</label>
         </div>
