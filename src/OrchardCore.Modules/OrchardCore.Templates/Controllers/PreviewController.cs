@@ -53,7 +53,7 @@ public sealed class PreviewController : Controller
         }
 
         // Mark request as a `Preview` request so that drivers / handlers or underlying services can be aware of an active preview mode.
-        HttpContext.Features.Set(new ContentPreviewFeature());
+        HttpContext.Features.Set(ContentPreviewFeature.Instance);
 
         var name = Request.Form["Name"];
         var content = Request.Form["Content"];
