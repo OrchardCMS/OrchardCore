@@ -53,7 +53,7 @@
 
     function setupIframeTheme(win) {
         if (!win || !win.document || !win.document.documentElement) return;
-        var tenant = document.documentElement.getAttribute('data-tenant') || 'Default';
+        var tenant = win.document.documentElement.getAttribute('data-tenant') || 'Default';
         var storageKey = tenant + '-theme';
         var stored = localStorage.getItem(storageKey);
         setIframeTheme(win, null, stored || 'auto');
