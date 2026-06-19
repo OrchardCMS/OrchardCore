@@ -110,4 +110,9 @@
     <PackageVersion Include="System.IO.Hashing" Version="10.0.8" />
     <PackageVersion Include="System.Text.Json" Version="10.0.8" />
   </ItemGroup>
+  <ItemGroup>
+    <!-- Transitive Packages -->
+    <PackageVersion Include="Microsoft.Data.Sqlite" Version="10.0.8" />
+    <PackageVersion Include="SQLitePCLRaw.lib.e_sqlite3" Version="3.50.3" />
+  </ItemGroup>
 </Project>
