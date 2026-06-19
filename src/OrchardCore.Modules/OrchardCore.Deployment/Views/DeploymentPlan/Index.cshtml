@@ -3,8 +3,6 @@
     int startIndex = (Model.Pager.Page - 1) * (Model.Pager.PageSize) + 1;
     int endIndex = startIndex + Model.DeploymentPlans.Count - 1;
 }
-<script asp-name="bootstrap-select" at="Foot"></script>
-
 <zone Name="Title"><h1>@RenderTitleSegments(T["Deployment Plans"])</h1></zone>
 
 <form asp-action="Index" method="post" class="no-multisubmit">
@@ -89,18 +87,12 @@
 
 <script at="Foot" depends-on="jQuery">
     $(function () {
-        $('.selectpicker').selectpicker();
-
         var actions = $("#actions");
         var items = $("#items");
         var filters = $(".filter");
         var selectAllCtrl = $("#select-all");
         var selectedItems = $("#selected-items");
         var itemsCheckboxes = $(":checkbox[name='itemIds']");
-
-        $('.selectpicker').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
-            $("[name='submit.Filter']").click();
-        });
 
         $(".dropdown-menu .dropdown-item").filter(function () {
             return $(this).data("action");

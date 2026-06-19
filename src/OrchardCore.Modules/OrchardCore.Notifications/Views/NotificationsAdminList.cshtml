@@ -70,6 +70,7 @@
 <script asp-name="bootstrap-select" at="Foot"></script>
 <script at="Foot" depends-on="jQuery">
     $(function () {
+        const submitFilterButton = document.querySelector("[name='submit.Filter']");
         var actions = $("#actions");
         var items = $("#items");
         var filters = $(".filter");
@@ -78,8 +79,8 @@
         var itemsCheckboxes = $(":checkbox[name='itemIds']");
 
         // This applies to all filter selectpickers on page. Add .nosubmit to not submit
-        $('.selectpicker:not(.nosubmit)').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
-            $("[name='submit.Filter']").click();
+        document.querySelectorAll('.selectpicker:not(.nosubmit)').forEach((element) => {
+            element.addEventListener('changed.bs.select', () => submitFilterButton?.click());
         });
 
         $(".dropdown-menu .dropdown-item").filter(function () {
