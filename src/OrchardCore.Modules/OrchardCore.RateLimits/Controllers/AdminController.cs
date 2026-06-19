@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Security.Claims;
+using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -28,6 +29,8 @@ namespace OrchardCore.RateLimits.Controllers;
 public sealed class AdminController : Controller
 {
     private const string PublishedPolicyLimiterMessage = "This policy is enabled and cannot be modified. To modify it, disable it first or create another policy.";
+    private const string DefaultClonedPolicyName = "Policy";
+    private static readonly Regex _indexedNameRegex = new(@"^(.*?)(?:\s*\((\d+)\))$", RegexOptions.Compiled);
 
     private static readonly string[] _rateLimiterSourceNames =
     [
@@ -45,6 +48,7 @@ public sealed class AdminController : Controller
     private readonly RateLimitsOptions _rateLimitsOptions;
     private readonly EndpointDataSource _endpointDataSource;
     private readonly IDisplayManager<RateLimitLimiter> _displayManager;
+    private readonly IDisplayManager<RateLimitPolicy> _policyDisplayManager;
 
     internal readonly IStringLocalizer S;
     internal readonly IHtmlLocalizer H;
@@ -58,6 +62,7 @@ public sealed class AdminController : Controller
         IShellReleaseManager shellReleaseManager,
         EndpointDataSource endpointDataSource,
         IOptions<RateLimitsOptions> rateLimitsOptions,
+        IDisplayManager<RateLimitPolicy> policyDisplayManager,
         IStringLocalizer<AdminController> stringLocalizer,
         IHtmlLocalizer<AdminController> htmlLocalizer)
     {
@@ -69,6 +74,7 @@ public sealed class AdminController : Controller
         _shellReleaseManager = shellReleaseManager;
         _endpointDataSource = endpointDataSource;
         _rateLimitsOptions = rateLimitsOptions.Value;
+        _policyDisplayManager = policyDisplayManager;
         S = stringLocalizer;
         H = htmlLocalizer;
     }
@@ -115,7 +121,7 @@ public sealed class AdminController : Controller
             SearchText = searchText,
             Policies =
             [
-                .. pagedPolicies.Select(BuildPolicyEntry),
+                .. await Task.WhenAll(pagedPolicies.Select(BuildPolicyEntryAsync)),
             ],
             BuiltInRouteLimits = BuildBuiltInRouteLimits(),
             BuiltInGroupLimits = BuildBuiltInGroupLimits(),
@@ -288,6 +294,27 @@ public sealed class AdminController : Controller
     }
 
     [HttpPost]
+    public async Task<IActionResult> Clone(string policyId)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, RateLimitsPermissions.ManageRateLimits))
+        {
+            return Forbid();
+        }
+
+        var policy = await GetCurrentPolicyAsync(policyId);
+        if (policy is null)
+        {
+            return NotFound();
+        }
+
+        var clonedPolicy = CreateClonedPolicy(policy, await GetCurrentPoliciesAsync());
+        await _policyStore.CreateAsync(clonedPolicy);
+        await _notifier.SuccessAsync(H["Policy cloned successfully."]);
+
+        return RedirectToAction(nameof(Edit), new { policyId = clonedPolicy.PolicyId });
+    }
+
+    [HttpPost]
     [FormValueRequired("submit.BulkAction")]
     [ActionName(nameof(Index))]
     public async Task<IActionResult> IndexPost(RateLimitsIndexViewModel model, IEnumerable<string> policyIds)
@@ -395,11 +422,14 @@ public sealed class AdminController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    private RateLimitPolicyEntryViewModel BuildPolicyEntry(RateLimitPolicy policy)
+    private async Task<RateLimitPolicyEntryViewModel> BuildPolicyEntryAsync(RateLimitPolicy policy)
     {
+        dynamic shape = await _policyDisplayManager.BuildDisplayAsync(policy, updater: null, displayType: OrchardCoreConstants.DisplayType.SummaryAdmin);
+
         return new RateLimitPolicyEntryViewModel
         {
             PolicyId = policy.PolicyId,
+            ActionsMenu = shape.ActionsMenu,
             Policy = policy,
             Name = policy.Name,
             Description = policy.Description,
@@ -487,6 +517,20 @@ public sealed class AdminController : Controller
         await _notifier.SuccessAsync(H["Policy saved successfully."]);
 
         return RedirectToAction(nameof(Index));
+    }
+
+    private RateLimitPolicy CreateClonedPolicy(RateLimitPolicy sourcePolicy, IReadOnlyCollection<RateLimitPolicy> policies)
+    {
+        var clonedPolicy = RateLimitPolicyStore.Clone(sourcePolicy);
+        clonedPolicy.PolicyId = IdGenerator.GenerateId();
+        clonedPolicy.Name = GenerateUniqueCloneName(sourcePolicy.Name, policies);
+        clonedPolicy.IsEnabled = false;
+        clonedPolicy.EnabledUtc = null;
+        clonedPolicy.Status = RateLimitPolicyStore.GetStatus(clonedPolicy.IsEnabled);
+        clonedPolicy.OwnerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        clonedPolicy.Author = User.Identity?.Name;
+
+        return clonedPolicy;
     }
 
     private RateLimitPolicyEditViewModel CreateEditViewModel(string selectedGroup = null)
@@ -733,6 +777,39 @@ public sealed class AdminController : Controller
 
     private static bool ShouldReloadPolicy(bool wasEnabled, bool isEnabled)
         => wasEnabled != isEnabled;
+
+    private static string GenerateUniqueCloneName(string sourceName, IReadOnlyCollection<RateLimitPolicy> policies)
+    {
+        var existingNames = policies
+            .Where(static policy => !string.IsNullOrWhiteSpace(policy.Name))
+            .Select(static policy => policy.Name)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        var candidate = GetNextCloneName(sourceName);
+
+        while (existingNames.Contains(candidate))
+        {
+            candidate = GetNextCloneName(candidate);
+        }
+
+        return candidate;
+    }
+
+    private static string GetNextCloneName(string name)
+    {
+        var trimmedName = string.IsNullOrWhiteSpace(name)
+            ? DefaultClonedPolicyName
+            : name.Trim();
+
+        var match = _indexedNameRegex.Match(trimmedName);
+        if (match.Success && int.TryParse(match.Groups[2].Value, out var number))
+        {
+            var prefix = match.Groups[1].Value.TrimEnd();
+            return $"{prefix} ({number + 1})";
+        }
+
+        return $"{trimmedName} (1)";
+    }
 
     private string DescribeTarget(RateLimitPolicy policy)
     {

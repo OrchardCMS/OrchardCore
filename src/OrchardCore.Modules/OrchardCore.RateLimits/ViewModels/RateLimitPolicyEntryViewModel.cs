@@ -6,6 +6,8 @@ public class RateLimitPolicyEntryViewModel
 {
     public string PolicyId { get; set; }
 
+    public dynamic ActionsMenu { get; set; }
+
     public RateLimitPolicy Policy { get; set; }
 
     public string Name { get; set; }

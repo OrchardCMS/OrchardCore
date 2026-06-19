@@ -165,6 +165,35 @@ public sealed class RateLimitPolicyStore : IRateLimitPolicyStore
     public static RateLimitPolicyStatus GetStatus(bool isEnabled)
         => isEnabled ? RateLimitPolicyStatus.Enabled : RateLimitPolicyStatus.Disabled;
 
+    /// <summary>
+    /// Creates a deep clone of the specified policy.
+    /// </summary>
+    /// <param name="policy">The policy to clone.</param>
+    /// <returns>A cloned policy instance, or <c>null</c> when <paramref name="policy"/> is <c>null</c>.</returns>
+    public static RateLimitPolicy Clone(RateLimitPolicy policy)
+    {
+        if (policy is null)
+        {
+            return null;
+        }
+
+        return new RateLimitPolicy
+        {
+            PolicyId = policy.PolicyId,
+            Name = policy.Name,
+            Description = policy.Description,
+            OwnerId = policy.OwnerId,
+            Author = policy.Author,
+            Scope = policy.Scope,
+            Path = policy.Path,
+            GroupName = policy.GroupName,
+            IsEnabled = policy.IsEnabled,
+            EnabledUtc = policy.EnabledUtc,
+            Status = policy.Status,
+            Limiters = [.. policy.Limiters.Select(Clone)],
+        };
+    }
+
     private static Dictionary<string, RateLimitPolicy> GetCurrentPolicies(RateLimitPolicyDocument document)
     {
         return document.Policies
@@ -204,25 +233,6 @@ public sealed class RateLimitPolicyStore : IRateLimitPolicyStore
             : null;
 
         return clonedPolicy;
-    }
-
-    private static RateLimitPolicy Clone(RateLimitPolicy policy)
-    {
-        return new RateLimitPolicy
-        {
-            PolicyId = policy.PolicyId,
-            Name = policy.Name,
-            Description = policy.Description,
-            OwnerId = policy.OwnerId,
-            Author = policy.Author,
-            Scope = policy.Scope,
-            Path = policy.Path,
-            GroupName = policy.GroupName,
-            IsEnabled = policy.IsEnabled,
-            EnabledUtc = policy.EnabledUtc,
-            Status = policy.Status,
-            Limiters = [.. policy.Limiters.Select(Clone)],
-        };
     }
 
     private static RateLimitLimiter Clone(RateLimitLimiter limiter)

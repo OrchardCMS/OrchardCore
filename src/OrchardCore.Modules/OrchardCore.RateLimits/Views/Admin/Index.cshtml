@@ -107,31 +107,19 @@
                                         <div class="metadata mt-1 text-muted">@entry.Description</div>
                                     }
                                 </div>
-                                <div class="d-flex gap-1">
+                                <div class="d-flex gap-1 flex-wrap">
                                     <a asp-action="Edit" asp-route-policyId="@entry.PolicyId" class="btn btn-primary btn-sm">@T["Edit"]</a>
-                                    @if (entry.IsEnabled)
-                                    {
-                                        <button type="button"
-                                                class="btn btn-warning btn-sm"
-                                                data-disable-policy-id="@entry.PolicyId"
-                                                data-title="@T["Disable Policy"]"
-                                                data-message="@T["Are you sure you want to disable this policy? This website will restart after disabling it."]">@T["Disable"]</button>
-                                    }
-                                    else
-                                    {
-                                        <button type="button"
-                                                class="btn btn-success btn-sm"
-                                                data-enable-policy-id="@entry.PolicyId"
-                                                data-title="@T["Enable Policy"]"
-                                                data-message="@T["Are you sure you want to enable this policy? This website will restart after enabling it."]">@T["Enable"]</button>
-                                    }
-                                    <button type="button"
-                                            class="btn btn-danger btn-sm"
-                                            data-delete-policy-id="@entry.PolicyId"
-                                            data-title="@T["Delete Policy"]"
-                                            data-message="@(entry.IsEnabled
-                                                ? T["Are you sure you want to delete this enabled policy? This website will restart after deleting it."]
-                                                : T["Are you sure you want to delete this disabled policy?"])">@T["Delete"]</button>
+                                    <div class="dropdown">
+                                        <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                            @T["Actions"]
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end">
+                                            @if (entry.ActionsMenu != null && entry.ActionsMenu.HasItems)
+                                            {
+                                                @await DisplayAsync(entry.ActionsMenu)
+                                            }
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -167,6 +155,10 @@
 
 <form asp-action="Disable" method="post" id="disable-policy-form" class="d-none">
     <input type="hidden" name="policyId" id="disable-policy-id" />
+</form>
+
+<form asp-action="Clone" method="post" id="clone-policy-form" class="d-none">
+    <input type="hidden" name="policyId" id="clone-policy-id" />
 </form>
 
 @if (Model.Pager is not null)
@@ -249,6 +241,8 @@
         const enablePolicyId = document.getElementById('enable-policy-id');
         const disablePolicyForm = document.getElementById('disable-policy-form');
         const disablePolicyId = document.getElementById('disable-policy-id');
+        const clonePolicyForm = document.getElementById('clone-policy-form');
+        const clonePolicyId = document.getElementById('clone-policy-id');
 
         const getCheckboxes = () => [...document.querySelectorAll('input[name="policyIds"]')];
         const updateSelection = () => {
@@ -345,6 +339,13 @@
                         disablePolicyForm.submit();
                     }
                 });
+            });
+        }
+
+        for (const button of document.querySelectorAll('[data-clone-policy-id]')) {
+            button.addEventListener('click', () => {
+                clonePolicyId.value = button.dataset.clonePolicyId;
+                clonePolicyForm.submit();
             });
         }
     });

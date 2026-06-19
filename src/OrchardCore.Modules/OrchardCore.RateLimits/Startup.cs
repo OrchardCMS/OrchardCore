@@ -31,6 +31,7 @@ public sealed class Startup : StartupBase
         services.AddTransient<IConfigureOptions<RateLimiterOptions>, RateLimiterOptionsConfigurations>();
         services.AddSingleton<IRateLimitPolicyStore, RateLimitPolicyStore>();
         services.AddDisplayDriver<RateLimitLimiter, RateLimitLimiterDisplayDriver>();
+        services.AddDisplayDriver<RateLimitPolicy, RateLimitPolicyDisplayDriver>();
 
         services.AddKeyedSingleton<IRateLimiterSource, FixedWindowRateLimiterSource>(FixedWindowRateLimiterSource.SourceName)
             .AddDisplayDriver<RateLimitLimiter, FixedWindowRateLimiterDisplayDriver>();

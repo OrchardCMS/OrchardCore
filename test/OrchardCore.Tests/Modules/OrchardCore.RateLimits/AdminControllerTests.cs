@@ -110,6 +110,83 @@ public class AdminControllerTests
         shellReleaseManager.Verify(x => x.RequestRelease(), Times.Once);
     }
 
+    [Fact]
+    public async Task CloneShouldCreateDisabledPolicyWithUniqueIncrementedName()
+    {
+        const string policyId = "policy-id";
+        var sourcePolicy = new RateLimitPolicy
+        {
+            PolicyId = policyId,
+            Name = "Login policy (1)",
+            Description = "Original description",
+            Scope = RateLimitPolicyScope.Endpoint,
+            Path = "/login",
+            GroupName = "users",
+            IsEnabled = true,
+            EnabledUtc = DateTime.UtcNow,
+            Limiters =
+            [
+                new RateLimitLimiter
+                {
+                    Id = "limiter-id",
+                    Source = "FixedWindow",
+                    Properties =
+                    {
+                        ["PermitLimit"] = 10,
+                    },
+                },
+            ],
+        };
+
+        var existingPolicies = new[]
+        {
+            sourcePolicy,
+            new RateLimitPolicy { PolicyId = "policy-2", Name = "Login policy (2)" },
+            new RateLimitPolicy { PolicyId = "policy-3", Name = "Login policy (3)" },
+        };
+
+        var policyStore = new Mock<IRateLimitPolicyStore>();
+        policyStore
+            .Setup(x => x.FindByIdAsync(policyId, PolicyVersion.Current))
+            .Returns(() => ValueTask.FromResult(sourcePolicy));
+        policyStore
+            .Setup(x => x.GetAllAsync(PolicyVersion.Current))
+            .Returns(() => ValueTask.FromResult<IReadOnlyCollection<RateLimitPolicy>>(existingPolicies));
+
+        RateLimitPolicy savedPolicy = null;
+        policyStore
+            .Setup(x => x.CreateAsync(It.IsAny<RateLimitPolicy>()))
+            .Callback<RateLimitPolicy>(policy => savedPolicy = policy)
+            .Returns(ValueTask.CompletedTask);
+
+        var shellReleaseManager = new Mock<IShellReleaseManager>();
+        var controller = CreateController(policyStore.Object, shellReleaseManager.Object);
+
+        var result = await controller.Clone(policyId);
+
+        var redirectResult = Assert.IsType<RedirectToActionResult>(result);
+        Assert.Equal(nameof(AdminController.Edit), redirectResult.ActionName);
+        Assert.NotNull(savedPolicy);
+        Assert.NotEqual(policyId, savedPolicy.PolicyId);
+        Assert.Equal("Login policy (4)", savedPolicy.Name);
+        Assert.Equal(sourcePolicy.Description, savedPolicy.Description);
+        Assert.Equal(sourcePolicy.Scope, savedPolicy.Scope);
+        Assert.Equal(sourcePolicy.Path, savedPolicy.Path);
+        Assert.Equal(sourcePolicy.GroupName, savedPolicy.GroupName);
+        Assert.False(savedPolicy.IsEnabled);
+        Assert.Null(savedPolicy.EnabledUtc);
+        Assert.Equal("user-id", savedPolicy.OwnerId);
+        Assert.Equal("admin", savedPolicy.Author);
+        Assert.Single(savedPolicy.Limiters);
+        Assert.NotSame(sourcePolicy.Limiters[0], savedPolicy.Limiters[0]);
+        Assert.Equal(sourcePolicy.Limiters[0].Id, savedPolicy.Limiters[0].Id);
+        Assert.Equal(sourcePolicy.Limiters[0].Source, savedPolicy.Limiters[0].Source);
+        Assert.Equal(sourcePolicy.Limiters[0].Properties["PermitLimit"]?.ToString(), savedPolicy.Limiters[0].Properties["PermitLimit"]?.ToString());
+        Assert.NotSame(sourcePolicy.Limiters[0].Properties, savedPolicy.Limiters[0].Properties);
+        Assert.Equal(savedPolicy.PolicyId, redirectResult.RouteValues["policyId"]);
+        shellReleaseManager.Verify(x => x.RequestRelease(), Times.Never);
+    }
+
     private static AdminController CreateController(
         IRateLimitPolicyStore policyStore,
         IShellReleaseManager shellReleaseManager)
@@ -123,6 +200,7 @@ public class AdminControllerTests
             shellReleaseManager,
             new EmptyEndpointDataSource(),
             Options.Create(new RateLimitsOptions()),
+            Mock.Of<IDisplayManager<RateLimitPolicy>>(),
             Mock.Of<IStringLocalizer<AdminController>>(),
             Mock.Of<IHtmlLocalizer<AdminController>>())
         {
