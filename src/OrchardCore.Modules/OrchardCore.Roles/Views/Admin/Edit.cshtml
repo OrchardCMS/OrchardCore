@@ -137,34 +137,49 @@
 </form>
 
 <script at="Foot">
-    $(function () {
-        var searchBox = $('#search-box');
+    document.addEventListener('DOMContentLoaded', function () {
+        var searchBox = document.getElementById('search-box');
+        if (!searchBox) {
+            return;
+        }
+
+        function setVisible(element, visible) {
+            element.style.display = visible ? '' : 'none';
+        }
+
+        function isVisible(element) {
+            return !!(element.offsetWidth || element.offsetHeight || element.getClientRects().length);
+        }
+
         // On each keypress filter the list of roles
-        searchBox.keyup(function (e) {
-            var search = $(this).val().toLowerCase();
+        searchBox.addEventListener('keyup', function (e) {
+            var search = this.value.toLowerCase();
 
             // On ESC, clear the search box and display all roles
             if (e.key === "Escape" || search == '') {
-                searchBox.val('');
-                $('.permissions-list').toggle(true);
-                $('.permissions-list > table > tbody > tr').toggle(true);
+                searchBox.value = '';
+                document.querySelectorAll('.permissions-list').forEach(function (list) {
+                    setVisible(list, true);
+                });
+                document.querySelectorAll('.permissions-list > table > tbody > tr').forEach(function (row) {
+                    setVisible(row, true);
+                });
             }
             else {
-                $('.permissions-list > table > tbody > tr').each(function () {
-                    var text = $(this).data('text').toLowerCase();
+                document.querySelectorAll('.permissions-list > table > tbody > tr').forEach(function (row) {
+                    var text = row.dataset.text.toLowerCase();
                     var found = text.indexOf(search) > -1;
-                    $(this).toggle(found);
+                    setVisible(row, found);
 
                     if (found) {
-                        $(this).parents('.permissions-list').toggle(true);
+                        setVisible(row.closest('.permissions-list'), true);
                     }
                 });
 
                 // Hide any section without visible permission
-                $('.permissions-list').each(function () {
-                    var list = $(this);
-                    var hasVisiblePermissions = list.find('table > tbody > tr:visible').length > 0;
-                    list.toggle(hasVisiblePermissions);
+                document.querySelectorAll('.permissions-list').forEach(function (list) {
+                    var hasVisiblePermissions = Array.from(list.querySelectorAll('table > tbody > tr')).some(isVisible);
+                    setVisible(list, hasVisiblePermissions);
                 });
             }
         });

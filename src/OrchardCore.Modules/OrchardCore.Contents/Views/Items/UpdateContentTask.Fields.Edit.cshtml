@@ -39,7 +39,7 @@
 <script asp-src="~/OrchardCore.Liquid/codemirror/liquid.js" at="Foot"></script>
 
 <script at="Foot">
-$(function () {
+document.addEventListener('DOMContentLoaded', function () {
     var editor = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.ContentProperties)'), {
         autoRefresh: true,
         lineNumbers: true,

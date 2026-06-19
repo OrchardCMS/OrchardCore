@@ -50,43 +50,50 @@
 </form>
 
 <script at="Foot">
-    $(function () {
-        var searchBox = $('#search-box');
+    document.addEventListener('DOMContentLoaded', function () {
+        var searchBox = document.getElementById('search-box');
 
         // On each keypress filter the list of cache entries
-        searchBox.keyup(function (e) {
-            var search = $(this).val().toLowerCase();
-            var elementsToFilter = $("[data-cacheentry]");
+        searchBox.addEventListener('keyup', function (e) {
+            var search = this.value.toLowerCase();
+            var elementsToFilter = document.querySelectorAll("[data-cacheentry]");
 
             // On ESC, clear the search box and display all cache entries
             if (e.key === "Escape" || search == '') {
-                searchBox.val('');
-                elementsToFilter.removeClass("d-none first-child-visible last-child-visible");
+                searchBox.value = '';
+                elementsToFilter.forEach(function (element) {
+                    element.classList.remove("d-none", "first-child-visible", "last-child-visible");
+                });
             }
             else {
-                $('#cache-entries > li').each(function () {
-                    var cacheEntry = $(this).data('cacheentry').toLowerCase();
+                document.querySelectorAll('#cache-entries > li').forEach(function (element) {
+                    var cacheEntry = element.dataset.cacheentry.toLowerCase();
                     var found = cacheEntry.indexOf(search) > -1;
 
                     if (found) {
-                        $(this).removeClass("d-none first-child-visible last-child-visible");
+                        element.classList.remove("d-none", "first-child-visible", "last-child-visible");
                     }
                     else {
-                        $(this).addClass("d-none");
+                        element.classList.add("d-none");
                     }
                 });
 
-                elementsToFilter.filter(":not(.d-none)").first().addClass("first-child-visible");
-                elementsToFilter.filter(":not(.d-none)").last().addClass("last-child-visible");
+                var visibleElements = Array.from(elementsToFilter).filter(function (element) {
+                    return !element.classList.contains("d-none");
+                });
+
+                if (visibleElements.length) {
+                    visibleElements[0].classList.add("first-child-visible");
+                    visibleElements[visibleElements.length - 1].classList.add("last-child-visible");
+                }
 
                 // We display an alert if a search is not found
-                var visible = $('#cache-entries > li:visible');
-                if (visible.length == 0) {
-                    $('#search-alert').removeClass("d-none");
-                    $('#none-alert').addClass("d-none");
+                if (document.querySelectorAll('#cache-entries > li:not(.d-none)').length == 0) {
+                    document.getElementById('search-alert').classList.remove("d-none");
+                    document.getElementById('none-alert').classList.add("d-none");
                 }
                 else {
-                    $('#search-alert').addClass("d-none");
+                    document.getElementById('search-alert').classList.add("d-none");
                 }
             }
         });
