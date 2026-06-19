@@ -270,45 +270,65 @@
 <script at="Foot">
     ////<![CDATA[
     window.onload = function () {
+        function setCollapse(element, action) {
+            if (element) {
+                bootstrap.Collapse.getOrCreateInstance(element, { toggle: false })[action]();
+            }
+        }
+
         refreshFlows();
 
-        $("#@Html.IdFor(m => m.ResponseMode), #@Html.IdFor(m => m.UseCodeFlow), #@Html.IdFor(m => m.UseCodeIdTokenFlow),#@Html.IdFor(m => m.UseCodeTokenFlow), #@Html.IdFor(m => m.UseCodeIdTokenTokenFlow), #@Html.IdFor(m => m.UseIdTokenFlow),#@Html.IdFor(m => m.UseIdTokenTokenFlow)").change(function () {
-            if (this != @Html.IdFor(m => m.ResponseMode)) {
-                $('input[type="checkbox"]').not(this).not(@Html.IdFor(m => m.StoreExternalTokens)).prop('checked', false);
-            } else {
-                $('input[type="checkbox"]').not(@Html.IdFor(m => m.UseCodeFlow)).not(@Html.IdFor(m => m.StoreExternalTokens)).prop('checked', false);
-            }
-            refreshFlows();
+        var responseModeElement = document.getElementById('@Html.IdFor(m => m.ResponseMode)');
+        var useCodeFlowElement = document.getElementById('@Html.IdFor(m => m.UseCodeFlow)');
+        var storeExternalTokensElement = document.getElementById('@Html.IdFor(m => m.StoreExternalTokens)');
+
+        document.querySelectorAll("#@Html.IdFor(m => m.ResponseMode), #@Html.IdFor(m => m.UseCodeFlow), #@Html.IdFor(m => m.UseCodeIdTokenFlow),#@Html.IdFor(m => m.UseCodeTokenFlow), #@Html.IdFor(m => m.UseCodeIdTokenTokenFlow), #@Html.IdFor(m => m.UseIdTokenFlow),#@Html.IdFor(m => m.UseIdTokenTokenFlow)").forEach(function (element) {
+            element.addEventListener('change', function () {
+                if (this !== responseModeElement) {
+                    document.querySelectorAll('input[type="checkbox"]').forEach(function (checkbox) {
+                        if (checkbox !== element && checkbox !== storeExternalTokensElement) {
+                            checkbox.checked = false;
+                        }
+                    });
+                } else {
+                    document.querySelectorAll('input[type="checkbox"]').forEach(function (checkbox) {
+                        if (checkbox !== useCodeFlowElement && checkbox !== storeExternalTokensElement) {
+                            checkbox.checked = false;
+                        }
+                    });
+                }
+                refreshFlows();
+            });
         });
         function refreshFlows(e) {
-            var useCodeFlowElement = $("#@Html.IdFor(m => m.UseCodeFlow)");
-            var useCodeIdTokenFlowElement = $("#@Html.IdFor(m => m.UseCodeIdTokenFlow)");
-            var useCodeIdTokenTokenFlowElement = $("#@Html.IdFor(m => m.UseCodeIdTokenTokenFlow)");
-            var useCodeTokenFlowElement = $("#@Html.IdFor(m => m.UseCodeTokenFlow)");
-            var useIdTokenFlowElement = $("#@Html.IdFor(m => m.UseIdTokenFlow)");
-            var useIdTokenTokenFlowElement = $("#@Html.IdFor(m => m.UseIdTokenTokenFlow)");
+            var useCodeFlowElement = document.getElementById('@Html.IdFor(m => m.UseCodeFlow)');
+            var useCodeIdTokenFlowElement = document.getElementById('@Html.IdFor(m => m.UseCodeIdTokenFlow)');
+            var useCodeIdTokenTokenFlowElement = document.getElementById('@Html.IdFor(m => m.UseCodeIdTokenTokenFlow)');
+            var useCodeTokenFlowElement = document.getElementById('@Html.IdFor(m => m.UseCodeTokenFlow)');
+            var useIdTokenFlowElement = document.getElementById('@Html.IdFor(m => m.UseIdTokenFlow)');
+            var useIdTokenTokenFlowElement = document.getElementById('@Html.IdFor(m => m.UseIdTokenTokenFlow)');
 
-            var responseModeElement = $("#@Html.IdFor(m => m.ResponseMode)");
+            var responseModeElement = document.getElementById('@Html.IdFor(m => m.ResponseMode)');
 
-            var clientSecretElement = $("#@Html.IdFor(m => m.ClientSecret)");
+            var clientSecretElement = document.getElementById('@Html.IdFor(m => m.ClientSecret)');
 
-            var queryOptionElement = $("#@OpenIdConnectResponseMode.Query");
-            if (useCodeFlowElement.prop("checked")) {
-                queryOptionElement.removeAttr("disabled");
+            var queryOptionElement = document.getElementById('@OpenIdConnectResponseMode.Query');
+            if (useCodeFlowElement.checked) {
+                queryOptionElement.disabled = false;
             } else {
-                queryOptionElement.prop("disabled", 'disabled');
-                responseModeElement.prop("value", "@OpenIdConnectResponseMode.FormPost");
+                queryOptionElement.disabled = true;
+                responseModeElement.value = "@OpenIdConnectResponseMode.FormPost";
             }
 
-            var showSecret = useCodeFlowElement.prop("checked") || useCodeIdTokenFlowElement.prop("checked") ||
-                useCodeIdTokenTokenFlowElement.prop("checked") || useCodeTokenFlowElement.prop("checked");
+            var showSecret = useCodeFlowElement.checked || useCodeIdTokenFlowElement.checked ||
+                useCodeIdTokenTokenFlowElement.checked || useCodeTokenFlowElement.checked;
 
             var clientSecretContainer = clientSecretElement.closest('.collapse');
 
             if (showSecret) {
-                clientSecretContainer.collapse("show");
+                setCollapse(clientSecretContainer, "show");
             } else {
-                clientSecretContainer.collapse("hide");
+                setCollapse(clientSecretContainer, "hide");
             }
 
         }

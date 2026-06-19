@@ -22,7 +22,7 @@
 </div>
 
 <script at="Foot">
-    $(function () {
+    document.addEventListener('DOMContentLoaded', function () {
         var textArea = document.getElementById('@Html.IdFor(x => x.Liquid)');
 
         if (textArea == null) {
@@ -39,7 +39,7 @@
 
         editor.on('change', function (cmEditor) {
             cmEditor.save();
-            $(document).trigger('contentpreview:render');
+            document.dispatchEvent(new Event('contentpreview:render'));
         });
     });
 </script>

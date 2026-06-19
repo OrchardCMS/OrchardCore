@@ -111,28 +111,52 @@
 
 <script at="Foot">
     //<![CDATA[
-    $(function () {
-        $('.field-editor').hide();
-        $('#field-editor-container').show();
-        var fieldEditorSelect = $('#field-editor-select');
-        if (fieldEditorSelect.length > 0) {
-            $('.field-editor-' + fieldEditorSelect.val().toLowerCase()).show();
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.field-editor').forEach(function (element) {
+            element.style.display = 'none';
+        });
+        var fieldEditorContainer = document.getElementById('field-editor-container');
+        if (fieldEditorContainer) {
+            fieldEditorContainer.style.display = '';
+        }
 
-            fieldEditorSelect.change(function () {
-                $('.field-editor').hide();
-                $('.field-editor-' + fieldEditorSelect.val().toLowerCase()).show();
+        var fieldEditorSelect = document.getElementById('field-editor-select');
+        if (fieldEditorSelect) {
+            document.querySelectorAll('.field-editor-' + fieldEditorSelect.value.toLowerCase()).forEach(function (element) {
+                element.style.display = '';
+            });
+
+            fieldEditorSelect.addEventListener('change', function () {
+                document.querySelectorAll('.field-editor').forEach(function (element) {
+                    element.style.display = 'none';
+                });
+                document.querySelectorAll('.field-editor-' + fieldEditorSelect.value.toLowerCase()).forEach(function (element) {
+                    element.style.display = '';
+                });
             });
         }
 
-        $('.field-display').hide();
-        $('#field-display-container').show();
-        var fieldDisplaySelect = $('#field-display-select');
-        if (fieldDisplaySelect.length > 0) {
-            $('.field-display-' + fieldDisplaySelect.val().toLowerCase()).show();
+        document.querySelectorAll('.field-display').forEach(function (element) {
+            element.style.display = 'none';
+        });
+        var fieldDisplayContainer = document.getElementById('field-display-container');
+        if (fieldDisplayContainer) {
+            fieldDisplayContainer.style.display = '';
+        }
 
-            fieldDisplaySelect.change(function () {
-                $('.field-display').hide();
-                $('.field-display-' + fieldDisplaySelect.val().toLowerCase()).show();
+        var fieldDisplaySelect = document.getElementById('field-display-select');
+        if (fieldDisplaySelect) {
+            document.querySelectorAll('.field-display-' + fieldDisplaySelect.value.toLowerCase()).forEach(function (element) {
+                element.style.display = '';
+            });
+
+            fieldDisplaySelect.addEventListener('change', function () {
+                document.querySelectorAll('.field-display').forEach(function (element) {
+                    element.style.display = 'none';
+                });
+                document.querySelectorAll('.field-display-' + fieldDisplaySelect.value.toLowerCase()).forEach(function (element) {
+                    element.style.display = '';
+                });
             });
         }
     });

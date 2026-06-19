@@ -48,14 +48,19 @@
 </div>
 
 <script at="Foot">
-    $(function () {
-        $("[data-reversetoggle]").on("click", function () {
-            var state = this.checked;
-            if (state) {
-                $($(this).attr("data-reversetoggle")).collapse('hide');
-            } else {
-                $($(this).attr("data-reversetoggle")).collapse('show');
-            }
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll("[data-reversetoggle]").forEach(function (toggle) {
+            toggle.addEventListener("click", function () {
+                var state = this.checked;
+                document.querySelectorAll(this.getAttribute("data-reversetoggle")).forEach(function (target) {
+                    var collapse = bootstrap.Collapse.getOrCreateInstance(target, { toggle: false });
+                    if (state) {
+                        collapse.hide();
+                    } else {
+                        collapse.show();
+                    }
+                });
+            });
         });
     });
 </script>

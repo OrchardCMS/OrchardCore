@@ -29,6 +29,7 @@ public class MetaWeblogHandler : IXmlRpcHandler
     private readonly IContentDefinitionManager _contentDefinitionManager;
     private readonly IAuthorizationService _authorizationService;
     private readonly IMediaFileStore _mediaFileStore;
+    private readonly FileCreationService _fileCreationService;
     private readonly IMembershipService _membershipService;
     private readonly IEnumerable<IMetaWeblogDriver> _metaWeblogDrivers;
     private readonly ISession _session;
@@ -41,6 +42,7 @@ public class MetaWeblogHandler : IXmlRpcHandler
         ISession session,
         IContentDefinitionManager contentDefinitionManager,
         IMediaFileStore mediaFileStore,
+        FileCreationService fileCreationService,
         IEnumerable<IMetaWeblogDriver> metaWeblogDrivers,
         IStringLocalizer<MetaWeblogHandler> localizer)
     {
@@ -50,6 +52,7 @@ public class MetaWeblogHandler : IXmlRpcHandler
         _metaWeblogDrivers = metaWeblogDrivers;
         _session = session;
         _mediaFileStore = mediaFileStore;
+        _fileCreationService = fileCreationService;
         _membershipService = membershipService;
         S = localizer;
     }
@@ -157,7 +160,11 @@ public class MetaWeblogHandler : IXmlRpcHandler
         try
         {
             stream = new MemoryStream(bits);
-            filePath = await _mediaFileStore.CreateFileFromStreamAsync(filePath, stream);
+            filePath = await _mediaFileStore.CreateFileFromStreamAsync(
+                _fileCreationService,
+                filePath,
+                stream,
+                contentType: file.Optional<string>("type"));
         }
         finally
         {
