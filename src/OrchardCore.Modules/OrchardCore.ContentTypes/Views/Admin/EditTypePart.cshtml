@@ -110,29 +110,52 @@
 
 <script at="Foot">
     //<![CDATA[
-    $(function () {
-        $('.type-part-editor').hide();
-        $('#type-part-editor-container').show();
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.type-part-editor').forEach(function (element) {
+            element.style.display = 'none';
+        });
+        var typePartEditorContainer = document.getElementById('type-part-editor-container');
+        if (typePartEditorContainer) {
+            typePartEditorContainer.style.display = '';
+        }
 
-        var typePartEditorSelect = $('#type-part-editor-select');
-        if (typePartEditorSelect.length > 0) {
-            $('.type-part-editor-' + typePartEditorSelect.val().toLowerCase()).show();
+        var typePartEditorSelect = document.getElementById('type-part-editor-select');
+        if (typePartEditorSelect) {
+            document.querySelectorAll('.type-part-editor-' + typePartEditorSelect.value.toLowerCase()).forEach(function (element) {
+                element.style.display = '';
+            });
 
-            typePartEditorSelect.change(function () {
-                $('.type-part-editor').hide();
-                $('.type-part-editor-' + typePartEditorSelect.val().toLowerCase()).show();
+            typePartEditorSelect.addEventListener('change', function () {
+                document.querySelectorAll('.type-part-editor').forEach(function (element) {
+                    element.style.display = 'none';
+                });
+                document.querySelectorAll('.type-part-editor-' + typePartEditorSelect.value.toLowerCase()).forEach(function (element) {
+                    element.style.display = '';
+                });
             });
         }
 
-        $('.type-part-display').hide();
-        $('#type-part-display-container').show();
-        var typePartDisplaySelect = $('#type-part-display-select');
-        if (typePartDisplaySelect.length > 0) {
-            $('.type-part-display-' + typePartDisplaySelect.val().toLowerCase()).show();
+        document.querySelectorAll('.type-part-display').forEach(function (element) {
+            element.style.display = 'none';
+        });
+        var typePartDisplayContainer = document.getElementById('type-part-display-container');
+        if (typePartDisplayContainer) {
+            typePartDisplayContainer.style.display = '';
+        }
 
-            typePartDisplaySelect.change(function () {
-                $('.type-part-display').hide();
-                $('.type-part-display-' + typePartDisplaySelect.val().toLowerCase()).show();
+        var typePartDisplaySelect = document.getElementById('type-part-display-select');
+        if (typePartDisplaySelect) {
+            document.querySelectorAll('.type-part-display-' + typePartDisplaySelect.value.toLowerCase()).forEach(function (element) {
+                element.style.display = '';
+            });
+
+            typePartDisplaySelect.addEventListener('change', function () {
+                document.querySelectorAll('.type-part-display').forEach(function (element) {
+                    element.style.display = 'none';
+                });
+                document.querySelectorAll('.type-part-display-' + typePartDisplaySelect.value.toLowerCase()).forEach(function (element) {
+                    element.style.display = '';
+                });
             });
         }
     });

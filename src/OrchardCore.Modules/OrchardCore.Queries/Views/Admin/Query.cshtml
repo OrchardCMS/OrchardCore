@@ -104,10 +104,11 @@
 }
 
 <script at="Foot">
-    $(function () {
-        CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(m => m.DecodedQuery)'), { mode: @MediaTypeNamesExtended.Text.PostgreSQL, lineNumbers: true, viewportMargin: Infinity });
+    document.addEventListener('DOMContentLoaded', function () {
+        CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(m => m.DecodedQuery)'), { mode: '@MediaTypeNamesExtended.Text.PostgreSQL', lineNumbers: true, viewportMargin: Infinity });
         CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(m => m.Parameters)'), { mode: "javascript", json: true, lineNumbers: true, viewportMargin: Infinity });
-        if (rawSql = document.getElementById('@Html.IdFor(m => m.RawSql)')) {
+        var rawSql = document.getElementById('@Html.IdFor(m => m.RawSql)');
+        if (rawSql) {
             CodeMirror.fromTextArea(rawSql, { mode: "@sqlmode", lineNumbers: true, readonly: true, viewportMargin: Infinity });
         }
     });

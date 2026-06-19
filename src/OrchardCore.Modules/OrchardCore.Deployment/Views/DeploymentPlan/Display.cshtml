@@ -140,53 +140,78 @@
 </div>
 <script at="Foot">
     function getDeploymentStepCategory() {
-        return $('#deployment-step-categories .nav-link.active').data('category') || 'all';
+        var activeCategory = document.querySelector('#deployment-step-categories .nav-link.active');
+
+        return activeCategory ? activeCategory.dataset.category || 'all' : 'all';
     }
 
     function filterDeploymentSteps() {
-        var search = replaceDiacritics(String($('#search-box').val() || '').toLowerCase());
+        var searchBox = document.getElementById('search-box');
+        var search = replaceDiacritics(String(searchBox ? searchBox.value || '' : '').toLowerCase());
         var selectedCategory = getDeploymentStepCategory();
 
-        $('.deployment-step-item').each(function () {
-            var card = $(this);
-            var cardText = replaceDiacritics(card.text().toLowerCase());
+        document.querySelectorAll('.deployment-step-item').forEach(function (card) {
+            var cardText = replaceDiacritics(card.textContent.toLowerCase());
             var matchesSearch = search === '' || cardText.indexOf(search) > -1;
-            var matchesCategory = selectedCategory === 'all' || card.data('category') === selectedCategory;
+            var matchesCategory = selectedCategory === 'all' || card.dataset.category === selectedCategory;
 
-            card.toggle(matchesSearch && matchesCategory);
+            card.style.display = matchesSearch && matchesCategory ? '' : 'none';
         });
     }
 
-    $(document).ready(function () {
-        $('#modalSteps').on('shown.bs.modal', function () {
-            $('#search-box').trigger('focus');
-            filterDeploymentSteps();
-        });
+    document.addEventListener('DOMContentLoaded', function () {
+        var modalSteps = document.getElementById('modalSteps');
+        var searchBox = document.getElementById('search-box');
+        var deploymentStepCategories = document.getElementById('deployment-step-categories');
 
-        $('#modalSteps').on('hidden.bs.modal', function () {
-            $('#search-box').val('');
-            $('#deployment-step-categories .nav-link').removeClass('active');
-            $('#deployment-step-categories .nav-link[data-category="all"]').addClass('active');
-            filterDeploymentSteps();
-        });
+        if (modalSteps) {
+            modalSteps.addEventListener('shown.bs.modal', function () {
+                if (searchBox) {
+                    searchBox.focus();
+                }
+                filterDeploymentSteps();
+            });
+
+            modalSteps.addEventListener('hidden.bs.modal', function () {
+                if (searchBox) {
+                    searchBox.value = '';
+                }
+                document.querySelectorAll('#deployment-step-categories .nav-link').forEach(function (link) {
+                    link.classList.remove('active');
+                });
+                var allCategory = document.querySelector('#deployment-step-categories .nav-link[data-category="all"]');
+                if (allCategory) {
+                    allCategory.classList.add('active');
+                }
+                filterDeploymentSteps();
+            });
+        }
+
+        if (searchBox) {
+            searchBox.addEventListener('input', function () {
+                filterDeploymentSteps();
+            });
+        }
+
+        if (deploymentStepCategories) {
+            deploymentStepCategories.addEventListener('click', function (e) {
+                var link = e.target.closest('.nav-link');
+
+                if (!link || !deploymentStepCategories.contains(link)) {
+                    return;
+                }
+
+                e.preventDefault();
+                document.querySelectorAll('#deployment-step-categories .nav-link').forEach(function (navLink) {
+                    navLink.classList.remove('active');
+                });
+                link.classList.add('active');
+                filterDeploymentSteps();
+            });
+        }
     });
 
     function replaceDiacritics(str) {
         return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
     }
-
-    $(function () {
-        var searchBox = $('#search-box');
-
-        searchBox.on('input', function () {
-            filterDeploymentSteps();
-        });
-
-        $('#deployment-step-categories').on('click', '.nav-link', function (e) {
-            e.preventDefault();
-            $('#deployment-step-categories .nav-link').removeClass('active');
-            $(this).addClass('active');
-            filterDeploymentSteps();
-        });
-    });
 </script>
