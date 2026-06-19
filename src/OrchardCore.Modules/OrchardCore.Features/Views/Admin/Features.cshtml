@@ -245,7 +245,7 @@
         @T["<strong>Nothing here!</strong> Your search or filters returned no results."]
     </div>
 </form>
-<script at="Foot" depends-on="jQuery">
+<script at="Foot">
     document.addEventListener('DOMContentLoaded', () => {
         const EscapeKey = 'Escape';
         const searchBox = document.getElementById('search-box');
@@ -383,8 +383,8 @@
         searchBox?.addEventListener('input', applyFilters);
         searchBox?.addEventListener('search', applyFilters);
 
-        $('.selectpicker.nosubmit').on('changed.bs.select', function () {
-            applyFilters();
+        document.querySelectorAll('.selectpicker.nosubmit').forEach((element) => {
+            element.addEventListener('changed.bs.select', applyFilters);
         });
 
         bulkActionLinks.forEach((link) => link.addEventListener('click', (e) => {
