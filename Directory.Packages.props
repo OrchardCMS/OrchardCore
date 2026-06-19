@@ -110,4 +110,14 @@
     <PackageVersion Include="System.IO.Hashing" Version="10.0.8" />
     <PackageVersion Include="System.Text.Json" Version="10.0.8" />
   </ItemGroup>
+  <ItemGroup>
+    <!-- Aspire Packages -->
+    <!-- When updating Aspire package versions, also update the corresponding SDK version in '<Project Sdk="Aspire.AppHost.Sdk/13.4.4">' 
+    within 'src/OrchardCore.AspireHost/OrchardCore.AspireHost.csproj. -->
+    <PackageVersion Include="Aspire.Hosting.AppHost" Version="13.4.4" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- Transitive Packages -->
+    <PackageVersion Include="MessagePack" Version="3.1.7" />
+  </ItemGroup>
 </Project>

@@ -2,7 +2,8 @@ using OrchardCore.DisplayManagement;
 
 namespace OrchardCore.ContentTypes.Shapes;
 
-public class ContentCardFieldsEditShape
+[GenerateShape]
+public partial class ContentCardFieldsEditShape
 {
     public IShape CardShape { get; set; }
 }

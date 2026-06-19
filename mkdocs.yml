@@ -211,6 +211,7 @@ nav:
               - Media:
                   - Media: reference/modules/Media/README.md
                   - Media Slugify: reference/modules/Media.Slugify/README.md
+                  - Antivirus: reference/modules/Antivirus/README.md
                   - Media Amazon S3: reference/modules/Media.AmazonS3/README.md
                   - Media Azure: reference/modules/Media.Azure/README.md
               - ReCaptcha: reference/modules/ReCaptcha/README.md
@@ -255,6 +256,7 @@ nav:
               - Audit Trail: reference/modules/AuditTrail/README.md
               - Auto Setup: reference/modules/AutoSetup/README.md
               - Features: reference/modules/Features/README.md
+              - File Upload Security: reference/core/file-upload-security.md
               - Contents: reference/modules/Contents/README.md
               - Configuration: reference/modules/Configuration/README.md
               - Cors: reference/modules/Cors/README.md
