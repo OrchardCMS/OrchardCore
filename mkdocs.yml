@@ -285,6 +285,7 @@ nav:
               - OpenId: reference/modules/OpenId/README.md
               - Permissions: reference/modules/Security/Permissions.md
               - Razor Helpers: reference/modules/Razor/README.md
+              - Rate Limits: reference/modules/RateLimits/README.md
               - Recipes: reference/modules/Recipes/README.md
               - Redis: reference/modules/Redis/README.md
               - Remote Deployment: reference/modules/Deployment.Remote/README.md

@@ -1,0 +1,28 @@
+@model OrchardCore.RateLimits.ViewModels.ConcurrencyRateLimiterViewModel
+
+<div class="ocat-limited-wrapper" asp-validation-class-for="PermitLimit">
+    <label asp-for="PermitLimit" class="ocat-label">@T["Permit limit"]</label>
+    <div class="ocat-limited">
+        <input asp-for="PermitLimit" type="number" min="1" class="form-control" />
+        <span asp-validation-for="PermitLimit"></span>
+        <span class="hint">@T["How many matching requests can run at the same time. For example, 3 means a fourth request must wait or be rejected."]</span>
+    </div>
+</div>
+
+<div class="ocat-limited-wrapper" asp-validation-class-for="QueueLimit">
+    <label asp-for="QueueLimit" class="ocat-label">@T["Queue limit"]</label>
+    <div class="ocat-limited">
+        <input asp-for="QueueLimit" type="number" min="0" class="form-control" />
+        <span asp-validation-for="QueueLimit"></span>
+        <span class="hint">@T["How many extra requests can wait for a free slot while all running slots are busy. Use 0 to reject extras immediately."]</span>
+    </div>
+</div>
+
+<div class="ocat-limited-wrapper" asp-validation-class-for="QueueProcessingOrder">
+    <label asp-for="QueueProcessingOrder" class="ocat-label">@T["Queue processing order"]</label>
+    <div class="ocat-limited">
+        <select asp-for="QueueProcessingOrder" asp-items="Model.QueueProcessingOrders" class="form-select"></select>
+        <span asp-validation-for="QueueProcessingOrder"></span>
+        <span class="hint">@T["Choose whether waiting requests are handled in arrival order or whether the newest waiting request gets the next free slot first."]</span>
+    </div>
+</div>
