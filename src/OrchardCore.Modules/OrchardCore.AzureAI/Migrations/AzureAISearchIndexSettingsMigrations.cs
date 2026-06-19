@@ -36,7 +36,12 @@ internal sealed class AzureAISearchIndexSettingsMigrations : DataMigration
 
     public static int Create()
     {
-        return 2;
+        // Return 1 (not the latest version) so that UpdateFrom1 runs and performs the conversion of legacy
+        // AzureAISearchIndexSettingsDocument data into the new index profile structure. Sites upgrading from a
+        // version that did not have this migration have no recorded version, so Create is invoked; returning the
+        // latest version here would skip UpdateFrom1 and the legacy indexes would never be migrated. For brand new
+        // installations UpdateFrom1 is a safe no-op because there is no legacy document to convert.
+        return 1;
     }
 
     public int UpdateFrom1()
@@ -201,7 +206,7 @@ internal sealed class AzureAISearchIndexSettingsMigrations : DataMigration
                     {
                         var map = indexMapping.ToObject<AzureAISearchIndexMap>();
 
-                        if (azureMetadata.IndexMappings.Any(map => map.AzureFieldKey.EqualsOrdinalIgnoreCase(map.AzureFieldKey)))
+                        if (azureMetadata.IndexMappings.Any(existing => existing.AzureFieldKey.EqualsOrdinalIgnoreCase(map.AzureFieldKey)))
                         {
                             continue;
                         }

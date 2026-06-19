@@ -287,6 +287,29 @@ public class ZoneShapesTests
         Assert.Equal(string.Empty, html);
     }
 
+    [Fact]
+    public async Task ContentZone_WithoutGrouping_ShouldPreserveExistingPositionOrder()
+    {
+        // Arrange
+        var first = CreateTestShape("First");
+        var second = CreateTestShape("Second");
+        var third = CreateTestShape("Third");
+
+        var zone = new Shape();
+        await zone.AddAsync(third, "3");
+        await zone.AddAsync(first, "1");
+        await zone.AddAsync(second, "2");
+
+        // Act
+        dynamic dynamicZone = zone;
+        var result = await _zoneShapes.ContentZone(_displayHelper, dynamicZone, _shapeFactory);
+
+        // Assert
+        var html = GetHtmlString(result);
+        Assert.True(html.IndexOf("First", StringComparison.Ordinal) < html.IndexOf("Second", StringComparison.Ordinal));
+        Assert.True(html.IndexOf("Second", StringComparison.Ordinal) < html.IndexOf("Third", StringComparison.Ordinal));
+    }
+
     #endregion
 
     #region ContentZone Tests - Tab Grouping
@@ -570,9 +593,9 @@ public class ZoneShapesTests
     }
 
     [Fact]
-    public async Task ColumnGrouping_WithSingleColumn_ShouldRenderDirectly()
+    public async Task ColumnGrouping_WithSameColumnName_ShouldCreateSeparateColumns()
     {
-        // Arrange
+        // Arrange - items with same column name each get their own column wrapper
         var shape1 = CreateShapeWithColumnGrouping("Col1", "1", null);
         var shape2 = CreateShapeWithColumnGrouping("Col1", "2", null);
 
@@ -589,12 +612,16 @@ public class ZoneShapesTests
         // Assert
         Assert.NotNull(result);
         var html = GetHtmlString(result);
-        // Should render shapes directly without container
-        Assert.DoesNotContain("row", html);
-        Assert.Contains("<div>TestShape</div>", html);
+        // Each item should get its own column wrapper in a row
+        Assert.Contains("row", html);
+        Assert.Contains("ta-col-grouping", html);
+        Assert.Contains("column-col1", html);
         // Verify there are 2 shapes rendered
         var shapeCount = System.Text.RegularExpressions.Regex.Count(html, "<div>TestShape</div>");
         Assert.Equal(2, shapeCount);
+        // Verify there are 2 separate column wrappers
+        var colGroupCount = System.Text.RegularExpressions.Regex.Count(html, "ta-col-grouping");
+        Assert.Equal(2, colGroupCount);
     }
 
     [Fact]
@@ -709,7 +736,7 @@ public class ZoneShapesTests
     }
 
     [Fact]
-    public async Task ColumnGrouping_WithContentKey_ShouldHandleDefault()
+    public async Task ColumnGrouping_WithContentKey_ShouldRenderNonColumnItemsOutsideRow()
     {
         // Arrange
         var shape1 = CreateShapeWithColumnGrouping("Col1", "1", null);
@@ -728,13 +755,115 @@ public class ZoneShapesTests
         // Assert
         Assert.NotNull(result);
         var html = GetHtmlString(result);
-        // Should handle both grouped and ungrouped shapes
+        // Should create a row for column items only
         Assert.Contains("row", html);
         Assert.Contains("ta-col-grouping", html);
-        Assert.Contains("column-content", html);
         Assert.Contains("column-col1", html);
-        Assert.Contains("col-12 col-md", html);
-        Assert.Contains("<div>TestShape</div>", html);
+        // Non-column items should NOT be inside the row as a "column-content" div
+        Assert.DoesNotContain("column-content", html);
+        // Both shapes should still be rendered
+        var shapeCount = System.Text.RegularExpressions.Regex.Count(html, "<div>TestShape</div>");
+        Assert.Equal(2, shapeCount);
+    }
+
+    [Fact]
+    public async Task ColumnGrouping_NonColumnItemsAfterColumns_ShouldRenderAfterRow()
+    {
+        // Arrange - column items first, then non-column item
+        var shape1 = CreateShapeWithColumnGrouping("Left", "1", "4");
+        var shape2 = CreateShapeWithColumnGrouping("Right", "2", "8");
+        var shape3 = CreateShapeWithoutGrouping(); // Goes to "Content" key, after columns
+
+        var grouping = CreateMockGrouping(shape1, shape2, shape3);
+        var viewModel = new GroupingViewModel
+        {
+            Identifier = "test-id",
+            Grouping = grouping,
+        };
+
+        // Act
+        var result = await _zoneShapes.ColumnGrouping(_displayHelper, viewModel, _shapeFactory);
+
+        // Assert
+        Assert.NotNull(result);
+        var html = GetHtmlString(result);
+        // Should have a row with column items
+        Assert.Contains("row", html);
+        Assert.Contains("column-left", html);
+        Assert.Contains("column-right", html);
+        Assert.Contains("col-12 col-md-4", html);
+        Assert.Contains("col-12 col-md-8", html);
+        // Non-column item should NOT be in a column wrapper
+        Assert.DoesNotContain("column-content", html);
+        // Non-column item should appear after the row
+        var rowEndIndex = html.LastIndexOf("</div></div>", StringComparison.Ordinal);
+        var lastShapeIndex = html.LastIndexOf("<div>TestShape</div>", StringComparison.Ordinal);
+        Assert.True(lastShapeIndex > html.IndexOf("row", StringComparison.Ordinal), "Non-column shape should appear after the row starts");
+    }
+
+    [Fact]
+    public async Task ColumnGrouping_NonColumnItemsBeforeColumns_ShouldRenderBeforeRow()
+    {
+        // Arrange - non-column item first, then column items
+        var shape1 = CreateShapeWithoutGrouping(); // Goes to "Content" key, before columns
+        var shape2 = CreateShapeWithColumnGrouping("Left", "1", "6");
+        var shape3 = CreateShapeWithColumnGrouping("Right", "2", "6");
+
+        var grouping = CreateMockGrouping(shape1, shape2, shape3);
+        var viewModel = new GroupingViewModel
+        {
+            Identifier = "test-id",
+            Grouping = grouping,
+        };
+
+        // Act
+        var result = await _zoneShapes.ColumnGrouping(_displayHelper, viewModel, _shapeFactory);
+
+        // Assert
+        Assert.NotNull(result);
+        var html = GetHtmlString(result);
+        // Should have a row with column items
+        Assert.Contains("row", html);
+        Assert.Contains("column-left", html);
+        Assert.Contains("column-right", html);
+        // Non-column item should appear before the row
+        var firstShapeIndex = html.IndexOf("<div>TestShape</div>", StringComparison.Ordinal);
+        var rowIndex = html.IndexOf("row", StringComparison.Ordinal);
+        Assert.True(firstShapeIndex < rowIndex, "Non-column shape should appear before the row");
+    }
+
+    [Fact]
+    public async Task ColumnGrouping_ShouldPreserveExistingPositionOrderForNonColumnItems()
+    {
+        // Arrange
+        var beforeSecond = CreateTestShape("BeforeSecond");
+        var beforeFirst = CreateTestShape("BeforeFirst");
+        var column = CreateShapeWithColumnGrouping("Center", "1", null);
+        var afterSecond = CreateTestShape("AfterSecond");
+        var afterFirst = CreateTestShape("AfterFirst");
+
+        var zone = new Shape();
+        await zone.AddAsync(afterSecond, "5");
+        await zone.AddAsync(column, "3");
+        await zone.AddAsync(beforeSecond, "2");
+        await zone.AddAsync(afterFirst, "4");
+        await zone.AddAsync(beforeFirst, "1");
+
+        var grouping = zone.Cast<object>().ToLookup(_ => "TestGroup").First();
+        var viewModel = new GroupingViewModel
+        {
+            Identifier = "test-id",
+            Grouping = grouping,
+        };
+
+        // Act
+        var result = await _zoneShapes.ColumnGrouping(_displayHelper, viewModel, _shapeFactory);
+
+        // Assert
+        var html = GetHtmlString(result);
+        Assert.True(html.IndexOf("BeforeFirst", StringComparison.Ordinal) < html.IndexOf("BeforeSecond", StringComparison.Ordinal));
+        Assert.True(html.IndexOf("BeforeSecond", StringComparison.Ordinal) < html.IndexOf("row", StringComparison.Ordinal));
+        Assert.True(html.LastIndexOf("AfterFirst", StringComparison.Ordinal) < html.LastIndexOf("AfterSecond", StringComparison.Ordinal));
     }
 
     #endregion

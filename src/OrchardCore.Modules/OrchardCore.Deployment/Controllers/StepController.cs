@@ -188,7 +188,9 @@ public sealed class StepController : Controller
         }
 
         await _notifier.ErrorAsync(H["The deployment plan step has validation errors."]);
+        model.DeploymentStep = step;
         model.Editor = editor;
+        model.Editor.DeploymentStep = step;
 
         // If we got this far, something failed, redisplay form
         return View(model);

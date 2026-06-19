@@ -180,9 +180,11 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <div class="mb-3">
-                    <label for="input" class="form-label" id="input-label">@T["Folder name"]</label>
-                    <input type="text" id="create-folder-name" class="form-control">
+                <div class="ocat-wrapper">
+                    <label for="create-folder-name" class="ocat-label" id="input-label">@T["Folder name"]</label>
+                    <div class="ocat-end">
+                        <input type="text" id="create-folder-name" class="form-control">
+                    </div>
                 </div>
                 <div id="createFolderModal-errors"></div>
             </div>
@@ -202,10 +204,12 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <div class="mb-3">
-                    <label for="input" class="form-label" id="input-label">@T["New Name"]</label>
-                    <input type="text" id="new-item-name" class="form-control">
-                    <input type="hidden" id="old-item-name" value="">
+                <div class="ocat-wrapper">
+                    <label for="new-item-name" class="ocat-label" id="input-label">@T["New Name"]</label>
+                    <div class="ocat-end">
+                        <input type="text" id="new-item-name" class="form-control">
+                        <input type="hidden" id="old-item-name" value="">
+                    </div>
                 </div>
                 <div id="renameMediaModal-errors"></div>
             </div>

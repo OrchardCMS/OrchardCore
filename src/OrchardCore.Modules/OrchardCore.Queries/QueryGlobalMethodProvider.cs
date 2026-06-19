@@ -17,24 +17,29 @@ public sealed class QueryGlobalMethodProvider : IGlobalMethodProvider
         {
             Name = "executeQuery",
             Method = serviceProvider => (Func<string, object, object>)((name, parameters) =>
-            {
-                var queryManager = serviceProvider.GetRequiredService<IQueryManager>();
-                var query = queryManager.GetQueryAsync(name).GetAwaiter().GetResult();
-
-                if (query == null)
-                {
-                    return null;
-                }
-
-                var result = queryManager.ExecuteQueryAsync(query, (IDictionary<string, object>)parameters).GetAwaiter().GetResult();
-
-                return result.Items;
-            }),
+                ExecuteQueryAsync(serviceProvider, name, parameters).GetAwaiter().GetResult()),
+            AsyncMethod = serviceProvider => (Func<string, object, Task<object>>)((name, parameters) =>
+                ExecuteQueryAsync(serviceProvider, name, parameters)),
         };
     }
 
     public IEnumerable<GlobalMethod> GetMethods()
     {
         return [_executeQuery];
+    }
+
+    private static async Task<object> ExecuteQueryAsync(IServiceProvider serviceProvider, string name, object parameters)
+    {
+        var queryManager = serviceProvider.GetRequiredService<IQueryManager>();
+        var query = await queryManager.GetQueryAsync(name);
+
+        if (query == null)
+        {
+            return null;
+        }
+
+        var result = await queryManager.ExecuteQueryAsync(query, (IDictionary<string, object>)parameters);
+
+        return result.Items;
     }
 }

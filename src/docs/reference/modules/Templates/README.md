@@ -339,7 +339,7 @@ This template is called when a content part is rendered for a given stereo type,
 
 ### `[Stereotype]_[DisplayType]__[PartType]__[PartName]`
 
-This template is called when a content part is a re-usable named part and rendered for a given stereotype, with or without a given display type.
+This template is called when a content part is a reusable named part and rendered for a given stereotype, with or without a given display type.
 
 #### Stereotype with Part Type Examples
 
@@ -350,7 +350,7 @@ This template is called when a content part is a re-usable named part and render
 
 ### `[Stereotype]_[DisplayType]__[PartType]__[ShapeType]`
 
-This template is called when a custom shape type is rendered  for a given stereotype type, with or without a given display type.
+This template is called when a custom shape type is rendered for a given stereotype type, with or without a given display type.
 
 #### Stereotype with Part Name and Shape Examples
 
@@ -361,7 +361,7 @@ This template is called when a custom shape type is rendered  for a given stereo
 
 ### `[Stereotype]_[DisplayType]__[PartType]__[PartName]__[ShapeType]`
 
-This template is called for re-usable named content part with  custom shape type and rendered for a given stereotype type, with or without a given display type.
+This template is called for a reusable named content part with a custom shape type and rendered for a given stereotype type, with or without a given display type.
 
 #### Stereotype with Part Name and Custom Shape Examples
 
@@ -735,7 +735,7 @@ This morphing behavior allows you to customize the icon and text independently b
 === "Razor"
 
     ```cshtml
-    <span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@Model.Title">
+    <span class="badge ta-badge fw-normal" data-bs-toggle="tooltip" title="@Model.Title">
         @await DisplayAsAsync(Model, "UserDisplayNameIcon")
         @await DisplayAsAsync(Model, "UserDisplayNameText")
     </span>
@@ -744,7 +744,7 @@ This morphing behavior allows you to customize the icon and text independently b
 === "Liquid"
 
     ```liquid
-    <span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="{{ Model.Title }}">
+    <span class="badge ta-badge fw-normal" data-bs-toggle="tooltip" title="{{ Model.Title }}">
         {{ "UserDisplayNameIcon" | shape_new | shape_render }}
         {{ "UserDisplayNameText" | shape_new | shape_render }}
     </span>
@@ -940,7 +940,7 @@ Create a user-specific template for a particular username (e.g., for user "admin
     **Filename:** `UserDisplayName-admin.SummaryAdmin.cshtml`
 
     ```cshtml
-    <span class="badge ta-badge font-weight-normal text-danger" data-bs-toggle="tooltip" title="@Model.Title">
+    <span class="badge ta-badge fw-normal text-danger" data-bs-toggle="tooltip" title="@Model.Title">
         <i class="fa-solid fa-user-shield" aria-hidden="true"></i>
         <strong>@Model.UserName</strong>
     </span>
@@ -951,7 +951,7 @@ Create a user-specific template for a particular username (e.g., for user "admin
     **Filename:** `UserDisplayName-admin.SummaryAdmin.liquid`
 
     ```liquid
-    <span class="badge ta-badge font-weight-normal text-danger" data-bs-toggle="tooltip" title="{{ Model.Title }}">
+    <span class="badge ta-badge fw-normal text-danger" data-bs-toggle="tooltip" title="{{ Model.Title }}">
         <i class="fa-solid fa-user-shield" aria-hidden="true"></i>
         <strong>{{ Model.UserName }}</strong>
     </span>

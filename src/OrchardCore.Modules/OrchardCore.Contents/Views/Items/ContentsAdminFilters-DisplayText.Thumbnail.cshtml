@@ -3,8 +3,12 @@
     var term = Model.Value.FilterResult.FirstOrDefault(x => x.TermName == "text");
 }
 
-<h4 class="card-title">@T["Display Text"]</h4>
-<pre class="mb-3">@(term?.ToString() ?? "text:...")</pre>
+<div class="ocat-wrapper">
+    <h4 class="card-title ocat-label">@T["Display Text"]</h4>
+    <div class="ocat-end">
+        <pre>@(term?.ToString() ?? "text:...")</pre>
+    </div>
+</div>
 <p>@T["Filters on the Display Text of a content item."]</p>
 <div class="d-block text-end">
     <span>

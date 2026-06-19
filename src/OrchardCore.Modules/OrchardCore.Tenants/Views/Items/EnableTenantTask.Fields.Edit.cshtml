@@ -1,8 +1,11 @@
 @using OrchardCore.Tenants.Workflows.ViewModels
 @model EnableTenantTaskViewModel
 
-<div class="mb-3" asp-validation-class-for="TenantNameExpression">
-    <label asp-for="TenantNameExpression" class="form-label">@T["Tenant name"] <span asp-validation-for="TenantNameExpression"></span></label>
-    <input type="text" asp-for="TenantNameExpression" class="form-control code" autofocus />
-    <span class="hint">@T["Select the name of the tenant to enable."]</span>
+<div class="ocat-wrapper" asp-validation-class-for="TenantNameExpression">
+    <label asp-for="TenantNameExpression" class="ocat-label">@T["Tenant name"]</label>
+    <div class="ocat-end">
+        <input type="text" asp-for="TenantNameExpression" class="form-control code" autofocus />
+        <span asp-validation-for="TenantNameExpression"></span>
+        <span class="hint">@T["Select the name of the tenant to enable."]</span>
+    </div>
 </div>

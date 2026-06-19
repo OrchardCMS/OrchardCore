@@ -85,4 +85,8 @@
 
   <Import Project="..\..\src\OrchardCore.Build\OrchardCore.Commons.targets" />
 
+  <Target Name="EnsureTestWwwRootExists" BeforeTargets="Build">
+    <MakeDir Directories="$(OutputPath)wwwroot" />
+  </Target>
+
 </Project>

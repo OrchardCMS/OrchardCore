@@ -15572,3 +15572,21 @@ input[type=password]::-ms-reveal,
 input[type=password]::-ms-clear {
   display: none;
 }
+
+.password-requirements-popover {
+  position: absolute;
+}
+
+.password-requirements-popover .popover-arrow {
+  position: absolute;
+}
+
+[dir="ltr"] .password-requirements-popover .popover-arrow {
+  left: 0;
+  transform: translate(119px, 0);
+}
+
+[dir="rtl"] .password-requirements-popover .popover-arrow {
+  right: 0;
+  transform: translate(-119px, 0);
+}
