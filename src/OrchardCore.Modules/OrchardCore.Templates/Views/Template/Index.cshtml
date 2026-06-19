@@ -108,6 +108,10 @@ else
         var selectedItems = document.getElementById("selected-items");
         var itemsCheckboxes = document.querySelectorAll("input[type='checkbox'][name='itemIds']");
 
+        if (!selectAllCtrl) {
+            return;
+        }
+
         function getSelectedItemsCount() {
             return document.querySelectorAll("input[type='checkbox'][name='itemIds']:checked").length;
         }
