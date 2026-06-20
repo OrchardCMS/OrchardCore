@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
@@ -9,6 +10,7 @@ using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Indexing;
 using OrchardCore.Modules;
+using OrchardCore.Modules.FileProviders;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Seo.Drivers;
@@ -44,6 +46,19 @@ public sealed class Startup : StartupBase
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
     {
-        app.UseMiddleware<RobotsMiddleware>();
+        var path = "/" + SeoConstants.RobotsFileName;
+
+        routes.Map(path, RequestDelegate);
+        routes.Map($"{path}/{{**robotsPath}}", RequestDelegate);
+    }
+
+    private static Task RequestDelegate(HttpContext context)
+    {
+        var middleware = new RobotsMiddleware(
+            static _ => Task.CompletedTask,
+            context.RequestServices.GetRequiredService<IStaticFileProvider>(),
+            context.RequestServices.GetServices<IRobotsProvider>());
+
+        return middleware.Invoke(context);
     }
 }
