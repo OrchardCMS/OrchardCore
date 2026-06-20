@@ -1,0 +1,46 @@
+@model OrchardCore.RateLimits.ViewModels.TokenBucketRateLimiterViewModel
+
+<div class="ocat-limited-wrapper" asp-validation-class-for="TokenLimit">
+    <label asp-for="TokenLimit" class="ocat-label">@T["Token limit"]</label>
+    <div class="ocat-limited">
+        <input asp-for="TokenLimit" type="number" min="1" class="form-control" />
+        <span asp-validation-for="TokenLimit"></span>
+        <span class="hint">@T["The bucket size. This is the largest burst of requests a client can use at once before it must wait for tokens to refill."]</span>
+    </div>
+</div>
+
+<div class="ocat-limited-wrapper" asp-validation-class-for="TokensPerPeriod">
+    <label asp-for="TokensPerPeriod" class="ocat-label">@T["Tokens per period"]</label>
+    <div class="ocat-limited">
+        <input asp-for="TokensPerPeriod" type="number" min="1" class="form-control" />
+        <span asp-validation-for="TokensPerPeriod"></span>
+        <span class="hint">@T["How many requests' worth of capacity are added back each refill period."]</span>
+    </div>
+</div>
+
+<div class="ocat-limited-wrapper" asp-validation-class-for="ReplenishmentPeriodSeconds">
+    <label asp-for="ReplenishmentPeriodSeconds" class="ocat-label">@T["Replenishment seconds"]</label>
+    <div class="ocat-limited">
+        <input asp-for="ReplenishmentPeriodSeconds" type="number" min="1" class="form-control" />
+        <span asp-validation-for="ReplenishmentPeriodSeconds"></span>
+        <span class="hint">@T["How often Orchard adds tokens back. For example, 10 with 5 tokens per period adds 5 more tokens every 10 seconds."]</span>
+    </div>
+</div>
+
+<div class="ocat-limited-wrapper" asp-validation-class-for="QueueLimit">
+    <label asp-for="QueueLimit" class="ocat-label">@T["Queue limit"]</label>
+    <div class="ocat-limited">
+        <input asp-for="QueueLimit" type="number" min="0" class="form-control" />
+        <span asp-validation-for="QueueLimit"></span>
+        <span class="hint">@T["How many extra requests can wait when the bucket is empty. Use 0 to reject extras immediately instead of making them wait."]</span>
+    </div>
+</div>
+
+<div class="ocat-limited-wrapper" asp-validation-class-for="QueueProcessingOrder">
+    <label asp-for="QueueProcessingOrder" class="ocat-label">@T["Queue processing order"]</label>
+    <div class="ocat-limited">
+        <select asp-for="QueueProcessingOrder" asp-items="Model.QueueProcessingOrders" class="form-select"></select>
+        <span asp-validation-for="QueueProcessingOrder"></span>
+        <span class="hint">@T["Choose whether waiting requests are handled in arrival order or whether the newest waiting request gets the next token first."]</span>
+    </div>
+</div>

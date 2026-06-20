@@ -24,8 +24,8 @@
     </div>
 </div>
 
-<script at="Foot" depends-on="jQuery, easymde-mediatoolbar">
-    $(function () {
+<script at="Foot" depends-on="easymde-mediatoolbar">
+    document.addEventListener('DOMContentLoaded', function () {
         var markdownElement = document.getElementById('@Html.IdFor(m => m.Markdown)');
         var isRtl = '@(culture.IsRightToLeft() ? "true" : "false")';
 
@@ -72,13 +72,17 @@ else
             initializeMdeShortcodeWrapper(mde);
 
             mde.codemirror.on('change', function () {
-                $(document).trigger('contentpreview:render');
+                document.dispatchEvent(new Event('contentpreview:render'));
             });
 
             if (isRtl === 'true')
             {
-                $('.editor-toolbar').attr('style', 'direction:rtl;text-align:right');
-                $('.CodeMirror').attr('style', 'text-align:right');
+                document.querySelectorAll('.editor-toolbar').forEach(function (element) {
+                    element.setAttribute('style', 'direction:rtl;text-align:right');
+                });
+                document.querySelectorAll('.CodeMirror').forEach(function (element) {
+                    element.setAttribute('style', 'text-align:right');
+                });
             }
         }
     });

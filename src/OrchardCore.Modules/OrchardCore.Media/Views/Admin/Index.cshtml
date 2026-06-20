@@ -7,24 +7,29 @@
 
 <script at="Foot">
     @* mediaApp is absolutely positioned. When a warning is shown we need to move it down to avoid overlapping. *@
-    $(function () {
-        if (!$('.message').length) { return; };
+    document.addEventListener('DOMContentLoaded', function () {
+        var messages = document.querySelectorAll('.message');
+        if (!messages.length) { return; };
         var mediaAppInitialTop = 0;
         var mediaAppLoaded = false;
 
         var repositionMediaApp = function () {
 
             var messagesHeight = 0;
-            $('.message').each(function () {
-                messagesHeight += $(this).outerHeight(true);
+            messages.forEach(function (message) {
+                var style = window.getComputedStyle(message);
+                messagesHeight += message.offsetHeight + (parseFloat(style.marginTop) || 0) + (parseFloat(style.marginBottom) || 0);
             });
 
             var newTop = mediaAppInitialTop + messagesHeight;
+            var mediaApp = document.getElementById('mediaApp');
 
-            $('#mediaApp').css('top', newTop + 'px');
+            if (mediaApp) {
+                mediaApp.style.top = newTop + 'px';
+            }
         }
 
-        $(window).on('resize', function () {
+        window.addEventListener('resize', function () {
             if (mediaAppLoaded) {
                 repositionMediaApp();
             }
@@ -32,8 +37,9 @@
 
         // before moving we need to wait until the vuejs mediaapp is loaded.
         var checkMediaAppIsLoaded = setInterval(function () {
-            if ($('#mediaApp').length) {
-                mediaAppInitialTop = $('#mediaApp').offset().top;
+            var mediaApp = document.getElementById('mediaApp');
+            if (mediaApp) {
+                mediaAppInitialTop = mediaApp.getBoundingClientRect().top + window.scrollY;
                 clearInterval(checkMediaAppIsLoaded);
                 mediaAppLoaded = true;
                 repositionMediaApp();

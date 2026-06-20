@@ -77,24 +77,33 @@
 </section>
 
 <script at="Foot" type="text/javascript">
-    $(function () {
-        $('.check-all-container').each(function () {
-            var container = $(this);
-            var master = container.find('input[type="checkbox"].check-all-master');
-            var slaves = container.find('.check-all-slave input[type="checkbox"]:not(:disabled)');
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.check-all-container').forEach(function (container) {
+            var master = container.querySelector('input[type="checkbox"].check-all-master');
+            var slaves = container.querySelectorAll('.check-all-slave input[type="checkbox"]:not(:disabled)');
 
-            var updateMaster = function () {
-                var allChecked = slaves.filter(':not(:checked)').length == 0;
-                master.prop('checked', allChecked);
+            if (!master) {
+                return;
             }
 
-            master.on('change', function () {
-                var isChecked = $(this).is(':checked');
-                slaves.prop('checked', isChecked);
+            var updateMaster = function () {
+                var allChecked = Array.from(slaves).filter(function (slave) {
+                    return !slave.checked;
+                }).length == 0;
+                master.checked = allChecked;
+            }
+
+            master.addEventListener('change', function () {
+                var isChecked = this.checked;
+                slaves.forEach(function (slave) {
+                    slave.checked = isChecked;
+                });
             });
 
-            slaves.on('change', function () {
-                updateMaster();
+            slaves.forEach(function (slave) {
+                slave.addEventListener('change', function () {
+                    updateMaster();
+                });
             });
 
             updateMaster();

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
@@ -7,6 +8,7 @@ using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
+using OrchardCore.RateLimits;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Users.Controllers;
 using OrchardCore.Users.Drivers;
@@ -110,6 +112,46 @@ public sealed class TwoFactorAuthenticationStartup : StartupBase
                 action = nameof(TwoFactorAuthenticationController.DisableTwoFactorAuthentication),
             }
         );
+    }
+}
+
+[Feature(UserConstants.Features.TwoFactorAuthentication)]
+[RequireFeatures("OrchardCore.RateLimits")]
+public sealed class TwoFactorAuthenticationRateLimitsStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.Configure<RateLimitsOptions>(options =>
+        {
+            options.AddRouteRateLimit(RateLimitRouteNames.LoginWithTwoFactorAuthentication, HttpMethods.Post, RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(UserRateLimiterPolicyNames.TwoFactorAuthentication, 5));
+            options.AddRouteRateLimit(RateLimitRouteNames.LoginWithRecoveryCode, HttpMethods.Post, RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(UserRateLimiterPolicyNames.TwoFactorRecovery, 3));
+        });
+    }
+}
+
+[Feature(UserConstants.Features.EmailAuthenticator)]
+[RequireFeatures("OrchardCore.RateLimits", UserConstants.Features.TwoFactorAuthentication)]
+public sealed class EmailAuthenticatorRateLimitsStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.Configure<RateLimitsOptions>(options =>
+        {
+            options.AddRouteRateLimit(Endpoints.EmailAuthenticator.SendCode.RouteName, HttpMethods.Post, RateLimitPartitionHelpers.CreateFixedWindowPerIpPolicy(UserRateLimiterPolicyNames.TwoFactorCodeSend, 2, TimeSpan.FromMinutes(1)));
+        });
+    }
+}
+
+[Feature(UserConstants.Features.SmsAuthenticator)]
+[RequireFeatures("OrchardCore.RateLimits", UserConstants.Features.TwoFactorAuthentication)]
+public sealed class SmsAuthenticatorRateLimitsStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.Configure<RateLimitsOptions>(options =>
+        {
+            options.AddRouteRateLimit(Endpoints.SmsAuthenticator.SendCode.RouteName, HttpMethods.Post, RateLimitPartitionHelpers.CreateFixedWindowPerIpPolicy(UserRateLimiterPolicyNames.TwoFactorCodeSend, 2, TimeSpan.FromMinutes(1)));
+        });
     }
 }
 

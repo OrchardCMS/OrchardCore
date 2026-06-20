@@ -87,6 +87,7 @@ public sealed class Startup : StartupBase
         services.AddResourceConfiguration<ResourceManagementOptionsConfiguration>();
 
         services.AddTransient<IConfigureOptions<MediaOptions>, MediaOptionsConfiguration>();
+        services.TryAddTransient<FileCreationService>();
 
         services.AddSingleton<IMediaFileProvider>(serviceProvider =>
         {
