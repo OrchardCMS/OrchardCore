@@ -3,6 +3,7 @@ using GraphQL.DataLoader;
 using GraphQL.Execution;
 using GraphQL.Validation;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -88,6 +89,26 @@ public sealed class Startup : StartupBase
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
     {
-        app.UseMiddleware<GraphQLMiddleware>();
+        var path = serviceProvider.GetRequiredService<IOptions<GraphQLSettings>>().Value.Path;
+
+        if (!path.HasValue)
+        {
+            return;
+        }
+
+        routes.Map(path, RequestDelegate);
+
+        var prefixPattern = path == "/"
+            ? "/{**graphQLPath}"
+            : $"{path}/{{**graphQLPath}}";
+
+        routes.Map(prefixPattern, RequestDelegate);
+    }
+
+    private static Task RequestDelegate(HttpContext context)
+    {
+        var middleware = context.RequestServices.GetRequiredService<GraphQLMiddleware>();
+
+        return middleware.InvokeAsync(context, _ => Task.CompletedTask);
     }
 }
