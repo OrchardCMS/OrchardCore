@@ -168,7 +168,7 @@ public class ArgumentsFromInterceptor : IIncrementalGenerator
 
     private static void GenerateInterceptor(StringBuilder sb, InvocationInfo info)
     {
-        var uniqueId = Guid.CreateVersion7().ToString("N");
+        var uniqueId = Guid.NewGuid().ToString("N");
 
         sb.AppendLine($"    file static class Interceptor_{uniqueId}");
         sb.AppendLine("    {");
