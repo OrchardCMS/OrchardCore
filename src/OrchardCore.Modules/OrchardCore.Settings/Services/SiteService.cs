@@ -52,7 +52,7 @@ public class SiteService : ISiteService
     {
         return Task.FromResult(new SiteSettings
         {
-            SiteSalt = Guid.NewGuid().ToString("N"),
+            SiteSalt = Guid.CreateVersion7().ToString("N"),
             SiteName = "My Orchard Project Application",
             PageTitleFormat = "{% page_title Site.SiteName, position: \"after\", separator: \" - \" %}",
             TimeZoneId = _clock.GetSystemTimeZone().TimeZoneId,

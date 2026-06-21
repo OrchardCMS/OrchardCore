@@ -25,7 +25,7 @@
 <div>
     @foreach (var zone in Model.AvailableZones)
     {
-        var widgetTemplatePlaceholderId = $"z{Guid.NewGuid():n}";
+        var widgetTemplatePlaceholderId = $"z{Guid.CreateVersion7():n}";
 
             <div class="widget-list-zone card my-2">
                 <div class="card-header text-muted">
@@ -170,7 +170,7 @@
         {
             // Render a mock widget so that its resources are included in the page
             var contentItem = await ContentManager.NewAsync(type.Name);
-            await DisplayAsync(await ContentItemDisplayManager.BuildEditorAsync(contentItem, Model.Updater, true, string.Empty, $"z{Guid.NewGuid():n}"));
+            await DisplayAsync(await ContentItemDisplayManager.BuildEditorAsync(contentItem, Model.Updater, true, string.Empty, $"z{Guid.CreateVersion7():n}"));
         }
         
         <script asp-name="widgetslist-edit" at="Foot"></script>

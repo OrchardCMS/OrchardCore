@@ -12,7 +12,7 @@
     var fieldName = Model.PartFieldDefinition.Name;
     var contentTypeName = Model.TypePartDefinition.Name;
     var searchUrl = Url.RouteUrl(new { area = "OrchardCore.ContentFields", controller = "UserPickerAdmin", action = "SearchUsers", part = partName, field = fieldName, contentType = contentTypeName });
-    var vueElementId = $"UserPicker_{partName}_{fieldName}_{Guid.NewGuid().ToString("n")}";
+    var vueElementId = $"UserPicker_{partName}_{fieldName}_{Guid.CreateVersion7().ToString("n")}";
     var multiple = settings.Multiple.ToString().ToLowerInvariant();
     string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), DataLocalizationContext.ContentField(Model.PartFieldDefinition.PartDefinition.Name)];
 }

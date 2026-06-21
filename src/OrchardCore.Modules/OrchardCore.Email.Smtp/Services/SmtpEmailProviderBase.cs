@@ -192,7 +192,7 @@ public abstract class SmtpEmailProviderBase : IEmailProvider
     {
         Directory.CreateDirectory(pickupDirectory);
 
-        var mailPath = Path.Combine(pickupDirectory, Guid.NewGuid().ToString() + EmailExtension);
+        var mailPath = Path.Combine(pickupDirectory, Guid.CreateVersion7().ToString() + EmailExtension);
 
         return message.WriteToAsync(mailPath, CancellationToken.None);
     }

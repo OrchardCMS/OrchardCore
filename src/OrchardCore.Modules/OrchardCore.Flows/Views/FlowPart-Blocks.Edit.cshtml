@@ -134,7 +134,7 @@
     {
         Context.Items["FlowPart.Edit:" + type.Name] = new object();
         var contentItem = await ContentManager.NewAsync(type.Name);
-        await DisplayAsync(await ContentItemDisplayManager.BuildEditorAsync(contentItem, Model.Updater, true, string.Empty, $"z{Guid.NewGuid():n}"));
+        await DisplayAsync(await ContentItemDisplayManager.BuildEditorAsync(contentItem, Model.Updater, true, string.Empty, $"z{Guid.CreateVersion7():n}"));
     }
 }
 

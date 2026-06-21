@@ -13,7 +13,7 @@
     var editUrl = Url.RouteUrl(new { area = "OrchardCore.Contents", controller = "Admin", action = "Edit", contentItemId = "contentItemId", returnUrl = FullRequestPath });
     var viewUrl = Url.RouteUrl(new { area = "OrchardCore.Contents", controller = "Admin", action = "Display", contentItemId = "contentItemId" });
     var searchUrl = Url.RouteUrl(new { area = "OrchardCore.ContentFields", controller = "ContentPickerAdmin", action = "SearchContentItems", part = partName, field = fieldName });
-    var vueElementId = $"ContentPicker_{partName}_{fieldName}_{Guid.NewGuid().ToString("n")}";
+    var vueElementId = $"ContentPicker_{partName}_{fieldName}_{Guid.CreateVersion7().ToString("n")}";
     var multiple = settings.Multiple.ToString().ToLowerInvariant();
     string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), DataLocalizationContext.ContentField(Model.PartFieldDefinition.PartDefinition.Name)];
 }

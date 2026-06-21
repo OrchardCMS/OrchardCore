@@ -240,7 +240,7 @@ public class SetupService : ISetupService
                 return null;
             }
 
-            executionId = Guid.NewGuid().ToString("n");
+            executionId = Guid.CreateVersion7().ToString("n");
 
             var recipeExecutor = shellContext.ServiceProvider.GetRequiredService<IRecipeExecutor>();
             try

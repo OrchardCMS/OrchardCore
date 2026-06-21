@@ -97,7 +97,7 @@ public class DynamicCacheShapeDisplayEvents : IShapeDisplayEvents
             if (_cacheOptions.DebugMode)
             {
                 var contentBuilder = new HtmlContentBuilder();
-                var debugLog = Guid.NewGuid();
+                var debugLog = Guid.CreateVersion7();
 
                 contentBuilder.AppendLine();
                 contentBuilder.AppendHtmlLine($"<!-- START CACHED SHAPE: {cacheContext.CacheId} ({debugLog})");

@@ -106,7 +106,7 @@ public sealed class AdminController : Controller
 
         try
         {
-            var executionId = Guid.NewGuid().ToString("n");
+            var executionId = Guid.CreateVersion7().ToString("n");
 
             await _recipeExecutor.ExecuteAsync(executionId, recipe, environment, CancellationToken.None);
 

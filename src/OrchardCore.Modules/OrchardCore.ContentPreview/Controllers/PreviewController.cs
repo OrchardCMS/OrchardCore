@@ -120,7 +120,7 @@ public sealed class PreviewController : Controller
         // saves — this prevents the preview window from losing its BroadcastChannel
         // connection and keeps the token alive via sliding expiration.
         var existingToken = (string)Request.Form["PreviewToken"];
-        var token = string.IsNullOrEmpty(existingToken) ? Guid.NewGuid().ToString("N") : existingToken;
+        var token = string.IsNullOrEmpty(existingToken) ? Guid.CreateVersion7().ToString("N") : existingToken;
         var draft = new PreviewDraft { ContentItem = contentItem, PreviewUrl = previewUrl };
 
         await _distributedCache.SetAsync(

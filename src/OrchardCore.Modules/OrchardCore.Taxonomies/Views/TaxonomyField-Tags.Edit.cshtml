@@ -23,7 +23,7 @@
         open = false;
     }
 
-    var vueElementId = $"TaxonomyField-Tags_{partName}_{fieldName}_{Guid.NewGuid().ToString("n")}";
+    var vueElementId = $"TaxonomyField-Tags_{partName}_{fieldName}_{Guid.CreateVersion7().ToString("n")}";
     string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), DataLocalizationContext.ContentField(Model.PartFieldDefinition.PartDefinition.Name)];
 }
 

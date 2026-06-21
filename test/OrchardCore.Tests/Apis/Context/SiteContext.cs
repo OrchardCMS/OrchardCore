@@ -41,7 +41,7 @@ public class SiteContext : IDisposable
 
     public virtual async Task InitializeAsync()
     {
-        var tenantName = Guid.NewGuid().ToString("n");
+        var tenantName = Guid.CreateVersion7().ToString("n");
         var tablePrefix = await _tablePrefixGenerator.GeneratePrefixAsync();
 
         var createModel = new Tenants.Models.TenantApiModel
@@ -87,7 +87,7 @@ public class SiteContext : IDisposable
 
         if (PermissionsContext != null)
         {
-            var permissionContextKey = Guid.NewGuid().ToString();
+            var permissionContextKey = Guid.CreateVersion7().ToString();
             SiteStartup.PermissionsContexts.TryAdd(permissionContextKey, PermissionsContext);
             Client.DefaultRequestHeaders.Add("PermissionsContext", permissionContextKey);
         }
@@ -163,7 +163,7 @@ public class SiteContext : IDisposable
             var recipe = recipes
                 .FirstOrDefault(recipe => recipe.RecipeFileInfo.Name == recipeName && recipe.BasePath == recipePath);
 
-            var executionId = Guid.NewGuid().ToString("n");
+            var executionId = Guid.CreateVersion7().ToString("n");
 
             await recipeExecutor.ExecuteAsync(
                 executionId,

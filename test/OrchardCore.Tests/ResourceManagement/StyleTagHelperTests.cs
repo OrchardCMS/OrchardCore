@@ -289,7 +289,7 @@ public class StyleTagHelperTests : IDisposable
             "style",
             new TagHelperAttributeList(),
             new Dictionary<object, object>(),
-            Guid.NewGuid().ToString("N"));
+            Guid.CreateVersion7().ToString("N"));
     }
 
     private static TagHelperOutput CreateTagHelperOutput()

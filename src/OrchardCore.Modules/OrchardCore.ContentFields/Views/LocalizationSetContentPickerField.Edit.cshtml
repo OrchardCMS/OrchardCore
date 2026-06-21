@@ -15,7 +15,7 @@
     var partName = Model.PartFieldDefinition.PartDefinition.Name;
     var fieldName = Model.PartFieldDefinition.Name;
     var searchUrl = Url.RouteUrl(new { area = "OrchardCore.ContentFields", controller = "LocalizationSetContentPickerAdmin", action = "SearchLocalizationSets", part = partName, field = fieldName });
-    var vueElementId = $"LocalizedContentPicker_{partName}_{fieldName}_{Guid.NewGuid().ToString("n")}";
+    var vueElementId = $"LocalizedContentPicker_{partName}_{fieldName}_{Guid.CreateVersion7().ToString("n")}";
     var multiple = settings.Multiple.ToString().ToLowerInvariant();
     string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), DataLocalizationContext.ContentField(Model.PartFieldDefinition.PartDefinition.Name)];
 }

@@ -8,7 +8,7 @@ public static class IdGenerator
     public static string GenerateId()
     {
         Span<byte> guidBytes = stackalloc byte[16];
-        Guid.NewGuid().TryWriteBytes(guidBytes);
+        Guid.CreateVersion7().TryWriteBytes(guidBytes);
 
         return string.Create(26, guidBytes, (buffer, guid) =>
         {

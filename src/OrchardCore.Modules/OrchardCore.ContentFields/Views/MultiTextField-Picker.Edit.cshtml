@@ -22,7 +22,7 @@
     var partName = Model.PartFieldDefinition.PartDefinition.Name;
     var fieldName = Model.PartFieldDefinition.Name;
 
-    var vueElementId = $"MultiTextField-Picker_{partName}_{fieldName}_{Guid.NewGuid().ToString("n")}";
+    var vueElementId = $"MultiTextField-Picker_{partName}_{fieldName}_{Guid.CreateVersion7().ToString("n")}";
 
     var valuesKey = Html.NameFor(x => x.Values);
     string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), DataLocalizationContext.ContentField(Model.PartFieldDefinition.PartDefinition.Name)];

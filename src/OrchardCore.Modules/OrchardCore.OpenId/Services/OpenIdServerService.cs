@@ -650,7 +650,7 @@ public class OpenIdServerService : IOpenIdServerService
     private async Task PersistCertificateAsync(DirectoryInfo directory, X509Certificate2 certificate)
     {
         var password = GeneratePassword();
-        var path = Path.Combine(directory.FullName, Guid.NewGuid().ToString());
+        var path = Path.Combine(directory.FullName, Guid.CreateVersion7().ToString());
 
         await File.WriteAllBytesAsync(Path.ChangeExtension(path, ".pfx"), certificate.Export(X509ContentType.Pfx, password));
         await File.WriteAllTextAsync(Path.ChangeExtension(path, ".pwd"), _dataProtector.Protect(password));

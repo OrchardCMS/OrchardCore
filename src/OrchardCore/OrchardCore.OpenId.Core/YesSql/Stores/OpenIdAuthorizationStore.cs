@@ -252,7 +252,7 @@ public class OpenIdAuthorizationStore<TAuthorization> : IOpenIdAuthorizationStor
 
     /// <inheritdoc/>
     public virtual ValueTask<TAuthorization> InstantiateAsync(CancellationToken cancellationToken)
-        => new(new TAuthorization { AuthorizationId = Guid.NewGuid().ToString("n") });
+        => new(new TAuthorization { AuthorizationId = Guid.CreateVersion7().ToString("n") });
 
     /// <inheritdoc/>
     public virtual IAsyncEnumerable<TAuthorization> ListAsync(int? count, int? offset, CancellationToken cancellationToken)

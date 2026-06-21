@@ -49,7 +49,7 @@ public class RemoteInstanceService
 
         remoteInstanceList.RemoteInstances.Add(new RemoteInstance
         {
-            Id = Guid.NewGuid().ToString("n"),
+            Id = Guid.CreateVersion7().ToString("n"),
             Name = name,
             Url = url,
             ClientName = clientName,

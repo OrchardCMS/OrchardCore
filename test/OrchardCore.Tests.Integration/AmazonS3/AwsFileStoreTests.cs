@@ -31,7 +31,7 @@ public sealed class AwsFileStoreTests : IAsyncLifetime
     public async ValueTask InitializeAsync()
     {
         var serviceUrl = GetServiceUrl();
-        _bucketName = $"test-{Guid.NewGuid():N}";
+        _bucketName = $"test-{Guid.CreateVersion7():N}";
 
         _s3Client = new AmazonS3Client(
             new BasicAWSCredentials("test", "test"),
