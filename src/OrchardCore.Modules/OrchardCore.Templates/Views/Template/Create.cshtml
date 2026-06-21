@@ -105,11 +105,17 @@
 
 
 <script at="Foot">
-    $(function () {
+    document.addEventListener('DOMContentLoaded', function () {
 
         function initializeTemplatePreview(element) {
 
-            var antiforgerytoken = $("[name='__RequestVerificationToken']").val();
+            var antiforgerytoken = document.querySelector("[name='__RequestVerificationToken']").value;
+
+            function toQueryString(data) {
+                return Object.keys(data).map(function (key) {
+                    return encodeURIComponent(key) + '=' + encodeURIComponent(data[key]);
+                }).join('&');
+            }
 
             sendFormData = function (element) {
 
@@ -119,7 +125,7 @@
                     '__RequestVerificationToken': antiforgerytoken
                 };
                 // store the form data to pass it in the event handler
-                localStorage.setItem('OrchardCore.templates', JSON.stringify($.param(formData)));
+                localStorage.setItem('OrchardCore.templates', JSON.stringify(toQueryString(formData)));
             }
 
             window.addEventListener('storage', function (ev) {
@@ -130,9 +136,9 @@
                 sendFormData(element);
             }, false);
 
-            $(element).on('change', function () { sendFormData(element); });
+            element.addEventListener('change', function () { sendFormData(element); });
 
-            $(window).on('unload', function () {
+            window.addEventListener('unload', function () {
                 localStorage.removeItem('OrchardCore.templates');
                 // this will raise an event in the preview window to notify that the live preview is no longer active.
                 localStorage.setItem('OrchardCore.templates:not-connected', '');
