@@ -4,5 +4,5 @@ namespace OrchardCore.Users.ViewModels;
 
 public class CustomUserSettingsEditViewModel
 {
-    public IShape Shape { get; set; }
+    public IShape Editor { get; set; }
 }

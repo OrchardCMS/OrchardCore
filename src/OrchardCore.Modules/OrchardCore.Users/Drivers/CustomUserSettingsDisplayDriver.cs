@@ -53,10 +53,10 @@ public sealed class CustomUserSettingsDisplayDriver : DisplayDriver<User>
 
         foreach (var contentTypeDefinition in contentTypeDefinitions)
         {
-            results.Add(Initialize<CustomUserSettingsEditViewModel>("CustomUserSettings", async model =>
+            results.Add(Factory("CustomUserSettings_SummaryAdmin", async builder =>
                 {
                     var contentItem = await GetUserSettingsAsync(user, contentTypeDefinition);
-                    model.Shape = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, updater: null, OrchardCoreConstants.DisplayType.SummaryAdmin);
+                    return await _contentItemDisplayManager.BuildDisplayAsync(contentItem, updater: null, OrchardCoreConstants.DisplayType.SummaryAdmin);
                 })
                 .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, PlacementInfo.HiddenLocation)
                 .Differentiator($"CustomUserSettings-{contentTypeDefinition.Name}")
@@ -83,7 +83,7 @@ public sealed class CustomUserSettingsDisplayDriver : DisplayDriver<User>
                 {
                     var isNew = false;
                     var contentItem = await GetUserSettingsAsync(user, contentTypeDefinition, () => isNew = true);
-                    model.Shape = await _contentItemDisplayManager.BuildEditorAsync(contentItem, context.Updater, isNew, context.GroupId, Prefix);
+                    model.Editor = await _contentItemDisplayManager.BuildEditorAsync(contentItem, context.Updater, isNew, context.GroupId, Prefix);
                 })
                 .Location($"Content:10#{contentTypeDefinition.DisplayName}")
                 .Differentiator($"CustomUserSettings-{contentTypeDefinition.Name}")
