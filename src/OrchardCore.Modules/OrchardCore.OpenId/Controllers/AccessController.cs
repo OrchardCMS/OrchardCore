@@ -17,8 +17,10 @@ using OrchardCore.Modules;
 using OrchardCore.OpenId.Abstractions.Managers;
 using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.ViewModels;
+using OrchardCore.RateLimits;
 using OrchardCore.Routing;
 using OrchardCore.Security.Services;
+using OrchardCore.Users;
 using OrchardCore.Users.Services;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 
@@ -272,8 +274,10 @@ public sealed class AccessController : Controller
         }
     }
 
-    [ActionName(nameof(Authorize)), DisableCors]
-    [FormValueRequired("submit.Deny"), HttpPost]
+    [ActionName(nameof(Authorize))]
+    [DisableCors]
+    [FormValueRequired("submit.Deny")]
+    [HttpPost]
     public IActionResult AuthorizeDeny()
     {
         var response = HttpContext.GetOpenIddictServerResponse();
@@ -295,7 +299,11 @@ public sealed class AccessController : Controller
         return Forbid(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
     }
 
-    [AllowAnonymous, DisableCors, HttpGet, HttpPost, IgnoreAntiforgeryToken]
+    [AllowAnonymous]
+    [DisableCors]
+    [HttpGet]
+    [HttpPost]
+    [IgnoreAntiforgeryToken]
     public async Task<IActionResult> Logout()
     {
         var response = HttpContext.GetOpenIddictServerResponse();
@@ -418,6 +426,7 @@ public sealed class AccessController : Controller
     [AllowAnonymous, HttpPost]
     [IgnoreAntiforgeryToken]
     [Produces(MediaTypeNames.Application.Json)]
+    [RateLimitGroup(UserRateLimiterPolicyNames.PasswordAuthentication)]
     public Task<IActionResult> Token()
     {
         // Warning: this action is decorated with IgnoreAntiforgeryTokenAttribute to override

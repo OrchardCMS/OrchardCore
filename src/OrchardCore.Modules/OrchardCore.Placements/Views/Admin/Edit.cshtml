@@ -57,7 +57,7 @@
 </form>
 
 <script at="Foot">
-    $(function () {
+    document.addEventListener('DOMContentLoaded', function () {
         var optionsTextArea = document.getElementById('@Html.IdFor(x => x.Nodes)');
         if (optionsTextArea) {
             var editor = CodeMirror.fromTextArea(optionsTextArea, {

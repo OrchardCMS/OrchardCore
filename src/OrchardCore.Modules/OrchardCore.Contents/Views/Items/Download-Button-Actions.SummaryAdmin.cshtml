@@ -30,17 +30,25 @@ else
 }
 
 <script at="Foot">
-    $(function () {
-        $('#@exportDraftId').on('click', function () {
-            $(this).closest(".dropdown-menu").prev().dropdown("toggle");
+    document.addEventListener('DOMContentLoaded', function () {
+        function toggleDropdown(element) {
+            var dropdownMenu = element.closest(".dropdown-menu");
+            var dropdownToggle = dropdownMenu?.previousElementSibling;
+            if (dropdownToggle) {
+                bootstrap.Dropdown.getOrCreateInstance(dropdownToggle).toggle();
+            }
+        }
+
+        document.getElementById('@exportDraftId')?.addEventListener('click', function () {
+            toggleDropdown(this);
         });
 
-        $('#@exportPublishedId').on('click', function () {
-            $(this).closest(".dropdown-menu").prev().dropdown("toggle");
+        document.getElementById('@exportPublishedId')?.addEventListener('click', function () {
+            toggleDropdown(this);
         });
 
-        $('#@exportId').on('click', function () {
-            $(this).closest(".dropdown-menu").prev().dropdown("toggle");
+        document.getElementById('@exportId')?.addEventListener('click', function () {
+            toggleDropdown(this);
         });
     });
 </script>

@@ -48,9 +48,9 @@
 </div>
 
 <script at="Foot">
-    $(function () {
+    document.addEventListener('DOMContentLoaded', function () {
         CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Query)'), {
-            mode: @MediaTypeNamesExtended.Text.PostgreSQL,
+            mode: '@MediaTypeNamesExtended.Text.PostgreSQL',
             indentWithTabs: true, smartIndent: true, matchBrackets: true, lineNumbers: true, styleActiveLine: true, viewportMargin: Infinity,
             extraKeys: { "Ctrl-Space": "autocomplete" },
             hintOptions: {

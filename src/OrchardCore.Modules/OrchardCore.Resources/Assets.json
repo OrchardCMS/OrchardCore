@@ -219,6 +219,13 @@
   },
   {
     "action": "min",
+    "name": "jquery-nestedSortable-2.1a",
+    "source": "Assets/Vendor/nestedSortable-2.1a/jquery.mjs.nestedSortable.js",
+    "dest": "wwwroot/Vendor/nestedSortable-2.1a/",
+    "tags": [ "resources", "js" ]
+  },
+  {
+    "action": "min",
     "name": "jquery-fileupload",
     "source": "node_modules/blueimp-file-upload/js/jquery.fileupload.js",
     "tags": [ "resources", "js" ]
