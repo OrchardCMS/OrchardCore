@@ -41,7 +41,7 @@ public class ShapeAttributeBindingStrategyTests
     private sealed class StaticShapeProvider : IShapeAttributeProvider
     {
         [global::OrchardCore.DisplayManagement.Shape]
-        public static IHtmlContent StaticShape() => new HtmlString("<span>static</span>");
+        public static HtmlString StaticShape() => new HtmlString("<span>static</span>");
     }
 
     private sealed class ThrowingServiceProvider : IServiceProvider
