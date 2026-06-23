@@ -6,29 +6,29 @@
   <ItemGroup>
     <PackageVersion Include="AnyAscii" Version="0.3.3" />
     <PackageVersion Include="AngleSharp" Version="1.4.0" />
-    <PackageVersion Include="AWSSDK.S3" Version="4.0.23.5" />
-    <PackageVersion Include="AWSSDK.Extensions.NETCore.Setup" Version="4.0.4.2" />
+    <PackageVersion Include="AWSSDK.S3" Version="4.0.24.1" />
+    <PackageVersion Include="AWSSDK.Extensions.NETCore.Setup" Version="4.0.4.4" />
     <PackageVersion Include="Azure.Communication.Email" Version="1.1.0" />
     <PackageVersion Include="Azure.Communication.Sms" Version="1.0.2" />
     <PackageVersion Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.5.1" />
     <PackageVersion Include="Azure.Extensions.AspNetCore.DataProtection.Blobs" Version="1.5.3" />
     <PackageVersion Include="Azure.Identity" Version="1.21.0" />
     <PackageVersion Include="Azure.Search.Documents" Version="12.0.0" />
-    <PackageVersion Include="Azure.Storage.Blobs" Version="12.28.0" />
+    <PackageVersion Include="Azure.Storage.Blobs" Version="12.29.0" />
     <PackageVersion Include="BenchmarkDotNet" Version="0.15.8" />
     <PackageVersion Include="Castle.Core" Version="5.2.1" />
     <PackageVersion Include="DocumentFormat.OpenXml" Version="3.5.1" />
-    <PackageVersion Include="Elastic.Clients.Elasticsearch" Version="8.19.22" />
+    <PackageVersion Include="Elastic.Clients.Elasticsearch" Version="8.19.23" />
     <PackageVersion Include="Fluid.Core" Version="2.31.0" />
     <PackageVersion Include="GraphQL" Version="8.8.4" />
     <PackageVersion Include="GraphQL.DataLoader" Version="8.8.4" />
     <PackageVersion Include="GraphQL.MicrosoftDI" Version="8.8.4" />
     <PackageVersion Include="GraphQL.SystemTextJson" Version="8.8.4" />
-    <PackageVersion Include="Jint" Version="4.9.2" />
+    <PackageVersion Include="Jint" Version="4.9.3" />
     <PackageVersion Include="JsonPath.Net" Version="2.2.0" />
     <PackageVersion Include="HtmlSanitizer" Version="9.1.893-beta" />
     <PackageVersion Include="Parlot" Version="1.5.7" />
-    <PackageVersion Include="libphonenumber-csharp" Version="9.0.31" />
+    <PackageVersion Include="libphonenumber-csharp" Version="9.0.32" />
     <PackageVersion Include="Lorem.Universal.NET" Version="5.0.0" />
     <PackageVersion Include="Lucene.Net" Version="4.8.0-beta00017" />
     <PackageVersion Include="Lucene.Net.Analysis.Common" Version="4.8.0-beta00017" />
@@ -40,7 +40,7 @@
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="5.3.0" />
     <PackageVersion Include="Microsoft.Extensions.Azure" Version="1.14.0" />
     <PackageVersion Include="Microsoft.Identity.Web" Version="4.10.0" />
-    <PackageVersion Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="8.18.0" />
+    <PackageVersion Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="8.19.1" />
     <PackageVersion Include="Microsoft.IO.RecyclableMemoryStream" Version="3.0.1" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.6.0" />
     <PackageVersion Include="MimeKit" Version="4.17.0" />
