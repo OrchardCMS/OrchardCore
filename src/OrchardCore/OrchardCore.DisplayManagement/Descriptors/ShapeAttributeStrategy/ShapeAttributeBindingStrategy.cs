@@ -120,7 +120,13 @@ public class ShapeAttributeBindingStrategy : ShapeTableProvider, IShapeTableHarv
 
         return context =>
         {
-            var serviceInstance = context.ServiceProvider.GetService(attributeOccurrence.ServiceType);
+            object serviceInstance = null;
+
+            if (!methodInfo.IsStatic)
+            {
+                serviceInstance = context.ServiceProvider.GetService(attributeOccurrence.ServiceType);
+            }
+
             return action(serviceInstance, context);
         };
     }
