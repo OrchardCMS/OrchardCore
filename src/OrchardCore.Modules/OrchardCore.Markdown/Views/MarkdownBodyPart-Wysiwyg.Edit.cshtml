@@ -25,7 +25,15 @@
 </div>
 
 <script at="Foot" depends-on="easymde-mediatoolbar">
-    document.addEventListener('DOMContentLoaded', function () {
+    function onDocumentReady(callback) {
+        if (document.readyState !== 'loading') {
+            callback();
+        } else {
+            document.addEventListener('DOMContentLoaded', callback);
+        }
+    }
+
+    onDocumentReady(function () {
         var markdownElement = document.getElementById('@Html.IdFor(m => m.Markdown)');
         var isRtl = '@(culture.IsRightToLeft() ? "true" : "false")';
 

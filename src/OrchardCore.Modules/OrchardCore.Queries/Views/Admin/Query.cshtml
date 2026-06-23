@@ -104,7 +104,15 @@
 }
 
 <script at="Foot">
-    document.addEventListener('DOMContentLoaded', function () {
+    function onDocumentReady(callback) {
+        if (document.readyState !== 'loading') {
+            callback();
+        } else {
+            document.addEventListener('DOMContentLoaded', callback);
+        }
+    }
+
+    onDocumentReady(function () {
         CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(m => m.DecodedQuery)'), { mode: '@MediaTypeNamesExtended.Text.PostgreSQL', lineNumbers: true, viewportMargin: Infinity });
         CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(m => m.Parameters)'), { mode: "javascript", json: true, lineNumbers: true, viewportMargin: Infinity });
         var rawSql = document.getElementById('@Html.IdFor(m => m.RawSql)');
@@ -115,7 +123,7 @@
 </script>
 <script asp-name="monaco" at="Foot"></script>
 <script at="Foot" asp-name="jsonrecipe-editor" depends-on="monaco, admin">
-    document.addEventListener('DOMContentLoaded', function () {
+    onDocumentReady(function () {
         require(['vs/editor/editor.main'], function () {
 
             const html = document.documentElement;
