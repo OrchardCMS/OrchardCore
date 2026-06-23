@@ -102,7 +102,15 @@
 <script asp-src="~/OrchardCore.Liquid/codemirror/liquid.js" at="Foot"></script>
 
 <script at="Foot">
-    document.addEventListener('DOMContentLoaded', function () {
+    function onDocumentReady(callback) {
+        if (document.readyState !== 'loading') {
+            callback();
+        } else {
+            document.addEventListener('DOMContentLoaded', callback);
+        }
+    }
+
+    onDocumentReady(function () {
         CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(m => m.HtmlBody)'), {
             lineNumbers: true,
             styleActiveLine: true,

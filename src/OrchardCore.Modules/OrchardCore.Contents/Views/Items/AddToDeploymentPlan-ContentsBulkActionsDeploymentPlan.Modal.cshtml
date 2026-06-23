@@ -39,7 +39,15 @@
 </zone>
 
 <script at="Foot">
-    document.addEventListener('DOMContentLoaded', function () {
+    function onDocumentReady(callback) {
+        if (document.readyState !== 'loading') {
+            callback();
+        } else {
+            document.addEventListener('DOMContentLoaded', callback);
+        }
+    }
+
+    onDocumentReady(function () {
         document.getElementById('modalAddToDeploymentPlanContentsBulkActionsDeploymentPlan')?.addEventListener('show.bs.modal', function () {
             var itemIds = document.querySelectorAll("input[type='checkbox'][name='itemIds']:checked");
             if (itemIds.length > 1) {

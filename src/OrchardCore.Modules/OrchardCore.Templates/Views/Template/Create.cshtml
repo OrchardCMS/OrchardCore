@@ -63,7 +63,15 @@
 </form>
 
 <script asp-name="create-template" at="Foot" depends-on="liquid-intellisense monaco">
-    document.addEventListener('DOMContentLoaded', function () {
+    function onDocumentReady(callback) {
+        if (document.readyState !== 'loading') {
+            callback();
+        } else {
+            document.addEventListener('DOMContentLoaded', callback);
+        }
+    }
+
+    onDocumentReady(function () {
         require(['vs/editor/editor.main'], function () {
             var settings = {
                 automaticLayout: true,
@@ -105,7 +113,7 @@
 
 
 <script at="Foot">
-    document.addEventListener('DOMContentLoaded', function () {
+    onDocumentReady(function () {
 
         function initializeTemplatePreview(element) {
 
