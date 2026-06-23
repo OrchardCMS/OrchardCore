@@ -32,34 +32,47 @@
 </div>
 
 <script at="Foot">
+    function setCollapse(element, action) {
+        if (!element) {
+            return;
+        }
+
+        bootstrap.Collapse.getOrCreateInstance(element, { toggle: false })[action]();
+    }
+
     function checkboxClicked(checkbox) {
         var path = checkbox.value;
 
-        if (checkbox.checked) {
-            $(`li[data-path='${path}']`).collapse('hide');
-        } else {
-            $(`li[data-path='${path}']`).collapse('show');
-        }
-
-        $(`input[data-parent-value='${path}']:checked`).each(function () {
-            this.checked = false;
-
-            checkboxClicked(this);
-        });
-    }
-
-    $(function () {
-        $("[data-reverseToggle]").on("click", function () {
-            var state = this.checked;
-            if (state) {
-                $($(this).attr("data-reverseToggle")).collapse('hide');
-            } else {
-                $($(this).attr("data-reverseToggle")).collapse('show');
+        document.querySelectorAll('li[data-path]').forEach(function (element) {
+            if (element.dataset.path === path) {
+                setCollapse(element, checkbox.checked ? 'hide' : 'show');
             }
         });
 
-        $("[data-parent-value]").on("click", function () {
-            checkboxClicked(this);
+        document.querySelectorAll('input[data-parent-value]:checked').forEach(function (element) {
+            if (element.dataset.parentValue !== path) {
+                return;
+            }
+
+            element.checked = false;
+            checkboxClicked(element);
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll("[data-reverseToggle]").forEach(function (element) {
+            element.addEventListener("click", function () {
+                var state = this.checked;
+                document.querySelectorAll(this.getAttribute("data-reverseToggle")).forEach(function (toggleElement) {
+                    setCollapse(toggleElement, state ? 'hide' : 'show');
+                });
+            });
+        });
+
+        document.querySelectorAll("[data-parent-value]").forEach(function (element) {
+            element.addEventListener("click", function () {
+                checkboxClicked(this);
+            });
         });
     });
 </script>

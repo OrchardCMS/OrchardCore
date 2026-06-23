@@ -135,68 +135,114 @@
 </div>
 
 <script at="Foot">
-    $(function () {
-        $('.selectpicker').selectpicker();
-        $('.selectpicker').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
-            $("[name='submit.Filter']").click();
-        });
-        var actions = $("#actions");
-        var items = $("#items");
-        var filters = $(".filter");
-        var selectAllCtrl = $("#select-all");
-        var selectedItems = $("#selected-items");
-        var itemsCheckboxes = $(":checkbox[name='itemIds']");
+    document.addEventListener('DOMContentLoaded', function () {
+        const submitFilterButton = document.querySelector("[name='submit.Filter']");
+        var actions = document.getElementById("actions");
+        var items = document.getElementById("items");
+        var filters = document.querySelectorAll(".filter");
+        var selectAllCtrl = document.getElementById("select-all");
+        var selectedItems = document.getElementById("selected-items");
+        var itemsCheckboxes = document.querySelectorAll("input[type='checkbox'][name='itemIds']");
+        var bulkActionInput = document.querySelector("[name='Options.BulkAction']");
+        var submitBulkActionButton = document.querySelector("[name='submit.BulkAction']");
 
-        $(".filter-options input").on("change", function () {
-            $("[name='submit.Filter']").click();
-        });
-
-        $(".dropdown-menu .dropdown-item").filter(function () {
-            return $(this).data("action");
-        }).on("click", function () {
-            if ($(":checkbox[name='itemIds']:checked").length > 1) {
-                var $this = $(this);
-                confirmDialog({
-                    title: $this.data('title'), message: $this.data('message'), callback: function (r) {
-                        if (r) {
-                            $("[name='Options.BulkAction']").val($this.data("action"));
-                            $("[name='submit.BulkAction']").click();
-                        }
-                    }
-                });
-            }
-        });
-
-        function displayActionsOrFilters() {
-            if ($(":checkbox[name='itemIds']:checked").length > 1) {
-                actions.show();
-                filters.hide();
-                selectedItems.show();
-                items.hide();
-            }
-            else {
-                actions.hide();
-                filters.show();
-                selectedItems.hide();
-                items.show();
+        function show(element) {
+            if (element) {
+                element.style.display = '';
             }
         }
 
-        selectAllCtrl.click(function () {
-            itemsCheckboxes.not(this).prop("checked", this.checked);
-            selectedItems.text($(":checkbox[name='itemIds']:checked").length + ' @T["selected"]');
-            displayActionsOrFilters();
+        function hide(element) {
+            if (element) {
+                element.style.display = 'none';
+            }
+        }
+
+        function selectedItemsCount() {
+            return document.querySelectorAll("input[type='checkbox'][name='itemIds']:checked").length;
+        }
+
+        function setBulkAction(action) {
+            if (bulkActionInput && submitBulkActionButton) {
+                bulkActionInput.value = action;
+                submitBulkActionButton.click();
+            }
+        }
+
+        document.querySelectorAll('.selectpicker').forEach((element) => {
+            element.addEventListener('changed.bs.select', () => submitFilterButton?.click());
         });
 
-        itemsCheckboxes.on("click", function () {
-            var itemsCount = $(":checkbox[name='itemIds']").length;
-            var selectedItemsCount = $(":checkbox[name='itemIds']:checked").length;
+        document.querySelectorAll(".filter-options input").forEach(function (input) {
+            input.addEventListener("change", function () {
+                submitFilterButton?.click();
+            });
+        });
 
-            selectAllCtrl.prop("checked", selectedItemsCount == itemsCount);
-            selectAllCtrl.prop("indeterminate", selectedItemsCount > 0 && selectedItemsCount < itemsCount);
+        document.querySelectorAll(".dropdown-menu .dropdown-item").forEach(function (item) {
+            if (!item.dataset.action) {
+                return;
+            }
 
-            selectedItems.text(selectedItemsCount + ' @T["selected"]');
-            displayActionsOrFilters();
+            item.addEventListener("click", function () {
+                if (selectedItemsCount() > 1) {
+                    confirmDialog({
+                        title: item.dataset.title, message: item.dataset.message, callback: function (r) {
+                            if (r) {
+                                setBulkAction(item.dataset.action);
+                            }
+                        }
+                    });
+                }
+            });
+        });
+
+        function displayActionsOrFilters() {
+            if (selectedItemsCount() > 1) {
+                show(actions);
+                filters.forEach(function (filter) {
+                    hide(filter);
+                });
+                show(selectedItems);
+                hide(items);
+            }
+            else {
+                hide(actions);
+                filters.forEach(function (filter) {
+                    show(filter);
+                });
+                hide(selectedItems);
+                show(items);
+            }
+        }
+
+        if (selectAllCtrl) {
+            selectAllCtrl.addEventListener("click", function () {
+                itemsCheckboxes.forEach(function (checkbox) {
+                    checkbox.checked = selectAllCtrl.checked;
+                });
+                if (selectedItems) {
+                    selectedItems.textContent = selectedItemsCount() + ' @T["selected"]';
+                }
+                displayActionsOrFilters();
+            });
+        }
+
+        itemsCheckboxes.forEach(function (checkbox) {
+            checkbox.addEventListener("click", function () {
+                var itemsCount = document.querySelectorAll("input[type='checkbox'][name='itemIds']").length;
+                var selectedCount = selectedItemsCount();
+
+                if (selectAllCtrl) {
+                    selectAllCtrl.checked = selectedCount == itemsCount;
+                    selectAllCtrl.indeterminate = selectedCount > 0 && selectedCount < itemsCount;
+                }
+
+                if (selectedItems) {
+                    selectedItems.textContent = selectedCount + ' @T["selected"]';
+                }
+                displayActionsOrFilters();
+            });
         });
     });
 </script>

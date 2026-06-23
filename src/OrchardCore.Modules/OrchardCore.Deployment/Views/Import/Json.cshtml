@@ -23,7 +23,7 @@
 </form>
 
 <script at="Foot">
-$(function () {
+document.addEventListener('DOMContentLoaded', function () {
     var textArea = document.getElementById('@Html.IdFor(x => x.Json)');
 
     var editor = CodeMirror.fromTextArea(textArea, {

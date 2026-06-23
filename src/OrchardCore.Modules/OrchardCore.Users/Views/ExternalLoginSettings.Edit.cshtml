@@ -166,19 +166,25 @@ type Context = {
 <script at="Foot">
     function toggleEditorState() {
         var syncRolesCheckbox = document.getElementById('@Html.IdFor(x => x.UseScriptToSyncProperties)');
+        var editorWrappers = document.querySelectorAll("#SyncRolesScript_wrapper,#doc_editor_wrapper");
 
         if (syncRolesCheckbox.checked) {
-            $("#SyncRolesScript_wrapper,#doc_editor_wrapper").show()
-
+            editorWrappers.forEach(function (element) {
+                element.style.display = '';
+            });
         } else {
-            $("#SyncRolesScript_wrapper,#doc_editor_wrapper").hide()
+            editorWrappers.forEach(function (element) {
+                element.style.display = 'none';
+            });
         }
     }
 
-    $(function () {
+    document.addEventListener('DOMContentLoaded', function () {
         var syncRolesCheckbox = document.getElementById('@Html.IdFor(x => x.UseScriptToSyncProperties)');
 
-        syncRolesCheckbox.addEventListener("change", toggleEditorState);
-        toggleEditorState();
+        if (syncRolesCheckbox) {
+            syncRolesCheckbox.addEventListener("change", toggleEditorState);
+            toggleEditorState();
+        }
     });
 </script>

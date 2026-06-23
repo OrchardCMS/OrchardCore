@@ -102,7 +102,7 @@
 <script asp-src="~/OrchardCore.Liquid/codemirror/liquid.js" at="Foot"></script>
 
 <script at="Foot">
-    $(function () {
+    document.addEventListener('DOMContentLoaded', function () {
         CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(m => m.HtmlBody)'), {
             lineNumbers: true,
             styleActiveLine: true,
@@ -117,26 +117,49 @@
         });
         changeBodyFormat();
 
-        $('select').on('change', function () {
-            changeBodyFormat();
+        document.querySelectorAll('select').forEach(function (select) {
+            select.addEventListener('change', function () {
+                changeBodyFormat();
+            });
         });
     });
 
     function changeBodyFormat() {
-        var selectedValue = $('select').val();
+        var select = document.querySelector('select');
+
+        if (!select) {
+            return;
+        }
+
+        var selectedValue = select.value;
+        var textBodyDiv = document.getElementById('textBodyDiv');
+        var htmlBodyDiv = document.getElementById('htmlBodyDiv');
+
         switch (selectedValue) {
             case '@MailMessageBodyFormat.All':
-                $('#textBodyDiv').removeClass('d-none');
-                $('#htmlBodyDiv').removeClass('d-none');
+                removeClass(textBodyDiv, 'd-none');
+                removeClass(htmlBodyDiv, 'd-none');
                 break;
             case '@MailMessageBodyFormat.Text':
-                $('#textBodyDiv').removeClass('d-none');
-                $('#htmlBodyDiv').addClass('d-none');
+                removeClass(textBodyDiv, 'd-none');
+                addClass(htmlBodyDiv, 'd-none');
                 break;
             case '@MailMessageBodyFormat.Html':
-                $('#textBodyDiv').addClass('d-none');
-                $('#htmlBodyDiv').removeClass('d-none');
+                addClass(textBodyDiv, 'd-none');
+                removeClass(htmlBodyDiv, 'd-none');
                 break;
+        }
+    }
+
+    function addClass(element, className) {
+        if (element) {
+            element.classList.add(className);
+        }
+    }
+
+    function removeClass(element, className) {
+        if (element) {
+            element.classList.remove(className);
         }
     }
 </script>

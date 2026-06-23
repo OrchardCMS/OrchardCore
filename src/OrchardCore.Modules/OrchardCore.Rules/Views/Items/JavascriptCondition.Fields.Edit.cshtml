@@ -21,9 +21,9 @@
     </div>
 </div>
 
-<script at="Foot" depends-on="jquery">
+<script at="Foot">
     //<![CDATA[
-    $(function () {
+    document.addEventListener('DOMContentLoaded', function () {
         editor = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Script)'), {
             autoRefresh: true,
             lineNumbers: true,
