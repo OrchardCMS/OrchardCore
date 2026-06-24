@@ -13,6 +13,10 @@ public sealed class ForkTaskDisplayDriver : ActivityDisplayDriver<ForkTask, Fork
 
     protected override void UpdateActivity(ForkTaskViewModel model, ForkTask activity)
     {
-        activity.Forks = model.Forks?.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()).ToList() ?? new List<string>();
+        activity.Forks =
+            model
+                .Forks?.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                .ToList()
+            ?? [];
     }
 }
