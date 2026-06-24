@@ -33,7 +33,15 @@
 </div>
 
 <script At="Foot">
-    document.addEventListener('DOMContentLoaded', function () {
+    function onDocumentReady(callback) {
+        if (document.readyState !== 'loading') {
+            callback();
+        } else {
+            document.addEventListener('DOMContentLoaded', callback);
+        }
+    }
+
+    onDocumentReady(function () {
         var modalConditions = document.getElementById('modalConditions');
         if (modalConditions) {
             modalConditions.addEventListener('show.bs.modal', function (event) {

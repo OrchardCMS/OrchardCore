@@ -40,7 +40,15 @@
 </form>
 
 <script at="Foot">
-    document.addEventListener('DOMContentLoaded', function () {
+    function onDocumentReady(callback) {
+        if (document.readyState !== 'loading') {
+            callback();
+        } else {
+            document.addEventListener('DOMContentLoaded', callback);
+        }
+    }
+
+    onDocumentReady(function () {
         var editor = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.ContentItemJson)'), {
             autoRefresh: true,
             lineNumbers: true,

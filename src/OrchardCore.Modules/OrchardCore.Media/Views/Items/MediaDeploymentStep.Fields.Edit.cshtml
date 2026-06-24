@@ -59,7 +59,15 @@
         });
     }
 
-    document.addEventListener('DOMContentLoaded', function () {
+    function onDocumentReady(callback) {
+        if (document.readyState !== 'loading') {
+            callback();
+        } else {
+            document.addEventListener('DOMContentLoaded', callback);
+        }
+    }
+
+    onDocumentReady(function () {
         document.querySelectorAll("[data-reverseToggle]").forEach(function (element) {
             element.addEventListener("click", function () {
                 var state = this.checked;

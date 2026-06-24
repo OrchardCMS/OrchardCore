@@ -110,7 +110,15 @@
 
 <script at="Foot">
     //<![CDATA[
-    document.addEventListener('DOMContentLoaded', function () {
+    function onDocumentReady(callback) {
+        if (document.readyState !== 'loading') {
+            callback();
+        } else {
+            document.addEventListener('DOMContentLoaded', callback);
+        }
+    }
+
+    onDocumentReady(function () {
         document.querySelectorAll('.type-part-editor').forEach(function (element) {
             element.style.display = 'none';
         });

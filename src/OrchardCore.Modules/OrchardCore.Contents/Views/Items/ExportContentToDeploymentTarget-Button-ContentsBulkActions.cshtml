@@ -1,7 +1,15 @@
 <a id="exportContentToDeploymentTargetBulkActions" class="dropdown-item" data-title="@T["Bulk Action"]" data-message="@T["Are you sure you want to export these items?"]">@T["Export to deployment target"]</a>
 
 <script at="Foot">
-    document.addEventListener('DOMContentLoaded', function () {
+    function onDocumentReady(callback) {
+        if (document.readyState !== 'loading') {
+            callback();
+        } else {
+            document.addEventListener('DOMContentLoaded', callback);
+        }
+    }
+
+    onDocumentReady(function () {
         var exportButton = document.getElementById('exportContentToDeploymentTargetBulkActions');
 
         if (!exportButton) {

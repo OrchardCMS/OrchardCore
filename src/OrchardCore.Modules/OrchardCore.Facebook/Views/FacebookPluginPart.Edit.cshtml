@@ -17,7 +17,15 @@
 </div>
 
 <script at="Foot">
-    document.addEventListener('DOMContentLoaded', function () {
+    function onDocumentReady(callback) {
+        if (document.readyState !== 'loading') {
+            callback();
+        } else {
+            document.addEventListener('DOMContentLoaded', callback);
+        }
+    }
+
+    onDocumentReady(function () {
         var textArea = document.getElementById('@Html.IdFor(x => x.Liquid)');
 
         if (textArea == null) {
