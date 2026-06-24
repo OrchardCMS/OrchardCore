@@ -1,6 +1,7 @@
 using System.Text.Encodings.Web;
 using Fluid.Values;
 using Microsoft.AspNetCore.Html;
+using OrchardCore.ContentManagement.Extensions;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Models;
@@ -76,13 +77,9 @@ public class HtmlBodyPartHandler : ContentPartHandler<HtmlBodyPart>
         });
     }
 
-    public override async Task ImportedAsync(ImportContentContext context, HtmlBodyPart part)
-    {
-        var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType);
-
-        if (typeDefinition.GetSettings<HtmlBodyPartSettings>() is { SanitizeHtml: true })
-        {
-            part.Html = _htmlSanitizerService.Sanitize(part.Html);
-        }
-    }
+    public override Task ImportedAsync(ImportContentContext context, HtmlBodyPart part) =>
+        _contentDefinitionManager.SanitizeHtmlHolderAsync(
+            _htmlSanitizerService,
+            part,
+            (definition, _) => definition.GetSettings<HtmlBodyPartSettings>() is { SanitizeHtml: true });
 }
