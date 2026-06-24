@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using GraphQL;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Authorization;
@@ -7,6 +6,7 @@ using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Contents;
 using OrchardCore.Contents.Security;
+using System.Security.Claims;
 using YesSql;
 
 namespace OrchardCore.ContentManagement.GraphQL.Queries;
@@ -31,7 +31,13 @@ public sealed class ContentItemFilters : GraphQLFilter<ContentItem>
     {
         var contentType = ((ListGraphType)(context.FieldDefinition).ResolvedType).ResolvedType.Name;
 
-        if (await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, CommonPermissions.ViewContent))
+        if (_httpContextAccessor.HttpContext is not { User: { } user })
+        {
+            // Since the user is not available, return a query that returns no record.
+            return query.With<ContentItemIndex>(x => true == false);
+        }
+
+        if (await _authorizationService.AuthorizeAsync(user, CommonPermissions.ViewContent))
         {
             // No additional check when the user has permission to view all contents
             return query;
@@ -41,22 +47,41 @@ public sealed class ContentItemFilters : GraphQLFilter<ContentItem>
         var contentTypePermission = ContentTypePermissionsHelper.ConvertToDynamicPermission(CommonPermissions.ViewContent);
         var dynamicPermission = ContentTypePermissionsHelper.CreateDynamicPermission(contentTypePermission, contentTypeDefinition);
 
-        if (await _authorizationService.AuthorizeContentTypeAsync(_httpContextAccessor.HttpContext.User, dynamicPermission, contentTypeDefinition))
+        if (await _authorizationService.AuthorizeContentTypeAsync(user, dynamicPermission, contentTypeDefinition))
         {
             // User has access to view any content item of the given type.
             return query;
         }
 
-        var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
 
         var contentTypeOwnPermission = ContentTypePermissionsHelper.ConvertToDynamicPermission(CommonPermissions.ViewOwnContent);
 
-        if (await _authorizationService.AuthorizeContentTypeAsync(_httpContextAccessor.HttpContext.User, contentTypeOwnPermission, contentTypeDefinition, userId))
+        if (await _authorizationService.AuthorizeContentTypeAsync(user, contentTypeOwnPermission, contentTypeDefinition, userId))
         {
             return query.With<ContentItemIndex>(x => x.ContentType == contentType && x.Owner == userId);
         }
 
         // Since the user has no permission to this content type, return a query that returns no record.
         return query.With<ContentItemIndex>(x => true == false);
+    }
+
+    public override async Task<IEnumerable<ContentItem>> PostQueryAsync(IEnumerable<ContentItem> contentItems, IResolveFieldContext context)
+    {
+        if (_httpContextAccessor.HttpContext is not { User: { } user })
+        {
+            return [];
+        }
+
+        var results = new List<ContentItem>();
+        foreach (var item in contentItems)
+        {
+            if (await _authorizationService.AuthorizeAsync(user, CommonPermissions.ViewContent, item))
+            {
+                results.Add(item);
+            }
+        }
+
+        return results;
     }
 }
