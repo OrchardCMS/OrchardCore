@@ -229,7 +229,7 @@ public sealed class SearchController : Controller
 
         pager.After = null;
 
-        if (containedItems.Count() == pager.PageSize + 1)
+        if (containedItems.Count == pager.PageSize + 1)
         {
             pager.After = (size - 1).ToString();
         }
