@@ -12,14 +12,12 @@ using OrchardCore.Tests.Stubs;
 
 namespace OrchardCore.Tests.DisplayManagement.Zones;
 
-[System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "<Pending>")]
 public class ZoneShapesTests
 {
     private readonly ShapeTable _defaultShapeTable;
     private readonly IServiceProvider _serviceProvider;
     private readonly IShapeFactory _shapeFactory;
     private readonly IDisplayHelper _displayHelper;
-    private readonly ZoneShapes _zoneShapes;
 
     public ZoneShapesTests()
     {
@@ -46,7 +44,6 @@ public class ZoneShapesTests
         _serviceProvider = services.BuildServiceProvider();
         _shapeFactory = _serviceProvider.GetRequiredService<IShapeFactory>();
         _displayHelper = _serviceProvider.GetRequiredService<IDisplayHelper>();
-        _zoneShapes = new ZoneShapes();
 
         // Add shape descriptors for all the shapes used in tests
         AddBasicShapeDescriptors();
@@ -123,7 +120,7 @@ public class ZoneShapesTests
         {
             var displayHelper = ctx.ServiceProvider.GetRequiredService<IDisplayHelper>();
             var groupingViewModel = (GroupingViewModel)ctx.Value;
-            return await _zoneShapes.CardGrouping(displayHelper, groupingViewModel, _shapeFactory);
+            return await ZoneShapes.CardGrouping(displayHelper, groupingViewModel, _shapeFactory);
         });
         AddShapeDescriptor(cardDescriptor);
 
@@ -133,7 +130,7 @@ public class ZoneShapesTests
         {
             var displayHelper = ctx.ServiceProvider.GetRequiredService<IDisplayHelper>();
             var groupingViewModel = (GroupingViewModel)ctx.Value;
-            return await _zoneShapes.CardGrouping(displayHelper, groupingViewModel, _shapeFactory);
+            return await ZoneShapes.CardGrouping(displayHelper, groupingViewModel, _shapeFactory);
         });
         AddShapeDescriptor(cardGroupingDescriptor);
 
@@ -184,7 +181,7 @@ public class ZoneShapesTests
         {
             var displayHelper = ctx.ServiceProvider.GetRequiredService<IDisplayHelper>();
             var groupingViewModel = (GroupingViewModel)ctx.Value;
-            return await _zoneShapes.ColumnGrouping(displayHelper, groupingViewModel, _shapeFactory);
+            return await ZoneShapes.ColumnGrouping(displayHelper, groupingViewModel, _shapeFactory);
         });
         AddShapeDescriptor(columnGroupingDescriptor);
     }
@@ -221,7 +218,7 @@ public class ZoneShapesTests
         };
 
         // Act
-        var result = await _zoneShapes.Zone(_displayHelper, shapes);
+        var result = await ZoneShapes.Zone(_displayHelper, shapes);
 
         // Assert
         Assert.NotNull(result);
@@ -238,7 +235,7 @@ public class ZoneShapesTests
         var shapes = new List<object>();
 
         // Act
-        var result = await _zoneShapes.Zone(_displayHelper, shapes);
+        var result = await ZoneShapes.Zone(_displayHelper, shapes);
 
         // Assert
         Assert.NotNull(result);
@@ -262,7 +259,7 @@ public class ZoneShapesTests
 
         // Act
         dynamic dynamicZone = zone;
-        var result = await _zoneShapes.ContentZone(_displayHelper, dynamicZone, _shapeFactory);
+        var result = await ZoneShapes.ContentZone(_displayHelper, dynamicZone, _shapeFactory);
 
         // Assert
         Assert.NotNull(result);
@@ -279,7 +276,7 @@ public class ZoneShapesTests
 
         // Act
         dynamic dynamicZone = zone;
-        var result = await _zoneShapes.ContentZone(_displayHelper, dynamicZone, _shapeFactory);
+        var result = await ZoneShapes.ContentZone(_displayHelper, dynamicZone, _shapeFactory);
 
         // Assert
         Assert.NotNull(result);
@@ -302,7 +299,7 @@ public class ZoneShapesTests
 
         // Act
         dynamic dynamicZone = zone;
-        var result = await _zoneShapes.ContentZone(_displayHelper, dynamicZone, _shapeFactory);
+        var result = await ZoneShapes.ContentZone(_displayHelper, dynamicZone, _shapeFactory);
 
         // Assert
         var html = GetHtmlString(result);
@@ -330,7 +327,7 @@ public class ZoneShapesTests
 
         // Act
         dynamic dynamicZone = zone;
-        var result = await _zoneShapes.ContentZone(_displayHelper, dynamicZone, _shapeFactory);
+        var result = await ZoneShapes.ContentZone(_displayHelper, dynamicZone, _shapeFactory);
 
         // Assert
         Assert.NotNull(result);
@@ -355,7 +352,7 @@ public class ZoneShapesTests
 
         // Act
         dynamic dynamicZone = zone;
-        var result = await _zoneShapes.ContentZone(_displayHelper, dynamicZone, _shapeFactory);
+        var result = await ZoneShapes.ContentZone(_displayHelper, dynamicZone, _shapeFactory);
 
         // Assert
         Assert.NotNull(result);
@@ -387,7 +384,7 @@ public class ZoneShapesTests
 
         // Act
         dynamic dynamicZone = zone;
-        var result = await _zoneShapes.ContentZone(_displayHelper, dynamicZone, _shapeFactory);
+        var result = await ZoneShapes.ContentZone(_displayHelper, dynamicZone, _shapeFactory);
 
         // Assert
         Assert.NotNull(result);
@@ -419,7 +416,7 @@ public class ZoneShapesTests
 
         // Act
         dynamic dynamicZone = zone;
-        var result = await _zoneShapes.ContentZone(_displayHelper, dynamicZone, _shapeFactory);
+        var result = await ZoneShapes.ContentZone(_displayHelper, dynamicZone, _shapeFactory);
 
         // Assert
         Assert.NotNull(result);
@@ -459,7 +456,7 @@ public class ZoneShapesTests
         };
 
         // Act
-        var result = await _zoneShapes.CardGrouping(_displayHelper, viewModel, _shapeFactory);
+        var result = await ZoneShapes.CardGrouping(_displayHelper, viewModel, _shapeFactory);
 
         // Assert
         Assert.NotNull(result);
@@ -484,7 +481,7 @@ public class ZoneShapesTests
         };
 
         // Act
-        var result = await _zoneShapes.CardGrouping(_displayHelper, viewModel, _shapeFactory);
+        var result = await ZoneShapes.CardGrouping(_displayHelper, viewModel, _shapeFactory);
 
         // Assert
         Assert.NotNull(result);
@@ -513,7 +510,7 @@ public class ZoneShapesTests
         };
 
         // Act
-        var result = await _zoneShapes.CardGrouping(_displayHelper, viewModel, _shapeFactory);
+        var result = await ZoneShapes.CardGrouping(_displayHelper, viewModel, _shapeFactory);
 
         // Assert
         Assert.NotNull(result);
@@ -551,7 +548,7 @@ public class ZoneShapesTests
         };
 
         // Act
-        var result = await _zoneShapes.CardGrouping(_displayHelper, viewModel, _shapeFactory);
+        var result = await ZoneShapes.CardGrouping(_displayHelper, viewModel, _shapeFactory);
 
         // Assert
         Assert.NotNull(result);
@@ -584,7 +581,7 @@ public class ZoneShapesTests
         };
 
         // Act
-        var result = await _zoneShapes.ColumnGrouping(_displayHelper, viewModel, _shapeFactory);
+        var result = await ZoneShapes.ColumnGrouping(_displayHelper, viewModel, _shapeFactory);
 
         // Assert
         Assert.NotNull(result);
@@ -607,7 +604,7 @@ public class ZoneShapesTests
         };
 
         // Act
-        var result = await _zoneShapes.ColumnGrouping(_displayHelper, viewModel, _shapeFactory);
+        var result = await ZoneShapes.ColumnGrouping(_displayHelper, viewModel, _shapeFactory);
 
         // Assert
         Assert.NotNull(result);
@@ -640,7 +637,7 @@ public class ZoneShapesTests
         };
 
         // Act
-        var result = await _zoneShapes.ColumnGrouping(_displayHelper, viewModel, _shapeFactory);
+        var result = await ZoneShapes.ColumnGrouping(_displayHelper, viewModel, _shapeFactory);
 
         // Assert
         Assert.NotNull(result);
@@ -680,7 +677,7 @@ public class ZoneShapesTests
         };
 
         // Act
-        var result = await _zoneShapes.ColumnGrouping(_displayHelper, viewModel, _shapeFactory);
+        var result = await ZoneShapes.ColumnGrouping(_displayHelper, viewModel, _shapeFactory);
 
         // Assert
         Assert.NotNull(result);
@@ -703,7 +700,7 @@ public class ZoneShapesTests
         };
 
         // Act
-        var result = await _zoneShapes.ColumnGrouping(_displayHelper, viewModel, _shapeFactory);
+        var result = await ZoneShapes.ColumnGrouping(_displayHelper, viewModel, _shapeFactory);
 
         // Assert
         Assert.NotNull(result);
@@ -727,7 +724,7 @@ public class ZoneShapesTests
         };
 
         // Act
-        var result = await _zoneShapes.ColumnGrouping(_displayHelper, viewModel, _shapeFactory);
+        var result = await ZoneShapes.ColumnGrouping(_displayHelper, viewModel, _shapeFactory);
 
         // Assert
         Assert.NotNull(result);
@@ -750,7 +747,7 @@ public class ZoneShapesTests
         };
 
         // Act
-        var result = await _zoneShapes.ColumnGrouping(_displayHelper, viewModel, _shapeFactory);
+        var result = await ZoneShapes.ColumnGrouping(_displayHelper, viewModel, _shapeFactory);
 
         // Assert
         Assert.NotNull(result);
@@ -782,7 +779,7 @@ public class ZoneShapesTests
         };
 
         // Act
-        var result = await _zoneShapes.ColumnGrouping(_displayHelper, viewModel, _shapeFactory);
+        var result = await ZoneShapes.ColumnGrouping(_displayHelper, viewModel, _shapeFactory);
 
         // Assert
         Assert.NotNull(result);
@@ -817,7 +814,7 @@ public class ZoneShapesTests
         };
 
         // Act
-        var result = await _zoneShapes.ColumnGrouping(_displayHelper, viewModel, _shapeFactory);
+        var result = await ZoneShapes.ColumnGrouping(_displayHelper, viewModel, _shapeFactory);
 
         // Assert
         Assert.NotNull(result);
@@ -857,7 +854,7 @@ public class ZoneShapesTests
         };
 
         // Act
-        var result = await _zoneShapes.ColumnGrouping(_displayHelper, viewModel, _shapeFactory);
+        var result = await ZoneShapes.ColumnGrouping(_displayHelper, viewModel, _shapeFactory);
 
         // Assert
         var html = GetHtmlString(result);
@@ -886,7 +883,7 @@ public class ZoneShapesTests
 
         // Act
         dynamic dynamicZone = zone;
-        var result = await _zoneShapes.ContentZone(_displayHelper, dynamicZone, _shapeFactory);
+        var result = await ZoneShapes.ContentZone(_displayHelper, dynamicZone, _shapeFactory);
 
         // Assert
         Assert.NotNull(result);
@@ -921,7 +918,7 @@ public class ZoneShapesTests
 
         // Act
         dynamic dynamicZone = zone;
-        var result = await _zoneShapes.ContentZone(_displayHelper, dynamicZone, _shapeFactory);
+        var result = await ZoneShapes.ContentZone(_displayHelper, dynamicZone, _shapeFactory);
 
         // Assert
         Assert.NotNull(result);
@@ -945,7 +942,7 @@ public class ZoneShapesTests
 
     #region Helper Methods
 
-    private Shape CreateTestShape(string name)
+    private static Shape CreateTestShape(string name)
     {
         var shape = new Shape
         {
@@ -959,7 +956,7 @@ public class ZoneShapesTests
         return shape;
     }
 
-    private Shape CreateShapeWithoutGrouping()
+    private static Shape CreateShapeWithoutGrouping()
     {
         return new Shape
         {
@@ -967,7 +964,7 @@ public class ZoneShapesTests
         };
     }
 
-    private Shape CreateShapeWithTabGrouping(string tabName, string position)
+    private static Shape CreateShapeWithTabGrouping(string tabName, string position)
     {
         var shape = new Shape
         {
@@ -978,7 +975,7 @@ public class ZoneShapesTests
         return shape;
     }
 
-    private Shape CreateShapeWithCardGrouping(string cardName, string position)
+    private static Shape CreateShapeWithCardGrouping(string cardName, string position)
     {
         var shape = new Shape
         {
@@ -988,7 +985,7 @@ public class ZoneShapesTests
         return shape;
     }
 
-    private Shape CreateShapeWithColumnGrouping(string columnName, string position, string width)
+    private static Shape CreateShapeWithColumnGrouping(string columnName, string position, string width)
     {
         var shape = new Shape
         {
@@ -1005,7 +1002,7 @@ public class ZoneShapesTests
         return shape;
     }
 
-    private Shape CreateShapeWithFullGrouping(
+    private static Shape CreateShapeWithFullGrouping(
         string tabName, string tabPosition,
         string cardName, string cardPosition,
         string columnName, string columnPosition, string columnWidth)
