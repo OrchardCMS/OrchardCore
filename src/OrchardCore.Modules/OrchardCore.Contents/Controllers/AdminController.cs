@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using OrchardCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
@@ -73,8 +74,8 @@ public sealed class AdminController : Controller, IUpdateModel
         PagerParameters pagerParameters,
         string contentTypeId = "",
         string stereotype = "",
-        string[] contentTypeIds = null,
-        string[] stereotypes = null)
+        [ModelBinder(BinderType = typeof(CommaSeparatedStringArrayModelBinder))] string[] contentTypeIds = null,
+        [ModelBinder(BinderType = typeof(CommaSeparatedStringArrayModelBinder))] string[] stereotypes = null)
     {
         var contentTypeDefinitions = (await _contentDefinitionManager.ListTypeDefinitionsAsync())
             .OrderBy(ctd => ctd.DisplayName)
