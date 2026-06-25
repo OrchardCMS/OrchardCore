@@ -65,11 +65,11 @@
     <PackageVersion Include="StackExchange.Redis" Version="2.13.17" />
     <PackageVersion Include="StyleCop.Analyzers" Version="1.1.118" />
     <PackageVersion Include="xunit.v3.mtp-v2" Version="3.2.2" />
-    <PackageVersion Include="YesSql" Version="5.4.7" />
-    <PackageVersion Include="YesSql.Abstractions" Version="5.4.7" />
-    <PackageVersion Include="YesSql.Core" Version="5.4.7" />
-    <PackageVersion Include="YesSql.Filters.Abstractions" Version="5.4.7" />
-    <PackageVersion Include="YesSql.Filters.Query" Version="5.4.7" />
+    <PackageVersion Include="YesSql" Version="6.0.0" />
+    <PackageVersion Include="YesSql.Abstractions" Version="6.0.0" />
+    <PackageVersion Include="YesSql.Core" Version="6.0.0" />
+    <PackageVersion Include="YesSql.Filters.Abstractions" Version="6.0.0" />
+    <PackageVersion Include="YesSql.Filters.Query" Version="6.0.0" />
     <PackageVersion Include="ZString" Version="2.6.0" />
   </ItemGroup>
   <ItemGroup>
@@ -113,6 +113,5 @@
   <ItemGroup>
     <!-- Transitive Packages -->
     <PackageVersion Include="Microsoft.Data.Sqlite" Version="10.0.8" />
-    <PackageVersion Include="SQLitePCLRaw.lib.e_sqlite3" Version="3.50.3" />
   </ItemGroup>
 </Project>
