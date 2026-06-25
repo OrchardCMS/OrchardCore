@@ -1,3 +1,5 @@
+using OrchardCore.Entities;
+
 namespace OrchardCore.Sitemaps.Services;
 
-public interface ISitemapIdGenerator;
+public interface ISitemapIdGenerator : IIdGenerator;
