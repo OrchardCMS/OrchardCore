@@ -42,7 +42,8 @@ public class DocumentStore : IDocumentStore
     }
 
     /// <inheritdoc />
-    public async Task<(bool, T)> GetOrCreateImmutableAsync<T>(Func<Task<T>> factoryAsync = null) where T : class, new()
+    public async Task<(bool, T)> GetOrCreateImmutableAsync<T>(Func<Task<T>> factoryAsync = null)
+        where T : class, new()
     {
         if (_loaded.TryGetValue(typeof(T), out var loaded))
         {
@@ -50,7 +51,20 @@ public class DocumentStore : IDocumentStore
             return (false, loaded as T);
         }
 
-        var document = await _session.Query<T>().FirstOrDefaultAsync();
+        T document = null;
+
+        try
+        {
+            document = await _session.Query<T>().FirstOrDefaultAsync();
+        }
+        catch
+        {
+            // A missing CLR type in YesSql.TypeService causes a KeyNotFoundException.
+            // Example: TemplatesDocument not registered → login crash.
+            // We swallow the exception and fall back to factory/new T.
+            document = null;
+        }
+
         if (document is not null)
         {
             _session.Detach(document);
