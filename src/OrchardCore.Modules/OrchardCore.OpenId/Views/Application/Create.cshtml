@@ -242,7 +242,15 @@
 <script at="Foot" asp-name="credential-helpers"></script>
 <script at="Foot" depends-on="credential-helpers">
 
-    document.addEventListener('DOMContentLoaded', () => {
+    function onDocumentReady(callback) {
+        if (document.readyState !== 'loading') {
+            callback();
+        } else {
+            document.addEventListener('DOMContentLoaded', callback);
+        }
+    }
+
+    onDocumentReady(() => {
 
         const clientIdElement = document.getElementById('@Html.IdFor(m => m.ClientId)');
         const clientSecretElement = document.getElementById('@Html.IdFor(m => m.ClientSecret)');
@@ -275,6 +283,16 @@
 
     //<![CDATA[
     window.onload = function () {
+        function getElement(id) {
+            return document.getElementById(id);
+        }
+
+        function setCollapse(element, action) {
+            if (element) {
+                bootstrap.Collapse.getOrCreateInstance(element, { toggle: false })[action]();
+            }
+        }
+
         refreshForbiddenFlows();
         refreshClientSecret('@OpenIddictConstants.ClientTypes.Confidential');
         refreshFlows();
@@ -284,12 +302,12 @@
             @if (settings == null)
             {
                 <text>
-                    $("#AllowAuthorizationCodeFlowFieldSet").collapse("show");
-                    $("#AllowClientCredentialsFlowFieldSet").collapse("show");
-                    $("#AllowImplicitFlowFieldSet").collapse("show");
-                    $("#AllowPasswordFlowFieldSet").collapse("show");
-                    $("#AllowRefreshTokenFlowFieldSet").collapse("show");
-                    $("#AllowLogoutEndpointFieldSet").collapse("show");
+                    setCollapse(getElement("AllowAuthorizationCodeFlowFieldSet"), "show");
+                    setCollapse(getElement("AllowClientCredentialsFlowFieldSet"), "show");
+                    setCollapse(getElement("AllowImplicitFlowFieldSet"), "show");
+                    setCollapse(getElement("AllowPasswordFlowFieldSet"), "show");
+                    setCollapse(getElement("AllowRefreshTokenFlowFieldSet"), "show");
+                    setCollapse(getElement("AllowLogoutEndpointFieldSet"), "show");
                 </text>
 
             }
@@ -297,139 +315,143 @@
             {
                 if (settings.AllowAuthorizationCodeFlow)
                 {
-                    <text>$("#AllowAuthorizationCodeFlowFieldSet").collapse("show");</text>
+                    <text>setCollapse(getElement("AllowAuthorizationCodeFlowFieldSet"), "show");</text>
                 }
                 else
                 {
                     <text>
-                        $("#AllowAuthorizationCodeFlowFieldSet").collapse("hide");
-                        $("#AllowAuthorizationCodeFlow").prop("checked", false);
+                        setCollapse(getElement("AllowAuthorizationCodeFlowFieldSet"), "hide");
+                        getElement("AllowAuthorizationCodeFlow").checked = false;
                     </text>
                 }
 
                 if (settings.AllowClientCredentialsFlow)
                 {
-                    <text>$("#AllowClientCredentialsFlowFieldSet").collapse("show");</text>
+                    <text>setCollapse(getElement("AllowClientCredentialsFlowFieldSet"), "show");</text>
                 }
                 else
                 {
                     <text>
-                        $("#AllowClientCredentialsFlowFieldSet").collapse("hide");
-                        $("#AllowClientCredentialsFlow").prop("checked", false);
+                        setCollapse(getElement("AllowClientCredentialsFlowFieldSet"), "hide");
+                        getElement("AllowClientCredentialsFlow").checked = false;
                     </text>
                 }
 
                 if (settings.AllowImplicitFlow)
                 {
-                    <text>$("#AllowImplicitFlowFieldSet").collapse("show");</text>
+                    <text>setCollapse(getElement("AllowImplicitFlowFieldSet"), "show");</text>
                 }
                 else
                 {
                     <text>
-                        $("#AllowImplicitFlowFieldSet").collapse("hide");
-                        $("#AllowImplicitFlow").prop("checked", false);
+                        setCollapse(getElement("AllowImplicitFlowFieldSet"), "hide");
+                        getElement("AllowImplicitFlow").checked = false;
                     </text>
                 }
 
                 if (settings.AllowHybridFlow)
                 {
-                    <text>$("#AllowHybridFlowFieldSet").collapse("show");</text>
+                    <text>setCollapse(getElement("AllowHybridFlowFieldSet"), "show");</text>
                 }
                 else
                 {
                     <text>
-                        $("#AllowHybridFlowFieldSet").collapse("hide");
-                        $("#AllowHybridFlowFlow").prop("checked", false);
+                        setCollapse(getElement("AllowHybridFlowFieldSet"), "hide");
+                        if (getElement("AllowHybridFlowFlow")) {
+                            getElement("AllowHybridFlowFlow").checked = false;
+                        }
                     </text>
                 }
 
                 if (settings.AllowPasswordFlow)
                 {
-                    <text>$("#AllowPasswordFlowFieldSet").collapse("show");</text>
+                    <text>setCollapse(getElement("AllowPasswordFlowFieldSet"), "show");</text>
                 }
                 else
                 {
                     <text>
-                        $("#AllowPasswordFlowFieldSet").collapse("hide");
-                        $("#AllowPasswordFlow").prop("checked", false);
+                        setCollapse(getElement("AllowPasswordFlowFieldSet"), "hide");
+                        getElement("AllowPasswordFlow").checked = false;
                     </text>
                 }
 
                 if (settings.AllowRefreshTokenFlow)
                 {
-                    <text>$("#AllowRefreshTokenFlowFieldSet").collapse("show");</text>
+                    <text>setCollapse(getElement("AllowRefreshTokenFlowFieldSet"), "show");</text>
                 }
                 else
                 {
                     <text>
-                        $("#AllowRefreshTokenFlowFieldSet").collapse("hide");
-                        $("#AllowRefreshTokenFlow").prop("checked", false);
+                        setCollapse(getElement("AllowRefreshTokenFlowFieldSet"), "hide");
+                        getElement("AllowRefreshTokenFlow").checked = false;
                     </text>
                 }
 
                 if (settings.LogoutEndpointPath.HasValue)
                 {
-                    <text>$("#AllowLogoutEndpointFieldSet").collapse("show");</text>
+                    <text>setCollapse(getElement("AllowLogoutEndpointFieldSet"), "show");</text>
                 }
                 else
                 {
                     <text>
-                        $("#AllowLogoutEndpointFieldSet").collapse("hide");
-                        $("#AllowLogoutEndpointFieldSet").prop("checked", false);
+                        setCollapse(getElement("AllowLogoutEndpointFieldSet"), "hide");
+                        getElement("AllowLogoutEndpointFieldSet").checked = false;
                     </text>
                 }
             }
         }
 
-        $("#Type").change(function () {
+        getElement("Type").addEventListener('change', function () {
             refreshClientSecret();
         });
         function refreshClientSecret(defaultType) {
-            var type = $("#Type");
-            $("#ClientSecretWrapper").collapse(type.val() === '@OpenIddictConstants.ClientTypes.Confidential' ? "show" : "hide");
+            var type = getElement("Type");
+            setCollapse(getElement("ClientSecretWrapper"), type.value === '@OpenIddictConstants.ClientTypes.Confidential' ? "show" : "hide");
 
-            var allowClientCredentialsFlow = $("#AllowClientCredentialsFlow");
-            if ($("#Type").val() === '@OpenIddictConstants.ClientTypes.Confidential') {
-                allowClientCredentialsFlow.removeAttr("disabled");
+            var allowClientCredentialsFlow = getElement("AllowClientCredentialsFlow");
+            if (getElement("Type").value === '@OpenIddictConstants.ClientTypes.Confidential') {
+                allowClientCredentialsFlow.disabled = false;
             }
             else {
-                allowClientCredentialsFlow.attr('disabled', true);
-                allowClientCredentialsFlow.prop("checked", false);
+                allowClientCredentialsFlow.disabled = true;
+                allowClientCredentialsFlow.checked = false;
             }
 
-            var clientSecretHints = $("#AllowPasswordFlowRecommendedHint, #AllowAuthorizationCodeFlowRecommendedHint, #AllowImplicitFlowRecommendedHint, #AllowRefreshTokenFlowRecommendedHint");
+            var clientSecretHints = document.querySelectorAll("#AllowPasswordFlowRecommendedHint, #AllowAuthorizationCodeFlowRecommendedHint, #AllowImplicitFlowRecommendedHint, #AllowRefreshTokenFlowRecommendedHint");
 
-            if (defaultType === $("#Type").val())
+            if (defaultType === getElement("Type").value)
                 return;
 
-            if ($("#Type").val() === '@OpenIddictConstants.ClientTypes.Confidential') {
-                clientSecretHints.each(function () { this.innerText = this.innerText.replace("client_id, ", "client_id, client_secret, "); });
+            if (getElement("Type").value === '@OpenIddictConstants.ClientTypes.Confidential') {
+                clientSecretHints.forEach(function (element) { element.innerText = element.innerText.replace("client_id, ", "client_id, client_secret, "); });
             }
             else {
-                clientSecretHints.each(function () { this.innerText = this.innerText.replace("client_id, client_secret, ", "client_id, "); });
+                clientSecretHints.forEach(function (element) { element.innerText = element.innerText.replace("client_id, client_secret, ", "client_id, "); });
             }
         }
 
-        $("#AllowRefreshTokenFlow").change(function () {
+        getElement("AllowRefreshTokenFlow").addEventListener('change', function () {
             refreshOfflineAccessTip();
         });
 
         function refreshOfflineAccessTip(defaultValue) {
-            var offlineAccessHints = $("#AllowPasswordFlowRecommendedHint, #AllowAuthorizationCodeFlowRecommendedHint");
-            var allowRefreshTokenFlow = $("#AllowRefreshTokenFlow");
-            if (defaultValue === allowRefreshTokenFlow.prop('checked'))
+            var offlineAccessHints = document.querySelectorAll("#AllowPasswordFlowRecommendedHint, #AllowAuthorizationCodeFlowRecommendedHint");
+            var allowRefreshTokenFlow = getElement("AllowRefreshTokenFlow");
+            if (defaultValue === allowRefreshTokenFlow.checked)
                 return;
 
-            if (allowRefreshTokenFlow.prop('checked')) {
-                offlineAccessHints.each(function () { this.innerText = this.innerText.replace("roles", "roles, offline_access"); });
+            if (allowRefreshTokenFlow.checked) {
+                offlineAccessHints.forEach(function (element) { element.innerText = element.innerText.replace("roles", "roles, offline_access"); });
             }
             else {
-                offlineAccessHints.each(function () { this.innerText = this.innerText.replace(", offline_access", ""); });
+                offlineAccessHints.forEach(function (element) { element.innerText = element.innerText.replace(", offline_access", ""); });
             }
         }
 
-        $("#AllowClientCredentialsFlow, #AllowPasswordFlow, #AllowAuthorizationCodeFlow, #AllowImplicitFlow, #AllowHybridFlow, #AllowRefreshTokenFlow").change(function () {
-            refreshFlows();
+        document.querySelectorAll("#AllowClientCredentialsFlow, #AllowPasswordFlow, #AllowAuthorizationCodeFlow, #AllowImplicitFlow, #AllowHybridFlow, #AllowRefreshTokenFlow").forEach(function (element) {
+            element.addEventListener('change', function () {
+                refreshFlows();
+            });
         });
 
         function refreshFlows() {
@@ -438,44 +460,46 @@
             refreshRedirectSettings();
         }
         function refreshRoleGroup() {
-            $("#RoleGroup").collapse($("#AllowClientCredentialsFlow").prop('checked') ? "show" : "hide");
+            setCollapse(getElement("RoleGroup"), getElement("AllowClientCredentialsFlow").checked ? "show" : "hide");
         }
         function refreshAllowRefreshTokenFlowVisibility() {
-            var allowRefreshTokenFlow = $("#AllowRefreshTokenFlow");
+            var allowRefreshTokenFlow = getElement("AllowRefreshTokenFlow");
 
-            if ($("#AllowPasswordFlow").prop('checked') ||
-                $("#AllowAuthorizationCodeFlow").prop('checked') ||
-                $("#AllowHybridFlow").prop('checked')) {
-                allowRefreshTokenFlow.removeAttr("disabled");
+            if (getElement("AllowPasswordFlow").checked ||
+                getElement("AllowAuthorizationCodeFlow").checked ||
+                getElement("AllowHybridFlow").checked) {
+                allowRefreshTokenFlow.disabled = false;
             }
             else {
-                allowRefreshTokenFlow.attr('disabled', true);
-                allowRefreshTokenFlow.prop("checked", false);
-                $("#AllowRefreshTokenFlowRecommendedHint").collapse("hide");
+                allowRefreshTokenFlow.disabled = true;
+                allowRefreshTokenFlow.checked = false;
+                setCollapse(getElement("AllowRefreshTokenFlowRecommendedHint"), "hide");
                 refreshOfflineAccessTip();
             }
         }
         function refreshRedirectSettings() {
-            var redirectSection = $("#RedirectSection");
-            var skipConsent = $("#SkipConsent");
-            var postLogoutRedirecUris = $("#postLogoutRedirectUris")
+            var redirectSection = getElement("RedirectSection");
+            var skipConsent = getElement("SkipConsent");
+            var postLogoutRedirecUris = getElement("postLogoutRedirectUris")
 
-            if ($("#AllowImplicitFlow").prop('checked') ||
-                $("#AllowAuthorizationCodeFlow").prop('checked') ||
-                $("#AllowHybridFlow").prop('checked')) {
-                redirectSection.collapse("show");
-                if ($("#AllowLogoutEndpoint").prop('checked')) {
-                    postLogoutRedirecUris.collapse("show");
+            if (getElement("AllowImplicitFlow").checked ||
+                getElement("AllowAuthorizationCodeFlow").checked ||
+                getElement("AllowHybridFlow").checked) {
+                setCollapse(redirectSection, "show");
+                if (getElement("AllowLogoutEndpoint").checked) {
+                    setCollapse(postLogoutRedirecUris, "show");
                 }
                 else {
-                    postLogoutRedirecUris.collapse("hide");
+                    setCollapse(postLogoutRedirecUris, "hide");
                 }
             }
             else {
-                skipConsent.prop("checked", false);
-                redirectSection.collapse("hide");
-                $("#AllowLogoutEndpoint").prop('checked', false);
-                postLogoutRedirecUris.collapse("hide");
+                if (skipConsent) {
+                    skipConsent.checked = false;
+                }
+                setCollapse(redirectSection, "hide");
+                getElement("AllowLogoutEndpoint").checked = false;
+                setCollapse(postLogoutRedirecUris, "hide");
             }
         }
     };

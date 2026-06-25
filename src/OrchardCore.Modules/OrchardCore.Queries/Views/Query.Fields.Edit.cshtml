@@ -18,10 +18,18 @@
     <span class="hint">@T["The schema the GraphQL API will use to return results."] <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/Queries/#graphql" target="_blank">@T["See documentation"]</a></span>
     </div>
 </div>
-<script asp-name="monaco" depends-on="jQuery" at="Foot"></script>
+<script asp-name="monaco" at="Foot"></script>
 
 <script at="Foot" depends-on="monaco">
-    document.addEventListener('DOMContentLoaded', function () {
+    function onDocumentReady(callback) {
+        if (document.readyState !== 'loading') {
+            callback();
+        } else {
+            document.addEventListener('DOMContentLoaded', callback);
+        }
+    }
+
+    onDocumentReady(function () {
         require(['vs/editor/editor.main'], function () {
 
             const html = document.documentElement;

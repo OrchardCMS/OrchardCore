@@ -42,11 +42,11 @@
     </div>
 </div>
 
-<script at="Foot" depends-on="jquery">
-    $('#@Html.IdFor(i => i.OverrideSitemapConfig)').change(function (e) {
-        var checked = $(e.target).prop('checked');
-        $('.sitemap-form-g').each(function () {
-            checked ? $(this).show() : $(this).hide();
+<script at="Foot">
+    document.getElementById('@Html.IdFor(i => i.OverrideSitemapConfig)').addEventListener('change', function (e) {
+        var checked = e.target.checked;
+        document.querySelectorAll('.sitemap-form-g').forEach(function (element) {
+            element.style.display = checked ? '' : 'none';
         });
     });
 </script>
