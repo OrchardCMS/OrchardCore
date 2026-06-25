@@ -72,7 +72,9 @@ public sealed class AdminController : Controller, IUpdateModel
         ContentOptionsViewModel options,
         PagerParameters pagerParameters,
         string contentTypeId = "",
-        string stereotype = "")
+        string stereotype = "",
+        string[] contentTypeIds = null,
+        string[] stereotypes = null)
     {
         var contentTypeDefinitions = (await _contentDefinitionManager.ListTypeDefinitionsAsync())
             .OrderBy(ctd => ctd.DisplayName)
@@ -89,11 +91,21 @@ public sealed class AdminController : Controller, IUpdateModel
             options.SelectedContentType = contentTypeId;
         }
 
+        // If contentTypeIds contains exactly one non-empty entry and no contentTypeId was set,
+        // treat it as a single selected content type.
+        var effectiveContentTypeIds = contentTypeIds?.Where(s => !string.IsNullOrEmpty(s)).Distinct().ToArray() ?? [];
+
+        if (string.IsNullOrEmpty(options.SelectedContentType) && effectiveContentTypeIds.Length == 1)
+        {
+            options.SelectedContentType = effectiveContentTypeIds[0];
+        }
+
         // The filter is bound separately and mapped to the options.
         // The options must still be bound so that options that are not filters are still bound.
         options.FilterResult = queryFilterResult;
 
         var hasSelectedContentType = !string.IsNullOrEmpty(options.SelectedContentType);
+        var hasMultipleContentTypes = !hasSelectedContentType && effectiveContentTypeIds.Length > 1;
 
         if (hasSelectedContentType)
         {
@@ -108,20 +120,63 @@ public sealed class AdminController : Controller, IUpdateModel
 
             options.CreatableTypes = await GetCreatableTypeOptionsAsync(options.CanCreateSelectedContentType, contentTypeDefinition);
         }
-
-        if (!hasSelectedContentType && !string.IsNullOrEmpty(stereotype))
+        else if (hasMultipleContentTypes)
         {
-            // When a stereotype is provided via the query parameter or options a placeholder node is used to apply a filter.
-            options.FilterResult.TryAddOrReplace(new StereotypeFilterNode(stereotype));
+            // When multiple content type IDs are provided, a placeholder node is used to apply a filter for all of them.
+            options.FilterResult.TryAddOrReplace(new ContentTypesFilterNode(effectiveContentTypeIds));
 
-            var availableContentTypeDefinitions = contentTypeDefinitions
-                .Where(definition => definition.StereotypeEquals(stereotype, StringComparison.OrdinalIgnoreCase))
+            var typeDefinitions = effectiveContentTypeIds
+                .Select(id => contentTypeDefinitions.FirstOrDefault(d => string.Equals(d.Name, id, StringComparison.Ordinal)))
+                .Where(d => d != null)
                 .ToArray();
 
-            if (availableContentTypeDefinitions.Length > 0)
+            if (typeDefinitions.Length > 0)
             {
-                options.ContentTypeOptions = await GetListableContentTypeOptionsAsync(availableContentTypeDefinitions, options.SelectedContentType, false);
-                options.CreatableTypes = await GetCreatableTypeOptionsAsync(options.CanCreateSelectedContentType, availableContentTypeDefinitions);
+                options.ContentTypeOptions = await GetListableContentTypeOptionsAsync(typeDefinitions, options.SelectedContentType, false);
+                options.CreatableTypes = await GetCreatableTypeOptionsAsync(false, typeDefinitions);
+            }
+        }
+
+        // Combine single and multiple stereotype parameters, filtering out empty entries and deduplicating.
+        var effectiveStereotypes = (stereotypes ?? [])
+            .Concat(!string.IsNullOrEmpty(stereotype) ? [stereotype] : [])
+            .Where(s => !string.IsNullOrEmpty(s))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToArray();
+
+        if (!hasSelectedContentType && !hasMultipleContentTypes)
+        {
+            if (effectiveStereotypes.Length == 1)
+            {
+                var singleStereotype = effectiveStereotypes[0];
+
+                // When a stereotype is provided via the query parameter or options a placeholder node is used to apply a filter.
+                options.FilterResult.TryAddOrReplace(new StereotypeFilterNode(singleStereotype));
+
+                var availableContentTypeDefinitions = contentTypeDefinitions
+                    .Where(definition => definition.StereotypeEquals(singleStereotype, StringComparison.OrdinalIgnoreCase))
+                    .ToArray();
+
+                if (availableContentTypeDefinitions.Length > 0)
+                {
+                    options.ContentTypeOptions = await GetListableContentTypeOptionsAsync(availableContentTypeDefinitions, options.SelectedContentType, false);
+                    options.CreatableTypes = await GetCreatableTypeOptionsAsync(options.CanCreateSelectedContentType, availableContentTypeDefinitions);
+                }
+            }
+            else if (effectiveStereotypes.Length > 1)
+            {
+                // When multiple stereotypes are provided, a placeholder node is used to apply a filter for all of them.
+                options.FilterResult.TryAddOrReplace(new StereotypesFilterNode(effectiveStereotypes));
+
+                var availableContentTypeDefinitions = contentTypeDefinitions
+                    .Where(definition => effectiveStereotypes.Any(s => definition.StereotypeEquals(s, StringComparison.OrdinalIgnoreCase)))
+                    .ToArray();
+
+                if (availableContentTypeDefinitions.Length > 0)
+                {
+                    options.ContentTypeOptions = await GetListableContentTypeOptionsAsync(availableContentTypeDefinitions, options.SelectedContentType, false);
+                    options.CreatableTypes = await GetCreatableTypeOptionsAsync(options.CanCreateSelectedContentType, availableContentTypeDefinitions);
+                }
             }
         }
 

@@ -245,6 +245,110 @@ public sealed class DefaultContentsAdminListFilterProvider : IContentsAdminListF
                     return query;
                 })
             )
+            .WithNamedTerm("types", builder => builder
+                .OneCondition(async (types, query, ctx) =>
+                {
+                    var context = (ContentQueryContext)ctx;
+                    var httpContextAccessor = context.ServiceProvider.GetRequiredService<IHttpContextAccessor>();
+                    var authorizationService = context.ServiceProvider.GetRequiredService<IAuthorizationService>();
+                    var contentDefinitionManager = context.ServiceProvider.GetRequiredService<IContentDefinitionManager>();
+                    var user = httpContextAccessor.HttpContext.User;
+                    var userNameIdentifier = user?.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                    // Filter for multiple content types.
+                    if (!string.IsNullOrEmpty(types))
+                    {
+                        var typeIds = types.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
+                        if (typeIds.Length > 0)
+                        {
+                            var viewAll = new List<string>();
+                            var viewOwn = new List<string>();
+
+                            foreach (var typeId in typeIds)
+                            {
+                                var contentTypeDefinition = await contentDefinitionManager.GetTypeDefinitionAsync(typeId);
+                                if (contentTypeDefinition == null)
+                                {
+                                    // Skip invalid content types.
+                                    continue;
+                                }
+
+                                // We display a specific type even if it's not listable so that admin pages
+                                // can reuse the content list page for specific types.
+
+                                // It is important to pass null to the owner parameter. This will check if the user can view content that belongs to others.
+                                if (await authorizationService.AuthorizeContentTypeAsync(user, CommonPermissions.ViewContent, contentTypeDefinition.Name, owner: null))
+                                {
+                                    viewAll.Add(typeId);
+
+                                    continue;
+                                }
+
+                                viewOwn.Add(typeId);
+                            }
+
+                            if (viewAll.Count > 0 || viewOwn.Count > 0)
+                            {
+                                return query.With<ContentItemIndex>(x => x.ContentType.IsIn(viewAll) || (x.ContentType.IsIn(viewOwn) && x.Owner == userNameIdentifier));
+                            }
+                        }
+                    }
+
+                    return query;
+                })
+            )
+            .WithNamedTerm("stereotypes", builder => builder
+                .OneCondition(async (stereotypes, query, ctx) =>
+                {
+                    var context = (ContentQueryContext)ctx;
+                    var httpContextAccessor = context.ServiceProvider.GetRequiredService<IHttpContextAccessor>();
+                    var authorizationService = context.ServiceProvider.GetRequiredService<IAuthorizationService>();
+                    var contentDefinitionManager = context.ServiceProvider.GetRequiredService<IContentDefinitionManager>();
+
+                    // Filter for multiple stereotypes.
+                    if (!string.IsNullOrEmpty(stereotypes))
+                    {
+                        var stereotypeList = stereotypes.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
+                        if (stereotypeList.Length > 0)
+                        {
+                            var contentTypeDefinitionNames = (await contentDefinitionManager.ListTypeDefinitionsAsync())
+                                .Where(definition => stereotypeList.Any(s => definition.StereotypeEquals(s, StringComparison.OrdinalIgnoreCase)))
+                                .Select(definition => definition.Name)
+                                .ToList();
+
+                            if (contentTypeDefinitionNames.Count > 0)
+                            {
+                                var user = httpContextAccessor.HttpContext.User;
+                                var userNameIdentifier = user?.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                                var viewAll = new List<string>();
+                                var viewOwn = new List<string>();
+
+                                foreach (var contentTypeDefinitionName in contentTypeDefinitionNames)
+                                {
+                                    // It is important to pass null to the owner parameter. This will check if the user can view content that belongs to others.
+                                    if (await authorizationService.AuthorizeContentTypeAsync(user, CommonPermissions.ViewContent, contentTypeDefinitionName, owner: null))
+                                    {
+                                        viewAll.Add(contentTypeDefinitionName);
+
+                                        continue;
+                                    }
+
+                                    viewOwn.Add(contentTypeDefinitionName);
+                                }
+
+                                return query.With<ContentItemIndex>(x => x.ContentType.IsIn(viewAll) || (x.ContentType.IsIn(viewOwn) && x.Owner == userNameIdentifier));
+                            }
+
+                            // At this point, the given stereotypes are invalid. Ignore them.
+                        }
+                    }
+
+                    return query;
+                })
+            )
             .WithDefaultTerm(ContentsAdminListFilterOptions.DefaultTermName, builder => builder
                 .ManyCondition(
                     (val, query) => query.With<ContentItemIndex>(x => x.DisplayText.Contains(val)),
