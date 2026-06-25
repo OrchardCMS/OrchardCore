@@ -281,21 +281,13 @@ public class DataMigrationManagerTests
         public Task<int> CountAsync(CancellationToken cancellationToken = default)
             => throw new NotImplementedException();
 
-        public Task<int> CountAsync()
-            => throw new NotImplementedException();
-
         public Task<T> FirstOrDefaultAsync(CancellationToken cancellationToken = default)
-            => throw new NotImplementedException();
-
-        public Task<T> FirstOrDefaultAsync() => Task.FromResult((T)null);
+            => Task.FromResult((T)null);
 
         public string GetTypeAlias(Type t)
             => throw new NotImplementedException();
 
-        public Task<IEnumerable<T>> ListAsync(CancellationToken cancellationToken = default)
-            => throw new NotImplementedException();
-
-        public Task<IEnumerable<T>> ListAsync()
+        public Task<IReadOnlyList<T>> ListAsync(CancellationToken cancellationToken = default)
             => throw new NotImplementedException();
 
         public IQuery<T> NoDuplicates()
@@ -308,9 +300,6 @@ public class DataMigrationManagerTests
             => throw new NotImplementedException();
 
         public IAsyncEnumerable<T> ToAsyncEnumerable(CancellationToken cancellationToken = default)
-            => throw new NotImplementedException();
-
-        public IAsyncEnumerable<T> ToAsyncEnumerable()
             => throw new NotImplementedException();
 
         public IQuery<T> With(Type indexType)
