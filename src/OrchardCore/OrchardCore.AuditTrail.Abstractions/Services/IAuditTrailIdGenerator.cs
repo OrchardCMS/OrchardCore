@@ -1,6 +1,5 @@
+using OrchardCore.Entities;
+
 namespace OrchardCore.AuditTrail.Services;
 
-public interface IAuditTrailIdGenerator
-{
-    string GenerateUniqueId();
-}
+public interface IAuditTrailIdGenerator : IIdGenerator;
