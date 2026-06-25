@@ -21,7 +21,15 @@
 <script asp-name="monaco" at="Foot"></script>
 
 <script at="Foot" depends-on="monaco">
-    document.addEventListener('DOMContentLoaded', function () {
+    function onDocumentReady(callback) {
+        if (document.readyState !== 'loading') {
+            callback();
+        } else {
+            document.addEventListener('DOMContentLoaded', callback);
+        }
+    }
+
+    onDocumentReady(function () {
         require(['vs/editor/editor.main'], function () {
 
             const html = document.documentElement;

@@ -116,7 +116,15 @@
 </div>
 
 <script at="Foot">
-    document.addEventListener('DOMContentLoaded', function () {
+    function onDocumentReady(callback) {
+        if (document.readyState !== 'loading') {
+            callback();
+        } else {
+            document.addEventListener('DOMContentLoaded', callback);
+        }
+    }
+
+    onDocumentReady(function () {
         document.querySelectorAll('.add-parent-link-checkbox').forEach(function (checkbox) {
             checkbox.addEventListener('click', function (e) {
                 var fieldSet = e.currentTarget.closest('.add-parent-link-fieldset');

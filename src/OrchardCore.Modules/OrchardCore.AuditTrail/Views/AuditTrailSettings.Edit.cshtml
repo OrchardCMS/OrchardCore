@@ -77,7 +77,15 @@
 </section>
 
 <script at="Foot" type="text/javascript">
-    document.addEventListener('DOMContentLoaded', function () {
+    function onDocumentReady(callback) {
+        if (document.readyState !== 'loading') {
+            callback();
+        } else {
+            document.addEventListener('DOMContentLoaded', callback);
+        }
+    }
+
+    onDocumentReady(function () {
         document.querySelectorAll('.check-all-container').forEach(function (container) {
             var master = container.querySelector('input[type="checkbox"].check-all-master');
             var slaves = container.querySelectorAll('.check-all-slave input[type="checkbox"]:not(:disabled)');
