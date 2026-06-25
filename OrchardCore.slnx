@@ -94,6 +94,7 @@
     <Project Path="src/OrchardCore.Modules/OrchardCore.Markdown/OrchardCore.Markdown.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Media.AmazonS3/OrchardCore.Media.AmazonS3.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Media.Azure/OrchardCore.Media.Azure.csproj" />
+    <Project Path="src/OrchardCore.Modules/OrchardCore.Media.ImageSharpV3/OrchardCore.Media.ImageSharpV3.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Media.Indexing.OpenXML/OrchardCore.Media.Indexing.OpenXML.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Media.Indexing.Pdf/OrchardCore.Media.Indexing.Pdf.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Media/OrchardCore.Media.csproj" />

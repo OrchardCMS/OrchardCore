@@ -6,8 +6,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.Data.Migration;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
+using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.FileStorage;
 using OrchardCore.FileStorage.AzureBlob;
 using OrchardCore.Media.Azure.Services;
@@ -17,8 +19,6 @@ using OrchardCore.Media.Events;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
-using SixLabors.ImageSharp.Web.Caching;
-using SixLabors.ImageSharp.Web.Caching.Azure;
 
 namespace OrchardCore.Media.Azure;
 
@@ -141,30 +141,29 @@ public sealed class Startup : Modules.StartupBase
     }
 }
 
-[Feature("OrchardCore.Media.Azure.ImageSharpImageCache")]
-public sealed class ImageSharpAzureBlobCacheStartup : Modules.StartupBase
+[Feature("OrchardCore.Media.Azure.ImageCache")]
+public sealed class MediaAzureImageCacheStartup : Modules.StartupBase
 {
     private readonly IShellConfiguration _configuration;
     private readonly ILogger _logger;
 
-    public ImageSharpAzureBlobCacheStartup(
+    public MediaAzureImageCacheStartup(
         IShellConfiguration configuration,
-        ILogger<ImageSharpAzureBlobCacheStartup> logger)
+        ILogger<MediaAzureImageCacheStartup> logger)
     {
         _configuration = configuration;
         _logger = logger;
     }
 
     public override int Order
-        => OrchardCoreConstants.ConfigureOrder.AzureImageSharpCache;
+        => OrchardCoreConstants.ConfigureOrder.AzureResizedImageCache;
 
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddTransient<IConfigureOptions<ImageSharpBlobImageCacheOptions>, ImageSharpBlobImageCacheOptionsConfiguration>();
-        services.AddTransient<IConfigureOptions<AzureBlobStorageCacheOptions>, AzureBlobStorageCacheOptionsConfiguration>();
+        services.AddTransient<IConfigureOptions<MediaBlobImageCacheOptions>, MediaBlobImageCacheOptionsConfiguration>();
 
-        // Only replace default implementation if options are valid.
-        var section = _configuration.GetSection("OrchardCore_Media_Azure_ImageSharp_Cache");
+        // Only replace the default local cache implementation if options are valid.
+        var section = _configuration.GetSection("OrchardCore_Media_Azure_Image_Cache");
         var connectionString = section.GetValue<string>(nameof(MediaBlobStorageOptions.ConnectionString));
         var containerName = section.GetValue<string>(nameof(MediaBlobStorageOptions.ContainerName));
 
@@ -173,12 +172,9 @@ public sealed class ImageSharpAzureBlobCacheStartup : Modules.StartupBase
             return;
         }
 
-        // Following https://docs.sixlabors.com/articles/imagesharp.web/imagecaches.html we'd use
-        // SetCache<AzureBlobStorageCache>() but that's only available on IImageSharpBuilder after AddImageSharp(),
-        // what happens in OrchardCore.Media. Thus, an explicit Replace() is necessary.
-        services.Replace(ServiceDescriptor.Singleton<IImageCache, AzureBlobStorageCache>());
+        services.Replace(ServiceDescriptor.Singleton<IResizedImageCache, AzureBlobResizedImageCache>());
 
-        services.AddScoped<IModularTenantEvents, ImageSharpBlobImageCacheTenantEvents>();
+        services.AddScoped<IModularTenantEvents, MediaBlobImageCacheTenantEvents>();
     }
 
     private bool CheckOptions(string connectionString, string containerName)
@@ -200,5 +196,38 @@ public sealed class ImageSharpAzureBlobCacheStartup : Modules.StartupBase
         }
 
         return optionsAreValid;
+    }
+}
+
+// Keeps the renamed feature enabled on sites that had the legacy
+// "OrchardCore.Media.Azure.ImageSharpImageCache" feature enabled before the rename. The legacy
+// feature depends on the new one, and this migration explicitly enables the new feature so it
+// remains active in its own right once the obsolete feature is removed.
+[Feature("OrchardCore.Media.Azure.ImageSharpImageCache")]
+public sealed class LegacyImageCacheFeatureStartup : Modules.StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddDataMigration<LegacyImageCacheFeatureMigrations>();
+    }
+}
+
+internal sealed class LegacyImageCacheFeatureMigrations : DataMigration
+{
+    public static int Create()
+    {
+        ShellScope.AddDeferredTask(async scope =>
+        {
+            var featuresManager = scope.ServiceProvider.GetRequiredService<IShellFeaturesManager>();
+
+            if (await featuresManager.IsFeatureEnabledAsync("OrchardCore.Media.Azure.ImageCache"))
+            {
+                return;
+            }
+
+            await featuresManager.EnableFeaturesAsync("OrchardCore.Media.Azure.ImageCache");
+        });
+
+        return 1;
     }
 }

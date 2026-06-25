@@ -7,14 +7,14 @@ using OrchardCore.FileStorage.AmazonS3;
 
 namespace OrchardCore.Media.AmazonS3.Services;
 
-public class ImageSharpS3ImageCacheBucketTenantEvents : AwsTenantEventsBase
+public class AwsS3MediaImageCacheTenantEvents : AwsTenantEventsBase
 {
-    public ImageSharpS3ImageCacheBucketTenantEvents(
+    public AwsS3MediaImageCacheTenantEvents(
         ShellSettings shellSettings,
         IAmazonS3 amazonS3Client,
-        IOptions<AwsImageSharpImageCacheOptions> options,
-        IStringLocalizer<ImageSharpS3ImageCacheBucketTenantEvents> localizer,
-        ILogger<ImageSharpS3ImageCacheBucketTenantEvents> logger)
+        IOptions<AwsMediaImageCacheOptions> options,
+        IStringLocalizer<AwsS3MediaImageCacheTenantEvents> localizer,
+        ILogger<AwsS3MediaImageCacheTenantEvents> logger)
         : base(shellSettings, amazonS3Client, options.Value, localizer, logger)
     {
     }
