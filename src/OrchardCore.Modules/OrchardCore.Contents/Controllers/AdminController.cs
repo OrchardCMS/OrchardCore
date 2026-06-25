@@ -93,9 +93,14 @@ public sealed class AdminController : Controller, IUpdateModel
 
         // If contentTypeIds contains exactly one non-empty entry and no contentTypeId was set,
         // treat it as a single selected content type.
-        var effectiveContentTypeIds = contentTypeIds?.Where(s => !string.IsNullOrEmpty(s)).Distinct().ToArray() ?? [];
+        string[] effectiveContentTypeIds = null;
 
-        if (string.IsNullOrEmpty(options.SelectedContentType) && effectiveContentTypeIds.Length == 1)
+        if (contentTypeIds is { Length: > 0 })
+        {
+            effectiveContentTypeIds = contentTypeIds.Where(s => !string.IsNullOrEmpty(s)).Distinct().ToArray();
+        }
+
+        if (string.IsNullOrEmpty(options.SelectedContentType) && effectiveContentTypeIds is { Length: 1 })
         {
             options.SelectedContentType = effectiveContentTypeIds[0];
         }
@@ -105,7 +110,7 @@ public sealed class AdminController : Controller, IUpdateModel
         options.FilterResult = queryFilterResult;
 
         var hasSelectedContentType = !string.IsNullOrEmpty(options.SelectedContentType);
-        var hasMultipleContentTypes = !hasSelectedContentType && effectiveContentTypeIds.Length > 1;
+        var hasMultipleContentTypes = !hasSelectedContentType && effectiveContentTypeIds is { Length: > 1 };
 
         if (hasSelectedContentType)
         {
@@ -138,15 +143,28 @@ public sealed class AdminController : Controller, IUpdateModel
         }
 
         // Combine single and multiple stereotype parameters, filtering out empty entries and deduplicating.
-        var effectiveStereotypes = (stereotypes ?? [])
-            .Concat(!string.IsNullOrEmpty(stereotype) ? [stereotype] : [])
-            .Where(s => !string.IsNullOrEmpty(s))
-            .Distinct(StringComparer.OrdinalIgnoreCase)
-            .ToArray();
+        string[] effectiveStereotypes = null;
+
+        if (!string.IsNullOrEmpty(stereotype) || stereotypes is { Length: > 0 })
+        {
+            var combined = new List<string>();
+
+            if (!string.IsNullOrEmpty(stereotype))
+            {
+                combined.Add(stereotype);
+            }
+
+            if (stereotypes != null)
+            {
+                combined.AddRange(stereotypes.Where(s => !string.IsNullOrEmpty(s)));
+            }
+
+            effectiveStereotypes = [.. combined.Distinct(StringComparer.OrdinalIgnoreCase)];
+        }
 
         if (!hasSelectedContentType && !hasMultipleContentTypes)
         {
-            if (effectiveStereotypes.Length == 1)
+            if (effectiveStereotypes is { Length: 1 })
             {
                 var singleStereotype = effectiveStereotypes[0];
 
@@ -163,7 +181,7 @@ public sealed class AdminController : Controller, IUpdateModel
                     options.CreatableTypes = await GetCreatableTypeOptionsAsync(options.CanCreateSelectedContentType, availableContentTypeDefinitions);
                 }
             }
-            else if (effectiveStereotypes.Length > 1)
+            else if (effectiveStereotypes is { Length: > 1 })
             {
                 // When multiple stereotypes are provided, a placeholder node is used to apply a filter for all of them.
                 options.FilterResult.TryAddOrReplace(new StereotypesFilterNode(effectiveStereotypes));
