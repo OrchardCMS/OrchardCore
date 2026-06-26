@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Localization;
 using OrchardCore.Deployment;
 
 namespace OrchardCore.Lucene.Deployment;
@@ -10,6 +11,12 @@ public class LuceneIndexResetDeploymentStep : DeploymentStep
     public LuceneIndexResetDeploymentStep()
     {
         Name = "LuceneIndexReset";
+    }
+
+    public LuceneIndexResetDeploymentStep(IStringLocalizer<LuceneIndexResetDeploymentStep> S)
+        : this()
+    {
+        Category = S["Search"];
     }
 
     public bool IncludeAll { get; set; } = true;

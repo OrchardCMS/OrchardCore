@@ -6,29 +6,35 @@
 <div asp-validation-summary="ModelOnly"></div>
 <form asp-action="Edit" method="post" class="no-multisubmit">
 
-    <div class="row row-cols-1 row-cols-md-2">
-        <div class="mb-3" asp-validation-class-for="Name">
-            <label asp-for="Name" class="form-label">@T["Name"]</label>
+    <div class="ocat-wrapper" asp-validation-class-for="Name">
+        <label asp-for="Name" class="ocat-label">@T["Name"]</label>
+        <div class="ocat-end">
             <input asp-for="Name" class="form-control" readonly autofocus />
             <span asp-validation-for="Name" class="text-danger"></span>
             <span class="hint">@T["The name of the tenant."]</span>
         </div>
-
-        <partial name="_TenantInfo" model="Model" />
     </div>
 
-    @if (Model.CanEditDatabasePresets)
+    <partial name="_TenantInfo" model="Model" />
+
+    @if (Model.Recipes is not null)
     {
-        <partial name="_TenantRecipes" model="Model" />
+        @if (Model.CanEditDatabasePresets)
+        {
+            <partial name="_TenantRecipes" model="Model" />
+        }
+
         <partial name="_TenantDatabaseInfo" model="Model" />
     }
 
     <partial name="_TenantFeatureProfile" model="Model" />
 
-    <div class="mb-3">
-        <button class="btn btn-primary save" type="submit">@T["Save"]</button>
-        <a class="btn btn-secondary cancel" role="button" asp-route-action="Index">@T["Cancel"]</a>
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
+            <button class="btn btn-primary save" type="submit">@T["Save"]</button>
+            <a class="btn btn-secondary cancel" role="button" asp-route-action="Index">@T["Cancel"]</a>
+        </div>
     </div>
 </form>
 
-<script at="Foot" asp-src="~/OrchardCore.Tenants/Scripts/tenant.js" depends-on="jquery"></script>
+<script at="Foot" asp-src="~/OrchardCore.Tenants/Scripts/tenant.js"></script>

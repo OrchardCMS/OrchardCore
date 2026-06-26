@@ -40,7 +40,7 @@ public static class ContentRazorHelperExtensions
         var html = markdownService.ToHtml(markdown ?? string.Empty);
 
         // TODO: provide context argument (optional on this helper as with the liquid helper?).
-        html = await shortcodeService.ProcessAsync(markdown);
+        html = await shortcodeService.ProcessAsync(html);
 
         if (sanitize)
         {

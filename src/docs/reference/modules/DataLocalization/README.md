@@ -88,6 +88,13 @@ To allow a user to only edit translations for a specific culture:
 
 The module includes these built-in `ILocalizationDataProvider` implementations:
 
+### Admin Menu Provider
+
+Provides admin menu display names for translation.
+
+- **Context**: `Admin Menus` or `Admin Menus:{menuName}`
+- **Strings**: Display names of all admin menu / sub menu items
+
 ### Content Type Provider
 
 Provides content type display names for translation.
@@ -99,15 +106,22 @@ Provides content type display names for translation.
 
 Provides content field display names for translation.
 
-- **Context**: `Content Fields`
+- **Context**: `Content Fields:{fieldName}`
 - **Strings**: Display names of all content fields
 
 ### Permissions Provider
 
 Provides permission descriptions for translation.
 
-- **Context**: `Permissions`
+- **Context**: `Permissions` or `Permissions:{groupName}`
 - **Strings**: Descriptions of all non-template permissions
+
+### Search Provider
+
+Provides search-related strings for translation.
+
+- **Context**: `Search`
+- **Strings**: Display names of all search-related items
 
 ## Creating Custom Providers
 
@@ -294,38 +308,4 @@ To display translated dynamic strings in Razor views, inject `IDataLocalizer`:
 
 ## Liquid filters
 
-### `d`
-
-Localizes a dynamic data string using the current culture.
-
-### Parameters
-
-| Property | Example                                | Description   |
-|----------|----------------------------------------|---------------|
-| Context  | The context that the string belongs to | Content Types |
-
-Input
-
-```liquid
-{{ "Blog" | d: "Content Types" }}
-```
-
-Output
-
-For `fr`, `it`, `es` cultures, it will return:
-
-```text
-Blog
-```
-
-For `ar` culture, it will return:
-
-```text
-مدونة
-```
-
-For unsupported cultures or missing translations, it will return:
-
-```text
-Blog.Content Types
-```
+For more information on using data locaization filters in Liquid templates, see the [Liquid Localization filters documentation](../Liquid/README.md#localization-filters).

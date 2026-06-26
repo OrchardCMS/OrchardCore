@@ -5,12 +5,14 @@ on:
 env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   DOTNET_CLI_TELEMETRY_OPTOUT: true
+permissions:
+  contents: read
 jobs:
   test:
     runs-on: macos-latest
     name: Unit Tests
     steps:
-    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+    - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
     - uses: ./.github/actions/setup-dotnet
     - name: Build and test
       run: |

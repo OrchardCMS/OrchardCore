@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 using OrchardCore.Indexing.Core;
 using OrchardCore.Lucene.QueryProviders;
 using OrchardCore.Lucene.QueryProviders.Filters;
@@ -43,12 +44,25 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-    public static IServiceCollection AddLuceneIndexingSource(this IServiceCollection services, string implementationType, Action<IndexingOptionsEntry> action = null)
+    public static IServiceCollection AddLuceneIndexingSource(
+        this IServiceCollection services,
+        string implementationType,
+        Action<IndexingOptionsEntry> action = null)
     {
         ArgumentException.ThrowIfNullOrEmpty(implementationType);
 
-        services.AddIndexingSource<LuceneIndexManager, LuceneIndexManager, LuceneIndexNameProvider>(LuceneConstants.ProviderName, implementationType, action);
+        services.AddIndexingSource<LuceneIndexManager, LuceneIndexManager, LuceneIndexNameProvider>(
+            LuceneConstants.ProviderName, implementationType, action);
+
+        services
+            .AddOptions<IndexingOptions>()
+            .Configure<IStringLocalizer<LuceneLocalizationMarker>>((options, S) =>
+                options.AddIndexingProvider(LuceneConstants.ProviderName, provider => provider.DisplayName = S["Lucene"]));
 
         return services;
+    }
+
+    private sealed class LuceneLocalizationMarker
+    {
     }
 }

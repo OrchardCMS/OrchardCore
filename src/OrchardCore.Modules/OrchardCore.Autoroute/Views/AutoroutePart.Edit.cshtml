@@ -1,7 +1,6 @@
 @using OrchardCore.Autoroute.ViewModels
 @using OrchardCore.ContentManagement
 @using OrchardCore.ContentManagement.Routing
-@using OrchardCore
 @model AutoroutePartViewModel
 @inject IAuthorizationService AuthorizationService
 @inject OrchardCore.Settings.ISiteService SiteService
@@ -15,8 +14,8 @@
 
 @if (Model.Settings.AllowDisabled)
 {
-    <div class="@Orchard.GetWrapperClasses()">
-        <div class="@Orchard.GetEndClasses(true)">
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
             <div class="form-check">
                 <input type="checkbox" class="form-check-input" asp-for="Disabled" checked="@Model.Disabled" />
                 <label class="form-check-label" asp-for="Disabled">@T["Disabled"]</label>
@@ -27,9 +26,9 @@
 }
 
 <div class="autoroute-disabled" style="@(Model.Disabled ? "display: none" : string.Empty)">
-    <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="Path">
-        <label asp-for="Path" class="@Orchard.GetLabelClasses(inputRequired: true)">@T["Permalink"]</label>
-        <div class="@Orchard.GetEndClasses()">
+    <div class="ocat-wrapper" asp-validation-class-for="Path">
+        <label asp-for="Path" class="ocat-label ocat-label-required">@T["Permalink"]</label>
+        <div class="ocat-end">
             <div class="input-group">
                 @if (!string.IsNullOrWhiteSpace(site.BaseUrl))
                 {
@@ -58,14 +57,16 @@
 
         if (Model.IsHomepage)
         {
-            <div class="alert alert-info">@T["This content item is the current homepage"]</div>
+            <div class="ocat-end-offset">
+                <div class="alert alert-info">@T["This content item is the current homepage"]</div>
+            </div>
         }
         else
         {
             if (showHomepageOption)
             {
-                <div class="@Orchard.GetWrapperClasses()">
-                    <div class="@Orchard.GetEndClasses(true)">
+                <div class="ocat-wrapper">
+                    <div class="ocat-end-offset">
                         <div class="form-check">
                             <input type="checkbox" class="form-check-input" asp-for="SetHomepage" checked="@Model.SetHomepage" />
                             <label class="form-check-label" asp-for="SetHomepage">@T["Set as homepage"]</label>
@@ -79,8 +80,8 @@
 
     @if (Model.Settings.AllowUpdatePath)
     {
-        <div class="@Orchard.GetWrapperClasses()">
-            <div class="@Orchard.GetEndClasses(true)">
+        <div class="ocat-wrapper">
+            <div class="ocat-end-offset">
                 <div class="form-check">
                     <input type="checkbox" class="form-check-input" asp-for="UpdatePath" checked="@Model.UpdatePath" />
                     <label class="form-check-label" asp-for="UpdatePath">@T["Refresh the path"]</label>
@@ -92,8 +93,8 @@
 
     @if (containedContentItemsAspect.Accessors.Any() && Model.Settings.AllowRouteContainedItems)
     {
-        <div class="@Orchard.GetWrapperClasses()">
-            <div class="@Orchard.GetEndClasses(true)">
+        <div class="ocat-wrapper">
+            <div class="ocat-end-offset">
                 <div class="form-check">
                     <input type="checkbox" class="form-check-input" asp-for="RouteContainedItems" checked="@Model.RouteContainedItems" />
                     <label class="form-check-label" asp-for="RouteContainedItems">@T["Route contained items"]</label>
@@ -105,8 +106,8 @@
 
     @if (Model.Settings.ManageContainedItemRoutes && Model.Settings.AllowAbsolutePath)
     {
-        <div class="@Orchard.GetWrapperClasses()">
-            <div class="@Orchard.GetEndClasses(true)">
+        <div class="ocat-wrapper">
+            <div class="ocat-end-offset">
                 <div class="form-check">
                     <input type="checkbox" class="form-check-input" asp-for="Absolute" checked="@Model.Absolute" />
                     <label class="form-check-label" asp-for="Absolute">@T["Absolute"]</label>
@@ -119,12 +120,15 @@
 
 @if (Model.Settings.AllowDisabled)
 {
-    <script at="Foot" depends-on="jquery">
-        $('#@Html.IdFor(i => i.Disabled)').change(function (e) {
-            var checked = $(e.target).prop('checked');
-            $('.autoroute-disabled').each(function () {
-                checked ? $(this).hide() : $(this).show();
+    <script at="Foot">
+        var disabledElement = document.getElementById('@Html.IdFor(i => i.Disabled)');
+        if (disabledElement) {
+            disabledElement.addEventListener('change', function (e) {
+                var checked = e.target.checked;
+                document.querySelectorAll('.autoroute-disabled').forEach(function (element) {
+                    element.style.display = checked ? 'none' : '';
+                });
             });
-        });
+        }
     </script>
 }

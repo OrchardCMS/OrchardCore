@@ -22,7 +22,8 @@ public sealed class Startup
     {
         services.AddSmtpEmailProvider()
             .AddSiteDisplayDriver<SmtpSettingsDisplayDriver>()
-            .AddTransient<IConfigureOptions<SmtpOptions>, SmtpOptionsConfiguration>();
+            .AddTransient<IConfigureOptions<SmtpOptions>, SmtpOptionsConfiguration>()
+            .AddTransient<IPostConfigureOptions<DefaultSmtpOptions>, DefaultSmtpOptionsConfiguration>();
 
         services.Configure<DefaultSmtpOptions>(options =>
         {

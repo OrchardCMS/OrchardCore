@@ -1,4 +1,4 @@
-import { isCompactExplicit, setCompactExplicit } from '../constants';
+import { isCompactExplicit, setCompactExplicit, getAdminPreferences, setAdminPreferences } from '../constants';
 import { persistAdminPreferences } from './userPreferencesPersistor';
 // When we load compact status from preferences we need to do some other tasks besides adding the class to the body.
 // UserPreferencesLoader has already added the needed class.
@@ -28,6 +28,14 @@ $('#left-nav li.has-items').click(function () {
     $(this).addClass("visible");
 });
 
+// When navigating via a real nav link, persist the selected item hash inside the
+// existing admin preferences cookie so the server can restore the correct selection.
+$('#left-nav').on('click', 'a[data-admin-hash][href^="/"]', function () {
+    const prefs = getAdminPreferences() as Record<string, unknown>;
+    prefs.selectedNavHash = String($(this).data('admin-hash'));
+    setAdminPreferences(prefs);
+});
+
 $(document).on("click", function (event) {
     var $trigger = $("#left-nav li.has-items");
     if ($trigger !== event.target && !$trigger.has(event.target).length) {
@@ -38,8 +46,8 @@ $(document).on("click", function (event) {
 var subMenuArray = new Array();
 
 const setCompactStatus = (explicit) => {
-    // This if is to avoid that when sliding from expanded to compact the 
-    // underliyng ul is visible while shrinking. It is ugly.    
+    // This if is to avoid that when sliding from expanded to compact the
+    // underliyng ul is visible while shrinking. It is ugly.
     if (!$('body').hasClass('left-sidebar-compact')) {
         var labels = $('#left-nav ul.menu-admin > li > figure > figcaption > .item-label');
         labels.css('background-color', 'transparent');
@@ -48,14 +56,20 @@ const setCompactStatus = (explicit) => {
         }, 200);
     }
 
+    // Transfer scroll position from expanded scroller (.menu-admin) to compact scroller (#left-nav)
+    const menuAdmin = document.querySelector<HTMLElement>('#left-nav ul.menu-admin');
+    const savedScroll = menuAdmin ? menuAdmin.scrollTop : 0;
+
     $('body').addClass('left-sidebar-compact');
+
+    if (leftNav) leftNav.scrollTop = savedScroll;
 
     // When leftbar is expanded  all ul tags are collapsed.
     // When leftbar is compacted we don't want the first level collapsed. 
     // We want it expanded so that hovering over the root buttons shows the full submenu
     $('#left-nav ul.menu-admin > li > figure > ul').removeClass('collapse');
     // When hovering, don't want toggling when clicking on label
-    $('#left-nav ul.menu-admin > li > figure > figcaption > a').attr('data-bs-toggle', '');
+    $('#left-nav ul.menu-admin > li > figure > figcaption > .item-label').attr('data-bs-toggle', '');
     $('#left-nav li.has-items').removeClass("visible");
 
     //after menu has collapsed we set the transitions to none so that we don't do any transition
@@ -71,13 +85,19 @@ const setCompactStatus = (explicit) => {
 }
 
 const unSetCompactStatus = () => {
+    // Transfer scroll position from compact scroller (#left-nav) to expanded scroller (.menu-admin)
+    const savedScroll = leftNav ? leftNav.scrollTop : 0;
+
     $('body').removeClass('left-sidebar-compact');
 
     // resetting what we disabled for compact state
     $('#left-nav ul.menu-admin > li > figure > ul').addClass('collapse');
-    $('#left-nav ul.menu-admin > li > figure > figcaption a').attr('data-bs-toggle', 'collapse');
+    $('#left-nav ul.menu-admin > li > figure > figcaption > button.item-label').attr('data-bs-toggle', 'collapse');
     $('#left-nav li.has-items').removeClass("visible");
     $('#left-nav > ul > li').css("transition", "");
+
+    const menuAdmin = document.querySelector<HTMLElement>('#left-nav ul.menu-admin');
+    if (menuAdmin) menuAdmin.scrollTop = savedScroll;
 
     setCompactExplicit(false);
     persistAdminPreferences();

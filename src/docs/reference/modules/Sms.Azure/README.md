@@ -12,6 +12,31 @@ Enabling this feature will introduce a new tab labeled **Azure Communication Ser
 | `DefaultAzure` | This provider sets default Azure Communication Service configurations for all tenants.                                                    |
 
 
+## Recipe Configuration
+
+Azure SMS settings can be configured using the `Settings` recipe step:
+
+```json
+{
+  "steps": [
+    {
+      "name": "settings",
+      "AzureSmsSettings": {
+        "IsEnabled": true,
+        "ConnectionString": "endpoint=https://your-resource.communication.azure.com/;accesskey=...",
+        "PhoneNumber": "+1234567890"
+      }
+    }
+  ]
+}
+```
+
+| Property           | Type    | Description                                                       |
+|--------------------|---------|-------------------------------------------------------------------|
+| `IsEnabled`        | Boolean | Whether the Azure SMS provider is enabled.                        |
+| `ConnectionString` | String  | The Azure Communication Services connection string. **Required.** |
+| `PhoneNumber`      | String  | The phone number to send SMS messages from. **Required.**         |
+
 ## **Default Azure Communication Services** Provider Configuration
 
 You may configure the **Default Azure Communication Services** using any configuration provider via the following settings:

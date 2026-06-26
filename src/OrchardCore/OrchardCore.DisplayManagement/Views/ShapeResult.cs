@@ -470,9 +470,9 @@ public class ShapeResult : IDisplayResult
             }
         }
 
-        if (parentShape is Shape shape)
+        if (parentShape != null)
         {
-            await shape.AddAsync(newShape, position);
+            await parentShape.AddAsync(newShape, position);
         }
     }
 }

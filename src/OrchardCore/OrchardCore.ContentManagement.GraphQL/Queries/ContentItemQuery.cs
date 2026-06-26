@@ -1,7 +1,7 @@
 using GraphQL;
 using GraphQL.Resolvers;
 using GraphQL.Types;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Apis.GraphQL;
@@ -11,14 +11,10 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries;
 
 public sealed class ContentItemQuery : ISchemaBuilder
 {
-    private readonly IHttpContextAccessor _httpContextAccessor;
-
     internal readonly IStringLocalizer S;
 
-    public ContentItemQuery(IHttpContextAccessor httpContextAccessor,
-        IStringLocalizer<ContentItemQuery> localizer)
+    public ContentItemQuery(IStringLocalizer<ContentItemQuery> localizer)
     {
-        _httpContextAccessor = httpContextAccessor;
         S = localizer;
     }
 
@@ -42,6 +38,8 @@ public sealed class ContentItemQuery : ISchemaBuilder
             Resolver = new FuncFieldResolver<ContentItem>(ResolveAsync),
         };
 
+        field.RequirePermission(GraphQLPermissions.ExecuteGraphQL);
+
         schema.Query.AddField(field);
 
         return Task.CompletedTask;
@@ -50,8 +48,22 @@ public sealed class ContentItemQuery : ISchemaBuilder
     private async ValueTask<ContentItem> ResolveAsync(IResolveFieldContext context)
     {
         var contentItemId = context.GetArgument<string>("contentItemId");
-        var contentManager = _httpContextAccessor.HttpContext.RequestServices.GetService<IContentManager>();
+        var contentManager = context.RequestServices.GetService<IContentManager>();
+        var authorizationService = context.RequestServices.GetService<IAuthorizationService>();
 
-        return await contentManager.GetAsync(contentItemId);
+        var contentItem = await contentManager.GetAsync(contentItemId);
+
+        if (contentItem == null)
+        {
+            return null;
+        }
+
+        if (!await authorizationService.AuthorizeAsync(context.User, Contents.CommonPermissions.ViewContent, contentItem))
+        {
+            // Return null if the user doesn't have permission to view the content item, so that it doesn't appear in the GraphQL response.
+            return null;
+        }
+
+        return contentItem;
     }
 }

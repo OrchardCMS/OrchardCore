@@ -169,7 +169,7 @@ public sealed class AdminController : Controller
             new SelectListItem() { Text = S["Any role"], Value = string.Empty, Selected = options.SelectedRole == string.Empty },
             new SelectListItem() { Text = S["Authenticated (no roles)"], Value = OrchardCoreConstants.Roles.Authenticated, Selected = string.Equals(options.SelectedRole, OrchardCoreConstants.Roles.Authenticated, StringComparison.OrdinalIgnoreCase) },
             // TODO Candidate for dynamic localization.
-            .. roleNames.Select(roleName =>
+            .. roleNames.OrderBy(roleName => roleName).Select(roleName =>
                 new SelectListItem
                 {
                     Text = roleName,
@@ -483,11 +483,14 @@ public sealed class AdminController : Controller
         {
             await _session.CancelAsync();
 
-            await _notifier.ErrorAsync(H["Could not delete the user."]);
-
-            foreach (var error in result.Errors)
+            var errorDescriptions = result.Errors.Select(error => error.Description).ToArray();
+            if (errorDescriptions.Length > 0)
             {
-                await _notifier.ErrorAsync(H[error.Description]);
+                await _notifier.ErrorAsync(H.Plural(errorDescriptions.Length, "Could not delete the user. {1}", "Could not delete the user. Errors: {1}", string.Join(", ", errorDescriptions)));
+            }
+            else
+            {
+                await _notifier.ErrorAsync(H["Could not delete the user."]);
             }
         }
 

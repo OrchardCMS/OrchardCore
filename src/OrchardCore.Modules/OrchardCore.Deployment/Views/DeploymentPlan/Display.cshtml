@@ -30,52 +30,71 @@
     </nav>
 </div>
 <form asp-action="DeploymentPlan">
-    @if (Model.Items.Any())
-    {
-        <ul class="list-group" id="stepOrder">
-            @foreach (var item in Model.Items)
-            {
-                item.DeploymentPlanId = Model.DeploymentPlan.Id;
+    <div class="mb-3">
+        @if (Model.Items.Any())
+        {
+            <ul class="list-group" id="stepOrder">
+                @foreach (var item in Model.Items)
+                {
+                    item.DeploymentPlanId = Model.DeploymentPlan.Id;
 
-                <li class="list-group-item">
-                    <div class="d-flex">
-                        <div class="ui-sortable-handle cursor-pointer me-2"><i class="fa-solid fa-up-down-left-right" aria-hidden="true"></i></div>
-                        @await DisplayAsync(item)
-                    </div>
-                </li>
-            }
-        </ul>
-    }
-    else
-    {
-        <div class="alert alert-info mb-0" role="alert">
-            @T["<strong>Nothing here!</strong> There are no steps on this plan for the moment."]
-        </div>
-    }
+                    <li class="list-group-item">
+                        <div class="d-flex">
+                            <div class="ui-sortable-handle cursor-pointer me-2"><i class="fa-solid fa-up-down-left-right" aria-hidden="true"></i></div>
+                            @await DisplayAsync(item)
+                        </div>
+                    </li>
+                }
+            </ul>
+        }
+        else
+        {
+            <div class="alert alert-info mb-0" role="alert">
+                @T["<strong>Nothing here!</strong> There are no steps on this plan for the moment."]
+            </div>
+        }
+    </div>
 </form>
 
 <!-- Modal -->
 <div class="modal fade" id="modalSteps" tabindex="-1" role="dialog" aria-labelledby="available-steps-title" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="available-steps-title">@T["Available Steps"]</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <div class="mb-3">
-                    <input class="form-control" id="search-box" type="search" placeholder="@T["Filter"]" aria-label="@T["Filter"]" autofocus />
-                </div>
-                <div id="cards" class="row row-cols-1 row-cols-md-2 g-2">
-                    @foreach (var thumbnail in Model.Thumbnails.OrderBy(t => t.Key))
-                    {
-                        thumbnail.Value.DeploymentPlan = Model.DeploymentPlan;
-                        thumbnail.Value.Type = thumbnail.Key;
-
-                        <div class="col item">
-                            @await DisplayAsync(thumbnail.Value)
+                <div class="row">
+                    <div class="col-sm-3 col-md-3 col-lg-2">
+                        <div class="mb-3">
+                            <input class="form-control" id="search-box" type="search" placeholder="@T["Filter"]" aria-label="@T["Filter"]" autofocus />
                         </div>
-                    }
+                        <ul class="nav nav-pills flex-column" id="deployment-step-categories">
+                            <li class="nav-item">
+                                <a class="nav-link active" href="#all" data-category="all">@T["All"]</a>
+                            </li>
+                            @foreach (var category in Model.Categories)
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#@category.Id" data-category="@category.Id">@category.Name</a>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                    <div class="col-sm-9 col-md-9 col-lg-10">
+                        <div id="cards" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-2">
+                            @foreach (var thumbnail in Model.Thumbnails)
+                            {
+                                thumbnail.Thumbnail.Properties["DeploymentPlan"] = Model.DeploymentPlan;
+                                thumbnail.Thumbnail.Properties["Type"] = thumbnail.Type;
+
+                                <div class="col item deployment-step-item" data-category="@thumbnail.CategoryId">
+                                    @await DisplayAsync(thumbnail.Thumbnail)
+                                </div>
+                            }
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
@@ -120,38 +139,87 @@
     </div>
 </div>
 <script at="Foot">
-    $(document).ready(function () {
-        $('#modalSteps').on('shown.bs.modal', function () {
-            $('#search-box').trigger('focus');
+    function getDeploymentStepCategory() {
+        var activeCategory = document.querySelector('#deployment-step-categories .nav-link.active');
+
+        return activeCategory ? activeCategory.dataset.category || 'all' : 'all';
+    }
+
+    function filterDeploymentSteps() {
+        var searchBox = document.getElementById('search-box');
+        var search = replaceDiacritics(String(searchBox ? searchBox.value || '' : '').toLowerCase());
+        var selectedCategory = getDeploymentStepCategory();
+
+        document.querySelectorAll('.deployment-step-item').forEach(function (card) {
+            var cardText = replaceDiacritics(card.textContent.toLowerCase());
+            var matchesSearch = search === '' || cardText.indexOf(search) > -1;
+            var matchesCategory = selectedCategory === 'all' || card.dataset.category === selectedCategory;
+
+            card.style.display = matchesSearch && matchesCategory ? '' : 'none';
         });
+    }
+
+    function onDocumentReady(callback) {
+        if (document.readyState !== 'loading') {
+            callback();
+        } else {
+            document.addEventListener('DOMContentLoaded', callback);
+        }
+    }
+
+    onDocumentReady(function () {
+        var modalSteps = document.getElementById('modalSteps');
+        var searchBox = document.getElementById('search-box');
+        var deploymentStepCategories = document.getElementById('deployment-step-categories');
+
+        if (modalSteps) {
+            modalSteps.addEventListener('shown.bs.modal', function () {
+                if (searchBox) {
+                    searchBox.focus();
+                }
+                filterDeploymentSteps();
+            });
+
+            modalSteps.addEventListener('hidden.bs.modal', function () {
+                if (searchBox) {
+                    searchBox.value = '';
+                }
+                document.querySelectorAll('#deployment-step-categories .nav-link').forEach(function (link) {
+                    link.classList.remove('active');
+                });
+                var allCategory = document.querySelector('#deployment-step-categories .nav-link[data-category="all"]');
+                if (allCategory) {
+                    allCategory.classList.add('active');
+                }
+                filterDeploymentSteps();
+            });
+        }
+
+        if (searchBox) {
+            searchBox.addEventListener('input', function () {
+                filterDeploymentSteps();
+            });
+        }
+
+        if (deploymentStepCategories) {
+            deploymentStepCategories.addEventListener('click', function (e) {
+                var link = e.target.closest('.nav-link');
+
+                if (!link || !deploymentStepCategories.contains(link)) {
+                    return;
+                }
+
+                e.preventDefault();
+                document.querySelectorAll('#deployment-step-categories .nav-link').forEach(function (navLink) {
+                    navLink.classList.remove('active');
+                });
+                link.classList.add('active');
+                filterDeploymentSteps();
+            });
+        }
     });
 
     function replaceDiacritics(str) {
         return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
     }
-
-    $(function () {
-        var searchBox = $('#search-box');
-
-        // On each keypress filter the list of cards
-        searchBox.keyup(function (e) {
-            var search = replaceDiacritics($(this).val().toLowerCase());
-            if (search == '') {
-                searchBox.val('');
-                $('.item').show();
-            }
-            else {
-                $('.item').each(function () {
-                    var filter = replaceDiacritics($(this).children().children().first().html().toLowerCase());
-                    var found = filter.indexOf(search) > -1;
-                    if (found) {
-                        $(this).show();
-                    }
-                    else {
-                        $(this).hide();
-                    }
-                });
-            }
-        });
-    })
 </script>

@@ -54,9 +54,17 @@ public sealed class MediaBlobContainerTenantEvents : ModularTenantEvents
                 _logger.LogDebug("Azure Media Storage container {ContainerName} created.", _options.ContainerName);
             }
         }
+        catch (RequestFailedException ex) when (ex.ErrorCode == "InvalidResourceName" || ex.ErrorCode == "OutOfRangeInput")
+        {
+            _logger.LogError(
+                ex,
+                "Unable to create Azure Media Storage Container '{ContainerName}': the container name is invalid per Azure Blob naming rules. " +
+                "See https://learn.microsoft.com/rest/api/storageservices/naming-and-referencing-containers--blobs--and-metadata.",
+                _options.ContainerName);
+        }
         catch (RequestFailedException ex)
         {
-            _logger.LogError(ex, "Unable to create Azure Media Storage Container.");
+            _logger.LogError(ex, "Unable to create Azure Media Storage Container '{ContainerName}'.", _options.ContainerName);
         }
     }
 

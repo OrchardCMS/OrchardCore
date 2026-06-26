@@ -2,7 +2,7 @@
 
 This module provides tools to manage background tasks. This includes an admin UI to show which background tasks are registered with the ability to enable and disable them.
 
-After enabling the feature, you'll be able to manage background tasks under Configuration → Tasks → Background Tasks. This includes the following:
+After enabling the feature, you'll be able to manage background tasks under Tools → Background Tasks. This includes the following:
 
 - Enable or disable a task.
 - Change the schedule of the task, i.e. how frequently it runs, with [cron expressions](https://en.wikipedia.org/wiki/Cron#Cron_expression).

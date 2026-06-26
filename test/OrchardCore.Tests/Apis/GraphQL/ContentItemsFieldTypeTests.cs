@@ -518,15 +518,15 @@ public class ContentItemsFieldTypeTests : IAsyncLifetime
                 {
                     Name = "Animal",
                 }),
-                Arguments =
-                [
+                Arguments = new QueryArguments
+                {
                     new QueryArgument<WhereInputObjectGraphType>
                     {
                         Name = "where",
                         Description = "filters the animals",
                         ResolvedType = where,
-                    }
-                ],
+                    },
+                },
             },
             RequestServices = services,
         };

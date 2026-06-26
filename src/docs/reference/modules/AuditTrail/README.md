@@ -49,6 +49,53 @@ Orchard Core is built to be extended, and the Audit Trail module is no different
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/t28rnjYtlJc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
+## Recipe Configuration
+
+Audit trail settings can be configured using the `Settings` recipe step:
+
+```json
+{
+  "steps": [
+    {
+      "name": "settings",
+      "AuditTrailSettings": {
+        "ClientIpAddressAllowed": true,
+        "Categories": [
+          {
+            "Name": "Content",
+            "Events": [
+              {
+                "Name": "Published",
+                "Category": "Content",
+                "IsEnabled": true
+              }
+            ]
+          }
+        ]
+      },
+      "AuditTrailTrimmingSettings": {
+        "RetentionDays": 10,
+        "Disabled": false
+      }
+    }
+  ]
+}
+```
+
+### AuditTrailSettings
+
+| Property                 | Type    | Description                                                     |
+|--------------------------|---------|-----------------------------------------------------------------|
+| `ClientIpAddressAllowed` | Boolean | Whether to record the client IP address in audit trail entries. |
+| `Categories`             | Array   | The list of audit trail event category configurations.          |
+
+### AuditTrailTrimmingSettings
+
+| Property        | Type    | Description                                                                      |
+|-----------------|---------|----------------------------------------------------------------------------------|
+| `RetentionDays` | Integer | The number of days to retain audit trail entries before trimming. Default: `10`. |
+| `Disabled`      | Boolean | Whether automatic trimming is disabled.                                          |
+
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/uMBN6TVhaMg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 ## CREDITS

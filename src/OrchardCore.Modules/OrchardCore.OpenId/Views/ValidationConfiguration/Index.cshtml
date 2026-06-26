@@ -4,9 +4,16 @@
 
 <form asp-action="Index" method="post" class="no-multisubmit">
     @Html.ValidationSummary()
+
+    <p class="alert alert-warning" role="alert">
+        @T["The website might be restarted upon saving the settings, potentially leading to temporary unresponsiveness during the process."]
+    </p>
+
     @await DisplayAsync(Model.Content)
 
-    <div class="mb-3">
-        <button class="btn btn-primary" type="submit">@T["Update the server settings and reload the tenant"]</button>
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
+            <button class="btn btn-primary" type="submit">@T["Save"]</button>
+        </div>
     </div>
 </form>

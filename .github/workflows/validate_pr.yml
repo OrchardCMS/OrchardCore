@@ -5,6 +5,10 @@ on:
   pull_request_target:
     types: [opened, synchronize]
 
+permissions:
+  issues: write
+  pull-requests: write
+
 jobs:
   validate-pull-request:
     # To enable this workflow on a fork, comment out:
@@ -14,7 +18,7 @@ jobs:
     timeout-minutes: 3
     steps:
       - name: Check for Merge Conflict in PR
-        uses: eps1lon/actions-label-merge-conflict@1df065ebe6e3310545d4f4c4e862e43bdca146f0 # v3.0.3
+        uses: eps1lon/actions-label-merge-conflict@0273be72a0bbd58fcd71d0d6c02c209b50d1e5e1 # v3.1.0
         with:
             repoToken: ${{ secrets.GITHUB_TOKEN }}
             commentOnDirty: "This pull request has merge conflicts. Please resolve those before requesting a review."

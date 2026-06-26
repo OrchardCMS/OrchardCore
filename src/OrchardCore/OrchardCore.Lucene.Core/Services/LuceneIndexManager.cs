@@ -10,9 +10,9 @@ using OrchardCore.Indexing;
 using OrchardCore.Indexing.Models;
 using OrchardCore.Locking.Distributed;
 using OrchardCore.Lucene.Core;
-using OrchardCore.Modules;
 using OrchardCore.Lucene.Model;
 using OrchardCore.Lucene.Models;
+using OrchardCore.Modules;
 using Spatial4n.Context;
 
 namespace OrchardCore.Lucene;
@@ -23,6 +23,7 @@ namespace OrchardCore.Lucene;
 /// </summary>
 public sealed class LuceneIndexManager : IIndexManager, IDocumentIndexManager
 {
+    private readonly IEnumerable<IDocumentIndexHandler> _documentIndexHandlers;
     private readonly ILuceneIndexStore _indexStore;
     private readonly ILuceneIndexingState _indexingState;
     private readonly ILogger _logger;
@@ -36,10 +37,12 @@ public sealed class LuceneIndexManager : IIndexManager, IDocumentIndexManager
         ILuceneIndexStore indexStore,
         ILuceneIndexingState indexingState,
         ILogger<LuceneIndexManager> logger,
+        IEnumerable<IDocumentIndexHandler> documentIndexHandlers,
         IEnumerable<IIndexEvents> indexEvents,
         IDistributedLock distributedLock
         )
     {
+        _documentIndexHandlers = documentIndexHandlers;
         _indexStore = indexStore;
         _indexingState = indexingState;
         _logger = logger;
@@ -177,6 +180,8 @@ public sealed class LuceneIndexManager : IIndexManager, IDocumentIndexManager
             writer.DeleteDocuments(documentIds.Select(id => new Term(metadata.IndexMappings.KeyFieldName, id)).ToArray());
         });
 
+        await _documentIndexHandlers.InvokeAsync((handler, indexProfile, ids) => handler.DocumentsDeletedAsync(indexProfile, ids), index, documentIds, _logger);
+
         return true;
     }
 
@@ -196,9 +201,9 @@ public sealed class LuceneIndexManager : IIndexManager, IDocumentIndexManager
             {
                 var metadata = index.GetOrCreate<LuceneIndexMetadata>();
 
-                foreach (var indexDocument in documents)
+                foreach (var document in documents)
                 {
-                    writer.UpdateDocument(new Term(metadata.IndexMappings.KeyFieldName, indexDocument.Id), CreateLuceneDocument(indexDocument, metadata.StoreSourceData));
+                    writer.UpdateDocument(new Term(metadata.IndexMappings.KeyFieldName, document.Id), CreateLuceneDocument(document, metadata.StoreSourceData));
                 }
             });
         }
@@ -208,6 +213,8 @@ public sealed class LuceneIndexManager : IIndexManager, IDocumentIndexManager
 
             return false;
         }
+
+        await _documentIndexHandlers.InvokeAsync((handler, indexProfile, docs) => handler.DocumentsAddedOrUpdatedAsync(indexProfile, docs), index, documents, _logger);
 
         return true;
     }

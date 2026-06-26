@@ -16,7 +16,7 @@ Shortcode templates are designed to be able to override a code based Shortcode o
 |--------------------|------------------------------------------------------------------------------------------|
 | `Name`             | The name of your Shortcode, without brackets.                                            |
 | `Hint`             | The hint to display for your Shortcode.                                                  |
-| `Usage`            | An html string to describe the usage and arguments for your Shortcode.                   |
+| `Usage`            | An HTML string to describe the usage and arguments for your Shortcode.                   |
 | `Categories`       | The categories your Shortcode falls under.                                               |
 | `Return Shortcode` | The Shortcode value to return from the Shortcode picker when selected. Defaults to Name. |
 | `Content`          | The Liquid template for your Shortcode.                                                  |
@@ -137,7 +137,7 @@ This will render an image tag for the file `my-image.jpg` in the site's media fo
 The following parameters can be used:
 
 - **alt:** Adds alternative text to your image for the benefit of readers who can't see the image and also good for SEO.
-- **class:** Adds an html class attribute to the image tag for styling.
+- **class:** Adds an HTML class attribute to the image tag for styling.
 - **append_version:** Adds a cache busting query string parameter if set to `true`, i.e. `append_version="true"`.
 - **format:** Change the file format from the original file. Can be jpeg, png, gif or bmp.
 - **quality:** Sets the encoding quality to use for jpeg images. The higher the quality, the larger the file size will be. The value can be from 0 to 100 and defaults to 75.

@@ -1,6 +1,5 @@
 @model OrchardCore.Media.ViewModels.EditMediaFieldViewModel
 @using Microsoft.Extensions.Options
-@using OrchardCore
 @using OrchardCore.ContentFields
 @using OrchardCore.ContentManagement.Metadata.Models
 @using OrchardCore.Media
@@ -19,9 +18,9 @@
 
 <style asp-name="media" at="Head"></style>
 
-<div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.Paths)_FieldWrapper">
-    <label asp-for="Paths" class="@Orchard.GetLabelClasses(inputRequired: settings.Required)">@localizedFieldName</label>
-    <div class="@Orchard.GetEndClasses()" id="@mediaFieldId" data-for="@Html.IdFor(m => m.Paths)">
+<div class="@($"ocat-wrapper field-wrapper field-wrapper-{Model.PartFieldDefinition.PartDefinition.Name.HtmlClassify()}-{Model.PartFieldDefinition.Name.HtmlClassify()}" + (Model.PartFieldDefinition.IsNamedPart() ? $" field-wrapper-{Model.PartFieldDefinition.ContentTypePartDefinition.Name.HtmlClassify()}-{Model.PartFieldDefinition.Name.HtmlClassify()}" : string.Empty))" id="@Html.IdFor(x => x.Paths)_FieldWrapper">
+    <label asp-for="Paths" class="ocat-label @(settings.Required ? "ocat-label-required" : "")">@localizedFieldName</label>
+    <div class="ocat-end" id="@mediaFieldId" data-for="@Html.IdFor(m => m.Paths)">
         @if (!string.IsNullOrWhiteSpace(settings.Hint))
         {
             <div class="hint mt-lg-2">@settings.Hint</div>
@@ -43,8 +42,8 @@
                 <a href="javascript:;" v-show="allowAnchors" v-on:click="showAnchorModal" class="btn btn-secondary btn-sm" v-bind:class="{ disabled : !selectedMedia || !selectedMedia.mime?.startsWith('image') }"><i class="fa-solid fa-crosshairs" aria-hidden="true"></i></a>
                 <a href="javascript:;" v-on:click="removeSelected" class="btn btn-secondary btn-sm" v-bind:class="{ disabled : !selectedMedia }"><i class="fa-solid fa-trash" aria-hidden="true"></i></a>
             </div>
-            <label class="selected-media-name form-label">
-                <code class="text-end" v-if="selectedMedia">@T["{{{{ selectedMedia.attachedFileName !== null && selectedMedia.attachedFileName !== '' ? selectedMedia.attachedFileName : selectedMedia.name }}}}{{{{ selectedMedia.mediaText === '' ? '' : ', ' + selectedMedia.mediaText }}}} ({{{{ isNaN(fileSize)? 0 : fileSize }}}} KB)"]</code>
+            <label class="selected-media-name">
+                <code class="text-end" v-if="selectedMedia">{{ selectedMediaDisplayText }}</code>
             </label>
         </div>
 
@@ -62,7 +61,7 @@
         <input type="hidden" id="t-uploads" value="@T["Uploads"]" />
         <input type="hidden" id="t-errors" value="@T["Errors"]" />
         <input type="hidden" id="t-clear-errors" value="@T["Clear Errors"]" />
-
+        <input type="hidden" id="t-selected-media-format" value="@T["{{0}}{{1}} ({{2}} KB)"]" />
     </div>
 
     <partial name="Shared/MediaFieldEditLocalization.cshtml" />
