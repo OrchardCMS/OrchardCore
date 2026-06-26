@@ -1,16 +1,16 @@
 @model OrchardCore.Lucene.Settings.ContentPickerFieldLuceneEditorSettings
 
 <div class="field-editor field-editor-lucene">
-    <div class="mb-3">
-        <div class="w-sm-50">
-            <label asp-for="Index" class="form-label">@T["Index"]</label>
+    <div class="ocat-wrapper">
+        <label asp-for="Index" class="ocat-label">@T["Index"]</label>
+        <div class="ocat-end w-sm-50">
             <select asp-for="Index" class="form-select">
                 @foreach (var index in Model.Indices)
                 {
                     <option value="@index">@index</option>
                 }
             </select>
+            <span class="hint">@T["The Lucene index to query for content items"]</span>
         </div>
-        <span class="hint">@T["The Lucene index to query for content items"]</span>
     </div>
 </div>

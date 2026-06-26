@@ -1,0 +1,17 @@
+@model OrchardCore.RateLimits.ViewModels.RateLimiterEditorViewModel
+
+<zone Name="Title"><h1>@RenderTitleSegments(T["Edit '{0}' Limiter", Model.DisplayName])</h1></zone>
+
+<form asp-action="Edit" method="post" class="no-multisubmit">
+    <div class="alert alert-info" role="alert">
+        <span>@Model.Description</span>
+        <a class="seedoc" href="@Model.DocumentationUrl" target="_blank">@T["Learn more"]</a>
+    </div>
+
+    @await DisplayAsync(Model.Editor)
+
+    <div class="mt-4 d-flex gap-1">
+        <button class="btn btn-primary" type="submit">@T["Save"]</button>
+        <a asp-action="Edit" asp-controller="Admin" asp-route-policyId="@ViewContext.RouteData.Values["policyId"]" class="btn btn-secondary">@T["Back"]</a>
+    </div>
+</form>

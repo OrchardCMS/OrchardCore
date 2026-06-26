@@ -1,0 +1,28 @@
+@model OrchardCore.RateLimits.ViewModels.FixedWindowRateLimiterViewModel
+
+<div class="ocat-limited-wrapper" asp-validation-class-for="PermitLimit">
+    <label asp-for="PermitLimit" class="ocat-label">@T["Permit limit"]</label>
+    <div class="ocat-limited">
+        <input asp-for="PermitLimit" type="number" min="1" class="form-control" />
+        <span asp-validation-for="PermitLimit"></span>
+        <span class="hint">@T["How many requests can succeed during one full window before extra requests are delayed or rejected."]</span>
+    </div>
+</div>
+
+<div class="ocat-limited-wrapper" asp-validation-class-for="WindowSeconds">
+    <label asp-for="WindowSeconds" class="ocat-label">@T["Window seconds"]</label>
+    <div class="ocat-limited">
+        <input asp-for="WindowSeconds" type="number" min="1" class="form-control" />
+        <span asp-validation-for="WindowSeconds"></span>
+        <span class="hint">@T["How long one window lasts. For example, 60 means the count resets every minute."]</span>
+    </div>
+</div>
+
+<div class="ocat-limited-wrapper" asp-validation-class-for="QueueLimit">
+    <label asp-for="QueueLimit" class="ocat-label">@T["Queue limit"]</label>
+    <div class="ocat-limited">
+        <input asp-for="QueueLimit" type="number" min="0" class="form-control" />
+        <span asp-validation-for="QueueLimit"></span>
+        <span class="hint">@T["How many extra requests can wait after the limit is reached. Use 0 to reject extras immediately instead of making them wait."]</span>
+    </div>
+</div>

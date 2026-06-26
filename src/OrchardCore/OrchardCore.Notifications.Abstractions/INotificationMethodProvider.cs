@@ -26,5 +26,5 @@ public interface INotificationMethodProvider
     /// <param name="message">The <see cref="INotificationMessage"/>.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A <see cref="Result"/> describing whether the notification method sent the message successfully.</returns>
-    Task<Result> TrySendAsync(object notify, INotificationMessage message, CancellationToken cancellationToken = default);
+    Task<Result> SendAsync(object notify, INotificationMessage message, CancellationToken cancellationToken = default);
 }

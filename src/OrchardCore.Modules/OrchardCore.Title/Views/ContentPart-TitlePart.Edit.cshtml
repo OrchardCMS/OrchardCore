@@ -1,8 +1,9 @@
-@using OrchardCore
 @using OrchardCore.ContentManagement
 @using OrchardCore.ContentManagement.Metadata.Models
 @using OrchardCore.ContentManagement.Metadata.Settings
+@using OrchardCore.ContentTypes
 @using OrchardCore.Title.Models
+@using OrchardCore.Mvc.Utilities
 
 @{
     var shapes = Model.Items;
@@ -21,7 +22,7 @@
     }
 }
 
-<div class="@Orchard.GetPartWrapperClasses(typePartDefinition)">
+<div class="@($"ocat-wrapper content-part-wrapper content-part-wrapper-{typePartDefinition.PartDefinition.Name.HtmlClassify()}" + (typePartDefinition.IsNamedPart() ? $" content-part-wrapper-{typePartDefinition.Name.HtmlClassify()}" : string.Empty))">
     @foreach (var shape in shapes)
     {
         @await DisplayAsync(shape)

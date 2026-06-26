@@ -1,14 +1,25 @@
 <a id="addToDeploymentPlanBulkActions" class="dropdown-item" data-title="@T["Bulk Action"]" data-message="@T["Are you sure you want to add these items to a deployment plan?"]">@T["Add to deployment plan"]</a>
-<script at="Foot" depends-on="jQuery">
-    $(function () {
-        $('#addToDeploymentPlanBulkActions').on('click', function () {
-            if ($(":checkbox[name='itemIds']:checked").length > 1) {
-                var $this = $(this);
+<script at="Foot">
+    function onDocumentReady(callback) {
+        if (document.readyState !== 'loading') {
+            callback();
+        } else {
+            document.addEventListener('DOMContentLoaded', callback);
+        }
+    }
+
+    onDocumentReady(function () {
+        document.getElementById('addToDeploymentPlanBulkActions')?.addEventListener('click', function () {
+            if (document.querySelectorAll("input[type='checkbox'][name='itemIds']:checked").length > 1) {
+                var data = { ...this.dataset };
                 confirmDialog({
-                    ...$this.data(), callback: function (r) {
+                    ...data, callback: function (r) {
                         if (r) {
-                            var modal = new bootstrap.Modal($('#modalAddToDeploymentPlanContentsBulkActionsDeploymentPlan'));
-                            modal.show();
+                            var modalElement = document.getElementById('modalAddToDeploymentPlanContentsBulkActionsDeploymentPlan');
+                            if (modalElement) {
+                                var modal = new bootstrap.Modal(modalElement);
+                                modal.show();
+                            }
                         }
                     }
                 });

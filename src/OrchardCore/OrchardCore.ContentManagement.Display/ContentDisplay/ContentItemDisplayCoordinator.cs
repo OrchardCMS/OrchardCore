@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.ContentManagement.Display.ViewModels;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Settings;
@@ -236,8 +237,12 @@ public class ContentItemDisplayCoordinator : IContentDisplayHandler
                 continue;
             }
 
-            typePartShape.Properties["ContentPart"] = part;
-            typePartShape.Properties["ContentTypePartDefinition"] = typePartDefinition;
+            if (typePartShape is ContentPartShapeViewModel contentPartShapeViewModel)
+            {
+                contentPartShapeViewModel.ContentPart = part;
+                contentPartShapeViewModel.ContentTypePartDefinition = typePartDefinition;
+            }
+
             partsShape.Properties[partName] = typePartShape;
 
             context.DefaultZone = $"Parts.{partName}";
@@ -327,8 +332,12 @@ public class ContentItemDisplayCoordinator : IContentDisplayHandler
                 continue;
             }
 
-            typePartShape.Properties["ContentPart"] = part;
-            typePartShape.Properties["ContentTypePartDefinition"] = typePartDefinition;
+            if (typePartShape is ContentPartShapeViewModel contentPartShapeViewModel)
+            {
+                contentPartShapeViewModel.ContentPart = part;
+                contentPartShapeViewModel.ContentTypePartDefinition = typePartDefinition;
+            }
+
             partsShape.Properties[partName] = typePartShape;
 
             context.DefaultZone = $"Parts.{partName}:{partPosition}";
@@ -367,7 +376,7 @@ public class ContentItemDisplayCoordinator : IContentDisplayHandler
         var partName = typePartDefinition.Name;
         var isNamedPart = typePartDefinition.PartDefinition.IsReusable() && partName != partTypeName;
 
-        var typePartShapeResult = ShapeResult.Create(shapeType, static (ctx, buildShapeType) => ctx.ShapeFactory.CreateAsync(buildShapeType), shapeType);
+        var typePartShapeResult = ShapeResult.Create(shapeType, static (_, _) => ValueTask.FromResult<IShape>(new ContentPartShapeViewModel()), shapeType);
         typePartShapeResult.Differentiator($"{contentType}-{partName}");
         typePartShapeResult.Name(partName);
         typePartShapeResult.Location($"Parts:{partPosition}");

@@ -1,7 +1,9 @@
 @model dynamic
 
-<div class="mb-3">
-    <label for="Line" class="form-label">Value @Html.ValidationMessage("Line")</label>
-    <input name="Line" id="Line" value="@Model.Line" class="form-control" />
-    <span class="hint">The value of the property.</span>
+<div class="ocat-wrapper">
+    <label for="Line" class="ocat-label">Value @Html.ValidationMessage("Line")</label>
+    <div class="ocat-end">
+        <input name="Line" id="Line" value="@Model.Line" class="form-control" />
+        <span class="hint">The value of the property.</span>
+    </div>
 </div>

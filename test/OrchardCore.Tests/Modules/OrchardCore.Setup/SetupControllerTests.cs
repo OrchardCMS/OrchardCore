@@ -1,8 +1,3 @@
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using OrchardCore.Abstractions.Setup;
 using OrchardCore.Data;
 using OrchardCore.Email;
@@ -78,6 +73,21 @@ public class SetupControllerTests
     }
 
     [Fact]
+    public async Task IndexShouldDefaultSiteTimeZoneToSystemTimeZone()
+    {
+        // Arrange
+        var controller = CreateController(new ShellSettings());
+
+        // Act
+        var result = await controller.Index(null);
+
+        // Assert
+        var viewResult = Assert.IsType<ViewResult>(result);
+        var model = Assert.IsType<SetupViewModel>(viewResult.Model);
+        Assert.Equal("Europe/Paris", model.SiteTimeZone);
+    }
+
+    [Fact]
     public async Task IndexPostShouldUsePresetDatabaseProviderAndPostedConnectionString_WhenOnlyDatabaseProviderIsConfigured()
     {
         // Arrange
@@ -128,6 +138,14 @@ public class SetupControllerTests
 
     private static SetupController CreateController(ShellSettings shellSettings, ISetupService setupService = null)
     {
+        var systemTimeZone = new Mock<ITimeZone>();
+        systemTimeZone.SetupProperty(x => x.TimeZoneId, "Europe/Paris");
+
+        var clock = new Mock<IClock>();
+        clock
+            .Setup(x => x.GetSystemTimeZone())
+            .Returns(systemTimeZone.Object);
+
         var recipes = new[]
         {
             new RecipeDescriptor
@@ -156,7 +174,7 @@ public class SetupControllerTests
             .Returns(true);
 
         return new SetupController(
-            Mock.Of<IClock>(),
+            clock.Object,
             setupService,
             shellSettings,
             Mock.Of<IShellHost>(),

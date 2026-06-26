@@ -4,7 +4,6 @@
 @using OrchardCore.ContentFields
 @using Microsoft.AspNetCore.Authorization
 @using OrchardCore.Mvc.Utilities
-@using OrchardCore
 @using OrchardCore.Localization.Data
 @inject IAuthorizationService AuthorizationService
 @inject IDataLocalizer D
@@ -31,9 +30,9 @@
 <script asp-src="~/OrchardCore.Taxonomies/Scripts/tags-editor.min.js" debug-src="~/OrchardCore.Taxonomies/Scripts/tags-editor.js" asp-name="tags-editor" at="Foot" depends-on="vuejs:2, vue-multiselect:2"></script>
 <style asp-src="~/OrchardCore.Taxonomies/Styles/tags-editor.min.css" debug-src="~/OrchardCore.Taxonomies/Styles/tags-editor.css" asp-name="tags-editor" depends-on="vue-multiselect:2"></style>
 
-<div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.TermContentItemIds)_FieldWrapper">
-    <label class="@Orchard.GetLabelClasses(inputRequired: taxonomySettings.Required)">@localizedFieldName</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="@($"ocat-wrapper field-wrapper field-wrapper-{Model.PartFieldDefinition.PartDefinition.Name.HtmlClassify()}-{Model.PartFieldDefinition.Name.HtmlClassify()}" + (Model.PartFieldDefinition.IsNamedPart() ? $" field-wrapper-{Model.PartFieldDefinition.ContentTypePartDefinition.Name.HtmlClassify()}-{Model.PartFieldDefinition.Name.HtmlClassify()}" : string.Empty))" id="@Html.IdFor(x => x.TermContentItemIds)_FieldWrapper">
+    <label class="ocat-label @(taxonomySettings.Required ? "ocat-label-required" : "")">@localizedFieldName</label>
+    <div class="ocat-end">
         @if (!string.IsNullOrEmpty(taxonomySettings.Hint))
         {
             <div class="hint dashed mt-lg-2">@taxonomySettings.Hint</div>

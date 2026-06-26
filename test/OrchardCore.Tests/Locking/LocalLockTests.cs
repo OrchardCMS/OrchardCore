@@ -54,8 +54,9 @@ public class LocalLockTests
     {
         using var localLock = CreateLockService();
 
-        // Acquire with short expiration; it should auto-release after it elapses.
-        var locker = await localLock.AcquireLockAsync("EXP_KEY", TimeSpan.FromMilliseconds(100));
+        // Acquire with an expiration large enough to avoid flaky failures on slow CI runners yet
+        // short enough for the test to complete well within the 5-second poll budget.
+        var locker = await localLock.AcquireLockAsync("EXP_KEY", TimeSpan.FromMilliseconds(500));
         Assert.True(await localLock.IsLockAcquiredAsync("EXP_KEY"));
 
         // Poll until the expiration callback fires, with a generous timeout for slow CI runners.

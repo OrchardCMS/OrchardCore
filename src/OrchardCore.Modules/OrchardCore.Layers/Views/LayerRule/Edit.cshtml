@@ -4,12 +4,18 @@
 
 <div asp-validation-summary="ModelOnly"></div>
 <form asp-action="Edit" method="post" class="no-multisubmit">
-    @await DisplayAsync(Model.Editor)
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
+            @await DisplayAsync(Model.Editor)
+        </div>
+    </div>
 
     <input type="hidden" asp-for="Name" />
     <input type="hidden" asp-for="ConditionId" />
 
-    <div class="mb-3 mt-3">
-        <button class="btn btn-primary save" type="submit">@T["Save"]</button>
+    <div class="ocat-wrapper mt-3">
+        <div class="ocat-end-offset">
+            <button class="btn btn-primary save" type="submit">@T["Save"]</button>
+        </div>
     </div>
 </form>

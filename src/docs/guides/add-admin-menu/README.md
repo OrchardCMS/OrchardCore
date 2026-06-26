@@ -19,7 +19,7 @@ There are different ways to create sites and modules for Orchard Core. You can l
 
 You can install the latest released templates using this command:
 
-```dotnet new install OrchardCore.ProjectTemplates::2.2.1-*```
+```dotnet new install OrchardCore.ProjectTemplates::3.0.0-*```
 
 !!! note
     To use the development branch of the template add `--nuget-source https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json`
@@ -40,10 +40,10 @@ The next step is to reference the module from the application, by adding a proje
 
 We also need a reference to the `OrchardCore.Admin` package in order to be able to implement the required interfaces:
 
-```dotnet add .\MyModule\MyModule.csproj package OrchardCore.Admin --version 2.2.1-*```
+```dotnet add .\MyModule\MyModule.csproj package OrchardCore.Admin --version 3.0.0-*```
 
 !!! note
-    To use the development branch of the template add ` --source https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json --version 2.2.1-*`
+    To use the development branch of the template add ` --source https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json --version 3.0.0-*`
 
 ## Adding our controller and views
 
@@ -181,7 +181,7 @@ Application started. Press Ctrl+C to shut down.
 
 Open a browser on <https://localhost:5001>
 
-If you have not already setup your site, select __Blank Site__ as the recipe, and use __SQLite__ as the database.
+If you have not already set up your site, select __Blank Site__ as the recipe, and use __SQLite__ as the database.
 
 Once your site is ready, you should see a __The page could not be found.__ message which is expected for a __Blank Site__ recipe.
 

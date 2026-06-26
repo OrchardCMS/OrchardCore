@@ -10,16 +10,16 @@ public abstract class BlobStorageOptionsConfiguration<TOptions> : IConfigureOpti
     where TOptions : BlobStorageOptions
 {
     private readonly FluidParser _fluidParser;
-    private readonly ShellSettings _sellSettings;
+    private readonly ShellSettings _shellSettings;
     private readonly ILogger _logger;
 
     public BlobStorageOptionsConfiguration(
         FluidParser fluidParser,
-        ShellSettings sellSettings,
+        ShellSettings shellSettings,
         ILogger logger)
     {
         _fluidParser = fluidParser;
-        _sellSettings = sellSettings;
+        _shellSettings = shellSettings;
         _logger = logger;
     }
 
@@ -34,7 +34,7 @@ public abstract class BlobStorageOptionsConfiguration<TOptions> : IConfigureOpti
             return;
         }
 
-        var parser = new FluidOptionsParser<TOptions>(_fluidParser, _sellSettings);
+        var parser = new FluidOptionsParser<TOptions>(_fluidParser, _shellSettings);
 
         options.ConnectionString = rawOptions.ConnectionString;
 
@@ -52,6 +52,19 @@ public abstract class BlobStorageOptionsConfiguration<TOptions> : IConfigureOpti
                     _logger.LogCritical(e, "Unable to parse container name for {OptionName}.", typeof(TOptions).Name);
                 }
                 throw;
+            }
+
+            if (!BlobContainerNameValidator.IsValid(options.ContainerName))
+            {
+                if (_logger.IsEnabled(LogLevel.Critical))
+                {
+                    _logger.LogCritical(
+                        "The resolved container name '{ContainerName}' for {OptionName} is not a valid Azure Blob container name. " +
+                        "Container names must be 3-63 characters, lowercase letters, digits, and single hyphens, and start and end with a letter or digit. " +
+                        "See https://learn.microsoft.com/rest/api/storageservices/naming-and-referencing-containers--blobs--and-metadata.",
+                        options.ContainerName,
+                        typeof(TOptions).Name);
+                }
             }
         }
 

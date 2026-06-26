@@ -76,7 +76,7 @@ To enable the blocks editor for a FlowPart or BagPart, set the **Editor** option
 
 This can be done in the admin UI:
 
-1. Navigate to **Content Definition** → **Content Types**
+1. Navigate to **Design** → **Content Definition** → **Content Types**
 2. Edit the content type containing the FlowPart or BagPart
 3. Click **Edit** on the FlowPart or BagPart
 4. Set the **Editor** field to `Blocks`
