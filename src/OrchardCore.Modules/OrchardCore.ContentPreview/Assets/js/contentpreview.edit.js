@@ -65,8 +65,8 @@ $(function () {
             })
             .fail(function (data) {
                 currentXHR = null;
-                if (data.statusText !== 'abort' && data.responseJSON && data.responseJSON.errors) {
-                    channel.postMessage({ type: 'error', errors: data.responseJSON.errors });
+                if (data.statusText !== 'abort' && data.status !== 422) {
+                    console.error('Preview draft request failed', data.status, data.statusText);
                 }
             });
     }
