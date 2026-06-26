@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-392-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-393-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key))!
@@ -542,6 +542,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <tr>
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/PUXVSE"><img src="https://avatars.githubusercontent.com/u/238208044?v=4?s=100" width="100px;" alt="PUXVSE"/><br /><sub><b>PUXVSE</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=PUXVSE" title="Code">💻</a></td>
       <td align="center" valign="top" width="16.66%"><a href="https://soumilm.vercel.app/"><img src="https://avatars.githubusercontent.com/u/120581772?v=4?s=100" width="100px;" alt="Soumil Mukhopadhyay"/><br /><sub><b>Soumil Mukhopadhyay</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=Soumilgit" title="Code">💻</a></td>
+      <td align="center" valign="top" width="16.66%"><a href="https://github.com/kizaski"><img src="https://avatars.githubusercontent.com/u/81563289?v=4?s=100" width="100px;" alt="Kiril Z"/><br /><sub><b>Kiril Z</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=kizaski" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>

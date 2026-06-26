@@ -325,7 +325,7 @@ body:not(.left-sidebar-compact) {
             color: var(--oc-admin-menu-item-font-color-active);
             padding-left: 3 * $link-padding-left !important;
 
-            &:hover{
+            &:hover {
                 background: rgba(0, 0, 0, 0.18);
                 color: var(--oc-admin-menu-font-color-hover);
             }
@@ -478,6 +478,12 @@ body:not(.left-sidebar-compact) {
 
                     > figure > figcaption > .item-label > .btn-nostyle {
                         display: none;
+                    }
+
+                    > figure > figcaption > .item-label > span.icon-none {
+                        &::before {
+                            content: "⋯";
+                        }
                     }
                 }
 
