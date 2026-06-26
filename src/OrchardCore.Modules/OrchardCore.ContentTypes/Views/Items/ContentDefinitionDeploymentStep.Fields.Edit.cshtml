@@ -113,35 +113,78 @@
 </div>
 
 <script at="Foot">
-    $(function () {
-        $("[data-reversetoggle]").on("click", function () {
-            var state = this.checked;
-            if (state) {
-                $($(this).attr("data-reversetoggle")).collapse('hide');
-            } else {
-                $($(this).attr("data-reversetoggle")).collapse('show');
-            }
-        });
-        $("[data-checkbox]").on("click", function () {
-            var state = this.checked;
-            $($(this).attr("data-checkbox"))
-                .prop("checked", state);
+    function onDocumentReady(callback) {
+        if (document.readyState !== 'loading') {
+            callback();
+        } else {
+            document.addEventListener('DOMContentLoaded', callback);
+        }
+    }
+
+    onDocumentReady(function () {
+        document.querySelectorAll("[data-reversetoggle]").forEach(function (element) {
+            element.addEventListener("click", function () {
+                var state = this.checked;
+                var selector = this.getAttribute("data-reversetoggle");
+
+                if (!selector) {
+                    return;
+                }
+
+                document.querySelectorAll(selector).forEach(function (target) {
+                    var collapse = bootstrap.Collapse.getOrCreateInstance(target);
+                    if (state) {
+                        collapse.hide();
+                    } else {
+                        collapse.show();
+                    }
+                });
+            });
         });
 
-        $("[data-checkboxChecked]").on("click", function () {
-            var state = this.checked;
-            if (state) {
-                $($(this).attr("data-checkboxChecked"))
-                    .prop("checked", state);
-            }
+        document.querySelectorAll("[data-checkbox]").forEach(function (element) {
+            element.addEventListener("click", function () {
+                var state = this.checked;
+                var selector = this.getAttribute("data-checkbox");
+
+                if (!selector) {
+                    return;
+                }
+
+                document.querySelectorAll(selector).forEach(function (target) {
+                    target.checked = state;
+                });
+            });
         });
 
-        $("[data-checkboxUnchecked]").on("click", function () {
-            var state = this.checked;
-            if (!state) {
-                $($(this).attr("data-checkboxUnchecked"))
-                    .prop("checked", state);
-            }
+        document.querySelectorAll("[data-checkboxchecked]").forEach(function (element) {
+            element.addEventListener("click", function () {
+                var state = this.checked;
+                var selector = this.getAttribute("data-checkboxchecked");
+
+                if (!state || !selector) {
+                    return;
+                }
+
+                document.querySelectorAll(selector).forEach(function (target) {
+                    target.checked = state;
+                });
+            });
+        });
+
+        document.querySelectorAll("[data-checkboxunchecked]").forEach(function (element) {
+            element.addEventListener("click", function () {
+                var state = this.checked;
+                var selector = this.getAttribute("data-checkboxunchecked");
+
+                if (state || !selector) {
+                    return;
+                }
+
+                document.querySelectorAll(selector).forEach(function (target) {
+                    target.checked = state;
+                });
+            });
         });
     });
 </script>

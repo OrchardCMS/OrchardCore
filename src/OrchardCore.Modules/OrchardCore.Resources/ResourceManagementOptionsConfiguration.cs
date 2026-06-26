@@ -240,6 +240,15 @@ public sealed class ResourceManagementOptionsConfiguration
             .SetVersion("1.3.4");
 
         manifest
+            .DefineScript("jQuery.nestedSortable")
+            .SetDependencies("jQuery-ui")
+            .SetUrl(
+                "~/OrchardCore.Resources/Vendor/nestedSortable-2.1a/jquery.mjs.nestedSortable.min.js",
+                "~/OrchardCore.Resources/Vendor/nestedSortable-2.1a/jquery.mjs.nestedSortable.js"
+            )
+            .SetVersion("2.1");
+
+        manifest
             .DefineScript("jquery-resizable")
             .SetDependencies("jQuery")
             .SetUrl(

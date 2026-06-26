@@ -13,6 +13,7 @@ using OrchardCore.Email;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
+using OrchardCore.RateLimits;
 using OrchardCore.Settings;
 using OrchardCore.Users.Events;
 using OrchardCore.Users.Handlers;
@@ -182,6 +183,8 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
         {
             await _notifier.ErrorAsync(H["New registrations are disabled for this site."]);
 
+            await _loginFormEvents.InvokeAsync(e => e.LoggingInFailedAsync("External User"), _logger);
+
             return RedirectToLogin(returnUrl);
         }
 
@@ -267,8 +270,9 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
         return View(nameof(RegisterExternalLogin), externalLoginViewModel);
     }
 
-    [HttpPost]
+    [HttpPost("/OrchardCore.Users/ExternalAuthentications/RegisterExternalLogin", Name = RateLimitRouteNames.RegisterExternalLogin)]
     [AllowAnonymous]
+    [RateLimitGroup(UserRateLimiterPolicyNames.UserRegistration)]
     public async Task<IActionResult> RegisterExternalLogin(RegisterExternalLoginViewModel model, string returnUrl = null)
     {
         var settings = await _siteService.GetSettingsAsync<ExternalRegistrationSettings>();
@@ -348,8 +352,9 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
         return View(model);
     }
 
-    [HttpPost]
+    [HttpPost("/OrchardCore.Users/ExternalAuthentications/LinkExternalLogin", Name = RateLimitRouteNames.LinkExternalLogin)]
     [AllowAnonymous]
+    [RateLimitGroup(UserRateLimiterPolicyNames.PasswordAuthentication)]
     public async Task<IActionResult> LinkExternalLogin(LinkExternalLoginViewModel model, string returnUrl = null)
     {
         var info = await _signInManager.GetExternalLoginInfoAsync();

@@ -1,0 +1,37 @@
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.RateLimits.Models
+
+@model ShapeViewModel<RateLimitLimiter>
+
+@{
+    var policyId = ViewContext.RouteData.Values["policyId"];
+    var areLimiterChangesAllowed = Model.Properties.TryGetValue("AreLimiterChangesAllowed", out var canManageLimiters) && canManageLimiters as bool? == false
+        ? false
+        : true;
+    var publishedPolicyLimiterMessage = Model.Properties.TryGetValue("PublishedPolicyLimiterMessage", out var limiterMessage)
+        ? limiterMessage as string
+        : null;
+}
+
+<div class="d-flex gap-1">
+    @if (areLimiterChangesAllowed)
+    {
+        <a asp-action="Edit"
+           asp-controller="Limiter"
+           asp-route-policyId="@policyId"
+           asp-route-limiterId="@Model.Value.Id"
+           class="btn btn-primary btn-sm">@T["Edit"]</a>
+
+        <a asp-action="Delete"
+           asp-controller="Limiter"
+           asp-route-policyId="@policyId"
+           asp-route-limiterId="@Model.Value.Id"
+           class="btn btn-danger btn-sm"
+           data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+    }
+    else
+    {
+        <button type="button" class="btn btn-primary btn-sm" disabled title="@publishedPolicyLimiterMessage">@T["Edit"]</button>
+        <button type="button" class="btn btn-danger btn-sm" disabled title="@publishedPolicyLimiterMessage">@T["Delete"]</button>
+    }
+</div>

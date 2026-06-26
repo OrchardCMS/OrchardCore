@@ -120,7 +120,7 @@ The quality used when compressing the image.
 
 The image format to use when processing the output of an image.
 
-Supported formats include `bmp`, `gif`, `jpg`, `png`, `tga`.
+Supported formats include `gif`, `jpg`, `png`, and `webp`.
 
 Can be combined with the `quality` argument to convert an image to a `JPG` and reduce the quality.
 
@@ -410,11 +410,30 @@ To configure the `StaticFileOptions` in more detail, including event handlers, f
 services.PostConfigure<MediaOptions>(o => ...);
 ```
 
-To configure the `ImageSharpMiddleware` in more detail, including event handlers, apply:
+On-demand image resizing is performed by a built-in middleware backed by an `IImageProcessingEngine` service. Resized images are produced by that engine and stored through an `IResizedImageCache` implementation, so no additional middleware configuration is required.
 
+### Image processing engines
+
+The image processing engine is a pluggable service contract (`IImageProcessingEngine`, defined in `OrchardCore.Media.Abstractions`). The middleware parses the validated request into an engine-agnostic `ImageProcessingCommands` instance and hands it to the registered engine, so engines never deal with query strings, tokens or cache keys.
+
+Two engines ship with Orchard Core:
+
+| Engine | Provided by | Backed by | Default |
+| --- | --- | --- | --- |
+| NetVips | `OrchardCore.Media` (built in) | [NetVips](https://github.com/kleisauke/net-vips), a managed binding over the native [libvips](https://www.libvips.org/) library | Yes |
+| ImageSharp (v3) | `OrchardCore.Media.ImageSharpV3` feature | [SixLabors.ImageSharp](https://github.com/SixLabors/ImageSharp) `3.1.x` | No |
+
+The NetVips engine is registered by default. To use ImageSharp instead, enable the **Media ImageSharp Image Processing** feature (`OrchardCore.Media.ImageSharpV3`); it replaces the default engine registration. Only one engine should be enabled at a time.
+
+To provide your own engine, implement `IImageProcessingEngine` and replace the registration after the `OrchardCore.Media` module's services are configured:
+
+```csharp
+services.Replace(ServiceDescriptor.Singleton<IImageProcessingEngine, MyImageProcessingEngine>());
 ```
-services.PostConfigure<ImageSharpMiddlewareOptions>(o => ...);
-```
+
+### Supported output formats
+
+Both engines support resizing to `jpg`/`jpeg`, `png`, `gif` and `webp`. Any other or unspecified format falls back to JPEG. The `bmp` and `tga` formats are no longer supported.
 
 !!! note
     The Media Library `StaticFileOptions` configuration is separated from the configuration for static files contained in module `wwwroot` folders.
