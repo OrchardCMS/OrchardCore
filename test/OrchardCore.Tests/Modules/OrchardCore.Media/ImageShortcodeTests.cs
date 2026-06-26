@@ -35,7 +35,7 @@ public class ImageShortcodeTests
     [InlineData("", "foo [media]bar[/media] baz foo [image]bar[/image] baz", @"foo <img src=""/media/bar""> baz foo <img src=""/media/bar""> baz")]
     [InlineData("", "foo [image]bàr.jpeg?width=100[/image] baz", @"foo <img src=""/media/b%C3%A0r.jpeg?width=100""> baz")]
     [InlineData("", "foo [image]bàr.jpeg?width=100 onload=\"javascript: alert('XSS')\"[/image] baz", @"foo <img src=""/media/b%C3%A0r.jpeg?width=100 onload=""> baz")]
-    public async Task ShouldProcess(string cdnBaseUrl, string text, string expected)
+    public async Task Process_Default_Succeeds(string cdnBaseUrl, string text, string expected)
     {
         var sanitizerOptions = new HtmlSanitizerOptions();
         sanitizerOptions.Configure.Add(opt => opt.AllowedAttributes.Add("class"));

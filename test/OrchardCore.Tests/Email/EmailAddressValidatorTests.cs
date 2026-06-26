@@ -10,7 +10,7 @@ public class EmailAddressValidatorTests
     [InlineData("mailbox@domain", true)]
     [InlineData(null, false)]
     [InlineData("", false)]
-    public void ValidateEmailAddress(string address, bool isValid)
+    public void ValidateEmailAddress_Default_Succeeds(string address, bool isValid)
     {
         // Arrange
         var emailAddressValidator = new EmailAddressValidator();
@@ -22,7 +22,7 @@ public class EmailAddressValidatorTests
     [Theory]
     [InlineData("hishamco_2007@hotmail.com", false)]
     [InlineData("hishamco@orchardcore.net", true)]
-    public void UseCustomEmailAddressValidator(string address, bool isValid)
+    public void UseCustomEmailAddressValidator_Default_Succeeds(string address, bool isValid)
     {
         // Arrange
         var emailAddressValidator = new OrchardCoreEmailValidator();

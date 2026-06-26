@@ -319,7 +319,7 @@ public class OpenIdAuthenticationTests
     }
 
     [Fact]
-    public async Task OpenId_PasswordGrant_WhenRateLimitExceeded_ReturnsTooManyRequests()
+    public async Task OpenIdPasswordGrant_RateLimitExceededReturnsTooManyRequests_Succeeds()
     {
         var context = new SiteContext();
 

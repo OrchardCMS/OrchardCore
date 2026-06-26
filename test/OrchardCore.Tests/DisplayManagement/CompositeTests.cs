@@ -5,7 +5,7 @@ namespace OrchardCore.Tests.DisplayManagement;
 public class CompositeTests
 {
     [Fact]
-    public void CompositesShouldNotOverrideExistingMembers()
+    public void Composites_Default_NotOverrideExistingMembers()
     {
         var composite = new Animal { Color = "Pink" };
 
@@ -13,7 +13,7 @@ public class CompositeTests
     }
 
     [Fact]
-    public void CompositesShouldNotOverrideExistingMembersWhenUsedAsDynamic()
+    public void Composites_UsedAsDynamic_NotOverrideExistingMembers()
     {
         dynamic composite = new Animal();
 
@@ -22,7 +22,7 @@ public class CompositeTests
     }
 
     [Fact]
-    public void CompositesShouldAccessUnknownProperties()
+    public void Composites_Default_AccessUnknownProperties()
     {
         dynamic composite = new Animal();
 
@@ -31,7 +31,7 @@ public class CompositeTests
     }
 
     [Fact]
-    public void CompositesShouldAccessUnknownPropertiesByIndex()
+    public void Composites_Default_AccessUnknownPropertiesByIndex()
     {
         dynamic composite = new Animal();
 
@@ -40,7 +40,7 @@ public class CompositeTests
     }
 
     [Fact]
-    public void CompositesShouldAccessKnownPropertiesByIndex()
+    public void Composites_Default_AccessKnownPropertiesByIndex()
     {
         dynamic composite = new Animal();
 
@@ -49,7 +49,7 @@ public class CompositeTests
     }
 
     [Fact]
-    public void ChainProperties()
+    public void ChainProperties_Default_Succeeds()
     {
         dynamic foo = new Animal();
         foo.Bar("bar");

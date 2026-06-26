@@ -21,7 +21,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.RateLimits;
 public class RateLimiterMiddlewareTests
 {
     [Fact]
-    public async Task ShouldNotCountStaticAssetsAgainstGlobalRateLimit()
+    public async Task Not_CountStaticAssetsAgainstGlobalRateLimit_Succeeds()
     {
         using var staticAssetDirectory = new StaticAssetDirectory();
         using var host = await CreateHostAsync(
@@ -54,7 +54,7 @@ public class RateLimiterMiddlewareTests
     }
 
     [Fact]
-    public async Task ShouldApplyShortRouteLimitToNamedTenantRoute()
+    public async Task Apply_ShortRouteLimitToNamedTenantRoute_Succeeds()
     {
         using var staticAssetDirectory = new StaticAssetDirectory();
         using var host = await CreateHostAsync(
@@ -89,7 +89,7 @@ public class RateLimiterMiddlewareTests
     }
 
     [Fact]
-    public async Task ShouldApplyEndpointSpecificPoliciesWithoutGlobalPolicies()
+    public async Task Apply_EndpointSpecificPoliciesWithoutGlobalPolicies_Succeeds()
     {
         using var staticAssetDirectory = new StaticAssetDirectory();
         using var host = await CreateHostAsync(
@@ -116,7 +116,7 @@ public class RateLimiterMiddlewareTests
     }
 
     [Fact]
-    public async Task ShouldApplyGroupSpecificPoliciesToGroupedEndpoints()
+    public async Task Apply_GroupSpecificPoliciesToGroupedEndpoints_Succeeds()
     {
         using var staticAssetDirectory = new StaticAssetDirectory();
         using var host = await CreateHostAsync(
