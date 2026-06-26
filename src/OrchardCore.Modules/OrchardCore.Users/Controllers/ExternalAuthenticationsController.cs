@@ -185,6 +185,8 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
         {
             await _notifier.ErrorAsync(H["New registrations are disabled for this site."]);
 
+            await _loginFormEvents.InvokeAsync(e => e.LoggingInFailedAsync("External User"), _logger);
+
             return RedirectToLogin(returnUrl);
         }
 
