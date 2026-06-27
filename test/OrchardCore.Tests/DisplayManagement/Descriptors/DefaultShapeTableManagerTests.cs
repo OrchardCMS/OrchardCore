@@ -359,9 +359,14 @@ public class DefaultShapeTableManagerTests : IDisposable
     [Fact]
     public async Task DefaultPlacementIsReturnedByDefault_Default_Succeeds()
     {
+        var shapeType = nameof(DefaultPlacementIsReturnedByDefault_Default_Succeeds);
+
+        _serviceProvider.GetService<TestShapeProvider>().Discover =
+            builder => builder.Describe(shapeType).From(TestFeature());
+
         var manager = _serviceProvider.GetService<IShapeTableManager>();
 
-        var hello = (await manager.GetShapeTableAsync(null)).Descriptors["Hello"];
+        var hello = (await manager.GetShapeTableAsync(null)).Descriptors[shapeType];
         hello.DefaultPlacement = "Header:5";
         var result = hello.Placement(null);
         Assert.Equal("Header:5", result.Location);
@@ -451,13 +456,14 @@ public class DefaultShapeTableManagerTests : IDisposable
             var path = rule.Item1;
             var context = rule.Item2;
             var match = rule.Item3;
+            var shapeType = nameof(PathConstraint_Default_Match);
 
             _serviceProvider.GetService<TestShapeProvider>().Discover =
-                builder => builder.Describe("Hello").From(TestFeature())
+                builder => builder.Describe(shapeType).From(TestFeature())
                                .Placement(ctx => true, new PlacementInfo("Match"));
 
             var manager = _serviceProvider.GetService<IShapeTableManager>();
-            var hello = (await manager.GetShapeTableAsync(null)).Descriptors["Hello"];
+            var hello = (await manager.GetShapeTableAsync(null)).Descriptors[shapeType];
             //var result = hello.Placement(new ShapePlacementContext { Path = context });
 
             //if (match)
