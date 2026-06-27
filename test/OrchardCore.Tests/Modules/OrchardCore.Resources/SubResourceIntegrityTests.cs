@@ -31,7 +31,7 @@ public class SubResourceIntegrityTests
         await ValidateSubResourceIntegrityAsync("script");
         await ValidateSubResourceIntegrityAsync("style");
 
-        async Task ValidateSubResourceIntegrityAsync_Default_Succeeds(string resourceType)
+        async Task ValidateSubResourceIntegrityAsync(string resourceType)
         {
             foreach (var resource in resourceManifest.GetResources(resourceType))
             {
