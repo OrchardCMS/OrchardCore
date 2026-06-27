@@ -7,8 +7,6 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.DisplayManagement.Shapes;
 
-#pragma warning disable CA1822 // Mark members as static
-
 [Feature(Application.DefaultFeatureId)]
 public class CoreShapes : IShapeAttributeProvider
 {
@@ -19,7 +17,7 @@ public class CoreShapes : IShapeAttributeProvider
     }
 
     [Shape]
-    public async Task<IHtmlContent> List(Shape shape, DisplayContext displayContext, IEnumerable<object> Items,
+    public static async Task<IHtmlContent> List(Shape shape, DisplayContext displayContext, IEnumerable<object> Items,
         string ItemTagName,
         IEnumerable<string> ItemClasses,
         IDictionary<string, string> ItemAttributes,
@@ -100,7 +98,7 @@ public class CoreShapes : IShapeAttributeProvider
     }
 
     [Shape]
-    public async Task<IHtmlContent> NotifyMessages(IShape shape, IDisplayHelper displayAsync, IShapeFactory shapeFactory)
+    public static async Task<IHtmlContent> NotifyMessages(IShape shape, IDisplayHelper displayAsync, IShapeFactory shapeFactory)
     {
         if (!shape.Properties.TryGetValue("Entries", out var value) ||
             value is not IEnumerable<NotifyEntry> messages)
@@ -121,7 +119,7 @@ public class CoreShapes : IShapeAttributeProvider
     }
 
     [Shape]
-    public IHtmlContent Message(IShape Shape)
+    public static IHtmlContent Message(IShape Shape)
     {
         var tagBuilder = Shape.GetTagBuilder("div");
         var type = Shape.Properties["Type"].ToString().ToLowerInvariant();
@@ -133,8 +131,6 @@ public class CoreShapes : IShapeAttributeProvider
         return tagBuilder;
     }
 }
-
-#pragma warning restore CA1822 // Mark members as static
 
 public class CoreShapesTableProvider : ShapeTableProvider
 {

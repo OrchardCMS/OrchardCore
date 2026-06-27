@@ -8,14 +8,14 @@ using OrchardCore.Liquid.Abstractions;
 
 namespace OrchardCore.Media.AmazonS3.Services;
 
-internal sealed class AwsImageSharpImageCacheOptionsConfiguration : IConfigureOptions<AwsImageSharpImageCacheOptions>
+internal sealed class AwsMediaImageCacheOptionsConfiguration : IConfigureOptions<AwsMediaImageCacheOptions>
 {
     private readonly FluidParser _fluidParser;
     private readonly IShellConfiguration _shellConfiguration;
     private readonly ShellSettings _shellSettings;
     private readonly ILogger _logger;
 
-    public AwsImageSharpImageCacheOptionsConfiguration(
+    public AwsMediaImageCacheOptionsConfiguration(
         FluidParser fluidParser,
         IShellConfiguration shellConfiguration,
         ShellSettings shellSettings,
@@ -27,11 +27,11 @@ internal sealed class AwsImageSharpImageCacheOptionsConfiguration : IConfigureOp
         _logger = logger;
     }
 
-    public void Configure(AwsImageSharpImageCacheOptions options)
+    public void Configure(AwsMediaImageCacheOptions options)
     {
-        options.BindConfiguration(AmazonS3Constants.ConfigSections.AmazonS3ImageSharpCache, _shellConfiguration, _logger);
+        options.BindConfiguration(AmazonS3Constants.ConfigSections.AmazonS3ImageCache, _shellConfiguration, _logger);
 
-        var parser = new FluidOptionsParser<AwsImageSharpImageCacheOptions>(_fluidParser, _shellSettings);
+        var parser = new FluidOptionsParser<AwsMediaImageCacheOptions>(_fluidParser, _shellSettings);
 
         try
         {
@@ -39,7 +39,7 @@ internal sealed class AwsImageSharpImageCacheOptionsConfiguration : IConfigureOp
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, "Unable to parse Amazon S3 ImageSharp Image Cache bucket name.");
+            _logger.LogCritical(e, "Unable to parse Amazon S3 Media Image Cache bucket name.");
         }
 
         try
@@ -48,7 +48,7 @@ internal sealed class AwsImageSharpImageCacheOptionsConfiguration : IConfigureOp
         }
         catch (Exception e)
         {
-            _logger.LogCritical(e, "Unable to parse Amazon S3 ImageSharp Image Cache base path.");
+            _logger.LogCritical(e, "Unable to parse Amazon S3 Media Image Cache base path.");
         }
     }
 }
