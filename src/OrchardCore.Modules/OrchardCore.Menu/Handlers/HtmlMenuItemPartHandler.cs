@@ -1,4 +1,4 @@
-using OrchardCore.ContentManagement.Extensions;
+using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Infrastructure.Html;
@@ -17,9 +17,14 @@ public class HtmlMenuItemPartHandler : ContentPartHandler<HtmlMenuItemPart>
         _htmlSanitizerService = htmlSanitizerService;
     }
     
-    public override Task ImportedAsync(ImportContentContext context, HtmlMenuItemPart part) =>
-        _contentDefinitionManager.SanitizeHtmlHolderAsync(
-            _htmlSanitizerService,
-            part,
-            (definition, _) => definition.GetSettings<HtmlMenuItemPartSettings>() is { SanitizeHtml: true });
+    public override async Task ImportedAsync(ImportContentContext context, HtmlMenuItemPart part)
+    {
+        var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType);
+
+        if (typeDefinition.GetSettings<HtmlMenuItemPartSettings>() is { SanitizeHtml: true })
+        {
+            context.ContentItem.Alter<HtmlMenuItemPart>(part => 
+                part.Html = _htmlSanitizerService.Sanitize(part.Html));
+        }
+    }
 }
