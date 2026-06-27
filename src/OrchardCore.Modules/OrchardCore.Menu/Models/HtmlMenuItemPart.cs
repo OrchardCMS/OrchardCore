@@ -2,7 +2,7 @@ using OrchardCore.ContentManagement;
 
 namespace OrchardCore.Menu.Models;
 
-public class HtmlMenuItemPart : ContentPart, IHtmlHolderContent
+public class HtmlMenuItemPart : ContentPart
 {
     /// <summary>
     /// The url of the link to create.
