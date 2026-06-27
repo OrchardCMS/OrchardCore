@@ -1,6 +1,5 @@
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.Settings;
-using OrchardCore.ContentManagement.Extensions;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Infrastructure.Html;
@@ -20,9 +19,16 @@ public class HtmlFieldHandler : ContentFieldHandler<HtmlField>
         _htmlSanitizerService = htmlSanitizerService;
     }
 
-    public override Task ImportedAsync(ImportContentFieldContext context, HtmlField field) =>
-        _contentDefinitionManager.SanitizeHtmlHolderAsync(
-            _htmlSanitizerService,
-            field,
-            (definition, _) => definition.GetSettings<HtmlFieldSettings>() is { SanitizeHtml: true });
+    public override Task ImportedAsync(ImportContentFieldContext context, HtmlField field)
+    {
+        var settings = context.ContentPartFieldDefinition.GetSettings<HtmlFieldSettings>();
+
+        if (settings?.SanitizeHtml == true)
+        {
+            context.ContentItem.Content[context.ContentPartFieldDefinition.PartDefinition.Name][context.ContentPartFieldDefinition.Name].Html =
+                _htmlSanitizerService.Sanitize(field.Html);
+        }
+
+        return Task.CompletedTask;
+    }
 }
