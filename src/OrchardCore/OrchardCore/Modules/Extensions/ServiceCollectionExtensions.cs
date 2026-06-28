@@ -160,7 +160,6 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ICalendarManager, DefaultCalendarManager>();
         services.AddScoped<ICalendarSelector, DefaultCalendarSelector>();
 
-        services.AddSingleton<IPoweredByMiddlewareOptions, PoweredByMiddlewareOptions>();
         services.AddTransient<IConfigureOptions<DocumentJsonSerializerOptions>, DocumentJsonSerializerOptionsConfiguration>();
         services.AddTransient<IConfigureOptions<MvcOptions>, MvcOptionsConfiguration>();
 
@@ -176,6 +175,7 @@ public static class ServiceCollectionExtensions
 
             var configuration = serviceProvider.GetService<IShellConfiguration>();
 
+            services.Configure<PoweredByOptions>(configuration.GetSection("OrchardCore_PoweredBy"));
             services.Configure<CultureOptions>(configuration.GetSection("OrchardCore_Localization_CultureOptions"));
         });
 

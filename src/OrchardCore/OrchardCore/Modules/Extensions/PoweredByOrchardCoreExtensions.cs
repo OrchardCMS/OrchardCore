@@ -1,6 +1,3 @@
-using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.Modules;
-
 namespace Microsoft.AspNetCore.Builder;
 
 public static class PoweredByOrchardCoreExtensions
@@ -14,10 +11,11 @@ public static class PoweredByOrchardCoreExtensions
     /// <returns>The modular application builder.</returns>
     public static IApplicationBuilder UsePoweredByOrchardCore(this IApplicationBuilder app, bool enabled)
     {
-        var options = app.ApplicationServices.GetRequiredService<IPoweredByMiddlewareOptions>();
-        options.Enabled = enabled;
+        ArgumentNullException.ThrowIfNull(app);
 
-        return app;
+        return enabled
+            ? app.UsePoweredBy()
+            : app;
     }
 
     /// <summary>
@@ -30,10 +28,8 @@ public static class PoweredByOrchardCoreExtensions
     /// <returns>The modular application builder.</returns>
     public static IApplicationBuilder UsePoweredBy(this IApplicationBuilder app, bool enabled, string headerValue)
     {
-        var options = app.ApplicationServices.GetRequiredService<IPoweredByMiddlewareOptions>();
-        options.Enabled = enabled;
-        options.HeaderValue = headerValue;
-
-        return app;
+        return enabled
+            ? app.UsePoweredBy(options => options.HeaderValue = headerValue)
+            : app;
     }
 }
