@@ -7,7 +7,7 @@ namespace OrchardCore.Tests.Data;
 public class ContentItemExtensions
 {
     [Fact]
-    public void GetReflectsChangesMadeByApply()
+    public void GetReflectsChangesMadeByApply_Default_Succeeds()
     {
         // arrange
         var value = "changed value";
@@ -24,7 +24,7 @@ public class ContentItemExtensions
     }
 
     [Fact]
-    public void GetReflectsChangesToFieldMadeByApply()
+    public void GetReflectsChangesToFieldMadeByApply_Default_Succeeds()
     {
         // arrange
         var value = "changed value";
@@ -43,7 +43,7 @@ public class ContentItemExtensions
     }
 
     [Fact]
-    public void WeldPreservesFieldsWhenPartWeldedAfterFields()
+    public void WeldPreservesFields_PartWeldedAfterFields_Succeeds()
     {
         // arrange
         var firstValue = "Hello";
@@ -72,7 +72,7 @@ public class ContentItemExtensions
     }
 
     [Fact]
-    public void WeldPreservesFieldsWhenPartWeldedBeforeFields()
+    public void WeldPreservesFields_PartWeldedBeforeFields_Succeeds()
     {
         // arrange
         var firstValue = "Hello";
@@ -102,7 +102,7 @@ public class ContentItemExtensions
     }
 
     [Fact]
-    public void MergeReflectsChangesToWellKnownProperties()
+    public void MergeReflectsChangesToWellKnownProperties_Default_Succeeds()
     {
         // Setup
         var contentItem = new ContentItem
@@ -123,7 +123,7 @@ public class ContentItemExtensions
     }
 
     [Fact]
-    public void MergeRemovesWellKnownPropertiesFromData()
+    public void MergeRemovesWellKnownPropertiesFromData_Default_Succeeds()
     {
         // Setup
         var contentItem = new ContentItem
@@ -144,7 +144,7 @@ public class ContentItemExtensions
     }
 
     [Fact]
-    public void MergeMaintainsDocumentId()
+    public void MergeMaintainsDocumentId_Default_Succeeds()
     {
         // Setup
         var contentItem = new ContentItem
@@ -165,7 +165,7 @@ public class ContentItemExtensions
     }
 
     [Fact]
-    public void MergeReflectsChangesToElements()
+    public void MergeReflectsChangesToElements_Default_Succeeds()
     {
         // Setup
         var value = "merged value";

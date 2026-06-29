@@ -9,7 +9,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media;
 public sealed class ImageSharpV3StartupTests
 {
     [Fact]
-    public void ConfigureServices_ReplacesDefaultEngineWithImageSharp()
+    public void ConfigureServices_ReplacesDefaultEngineWithImageSharp_Succeeds()
     {
         var services = new ServiceCollection();
 

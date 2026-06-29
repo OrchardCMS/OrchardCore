@@ -5,7 +5,7 @@ namespace OrchardCore.Tests.Modules;
 public class PoweredByMiddlewareTests
 {
     [Fact]
-    public async Task InjectPoweredByHeader()
+    public async Task InjectPoweredByHeader_Default_Succeeds()
     {
         // Arrange
         string key = "X-Powered-By", value = "OrchardCore";
@@ -34,6 +34,18 @@ public class PoweredByMiddlewareTests
 
         // Assert
         Assert.Equal(value, headersArray[key]);
+        httpResponseMock.Verify(r => r.Headers, Times.Once);
+    }
+
+    [Fact]
+    public async Task DoNotInjectPoweredByHeaderIfDisabled_Default_Succeeds()
+    {
+        // Arrange
+        string key = "X-Powered-By", value = "OrchardCore";
+        var httpResponseMock = new Mock<HttpResponse>();
+#pragma warning disable ASP0019 // Suggest using IHeaderDictionary.Append or the indexer
+        _ = httpResponseMock.Setup(r => r.Headers.Add(key, value));
+#pragma warning restore ASP0019 // Suggest using IHeaderDictionary.Append or the indexer
 
         httpResponseMock.Verify(r => r.Headers, Times.Once);
 

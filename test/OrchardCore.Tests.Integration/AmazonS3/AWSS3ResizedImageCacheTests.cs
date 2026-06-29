@@ -97,7 +97,7 @@ public sealed class AWSS3ResizedImageCacheTests : IAsyncLifetime
     // ── Set / Get round-trip ─────────────────────────────────────────────────
 
     [DockerFact]
-    public async Task Set_ThenGet_JPEG_RoundTripsContentAndContentType()
+    public async Task Set_ThenGetJPEG_RoundTripsContentAndContentType()
     {
         const string body = "fake-jpeg-bytes";
         using var input = FakeImage(body);
@@ -112,7 +112,7 @@ public sealed class AWSS3ResizedImageCacheTests : IAsyncLifetime
     }
 
     [DockerFact]
-    public async Task Set_ThenGet_PNG_ReturnsCorrectContentType()
+    public async Task Set_ThenGetPNG_ReturnsCorrectContentType()
     {
         using var input = FakeImage();
         await _cache.SetAsync("png-key", input, "image/png", TimeSpan.FromDays(1));
@@ -124,7 +124,7 @@ public sealed class AWSS3ResizedImageCacheTests : IAsyncLifetime
     }
 
     [DockerFact]
-    public async Task Set_ThenGet_WebP_ReturnsCorrectContentType()
+    public async Task Set_ThenGetWebP_ReturnsCorrectContentType()
     {
         using var input = FakeImage();
         await _cache.SetAsync("webp-key", input, "image/webp", TimeSpan.FromDays(1));
@@ -136,7 +136,7 @@ public sealed class AWSS3ResizedImageCacheTests : IAsyncLifetime
     }
 
     [DockerFact]
-    public async Task Set_SameKey_Overwrites_Content()
+    public async Task Set_SameKeyOverwrites_Content()
     {
         using var v1 = FakeImage("v1");
         using var v2 = FakeImage("v2");
@@ -160,7 +160,7 @@ public sealed class AWSS3ResizedImageCacheTests : IAsyncLifetime
     }
 
     [DockerFact]
-    public async Task Clear_DeletesAllEntries()
+    public async Task Clear_Default_DeletesAllEntries()
     {
         using var a = FakeImage("a");
         using var b = FakeImage("b");
@@ -174,7 +174,7 @@ public sealed class AWSS3ResizedImageCacheTests : IAsyncLifetime
     }
 
     [DockerFact]
-    public async Task Clear_WithBasePath_OnlyDeletesEntriesUnderThatPath()
+    public async Task Clear_BasePath_OnlyDeletesEntriesUnderThatPath()
     {
         var cacheA = CreateCache(basePath: "zone-a");
         var cacheB = CreateCache(basePath: "zone-b");

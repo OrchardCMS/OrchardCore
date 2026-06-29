@@ -8,7 +8,7 @@ namespace OrchardCore.Tests.Email;
 public class SmtpPickupDirectoryResolverTests
 {
     [Fact]
-    public void GetPickupDirectoryLocationBase_UsesDefaultTemplate()
+    public void GetPickupDirectoryLocationBase_Default_UsesDefaultTemplate()
     {
         var appDataPath = GetRootedPath("App", "App_Data");
         var shellSettings = new ShellSettings
@@ -29,7 +29,7 @@ public class SmtpPickupDirectoryResolverTests
     }
 
     [Fact]
-    public void GetPickupDirectoryLocationBase_ExpandsFluidTokens()
+    public void GetPickupDirectoryLocationBase_ExpandsFluidTokens_Succeeds()
     {
         var appDataPath = GetRootedPath("App", "App_Data");
         var shellSettings = new ShellSettings
@@ -56,7 +56,7 @@ public class SmtpPickupDirectoryResolverTests
     [InlineData("/Outbound")]
     [InlineData("Outbound")]
     [InlineData("Email/Outbound")]
-    public void IsValidPickupDirectoryLocation_AllowsSupportedValues(string pickupDirectoryLocation)
+    public void IsValidPickupDirectoryLocation_Default_AllowssSupportedValues(string pickupDirectoryLocation)
     {
         Assert.True(SmtpPickupDirectoryResolver.IsValidPickupDirectoryLocation(pickupDirectoryLocation));
     }
@@ -77,13 +77,13 @@ public class SmtpPickupDirectoryResolverTests
     [InlineData("C:\\Emails")]
     [InlineData("\\\\server\\share\\Emails")]
     [InlineData("{{ ShellSettings.Name }}\\Emails")]
-    public void IsValidPickupDirectoryLocation_RejectsUnsafeValues(string pickupDirectoryLocation)
+    public void IsValidPickupDirectoryLocation_Default_RejectssUnsafeValues(string pickupDirectoryLocation)
     {
         Assert.False(SmtpPickupDirectoryResolver.IsValidPickupDirectoryLocation(pickupDirectoryLocation));
     }
 
     [Fact]
-    public void ConfigurePickupDirectory_AppliesBaseAndResolvedPath()
+    public void ConfigurePickupDirectory_AppliesBaseAndResolvedPath_Succeeds()
     {
         var appDataPath = GetRootedPath("App", "App_Data");
         var shellSettings = new ShellSettings
@@ -114,7 +114,7 @@ public class SmtpPickupDirectoryResolverTests
     [InlineData("/", null)]
     [InlineData("/Outbound", "Outbound")]
     [InlineData("Email/Outbound", "Email/Outbound")]
-    public void ResolvePickupDirectoryLocation_ResolvesInsideBasePath(string pickupDirectoryLocation, string expectedRelativePath)
+    public void ResolvePickupDirectoryLocation_Default_ResolvesInsideBasePath(string pickupDirectoryLocation, string expectedRelativePath)
     {
         var basePath = GetRootedPath("App", "App_Data", "Sites", "Default", "Emails");
 
@@ -132,7 +132,7 @@ public class SmtpPickupDirectoryResolverTests
     [InlineData("../Shared")]
     [InlineData("./Drafts")]
     [InlineData("Emails/../Shared")]
-    public void ResolvePickupDirectoryLocation_ThrowsForUnsafeValues(string pickupDirectoryLocation)
+    public void ResolvePickupDirectoryLocation_Default_ThrowsForUnsafeValues(string pickupDirectoryLocation)
     {
         var basePath = GetRootedPath("App", "App_Data", "Sites", "Default", "Emails");
 

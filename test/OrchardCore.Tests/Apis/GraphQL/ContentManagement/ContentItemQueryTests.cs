@@ -10,7 +10,7 @@ namespace OrchardCore.Tests.Apis.GraphQL;
 public class ContentItemQueryTests
 {
     [Fact]
-    public async Task ShouldReturnContentItemWhenViewContentPermissionIsGranted()
+    public async Task Return_ViewContentPermissionIsGranted_Succeeds()
     {
         using var context = new SiteContext()
             .WithRecipe("Blog")
@@ -37,7 +37,7 @@ public class ContentItemQueryTests
     }
 
     [Fact]
-    public async Task ShouldNotReturnContentItemWithoutViewContentPermission()
+    public async Task Not_ReturnContentItemWithoutViewContentPermission_Succeeds()
     {
         using var context = new SiteContext()
             .WithRecipe("Blog")

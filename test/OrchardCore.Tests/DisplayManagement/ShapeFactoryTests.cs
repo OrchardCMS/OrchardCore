@@ -37,7 +37,7 @@ public class ShapeFactoryTests
     }
 
     [Fact]
-    public async Task ShapeHasAttributesType()
+    public async Task ShapeHasAttributesType_Default_Succeeds()
     {
         var factory = _serviceProvider.GetService<IShapeFactory>();
         dynamic foo = await factory.CreateAsync("Foo", ArgsUtility.Empty());
@@ -46,7 +46,7 @@ public class ShapeFactoryTests
     }
 
     [Fact]
-    public async Task CreateShapeWithNamedArguments()
+    public async Task CreateShapeWithNamedArguments_Default_Succeeds()
     {
         var factory = _serviceProvider.GetService<IShapeFactory>();
         dynamic foo = await factory.CreateAsync("Foo", ArgsUtility.Named(new { one = 1, two = "dos" }));
@@ -55,7 +55,7 @@ public class ShapeFactoryTests
     }
 
     [Fact]
-    public async Task CallSyntax()
+    public async Task CallSyntax_Default_Succeeds()
     {
         dynamic factory = _serviceProvider.GetService<IShapeFactory>();
         var foo = await factory.Foo();
@@ -64,7 +64,7 @@ public class ShapeFactoryTests
     }
 
     [Fact]
-    public async Task CallSyntaxAsync()
+    public async Task CallSyntaxAsync_Default_Succeeds()
     {
         dynamic factory = _serviceProvider.GetService<IShapeFactory>();
         var foo = await factory.FooAsync();
@@ -73,7 +73,7 @@ public class ShapeFactoryTests
     }
 
     [Fact]
-    public async Task CallInitializer()
+    public async Task CallInitializer_Default_Succeeds()
     {
         dynamic factory = _serviceProvider.GetService<IShapeFactory>();
         var bar = new { One = 1, Two = "two" };
@@ -84,7 +84,7 @@ public class ShapeFactoryTests
     }
 
     [Fact]
-    public async Task ShapeFactoryUsesCustomShapeType()
+    public async Task ShapeFactoryUsesCustomShapeType_Default_Succeeds()
     {
         var descriptor = new ShapeDescriptor
         {
@@ -106,7 +106,7 @@ public class ShapeFactoryTests
     }
 
     [Fact]
-    public async Task ShapeFactoryWithCustomShapeTypeAppliesArguments()
+    public async Task ShapeFactoryWithCustomShapeTypeAppliesArguments_Default_Succeeds()
     {
         var descriptor = new ShapeDescriptor
         {
@@ -129,7 +129,7 @@ public class ShapeFactoryTests
     }
 
     [Fact]
-    public async Task CreateStronglyTypedShapeUsesGeneratedShapeType()
+    public async Task CreateStronglyTypedShapeUsesGeneratedShapeType_Default_Succeeds()
     {
         var factory = _serviceProvider.GetRequiredService<IShapeFactory>();
 
@@ -153,7 +153,7 @@ public class ShapeFactoryTests
     }
 
     [Fact]
-    public async Task CreateStronglyTypedShapeDelegatesShapeMembers()
+    public async Task CreateStronglyTypedShapeDelegatesShapeMembers_Default_Succeeds()
     {
         var factory = _serviceProvider.GetRequiredService<IShapeFactory>();
 
@@ -181,7 +181,7 @@ public class ShapeFactoryTests
     }
 
     [Fact]
-    public async Task CreateStronglyTypedShapeFallsBackToCastleProxy()
+    public async Task CreateStronglyTypedShapeFallsBackToCastleProxy_Default_Succeeds()
     {
         var factory = _serviceProvider.GetRequiredService<IShapeFactory>();
         var shapeFactoryExtensionsType = typeof(IShapeFactory).Assembly.GetType("OrchardCore.DisplayManagement.ShapeFactoryExtensions", throwOnError: true);
@@ -198,7 +198,7 @@ public class ShapeFactoryTests
     }
 
     [Fact]
-    public async Task CreateStronglyTypedShapeUsesAttributedModelWithoutInterception()
+    public async Task CreateStronglyTypedShapeUsesAttributedModelWithoutInterception_Default_Succeeds()
     {
         var factory = _serviceProvider.GetRequiredService<IShapeFactory>();
         var shape = await factory.CreateAsync<AttributedShapeViewModel>(model => model.Title = "Attributed");
@@ -212,7 +212,7 @@ public class ShapeFactoryTests
     }
 
     [Fact]
-    public async Task DisplayDriverInitializeUsesGeneratedShapeType()
+    public async Task DisplayDriverInitializeUsesGeneratedShapeType_Default_Succeeds()
     {
         var factory = _serviceProvider.GetRequiredService<IShapeFactory>();
         var shapeResult = new TestDisplayDriver().Build();
@@ -231,7 +231,7 @@ public class ShapeFactoryTests
     }
 
     [Fact]
-    public async Task DisplayDriverInitializeWithoutInitializerUsesGeneratedShapeType()
+    public async Task DisplayDriverInitializeWithoutInitializerUsesGeneratedShapeType_Default_Succeeds()
     {
         var factory = _serviceProvider.GetRequiredService<IShapeFactory>();
         var shapeResult = new TestDisplayDriverWithoutInitializer().Build();
@@ -248,7 +248,7 @@ public class ShapeFactoryTests
     }
 
     [Fact]
-    public async Task DisplayDriverInitializeWithoutShapeTypeOrInitializerUsesGeneratedShapeType()
+    public async Task DisplayDriverInitializeWithoutShapeTypeOrInitializerUsesGeneratedShapeType_Default_Succeeds()
     {
         var factory = _serviceProvider.GetRequiredService<IShapeFactory>();
         var shapeResult = new TestDisplayDriverWithoutShapeTypeOrInitializer().Build();

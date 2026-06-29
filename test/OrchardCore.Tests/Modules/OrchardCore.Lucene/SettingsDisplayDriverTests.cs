@@ -52,7 +52,7 @@ public partial class SettingsDisplayDriverTests
     }
 
     [Fact]
-    public async Task ContentPickerFieldLuceneEditorSettingsShouldDeserialize()
+    public async Task ContentPickerFieldLuceneEditorSettings_Default_Deserialize()
     {
         await (await CreateShellContext().CreateScopeAsync()).UsingAsync(async scope =>
         {
