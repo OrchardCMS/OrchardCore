@@ -90,7 +90,7 @@ public class MediaTokenTests
     [Theory]
     [InlineData("/media/blog.jpg?width=100&height=100", "/media/blog.jpg?width=100&height=100&token=eVmmj09NoysPASEiuhCuUHJR%2BSrUtSafBo738SuL2eU%3D")]
     [InlineData("/media/blog.jpg?width=100&height=100&foo=bar", "/media/blog.jpg?width=100&height=100&token=eVmmj09NoysPASEiuhCuUHJR%2BSrUtSafBo738SuL2eU%3D&foo=bar")]
-    public void ShouldAddToken(string path, string expected)
+    public void Add_Token_Succeeds(string path, string expected)
     {
         var serviceProvider = CreateServiceProvider();
         var mediaTokenService = serviceProvider.GetRequiredService<IMediaTokenService>();
@@ -106,7 +106,7 @@ public class MediaTokenTests
     [Theory]
     [InlineData("/media/blog.jpg?v=version")]
     [InlineData("/media/blog.jpg")]
-    public void ShouldNotAddTokens(string path)
+    public void Not_AddTokens_Succeeds(string path)
     {
         var serviceProvider = CreateServiceProvider();
         var mediaTokenService = serviceProvider.GetRequiredService<IMediaTokenService>();
@@ -116,7 +116,7 @@ public class MediaTokenTests
     }
 
     [Fact]
-    public void ShouldGenerateConsistentToken()
+    public void Generate_ConsistentToken_Succeeds()
     {
         var sp1 = CreateServiceProvider();
         var sp2 = CreateServiceProvider();
@@ -130,7 +130,7 @@ public class MediaTokenTests
     }
 
     [Fact]
-    public void ShouldExcludeVersionFromTokenButPreserveItInPath()
+    public void Exclude_VersionFromTokenButPreserveItInPath_Succeeds()
     {
         var serviceProvider = CreateServiceProvider();
         var mediaTokenService = serviceProvider.GetRequiredService<IMediaTokenService>();

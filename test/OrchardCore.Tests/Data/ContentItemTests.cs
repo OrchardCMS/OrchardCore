@@ -10,7 +10,7 @@ namespace OrchardCore.Tests.Data;
 public class ContentItemTests
 {
     [Fact]
-    public void NullValueDateTimeFieldSerializationTest()
+    public void NullValueDateTimeFieldSerialization_Default_Succeeds()
     {
         // Arrange
         var jsonStr = """
@@ -33,7 +33,7 @@ public class ContentItemTests
     /// and <seealso cref="TimeSpanJsonConverter"/>
     /// </summary>
     [Fact]
-    public void JsonNode_WhenParseCalled_ConvertShortTimeFormatToTimeField()
+    public void JsonNode_ParseCalledConvertShortTimeFormatToTimeField_Succeeds()
     {
         // Arrange
         var jsonStr = """
@@ -74,7 +74,7 @@ public class ContentItemTests
     }
 
     [Fact]
-    public void JsonNode_WhenParseCalled_ThrowsJsonExceptionWithInvalidDateTime()
+    public void JsonNode_ParseCalledThrowsJsonExceptionWithInvalidDateTime_Succeeds()
     {
         // Arrange
         var jsonStr = """
@@ -98,7 +98,7 @@ public class ContentItemTests
     }
 
     [Fact]
-    public void ShouldSerializeContent()
+    public void Serialize_Content_Succeeds()
     {
         var contentItem = new ContentItem
         {
@@ -121,7 +121,7 @@ public class ContentItemTests
     }
 
     [Fact]
-    public void ShouldSerializeParts()
+    public void Serialize_Parts_Succeeds()
     {
         var contentItem = new ContentItem();
         var myPart = new MyPart { Text = "test" };
@@ -136,7 +136,7 @@ public class ContentItemTests
     }
 
     [Fact]
-    public void ShouldAlterPart()
+    public void Alter_Part_Succeeds()
     {
         var contentItem = CreateContentItemWithMyPart();
 
@@ -149,7 +149,7 @@ public class ContentItemTests
     }
 
     [Fact]
-    public void ContentShouldOnlyContainParts()
+    public void Content_Default_OnlyContainParts()
     {
         var contentItem = CreateContentItemWithMyPart();
 
@@ -159,7 +159,7 @@ public class ContentItemTests
     }
 
     [Fact]
-    public void ContentShouldStoreFields()
+    public void Content_Default_StoressFields()
     {
         var contentItem = CreateContentItemWithMyPart();
         contentItem.Alter<MyPart>(x =>
@@ -174,7 +174,7 @@ public class ContentItemTests
     }
 
     [Fact]
-    public void ContentShouldBeJsonPathQueryable()
+    public void Content_Default_BeJsonPathQueryable()
     {
         var contentItem = CreateContentItemWithMyPart();
         JsonNode contentItemJson = contentItem.Content;
@@ -196,7 +196,7 @@ public class ContentItemTests
     }
 
     [Fact]
-    public void RemovingPropertyShouldWork()
+    public void RemovingProperty_Default_Works()
     {
         var contentItem = new ContentItem();
         contentItem.GetOrCreate<MyPart>();
@@ -211,7 +211,7 @@ public class ContentItemTests
     }
 
     [Fact]
-    public void ContentShouldCanCallRemoveMethod()
+    public void Content_Default_CanCallRemoveMethod()
     {
         var contentItem = CreateContentItemWithMyPart();
         contentItem.Alter<MyPart>(x => x.Text = "test");
@@ -220,7 +220,7 @@ public class ContentItemTests
     }
 
     [Fact]
-    public void ShouldDeserializeContentField()
+    public void Deserialize_ContentField_Succeeds()
     {
         var contentItem = CreateContentItemWithMyPart();
         contentItem.Alter<MyPart>(x => x.Text = "test");
@@ -240,7 +240,7 @@ public class ContentItemTests
     }
 
     [Fact]
-    public void ContentShouldStoreDateTimeFields()
+    public void Content_Default_StoressDateTimeFields()
     {
         var contentItem = new ContentItem();
         contentItem.GetOrCreate<MyPart>();
@@ -257,7 +257,7 @@ public class ContentItemTests
     }
 
     [Fact]
-    public void ShouldDeserializeDateTimeFields()
+    public void Deserialize_DateTimeFields_Succeeds()
     {
         var contentItem = new ContentItem();
         contentItem.GetOrCreate<MyPart>();
@@ -278,7 +278,7 @@ public class ContentItemTests
     }
 
     [Fact]
-    public void ContentShouldStoreUtcDateTimeFields()
+    public void Content_Default_StoressUtcDateTimeFields()
     {
         var contentItem = new ContentItem();
         contentItem.GetOrCreate<MyPart>();
@@ -295,7 +295,7 @@ public class ContentItemTests
     }
 
     [Fact]
-    public void ShouldDeserializeUtcDateTimeFields()
+    public void Deserialize_UtcDateTimeFields_Succeeds()
     {
         var contentItem = new ContentItem();
         contentItem.GetOrCreate<MyPart>();
@@ -316,7 +316,7 @@ public class ContentItemTests
     }
 
     [Fact]
-    public void ShouldDeserializeTextFields()
+    public void Deserialize_TextFields_Succeeds()
     {
         var contentItem = new ContentItem();
         contentItem.GetOrCreate<MyPart>();

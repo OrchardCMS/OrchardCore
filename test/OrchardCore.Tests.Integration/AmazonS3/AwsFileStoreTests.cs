@@ -99,14 +99,14 @@ public sealed class AwsFileStoreTests : IAsyncLifetime
     // -- File operations --
 
     [DockerFact]
-    public async Task CreateFile_ReturnsPath()
+    public async Task CreateFile_Default_ReturnsPath()
     {
         var result = await CreateTestFileAsync("folder/file.txt");
         Assert.Equal("folder/file.txt", result);
     }
 
     [DockerFact]
-    public async Task GetFileInfo_ReturnsCorrectMetadata()
+    public async Task GetFileInfo_Default_ReturnsCorrectMetadata()
     {
         var content = "hello world";
         await CreateTestFileAsync("info-test.txt", content);
@@ -128,7 +128,7 @@ public sealed class AwsFileStoreTests : IAsyncLifetime
     }
 
     [DockerFact]
-    public async Task GetFileStream_ReturnsContent()
+    public async Task GetFileStream_Default_ReturnsContent()
     {
         var expected = "stream content test";
         await CreateTestFileAsync("stream-test.txt", expected);
@@ -139,7 +139,7 @@ public sealed class AwsFileStoreTests : IAsyncLifetime
     }
 
     [DockerFact]
-    public async Task DeleteFile_ReturnsTrue()
+    public async Task DeleteFile_Default_ReturnsTrue()
     {
         await CreateTestFileAsync("delete-me.txt");
 
@@ -150,7 +150,7 @@ public sealed class AwsFileStoreTests : IAsyncLifetime
     }
 
     [DockerFact]
-    public async Task CopyFile_CreatesNewFile()
+    public async Task CopyFile_Default_CreatesNewFile()
     {
         var content = "copy me";
         await CreateTestFileAsync("original.txt", content);
@@ -229,7 +229,7 @@ public sealed class AwsFileStoreTests : IAsyncLifetime
     }
 
     [DockerFact]
-    public async Task CreateDirectory_Succeeds()
+    public async Task CreateDirectory_Default_Succeeds()
     {
         var result = await _store.TryCreateDirectoryAsync("new-dir");
 
@@ -240,7 +240,7 @@ public sealed class AwsFileStoreTests : IAsyncLifetime
     }
 
     [DockerFact]
-    public async Task DeleteDirectory_WithContents_DeletesAll()
+    public async Task DeleteDirectory_Contents_DeletesAll()
     {
         await _store.TryCreateDirectoryAsync("dir-to-delete");
         await CreateTestFileAsync("dir-to-delete/file1.txt");
@@ -263,7 +263,7 @@ public sealed class AwsFileStoreTests : IAsyncLifetime
     // -- Move --
 
     [DockerFact]
-    public async Task MoveFile_MovesToNewPath()
+    public async Task MoveFile_Default_MovesToNewPath()
     {
         var content = "move me";
         await CreateTestFileAsync("src.txt", content);
@@ -275,7 +275,7 @@ public sealed class AwsFileStoreTests : IAsyncLifetime
     }
 
     [DockerFact]
-    public async Task MoveFile_AcrossDirectories()
+    public async Task MoveFile_AcrossDirectories_Succeeds()
     {
         await _store.TryCreateDirectoryAsync("dir-a");
         await _store.TryCreateDirectoryAsync("dir-b");
@@ -290,7 +290,7 @@ public sealed class AwsFileStoreTests : IAsyncLifetime
     // -- Directory content listing --
 
     [DockerFact]
-    public async Task GetDirectoryContent_ListsFilesAndDirs()
+    public async Task GetDirectoryContent_Default_ListsFilesAndDirs()
     {
         await CreateTestFileAsync("root-file.txt");
         await _store.TryCreateDirectoryAsync("sub-dir");

@@ -6,7 +6,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media;
 public class FileCreationServiceTests
 {
     [Fact]
-    public async Task CreateAsync_DisposesReplacementStream_WhenLaterHandlerThrows()
+    public async Task CreateAsyncDisposesReplacementStream_LaterHandlerThrows_Succeeds()
     {
         var originalStream = new TrackingStream();
         var replacementStream = new TrackingStream();
@@ -63,7 +63,7 @@ public class FileCreationServiceTests
     }
 
     [Fact]
-    public async Task CreateAsync_LeavesOriginalStreamOpen_WhenRequested()
+    public async Task CreateAsyncLeavesOriginalStreamOpen_Requested_Succeeds()
     {
         var originalStream = new TrackingStream();
         var service = new FileCreationService([]);

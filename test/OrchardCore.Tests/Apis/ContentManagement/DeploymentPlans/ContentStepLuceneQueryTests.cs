@@ -8,7 +8,7 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans;
 public class ContentStepLuceneQueryTests
 {
     [Fact]
-    public async Task ShouldUpdateLuceneIndexesOnImport()
+    public async Task Update_LuceneIndexesOnImport_Succeeds()
     {
         using var context = new BlogPostDeploymentContext();
 

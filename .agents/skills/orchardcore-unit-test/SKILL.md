@@ -30,7 +30,7 @@ OrchardCore uses **xUnit v3** (Microsoft Testing Platform — test projects are 
 
 ### Step 1: Add a test class
 
-Naming: `{Subject}Tests`; methods `{Action}Should{Result}` or `{Action}_{Condition}_{Result}`.
+Naming: `{Subject}Tests`; methods `{Action}_{Condition}_{ExpectedResult}`, for example `Write_WithinLimit_Succeeds`.
 
 ```csharp
 namespace OrchardCore.Json.Nodes.Test;
@@ -40,7 +40,7 @@ public class Base64Tests
     [Theory]
     [InlineData("YTw+OmE/", "a<>:a?")]
     [InlineData("SGVsbA==", "Hell")]
-    public void DecodeToStringTest(string source, string expected)
+    public void DecodeToString_ValidBase64_ReturnsDecodedString(string source, string expected)
     {
         Assert.Equal(expected, Base64.FromUTF8Base64String(source));
     }
@@ -83,7 +83,7 @@ var httpContext = new DefaultHttpContext
 public class BlogPostApiControllerTests
 {
     [Fact]
-    public async Task ShouldCreateDraftOfExistingContentItem()
+    public async Task CreateDraft_ExistingContentItem_CreatesDraft()
     {
         using var context = new SiteContext();
         await context.InitializeAsync();

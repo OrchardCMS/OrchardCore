@@ -49,7 +49,7 @@ public sealed class ImageSharpImageProcessingEngineTests
     }
 
     [Fact]
-    public async Task Process_CropMode_ProducesExactDimensions()
+    public async Task Process_CropMode_ProducessExactDimensions()
     {
         using var input = CreateTestPng(200, 100);
         var commands = new ImageProcessingCommands { Width = 60, Height = 60, ResizeMode = ResizeMode.Crop };
@@ -59,7 +59,7 @@ public sealed class ImageSharpImageProcessingEngineTests
     }
 
     [Fact]
-    public async Task Process_CropMode_WithFocalPoint_ProducesExactDimensions()
+    public async Task Process_CropModeWithFocalPoint_ProducessExactDimensions()
     {
         using var input = CreateTestPng(200, 100);
         var commands = new ImageProcessingCommands
@@ -76,7 +76,7 @@ public sealed class ImageSharpImageProcessingEngineTests
     }
 
     [Fact]
-    public async Task Process_StretchMode_ProducesExactDimensions()
+    public async Task Process_StretchMode_ProducessExactDimensions()
     {
         using var input = CreateTestPng(200, 100);
         var commands = new ImageProcessingCommands { Width = 100, Height = 80, ResizeMode = ResizeMode.Stretch };
@@ -86,7 +86,7 @@ public sealed class ImageSharpImageProcessingEngineTests
     }
 
     [Fact]
-    public async Task Process_PadMode_ProducesExactDimensions()
+    public async Task Process_PadMode_ProducessExactDimensions()
     {
         using var input = CreateTestPng(200, 100);
         var commands = new ImageProcessingCommands
@@ -160,7 +160,7 @@ public sealed class ImageSharpImageProcessingEngineTests
     }
 
     [Fact]
-    public async Task Process_AutoOrientDisabled_ProducesOutput()
+    public async Task Process_AutoOrientDisabled_ProducessOutput()
     {
         using var input = CreateTestPng(200, 100);
         var commands = new ImageProcessingCommands { Width = 100, ResizeMode = ResizeMode.Max, AutoOrient = false };
@@ -170,7 +170,7 @@ public sealed class ImageSharpImageProcessingEngineTests
     }
 
     [Fact]
-    public async Task Process_OutputIsNonEmpty()
+    public async Task Process_OutputIsNonEmpty_Succeeds()
     {
         using var input = CreateTestPng(100, 50);
         var commands = new ImageProcessingCommands { Width = 50, Format = Format.Png };

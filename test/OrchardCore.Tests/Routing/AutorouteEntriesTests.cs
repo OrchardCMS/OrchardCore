@@ -10,7 +10,7 @@ namespace OrchardCore.Tests.Routing;
 public class AutorouteEntriesTests
 {
     [Fact]
-    public async Task ShouldGetContainedEntryByPath()
+    public async Task Get_ContainedEntryByPath_Succeeds()
     {
         // Setup
         var shellContext = CreateShellContext();
@@ -44,7 +44,7 @@ public class AutorouteEntriesTests
     }
 
     [Fact]
-    public async Task ShouldGetEntryByContainedContentItemId()
+    public async Task Get_EntryByContainedContentItemId_Succeeds()
     {
         // Setup
         var shellContext = CreateShellContext();
@@ -78,7 +78,7 @@ public class AutorouteEntriesTests
     }
 
     [Fact]
-    public async Task RemovesContainedEntriesWhenContainerRemoved()
+    public async Task RemovesContainedEntries_ContainerRemoved_Succeeds()
     {
         // Setup
         var shellContext = CreateShellContext();
@@ -113,7 +113,7 @@ public class AutorouteEntriesTests
     }
 
     [Fact]
-    public async Task RemovesContainedEntriesWhenDeleted()
+    public async Task RemovesContainedEntries_Deleted_Succeeds()
     {
         // Setup
         var shellContext = CreateShellContext();
@@ -155,7 +155,7 @@ public class AutorouteEntriesTests
     }
 
     [Fact]
-    public async Task RemovesOldContainedPaths()
+    public async Task RemovesOldContainedPaths_Default_Succeeds()
     {
         // Setup
         var shellContext = CreateShellContext();
@@ -196,7 +196,7 @@ public class AutorouteEntriesTests
     }
 
     [Fact]
-    public async Task RemovesOldPaths()
+    public async Task RemovesOldPaths_Default_Succeeds()
     {
         // Setup
         var shellContext = CreateShellContext();

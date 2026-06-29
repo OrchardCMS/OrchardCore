@@ -5,7 +5,7 @@ namespace OrchardCore.Tests.DisplayManagement;
 public class AlternatesCollectionTests
 {
     [Fact]
-    public void Add_ShouldAddItem()
+    public void Add_Default_AddsItem()
     {
         var collection = new AlternatesCollection();
 
@@ -16,7 +16,7 @@ public class AlternatesCollectionTests
     }
 
     [Fact]
-    public void Add_ShouldIgnoreDuplicate()
+    public void Add_Default_IgnoresDuplicate()
     {
         var collection = new AlternatesCollection();
 
@@ -27,7 +27,7 @@ public class AlternatesCollectionTests
     }
 
     [Fact]
-    public void Add_ShouldPreserveInsertionOrder()
+    public void Add_Default_PreservesInsertionOrder()
     {
         var collection = new AlternatesCollection();
 
@@ -41,7 +41,7 @@ public class AlternatesCollectionTests
     }
 
     [Fact]
-    public void Add_ThrowsForNull()
+    public void Add_Default_ThrowsForNull()
     {
         var collection = new AlternatesCollection();
 
@@ -49,7 +49,7 @@ public class AlternatesCollectionTests
     }
 
     [Fact]
-    public void Remove_ShouldRemoveItem()
+    public void Remove_Default_RemovesItem()
     {
         var collection = new AlternatesCollection();
 
@@ -63,7 +63,7 @@ public class AlternatesCollectionTests
     }
 
     [Fact]
-    public void Remove_NonExistent_ShouldNotThrow()
+    public void Remove_NonExistent_DoesNotThrow()
     {
         var collection = new AlternatesCollection();
 
@@ -74,7 +74,7 @@ public class AlternatesCollectionTests
     }
 
     [Fact]
-    public void Remove_OnEmpty_ShouldNotThrow()
+    public void Remove_Empty_DoesNotThrow()
     {
         var collection = new AlternatesCollection();
 
@@ -84,7 +84,7 @@ public class AlternatesCollectionTests
     }
 
     [Fact]
-    public void Remove_ThrowsForNull()
+    public void Remove_Default_ThrowsForNull()
     {
         var collection = new AlternatesCollection();
 
@@ -92,7 +92,7 @@ public class AlternatesCollectionTests
     }
 
     [Fact]
-    public void Remove_PreservesOrderOfRemainingItems()
+    public void Remove_Default_PreservesOrderOfRemainingItems()
     {
         var collection = new AlternatesCollection();
 
@@ -107,7 +107,7 @@ public class AlternatesCollectionTests
     }
 
     [Fact]
-    public void Clear_ShouldRemoveAllItems()
+    public void Clear_Default_RemovesAllItems()
     {
         var collection = new AlternatesCollection();
 
@@ -120,7 +120,7 @@ public class AlternatesCollectionTests
     }
 
     [Fact]
-    public void Contains_ShouldFindItems()
+    public void Contains_Default_FindItems()
     {
         var collection = new AlternatesCollection();
 
@@ -131,7 +131,7 @@ public class AlternatesCollectionTests
     }
 
     [Fact]
-    public void Contains_ThrowsForNull()
+    public void Contains_Default_ThrowsForNull()
     {
         var collection = new AlternatesCollection();
 
@@ -139,7 +139,7 @@ public class AlternatesCollectionTests
     }
 
     [Fact]
-    public void Count_ShouldReflectCurrentState()
+    public void Count_Default_ReflectCurrentState()
     {
         var collection = new AlternatesCollection();
 
@@ -159,7 +159,7 @@ public class AlternatesCollectionTests
     }
 
     [Fact]
-    public void Last_ShouldReturnEmptyForEmptyCollection()
+    public void Last_Default_ReturnsEmptyForEmptyCollection()
     {
         var collection = new AlternatesCollection();
 
@@ -167,7 +167,7 @@ public class AlternatesCollectionTests
     }
 
     [Fact]
-    public void Last_ShouldReturnLastAddedItem()
+    public void Last_Default_ReturnsLastAddedItem()
     {
         var collection = new AlternatesCollection();
 
@@ -191,7 +191,7 @@ public class AlternatesCollectionTests
     }
 
     [Fact]
-    public void Indexer_ShouldReturnEmptyForOutOfRange()
+    public void Indexer_Default_ReturnsEmptyForOutOfRange()
     {
         var collection = new AlternatesCollection();
 
@@ -200,7 +200,7 @@ public class AlternatesCollectionTests
     }
 
     [Fact]
-    public void Indexer_ShouldReturnCorrectItems()
+    public void Indexer_Default_ReturnsCorrectItems()
     {
         var collection = new AlternatesCollection();
 
@@ -214,7 +214,7 @@ public class AlternatesCollectionTests
     }
 
     [Fact]
-    public void AddRangeArray_ShouldAddItems()
+    public void AddRangeArray_Default_AddsItems()
     {
         var collection = new AlternatesCollection();
         var array = new[] { "A", "B", "C" };
@@ -228,7 +228,7 @@ public class AlternatesCollectionTests
     }
 
     [Fact]
-    public void AddRangeArray_EmptyArray_ShouldBeIgnored()
+    public void AddRangeArray_EmptyArray_IsIgnored()
     {
         var collection = new AlternatesCollection();
 
@@ -238,7 +238,7 @@ public class AlternatesCollectionTests
     }
 
     [Fact]
-    public void AddRangeArray_WithDuplicates_ShouldIgnoreThem()
+    public void AddRangeArray_Duplicates_IgnoresThem()
     {
         var collection = new AlternatesCollection();
 
@@ -252,7 +252,7 @@ public class AlternatesCollectionTests
     }
 
     [Fact]
-    public void AddRangeEnumerable_ShouldAddItems()
+    public void AddRangeEnumerable_Default_AddsItems()
     {
         var collection = new AlternatesCollection();
         IEnumerable<string> items = new List<string> { "A", "B" };
@@ -265,7 +265,7 @@ public class AlternatesCollectionTests
     }
 
     [Fact]
-    public void AddRangeEnumerable_ShouldIgnoreDuplicates()
+    public void AddRangeEnumerable_Default_IgnoresDuplicates()
     {
         var collection = new AlternatesCollection();
 
@@ -276,7 +276,7 @@ public class AlternatesCollectionTests
     }
 
     [Fact]
-    public void AddRangeEnumerable_ThrowsForNull()
+    public void AddRangeEnumerable_Default_ThrowsForNull()
     {
         var collection = new AlternatesCollection();
 
@@ -284,7 +284,7 @@ public class AlternatesCollectionTests
     }
 
     [Fact]
-    public void AddRangeAlternatesCollection_ShouldCopyAll()
+    public void AddRangeAlternatesCollection_Default_CopyAll()
     {
         var source = new AlternatesCollection();
         source.Add("A");
@@ -301,7 +301,7 @@ public class AlternatesCollectionTests
     }
 
     [Fact]
-    public void AddRangeAlternatesCollection_ShouldIgnoreDuplicates()
+    public void AddRangeAlternatesCollection_Default_IgnoresDuplicates()
     {
         var source = new AlternatesCollection();
         source.Add("A");
@@ -319,7 +319,7 @@ public class AlternatesCollectionTests
     }
 
     [Fact]
-    public void AddRangeAlternatesCollection_ThrowsForNull()
+    public void AddRangeAlternatesCollection_Default_ThrowsForNull()
     {
         var collection = new AlternatesCollection();
 
@@ -327,7 +327,7 @@ public class AlternatesCollectionTests
     }
 
     [Fact]
-    public void Enumerate_ShouldMatchIndexer()
+    public void Enumerate_Default_MatchIndexer()
     {
         var collection = new AlternatesCollection();
 
@@ -346,7 +346,7 @@ public class AlternatesCollectionTests
     }
 
     [Fact]
-    public void Enumerate_EmptyCollection_ShouldYieldNothing()
+    public void Enumerate_EmptyCollection_YieldNothing()
     {
         var collection = new AlternatesCollection();
 
@@ -354,7 +354,7 @@ public class AlternatesCollectionTests
     }
 
     [Fact]
-    public void Enumerate_PreservesInsertionOrder()
+    public void Enumerate_Default_PreservesInsertionOrder()
     {
         var collection = new AlternatesCollection();
 
@@ -370,7 +370,7 @@ public class AlternatesCollectionTests
     }
 
     [Fact]
-    public void Constructor_WithParams_ShouldAddItems()
+    public void Constructor_Params_AddsItems()
     {
         var collection = new AlternatesCollection("A", "B", "C");
 
@@ -381,7 +381,7 @@ public class AlternatesCollectionTests
     }
 
     [Fact]
-    public void Constructor_WithDuplicateParams_ShouldDeduplicate()
+    public void Constructor_DuplicateParams_Deduplicate()
     {
         var collection = new AlternatesCollection("A", "B", "A");
 
@@ -391,7 +391,7 @@ public class AlternatesCollectionTests
     }
 
     [Fact]
-    public void Constructor_WithNullArray_DoesNotThrow()
+    public void Constructor_NullArray_DoesNotThrow()
     {
         var collection = new AlternatesCollection(null);
 
@@ -399,7 +399,7 @@ public class AlternatesCollectionTests
     }
 
     [Fact]
-    public void Empty_ShouldNotAllowMutation()
+    public void Empty_Default_NotAllowMutation()
     {
         Assert.Throws<NotSupportedException>(() => AlternatesCollection.Empty.Add("A"));
         Assert.Throws<NotSupportedException>(() => AlternatesCollection.Empty.AddRange(new[] { "A" }));
@@ -411,7 +411,7 @@ public class AlternatesCollectionTests
     }
 
     [Fact]
-    public void Empty_ShouldHaveZeroCount()
+    public void Empty_Default_HasZeroCount()
     {
         Assert.Equal(0, AlternatesCollection.Empty.Count);
         Assert.Equal("", AlternatesCollection.Empty.Last);
@@ -419,7 +419,7 @@ public class AlternatesCollectionTests
     }
 
     [Fact]
-    public void Empty_IsReadOnly()
+    public void Empty_Default_IsReadOnly()
     {
         var empty = AlternatesCollection.Empty;
 
@@ -429,7 +429,7 @@ public class AlternatesCollectionTests
     }
 
     [Fact]
-    public void Clear_ThenAdd_ShouldWork()
+    public void Clear_ThenAdd_Works()
     {
         var collection = new AlternatesCollection();
 
@@ -446,7 +446,7 @@ public class AlternatesCollectionTests
     }
 
     [Fact]
-    public void MixedOperations_MaintainConsistency()
+    public void MixedOperations_MaintainConsistency_Succeeds()
     {
         var collection = new AlternatesCollection();
 
@@ -473,7 +473,7 @@ public class AlternatesCollectionTests
     }
 
     [Fact]
-    public void Last_AfterClear_ShouldReturnEmpty()
+    public void Last_AfterClear_ReturnsEmpty()
     {
         var collection = new AlternatesCollection();
 
@@ -484,7 +484,7 @@ public class AlternatesCollectionTests
     }
 
     [Fact]
-    public void DuplicatesAcrossMultipleOperations_AreIgnored()
+    public void DuplicatesAcrossMultipleOperations_Default_AreIgnored()
     {
         var collection = new AlternatesCollection();
 
@@ -526,7 +526,7 @@ public class AlternatesCollectionTests
     }
 
     [Fact]
-    public void AddRange_PreservesOrderFromSourceCollection()
+    public void AddRange_Default_PreservesOrderFromSourceCollection()
     {
         var source = new AlternatesCollection();
         source.Add("Z");
