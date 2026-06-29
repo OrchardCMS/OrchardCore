@@ -159,7 +159,15 @@
         });
     }
 
-    document.addEventListener('DOMContentLoaded', function () {
+    function onDocumentReady(callback) {
+        if (document.readyState !== 'loading') {
+            callback();
+        } else {
+            document.addEventListener('DOMContentLoaded', callback);
+        }
+    }
+
+    onDocumentReady(function () {
         var modalSteps = document.getElementById('modalSteps');
         var searchBox = document.getElementById('search-box');
         var deploymentStepCategories = document.getElementById('deployment-step-categories');

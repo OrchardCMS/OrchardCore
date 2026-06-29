@@ -16,7 +16,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.RateLimits;
 public class RateLimiterOptionsConfigurationsTests
 {
     [Fact]
-    public async Task ShouldApplyCustomRouteLimitForMatchingRouteNameAndMethod()
+    public async Task Apply_CustomRouteLimitForMatchingRouteNameAndMethod_Succeeds()
     {
         var cancellationToken = TestContext.Current.CancellationToken;
         var rateLimitsOptions = new RateLimitsOptions();
@@ -32,7 +32,7 @@ public class RateLimiterOptionsConfigurationsTests
     }
 
     [Fact]
-    public async Task ShouldOnlyApplyCustomRouteLimitToMatchingHttpMethods()
+    public async Task Only_ApplyCustomRouteLimitToMatchingHttpMethods_Succeeds()
     {
         var cancellationToken = TestContext.Current.CancellationToken;
         var rateLimitsOptions = new RateLimitsOptions();
@@ -53,7 +53,7 @@ public class RateLimiterOptionsConfigurationsTests
     }
 
     [Fact]
-    public async Task ShouldApplyCustomRouteLimitToEndpointNameMetadata()
+    public async Task Apply_CustomRouteLimitToEndpointNameMetadata_Succeeds()
     {
         var cancellationToken = TestContext.Current.CancellationToken;
         var rateLimitsOptions = new RateLimitsOptions();
@@ -69,7 +69,7 @@ public class RateLimiterOptionsConfigurationsTests
     }
 
     [Fact]
-    public async Task ShouldApplyCustomGroupLimitToMatchingEndpointGroup()
+    public async Task Apply_CustomGroupLimitToMatchingEndpointGroup_Succeeds()
     {
         var cancellationToken = TestContext.Current.CancellationToken;
         var rateLimitsOptions = new RateLimitsOptions();
@@ -87,7 +87,7 @@ public class RateLimiterOptionsConfigurationsTests
     }
 
     [Fact]
-    public async Task ShouldApplyEnabledGlobalPolicy()
+    public async Task Apply_EnabledGlobalPolicy_Succeeds()
     {
         var cancellationToken = TestContext.Current.CancellationToken;
 
@@ -106,7 +106,7 @@ public class RateLimiterOptionsConfigurationsTests
     }
 
     [Fact]
-    public async Task ShouldIgnoreDisabledPolicies()
+    public async Task Ignore_DisabledPolicies_Succeeds()
     {
         var cancellationToken = TestContext.Current.CancellationToken;
         var disabledPolicy = CreateGlobalFixedWindowPolicy("Disabled", 1, 60);
@@ -123,7 +123,7 @@ public class RateLimiterOptionsConfigurationsTests
     }
 
     [Fact]
-    public async Task ShouldApplyEnabledFixedWindowEndpointPolicy()
+    public async Task Apply_EnabledEndpointPolicy_Succeeds()
     {
         var cancellationToken = TestContext.Current.CancellationToken;
         var policy = CreateGlobalFixedWindowPolicy("Api", 1, 60);
@@ -144,7 +144,7 @@ public class RateLimiterOptionsConfigurationsTests
     }
 
     [Fact]
-    public async Task ShouldApplyEnabledSlidingWindowEndpointPolicy()
+    public async Task Apply_EnabledSlidingWindowEndpointPolicy_Succeeds()
     {
         var cancellationToken = TestContext.Current.CancellationToken;
         var policy = CreateEndpointSlidingWindowPolicy("Health", "/health/live", 10, 59, 1);
@@ -161,7 +161,7 @@ public class RateLimiterOptionsConfigurationsTests
     }
 
     [Fact]
-    public async Task ShouldApplyEnabledTokenBucketEndpointPolicy()
+    public async Task Apply_EnabledTokenBucketEndpointPolicy_Succeeds()
     {
         var cancellationToken = TestContext.Current.CancellationToken;
         var policy = CreateEndpointTokenBucketPolicy("ApiBurst", "/api", 1, 1, 60);
@@ -177,7 +177,7 @@ public class RateLimiterOptionsConfigurationsTests
     }
 
     [Fact]
-    public async Task ShouldApplyEnabledConcurrencyEndpointPolicy()
+    public async Task Apply_EnabledConcurrencyEndpointPolicy_Succeeds()
     {
         var cancellationToken = TestContext.Current.CancellationToken;
         var policy = CreateEndpointConcurrencyPolicy("ExpensiveApi", "/api/expensive", 1);
@@ -193,7 +193,7 @@ public class RateLimiterOptionsConfigurationsTests
     }
 
     [Fact]
-    public async Task ShouldApplyEnabledGroupPolicyToAnyMatchingGroup()
+    public async Task Apply_EnabledGroupPolicyToAnyMatchingGroup_Succeeds()
     {
         var cancellationToken = TestContext.Current.CancellationToken;
         var policy = CreateGlobalFixedWindowPolicy("Authentication", 1, 60);
@@ -212,7 +212,7 @@ public class RateLimiterOptionsConfigurationsTests
     }
 
     [Fact]
-    public async Task ShouldHandleEnabledPoliciesWithStringifiedNumericLimiterValues()
+    public async Task Handle_EnabledPoliciesWithStringifiedNumericLimiterValues_Succeeds()
     {
         var cancellationToken = TestContext.Current.CancellationToken;
         var limiter = new RateLimitLimiter

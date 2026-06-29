@@ -13,7 +13,7 @@ public sealed class AdminNavigationTests : CmsTestBase<BlogFixture>, IClassFixtu
     public AdminNavigationTests(BlogFixture fixture) : base(fixture) { }
 
     [Fact]
-    public async Task AdminNavigationShouldNotUseAdminQueryParameter()
+    public async Task AdminNavigation_Default_NotUseAdminQueryParameter()
     {
         var page = await Fixture.CreatePageAsync();
         await page.LoginAsync();
@@ -38,7 +38,7 @@ public sealed class AdminNavigationTests : CmsTestBase<BlogFixture>, IClassFixtu
     }
 
     [Fact]
-    public async Task AdminRootShouldNotKeepPreviousMenuItemActive()
+    public async Task AdminRoot_Default_NotKeepPreviousMenuItemActive()
     {
         var page = await Fixture.CreatePageAsync();
         await page.LoginAsync();

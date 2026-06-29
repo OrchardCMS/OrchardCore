@@ -9,7 +9,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Lucene;
 public partial class BooleanQueryProviderTests
 {
     [Fact]
-    public void BoolQueryFilterAsArrayDoesNotThrow()
+    public void BoolQueryFilterAsArrayDoesNotThrow_Default_Succeeds()
     {
         var arrayFilter = JsonNode.Parse("""
         {
@@ -23,7 +23,7 @@ public partial class BooleanQueryProviderTests
     }
 
     [Fact]
-    public void BoolQueryFilterAsObjectDoesNotThrow()
+    public void BoolQueryFilterAsObjectDoesNotThrow_Default_Succeeds()
     {
         var objectFilter = JsonNode.Parse("""
         {

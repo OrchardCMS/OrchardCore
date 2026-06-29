@@ -12,7 +12,7 @@ public class RssFeedTests
     [Theory]
     [InlineData("rss")]
     [InlineData("non rss")]
-    public async Task AvoidDoubleEncodeCDATA(string format)
+    public async Task AvoidDoubleEncodeCDATA_Default_Succeeds(string format)
     {
         // Arrange
         var contentManagerMock = new Mock<IContentManager>();
@@ -48,7 +48,7 @@ public class RssFeedTests
     [Theory]
     [InlineData("rss")]
     [InlineData("non rss")]
-    public async Task ShouldOnlyHtmlEntityEscapeFeedTitle(string format)
+    public async Task Only_HtmlEntityEscapeFeedTitle_Succeeds(string format)
     {
         // Arrange
         var contentManagerMock = new Mock<IContentManager>();

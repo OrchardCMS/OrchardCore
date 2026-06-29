@@ -10,7 +10,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Users;
 public class ResetPasswordControllerTests
 {
     [Fact]
-    public async Task ForgotPassword_WhenRateLimitExceeded_ReturnsTooManyRequests()
+    public async Task ForgotPassword_RateLimitExceededReturnsTooManyRequests_Succeeds()
     {
         // Arrange
         var context = await GetSiteContextAsync();

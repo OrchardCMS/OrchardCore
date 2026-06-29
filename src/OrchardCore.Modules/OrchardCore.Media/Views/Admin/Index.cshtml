@@ -7,7 +7,15 @@
 
 <script at="Foot">
     @* mediaApp is absolutely positioned. When a warning is shown we need to move it down to avoid overlapping. *@
-    document.addEventListener('DOMContentLoaded', function () {
+    function onDocumentReady(callback) {
+        if (document.readyState !== 'loading') {
+            callback();
+        } else {
+            document.addEventListener('DOMContentLoaded', callback);
+        }
+    }
+
+    onDocumentReady(function () {
         var messages = document.querySelectorAll('.message');
         if (!messages.length) { return; };
         var mediaAppInitialTop = 0;

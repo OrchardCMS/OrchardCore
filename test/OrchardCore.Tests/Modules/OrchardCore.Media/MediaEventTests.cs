@@ -5,7 +5,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media;
 public class MediaEventTests
 {
     [Fact]
-    public async Task DisposesMediaCreatingStreams()
+    public async Task DisposesMediaCreatingStreams_Default_Succeeds()
     {
         var streams = new List<Stream>();
         var creatingEventHandlers = new List<IMediaCreatingEventHandler>()

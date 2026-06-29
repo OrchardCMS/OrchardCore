@@ -14,7 +14,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Users;
 public class AccountControllerTests
 {
     [Fact]
-    public async Task ExternalLoginSignIn_Test()
+    public async Task ExternalLoginSignIn_Default_Succeeds()
     {
         // Arrange
         var context = await GetSiteContextAsync(new RegistrationSettings(), true, true, true);
@@ -162,7 +162,7 @@ public class AccountControllerTests
     }
 
     [Fact]
-    public async Task Register_WhenAllowed_RegisterUser()
+    public async Task Register_AllowedRegisterUser_Succeeds()
     {
         // Arrange
         var context = await GetSiteContextAsync(new RegistrationSettings());
@@ -198,7 +198,7 @@ public class AccountControllerTests
     }
 
     [Fact]
-    public async Task Register_WhenNotAllowed_ReturnNotFound()
+    public async Task Register_NotAllowedReturnNotFound_Succeeds()
     {
         // Arrange
         var context = await GetSiteContextAsync(new RegistrationSettings(), false);
@@ -211,7 +211,7 @@ public class AccountControllerTests
     }
 
     [Fact]
-    public async Task Register_WhenFeatureIsNotEnable_ReturnNotFound()
+    public async Task Register_FeatureIsNotEnableReturnNotFound_Succeeds()
     {
         // Arrange
         var context = await GetSiteContextAsync(new RegistrationSettings(), enableRegistrationFeature: false);
@@ -224,7 +224,7 @@ public class AccountControllerTests
     }
 
     [Fact]
-    public async Task Register_WhenRequireUniqueEmailIsTrue_PreventRegisteringMultipleUsersWithTheSameEmails()
+    public async Task Register_RequireUniqueEmailIsTruePreventRegisteringMultipleUsersWithTheSameEmails_Succeeds()
     {
         // Arrange
         var context = await GetSiteContextAsync(new RegistrationSettings());
@@ -268,7 +268,7 @@ public class AccountControllerTests
     }
 
     [Fact]
-    public async Task Register_WhenRequireUniqueEmailIsFalse_AllowRegisteringMultipleUsersWithTheSameEmails()
+    public async Task Register_RequireUniqueEmailIsFalseAllowRegisteringMultipleUsersWithTheSameEmails_Succeeds()
     {
         // Arrange
         var context = await GetSiteContextAsync(new RegistrationSettings(), enableRegistrationFeature: true, requireUniqueEmail: false);
@@ -314,7 +314,7 @@ public class AccountControllerTests
     }
 
     [Fact]
-    public async Task Register_WhenModeration_RedirectToRegistrationPending()
+    public async Task Register_ModerationRedirectToRegistrationPending_Succeeds()
     {
         // Arrange
         var context = await GetSiteContextAsync(new RegistrationSettings()
@@ -354,7 +354,7 @@ public class AccountControllerTests
     }
 
     [Fact]
-    public async Task Register_WhenRequireEmailConfirmation_RedirectToConfirmEmailSent()
+    public async Task Register_RequireEmailConfirmationRedirectToConfirmEmailSent_Succeeds()
     {
         // Arrange
         var context = await GetSiteContextAsync(new RegistrationSettings
@@ -396,7 +396,7 @@ public class AccountControllerTests
     }
 
     [Fact]
-    public async Task Login_WhenUserIsDisabled_RedirectsToLoginWithError()
+    public async Task Login_UserIsDisabledRedirectsToLoginWithError_Succeeds()
     {
         // Arrange
         var context = await GetSiteContextAsync(new RegistrationSettings());
@@ -440,7 +440,7 @@ public class AccountControllerTests
     }
 
     [Fact]
-    public async Task Login_WhenUserIsEnabled_Succeeds()
+    public async Task Login_UserIsEnabledSucceeds_Succeeds()
     {
         // Arrange
         var context = await GetSiteContextAsync(new RegistrationSettings());
@@ -474,7 +474,7 @@ public class AccountControllerTests
     }
 
     [Fact]
-    public async Task Register_WhenRateLimitExceeded_ReturnsTooManyRequests()
+    public async Task Register_RateLimitExceededReturnsTooManyRequests_Succeeds()
     {
         // Arrange
         var context = await GetSiteContextAsync(new RegistrationSettings(), enableRateLimits: true);
@@ -503,7 +503,7 @@ public class AccountControllerTests
     }
 
     [Fact]
-    public async Task Login_WhenUsernameIsInvalid_ReturnsGenericError()
+    public async Task Login_UsernameIsInvalidReturnsGenericError_Succeeds()
     {
         // Arrange
         var context = await GetSiteContextAsync(new RegistrationSettings());
@@ -524,7 +524,7 @@ public class AccountControllerTests
     }
 
     [Fact]
-    public async Task Login_WhenRateLimitExceeded_ReturnsTooManyRequests()
+    public async Task Login_RateLimitExceededReturnsTooManyRequests_Succeeds()
     {
         // Arrange
         var context = await GetSiteContextAsync(new RegistrationSettings(), enableRateLimits: true);
@@ -545,7 +545,7 @@ public class AccountControllerTests
     }
 
     [Fact]
-    public async Task Login_WhenUserDisabledUnderModeration_DefersToModerationHandler()
+    public async Task Login_UserDisabledUnderModerationDefersToModerationHandler_Succeeds()
     {
         // Arrange
         var context = await GetSiteContextAsync(new RegistrationSettings()

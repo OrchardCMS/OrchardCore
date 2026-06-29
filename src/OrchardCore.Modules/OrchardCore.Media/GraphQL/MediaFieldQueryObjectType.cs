@@ -125,7 +125,7 @@ public sealed class MediaFileItemType : ObjectGraphType<MediaFileItem>
             .Argument<IntGraphType>("height", arg => arg.Description = S["the height of the image"])
             .Argument<StringGraphType>("mode", arg => arg.Description = S["the resize mode (pad, boxpad, max, min, stretch)"])
             .Argument<IntGraphType>("quality", arg => arg.Description = S["the quality of the image (1-100)"])
-            .Argument<StringGraphType>("format", arg => arg.Description = S["the format of the image (png, jpg, gif, bmp, webp)"])
+            .Argument<StringGraphType>("format", arg => arg.Description = S["the format of the image (jpg, png, gif, webp)"])
             .Argument<StringGraphType>("bgcolor", arg => arg.Description = S["the background color of the image"])
             .Argument<BooleanGraphType>("autoorient", arg => arg.Description = S["auto-orient the image based on EXIF data (defaults to true)"])
             .ResolveAsync(async x =>

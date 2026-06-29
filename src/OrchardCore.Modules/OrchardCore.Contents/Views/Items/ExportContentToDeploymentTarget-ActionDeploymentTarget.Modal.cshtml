@@ -43,7 +43,15 @@
     </zone>
 
     <script at="Foot">
-        document.addEventListener('DOMContentLoaded', function () {
+        function onDocumentReady(callback) {
+            if (document.readyState !== 'loading') {
+                callback();
+            } else {
+                document.addEventListener('DOMContentLoaded', callback);
+            }
+        }
+
+        onDocumentReady(function () {
             var modal = document.getElementById('modalExportContentToDeploymentTargetActionTarget');
             modal?.addEventListener('show.bs.modal', function (event) {
                 var button = event.relatedTarget;

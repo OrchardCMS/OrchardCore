@@ -262,7 +262,15 @@
 <script at="Foot" asp-name="credential-helpers"></script>
 <script at="Foot" depends-on="credential-helpers">
 
-    document.addEventListener('DOMContentLoaded', () => {
+    function onDocumentReady(callback) {
+        if (document.readyState !== 'loading') {
+            callback();
+        } else {
+            document.addEventListener('DOMContentLoaded', callback);
+        }
+    }
+
+    onDocumentReady(() => {
 
         const clientIdElement = document.getElementById('@Html.IdFor(m => m.ClientId)');
         const clientSecretElement = document.getElementById('@Html.IdFor(m => m.ClientSecret)');
