@@ -64,6 +64,32 @@ public sealed class EtlExecutionContext
     /// </summary>
     public IAsyncEnumerable<JsonObject> DataStream { get; set; }
 
+    /// <summary>
+    /// Gets the total number of records that flowed through the pipeline's load activities.
+    /// </summary>
+    public int RecordsProcessed { get; private set; }
+
+    /// <summary>
+    /// Gets the total number of records successfully written to a destination.
+    /// </summary>
+    public int RecordsLoaded { get; private set; }
+
+    /// <summary>
+    /// Increments the number of records processed by a load activity.
+    /// </summary>
+    public void IncrementRecordsProcessed(int count)
+    {
+        RecordsProcessed += count;
+    }
+
+    /// <summary>
+    /// Increments the number of records successfully written to a destination.
+    /// </summary>
+    public void IncrementRecordsLoaded(int count)
+    {
+        RecordsLoaded += count;
+    }
+
     public EtlExecutionContext Clone()
     {
         var clone = new EtlExecutionContext(Pipeline, ActivityLibrary, ServiceProvider, Logger, CancellationToken);

@@ -1,0 +1,13 @@
+@model QuerySourceViewModel
+
+<div class="mb-3">
+    <label asp-for="QueryName" class="form-label">@T["Query Name"]</label>
+    <input asp-for="QueryName" class="form-control" />
+    <span class="hint">@T["The technical name of an existing query (provided by the Queries feature) to execute, for example a SQL, Lucene, or Elasticsearch query."]</span>
+</div>
+
+<div class="mb-3">
+    <label asp-for="ParametersJson" class="form-label">@T["Parameters"]</label>
+    <textarea asp-for="ParametersJson" rows="4" class="form-control" placeholder='{ "size": 50 }'></textarea>
+    <span class="hint">@T["Optional JSON object of parameters passed to the query."]</span>
+</div>

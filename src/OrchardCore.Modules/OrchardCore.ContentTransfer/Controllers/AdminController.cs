@@ -269,7 +269,7 @@ public sealed class AdminController : Controller, IUpdateModel
                 CreatedUtc = _clock.UtcNow,
             };
 
-            _session.Save(entry);
+            await _session.SaveAsync(entry);
             await _session.SaveChangesAsync();
             await TriggerImportProcessingAsync(entry.EntryId);
 
@@ -511,7 +511,7 @@ public sealed class AdminController : Controller, IUpdateModel
                 });
             }
 
-            _session.Save(entry);
+            await _session.SaveAsync(entry);
             await _session.SaveChangesAsync();
             await TriggerExportProcessingAsync(entry.EntryId);
 
@@ -737,7 +737,7 @@ public sealed class AdminController : Controller, IUpdateModel
         entry.ProcessSaveUtc = _clock.UtcNow;
         entry.CompletedUtc = _clock.UtcNow;
 
-        _session.Save(entry);
+        await _session.SaveAsync(entry);
         await _session.SaveChangesAsync();
 
         await _notifier.SuccessAsync(importedCount > 0

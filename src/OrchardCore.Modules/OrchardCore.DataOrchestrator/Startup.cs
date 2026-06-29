@@ -5,6 +5,7 @@ using OrchardCore.Data.Migration;
 using OrchardCore.DataOrchestrator.Activities;
 using OrchardCore.DataOrchestrator.BackgroundTasks;
 using OrchardCore.DataOrchestrator.Drivers;
+using OrchardCore.DataOrchestrator.Exporting;
 using OrchardCore.DataOrchestrator.Helpers;
 using OrchardCore.DataOrchestrator.Indexes;
 using OrchardCore.DataOrchestrator.Migrations;
@@ -24,6 +25,7 @@ public sealed class Startup : StartupBase
         services.AddScoped<IEtlPipelineExecutor, EtlPipelineExecutor>();
         services.AddScoped<IEtlPipelineService, EtlPipelineService>();
         services.AddScoped<IEtlActivityDisplayManager, EtlActivityDisplayManager>();
+        services.AddScoped<IEtlExportFormatProvider, EtlExportFormatProvider>();
 
         // Data persistence.
         services.AddDataMigration<DataOrchestratorIndexMigrations>();
@@ -40,10 +42,16 @@ public sealed class Startup : StartupBase
         // Resource management.
         services.AddResourceConfiguration<ResourceManagementOptionsConfiguration>();
 
+        // Built-in export formats (shared by every file-based destination).
+        services.AddEtlExportFormat<JsonExportFormat>();
+        services.AddEtlExportFormat<CsvExportFormat>();
+        services.AddEtlExportFormat<ExcelExportFormat>();
+
         // Built-in source activities.
         services.AddEtlActivity<ContentItemSource, ContentItemSourceDisplayDriver>();
         services.AddEtlActivity<ExcelSource, ExcelSourceDisplayDriver>();
         services.AddEtlActivity<JsonSource, JsonSourceDisplayDriver>();
+        services.AddEtlActivity<QuerySource, QuerySourceDisplayDriver>();
 
         // Built-in transform activities.
         services.AddEtlActivity<FieldMappingTransform, FieldMappingTransformDisplayDriver>();
@@ -51,9 +59,9 @@ public sealed class Startup : StartupBase
         services.AddEtlActivity<FormatValueTransform, FormatValueTransformDisplayDriver>();
         services.AddEtlActivity<JoinDataSetsTransform, JoinDataSetsTransformDisplayDriver>();
 
-        // Built-in load activities.
-        services.AddEtlActivity<ExcelExportLoad, ExcelExportLoadDisplayDriver>();
-        services.AddEtlActivity<JsonExportLoad, JsonExportLoadDisplayDriver>();
+        // Built-in load activities (destinations).
+        services.AddEtlActivity<MediaFolderExportLoad, MediaFolderExportLoadDisplayDriver>();
+        services.AddEtlActivity<FtpExportLoad, FtpExportLoadDisplayDriver>();
         services.AddEtlActivity<ContentItemLoad, ContentItemLoadDisplayDriver>();
     }
 }

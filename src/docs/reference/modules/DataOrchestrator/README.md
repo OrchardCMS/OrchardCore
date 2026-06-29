@@ -71,63 +71,101 @@ Extracts content items from the Orchard Core content store.
 
 | Setting | Description |
 |---------|-------------|
-| Content Type | The content type to query (e.g., `Article`, `BlogPost`). |
-| Query | Optional Lucene/Elasticsearch query string to filter items. |
-| Max Items | Maximum number of items to extract (0 = unlimited). |
+| Content Type | The content type to extract (e.g., `Article`, `BlogPost`). |
+| Version Scope | `Published`, `Latest`, or `All Versions`. |
+| Owner | Optional owner username filter. |
+| Created From / To (UTC) | Optional creation date range filter. |
+
+#### Query Source
+
+Executes a named query registered by the **Queries** feature (SQL, Lucene, or Elasticsearch) and streams its results as records.
+
+| Setting | Description |
+|---------|-------------|
+| Query Name | The technical name of an existing query to run. |
+| Parameters | Optional JSON object of parameters passed to the query. |
+
+This activity uses the `IQueryManager` service. When the Queries feature is not enabled, or no query with the given name exists, the source yields no records.
+
+#### Excel Workbook Source
+
+Reads rows from an `.xlsx` file stored in the media library.
+
+| Setting | Description |
+|---------|-------------|
+| Excel File Path | The media path to the workbook (e.g., `imports/products.xlsx`). |
+| Worksheet Name | The worksheet to read. Leave empty for the first one. |
+| First row contains headers | Whether to use the first row as column names. |
 
 #### JSON Source
 
-Reads data from a JSON string or file.
+Reads records from a JSON array provided inline.
 
 | Setting | Description |
 |---------|-------------|
-| JSON Data | Raw JSON array or object to use as input. |
-| Source Path | JSONPath expression to select data within the JSON structure. |
+| JSON Data | A JSON array of objects to use as input. |
 
 ### Transforms
 
-#### Field Mapping Transform
+#### Field Mapping
 
-Maps fields from the source schema to a target schema using JSONPath or Liquid expressions.
-
-| Setting | Description |
-|---------|-------------|
-| Mappings | A JSON object mapping target field names to source expressions. |
-
-Example mappings:
-
-```json
-{
-    "Title": "$.ContentItem.DisplayText",
-    "Author": "$.ContentItem.Owner",
-    "PublishedDate": "{{ ContentItem.PublishedUtc | date: '%Y-%m-%d' }}"
-}
-```
-
-#### Filter Transform
-
-Filters records based on a condition expression.
+Selects and renames fields using `source.path` → `target` mappings, producing a reshaped record that contains only the mapped fields.
 
 | Setting | Description |
 |---------|-------------|
-| Expression | A Liquid expression that evaluates to `true` or `false`. |
+| Mappings | A JSON array of `{ "source": "from.path", "target": "ToField" }` entries. |
 
-Example expression:
+#### Filter
 
-```liquid
-{{ Record.Status == "Published" }}
-```
-
-### Loads
-
-#### JSON Export Load
-
-Exports data as a JSON file.
+Keeps only the records that match a field condition.
 
 | Setting | Description |
 |---------|-------------|
-| File Path | The output file path (relative to the tenant's data folder). |
-| Format | `Array` (default) or `Lines` (JSON Lines format). |
+| Field | The (dotted) field path to evaluate. |
+| Operator | `equals`, `not_equals`, `contains`, `starts_with`, `greater_than`, `is_empty`, ... |
+| Value | The value to compare against. |
+
+#### Format Value
+
+Formats or converts a field value (currency, number, date/time, UTC-to-time-zone conversion, upper/lower case) and writes it back to the record.
+
+| Setting | Description |
+|---------|-------------|
+| Field / Output Field | The source field and the field the formatted value is written to. |
+| Format Type | `Currency`, `Number`, `DateTime`, `ConvertUtcToTimeZone`, `Uppercase`, `Lowercase`. |
+| Format String / Culture / Time Zone | Optional format options. |
+
+#### Join Data Sets
+
+Merges the current data stream with a second data set on a key field.
+
+### Loads (Destinations)
+
+Load activities are the pipeline's destinations. File-based destinations share a common set of **export formats** (see [Export Formats](#export-formats)), so you choose *where* to write independently from *how* the data is serialized.
+
+#### Media Folder Export
+
+Writes the serialized data to a file in the tenant's media library.
+
+| Setting | Description |
+|---------|-------------|
+| Format | `JSON`, `CSV`, or `Excel Workbook`. |
+| File Name | The media path the file is written to (e.g., `exports/output.json`). |
+
+#### FTP / FTPS Export
+
+Uploads the serialized data to an FTP or FTPS server.
+
+| Setting | Description |
+|---------|-------------|
+| Host / Port | The FTP server address. |
+| User Name / Password | Credentials used to authenticate. |
+| Remote Directory | The target directory (created when missing). |
+| Security | `Auto`, `Explicit FTPS`, `Implicit FTPS`, or `None`. |
+| Format | `JSON`, `CSV`, or `Excel Workbook`. |
+| File Name | The name of the uploaded file. |
+| Passive mode | Recommended when the client is behind a firewall/NAT. |
+| Accept any TLS certificate | Allow self-signed certificates. |
 
 #### Content Item Load
 
@@ -135,9 +173,19 @@ Creates or updates content items in the Orchard Core content store.
 
 | Setting | Description |
 |---------|-------------|
-| Content Type | The content type to create. |
-| Owner | The owner to assign to created items. |
-| Published | Whether to publish items immediately. |
+| Content Type | The content type to create or update. |
+
+### Export Formats
+
+File-based destinations serialize records using a registered **export format**. The following formats are built in:
+
+| Format | Extension | Description |
+|--------|-----------|-------------|
+| JSON | `.json` | An indented JSON array of records. |
+| CSV | `.csv` | A comma-separated file; the header is the union of every record's fields. |
+| Excel Workbook | `.xlsx` | A single-worksheet workbook. |
+
+Formats are extensible — see [Extending the ETL Module](#extending-the-etl-module).
 
 ## Pipeline Parameters
 
@@ -191,24 +239,26 @@ Pipelines with parameters can be executed on demand, prompting the user to provi
 Each pipeline execution is logged with:
 
 - **Start/End time** — When the pipeline started and finished.
-- **Status** — `Running`, `Completed`, or `Failed`.
-- **Records Processed** — Number of records that flowed through the pipeline.
+- **Status** — `Running`, `Success`, `Failed`, or `Cancelled`.
+- **Records Processed / Loaded** — Number of records that flowed through the pipeline and that were written to a destination.
 - **Errors** — Any errors encountered during execution, with details.
 
 View logs from the **Logs** link on the pipeline list page.
 
 ## Extending the ETL Module
 
-The ETL module is designed to be extensible. Developers can add custom sources, transforms, and loads by implementing activity classes and registering them in their module's `Startup.cs`.
+The ETL module is designed to be extended at three levels: **sources**, **destinations**, and **export formats**. Each is registered from a module's `Startup.cs`.
 
 ### Creating a Custom Source
+
+Derive from `EtlSourceActivity`, set `context.DataStream`, and return an outcome:
 
 ```csharp
 public sealed class SqlServerSource : EtlSourceActivity
 {
     public override string Name => nameof(SqlServerSource);
-    public override LocalizedString DisplayText => S["SQL Server Source"];
-    public override LocalizedString Category => S["Sources"];
+
+    public override string DisplayText => "SQL Server";
 
     public string ConnectionString
     {
@@ -222,19 +272,68 @@ public sealed class SqlServerSource : EtlSourceActivity
         set => SetProperty(value);
     }
 
-    public override IEnumerable<EtlOutcome> GetPossibleOutcomes(
-        IStringLocalizer localizer)
+    public override IEnumerable<EtlOutcome> GetPossibleOutcomes()
     {
-        return Outcomes(localizer["Done"]);
+        return [new EtlOutcome("Done")];
     }
 
-    public override async Task<EtlActivityResult> ExecuteAsync(
-        EtlExecutionContext context)
+    public override Task<EtlActivityResult> ExecuteAsync(EtlExecutionContext context)
     {
-        // Implementation: query SQL Server and yield records
-        var records = QuerySqlServerAsync(ConnectionString, Query);
-        context.DataStream = records;
-        return EtlActivityResult.Success(["Done"]);
+        // Implementation: query SQL Server and stream the rows as records.
+        context.DataStream = QuerySqlServerAsync(ConnectionString, Query, context.CancellationToken);
+
+        return Task.FromResult(Outcomes("Done"));
+    }
+}
+```
+
+The base `Category` (`Sources`, `Transforms`, or `Loads`) is provided by the `EtlSourceActivity`, `EtlTransformActivity`, and `EtlLoadActivity` base classes.
+
+### Creating a Custom Destination
+
+A destination is a load activity. Derive from `EtlFileExportLoad` to reuse the built-in export formats (JSON/CSV/Excel) and only implement where the file is written:
+
+```csharp
+public sealed class S3ExportLoad : EtlFileExportLoad
+{
+    public override string Name => nameof(S3ExportLoad);
+
+    public override string DisplayText => "Amazon S3";
+
+    public string Bucket
+    {
+        get => GetProperty<string>();
+        set => SetProperty(value);
+    }
+
+    protected override async Task WriteToDestinationAsync(
+        EtlExecutionContext context, string fileName, Stream content, IEtlExportFormat format)
+    {
+        // Upload `content` (already serialized in the selected format) to S3.
+    }
+}
+```
+
+For a destination that is not file-based (for example a reporting server such as Tableau, or another content store), derive from `EtlLoadActivity` directly and consume `context.DataStream`.
+
+### Creating a Custom Export Format
+
+Implement `IEtlExportFormat` to add a serialization format that immediately becomes available to every file-based destination:
+
+```csharp
+public sealed class XmlExportFormat : IEtlExportFormat
+{
+    public string Name => "Xml";
+
+    public string DisplayText => "XML";
+
+    public string FileExtension => "xml";
+
+    public string MimeType => "application/xml";
+
+    public async Task WriteAsync(IReadOnlyList<JsonObject> records, Stream output, CancellationToken cancellationToken)
+    {
+        // Serialize `records` to `output` as XML.
     }
 }
 ```
@@ -270,7 +369,12 @@ public sealed class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
+        // A source, transform, or destination activity (with its display driver).
         services.AddEtlActivity<SqlServerSource, SqlServerSourceDisplayDriver>();
+        services.AddEtlActivity<S3ExportLoad, S3ExportLoadDisplayDriver>();
+
+        // An export format available to every file-based destination.
+        services.AddEtlExportFormat<XmlExportFormat>();
     }
 }
 ```
@@ -293,18 +397,9 @@ Each activity needs three Razor views:
 
 ## Configuration
 
-The ETL module can be configured via `appsettings.json`:
+The module does not require any `appsettings.json` configuration. Scheduled execution is driven by each pipeline's own cron **Schedule** (set in the pipeline properties); a background task evaluates enabled, scheduled pipelines every 10 minutes and runs the ones that are due.
 
-```json
-{
-    "OrchardCore": {
-        "OrchardCore_ETL": {
-            "MaxConcurrentPipelines": 5,
-            "DefaultTimeout": "00:30:00"
-        }
-    }
-}
-```
+The FTP / FTPS destination stores its connection settings (host, credentials, directory, and security mode) on the activity itself, as part of the pipeline definition.
 
 ## Videos
 

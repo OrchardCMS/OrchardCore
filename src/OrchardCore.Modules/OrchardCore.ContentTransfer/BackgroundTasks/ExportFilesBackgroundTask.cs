@@ -237,7 +237,7 @@ public sealed class ExportFilesBackgroundTask : IBackgroundTask
                         entry.ProcessSaveUtc = clock.UtcNow;
                         entry.Put(progressPart);
 
-                        session.Save(entry);
+                        await session.SaveAsync(entry);
                         await session.SaveChangesAsync(cancellationToken);
 
                         page++;
@@ -256,7 +256,7 @@ public sealed class ExportFilesBackgroundTask : IBackgroundTask
                 entry.Status = ContentTransferEntryStatus.Completed;
                 entry.Put(progressPart);
 
-                session.Save(entry);
+                await session.SaveAsync(entry);
                 await session.SaveChangesAsync(cancellationToken);
 
                 // Send notification if the Notifications module is enabled.
@@ -289,7 +289,7 @@ public sealed class ExportFilesBackgroundTask : IBackgroundTask
         entry.Error = error;
         entry.CompletedUtc = clock.UtcNow;
 
-        session.Save(entry);
+        await session.SaveAsync(entry);
         await session.SaveChangesAsync();
     }
 

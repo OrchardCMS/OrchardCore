@@ -113,7 +113,7 @@ public sealed class ImportFilesBackgroundTask : IBackgroundTask
         progressPart.ErrorMessages ??= [];
         entry.Put(progressPart);
 
-        session.Save(entry);
+        await session.SaveAsync(entry, cancellationToken: cancellationToken);
         await session.SaveChangesAsync(cancellationToken);
 
         await using var fileStream = await fileStore.GetFileStreamAsync(fileInfo);
@@ -146,7 +146,7 @@ public sealed class ImportFilesBackgroundTask : IBackgroundTask
             entry.ProcessSaveUtc = clock.UtcNow;
             entry.CompletedUtc = clock.UtcNow;
             entry.Put(progressPart);
-            session.Save(entry);
+            await session.SaveAsync(entry, cancellationToken: cancellationToken);
             await session.SaveChangesAsync(cancellationToken);
             return;
         }
@@ -159,7 +159,7 @@ public sealed class ImportFilesBackgroundTask : IBackgroundTask
             : ContentTransferEntryStatus.Completed;
         entry.Put(progressPart);
 
-        session.Save(entry);
+        await session.SaveAsync(entry, cancellationToken: cancellationToken);
         await session.SaveChangesAsync(cancellationToken);
     }
 
@@ -481,7 +481,7 @@ public sealed class ImportFilesBackgroundTask : IBackgroundTask
         entry.ProcessSaveUtc = clock.UtcNow;
         entry.Put(progressPart);
 
-        session.Save(entry);
+        await session.SaveAsync(entry, cancellationToken: cancellationToken);
         await session.SaveChangesAsync(cancellationToken);
     }
 
@@ -579,7 +579,7 @@ public sealed class ImportFilesBackgroundTask : IBackgroundTask
         entry.Error = error;
         entry.CompletedUtc = clock.UtcNow;
 
-        session.Save(entry);
+        await session.SaveAsync(entry, cancellationToken: cancellationToken);
         await session.SaveChangesAsync(cancellationToken);
     }
 

@@ -1,0 +1,62 @@
+@model FtpExportLoadViewModel
+
+<div class="row">
+    <div class="col-md-8 mb-3">
+        <label asp-for="Host" class="form-label">@T["Host"]</label>
+        <input asp-for="Host" class="form-control" />
+        <span class="hint">@T["The FTP server host name or IP address."]</span>
+    </div>
+    <div class="col-md-4 mb-3">
+        <label asp-for="Port" class="form-label">@T["Port"]</label>
+        <input asp-for="Port" type="number" min="1" max="65535" class="form-control" />
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-3">
+        <label asp-for="Username" class="form-label">@T["User Name"]</label>
+        <input asp-for="Username" class="form-control" autocomplete="off" />
+    </div>
+    <div class="col-md-6 mb-3">
+        <label asp-for="Password" class="form-label">@T["Password"]</label>
+        <input asp-for="Password" type="password" class="form-control" autocomplete="new-password" />
+    </div>
+</div>
+
+<div class="mb-3">
+    <label asp-for="RemoteDirectory" class="form-label">@T["Remote Directory"]</label>
+    <input asp-for="RemoteDirectory" class="form-control" />
+    <span class="hint">@T["The directory on the server the file is uploaded to, for example `/exports`. It is created when missing."]</span>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-3">
+        <label asp-for="SecurityMode" class="form-label">@T["Security"]</label>
+        <select asp-for="SecurityMode" class="form-select">
+            <option value="@FtpExportLoad.SecurityAuto">@T["Auto (negotiate FTPS, fall back to FTP)"]</option>
+            <option value="@FtpExportLoad.SecurityExplicit">@T["Explicit FTPS"]</option>
+            <option value="@FtpExportLoad.SecurityImplicit">@T["Implicit FTPS"]</option>
+            <option value="@FtpExportLoad.SecurityNone">@T["None (plain FTP)"]</option>
+        </select>
+    </div>
+    <div class="col-md-6 mb-3">
+        <label asp-for="Format" class="form-label">@T["Format"]</label>
+        <select asp-for="Format" asp-items="Model.Formats" class="form-select"></select>
+    </div>
+</div>
+
+<div class="mb-3">
+    <label asp-for="FileName" class="form-label">@T["File Name"]</label>
+    <input asp-for="FileName" class="form-control" />
+    <span class="hint">@T["The name of the file created on the server. Leave empty to use a default name based on the format."]</span>
+</div>
+
+<div class="form-check">
+    <input asp-for="Passive" class="form-check-input" />
+    <label asp-for="Passive" class="form-check-label">@T["Use passive mode (recommended behind a firewall or NAT)"]</label>
+</div>
+
+<div class="form-check">
+    <input asp-for="AcceptAnyCertificate" class="form-check-input" />
+    <label asp-for="AcceptAnyCertificate" class="form-check-label">@T["Accept any TLS certificate (including self-signed)"]</label>
+</div>

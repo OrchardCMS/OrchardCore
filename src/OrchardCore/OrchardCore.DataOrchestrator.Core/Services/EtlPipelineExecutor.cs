@@ -41,6 +41,8 @@ public sealed class EtlPipelineExecutor : IEtlPipelineExecutor
             Status = "Running",
         };
 
+        EtlExecutionContext context = null;
+
         try
         {
             if (_logger.IsEnabled(LogLevel.Information))
@@ -48,7 +50,7 @@ public sealed class EtlPipelineExecutor : IEtlPipelineExecutor
                 _logger.LogInformation("Starting ETL pipeline '{PipelineName}' ({PipelineId}).", pipeline.Name, pipeline.PipelineId);
             }
 
-            var context = new EtlExecutionContext(pipeline, _activityLibrary, _serviceProvider, _logger, cancellationToken);
+            context = new EtlExecutionContext(pipeline, _activityLibrary, _serviceProvider, _logger, cancellationToken);
 
             if (parameters != null)
             {
@@ -144,6 +146,12 @@ public sealed class EtlPipelineExecutor : IEtlPipelineExecutor
         }
         finally
         {
+            if (context != null)
+            {
+                log.RecordsProcessed = context.RecordsProcessed;
+                log.RecordsLoaded = context.RecordsLoaded;
+            }
+
             log.CompletedUtc = DateTime.UtcNow;
         }
 
