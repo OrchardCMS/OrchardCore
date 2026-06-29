@@ -1,30 +1,30 @@
-@using OrchardCore.Search.AzureAI.ViewModels
+@using OrchardCore.AzureAI.ViewModels
 
 @model ResetIndexDeploymentStepViewModel
 
-<h5>@T["Reset Indexes"]</h5>
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
+        <h5>@T["Reset Indexes"]</h5>
+    </div>
+</div>
 
-<div class="mb-3">
-    <div class="row">
-        <div class="col">
-            <div class="form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="IncludeAll" data-bs-toggle="collapse" role="button" data-bs-target="#indexes-list" aria-expanded="false" aria-controls="indexes-list" />
-                    @T["Include all indexes."]
-                </label>
-            </div>
+<div class="ocat-wrapper" asp-validation-class-for="IncludeAll">
+    <div class="ocat-end-offset">
+        <div class="form-check">
+            <input class="form-check-input" asp-for="IncludeAll" data-bs-toggle="collapse" role="button" data-bs-target="#indexes-list" aria-expanded="false" aria-controls="indexes-list" />
+            <label class="form-check-label" asp-for="IncludeAll">@T["Include all indexes."]</label>
         </div>
     </div>
 </div>
 
-<div id="indexes-list" class="mb-3 collapse@(Model.IncludeAll ? string.Empty : " show")">
-    <div class="row">
-        <div class="col-small col-12 col-sm-9 col-md-6 col-lg-3 col-xl-3">
+<div id="indexes-list" class="collapse@(Model.IncludeAll ? string.Empty : " show")">
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
             <span class="hint">@T["The indexes to reset as part of the plan."]</span>
         </div>
     </div>
-    <div class="row">
-        <div class="col-small col-12 col-sm-9 col-md-6 col-lg-3 col-xl-3">
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
             <ul class="list-group">
                 @foreach (var indexName in Model.AllIndexNames)
                 {

@@ -55,12 +55,12 @@ public class MenuShapes : ShapeTableProvider
 
                 menu.Properties["MenuName"] = menuContentItem.DisplayText;
 
-                var menuItems = menuContentItem.As<MenuItemsListPart>()?.MenuItems;
-
-                if (menuItems == null)
+                if (!menuContentItem.TryGet<MenuItemsListPart>(out var menuItemsListPart))
                 {
                     return;
                 }
+
+                var menuItems = menuItemsListPart.MenuItems;
 
                 var differentiator = FormatName(menu.GetProperty<string>("MenuName"));
 
@@ -112,14 +112,13 @@ public class MenuShapes : ShapeTableProvider
 
                 var shapeFactory = context.ServiceProvider.GetRequiredService<IShapeFactory>();
 
-                var menuItems = menuContentItem.As<MenuItemsListPart>()?.MenuItems;
-
-                if (menuItems != null)
+                if (menuContentItem.TryGet<MenuItemsListPart>(out var menuItemsListPart))
                 {
                     var permissionService = context.ServiceProvider.GetRequiredService<IPermissionService>();
                     var httpContextAccessor = context.ServiceProvider.GetRequiredService<IHttpContextAccessor>();
                     var authorizationService = context.ServiceProvider.GetRequiredService<IAuthorizationService>();
                     var contentManager = context.ServiceProvider.GetRequiredService<IContentManager>();
+                    var menuItems = menuItemsListPart.MenuItems;
 
                     foreach (var contentItem in menuItems)
                     {

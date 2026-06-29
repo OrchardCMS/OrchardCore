@@ -29,7 +29,7 @@ public sealed class UrlRedirectRuleHandler : RewriteRuleHandlerBase
             return Task.CompletedTask;
         }
 
-        var metadata = context.Rule.As<UrlRedirectSourceMetadata>();
+        var metadata = context.Rule.GetOrCreate<UrlRedirectSourceMetadata>();
 
         if (string.IsNullOrWhiteSpace(metadata.Pattern))
         {
@@ -59,7 +59,7 @@ public sealed class UrlRedirectRuleHandler : RewriteRuleHandlerBase
             return Task.CompletedTask;
         }
 
-        var metadata = rule.As<UrlRedirectSourceMetadata>();
+        var metadata = rule.GetOrCreate<UrlRedirectSourceMetadata>();
 
         var pattern = data[nameof(UrlRedirectSourceMetadata.Pattern)]?.GetValue<string>();
 

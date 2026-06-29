@@ -6,6 +6,7 @@ import path from "path";
 import swc from "@swc/core";
 import { Buffer } from "buffer";
 import process from "node:process";
+import { normalizeLineEndings, writeAssetFile } from "./output.mjs";
 
 let action = process.argv[2];
 let mode = action === "build" ? "production" : "development";
@@ -69,7 +70,7 @@ resolveFiles(sources, config.basePath).then(async (files) => {
     for (const file of files) {
         try {
             const content = await fs.readFile(file, "utf8");
-            concatenated += content + "\n\n";
+            concatenated += normalizeLineEndings(content) + "\n\n";
             console.log(`Concatenated ${chalk.gray(file)}`);
         } catch (err) {
             console.log(chalk.red(`Error reading file ${file}:`), err.message);
@@ -81,25 +82,24 @@ resolveFiles(sources, config.basePath).then(async (files) => {
     await fs.ensureDir(path.dirname(output));
 
     // Write non-minified version
-    await fs.outputFile(output, concatenated);
+    await writeAssetFile(output, concatenated);
     console.log(`Concatenated ${files.length} file(s) to ${chalk.cyan(output)}`);
 
     // Minify for production
     try {
-        const minified = await swc.minify(concatenated.replace(/(\r?\n|\r)/gm, "\n"), {
+        const minified = await swc.minify(normalizeLineEndings(concatenated), {
             compress: true,
             mangle: true,
             sourceMap: mode === "production",
         });
 
         const minOutput = output.replace(/\.js$/, ".min.js");
-        await fs.outputFile(minOutput, minified.code + "\n");
+        await writeAssetFile(minOutput, minified.code + "\n");
         console.log(`Minified to ${chalk.cyan(minOutput)}`);
 
         if (mode === "production" && minified.map) {
             const mapOutput = output.replace(/\.js$/, ".map");
-            let normalized = minified.map.replace(/(?:\\r\\n)/g, "\\n");
-            await fs.outputFile(mapOutput, normalized + "\n");
+            await writeAssetFile(mapOutput, minified.map + "\n");
             console.log(`Source map to ${chalk.cyan(mapOutput)}`);
         }
     } catch (err) {

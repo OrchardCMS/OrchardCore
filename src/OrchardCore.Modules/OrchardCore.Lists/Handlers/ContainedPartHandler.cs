@@ -106,8 +106,7 @@ public class ContainedPartHandler : ContentHandlerBase
 
     public override async Task CloningAsync(CloneContentContext context)
     {
-        var containedPart = context.CloneContentItem.As<ContainedPart>();
-        if (containedPart != null)
+        if (context.CloneContentItem.TryGet<ContainedPart>(out var containedPart))
         {
             // Resolve from DI to avoid circular references.
             var contentManager = _serviceProvider.GetRequiredService<IContentManager>();

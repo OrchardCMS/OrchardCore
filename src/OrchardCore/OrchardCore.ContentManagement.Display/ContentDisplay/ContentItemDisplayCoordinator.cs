@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.ContentManagement.Display.ViewModels;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Settings;
@@ -104,7 +105,17 @@ public class ContentItemDisplayCoordinator : IContentDisplayHandler
             {
                 var shapeType = context.DisplayType != OrchardCoreConstants.DisplayType.Detail ? "ContentPart_" + context.DisplayType : "ContentPart";
 
-                var shapeResult = new ShapeResult(shapeType, ctx => ctx.ShapeFactory.CreateAsync(shapeType, shapeContext => ValueTask.FromResult<IShape>(new ZoneHolding(() => shapeContext.ShapeFactory.CreateAsync("Zone"))), ctx));
+                var shapeResult = new ShapeResult(
+                    shapeType,
+                    ctx => ctx.ShapeFactory.CreateAsync(
+                        shapeType,
+                        static shapeContext =>
+                            ValueTask.FromResult<IShape>(
+                                new ZoneHolding<IShapeFactory>(
+                                    static factory => factory.CreateAsync("Zone"),
+                                    shapeContext.ShapeFactory)),
+                        ctx));
+
                 shapeResult.Differentiator(partName);
                 shapeResult.Name(partName);
                 shapeResult.Location("Content");
@@ -225,8 +236,12 @@ public class ContentItemDisplayCoordinator : IContentDisplayHandler
                 continue;
             }
 
-            typePartShape.Properties["ContentPart"] = part;
-            typePartShape.Properties["ContentTypePartDefinition"] = typePartDefinition;
+            if (typePartShape is ContentPartShapeViewModel contentPartShapeViewModel)
+            {
+                contentPartShapeViewModel.ContentPart = part;
+                contentPartShapeViewModel.ContentTypePartDefinition = typePartDefinition;
+            }
+
             partsShape.Properties[partName] = typePartShape;
 
             context.DefaultZone = $"Parts.{partName}";
@@ -316,8 +331,12 @@ public class ContentItemDisplayCoordinator : IContentDisplayHandler
                 continue;
             }
 
-            typePartShape.Properties["ContentPart"] = part;
-            typePartShape.Properties["ContentTypePartDefinition"] = typePartDefinition;
+            if (typePartShape is ContentPartShapeViewModel contentPartShapeViewModel)
+            {
+                contentPartShapeViewModel.ContentPart = part;
+                contentPartShapeViewModel.ContentTypePartDefinition = typePartDefinition;
+            }
+
             partsShape.Properties[partName] = typePartShape;
 
             context.DefaultZone = $"Parts.{partName}:{partPosition}";
@@ -356,7 +375,7 @@ public class ContentItemDisplayCoordinator : IContentDisplayHandler
         var partName = typePartDefinition.Name;
         var isNamedPart = typePartDefinition.PartDefinition.IsReusable() && partName != partTypeName;
 
-        var typePartShapeResult = new ShapeResult(shapeType, ctx => ctx.ShapeFactory.CreateAsync(shapeType));
+        var typePartShapeResult = new ShapeResult(shapeType, _ => ValueTask.FromResult<IShape>(new ContentPartShapeViewModel()));
         typePartShapeResult.Differentiator($"{contentType}-{partName}");
         typePartShapeResult.Name(partName);
         typePartShapeResult.Location($"Parts:{partPosition}");

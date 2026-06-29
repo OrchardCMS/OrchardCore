@@ -1,3 +1,4 @@
+@using OrchardCore.ContentTypes
 @using OrchardCore.Localization.Data
 @model ContentTypesAdminNodeViewModel
 @inject IDataLocalizer D
@@ -5,112 +6,114 @@
 <style asp-src="~/OrchardCore.AdminMenu/Styles/admin-menu-icon-picker.min.css" debug-src="~/OrchardCore.AdminMenu/Styles/admin-menu-icon-picker.css" at="Head"></style>
 
 <script asp-name="vuejs" at="Foot" version="2"></script>
-<script asp-src="~/OrchardCore.AdminMenu/Scripts/admin-menu-icon-picker.min.js" debug-src="~/OrchardCore.AdminMenu/Scripts/admin-menu-icon-picker.js" at="Foot" depends-on="bootstrap, jQuery, jQuery.nestedSortable, fontawesome-iconpicker"></script>
+<script asp-src="~/OrchardCore.AdminMenu/Scripts/admin-menu-icon-picker.min.js" debug-src="~/OrchardCore.AdminMenu/Scripts/admin-menu-icon-picker.js" at="Foot" depends-on="bootstrap, jQuery, jQuery.nestedSortable:2.1, fontawesome-iconpicker"></script>
 
-<h5>@T["Content Types"]</h5>
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
+        <h5 class="mb-0">@T["Content Types"]</h5>
+    </div>
+</div>
 
-<div class="row">
-    <div class="col col-xl-9">
-
-        @*Panel Switcher*@
-        <div class="form-check">
-            <input asp-for="ShowAll" class="form-check-input" id="ContentTypesAdminNode_ShowAll" />
-            <label asp-for="ShowAll" class="form-check-label">@T["Show All Content Types"]</label>
-        </div>
-
-        @*Show All Panel*@
-        <div id="show-all-card" class="card mb-4 @(Model.ShowAll ? "" : "collapse")">
-            <div class="card-header">
-                @T["Show All Content Types"]
+<div class="mb-4">
+    @*Panel Switcher*@
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
+            <div class="form-check">
+                <input asp-for="ShowAll" class="form-check-input" id="ContentTypesAdminNode_ShowAll" />
+                <label asp-for="ShowAll" class="form-check-label">@T["Show All Content Types"]</label>
             </div>
-            <div class="card-body">
-                <div class="mb-3">
-                    <label asp-for="IconClass" class="form-label">@T["Default Icon"]</label>
+        </div>
+    </div>
 
-                    <div class="input-group mb-3">
-                        <div class="btn-toolbar" role="toolbar" aria-label="Icon Selector Toolbar">
+    @*Show All Panel*@
+    <div id="show-all-card" class="card mb-4 @(Model.ShowAll ? "" : "collapse")">
+        <div class="card-header">
+            @T["Show All Content Types"]
+        </div>
+        <div class="card-body">
+            <div class="ocat-wrapper">
+                <label asp-for="IconClass" class="ocat-label">@T["Default Icon"]</label>
+                <div class="ocat-end">
+                    <div class="btn-toolbar" role="toolbar" aria-label="Icon Selector Toolbar">
+                        <div class="btn-group input-group me-2" role="group" aria-label="Icon Selector">
+                            <button type="button" class="btn btn-primary sample-icon">
+                                <i id="@("sample-icon-" + Html.IdFor(m => m.IconClass))" class="@Model.IconClass"></i>
+                            </button>
+                            <input type="hidden" name="@Html.NameFor(m => m.IconClass)" id="@Html.IdFor(m => m.IconClass)" class="icon-val" value="@Model.IconClass" />
+                            <button type="button"
+                                    class="btn btn-primary icon-picker-trigger"
+                                    data-related-node="@Html.IdFor(m => m.IconClass)">
+                                @T["Pick"]
+                            </button>
+                        </div>
 
-                            <div class="btn-group input-group me-2" role="group" aria-label="Icon Selector">
-                                <button type="button" class="btn btn-primary sample-icon">
-                                    <i id="@("sample-icon-" + Html.IdFor(m => m.IconClass))" class="@Model.IconClass"></i>
-                                </button>
-                                <input type="hidden" name="@Html.NameFor(m => m.IconClass)" id="@Html.IdFor(m => m.IconClass)" class="icon-val" value="@Model.IconClass" />
-                                <button type="button"
-                                        class="btn btn-primary icon-picker-trigger"
-                                        data-related-node="@Html.IdFor(m => m.IconClass)">
-                                    @T["Pick"]
-                                </button>
-                            </div>
-
-                            <div class="btn-group" role="group" aria-label="Remove Icon Button">
-                                <button type="button" class="btn btn-secondary remove-icon" data-related-node="@Html.IdFor(m => m.IconClass)">
-                                    <div style="pointer-events:none;">
-                                        <i class="fa-solid fa-trash" aria-hidden="true"></i>
-                                    </div>
-                                </button>
-                            </div>
+                        <div class="btn-group" role="group" aria-label="Remove Icon Button">
+                            <button type="button" class="btn btn-secondary remove-icon" data-related-node="@Html.IdFor(m => m.IconClass)">
+                                <div style="pointer-events:none;">
+                                    <i class="fa-solid fa-trash" aria-hidden="true"></i>
+                                </div>
+                            </button>
                         </div>
                     </div>
-
                     <span class="hint">@T["Select an icon. It will be shared by all menu items."]</span>
                 </div>
             </div>
         </div>
+    </div>
 
-        @*Show Selected Panel*@
-        <div id="show-selected-card" class="card mb-4 @(Model.ShowAll ? "collapse" : "")">
-            <div class="card-header">
-                @T["Select Content Types"]
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col">
-                        <ul class="list-group">
-                            @for (int i = 0; i < Model.ContentTypes.Count(); i++)
-                            {
-                                var displayName = Model.ContentTypes[i].ContentTypeDisplayName;
-                                var checkd = Model.ContentTypes[i].IsChecked;
-                                <li class="list-group-item d-flex align-items-center @(checkd ? "" : "disabled-content-type")">
-                                    <div class="flex-grow-1">
-                                        <input type="hidden" name="@Html.NameFor(m => m.ContentTypes[i].ContentTypeName)" value="@Model.ContentTypes[i].ContentTypeName" />
-                                        <input type="hidden" name="@Html.NameFor(m => m.ContentTypes[i].ContentTypeDisplayName)" value="@Model.ContentTypes[i].ContentTypeDisplayName" />
-                                        <div class="form-check">
-                                            <input asp-for="ContentTypes[i].IsChecked" class="form-check-input content-type-checkbox" />
-                                            <label class="form-check-label" for="@Html.IdFor(m => m.ContentTypes[i].IsChecked)">@D[displayName, "Content Types"]</label>
-                                        </div>
+    @*Show Selected Panel*@
+    <div id="show-selected-card" class="card mb-4 @(Model.ShowAll ? "collapse" : "")">
+        <div class="card-header">
+            @T["Select Content Types"]
+        </div>
+        <div class="card-body">
+            <div class="ocat-wrapper">
+                <label class="ocat-label">@T["Content types"]</label>
+                <div class="ocat-end">
+                    <ul class="list-group">
+                        @for (int i = 0; i < Model.ContentTypes.Count(); i++)
+                        {
+                            var displayName = Model.ContentTypes[i].ContentTypeDisplayName;
+                            var checkd = Model.ContentTypes[i].IsChecked;
+                            <li class="list-group-item d-flex align-items-center @(checkd ? "" : "disabled-content-type")">
+                                <div class="flex-grow-1">
+                                    <input type="hidden" name="@Html.NameFor(m => m.ContentTypes[i].ContentTypeName)" value="@Model.ContentTypes[i].ContentTypeName" />
+                                    <input type="hidden" name="@Html.NameFor(m => m.ContentTypes[i].ContentTypeDisplayName)" value="@Model.ContentTypes[i].ContentTypeDisplayName" />
+                                    <div class="form-check">
+                                        <input asp-for="ContentTypes[i].IsChecked" class="form-check-input content-type-checkbox" />
+                                        <label class="form-check-label" for="@Html.IdFor(m => m.ContentTypes[i].IsChecked)">@D[displayName, DataLocalizationContext.ContentType]</label>
+                                    </div>
+                                </div>
+
+                                <div class="btn-toolbar icon-toolbar" role="toolbar" aria-label="Icon Selector Toolbar">
+                                    <div class="btn-group input-group me-2" role="group" aria-label="Icon Selector">
+                                        <button type="button" class="btn btn-primary sample-icon">
+                                            <i id="@("sample-icon-" + Html.IdFor(m => m.ContentTypes[i].IconClass))"
+                                               class="@(Model.ContentTypes[i].IconClass)"></i>
+                                        </button>
+                                        <input type="hidden" name="@Html.NameFor(m => m.ContentTypes[i].IconClass)"
+                                               id="@Html.IdFor(m => m.ContentTypes[i].IconClass)" class="icon-val"
+                                               value="@Model.ContentTypes[i].IconClass" />
+                                        <button type="button"
+                                                class="btn btn-primary icon-picker-trigger"
+                                                data-related-node="@Html.IdFor(m => m.ContentTypes[i].IconClass)">
+                                            @T["Icon"]
+                                        </button>
                                     </div>
 
-                                    <div class="btn-toolbar icon-toolbar" role="toolbar" aria-label="Icon Selector Toolbar">
-
-                                        <div class="btn-group input-group me-2" role="group" aria-label="Icon Selector">
-                                            <button type="button" class="btn btn-primary sample-icon">
-                                                <i id="@("sample-icon-" + Html.IdFor(m => m.ContentTypes[i].IconClass))"
-                                                   class="@(Model.ContentTypes[i].IconClass)"></i>
-                                            </button>
-                                            <input type="hidden" name="@Html.NameFor(m => m.ContentTypes[i].IconClass)"
-                                                   id="@Html.IdFor(m => m.ContentTypes[i].IconClass)" class="icon-val"
-                                                   value="@Model.ContentTypes[i].IconClass" />
-                                            <button type="button"
-                                                    class="btn btn-primary icon-picker-trigger"
-                                                    data-related-node="@Html.IdFor(m => m.ContentTypes[i].IconClass)">
-                                                @T["Icon"]
-                                            </button>
-                                        </div>
-
-                                        <div class="btn-group" role="group" aria-label="Remove Icon Button">
-                                            <button type="button" class="btn btn-secondary remove-icon"
-                                                    data-related-node="@Html.IdFor(m => m.ContentTypes[i].IconClass)">
-                                                <div style="pointer-events:none;">
-                                                    <i class="fa-solid fa-trash" aria-hidden="true"></i>
-                                                </div>
-                                            </button>
-                                        </div>
+                                    <div class="btn-group" role="group" aria-label="Remove Icon Button">
+                                        <button type="button" class="btn btn-secondary remove-icon"
+                                                data-related-node="@Html.IdFor(m => m.ContentTypes[i].IconClass)">
+                                            <div style="pointer-events:none;">
+                                                <i class="fa-solid fa-trash" aria-hidden="true"></i>
+                                            </div>
+                                        </button>
                                     </div>
-                                </li>
-                            }
-                        </ul>
-                        <span class="hint">@T["The content types to add to the menu."]</span>
-                    </div>
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                    <span class="hint">@T["The content types to add to the menu."]</span>
                 </div>
             </div>
         </div>
@@ -133,44 +136,81 @@
     </div>
 </div>
 
-<script at="Foot" depends-on="jquery">
-    $(function () {
+<script at="Foot">
+    function onDocumentReady(callback) {
+        if (document.readyState !== 'loading') {
+            callback();
+        } else {
+            document.addEventListener('DOMContentLoaded', callback);
+        }
+    }
+
+    onDocumentReady(function () {
         switchContentTypesCheckBoxes();
 
-        $('#ContentTypesAdminNode_ShowAll').change(function () {
+        document.getElementById('ContentTypesAdminNode_ShowAll')?.addEventListener('change', function () {
             switchContentTypesCheckBoxes();
         });
 
-        function switchContentTypesCheckBoxes() {
-            var showAll = $('#ContentTypesAdminNode_ShowAll').prop('checked');
-
-            if (showAll) {
-                $('#show-all-card').show();
-                $('#show-selected-card').hide();
-            } else {
-                $('#show-all-card').hide();
-                $('#show-selected-card').show();
+        function showElement(element) {
+            if (element) {
+                element.style.display = 'block';
             }
         }
 
-        $('.content-type-checkbox').on('click', function (e) {
-            var listItem = $(e.target).closest('.list-group-item');
+        function hideElement(element) {
+            if (element) {
+                element.style.display = 'none';
+            }
+        }
 
-            var selected = $(e.target).prop('checked');
-            selected ? listItem.removeClass('disabled-content-type') : listItem.addClass('disabled-content-type');
+        function switchContentTypesCheckBoxes() {
+            var showAll = document.getElementById('ContentTypesAdminNode_ShowAll')?.checked;
+            var showAllCard = document.getElementById('show-all-card');
+            var showSelectedCard = document.getElementById('show-selected-card');
 
+            if (showAll) {
+                showElement(showAllCard);
+                hideElement(showSelectedCard);
+            } else {
+                hideElement(showAllCard);
+                showElement(showSelectedCard);
+            }
+        }
+
+        document.querySelectorAll('.content-type-checkbox').forEach(function (checkbox) {
+            checkbox.addEventListener('click', function (e) {
+                var listItem = e.target.closest('.list-group-item');
+                var selected = e.target.checked;
+
+                if (selected) {
+                    listItem?.classList.remove('disabled-content-type');
+                } else {
+                    listItem?.classList.add('disabled-content-type');
+                }
+            });
         });
 
-        $('.icon-picker-trigger').on('click', function (e) {
-
-            var node = $(e.target).data('related-node');
-            iconPickerVue.show(node, 'sample-icon-' + node);
+        document.querySelectorAll('.icon-picker-trigger').forEach(function (button) {
+            button.addEventListener('click', function () {
+                var node = this.dataset.relatedNode;
+                iconPickerVue.show(node, 'sample-icon-' + node);
+            });
         });
 
-        $('button.remove-icon').on('click', function (e) {
-            var node = $(e.target).data('related-node');
-            $('#' + node).val('');
-            $('#sample-icon-' + node).replaceWith('<i id="sample-icon-' + node + '" class=" "></i>'); // changing the class is not enough.
+        document.querySelectorAll('button.remove-icon').forEach(function (button) {
+            button.addEventListener('click', function () {
+                var node = this.dataset.relatedNode;
+                var input = document.getElementById(node);
+                if (input) {
+                    input.value = '';
+                }
+
+                var sampleIcon = document.getElementById('sample-icon-' + node);
+                if (sampleIcon) {
+                    sampleIcon.outerHTML = '<i id="sample-icon-' + node + '" class=" "></i>'; // changing the class is not enough.
+                }
+            });
         });
     });
 </script>

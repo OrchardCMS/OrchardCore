@@ -53,8 +53,7 @@ public sealed class Migrations : DataMigration
 
         foreach (var menu in menus)
         {
-            var menuItemsListPart = menu.As<MenuItemsListPart>();
-            if (menuItemsListPart != null)
+            if (menu.TryGet<MenuItemsListPart>(out var menuItemsListPart))
             {
                 MigrateMenuItems(menuItemsListPart.MenuItems);
                 menu.Apply(menuItemsListPart);
@@ -70,8 +69,7 @@ public sealed class Migrations : DataMigration
     {
         foreach (var menuItem in menuItems)
         {
-            var menuItemsListPart = menuItem.As<MenuItemsListPart>();
-            if (menuItemsListPart != null)
+            if (menuItem.TryGet<MenuItemsListPart>(out var menuItemsListPart))
             {
                 MigrateMenuItems(menuItemsListPart.MenuItems);
                 menuItem.Apply(menuItemsListPart);

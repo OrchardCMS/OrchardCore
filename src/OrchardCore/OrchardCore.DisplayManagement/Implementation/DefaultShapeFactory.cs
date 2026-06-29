@@ -72,7 +72,6 @@ public class DefaultShapeFactory : DynamicObject, IShapeFactory
             New = this,
             ShapeFactory = this,
             ShapeType = shapeType,
-            OnCreated = [],
             CreateAsyncWithState = shapeFactory,
             State = state,
         };
@@ -129,9 +128,12 @@ public class DefaultShapeFactory : DynamicObject, IShapeFactory
             }
         }
 
-        foreach (var ev in creatingContext.OnCreated)
+        if (creatingContext.HasOnCreated)
         {
-            await ev(createdContext);
+            foreach (var ev in creatingContext.OnCreated)
+            {
+                await ev(createdContext);
+            }
         }
 
         created?.Invoke(createdContext, state);

@@ -49,11 +49,11 @@
 @await DisplayAsync(Model.Pager)
 
 <script at="Foot">
-    $(function () {
-        $('.selectpicker').selectpicker();
+    document.addEventListener('DOMContentLoaded', function () {
+        const submitFilterButton = document.querySelector("[name='submit.Filter']");
 
-        $('.selectpicker').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
-            $("[name='submit.Filter']").click();
+        document.querySelectorAll('.selectpicker').forEach((element) => {
+            element.addEventListener('changed.bs.select', () => submitFilterButton?.click());
         });
     });
 </script>

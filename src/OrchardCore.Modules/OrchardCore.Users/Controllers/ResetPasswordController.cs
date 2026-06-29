@@ -7,6 +7,7 @@ using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Modules;
+using OrchardCore.RateLimits;
 using OrchardCore.Settings;
 using OrchardCore.Users.Events;
 using OrchardCore.Users.Models;
@@ -72,11 +73,11 @@ public sealed class ResetPasswordController : Controller
     [HttpPost]
     [AllowAnonymous]
     [ActionName(nameof(ForgotPassword))]
+    [RateLimitGroup(UserRateLimiterPolicyNames.PasswordRecovery)]
     public async Task<IActionResult> ForgotPasswordPOST()
     {
         var site = await _siteService.GetSiteSettingsAsync();
-
-        if (!site.As<ResetPasswordSettings>().AllowResetPassword)
+        if (!site.TryGet<ResetPasswordSettings>(out var settings) || !settings.AllowResetPassword)
         {
             return NotFound();
         }
@@ -143,6 +144,7 @@ public sealed class ResetPasswordController : Controller
     [HttpPost]
     [AllowAnonymous]
     [ActionName(nameof(ResetPassword))]
+    [RateLimitGroup(UserRateLimiterPolicyNames.PasswordRecovery)]
     public async Task<IActionResult> ResetPasswordPOST()
     {
         if (!(await _siteService.GetSettingsAsync<ResetPasswordSettings>()).AllowResetPassword)

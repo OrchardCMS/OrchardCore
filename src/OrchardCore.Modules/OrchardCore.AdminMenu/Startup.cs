@@ -41,7 +41,7 @@ public sealed class DataLocalizationStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddScoped<ILocalizationDataProvider, AdminMenuDataLocalizationProvider>();
-        services.AddScoped<ILocalizationDataProvider, ListsAdminNodeDataLocalizationProvider>();
+        services.AddScoped<ILocalizationDataProvider, LinkAdminNodeDataLocalizationProvider>();
         services.AddScoped<ILocalizationDataProvider, PlaceholderAdminNodeDataLocalizationProvider>();
     }
 }

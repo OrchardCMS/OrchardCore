@@ -1,16 +1,17 @@
 @model OrchardCore.ContentFields.ViewModels.EditHtmlFieldViewModel
+@using OrchardCore.ContentFields
 @using OrchardCore.Mvc.Utilities
 @using OrchardCore.Localization.Data
 @inject IDataLocalizer D
 @{
     var settings = Model.PartFieldDefinition.GetSettings<HtmlFieldSettings>();
     var culture = await Orchard.GetContentCultureAsync(Model.Field.ContentItem);
-    string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), $"Content Fields{Constants.ContextSeparator}{Model.PartFieldDefinition.PartDefinition.Name}"];
+    string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), DataLocalizationContext.ContentField(Model.PartFieldDefinition.PartDefinition.Name)];
 }
 
-<div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.Html)_FieldWrapper">
-    <label asp-for="Html" class="@Orchard.GetLabelClasses()">@localizedFieldName</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="@($"ocat-wrapper field-wrapper field-wrapper-{Model.PartFieldDefinition.PartDefinition.Name.HtmlClassify()}-{Model.PartFieldDefinition.Name.HtmlClassify()}" + (Model.PartFieldDefinition.IsNamedPart() ? $" field-wrapper-{Model.PartFieldDefinition.ContentTypePartDefinition.Name.HtmlClassify()}-{Model.PartFieldDefinition.Name.HtmlClassify()}" : string.Empty))" id="@Html.IdFor(x => x.Html)_FieldWrapper">
+    <label asp-for="Html" class="ocat-label">@localizedFieldName</label>
+    <div class="ocat-end">
         @await DisplayAsync(await New.ShortcodeModal())
         <textarea asp-for="Html" rows="5" class="form-control content-preview-text" dir="@culture.GetLanguageDirection()"></textarea>
         @if (!string.IsNullOrEmpty(settings.Hint))
@@ -30,7 +31,15 @@
 <script asp-name="codemirror-mode-javascript" at="Foot"></script>
 <script asp-name="codemirror-mode-xml" at="Foot"></script>
 <script at="Foot">
-    $(function () {
+    function onDocumentReady(callback) {
+        if (document.readyState !== 'loading') {
+            callback();
+        } else {
+            document.addEventListener('DOMContentLoaded', callback);
+        }
+    }
+
+    onDocumentReady(function () {
         var optionsTextArea = document.getElementById('@Html.IdFor(x => x.Html)');
     @* When the field is rendered by a flow part only the elements scripts are rendered, so the html element will not exist. *@
         if (optionsTextArea) {
@@ -48,7 +57,7 @@
 
             editor.on('change', function (cmEditor) {
                 cmEditor.save();
-                $(document).trigger('contentpreview:render');
+                document.dispatchEvent(new Event('contentpreview:render'));
             });
         }
     });

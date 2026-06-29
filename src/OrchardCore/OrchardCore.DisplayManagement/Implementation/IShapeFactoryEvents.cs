@@ -8,19 +8,26 @@ public interface IShapeFactoryEvents
 
 public class ShapeCreatingContext
 {
+    private IList<Func<ShapeCreatedContext, Task>> _onCreated;
     protected internal Func<ValueTask<IShape>> _createAsync;
 
     public IServiceProvider ServiceProvider { get; set; }
+
     public IShapeFactory ShapeFactory { get; set; }
+
     public dynamic New { get; set; }
+
     public string ShapeType { get; set; }
+
     public Func<ValueTask<IShape>> CreateAsync
     {
         get => CreateInternalAsync;
         set => _createAsync = value;
     }
 
-    public IList<Func<ShapeCreatedContext, Task>> OnCreated { get; set; }
+    public IList<Func<ShapeCreatedContext, Task>> OnCreated { get => _onCreated ??= []; }
+
+    internal bool HasOnCreated => _onCreated != null && _onCreated.Count > 0;
 
     public Func<IShape> Create
     {
@@ -64,6 +71,7 @@ public abstract class ShapeFactoryEvents : IShapeFactoryEvents
     public virtual void Creating(ShapeCreatingContext context)
     {
     }
+
     public virtual void Created(ShapeCreatedContext context)
     {
     }

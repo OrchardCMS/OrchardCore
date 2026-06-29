@@ -1833,6 +1833,14 @@
 });
 
 
+function getTenantName() {
+    return document.documentElement.getAttribute('data-tenant') || 'default';
+}
+
+function getTenantStorageKey(key) {
+    return getTenantName() + '-' + key;
+}
+
 // <upload> component
 Vue.component('upload', {
     template: '\
@@ -2065,22 +2073,22 @@ Vue.component('pager', {
         <nav id="media-pager" class="d-flex justify-content-center" aria-label="Pagination Navigation" role="navigation" :data-computed-trigger="itemsInCurrentPage.length">
             <ul class="pagination pagination-sm m-0">
                 <li class="page-item media-first-button" :class="{disabled : !canDoFirst}">
-                    <a class="page-link" href="#" :tabindex="canDoFirst ? 0 : -1" v-on:click="goFirst">{{ T.pagerFirstButton }}</a>
+                    <a class="page-link" href="#" :tabindex="canDoFirst ? 0 : -1" v-on:click.prevent="goFirst">{{ T.pagerFirstButton }}</a>
                 </li>
                 <li class="page-item" :class="{disabled : !canDoPrev}">
-                    <a class="page-link" href="#" :tabindex="canDoPrev ? 0 : -1" v-on:click="previous">{{ T.pagerPreviousButton }}</a>
+                    <a class="page-link" href="#" :tabindex="canDoPrev ? 0 : -1" v-on:click.prevent="previous">{{ T.pagerPreviousButton }}</a>
                 </li>
                 <li v-if="link !== -1" class="page-item page-number"  :class="{active : current == link - 1}" v-for="link in pageLinks">
-                    <a class="page-link" href="#" v-on:click="goTo(link - 1)" :aria-label="'Goto Page' + link">
+                    <a class="page-link" href="#" v-on:click.prevent="goTo(link - 1)" :aria-label="'Goto Page' + link">
                         {{link}}
                         <span v-if="current == link -1" class="visually-hidden">(current)</span>
                     </a>
                 </li>
                 <li class="page-item" :class="{disabled : !canDoNext}">
-                    <a class="page-link" href="#" :tabindex="canDoNext ? 0 : -1" v-on:click="next">{{ T.pagerNextButton }}</a>
+                    <a class="page-link" href="#" :tabindex="canDoNext ? 0 : -1" v-on:click.prevent="next">{{ T.pagerNextButton }}</a>
                 </li>
                 <li class="page-item media-last-button" :class="{disabled : !canDoLast}">
-                    <a class="page-link" href="#" :tabindex="canDoLast ? 0 : -1" v-on:click="goLast">{{ T.pagerLastButton }}</a>
+                    <a class="page-link" href="#" :tabindex="canDoLast ? 0 : -1" v-on:click.prevent="goLast">{{ T.pagerLastButton }}</a>
                 </li>
                 <li class="page-item ms-4 page-size-info">
                     <div style="display: flex;">
@@ -2471,7 +2479,7 @@ Vue.component('media-items-table', {
                           :key="media.name">
                              <td class="thumbnail-column">
                                 <div class="img-wrapper">
-                                    <img v-if="media.mime.startsWith('image')" draggable="false" :src="buildMediaUrl(media.url, thumbSize)" />
+                                    <img v-if="media.mime?.startsWith('image')" draggable="false" :src="buildMediaUrl(media.url, thumbSize)" />
                                     <i v-else :class="getfontAwesomeClassNameForFileName(media.name, \'fa-4x\')" :data-mime="media.mime"></i>
                                 </div>
                             </td>
@@ -2569,7 +2577,7 @@ Vue.component('media-items-grid', {
                     v-on:click.stop="toggleSelectionOfMedia(media)"
                     draggable="true" v-on:dragstart="dragStart(media, $event)">
                     <div class="thumb-container" :style="{height: thumbSize +'px'}">
-                        <img v-if="media.mime.startsWith('image')"
+                        <img v-if="media.mime?.startsWith('image')"
                                 :src="buildMediaUrl(media.url, thumbSize)"
                                 :data-mime="media.mime"
                                 :style="{maxHeight: thumbSize +'px', maxWidth: thumbSize +'px'}" />
@@ -2810,12 +2818,14 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                         self.selectedMedias = [];
                     });
 
-                    if (!localStorage.getItem('mediaApplicationPrefs')) {
+                    var mediaApplicationPrefsKey = getTenantStorageKey('mediaApplicationPrefs');
+
+                    if (!localStorage.getItem(mediaApplicationPrefsKey)) {
                         self.selectedFolder = root;
                         return;
                     }
 
-                    self.currentPrefs = JSON.parse(localStorage.getItem('mediaApplicationPrefs'));
+                    self.currentPrefs = JSON.parse(localStorage.getItem(mediaApplicationPrefsKey));
                 },
                 computed: {
                     isHome: function () {
@@ -2895,7 +2905,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                 },
                 watch: {
                     currentPrefs: function (newPrefs) {
-                        localStorage.setItem('mediaApplicationPrefs', JSON.stringify(newPrefs));
+                        localStorage.setItem(getTenantStorageKey('mediaApplicationPrefs'), JSON.stringify(newPrefs));
                     },
                     selectedFolder: function (newFolder) {
                         this.mediaFilter = '';
@@ -3292,7 +3302,7 @@ Vue.component('mediaFieldThumbsContainer', {
                     </div>
                     <div v-else-if="!media.errorType">
                         <div class="thumb-container" :style="{height: thumbSize + 'px'}" >
-                            <img v-if="media.mime.startsWith('image')"
+                            <img v-if="media.mime?.startsWith('image')"
                                 :src="buildMediaUrl(media.url, thumbSize)"
                                 :data-mime="media.mime"
                                 width="100%"
@@ -3442,7 +3452,7 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
         created: function () {
             var self = this;
 
-            self.currentPrefs = JSON.parse(localStorage.getItem('mediaFieldPrefs'));
+            self.currentPrefs = JSON.parse(localStorage.getItem(getTenantStorageKey('mediaFieldPrefs')));
         },
         computed: {
             paths: {
@@ -3506,6 +3516,32 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
             },
             fileSize: function () {
                 return Math.round(this.selectedMedia.size / 1024);
+            },
+            selectedMediaDisplayText: function () {
+                if (!this.selectedMedia) {
+                    return "";
+                }
+
+                var fileName =
+                    this.selectedMedia.attachedFileName !== null &&
+                        this.selectedMedia.attachedFileName !== ''
+                        ? this.selectedMedia.attachedFileName
+                        : this.selectedMedia.name;
+
+                var mediaText =
+                    this.selectedMedia.mediaText === ''
+                        ? ''
+                        : ', ' + this.selectedMedia.mediaText;
+
+                var size = isNaN(this.fileSize) ? 0 : this.fileSize;
+
+                var formatElement = this.$el.querySelector('#t-selected-media-format');
+                var format = formatElement ? formatElement.value : '{0}{1} ({2} KB)';
+
+                return format
+                    .replace('{0}', fileName)
+                    .replace('{1}', mediaText)
+                    .replace('{2}', size);
             },
             canAddMedia: function () {
                 var nonRemovedMediaItems = [];
@@ -3716,7 +3752,7 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
                         position = position + 5; // Adjust to hit the mouse pointer.
                     }
                     return position + 'px';
-                } else {
+                } else { 
                     return '0';
                 }
             },
@@ -3756,7 +3792,7 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
                 }
             },
             currentPrefs: function (newPrefs) {
-                localStorage.setItem('mediaFieldPrefs', JSON.stringify(newPrefs));
+                localStorage.setItem(getTenantStorageKey('mediaFieldPrefs'), JSON.stringify(newPrefs));
             }
         }
     }));
@@ -3765,6 +3801,10 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
 
 const MEDIA_FIELD_GALLERY = "mediaFieldGallery_";
 
+function getMediaFieldGalleryStorageKey(idPrefix) {
+    return getTenantStorageKey(MEDIA_FIELD_GALLERY + idPrefix);
+}
+
 Vue.component("mediaFieldGalleryListItem", {
     template:
     /*html*/
@@ -3772,7 +3812,7 @@ Vue.component("mediaFieldGalleryListItem", {
         <li class="list-group-item d-flex p-0 overflow-hidden align-items-center" v-if="!media.isRemoved" :class="media.errorType==='not-found' ? 'text-danger' : (media.errorType==='transient' ? 'text-warning' : '')">
             <div class="media-preview flex-shrink-0">
                 <img
-                    v-if="media.mime.startsWith('image') && !media.errorType"
+                    v-if="media.mime?.startsWith('image') && !media.errorType"
                     :src="buildMediaUrl(media.url, media.anchor)"
                     :data-mime="media.mime"
                     class="w-100 object-fit-scale"
@@ -3803,7 +3843,7 @@ Vue.component("mediaFieldGalleryListItem", {
                 </a>
                 <a
                     href="javascript:;"
-                    v-show="allowAnchors && media.mime.startsWith('image') && !media.errorType"
+                    v-show="allowAnchors && media.mime?.startsWith('image') && !media.errorType"
                     v-on:click="$parent.showAnchorModal(media)"
                     class="btn btn-light btn-sm inline-media-button view-button"
                     title="Set anchor"
@@ -3858,7 +3898,7 @@ Vue.component("mediaFieldGalleryCardItem", {
                         <div class="update-media" v-if="!$parent.allowMultiple" v-on:click="$parent.showMediaModal">
                             + Media Library
                         </div>
-                        <div class="image-wrapper" v-if="media.mime.startsWith('image') && !media.errorType">
+                        <div class="image-wrapper" v-if="media.mime?.startsWith('image') && !media.errorType">
                             <img
                                 :src="buildMediaUrl(media.url)"
                                 :data-mime="media.mime"
@@ -3896,7 +3936,7 @@ Vue.component("mediaFieldGalleryCardItem", {
                         </a>
                         <a
                             href="javascript:;"
-                            v-show="allowAnchors && media.mime.startsWith('image') && !media.errorType"
+                            v-show="allowAnchors && media.mime?.startsWith('image') && !media.errorType"
                             v-on:click="$parent.showAnchorModal(media)"
                             class="btn btn-light btn-sm inline-media-button view-button"
                             title="Set anchor"
@@ -4096,13 +4136,15 @@ Vue.component("mediaFieldGalleryContainer", {
     },
     methods: {
         getLocalStorageState: function getLocalStorageState() {
-            if (localStorage.getItem(MEDIA_FIELD_GALLERY + this.idPrefix)) {
+            const key = getMediaFieldGalleryStorageKey(this.idPrefix);
+
+            if (localStorage.getItem(key)) {
                 try {
-                    const state = JSON.parse(localStorage.getItem(MEDIA_FIELD_GALLERY + this.idPrefix));
+                    const state = JSON.parse(localStorage.getItem(key));
                     this.size = state.size || "lg";
                     this.gridView = !this.allowMultiple ? true : state.gridView ?? false;
                 } catch (e) {
-                    localStorage.removeItem(MEDIA_FIELD_GALLERY + this.idPrefix);
+                    localStorage.removeItem(key);
                 }
             }
         },
@@ -4111,7 +4153,7 @@ Vue.component("mediaFieldGalleryContainer", {
                 size: this.size,
                 gridView: this.gridView,
             });
-            localStorage.setItem(MEDIA_FIELD_GALLERY + this.idPrefix, parsed);
+            localStorage.setItem(getMediaFieldGalleryStorageKey(this.idPrefix), parsed);
         },
         initSortable: function initSortable() {
             if (this.allowMultiple && this.$refs.mediaContainer && this.mediaItemsNoDuplicates.length > 0) {
@@ -4255,7 +4297,7 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple,
         created: function () {
             var self = this;
 
-            self.currentPrefs = JSON.parse(localStorage.getItem('mediaFieldPrefs'));
+            self.currentPrefs = JSON.parse(localStorage.getItem(getTenantStorageKey('mediaFieldPrefs')));
         },
         computed: {
             paths: {
@@ -4512,7 +4554,7 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple,
                 }
             },            
             currentPrefs: function (newPrefs) {
-                localStorage.setItem('mediaFieldPrefs', JSON.stringify(newPrefs));
+                localStorage.setItem(getTenantStorageKey('mediaFieldPrefs'), JSON.stringify(newPrefs));
             }
         }
     }));

@@ -17,9 +17,7 @@ public class SeoMetaPartContentIndexHandler : IDocumentIndexHandler
             return Task.CompletedTask;
         }
 
-        var parent = contentItem.As<SeoMetaPart>();
-
-        if (parent == null)
+        if (!contentItem.TryGet<SeoMetaPart>(out var parent))
         {
             return Task.CompletedTask;
         }

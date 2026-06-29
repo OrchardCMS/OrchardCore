@@ -29,10 +29,10 @@ public class LayerService : ILayerService
     /// </summary>
     public Task<LayersDocument> GetLayersAsync() => _documentManager.GetOrCreateImmutableAsync();
 
-    public Task<IEnumerable<ContentItem>> GetLayerWidgetsAsync(
+    public async Task<IEnumerable<ContentItem>> GetLayerWidgetsAsync(
         Expression<Func<ContentItemIndex, bool>> predicate)
     {
-        return _session
+        return await _session
             .Query<ContentItem, LayerMetadataIndex>()
             .With(predicate)
             .ListAsync();
@@ -44,7 +44,7 @@ public class LayerService : ILayerService
         var allWidgets = await GetLayerWidgetsAsync(predicate);
 
         return allWidgets
-            .Select(x => x.As<LayerMetadata>())
+            .Select(x => x.TryGet<LayerMetadata>(out var layerMetadata) ? layerMetadata : null)
             .Where(x => x != null)
             .OrderBy(x => x.Position)
             .ToList();

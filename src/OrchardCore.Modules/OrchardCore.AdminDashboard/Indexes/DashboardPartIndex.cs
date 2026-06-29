@@ -16,15 +16,13 @@ public class DashboardPartIndexProvider : IndexProvider<ContentItem>
         context.For<DashboardPartIndex>()
             .Map(contentItem =>
             {
-                var dashboardPart = contentItem.As<DashboardPart>();
-
                 // Store only published and latest versions
                 if (!contentItem.Published && !contentItem.Latest)
                 {
                     return null;
                 }
 
-                if (dashboardPart != null)
+                if (contentItem.TryGet<DashboardPart>(out var dashboardPart))
                 {
                     return new DashboardPartIndex
                     {

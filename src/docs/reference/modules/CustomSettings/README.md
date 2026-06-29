@@ -57,11 +57,11 @@ public sealed class MyController : Controller
 
         Alternatively, you can access the custom settings without using the 'GetCustomSettingsAsync' extension method as follow:
         var siteSettings = await _siteService.GetSiteSettingsAsync();
-        var blogSettings = siteSettings.As<ContentItem>("BlogSettings");
+        var blogSettings = siteSettings.GetOrCreate<ContentItem>("BlogSettings");
         */
 
         ContentItem blogSettings = await _siteService.GetCustomSettingsAsync("BlogSettings");
-        var blogHtml = blogSettings.As<HtmlBodyPart>();
+        var blogHtml = blogSettings.GetOrCreate<HtmlBodyPart>();
 
         return View();
     }

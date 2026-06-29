@@ -5,11 +5,15 @@
 @using OrchardCore.Workflows
 
 @{
-    var formPart = ((ContentItem)Model.ContentItem).As<FormPart>();
+    var contentItem = (ContentItem)Model.ContentItem;
+    if (!contentItem.TryGet<FormPart>(out var formPart))
+    {
+        return;
+    }
     string encType = formPart.Method == "POST" ? formPart.EncType : string.Empty;
     var formContentTypeClassName = "form-" + ((string)Model.ContentItem.ContentType).HtmlClassify();
 
-    var elementId = ((ContentItem)Model.ContentItem).As<FormElementPart>()?.Id;
+    var elementId = contentItem.TryGet<FormElementPart>(out var formElementPart) ? formElementPart.Id : null;
     string formId = string.IsNullOrWhiteSpace(elementId) ? $"form_{Model.ContentItem.ContentItemId}" : elementId;
 
 }

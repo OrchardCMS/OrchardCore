@@ -16,8 +16,14 @@ public static class UserManagerExtensions
 
     public static async Task<bool> UpdateUserPropertiesAsync(this UserManager<IUser> userManager, User user, UpdateUserContext context)
     {
-        await userManager.AddToRolesAsync(user, context.RolesToAdd.Distinct());
-        await userManager.RemoveFromRolesAsync(user, context.RolesToRemove.Distinct());
+        if (context.RolesToAdd.Count > 0)
+        {
+            await userManager.AddToRolesAsync(user, context.RolesToAdd.Distinct());
+        }
+        if (context.RolesToRemove.Count > 0)
+        {
+            await userManager.RemoveFromRolesAsync(user, context.RolesToRemove.Distinct());
+        }
 
         var userNeedUpdate = false;
         if (context.PropertiesToUpdate != null)
@@ -64,6 +70,13 @@ public static class UserManagerExtensions
         {
             user.UserClaims = currentClaims;
             userNeedUpdate = true;
+        }
+
+        if (context.RolesToRemove.Count > 0 || claimsChanged)
+        {
+            // When roles are removed or claims are changed, the security stamp needs to be
+            // updated to invalidate existing authentication sessions.
+            await userManager.UpdateSecurityStampAsync(user);
         }
 
         return userNeedUpdate;

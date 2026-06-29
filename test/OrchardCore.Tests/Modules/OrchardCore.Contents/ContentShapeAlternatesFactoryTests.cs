@@ -4,60 +4,34 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Contents;
 
 public class ContentShapeAlternatesFactoryTests
 {
-    private const int CacheCapacity = 1_000;
-
-    public ContentShapeAlternatesFactoryTests()
+    [Fact]
+    public void GetEntry_ShouldReturnCachedInstance_ForSameKey()
     {
-        ContentShapeAlternatesFactory.ClearCache();
+        var entry = ContentShapeAlternatesFactory.GetEntry("BlogPost", "Summary");
+        var cachedEntry = ContentShapeAlternatesFactory.GetEntry("BlogPost", "Summary");
+
+        Assert.Same(entry, cachedEntry);
     }
 
     [Fact]
-    public void GetAlternates_ShouldReturnCachedInstance_ForSameKey()
+    public void GetEntry_ShouldProduceCorrectAlternates_WhenAssembledWithContentItemId()
     {
-        var alternates = ContentShapeAlternatesFactory.GetAlternates("BlogPost", "1", "Summary");
+        var entry = ContentShapeAlternatesFactory.GetEntry("BlogPost", "Summary");
 
-        var cachedAlternates = ContentShapeAlternatesFactory.GetAlternates("BlogPost", "1", "Summary");
-
-        Assert.Same(alternates, cachedAlternates);
+        Assert.Equal(
+            ["Content_Summary", "Content__BlogPost", "Content__42", "Content_Summary__BlogPost", "Content_Summary__42"],
+            entry.GetAlternates("42"));
     }
 
     [Fact]
-    public void GetAlternates_ShouldEvictLeastRecentlyUsedEntry_WhenCapacityIsExceeded()
+    public void GetEntry_ShouldReturnDifferentInstances_ForDifferentKeys()
     {
-        var evictedAlternates = ContentShapeAlternatesFactory.GetAlternates("Article", "evict-me", "Detail");
+        var entryA = ContentShapeAlternatesFactory.GetEntry("BlogPost", "Summary");
+        var entryB = ContentShapeAlternatesFactory.GetEntry("Article", "Detail");
 
-        for (var i = 0; i < CacheCapacity + 5; i++)
-        {
-            ContentShapeAlternatesFactory.GetAlternates("Article", $"item-{i}", "Detail");
-        }
-
-        var alternatesAfterEviction = ContentShapeAlternatesFactory.GetAlternates("Article", "evict-me", "Detail");
-
-        Assert.NotSame(evictedAlternates, alternatesAfterEviction);
-    }
-
-    [Fact]
-    public void GetAlternates_ShouldKeepMostRecentlyUsedEntry_WhenCapacityIsExceeded()
-    {
-        var leastRecentlyUsedAlternates = ContentShapeAlternatesFactory.GetAlternates("Page", "cold", "Summary");
-        var mostRecentlyUsedAlternates = ContentShapeAlternatesFactory.GetAlternates("Page", "hot", "Summary");
-
-        for (var i = 0; i < CacheCapacity - 2; i++)
-        {
-            ContentShapeAlternatesFactory.GetAlternates("Page", $"seed-{i}", "Summary");
-        }
-
-        ContentShapeAlternatesFactory.GetAlternates("Page", "hot", "Summary");
-
-        for (var i = 0; i < 10; i++)
-        {
-            ContentShapeAlternatesFactory.GetAlternates("Page", $"overflow-{i}", "Summary");
-        }
-
-        var leastRecentlyUsedAlternatesAfterTrim = ContentShapeAlternatesFactory.GetAlternates("Page", "cold", "Summary");
-        var mostRecentlyUsedAlternatesAfterTrim = ContentShapeAlternatesFactory.GetAlternates("Page", "hot", "Summary");
-
-        Assert.NotSame(leastRecentlyUsedAlternates, leastRecentlyUsedAlternatesAfterTrim);
-        Assert.Same(mostRecentlyUsedAlternates, mostRecentlyUsedAlternatesAfterTrim);
+        Assert.NotSame(entryA, entryB);
+        Assert.NotEqual(entryA.ContentTypeAlternate, entryB.ContentTypeAlternate);
+        Assert.NotEqual(entryA.DisplayTypeAlternate, entryB.DisplayTypeAlternate);
     }
 }
+

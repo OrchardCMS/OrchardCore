@@ -4,7 +4,6 @@ using OrchardCore.ContentLocalization.Handlers;
 using OrchardCore.ContentLocalization.Models;
 using OrchardCore.ContentLocalization.Records;
 using OrchardCore.ContentManagement;
-using OrchardCore.Entities;
 using OrchardCore.Localization;
 using OrchardCore.Modules;
 using YesSql;
@@ -53,15 +52,15 @@ public class DefaultContentLocalizationManager : IContentLocalizationManager
                 .FirstOrDefaultAsync();
     }
 
-    public Task<IEnumerable<ContentItem>> GetItemsForSetAsync(string localizationSet)
+    public async Task<IEnumerable<ContentItem>> GetItemsForSetAsync(string localizationSet)
     {
-        return _session.Query<ContentItem, LocalizedContentItemIndex>(i => (i.Published || i.Latest) && i.LocalizationSet == localizationSet).ListAsync();
+        return await _session.Query<ContentItem, LocalizedContentItemIndex>(i => (i.Published || i.Latest) && i.LocalizationSet == localizationSet).ListAsync();
     }
 
-    public Task<IEnumerable<ContentItem>> GetItemsForSetsAsync(IEnumerable<string> localizationSets, string culture)
+    public async Task<IEnumerable<ContentItem>> GetItemsForSetsAsync(IEnumerable<string> localizationSets, string culture)
     {
         var invariantCulture = culture.ToLowerInvariant();
-        return _session.Query<ContentItem, LocalizedContentItemIndex>(i => (i.Published || i.Latest) && i.LocalizationSet.IsIn(localizationSets) && i.Culture == invariantCulture).ListAsync();
+        return await _session.Query<ContentItem, LocalizedContentItemIndex>(i => (i.Published || i.Latest) && i.LocalizationSet.IsIn(localizationSets) && i.Culture == invariantCulture).ListAsync();
     }
 
     public async Task<ContentItem> LocalizeAsync(ContentItem content, string targetCulture)
@@ -72,7 +71,7 @@ public class DefaultContentLocalizationManager : IContentLocalizationManager
             throw new InvalidOperationException("Cannot localize an unsupported culture");
         }
 
-        var localizationPart = content.As<LocalizationPart>();
+        var localizationPart = content.GetOrCreate<LocalizationPart>();
         if (string.IsNullOrEmpty(localizationPart.LocalizationSet))
         {
             // If the source content item is not yet localized, define its defaults.
@@ -93,7 +92,7 @@ public class DefaultContentLocalizationManager : IContentLocalizationManager
 
         // Cloning the content item.
         var cloned = await _contentManager.CloneAsync(content);
-        var clonedPart = cloned.As<LocalizationPart>();
+        var clonedPart = cloned.GetOrCreate<LocalizationPart>();
         clonedPart.Culture = targetCulture;
         clonedPart.LocalizationSet = localizationPart.LocalizationSet;
         clonedPart.Apply();

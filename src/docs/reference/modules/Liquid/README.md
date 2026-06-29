@@ -70,6 +70,22 @@ Blog
 
 ## String Filters
 
+### `transliterate`
+Convert Unicode text (e.g. Greek, Cyrillic, Arabic, Chinese, etc.) into its closest ASCII/Latin representation using the <https://github.com/anyascii/anyascii> library.
+
+Input
+
+```liquid
+{{ "Ελληνικά" | transliterate }}
+```
+
+Output
+
+```text
+Ellinika
+```
+
+
 ### `slugify`
 
 Convert a text into a string that can be used in a URL.
@@ -85,6 +101,23 @@ Output
 ```text
 this-is-some-text
 ```
+
+There is an option to transliterate (by default `true`) which first transliterates and slugifies afterwards:
+
+```liquid
+{{ "Ελληνικά" | slugify }}
+```
+or 
+```liquid
+{{ "Ελληνικά" | slugify: transliterate: true}}
+```
+
+Output
+
+```text
+ellinika
+```
+
 
 ### `local`
 
@@ -122,22 +155,6 @@ Output
 
 ```text
 Wednesday, 02 August 2017 11:54:48
-```
-
-### `t`
-
-Localizes a string using the current culture.
-
-Input
-
-```liquid
-{{ "Hello!" | t }}
-```
-
-Output
-
-```text
-Bonjour!
 ```
 
 ## Html Filters
@@ -263,6 +280,38 @@ Renders Shortcodes. Should be combined with the `raw` filter.
 {{ Model.ContentItem.Content.RawHtml.Content.Html | shortcode | raw }}
 ```
 
+## Localization Filters
+
+### `t`
+
+Localizes a string using the current culture.
+
+Input
+
+```liquid
+{{ "Hello!" | t }}
+```
+
+Output
+
+```text
+Bonjour!
+```
+
+You can pass one or more parameters to a localized string:
+
+Input
+
+```liquid
+{{ "Hello {0}!" | t: "John" }}
+```
+
+Output
+
+```text
+Bonjour John!
+```
+
 ## Json Filters
 
 ### `json`
@@ -298,6 +347,41 @@ Example:
 {% for k in jsonObject %}
   {{k["key"]}} {{k["value"]}}
 {% endfor %}
+```
+
+## Data Protection Filters
+
+### `encrypt`
+
+Encrypts a string using the ASP.NET Core Data Protection API and returns a Base64-encoded ciphertext.
+
+Input
+
+```liquid
+{{ "my-secret-value" | encrypt }}
+```
+
+Output
+
+```text
+CfDJ8...  (Base64-encoded ciphertext)
+```
+
+### `decrypt`
+
+Decrypts a Base64-encoded string previously encrypted with the `encrypt` filter. Returns nil if the input is empty or cannot be decrypted.
+
+Input
+
+```liquid
+{% assign encrypted = "my-secret-value" | encrypt %}
+{{ encrypted | decrypt }}
+```
+
+Output
+
+```text
+my-secret-value
 ```
 
 ## Properties
@@ -612,6 +696,60 @@ Here is an example of how to use the `TrackingConsent` object in a Liquid templa
 {% else %}
     <p>Tracking is not allowed.</p>
 {% endif %}
+```
+
+## Localization Filters
+
+### `d`
+
+Localizes a dynamic data string using the current culture.
+
+### Parameters
+
+| Property | Example                                | Description   |
+|----------|----------------------------------------|---------------|
+| Context  | The context that the string belongs to | Content Types |
+
+Input
+
+```liquid
+{{ "Blog" | d: "Content Types" }}
+```
+
+Output
+
+For `fr`, `it`, `es` cultures, it will return:
+
+```text
+Blog
+```
+
+For `ar` culture, it will return:
+
+```text
+مدونة
+```
+
+For unsupported cultures or missing translations, it will return:
+
+```text
+Blog.Content Types
+```
+
+You can pass one or more parameters to a localized string:
+
+Input
+
+```liquid
+{{ "New {0}" | d: "Content Types", "Article" }}
+```
+
+Output
+
+For `it` culture, it will return:
+
+```text
+New Articolo
 ```
 
 ## Shape Filters

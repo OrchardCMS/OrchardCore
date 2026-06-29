@@ -3,8 +3,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Https.Drivers;
+using OrchardCore.Https.Migrations;
 using OrchardCore.Https.Services;
 using OrchardCore.Https.Settings;
 using OrchardCore.Modules;
@@ -25,7 +28,9 @@ public sealed class Startup : StartupBase
             app.UseHttpsRedirection();
         }
 
-        if (settings.EnableStrictTransportSecurity)
+        if (settings.StrictTransportSecurityMode == HttpStrictTransportSecurityMode.Enabled ||
+            (settings.StrictTransportSecurityMode == HttpStrictTransportSecurityMode.FromConfiguration &&
+             serviceProvider.GetRequiredService<IHostEnvironment>().IsProduction()))
         {
             app.UseHsts();
         }
@@ -36,6 +41,7 @@ public sealed class Startup : StartupBase
         services.AddSiteDisplayDriver<HttpsSettingsDisplayDriver>();
         services.AddNavigationProvider<AdminMenu>();
         services.AddSingleton<IHttpsService, HttpsService>();
+        services.AddDataMigration<HttpsSettingsMigrations>();
 
         services.AddPermissionProvider<Permissions>();
 

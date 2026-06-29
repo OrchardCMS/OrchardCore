@@ -13,7 +13,9 @@ public class DefaultSystemRoleProviderTests
         options.Setup(o => o.Value)
             .Returns(new SystemRoleOptions());
 
-        var provider = new DefaultSystemRoleProvider(shellSettings, options.Object);
+        var localizer = new Mock<IStringLocalizer<DefaultSystemRoleProvider>>();
+
+        var provider = new DefaultSystemRoleProvider(shellSettings, localizer.Object, options.Object);
 
         // Act
         var roles = provider.GetSystemRoles();
@@ -38,7 +40,8 @@ public class DefaultSystemRoleProviderTests
                 SystemAdminRoleName = configureSystemAdminRoleName,
             });
 
-        var provider = new DefaultSystemRoleProvider(shellSettings, options.Object);
+        var localizer = new Mock<IStringLocalizer<DefaultSystemRoleProvider>>();
+        var provider = new DefaultSystemRoleProvider(shellSettings, localizer.Object, options.Object);
 
         // Act
         var role = provider.GetAdminRole();
@@ -60,7 +63,8 @@ public class DefaultSystemRoleProviderTests
         options.Setup(o => o.Value)
         .Returns(new SystemRoleOptions());
 
-        var provider = new DefaultSystemRoleProvider(shellSettings, options.Object);
+        var localizer = new Mock<IStringLocalizer<DefaultSystemRoleProvider>>();
+        var provider = new DefaultSystemRoleProvider(shellSettings, localizer.Object, options.Object);
 
         // Act
         var role = provider.GetAdminRole();
@@ -90,7 +94,8 @@ public class DefaultSystemRoleProviderTests
         options.Setup(o => o.Value)
             .Returns(new SystemRoleOptions());
 
-        var provider = new DefaultSystemRoleProvider(shellSettings, options.Object);
+        var localizer = new Mock<IStringLocalizer<DefaultSystemRoleProvider>>();
+        var provider = new DefaultSystemRoleProvider(shellSettings, localizer.Object, options.Object);
 
         // Act
         var result = provider.IsSystemRole(roleName);
@@ -117,7 +122,8 @@ public class DefaultSystemRoleProviderTests
         options.Setup(o => o.Value)
             .Returns(new SystemRoleOptions());
 
-        var provider = new DefaultSystemRoleProvider(shellSettings, options.Object);
+        var localizer = new Mock<IStringLocalizer<DefaultSystemRoleProvider>>();
+        var provider = new DefaultSystemRoleProvider(shellSettings, localizer.Object, options.Object);
 
         // Act
         var result = provider.IsAdminRole(roleName);

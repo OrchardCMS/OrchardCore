@@ -3,7 +3,7 @@
 @using OrchardCore.Admin.Models
 @using OrchardCore.Navigation
 @{
-    var adminSettings = (await siteService.GetSiteSettingsAsync()).As<AdminSettings>();
+    var adminSettings = (await siteService.GetSiteSettingsAsync()).GetOrCreate<AdminSettings>();
     TagBuilder tag = Tag(Model, "ul");
     tag.Attributes["Id"] = NavigationConstants.AdminMenuId;
 
@@ -22,43 +22,51 @@
 @if (adminSettings.DisplayMenuFilter)
 {
 <script at="Foot">
-    $(document).bind('keydown', function (e) {
-        if (e.ctrlKey && e.shiftKey && e.which == 70) {
-            $('#filter').focus();
-            return false;
+    document.addEventListener('keydown', function (e) {
+        var isFilterShortcut = e.key ? e.key.toUpperCase() == 'F' : e.which == 70;
+
+        if (e.ctrlKey && e.shiftKey && isFilterShortcut) {
+            document.getElementById('filter').focus();
+            e.preventDefault();
+            e.stopPropagation();
         }
-    });
-    // custom css expression for a case-insensitive contains()
-    jQuery.expr[":"].contains = jQuery.expr.createPseudo(function (arg) {
-        return function (elem) {
-            return jQuery(elem).text().toUpperCase().indexOf(arg.toUpperCase()) >= 0;
-        };
     });
 
     function hasChild(list) {
-        var filter = $('#filter').val();
-        list.children('li').each(function () {
-            if ($(this).find("span:contains(" + filter + ")").length > 0) {
-                if ($(this).find('ul :first').length > 0) {
-                    $(this).show();
-                    hasChild($(this).find('ul :first').parent());
+        var filter = document.getElementById('filter').value.toUpperCase();
+        Array.from(list.children).filter(function (item) {
+            return item.matches('li');
+        }).forEach(function (item) {
+            var hasMatchingSpan = Array.from(item.querySelectorAll('span')).some(function (span) {
+                return span.textContent.toUpperCase().indexOf(filter) >= 0;
+            });
+
+            if (hasMatchingSpan) {
+                var firstNestedListItem = item.querySelector('ul li');
+
+                if (firstNestedListItem) {
+                    item.style.display = '';
+                    hasChild(firstNestedListItem.parentElement);
                 } else {
-                    $(this).show();
+                    item.style.display = '';
                 }
             } else {
-                $(this).hide();
+                item.style.display = 'none';
             }
         });
     };
-    $('#filter').keyup(function () {
-        var list = $('#adminMenu');
-        var filter = $('#filter').val();
+    document.getElementById('filter').addEventListener('keyup', function (e) {
+        var list = document.getElementById('adminMenu');
+        var filter = document.getElementById('filter').value;
         if (filter) {
             hasChild(list);
         } else {
-            list.find("li").show();
+            list.querySelectorAll("li").forEach(function (item) {
+                item.style.display = '';
+            });
         }
-        return false;
+        e.preventDefault();
+        e.stopPropagation();
     });
 </script>
 }

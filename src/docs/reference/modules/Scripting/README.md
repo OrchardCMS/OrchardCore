@@ -63,23 +63,56 @@ Here is a list of javascript methods provided by Orchard Modules.
 
 #### Generic functions
 
-| Function                                                | Description                                                                                                              |
-|---------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------|
-| `log(level: String, text: String, param: Object): void` | Formats and writes a log message at the specified log level.                                                             |
-| `uuid(): String`                                        | Generates a unique identifier for a content item.                                                                        |
-| `base64(String): String`                                | Decodes the specified string from Base64 encoding. Use <https://www.base64-image.de/> to convert your files to base64.   |
-| `html(String): String`                                  | Decodes the specified string from HTML encoding.                                                                         |
-| `gzip(String): String`                                  | Decodes the specified string from gzip/base64 encoding. Use <http://www.txtwizard.net/compression> to gzip your strings. |
+| Function                                                | Description                                                                                                                     |
+|---------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------|
+| `log(level: String, text: String, param: Object): void` | Formats and writes a log message at the specified log level.                                                                    |
+| `uuid(): String`                                        | Generates a unique identifier for a content item.                                                                               |
+| `base64(String): String`                                | Decodes the specified string from Base64 encoding. Use <https://www.base64-image.de/> to convert your files to base64.          |
+| `html(String): String`                                  | Decodes the specified string from HTML encoding.                                                                                |
+| `gzip(String): String`                                  | Decodes the specified string from gzip/base64 encoding. Use <http://www.txtwizard.net/compression> to gzip your strings.        |
+| `protect(purpose: String, value: String): String`       | Protects the specified value using the ASP.NET Core Data Protection API with the given purpose string.                          |
+| `encrypt(value: String): String`                        | Encrypts the specified value using the ASP.NET Core Data Protection API. Returns a Base64-encoded ciphertext.                   |
+| `decrypt(value: String): String`                        | Decrypts a Base64-encoded string previously encrypted with the `encrypt` function. Returns an empty string if decryption fails. |
+
+!!! warning
+    The `protect` function is intended for use during development and testing scenarios only. **Storing secrets in recipe files for production environments is not recommended** and should be avoided. Use a secure secret management solution (e.g., Azure Key Vault, environment variables) for production deployments.
+
+**Example (protect):**
+
+```json
+{
+  "steps": [
+    {
+      "name": "settings",
+      "Properties": {
+        "ApiKey": "[js: protect('MyModule.ApiKey', 'my-secret-value')]"
+      }
+    }
+  ]
+}
+```
+
+**Example (encrypt / decrypt):**
+
+```javascript
+var encryptedValue = encrypt('my-secret-value');
+```
+
+To read the value back later using JavaScript:
+
+```javascript
+var plainText = decrypt(encryptedValue);
+```
 
 #### Content (`OrchardCore.Contents`)
 
-| Function                                                                                     | Description                                                         |
-|----------------------------------------------------------------------------------------------|---------------------------------------------------------------------|
-| `newContentItem(contentTypeName: String): IContent`                                          | Creates a new instance of a ContentType (does not persist)          |
-| `createContentItem(contentTypeName: String, publish: Boolean, properties: Object): IContent` | Creates and persists a new ContentItem. Conditionally publishes it. |
-| `updateContentItem(contentItem: IContent, properties: Object)`                               | Updates an existing content item with the properties                |
-| `deleteContentItem(contentItem: IContent)`                                                   | Deletes an existing content item                                    |
-| `getUrlPrefix(path: String): String`                                                         | Prefixes the path with the Tenant prefix (if specified)             |
+| Function                                                                                                   | Description                                                         |
+|------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------|
+| `newContentItemAsync(contentTypeName: String): Promise<IContent>`                                          | Creates a new instance of a ContentType (does not persist)          |
+| `createContentItemAsync(contentTypeName: String, publish: Boolean, properties: Object): Promise<IContent>` | Creates and persists a new ContentItem. Conditionally publishes it. |
+| `updateContentItemAsync(contentItem: IContent, properties: Object): Promise`                               | Updates an existing content item with the properties                |
+| `deleteContentItemAsync(contentItem: IContent): Promise`                                                   | Deletes an existing content item                                    |
+| `getUrlPrefix(path: String): String`                                                                       | Prefixes the path with the Tenant prefix (if specified)             |
 
 #### Layers (`OrchardCore.Layers`)
 
@@ -88,34 +121,34 @@ Here is a list of javascript methods provided by Orchard Modules.
 | `isHomepage(): Boolean`          | Returns true if the current request Url is the current homepage                                                                      |
 | `isAnonymous(): Boolean`         | Returns true if there is no authenticated user on the current request                                                                |
 | `isAuthenticated(): Boolean`     | Returns true if there is an authenticated user on the current request                                                                |
-| `url(url: String): Boolean`      | Returns true if the current url matches the provided url. Add a `*` to the end of the url parameter to match any url that start with |
+| `url(url: String): Boolean`      | Returns true if the current URL matches the provided URL. Add a `*` to the end of the URL parameter to match any URL that starts with the provided value. |
 | `culture(name: String): Boolean` | Returns true if the current culture name or the current culture's parent name matches the `name` argument                            |
 
 #### Queries (`OrchardCore.Queries`)
 
-| Function                                                                                 | Description                      |
-|------------------------------------------------------------------------------------------|----------------------------------|
-| `executeQuery(name: String, parameters: Dictionary<string,object>): IEnumerable<object>` | Returns the result of the query. |
+| Function                                                                                               | Description                      |
+|--------------------------------------------------------------------------------------------------------|----------------------------------|
+| `executeQueryAsync(name: String, parameters: Dictionary<string,object>): Promise<IEnumerable<object>>` | Returns the result of the query. |
 
 #### HTTP (`OrchardCore.Workflows.Http`)
 
-| Function                                               | Description                                                                                                                                                                 |
-|--------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `httpContext(): HttpContext`                           | Returns the `HttpContext` which encapsulates all HTTP-specific information about an individual HTTP request.                                                                |
-| `queryString(name: String): String                     | Array`                                                                                                                                                                      | Returns the entire query string (including the leading `?`) when invoked with no arguments, or the value(s) of the parameter name passed in as an argument. |
-| `responseWrite(text: String): void`                    | Writes the argument string directly to the HTTP response stream.                                                                                                            |
-| `absoluteUrl(relativePath: String): String`            | Returns the absolute URL for the relative path argument.                                                                                                                    |
-| `readBody(): String`                                   | Returns the raw HTTP request body.                                                                                                                                          |
-| `requestForm(name: String): String                     | Array`                                                                                                                                                                      | Returns the value(s) of the form field name passed in as an argument. |
-| `deserializeRequestData(): Dictionary<string, object>` | Deserializes the request data as a Dictionary<string, object> for requests that send JSON or form data. Replaces deprecated queryStringAsJson and requestFormAsJson methods |
+| Function                                                             | Description                                                                                                                                                                 |
+|----------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `httpContext(): HttpContext`                                         | Returns the `HttpContext` which encapsulates all HTTP-specific information about an individual HTTP request.                                                                |
+| `queryString(name: String): String`                                  | Array`                                                                                                                                                                      | Returns the entire query string (including the leading `?`) when invoked with no arguments, or the value(s) of the parameter name passed in as an argument. |
+| `responseWriteAsync(text: String): Promise`                          | Writes the argument string directly to the HTTP response stream.                                                                                                            |
+| `absoluteUrl(relativePath: String): String`                          | Returns the absolute URL for the relative path argument.                                                                                                                    |
+| `readBodyAsync(): Promise<String>`                                   | Returns the raw HTTP request body.                                                                                                                                          |
+| `requestForm(name: String): String`                                  | Array`                                                                                                                                                                      | Returns the value(s) of the form field name passed in as an argument. |
+| `deserializeRequestDataAsync(): Promise<Dictionary<string, object>>` | Deserializes the request data as a Dictionary<string, object> for requests that send JSON or form data. Replaces deprecated queryStringAsJson and requestFormAsJson methods |
 
 #### Recipes (`OrchardCore.Recipes`)
 
-| Function                                           | Description                                                                                                                                                                                                            |
-|----------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `variables()`                                      | Declare variables at the root of a recipe. Ex: `"variables": { "blogContentItemId": "[js:uuid()]" }`  Retrieve a variable value like this: `"ContentItemId": "[js: variables('blogContentItemId')]"`                   |
-| `parameters()`                                     | Retrieves the parameters specified during the setup. Ex: `"Owner": "[js: parameters('AdminUserId')]"` See the available [Setup Recipe parameters](../Setup/README.md#recipe-parameters)                                |
-| `configuration(key: String, defaultValue: String)` | Retrieves the specified configuration setting by its key, optionally providing a default. Ex: `[js: configuration('OrchardCore_Admin:AdminUrlPrefix', 'Admin')]` See [IShellConfiguration](../Configuration/README.md) |
+| Function                                                   | Description                                                                                                                                                                                                            |
+|------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `variables(): string`                                      | Declare variables at the root of a recipe. Ex: `"variables": { "blogContentItemId": "[js:uuid()]" }`  Retrieve a variable value like this: `"ContentItemId": "[js: variables('blogContentItemId')]"`                   |
+| `parameters(): string`                                     | Retrieves the parameters specified during the setup. Ex: `"Owner": "[js: parameters('AdminUserId')]"` See the available [Setup Recipe parameters](../Setup/README.md#recipe-parameters)                                |
+| `configuration(key: String, defaultValue: String): string` | Retrieves the specified configuration setting by its key, optionally providing a default. Ex: `[js: configuration('OrchardCore_Admin:AdminUrlPrefix', 'Admin')]` See [IShellConfiguration](../Configuration/README.md) |
 
 #### Workflows (`OrchardCore.Workflows.Http`)
 

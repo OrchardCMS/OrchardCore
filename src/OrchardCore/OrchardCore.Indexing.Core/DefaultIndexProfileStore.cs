@@ -131,9 +131,6 @@ public sealed class DefaultIndexProfileStore : IIndexProfileStore
         await _session.SaveAsync(indexProfile, checkConcurrency: true);
     }
 
-    public ValueTask SaveChangesAsync()
-        => ValueTask.CompletedTask;
-
     private IQuery<IndexProfile, IndexProfileIndex> BuildQuery(QueryContext context)
     {
         var query = _session.Query<IndexProfile, IndexProfileIndex>();

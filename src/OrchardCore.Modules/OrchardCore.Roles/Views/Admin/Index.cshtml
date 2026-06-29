@@ -36,7 +36,7 @@
 
                         @if (entry.IsSystemRole)
                         {
-                            <span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@T["The '{0}' role cannot be deleted.", entry.Name])">
+                            <span class="badge ta-badge fw-normal" data-bs-toggle="tooltip" title="@T["The '{0}' role cannot be deleted.", entry.Name]">
                                 <i class="fa-solid fa-shield text-secondary me-1" aria-hidden="true"></i>@T["System"]
                             </span>
                         }
@@ -69,55 +69,80 @@
 </form>
 
 <script at="Foot">
-    $(function () {
-        var searchBox = $('#search-box');
+    function onDocumentReady(callback) {
+        if (document.readyState !== 'loading') {
+            callback();
+        } else {
+            document.addEventListener('DOMContentLoaded', callback);
+        }
+    }
+
+    onDocumentReady(function () {
+        var searchBox = document.getElementById('search-box');
+        if (!searchBox) {
+            return;
+        }
+
+        function isVisible(element) {
+            return !!(element.offsetWidth || element.offsetHeight || element.getClientRects().length);
+        }
 
         // On Enter, edit the role if there is a single one
-        searchBox.keydown(function (e) {
+        searchBox.addEventListener('keydown', function (e) {
             if (e.key == 'Enter') {
 
                 // Edit the role if there is a single filtered element
-                var visible = $('.roles > ul > li:visible');
+                var visible = Array.from(document.querySelectorAll('.roles > ul > li')).filter(isVisible);
                 if (visible.length == 1) {
-                    window.location = visible.find('.edit').attr('href');
+                    window.location = visible[0].querySelector('.edit').getAttribute('href');
                 }
+                e.preventDefault();
+                e.stopPropagation();
                 return false;
             }
         });
 
         // On each keypress filter the list of roles
-        searchBox.keyup(function (e) {
-            var search = $(this).val().toLowerCase();
-            var elementsToFilter = $("[data-filter-value]");
+        searchBox.addEventListener('keyup', function (e) {
+            var search = this.value.toLowerCase();
+            var elementsToFilter = document.querySelectorAll("[data-filter-value]");
 
             // On ESC, clear the search box and display all roles
             if (e.key === "Escape" || search == '') {
-                searchBox.val('');
-                elementsToFilter.removeClass("d-none first-child-visible last-child-visible");
+                searchBox.value = '';
+                elementsToFilter.forEach(function (element) {
+                    element.classList.remove("d-none", "first-child-visible", "last-child-visible");
+                });
             }
             else {
-                elementsToFilter.each(function () {
-                    var text = $(this).data('filter-value').toLowerCase();
+                elementsToFilter.forEach(function (element) {
+                    var text = element.dataset.filterValue.toLowerCase();
                     var found = text.indexOf(search) > -1;
 
                     if (found) {
-                        $(this).removeClass("d-none first-child-visible last-child-visible");
+                        element.classList.remove("d-none", "first-child-visible", "last-child-visible");
                     }
                     else {
-                        $(this).addClass("d-none");
+                        element.classList.add("d-none");
                     }
                 });
 
-                elementsToFilter.filter(":not(.d-none)").first().addClass("first-child-visible");
-                elementsToFilter.filter(":not(.d-none)").last().addClass("last-child-visible");
+                var visibleElements = Array.from(elementsToFilter).filter(function (element) {
+                    return !element.classList.contains('d-none');
+                });
+
+                if (visibleElements.length > 0) {
+                    visibleElements[0].classList.add("first-child-visible");
+                    visibleElements[visibleElements.length - 1].classList.add("last-child-visible");
+                }
 
                 // We display an alert if a search is not found
-                var visible = $('.roles > ul > li:visible');
+                var visible = Array.from(document.querySelectorAll('.roles > ul > li')).filter(isVisible);
                 if (visible.length == 0) {
-                    $('#list-alert').removeClass("d-none");
+                    document.getElementById('list-alert').classList.remove("d-none");
                 }
                 else {
-                    $('#list-alert').addClass("d-none");
+                    document.getElementById('list-alert').classList.add("d-none");
                 }
             }
         });

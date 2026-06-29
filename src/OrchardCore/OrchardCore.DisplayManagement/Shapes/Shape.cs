@@ -29,7 +29,7 @@ public class Shape : Composite, IShape, IPositioned, IEnumerable<object>
         {
             _items ??= [];
 
-            if (!_sorted)
+            if (!_sorted && _items.Count > 0)
             {
                 _items = _items.OrderBy(x => x, FlatPositionComparer.Instance).ToList();
                 _sorted = true;
@@ -129,7 +129,7 @@ public class Shape : Composite, IShape, IPositioned, IEnumerable<object>
             return Enumerable.Empty<object>().GetEnumerator();
         }
 
-        if (!_sorted)
+        if (!_sorted && _items.Count > 0)
         {
             _items = _items.OrderBy(x => x, FlatPositionComparer.Instance).ToList();
             _sorted = true;
@@ -145,7 +145,7 @@ public class Shape : Composite, IShape, IPositioned, IEnumerable<object>
             return Enumerable.Empty<object>().GetEnumerator();
         }
 
-        if (!_sorted)
+        if (!_sorted && _items.Count > 0)
         {
             _items = _items.OrderBy(x => x, FlatPositionComparer.Instance).ToList();
             _sorted = true;

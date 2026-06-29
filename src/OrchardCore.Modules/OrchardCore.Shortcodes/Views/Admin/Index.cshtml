@@ -91,55 +91,101 @@
 
 @await DisplayAsync(Model.Pager)
 
-<script at="Foot" depends-on="jQuery">
-    $(function () {
-        var actions = $("#actions");
-        var items = $("#items");
-        var filters = $(".filter");
-        var selectAllCtrl = $("#select-all");
-        var selectedItems = $("#selected-items");
-        var itemsCheckboxes = $(":checkbox[name='itemIds']");
-        function displayActionsOrFilters() {
-            if ($(":checkbox[name='itemIds']:checked").length > 1) {
-                actions.show();
-                filters.hide();
-                selectedItems.show();
-                items.hide();
-            }
-            else {
-                actions.hide();
-                filters.show();
-                selectedItems.hide();
-                items.show();
+<script at="Foot">
+    function onDocumentReady(callback) {
+        if (document.readyState !== 'loading') {
+            callback();
+        } else {
+            document.addEventListener('DOMContentLoaded', callback);
+        }
+    }
+
+    onDocumentReady(function () {
+        var actions = document.getElementById("actions");
+        var items = document.getElementById("items");
+        var filters = document.querySelectorAll(".filter");
+        var selectAllCtrl = document.getElementById("select-all");
+        var selectedItems = document.getElementById("selected-items");
+        var itemsCheckboxes = document.querySelectorAll("input[type='checkbox'][name='itemIds']");
+
+        function show(element) {
+            if (element) {
+                element.style.display = '';
             }
         }
-        $(".dropdown-menu .dropdown-item").filter(function () {
-            return $(this).data("action");
-        }).on("click", function () {
-            if ($(":checkbox[name='itemIds']:checked").length > 1) {
-                var $this = $(this);
-                confirmDialog({
-                    ...$this.data(), callback: function (r) {
-                        if (r) {
-                            $("[name='Options.BulkAction']").val($this.data("action"));
-                            $("[name='submit.BulkAction']").click();
+
+        function hide(element) {
+            if (element) {
+                element.style.display = 'none';
+            }
+        }
+
+        function displayActionsOrFilters() {
+            if (document.querySelectorAll("input[type='checkbox'][name='itemIds']:checked").length > 1) {
+                show(actions);
+                filters.forEach(hide);
+                show(selectedItems);
+                hide(items);
+            }
+            else {
+                hide(actions);
+                filters.forEach(show);
+                hide(selectedItems);
+                show(items);
+            }
+        }
+
+        document.querySelectorAll(".dropdown-menu .dropdown-item").forEach(function (item) {
+            if (!item.dataset.action) {
+                return;
+            }
+
+            item.addEventListener("click", function () {
+                if (document.querySelectorAll("input[type='checkbox'][name='itemIds']:checked").length > 1) {
+                    confirmDialog({
+                        ...this.dataset, callback: function (r) {
+                            if (r) {
+                                document.querySelector("[name='Options.BulkAction']").value = item.dataset.action;
+                                document.querySelector("[name='submit.BulkAction']").click();
+                            }
                         }
+                    });
+                }
+            });
+        });
+
+        if (selectAllCtrl) {
+            selectAllCtrl.addEventListener("click", function () {
+                itemsCheckboxes.forEach(function (checkbox) {
+                    if (checkbox !== selectAllCtrl) {
+                        checkbox.checked = selectAllCtrl.checked;
                     }
                 });
-            }
-        });
-        selectAllCtrl.click(function () {
-            itemsCheckboxes.not(this).prop("checked", this.checked);
-            selectedItems.text($(":checkbox[name='itemIds']:checked").length + ' @T["selected"]');
-            displayActionsOrFilters();
-        });
-        itemsCheckboxes.on("click", function () {
-            var itemsCount = $(":checkbox[name='itemIds']").length;
-            var selectedItemsCount = $(":checkbox[name='itemIds']:checked").length;
-            selectAllCtrl.prop("checked", selectedItemsCount == itemsCount);
-            selectAllCtrl.prop("indeterminate", selectedItemsCount > 0 && selectedItemsCount < itemsCount);
-            selectedItems.text(selectedItemsCount + ' @T["selected"]');
-            displayActionsOrFilters();
+
+                if (selectedItems) {
+                    selectedItems.textContent = document.querySelectorAll("input[type='checkbox'][name='itemIds']:checked").length + ' @T["selected"]';
+                }
+
+                displayActionsOrFilters();
+            });
+        }
+
+        itemsCheckboxes.forEach(function (checkbox) {
+            checkbox.addEventListener("click", function () {
+                var itemsCount = document.querySelectorAll("input[type='checkbox'][name='itemIds']").length;
+                var selectedItemsCount = document.querySelectorAll("input[type='checkbox'][name='itemIds']:checked").length;
+
+                if (selectAllCtrl) {
+                    selectAllCtrl.checked = selectedItemsCount == itemsCount;
+                    selectAllCtrl.indeterminate = selectedItemsCount > 0 && selectedItemsCount < itemsCount;
+                }
+
+                if (selectedItems) {
+                    selectedItems.textContent = selectedItemsCount + ' @T["selected"]';
+                }
+
+                displayActionsOrFilters();
+            });
         });
     })
 </script>

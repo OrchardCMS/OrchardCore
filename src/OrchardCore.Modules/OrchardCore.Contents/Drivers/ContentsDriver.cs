@@ -33,8 +33,9 @@ public sealed class ContentsDriver : ContentDisplayDriver
 
         var results = new List<IDisplayResult>()
         {
-            Shape("ContentsTags_SummaryAdmin", new ContentItemViewModel(contentItem)).Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Tags:10"),
-            Shape("ContentsMeta_SummaryAdmin", new ContentItemViewModel(contentItem)).Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Meta:20"),
+            Factory("ContentsCheckbox_SummaryAdmin", (ctx) => new ContentItemViewModel(contentItem)).Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Checkbox:10"),
+            Factory("ContentsTags_SummaryAdmin", (ctx) => new ContentItemViewModel(contentItem)).Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Tags:10"),
+            Factory("ContentsMeta_SummaryAdmin", (ctx) => new ContentItemViewModel(contentItem)).Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Meta:20"),
         };
 
         var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);

@@ -16,16 +16,15 @@ internal sealed class SearchLocalizationDataProvider : ILocalizationDataProvider
     public async Task<IEnumerable<DataLocalizedString>> GetDescriptorsAsync()
     {
         var siteSettings = await _siteService.GetSiteSettingsAsync();
-        var searchSettings = siteSettings.As<SearchSettings>();
-
-        if (string.IsNullOrEmpty(searchSettings.Placeholder))
+        if (!siteSettings.TryGet<SearchSettings>(out var searchSettings) ||
+            string.IsNullOrEmpty(searchSettings.Placeholder))
         {
             return Enumerable.Empty<DataLocalizedString>();
         }
 
         return new[]
         {
-            new DataLocalizedString("Search", searchSettings.Placeholder, string.Empty),
+            new DataLocalizedString(DataLocalizationContext.Search, searchSettings.Placeholder, string.Empty),
         };
     }
 }

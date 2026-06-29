@@ -1,4 +1,5 @@
 @model OrchardCore.ContentFields.ViewModels.EditHtmlFieldViewModel
+@using OrchardCore.ContentFields
 @using OrchardCore.ContentManagement.Metadata.Models
 @using OrchardCore.ContentFields.Settings
 @using OrchardCore.Mvc.Utilities
@@ -7,7 +8,7 @@
 @{
     var settings = Model.PartFieldDefinition.GetSettings<HtmlFieldSettings>();
     var culture = await Orchard.GetContentCultureAsync(Model.Field.ContentItem);
-    string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), $"Content Fields{Constants.ContextSeparator}{Model.PartFieldDefinition.PartDefinition.Name}"];
+    string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), DataLocalizationContext.ContentField(Model.PartFieldDefinition.PartDefinition.Name)];
 }
 
 <style asp-name="trumbowyg-plugins" version="2"></style>
@@ -17,9 +18,9 @@
 <script asp-name="trumbowyg-shortcodes" at="Foot"></script>
 <script asp-name="trumbowyg-theme" at="Foot"></script>
 
-<div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.Html)_FieldWrapper">
-    <label asp-for="Html" class="@Orchard.GetLabelClasses()">@localizedFieldName</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="@($"ocat-wrapper field-wrapper field-wrapper-{Model.PartFieldDefinition.PartDefinition.Name.HtmlClassify()}-{Model.PartFieldDefinition.Name.HtmlClassify()}" + (Model.PartFieldDefinition.IsNamedPart() ? $" field-wrapper-{Model.PartFieldDefinition.ContentTypePartDefinition.Name.HtmlClassify()}-{Model.PartFieldDefinition.Name.HtmlClassify()}" : string.Empty))" id="@Html.IdFor(x => x.Html)_FieldWrapper">
+    <label asp-for="Html" class="ocat-label">@localizedFieldName</label>
+    <div class="ocat-end">
         @await DisplayAsync(await New.ShortcodeModal())
         @if (culture.IsRightToLeft())
         {

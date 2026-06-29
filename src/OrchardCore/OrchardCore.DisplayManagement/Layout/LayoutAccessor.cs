@@ -34,7 +34,12 @@ public class LayoutAccessor : ILayoutAccessor
         // Create a shape whose properties are dynamically created as Zone shapes.
         var layout = await _shapeFactory.CreateAsync(
             "Layout",
-            (shapeFactory) => ValueTask.FromResult<IShape>(new ZoneHolding(() => shapeFactory.CreateAsync("Zone"))), _shapeFactory) as IZoneHolding;
+            static (shapeFactory) =>
+                ValueTask.FromResult<IShape>(
+                    new ZoneHolding<IShapeFactory>(
+                        static (factory) => factory.CreateAsync("Zone"),
+                        shapeFactory)),
+            _shapeFactory) as IZoneHolding;
 
         if (layout == null)
         {

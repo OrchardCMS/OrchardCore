@@ -43,10 +43,7 @@ using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Shortcodes;
-using SixLabors.ImageSharp.Web.Caching;
-using SixLabors.ImageSharp.Web.DependencyInjection;
-using SixLabors.ImageSharp.Web.Middleware;
-using SixLabors.ImageSharp.Web.Providers;
+using OrchardCore.Media.Middleware;
 
 namespace OrchardCore.Media;
 
@@ -55,14 +52,7 @@ public sealed class Startup : StartupBase
     public override int Order
         => OrchardCoreConstants.ConfigureOrder.Media;
 
-    private const string ImageSharpCacheFolder = "is-cache";
-
-    private readonly ShellSettings _shellSettings;
-
-    public Startup(ShellSettings shellSettings)
-    {
-        _shellSettings = shellSettings;
-    }
+    public Startup() { }
 
     public override void ConfigureServices(IServiceCollection services)
     {
@@ -87,6 +77,7 @@ public sealed class Startup : StartupBase
         services.AddResourceConfiguration<ResourceManagementOptionsConfiguration>();
 
         services.AddTransient<IConfigureOptions<MediaOptions>, MediaOptionsConfiguration>();
+        services.TryAddTransient<FileCreationService>();
 
         services.AddSingleton<IMediaFileProvider>(serviceProvider =>
         {
@@ -139,24 +130,15 @@ public sealed class Startup : StartupBase
         services.AddScoped<IAuthorizationHandler, ManageMediaFolderAuthorizationHandler>();
         services.AddNavigationProvider<AdminMenu>();
 
-        // ImageSharp
-
-        // Add ImageSharp Configuration first, to override ImageSharp defaults.
-        services.AddTransient<IConfigureOptions<ImageSharpMiddlewareOptions>, MediaImageSharpConfiguration>();
-
-        services
-            .AddImageSharp()
-            .RemoveProvider<PhysicalFileSystemProvider>()
-            // For multitenancy we must use an absolute path to prevent leakage across tenants on different hosts.
-            .SetCacheKey<BackwardsCompatibleCacheKey>()
-            .Configure<PhysicalFileSystemCacheOptions>(options =>
-            {
-                options.CacheFolder = $"{_shellSettings.Name}/{ImageSharpCacheFolder}";
-                options.CacheFolderDepth = 12;
-            })
-            .AddProvider<MediaResizingFileProvider>()
-            .AddProcessor<ImageVersionProcessor>()
-            .AddProcessor<TokenCommandProcessor>();
+        // Image processing pipeline (NetVips-based)
+        services.AddSingleton<IImageProcessingEngine, VipsImageProcessingEngine>();
+        services.AddSingleton<IResizedImageCache, PhysicalFileSystemResizedImageCache>();
+        services.AddSingleton<MediaCommandParser>();
+        // Shared single-flight instance so concurrent cold-cache requests for the same resized image
+        // coalesce into a single transform (cache-stampede protection). Must be a singleton because
+        // the middleware itself is transient.
+        services.AddSingleton<SingleFlight<string, string>>();
+        services.AddTransient<MediaImageProcessingMiddleware>();
 
         services.AddScoped<MediaTokenSettingsUpdater>();
         services.AddSingleton<IMediaTokenService, MediaTokenService>();
@@ -172,8 +154,10 @@ public sealed class Startup : StartupBase
         services.AddScoped<AttachedMediaFieldFileService, AttachedMediaFieldFileService>();
         services.AddScoped<IContentHandler, AttachedMediaFieldContentHandler>();
         services.AddScoped<IModularTenantEvents, TempDirCleanerService>();
+        services.AddScoped<MoveAttachedMediaFieldsStepExecutor>();
         services.AddDataMigration<Migrations>();
         services.AddRecipeExecutionStep<MediaStep>();
+        services.AddRecipeExecutionStep<MoveAttachedMediaFieldsStep>();
 
         // MIME types
         services.TryAddSingleton<IContentTypeProvider, FileExtensionContentTypeProvider>();
@@ -191,8 +175,7 @@ public sealed class Startup : StartupBase
         services.AddScoped<IMediaNameNormalizerService, NullMediaNameNormalizerService>();
 
         services.AddScoped<IUserAssetFolderNameProvider, DefaultUserAssetFolderNameProvider>();
-        services.AddSingleton<IChunkFileUploadService, ChunkFileUploadService>();
-        services.AddSingleton<IBackgroundTask, ChunkFileUploadBackgroundTask>();
+        services.AddChunkFileUploadServices();
     }
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -209,14 +192,14 @@ public sealed class Startup : StartupBase
             app.UseMiddleware<SecureMediaMiddleware>();
         }
 
-        // FileStore middleware before ImageSharp, but only if a remote storage module has registered a cache provider.
+        // FileStore middleware before image processing, but only if a remote storage module has registered a cache provider.
         if (mediaFileStoreCache != null)
         {
             app.UseMiddleware<MediaFileStoreResolverMiddleware>();
         }
 
-        // ImageSharp before the static file provider.
-        app.UseImageSharp();
+        // Image processing middleware before the static file provider.
+        app.UseMiddleware<MediaImageProcessingMiddleware>();
 
         // The file provider is a circular dependency and replaceable via di.
         mediaOptions.StaticFileOptions.FileProvider = mediaFileProvider;
@@ -246,6 +229,8 @@ public sealed class MediaSlugifyStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.AddTransient<IConfigureOptions<MediaSlugifyOptions>, MediaSlugifyOptionsConfiguration>();
+
         // Media Name Normalizer
         services.AddScoped<IMediaNameNormalizerService, SlugifyMediaNameNormalizerService>();
     }

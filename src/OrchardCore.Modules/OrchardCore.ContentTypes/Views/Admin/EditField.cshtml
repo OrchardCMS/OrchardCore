@@ -16,7 +16,7 @@
     var editorShapes = shapeTable.Bindings.Keys.Where(x => x.StartsWith(Model.PartFieldDefinition.FieldDefinition.Name + "_Option__", StringComparison.OrdinalIgnoreCase) || x.Equals(Model.PartFieldDefinition.FieldDefinition.Name + "_Option", StringComparison.OrdinalIgnoreCase));
     var displayShapes = shapeTable.Bindings.Keys.Where(x => x.StartsWith(Model.PartFieldDefinition.FieldDefinition.Name + "_DisplayOption__", StringComparison.OrdinalIgnoreCase) || x.Equals(Model.PartFieldDefinition.FieldDefinition.Name + "_DisplayOption", StringComparison.OrdinalIgnoreCase));
     var returnUrl = ViewData["returnUrl"]?.ToString();
-    var fieldContext = $"{Model.PartFieldDefinition.PartDefinition.Name}.{Model.DisplayName}";
+    var fieldContext = $"Content Fields{Constants.ContextSeparator}{Model.PartFieldDefinition.PartDefinition.Name}";
     string localizedFieldName = D[Model.DisplayName, fieldContext];
     string localizedPartName = D[Model.PartFieldDefinition.PartDefinition.DisplayName(), "Content Types"];
 }
@@ -25,107 +25,146 @@
 
 <form asp-action="EditField" asp-route-returnUrl="@ViewData["returnUrl"]">
     @Html.ValidationSummary()
-    <div class="mb-3">
-        <div class="w-sm-75 w-lg-75 w-xl-50">
-            <label asp-for="DisplayName" class="form-label">@T["Display Name"]</label>
+
+    <div class="ocat-limited-wrapper">
+        <label asp-for="DisplayName" class="ocat-label">@T["Display Name"]</label>
+        <div class="ocat-limited">
             <input asp-for="DisplayName" autofocus class="form-control" />
+            <span class="hint">@T["Name of the field as it will be displayed in screens."]</span>
         </div>
-        <span class="hint">@T["Name of the field as it will be displayed in screens."]</span>
     </div>
 
-    <div class="mb-3">
-        <div class="w-sm-75 w-lg-75 w-xl-50">
-            <label asp-for="Name" class="form-label">@T["Technical Name"]</label>
+    <div class="ocat-limited-wrapper">
+        <label asp-for="Name" class="ocat-label">@T["Technical Name"]</label>
+        <div class="ocat-limited">
             <input asp-for="Name" class="form-control" readonly />
+            <span class="hint">@T["Technical name of the field."]</span>
         </div>
-        <span class="hint">@T["Technical name of the field."]</span>
     </div>
 
     @if (Model.Shape.Shortcuts != null)
     {
-        <div class="mb-3">
-            @await DisplayAsync(Model.Shape.Shortcuts)
+        <div class="ocat-wrapper">
+            <div class="ocat-end-offset">
+                @await DisplayAsync(Model.Shape.Shortcuts)
+            </div>
         </div>
     }
 
     @if (Model.Shape.Content != null)
     {
-        <div class="mb-3">
-            @await DisplayAsync(Model.Shape.Content)
-        </div>
+        @await DisplayAsync(Model.Shape.Content)
 
         @if (editorShapes.Any())
         {
-            <div class="mb-3">
-                <label asp-for="Editor" class="form-label">@T["What type of editor should be used?"]</label>
-                <select asp-for="Editor" class="form-select" id="field-editor-select">
-                    @foreach (var editorShape in editorShapes)
-                    {
-                        var shape = await Factory.CreateAsync(editorShape);
-                        shape.Properties["Editor"] = Model.Editor;
-                        @await DisplayAsync(shape)
-                    }
-                </select>
+            <div class="ocat-wrapper">
+                <label asp-for="Editor" class="ocat-label">@T["What type of editor should be used?"]</label>
+                <div class="ocat-end">
+                    <select asp-for="Editor" class="form-select" id="field-editor-select">
+                        @foreach (var editorShape in editorShapes)
+                        {
+                            var shape = await Factory.CreateAsync(editorShape);
+                            shape.Properties["Editor"] = Model.Editor;
+                            @await DisplayAsync(shape)
+                        }
+                    </select>
+                </div>
             </div>
         }
 
-        <div id="field-editor-container" class="mb-3" style="display: none">
+        <div id="field-editor-container" style="display: none">
             @await DisplayAsync(Model.Shape.Editor)
         </div>
 
         @if (displayShapes.Any())
         {
-            <div class="mb-3">
-                <label asp-for="DisplayMode" class="form-label">@T["What type of display mode should be used?"]</label>
-                <select asp-for="DisplayMode" class="form-select" id="field-display-select">
-                    @foreach (var displayShape in displayShapes)
-                    {
-                        var shape = await Factory.CreateAsync(displayShape);
-                        shape.Properties["DisplayMode"] = Model.DisplayMode;
-                        @await DisplayAsync(shape)
-                    }
-                </select>
+            <div class="ocat-wrapper">
+                <label asp-for="DisplayMode" class="ocat-label">@T["What type of display mode should be used?"]</label>
+                <div class="ocat-end">
+                    <select asp-for="DisplayMode" class="form-select" id="field-display-select">
+                        @foreach (var displayShape in displayShapes)
+                        {
+                            var shape = await Factory.CreateAsync(displayShape);
+                            shape.Properties["DisplayMode"] = Model.DisplayMode;
+                            @await DisplayAsync(shape)
+                        }
+                    </select>
+                </div>
             </div>
         }
 
-        <div id="field-display-container" class="mb-3" style="display: none">
+        <div id="field-display-container" style="display: none">
             @await DisplayAsync(Model.Shape.DisplayMode)
         </div>
     }
 
-    <div class="mb-3">
-        <button class="btn btn-primary save" type="submit" name="submit.Save" value="Save">@T["Save"]</button>
-        @if (Url.IsLocalUrl(returnUrl))
-        {
-            <a class="btn btn-secondary cancel" role="button" href="@returnUrl">@T["Cancel"]</a>
-        }
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
+            <button class="btn btn-primary save" type="submit" name="submit.Save" value="Save">@T["Save"]</button>
+            @if (Url.IsLocalUrl(returnUrl))
+            {
+                <a class="btn btn-secondary cancel" role="button" href="@returnUrl">@T["Cancel"]</a>
+            }
+        </div>
     </div>
 </form>
 
 <script at="Foot">
     //<![CDATA[
-    $(function () {
-        $('.field-editor').hide();
-        $('#field-editor-container').show();
-        var fieldEditorSelect = $('#field-editor-select');
-        if (fieldEditorSelect.length > 0) {
-            $('.field-editor-' + fieldEditorSelect.val().toLowerCase()).show();
+    function onDocumentReady(callback) {
+        if (document.readyState !== 'loading') {
+            callback();
+        } else {
+            document.addEventListener('DOMContentLoaded', callback);
+        }
+    }
 
-            fieldEditorSelect.change(function () {
-                $('.field-editor').hide();
-                $('.field-editor-' + fieldEditorSelect.val().toLowerCase()).show();
+    onDocumentReady(function () {
+        document.querySelectorAll('.field-editor').forEach(function (element) {
+            element.style.display = 'none';
+        });
+        var fieldEditorContainer = document.getElementById('field-editor-container');
+        if (fieldEditorContainer) {
+            fieldEditorContainer.style.display = '';
+        }
+
+        var fieldEditorSelect = document.getElementById('field-editor-select');
+        if (fieldEditorSelect) {
+            document.querySelectorAll('.field-editor-' + fieldEditorSelect.value.toLowerCase()).forEach(function (element) {
+                element.style.display = '';
+            });
+
+            fieldEditorSelect.addEventListener('change', function () {
+                document.querySelectorAll('.field-editor').forEach(function (element) {
+                    element.style.display = 'none';
+                });
+                document.querySelectorAll('.field-editor-' + fieldEditorSelect.value.toLowerCase()).forEach(function (element) {
+                    element.style.display = '';
+                });
             });
         }
 
-        $('.field-display').hide();
-        $('#field-display-container').show();
-        var fieldDisplaySelect = $('#field-display-select');
-        if (fieldDisplaySelect.length > 0) {
-            $('.field-display-' + fieldDisplaySelect.val().toLowerCase()).show();
+        document.querySelectorAll('.field-display').forEach(function (element) {
+            element.style.display = 'none';
+        });
+        var fieldDisplayContainer = document.getElementById('field-display-container');
+        if (fieldDisplayContainer) {
+            fieldDisplayContainer.style.display = '';
+        }
 
-            fieldDisplaySelect.change(function () {
-                $('.field-display').hide();
-                $('.field-display-' + fieldDisplaySelect.val().toLowerCase()).show();
+        var fieldDisplaySelect = document.getElementById('field-display-select');
+        if (fieldDisplaySelect) {
+            document.querySelectorAll('.field-display-' + fieldDisplaySelect.value.toLowerCase()).forEach(function (element) {
+                element.style.display = '';
+            });
+
+            fieldDisplaySelect.addEventListener('change', function () {
+                document.querySelectorAll('.field-display').forEach(function (element) {
+                    element.style.display = 'none';
+                });
+                document.querySelectorAll('.field-display-' + fieldDisplaySelect.value.toLowerCase()).forEach(function (element) {
+                    element.style.display = '';
+                });
             });
         }
     });

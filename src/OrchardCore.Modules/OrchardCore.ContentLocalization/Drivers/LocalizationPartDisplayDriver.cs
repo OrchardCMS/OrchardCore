@@ -16,6 +16,8 @@ public sealed class LocalizationPartDisplayDriver : ContentPartDisplayDriver<Loc
     private readonly IIdGenerator _idGenerator;
     private readonly ILocalizationService _localizationService;
 
+    private Dictionary<string, IEnumerable<ContentItem>> _alreadyTranslated;
+
     public LocalizationPartDisplayDriver(
         IContentLocalizationManager contentLocalizationManager,
         IIdGenerator idGenerator,
@@ -58,7 +60,7 @@ public sealed class LocalizationPartDisplayDriver : ContentPartDisplayDriver<Loc
 
     public async ValueTask BuildViewModelAsync(LocalizationPartViewModel model, LocalizationPart localizationPart)
     {
-        var alreadyTranslated = await _contentLocalizationManager.GetItemsForSetAsync(localizationPart.LocalizationSet);
+        var alreadyTranslated = await GetAlreadyTranslatedAsync(localizationPart);
 
         model.Culture = localizationPart.Culture;
         model.LocalizationSet = localizationPart.LocalizationSet;
@@ -69,19 +71,19 @@ public sealed class LocalizationPartDisplayDriver : ContentPartDisplayDriver<Loc
 
         var supportedCultures = await _localizationService.GetSupportedCulturesAsync();
         var currentCultures = supportedCultures.Where(c => c != model.Culture).Select(culture =>
-          {
-              return new LocalizationLinksViewModel()
-              {
-                  IsDeleted = false,
-                  Culture = CultureInfo.GetCultureInfo(culture),
-                  ContentItemId = alreadyTranslated.FirstOrDefault(c => c.As<LocalizationPart>()?.Culture == culture)?.ContentItemId,
-              };
-          }).ToList();
+        {
+            return new LocalizationLinksViewModel()
+            {
+                IsDeleted = false,
+                Culture = CultureInfo.GetCultureInfo(culture),
+                ContentItemId = alreadyTranslated.FirstOrDefault(c => GetCulture(c) == culture)?.ContentItemId,
+            };
+        }).ToList();
 
         // Content items that have been translated but the culture was removed from the settings page
-        var deletedCultureTranslations = alreadyTranslated.Where(c => c.As<LocalizationPart>()?.Culture != model.Culture).Select(ci =>
+        var deletedCultureTranslations = alreadyTranslated.Where(c => GetCulture(c) != model.Culture).Select(ci =>
         {
-            var culture = ci.As<LocalizationPart>()?.Culture;
+            var culture = GetCulture(ci);
             if (currentCultures.Any(c => c.ContentItemId == ci.ContentItemId) || culture == null)
             {
                 return null;
@@ -96,4 +98,28 @@ public sealed class LocalizationPartDisplayDriver : ContentPartDisplayDriver<Loc
 
         model.ContentItemCultures = currentCultures.Concat(deletedCultureTranslations).ToList();
     }
+
+    private async ValueTask<IEnumerable<ContentItem>> GetAlreadyTranslatedAsync(LocalizationPart localizationPart)
+    {
+        _alreadyTranslated ??= [];
+
+        if (string.IsNullOrEmpty(localizationPart.LocalizationSet))
+        {
+            return [];
+        }
+
+        if (!_alreadyTranslated.TryGetValue(localizationPart.LocalizationSet, out var items))
+        {
+            items = await _contentLocalizationManager.GetItemsForSetAsync(localizationPart.LocalizationSet);
+
+            _alreadyTranslated[localizationPart.LocalizationSet] = items;
+        }
+
+        return items;
+    }
+
+    private static string GetCulture(ContentItem contentItem)
+        => contentItem.TryGet<LocalizationPart>(out var localizationPart)
+        ? localizationPart.Culture
+        : null;
 }

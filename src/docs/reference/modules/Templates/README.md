@@ -339,7 +339,7 @@ This template is called when a content part is rendered for a given stereo type,
 
 ### `[Stereotype]_[DisplayType]__[PartType]__[PartName]`
 
-This template is called when a content part is a re-usable named part and rendered for a given stereotype, with or without a given display type.
+This template is called when a content part is a reusable named part and rendered for a given stereotype, with or without a given display type.
 
 #### Stereotype with Part Type Examples
 
@@ -350,7 +350,7 @@ This template is called when a content part is a re-usable named part and render
 
 ### `[Stereotype]_[DisplayType]__[PartType]__[ShapeType]`
 
-This template is called when a custom shape type is rendered  for a given stereotype type, with or without a given display type.
+This template is called when a custom shape type is rendered for a given stereotype type, with or without a given display type.
 
 #### Stereotype with Part Name and Shape Examples
 
@@ -361,7 +361,7 @@ This template is called when a custom shape type is rendered  for a given stereo
 
 ### `[Stereotype]_[DisplayType]__[PartType]__[PartName]__[ShapeType]`
 
-This template is called for re-usable named content part with  custom shape type and rendered for a given stereotype type, with or without a given display type.
+This template is called for a reusable named content part with a custom shape type and rendered for a given stereotype type, with or without a given display type.
 
 #### Stereotype with Part Name and Custom Shape Examples
 
@@ -668,10 +668,10 @@ This template is called when displaying a User Name.
 
 #### User Examples
 
-| Template        | Filename              |
-|-----------------|-----------------------|
-| `UserDisplayName_SummaryAdmin__johndoe`  | `UserDisplayName-johndoe.SummaryAdmin.cshtml`  |
-| `UserDisplayName_SummaryAdmin` | `UserDisplayName.SummaryAdmin.cshtml` |
+| Template                                | Filename                                      |
+|-----------------------------------------|-----------------------------------------------|
+| `UserDisplayName_SummaryAdmin__johndoe` | `UserDisplayName-johndoe.SummaryAdmin.cshtml` |
+| `UserDisplayName_SummaryAdmin`          | `UserDisplayName.SummaryAdmin.cshtml`         |
 
 ### Customizing User Display in Admin Lists
 
@@ -708,16 +708,16 @@ The `UserDisplayName` shape provides a flexible way to display user information 
 
 ##### Tag Helper Parameters
 
-| Parameter | Description | Required |
-|-----------|-------------|----------|
-| `user-name` | The username to display | Yes |
-| `display-type` | The display type for template resolution (e.g., `SummaryAdmin`) | No |
-| `cache-id` | Cache identifier for the rendered output | No (defaults to `"user-display-name"`) |
-| `title` | Tooltip text to display on hover | No |
-| `cache-tag` | Cache tags for cache invalidation | No (automatically includes `user-display-name` and `user-display-name:{username}`) |
-| `cache-context` | Cache context for cache variation | No (automatically includes `username-{username}`) |
-| `cache-fixed-duration` | Fixed cache duration (e.g., `"00:05:00"` for 5 minutes) | No |
-| `cache-sliding-duration` | Sliding cache duration | No |
+| Parameter                | Description                                                     | Required                                                                           |
+|--------------------------|-----------------------------------------------------------------|------------------------------------------------------------------------------------|
+| `user-name`              | The username to display                                         | Yes                                                                                |
+| `display-type`           | The display type for template resolution (e.g., `SummaryAdmin`) | No                                                                                 |
+| `cache-id`               | Cache identifier for the rendered output                        | No (defaults to `"user-display-name"`)                                             |
+| `title`                  | Tooltip text to display on hover                                | No                                                                                 |
+| `cache-tag`              | Cache tags for cache invalidation                               | No (automatically includes `user-display-name` and `user-display-name:{username}`) |
+| `cache-context`          | Cache context for cache variation                               | No (automatically includes `username-{username}`)                                  |
+| `cache-fixed-duration`   | Fixed cache duration (e.g., `"00:05:00"` for 5 minutes)         | No                                                                                 |
+| `cache-sliding-duration` | Sliding cache duration                                          | No                                                                                 |
 
 #### Shape Morphing
 
@@ -735,7 +735,7 @@ This morphing behavior allows you to customize the icon and text independently b
 === "Razor"
 
     ```cshtml
-    <span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@Model.Title">
+    <span class="badge ta-badge fw-normal" data-bs-toggle="tooltip" title="@Model.Title">
         @await DisplayAsAsync(Model, "UserDisplayNameIcon")
         @await DisplayAsAsync(Model, "UserDisplayNameText")
     </span>
@@ -744,7 +744,7 @@ This morphing behavior allows you to customize the icon and text independently b
 === "Liquid"
 
     ```liquid
-    <span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="{{ Model.Title }}">
+    <span class="badge ta-badge fw-normal" data-bs-toggle="tooltip" title="{{ Model.Title }}">
         {{ "UserDisplayNameIcon" | shape_new | shape_render }}
         {{ "UserDisplayNameText" | shape_new | shape_render }}
     </span>
@@ -798,10 +798,10 @@ This morphing behavior allows you to customize the icon and text independently b
 
 The `UserDisplayName` shape exposes the following properties:
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `Model.UserName` | `string` | The username of the user to display |
-| `Model.Title` | `string` | The title/tooltip text (typically used in the HTML `title` attribute) |
+| Property         | Type     | Description                                                           |
+|------------------|----------|-----------------------------------------------------------------------|
+| `Model.UserName` | `string` | The username of the user to display                                   |
+| `Model.Title`    | `string` | The title/tooltip text (typically used in the HTML `title` attribute) |
 
 !!! note
     The shape uses a dynamic `IShape` type, not a strongly-typed model. Additional properties can be accessed dynamically.
@@ -940,7 +940,7 @@ Create a user-specific template for a particular username (e.g., for user "admin
     **Filename:** `UserDisplayName-admin.SummaryAdmin.cshtml`
 
     ```cshtml
-    <span class="badge ta-badge font-weight-normal text-danger" data-bs-toggle="tooltip" title="@Model.Title">
+    <span class="badge ta-badge fw-normal text-danger" data-bs-toggle="tooltip" title="@Model.Title">
         <i class="fa-solid fa-user-shield" aria-hidden="true"></i>
         <strong>@Model.UserName</strong>
     </span>
@@ -951,7 +951,7 @@ Create a user-specific template for a particular username (e.g., for user "admin
     **Filename:** `UserDisplayName-admin.SummaryAdmin.liquid`
 
     ```liquid
-    <span class="badge ta-badge font-weight-normal text-danger" data-bs-toggle="tooltip" title="{{ Model.Title }}">
+    <span class="badge ta-badge fw-normal text-danger" data-bs-toggle="tooltip" title="{{ Model.Title }}">
         <i class="fa-solid fa-user-shield" aria-hidden="true"></i>
         <strong>{{ Model.UserName }}</strong>
     </span>

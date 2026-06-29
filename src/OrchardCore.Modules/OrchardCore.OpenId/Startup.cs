@@ -3,6 +3,7 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -31,8 +32,10 @@ using OrchardCore.OpenId.Services.Handlers;
 using OrchardCore.OpenId.Settings;
 using OrchardCore.OpenId.Tasks;
 using OrchardCore.Recipes;
+using OrchardCore.RateLimits;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
+using OrchardCore.Users;
 
 namespace OrchardCore.OpenId;
 
@@ -192,6 +195,17 @@ public sealed class ServerStartup : StartupBase
 
             return configuration;
         }
+    }
+}
+
+[Feature(OpenIdConstants.Features.Server)]
+[RequireFeatures("OrchardCore.RateLimits")]
+public sealed class ServerRateLimitsStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.Configure<RateLimitsOptions>(options =>
+            options.AddRouteRateLimit("Access.Token", HttpMethods.Post, RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(UserRateLimiterPolicyNames.PasswordAuthentication, 10)));
     }
 }
 
