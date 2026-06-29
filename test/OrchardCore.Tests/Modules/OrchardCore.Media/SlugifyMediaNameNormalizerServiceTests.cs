@@ -13,7 +13,7 @@ public class SlugifyMediaNameNormalizerServiceTests
     private readonly SlugService _slugService = new();
 
     [Fact]
-    public void ShouldNormalizeFolderNameWithTransliterationEnabledByDefault()
+    public void Normalize_FolderNameWithTransliterationEnabledByDefault_Succeeds()
     {
         var options = new MediaSlugifyOptions();
         var service = new SlugifyMediaNameNormalizerService(_slugService, Options.Create(options));
@@ -24,7 +24,7 @@ public class SlugifyMediaNameNormalizerServiceTests
     }
 
     [Fact]
-    public void ShouldNormalizeFileNameWithoutTransliterationWhenDisabled()
+    public void Normalize_Disabled_Succeeds()
     {
         var options = new MediaSlugifyOptions
         {
@@ -38,7 +38,7 @@ public class SlugifyMediaNameNormalizerServiceTests
     }
 
     [Fact]
-    public void ShouldDefaultTransliterationToTrueWhenConfigurationIsMissing()
+    public void Default_ConfigurationIsMissing_Succeeds()
     {
         var options = new MediaSlugifyOptions
         {
@@ -54,7 +54,7 @@ public class SlugifyMediaNameNormalizerServiceTests
     }
 
     [Fact]
-    public void ShouldReadTransliterationFromConfiguration()
+    public void Read_TransliterationFromConfiguration_Succeeds()
     {
         var shellConfiguration = CreateShellConfiguration(
         [

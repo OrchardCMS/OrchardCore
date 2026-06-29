@@ -3,7 +3,7 @@ namespace OrchardCore.Localization.Data.Tests;
 public class DataLocalizedStringTests
 {
     [Fact]
-    public void DataLocalizedString_ReturnsValue_WithStringDataType()
+    public void DataLocalizedString_StringDataType_ReturnsValue()
     {
         // Arrange
         var dataLocalizedString = new DataLocalizedString("Content Types", "Blog", "Translated Blog");
@@ -16,7 +16,7 @@ public class DataLocalizedStringTests
     }
 
     [Fact]
-    public void DataLocalizedString_ReturnsValue_WithVarDataType()
+    public void DataLocalizedString_VarDataType_ReturnsValue()
     {
         // Arrange
         var dataLocalizedString = new DataLocalizedString("Content Types", "Blog", "Translated Blog");
@@ -29,7 +29,7 @@ public class DataLocalizedStringTests
     }
 
     [Fact]
-    public void DataLocalizedString_ReturnsValue_WithToString()
+    public void DataLocalizedString_ToString_ReturnsValue()
     {
         // Arrange
         var dataLocalizedString = new DataLocalizedString("Content Types", "Blog", "Translated Blog");
@@ -42,7 +42,7 @@ public class DataLocalizedStringTests
     }
 
     [Fact]
-    public void DataLocalizedString_ReturnsValue_WithLocalizer()
+    public void DataLocalizedString_Localizer_ReturnsValue()
     {
         // Arrange
         var context = "context";

@@ -22,7 +22,7 @@ Framework: **xUnit v3** via the `xunit.v3.mtp-v2` package (versions in `Director
 ## Naming conventions
 
 - Class: `{Subject}Tests` — `Base64Tests`, `BlogPostApiControllerTests`.
-- Method: `{Action}Should{Expected}` or `{Action}_{Condition}_{Expected}` — `ShouldCreateDraftOfExistingContentItem`, `InvokeAsync_InitializedShell_SkipsSetup`.
+- Method: `{Action}_{Condition}_{ExpectedResult}` — `Write_WithinLimit_Succeeds`, `InvokeAsync_InitializedShell_SkipsSetup`.
 - Arrange–Act–Assert.
 
 ## Parameterized tests
