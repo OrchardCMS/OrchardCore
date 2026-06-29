@@ -42,13 +42,35 @@ public class PoweredByMiddlewareTests
     {
         // Arrange
         string key = "X-Powered-By", value = "OrchardCore";
+        var poweredByOptions = Options.Create(new PoweredByOptions
+        {
+            Enabled = false,
+            HeaderName = key,
+            HeaderValue = value,
+        });
+
         var httpResponseMock = new Mock<HttpResponse>();
 #pragma warning disable ASP0019 // Suggest using IHeaderDictionary.Append or the indexer
         _ = httpResponseMock.Setup(r => r.Headers.Add(key, value));
 #pragma warning restore ASP0019 // Suggest using IHeaderDictionary.Append or the indexer
 
-        httpResponseMock.Verify(r => r.Headers, Times.Once);
+        Func<Task> dueTask = null;
+        httpResponseMock.Setup(r => r.OnStarting(It.IsAny<Func<Task>>()))
+                        .Callback<Func<Task>>((f) => dueTask = f);
 
-        var applicationBuilderMock = new Mock<IApplicationBuilder>();
+        var httpContextMock = new Mock<HttpContext>();
+        httpContextMock.Setup(c => c.Response).Returns(httpResponseMock.Object);
+
+        static Task requestDelegate(HttpContext context) => Task.CompletedTask;
+        var middleware = new PoweredByMiddleware(next: requestDelegate, poweredByOptions);
+
+        // Act
+        await middleware.Invoke(httpContextMock.Object);
+
+        // Assert
+        Assert.Null(dueTask);
+#pragma warning disable ASP0019 // Suggest using IHeaderDictionary.Append or the indexer
+        httpResponseMock.Verify(r => r.Headers.Add(key, value), Times.Never);
+#pragma warning restore ASP0019 // Suggest using IHeaderDictionary.Append or the indexer
     }
 }
