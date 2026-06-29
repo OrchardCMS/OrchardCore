@@ -19,7 +19,10 @@ public class PoweredByMiddleware
 
     public Task Invoke(HttpContext httpContext)
     {
-        httpContext.Response.Headers[_poweredByOptions.HeaderName] = _poweredByOptions.HeaderValue;
+        if (_poweredByOptions.Enabled)
+        {
+            httpContext.Response.Headers[_poweredByOptions.HeaderName] = _poweredByOptions.HeaderValue;
+        }
 
         return _next.Invoke(httpContext);
     }
