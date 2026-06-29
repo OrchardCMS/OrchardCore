@@ -74,7 +74,7 @@ public sealed class AliasPartContentImportHandler : ContentImportHandlerBase, IC
 
         if (_column?.Name != null)
         {
-            var part = context.ContentItem.As<AliasPart>();
+            var part = context.ContentItem.Get<AliasPart>(nameof(AliasPart));
 
             if (part != null)
             {

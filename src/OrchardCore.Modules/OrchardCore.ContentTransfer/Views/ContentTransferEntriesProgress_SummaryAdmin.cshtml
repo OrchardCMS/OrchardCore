@@ -6,7 +6,7 @@
 
 @{
     var entry = Model.Value.ContentTransferEntry;
-    var part = entry.As<ImportFileProcessStatsPart>();
+    var part = entry.GetOrCreate<ImportFileProcessStatsPart>();
 }
 
 @if (entry.Status == ContentTransferEntryStatus.Processing && part?.TotalRecords > 0)

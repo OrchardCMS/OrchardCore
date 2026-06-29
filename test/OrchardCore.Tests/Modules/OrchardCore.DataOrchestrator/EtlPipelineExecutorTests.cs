@@ -50,7 +50,7 @@ public class EtlPipelineExecutorTests
             Name = "Empty",
         };
 
-        var log = await executor.ExecuteAsync(pipeline);
+        var log = await executor.ExecuteAsync(pipeline, cancellationToken: TestContext.Current.CancellationToken);
 
         Assert.Equal("Failed", log.Status);
         Assert.Contains(log.Errors, e => e.Contains("start", StringComparison.OrdinalIgnoreCase));

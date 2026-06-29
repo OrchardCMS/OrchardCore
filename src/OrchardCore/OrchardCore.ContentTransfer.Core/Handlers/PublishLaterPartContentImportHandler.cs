@@ -74,7 +74,7 @@ public sealed class PublishLaterPartContentImportHandler : ContentImportHandlerB
 
         if (_column?.Name != null)
         {
-            var part = context.ContentItem.As<PublishLaterPart>();
+            var part = context.ContentItem.Get<PublishLaterPart>(nameof(PublishLaterPart));
 
             if (part != null)
             {

@@ -74,7 +74,7 @@ public sealed class MarkdownBodyPartContentImportHandler : ContentImportHandlerB
 
         if (_column?.Name != null)
         {
-            var part = context.ContentItem.As<MarkdownBodyPart>();
+            var part = context.ContentItem.Get<MarkdownBodyPart>(nameof(MarkdownBodyPart));
 
             if (part != null)
             {

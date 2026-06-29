@@ -74,7 +74,7 @@ public sealed class LiquidPartContentImportHandler : ContentImportHandlerBase, I
 
         if (_column?.Name != null)
         {
-            var part = context.ContentItem.As<LiquidPart>();
+            var part = context.ContentItem.Get<LiquidPart>(nameof(LiquidPart));
 
             if (part != null)
             {

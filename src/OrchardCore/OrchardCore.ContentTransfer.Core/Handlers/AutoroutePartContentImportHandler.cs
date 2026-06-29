@@ -74,7 +74,7 @@ public sealed class AutoroutePartContentImportHandler : ContentImportHandlerBase
 
         if (_column?.Name != null)
         {
-            var part = context.ContentItem.As<AutoroutePart>();
+            var part = context.ContentItem.Get<AutoroutePart>(nameof(AutoroutePart));
 
             if (part != null)
             {

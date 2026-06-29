@@ -728,7 +728,7 @@ public sealed class AdminController : Controller, IUpdateModel
             return RedirectTo(returnUrl);
         }
 
-        var progressPart = entry.As<ImportFileProcessStatsPart>();
+        var progressPart = entry.GetOrCreate<ImportFileProcessStatsPart>();
         var importedCount = progressPart?.ImportedCount ?? 0;
 
         entry.Status = importedCount > 0
@@ -811,7 +811,7 @@ public sealed class AdminController : Controller, IUpdateModel
             return NotFound();
         }
 
-        var statsPart = entry.As<ImportFileProcessStatsPart>();
+        var statsPart = entry.GetOrCreate<ImportFileProcessStatsPart>();
 
         if (statsPart == null || statsPart.Errors == null || statsPart.Errors.Count == 0)
         {

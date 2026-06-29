@@ -74,7 +74,7 @@ public sealed class ArchiveLaterPartContentImportHandler : ContentImportHandlerB
 
         if (_column?.Name != null)
         {
-            var part = context.ContentItem.As<ArchiveLaterPart>();
+            var part = context.ContentItem.Get<ArchiveLaterPart>(nameof(ArchiveLaterPart));
 
             if (part != null)
             {

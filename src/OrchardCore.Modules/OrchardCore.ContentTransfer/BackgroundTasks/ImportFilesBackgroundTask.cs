@@ -108,7 +108,7 @@ public sealed class ImportFilesBackgroundTask : IBackgroundTask
         entry.Error = null;
         entry.CompletedUtc = null;
 
-        var progressPart = entry.As<ImportFileProcessStatsPart>() ?? new ImportFileProcessStatsPart();
+        var progressPart = entry.GetOrCreate<ImportFileProcessStatsPart>();
         progressPart.Errors ??= [];
         progressPart.ErrorMessages ??= [];
         entry.Put(progressPart);

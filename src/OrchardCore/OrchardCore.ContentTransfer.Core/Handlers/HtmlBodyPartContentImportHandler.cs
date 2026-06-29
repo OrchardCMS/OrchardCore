@@ -74,7 +74,7 @@ public sealed class HtmlBodyPartContentImportHandler : ContentImportHandlerBase,
 
         if (_column?.Name != null)
         {
-            var part = context.ContentItem.As<HtmlBodyPart>();
+            var part = context.ContentItem.Get<HtmlBodyPart>(nameof(HtmlBodyPart));
 
             if (part != null)
             {
