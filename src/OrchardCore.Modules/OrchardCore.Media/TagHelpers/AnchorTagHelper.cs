@@ -48,7 +48,8 @@ public class AnchorTagHelper : TagHelper
             return;
         }
 
-        var resolvedUrl = _mediaFileStore != null ? _mediaFileStore.MapPathToPublicUrl(AssetHref) : AssetHref;
+        AssetHref = AssetHref.RemoveQueryString(out string queryString);
+        var resolvedUrl = _mediaFileStore != null ? _mediaFileStore.MapPathToPublicUrl(AssetHref) + queryString : AssetHref + queryString;
 
         if (AppendVersion && _fileVersionProvider != null)
         {
