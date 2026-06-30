@@ -31,3 +31,13 @@ input[type=password]::-ms-reveal,
 input[type=password]::-ms-clear {
     display: none;
 }
+
+.password-requirements-popover {
+    position: absolute;
+}
+
+.password-requirements-popover .popover-arrow {
+    position: absolute;
+    left: 0;
+    transform: translate(119px, 0);
+}

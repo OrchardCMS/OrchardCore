@@ -229,7 +229,7 @@ Content types can be configured with a category and thumbnail for use in block p
 
 Content types can be organized into categories. To set a category:
 
-1. Navigate to **Content Definition** → **Content Types**
+1. Navigate to **Design** → **Content Definition** → **Content Types**
 2. Edit the content type
 3. In the **Content Type Settings** section, set the **Category** field
 
@@ -247,7 +247,7 @@ Content types with the same category are grouped together in the picker's sideba
 
 Content types can display a thumbnail image in block pickers. To set a thumbnail:
 
-1. Navigate to **Content Definition** → **Content Types**
+1. Navigate to **Design** → **Content Definition** → **Content Types**
 2. Edit the content type
 3. In the **Content Type Settings** section, set the **Thumbnail Path** field to an image path (e.g., `/media/thumbnails/my-widget.png`)
 

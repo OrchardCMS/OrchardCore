@@ -187,7 +187,7 @@ public class EmailTests
         var smtp = CreateSmtpService(options);
 
         // Act
-        var result = await smtp.SendAsync(message);
+        var result = await smtp.SendAsync(message, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.True(result.Errors.Any());
@@ -213,6 +213,42 @@ public class EmailTests
         Assert.Contains("Plain text Message", content);
         Assert.Contains("Content-Type: text/html; charset=utf-8", content);
         Assert.Contains("<p>HTML Message</p>", content);
+    }
+
+    [Fact]
+    public async Task SendEmail_CreatesMissingPickupDirectory()
+    {
+        // Arrange
+        var pickupDirectoryPath = Path.Combine(Directory.GetCurrentDirectory(), "Email", "Sites", "Blog1", "Emails");
+
+        if (Directory.Exists(pickupDirectoryPath))
+        {
+            Directory.Delete(pickupDirectoryPath, recursive: true);
+        }
+
+        var message = new MailMessage
+        {
+            To = "info@oc.com",
+            Subject = "Test",
+            TextBody = "Plain text Message",
+        };
+
+        var options = new SmtpOptions
+        {
+            DeliveryMethod = SmtpDeliveryMethod.SpecifiedPickupDirectory,
+            PickupDirectoryLocation = pickupDirectoryPath,
+            IsEnabled = true,
+        };
+
+        var smtp = CreateSmtpService(options);
+
+        // Act
+        var result = await smtp.SendAsync(message, TestContext.Current.CancellationToken);
+
+        // Assert
+        Assert.True(result.Succeeded);
+        Assert.True(Directory.Exists(pickupDirectoryPath));
+        Assert.NotNull(new DirectoryInfo(pickupDirectoryPath).GetFiles().FirstOrDefault());
     }
 
     private static async Task<string> SendEmailAsync(MailMessage message, string defaultSender = null)

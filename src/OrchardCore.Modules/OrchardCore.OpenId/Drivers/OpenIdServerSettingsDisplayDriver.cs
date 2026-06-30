@@ -69,6 +69,7 @@ public sealed class OpenIdServerSettingsDisplayDriver : DisplayDriver<OpenIdServ
             model.UseReferenceAccessTokens = settings.UseReferenceAccessTokens;
             model.RequireProofKeyForCodeExchange = settings.RequireProofKeyForCodeExchange;
             model.RequirePushedAuthorizationRequests = settings.RequirePushedAuthorizationRequests;
+            model.RequireEndSessionConfirmation = settings.RequireEndSessionConfirmation;
 
             foreach (var (certificate, location, name) in await _serverService.GetAvailableCertificatesAsync())
             {
@@ -139,6 +140,7 @@ public sealed class OpenIdServerSettingsDisplayDriver : DisplayDriver<OpenIdServ
         settings.UseReferenceAccessTokens = model.UseReferenceAccessTokens;
         settings.RequireProofKeyForCodeExchange = model.RequireProofKeyForCodeExchange;
         settings.RequirePushedAuthorizationRequests = model.RequirePushedAuthorizationRequests;
+        settings.RequireEndSessionConfirmation = model.RequireEndSessionConfirmation;
 
         return await EditAsync(settings, context);
     }

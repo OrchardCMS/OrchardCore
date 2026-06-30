@@ -15,7 +15,8 @@
             Name = c.CultureInfo.Name,
             DisplayName = !string.IsNullOrEmpty(c.CultureInfo.DisplayName)
                 ? c.CultureInfo.DisplayName
-                : c.CultureInfo.NativeName, Supported = c.Supported
+                : c.CultureInfo.NativeName,
+            Supported = c.Supported,
         })
         .ToArray(), JsonSerializerOptions.Default);
     var defaultCulture = Model.Cultures.FirstOrDefault(x => x.IsDefault).CultureInfo.Name;
@@ -29,7 +30,7 @@
 </script>
 
 <script type="text/x-template" id="options-table">
-    <div class="mb-3">
+    <div>
         <table class="table border-bottom">
             <thead>
                 <tr>
@@ -78,19 +79,20 @@
     </div>
 </script>
 
-<div id="@Html.IdFor(m => m)" class="field-editor field-editor-predefinedlist">
-
-    <div class="row">
-        <div class="col-xl-6">
-            <label class="form-label">@T["Define which cultures are supported by the site."]</label>
+<div class="ocat-wrapper">
+    <label class="ocat-label">@T["Define which cultures are supported by the site."]</label>
+    <div class="ocat-end">
+        <div id="@Html.IdFor(m => m)" class="field-editor field-editor-predefinedlist">
             <options-table :data="supportedCultures" :default-value="defaultCulture" :selectedCulture="selectedCulture" :list="allCultures"></options-table>
         </div>
     </div>
 </div>
 
-<div class="mb-3" asp-validation-class-for="FallBackToParentCultures">
-    <div class="form-check">
-        <input type="checkbox" class="form-check-input" asp-for="FallBackToParentCultures" />
-        <label class="form-check-label" asp-for="FallBackToParentCultures">@T["Fall back to parent culture(s)"]</label>
+<div class="ocat-wrapper" asp-validation-class-for="FallBackToParentCultures">
+    <div class="ocat-end-offset">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" asp-for="FallBackToParentCultures" />
+            <label class="form-check-label" asp-for="FallBackToParentCultures">@T["Fall back to parent culture(s)"]</label>
+        </div>
     </div>
 </div>

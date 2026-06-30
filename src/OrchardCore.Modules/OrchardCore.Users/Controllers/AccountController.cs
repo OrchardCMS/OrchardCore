@@ -11,6 +11,7 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
+using OrchardCore.RateLimits;
 using OrchardCore.Settings;
 using OrchardCore.Users.Events;
 using OrchardCore.Users.Models;
@@ -32,6 +33,7 @@ public sealed class AccountController : AccountBaseController
     private readonly IDisplayManager<LoginForm> _loginFormDisplayManager;
     private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly INotifier _notifier;
+    private readonly PasswordTimingNormalizationService _timingNormalization;
 
     internal readonly IHtmlLocalizer H;
     internal readonly IStringLocalizer S;
@@ -48,7 +50,8 @@ public sealed class AccountController : AccountBaseController
         IOptions<RegistrationOptions> registrationOptions,
         INotifier notifier,
         IDisplayManager<LoginForm> loginFormDisplayManager,
-        IUpdateModelAccessor updateModelAccessor)
+        IUpdateModelAccessor updateModelAccessor,
+        PasswordTimingNormalizationService timingNormalization)
     {
         _signInManager = signInManager;
         _userManager = userManager;
@@ -60,6 +63,7 @@ public sealed class AccountController : AccountBaseController
         _notifier = notifier;
         _loginFormDisplayManager = loginFormDisplayManager;
         _updateModelAccessor = updateModelAccessor;
+        _timingNormalization = timingNormalization;
 
         H = htmlLocalizer;
         S = stringLocalizer;
@@ -98,6 +102,7 @@ public sealed class AccountController : AccountBaseController
     [HttpPost]
     [AllowAnonymous]
     [ActionName(nameof(Login))]
+    [RateLimitGroup(UserRateLimiterPolicyNames.PasswordAuthentication)]
     public async Task<IActionResult> LoginPOST(string returnUrl = null)
     {
         var loginSettings = await _siteService.GetSettingsAsync<LoginSettings>();
@@ -139,7 +144,9 @@ public sealed class AccountController : AccountBaseController
                         }
                     }
 
-                    result = await _signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, lockoutOnFailure: true);
+                    var rememberMe = loginSettings.AllowRememberMe && model.RememberMe;
+
+                    result = await _signInManager.PasswordSignInAsync(user, model.Password, rememberMe, lockoutOnFailure: true);
 
                     if (result.Succeeded)
                     {
@@ -171,6 +178,13 @@ public sealed class AccountController : AccountBaseController
 
                     return View();
                 }
+            }
+            else
+            {
+                // Perform a dummy hash verification so the response time is
+                // indistinguishable from a real password check, preventing
+                // username enumeration attack via timing analysis.
+                _timingNormalization.NormalizeResponseTime();
             }
 
             ModelState.AddModelError(string.Empty, S["Invalid login attempt."]);

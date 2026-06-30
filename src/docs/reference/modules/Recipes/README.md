@@ -63,7 +63,7 @@ These helpers allow dynamic expressions inside recipe values using a special syn
 | `localization` | `"value": "[localization:WelcomeTitle]"`                                            | Retrieves localized strings by key.                                                                                    |
 | `uuid`         | `"Id": "[js:uuid()]"`                                                               | Generates a new unique identifier (UUID/GUID).                                                                         |
 | `base64`       | `"data": "[js:base64('ew0KICAgICJ0eXBlIjogIkNvbnRlbnRJdGVtL0Jsb2dQb3N0Ig0KfQ==')]"` | Decodes the specified string from Base64 encoding. Use https://www.base64-image.de/ to convert your files to base64.   |
-| `html`         | `"html": "[js:html('&lt;p&gt;Hello &amp; welcome&lt;/p&gt;')]"`                     | Decodes the specified string from HTML encoding..                                                                      |
+| `html`         | `"html": "[js:html('&lt;p&gt;Hello &amp; welcome&lt;/p&gt;')]"`                     | Decodes the specified string from HTML encoding.                                                                       |
 | `gzip`         | `"data": "[js:gzip('data')]"`                                                       | Decodes the specified string from gzip/base64 encoding. Use http://www.txtwizard.net/compression to gzip your strings. |
 
 ---
@@ -173,7 +173,7 @@ Creates or configures Lucene search indexes.
   },
   {
     // Create the search settings.
-    "name": "Settings",
+    "name": "settings",
     "LuceneSettings": {
       "SearchIndex": "Search",
       "DefaultSearchFields": [
@@ -457,7 +457,7 @@ Recipe files must be stored in a `Migrations` folder within your project, and th
 
 ### Example: Media Asset Migration
 
-Let's say we want to deploy media assets as part of a module. Here’s how we’d structure this:
+Let's say we want to deploy media assets as part of a module. Here's how we'd structure this:
 
 #### Migration Class
 

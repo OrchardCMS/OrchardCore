@@ -1,0 +1,31 @@
+@using OrchardCore.DisplayManagement.Notify
+<style at="Head">
+    .oc-notify-toast-container {
+        inset-inline-start: auto;
+        inset-inline-end: 1rem;
+        /*top: calc(var(--oc-notify-offset-top, 0px) + .25rem);*/
+        z-index: 1080;
+    }
+
+</style>
+
+<div class="toast-container position-fixed p-3 oc-notify-toast-container">
+@foreach (var entry in (IEnumerable<NotifyEntry>)Model.Entries)
+{
+    @await DisplayAsync(await New.Message(Type: entry.Type, Message: entry.Message, Milliseconds: entry.DismissalMilliseconds))
+}
+</div>
+
+<script at="Foot">
+    document.addEventListener('DOMContentLoaded', () => {
+        if (!window.bootstrap?.Toast) {
+            return;
+        }
+
+        for (const toastElement of document.querySelectorAll('.oc-notify-toast-container .toast')) {
+            const toast = bootstrap.Toast.getOrCreateInstance(toastElement);
+            toast.show();
+            toastElement.addEventListener('hidden.bs.toast', () => toastElement.remove(), { once: true });
+        }
+    });
+</script>

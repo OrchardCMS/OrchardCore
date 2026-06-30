@@ -64,7 +64,9 @@ public sealed class SmtpSettingsDisplayDriver : SiteDisplayDriver<SmtpSettings>
             model.IsEnabled = settings.IsEnabled ?? _smtpOptions.ConfigurationExists();
             model.DefaultSender = settings.DefaultSender;
             model.DeliveryMethod = settings.DeliveryMethod;
-            model.PickupDirectoryLocation = settings.PickupDirectoryLocation;
+            model.PickupDirectoryLocation = string.IsNullOrWhiteSpace(settings.PickupDirectoryLocation)
+                ? SmtpPickupDirectoryResolver.DefaultPickupDirectoryLocation
+                : settings.PickupDirectoryLocation;
             model.Host = settings.Host;
             model.Port = settings.Port;
             model.ProxyHost = settings.ProxyHost;
@@ -123,9 +125,9 @@ public sealed class SmtpSettingsDisplayDriver : SiteDisplayDriver<SmtpSettings>
                 context.Updater.ModelState.AddModelError(Prefix, nameof(model.Host), S["The {0} field is required.", "Host name"]);
             }
             else if (model.DeliveryMethod == SmtpDeliveryMethod.SpecifiedPickupDirectory
-                && string.IsNullOrWhiteSpace(model.PickupDirectoryLocation))
+                && !SmtpPickupDirectoryResolver.IsValidPickupDirectoryLocation(model.PickupDirectoryLocation))
             {
-                context.Updater.ModelState.AddModelError(Prefix, nameof(model.PickupDirectoryLocation), S["The {0} field is required.", "Pickup directory location"]);
+                context.Updater.ModelState.AddModelError(Prefix, nameof(model.PickupDirectoryLocation), S["The pickup directory location is invalid."]);
             }
 
             hasChanges |= model.DefaultSender != settings.DefaultSender;
@@ -169,7 +171,9 @@ public sealed class SmtpSettingsDisplayDriver : SiteDisplayDriver<SmtpSettings>
             settings.ProxyPort = model.ProxyPort;
             settings.IgnoreInvalidSslCertificate = model.IgnoreInvalidSslCertificate;
             settings.DeliveryMethod = model.DeliveryMethod;
-            settings.PickupDirectoryLocation = model.PickupDirectoryLocation;
+            settings.PickupDirectoryLocation = string.IsNullOrWhiteSpace(model.PickupDirectoryLocation)
+                ? SmtpPickupDirectoryResolver.DefaultPickupDirectoryLocation
+                : model.PickupDirectoryLocation;
         }
 
         if (context.Updater.ModelState.IsValid)

@@ -68,11 +68,8 @@ public class HttpMethodsProvider : IGlobalMethodProvider
         _responseWriteMethod = new GlobalMethod
         {
             Name = "responseWrite",
-            Method = serviceProvider => (Action<string>)(text =>
-            {
-                httpContextAccessor.HttpContext.Items[WorkflowHttpResult.Instance] = WorkflowHttpResult.Instance;
-                httpContextAccessor.HttpContext.Response.WriteAsync(text).GetAwaiter().GetResult();
-            }),
+            Method = serviceProvider => (Action<string>)(text => ResponseWriteAsync(httpContextAccessor, text).GetAwaiter().GetResult()),
+            AsyncMethod = serviceProvider => (Func<string, Task>)(text => ResponseWriteAsync(httpContextAccessor, text)),
         };
 
         _absoluteUrlMethod = new GlobalMethod
@@ -89,13 +86,8 @@ public class HttpMethodsProvider : IGlobalMethodProvider
         _readBodyMethod = new GlobalMethod
         {
             Name = "readBody",
-            Method = serviceProvider => (Func<string>)(() =>
-            {
-                using var sr = new StreamReader(httpContextAccessor.HttpContext.Request.Body);
-
-                // Async read of the request body is mandatory.
-                return sr.ReadToEndAsync().GetAwaiter().GetResult();
-            }),
+            Method = serviceProvider => (Func<string>)(() => ReadBodyAsync(httpContextAccessor).GetAwaiter().GetResult()),
+            AsyncMethod = serviceProvider => (Func<Task<string>>)(() => ReadBodyAsync(httpContextAccessor)),
         };
 
         _requestFormMethod = new GlobalMethod
@@ -132,6 +124,7 @@ public class HttpMethodsProvider : IGlobalMethodProvider
         {
             Name = "queryStringAsJson",
             Method = serviceProvider => _deserializeRequestDataMethod.Method.Invoke(serviceProvider),
+            AsyncMethod = serviceProvider => _deserializeRequestDataMethod.AsyncMethod.Invoke(serviceProvider),
         };
 
         // This should be deprecated
@@ -139,83 +132,103 @@ public class HttpMethodsProvider : IGlobalMethodProvider
         {
             Name = "requestFormAsJson",
             Method = serviceProvider => _deserializeRequestDataMethod.Method.Invoke(serviceProvider),
+            AsyncMethod = serviceProvider => _deserializeRequestDataMethod.AsyncMethod.Invoke(serviceProvider),
         };
 
         _deserializeRequestDataMethod = new GlobalMethod
         {
             Name = "deserializeRequestData",
             Method = serviceProvider => (Func<Dictionary<string, object>>)(() =>
+                DeserializeRequestDataAsync(httpContextAccessor).GetAwaiter().GetResult()),
+            AsyncMethod = serviceProvider => (Func<Task<Dictionary<string, object>>>)(() =>
+                DeserializeRequestDataAsync(httpContextAccessor)),
+        };
+    }
+
+    private static async Task ResponseWriteAsync(IHttpContextAccessor httpContextAccessor, string text)
+    {
+        httpContextAccessor.HttpContext.Items[WorkflowHttpResult.Instance] = WorkflowHttpResult.Instance;
+        await httpContextAccessor.HttpContext.Response.WriteAsync(text);
+    }
+
+    private static async Task<string> ReadBodyAsync(IHttpContextAccessor httpContextAccessor)
+    {
+        using var sr = new StreamReader(httpContextAccessor.HttpContext.Request.Body);
+
+        // Async read of the request body is mandatory.
+        return await sr.ReadToEndAsync();
+    }
+
+    private static async Task<Dictionary<string, object>> DeserializeRequestDataAsync(IHttpContextAccessor httpContextAccessor)
+    {
+        Dictionary<string, object> result = null;
+
+        if (httpContextAccessor.HttpContext != null)
+        {
+            var method = httpContextAccessor.HttpContext.Request.Method;
+            if (method.Equals("POST", StringComparison.OrdinalIgnoreCase) || method.Equals("PUT", StringComparison.OrdinalIgnoreCase) || method.Equals("PATCH", StringComparison.OrdinalIgnoreCase))
             {
-                Dictionary<string, object> result = null;
-
-                if (httpContextAccessor.HttpContext != null)
+                if (httpContextAccessor.HttpContext.Request.HasFormContentType)
                 {
-                    var method = httpContextAccessor.HttpContext.Request.Method;
-                    if (method.Equals("POST", StringComparison.OrdinalIgnoreCase) || method.Equals("PUT", StringComparison.OrdinalIgnoreCase) || method.Equals("PATCH", StringComparison.OrdinalIgnoreCase))
+                    var formData = httpContextAccessor.HttpContext.Request.Form;
+
+                    // If we can parse first request form element key as JSON then we throw
+                    if (isValidJSON(formData.First().Key.ToString()))
                     {
-                        if (httpContextAccessor.HttpContext.Request.HasFormContentType)
-                        {
-                            var formData = httpContextAccessor.HttpContext.Request.Form;
-
-                            // If we can parse first request form element key as JSON then we throw
-                            if (isValidJSON(formData.First().Key.ToString()))
-                            {
-                                throw new Exception("Invalid form data passed in the request. The data passed was JSON while it should be form data.");
-                            }
-
-                            try
-                            {
-                                result = formData.ToDictionary(x => x.Key, x => (object)x.Value);
-                            }
-                            catch
-                            {
-                                throw new Exception("Invalid form data passed in the request.");
-                            }
-                        }
-                        else if (httpContextAccessor.HttpContext.Request.HasJsonContentType())
-                        {
-                            string json;
-                            using (var sr = new StreamReader(httpContextAccessor.HttpContext.Request.Body))
-                            {
-                                // Async read of the request body is mandatory.
-                                json = sr.ReadToEndAsync().GetAwaiter().GetResult();
-                            }
-
-                            try
-                            {
-                                result = JConvert.DeserializeObject<Dictionary<string, object>>(json);
-                            }
-                            catch
-                            {
-                                throw new Exception("Invalid JSON passed in the request.");
-                            }
-                        }
+                        throw new Exception("Invalid form data passed in the request. The data passed was JSON while it should be form data.");
                     }
-                    else if (httpContextAccessor.HttpContext.Request.Method.Equals("GET", StringComparison.OrdinalIgnoreCase))
+
+                    try
                     {
-                        var queryData = httpContextAccessor.HttpContext.Request.Query;
-
-                        try
-                        {
-                            result = queryData.ToDictionary(x => x.Key, x => (object)x.Value);
-
-                            // We never need to keep the Workflow token
-                            result.Remove("token");
-                        }
-                        catch
-                        {
-                            throw new Exception("Invalid query string data passed in the request.");
-                        }
+                        result = formData.ToDictionary(x => x.Key, x => (object)x.Value);
                     }
-                    else
+                    catch
                     {
-                        throw new Exception("The request method is not supported");
+                        throw new Exception("Invalid form data passed in the request.");
                     }
                 }
+                else if (httpContextAccessor.HttpContext.Request.HasJsonContentType())
+                {
+                    string json;
+                    using (var sr = new StreamReader(httpContextAccessor.HttpContext.Request.Body))
+                    {
+                        // Async read of the request body is mandatory.
+                        json = await sr.ReadToEndAsync();
+                    }
 
-                return result;
-            }),
-        };
+                    try
+                    {
+                        result = JConvert.DeserializeObject<Dictionary<string, object>>(json);
+                    }
+                    catch
+                    {
+                        throw new Exception("Invalid JSON passed in the request.");
+                    }
+                }
+            }
+            else if (httpContextAccessor.HttpContext.Request.Method.Equals("GET", StringComparison.OrdinalIgnoreCase))
+            {
+                var queryData = httpContextAccessor.HttpContext.Request.Query;
+
+                try
+                {
+                    result = queryData.ToDictionary(x => x.Key, x => (object)x.Value);
+
+                    // We never need to keep the Workflow token
+                    result.Remove("token");
+                }
+                catch
+                {
+                    throw new Exception("Invalid query string data passed in the request.");
+                }
+            }
+            else
+            {
+                throw new Exception("The request method is not supported");
+            }
+        }
+
+        return result;
     }
 
     private static bool isValidJSON(string json)

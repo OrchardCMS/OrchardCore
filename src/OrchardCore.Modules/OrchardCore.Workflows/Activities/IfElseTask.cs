@@ -8,11 +8,16 @@ namespace OrchardCore.Workflows.Activities;
 public class IfElseTask : TaskActivity<IfElseTask>
 {
     private readonly IWorkflowScriptEvaluator _scriptEvaluator;
+    private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
     protected readonly IStringLocalizer S;
 
-    public IfElseTask(IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<IfElseTask> localizer)
+    public IfElseTask(
+        IWorkflowScriptEvaluator scriptEvaluator,
+        IWorkflowExpressionEvaluator expressionEvaluator,
+        IStringLocalizer<IfElseTask> localizer)
     {
         _scriptEvaluator = scriptEvaluator;
+        _expressionEvaluator = expressionEvaluator;
         S = localizer;
     }
 
@@ -29,6 +34,18 @@ public class IfElseTask : TaskActivity<IfElseTask>
         set => SetProperty(value);
     }
 
+    public WorkflowExpression<bool> LiquidCondition
+    {
+        get => GetProperty(() => new WorkflowExpression<bool>());
+        set => SetProperty(value);
+    }
+
+    public WorkflowScriptSyntax Syntax
+    {
+        get => GetProperty(() => WorkflowScriptSyntax.JavaScript);
+        set => SetProperty(value);
+    }
+
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
         return Outcomes(S["True"], S["False"]);
@@ -36,7 +53,13 @@ public class IfElseTask : TaskActivity<IfElseTask>
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
-        var result = await _scriptEvaluator.EvaluateAsync(Condition, workflowContext);
+        var result = Syntax switch
+        {
+            WorkflowScriptSyntax.Liquid => await _expressionEvaluator.EvaluateAsync(LiquidCondition, workflowContext, null),
+            WorkflowScriptSyntax.JavaScript => await _scriptEvaluator.EvaluateAsync(Condition, workflowContext),
+            _ => throw new NotSupportedException($"The syntax {Syntax} isn't supported for IfElseTask.")
+        };
+
         return Outcomes(result ? "True" : "False");
     }
 }

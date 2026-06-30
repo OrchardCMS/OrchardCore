@@ -33,7 +33,7 @@ public class BlogPostContentStepIdempotentTests
                 var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x =>
                     x.ContentType == "BlogPost").ListAsync();
 
-                Assert.Equal(2, blogPosts.Count());
+                Assert.Equal(2, blogPosts.Count);
 
                 var originalVersion = blogPosts.FirstOrDefault(x => x.ContentItemVersionId == context.OriginalBlogPostVersionId);
                 Assert.False(originalVersion?.Latest);

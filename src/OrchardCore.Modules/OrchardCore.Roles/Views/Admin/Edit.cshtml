@@ -35,10 +35,12 @@
 <form asp-action="@(Model.IsCloning ? "Clone" : "Edit")" asp-route-id="@ViewContext.HttpContext.Request.RouteValues["id"]" method="post" class="no-multisubmit">
     @if (Model.IsCloning)
     {
-        <div class="mb-3" asp-validation-class-for="Name">
-            <label asp-for="Name" class="form-label">@T["Role name"]</label>
+        <div class="ocat-wrapper" asp-validation-class-for="Name">
+            <label asp-for="Name" class="ocat-label">@T["Role name"]</label>
+            <div class="ocat-end">
             <input asp-for="Name" class="form-control" autofocus />
             <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
         </div>
     }
     <div class="mb-3" asp-validation-class-for="RoleDescription">
@@ -126,41 +128,66 @@
             }
         </div>
     }
-    <div class="mb-3">
-        <button class="btn btn-primary save" type="submit">@T["Save"]</button>
-        <a class="btn btn-secondary cancel" role="button" asp-route-action="Index">@T["Cancel"]</a>
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
+            <button class="btn btn-primary save" type="submit">@T["Save"]</button>
+            <a class="btn btn-secondary cancel" role="button" asp-route-action="Index">@T["Cancel"]</a>
+        </div>
     </div>
 </form>
 
 <script at="Foot">
-    $(function () {
-        var searchBox = $('#search-box');
+    function onDocumentReady(callback) {
+        if (document.readyState !== 'loading') {
+            callback();
+        } else {
+            document.addEventListener('DOMContentLoaded', callback);
+        }
+    }
+
+    onDocumentReady(function () {
+        var searchBox = document.getElementById('search-box');
+        if (!searchBox) {
+            return;
+        }
+
+        function setVisible(element, visible) {
+            element.style.display = visible ? '' : 'none';
+        }
+
+        function isVisible(element) {
+            return !!(element.offsetWidth || element.offsetHeight || element.getClientRects().length);
+        }
+
         // On each keypress filter the list of roles
-        searchBox.keyup(function (e) {
-            var search = $(this).val().toLowerCase();
+        searchBox.addEventListener('keyup', function (e) {
+            var search = this.value.toLowerCase();
 
             // On ESC, clear the search box and display all roles
             if (e.key === "Escape" || search == '') {
-                searchBox.val('');
-                $('.permissions-list').toggle(true);
-                $('.permissions-list > table > tbody > tr').toggle(true);
+                searchBox.value = '';
+                document.querySelectorAll('.permissions-list').forEach(function (list) {
+                    setVisible(list, true);
+                });
+                document.querySelectorAll('.permissions-list > table > tbody > tr').forEach(function (row) {
+                    setVisible(row, true);
+                });
             }
             else {
-                $('.permissions-list > table > tbody > tr').each(function () {
-                    var text = $(this).data('text').toLowerCase();
+                document.querySelectorAll('.permissions-list > table > tbody > tr').forEach(function (row) {
+                    var text = row.dataset.text.toLowerCase();
                     var found = text.indexOf(search) > -1;
-                    $(this).toggle(found);
+                    setVisible(row, found);
 
                     if (found) {
-                        $(this).parents('.permissions-list').toggle(true);
+                        setVisible(row.closest('.permissions-list'), true);
                     }
                 });
 
                 // Hide any section without visible permission
-                $('.permissions-list').each(function () {
-                    var list = $(this);
-                    var hasVisiblePermissions = list.find('table > tbody > tr:visible').length > 0;
-                    list.toggle(hasVisiblePermissions);
+                document.querySelectorAll('.permissions-list').forEach(function (list) {
+                    var hasVisiblePermissions = Array.from(list.querySelectorAll('table > tbody > tr')).some(isVisible);
+                    setVisible(list, hasVisiblePermissions);
                 });
             }
         });

@@ -32,12 +32,14 @@ extra:
   social:
     - icon: fontawesome/solid/leaf
       link: https://orchardcore.net
-    - icon: fontawesome/brands/github-alt
+    - icon: fontawesome/brands/github
       link: https://github.com/OrchardCMS/OrchardCore
     - icon: fontawesome/brands/discord
       link: https://orchardcore.net/discord
-    - icon: fontawesome/brands/twitter
+    - icon: fontawesome/brands/x-twitter
       link: https://twitter.com/OrchardCMS
+    - icon: fontawesome/brands/linkedin
+      link: https://www.linkedin.com/groups/13605669/
 
 # Repository
 repo_name: OrchardCMS/OrchardCore
@@ -54,7 +56,7 @@ validation:
 # Add files here that are intentionally not in the navigation and thus omitted_files shouldn't warn about them.
 not_in_nav: |
   samples/
-  releases/3.0.0.md
+  releases/4.0.0.md
   llms.txt
 
 # Extensions
@@ -145,7 +147,7 @@ nav:
       - Install localization files: guides/install-localization-files/README.md
       - Integrate Facebook plugins: guides/integrate-facebook-plugins/README.md
       - Run code on startup: guides/run-code-on-startup/README.md
-      - Create a custom admin theme: guides/create-admin-theme/README.md
+      - Creating an Admin Theme: guides/create-admin-theme/README.md
       - Create a Custom Module: guides/create-install-custom-module/README.md  
       - Customize encoding settings: guides/encoding-settings/README.md
       - Understanding Content Definitions Stores: guides/content-definitions/README.md
@@ -204,16 +206,19 @@ nav:
               - Templates: reference/modules/Templates/README.md
               - Placements: reference/modules/Placements/README.md
               - Themes: reference/modules/Themes/README.md
+              - Admin Theme Conventions: reference/themes/admin-theme.md
               - Liquid: reference/modules/Liquid/README.md
               - Media:
                   - Media: reference/modules/Media/README.md
                   - Media Slugify: reference/modules/Media.Slugify/README.md
+                  - Antivirus: reference/modules/Antivirus/README.md
                   - Media Amazon S3: reference/modules/Media.AmazonS3/README.md
                   - Media Azure: reference/modules/Media.Azure/README.md
               - ReCaptcha: reference/modules/ReCaptcha/README.md
               - Resources: reference/modules/Resources/README.md
               - Rules: reference/modules/Rules/README.md
               - Search, Indexing, Querying:
+                  - Search: reference/modules/Search/README.md
                   - Azure AI Search: reference/modules/AzureAISearch/README.md
                   - Elasticsearch: reference/modules/Elasticsearch/README.md
                   - Indexing: reference/modules/Indexing/README.md
@@ -251,10 +256,12 @@ nav:
               - Audit Trail: reference/modules/AuditTrail/README.md
               - Auto Setup: reference/modules/AutoSetup/README.md
               - Features: reference/modules/Features/README.md
+              - File Upload Security: reference/core/file-upload-security.md
               - Contents: reference/modules/Contents/README.md
               - Configuration: reference/modules/Configuration/README.md
               - Cors: reference/modules/Cors/README.md
               - Custom Settings: reference/modules/CustomSettings/README.md
+              - Settings: reference/modules/Settings/README.md
               - Deployment: reference/modules/Deployment/README.md
               - Placement: reference/modules/Placement/README.md
               - Data: reference/modules/Data/README.md
@@ -279,6 +286,7 @@ nav:
               - OpenId: reference/modules/OpenId/README.md
               - Permissions: reference/modules/Security/Permissions.md
               - Razor Helpers: reference/modules/Razor/README.md
+              - Rate Limits: reference/modules/RateLimits/README.md
               - Recipes: reference/modules/Recipes/README.md
               - Redis: reference/modules/Redis/README.md
               - Remote Deployment: reference/modules/Deployment.Remote/README.md
@@ -299,6 +307,7 @@ nav:
       - Libraries: reference/libraries/README.md
       - Glossary: reference/glossary/README.md
   - Releases Notes:
+      - 3.0.0: releases/3.0.0.md
       - 2.2.1: releases/2.2.1.md
       - 2.2.0: releases/2.2.0.md
       - 2.1.9: releases/2.1.9.md
@@ -342,6 +351,7 @@ nav:
       - Contributing code: contributing/contributing-code.md
       - Contributing documentation: contributing/contributing-documentation.md
       - Reviewing pull requests: contributing/reviewing-pull-requests.md
+      - Using agent skills: contributing/using-skills.md
       - Benchmarking: contributing/benchmarking.md
       - Contributing to orchardcore.net: contributing/contributing-to-orchardcore-net.md
       - Developer Meetings: contributing/meetings.md

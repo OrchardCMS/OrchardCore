@@ -1,15 +1,28 @@
 <a id="exportContentToDeploymentTargetBulkActions" class="dropdown-item" data-title="@T["Bulk Action"]" data-message="@T["Are you sure you want to export these items?"]">@T["Export to deployment target"]</a>
 
-<script at="Foot" depends-on="jQuery">
-    $(function () {
-        $('#exportContentToDeploymentTargetBulkActions').on('click', function () {
-            if ($(":checkbox[name='itemIds']:checked").length > 1) {
-                var $this = $(this);
+<script at="Foot">
+    function onDocumentReady(callback) {
+        if (document.readyState !== 'loading') {
+            callback();
+        } else {
+            document.addEventListener('DOMContentLoaded', callback);
+        }
+    }
+
+    onDocumentReady(function () {
+        var exportButton = document.getElementById('exportContentToDeploymentTargetBulkActions');
+
+        if (!exportButton) {
+            return;
+        }
+
+        exportButton.addEventListener('click', function () {
+            if (document.querySelectorAll("input[type='checkbox'][name='itemIds']:checked").length > 1) {
                 confirmDialog({
-                    ...$this.data(), callback: function (r) {
+                    ...this.dataset, callback: function (r) {
                         if (r) {
                             console.log('t')
-                            var modal = new bootstrap.Modal($('#modalExportContentToDeploymentTargetContentBulkActionsTarget'));
+                            var modal = new bootstrap.Modal(document.getElementById('modalExportContentToDeploymentTargetContentBulkActionsTarget'));
                             modal.show();
                         }
                     }

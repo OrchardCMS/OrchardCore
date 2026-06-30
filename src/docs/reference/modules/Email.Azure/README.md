@@ -28,3 +28,28 @@ For more information about configurations, please refer to [Configuration](../Co
 
 !!! note
     Configuration of the **Default Azure Communication Services** provider is not possible through Admin Settings. Utilize the configuration provider for the necessary setup. The provider will appear only if the configuration exists.
+
+## Recipe Configuration
+
+Azure email settings can be configured using the `Settings` recipe step:
+
+```json
+{
+  "steps": [
+    {
+      "name": "settings",
+      "AzureEmailSettings": {
+        "IsEnabled": true,
+        "DefaultSender": "noreply@example.com",
+        "ConnectionString": "endpoint=https://your-resource.communication.azure.com/;accesskey=..."
+      }
+    }
+  ]
+}
+```
+
+| Property           | Type    | Description                                                       |
+|--------------------|---------|-------------------------------------------------------------------|
+| `IsEnabled`        | Boolean | Whether the Azure email provider is enabled.                      |
+| `DefaultSender`    | String  | The default sender email address.                                 |
+| `ConnectionString` | String  | The Azure Communication Services connection string. **Required.** |
