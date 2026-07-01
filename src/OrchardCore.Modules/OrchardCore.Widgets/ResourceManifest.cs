@@ -17,7 +17,8 @@ public sealed class ResourceManagementOptionsConfiguration : IConfigureOptions<R
 
         _manifest
             .DefineScript("widgetslist-edit")
-            .SetUrl("~/OrchardCore.Widgets/Scripts/widgetslist.edit.min.js", "~/OrchardCore.Widgets/Scripts/widgetslist.edit.js");
+            .SetDependencies("Sortable")
+            .SetUrl("~/OrchardCore.Widgets/Scripts/widgets/widgetslist.edit.min.js", "~/OrchardCore.Widgets/Scripts/widgets/widgetslist.edit.js");
     }
 
     public void Configure(ResourceManagementOptions options)
