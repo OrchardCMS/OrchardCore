@@ -23,14 +23,17 @@ window.iconPickerVue = new Vue({
             var selected = e.iconpickerInstance.options.fullClassFormatter(e.iconpickerValue);
 
             if (this.targetInputField) {
-                $('#' + this.targetInputField).val(selected);
+                document.getElementById(this.targetInputField).value = selected;
             }
 
             if (this.targetIconTag) {
                 // We need to replace the full tag with the new class.
                 // We could simply apply the new selected class to the i element.
                 // But there is an issue: when the previous class is not a valid fa icon the icon does not refresh.
-                $('#' + this.targetIconTag).replaceWith('<i id="' + this.targetIconTag + '" class="'+ selected + '"></i>')
+                var newIcon = document.createElement('i');
+                newIcon.id = this.targetIconTag;
+                newIcon.className = selected;
+                document.getElementById(this.targetIconTag).replaceWith(newIcon);
             }
 
             if (this.iconPickerModal != null)
@@ -47,7 +50,7 @@ window.iconPickerVue = new Vue({
 
             if (this.iconPickerModal == null)
             {
-                this.iconPickerModal = new bootstrap.Modal($("#iconPickerModal"), {
+                this.iconPickerModal = new bootstrap.Modal(document.getElementById("iconPickerModal"), {
                     keyboard: false
                 });
             }
