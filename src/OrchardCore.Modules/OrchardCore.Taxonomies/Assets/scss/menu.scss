@@ -9,3 +9,12 @@
     border: none;
     padding: 0;
 }
+
+// Auto-created child lists (see menu.js) collapse to nothing at rest so leaf
+// items keep their compact height; nesting depth is only ever changed via the
+// indent/outdent buttons, so this list never needs to visibly expand.
+#menu ol.menu-item-links:empty {
+    margin: 0;
+    padding: 0;
+    min-height: 0;
+}

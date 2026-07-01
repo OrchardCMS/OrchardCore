@@ -9,3 +9,9 @@
   border: none;
   padding: 0;
 }
+
+#menu ol.menu-item-links:empty {
+  margin: 0;
+  padding: 0;
+  min-height: 0;
+}

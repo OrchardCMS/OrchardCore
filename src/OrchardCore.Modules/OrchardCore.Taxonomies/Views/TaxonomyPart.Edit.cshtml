@@ -13,8 +13,8 @@
     The shape is created from TaxonomyPartDisplayDriver
 *@
 
-<script asp-src="~/OrchardCore.Taxonomies/Scripts/menu.js" at="Foot" depends-on="jQuery-ui"></script>
-<style asp-src="~/OrchardCore.Taxonomies/Styles/menu.min.css" debug-src="~/OrchardCore.Taxonomies/Styles/menu.css" depends-on="jQuery-ui"></style>
+<script asp-src="~/OrchardCore.Taxonomies/Scripts/menu.js" at="Foot" depends-on="Sortable"></script>
+<style asp-src="~/OrchardCore.Taxonomies/Styles/menu.min.css" debug-src="~/OrchardCore.Taxonomies/Styles/menu.css"></style>
 
 @{
     var updater = ModelUpdaterAccessor.ModelUpdater;
@@ -55,7 +55,7 @@
                 ? taxonomyPart.Terms
                 : [];
         }
-        <ol id="menu" class="list-group my-3">
+        <ol id="menu" class="list-group my-3" data-hierarchy-input="@Html.IdFor(m => m.Hierarchy)" data-leave-message="@T["You have reordered the taxonomy."]">
             @foreach (var menuItem in taxonomyItems)
             {
                 var termShape = await ContentItemDisplayManager.BuildDisplayAsync(menuItem, updater, "TermAdmin");
@@ -66,34 +66,5 @@
         </ol>
 
         <input asp-for="Hierarchy" type="hidden" value="" />
-        <div id="msg-leave" style="display:none" data>@T["You have reordered the taxonomy."]</div>
     </div>
 </div>
-<script at="Foot">
-    var menuItemId;
-    var confirmLeave;
-
-    $(function () {
-        $('#menu')
-            .nestedSortable({
-                handle: 'div.menu-item-title',
-                items: 'li.menu-item',
-                toleranceElement: '> div.menu-item-title',
-                relocate: function () {
-                    confirmLeave = true;
-                    $('#@Html.IdFor(m => m.Hierarchy)').attr('value', JSON.stringify($('#menu').nestedSortable('toHierarchy')));
-                }
-            });
-
-        window.onbeforeunload = function () {
-            if (confirmLeave) {
-                return $('#msg-leave').text();
-            }
-        }
-
-        $('#menu').closest("form").on('submit', function (e) {
-            confirmLeave = false;
-            window.onbeforeunload = function () { };
-        });
-    });
-</script>
