@@ -1,6 +1,9 @@
 {
   "name": "@orchardcore/liquid",
   "version": "1.0.0",
+  "scripts": {
+    "check": "vue-tsc --noEmit"
+  },
   "dependencies": {
     "monaco-editor": "0.52.2"
   }
