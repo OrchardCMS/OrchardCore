@@ -82,7 +82,7 @@ function managerHasVersion(managerName, version) {
 const versionManagers = {
     fnm: {
         name: "fnm",
-        install() {
+        install(expectedVersion) {
             console.log(chalk.cyan("Installing fnm (Fast Node Manager)..."));
             if (process.platform === "win32") {
                 execSync("winget install Schniz.fnm", { stdio: "inherit" });
@@ -128,7 +128,7 @@ const versionManagers = {
     },
     volta: {
         name: "volta",
-        install() {
+        install(expectedVersion) {
             console.log(chalk.cyan("Installing Volta..."));
             if (process.platform === "win32") {
                 execSync("winget install Volta.Volta", { stdio: "inherit" });
@@ -233,7 +233,7 @@ if (fs.existsSync(nodeVersionFile)) {
             const manager = versionManagers[managerByOption[answer]];
             try {
                 if (!isCommandAvailable(manager.name)) {
-                    manager.install();
+                    manager.install(expectedVersion);
                 }
                 console.log(chalk.cyan(`Installing Node.js ${expectedVersion} via ${manager.name}...`));
                 manager.useNode(expectedVersion);
