@@ -10,6 +10,7 @@
     'use strict';
 
     var DRAGGING_CLASS = 'menu-dragging';
+    var DRAGGED_OWN_LIST_CLASS = 'menu-item-links-dragged-own';
     var ITEM_SELECTOR = 'li.menu-item';
     var LIST_SELECTOR = 'ol.menu-item-links';
     var GROUP = 'menu-items';
@@ -75,8 +76,18 @@
             swapThreshold: 0.65,
             emptyInsertThreshold: 5,
             animation: 150,
-            onStart: function () {
+            onStart: function (evt) {
                 document.body.classList.add(DRAGGING_CLASS);
+
+                // The dragged item's own (empty) child list can never be a valid
+                // drop target for itself (see onMove below), so don't reveal it as
+                // one - it would otherwise show up as a distracting dashed box
+                // tagging along right next to the item being dragged.
+                var ownList = evt.item.querySelector(':scope > ' + LIST_SELECTOR);
+
+                if (ownList) {
+                    ownList.classList.add(DRAGGED_OWN_LIST_CLASS);
+                }
             },
             onMove: function (evt) {
                 // Never allow dropping an item inside its own subtree.
@@ -84,6 +95,12 @@
             },
             onEnd: function (evt) {
                 document.body.classList.remove(DRAGGING_CLASS);
+
+                var ownList = evt.item.querySelector(':scope > ' + LIST_SELECTOR);
+
+                if (ownList) {
+                    ownList.classList.remove(DRAGGED_OWN_LIST_CLASS);
+                }
 
                 var moved = evt.from !== evt.to || evt.oldIndex !== evt.newIndex;
 
