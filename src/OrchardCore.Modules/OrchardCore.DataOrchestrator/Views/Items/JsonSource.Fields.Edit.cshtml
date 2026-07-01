@@ -1,0 +1,7 @@
+@model JsonSourceViewModel
+
+<div class="mb-3">
+    <label asp-for="Data" class="form-label">@T["JSON Data"]</label>
+    <textarea asp-for="Data" class="form-control" rows="10"></textarea>
+    <span class="hint">@T["A JSON array of objects to use as the data source."]</span>
+</div>

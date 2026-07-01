@@ -1,0 +1,13 @@
+@model EtlActivityViewModel<FormatValueTransform>
+
+<header>
+    <h4><i class="fa-solid fa-wand-magic-sparkles"></i> @T["Format Value"]</h4>
+</header>
+@if (!string.IsNullOrWhiteSpace(Model.Activity.Field))
+{
+    <div>@T["Field:"] @Model.Activity.Field</div>
+}
+@if (!string.IsNullOrWhiteSpace(Model.Activity.FormatType))
+{
+    <div>@T["Format:"] @Model.Activity.FormatType</div>
+}

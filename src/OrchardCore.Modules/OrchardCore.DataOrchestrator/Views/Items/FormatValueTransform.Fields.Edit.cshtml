@@ -1,0 +1,44 @@
+@model FormatValueTransformViewModel
+
+<div class="mb-3">
+    <label asp-for="Field" class="form-label">@T["Field"]</label>
+    <input asp-for="Field" class="form-control" />
+    <span class="hint">@T["The source field to format. Dot-notation is supported."]</span>
+</div>
+
+<div class="mb-3">
+    <label asp-for="OutputField" class="form-label">@T["Output Field"]</label>
+    <input asp-for="OutputField" class="form-control" />
+    <span class="hint">@T["Optional destination field. Leave empty to overwrite the source field."]</span>
+</div>
+
+<div class="mb-3">
+    <label asp-for="FormatType" class="form-label">@T["Format Type"]</label>
+    <select asp-for="FormatType" class="form-select">
+        <option value="@FormatValueTransform.CurrencyFormat">@T["Currency"]</option>
+        <option value="@FormatValueTransform.NumberFormat">@T["Number"]</option>
+        <option value="@FormatValueTransform.DateTimeFormat">@T["Date/Time"]</option>
+        <option value="@FormatValueTransform.ConvertUtcToTimeZoneFormat">@T["Convert UTC to Time Zone"]</option>
+        <option value="@FormatValueTransform.UppercaseFormat">@T["Uppercase"]</option>
+        <option value="@FormatValueTransform.LowercaseFormat">@T["Lowercase"]</option>
+    </select>
+</div>
+
+<div class="mb-3">
+    <label asp-for="FormatString" class="form-label">@T["Format String"]</label>
+    <input asp-for="FormatString" class="form-control" />
+    <span class="hint">@T["Optional .NET format string, such as `C2`, `N0`, `yyyy-MM-dd`, or `G`."]</span>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-3">
+        <label asp-for="Culture" class="form-label">@T["Culture"]</label>
+        <input asp-for="Culture" class="form-control" />
+        <span class="hint">@T["Optional culture name such as `en-US` or `fr-FR`."]</span>
+    </div>
+    <div class="col-md-6 mb-3">
+        <label asp-for="TimeZoneId" class="form-label">@T["Time Zone Id"]</label>
+        <input asp-for="TimeZoneId" class="form-control" />
+        <span class="hint">@T["Used for UTC conversion, for example `Eastern Standard Time`."]</span>
+    </div>
+</div>
