@@ -6,6 +6,13 @@
     "tags": ["admin", "dashboard", "css"]
   },
   {
+    "action": "parcel",
+    "name": "menu",
+    "source": "Assets/ts/menu.ts",
+    "dest": "wwwroot/Scripts/menu/",
+    "tags": ["admin", "dashboard", "js"]
+  },
+  {
     "action": "min",
     "name": "activate-links",
     "source": "Assets/js/activate-links.js",
