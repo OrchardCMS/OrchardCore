@@ -11,7 +11,7 @@
     "dry-run": "assets-manager dry-run",
     "clean": "assets-manager clean",
     "lint": "eslint .",
-    "check": "vue-tsc --noEmit"
+    "check": "yarn workspaces foreach -A run check"
   },
   "workspaces": [
     ".scripts/assets-manager",
