@@ -40,7 +40,7 @@ window.corsApp = new Vue({
     data: function () {
         return {
             selectedPolicy: null,
-            policies: null,
+            policies: [],
             defaultPolicyName: null
         };
     },
@@ -99,6 +99,10 @@ window.corsApp = new Vue({
         },
         searchBox: function () {
             var searchBox = document.getElementById('search-box');
+
+            if (!searchBox) {
+                return;
+            }
 
             // On Enter, edit the item if there is a single one
             searchBox.addEventListener('keydown', function (e) {
