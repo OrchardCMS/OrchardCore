@@ -14,7 +14,7 @@ function updateRuleOrders(conditionId, toConditionId, toPosition) {
         url: url,
         method: 'POST',
         data: parameters,
-        error: function (error) {
+        error: function () {
             alert($('#ruleOrderErrorMessage').data("message"));
         }
     });
