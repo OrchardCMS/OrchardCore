@@ -35,5 +35,5 @@ public interface IEtlExportFormat
     /// <param name="records">The records to serialize.</param>
     /// <param name="output">The stream the serialized content is written to.</param>
     /// <param name="cancellationToken">A cancellation token.</param>
-    Task WriteAsync(IReadOnlyList<JsonObject> records, Stream output, CancellationToken cancellationToken);
+    Task WriteAsync(IAsyncEnumerable<JsonObject> records, Stream output, CancellationToken cancellationToken);
 }

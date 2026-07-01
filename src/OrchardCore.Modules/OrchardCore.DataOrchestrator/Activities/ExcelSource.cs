@@ -4,14 +4,16 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using OrchardCore.DataOrchestrator.Services;
 using OrchardCore.DataOrchestrator.Models;
-using OrchardCore.FileStorage;
-using OrchardCore.Media;
+using OrchardCore.Environment.Shell;
+using OrchardCore.Modules;
 
 namespace OrchardCore.DataOrchestrator.Activities;
 
 /// <summary>
-/// Extracts rows from an Excel workbook stored in the media library.
+/// Extracts rows from an Excel workbook stored in the tenant's App_Data folder.
 /// </summary>
 public sealed class ExcelSource : EtlSourceActivity
 {
@@ -44,33 +46,47 @@ public sealed class ExcelSource : EtlSourceActivity
 
     public override Task<EtlActivityResult> ExecuteAsync(EtlExecutionContext context)
     {
-        context.DataStream = ExtractAsync(context.ServiceProvider, FilePath, WorksheetName, HasHeaderRow, context.CancellationToken);
+        if (string.IsNullOrWhiteSpace(FilePath))
+        {
+            return Task.FromResult(EtlActivityResult.Failure("Excel source requires a file path or uploaded .xlsx file."));
+        }
+
+        if (!EtlLocalFilePathResolver.IsSupportedExcelFilePath(FilePath))
+        {
+            return Task.FromResult(EtlActivityResult.Failure("Excel source requires an .xlsx file."));
+        }
+
+        string fullPath;
+
+        try
+        {
+            var shellOptions = context.ServiceProvider.GetRequiredService<IOptions<ShellOptions>>().Value;
+            var shellSettings = context.ServiceProvider.GetRequiredService<ShellSettings>();
+            var basePath = EtlLocalFilePathResolver.GetFilesBasePath(shellOptions, shellSettings);
+            fullPath = EtlLocalFilePathResolver.ResolveFilePath(basePath, FilePath);
+        }
+        catch (Exception ex) when (!ex.IsFatal())
+        {
+            return Task.FromResult(EtlActivityResult.Failure(ex.Message));
+        }
+
+        if (!File.Exists(fullPath))
+        {
+            return Task.FromResult(EtlActivityResult.Failure($"The Excel file '{FilePath}' could not be found."));
+        }
+
+        context.DataStream = ExtractAsync(fullPath, WorksheetName, HasHeaderRow, context.CancellationToken);
 
         return Task.FromResult(Outcomes("Done"));
     }
 
     private static async IAsyncEnumerable<JsonObject> ExtractAsync(
-        IServiceProvider serviceProvider,
-        string filePath,
+        string fullPath,
         string worksheetName,
         bool hasHeaderRow,
         [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        if (string.IsNullOrWhiteSpace(filePath))
-        {
-            yield break;
-        }
-
-        var mediaFileStore = serviceProvider.GetRequiredService<IMediaFileStore>();
-        var normalizedPath = mediaFileStore.NormalizePath(filePath);
-        var fileInfo = await mediaFileStore.GetFileInfoAsync(normalizedPath);
-
-        if (fileInfo == null)
-        {
-            yield break;
-        }
-
-        await using var stream = await mediaFileStore.GetFileStreamAsync(fileInfo);
+        await using var stream = File.OpenRead(fullPath);
         using var spreadsheetDocument = SpreadsheetDocument.Open(stream, false);
         var workbookPart = spreadsheetDocument.WorkbookPart;
 

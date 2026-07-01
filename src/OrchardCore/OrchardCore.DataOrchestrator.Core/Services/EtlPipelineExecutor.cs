@@ -50,6 +50,9 @@ public sealed class EtlPipelineExecutor : IEtlPipelineExecutor
                 _logger.LogInformation("Starting ETL pipeline '{PipelineName}' ({PipelineId}).", pipeline.Name, pipeline.PipelineId);
             }
 
+            var activities = pipeline.Activities ?? [];
+            var transitions = pipeline.Transitions ?? [];
+
             context = new EtlExecutionContext(pipeline, _activityLibrary, _serviceProvider, _logger, cancellationToken);
 
             if (parameters != null)
@@ -60,23 +63,52 @@ public sealed class EtlPipelineExecutor : IEtlPipelineExecutor
                 }
             }
 
-            var startActivities = pipeline.Activities.Where(a => a.IsStart).ToList();
+            var startActivities = activities.Where(a => a.IsStart).ToList();
 
             if (startActivities.Count == 0)
             {
                 throw new InvalidOperationException("Pipeline has no start activity.");
             }
 
-            var scheduled = new Stack<EtlActivityRecord>();
+            var activitiesById = new Dictionary<string, EtlActivityRecord>(StringComparer.Ordinal);
+            foreach (var activity in activities)
+            {
+                if (!string.IsNullOrEmpty(activity.ActivityId))
+                {
+                    activitiesById[activity.ActivityId] = activity;
+                }
+            }
+
+            var transitionsBySource = new Dictionary<string, List<EtlTransition>>(StringComparer.Ordinal);
+            foreach (var transition in transitions)
+            {
+                if (string.IsNullOrEmpty(transition.SourceActivityId))
+                {
+                    continue;
+                }
+
+                if (!transitionsBySource.TryGetValue(transition.SourceActivityId, out var sourceTransitions))
+                {
+                    sourceTransitions = [];
+                    transitionsBySource[transition.SourceActivityId] = sourceTransitions;
+                }
+
+                sourceTransitions.Add(transition);
+            }
+
+            var scheduled = new Stack<ScheduledActivity>();
 
             foreach (var start in startActivities)
             {
-                scheduled.Push(start);
+                scheduled.Push(ScheduledActivity.Create(start, context.DataStream));
             }
 
             while (scheduled.Count > 0 && !cancellationToken.IsCancellationRequested)
             {
-                var activityRecord = scheduled.Pop();
+                var scheduledActivity = scheduled.Pop();
+                var activityRecord = scheduledActivity.Activity;
+                context.DataStream = scheduledActivity.DataStream;
+
                 var activity = _activityLibrary.InstantiateActivity(activityRecord.Name);
 
                 if (activity == null)
@@ -88,6 +120,8 @@ public sealed class EtlPipelineExecutor : IEtlPipelineExecutor
 
                 activity.Properties = activityRecord.Properties?.DeepClone() as JsonObject ?? [];
 
+                cancellationToken.ThrowIfCancellationRequested();
+
                 var result = await activity.ExecuteAsync(context);
 
                 if (!result.IsSuccess)
@@ -97,21 +131,35 @@ public sealed class EtlPipelineExecutor : IEtlPipelineExecutor
                     continue;
                 }
 
+                if (string.IsNullOrEmpty(activityRecord.ActivityId) ||
+                    !transitionsBySource.TryGetValue(activityRecord.ActivityId, out var sourceTransitions))
+                {
+                    continue;
+                }
+
                 foreach (var outcome in result.Outcomes)
                 {
-                    var transitions = pipeline.Transitions
-                        .Where(t => t.SourceActivityId == activityRecord.ActivityId
-                            && t.SourceOutcomeName == outcome);
-
-                    foreach (var transition in transitions)
+                    foreach (var transition in sourceTransitions)
                     {
-                        var next = pipeline.Activities
-                            .FirstOrDefault(a => a.ActivityId == transition.DestinationActivityId);
-
-                        if (next != null)
+                        if (!string.Equals(transition.SourceOutcomeName, outcome, StringComparison.Ordinal))
                         {
-                            scheduled.Push(next);
+                            continue;
                         }
+
+                        if (string.IsNullOrEmpty(transition.DestinationActivityId) ||
+                            !activitiesById.TryGetValue(transition.DestinationActivityId, out var next))
+                        {
+                            continue;
+                        }
+
+                        if (!scheduledActivity.TryCreateNext(next, context.DataStream, out var nextActivity))
+                        {
+                            log.Errors.Add($"Cycle detected in ETL pipeline at activity '{next.Name}' ({next.ActivityId}).");
+                            log.ErrorCount++;
+                            continue;
+                        }
+
+                        scheduled.Push(nextActivity);
                     }
                 }
             }
@@ -156,5 +204,59 @@ public sealed class EtlPipelineExecutor : IEtlPipelineExecutor
         }
 
         return log;
+    }
+
+    private sealed class ScheduledActivity
+    {
+        private ScheduledActivity(
+            EtlActivityRecord activity,
+            IAsyncEnumerable<JsonObject> dataStream,
+            HashSet<string> visitedActivityIds)
+        {
+            Activity = activity;
+            DataStream = dataStream;
+            VisitedActivityIds = visitedActivityIds;
+        }
+
+        public EtlActivityRecord Activity { get; }
+
+        public IAsyncEnumerable<JsonObject> DataStream { get; }
+
+        private HashSet<string> VisitedActivityIds { get; }
+
+        public static ScheduledActivity Create(EtlActivityRecord activity, IAsyncEnumerable<JsonObject> dataStream)
+        {
+            var visitedActivityIds = new HashSet<string>(StringComparer.Ordinal);
+
+            if (!string.IsNullOrEmpty(activity.ActivityId))
+            {
+                visitedActivityIds.Add(activity.ActivityId);
+            }
+
+            return new ScheduledActivity(activity, dataStream, visitedActivityIds);
+        }
+
+        public bool TryCreateNext(
+            EtlActivityRecord activity,
+            IAsyncEnumerable<JsonObject> dataStream,
+            out ScheduledActivity scheduledActivity)
+        {
+            if (!string.IsNullOrEmpty(activity.ActivityId) && VisitedActivityIds.Contains(activity.ActivityId))
+            {
+                scheduledActivity = null;
+                return false;
+            }
+
+            var visitedActivityIds = new HashSet<string>(VisitedActivityIds, StringComparer.Ordinal);
+
+            if (!string.IsNullOrEmpty(activity.ActivityId))
+            {
+                visitedActivityIds.Add(activity.ActivityId);
+            }
+
+            scheduledActivity = new ScheduledActivity(activity, dataStream, visitedActivityIds);
+
+            return true;
+        }
     }
 }

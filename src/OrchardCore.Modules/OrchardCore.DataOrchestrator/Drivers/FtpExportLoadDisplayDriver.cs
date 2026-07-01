@@ -22,7 +22,7 @@ public sealed class FtpExportLoadDisplayDriver : EtlActivityDisplayDriver<FtpExp
         model.Host = activity.Host;
         model.Port = activity.Port;
         model.Username = activity.Username;
-        model.Password = activity.Password;
+        model.Password = null;
         model.RemoteDirectory = activity.RemoteDirectory;
         model.SecurityMode = activity.SecurityMode;
         model.AcceptAnyCertificate = activity.AcceptAnyCertificate;
@@ -36,7 +36,12 @@ public sealed class FtpExportLoadDisplayDriver : EtlActivityDisplayDriver<FtpExp
         activity.Host = model.Host;
         activity.Port = model.Port;
         activity.Username = model.Username;
-        activity.Password = model.Password;
+
+        if (!string.IsNullOrEmpty(model.Password))
+        {
+            activity.Password = model.Password;
+        }
+
         activity.RemoteDirectory = model.RemoteDirectory;
         activity.SecurityMode = model.SecurityMode;
         activity.AcceptAnyCertificate = model.AcceptAnyCertificate;

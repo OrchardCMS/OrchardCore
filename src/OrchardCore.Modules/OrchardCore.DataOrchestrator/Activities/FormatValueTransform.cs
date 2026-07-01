@@ -64,14 +64,24 @@ public sealed class FormatValueTransform : EtlTransformActivity
 
     public override Task<EtlActivityResult> ExecuteAsync(EtlExecutionContext context)
     {
+        if (!TryGetCultureInfo(Culture, out var cultureInfo, out var errorMessage))
+        {
+            return Task.FromResult(EtlActivityResult.Failure(errorMessage));
+        }
+
+        if (!TryGetTimeZoneInfo(FormatType, TimeZoneId, out var timeZoneInfo, out errorMessage))
+        {
+            return Task.FromResult(EtlActivityResult.Failure(errorMessage));
+        }
+
         context.DataStream = TransformAsync(
             context.DataStream,
             Field,
             OutputField,
             FormatType,
             FormatString,
-            Culture,
-            TimeZoneId,
+            cultureInfo,
+            timeZoneInfo,
             context.CancellationToken);
 
         return Task.FromResult(Outcomes("Done"));
@@ -83,8 +93,8 @@ public sealed class FormatValueTransform : EtlTransformActivity
         string outputField,
         string formatType,
         string formatString,
-        string culture,
-        string timeZoneId,
+        CultureInfo cultureInfo,
+        TimeZoneInfo timeZoneInfo,
         [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         if (input == null)
@@ -109,37 +119,98 @@ public sealed class FormatValueTransform : EtlTransformActivity
 
             var cloned = record.DeepClone().AsObject();
             var destinationField = string.IsNullOrWhiteSpace(outputField) ? field : outputField;
-            SetFieldValue(cloned, destinationField, ApplyFormat(sourceValue, formatType, formatString, culture, timeZoneId));
+            SetFieldValue(cloned, destinationField, ApplyFormat(sourceValue, formatType, formatString, cultureInfo, timeZoneInfo));
             yield return cloned;
         }
     }
 
-    private static string ApplyFormat(string sourceValue, string formatType, string formatString, string culture, string timeZoneId)
+    private static bool TryGetCultureInfo(string culture, out CultureInfo cultureInfo, out string errorMessage)
     {
-        var cultureInfo = string.IsNullOrWhiteSpace(culture)
-            ? CultureInfo.InvariantCulture
-            : CultureInfo.GetCultureInfo(culture);
+        if (string.IsNullOrWhiteSpace(culture))
+        {
+            cultureInfo = CultureInfo.InvariantCulture;
+            errorMessage = null;
 
+            return true;
+        }
+
+        try
+        {
+            cultureInfo = CultureInfo.GetCultureInfo(culture);
+            errorMessage = null;
+
+            return true;
+        }
+        catch (CultureNotFoundException)
+        {
+            cultureInfo = null;
+            errorMessage = $"The culture '{culture}' is not valid.";
+
+            return false;
+        }
+    }
+
+    private static bool TryGetTimeZoneInfo(
+        string formatType,
+        string timeZoneId,
+        out TimeZoneInfo timeZoneInfo,
+        out string errorMessage)
+    {
+        timeZoneInfo = null;
+        errorMessage = null;
+
+        if (!string.Equals(formatType, ConvertUtcToTimeZoneFormat, StringComparison.Ordinal) ||
+            string.IsNullOrWhiteSpace(timeZoneId))
+        {
+            return true;
+        }
+
+        try
+        {
+            timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(timeZoneId);
+
+            return true;
+        }
+        catch (TimeZoneNotFoundException)
+        {
+            errorMessage = $"The time zone '{timeZoneId}' could not be found.";
+
+            return false;
+        }
+        catch (InvalidTimeZoneException)
+        {
+            errorMessage = $"The time zone '{timeZoneId}' is invalid.";
+
+            return false;
+        }
+    }
+
+    private static string ApplyFormat(
+        string sourceValue,
+        string formatType,
+        string formatString,
+        CultureInfo cultureInfo,
+        TimeZoneInfo timeZoneInfo)
+    {
         return formatType switch
         {
             CurrencyFormat when decimal.TryParse(sourceValue, out var currencyValue) => currencyValue.ToString(formatString ?? "C", cultureInfo),
             NumberFormat when decimal.TryParse(sourceValue, out var numberValue) => numberValue.ToString(formatString ?? "N", cultureInfo),
             DateTimeFormat when DateTime.TryParse(sourceValue, out var dateTimeValue) => dateTimeValue.ToString(formatString ?? "u", cultureInfo),
-            ConvertUtcToTimeZoneFormat when DateTime.TryParse(sourceValue, out var utcValue) => ConvertUtcToTimeZone(utcValue, timeZoneId, formatString, cultureInfo),
+            ConvertUtcToTimeZoneFormat when DateTime.TryParse(sourceValue, out var utcValue) => ConvertUtcToTimeZone(utcValue, timeZoneInfo, formatString, cultureInfo),
             UppercaseFormat => sourceValue.ToUpper(cultureInfo),
             LowercaseFormat => sourceValue.ToLower(cultureInfo),
             _ => sourceValue,
         };
     }
 
-    private static string ConvertUtcToTimeZone(DateTime utcValue, string timeZoneId, string formatString, CultureInfo cultureInfo)
+    private static string ConvertUtcToTimeZone(DateTime utcValue, TimeZoneInfo timeZone, string formatString, CultureInfo cultureInfo)
     {
-        if (string.IsNullOrWhiteSpace(timeZoneId))
+        if (timeZone == null)
         {
             return utcValue.ToString(formatString ?? "u", cultureInfo);
         }
 
-        var timeZone = TimeZoneInfo.FindSystemTimeZoneById(timeZoneId);
         var normalized = utcValue.Kind == DateTimeKind.Utc ? utcValue : DateTime.SpecifyKind(utcValue, DateTimeKind.Utc);
         var converted = TimeZoneInfo.ConvertTimeFromUtc(normalized, timeZone);
 

@@ -54,11 +54,17 @@ public sealed class ContentItemLoad : EtlLoadActivity
             {
                 var contentItemId = record["ContentItemId"]?.GetValue<string>();
                 ContentItem item;
+                var isNew = true;
 
                 if (!string.IsNullOrEmpty(contentItemId))
                 {
                     item = await contentManager.GetAsync(contentItemId, VersionOptions.DraftRequired);
-                    item ??= await contentManager.NewAsync(contentType);
+                    isNew = item == null;
+
+                    if (isNew)
+                    {
+                        item = await contentManager.NewAsync(contentType);
+                    }
                 }
                 else
                 {
@@ -83,9 +89,25 @@ public sealed class ContentItemLoad : EtlLoadActivity
                     var merged = JConvert.DeserializeObject<ContentItem>(itemNode.ToJsonString());
                     if (merged is not null)
                     {
-                        await contentManager.CreateAsync(merged, VersionOptions.Draft);
-                        await contentManager.PublishAsync(merged);
-                        loaded++;
+                        var saved = true;
+
+                        if (isNew)
+                        {
+                            saved = await contentManager.CreateAsync(merged, VersionOptions.Draft);
+                        }
+                        else
+                        {
+                            await contentManager.UpdateAsync(merged);
+                        }
+
+                        if (saved && await contentManager.PublishAsync(merged))
+                        {
+                            loaded++;
+                        }
+                        else
+                        {
+                            failed++;
+                        }
                     }
                 }
             }

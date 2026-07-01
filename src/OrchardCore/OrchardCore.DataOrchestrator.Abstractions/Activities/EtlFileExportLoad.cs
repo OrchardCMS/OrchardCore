@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using System.Text.Json.Nodes;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -70,22 +71,19 @@ public abstract class EtlFileExportLoad : EtlLoadActivity
             return EtlActivityResult.Failure($"The export format '{Format}' is not registered.");
         }
 
-        var records = new List<JsonObject>();
-
-        await foreach (var record in data.WithCancellation(context.CancellationToken))
-        {
-            records.Add(record.DeepClone().AsObject());
-        }
-
-        context.IncrementRecordsProcessed(records.Count);
-
         var fileName = ResolveFileName(format);
+        var recordsProcessed = 0;
 
         try
         {
             using var stream = new MemoryStream();
-            await format.WriteAsync(records, stream, context.CancellationToken);
+            await format.WriteAsync(
+                CountRecordsAsync(data, () => recordsProcessed++, context.CancellationToken),
+                stream,
+                context.CancellationToken);
             stream.Position = 0;
+
+            context.IncrementRecordsProcessed(recordsProcessed);
 
             await WriteToDestinationAsync(context, fileName, stream, format);
         }
@@ -101,7 +99,7 @@ public abstract class EtlFileExportLoad : EtlLoadActivity
             return EtlActivityResult.Failure($"The '{DisplayText}' export failed for '{fileName}': {ex.Message}");
         }
 
-        context.IncrementRecordsLoaded(records.Count);
+        context.IncrementRecordsLoaded(recordsProcessed);
 
         return Outcomes("Done");
     }
@@ -114,6 +112,18 @@ public abstract class EtlFileExportLoad : EtlLoadActivity
     /// <param name="content">A readable stream positioned at the beginning of the serialized content.</param>
     /// <param name="format">The format used to serialize the data.</param>
     protected abstract Task WriteToDestinationAsync(EtlExecutionContext context, string fileName, Stream content, IEtlExportFormat format);
+
+    private static async IAsyncEnumerable<JsonObject> CountRecordsAsync(
+        IAsyncEnumerable<JsonObject> records,
+        Action increment,
+        [EnumeratorCancellation] CancellationToken cancellationToken)
+    {
+        await foreach (var record in records.WithCancellation(cancellationToken))
+        {
+            increment();
+            yield return record;
+        }
+    }
 
     private string ResolveFileName(IEtlExportFormat format)
     {

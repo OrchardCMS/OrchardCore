@@ -1,5 +1,5 @@
 namespace OrchardCore.DataOrchestrator.ViewModels;
 
-public sealed class MediaFolderExportLoadViewModel : FileExportLoadViewModel
+public class MediaFolderExportLoadViewModel : FileExportLoadViewModel
 {
 }

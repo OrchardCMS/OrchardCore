@@ -20,7 +20,7 @@ public class EtlExportFormatTests
         var format = new JsonExportFormat();
 
         using var stream = new MemoryStream();
-        await format.WriteAsync(records, stream, CancellationToken.None);
+        await format.WriteAsync(ToAsyncEnumerable(records, TestContext.Current.CancellationToken), stream, TestContext.Current.CancellationToken);
         stream.Position = 0;
 
         var parsed = JsonNode.Parse(stream) as JsonArray;
@@ -44,7 +44,7 @@ public class EtlExportFormatTests
         var format = new CsvExportFormat();
 
         using var stream = new MemoryStream();
-        await format.WriteAsync(records, stream, CancellationToken.None);
+        await format.WriteAsync(ToAsyncEnumerable(records, TestContext.Current.CancellationToken), stream, TestContext.Current.CancellationToken);
 
         var text = Encoding.UTF8.GetString(stream.ToArray());
         var lines = text.Replace("\r\n", "\n").TrimEnd('\n').Split('\n');
@@ -66,7 +66,7 @@ public class EtlExportFormatTests
         var format = new ExcelExportFormat();
 
         using var stream = new MemoryStream();
-        await format.WriteAsync(records, stream, CancellationToken.None);
+        await format.WriteAsync(ToAsyncEnumerable(records, TestContext.Current.CancellationToken), stream, TestContext.Current.CancellationToken);
 
         Assert.True(stream.Length > 0);
 
@@ -102,5 +102,17 @@ public class EtlExportFormatTests
         Assert.Null(provider.GetFormat("unknown"));
         Assert.Null(provider.GetFormat(null));
         Assert.Equal(3, provider.ListFormats().Count());
+    }
+
+    private static async IAsyncEnumerable<JsonObject> ToAsyncEnumerable(
+        IEnumerable<JsonObject> records,
+        [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken cancellationToken)
+    {
+        foreach (var record in records)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            await Task.Yield();
+            yield return record;
+        }
     }
 }

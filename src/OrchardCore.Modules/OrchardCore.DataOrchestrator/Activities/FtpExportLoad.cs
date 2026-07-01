@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.DataProtection;
 using FluentFTP;
 using OrchardCore.DataOrchestrator.Exporting;
 using OrchardCore.DataOrchestrator.Models;
@@ -13,10 +14,20 @@ namespace OrchardCore.DataOrchestrator.Activities;
 /// </summary>
 public sealed class FtpExportLoad : EtlFileExportLoad
 {
+    private const string ProtectedPasswordPrefix = "protected:";
+    private const string PasswordProtectorPurpose = "OrchardCore.DataOrchestrator.FtpExportLoad.Password";
+
+    private readonly IDataProtector _dataProtector;
+
     public const string SecurityNone = "None";
     public const string SecurityExplicit = "Explicit";
     public const string SecurityImplicit = "Implicit";
     public const string SecurityAuto = "Auto";
+
+    public FtpExportLoad(IDataProtectionProvider dataProtectionProvider)
+    {
+        _dataProtector = dataProtectionProvider.CreateProtector(PasswordProtectorPurpose);
+    }
 
     public override string Name => nameof(FtpExportLoad);
 
@@ -54,8 +65,24 @@ public sealed class FtpExportLoad : EtlFileExportLoad
     /// </summary>
     public string Password
     {
-        get => GetProperty<string>();
-        set => SetProperty(value);
+        get
+        {
+            var protectedPassword = GetProperty<string>();
+
+            if (string.IsNullOrEmpty(protectedPassword))
+            {
+                return null;
+            }
+
+            if (!protectedPassword.StartsWith(ProtectedPasswordPrefix, StringComparison.Ordinal))
+            {
+                return protectedPassword;
+            }
+
+            return _dataProtector.Unprotect(protectedPassword[ProtectedPasswordPrefix.Length..]);
+        }
+
+        set => SetProperty(string.IsNullOrEmpty(value) ? null : ProtectedPasswordPrefix + _dataProtector.Protect(value));
     }
 
     /// <summary>

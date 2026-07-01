@@ -92,7 +92,10 @@ public sealed class EtlExecutionContext
 
     public EtlExecutionContext Clone()
     {
-        var clone = new EtlExecutionContext(Pipeline, ActivityLibrary, ServiceProvider, Logger, CancellationToken);
+        var clone = new EtlExecutionContext(Pipeline, ActivityLibrary, ServiceProvider, Logger, CancellationToken)
+        {
+            DataStream = DataStream,
+        };
 
         foreach (var property in Properties)
         {

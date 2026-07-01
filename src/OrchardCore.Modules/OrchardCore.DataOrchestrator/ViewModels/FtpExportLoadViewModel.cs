@@ -1,6 +1,6 @@
 namespace OrchardCore.DataOrchestrator.ViewModels;
 
-public sealed class FtpExportLoadViewModel : FileExportLoadViewModel
+public class FtpExportLoadViewModel : FileExportLoadViewModel
 {
     public string Host { get; set; }
 

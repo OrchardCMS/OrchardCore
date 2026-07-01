@@ -37,11 +37,16 @@ public sealed class QuerySource : EtlSourceActivity
 
     public override IEnumerable<EtlOutcome> GetPossibleOutcomes()
     {
-        return [new EtlOutcome("Done")];
+        return [new EtlOutcome("Done"), new EtlOutcome("Failed")];
     }
 
     public override Task<EtlActivityResult> ExecuteAsync(EtlExecutionContext context)
     {
+        if (string.IsNullOrWhiteSpace(QueryName))
+        {
+            return Task.FromResult(EtlActivityResult.Failure("A query must be selected."));
+        }
+
         context.DataStream = ExtractAsync(
             context.ServiceProvider,
             QueryName,

@@ -1,8 +1,14 @@
+using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc.Rendering;
+
 namespace OrchardCore.DataOrchestrator.ViewModels;
 
-public sealed class QuerySourceViewModel
+public class QuerySourceViewModel
 {
+    [Required]
     public string QueryName { get; set; }
 
     public string ParametersJson { get; set; }
+
+    public IList<SelectListItem> AvailableQueries { get; set; } = [];
 }

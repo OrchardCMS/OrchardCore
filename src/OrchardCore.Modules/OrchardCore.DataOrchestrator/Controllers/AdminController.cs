@@ -188,15 +188,17 @@ public sealed class AdminController : Controller
             }),
         };
 
+        var pipelineJson = JsonSerializer.Serialize(pipelineData, _camelCaseOptions);
         var viewModel = new EtlPipelineEditorViewModel
         {
             Pipeline = pipeline,
-            PipelineJson = JsonSerializer.Serialize(pipelineData, _camelCaseOptions),
+            PipelineJson = pipelineJson,
             ActivityThumbnailShapes = activityThumbnailShapes,
             ActivityDesignShapes = activityDesignShapes,
             ActivityCategories = _activityLibrary.ListCategories().ToList(),
             LocalId = newLocalId,
             LoadLocalState = !string.IsNullOrWhiteSpace(localId),
+            State = pipelineJson,
         };
 
         return View(viewModel);
@@ -217,52 +219,80 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
-        var state = JsonNode.Parse(model.State);
-        var activities = state["activities"]?.AsArray();
-        var transitions = state["transitions"]?.AsArray();
-
-        if (activities != null)
+        if (!TryParsePipelineState(model.State, out var state, out var activities, out var transitions))
         {
-            foreach (var activityState in activities)
+            ModelState.AddModelError(nameof(model.State), S["The pipeline editor state could not be read."]);
+
+            return await Edit(pipeline.Id, null);
+        }
+
+        var removedActivityIds = GetRemovedActivityIds(state);
+
+        var activityIds = pipeline.Activities
+            .Where(activity => !string.IsNullOrEmpty(activity.ActivityId))
+            .Where(activity => !removedActivityIds.Contains(activity.ActivityId))
+            .Select(activity => activity.ActivityId)
+            .ToHashSet(StringComparer.Ordinal);
+
+        foreach (var activityState in activities)
+        {
+            if (activityState is not JsonObject activityObject ||
+                !TryGetString(activityObject, "id", out var activityId))
             {
-                var activityId = activityState["id"]?.GetValue<string>();
-                var existing = pipeline.Activities.FirstOrDefault(a => a.ActivityId == activityId);
-                if (existing != null)
-                {
-                    existing.X = (int)Math.Round(Convert.ToDecimal(activityState["x"]?.GetValue<double>() ?? 0));
-                    existing.Y = (int)Math.Round(Convert.ToDecimal(activityState["y"]?.GetValue<double>() ?? 0));
-                    existing.IsStart = activityState["isStart"]?.GetValue<bool>() ?? false;
-                }
+                continue;
+            }
+
+            if (removedActivityIds.Contains(activityId))
+            {
+                continue;
+            }
+
+            var existing = pipeline.Activities.FirstOrDefault(a => a.ActivityId == activityId);
+            if (existing != null)
+            {
+                existing.X = GetRoundedInt32(activityObject, "x");
+                existing.Y = GetRoundedInt32(activityObject, "y");
+                existing.IsStart = GetBoolean(activityObject, "isStart");
             }
         }
 
-        if (transitions != null)
+        pipeline.Transitions.Clear();
+        foreach (var transitionState in transitions)
         {
-            pipeline.Transitions.Clear();
-            foreach (var transitionState in transitions)
+            if (transitionState is not JsonObject transitionObject ||
+                !TryGetString(transitionObject, "sourceActivityId", out var sourceActivityId) ||
+                !TryGetString(transitionObject, "destinationActivityId", out var destinationActivityId))
             {
-                pipeline.Transitions.Add(new EtlTransition
-                {
-                    SourceActivityId = transitionState["sourceActivityId"]?.GetValue<string>(),
-                    DestinationActivityId = transitionState["destinationActivityId"]?.GetValue<string>(),
-                    SourceOutcomeName = transitionState["sourceOutcomeName"]?.GetValue<string>(),
-                });
+                continue;
             }
+
+            if (!activityIds.Contains(sourceActivityId) || !activityIds.Contains(destinationActivityId))
+            {
+                continue;
+            }
+
+            pipeline.Transitions.Add(new EtlTransition
+            {
+                SourceActivityId = sourceActivityId,
+                DestinationActivityId = destinationActivityId,
+                SourceOutcomeName = TryGetString(transitionObject, "sourceOutcomeName", out var sourceOutcomeName)
+                    ? sourceOutcomeName
+                    : "Done",
+            });
         }
 
-        var removedActivities = state["removedActivities"]?.AsArray();
-        if (removedActivities != null)
+        if (removedActivityIds.Count > 0)
         {
-            foreach (var removedId in removedActivities)
+            foreach (var activity in pipeline.Activities.ToArray())
             {
-                var actId = removedId?.GetValue<string>();
-                var activity = pipeline.Activities.FirstOrDefault(a => a.ActivityId == actId);
-                if (activity != null)
+                if (removedActivityIds.Contains(activity.ActivityId))
                 {
                     pipeline.Activities.Remove(activity);
                 }
             }
         }
+
+        EnsureStartActivity(pipeline.Activities);
 
         await _pipelineService.SaveAsync(pipeline);
 
@@ -591,6 +621,104 @@ public sealed class AdminController : Controller
         }
 
         return RedirectToAction(nameof(Edit), new { id = pipeline.Id });
+    }
+
+    private static bool TryParsePipelineState(
+        string editorState,
+        out JsonObject state,
+        out JsonArray activities,
+        out JsonArray transitions)
+    {
+        state = null;
+        activities = null;
+        transitions = null;
+
+        if (string.IsNullOrWhiteSpace(editorState))
+        {
+            return false;
+        }
+
+        try
+        {
+            state = JsonNode.Parse(editorState) as JsonObject;
+        }
+        catch (JsonException)
+        {
+            return false;
+        }
+
+        if (state == null)
+        {
+            return false;
+        }
+
+        activities = state["activities"] as JsonArray;
+        transitions = state["transitions"] as JsonArray;
+
+        return activities != null && transitions != null;
+    }
+
+    private static HashSet<string> GetRemovedActivityIds(JsonObject state)
+    {
+        var removedActivityIds = new HashSet<string>(StringComparer.Ordinal);
+
+        if (state["removedActivities"] is not JsonArray removedActivities)
+        {
+            return removedActivityIds;
+        }
+
+        foreach (var removedActivity in removedActivities)
+        {
+            if (removedActivity is JsonValue value &&
+                value.TryGetValue<string>(out var activityId) &&
+                !string.IsNullOrEmpty(activityId))
+            {
+                removedActivityIds.Add(activityId);
+            }
+        }
+
+        return removedActivityIds;
+    }
+
+    private static void EnsureStartActivity(IList<EtlActivityRecord> activities)
+    {
+        if (activities.Count == 0 || activities.Any(activity => activity.IsStart))
+        {
+            return;
+        }
+
+        activities[0].IsStart = true;
+    }
+
+    private static bool TryGetString(JsonObject obj, string propertyName, out string value)
+    {
+        value = null;
+
+        if (obj[propertyName] is not JsonValue node ||
+            !node.TryGetValue<string>(out value))
+        {
+            return false;
+        }
+
+        return !string.IsNullOrEmpty(value);
+    }
+
+    private static int GetRoundedInt32(JsonObject obj, string propertyName)
+    {
+        if (obj[propertyName] is not JsonValue node ||
+            !node.TryGetValue<double>(out var value))
+        {
+            return 0;
+        }
+
+        return (int)Math.Round(Convert.ToDecimal(value));
+    }
+
+    private static bool GetBoolean(JsonObject obj, string propertyName)
+    {
+        return obj[propertyName] is JsonValue node &&
+            node.TryGetValue<bool>(out var value) &&
+            value;
     }
 
     private async Task<dynamic> BuildActivityDisplayAsync(IEtlActivity activity, long pipelineId, string localId, string displayType)

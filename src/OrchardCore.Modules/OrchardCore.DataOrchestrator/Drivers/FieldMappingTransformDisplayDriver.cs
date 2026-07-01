@@ -3,13 +3,15 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.DataOrchestrator.Activities;
 using OrchardCore.DataOrchestrator.Display;
 using OrchardCore.DataOrchestrator.Services;
 using OrchardCore.DataOrchestrator.ViewModels;
-using OrchardCore.FileStorage;
-using OrchardCore.Media;
+using OrchardCore.Environment.Shell;
+using OrchardCore.Modules;
 
 namespace OrchardCore.DataOrchestrator.Drivers;
 
@@ -17,19 +19,16 @@ public sealed class FieldMappingTransformDisplayDriver : EtlActivityDisplayDrive
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IEtlPipelineService _pipelineService;
-    private readonly IContentDefinitionManager _contentDefinitionManager;
-    private readonly IMediaFileStore _mediaFileStore;
+    private readonly IServiceProvider _serviceProvider;
 
     public FieldMappingTransformDisplayDriver(
         IHttpContextAccessor httpContextAccessor,
         IEtlPipelineService pipelineService,
-        IContentDefinitionManager contentDefinitionManager,
-        IMediaFileStore mediaFileStore)
+        IServiceProvider serviceProvider)
     {
         _httpContextAccessor = httpContextAccessor;
         _pipelineService = pipelineService;
-        _contentDefinitionManager = contentDefinitionManager;
-        _mediaFileStore = mediaFileStore;
+        _serviceProvider = serviceProvider;
     }
 
     protected override async ValueTask EditActivityAsync(FieldMappingTransform activity, FieldMappingTransformViewModel model)
@@ -96,13 +95,19 @@ public sealed class FieldMappingTransformDisplayDriver : EtlActivityDisplayDrive
             "Latest",
         };
 
+        var contentDefinitionManager = _serviceProvider.GetService<IContentDefinitionManager>();
+        if (contentDefinitionManager == null)
+        {
+            return fields;
+        }
+
         var contentType = properties?["ContentType"]?.GetValue<string>();
         if (string.IsNullOrWhiteSpace(contentType))
         {
             return fields;
         }
 
-        var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentType);
+        var typeDefinition = await contentDefinitionManager.GetTypeDefinitionAsync(contentType);
         if (typeDefinition == null)
         {
             return fields;
@@ -154,15 +159,30 @@ public sealed class FieldMappingTransformDisplayDriver : EtlActivityDisplayDrive
             return [];
         }
 
-        var normalizedPath = _mediaFileStore.NormalizePath(filePath);
-        var fileInfo = await _mediaFileStore.GetFileInfoAsync(normalizedPath);
-        if (fileInfo == null)
+        try
+        {
+            var shellOptions = _serviceProvider.GetRequiredService<IOptions<ShellOptions>>().Value;
+            var shellSettings = _serviceProvider.GetRequiredService<ShellSettings>();
+            var basePath = EtlLocalFilePathResolver.GetFilesBasePath(shellOptions, shellSettings);
+            var fullPath = EtlLocalFilePathResolver.ResolveFilePath(basePath, filePath);
+
+            if (!File.Exists(fullPath))
+            {
+                return [];
+            }
+
+            await using var stream = File.OpenRead(fullPath);
+            using var spreadsheetDocument = SpreadsheetDocument.Open(stream, false);
+            return GetExcelFields(spreadsheetDocument, properties).ToList();
+        }
+        catch (Exception ex) when (!ex.IsFatal())
         {
             return [];
         }
+    }
 
-        await using var stream = await _mediaFileStore.GetFileStreamAsync(fileInfo);
-        using var spreadsheetDocument = SpreadsheetDocument.Open(stream, false);
+    private static IEnumerable<string> GetExcelFields(SpreadsheetDocument spreadsheetDocument, JsonObject properties)
+    {
         var workbookPart = spreadsheetDocument.WorkbookPart;
 
         if (workbookPart?.Workbook == null)

@@ -1,13 +1,19 @@
 @model MediaFolderExportLoadViewModel
 
-<div class="mb-3">
-    <label asp-for="Format" class="form-label">@T["Format"]</label>
-    <select asp-for="Format" asp-items="Model.Formats" class="form-select"></select>
-    <span class="hint">@T["The serialization format of the exported file."]</span>
+<div class="ocat-wrapper" asp-validation-class-for="Format">
+    <label asp-for="Format" class="ocat-label">@T["Format"]</label>
+    <div class="ocat-end">
+        <select asp-for="Format" asp-items="Model.Formats" class="form-select"></select>
+        <span asp-validation-for="Format"></span>
+        <span class="hint">@T["The serialization format of the exported file."]</span>
+    </div>
 </div>
 
-<div class="mb-3">
-    <label asp-for="FileName" class="form-label">@T["File Name"]</label>
-    <input asp-for="FileName" class="form-control" />
-    <span class="hint">@T["The media library path the file is written to, for example `exports/output.json`. Leave empty to use a default name based on the format."]</span>
+<div class="ocat-wrapper" asp-validation-class-for="FileName">
+    <label asp-for="FileName" class="ocat-label">@T["File Name"]</label>
+    <div class="ocat-end">
+        <input asp-for="FileName" class="form-control" />
+        <span asp-validation-for="FileName"></span>
+        <span class="hint">@T["The media library path the file is written to, for example `exports/output.json`. Leave empty to use a default name based on the format."]</span>
+    </div>
 </div>

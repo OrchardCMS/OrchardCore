@@ -16,6 +16,7 @@
   <ItemGroup>
     <PackageReference Include="DocumentFormat.OpenXml" />
     <PackageReference Include="FluentFTP" />
+    <PackageReference Include="ncrontab" />
   </ItemGroup>
 
   <ItemGroup>

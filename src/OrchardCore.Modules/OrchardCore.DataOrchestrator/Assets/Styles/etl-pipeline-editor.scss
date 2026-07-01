@@ -1,85 +1,92 @@
-.etl-container {
-    border: 1px solid var(--bs-border-color);
-    border-radius: 0.25rem;
-    overflow: hidden;
-}
-
-.etl-canvas-container {
-    overflow: auto;
-    max-height: 700px;
+.etl-container,
+.workflow-container {
+    .etl-canvas-container,
+    .workflow-canvas-container {
+        border: var(--bs-border-width, 1px) var(--bs-border-style, solid)
+            var(--bs-border-color, #e4e5e6);
+        border-radius: var(--bs-border-radius, 2px);
+        padding: 15px;
+        overflow: auto;
+    }
 }
 
 .etl-canvas {
+    overflow: auto !important;
     position: relative;
+    touch-action: none;
     min-height: 400px;
-    overflow: auto;
-    background-color: var(--bs-body-bg);
-    background-image:
-        linear-gradient(var(--bs-border-color-translucent) 1px, transparent 1px),
-        linear-gradient(90deg, var(--bs-border-color-translucent) 1px, transparent 1px);
-    background-size: 20px 20px;
 
     .activity {
         position: absolute;
-        border: 1px solid #346789;
-        border-radius: 4px;
+        border: var(--bs-border-width, 1px) var(--bs-border-style, solid)
+            var(--bs-border-color, #346789);
+        border-radius: var(--bs-border-radius, 2px);
         background-color: var(--bs-secondary-bg);
+        color: var(--bs-body-color);
         padding: 1em;
-        min-width: 120px;
-        min-height: 60px;
-        max-width: 250px;
-        opacity: 0.9;
+        min-width: 80px;
+        min-height: 80px;
+        max-width: 280px;
+        opacity: 0.8;
         cursor: move;
         z-index: 20;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
-        transition: box-shadow 0.2s, opacity 0.2s;
+        box-shadow: 2px 2px 19px #aaa;
+        font-size: 0.7em;
+        text-align: left;
+        transition: box-shadow 0.15s ease-in;
 
         &:hover {
-            box-shadow: 2px 2px 12px rgba(0, 0, 0, 0.3);
-            opacity: 1;
+            box-shadow: 2px 2px 19px #444;
+            opacity: 0.6;
         }
 
         &.activity-source {
-            border-color: #7ab02c;
-            border-width: 2px;
-
-            header h4 i {
-                color: #7ab02c;
-            }
-        }
-
-        &.activity-transform {
             border-color: #3a8acd;
-            border-width: 2px;
 
             header h4 i {
                 color: #3a8acd;
             }
         }
 
-        &.activity-load {
-            border-color: #6c757d;
-            border-width: 2px;
+        &.activity-transform {
+            border-color: #7ab02c;
 
             header h4 i {
-                color: #6c757d;
+                color: #7ab02c;
+            }
+        }
+
+        &.activity-load {
+            border-color: #7ab02c;
+
+            header h4 i {
+                color: #7ab02c;
             }
         }
 
         &.activity-start {
-            border-width: 3px;
-            font-weight: bold;
+            background-color: #7ab02c;
+            color: var(--bs-white, #ffffff);
+            border-color: #507b11;
         }
 
         header {
             h4 {
-                font-size: 0.9rem;
-                margin-bottom: 0.25rem;
+                font-size: 1.4em;
 
                 i {
-                    margin-right: 0.3rem;
+                    margin-right: 0.5em;
                 }
             }
+        }
+
+        span,
+        em {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            width: 100%;
+            display: inline-block;
         }
 
         .activity-commands {
@@ -99,35 +106,59 @@
         }
     }
 
+    .jtk-connector {
+        z-index: 4;
+    }
+
     .jtk-endpoint {
         z-index: 21;
         cursor: pointer;
     }
 
+    .jtk-overlay {
+        background-color: transparent;
+    }
+
     .connection-label {
         z-index: 31;
-        border: 1px solid var(--bs-border-color);
+        border: var(--bs-border-width, 1px) var(--bs-border-style, solid)
+            var(--bs-border-color, #e4e5e6);
         padding: 0 0.5rem;
-        border-radius: 2px;
+        border-radius: var(--bs-border-radius, 2px);
         background-color: var(--bs-secondary-bg);
-        font-size: 0.75rem;
     }
 
     .outcome-label {
         z-index: 21;
+        display: inline-flex;
+        align-items: center;
         font-size: 10px;
+        line-height: 1.1;
         font-weight: 500;
         color: var(--bs-body-color);
         background-color: var(--bs-body-bg);
-        border: 1px solid var(--bs-border-color);
+        border: var(--bs-border-width, 1px) var(--bs-border-style, solid)
+            var(--bs-border-color, #e4e5e6);
         padding: 0.1rem 0.4rem;
-        border-radius: 2px;
+        border-radius: var(--bs-border-radius, 2px);
         white-space: nowrap;
+
+        &:empty {
+            display: none !important;
+        }
     }
 }
 
 // Activity picker modal
 .modal-activities {
+    h4.card-title,
+    h5.card-title {
+        .svg-inline--fa,
+        .fa {
+            margin-right: 0.5em;
+        }
+    }
+
     .activity-picker-categories {
         gap: 0.25rem;
     }

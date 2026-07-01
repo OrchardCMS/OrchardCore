@@ -19,15 +19,19 @@ public sealed class ExcelExportFormat : IEtlExportFormat
 
     public string MimeType => "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 
-    public Task WriteAsync(IReadOnlyList<JsonObject> records, Stream output, CancellationToken cancellationToken)
+    public async Task WriteAsync(IAsyncEnumerable<JsonObject> records, Stream output, CancellationToken cancellationToken)
     {
+        var rows = new List<JsonObject>();
         var headers = new List<string>();
+        var headerSet = new HashSet<string>(StringComparer.Ordinal);
 
-        foreach (var record in records)
+        await foreach (var record in records.WithCancellation(cancellationToken))
         {
+            rows.Add(record);
+
             foreach (var property in record)
             {
-                if (!headers.Contains(property.Key, StringComparer.Ordinal))
+                if (headerSet.Add(property.Key))
                 {
                     headers.Add(property.Key);
                 }
@@ -60,7 +64,7 @@ public sealed class ExcelExportFormat : IEtlExportFormat
 
             sheetData.Append(headerRow);
 
-            foreach (var record in records)
+            foreach (var record in rows)
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
@@ -81,7 +85,6 @@ public sealed class ExcelExportFormat : IEtlExportFormat
             workbookPart.Workbook.Save();
         }
 
-        return Task.CompletedTask;
     }
 
     private static Cell CreateTextCell(string value)

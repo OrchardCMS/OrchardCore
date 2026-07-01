@@ -48,10 +48,8 @@ public sealed class Startup : StartupBase
         services.AddEtlExportFormat<ExcelExportFormat>();
 
         // Built-in source activities.
-        services.AddEtlActivity<ContentItemSource, ContentItemSourceDisplayDriver>();
         services.AddEtlActivity<ExcelSource, ExcelSourceDisplayDriver>();
         services.AddEtlActivity<JsonSource, JsonSourceDisplayDriver>();
-        services.AddEtlActivity<QuerySource, QuerySourceDisplayDriver>();
 
         // Built-in transform activities.
         services.AddEtlActivity<FieldMappingTransform, FieldMappingTransformDisplayDriver>();
@@ -62,6 +60,24 @@ public sealed class Startup : StartupBase
         // Built-in load activities (destinations).
         services.AddEtlActivity<MediaFolderExportLoad, MediaFolderExportLoadDisplayDriver>();
         services.AddEtlActivity<FtpExportLoad, FtpExportLoadDisplayDriver>();
+    }
+}
+
+[RequireFeatures("OrchardCore.Queries")]
+public sealed class QueriesStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddEtlActivity<QuerySource, QuerySourceDisplayDriver>();
+    }
+}
+
+[RequireFeatures("OrchardCore.Contents")]
+public sealed class ContentsStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddEtlActivity<ContentItemSource, ContentItemSourceDisplayDriver>();
         services.AddEtlActivity<ContentItemLoad, ContentItemLoadDisplayDriver>();
     }
 }

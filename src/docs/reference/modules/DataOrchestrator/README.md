@@ -2,6 +2,8 @@
 
 The ETL (Extract, Transform, Load) module provides a visual pipeline editor for building data integration workflows. It allows users to extract data from various sources, transform it using configurable operations, and load it into different destinations.
 
+The module adds the **Data Pipelines** admin section, where editors can design pipelines on a visual canvas, configure each activity, run pipelines manually, inspect execution logs, and optionally schedule enabled pipelines.
+
 ## General Concepts
 
 An ETL pipeline is a collection of **activities** connected by **transitions**. Activities are categorized into three types:
@@ -61,6 +63,18 @@ Activities are color-coded:
 - 🔵 **Blue** — Transforms
 - 🔴 **Red** — Loads
 
+## Feature Dependencies
+
+The base `OrchardCore.DataOrchestrator` feature provides the visual pipeline designer, pipeline execution services, scheduling support, transforms, file export formats, JSON and Excel sources, and file-based destinations.
+
+Some activities are registered only when their dependency feature is enabled:
+
+| Activity | Required feature | Notes |
+|----------|------------------|-------|
+| Query Source | `OrchardCore.Queries` | Lists available saved queries in the activity editor and requires selecting one. |
+| Content Item Source | `OrchardCore.Contents` | Reads content items and uses content type definitions for editor choices. |
+| Content Item Load | `OrchardCore.Contents` | Creates or updates content items. |
+
 ## Built-in Activities
 
 ### Sources
@@ -68,6 +82,7 @@ Activities are color-coded:
 #### Content Item Source
 
 Extracts content items from the Orchard Core content store.
+This activity is available when the `OrchardCore.Contents` feature is enabled.
 
 | Setting | Description |
 |---------|-------------|
@@ -79,21 +94,25 @@ Extracts content items from the Orchard Core content store.
 #### Query Source
 
 Executes a named query registered by the **Queries** feature (SQL, Lucene, or Elasticsearch) and streams its results as records.
+This activity is available when the `OrchardCore.Queries` feature is enabled, and the query selection is required.
 
 | Setting | Description |
 |---------|-------------|
-| Query Name | The technical name of an existing query to run. |
+| Query | The existing query to run. |
 | Parameters | Optional JSON object of parameters passed to the query. |
 
-This activity uses the `IQueryManager` service. When the Queries feature is not enabled, or no query with the given name exists, the source yields no records.
+This activity uses the `IQueryManager` service. When no query with the selected name exists, the source yields no records.
 
 #### Excel Workbook Source
 
-Reads rows from an `.xlsx` file stored in the media library.
+Reads rows from an `.xlsx` file stored under the tenant's Data Orchestrator folder in App_Data. The editor can upload a workbook or reference an existing tenant-relative file path; paths are sandboxed and cannot escape App_Data.
+
+Uploaded workbooks are saved under the tenant's Data Orchestrator folder, e.g. `App_Data/Sites/{TenantName}/DataOrchestrator/Uploads`. Existing file paths must be relative to `App_Data/Sites/{TenantName}/DataOrchestrator` and must not contain path traversal segments.
 
 | Setting | Description |
 |---------|-------------|
-| Excel File Path | The media path to the workbook (e.g., `imports/products.xlsx`). |
+| Upload Excel File | Uploads an `.xlsx` workbook into the tenant's Data Orchestrator uploads folder. |
+| Excel File Path | A path relative to the tenant's Data Orchestrator App_Data folder (e.g., `Uploads/products.xlsx`). |
 | Worksheet Name | The worksheet to read. Leave empty for the first one. |
 | First row contains headers | Whether to use the first row as column names. |
 
@@ -155,6 +174,7 @@ Writes the serialized data to a file in the tenant's media library.
 #### FTP / FTPS Export
 
 Uploads the serialized data to an FTP or FTPS server.
+The password is stored protected using ASP.NET Core data protection and is not re-displayed in the activity editor after saving.
 
 | Setting | Description |
 |---------|-------------|
@@ -170,6 +190,7 @@ Uploads the serialized data to an FTP or FTPS server.
 #### Content Item Load
 
 Creates or updates content items in the Orchard Core content store.
+This activity is available when the `OrchardCore.Contents` feature is enabled.
 
 | Setting | Description |
 |---------|-------------|
@@ -331,7 +352,7 @@ public sealed class XmlExportFormat : IEtlExportFormat
 
     public string MimeType => "application/xml";
 
-    public async Task WriteAsync(IReadOnlyList<JsonObject> records, Stream output, CancellationToken cancellationToken)
+    public async Task WriteAsync(IAsyncEnumerable<JsonObject> records, Stream output, CancellationToken cancellationToken)
     {
         // Serialize `records` to `output` as XML.
     }
@@ -399,7 +420,9 @@ Each activity needs three Razor views:
 
 The module does not require any `appsettings.json` configuration. Scheduled execution is driven by each pipeline's own cron **Schedule** (set in the pipeline properties); a background task evaluates enabled, scheduled pipelines every 10 minutes and runs the ones that are due.
 
-The FTP / FTPS destination stores its connection settings (host, credentials, directory, and security mode) on the activity itself, as part of the pipeline definition.
+Local Excel workbooks are stored under each tenant's App_Data folder in `Sites/{TenantName}/DataOrchestrator`.
+
+The FTP / FTPS destination stores its connection settings (host, user name, protected password, directory, and security mode) on the activity itself, as part of the pipeline definition.
 
 ## Videos
 

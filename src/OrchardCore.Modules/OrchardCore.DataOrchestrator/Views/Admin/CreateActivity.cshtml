@@ -2,7 +2,7 @@
 
 <zone Name="Title"><h1>@(string.IsNullOrEmpty(Model.ActivityId) ? T["Add Activity"] : T["Edit Activity"])</h1></zone>
 
-<form asp-action="@(string.IsNullOrEmpty(Model.ActivityId) ? "CreateActivity" : "EditActivity")" method="post">
+<form asp-action="@(string.IsNullOrEmpty(Model.ActivityId) ? "CreateActivity" : "EditActivity")" method="post" enctype="multipart/form-data" class="no-multisubmit">
     <input type="hidden" name="PipelineId" value="@Model.PipelineId" />
     <input type="hidden" name="ActivityId" value="@Model.ActivityId" />
     <input type="hidden" name="ActivityName" value="@Model.ActivityName" />
@@ -12,15 +12,17 @@
 
     @await DisplayAsync(Model.Editor)
 
-    <div class="mb-3">
-        <button class="btn btn-success" type="submit">@T["Save"]</button>
-        @if (Url.IsLocalUrl(Model.ReturnUrl))
-        {
-            <a class="btn btn-secondary" href="@Model.ReturnUrl">@T["Cancel"]</a>
-        }
-        else
-        {
-            <a class="btn btn-secondary" asp-action="Edit" asp-route-id="@Model.PipelineId">@T["Cancel"]</a>
-        }
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
+            <button class="btn btn-primary save" type="submit">@T["Save"]</button>
+            @if (Url.IsLocalUrl(Model.ReturnUrl))
+            {
+                <a class="btn btn-secondary cancel" href="@Model.ReturnUrl">@T["Cancel"]</a>
+            }
+            else
+            {
+                <a class="btn btn-secondary cancel" asp-action="Edit" asp-route-id="@Model.PipelineId">@T["Cancel"]</a>
+            }
+        </div>
     </div>
 </form>

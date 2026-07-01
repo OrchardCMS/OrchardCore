@@ -6,9 +6,9 @@
     var isStart = activityRecord.IsStart;
     var activityCssClass = activity switch
     {
-        EtlSourceActivity => "activity-source",
-        EtlTransformActivity => "activity-transform",
-        EtlLoadActivity => "activity-load",
+        EtlSourceActivity => "activity-source activity-event",
+        EtlTransformActivity => "activity-transform activity-task",
+        EtlLoadActivity => "activity-load activity-task",
         _ => string.Empty,
     };
     var xPosition = activityRecord.X <= 0 ? 0 : activityRecord.X;
@@ -18,7 +18,8 @@
      style="left:@(xPosition)px; top:@(yPosition)px;"
      id="@($"activity-{Model.PipelineId}-{activityRecord.ActivityId}")"
      data-activity-id="@activityRecord.ActivityId"
-     data-activity-start="@(isStart.ToString().ToLowerInvariant())">
+     data-activity-start="@(isStart.ToString().ToLowerInvariant())"
+     data-placement="bottom">
     @await DisplayAsync(Model.Content)
     <div class="activity-commands d-none">
         @if (activity.HasEditor)

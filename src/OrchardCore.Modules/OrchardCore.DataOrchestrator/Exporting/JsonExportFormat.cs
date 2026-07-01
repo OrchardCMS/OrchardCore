@@ -1,4 +1,3 @@
-using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
@@ -22,18 +21,8 @@ public sealed class JsonExportFormat : IEtlExportFormat
 
     public string MimeType => "application/json";
 
-    public async Task WriteAsync(IReadOnlyList<JsonObject> records, Stream output, CancellationToken cancellationToken)
+    public async Task WriteAsync(IAsyncEnumerable<JsonObject> records, Stream output, CancellationToken cancellationToken)
     {
-        var array = new JsonArray();
-
-        foreach (var record in records)
-        {
-            array.Add(record.DeepClone());
-        }
-
-        var json = array.ToJsonString(_options);
-        var bytes = Encoding.UTF8.GetBytes(json);
-
-        await output.WriteAsync(bytes, cancellationToken);
+        await JsonSerializer.SerializeAsync(output, records, _options, cancellationToken);
     }
 }

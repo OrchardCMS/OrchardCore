@@ -72,6 +72,133 @@ public class EtlPipelineExecutorTests
         Assert.True(log.ErrorCount > 0);
     }
 
+    [Fact]
+    public async Task ExecuteAsync_WithFanOut_PreservesBranchDataStreams()
+    {
+        var source = new JsonSource
+        {
+            Data = "[{\"name\":\"a\",\"active\":\"true\"},{\"name\":\"b\",\"active\":\"false\"}]",
+        };
+
+        var activeFilter = new FilterTransform
+        {
+            Field = "active",
+            Operator = "equals",
+            Value = "true",
+        };
+
+        var inactiveFilter = new FilterTransform
+        {
+            Field = "active",
+            Operator = "equals",
+            Value = "false",
+        };
+
+        var activeLoad = new CaptureLoad("ActiveLoad");
+        var inactiveLoad = new CaptureLoad("InactiveLoad");
+
+        var sourceRecord = CreateRecord(source, isStart: true);
+        var activeFilterRecord = CreateRecord(activeFilter);
+        var inactiveFilterRecord = CreateRecord(inactiveFilter);
+        var activeLoadRecord = CreateRecord(activeLoad);
+        var inactiveLoadRecord = CreateRecord(inactiveLoad);
+
+        var pipeline = new EtlPipelineDefinition
+        {
+            PipelineId = "p1",
+            Name = "Fan-out pipeline",
+            Activities =
+            [
+                sourceRecord,
+                activeFilterRecord,
+                inactiveFilterRecord,
+                activeLoadRecord,
+                inactiveLoadRecord,
+            ],
+            Transitions =
+            [
+                Transition(sourceRecord, activeFilterRecord),
+                Transition(activeFilterRecord, activeLoadRecord),
+                Transition(sourceRecord, inactiveFilterRecord),
+                Transition(inactiveFilterRecord, inactiveLoadRecord),
+            ],
+        };
+
+        var executor = new EtlPipelineExecutor(
+            new FakeActivityLibrary([source, activeFilter, activeLoad, inactiveLoad]),
+            new ServiceCollection().BuildServiceProvider(),
+            NullLogger<EtlPipelineExecutor>.Instance);
+
+        var log = await executor.ExecuteAsync(pipeline, cancellationToken: TestContext.Current.CancellationToken);
+
+        Assert.Equal("Success", log.Status);
+        Assert.Single(activeLoad.Captured);
+        Assert.Single(inactiveLoad.Captured);
+        Assert.Equal("a", activeLoad.Captured[0]["name"].GetValue<string>());
+        Assert.Equal("b", inactiveLoad.Captured[0]["name"].GetValue<string>());
+        Assert.Equal(2, log.RecordsProcessed);
+        Assert.Equal(2, log.RecordsLoaded);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_WithCycle_FailsWithoutRepeatingActivitiesIndefinitely()
+    {
+        var first = new CountingActivity("First");
+        var second = new CountingActivity("Second");
+        var firstRecord = CreateRecord(first, isStart: true);
+        var secondRecord = CreateRecord(second);
+
+        var pipeline = new EtlPipelineDefinition
+        {
+            PipelineId = "cycle",
+            Name = "Cycle",
+            Activities = [firstRecord, secondRecord],
+            Transitions =
+            [
+                Transition(firstRecord, secondRecord),
+                Transition(secondRecord, firstRecord),
+            ],
+        };
+
+        var executor = new EtlPipelineExecutor(
+            new FakeActivityLibrary([first, second]),
+            new ServiceCollection().BuildServiceProvider(),
+            NullLogger<EtlPipelineExecutor>.Instance);
+
+        var log = await executor.ExecuteAsync(pipeline, cancellationToken: TestContext.Current.CancellationToken);
+
+        Assert.Equal("Failed", log.Status);
+        Assert.Equal(1, log.ErrorCount);
+        Assert.Contains(log.Errors, error => error.Contains("Cycle", StringComparison.OrdinalIgnoreCase));
+        Assert.Equal(1, first.ExecuteCount);
+        Assert.Equal(1, second.ExecuteCount);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_WhenActivityConfigurationIsInvalid_FailsWithoutConsumingLoad()
+    {
+        var source = new JsonSource
+        {
+            Data = "[{\"date\":\"2026-06-29T12:00:00Z\"}]",
+        };
+
+        var format = new FormatValueTransform
+        {
+            Field = "date",
+            FormatType = FormatValueTransform.ConvertUtcToTimeZoneFormat,
+            TimeZoneId = "Invalid/TimeZone",
+        };
+
+        var load = new CaptureLoad();
+
+        var log = await ExecuteAsync(source, format, load);
+
+        Assert.Equal("Failed", log.Status);
+        Assert.Equal(1, log.ErrorCount);
+        Assert.Contains(log.Errors, error => error.Contains("time zone", StringComparison.OrdinalIgnoreCase));
+        Assert.Empty(load.Captured);
+    }
+
     private static async Task<EtlExecutionLog> ExecuteAsync(IEtlActivity source, IEtlActivity transform, IEtlActivity load)
     {
         var activities = new List<IEtlActivity> { source, load };
@@ -120,12 +247,12 @@ public class EtlPipelineExecutorTests
         return await executor.ExecuteAsync(pipeline);
     }
 
-    private static EtlActivityRecord CreateRecord(IEtlActivity activity, bool isStart = false)
+    private static EtlActivityRecord CreateRecord(IEtlActivity activity, bool isStart = false, string name = null)
     {
         return new EtlActivityRecord
         {
             ActivityId = Guid.NewGuid().ToString("n"),
-            Name = activity.Name,
+            Name = name ?? activity.Name,
             Properties = activity.Properties,
             IsStart = isStart,
         };
@@ -171,11 +298,44 @@ public class EtlPipelineExecutorTests
         }
     }
 
+    private sealed class CountingActivity : EtlActivity
+    {
+        public CountingActivity(string name)
+        {
+            Name = name;
+        }
+
+        public override string Name { get; }
+
+        public override string DisplayText => Name;
+
+        public override string Category => "Tests";
+
+        public int ExecuteCount { get; private set; }
+
+        public override IEnumerable<EtlOutcome> GetPossibleOutcomes()
+        {
+            return [new EtlOutcome("Done")];
+        }
+
+        public override Task<EtlActivityResult> ExecuteAsync(EtlExecutionContext context)
+        {
+            ExecuteCount++;
+
+            return Task.FromResult(EtlActivityResult.Success("Done"));
+        }
+    }
+
     private sealed class CaptureLoad : EtlLoadActivity
     {
+        public CaptureLoad(string name = nameof(CaptureLoad))
+        {
+            Name = name;
+        }
+
         public List<JsonObject> Captured { get; } = [];
 
-        public override string Name => nameof(CaptureLoad);
+        public override string Name { get; }
 
         public override string DisplayText => "Capture";
 
