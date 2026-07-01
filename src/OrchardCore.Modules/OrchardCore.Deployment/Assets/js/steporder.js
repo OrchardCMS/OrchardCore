@@ -11,7 +11,7 @@ function updateStepOrders(oldIndex, newIndex) {
             newIndex: newIndex,
             oldIndex: oldIndex,
         },
-        error: function (error) {
+        error: function () {
             alert($('#stepOrderErrorMessage').data("message"));
         }
     });
@@ -22,7 +22,7 @@ $(function () {
     if (!sortable) {
         return;
     }
-    var sortable = Sortable.create(sortable, {
+    sortable = Sortable.create(sortable, {
         handle: ".ui-sortable-handle",
         onSort: function (evt) {
             var oldIndex = evt.oldIndex;
