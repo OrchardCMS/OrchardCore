@@ -34,6 +34,8 @@ jobs:
         corepack enable
         yarn --no-check-resolutions
         yarn build
+    - name: Type-check assets
+      run: yarn check
     - name: Check if git has changes
       shell: pwsh
       run: |
