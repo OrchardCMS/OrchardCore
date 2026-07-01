@@ -10,10 +10,12 @@ function initMultiTextFieldPicker(element) {
         var vm = new Vue({
             el: '#' + elementId,
             components: { 'vue-multiselect': vueMultiselect },
-            data: {
-                value: selectedValues,
-                options: options,
-                valuesKey: element.dataset.valueskey
+            data: function () {
+                return {
+                    value: selectedValues,
+                    options: options,
+                    valuesKey: element.dataset.valueskey
+                };
             },
             watch: {
                 value: function () {

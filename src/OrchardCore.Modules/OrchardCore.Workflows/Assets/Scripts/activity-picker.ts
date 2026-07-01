@@ -1,4 +1,4 @@
-var applyFilter = function (category: string | null, q: string | null) {
+const applyFilter = function (category: string | null, q: string | null) {
     const type = document.querySelector<HTMLElement>('.modal-activities')?.dataset.activityType;
     category = category || document.querySelector('.activity-picker-categories .nav-link.active')?.getAttribute('href')?.substring(1) || '';
     q = q || (document.querySelector<HTMLInputElement>('.modal-activities input[type=search]')?.value ?? '');
