@@ -1,8 +1,9 @@
 [
   {
-    "action": "min",
+    "action": "parcel",
     "name": "flows",
-    "source": "Assets/js/flows.edit.js",
+    "source": "Assets/ts/flows.edit.ts",
+    "dest": "wwwroot/Scripts/flows/",
     "tags": ["admin", "dashboard", "js"]
   },
   {
