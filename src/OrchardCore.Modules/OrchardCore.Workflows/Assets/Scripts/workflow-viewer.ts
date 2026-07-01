@@ -1,14 +1,16 @@
+// typings.d.ts is a pure ambient declaration file (global interfaces, no exports), so there's
+// nothing to `import` - a path reference is the only way to bring it into scope.
+// eslint-disable-next-line @typescript-eslint/triple-slash-reference
 ///<reference path='../Lib/jsplumb/typings.d.ts' />
 
-import './workflow-models';
+import { WorkflowType, Activity, Outcome } from './workflow-models';
 import WorkflowCanvas from './workflow-canvas';
 
 class WorkflowViewer extends WorkflowCanvas {
     private jsPlumbInstance!: jsPlumbInstance;
 
-    constructor(protected container: HTMLElement, protected workflowType: Workflows.WorkflowType) {
+    constructor(protected container: HTMLElement, protected workflowType: WorkflowType) {
         super(container, workflowType);
-        const self = this;
 
         jsPlumb.ready(() => {
             jsPlumb.importDefaults(this.getDefaults());
@@ -16,15 +18,15 @@ class WorkflowViewer extends WorkflowCanvas {
             const plumber = this.createJsPlumbInstance();
 
             // Listen for new connections.
-            plumber.bind('connection', function (connInfo, originalEvent) {
-                const connection: Connection = connInfo.connection;
-                const outcome: Workflows.Outcome = connection.getParameters().outcome;
+            plumber.bind('connection', (connInfo: { connection: Connection; sourceEndpoint: Endpoint }) => {
+                const connection = connInfo.connection;
+                const outcome: Outcome = connection.getParameters().outcome;
 
-                const label: any = connection.getOverlay('label');
+                const label: Overlay = connection.getOverlay('label');
                 label.setLabel(outcome.displayName);
 
                 // Change anchor to Continuous for better routing when connected
-                const sourceEndpoint: any = connInfo.sourceEndpoint;
+                const sourceEndpoint = connInfo.sourceEndpoint;
                 if (sourceEndpoint && sourceEndpoint.setAnchor) {
                     sourceEndpoint.setAnchor('Continuous');
                 }
@@ -39,37 +41,15 @@ class WorkflowViewer extends WorkflowCanvas {
 
                 // Re-orient labels after connection
                 requestAnimationFrame(() => {
-                    self.orientOutcomeLabels();
+                    this.orientOutcomeLabels();
                 });
             });
 
             const activityElements = this.getActivityElements();
 
-            const areEqualOutcomes = function (outcomes1: Workflows.Outcome[], outcomes2: Workflows.Outcome[]): boolean {
-                if (outcomes1.length != outcomes2.length) {
-                    return false;
-                }
-
-                for (let i = 0; i < outcomes1.length; i++) {
-                    const outcome1 = outcomes1[i];
-                    const outcome2 = outcomes2[i];
-
-                    if (outcome1.name != outcome2.displayName || outcome1.displayName != outcome2.displayName) {
-                        return false;
-                    }
-                }
-
-                return true;
-            }
-
             // Suspend drawing and initialize.
             plumber.batch(() => {
-                const workflowId: number = this.workflowType.id;
-
                 activityElements.forEach((activityElement) => {
-                    const activityId = activityElement.dataset.activityId as string;
-                    const activity = this.getActivity(activityId);
-
                     // Configure the activity as a target.
                     plumber.makeTarget(activityElement, {
                         dropOptions: { hoverClass: 'hover' },
@@ -115,7 +95,7 @@ class WorkflowViewer extends WorkflowCanvas {
         });
     }
 
-    protected getEndpointColor = (activity: Workflows.Activity) => {
+    protected getEndpointColor = (activity: Activity) => {
         return activity.isBlocking ? '#7ab02c' : activity.isEvent ? '#3a8acd' : '#7ab02c';
     }
 }
@@ -123,7 +103,7 @@ class WorkflowViewer extends WorkflowCanvas {
 const workflowViewerInstances = new WeakMap<HTMLElement, WorkflowViewer>();
 
 function initWorkflowViewer(element: HTMLElement): WorkflowViewer {
-    const workflowType: Workflows.WorkflowType = JSON.parse(element.dataset.workflowType ?? '{}');
+    const workflowType: WorkflowType = JSON.parse(element.dataset.workflowType ?? '{}');
     const instance = new WorkflowViewer(element, workflowType);
     workflowViewerInstances.set(element, instance);
     return instance;
