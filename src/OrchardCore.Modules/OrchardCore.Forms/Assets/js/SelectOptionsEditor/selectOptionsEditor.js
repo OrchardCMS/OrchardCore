@@ -1,4 +1,4 @@
-selectOptionsEditor = function () {
+window.selectOptionsEditor = function () {
 
     const initilize = (elemId, optionsData, defaultValue) => {
         var keyId = 1;
@@ -128,11 +128,11 @@ selectOptionsEditor = function () {
                         this.$emit("modal-cancel");
                     }
                 },
-                showStart: function (params) {
+                showStart: function () {
                     this.$refs.modal.classList.toggle('d-block');
                     this.$refs.backdrop.classList.toggle('d-block');
                 },
-                showEnd: function (params) {
+                showEnd: function () {
                     this.$refs.modal.classList.toggle('show');
                     this.$refs.backdrop.classList.toggle('show');
                 }
@@ -161,7 +161,7 @@ selectOptionsEditor = function () {
                         } else {
                             this.isValid = false;
                         }
-                    } catch (e) {
+                    } catch {
                         this.isValid = false;
                     }
                 },
@@ -231,10 +231,10 @@ selectOptionsEditor = function () {
                         this.debouncePreview();
                     }
                 },
-                reorderOption: function (evt) {
+                reorderOption: function () {
                     this.debouncePreview();
                 },
-                debouncePreview: function (params) {
+                debouncePreview: function () {
                     if (this.debounceTimeout) clearTimeout(this.debounceTimeout);
                     this.debounceTimeout = setTimeout(() => {
                         const previewEvent = new Event("contentpreview:render");
@@ -313,9 +313,9 @@ document.addEventListener('DOMContentLoaded', function () {
             var initialDefaultValue = fieldWrapper.querySelector('.field-options-wrapper-initial-default-value');
             var initialOptions = fieldWrapper.querySelector('.field-options-wrapper-initial-options');
 
-            selectOptionsEditor.initilizeElement(fieldWrapper.Id, initialOptions.innerHTML, initialDefaultValue.value)
+            window.selectOptionsEditor.initilizeElement(fieldWrapper.Id, initialOptions.innerHTML, initialDefaultValue.value)
         }
     }
 
-    selectOptionsEditor.initilizeFieldType(document);
+    window.selectOptionsEditor.initilizeFieldType(document);
 });

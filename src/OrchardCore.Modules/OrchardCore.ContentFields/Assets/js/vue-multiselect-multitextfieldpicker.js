@@ -1,4 +1,4 @@
-function initMultiTextFieldPicker(element) {
+window.initMultiTextFieldPicker = function (element) {
     // only run script if element exists
     if (element) {
         var elementId = element.id;
@@ -30,4 +30,4 @@ function initMultiTextFieldPicker(element) {
         var event = new CustomEvent("multitextfield-picker-created", { detail: { vm: vm } });
         document.querySelector("body").dispatchEvent(event);
     }
-}
+};
