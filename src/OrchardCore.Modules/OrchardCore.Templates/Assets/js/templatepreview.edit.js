@@ -2,7 +2,7 @@ var editor;
 
 window.initializeTemplatePreview = function (nameElement, editorElement) {
 
-    var antiforgerytoken = $("[name='__RequestVerificationToken']").val();
+    var antiforgerytoken = document.querySelector("[name='__RequestVerificationToken']").value;
 
     var sendFormData = function (nameElement) {
 
@@ -13,7 +13,7 @@ window.initializeTemplatePreview = function (nameElement, editorElement) {
         };
 
         // store the form data to pass it in the event handler
-        localStorage.setItem('OrchardCore.templates', JSON.stringify($.param(formData)));
+        localStorage.setItem('OrchardCore.templates', JSON.stringify(new URLSearchParams(formData).toString()));
     }
 
     editor = CodeMirror.fromTextArea(editorElement, {
@@ -45,18 +45,17 @@ window.initializeTemplatePreview = function (nameElement, editorElement) {
         sendFormData(nameElement);
     }, false);
 
-    $(nameElement)
-        .on('input', function () { sendFormData(nameElement); })
-        .on('propertychange', function () { sendFormData(nameElement); })
-        .on('change', function () { sendFormData(nameElement); })
-        .on('keyup', function (e) {
-            // handle backspace
-            if (e.key === "Backspace" || e.ctrlKey) {
-                sendFormData(nameElement);
-            }
-        });
+    nameElement.addEventListener('input', function () { sendFormData(nameElement); });
+    nameElement.addEventListener('propertychange', function () { sendFormData(nameElement); });
+    nameElement.addEventListener('change', function () { sendFormData(nameElement); });
+    nameElement.addEventListener('keyup', function (e) {
+        // handle backspace
+        if (e.key === "Backspace" || e.ctrlKey) {
+            sendFormData(nameElement);
+        }
+    });
 
-    $(window).on('unload', function () {
+    window.addEventListener('unload', function () {
         localStorage.removeItem('OrchardCore.templates');
         // this will raise an event in the preview window to notify that the live preview is no longer active.
         localStorage.setItem('OrchardCore.templates:not-connected', '');
