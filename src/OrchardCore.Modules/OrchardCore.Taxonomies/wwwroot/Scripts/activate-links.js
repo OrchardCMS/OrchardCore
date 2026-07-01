@@ -1,2 +1,2 @@
-!function(n){n.fn.activateLinks=function(o){var t=n.extend({class:"active",selector:null},o),e=window.location.href.replace(window.location.protocol+"//"+window.location.host,""),i=n(this).find('a[href="'+e+'"]').parent();return t.selector&&(i=i.find(t.selector)),i.addClass(t.class),this}}(jQuery);
+window.activateLinks=function(o,r){var e=Object.assign({class:"active",selector:null},r),t=window.location.href.replace(window.location.protocol+"//"+window.location.host,""),n=Array.from(o.querySelectorAll('a[href="'+t+'"]')).map(function(o){return o.parentElement});return e.selector&&(n=n.flatMap(function(o){return Array.from(o.querySelectorAll(e.selector))})),n.forEach(function(o){o.classList.add(e.class)}),o};
 //# sourceMappingURL=activate-links.map
