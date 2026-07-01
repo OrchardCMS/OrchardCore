@@ -23,6 +23,12 @@ body.menu-dragging #menu ol.menu-item-links:empty {
   border-radius: 0.25rem;
 }
 
+body.menu-dragging #menu ol.menu-item-links.menu-item-links-dragged-own:empty {
+  min-height: 0;
+  margin-left: 0;
+  border: none;
+}
+
 body.menu-dragging #menu {
   padding-bottom: 2rem;
 }

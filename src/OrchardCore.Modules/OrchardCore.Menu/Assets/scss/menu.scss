@@ -25,6 +25,14 @@ body.menu-dragging #menu ol.menu-item-links:empty {
     border-radius: 0.25rem;
 }
 
+// The dragged item's own child list is never a valid target for itself; keep it
+// collapsed even while otherwise-empty lists are revealed as drop targets.
+body.menu-dragging #menu ol.menu-item-links.menu-item-links-dragged-own:empty {
+    min-height: 0;
+    margin-left: 0;
+    border: none;
+}
+
 // The root list has no parent <li> of its own, so once its last item has nested
 // children, there's no space belonging to the root list itself below them to drop
 // an item back onto (only the nested item's own child list would be under the
