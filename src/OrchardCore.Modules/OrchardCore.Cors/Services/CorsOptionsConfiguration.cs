@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.Cors.Settings;
 
 namespace OrchardCore.Cors.Services;
 
@@ -23,11 +24,17 @@ public sealed class CorsOptionsConfiguration : IConfigureOptions<CorsOptions>
             return;
         }
 
+        string? firstAddedPolicyName = null;
+
         foreach (var corsPolicy in corsSettings.Policies)
         {
-            if (corsPolicy.AllowCredentials && corsPolicy.AllowAnyOrigin)
+            var allowAnyOrigin = CorsSettingsHelper.IsAnyOriginAllowed(corsPolicy.AllowAnyOrigin, corsPolicy.AllowedOrigins);
+
+            if (corsPolicy.AllowCredentials && allowAnyOrigin)
             {
-                _logger.LogWarning("Using AllowCredentials and AllowAnyOrigin at the same time is considered a security risk, the {PolicyName} policy will not be loaded.", corsPolicy.Name);
+                _logger.LogWarning(
+                    "Using AllowCredentials with any origin (including '*') is considered a security risk, the {PolicyName} policy will not be loaded.",
+                    corsPolicy.Name);
                 continue;
             }
 
@@ -51,7 +58,7 @@ public sealed class CorsOptionsConfiguration : IConfigureOptions<CorsOptions>
                     configurePolicy.WithMethods(corsPolicy.AllowedMethods);
                 }
 
-                if (corsPolicy.AllowAnyOrigin)
+                if (allowAnyOrigin)
                 {
                     configurePolicy.AllowAnyOrigin();
                 }
@@ -75,12 +82,15 @@ public sealed class CorsOptionsConfiguration : IConfigureOptions<CorsOptions>
                 }
             });
 
+            firstAddedPolicyName ??= corsPolicy.Name;
+
             if (corsPolicy.IsDefaultPolicy)
             {
                 options.DefaultPolicyName = corsPolicy.Name;
             }
         }
 
-        options.DefaultPolicyName ??= corsSettings.Policies.FirstOrDefault()?.Name;
+        // Only fall back to the first *successfully added* policy, never a skipped/invalid one.
+        options.DefaultPolicyName ??= firstAddedPolicyName;
     }
 }
