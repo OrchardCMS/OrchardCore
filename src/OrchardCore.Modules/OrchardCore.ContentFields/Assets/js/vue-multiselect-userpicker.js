@@ -39,10 +39,12 @@ function initVueMultiselectUserPicker(element) {
         var vm = new Vue({
             el: '#' + elementId,
             components: { 'vue-multiselect': vueMultiselect },
-            data: {
-                value: null,
-                arrayOfUsers: selectedUsers,
-                options: [],
+            data: function () {
+                return {
+                    value: null,
+                    arrayOfUsers: selectedUsers,
+                    options: [],
+                };
             },
             computed: {
                 selectedIds: function () {

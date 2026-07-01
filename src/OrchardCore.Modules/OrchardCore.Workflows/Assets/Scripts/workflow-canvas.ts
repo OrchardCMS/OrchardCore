@@ -101,10 +101,10 @@ abstract class WorkflowCanvas {
     }
 
     protected updateConnections = (plumber: jsPlumbInstance) => {
-        var workflowId: number = this.workflowType.id;
+        const workflowId: number = this.workflowType.id;
 
         // Connect activities.
-        for (let transitionModel of this.workflowType.transitions) {
+        for (const transitionModel of this.workflowType.transitions) {
             const sourceEndpointUuid: string = `${transitionModel.sourceActivityId}-${transitionModel.sourceOutcomeName}`;
             const sourceEndpoint: Endpoint = plumber.getEndpoint(sourceEndpointUuid);
             const destinationElementId: string = `activity-${workflowId}-${transitionModel.destinationActivityId}`;
@@ -122,7 +122,7 @@ abstract class WorkflowCanvas {
         let currentElementTop = 0;
         let currentActivityHeight = 0;
 
-        for (let activityElement of activityElements) {
+        for (const activityElement of activityElements) {
             const top = activityElement.offsetTop;
 
             if (top > currentElementTop) {

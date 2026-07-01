@@ -43,9 +43,9 @@ class WorkflowViewer extends WorkflowCanvas {
                 });
             });
 
-            let activityElements = this.getActivityElements();
+            const activityElements = this.getActivityElements();
 
-            var areEqualOutcomes = function (outcomes1: Workflows.Outcome[], outcomes2: Workflows.Outcome[]): boolean {
+            const areEqualOutcomes = function (outcomes1: Workflows.Outcome[], outcomes2: Workflows.Outcome[]): boolean {
                 if (outcomes1.length != outcomes2.length) {
                     return false;
                 }
@@ -64,7 +64,7 @@ class WorkflowViewer extends WorkflowCanvas {
 
             // Suspend drawing and initialize.
             plumber.batch(() => {
-                var workflowId: number = this.workflowType.id;
+                const workflowId: number = this.workflowType.id;
 
                 activityElements.forEach((activityElement) => {
                     const activityId = activityElement.dataset.activityId as string;
@@ -94,7 +94,7 @@ class WorkflowViewer extends WorkflowCanvas {
                         const activity = this.getActivity(activityId);
 
                         // Add source endpoints after layout is complete
-                        for (let outcome of activity.outcomes) {
+                        for (const outcome of activity.outcomes) {
                             const sourceEndpointOptions = this.getSourceEndpointOptions(activity, outcome);
                             const endpoint = plumber.addEndpoint(activityElement, { connectorOverlays: [['Label', { label: outcome.displayName, cssClass: 'connection-label' }]] }, sourceEndpointOptions);
                             this.endpointMap.push({ endpoint, activityElement });
