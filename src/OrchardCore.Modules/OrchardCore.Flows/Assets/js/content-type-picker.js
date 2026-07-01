@@ -159,28 +159,36 @@ function hideContentTypePicker() {
     }
 }
 
+// Browsers don't execute <script> tags inserted via innerHTML, so scripts are extracted
+// server-side into a separate markup fragment and re-created here as real <script> elements,
+// which do execute when appended to the document (mirrors jQuery's $.globalEval trick).
+function evalScripts(html) {
+    var container = document.createElement("div");
+    container.innerHTML = html;
+    container.querySelectorAll("script").forEach(function (oldScript) {
+        var newScript = document.createElement("script");
+        for (var i = 0; i < oldScript.attributes.length; i++) {
+            newScript.setAttribute(oldScript.attributes[i].name, oldScript.attributes[i].value);
+        }
+        newScript.textContent = oldScript.textContent;
+        document.body.appendChild(newScript);
+    });
+}
+
 // Direct widget creation via AJAX
 window.contentTypePickerSelectContentType = function (contentType, config) {
     var targetId = config.targetId;
     var htmlFieldPrefix = config.htmlFieldPrefix;
-    var $target = $("#" + targetId);
-    var createEditorUrl = $target.data("buildeditorurl");
+    var target = document.getElementById(targetId);
+    var createEditorUrl = target.dataset.buildeditorurl;
 
     // Calculate next prefix index
-    var indexes = $target
-        .closest("form")
-        .find("input[name*='Prefixes']")
-        .filter(function (i, e) {
-            return $(e).val().substring(0, $(e).val().lastIndexOf("-")) === htmlFieldPrefix;
+    var indexes = Array.from(target.closest("form").querySelectorAll("input[name*='Prefixes']"))
+        .filter(function (e) {
+            return e.value.substring(0, e.value.lastIndexOf("-")) === htmlFieldPrefix;
         })
-        .map(function (i, e) {
-            return (
-                parseInt(
-                    $(e)
-                        .val()
-                        .substring($(e).val().lastIndexOf("-") + 1),
-                ) || 0
-            );
+        .map(function (e) {
+            return parseInt(e.value.substring(e.value.lastIndexOf("-") + 1)) || 0;
         });
 
     var index = indexes.length ? Math.max(...indexes) + 1 : 0;
@@ -204,29 +212,24 @@ window.contentTypePickerSelectContentType = function (contentType, config) {
         params.append("cardCollectionType", config.cardCollectionType);
     }
 
-    $.ajax({
-        url: createEditorUrl + "?" + params.toString(),
-    }).done(function (data) {
-        var result = JSON.parse(data);
+    fetch(createEditorUrl + "?" + params.toString())
+        .then(function (response) { return response.text(); })
+        .then(function (data) {
+            var result = JSON.parse(data);
 
-        // Insert before element if specified, otherwise append to target
-        if (config.insertBefore) {
-            $(result.Content).insertBefore(config.insertBefore);
-        } else {
-            $target.append(result.Content);
-        }
+            // Insert before element if specified, otherwise append to target
+            if (config.insertBefore) {
+                config.insertBefore.insertAdjacentHTML("beforebegin", result.Content);
+            } else {
+                target.insertAdjacentHTML("beforeend", result.Content);
+            }
 
-        // Execute scripts
-        $(result.Scripts)
-            .filter("script")
-            .each(function () {
-                $.globalEval(this.text || this.textContent || this.innerHTML || "");
-            });
+            evalScripts(result.Scripts);
 
-        hideContentTypePicker();
-    }).fail(function () {
-        if (contentTypePickerApp) {
-            contentTypePickerApp.hasError = true;
-        }
-    });
+            hideContentTypePicker();
+        }, function () {
+            if (contentTypePickerApp) {
+                contentTypePickerApp.hasError = true;
+            }
+        });
 };
