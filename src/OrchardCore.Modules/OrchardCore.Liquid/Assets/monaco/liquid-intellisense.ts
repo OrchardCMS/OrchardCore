@@ -1,3 +1,9 @@
+// monaco-editor ships monaco.d.ts as a pure ambient declaration file with no "types" entry in its
+// package.json, so `import` (or `/// <reference types="monaco-editor" />`) can't resolve it - a
+// path reference is the only way to bring the ambient `monaco` namespace into scope. `monaco` is a
+// runtime global here too (loaded via Monaco's own AMD loader, not bundled), so there is nothing to
+// import at the value level either.
+// eslint-disable-next-line @typescript-eslint/triple-slash-reference
 /// <reference path="../../../../../node_modules/monaco-editor/monaco.d.ts" />
 
 const liquidTags = [
@@ -88,7 +94,7 @@ interface ILiquidContextInfo {
     inObject: boolean;
 }
 
-function getLiquidContextInfo(model: monaco.editor.ITextModel, position: monaco.Position, triggerCharacter?: string|undefined): ILiquidContextInfo {
+function getLiquidContextInfo(model: monaco.editor.ITextModel, position: monaco.Position): ILiquidContextInfo {
     let inTag: boolean = false;
     let inObject: boolean = false;
     let showTags: boolean = false;
@@ -133,7 +139,7 @@ function getLiquidContextInfo(model: monaco.editor.ITextModel, position: monaco.
 
 const completionItemProvider: monaco.languages.CompletionItemProvider = {
     triggerCharacters: [" "],
-    provideCompletionItems: (model: monaco.editor.ITextModel, position: monaco.Position, context: monaco.languages.CompletionContext, token: monaco.CancellationToken) => {
+    provideCompletionItems: (model: monaco.editor.ITextModel, position: monaco.Position, context: monaco.languages.CompletionContext) => {
         let items: string[] = [];
 
         if (context.triggerCharacter == " ") {
@@ -143,7 +149,7 @@ const completionItemProvider: monaco.languages.CompletionItemProvider = {
             }
         }
 
-        const liquidContext: ILiquidContextInfo = getLiquidContextInfo(model, position, context.triggerCharacter);
+        const liquidContext: ILiquidContextInfo = getLiquidContextInfo(model, position);
         if (liquidContext.showFilters) {
             items = liquidFilters;
         } else if (liquidContext.showTags) {
@@ -165,7 +171,7 @@ const completionItemProvider: monaco.languages.CompletionItemProvider = {
     },
 };
 
-function ConfigureLiquidIntellisense(monaco: any, suggestHtml: boolean = true) {
+function ConfigureLiquidIntellisense(monaco: typeof globalThis.monaco, suggestHtml: boolean = true) {
     if (suggestHtml) {
         const modeConfiguration: monaco.languages.html.ModeConfiguration = {
             completionItems: true,
@@ -188,7 +194,7 @@ function ConfigureLiquidIntellisense(monaco: any, suggestHtml: boolean = true) {
 
 declare global {
     interface Window {
-        ConfigureLiquidIntellisense: (monaco: any, suggestHtml?: boolean) => void;
+        ConfigureLiquidIntellisense: (monaco: typeof globalThis.monaco, suggestHtml?: boolean) => void;
         liquidFilters: string[];
         liquidTags: string[];
     }
