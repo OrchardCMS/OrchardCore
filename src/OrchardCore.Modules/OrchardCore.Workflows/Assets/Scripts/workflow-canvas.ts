@@ -1,12 +1,15 @@
+// typings.d.ts is a pure ambient declaration file (global interfaces, no exports), so there's
+// nothing to `import` - a path reference is the only way to bring it into scope.
+// eslint-disable-next-line @typescript-eslint/triple-slash-reference
 ///<reference path='../Lib/jsplumb/typings.d.ts' />
 
-import './workflow-models';
+import { WorkflowType, Activity, Outcome } from './workflow-models';
 
 abstract class WorkflowCanvas {
     private minCanvasHeight: number = 400;
-    protected endpointMap: Array<{ endpoint: any, activityElement: HTMLElement }> = [];
+    protected endpointMap: Array<{ endpoint: Endpoint, activityElement: HTMLElement }> = [];
 
-    constructor(protected container: HTMLElement, protected workflowType: Workflows.WorkflowType) {
+    constructor(protected container: HTMLElement, protected workflowType: WorkflowType) {
     }
 
     protected getActivityElements = (): NodeListOf<HTMLElement> => {
@@ -46,11 +49,11 @@ abstract class WorkflowCanvas {
         });
     };
 
-    protected getEndpointColor = (activity: Workflows.Activity) => {
+    protected getEndpointColor = (activity: Activity) => {
         return activity.isBlocking || activity.isStart ? '#7ab02c' : activity.isEvent ? '#3a8acd' : '#7ab02c';
     }
 
-    protected getSourceEndpointOptions = (activity: Workflows.Activity, outcome: Workflows.Outcome): EndpointOptions => {
+    protected getSourceEndpointOptions = (activity: Activity, outcome: Outcome): EndpointOptions => {
         // The definition of source endpoints.
         const paintColor = this.getEndpointColor(activity);
         const displayName = outcome.displayName || '';
@@ -93,11 +96,11 @@ abstract class WorkflowCanvas {
         };
     };
 
-    protected getActivity = (id: string, activities: Array<Workflows.Activity> | null = null): Workflows.Activity => {
+    protected getActivity = (id: string, activities: Array<Activity> | null = null): Activity => {
         if (!activities) {
             activities = this.workflowType.activities;
         }
-        return activities.find((x: Workflows.Activity) => x.id === id) as Workflows.Activity;
+        return activities.find((x: Activity) => x.id === id) as Activity;
     }
 
     protected updateConnections = (plumber: jsPlumbInstance) => {
@@ -144,10 +147,10 @@ abstract class WorkflowCanvas {
 
     protected orientOutcomeLabels = () => {
         for (const { endpoint, activityElement } of this.endpointMap) {
-            const overlay: any = endpoint.getOverlay ? endpoint.getOverlay('outcome-label') : null;
+            const overlay: Overlay | null = endpoint.getOverlay ? endpoint.getOverlay('outcome-label') : null;
             if (!overlay) continue;
 
-            const overlayEl: HTMLElement = overlay.getElement ? overlay.getElement() : overlay.canvas;
+            const overlayEl: HTMLElement | undefined = overlay.getElement ? overlay.getElement() : overlay.canvas;
             if (!overlayEl) continue;
 
             // Once the outcome is connected, the connection's own label overlay shows the name instead,

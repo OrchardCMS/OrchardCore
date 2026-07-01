@@ -1,6 +1,9 @@
+// typings.d.ts is a pure ambient declaration file (global interfaces, no exports), so there's
+// nothing to `import` - a path reference is the only way to bring it into scope.
+// eslint-disable-next-line @typescript-eslint/triple-slash-reference
 ///<reference path='../Lib/jsplumb/typings.d.ts' />
 
-import "./workflow-models";
+import { WorkflowType, Activity, Outcome } from "./workflow-models";
 import "./activity-picker";
 import "./workflow-url-generator";
 import WorkflowCanvas from "./workflow-canvas";
@@ -18,13 +21,12 @@ class WorkflowEditor extends WorkflowCanvas {
 
     constructor(
         protected container: HTMLElement,
-        protected workflowType: Workflows.WorkflowType,
+        protected workflowType: WorkflowType,
         private deleteActivityPrompt: string,
         private localId: string,
         loadLocalState: boolean,
     ) {
         super(container, workflowType);
-        const self = this;
 
         jsPlumb.ready(() => {
             jsPlumb.importDefaults(this.getDefaults());
@@ -32,15 +34,15 @@ class WorkflowEditor extends WorkflowCanvas {
             const plumber = this.createJsPlumbInstance();
 
             // Listen for new connections.
-            plumber.bind("connection", function (connInfo, originalEvent) {
-                const connection: Connection = connInfo.connection;
-                const outcome: Workflows.Outcome = connection.getParameters().outcome;
+            plumber.bind("connection", (connInfo: { connection: Connection; sourceEndpoint: Endpoint }) => {
+                const connection = connInfo.connection;
+                const outcome: Outcome = connection.getParameters().outcome;
 
-                const label: any = connection.getOverlay("label");
+                const label: Overlay = connection.getOverlay("label");
                 label.setLabel(outcome.displayName);
 
                 // Change anchor to Continuous for better routing when connected
-                const sourceEndpoint: any = connInfo.sourceEndpoint;
+                const sourceEndpoint = connInfo.sourceEndpoint;
                 if (sourceEndpoint && sourceEndpoint.setAnchor) {
                     sourceEndpoint.setAnchor('Continuous');
                 }
@@ -55,13 +57,13 @@ class WorkflowEditor extends WorkflowCanvas {
 
                 // Re-orient labels after connection
                 requestAnimationFrame(() => {
-                    self.orientOutcomeLabels();
+                    this.orientOutcomeLabels();
                 });
             });
 
             // Listen for detached connections.
-            plumber.bind("connectionDetached", function (connInfo, originalEvent) {
-                const sourceEndpoint: any = connInfo.sourceEndpoint;
+            plumber.bind("connectionDetached", (connInfo: { sourceEndpoint: Endpoint }) => {
+                const sourceEndpoint = connInfo.sourceEndpoint;
 
                 // Change anchor back to ContinuousRight when no connections remain
                 if (sourceEndpoint && sourceEndpoint.connections && sourceEndpoint.connections.length === 0) {
@@ -73,7 +75,7 @@ class WorkflowEditor extends WorkflowCanvas {
                     if (sourceEndpoint.showOverlay) {
                         const overlay = sourceEndpoint.getOverlay('outcome-label');
                         if (overlay) {
-                            const outcome: Workflows.Outcome = sourceEndpoint.getParameters().outcome;
+                            const outcome: Outcome = sourceEndpoint.getParameters().outcome;
                             if (outcome && outcome.displayName) {
                                 sourceEndpoint.showOverlay("outcome-label");
                             }
@@ -83,13 +85,13 @@ class WorkflowEditor extends WorkflowCanvas {
 
                 // Re-orient labels after disconnection
                 requestAnimationFrame(() => {
-                    self.orientOutcomeLabels();
+                    this.orientOutcomeLabels();
                 });
             });
 
             const activityElements = this.getActivityElements();
 
-            const areEqualOutcomes = function (outcomes1: Workflows.Outcome[], outcomes2: Workflows.Outcome[]): boolean {
+            const areEqualOutcomes = function (outcomes1: Outcome[], outcomes2: Outcome[]): boolean {
                 if (outcomes1.length != outcomes2.length) {
                     return false;
                 }
@@ -108,11 +110,10 @@ class WorkflowEditor extends WorkflowCanvas {
 
             // Suspend drawing and initialize.
             plumber.batch(() => {
-                const serverworkflowType: Workflows.WorkflowType = this.workflowType;
-                const workflowId: number = this.workflowType.id;
+                const serverworkflowType: WorkflowType = this.workflowType;
 
                 if (loadLocalState) {
-                    const localState: Workflows.WorkflowType = this.loadLocalState();
+                    const localState: WorkflowType = this.loadLocalState();
 
                     if (localState) {
                         this.workflowType = localState;
@@ -160,15 +161,15 @@ class WorkflowEditor extends WorkflowCanvas {
                     plumber.draggable(activityElement, {
                         grid: [10, 10],
                         containment: true,
-                        start: (args: any) => {
+                        start: (args: { e: MouseEvent }) => {
                             this.dragStart = { left: args.e.screenX, top: args.e.screenY };
                         },
-                        stop: (args: any) => {
+                        stop: (args: { e: MouseEvent }) => {
                             this.hasDragged = this.dragStart.left != args.e.screenX || this.dragStart.top != args.e.screenY;
                             this.updateCanvasHeight();
                             // Re-orient labels after dragging (connections may have repositioned)
                             requestAnimationFrame(() => {
-                                self.orientOutcomeLabels();
+                                this.orientOutcomeLabels();
                             });
                         },
                     });
@@ -272,7 +273,7 @@ class WorkflowEditor extends WorkflowCanvas {
                             //    return;
                             //}
 
-                            self.workflowType.removedActivities.push(activityId);
+                            this.workflowType.removedActivities.push(activityId);
                             plumber.remove(activityElement);
                             bootstrap.Popover.getInstance(activityElement)?.dispose();
                         });
@@ -282,7 +283,7 @@ class WorkflowEditor extends WorkflowCanvas {
                             if (!persistTrigger) {
                                 return;
                             }
-                            self.saveLocalState();
+                            this.saveLocalState();
                         });
 
                         return content;
@@ -334,7 +335,7 @@ class WorkflowEditor extends WorkflowCanvas {
             });
 
             // Hide all popovers when clicking anywhere but on an activity.
-            document.body.addEventListener("click", (e) => {
+            document.body.addEventListener("click", () => {
                 activityElements.forEach((el) => bootstrap.Popover.getInstance(el)?.hide());
                 this.isPopoverVisible = false;
             });
@@ -351,9 +352,9 @@ class WorkflowEditor extends WorkflowCanvas {
         });
     }
 
-    private getState = (): Workflows.WorkflowType => {
+    private getState = (): WorkflowType => {
         const allActivityElements = this.container.querySelectorAll<HTMLElement>(".activity");
-        const workflow: Workflows.WorkflowType = {
+        const workflow: WorkflowType = {
             id: this.workflowType.id,
             activities: [],
             transitions: [],
@@ -365,7 +366,7 @@ class WorkflowEditor extends WorkflowCanvas {
             const activityId = activityElement.dataset.activityId as string;
             const activityIsStart = activityElement.dataset.activityStart === "true";
             const activityIsEvent = activityElement.dataset.activityType === "Event";
-            const activity: Workflows.Activity = this.getActivity(activityId);
+            const activity: Activity = this.getActivity(activityId);
 
             workflow.activities.push({
                 id: activityId,
@@ -398,7 +399,7 @@ class WorkflowEditor extends WorkflowCanvas {
     };
 
     public serialize = (): string => {
-        const workflow: Workflows.WorkflowType = this.getState();
+        const workflow: WorkflowType = this.getState();
         return JSON.stringify(workflow);
     };
 
@@ -406,7 +407,7 @@ class WorkflowEditor extends WorkflowCanvas {
         sessionStorage[this.localId] = this.serialize();
     };
 
-    private loadLocalState = (): Workflows.WorkflowType => {
+    private loadLocalState = (): WorkflowType => {
         return JSON.parse(sessionStorage[this.localId]);
     };
 }
@@ -414,7 +415,7 @@ class WorkflowEditor extends WorkflowCanvas {
 const workflowEditorInstances = new WeakMap<HTMLElement, WorkflowEditor>();
 
 function initWorkflowEditor(element: HTMLElement): WorkflowEditor {
-    const workflowType: Workflows.WorkflowType = JSON.parse(element.dataset.workflowType ?? '{}');
+    const workflowType: WorkflowType = JSON.parse(element.dataset.workflowType ?? '{}');
     const deleteActivityPrompt = element.dataset.workflowDeleteActivityPrompt ?? '';
     const localId = element.dataset.workflowLocalId ?? '';
     const loadLocalState = element.dataset.workflowLoadLocalState === 'true';

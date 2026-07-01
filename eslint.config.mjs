@@ -28,6 +28,10 @@ export default [
             // duplicated verbatim in both modules.
             "**/OrchardCore.Taxonomies/Assets/js/menu.js",
             "**/OrchardCore.Menu/Assets/js/menu.js",
+            // Hand-authored ambient type declarations for the untyped third-party jsPlumb library
+            // (not from DefinitelyTyped) - a typing compatibility shim, not application code.
+            // Properly typing jsPlumb's full API is a separate, substantial effort.
+            "**/OrchardCore.Workflows/Assets/Lib/jsplumb/typings.d.ts",
         ],
     },
     { languageOptions: { globals: globals.browser } },

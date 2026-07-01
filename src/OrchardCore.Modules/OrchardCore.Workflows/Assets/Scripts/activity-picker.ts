@@ -44,17 +44,16 @@ document.addEventListener('DOMContentLoaded', () => {
         applyFilter(null, (e.target as HTMLInputElement).value);
     });
 
-    document.getElementById('activity-picker')?.addEventListener('show.bs.modal', function (this: HTMLElement, event) {
-        const button = (event as any).relatedTarget as HTMLElement | null;
+    document.getElementById('activity-picker')?.addEventListener('show.bs.modal', function (this: HTMLElement, event: Event & { relatedTarget?: HTMLElement | null }) {
+        const button = event.relatedTarget;
         const title = button?.dataset.pickerTitle ?? '';
         const type = button?.dataset.activityType ?? '';
-        const modal = this;
-        modal.querySelector<HTMLElement>('[href="#all"]')?.click();
-        const modalTitle = modal.querySelector('.modal-title');
+        this.querySelector<HTMLElement>('[href="#all"]')?.click();
+        const modalTitle = this.querySelector('.modal-title');
         if (modalTitle) {
             modalTitle.textContent = title;
         }
-        modal.dataset.activityType = type;
+        this.dataset.activityType = type;
         applyFilter(null, null);
     });
 });
