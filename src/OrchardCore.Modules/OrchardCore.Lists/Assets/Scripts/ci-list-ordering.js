@@ -18,7 +18,7 @@ function updateContentItemOrders(oldIndex, newIndex) {
             },
             pageSize: pageSize
         },
-        error: function (error) {
+        error: function () {
             alert($('#update-order-error-message').data("message"));
         }
     });
@@ -27,7 +27,7 @@ function updateContentItemOrders(oldIndex, newIndex) {
 $(function () {
     var sortable = document.getElementById("ci-sortable");
 
-    var sortable = Sortable.create(sortable, {
+    Sortable.create(sortable, {
         handle: ".ui-sortable-handle",
         onSort: function (evt) {
             var oldIndex = evt.oldIndex;
