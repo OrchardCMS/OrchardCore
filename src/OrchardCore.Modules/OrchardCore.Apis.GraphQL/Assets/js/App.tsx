@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
 import GraphiQL from "graphiql";
 import GraphiQLExplorer from "graphiql-explorer";
-import { buildClientSchema, getIntrospectionQuery } from "graphql";
+import { buildClientSchema, getIntrospectionQuery, IntrospectionQuery } from "graphql";
 import { GraphiQLToolbarConfig } from "graphiql/dist/components/GraphiQL";
 
 import "graphiql/graphiql.css";
@@ -14,7 +14,7 @@ function getIntrospectionUrl(): string {
         .dataset.introspectionUrl;
 }
 
-function fetcher(params: object): Promise<any> {
+function fetcher(params: object): Promise<{ data?: unknown }> {
     const introspectionUrl = getIntrospectionUrl();
     return fetch(
         introspectionUrl,
@@ -34,15 +34,16 @@ function fetcher(params: object): Promise<any> {
     .then(function(responseBody) {
         try {
             return JSON.parse(responseBody);
-        } catch (e) {
-            return responseBody;
+        } catch {
+            // Not valid JSON: display the raw response body as-is rather than an error.
+            return responseBody as unknown as { data?: unknown };
         }
     });
 }
 
 function App() {
     // Gets a graphql query from the URL if present and sets it as the default query.
-    const parameters: any = parseQueryFromUrl(window.location);
+    const parameters = parseQueryFromUrl(window.location);
 
     const [query, setQuery] = useState(parameters.query);
     const [schema, setSchema] = useState(null);
@@ -52,7 +53,7 @@ function App() {
         fetcher({
             query: getIntrospectionQuery()
         }).then(result => {
-            setSchema(buildClientSchema(result.data));
+            setSchema(buildClientSchema(result.data as IntrospectionQuery));
         });
     }, []);
 
@@ -76,8 +77,8 @@ function App() {
         updateURL();
     }
 
-    function parseQueryFromUrl(location: Location) {
-        const params: any = {};
+    function parseQueryFromUrl(location: Location): Record<string, string> {
+        const params: Record<string, string> = {};
         location.search.substr(1).split('&').forEach(function (entry) {
             const eq = entry.indexOf('=');
             if (eq >= 0) {
@@ -90,7 +91,7 @@ function App() {
             try {
                 params.variables =
                     JSON.stringify(JSON.parse(params.variables), null, 2);
-            } catch (e) {
+            } catch {
                 // Do nothing, we want to display the invalid JSON as a string, rather
                 // than present an error.
             }
@@ -129,8 +130,8 @@ function App() {
                 explorerIsOpen={explorerIsOpen}
                 onToggleExplorer={handleToggleExplorer}
             />
-            {/*@ts-ignore */}
             <GraphiQL
+                // @ts-expect-error fetcher's return type is intentionally loose (see fetcher above); doesn't structurally match GraphiQL's Fetcher/SyncExecutionResult shape.
                 fetcher={fetcher}
                 schema={schema}
                 variables={parameters.variables}

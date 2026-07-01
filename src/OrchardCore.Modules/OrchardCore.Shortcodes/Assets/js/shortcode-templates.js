@@ -1,4 +1,4 @@
-function initializeShortcodesTemplateEditor(categoriesElement, contentElement, usageElement, previewElement, nameElement, hintElement) {
+window.initializeShortcodesTemplateEditor = function (categoriesElement, contentElement, usageElement, previewElement, nameElement, hintElement) {
     if (contentElement) {
         CodeMirror.fromTextArea(contentElement, {
             autoCloseTags: true,
@@ -70,4 +70,4 @@ function initializeShortcodesTemplateEditor(categoriesElement, contentElement, u
         });
         return vm;
     }
-}
+};
