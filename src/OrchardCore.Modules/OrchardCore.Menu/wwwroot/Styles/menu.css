@@ -16,19 +16,6 @@
   min-height: 0;
 }
 
-body.menu-dragging #menu ol.menu-item-links:empty {
-  min-height: 1.5rem;
-  margin-left: 1.5rem;
-  border: 1px dashed var(--bs-border-color, #ccc);
-  border-radius: 0.25rem;
-}
-
-body.menu-dragging #menu ol.menu-item-links.menu-item-links-dragged-own:empty {
-  min-height: 0;
-  margin-left: 0;
-  border: none;
-}
-
 body.menu-dragging #menu {
   padding-bottom: 2rem;
 }
