@@ -165,7 +165,9 @@ nav:
   - Key Topics:
       - Manage your Content: topics/content-management/README.md
       - Content Relationships: topics/content-relationships/README.md
-      - Customize the Display: topics/display/README.md
+      - Customize the Display:
+          - Overview: topics/display/README.md
+          - What is a Shape?: topics/display/shapes.md
       - Localize your site: topics/localize/README.md
       - Handle the Media: topics/media/README.md
       - Navigate between pages: topics/navigation/README.md
