@@ -8,10 +8,33 @@
   cursor: move;
   border: none;
   padding: 0;
+  user-select: none;
+}
+
+#menu .sortable-ghost:not(.sortable-fallback) {
+  opacity: 0;
 }
 
 #menu ol.menu-item-links:empty {
   margin: 0;
   padding: 0;
   min-height: 0;
+}
+
+.menu-item-pending-indent {
+  transform: translateX(1.5rem);
+}
+
+.menu-item-pending-outdent {
+  transform: translateX(-1.5rem);
+}
+
+.menu-item-pending-indent,
+.menu-item-pending-outdent {
+  transition: transform 0.1s ease-out;
+}
+
+.menu-item-pending-parent > .menu-item-title {
+  outline: 2px solid var(--bs-primary, #0d6efd);
+  outline-offset: 2px;
 }

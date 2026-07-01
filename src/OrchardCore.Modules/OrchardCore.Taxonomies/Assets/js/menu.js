@@ -17,6 +17,10 @@
     var DRAGGING_CLASS = 'menu-dragging';
     var ITEM_SELECTOR = 'li.menu-item';
     var LIST_SELECTOR = 'ol.menu-item-links';
+    var PENDING_INDENT_CLASS = 'menu-item-pending-indent';
+    var PENDING_OUTDENT_CLASS = 'menu-item-pending-outdent';
+    var PENDING_PARENT_CLASS = 'menu-item-pending-parent';
+    var FALLBACK_CLONE_SELECTOR = '.sortable-fallback';
     // How far (in px) the pointer must move horizontally, relative to where the
     // drag started, before it's treated as an intentional request to indent or
     // outdent rather than incidental drift during an up/down reorder.
@@ -33,10 +37,54 @@
     var confirmLeave = false;
     var dragStartX = null;
     var pointerX = null;
+    var draggedItem = null;
+
+    function clearPendingPreview() {
+        Array.prototype.forEach.call(document.querySelectorAll('.' + PENDING_INDENT_CLASS + ', .' + PENDING_OUTDENT_CLASS), function (el) {
+            el.classList.remove(PENDING_INDENT_CLASS, PENDING_OUTDENT_CLASS);
+        });
+        Array.prototype.forEach.call(document.querySelectorAll('.' + PENDING_PARENT_CLASS), function (el) {
+            el.classList.remove(PENDING_PARENT_CLASS);
+        });
+    }
+
+    // Shows, in real time as the pointer moves during a drag, what letting go
+    // right now would do: shift the dragged item (and its drag clone, which is
+    // what's actually visible while forceFallback is in effect) sideways and
+    // highlight whichever item would become its new parent, mirroring how
+    // jQuery UI's nestedSortable gave live feedback while dragging.
+    function updatePendingPreview() {
+        if (!draggedItem || dragStartX === null || pointerX === null) {
+            return;
+        }
+
+        clearPendingPreview();
+
+        var deltaX = pointerX - dragStartX;
+        var previous = draggedItem.previousElementSibling;
+        var parentItem = draggedItem.parentElement.closest(ITEM_SELECTOR);
+        var clone = document.querySelector(FALLBACK_CLONE_SELECTOR);
+
+        if (deltaX > INDENT_THRESHOLD && previous && previous.matches(ITEM_SELECTOR)) {
+            draggedItem.classList.add(PENDING_INDENT_CLASS);
+            previous.classList.add(PENDING_PARENT_CLASS);
+
+            if (clone) {
+                clone.classList.add(PENDING_INDENT_CLASS);
+            }
+        } else if (deltaX < -INDENT_THRESHOLD && parentItem) {
+            draggedItem.classList.add(PENDING_OUTDENT_CLASS);
+
+            if (clone) {
+                clone.classList.add(PENDING_OUTDENT_CLASS);
+            }
+        }
+    }
 
     function trackPointer(e) {
         var point = e.touches ? e.touches[0] : e;
         pointerX = point.clientX;
+        updatePendingPreview();
     }
 
     document.addEventListener('mousemove', trackPointer);
@@ -131,15 +179,18 @@
             forceFallback: true,
             fallbackOnBody: true,
             animation: 150,
-            onStart: function () {
+            onStart: function (evt) {
                 document.body.classList.add(DRAGGING_CLASS);
                 dragStartX = pointerX;
+                draggedItem = evt.item;
             },
             onEnd: function (evt) {
                 document.body.classList.remove(DRAGGING_CLASS);
+                clearPendingPreview();
 
                 var deltaX = (pointerX !== null && dragStartX !== null) ? pointerX - dragStartX : 0;
                 dragStartX = null;
+                draggedItem = null;
 
                 var reparented = false;
 
