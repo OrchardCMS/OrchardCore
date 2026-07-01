@@ -164,7 +164,6 @@ export default function initSortableMenu(): void {
     const trackPointerDown = (e: MouseEvent | TouchEvent) => {
         const point = "touches" in e && e.touches.length > 0 ? e.touches[0] : (e as MouseEvent);
         dragStartX = point.clientX;
-        console.log("DEBUG trackPointerDown", e.type, dragStartX);
     };
 
     document.addEventListener("mousemove", trackPointer);
@@ -255,7 +254,6 @@ export default function initSortableMenu(): void {
             clearPendingPreview();
 
             const deltaX = pointerX !== null && dragStartX !== null ? pointerX - dragStartX : 0;
-            console.log("DEBUG onEnd", "pointerX", pointerX, "dragStartX", dragStartX, "deltaX", deltaX);
             dragStartX = null;
 
             if (!draggedItem) {
