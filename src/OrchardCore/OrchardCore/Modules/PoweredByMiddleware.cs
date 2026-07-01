@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 
 namespace OrchardCore.Modules;
 
@@ -8,25 +9,26 @@ namespace OrchardCore.Modules;
 public class PoweredByMiddleware
 {
     private readonly RequestDelegate _next;
-    private readonly IPoweredByMiddlewareOptions _options;
+    private readonly PoweredByOptions _poweredByOptions;
 
-    public PoweredByMiddleware(RequestDelegate next, IPoweredByMiddlewareOptions options)
+    public PoweredByMiddleware(RequestDelegate next, IOptions<PoweredByOptions> poweredByOptions)
     {
         _next = next;
-        _options = options;
+        _poweredByOptions = poweredByOptions.Value;
     }
 
     public Task Invoke(HttpContext httpContext)
     {
-        if (_options.Enabled)
+        if (_poweredByOptions.Enabled)
         {
-            httpContext.Response.Headers[_options.HeaderName] = _options.HeaderValue;
+            httpContext.Response.Headers[_poweredByOptions.HeaderName] = _poweredByOptions.HeaderValue;
         }
 
         return _next.Invoke(httpContext);
     }
 }
 
+[Obsolete("This interface is deprecated.", error: true)]
 public interface IPoweredByMiddlewareOptions
 {
     bool Enabled { get; set; }
@@ -34,6 +36,7 @@ public interface IPoweredByMiddlewareOptions
     string HeaderValue { get; set; }
 }
 
+[Obsolete("This class is deprecated. Use PoweredByOptions instead.", error: true)]
 internal sealed class PoweredByMiddlewareOptions : IPoweredByMiddlewareOptions
 {
     private const string PoweredByHeaderName = "X-Powered-By";

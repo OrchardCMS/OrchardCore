@@ -9,20 +9,25 @@ public class PoweredByMiddlewareTests
     {
         // Arrange
         string key = "X-Powered-By", value = "OrchardCore";
+        var poweredByOptions = Options.Create(new PoweredByOptions
+        {
+            HeaderName = key,
+            HeaderValue = value,
+        });
+
         var headersArray = new Dictionary<string, StringValues>() { { key, string.Empty } };
         var headersDic = new HeaderDictionary(headersArray);
         var httpResponseMock = new Mock<HttpResponse>();
-        httpResponseMock.SetupGet(r => r.Headers).Returns(headersDic);
+        httpResponseMock.SetupGet(r => r.Headers)
+            .Returns(headersDic);
 
         var httpContextMock = new Mock<HttpContext>();
-        httpContextMock.Setup(c => c.Response).Returns(httpResponseMock.Object);
+        httpContextMock.Setup(c => c.Response)
+            .Returns(httpResponseMock.Object);
 
-        var optionsMock = new Mock<IPoweredByMiddlewareOptions>();
-        optionsMock.SetupGet(o => o.Enabled).Returns(true);
-        optionsMock.SetupGet(o => o.HeaderName).Returns(key);
-        optionsMock.SetupGet(o => o.HeaderValue).Returns(value);
         static Task requestDelegate(HttpContext context) => Task.CompletedTask;
-        var middleware = new PoweredByMiddleware(next: requestDelegate, options: optionsMock.Object);
+
+        var middleware = new PoweredByMiddleware(requestDelegate, poweredByOptions);
 
         // Act
         await middleware.Invoke(httpContextMock.Object);
@@ -37,6 +42,13 @@ public class PoweredByMiddlewareTests
     {
         // Arrange
         string key = "X-Powered-By", value = "OrchardCore";
+        var poweredByOptions = Options.Create(new PoweredByOptions
+        {
+            Enabled = false,
+            HeaderName = key,
+            HeaderValue = value,
+        });
+
         var httpResponseMock = new Mock<HttpResponse>();
 #pragma warning disable ASP0019 // Suggest using IHeaderDictionary.Append or the indexer
         _ = httpResponseMock.Setup(r => r.Headers.Add(key, value));
@@ -49,12 +61,8 @@ public class PoweredByMiddlewareTests
         var httpContextMock = new Mock<HttpContext>();
         httpContextMock.Setup(c => c.Response).Returns(httpResponseMock.Object);
 
-        var optionsMock = new Mock<IPoweredByMiddlewareOptions>();
-        optionsMock.SetupGet(o => o.Enabled).Returns(false);
-        optionsMock.SetupGet(o => o.HeaderName).Returns(key);
-        optionsMock.SetupGet(o => o.HeaderValue).Returns(value);
         static Task requestDelegate(HttpContext context) => Task.CompletedTask;
-        var middleware = new PoweredByMiddleware(next: requestDelegate, options: optionsMock.Object);
+        var middleware = new PoweredByMiddleware(next: requestDelegate, poweredByOptions);
 
         // Act
         await middleware.Invoke(httpContextMock.Object);
