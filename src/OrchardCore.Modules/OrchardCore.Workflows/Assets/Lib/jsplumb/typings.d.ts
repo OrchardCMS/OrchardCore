@@ -76,6 +76,8 @@ interface PaintStyle {
 
 interface Overlay {
     setLabel(label: string): void;
+    getElement?(): HTMLElement;
+    canvas?: HTMLElement;
 }
 
 interface ArrowOverlay extends Overlay {
@@ -177,4 +179,10 @@ interface Connection {
 
 interface Endpoint {
     getParameters(): any;
+    getOverlay(name: string): Overlay;
+    hideOverlay(name: string): void;
+    showOverlay(name: string): void;
+    setAnchor(anchor: string): void;
+    canvas: HTMLElement;
+    connections: Connection[];
 }

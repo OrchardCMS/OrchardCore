@@ -7,7 +7,7 @@
 */
 
 
-function select_all_and_copy(el) {
+window.select_all_and_copy = function (el) {
     // Copy textarea, pre, div, etc.
     if (document.body.createTextRange) {
         // IE
@@ -35,7 +35,7 @@ function select_all_and_copy(el) {
         el.contentEditable = editable; // Restore previous contentEditable status
         el.readOnly = readOnly; // Restore previous readOnly status
         if (document.queryCommandSupported("copy")) {
-            var successful = document.execCommand('copy');
+            document.execCommand('copy');
             //if (successful) tooltip(el, "Copied to clipboard.");
             //else tooltip(el, "Press CTRL+C to copy");
         }
@@ -44,7 +44,7 @@ function select_all_and_copy(el) {
         //        tooltip(el, "Press CTRL+C to copy");
         //}
     }
-} // end function select_all_and_copy(el)
+}; // end function select_all_and_copy(el)
 
 
     /* Note: document.queryCommandSupported("copy") should return "true" on browsers that support copy
