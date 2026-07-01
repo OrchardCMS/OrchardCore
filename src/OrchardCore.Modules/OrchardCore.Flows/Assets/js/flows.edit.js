@@ -4,133 +4,164 @@ window.lastContainer = undefined;
 window.widgetItemSourceId = undefined;
 window.widgetItemDestId = undefined;
 
-$(function () {
-    $(document).on('click', '.add-widget', function () {
-        var type = $(this).data("widget-type");
-        var targetId = $(this).data("target-id");
-        var htmlFieldPrefix = $(this).data("html-field-prefix");
-        var createEditorUrl = $('#' + targetId).data("buildeditorurl");
-        var prefixesName = $(this).data("prefixes-name");
-        var flowmetadata = $(this).data("flowmetadata");
-        var parentContentType = $(this).data("parent-content-type");
-        var partName = $(this).data("part-name");
+document.addEventListener('DOMContentLoaded', function () {
+    // Browsers don't execute <script> tags inserted via innerHTML, so scripts are extracted
+    // server-side into a separate markup fragment and re-created here as real <script> elements,
+    // which do execute when appended to the document (mirrors jQuery's $.globalEval trick).
+    function evalScripts(html) {
+        var container = document.createElement('div');
+        container.innerHTML = html;
+        container.querySelectorAll('script').forEach(function (oldScript) {
+            var newScript = document.createElement('script');
+            for (var i = 0; i < oldScript.attributes.length; i++) {
+                newScript.setAttribute(oldScript.attributes[i].name, oldScript.attributes[i].value);
+            }
+            newScript.textContent = oldScript.textContent;
+            document.body.appendChild(newScript);
+        });
+    }
 
+    function getIndexes(targetId, htmlFieldPrefix) {
         // Retrieve all index values knowing that some elements may have been moved / removed.
-        var indexes = $('#' + targetId).closest("form").find("input[name*='Prefixes']")
-            .filter(function (i, e) {
-                return $(e).val().substring(0, $(e).val().lastIndexOf('-')) === htmlFieldPrefix;
+        return Array.from(document.getElementById(targetId).closest("form").querySelectorAll("input[name*='Prefixes']"))
+            .filter(function (e) {
+                return e.value.substring(0, e.value.lastIndexOf('-')) === htmlFieldPrefix;
             })
-            .map(function (i, e) {
-                return parseInt($(e).val().substring($(e).val().lastIndexOf('-') + 1)) || 0;
+            .map(function (e) {
+                return parseInt(e.value.substring(e.value.lastIndexOf('-') + 1)) || 0;
             });
+    }
+
+    document.addEventListener('click', function (event) {
+        var target = event.target.closest('.add-widget');
+        if (!target) {
+            return;
+        }
+
+        var type = target.dataset.widgetType;
+        var targetId = target.dataset.targetId;
+        var htmlFieldPrefix = target.dataset.htmlFieldPrefix;
+        var createEditorUrl = document.getElementById(targetId).dataset.buildeditorurl;
+        var prefixesName = target.dataset.prefixesName;
+        var flowmetadata = target.dataset.flowmetadata;
+        var parentContentType = target.dataset.parentContentType;
+        var partName = target.dataset.partName;
+
+        var indexes = getIndexes(targetId, htmlFieldPrefix);
 
         // Use a prefix based on the items count (not a guid) so that the browser autofill still works.
         var index = indexes.length ? Math.max(...indexes) + 1 : 0;
         var prefix = htmlFieldPrefix + '-' + index.toString();
 
-        var contentTypesName = $(this).data("contenttypes-name");
-        var contentItemsName = $(this).data("contentitems-name");
-        $.ajax({
-            url: createEditorUrl + "?id=" + type + "&prefix=" + prefix + "&prefixesName=" + prefixesName + "&contentTypesName=" + contentTypesName + "&contentItemsName=" + contentItemsName + "&targetId=" + targetId + "&flowmetadata=" + flowmetadata + "&parentContentType=" + parentContentType + "&partName=" + partName
-        }).done(function (data) {
-            var result = JSON.parse(data);
-            $(document.getElementById(targetId)).append(result.Content);
-
-            var dom = $(result.Scripts);
-            dom.filter('script').each(function () {
-                $.globalEval(this.text || this.textContent || this.innerHTML || '');
+        var contentTypesName = target.dataset.contenttypesName;
+        var contentItemsName = target.dataset.contentitemsName;
+        fetch(createEditorUrl + "?id=" + type + "&prefix=" + prefix + "&prefixesName=" + prefixesName + "&contentTypesName=" + contentTypesName + "&contentItemsName=" + contentItemsName + "&targetId=" + targetId + "&flowmetadata=" + flowmetadata + "&parentContentType=" + parentContentType + "&partName=" + partName)
+            .then(function (response) { return response.text(); })
+            .then(function (data) {
+                var result = JSON.parse(data);
+                document.getElementById(targetId).insertAdjacentHTML('beforeend', result.Content);
+                evalScripts(result.Scripts);
             });
-        });
     });
 
-    $(document).on('click', '.insert-widget', function () {
-        var type = $(this).data("widget-type");
-        var target = $(this).closest('.widget-template');
-        var targetId = $(this).data("target-id");
-        var htmlFieldPrefix = $(this).data("html-field-prefix");
-        var createEditorUrl = $('#' + targetId).data("buildeditorurl");
-        var flowmetadata = $(this).data("flowmetadata");
-        var prefixesName = $(this).data("prefixes-name");
-        var parentContentType = $(this).data("parent-content-type");
-        var partName = $(this).data("part-name");
+    document.addEventListener('click', function (event) {
+        var target = event.target.closest('.insert-widget');
+        if (!target) {
+            return;
+        }
 
-        // Retrieve all index values knowing that some elements may have been moved / removed.
-        var indexes = $('#' + targetId).closest("form").find("input[name*='Prefixes']")
-            .filter(function (i, e) {
-                return $(e).val().substring(0, $(e).val().lastIndexOf('-')) === htmlFieldPrefix;
-            })
-            .map(function (i, e) {
-                return parseInt($(e).val().substring($(e).val().lastIndexOf('-') + 1)) || 0;
-            });
+        var type = target.dataset.widgetType;
+        var widgetTemplate = target.closest('.widget-template');
+        var targetId = target.dataset.targetId;
+        var htmlFieldPrefix = target.dataset.htmlFieldPrefix;
+        var createEditorUrl = document.getElementById(targetId).dataset.buildeditorurl;
+        var flowmetadata = target.dataset.flowmetadata;
+        var prefixesName = target.dataset.prefixesName;
+        var parentContentType = target.dataset.parentContentType;
+        var partName = target.dataset.partName;
+
+        var indexes = getIndexes(targetId, htmlFieldPrefix);
 
         // Use a prefix based on the items count (not a guid) so that the browser autofill still works.
         var index = indexes.length ? Math.max(...indexes) + 1 : 0;
         var prefix = htmlFieldPrefix + '-' + index.toString();
 
-        var contentTypesName = $(this).data("contenttypes-name");
-        var contentItemsName = $(this).data("contentitems-name");
-        $.ajax({
-            url: createEditorUrl + "?id=" + type + "&prefix=" + prefix + "&prefixesName=" + prefixesName + "&contentTypesName=" + contentTypesName + "&contentItemsName=" + contentItemsName + "&targetId=" + targetId + "&flowmetadata=" + flowmetadata + "&parentContentType=" + parentContentType + "&partName=" + partName
-        }).done(function (data) {
-            var result = JSON.parse(data);
-            $(result.Content).insertBefore(target);
-
-            var dom = $(result.Scripts);
-            dom.filter('script').each(function () {
-                $.globalEval(this.text || this.textContent || this.innerHTML || '');
+        var contentTypesName = target.dataset.contenttypesName;
+        var contentItemsName = target.dataset.contentitemsName;
+        fetch(createEditorUrl + "?id=" + type + "&prefix=" + prefix + "&prefixesName=" + prefixesName + "&contentTypesName=" + contentTypesName + "&contentItemsName=" + contentItemsName + "&targetId=" + targetId + "&flowmetadata=" + flowmetadata + "&parentContentType=" + parentContentType + "&partName=" + partName)
+            .then(function (response) { return response.text(); })
+            .then(function (data) {
+                var result = JSON.parse(data);
+                widgetTemplate.insertAdjacentHTML('beforebegin', result.Content);
+                evalScripts(result.Scripts);
             });
-        });
     });
 
-    $(document).on('click', '.widget-delete', function () {
-        var $this = $(this);
+    document.addEventListener('click', function (event) {
+        var target = event.target.closest('.widget-delete');
+        if (!target) {
+            return;
+        }
+
         confirmDialog({
-            ...$this.data(), callback: function (r) {
+            ...target.dataset,
+            callback: function (r) {
                 if (r) {
-                    $this.closest('.widget-template').remove();
-                    $(document).trigger('contentpreview:render');
+                    target.closest('.widget-template').remove();
+                    document.dispatchEvent(new CustomEvent('contentpreview:render'));
                 }
             }
         });
     });
 
-    $(document).on('change', '.widget-editor-footer label, .widget-editor-header label', function () {
-
-        var $tmpl = $(this).closest('.widget-template');
-        var $radio = $(this).find("input:first-child");
-        if ($radio[0].id !== 'undefined' && $radio[0].id.indexOf('Size') > 0) {
-            var $radioSize = $(this).find("input:first-child").val();
-            var classList = $tmpl.attr('class').split(' ');
-            $.each(classList, function (id, item) {
-                if (item.indexOf('col-md-') === 0) $tmpl.removeClass(item);
-            });
-            var colSize = Math.round($radioSize / 100 * 12);
-            $tmpl.addClass('col-md-' + colSize);
-
-            var dropdown = $(this).closest('.dropdown-menu');
-            dropdown.prev('button').text($radioSize + '%');
-        } else if ($radio[0].id !== 'undefined' && $radio[0].id.indexOf('Alignment') > 0) {
-            var svg = $(this).find('svg')[0].outerHTML;
-            var alignDropdown = $(this).closest('.dropdown-menu');
-            var $btn = alignDropdown.prev('button');
-            $btn.html(svg);
+    document.addEventListener('change', function (event) {
+        var target = event.target.closest('.widget-editor-footer label, .widget-editor-header label');
+        if (!target) {
+            return;
         }
 
-        $(this).parent().find('.dropdown-item').removeClass('active');
-        $(this).toggleClass('active');
-        $(document).trigger('contentpreview:render');
+        var tmpl = target.closest('.widget-template');
+        var radio = target.querySelector("input:first-child");
+        if (radio.id !== 'undefined' && radio.id.indexOf('Size') > 0) {
+            var radioSize = radio.value;
+            Array.from(tmpl.classList).forEach(function (item) {
+                if (item.indexOf('col-md-') === 0) tmpl.classList.remove(item);
+            });
+            var colSize = Math.round(radioSize / 100 * 12);
+            tmpl.classList.add('col-md-' + colSize);
+
+            var dropdown = target.closest('.dropdown-menu');
+            dropdown.previousElementSibling.textContent = radioSize + '%';
+        } else if (radio.id !== 'undefined' && radio.id.indexOf('Alignment') > 0) {
+            var svg = target.querySelector('svg').outerHTML;
+            var alignDropdown = target.closest('.dropdown-menu');
+            alignDropdown.previousElementSibling.innerHTML = svg;
+        }
+
+        target.parentElement.querySelectorAll('.dropdown-item').forEach(function (item) { item.classList.remove('active'); });
+        target.classList.toggle('active');
+        document.dispatchEvent(new CustomEvent('contentpreview:render'));
     });
 
-    $(document).on('click', '.widget-editor-btn-toggle', function () {
-        $(this).closest('.widget-editor').toggleClass('collapsed');
+    document.addEventListener('click', function (event) {
+        var target = event.target.closest('.widget-editor-btn-toggle');
+        if (target) {
+            target.closest('.widget-editor').classList.toggle('collapsed');
+        }
     });
 
-    $(document).on('keyup', '.widget-editor-body .form-group input.content-caption-text', function () {
-        var headerTextLabel = $(this).closest('.widget-editor').find('.widget-editor-header:first .widget-editor-header-text');
-        var contentTypeDisplayText = headerTextLabel.data('content-type-display-text');
-        var title = $(this).val();
+    document.addEventListener('keyup', function (event) {
+        var target = event.target.closest('.widget-editor-body .form-group input.content-caption-text');
+        if (!target) {
+            return;
+        }
+
+        var firstHeader = target.closest('.widget-editor').querySelector('.widget-editor-header');
+        var headerTextLabel = firstHeader ? firstHeader.querySelector('.widget-editor-header-text') : null;
+        var contentTypeDisplayText = headerTextLabel.dataset.contentTypeDisplayText;
+        var title = target.value;
         var newDisplayText = title + ' ' + contentTypeDisplayText;
 
-        headerTextLabel.text(newDisplayText);
+        headerTextLabel.textContent = newDisplayText;
     });
 });
