@@ -18,11 +18,6 @@ export default [
             ".parcel-cache/**/*",
             "**/vite-env.d.ts",
             "**/eslintrc.cjs",
-            "**/po-gtranslator.js",
-            "**/OrchardCore.Tests.Functional/**",
-            "**/OrchardCore.Themes**/",
-            "**/OrchardCore.Modules**/",
-            "gulpfile.js",
             "**/docs/assets/js/**",
         ],
     },
@@ -31,4 +26,29 @@ export default [
     ...tseslint.configs.recommended,
     ...pluginVue.configs["flat/essential"],
     { files: ["**/*.vue"], languageOptions: { parserOptions: { parser: tseslint.parser } } },
+    {
+        // Legacy (pre-module) module/theme scripts that rely on libraries loaded as global
+        // <script> tags rather than bundled imports. Scoped to .js only: the .ts sources that
+        // have been migrated off jQuery must keep failing no-undef if $/jQuery reappear in them.
+        files: ["**/OrchardCore.Modules/**/*.js", "**/OrchardCore.Themes/**/*.js"],
+        languageOptions: {
+            globals: {
+                $: "readonly",
+                jQuery: "readonly",
+                define: "readonly",
+                require: "readonly",
+                Vue: "readonly",
+                bootstrap: "readonly",
+                EasyMDE: "readonly",
+                Sortable: "readonly",
+                CodeMirror: "readonly",
+            },
+        },
+    },
+    {
+        // Node-based build tooling scripts (pug/scss/webpack orchestration) for the themes that
+        // ship their own asset pipeline, as opposed to browser-side theme scripts.
+        files: ["**/Assets/*Theme/scripts/**/*.js"],
+        languageOptions: { globals: globals.node },
+    },
 ];
