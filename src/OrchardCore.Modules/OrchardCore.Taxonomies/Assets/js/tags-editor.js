@@ -1,4 +1,4 @@
-function initializeTagsEditor(element) {
+window.initializeTagsEditor = function (element) {
     if (element) {
 
         var elementId = element.id;
@@ -26,7 +26,7 @@ function initializeTagsEditor(element) {
                 }
 
                 // Selected terms are show in selected tags field.
-                selectedTagTerms = allTagTerms.filter(function (tagTerm) { return tagTerm.selected });
+                var selectedTagTerms = allTagTerms.filter(function (tagTerm) { return tagTerm.selected });
 
                 return {
                     open: element.dataset.open,
@@ -58,30 +58,29 @@ function initializeTagsEditor(element) {
             },
             methods: {
                 createTagTerm(newTagTerm) {
-                    var self = this;
                     $.ajax({
-                        url: self.createTagUrl,
+                        url: this.createTagUrl,
                         method: 'POST',
                         data: {
                             __RequestVerificationToken: $("input[name='__RequestVerificationToken']").val(),
-                            taxonomyContentItemId: self.taxonomyContentItemId,
+                            taxonomyContentItemId: this.taxonomyContentItemId,
                             displayText: newTagTerm
                         },
-                        success: function (data) {
+                        success: (data) => {
                             var tagTerm = {
                                 contentItemId: data.contentItemId,
                                 displayText: data.displayText,
                                 selected: true
                             }
                             // Add to allTagTerms array so model binding will save tag as selected.
-                            self.allTagTerms.push(tagTerm);
+                            this.allTagTerms.push(tagTerm);
 
                             // Add to selectedTerms to display in vue-multi-select.
-                            self.selectedTagTerms.push(tagTerm);
+                            this.selectedTagTerms.push(tagTerm);
 
                         },
-                        error: function () {
-                            alert(self.createTagErrorMessage);
+                        error: () => {
+                            alert(this.createTagErrorMessage);
                         }
                     });
                 },
@@ -100,4 +99,4 @@ function initializeTagsEditor(element) {
 
         return vm;
     }
-}
+};

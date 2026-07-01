@@ -21,7 +21,11 @@ document.querySelectorAll('span.title').forEach((el) => {
 });
 
 document.querySelector('.leftbar-compactor')?.addEventListener('click', () => {
-    document.body.classList.contains('left-sidebar-compact') ? unSetCompactStatus() : setCompactStatus(true);
+    if (document.body.classList.contains('left-sidebar-compact')) {
+        unSetCompactStatus();
+    } else {
+        setCompactStatus(true);
+    }
 });
 
 document.querySelectorAll('#left-nav li.has-items').forEach((item) => {
@@ -51,8 +55,6 @@ document.addEventListener('click', (event) => {
         triggers.forEach((el) => el.classList.remove('visible'));
     }
 });
-
-var subMenuArray = new Array();
 
 const setCompactStatus = (explicit: boolean) => {
     // This if is to avoid that when sliding from expanded to compact the
@@ -112,10 +114,10 @@ const unSetCompactStatus = () => {
     persistAdminPreferences();
 }
 
-var leftNav = document.getElementById("left-nav");
+const leftNav = document.getElementById("left-nav");
 
 // create an Observer instance
-const resizeObserver = new ResizeObserver(entries => {
+const resizeObserver = new ResizeObserver(() => {
     if (isCompactExplicit) {
         if (leftNav && (leftNav.scrollHeight > leftNav.clientHeight)) {
             document.body.classList.add("scroll");

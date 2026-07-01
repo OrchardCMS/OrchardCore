@@ -20,7 +20,7 @@
                             modal.show();
                             //disable an reset on click event over the button to avoid issue if press button multiple times or have multiple editor
                             $('#mediaBodySelectButton').off('click');
-                            $('#mediaBodySelectButton').on('click', function (v) {
+                            $('#mediaBodySelectButton').on('click', function () {
                                 trumbowyg.restoreRange();
                                 trumbowyg.range.deleteContents();
                                 

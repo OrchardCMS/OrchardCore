@@ -22,6 +22,11 @@ export default [
             // TODO: large, jQuery-heavy legacy codebases; deferred to a dedicated follow-up.
             "**/OrchardCore.Resources/**",
             "**/OrchardCore.Media/**",
+            // Vendored third-party code embedded directly rather than under a vendor/ folder:
+            // the jQuery UI Nested Sortable plugin (MIT, github.com/ilikenwf/nestedSortable),
+            // duplicated verbatim in both modules.
+            "**/OrchardCore.Taxonomies/Assets/js/menu.js",
+            "**/OrchardCore.Menu/Assets/js/menu.js",
         ],
     },
     { languageOptions: { globals: globals.browser } },
@@ -47,6 +52,8 @@ export default [
                 CodeMirror: "readonly",
                 L: "readonly",
                 confirmDialog: "readonly",
+                // Defined by the (currently lint-deferred) OrchardCore.Media module, consumed here.
+                mediaApp: "readonly",
             },
         },
     },

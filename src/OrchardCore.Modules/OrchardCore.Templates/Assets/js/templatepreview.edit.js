@@ -1,10 +1,10 @@
 var editor;
 
-function initializeTemplatePreview(nameElement, editorElement) {
+window.initializeTemplatePreview = function (nameElement, editorElement) {
 
     var antiforgerytoken = $("[name='__RequestVerificationToken']").val();
 
-    sendFormData = function (nameElement) {
+    var sendFormData = function (nameElement) {
 
         var formData = {
             'Name': nameElement.value,
@@ -33,7 +33,7 @@ function initializeTemplatePreview(nameElement, editorElement) {
         }
     });
 
-    editor.on('change', function (cm) {
+    editor.on('change', function () {
         sendFormData(nameElement);
     });
 
@@ -62,4 +62,4 @@ function initializeTemplatePreview(nameElement, editorElement) {
         localStorage.setItem('OrchardCore.templates:not-connected', '');
         localStorage.removeItem('OrchardCore.templates:not-connected');
    });
-}
+};

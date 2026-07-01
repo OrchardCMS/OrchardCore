@@ -5,7 +5,9 @@ import "./resizeDetector";
 // not bundled here — this brings in its types only, with no runtime import/bundling.
 declare const bootstrap: typeof import("bootstrap");
 
-function confirmDialog({ callback, ...options }: { callback: (response: boolean) => void; [key: string]: any }) {
+type ConfirmDialogCallback = (response: boolean) => void;
+
+function confirmDialog({ callback, ...options }: { callback: ConfirmDialogCallback; [key: string]: string | ConfirmDialogCallback }) {
     const defaultOptions = document.getElementById("confirmRemoveModalMetadata")?.dataset ?? {};
     const { title, message, okText, cancelText, okClass, cancelClass } = { ...defaultOptions, ...options };
 
