@@ -10,7 +10,7 @@ var optionsList = Vue.component('options-list',
         methods: {
             addOption: function (value) {
                 if (value !== null && value !== '') {
-                    var noDuplicates = ($.inArray(value.toLowerCase(), this.options.map(o => o.toLowerCase())) < 0);
+                    var noDuplicates = (this.options.map(o => o.toLowerCase()).indexOf(value.toLowerCase()) < 0);
                     // Intentionally mutates the shared array reference passed down from
                     // corsApp.selectedPolicy; the parent never re-passes a new array, so this
                     // is how the edit is reflected back up.
@@ -22,7 +22,7 @@ var optionsList = Vue.component('options-list',
             },
             deleteOption: function (value) {
                 // eslint-disable-next-line vue/no-mutating-props -- see addOption above.
-                this.options.splice($.inArray(value, this.options), 1);
+                this.options.splice(this.options.indexOf(value), 1);
             }
         }
     });
@@ -70,7 +70,7 @@ window.corsApp = new Vue({
             this.selectedPolicy = null;
             var policyToRemove = this.policies.filter(function (item) { return item.name === policy.name; });
             if (policyToRemove.length > 0)
-                this.policies.splice($.inArray(policyToRemove[0], this.policies), 1);
+                this.policies.splice(this.policies.indexOf(policyToRemove[0]), 1);
             event.stopPropagation();
             this.save();
         },
@@ -98,38 +98,40 @@ window.corsApp = new Vue({
             this.selectedPolicy = null;
         },
         searchBox: function () {
-            var searchBox = $('#search-box');
+            var searchBox = document.getElementById('search-box');
 
             // On Enter, edit the item if there is a single one
-            searchBox.keydown(function (e) {
+            searchBox.addEventListener('keydown', function (e) {
                 if (e.key == 'Enter') {
 
                     // Edit the item if there is a single filtered element
-                    var visible = $('#corsAdmin > ul > li:visible');
+                    var visible = Array.from(document.querySelectorAll('#corsAdmin > ul > li')).filter(function (li) {
+                        return li.style.display !== 'none';
+                    });
                     if (visible.length == 1) {
-                        window.location = visible.find('.edit').attr('href');
+                        window.location = visible[0].querySelector('.edit').getAttribute('href');
                     }
                     return false;
                 }
             });
 
             // On each keypress filter the list
-            searchBox.keyup(function (e) {
-                var search = $(this).val().toLowerCase();
-                var elementsToFilter = $("[data-filter-value]");
+            searchBox.addEventListener('keyup', function (e) {
+                var search = searchBox.value.toLowerCase();
+                var elementsToFilter = document.querySelectorAll("[data-filter-value]");
 
                 // On ESC, clear the search box and display all
                 if (e.key === 'Escape' || search == '') {
-                    searchBox.val('');
-                    elementsToFilter.toggle(true);
-                    $('#list-alert').addClass("d-none");
+                    searchBox.value = '';
+                    elementsToFilter.forEach(function (el) { el.style.display = ''; });
+                    document.getElementById('list-alert').classList.add("d-none");
                 }
                 else {
                     var intVisible = 0;
-                    elementsToFilter.each(function () {
-                        var text = $(this).data('filter-value').toLowerCase();
+                    elementsToFilter.forEach(function (el) {
+                        var text = el.dataset.filterValue.toLowerCase();
                         var found = text.indexOf(search) > -1;
-                        $(this).toggle(found);
+                        el.style.display = found ? '' : 'none';
 
                         if (found) {
                             intVisible++;
@@ -138,10 +140,10 @@ window.corsApp = new Vue({
 
                     // We display an alert if a search is not found
                     if (intVisible == 0) {
-                        $('#list-alert').removeClass("d-none");
+                        document.getElementById('list-alert').classList.remove("d-none");
                     }
                     else {
-                        $('#list-alert').addClass("d-none");
+                        document.getElementById('list-alert').classList.add("d-none");
                     }
                 }
             });

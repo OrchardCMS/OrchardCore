@@ -1,6 +1,6 @@
 window.mdeToolbar = undefined;
 
-$(function () {
+document.addEventListener('DOMContentLoaded', function () {
     window.mdeToolbar = [
         {
             name: "guide",
@@ -84,12 +84,12 @@ $(function () {
         {
             name: "image",
             action: function (editor) {
-                $("#mediaApp").detach().appendTo('#mediaModalMarkdown .modal-body');
+                document.querySelector('#mediaModalMarkdown .modal-body').appendChild(document.getElementById("mediaApp"));
                 document.getElementById("mediaApp").classList.remove("d-none");
                 mediaApp.selectedMedias = [];
-                var modal = new bootstrap.Modal($('#mediaModalMarkdown'));
+                var modal = new bootstrap.Modal(document.getElementById('mediaModalMarkdown'));
                 modal.show();
-                $('#mediaMarkdownSelectButton').on('click', function () {
+                document.getElementById('mediaMarkdownSelectButton').addEventListener('click', function () {
                     var mediaMarkdownContent = "";
                     for (var i = 0; i < mediaApp.selectedMedias.length; i++) {
                         mediaMarkdownContent += ' [image]' + mediaApp.selectedMedias[i].mediaPath + '[/image]';
@@ -97,8 +97,7 @@ $(function () {
                     var cm = editor.codemirror;
                     cm.replaceSelection(mediaMarkdownContent)
                     modal.hide();
-                    $(this).off('click');
-                });
+                }, { once: true });
             },
             className: "far fa-image fa-sm",
             title: "Insert Image",
@@ -155,5 +154,8 @@ $(function () {
 window.initializeMdeShortcodeWrapper = function (mde) {
     const toolbar = mde.gui.toolbar;
 
-    $(toolbar).wrap('<div class="shortcode-modal-wrapper"></div>');
+    const wrapper = document.createElement('div');
+    wrapper.className = 'shortcode-modal-wrapper';
+    toolbar.parentNode.insertBefore(wrapper, toolbar);
+    wrapper.appendChild(toolbar);
 };
