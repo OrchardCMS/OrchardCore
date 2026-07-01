@@ -1,26 +1,31 @@
 /*
  * Menu admin editor: nested drag-and-drop using SortableJS (no jQuery UI).
  *
- * Mirrors how the original jQuery UI nestedSortable felt to use: dragging up/down
- * reorders an item within its current list (each list is its own independent
- * Sortable instance - dragging never reparents by hovering into a nested list,
- * which turned out to be an unreliable target no matter how it was sized/tuned).
- * Dragging sideways past a threshold changes nesting depth instead: drag right to
- * nest the item under whichever item it now sits below, drag left to move it back
- * out to its parent's level. The tree is serialized into the hidden "Hierarchy"
- * field on every change, using the same { index, children } shape the
- * server-side MenuPart display driver parses.
+ * The whole tree is rendered as ONE FLAT list of <li data-depth="N"> siblings
+ * (see MenuItem.Admin.cshtml) rather than as actual nested <ol> elements per
+ * item. This is what lets a single SortableJS instance handle the entire tree:
+ * dragging vertically reorders/reparents freely across the whole tree (moving
+ * an item from one parent's children to a different parent's children is just
+ * "drag it near the new spot"), while dragging sideways past a threshold
+ * changes nesting depth explicitly - right to nest under whichever item ends
+ * up directly before it, left to move up a level. When a dragged item has its
+ * own descendants, they're temporarily detached for the duration of the drag
+ * and reinserted right after it, at the same relative depths, once it's
+ * dropped - so the whole subtree moves as a unit.
+ *
+ * The tree is serialized into the hidden "Hierarchy" field on every change,
+ * using the same { index, children } shape the server-side MenuPart display
+ * driver parses, reconstructed from the flat depth sequence.
  */
 (function () {
     'use strict';
 
     var DRAGGING_CLASS = 'menu-dragging';
     var ITEM_SELECTOR = 'li.menu-item';
-    var LIST_SELECTOR = 'ol.menu-item-links';
-    var PENDING_INDENT_CLASS = 'menu-item-pending-indent';
-    var PENDING_OUTDENT_CLASS = 'menu-item-pending-outdent';
+    var PENDING_SHIFT_CLASS = 'menu-item-pending-shift';
     var PENDING_PARENT_CLASS = 'menu-item-pending-parent';
     var FALLBACK_CLONE_SELECTOR = '.sortable-fallback';
+    var INDENT_REM = 1.5;
     // How far (in px) the pointer must move horizontally, relative to where the
     // drag started, before it's treated as an intentional request to indent or
     // outdent rather than incidental drift during an up/down reorder.
@@ -38,10 +43,56 @@
     var dragStartX = null;
     var pointerX = null;
     var draggedItem = null;
+    var draggedOriginalDepth = null;
+    var detachedBlock = [];
+
+    function depthOf(item) {
+        return parseInt(item.dataset.depth, 10) || 0;
+    }
+
+    function applyDepth(item, depth) {
+        item.dataset.depth = depth;
+        item.style.marginLeft = (depth * INDENT_REM) + 'rem';
+    }
+
+    // Walking backward from an item, the nearest preceding item shallower than
+    // "depth" is its parent at that depth - the flat sequence never skips more
+    // than one level per step (indent/outdent only ever move one level at a
+    // time), so the first shallower item found is exactly one level up.
+    function findAncestorAt(item, depth) {
+        var el = item.previousElementSibling;
+
+        while (el) {
+            if (depthOf(el) < depth) {
+                return el;
+            }
+
+            el = el.previousElementSibling;
+        }
+
+        return null;
+    }
+
+    // The deepest depth a valid drop at this position could ever be: at most
+    // one level deeper than whatever item now immediately precedes it.
+    function maxDepthAfter(precedingItem) {
+        return precedingItem ? depthOf(precedingItem) + 1 : 0;
+    }
+
+    // Combines the item's original depth (clamped to whatever's still valid at
+    // its current position) with any explicit sideways indent/outdent request.
+    function computeTargetDepth(precedingItem, deltaX) {
+        var maxDepth = maxDepthAfter(precedingItem);
+        var baseDepth = Math.min(draggedOriginalDepth, maxDepth);
+        var adjustment = deltaX > INDENT_THRESHOLD ? 1 : (deltaX < -INDENT_THRESHOLD ? -1 : 0);
+
+        return Math.max(0, Math.min(baseDepth + adjustment, maxDepth));
+    }
 
     function clearPendingPreview() {
-        Array.prototype.forEach.call(document.querySelectorAll('.' + PENDING_INDENT_CLASS + ', .' + PENDING_OUTDENT_CLASS), function (el) {
-            el.classList.remove(PENDING_INDENT_CLASS, PENDING_OUTDENT_CLASS);
+        Array.prototype.forEach.call(document.querySelectorAll('.' + PENDING_SHIFT_CLASS), function (el) {
+            el.classList.remove(PENDING_SHIFT_CLASS);
+            el.style.removeProperty('--pending-shift');
         });
         Array.prototype.forEach.call(document.querySelectorAll('.' + PENDING_PARENT_CLASS), function (el) {
             el.classList.remove(PENDING_PARENT_CLASS);
@@ -61,23 +112,27 @@
         clearPendingPreview();
 
         var deltaX = pointerX - dragStartX;
-        var previous = draggedItem.previousElementSibling;
-        var parentItem = draggedItem.parentElement.closest(ITEM_SELECTOR);
+        var targetDepth = computeTargetDepth(draggedItem.previousElementSibling, deltaX);
+
+        if (targetDepth === draggedOriginalDepth) {
+            return;
+        }
+
+        var shift = 'translateX(' + ((targetDepth - draggedOriginalDepth) * INDENT_REM) + 'rem)';
         var clone = document.querySelector(FALLBACK_CLONE_SELECTOR);
 
-        if (deltaX > INDENT_THRESHOLD && previous && previous.matches(ITEM_SELECTOR)) {
-            draggedItem.classList.add(PENDING_INDENT_CLASS);
-            previous.classList.add(PENDING_PARENT_CLASS);
+        draggedItem.style.setProperty('--pending-shift', shift);
+        draggedItem.classList.add(PENDING_SHIFT_CLASS);
 
-            if (clone) {
-                clone.classList.add(PENDING_INDENT_CLASS);
-            }
-        } else if (deltaX < -INDENT_THRESHOLD && parentItem) {
-            draggedItem.classList.add(PENDING_OUTDENT_CLASS);
+        if (clone) {
+            clone.style.setProperty('--pending-shift', shift);
+            clone.classList.add(PENDING_SHIFT_CLASS);
+        }
 
-            if (clone) {
-                clone.classList.add(PENDING_OUTDENT_CLASS);
-            }
+        var newParent = targetDepth > 0 ? findAncestorAt(draggedItem, targetDepth) : null;
+
+        if (newParent) {
+            newParent.classList.add(PENDING_PARENT_CLASS);
         }
     }
 
@@ -91,126 +146,108 @@
     document.addEventListener('touchmove', trackPointer);
     document.addEventListener('dragover', trackPointer);
 
-    function directItems(list) {
-        return Array.prototype.filter.call(list.children, function (child) {
-            return child.matches(ITEM_SELECTOR);
-        });
-    }
+    // Walks the flat <li data-depth> sequence and rebuilds [{ index, children? }],
+    // where "index" is each item's data-index attribute (a stable pointer back to
+    // its original position server-side, unrelated to its new position/depth
+    // here) and nesting is reconstructed purely from the depth values.
+    function serialize() {
+        var root = [];
+        var stack = [{ children: root, depth: -1 }];
 
-    // Ensures every item exposes a direct child <ol> so that nesting another
-    // item under it has somewhere to go. Empty lists are collapsed via CSS.
-    function ensureChildList(item) {
-        var list = item.querySelector(':scope > ' + LIST_SELECTOR);
+        Array.prototype.forEach.call(menu.querySelectorAll(ITEM_SELECTOR), function (item) {
+            var depth = depthOf(item);
+            var node = { index: item.dataset.index, children: [] };
 
-        if (!list) {
-            list = document.createElement('ol');
-            list.className = 'menu-item menu-item-links';
-            item.appendChild(list);
-            attach(list);
-        }
-
-        return list;
-    }
-
-    // Walks the nested <ol>/<li> DOM and emits [{ index, children? }], where
-    // "index" is each item's data-index attribute. Items without children omit
-    // the children array. The original data-index values are preserved; the new
-    // order and nesting are conveyed purely by tree position.
-    function serialize(list) {
-        return directItems(list).map(function (item) {
-            var node = { index: item.dataset.index };
-            var childList = item.querySelector(':scope > ' + LIST_SELECTOR);
-
-            if (childList && directItems(childList).length > 0) {
-                node.children = serialize(childList);
+            while (stack.length > 1 && stack[stack.length - 1].depth >= depth) {
+                stack.pop();
             }
 
-            return node;
+            stack[stack.length - 1].children.push(node);
+            stack.push({ children: node.children, depth: depth });
         });
+
+        (function prune(nodes) {
+            nodes.forEach(function (node) {
+                if (node.children.length > 0) {
+                    prune(node.children);
+                } else {
+                    delete node.children;
+                }
+            });
+        })(root);
+
+        return root;
     }
 
     function onChange() {
         confirmLeave = true;
 
         if (hierarchyInput) {
-            hierarchyInput.value = JSON.stringify(serialize(menu));
+            hierarchyInput.value = JSON.stringify(serialize());
         }
     }
 
-    // Nests the item under the item immediately above it (in whatever list it
-    // currently sits in). No-op - and returns false - if there's no such item.
-    function indent(item) {
-        var previous = item.previousElementSibling;
+    window.Sortable.create(menu, {
+        handle: '.menu-item-title',
+        draggable: ITEM_SELECTOR,
+        // Keep links, buttons and form controls clickable while still allowing
+        // a drag to start from the item title.
+        filter: 'a, button, input, select, textarea, [data-bs-toggle]',
+        preventOnFilter: false,
+        // Force the mouse/touch-simulated drag rather than native HTML5 DnD:
+        // native drag stops firing "mousemove" for the page, which is needed
+        // to track horizontal movement for the indent/outdent gesture below.
+        forceFallback: true,
+        fallbackOnBody: true,
+        animation: 150,
+        onStart: function (evt) {
+            document.body.classList.add(DRAGGING_CLASS);
+            dragStartX = pointerX;
+            draggedItem = evt.item;
+            draggedOriginalDepth = depthOf(draggedItem);
+            detachedBlock = [];
 
-        if (!previous || !previous.matches(ITEM_SELECTOR)) {
-            return false;
-        }
+            // Detach the dragged item's descendants (contiguous following
+            // siblings deeper than it) for the duration of the drag, so they
+            // don't end up scattered by the reordering animation - they're
+            // reinserted, at the same relative depths, right after wherever
+            // the item ends up once dropped.
+            var sibling = draggedItem.nextElementSibling;
 
-        ensureChildList(previous).appendChild(item);
-
-        return true;
-    }
-
-    // Moves the item out to its parent's level, right after the parent. No-op
-    // - and returns false - if the item is already at the root level.
-    function outdent(item) {
-        var parentItem = item.parentElement.closest(ITEM_SELECTOR);
-
-        if (!parentItem) {
-            return false;
-        }
-
-        parentItem.parentElement.insertBefore(item, parentItem.nextElementSibling);
-
-        return true;
-    }
-
-    function attach(list) {
-        window.Sortable.create(list, {
-            handle: '.menu-item-title',
-            draggable: ITEM_SELECTOR,
-            // Keep links, buttons and form controls clickable while still allowing
-            // a drag to start from the item title.
-            filter: 'a, button, input, select, textarea, [data-bs-toggle]',
-            preventOnFilter: false,
-            // Force the mouse/touch-simulated drag rather than native HTML5 DnD:
-            // native drag stops firing "mousemove" for the page, which is needed
-            // to track horizontal movement for the indent/outdent gesture below.
-            forceFallback: true,
-            fallbackOnBody: true,
-            animation: 150,
-            onStart: function (evt) {
-                document.body.classList.add(DRAGGING_CLASS);
-                dragStartX = pointerX;
-                draggedItem = evt.item;
-            },
-            onEnd: function (evt) {
-                document.body.classList.remove(DRAGGING_CLASS);
-                clearPendingPreview();
-
-                var deltaX = (pointerX !== null && dragStartX !== null) ? pointerX - dragStartX : 0;
-                dragStartX = null;
-                draggedItem = null;
-
-                var reparented = false;
-
-                if (deltaX > INDENT_THRESHOLD) {
-                    reparented = indent(evt.item);
-                } else if (deltaX < -INDENT_THRESHOLD) {
-                    reparented = outdent(evt.item);
-                }
-
-                if (reparented || evt.oldIndex !== evt.newIndex) {
-                    onChange();
-                }
+            while (sibling && depthOf(sibling) > draggedOriginalDepth) {
+                var next = sibling.nextElementSibling;
+                detachedBlock.push(sibling);
+                sibling.remove();
+                sibling = next;
             }
-        });
-    }
+        },
+        onEnd: function () {
+            document.body.classList.remove(DRAGGING_CLASS);
+            clearPendingPreview();
 
-    Array.prototype.forEach.call(menu.querySelectorAll(ITEM_SELECTOR), ensureChildList);
+            var deltaX = (pointerX !== null && dragStartX !== null) ? pointerX - dragStartX : 0;
+            dragStartX = null;
 
-    attach(menu);
-    Array.prototype.forEach.call(menu.querySelectorAll(LIST_SELECTOR), attach);
+            var targetDepth = computeTargetDepth(draggedItem.previousElementSibling, deltaX);
+            var depthShift = targetDepth - draggedOriginalDepth;
+
+            applyDepth(draggedItem, targetDepth);
+
+            var insertionPoint = draggedItem;
+
+            detachedBlock.forEach(function (item) {
+                applyDepth(item, depthOf(item) + depthShift);
+                insertionPoint.after(item);
+                insertionPoint = item;
+            });
+
+            draggedItem = null;
+            draggedOriginalDepth = null;
+            detachedBlock = [];
+
+            onChange();
+        }
+    });
 
     window.addEventListener('beforeunload', function (e) {
         if (confirmLeave) {

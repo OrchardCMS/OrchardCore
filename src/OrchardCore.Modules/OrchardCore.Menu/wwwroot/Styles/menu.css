@@ -9,28 +9,15 @@
   border: none;
   padding: 0;
   user-select: none;
+  transition: margin-left 0.1s ease-out;
 }
 
 #menu .sortable-ghost:not(.sortable-fallback) {
   opacity: 0;
 }
 
-#menu ol.menu-item-links:empty {
-  margin: 0;
-  padding: 0;
-  min-height: 0;
-}
-
-.menu-item-pending-indent {
-  transform: translateX(1.5rem);
-}
-
-.menu-item-pending-outdent {
-  transform: translateX(-1.5rem);
-}
-
-.menu-item-pending-indent,
-.menu-item-pending-outdent {
+.menu-item-pending-shift {
+  transform: var(--pending-shift);
   transition: transform 0.1s ease-out;
 }
 

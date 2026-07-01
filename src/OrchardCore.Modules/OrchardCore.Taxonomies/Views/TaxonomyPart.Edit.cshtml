@@ -61,6 +61,7 @@
                 var termShape = await ContentItemDisplayManager.BuildDisplayAsync(menuItem, updater, "TermAdmin");
                 termShape.Properties["TaxonomyPart"] = Model.TaxonomyPart;
                 termShape.Properties["Index"] = index++;
+                termShape.Properties["Depth"] = 0;
                 @await DisplayAsync(termShape)
             }
         </ol>
