@@ -29,5 +29,12 @@
     "source": "Assets/js/admin-menu-icon-picker.js",
     "dest": "wwwroot/Scripts/",
     "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "admin-menu-node-list",
+    "source": "Assets/ts/admin-menu-node-list.ts",
+    "dest": "wwwroot/Scripts/node-list/",
+    "tags": ["admin", "dashboard", "js"]
   }
 ]
