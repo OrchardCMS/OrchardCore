@@ -10,20 +10,11 @@
     padding: 0;
 }
 
-// Auto-created child lists collapse to nothing (no visible drop-target hint) so
-// leaf items keep their compact height. SortableJS's own ghost/preview element
-// already shows exactly where a dragged item will land, including a nested
-// position, without needing a separate always-visible affordance here.
+// Auto-created child lists (see menu.js) collapse to nothing at rest so leaf
+// items keep their compact height; nesting depth is only ever changed via the
+// indent/outdent buttons, so this list never needs to visibly expand.
 #menu ol.menu-item-links:empty {
     margin: 0;
     padding: 0;
     min-height: 0;
-}
-
-// The root list has no parent <li> of its own, so once its last item has nested
-// children, there's no space belonging to the root list itself below them to drop
-// an item back onto (only the nested item's own child list would be under the
-// pointer). Reserve that space explicitly while dragging.
-body.menu-dragging #menu {
-    padding-bottom: 2rem;
 }
