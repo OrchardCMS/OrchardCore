@@ -18,7 +18,8 @@ public sealed class ResourceManagementOptionsConfiguration : IConfigureOptions<R
 
         _manifest
             .DefineScript("flowpart-edit")
-            .SetUrl("~/OrchardCore.Flows/Scripts/flows.edit.min.js", "~/OrchardCore.Flows/Scripts/flows.edit.js");
+            .SetDependencies("Sortable")
+            .SetUrl("~/OrchardCore.Flows/Scripts/flows/flows.edit.min.js", "~/OrchardCore.Flows/Scripts/flows/flows.edit.js");
 
         _manifest
             .DefineScript("content-type-picker")
