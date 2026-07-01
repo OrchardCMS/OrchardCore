@@ -33,6 +33,8 @@ jobs:
         npm install -g corepack
         corepack enable
         yarn --no-check-resolutions
+    - name: Lint assets
+      run: yarn lint
     - name: Type-check assets
       run: yarn check
     - name: Rebuild packages
