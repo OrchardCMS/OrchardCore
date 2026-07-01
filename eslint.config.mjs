@@ -10,6 +10,7 @@ export default [
         ignores: [
             "**/node_modules/**",
             "**/wwwroot/**",
+            "**/Assets/*Theme/dist/**",
             "**/obj/**",
             "**/bin/**",
             "**/vendor/**",
@@ -61,8 +62,10 @@ export default [
     },
     {
         // Node-based build tooling scripts (pug/scss/webpack orchestration) for the themes that
-        // ship their own asset pipeline, as opposed to browser-side theme scripts.
+        // ship their own asset pipeline, as opposed to browser-side theme scripts. Plain CommonJS,
+        // not bundled, so require() is the correct import style here, not just a known global.
         files: ["**/Assets/*Theme/scripts/**/*.js"],
         languageOptions: { globals: globals.node },
+        rules: { "@typescript-eslint/no-require-imports": "off" },
     },
 ];
