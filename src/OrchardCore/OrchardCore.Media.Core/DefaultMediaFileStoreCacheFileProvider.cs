@@ -45,7 +45,7 @@ public class DefaultMediaFileStoreCacheFileProvider : PhysicalFileProvider, IMed
     {
         // File store semantics may include a leading slash.
         // Trailing slash would create an empty directory instead of a file.
-        var cachePath = Path.Combine(Root, fileStoreEntry.Path.TrimStart('/').TrimEnd('/'));
+        var cachePath = Path.Combine(Root, fileStoreEntry.Path.Trim('/'));
         var directory = Path.GetDirectoryName(cachePath);
 
         if (!Directory.Exists(directory))
