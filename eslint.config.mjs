@@ -24,10 +24,8 @@ export default [
             "**/OrchardCore.Resources/**",
             "**/OrchardCore.Media/**",
             // Vendored third-party code embedded directly rather than under a vendor/ folder:
-            // the jQuery UI Nested Sortable plugin (MIT, github.com/ilikenwf/nestedSortable),
-            // duplicated verbatim in both modules.
+            // the jQuery UI Nested Sortable plugin (MIT, github.com/ilikenwf/nestedSortable).
             "**/OrchardCore.Taxonomies/Assets/js/menu.js",
-            "**/OrchardCore.Menu/Assets/js/menu.js",
             // Hand-authored ambient type declarations for the untyped third-party jsPlumb library
             // (not from DefinitelyTyped) - a typing compatibility shim, not application code.
             // Properly typing jsPlumb's full API is a separate, substantial effort.

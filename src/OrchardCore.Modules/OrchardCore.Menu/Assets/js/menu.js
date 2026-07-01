@@ -73,8 +73,7 @@
             preventOnFilter: false,
             fallbackOnBody: true,
             swapThreshold: 0.65,
-            invertSwap: true,
-            emptyInsertThreshold: 12,
+            emptyInsertThreshold: 5,
             animation: 150,
             onStart: function () {
                 document.body.classList.add(DRAGGING_CLASS);
