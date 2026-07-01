@@ -53,7 +53,13 @@ public sealed class TaxonomyHierarchyTests : CmsTestBase<BlogFixture>, IClassFix
         await OpenTagsAsync(page);
 
         await page.DragMenuItemSidewaysAsync("Exploration", 70); // nest under Earth
-        Assert.Equal("1", await page.GetMenuItemDepthAsync("Exploration"));
+
+        // Wait for the nest to actually settle before starting the next drag:
+        // a fixed sleep inside DragMenuItemSidewaysAsync isn't always enough
+        // headroom on a slower CI runner, and starting the second drag before
+        // the first one's DOM update has fully applied races the two together.
+        await Assertions.Expect(page.Locator("#menu li.menu-item").Filter(new LocatorFilterOptions { HasText = "Exploration" }).First)
+            .ToHaveAttributeAsync("data-depth", "1");
 
         await page.DragMenuItemJustAfterAsync("Exploration", "Space");
 
