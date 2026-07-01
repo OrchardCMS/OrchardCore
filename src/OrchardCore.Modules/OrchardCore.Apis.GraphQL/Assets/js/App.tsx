@@ -14,8 +14,8 @@ function getIntrospectionUrl(): string {
         .dataset.introspectionUrl;
 }
 
-function fetcher(params: Object): Promise<any> {
-    var introspectionUrl = getIntrospectionUrl();
+function fetcher(params: object): Promise<any> {
+    const introspectionUrl = getIntrospectionUrl();
     return fetch(
         introspectionUrl,
         {
@@ -42,7 +42,7 @@ function fetcher(params: Object): Promise<any> {
 
 function App() {
     // Gets a graphql query from the URL if present and sets it as the default query.
-    var parameters: any = parseQueryFromUrl(window.location);
+    const parameters: any = parseQueryFromUrl(window.location);
 
     const [query, setQuery] = useState(parameters.query);
     const [schema, setSchema] = useState(null);
@@ -77,9 +77,9 @@ function App() {
     }
 
     function parseQueryFromUrl(location: Location) {
-        var params: any = {};
+        const params: any = {};
         location.search.substr(1).split('&').forEach(function (entry) {
-            var eq = entry.indexOf('=');
+            const eq = entry.indexOf('=');
             if (eq >= 0) {
                 params[decodeURIComponent(entry.slice(0, eq))] =
                     decodeURIComponent(entry.slice(eq + 1));
@@ -100,7 +100,7 @@ function App() {
     }
 
     function updateURL() {
-        var newSearch = '?' + Object.keys(parameters).filter(function (key) {
+        const newSearch = '?' + Object.keys(parameters).filter(function (key) {
             return Boolean(parameters[key]);
         }).map(function (key) {
             return encodeURIComponent(key) + '=' +

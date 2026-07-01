@@ -72,9 +72,11 @@ function initializeOptionsEditor(elem, data, defaultValue, modalBodyElement) {
             optionsTable: optionsTable,
             optionsModal: optionsModal
         },
-        data: {
-            sharedState: store.state,
-            modal: null
+        data: function () {
+            return {
+                sharedState: store.state,
+                modal: null
+            };
         },
         el: elem,
         methods: {

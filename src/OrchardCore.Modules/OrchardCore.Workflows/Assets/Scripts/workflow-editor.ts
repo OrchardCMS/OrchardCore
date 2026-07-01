@@ -87,9 +87,9 @@ class WorkflowEditor extends WorkflowCanvas {
                 });
             });
 
-            let activityElements = this.getActivityElements();
+            const activityElements = this.getActivityElements();
 
-            var areEqualOutcomes = function (outcomes1: Workflows.Outcome[], outcomes2: Workflows.Outcome[]): boolean {
+            const areEqualOutcomes = function (outcomes1: Workflows.Outcome[], outcomes2: Workflows.Outcome[]): boolean {
                 if (outcomes1.length != outcomes2.length) {
                     return false;
                 }
@@ -108,8 +108,8 @@ class WorkflowEditor extends WorkflowCanvas {
 
             // Suspend drawing and initialize.
             plumber.batch(() => {
-                var serverworkflowType: Workflows.WorkflowType = this.workflowType;
-                var workflowId: number = this.workflowType.id;
+                const serverworkflowType: Workflows.WorkflowType = this.workflowType;
+                const workflowId: number = this.workflowType.id;
 
                 if (loadLocalState) {
                     const localState: Workflows.WorkflowType = this.loadLocalState();
@@ -200,12 +200,12 @@ class WorkflowEditor extends WorkflowCanvas {
                             return;
                         }
 
-                        let activity = this.getActivity(activityId);
+                        const activity = this.getActivity(activityId);
 
                         // Add source endpoints after layout is complete
-                        for (let outcome of activity.outcomes) {
+                        for (const outcome of activity.outcomes) {
                             const sourceEndpointOptions = this.getSourceEndpointOptions(activity, outcome);
-                            var endpoint = plumber.addEndpoint(
+                            const endpoint = plumber.addEndpoint(
                                 activityElement,
                                 { connectorOverlays: [["Label", { label: outcome.displayName, cssClass: "connection-label" }]] },
                                 sourceEndpointOptions,
@@ -381,11 +381,11 @@ class WorkflowEditor extends WorkflowCanvas {
         const allConnections = this.jsPlumbInstance.getConnections();
 
         for (let i = 0; i < allConnections.length; i++) {
-            var connection = allConnections[i];
-            var sourceEndpoint: Endpoint = connection.endpoints[0];
-            var sourceOutcomeName = sourceEndpoint.getParameters().outcome.name;
-            var sourceActivityId = (connection.source as HTMLElement).dataset.activityId as string;
-            var destinationActivityId = (connection.target as HTMLElement).dataset.activityId as string;
+            const connection = allConnections[i];
+            const sourceEndpoint: Endpoint = connection.endpoints[0];
+            const sourceOutcomeName = sourceEndpoint.getParameters().outcome.name;
+            const sourceActivityId = (connection.source as HTMLElement).dataset.activityId as string;
+            const destinationActivityId = (connection.target as HTMLElement).dataset.activityId as string;
 
             workflow.transitions.push({
                 sourceActivityId: sourceActivityId,

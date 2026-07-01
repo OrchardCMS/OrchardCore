@@ -1,5 +1,5 @@
 ///<reference path="../../../../../../node_modules/@types/jquery/index.d.ts" />
-declare var jsPlumb: jsPlumbInstance;
+declare let jsPlumb: jsPlumbInstance;
 
 interface jsPlumbInstance {
     setRenderMode(renderMode: string): string;
