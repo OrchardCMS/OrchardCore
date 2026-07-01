@@ -152,9 +152,26 @@ export default function initSortableMenu(): void {
         updatePendingPreview();
     };
 
+    // Recorded on the actual mousedown/touchstart that precedes a drag, rather
+    // than read back from `pointerX` inside Sortable's onStart: onStart only
+    // fires once Sortable's own threshold-crossing check has processed some
+    // number of queued mousemove events, which can lag behind the real start
+    // of the gesture under load - reading `pointerX` at that point could pick
+    // up a position well past where the drag actually began, undercounting
+    // the horizontal distance dragged and silently dropping indent/outdent
+    // requests. Capturing it here, at the gesture's actual origin, keeps that
+    // distance accurate regardless of how long Sortable takes to catch up.
+    const trackPointerDown = (e: MouseEvent | TouchEvent) => {
+        const point = "touches" in e && e.touches.length > 0 ? e.touches[0] : (e as MouseEvent);
+        dragStartX = point.clientX;
+        console.log("DEBUG trackPointerDown", e.type, dragStartX);
+    };
+
     document.addEventListener("mousemove", trackPointer);
     document.addEventListener("touchmove", trackPointer);
     document.addEventListener("dragover", trackPointer);
+    document.addEventListener("mousedown", trackPointerDown, true);
+    document.addEventListener("touchstart", trackPointerDown, true);
 
     // Walks the flat <li data-depth> sequence and rebuilds [{ index, children? }],
     // where "index" is each item's data-index attribute (a stable pointer back to
@@ -215,7 +232,6 @@ export default function initSortableMenu(): void {
         animation: 150,
         onStart: (evt: { item: HTMLElement }) => {
             document.body.classList.add(DRAGGING_CLASS);
-            dragStartX = pointerX;
             draggedItem = evt.item;
             draggedOriginalDepth = depthOf(draggedItem);
             detachedBlock = [];
@@ -239,6 +255,7 @@ export default function initSortableMenu(): void {
             clearPendingPreview();
 
             const deltaX = pointerX !== null && dragStartX !== null ? pointerX - dragStartX : 0;
+            console.log("DEBUG onEnd", "pointerX", pointerX, "dragStartX", dragStartX, "deltaX", deltaX);
             dragStartX = null;
 
             if (!draggedItem) {
