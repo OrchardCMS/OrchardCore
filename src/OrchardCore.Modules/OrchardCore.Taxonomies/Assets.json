@@ -12,6 +12,13 @@
     "tags": ["admin", "dashboard", "css"]
   },
   {
+    "action": "parcel",
+    "name": "taxonomies-menu",
+    "source": "Assets/ts/menu.ts",
+    "dest": "wwwroot/Scripts/menu/",
+    "tags": ["admin", "dashboard", "js"]
+  },
+  {
     "action": "min",
     "name": "taxonomies-activate-links",
     "source": "Assets/js/activate-links.js",
