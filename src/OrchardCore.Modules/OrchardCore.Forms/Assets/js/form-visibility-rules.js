@@ -84,7 +84,7 @@ window.formVisibilityGroupRules = (function () {
 
                 var checkboxes = document.querySelectorAll(`input[name="${element.name}"]`);
 
-                for (var i = 0; i < checkboxes.length; i++) {
+                for (let i = 0; i < checkboxes.length; i++) {
 
                     var checkbox = checkboxes[i];
 
@@ -97,7 +97,7 @@ window.formVisibilityGroupRules = (function () {
 
                 var radioButtons = document.querySelectorAll(`input[name="${element.name}"]`);
 
-                for (var i = 0; i < radioButtons.length; i++) {
+                for (let i = 0; i < radioButtons.length; i++) {
 
                     var radio = radioButtons[i];
 
@@ -151,6 +151,8 @@ window.formVisibilityGroupRules = (function () {
 
                 const fieldType = fieldElement.type.toLowerCase();
 
+                let fieldValue;
+
                 if (fieldType === 'radio') {
 
                     var selectedRadio = document.querySelector('input[name="' + rule.field + '"]:checked');
@@ -184,7 +186,7 @@ window.formVisibilityGroupRules = (function () {
 
                 if (addHandlers) {
 
-                    addProperListeners(fieldElement, (e) => {
+                    addProperListeners(fieldElement, () => {
                         processGroups(data, inputElement, widgetContainer, false);
                     });
                 }
