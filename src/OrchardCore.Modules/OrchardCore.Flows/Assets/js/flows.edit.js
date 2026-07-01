@@ -1,8 +1,11 @@
 //variables used in FlowPart.Edit sortable
-var widgetDragItem, lastContainer, widgetItemSourceId, widgetItemDestId;
+window.widgetDragItem = undefined;
+window.lastContainer = undefined;
+window.widgetItemSourceId = undefined;
+window.widgetItemDestId = undefined;
 
 $(function () {
-    $(document).on('click', '.add-widget', function (event) {
+    $(document).on('click', '.add-widget', function () {
         var type = $(this).data("widget-type");
         var targetId = $(this).data("target-id");
         var htmlFieldPrefix = $(this).data("html-field-prefix");
@@ -40,7 +43,7 @@ $(function () {
         });
     });
 
-    $(document).on('click', '.insert-widget', function (event) {
+    $(document).on('click', '.insert-widget', function () {
         var type = $(this).data("widget-type");
         var target = $(this).closest('.widget-template');
         var targetId = $(this).data("target-id");
