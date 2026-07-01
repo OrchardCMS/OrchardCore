@@ -17,7 +17,6 @@ public sealed class ResourceManagementOptionsConfiguration : IConfigureOptions<R
 
         _manifest
             .DefineScript("widgetslist-edit")
-            .SetDependencies("jQuery")
             .SetUrl("~/OrchardCore.Widgets/Scripts/widgetslist.edit.min.js", "~/OrchardCore.Widgets/Scripts/widgetslist.edit.js");
     }
 

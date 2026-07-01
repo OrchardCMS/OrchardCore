@@ -35,7 +35,7 @@ window.initializeOptionsEditor = function (elem, data, defaultValue, modalBodyEl
             },
             uncheck: function (index) {
                 if (index == previouslyChecked) {
-                    $('#customRadio_' + index)[0].checked = false;
+                    document.getElementById('customRadio_' + index).checked = false;
                     store.state.selected = null;
                     previouslyChecked = null;
                 }
