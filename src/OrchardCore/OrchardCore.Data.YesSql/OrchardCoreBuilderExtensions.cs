@@ -114,6 +114,13 @@ public static class OrchardCoreBuilderExtensions
 
                 store.RegisterIndexes(indexes);
 
+                // Pre-register the CLR types that modules have declared through 'AddDocumentType'
+                // so that YesSql can resolve a row's persisted type name even before that type has
+                // first been saved or queried in the current process. Without this, a by-id or
+                // polymorphic read (e.g. 'GetAsync<T>(ids)') that loads a row of a not-yet-touched
+                // type would fail with a 'KeyNotFoundException'.
+                RegisterDocumentTypes(store, sp);
+
                 return store;
             });
 
@@ -178,6 +185,24 @@ public static class OrchardCoreBuilderExtensions
         });
 
         return builder;
+    }
+
+    private static void RegisterDocumentTypes(IStore store, IServiceProvider sp)
+    {
+        var documentTypeOptions = sp.GetService<IOptions<DocumentTypeOptions>>()?.Value;
+        if (documentTypeOptions is null)
+        {
+            return;
+        }
+
+        var typeNames = store.TypeNames;
+
+        // Reading the forward 'Type -> name' mapping also populates the reverse 'name -> Type'
+        // lookup that a read relies on to resolve a row's persisted type name.
+        foreach (var type in documentTypeOptions.Types)
+        {
+            _ = typeNames[type];
+        }
     }
 
     private static YesSql.Configuration GetStoreConfiguration(IServiceProvider sp, YesSqlOptions yesSqlOptions, DatabaseTableOptions databaseTableOptions)

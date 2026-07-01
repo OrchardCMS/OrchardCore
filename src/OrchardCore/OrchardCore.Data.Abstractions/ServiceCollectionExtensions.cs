@@ -39,4 +39,32 @@ public static class ServiceCollectionExtensions
 
         return services;
     }
+
+    /// <summary>
+    /// Pre-registers a document type with the store so that YesSql can resolve its persisted type
+    /// name during a by-id or polymorphic read, even before that type has first been saved or
+    /// queried in the current process. Call this from a module's <c>ConfigureServices</c> for every
+    /// type it stores but may load through a base type or by id.
+    /// </summary>
+    /// <typeparam name="TDocument">The document type to pre-register.</typeparam>
+    /// <param name="services">The <see cref="IServiceCollection"/>.</param>
+    public static IServiceCollection AddDocumentType<TDocument>(this IServiceCollection services)
+        => services.AddDocumentType(typeof(TDocument));
+
+    /// <summary>
+    /// Pre-registers a document type with the store so that YesSql can resolve its persisted type
+    /// name during a by-id or polymorphic read, even before that type has first been saved or
+    /// queried in the current process. Call this from a module's <c>ConfigureServices</c> for every
+    /// type it stores but may load through a base type or by id.
+    /// </summary>
+    /// <param name="services">The <see cref="IServiceCollection"/>.</param>
+    /// <param name="documentType">The document type to pre-register.</param>
+    public static IServiceCollection AddDocumentType(this IServiceCollection services, Type documentType)
+    {
+        ArgumentNullException.ThrowIfNull(documentType);
+
+        services.Configure<DocumentTypeOptions>(options => options.Types.Add(documentType));
+
+        return services;
+    }
 }
