@@ -1,4 +1,4 @@
-function initializeOptionsEditor(elem, data, defaultValue, selectedValue, list) {
+window.initializeOptionsEditor = function (elem, data, defaultValue, selectedValue, list) {
 
     var optionsTable = {
         name: 'options-table',
@@ -37,7 +37,7 @@ function initializeOptionsEditor(elem, data, defaultValue, selectedValue, list) 
             remove: function (index) {
 
                 var selectedCulture = this.data[index];
-                cultureRemoved = this.list.filter(function (ele) {
+                var cultureRemoved = this.list.filter(function (ele) {
                     return ele.Name == selectedCulture;
                 });
 
@@ -75,13 +75,15 @@ function initializeOptionsEditor(elem, data, defaultValue, selectedValue, list) 
         components: {
             optionsTable: optionsTable
         },
-        data: {
-            allCultures: list,
-            supportedCultures: data,
-            defaultCulture: defaultValue,
-            selectedCulture: selectedValue
+        data: function () {
+            return {
+                allCultures: list,
+                supportedCultures: data,
+                defaultCulture: defaultValue,
+                selectedCulture: selectedValue
+            };
         },
         el: elem
     });
 
-}
+};
