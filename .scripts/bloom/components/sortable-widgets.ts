@@ -28,6 +28,11 @@ interface SortableWidgetsOptions {
     groupName: string;
     accepts?: (target: HTMLElement, draggedItem: HTMLElement) => boolean;
     onReparented?: (item: HTMLElement, from: HTMLElement, to: HTMLElement) => void;
+    // Flows only fires "contentpreview:render" when a widget actually moved to a
+    // different container, matching the original jQuery UI setup's behavior there.
+    // WidgetsListPart's original setup fires it on every drop, including plain
+    // same-zone reorders - set this to preserve that.
+    renderOnAnyDrop?: boolean;
 }
 
 const DROPZONE_HINT_CLASS = "widget-dropzone-hint";
@@ -79,8 +84,13 @@ export default function initSortableWidgets(containerId: string, options: Sortab
             evt.item.querySelector(".card")?.classList.remove(DRAGGED_CLASS);
             setHint(null);
 
-            if (sourceContainer && evt.to !== sourceContainer) {
-                options.onReparented?.(evt.item, sourceContainer, evt.to);
+            const reparented = sourceContainer != null && evt.to !== sourceContainer;
+
+            if (reparented) {
+                options.onReparented?.(evt.item, sourceContainer!, evt.to);
+            }
+
+            if (reparented || options.renderOnAnyDrop) {
                 document.dispatchEvent(new CustomEvent("contentpreview:render"));
             }
 

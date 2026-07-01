@@ -6,9 +6,10 @@
     "tags": ["admin", "dashboard", "css"]
   },
   {
-    "action": "min",
+    "action": "parcel",
     "name": "widgets",
-    "source": "Assets/js/widgetslist.edit.js",
+    "source": "Assets/ts/widgetslist.edit.ts",
+    "dest": "wwwroot/Scripts/widgets/",
     "tags": ["admin", "dashboard", "js"]
   }
 ]

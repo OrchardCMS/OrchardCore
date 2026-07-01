@@ -20,8 +20,6 @@
     string partName = ((dynamic)Model).Metadata.Name;
 }
 
-<script asp-name="jquery-ui" at="Foot"></script>
-
 <div>
     @foreach (var zone in Model.AvailableZones)
     {
@@ -79,57 +77,7 @@
                         }
 
                             <script at="Foot">
-                                @*Only apply sortable if element is present in dom, do not call sortable on scripts for mock widgets *@
-                                if ($('#@widgetTemplatePlaceholderId').length == 1) {
-                                    $("#@widgetTemplatePlaceholderId").sortable({
-                                        handle: ".widget-editor-handle",
-                                        cursor: "move",
-                                        opacity: 0.7,
-                                        tolerance: "pointer",
-                                        placeholder: {
-                                            element: function (currentItem) {
-                                                return $('<div class="widget-dragdrop-placeholder"><div></div></div>')[0];
-                                            },
-                                            update: function (container, p) {
-                                                return;
-                                            }
-                                        },
-                                        toleranceElement: '> div',
-                                        connectWith: '.widget-template-placeholder.widget-template-placeholder-widget-list',
-                                        receive: function (event, ui) {
-                                            var newZone = ui.item.closest('.widget-editor-body').data("zone");
-                                            var zoneInput = ui.item.find('.source-zone').val(newZone);
-                                        },
-                                        start: function (event, ui) {
-                                            widgetDragItem = ui.item;
-                                            lastContainer = ui.item.parent();
-                                            lastContainer.toggleClass('widget-dropzone-hint');
-                                            widgetDragItem.find('.card').first().toggleClass('border-primary');
-                                            var classList = widgetDragItem.attr('class').split(' ');
-                                            $.each(classList, function (id, item) {
-                                                if (item.indexOf('col-md-') === 0) ui.placeholder.addClass(item);
-                                            });
-                                        },
-                                        stop: function (event, ui) {
-                                            lastContainer.toggleClass('widget-dropzone-hint');
-                                            widgetDragItem.find('.card').first().toggleClass('border-primary');
-                                            //clear the global variables
-                                            widgetDragItem = null;
-                                            lastContainer = null;
-                                            widgetItemSourceId = null;
-                                            widgetItemDestId = null;
-                                            $(document).trigger('contentpreview:render');
-                                        },
-                                        over: function (event, ui) {
-                                            var $self = $(this);
-                                            if (lastContainer[0] != this) {
-                                                lastContainer.toggleClass('widget-dropzone-hint');
-                                                lastContainer = $self;
-                                                $self.toggleClass('widget-dropzone-hint');
-                                            }
-                                        }
-                                    });
-                                }
+                                initWidgetsListSortable('@widgetTemplatePlaceholderId', 'widgetslist-widgets');
                             </script>
                         </div>
                         <div class="btn-widget-add-below-wrapper w-100 my-2">
