@@ -150,6 +150,14 @@ abstract class WorkflowCanvas {
             const overlayEl: HTMLElement = overlay.getElement ? overlay.getElement() : overlay.canvas;
             if (!overlayEl) continue;
 
+            // Once the outcome is connected, the connection's own label overlay shows the name instead,
+            // so keep the endpoint's label hidden (the "connection"/"connectionDetached" handlers toggle
+            // this via hideOverlay/showOverlay, but this runs on every frame and would otherwise undo that).
+            if (endpoint.connections && endpoint.connections.length > 0) {
+                overlayEl.style.display = 'none';
+                continue;
+            }
+
             // Hide empty labels
             const labelText = overlayEl.textContent?.trim() ?? '';
             if (!labelText) {
