@@ -21,7 +21,7 @@ window.initMultiTextFieldPicker = function (element) {
                 value: function () {
                     // We add a delay to allow for the <input> to get the actual value	
                     // before the form is submitted	
-                    setTimeout(function () { $(document).trigger('contentpreview:render') }, 100);
+                    setTimeout(function () { document.dispatchEvent(new CustomEvent('contentpreview:render')); }, 100);
                 }
             },
         })
