@@ -52,5 +52,12 @@
     "name": "contentfields",
     "source": "Assets/scss/iconpicker-custom.css",
     "tags": [ "admin", "dashboard", "css" ]
+  },
+  {
+    "action": "parcel",
+    "name": "date-field-localized",
+    "source": "Assets/ts/date-field-localized.ts",
+    "dest": "wwwroot/Scripts/date-field-localized/",
+    "tags": [ "admin", "dashboard", "js" ]
   }
 ]
