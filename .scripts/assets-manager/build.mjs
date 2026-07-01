@@ -51,6 +51,34 @@ function addInstallDirToPath(candidateDirs, binaryName) {
     return false;
 }
 
+// Known install locations, checked directly on disk rather than relying on
+// PATH - a terminal opened before fnm/Volta was installed (or one whose
+// shell rc never got the installer's hook, e.g. a different shell / an
+// already-open VS Code terminal) will never see them on PATH without being
+// restarted, on any OS.
+const managerInstallDirs = {
+    fnm: [path.join(os.homedir(), ".local/share/fnm"), path.join(os.homedir(), ".fnm")],
+    volta: [path.join(os.homedir(), ".volta/bin")],
+};
+
+function findManagerBinary(managerName) {
+    return isCommandAvailable(managerName) || addInstallDirToPath(managerInstallDirs[managerName], managerName);
+}
+
+// Once a manager binary is locatable (whether via PATH or by extending it
+// above), check whether it already has the expected Node version installed,
+// so a version that was set up in a *previous* run/terminal can be reused
+// silently instead of re-prompting.
+function managerHasVersion(managerName, version) {
+    try {
+        const listCommand = managerName === "fnm" ? "fnm list" : "volta list node";
+        const output = execSync(listCommand, { encoding: "utf8" });
+        return output.includes(version);
+    } catch {
+        return false;
+    }
+}
+
 const versionManagers = {
     fnm: {
         name: "fnm",
@@ -67,10 +95,7 @@ const versionManagers = {
 
             execSync("curl -fsSL https://fnm.vercel.app/install | bash", { stdio: "inherit" });
 
-            const found = addInstallDirToPath(
-                [path.join(os.homedir(), ".local/share/fnm"), path.join(os.homedir(), ".fnm")],
-                "fnm",
-            );
+            const found = addInstallDirToPath(managerInstallDirs.fnm, "fnm");
 
             if (!found && !isCommandAvailable("fnm")) {
                 console.log(chalk.yellow("\nfnm was just installed but could not be found on PATH in this terminal session."));
@@ -116,7 +141,7 @@ const versionManagers = {
 
             execSync("curl https://get.volta.sh | bash", { stdio: "inherit" });
 
-            const found = addInstallDirToPath([path.join(os.homedir(), ".volta/bin")], "volta");
+            const found = addInstallDirToPath(managerInstallDirs.volta, "volta");
 
             if (!found && !isCommandAvailable("volta")) {
                 console.log(chalk.yellow("\nVolta was just installed but could not be found on PATH in this terminal session."));
@@ -163,6 +188,27 @@ if (fs.existsSync(nodeVersionFile)) {
                 )
             );
             process.exit(1);
+        }
+
+        // A previous run may have already installed the expected version via
+        // fnm/Volta - that doesn't make plain "node"/"yarn" resolve to it
+        // going forward (that requires either restarting the terminal so
+        // shell rc changes take effect, or the manager's own default/pin
+        // being set), so re-check on disk every time and silently re-exec
+        // through the manager instead of re-prompting.
+        for (const managerName of Object.keys(versionManagers)) {
+            if (findManagerBinary(managerName) && managerHasVersion(managerName, expectedVersion)) {
+                const manager = versionManagers[managerName];
+                console.log(
+                    chalk.cyan(`Node.js ${expectedVersion} is already installed via ${manager.name}; using it...`)
+                );
+                const args = process.argv.slice(2).join(" ");
+                execSync(manager.execCommand(expectedVersion, args), {
+                    stdio: "inherit",
+                    cwd: repoRoot,
+                });
+                process.exit(0);
+            }
         }
 
         console.warn(
