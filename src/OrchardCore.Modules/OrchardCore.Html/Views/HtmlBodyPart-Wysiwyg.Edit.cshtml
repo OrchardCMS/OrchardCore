@@ -36,7 +36,7 @@
 </div>
 
 <script at="Foot">
-    $(function () {
+    document.addEventListener('DOMContentLoaded', function () {
     @* set dir while keeping trumbowg translations dictionary intact *@
     @if (culture.GetLanguageDirection() == LanguageDirection.RTL)
     {
@@ -72,7 +72,7 @@
         }
 
         $('#@Html.IdFor(m => m.Html)').trumbowyg(settings).on('tbwchange', function () {
-            $(document).trigger('contentpreview:render');
+            document.dispatchEvent(new CustomEvent('contentpreview:render'));
         });
     });
 </script>
