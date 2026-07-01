@@ -14,7 +14,6 @@ public sealed class ResourceManagementOptionsConfiguration : IConfigureOptions<R
         _manifest
             .DefineScript("contentpreview-edit")
             .SetUrl("~/OrchardCore.ContentPreview/Scripts/contentpreview.edit.min.js", "~/OrchardCore.ContentPreview/Scripts/contentpreview.edit.js")
-            .SetDependencies("jQuery")
             .SetVersion("1.0.0");
     }
 
