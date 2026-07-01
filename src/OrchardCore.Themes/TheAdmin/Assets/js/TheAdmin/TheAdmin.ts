@@ -7,7 +7,9 @@ declare const bootstrap: typeof import("bootstrap");
 
 initializeMenu();
 
-function confirmDialog({ callback, ...options }: { callback: (response: boolean) => void; [key: string]: any }) {
+type ConfirmDialogCallback = (response: boolean) => void;
+
+function confirmDialog({ callback, ...options }: { callback: ConfirmDialogCallback; [key: string]: string | ConfirmDialogCallback }) {
     const defaultOptions = document.getElementById("confirmRemoveModalMetadata")?.dataset ?? {};
     const { title, message, okText, cancelText, okClass, cancelClass } = { ...defaultOptions, ...options };
 
