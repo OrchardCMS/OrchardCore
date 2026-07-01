@@ -35,6 +35,7 @@
     "webpack-cli": "^6.0.1"
   },
   "scripts": {
-    "build": "webpack --mode production"
+    "build": "webpack --mode production",
+    "check": "vue-tsc --noEmit"
   }
 }
