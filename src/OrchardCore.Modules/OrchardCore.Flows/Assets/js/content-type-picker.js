@@ -18,29 +18,30 @@ function initializeContentTypePickerApplication(pathBase) {
 
     contentTypePickerApp = new Vue({
         el: "#contentTypePickerApp",
-        data: {
-            contentTypes: [],
-            categories: [],
-            searchFilter: "",
-            selectedCategory: "All",
-            pathBase: pathBase || "",
-            currentConfig: null,
-            hasError: false,
+        data: function () {
+            return {
+                contentTypes: [],
+                categories: [],
+                searchFilter: "",
+                selectedCategory: "All",
+                pathBase: pathBase || "",
+                currentConfig: null,
+                hasError: false,
+            };
         },
         computed: {
             filteredContentTypes: function () {
-                var self = this;
-                return this.contentTypes.filter(function (contentType) {
+                return this.contentTypes.filter((contentType) => {
                     // Filter by category
                     // Items without a category are only shown when "All" is selected
-                    if (self.selectedCategory !== "All") {
-                        if (!contentType.category || contentType.category !== self.selectedCategory) {
+                    if (this.selectedCategory !== "All") {
+                        if (!contentType.category || contentType.category !== this.selectedCategory) {
                             return false;
                         }
                     }
                     // Filter by search term
-                    if (self.searchFilter) {
-                        var searchLower = self.searchFilter.toLowerCase();
+                    if (this.searchFilter) {
+                        var searchLower = this.searchFilter.toLowerCase();
                         var nameMatch = contentType.displayName.toLowerCase().indexOf(searchLower) >= 0;
                         var descMatch = contentType.description && contentType.description.toLowerCase().indexOf(searchLower) >= 0;
                         return nameMatch || descMatch;
@@ -122,7 +123,7 @@ function removeDuplicateModals() {
 }
 
 // Show the shared modal with configuration
-function showContentTypePicker(config) {
+window.showContentTypePicker = function (config) {
     // Remove any duplicate modals first
     removeDuplicateModals();
 
@@ -145,7 +146,7 @@ function showContentTypePicker(config) {
 
         sharedContentTypePickerModal.show();
     }
-}
+};
 
 // Hide the shared modal
 function hideContentTypePicker() {
@@ -159,7 +160,7 @@ function hideContentTypePicker() {
 }
 
 // Direct widget creation via AJAX
-function contentTypePickerSelectContentType(contentType, config) {
+window.contentTypePickerSelectContentType = function (contentType, config) {
     var targetId = config.targetId;
     var htmlFieldPrefix = config.htmlFieldPrefix;
     var $target = $("#" + targetId);
@@ -228,4 +229,4 @@ function contentTypePickerSelectContentType(contentType, config) {
             contentTypePickerApp.hasError = true;
         }
     });
-}
+};

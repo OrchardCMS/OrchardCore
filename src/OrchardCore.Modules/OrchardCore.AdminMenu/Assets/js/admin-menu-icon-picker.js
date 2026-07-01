@@ -2,16 +2,16 @@
 // It makes easier to use a single picker instance with several input fields.
 // How to use it: Call show() from outside , passing it the id's of the input fields you want the icon classes applied to.
 
-var iconPickerVue = new Vue({
+window.iconPickerVue = new Vue({
     el: '#iconPickerVue',
-    data: {
-        targetInputField: '',
-        targetIconTag: '',
-        iconPickerModal: null,
+    data: function () {
+        return {
+            targetInputField: '',
+            targetIconTag: '',
+            iconPickerModal: null,
+        };
     },
     mounted: function () {
-        var self = this;
-
         $('.icp-auto').iconpicker({
             title: false,
             templates: {
@@ -19,23 +19,23 @@ var iconPickerVue = new Vue({
             }
         });
 
-        $('#inline-picker').on('iconpickerSelected', function (e) {
+        $('#inline-picker').on('iconpickerSelected', (e) => {
             var selected = e.iconpickerInstance.options.fullClassFormatter(e.iconpickerValue);
-            
-            if (self.targetInputField) {
-                $('#' + self.targetInputField).val(selected);
+
+            if (this.targetInputField) {
+                $('#' + this.targetInputField).val(selected);
             }
 
-            if (self.targetIconTag) {
+            if (this.targetIconTag) {
                 // We need to replace the full tag with the new class.
                 // We could simply apply the new selected class to the i element.
                 // But there is an issue: when the previous class is not a valid fa icon the icon does not refresh.
-                $('#' + self.targetIconTag).replaceWith('<i id="' + self.targetIconTag + '" class="'+ selected + '"></i>')                
+                $('#' + this.targetIconTag).replaceWith('<i id="' + this.targetIconTag + '" class="'+ selected + '"></i>')
             }
 
-            if (self.iconPickerModal != null)
+            if (this.iconPickerModal != null)
             {
-                self.iconPickerModal.hide();
+                this.iconPickerModal.hide();
             }
         });
 
