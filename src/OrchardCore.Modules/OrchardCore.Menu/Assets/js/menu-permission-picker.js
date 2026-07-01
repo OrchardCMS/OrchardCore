@@ -1,4 +1,4 @@
-function initMenuPermissionsPicker(element) {
+window.initMenuPermissionsPicker = function (element) {
     // only run script if element exists
     if (element) {
         var elementId = element.id;
@@ -10,10 +10,12 @@ function initMenuPermissionsPicker(element) {
         var vm = new Vue({
             el: '#' + elementId,
             components: { 'vue-multiselect': vueMultiselect },
-            data: {
-                value: null,
-                arrayOfItems: selectedItems,
-                options: allItems,
+            data: function () {
+                return {
+                    value: null,
+                    arrayOfItems: selectedItems,
+                    options: allItems,
+                };
             },
             computed: {
                 selectedNames: function () {
@@ -21,16 +23,14 @@ function initMenuPermissionsPicker(element) {
                 }
             },
             methods: {
-                onSelect: function (selectedOption, name) {
-                    var self = this;
-
-                    for (i = 0; i < self.arrayOfItems.length; i++) {
-                        if (self.arrayOfItems[i].name === selectedOption.name) {
+                onSelect: function (selectedOption) {
+                    for (var i = 0; i < this.arrayOfItems.length; i++) {
+                        if (this.arrayOfItems[i].name === selectedOption.name) {
                             return;
                         }
                     }
 
-                    self.arrayOfItems.push(selectedOption);
+                    this.arrayOfItems.push(selectedOption);
                 },
                 remove: function (item) {
                     this.arrayOfItems.splice(this.arrayOfItems.indexOf(item), 1)
@@ -42,4 +42,4 @@ function initMenuPermissionsPicker(element) {
         var event = new CustomEvent("menu-permission-picker-created", { detail: { vm: vm } });
         document.querySelector("body").dispatchEvent(event);
     }
-}
+};
