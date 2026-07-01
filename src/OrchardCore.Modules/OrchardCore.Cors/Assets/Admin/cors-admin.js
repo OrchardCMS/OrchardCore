@@ -11,12 +11,17 @@ var optionsList = Vue.component('options-list',
             addOption: function (value) {
                 if (value !== null && value !== '') {
                     var noDuplicates = ($.inArray(value.toLowerCase(), this.options.map(o => o.toLowerCase())) < 0);
+                    // Intentionally mutates the shared array reference passed down from
+                    // corsApp.selectedPolicy; the parent never re-passes a new array, so this
+                    // is how the edit is reflected back up.
                     if (noDuplicates) {
+                        // eslint-disable-next-line vue/no-mutating-props
                         this.options.push(value);
                     }
                 }
             },
             deleteOption: function (value) {
+                // eslint-disable-next-line vue/no-mutating-props -- see addOption above.
                 this.options.splice($.inArray(value, this.options), 1);
             }
         }
@@ -29,13 +34,15 @@ var policyDetails = Vue.component('policy-details',
         template: '#policy-details'
     });
 
-var corsApp = new Vue({
+window.corsApp = new Vue({
     el: '#corsAdmin',
     components: { policyDetails: policyDetails, optionsList: optionsList },
-    data: {
-        selectedPolicy: null,
-        policies: null,
-        defaultPolicyName: null
+    data: function () {
+        return {
+            selectedPolicy: null,
+            policies: null,
+            defaultPolicyName: null
+        };
     },
     updated: function () {
         this.searchBox();
@@ -67,7 +74,7 @@ var corsApp = new Vue({
             event.stopPropagation();
             this.save();
         },
-        updatePolicy: function (policy, event) {
+        updatePolicy: function (policy) {
             if (policy.isDefaultPolicy) {
                 this.policies.forEach(p => p.isDefaultPolicy = false);
             }
