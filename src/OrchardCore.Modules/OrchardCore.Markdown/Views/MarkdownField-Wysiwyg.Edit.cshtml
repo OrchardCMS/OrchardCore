@@ -28,8 +28,16 @@
     </div>
 </div>
 
-<script at="Foot" depends-on="jQuery, easymde-mediatoolbar">
-    $(function () {
+<script at="Foot" depends-on="easymde-mediatoolbar">
+    function onDocumentReady(callback) {
+        if (document.readyState !== 'loading') {
+            callback();
+        } else {
+            document.addEventListener('DOMContentLoaded', callback);
+        }
+    }
+
+    onDocumentReady(function () {
         var markdownElement = document.getElementById('@Html.IdFor(m => m.Markdown)');
         var isRtl = '@(culture.IsRightToLeft() ? "true" : "false")';
 
@@ -76,13 +84,13 @@ else
             initializeMdeShortcodeWrapper(mde);
 
             mde.codemirror.on('change', function () {
-                $(document).trigger('contentpreview:render');
+                document.dispatchEvent(new CustomEvent('contentpreview:render'));
             });
 
             if (isRtl === 'true')
             {
-                $('.editor-toolbar').attr('style', 'direction:rtl;text-align:right');
-                $('.CodeMirror').attr('style', 'text-align:right');
+                document.querySelector('.editor-toolbar').setAttribute('style', 'direction:rtl;text-align:right');
+                document.querySelector('.CodeMirror').setAttribute('style', 'text-align:right');
             }
         }
     });
