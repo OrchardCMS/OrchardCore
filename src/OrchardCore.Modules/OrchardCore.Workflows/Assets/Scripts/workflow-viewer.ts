@@ -1,11 +1,10 @@
-///<reference path='../Lib/jquery/typings.d.ts' />
 ///<reference path='../Lib/jsplumb/typings.d.ts' />
 
 import './workflow-models';
 import WorkflowCanvas from './workflow-canvas';
 
 class WorkflowViewer extends WorkflowCanvas {
-    private jsPlumbInstance: jsPlumbInstance;
+    private jsPlumbInstance!: jsPlumbInstance;
 
     constructor(protected container: HTMLElement, protected workflowType: Workflows.WorkflowType) {
         super(container, workflowType);
@@ -37,7 +36,7 @@ class WorkflowViewer extends WorkflowCanvas {
                         sourceEndpoint.hideOverlay('outcome-label');
                     }
                 }
-                
+
                 // Re-orient labels after connection
                 requestAnimationFrame(() => {
                     self.orientOutcomeLabels();
@@ -67,9 +66,8 @@ class WorkflowViewer extends WorkflowCanvas {
             plumber.batch(() => {
                 var workflowId: number = this.workflowType.id;
 
-                activityElements.each((_, activityElement) => {
-                    const $activityElement = $(activityElement);
-                    const activityId = $activityElement.data('activity-id');
+                activityElements.forEach((activityElement) => {
+                    const activityId = activityElement.dataset.activityId as string;
                     const activity = this.getActivity(activityId);
 
                     // Configure the activity as a target.
@@ -81,7 +79,7 @@ class WorkflowViewer extends WorkflowCanvas {
                 });
 
                 // Make all activity elements visible
-                activityElements.show();
+                activityElements.forEach((activityElement) => activityElement.style.display = '');
 
                 this.updateCanvasHeight();
             });
@@ -89,9 +87,8 @@ class WorkflowViewer extends WorkflowCanvas {
             // Wait for layout to complete before adding endpoints and connections
             setTimeout(() => {
                 plumber.batch(() => {
-                    activityElements.each((_, activityElement) => {
-                        const $activityElement = $(activityElement);
-                        const activityId = $activityElement.data('activity-id');
+                    activityElements.forEach((activityElement) => {
+                        const activityId = activityElement.dataset.activityId as string;
                         const activity = this.getActivity(activityId);
 
                         // Add source endpoints after layout is complete
@@ -121,17 +118,15 @@ class WorkflowViewer extends WorkflowCanvas {
     }
 }
 
-$.fn.workflowViewer = function (this: JQuery): JQuery {
-    this.each((index, element) => {
-        var $element = $(element);
-        var workflowType: Workflows.WorkflowType = $element.data('workflow-type');
+const workflowViewerInstances = new WeakMap<HTMLElement, WorkflowViewer>();
 
-        $element.data('workflowViewer', new WorkflowViewer(element, workflowType));
-    });
+function initWorkflowViewer(element: HTMLElement): WorkflowViewer {
+    const workflowType: Workflows.WorkflowType = JSON.parse(element.dataset.workflowType ?? '{}');
+    const instance = new WorkflowViewer(element, workflowType);
+    workflowViewerInstances.set(element, instance);
+    return instance;
+}
 
-    return this;
-};
-
-$(document).ready(function () {
-    const workflowViewer: WorkflowViewer = $('.workflow-canvas').workflowViewer().data('workflowViewer');
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll<HTMLElement>('.workflow-canvas').forEach((element) => initWorkflowViewer(element));
 });

@@ -95,6 +95,9 @@ export default (element: HTMLInputElement, options: PasswordStrengthOptions) => 
         bar.style.width = percentage + "%";
         el.appendChild(bar);
         const target = document.querySelector(settings.target);
+        if (!target) {
+            return;
+        }
         target.innerHTML = "";
         target.appendChild(el);
     };

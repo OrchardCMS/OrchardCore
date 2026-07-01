@@ -3,7 +3,7 @@ namespace Workflows {
         id: number;
         activities: Array<Activity>;
         transitions: Array<Transition>;
-        removedActivities: Array<number>;
+        removedActivities: Array<string>;
     }
 
     export interface Activity {
