@@ -58,41 +58,45 @@ window.initializeTagsEditor = function (element) {
             },
             methods: {
                 createTagTerm(newTagTerm) {
-                    $.ajax({
-                        url: this.createTagUrl,
+                    fetch(this.createTagUrl, {
                         method: 'POST',
-                        data: {
-                            __RequestVerificationToken: $("input[name='__RequestVerificationToken']").val(),
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        body: new URLSearchParams({
+                            __RequestVerificationToken: document.querySelector("input[name='__RequestVerificationToken']").value,
                             taxonomyContentItemId: this.taxonomyContentItemId,
                             displayText: newTagTerm
-                        },
-                        success: (data) => {
-                            var tagTerm = {
-                                contentItemId: data.contentItemId,
-                                displayText: data.displayText,
-                                selected: true
-                            }
-                            // Add to allTagTerms array so model binding will save tag as selected.
-                            this.allTagTerms.push(tagTerm);
-
-                            // Add to selectedTerms to display in vue-multi-select.
-                            this.selectedTagTerms.push(tagTerm);
-
-                        },
-                        error: () => {
-                            alert(this.createTagErrorMessage);
+                        })
+                    }).then((response) => {
+                        if (!response.ok) {
+                            throw new Error('Request failed');
                         }
+                        return response.json();
+                    }).then((data) => {
+                        var tagTerm = {
+                            contentItemId: data.contentItemId,
+                            displayText: data.displayText,
+                            selected: true
+                        }
+                        // Add to allTagTerms array so model binding will save tag as selected.
+                        this.allTagTerms.push(tagTerm);
+
+                        // Add to selectedTerms to display in vue-multi-select.
+                        this.selectedTagTerms.push(tagTerm);
+                    }).catch(() => {
+                        alert(this.createTagErrorMessage);
                     });
                 },
                 onSelect(selectedTagTerm) {
                     var tagTerm = this.allTagTerms.find(function (tagTerm) { return tagTerm.contentItemId === selectedTagTerm.contentItemId });
                     tagTerm.selected = true;
-                    $(document).trigger('contentpreview:render');
+                    document.dispatchEvent(new CustomEvent('contentpreview:render'));
                 },
                 onRemove(removedTagTerm) {
                     var tagTerm = this.allTagTerms.find(function (tagTerm) { return tagTerm.contentItemId === removedTagTerm.contentItemId });
                     tagTerm.selected = false;
-                    $(document).trigger('contentpreview:render');
+                    document.dispatchEvent(new CustomEvent('contentpreview:render'));
                 }
             }
         });
