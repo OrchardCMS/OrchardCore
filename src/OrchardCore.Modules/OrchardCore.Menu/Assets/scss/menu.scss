@@ -24,3 +24,11 @@ body.menu-dragging #menu ol.menu-item-links:empty {
     border: 1px dashed var(--bs-border-color, #ccc);
     border-radius: 0.25rem;
 }
+
+// The root list has no parent <li> of its own, so once its last item has nested
+// children, there's no space belonging to the root list itself below them to drop
+// an item back onto (only the nested item's own child list would be under the
+// pointer). Reserve that space explicitly while dragging.
+body.menu-dragging #menu {
+    padding-bottom: 2rem;
+}
