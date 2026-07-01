@@ -45,6 +45,8 @@ export default [
                 EasyMDE: "readonly",
                 Sortable: "readonly",
                 CodeMirror: "readonly",
+                L: "readonly",
+                confirmDialog: "readonly",
             },
         },
     },
