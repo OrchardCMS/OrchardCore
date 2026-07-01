@@ -19,6 +19,9 @@ export default [
             "**/vite-env.d.ts",
             "**/eslintrc.cjs",
             "**/docs/assets/js/**",
+            // TODO: large, jQuery-heavy legacy codebases; deferred to a dedicated follow-up.
+            "**/OrchardCore.Resources/**",
+            "**/OrchardCore.Media/**",
         ],
     },
     { languageOptions: { globals: globals.browser } },
