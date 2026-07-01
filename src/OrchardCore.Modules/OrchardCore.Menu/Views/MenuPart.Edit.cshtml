@@ -86,18 +86,22 @@
 <script at="Foot">
     var menuItemId;
 
-    $('#modalMenuItems').on('show.bs.modal', function (event) {
-        var button = $(event.relatedTarget) // Button that triggered the modal
-        menuItemId = button.data('menuitemid') // Extract info from data-* attributes
-    })
+    document.getElementById('modalMenuItems').addEventListener('show.bs.modal', function (event) {
+        var button = event.relatedTarget; // Button that triggered the modal
+        menuItemId = button.dataset.menuitemid; // Extract info from data-* attributes
+    });
 
-    $('.thumbnail-link-create').on('click', function () {
+    document.addEventListener('click', function (event) {
+        var link = event.target.closest('.thumbnail-link-create');
+        if (!link) {
+            return;
+        }
+
         // there is no value for a new root menu item
         if (menuItemId) {
-            var link = $(this);
-            var href = link.attr('href');
+            var href = link.getAttribute('href');
             href += '&menuitemid=' + menuItemId;
-            link.attr('href', href);
+            link.setAttribute('href', href);
         }
     });
 </script>
