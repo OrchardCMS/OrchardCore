@@ -6,6 +6,7 @@ using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement;
 using OrchardCore.Modules;
 using OrchardCore.Widgets.Drivers;
+using OrchardCore.Widgets.Handlers;
 using OrchardCore.Widgets.Models;
 using OrchardCore.Widgets.Services;
 using OrchardCore.Widgets.Settings;
@@ -20,7 +21,8 @@ public sealed class Startup : StartupBase
         services.AddShapeTableProvider<ContentCardShapes>();
         // Widgets List Part
         services.AddContentPart<WidgetsListPart>()
-            .UseDisplayDriver<WidgetsListPartDisplayDriver>();
+            .UseDisplayDriver<WidgetsListPartDisplayDriver>()
+            .AddHandler<WidgetsListPartHandler>();
 
         services.AddScoped<IStereotypesProvider, WidgetStereotypesProvider>();
 
