@@ -1,4 +1,4 @@
-function initializeOptionsEditor(elem, data, defaultValue, modalBodyElement) {
+window.initializeOptionsEditor = function (elem, data, defaultValue, modalBodyElement) {
 
     var previouslyChecked;
 
@@ -86,7 +86,7 @@ function initializeOptionsEditor(elem, data, defaultValue, modalBodyElement) {
         }
     });
 
-}
+};
 
 function IsNullOrWhiteSpace(str) {
     return str === null || str.match(/^ *$/) !== null;

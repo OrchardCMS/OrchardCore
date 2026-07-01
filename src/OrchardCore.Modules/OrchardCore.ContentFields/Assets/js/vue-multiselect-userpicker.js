@@ -1,6 +1,10 @@
 function debounceUserPicker(func, wait, immediate) {
     var timeout;
     return function () {
+        // Generic utility: `this`/`arguments` must be captured here since `later` runs asynchronously
+        // via setTimeout, by which point the wrapper's own call context is gone. The wrapper itself
+        // stays a regular function so it keeps working for any caller, not just Vue instances.
+        // eslint-disable-next-line @typescript-eslint/no-this-alias
         var context = this, args = arguments;
         var later = function () {
             timeout = null;
@@ -12,7 +16,7 @@ function debounceUserPicker(func, wait, immediate) {
         if (callNow) func.apply(context, args);
     };
 };
-function initVueMultiselectUserPicker(element) {
+window.initVueMultiselectUserPicker = function (element) {
     // only run script if element exists
     if (element) {
         var elementId = element.id;
@@ -62,8 +66,7 @@ function initVueMultiselectUserPicker(element) {
                 }
             },
             created: function () {
-                var self = this;
-                self.asyncFind();
+                this.asyncFind();
             },
             mounted: function () {
                 // Store a reference to the div containing the search box used to select users
@@ -79,19 +82,16 @@ function initVueMultiselectUserPicker(element) {
             },
             methods: {
                 asyncFind: function (query) {
-                    var self = this;
-                    debouncedSearch(self, query);
+                    debouncedSearch(this, query);
                 },
-                onSelect: function (selectedOption, id) {
-                    var self = this;
-
-                    for (i = 0; i < self.arrayOfUsers.length; i++) {
-                        if (self.arrayOfUsers[i].id === selectedOption.id) {
+                onSelect: function (selectedOption) {
+                    for (var i = 0; i < this.arrayOfUsers.length; i++) {
+                        if (this.arrayOfUsers[i].id === selectedOption.id) {
                             return;
                         }
                     }
 
-                    self.arrayOfUsers.push(selectedOption);
+                    this.arrayOfUsers.push(selectedOption);
 
                     // We don't want to show the search box if we are only allowing a single user 
                     // and a user has already been selected. We don't need that search box again 
@@ -118,4 +118,4 @@ function initVueMultiselectUserPicker(element) {
         var event = new CustomEvent("vue-multiselect-userpicker-created", { detail: { vm: vm } });
         document.querySelector("body").dispatchEvent(event);
     }
-}
+};
