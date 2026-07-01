@@ -1,4 +1,3 @@
-///<reference path='../Lib/jquery/typings.d.ts' />
 ///<reference path='../Lib/jsplumb/typings.d.ts' />
 
 import './workflow-models';
@@ -10,8 +9,8 @@ abstract class WorkflowCanvas {
     constructor(protected container: HTMLElement, protected workflowType: Workflows.WorkflowType) {
     }
 
-    protected getActivityElements = (): JQuery => {
-        return $(this.container).find('.activity');
+    protected getActivityElements = (): NodeListOf<HTMLElement> => {
+        return this.container.querySelectorAll<HTMLElement>('.activity');
     }
 
     protected getDefaults = () => {
@@ -55,7 +54,7 @@ abstract class WorkflowCanvas {
         // The definition of source endpoints.
         const paintColor = this.getEndpointColor(activity);
         const displayName = outcome.displayName || '';
-        
+
         return {
             endpoint: 'Dot',
             anchor: 'ContinuousRight',
@@ -94,11 +93,11 @@ abstract class WorkflowCanvas {
         };
     };
 
-    protected getActivity = function (id: string, activities: Array<Workflows.Activity> = null): Workflows.Activity {
+    protected getActivity = (id: string, activities: Array<Workflows.Activity> | null = null): Workflows.Activity => {
         if (!activities) {
             activities = this.workflowType.activities;
         }
-        return $.grep(activities, (x: Workflows.Activity) => x.id === id)[0];
+        return activities.find((x: Workflows.Activity) => x.id === id) as Workflows.Activity;
     }
 
     protected updateConnections = (plumber: jsPlumbInstance) => {
@@ -117,21 +116,18 @@ abstract class WorkflowCanvas {
         }
     }
 
-    protected updateCanvasHeight = function () {
-        const $container = $(this.container);
-
+    protected updateCanvasHeight = () => {
         // Get the activity element with the highest Y coordinate.
-        const $activityElements = $container.find(".activity");
+        const activityElements = this.container.querySelectorAll<HTMLElement>(".activity");
         let currentElementTop = 0;
         let currentActivityHeight = 0;
 
-        for (let activityElement of $activityElements.toArray()) {
-            const $activityElement = $(activityElement);
-            const top = $activityElement.position().top;
+        for (let activityElement of activityElements) {
+            const top = activityElement.offsetTop;
 
             if (top > currentElementTop) {
                 currentElementTop = top;
-                currentActivityHeight = $activityElement.height();
+                currentActivityHeight = activityElement.offsetHeight;
             }
         }
 
@@ -143,7 +139,7 @@ abstract class WorkflowCanvas {
             newCanvasHeight += stretchValue;
         }
 
-        $container.height(Math.max(this.minCanvasHeight, newCanvasHeight));
+        this.container.style.height = `${Math.max(this.minCanvasHeight, newCanvasHeight)}px`;
     };
 
     protected orientOutcomeLabels = () => {
@@ -151,13 +147,13 @@ abstract class WorkflowCanvas {
             const overlay: any = endpoint.getOverlay ? endpoint.getOverlay('outcome-label') : null;
             if (!overlay) continue;
 
-            const overlayEl = overlay.getElement ? overlay.getElement() : overlay.canvas;
+            const overlayEl: HTMLElement = overlay.getElement ? overlay.getElement() : overlay.canvas;
             if (!overlayEl) continue;
 
             // Hide empty labels
-            const labelText = $(overlayEl).text().trim();
+            const labelText = overlayEl.textContent?.trim() ?? '';
             if (!labelText) {
-                $(overlayEl).hide();
+                overlayEl.style.display = 'none';
                 continue;
             }
 
@@ -184,26 +180,24 @@ abstract class WorkflowCanvas {
                 face = dy > 0 ? 'bottom' : 'top';
             }
 
-            const $ol = $(overlayEl);
-            $ol.show();
+            overlayEl.style.display = '';
 
             // Measure label width, temporarily showing if hidden.
-            let halfWidth = $ol.outerWidth() / 2;
+            let halfWidth = overlayEl.offsetWidth / 2;
             if (halfWidth === 0) {
                 const prevDisplay = overlayEl.style.display;
                 overlayEl.style.display = 'block';
-                halfWidth = $ol.outerWidth() / 2;
+                halfWidth = overlayEl.offsetWidth / 2;
                 overlayEl.style.display = prevDisplay;
             }
             const labelOffset = Math.max(halfWidth - 6, 0);
 
-            const overlayHtmlElement = overlayEl as HTMLElement;
-            const storedBaseTransform = overlayHtmlElement.dataset.outcomeLabelBaseTransform;
-            const currentTransform = overlayHtmlElement.style.transform || '';
+            const storedBaseTransform = overlayEl.dataset.outcomeLabelBaseTransform;
+            const currentTransform = overlayEl.style.transform || '';
             const normalizedCurrentTransform = !currentTransform || currentTransform === 'none' ? '' : currentTransform;
             const baseTransform = storedBaseTransform ?? normalizedCurrentTransform;
             if (!storedBaseTransform) {
-                overlayHtmlElement.dataset.outcomeLabelBaseTransform = baseTransform;
+                overlayEl.dataset.outcomeLabelBaseTransform = baseTransform;
             }
 
             let orientedTransform = '';
@@ -224,10 +218,8 @@ abstract class WorkflowCanvas {
             }
 
             const transformPrefix = baseTransform ? `${baseTransform} ` : '';
-            $ol.css({
-                'transform': `${transformPrefix}${orientedTransform}`.trim(),
-                'transform-origin': 'center center'
-            });
+            overlayEl.style.transform = `${transformPrefix}${orientedTransform}`.trim();
+            overlayEl.style.transformOrigin = 'center center';
 
             // Ensure left/right outcome badges are vertically centered with the endpoint dot.
             if (face === 'left' || face === 'right') {
@@ -236,7 +228,7 @@ abstract class WorkflowCanvas {
                 const verticalOffset = Math.round((epCenterY - overlayCenterY) * 10) / 10;
 
                 if (Math.abs(verticalOffset) >= 0.5) {
-                    $ol.css('transform', `${transformPrefix}${orientedTransform} translateY(${verticalOffset}px)`.trim());
+                    overlayEl.style.transform = `${transformPrefix}${orientedTransform} translateY(${verticalOffset}px)`.trim();
                 }
             }
         }

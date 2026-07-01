@@ -14,7 +14,6 @@ public sealed class ResourceManagementOptionsConfiguration
 
         _manifest
             .DefineScript("jsplumb")
-            .SetDependencies("jQuery")
             .SetUrl(
                 "~/OrchardCore.Workflows/Scripts/jsplumb.min.js",
                 "~/OrchardCore.Workflows/Scripts/jsplumb.js"
@@ -65,7 +64,6 @@ public sealed class ResourceManagementOptionsConfiguration
 
         _manifest
             .DefineScript("workflow-url-generator")
-            .SetDependencies("jQuery")
             .SetUrl(
                 "~/OrchardCore.Workflows/Scripts/Workflows/url-generator/workflow-url-generator.min.js",
                 "~/OrchardCore.Workflows/Scripts/Workflows/url-generator/workflow-url-generator.js"
