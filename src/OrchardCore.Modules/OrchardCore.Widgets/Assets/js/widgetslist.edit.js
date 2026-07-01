@@ -1,5 +1,5 @@
 $(function () {
-    $(document).on('click', '.add-list-widget', function (event) {
+    $(document).on('click', '.add-list-widget', function () {
         var type = $(this).data("widget-type");
         var targetId = $(this).data("target-id");
         var htmlFieldPrefix = $(this).data("html-field-prefix");
@@ -39,7 +39,7 @@ $(function () {
         });
     });
 
-    $(document).on('click', '.insert-list-widget', function (event) {
+    $(document).on('click', '.insert-list-widget', function () {
         var type = $(this).data("widget-type");
         var target = $(this).closest('.widget-template');
         var targetId = $(this).data("target-id");
@@ -82,14 +82,15 @@ $(function () {
 
     $(document).on('click', '.widget-list-delete', function () {
         var $this = $(this);
-        confirmDialog(_objectSpread({}, $this.data(), {
+        confirmDialog({
+            ...$this.data(),
             callback: function callback(r) {
                 if (r) {
                     $this.closest('.widget-template').remove();
                     $(document).trigger('contentpreview:render');
                 }
             }
-        }));
+        });
     });
 
     $(document).on('change', '.widget-editor-footer label', function () {
