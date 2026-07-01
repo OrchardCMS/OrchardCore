@@ -27,6 +27,7 @@
     <PackageVersion Include="Jint" Version="4.9.3" />
     <PackageVersion Include="JsonPath.Net" Version="2.2.0" />
     <PackageVersion Include="HtmlSanitizer" Version="9.1.893-beta" />
+    <PackageVersion Include="Microsoft.Extensions.Compliance.Redaction" Version="10.5.0" />
     <PackageVersion Include="Parlot" Version="1.5.7" />
     <PackageVersion Include="libphonenumber-csharp" Version="9.0.32" />
     <PackageVersion Include="Lorem.Universal.NET" Version="5.0.0" />
