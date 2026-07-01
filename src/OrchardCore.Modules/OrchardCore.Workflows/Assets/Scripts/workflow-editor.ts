@@ -181,8 +181,10 @@ class WorkflowEditor extends WorkflowCanvas {
                     });
                 });
 
-                // Make all activity elements visible
-                activityElements.forEach((activityElement) => activityElement.style.display = '');
+                // Make all activity elements visible. The ".activity" class defaults to "display: none"
+                // so newly added activities stay hidden until positioned here; clearing the inline style
+                // would just fall back to that CSS default instead of showing the element.
+                activityElements.forEach((activityElement) => activityElement.style.display = 'block');
 
                 this.updateCanvasHeight();
             });
