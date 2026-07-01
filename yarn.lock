@@ -2572,7 +2572,6 @@ __metadata:
   dependencies:
     "@popperjs/core": "npm:2.11.8"
     bootstrap: "npm:5.3.8"
-    jquery: "npm:3.7.1"
   languageName: unknown
   linkType: soft
 
@@ -2611,10 +2610,8 @@ __metadata:
   dependencies:
     "@crestapps/bootstrap-select": "npm:1.2.0"
     "@popperjs/core": "npm:2.11.8"
-    "@types/jquery": "npm:3.5.32"
     "@types/js-cookie": "npm:^3.0.6"
     bootstrap: "npm:5.3.8"
-    jquery: "npm:3.7.1"
     js-cookie: "npm:^3.0.5"
     nouislider: "npm:15.7.0"
   languageName: unknown
@@ -2691,7 +2688,6 @@ __metadata:
   dependencies:
     "@popperjs/core": "npm:2.11.8"
     "@types/bootstrap": "npm:5.2.7"
-    "@types/jquery": "npm:3.5.5"
     bootstrap: "npm:5.3.8"
     jsplumb: "npm:2.15.6"
   languageName: unknown
@@ -4618,24 +4614,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/jquery@npm:3.5.32":
-  version: 3.5.32
-  resolution: "@types/jquery@npm:3.5.32"
-  dependencies:
-    "@types/sizzle": "npm:*"
-  checksum: 10/2c67cac338828870ead5c5e608f5fa5ab8101598ed4572cf49b58c342adffe8918d2e2fc94d7954e6b98a889cef8c3f4e6f44b8fecb75e80854b0f9cf9dd18a1
-  languageName: node
-  linkType: hard
-
-"@types/jquery@npm:3.5.5":
-  version: 3.5.5
-  resolution: "@types/jquery@npm:3.5.5"
-  dependencies:
-    "@types/sizzle": "npm:*"
-  checksum: 10/d26f4ce1cdc30d9d21783cd7402eb7608e1c89502b2bf30f812d9b396326748ec4d4f0782cd0754e5958cd0c7c5aab0ff30ee741b4915a2360bc74ad8d7bcfb0
-  languageName: node
-  linkType: hard
-
 "@types/js-cookie@npm:^3.0.6":
   version: 3.0.6
   resolution: "@types/js-cookie@npm:3.0.6"
@@ -4787,13 +4765,6 @@ __metadata:
     "@types/http-errors": "npm:*"
     "@types/node": "npm:*"
   checksum: 10/f2bad1304c7d0d3b7221faff3e490c40129d3803f4fb1b2fb84f31f561071c5e6a4b876c41bbbe82d5645034eea936e946bcaaf993dac1093ce68b56effad6e0
-  languageName: node
-  linkType: hard
-
-"@types/sizzle@npm:*":
-  version: 2.3.10
-  resolution: "@types/sizzle@npm:2.3.10"
-  checksum: 10/7898ae8c147d6804e1eb7811664bf6e58c382840b03a56976c668f17fbc76f752c4086bddb0d6c6d54e279a9259cf4fbb61a6ee968dac98615c42350f6f57d6a
   languageName: node
   linkType: hard
 
