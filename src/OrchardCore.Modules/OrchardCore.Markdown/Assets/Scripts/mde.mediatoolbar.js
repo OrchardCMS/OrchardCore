@@ -1,7 +1,7 @@
-var mdeToolbar;
+window.mdeToolbar = undefined;
 
 $(function () {
-    mdeToolbar = [
+    window.mdeToolbar = [
         {
             name: "guide",
             action: "https://www.markdownguide.org/basic-syntax/",
@@ -89,9 +89,9 @@ $(function () {
                 mediaApp.selectedMedias = [];
                 var modal = new bootstrap.Modal($('#mediaModalMarkdown'));
                 modal.show();
-                $('#mediaMarkdownSelectButton').on('click', function (v) {
+                $('#mediaMarkdownSelectButton').on('click', function () {
                     var mediaMarkdownContent = "";
-                    for (i = 0; i < mediaApp.selectedMedias.length; i++) {
+                    for (var i = 0; i < mediaApp.selectedMedias.length; i++) {
                         mediaMarkdownContent += ' [image]' + mediaApp.selectedMedias[i].mediaPath + '[/image]';
                     }
                     var cm = editor.codemirror;
@@ -152,8 +152,8 @@ $(function () {
     ];
 });
 
-function initializeMdeShortcodeWrapper(mde) {
+window.initializeMdeShortcodeWrapper = function (mde) {
     const toolbar = mde.gui.toolbar;
 
     $(toolbar).wrap('<div class="shortcode-modal-wrapper"></div>');
-}
+};

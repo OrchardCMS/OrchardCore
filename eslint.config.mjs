@@ -54,6 +54,8 @@ export default [
                 confirmDialog: "readonly",
                 // Defined by the (currently lint-deferred) OrchardCore.Media module, consumed here.
                 mediaApp: "readonly",
+                // Defined by OrchardCore.Shortcodes, consumed here.
+                shortcodesApp: "readonly",
             },
         },
     },
