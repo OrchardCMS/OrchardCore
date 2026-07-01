@@ -8,7 +8,8 @@
     string localizedAdminMenuName = D[Model.AdminMenu.Name, "Admin Menus"];
 }
 
-<script asp-name="jQuery.nestedSortable" version="2.1" at="Foot" depends-on="jQuery-ui"></script>
+<script asp-name="Sortable" at="Foot"></script>
+<script asp-src="~/OrchardCore.AdminMenu/Scripts/node-list/admin-menu-node-list.min.js" debug-src="~/OrchardCore.AdminMenu/Scripts/node-list/admin-menu-node-list.js" at="Foot" depends-on="Sortable"></script>
 <style asp-src="~/OrchardCore.AdminMenu/Styles/admin-menu.min.css" debug-src="~/OrchardCore.AdminMenu/Styles/admin-menu.css"></style>
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Edit Nodes for '{0}'", localizedAdminMenuName])</h1></zone>
@@ -88,43 +89,5 @@
 <div id="move-error-message" class="d-none" data-message="@T["There was an error when moving the tree node."]"></div>
 
 <script at="Foot">
-    function moveNode(AdminMenuId, nodeToMoveId, destinationNodeId, position) {
-        var url = "@Url.Action("MoveNode", "Node", new { area = "OrchardCore.AdminMenu"})";
-        $.ajax({
-            url: url,
-            method: 'POST',
-            data: {
-                __RequestVerificationToken: $("input[name='__RequestVerificationToken']").val(),
-                treeId: AdminMenuId,
-                nodeToMoveId: nodeToMoveId,
-                destinationNodeId: destinationNodeId,
-                position: position
-            },
-            success: function () {
-                location.reload(true);
-            },
-            error: function (error) {
-                alert($('#move-error-message').data("message"));
-            }
-        });
-    }
-
-    $(function () {
-        $('#menu')
-            .nestedSortable({
-                handle: 'div.menu-item-title',
-                items: 'li.menu-item',
-                toleranceElement: '> div.menu-item-title',
-                relocate: function (event, helper) {
-                    // get var required by rest api
-                    var AdminMenuId = '@Model.AdminMenu.Id';
-                    var nodeToMoveId = helper.item.data('treenode-id');
-                    var destinationNodeId = helper.item.parent().closest('[data-treenode-id]').data('treenode-id'); // get the id of the new parent
-                    var position = helper.item.index();
-
-                    // make request to rest api
-                    moveNode(AdminMenuId, nodeToMoveId, destinationNodeId, position);
-                }
-            });
-    });
+    initAdminMenuNodeList('@Model.AdminMenu.Id', '@Url.Action("MoveNode", "Node", new { area = "OrchardCore.AdminMenu"})');
 </script>
