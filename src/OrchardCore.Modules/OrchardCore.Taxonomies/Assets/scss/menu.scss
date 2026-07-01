@@ -8,13 +8,49 @@
     cursor: move;
     border: none;
     padding: 0;
+    // Dragging via forceFallback (see menu.js) is mouse-simulated rather than
+    // native HTML5 drag, which normally prevents text selection on its own;
+    // without this, dragging over an item's text selects it like a click-drag.
+    user-select: none;
+}
+
+// While dragging (forceFallback), the item stays in place in the list as a
+// "ghost" placeholder - showing where it would land if dropped now - while a
+// separate floating clone (.sortable-fallback) follows the cursor. Hide the
+// in-place placeholder entirely so only the item actually following the
+// pointer is visible, rather than two overlapping copies of the same row.
+#menu .sortable-ghost:not(.sortable-fallback) {
+    opacity: 0;
 }
 
 // Auto-created child lists (see menu.js) collapse to nothing at rest so leaf
-// items keep their compact height; nesting depth is only ever changed via the
-// indent/outdent buttons, so this list never needs to visibly expand.
+// items keep their compact height; nesting depth is only ever changed by
+// dragging sideways past a threshold, so this list never needs to visibly
+// expand as a drop target.
 #menu ol.menu-item-links:empty {
     margin: 0;
     padding: 0;
     min-height: 0;
+}
+
+// Live preview shown while dragging (see menu.js), mirroring how the original
+// jQuery UI nestedSortable gave feedback: once the pointer has moved far enough
+// sideways to trigger a nesting-depth change, shift the item to hint at where
+// it would land and highlight whichever item would become its new parent.
+.menu-item-pending-indent {
+    transform: translateX(1.5rem);
+}
+
+.menu-item-pending-outdent {
+    transform: translateX(-1.5rem);
+}
+
+.menu-item-pending-indent,
+.menu-item-pending-outdent {
+    transition: transform 0.1s ease-out;
+}
+
+.menu-item-pending-parent > .menu-item-title {
+    outline: 2px solid var(--bs-primary, #0d6efd);
+    outline-offset: 2px;
 }
