@@ -36,13 +36,13 @@ public sealed class AdminSiteSettingsDisplayDriver : SiteDisplayDriver<AdminSett
             return null;
         }
 
-        return Initialize<AdminSettingsViewModel>("AdminSettings_Edit", model =>
+        return Initialize<AdminSettingsViewModel, AdminSettings>("AdminSettings_Edit", static (model, settings) =>
         {
             model.DisplayThemeToggler = settings.DisplayThemeToggler;
             model.DisplayMenuFilter = settings.DisplayMenuFilter;
             model.DisplayNewMenu = settings.DisplayNewMenu;
             model.DisplayTitlesInTopbar = settings.DisplayTitlesInTopbar;
-        }).Location("Content:3")
+        }, settings).Location("Content:3")
         .OnGroup(SettingsGroupId);
     }
 

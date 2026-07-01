@@ -45,7 +45,7 @@ public sealed class UserNotificationPreferencesPartDisplayDriver : SectionDispla
             }
 
         }).Location("Content:11")
-        .RenderWhen(() => Task.FromResult(_notificationMethodProviders.Any()));
+        .RenderWhen(static (notificationMethodProviders) => Task.FromResult(notificationMethodProviders.Any()), _notificationMethodProviders);
 
         return Task.FromResult<IDisplayResult>(result);
     }
