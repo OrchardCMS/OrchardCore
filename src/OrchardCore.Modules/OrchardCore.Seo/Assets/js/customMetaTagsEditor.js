@@ -1,4 +1,4 @@
-function initializeCustomMetaTagsEditor(elem, data, modalBodyElement) {
+window.initializeCustomMetaTagsEditor = function (elem, data, modalBodyElement) {
 
     var store = {
         debug: false,
@@ -56,9 +56,11 @@ function initializeCustomMetaTagsEditor(elem, data, modalBodyElement) {
             metaTagsTable: metaTagsTable,
             metaTagsModal: metaTagsModal
         },
-        data: {
-            sharedState: store.state,
-            modal: null
+        data: function () {
+            return {
+                sharedState: store.state,
+                modal: null
+            };
         },
         el: elem,
         methods: {
@@ -67,4 +69,4 @@ function initializeCustomMetaTagsEditor(elem, data, modalBodyElement) {
             }
         }
     });
-}
+};

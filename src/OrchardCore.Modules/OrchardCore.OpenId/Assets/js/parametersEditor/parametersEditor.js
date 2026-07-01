@@ -1,4 +1,4 @@
-function initializeParametersEditor(elem, data, modalBodyElement) {
+window.initializeParametersEditor = function (elem, data, modalBodyElement) {
 
     var store = {
         state: {
@@ -55,9 +55,11 @@ function initializeParametersEditor(elem, data, modalBodyElement) {
             parametersTable: parametersTable,
             parametersModal: parametersModal
         },
-        data: {
-            sharedState: store.state,
-            modal: null
+        data: function () {
+            return {
+                sharedState: store.state,
+                modal: null
+            };
         },
         el: elem,
         methods: {
@@ -67,7 +69,7 @@ function initializeParametersEditor(elem, data, modalBodyElement) {
         }
     });
 
-}
+};
 
 function IsNullOrWhiteSpace(str) {
     return str === null || str.match(/^ *$/) !== null;
