@@ -57,6 +57,18 @@ public sealed class MenuHierarchyTests : CmsTestBase<BlogFixture>, IClassFixture
         Assert.Contains("About", reloadedOrder[0]);
         Assert.Contains("Home", reloadedOrder[1]);
 
+        // Restore the original Home-then-About order before finishing: the
+        // Main Menu content item is shared (and its edits persisted) across
+        // every test in this class via the same BlogFixture, so leaving it
+        // reordered here would make later tests' results depend on whichever
+        // order xunit happens to run these methods in.
+        await page.DragMenuItemJustAfterAsync("About", "Home");
+        await SaveDraftAsync(page);
+
+        var restoredOrder = await page.Locator("#menu li.menu-item").AllTextContentsAsync();
+        Assert.Contains("Home", restoredOrder[0]);
+        Assert.Contains("About", restoredOrder[1]);
+
         await page.CloseAsync();
     }
 
