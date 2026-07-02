@@ -172,7 +172,7 @@ public class DefaultMediaFileStore : IMediaFileStore
                     Path = path,
                 };
 
-                foreach (var mediaCreatingEventHandler in _mediaCreatingEventHandlers)
+                foreach (var mediaCreatingEventHandler in _mediaCreatingEventHandlers.OrderBy(x => x.Priority))
                 {
                     var creatingStream = outputStream;
 
