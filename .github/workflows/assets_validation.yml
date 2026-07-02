@@ -36,6 +36,7 @@ jobs:
     - name: Lint assets
       run: yarn lint
     - name: Type-check assets
+      timeout-minutes: 10
       run: yarn check
     - name: Rebuild packages
       run: yarn build
