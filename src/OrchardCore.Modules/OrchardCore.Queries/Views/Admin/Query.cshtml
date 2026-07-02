@@ -103,7 +103,7 @@
     }
 }
 
-<script at="Foot">
+<script at="Foot" asp-name="query-editor">
     function onDocumentReady(callback) {
         if (document.readyState !== 'loading') {
             callback();
@@ -122,7 +122,7 @@
     });
 </script>
 <script asp-name="monaco" at="Foot"></script>
-<script at="Foot" asp-name="jsonrecipe-editor" depends-on="monaco, admin">
+<script at="Foot" asp-name="jsonresult-editor" depends-on="monaco, the-admin, query-editor">
     onDocumentReady(function () {
         require(['vs/editor/editor.main'], function () {
 
