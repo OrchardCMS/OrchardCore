@@ -157,7 +157,7 @@ public class RateLimiterMiddlewareTests
     }
 
     [Fact]
-    public async Task ShouldApplyEndpointSpecificPoliciesToRobotsTxt()
+    public async Task Apply_EndpointSpecificPoliciesToRobotsTxt_Succeeds()
     {
         using var host = await CreateSeoHostAsync(
             [
@@ -179,7 +179,7 @@ public class RateLimiterMiddlewareTests
     }
 
     [Fact]
-    public async Task ShouldApplyEndpointSpecificPoliciesToGraphQL()
+    public async Task Apply_EndpointSpecificPoliciesToGraphQL_Succeeds()
     {
         using var host = await CreateGraphQLHostAsync(
             [
