@@ -11,7 +11,7 @@
     "dry-run": "assets-manager dry-run",
     "clean": "assets-manager clean",
     "lint": "eslint .",
-    "check": "yarn workspaces foreach -A run check"
+    "check": "yarn workspaces foreach -A -v -v run check"
   },
   "workspaces": [
     ".scripts/assets-manager",
