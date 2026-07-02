@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 var shortcodesApp;
 
-function initializeShortcodesApp(element) {
+window.initializeShortcodesApp = function (element) {
     if (element && !shortcodesApp) {
         var elementId = element.id;
 
@@ -94,12 +94,11 @@ function initializeShortcodesApp(element) {
                     this.selectedValue = '';
                     this.modal = new bootstrap.Modal(this.$el);
                     this.modal.show();
-                    var self = this;
-                    this.$el.addEventListener('shown.bs.modal', function (e) {
-                        self.$refs.filter.focus();
+                    this.$el.addEventListener('shown.bs.modal', () => {
+                        this.$refs.filter.focus();
                     });
                 },
-                onClose(defaultValue)
+                onClose()
                 {
                     return;
                 },
@@ -126,10 +125,10 @@ function initializeShortcodesApp(element) {
 
         return shortcodesApp;
     }
-}
+};
 
 // initializes a code mirror editor with a shortcode modal.
-function initializeCodeMirrorShortcodeWrapper(editor) {
+window.initializeCodeMirrorShortcodeWrapper = function (editor) {
     const codemirrorWrapper = editor.display.wrapper;
 
     const wrapper = document.createElement('div');
@@ -140,7 +139,7 @@ function initializeCodeMirrorShortcodeWrapper(editor) {
     codemirrorWrapper.parentElement.insertAdjacentHTML('beforeend', shortcodeBtnTemplate);
     codemirrorWrapper.parentElement.querySelector('.shortcode-modal-btn').addEventListener('click', () => {
         shortcodesApp.init(defaultValue => {
-            editor.replaceSelection(defaultValue);   
-        });   
+            editor.replaceSelection(defaultValue);
+        });
     });
-}
+};

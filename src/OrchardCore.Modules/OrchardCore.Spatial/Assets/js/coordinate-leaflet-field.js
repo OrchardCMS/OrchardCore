@@ -1,7 +1,10 @@
 function addMapPicker() {
 
-    var lat = $('[data-latitude]').val();
-    var long = $('[data-longitude]').val();
+    var latInput = document.querySelector('[data-latitude]');
+    var longInput = document.querySelector('[data-longitude]');
+
+    var lat = latInput.value;
+    var long = longInput.value;
 
     var mapCenter = [40.866667, 34.566667];
     var zoom = 0;
@@ -26,19 +29,19 @@ function addMapPicker() {
     };
 
     map.on('click', function (e) {
-        $('[data-latitude]').val(e.latlng.lat.toFixed(6));
-        $('[data-longitude]').val(e.latlng.lng.toFixed(6));
+        latInput.value = e.latlng.lat.toFixed(6);
+        longInput.value = e.latlng.lng.toFixed(6);
         updateMarker(e.latlng.lat.toFixed(6), e.latlng.lng.toFixed(6));
     });
 
 
     var updateMarkerByInputs = function () {
-        return updateMarker($('[data-latitude]').val(), $('[data-longitude]').val());
+        return updateMarker(latInput.value, longInput.value);
     }
-    $('[data-latitude]').on('input', updateMarkerByInputs);
-    $('[data-longitude]').on('input', updateMarkerByInputs);
+    latInput.addEventListener('input', updateMarkerByInputs);
+    longInput.addEventListener('input', updateMarkerByInputs);
 }
 
-$(document).ready(function () {
+document.addEventListener('DOMContentLoaded', function () {
     addMapPicker();
 });

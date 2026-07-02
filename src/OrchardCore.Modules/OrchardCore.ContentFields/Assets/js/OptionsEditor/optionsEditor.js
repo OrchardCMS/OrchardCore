@@ -1,4 +1,4 @@
-function initializeOptionsEditor(elem, data, defaultValue, modalBodyElement) {
+window.initializeOptionsEditor = function (elem, data, defaultValue, modalBodyElement) {
 
     var previouslyChecked;
 
@@ -35,7 +35,7 @@ function initializeOptionsEditor(elem, data, defaultValue, modalBodyElement) {
             },
             uncheck: function (index) {
                 if (index == previouslyChecked) {
-                    $('#customRadio_' + index)[0].checked = false;
+                    document.getElementById('customRadio_' + index).checked = false;
                     store.state.selected = null;
                     previouslyChecked = null;
                 }
@@ -72,9 +72,11 @@ function initializeOptionsEditor(elem, data, defaultValue, modalBodyElement) {
             optionsTable: optionsTable,
             optionsModal: optionsModal
         },
-        data: {
-            sharedState: store.state,
-            modal: null
+        data: function () {
+            return {
+                sharedState: store.state,
+                modal: null
+            };
         },
         el: elem,
         methods: {
@@ -84,7 +86,7 @@ function initializeOptionsEditor(elem, data, defaultValue, modalBodyElement) {
         }
     });
 
-}
+};
 
 function IsNullOrWhiteSpace(str) {
     return str === null || str.match(/^ *$/) !== null;

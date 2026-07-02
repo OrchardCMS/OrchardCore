@@ -1,4 +1,4 @@
-function initMultiTextFieldPicker(element) {
+window.initMultiTextFieldPicker = function (element) {
     // only run script if element exists
     if (element) {
         var elementId = element.id;
@@ -10,16 +10,18 @@ function initMultiTextFieldPicker(element) {
         var vm = new Vue({
             el: '#' + elementId,
             components: { 'vue-multiselect': vueMultiselect },
-            data: {
-                value: selectedValues,
-                options: options,
-                valuesKey: element.dataset.valueskey
+            data: function () {
+                return {
+                    value: selectedValues,
+                    options: options,
+                    valuesKey: element.dataset.valueskey
+                };
             },
             watch: {
                 value: function () {
                     // We add a delay to allow for the <input> to get the actual value	
                     // before the form is submitted	
-                    setTimeout(function () { $(document).trigger('contentpreview:render') }, 100);
+                    setTimeout(function () { document.dispatchEvent(new CustomEvent('contentpreview:render')); }, 100);
                 }
             },
         })
@@ -28,4 +30,4 @@ function initMultiTextFieldPicker(element) {
         var event = new CustomEvent("multitextfield-picker-created", { detail: { vm: vm } });
         document.querySelector("body").dispatchEvent(event);
     }
-}
+};

@@ -513,7 +513,6 @@ public sealed class ResourceManagementOptionsConfiguration
 
         manifest
             .DefineScript("nouislider")
-            .SetDependencies("jQuery")
             .SetUrl(
                 "~/OrchardCore.Resources/Scripts/nouislider/nouislider.min.js",
                 "~/OrchardCore.Resources/Scripts/nouislider/nouislider.js"
