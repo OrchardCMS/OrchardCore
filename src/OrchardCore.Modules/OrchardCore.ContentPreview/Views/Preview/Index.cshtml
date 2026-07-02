@@ -92,7 +92,15 @@
             }
         };
 
-        document.addEventListener('DOMContentLoaded', function () {
+        function onDocumentReady(callback) {
+            if (document.readyState !== 'loading') {
+                callback();
+            } else {
+                document.addEventListener('DOMContentLoaded', callback);
+            }
+        }
+
+        onDocumentReady(function () {
             var closeConnectWarning = document.getElementById('close-connect-warning');
             if (closeConnectWarning) {
                 closeConnectWarning.addEventListener('click', function () {

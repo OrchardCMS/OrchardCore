@@ -1,8 +1,8 @@
+using Microsoft.AspNetCore.WebUtilities;
 using OrchardCore.Media;
 using OrchardCore.Media.Processing;
 using OrchardCore.Settings;
 using OrchardCore.Tests.Utilities;
-using SixLabors.ImageSharp.Web.Processors;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Media;
 
@@ -90,7 +90,7 @@ public class MediaTokenTests
     [Theory]
     [InlineData("/media/blog.jpg?width=100&height=100", "/media/blog.jpg?width=100&height=100&token=eVmmj09NoysPASEiuhCuUHJR%2BSrUtSafBo738SuL2eU%3D")]
     [InlineData("/media/blog.jpg?width=100&height=100&foo=bar", "/media/blog.jpg?width=100&height=100&token=eVmmj09NoysPASEiuhCuUHJR%2BSrUtSafBo738SuL2eU%3D&foo=bar")]
-    public void ShouldAddToken(string path, string expected)
+    public void Add_Token_Succeeds(string path, string expected)
     {
         var serviceProvider = CreateServiceProvider();
         var mediaTokenService = serviceProvider.GetRequiredService<IMediaTokenService>();
@@ -106,7 +106,7 @@ public class MediaTokenTests
     [Theory]
     [InlineData("/media/blog.jpg?v=version")]
     [InlineData("/media/blog.jpg")]
-    public void ShouldNotAddTokens(string path)
+    public void Not_AddTokens_Succeeds(string path)
     {
         var serviceProvider = CreateServiceProvider();
         var mediaTokenService = serviceProvider.GetRequiredService<IMediaTokenService>();
@@ -116,7 +116,7 @@ public class MediaTokenTests
     }
 
     [Fact]
-    public void ShouldGenerateConsistentToken()
+    public void Generate_ConsistentToken_Succeeds()
     {
         var sp1 = CreateServiceProvider();
         var sp2 = CreateServiceProvider();
@@ -127,6 +127,39 @@ public class MediaTokenTests
         var tokenizedPath1 = mts1.AddTokenToPath(path);
         var tokenizedPath2 = mts2.AddTokenToPath(path);
         Assert.Equal(tokenizedPath1, tokenizedPath2);
+    }
+
+    [Fact]
+    public void Exclude_VersionFromTokenButPreserveItInPath_Succeeds()
+    {
+        var serviceProvider = CreateServiceProvider();
+        var mediaTokenService = serviceProvider.GetRequiredService<IMediaTokenService>();
+
+        var withVersion = mediaTokenService.AddTokenToPath("/media/blog.jpg?width=100&height=100&v=abc123");
+        var withoutVersion = mediaTokenService.AddTokenToPath("/media/blog.jpg?width=100&height=100");
+
+        // The version cache-buster must remain on the URL.
+        Assert.Contains("v=abc123", withVersion);
+
+        // The version must not influence the token, so both URLs carry the same token.
+        var tokenWithVersion = ExtractToken(withVersion);
+        var tokenWithoutVersion = ExtractToken(withoutVersion);
+        Assert.Equal(tokenWithoutVersion, tokenWithVersion);
+
+        // The token validates against the real processing commands, which never include "v".
+        // This is the regression guard for versioned + tokenized URLs silently dropping resizing.
+        var commands = new[]
+        {
+            KeyValuePair.Create("width", "100"),
+            KeyValuePair.Create("height", "100"),
+        };
+        Assert.True(mediaTokenService.TryValidateToken(commands, tokenWithVersion));
+    }
+
+    private static string ExtractToken(string url)
+    {
+        var query = QueryHelpers.ParseQuery(url[(url.IndexOf('?') + 1)..]);
+        return query["token"].ToString();
     }
 
     private ServiceProvider CreateServiceProvider()
@@ -140,8 +173,6 @@ public class MediaTokenTests
         services.AddMemoryCache();
 
         services.AddSingleton(mockSiteService);
-        services.AddSingleton<IImageWebProcessor, TokenCommandProcessor>();
-        services.AddSingleton<IImageWebProcessor, ResizeWebProcessor>();
         services.AddScoped<IMediaTokenService, MediaTokenService>();
         services.AddTransient<IConfigureOptions<MediaTokenOptions>, MediaTokenOptionsConfiguration>();
 

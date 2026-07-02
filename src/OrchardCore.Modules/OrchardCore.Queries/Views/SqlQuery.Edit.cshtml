@@ -48,7 +48,15 @@
 </div>
 
 <script at="Foot">
-    document.addEventListener('DOMContentLoaded', function () {
+    function onDocumentReady(callback) {
+        if (document.readyState !== 'loading') {
+            callback();
+        } else {
+            document.addEventListener('DOMContentLoaded', callback);
+        }
+    }
+
+    onDocumentReady(function () {
         CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Query)'), {
             mode: '@MediaTypeNamesExtended.Text.PostgreSQL',
             indentWithTabs: true, smartIndent: true, matchBrackets: true, lineNumbers: true, styleActiveLine: true, viewportMargin: Infinity,

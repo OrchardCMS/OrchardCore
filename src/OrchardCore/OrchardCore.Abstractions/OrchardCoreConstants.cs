@@ -66,14 +66,14 @@ public static class OrchardCoreConstants
         public const int Media = Default + StaticFiles;
 
         /// <summary>
-        /// Image cache overrides Media configurations and services. The order number should always be greater than Media module. 
+        /// Image cache overrides Media configurations and services. The order number should always be greater than Media module.
         /// </summary>
-        public const int ImageSharpCache = Media + 5;
+        public const int ResizedImageCache = Media + 5;
 
         /// <summary>
-        /// Image cache overrides Media configurations and services. The order number should always be greater than Media module. 
+        /// Image cache overrides Media configurations and services. The order number should always be greater than Media module.
         /// </summary>
-        public const int AzureImageSharpCache = Media + 5;
+        public const int AzureResizedImageCache = Media + 5;
 
         /// <summary>
         /// Azure media storage overrides Media configurations and services. The order number should always be greater than Media module.

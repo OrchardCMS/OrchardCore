@@ -5,7 +5,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Contents;
 public class ContentShapeAlternatesFactoryTests
 {
     [Fact]
-    public void GetEntry_ShouldReturnCachedInstance_ForSameKey()
+    public void GetEntry_SameKey_ReturnsCachedInstance()
     {
         var entry = ContentShapeAlternatesFactory.GetEntry("BlogPost", "Summary");
         var cachedEntry = ContentShapeAlternatesFactory.GetEntry("BlogPost", "Summary");
@@ -14,7 +14,7 @@ public class ContentShapeAlternatesFactoryTests
     }
 
     [Fact]
-    public void GetEntry_ShouldProduceCorrectAlternates_WhenAssembledWithContentItemId()
+    public void GetEntry_AssembledWithContentItemId_ProducesCorrectAlternates()
     {
         var entry = ContentShapeAlternatesFactory.GetEntry("BlogPost", "Summary");
 
@@ -24,7 +24,7 @@ public class ContentShapeAlternatesFactoryTests
     }
 
     [Fact]
-    public void GetEntry_ShouldReturnDifferentInstances_ForDifferentKeys()
+    public void GetEntry_DifferentKeys_ReturnsDifferentInstances()
     {
         var entryA = ContentShapeAlternatesFactory.GetEntry("BlogPost", "Summary");
         var entryB = ContentShapeAlternatesFactory.GetEntry("Article", "Detail");
