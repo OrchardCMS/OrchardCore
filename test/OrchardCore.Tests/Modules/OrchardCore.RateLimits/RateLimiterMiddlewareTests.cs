@@ -1,3 +1,8 @@
+using System.Security.Claims;
+using GraphQL;
+using GraphQL.Execution;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -11,6 +16,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
+using OrchardCore.Apis.GraphQL;
 using OrchardCore.Entities;
 using OrchardCore.Modules;
 using OrchardCore.Modules.FileProviders;
@@ -151,7 +157,7 @@ public class RateLimiterMiddlewareTests
     }
 
     [Fact]
-    public async Task ShouldApplyEndpointSpecificPoliciesToRobotsTxt()
+    public async Task Apply_EndpointSpecificPoliciesToRobotsTxt_Succeeds()
     {
         using var host = await CreateSeoHostAsync(
             [
@@ -170,6 +176,28 @@ public class RateLimiterMiddlewareTests
         Assert.Equal(HttpStatusCode.TooManyRequests, secondRobotsResponse.StatusCode);
         Assert.Equal(HttpStatusCode.OK, otherResponse.StatusCode);
         Assert.Equal("other-response", await otherResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
+    }
+
+    [Fact]
+    public async Task Apply_EndpointSpecificPoliciesToGraphQL_Succeeds()
+    {
+        using var host = await CreateGraphQLHostAsync(
+            [
+                CreateEndpointSlidingWindowPolicy("GraphQL", "/api/graphql", 10, 59, 1),
+            ],
+            TestContext.Current.CancellationToken);
+
+        var client = host.GetTestClient();
+
+        for (var i = 0; i < 10; i++)
+        {
+            var response = await client.GetAsync("/api/graphql?query=%7Bping%7D", TestContext.Current.CancellationToken);
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+        }
+
+        var rejectedResponse = await client.GetAsync("/api/graphql?query=%7Bping%7D", TestContext.Current.CancellationToken);
+
+        Assert.Equal(HttpStatusCode.TooManyRequests, rejectedResponse.StatusCode);
     }
 
     private static async Task<IHost> CreateHostAsync(
@@ -275,6 +303,55 @@ public class RateLimiterMiddlewareTests
         return await builder.StartAsync(cancellationToken);
     }
 
+    private static async Task<IHost> CreateGraphQLHostAsync(
+        IEnumerable<RateLimitPolicy> enabledPolicies,
+        CancellationToken cancellationToken)
+    {
+        var graphQLStartup = new global::OrchardCore.Apis.GraphQL.Startup(Mock.Of<IHostEnvironment>());
+        var builder = Host.CreateDefaultBuilder()
+            .ConfigureWebHostDefaults(webBuilder =>
+            {
+                webBuilder.UseTestServer();
+                webBuilder.ConfigureServices(services =>
+                {
+                    services.AddRouting();
+                    services.AddRateLimiter();
+                    services.AddTransient<IConfigureOptions<RateLimiterOptions>, RateLimiterOptionsConfigurations>();
+                    services.AddSingleton(CreatePolicyStore(enabledPolicies ?? []));
+                    services.AddSingleton(new FixedWindowRateLimiterSource(Mock.Of<IStringLocalizer<FixedWindowRateLimiterSource>>()));
+                    services.AddSingleton(new SlidingWindowRateLimiterSource(Mock.Of<IStringLocalizer<SlidingWindowRateLimiterSource>>()));
+                    services.AddSingleton(new ConcurrencyRateLimiterSource(Mock.Of<IStringLocalizer<ConcurrencyRateLimiterSource>>()));
+                    services.AddSingleton(new TokenBucketRateLimiterSource(Mock.Of<IStringLocalizer<TokenBucketRateLimiterSource>>()));
+                    services.AddKeyedSingleton<IRateLimiterSource>(FixedWindowRateLimiterSource.SourceName, static (sp, _) => sp.GetRequiredService<FixedWindowRateLimiterSource>());
+                    services.AddKeyedSingleton<IRateLimiterSource>(SlidingWindowRateLimiterSource.SourceName, static (sp, _) => sp.GetRequiredService<SlidingWindowRateLimiterSource>());
+                    services.AddKeyedSingleton<IRateLimiterSource>(ConcurrencyRateLimiterSource.SourceName, static (sp, _) => sp.GetRequiredService<ConcurrencyRateLimiterSource>());
+                    services.AddKeyedSingleton<IRateLimiterSource>(TokenBucketRateLimiterSource.SourceName, static (sp, _) => sp.GetRequiredService<TokenBucketRateLimiterSource>());
+                    services.AddOptions<GraphQLSettings>();
+                    services.AddSingleton<GraphQLMiddleware>();
+                    services.AddSingleton(Mock.Of<IDocumentExecuter>());
+                    services.AddSingleton(Mock.Of<IGraphQLSerializer>());
+                    services.AddSingleton(Mock.Of<IGraphQLTextSerializer>());
+                    services.AddSingleton(Mock.Of<ISchemaFactory>());
+                    services.AddSingleton(Mock.Of<IDocumentExecutionListener>());
+                    services.AddSingleton<IAuthenticationService>(new TestAuthenticationService());
+                    services.AddSingleton<IAuthorizationService>(new DenyAllAuthorizationService());
+                });
+
+                webBuilder.Configure(app =>
+                {
+                    app.UseRouting();
+
+                    var routes = (IEndpointRouteBuilder)app.Properties["__EndpointRouteBuilder"];
+                    graphQLStartup.Configure(app, routes, app.ApplicationServices);
+
+                    app.UseRateLimiter();
+                    app.UseEndpoints(_ => { });
+                });
+            });
+
+        return await builder.StartAsync(cancellationToken);
+    }
+
     private static IRateLimitPolicyStore CreatePolicyStore(IEnumerable<RateLimitPolicy> enabledPolicies)
     {
         var store = new Mock<IRateLimitPolicyStore>();
@@ -329,6 +406,63 @@ public class RateLimiterMiddlewareTests
         });
 
         return limiter;
+    }
+
+    private static RateLimitPolicy CreateEndpointSlidingWindowPolicy(string name, string path, int permitLimit, int windowSeconds, int segmentsPerWindow)
+    {
+        var limiter = new RateLimitLimiter
+        {
+            Id = IdGenerator.GenerateId(),
+            Source = SlidingWindowRateLimiterSource.SourceName,
+        };
+
+        limiter.Put(new SlidingWindowRateLimiterData
+        {
+            PermitLimit = permitLimit,
+            QueueLimit = 0,
+            WindowSeconds = windowSeconds,
+            SegmentsPerWindow = segmentsPerWindow,
+        });
+
+        return new RateLimitPolicy
+        {
+            Name = name,
+            IsEnabled = true,
+            EnabledUtc = DateTime.UtcNow,
+            Scope = RateLimitPolicyScope.Endpoint,
+            Path = path,
+            Limiters = [limiter],
+        };
+    }
+
+    private sealed class TestAuthenticationService : IAuthenticationService
+    {
+        public Task<AuthenticateResult> AuthenticateAsync(HttpContext context, string scheme)
+            => Task.FromResult(AuthenticateResult.NoResult());
+
+        public Task ChallengeAsync(HttpContext context, string scheme, AuthenticationProperties properties)
+        {
+            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+            return Task.CompletedTask;
+        }
+
+        public Task ForbidAsync(HttpContext context, string scheme, AuthenticationProperties properties)
+            => Task.CompletedTask;
+
+        public Task SignInAsync(HttpContext context, string scheme, ClaimsPrincipal principal, AuthenticationProperties properties)
+            => Task.CompletedTask;
+
+        public Task SignOutAsync(HttpContext context, string scheme, AuthenticationProperties properties)
+            => Task.CompletedTask;
+    }
+
+    private sealed class DenyAllAuthorizationService : IAuthorizationService
+    {
+        public Task<AuthorizationResult> AuthorizeAsync(ClaimsPrincipal user, object resource, IEnumerable<IAuthorizationRequirement> requirements)
+            => Task.FromResult(AuthorizationResult.Failed());
+
+        public Task<AuthorizationResult> AuthorizeAsync(ClaimsPrincipal user, object resource, string policyName)
+            => Task.FromResult(AuthorizationResult.Failed());
     }
 
     private sealed class StaticAssetDirectory : IDisposable
