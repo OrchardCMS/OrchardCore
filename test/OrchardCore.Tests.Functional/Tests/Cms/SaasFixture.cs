@@ -5,7 +5,12 @@ namespace OrchardCore.Tests.Functional.Tests.Cms;
 
 public sealed class SaasFixture : IAsyncLifetime
 {
-    private readonly OrchardTestFixture _testFixture = new(instanceId: nameof(SaasFixture));
+    // xunit creates one SaasFixture instance per consuming test class (SaasTests,
+    // TenantsBulkSelectTests, ...). A shared instanceId would point them all at the
+    // same App_Data directory and race on Directory.Delete/SQLite files when their
+    // fixtures run concurrently, so each instance needs its own, like CmsRecipeFixture.
+    private static int _instanceCounter;
+    private readonly OrchardTestFixture _testFixture = new(instanceId: $"{nameof(SaasFixture)}_{Interlocked.Increment(ref _instanceCounter)}");
 
     public IBrowser Browser => _testFixture.Browser;
     public string BaseUrl => _testFixture.BaseUrl;
