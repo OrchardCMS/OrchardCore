@@ -95,7 +95,15 @@
 </div>
 
 <script at="Foot">
-    document.addEventListener('DOMContentLoaded', function() {
+    function onDocumentReady(callback) {
+        if (document.readyState !== 'loading') {
+            callback();
+        } else {
+            document.addEventListener('DOMContentLoaded', callback);
+        }
+    }
+
+    onDocumentReady(function() {
         var sources = document.getElementsByName('@Html.NameFor(x => x.Source)');
         var contentTypesContainer = document.getElementById('ContentTypesContainer');
         var stereotypeContainer = document.getElementById('StereotypesContainer');
@@ -123,7 +131,7 @@
 
 <script at="Foot">
     //<![CDATA[
-    document.addEventListener('DOMContentLoaded', function () {
+    onDocumentReady(function () {
         editor = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.TitlePattern)'), {
             autoRefresh: true,
             lineNumbers: true,

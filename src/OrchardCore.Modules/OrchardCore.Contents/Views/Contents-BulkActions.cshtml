@@ -13,7 +13,15 @@
 }
 
 <script at="Foot">
-    document.addEventListener('DOMContentLoaded', function () {
+    function onDocumentReady(callback) {
+        if (document.readyState !== 'loading') {
+            callback();
+        } else {
+            document.addEventListener('DOMContentLoaded', callback);
+        }
+    }
+
+    onDocumentReady(function () {
         document.querySelectorAll(".dropdown-menu .dropdown-item").forEach(function (item) {
             if (!item.dataset.action) {
                 return;

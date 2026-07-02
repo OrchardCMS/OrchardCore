@@ -15,13 +15,17 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Primitives;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.Entities;
 using OrchardCore.Modules;
+using OrchardCore.Modules.FileProviders;
 using OrchardCore.RateLimits;
 using OrchardCore.RateLimits.Core;
 using OrchardCore.RateLimits.Models;
 using OrchardCore.RateLimits.Services;
+using OrchardCore.Seo;
+using OrchardCore.Seo.Services;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.RateLimits;
 
@@ -174,6 +178,28 @@ public class RateLimiterMiddlewareTests
         Assert.Equal(HttpStatusCode.TooManyRequests, rejectedResponse.StatusCode);
     }
 
+    [Fact]
+    public async Task ShouldApplyEndpointSpecificPoliciesToRobotsTxt()
+    {
+        using var host = await CreateSeoHostAsync(
+            [
+                CreateEndpointFixedWindowPolicy("Robots", "/robots.txt", 1, 60),
+            ],
+            TestContext.Current.CancellationToken);
+
+        var client = host.GetTestClient();
+
+        var firstRobotsResponse = await client.GetAsync("/robots.txt", TestContext.Current.CancellationToken);
+        var secondRobotsResponse = await client.GetAsync("/robots.txt", TestContext.Current.CancellationToken);
+        var otherResponse = await client.GetAsync("/other", TestContext.Current.CancellationToken);
+
+        Assert.Equal(HttpStatusCode.OK, firstRobotsResponse.StatusCode);
+        Assert.Equal("User-agent: *\nDisallow:\n", (await firstRobotsResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken)).Replace("\r\n", "\n"));
+        Assert.Equal(HttpStatusCode.TooManyRequests, secondRobotsResponse.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, otherResponse.StatusCode);
+        Assert.Equal("other-response", await otherResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
+    }
+
     private static async Task<IHost> CreateHostAsync(
         string staticAssetPath,
         Action<RateLimitsOptions> configureRouteLimits,
@@ -275,6 +301,51 @@ public class RateLimiterMiddlewareTests
 
                     app.UseRateLimiter();
                     app.UseEndpoints(_ => { });
+                });
+            });
+
+        return await builder.StartAsync(cancellationToken);
+    }
+
+    private static async Task<IHost> CreateSeoHostAsync(
+        IEnumerable<RateLimitPolicy> enabledPolicies,
+        CancellationToken cancellationToken)
+    {
+        var seoStartup = new global::OrchardCore.Seo.Startup();
+        var builder = Host.CreateDefaultBuilder()
+            .ConfigureWebHostDefaults(webBuilder =>
+            {
+                webBuilder.UseTestServer();
+                webBuilder.ConfigureServices(services =>
+                {
+                    services.AddRouting();
+                    services.AddRateLimiter();
+                    services.AddTransient<IConfigureOptions<RateLimiterOptions>, RateLimiterOptionsConfigurations>();
+                    services.AddSingleton(CreatePolicyStore(enabledPolicies ?? []));
+                    services.AddSingleton(new FixedWindowRateLimiterSource(Mock.Of<IStringLocalizer<FixedWindowRateLimiterSource>>()));
+                    services.AddSingleton(new SlidingWindowRateLimiterSource(Mock.Of<IStringLocalizer<SlidingWindowRateLimiterSource>>()));
+                    services.AddSingleton(new ConcurrencyRateLimiterSource(Mock.Of<IStringLocalizer<ConcurrencyRateLimiterSource>>()));
+                    services.AddSingleton(new TokenBucketRateLimiterSource(Mock.Of<IStringLocalizer<TokenBucketRateLimiterSource>>()));
+                    services.AddKeyedSingleton<IRateLimiterSource>(FixedWindowRateLimiterSource.SourceName, static (sp, _) => sp.GetRequiredService<FixedWindowRateLimiterSource>());
+                    services.AddKeyedSingleton<IRateLimiterSource>(SlidingWindowRateLimiterSource.SourceName, static (sp, _) => sp.GetRequiredService<SlidingWindowRateLimiterSource>());
+                    services.AddKeyedSingleton<IRateLimiterSource>(ConcurrencyRateLimiterSource.SourceName, static (sp, _) => sp.GetRequiredService<ConcurrencyRateLimiterSource>());
+                    services.AddKeyedSingleton<IRateLimiterSource>(TokenBucketRateLimiterSource.SourceName, static (sp, _) => sp.GetRequiredService<TokenBucketRateLimiterSource>());
+                    services.AddSingleton<IStaticFileProvider>(new TestStaticFileProvider());
+                    services.AddSingleton<IRobotsProvider>(new TestRobotsProvider());
+                });
+
+                webBuilder.Configure(app =>
+                {
+                    app.UseRouting();
+
+                    var routes = (IEndpointRouteBuilder)app.Properties["__EndpointRouteBuilder"];
+                    seoStartup.Configure(app, routes, app.ApplicationServices);
+
+                    app.UseRateLimiter();
+                    app.UseEndpoints(endpoints =>
+                    {
+                        endpoints.MapGet("/other", () => Results.Text("other-response"));
+                    });
                 });
             });
 
@@ -412,5 +483,19 @@ public class RateLimiterMiddlewareTests
                 Directory.Delete(Path, recursive: true);
             }
         }
+    }
+
+    private sealed class TestStaticFileProvider : IStaticFileProvider
+    {
+        public IDirectoryContents GetDirectoryContents(string subpath) => NotFoundDirectoryContents.Singleton;
+
+        public IFileInfo GetFileInfo(string subpath) => new NotFoundFileInfo(subpath);
+
+        public IChangeToken Watch(string filter) => NullChangeToken.Singleton;
+    }
+
+    private sealed class TestRobotsProvider : IRobotsProvider
+    {
+        public Task<string> GetContentAsync() => Task.FromResult("User-agent: *\nDisallow:");
     }
 }

@@ -10,7 +10,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media;
 public class MediaFileStoreExtensionsTests
 {
     [Fact]
-    public async Task CreateFileFromStreamAsync_FileEventHandlerCanReplaceStreamBeforeSaving()
+    public async Task CreateFileFromStreamAsync_FileEventHandlerCanReplaceStreamBeforeSaving_Succeeds()
     {
         var cancellationToken = TestContext.Current.CancellationToken;
         var mediaFileStoreMock = new Mock<IMediaFileStore>();
@@ -42,7 +42,7 @@ public class MediaFileStoreExtensionsTests
     }
 
     [Fact]
-    public async Task CreateFileFromStreamAsync_FileEventHandlerCanRejectFile()
+    public async Task CreateFileFromStreamAsync_FileEventHandlerCanRejectFile_Succeeds()
     {
         var cancellationToken = TestContext.Current.CancellationToken;
         var mediaFileStoreMock = new Mock<IMediaFileStore>(MockBehavior.Strict);
@@ -65,7 +65,7 @@ public class MediaFileStoreExtensionsTests
     }
 
     [Fact]
-    public async Task CreateFileFromStreamAsync_FileEventHandlersRunCreatedAfterTheFileIsStored()
+    public async Task CreateFileFromStreamAsync_FileEventHandlersRunCreatedAfterTheFileIsStored_Succeeds()
     {
         var cancellationToken = TestContext.Current.CancellationToken;
         var mediaFileStoreMock = new Mock<IMediaFileStore>();
@@ -93,7 +93,7 @@ public class MediaFileStoreExtensionsTests
     }
 
     [Fact]
-    public async Task CreateFileFromStreamAsync_FileEventHandlersRunBeforeMediaCreatingHandlers()
+    public async Task CreateFileFromStreamAsync_FileEventHandlersRunBeforeMediaCreatingHandlers_Succeeds()
     {
         var cancellationToken = TestContext.Current.CancellationToken;
         var fileStoreMock = new Mock<IFileStore>();
@@ -143,7 +143,7 @@ public class MediaFileStoreExtensionsTests
     }
 
     [Fact]
-    public async Task CreateFileFromStreamAsync_FileEventHandlerRejectionStopsMediaProcessing()
+    public async Task CreateFileFromStreamAsync_FileEventHandlerRejectionStopsMediaProcessing_Succeeds()
     {
         var cancellationToken = TestContext.Current.CancellationToken;
         var loggerMock = new Mock<ILogger<DefaultMediaFileStore>>();
@@ -176,7 +176,7 @@ public class MediaFileStoreExtensionsTests
     }
 
     [Fact]
-    public async Task CreateFileFromStreamAsync_FileEventReplacementStreamLivesThroughMediaProcessingAndStorage()
+    public async Task CreateFileFromStreamAsync_FileEventReplacementStreamLivesThroughMediaProcessingAndStorage_Succeeds()
     {
         var cancellationToken = TestContext.Current.CancellationToken;
         var fileStoreMock = new Mock<IFileStore>();

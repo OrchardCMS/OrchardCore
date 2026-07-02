@@ -6,7 +6,7 @@ using OrchardCore.Media.Models;
 
 namespace OrchardCore.Media.Processing;
 
-internal sealed class ImageSharpUrlFormatter
+internal sealed class MediaImageUrlFormatter
 {
     public static string GetImageResizeUrl(string path, IDictionary<string, string> queryStringParams = null, int? width = null, int? height = null, ResizeMode resizeMode = ResizeMode.Undefined, int? quality = null, Format format = Format.Undefined, Anchor anchor = null, string bgcolor = null, bool? autoorient = null)
     {

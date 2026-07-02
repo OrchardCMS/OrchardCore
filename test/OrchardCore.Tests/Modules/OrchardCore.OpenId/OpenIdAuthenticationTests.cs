@@ -76,7 +76,7 @@ public class OpenIdAuthenticationTests
 
             Assert.Single(applications);
 
-            var application = applications.First();
+            var application = applications[0];
             Assert.True(application.ClientId == clientId);
             Assert.Contains(redirectUri, application.RedirectUris);
             Assert.Equal("implicit", application.ConsentType);
@@ -234,7 +234,7 @@ public class OpenIdAuthenticationTests
 
             Assert.Single(applications);
 
-            var application = applications.First();
+            var application = applications[0];
             Assert.True(application.ClientId == clientId);
             Assert.Contains(redirectUri, application.RedirectUris);
             Assert.Equal("implicit", application.ConsentType);
@@ -319,7 +319,7 @@ public class OpenIdAuthenticationTests
     }
 
     [Fact]
-    public async Task OpenId_PasswordGrant_WhenRateLimitExceeded_ReturnsTooManyRequests()
+    public async Task OpenIdPasswordGrant_RateLimitExceededReturnsTooManyRequests_Succeeds()
     {
         var context = new SiteContext();
 

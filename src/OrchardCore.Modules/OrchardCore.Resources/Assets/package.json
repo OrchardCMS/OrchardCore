@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "dependencies": {
     "@crestapps/bootstrap-select": "1.2.0",
-    "@fortawesome/fontawesome-free": "7.2.0",
+    "@fortawesome/fontawesome-free": "7.3.0",
     "@fortawesome/fontawesome-free-5.15.4": "npm:@fortawesome/fontawesome-free@5.15.4",
     "@fortawesome/fontawesome-free-6.6.0": "npm:@fortawesome/fontawesome-free@6.6.0",
     "@fortawesome/fontawesome-free-6.7.2": "npm:@fortawesome/fontawesome-free@6.7.2",
