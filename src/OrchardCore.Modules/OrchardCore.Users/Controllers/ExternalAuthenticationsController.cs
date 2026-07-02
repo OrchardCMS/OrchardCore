@@ -137,8 +137,6 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
 
                 if (signInResult.Succeeded)
                 {
-                    await _loginFormEvents.InvokeAsync((e, user) => e.LoggedInAsync(user), iUser, _logger);
-
                     return await LoggedInActionResultAsync(iUser, returnUrl, info);
                 }
             }
@@ -255,8 +253,6 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
 
                 if (signInResult.Succeeded)
                 {
-                    await _loginFormEvents.InvokeAsync((e, user) => e.LoggedInAsync(user), iUser, _logger);
-
                     return await LoggedInActionResultAsync(iUser, returnUrl, info);
                 }
 
