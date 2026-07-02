@@ -1,12 +1,14 @@
 using System.Text.Encodings.Web;
 using Fluid.Values;
 using Microsoft.AspNetCore.Html;
+using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Models;
 using OrchardCore.Html.Models;
 using OrchardCore.Html.Settings;
 using OrchardCore.Html.ViewModels;
+using OrchardCore.Infrastructure.Html;
 using OrchardCore.Liquid;
 using OrchardCore.Shortcodes.Services;
 using Shortcodes;
@@ -19,16 +21,19 @@ public class HtmlBodyPartHandler : ContentPartHandler<HtmlBodyPart>
     private readonly IShortcodeService _shortcodeService;
     private readonly ILiquidTemplateManager _liquidTemplateManager;
     private readonly HtmlEncoder _htmlEncoder;
+    private readonly IHtmlSanitizerService _htmlSanitizerService;
 
     public HtmlBodyPartHandler(IContentDefinitionManager contentDefinitionManager,
         IShortcodeService shortcodeService,
         ILiquidTemplateManager liquidTemplateManager,
-        HtmlEncoder htmlEncoder)
+        HtmlEncoder htmlEncoder,
+        IHtmlSanitizerService htmlSanitizerService)
     {
         _contentDefinitionManager = contentDefinitionManager;
         _shortcodeService = shortcodeService;
         _liquidTemplateManager = liquidTemplateManager;
         _htmlEncoder = htmlEncoder;
+        _htmlSanitizerService = htmlSanitizerService;
     }
 
     public override Task GetContentItemAspectAsync(ContentItemAspectContext context, HtmlBodyPart part)
@@ -70,5 +75,16 @@ public class HtmlBodyPartHandler : ContentPartHandler<HtmlBodyPart>
                 bodyAspect.Body = HtmlString.Empty;
             }
         });
+    }
+
+    public override async Task ImportedAsync(ImportContentContext context, HtmlBodyPart part)
+    {
+        var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType);
+
+        if (typeDefinition.GetSettings<HtmlBodyPartSettings>() is { SanitizeHtml: true })
+        {
+            context.ContentItem.Alter<HtmlBodyPart>(part => 
+                part.Html = _htmlSanitizerService.Sanitize(part.Html));
+        }
     }
 }
