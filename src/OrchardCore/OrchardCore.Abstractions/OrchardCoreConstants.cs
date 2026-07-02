@@ -83,7 +83,7 @@ public static class OrchardCoreConstants
         /// <summary>
         /// The FileProvider module should be registered after the StaticFiles module to ensure that the tenant file provider is used for static assets.
         /// </summary>
-        public const int FileProvider = StaticFiles + 10;
+        public const int FileProvider = StaticFiles + 20;
 
         /// <summary>
         /// The RateLimiter module should be registered after the FileProvider module to ensure that the rate limiting policies do not impact assets.
