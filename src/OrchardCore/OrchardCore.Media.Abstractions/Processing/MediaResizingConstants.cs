@@ -62,4 +62,19 @@ public static class MediaResizingConstants
         ".gif" => GifContentType,
         _ => JpegContentType,
     };
+
+    /// <summary>
+    /// Maps a cached resized-image file extension (including the leading dot) to its format.
+    /// </summary>
+    /// <param name="ext"></param>
+    /// <returns></returns>
+    public static string ExtensionToFormat(string ext) => ext.TrimStart('.').ToLowerInvariant() switch
+    {
+        "jpeg" => "jpg",
+        "png" => "png",
+        "gif" => "gif",
+        "webp" => "webp",
+        _ => "jpg",
+    };
+
 }

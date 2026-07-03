@@ -85,7 +85,7 @@ internal sealed class MediaImageProcessingMiddleware : IMiddleware
         // If the format is not explicitly requested, default to the source file's format.
         if (string.IsNullOrEmpty(commands.Format))
         {
-            commands.Format = ExtensionToFormat(ext);
+            commands.Format = MediaResizingConstants.ExtensionToFormat(ext);
         }
 
         // The output format is fully determined here, so the cache file extension and content type
@@ -216,16 +216,7 @@ internal sealed class MediaImageProcessingMiddleware : IMiddleware
 
             await content.CopyToAsync(response.Body, context.RequestAborted);
         }
-    }
-
-    private static string ExtensionToFormat(string ext) => ext.TrimStart('.').ToLowerInvariant() switch
-    {
-        "jpeg" => "jpg",
-        "png"  => "png",
-        "gif"  => "gif",
-        "webp" => "webp",
-        _      => "jpg",
-    };
+    } 
 
     // Maps the validated, string-based request commands to the engine-agnostic, typed command set
     // consumed by IImageProcessingEngine. Parsing happens once here so engines never touch raw
