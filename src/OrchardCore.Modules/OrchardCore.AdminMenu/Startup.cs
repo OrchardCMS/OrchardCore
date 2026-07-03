@@ -3,6 +3,7 @@ using OrchardCore.AdminMenu.AdminNodes;
 using OrchardCore.AdminMenu.Deployment;
 using OrchardCore.AdminMenu.Recipes;
 using OrchardCore.AdminMenu.Services;
+using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
 using OrchardCore.Localization.Data;
 using OrchardCore.Modules;
@@ -32,6 +33,9 @@ public sealed class Startup : StartupBase
 
         // link treeNode
         services.AddAdminNode<LinkAdminNode, LinkAdminNodeNavigationBuilder, LinkAdminNodeDriver>();
+
+        //migrate admin menu to 3.0 format
+        services.AddDataMigration<Migrations>();
     }
 }
 
