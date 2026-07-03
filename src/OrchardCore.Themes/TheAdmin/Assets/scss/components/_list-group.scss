@@ -13,26 +13,3 @@
     border-bottom-left-radius: var(--bs-border-radius) !important;
     border-bottom-right-radius: var(--bs-border-radius) !important;
 }
-
-/*
- Fix stacking issues with Bootstrap dropdown menus inside content item rows.
-
- Context:
- The sticky action bar above the list creates a separate stacking context.
- Combined with Bootstrap's card layout (`position: sticky`, `position: relative`)
- and Popper.js positioning, an open dropdown menu may render behind the action
- bar while the user moves the mouse over menu items.
-
- Solution:
- Raise the list item that contains the currently open dropdown menu.
- This keeps the dropdown visible above the action bar, although the active row 
- may temporarily overlap the action bar while its dropdown is open.
-
- Note:
- Uses the Bootstrap/Orchard dropdown z-index variable to stay aligned with the
- application's existing layering scheme.
-*/
-.list-group-item:has(.dropdown-menu.show) {
-    position: relative;
-    z-index: var(--oc-zindex-dropdown);
-}

@@ -44,6 +44,13 @@ public sealed class Startup : StartupBase
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
     {
-        app.UseMiddleware<RobotsMiddleware>();
+        var pipeline = routes.CreateApplicationBuilder()
+            .UseMiddleware<RobotsMiddleware>()
+            .Build();
+
+        var path = "/" + SeoConstants.RobotsFileName;
+
+        routes.Map(path, pipeline);
+        routes.Map($"{path}/{{**robotsPath}}", pipeline);
     }
 }
