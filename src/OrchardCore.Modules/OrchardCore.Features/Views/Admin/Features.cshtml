@@ -15,6 +15,22 @@
 
 <script asp-name="bootstrap-select" at="Foot"></script>
 
+<div data-list-management
+     data-client-side-search="true"
+     data-item-input-name="featureIds"
+     data-bulk-action-input-name="BulkAction"
+     data-min-selected-items="1"
+     data-filter-selector=".list-management-unused"
+     data-search-result-selector=".feature-group .list-group-item[data-search-text]"
+     data-search-text-attribute="data-search-text"
+     data-search-group-selector=".feature-group"
+     data-search-group-visible-selector=".list-group-item[data-search-text]"
+     data-search-summary-selector="#features-summary"
+     data-group-select-all-selector=".feature-group-select-all"
+     data-group-checkbox-selector="input[name='featureIds']"
+     data-group-toggle-container-selector=".feature-group-toggle-container"
+     data-group-label-selector=".feature-group-select-all-label"
+     data-group-text-selector=".feature-group-select-all-text">
 <form autocomplete="off" class="position-sticky action-bar">
     <div class="card text-bg-theme mb-3">
         <div class="card-body">
@@ -63,14 +79,14 @@
                 </div>
                 <div class="col col-md-auto text-end">
                     <div class="btn-group filter">
-                        <select id="visibility-filter" class="selectpicker show-tick nosubmit me-2" multiple data-header="@T["Filter by visibility"]" data-selected-text-format="static" data-width="fit" title="@T["Visibility"]" data-style="btn-sm">
-                            <option value="on-demand" selected>@T["Hide on demand"]</option>
-                            <option value="always-enabled" selected>@T["Hide always enabled"]</option>
+                        <select id="visibility-filter" class="selectpicker show-tick nosubmit me-2" multiple data-list-filter data-header="@T["Filter by visibility"]" data-selected-text-format="static" data-width="fit" title="@T["Visibility"]" data-style="btn-sm">
+                            <option value="true" data-list-filter-attribute="data-is-on-demand" data-list-filter-mode="exclude" selected>@T["Hide on demand"]</option>
+                            <option value="true" data-list-filter-attribute="data-is-always-enabled" data-list-filter-mode="exclude" selected>@T["Hide always enabled"]</option>
                         </select>
-                        <select id="status-filter" class="selectpicker show-tick nosubmit" data-header="@T["Filter by status"]" data-selected-text-format="static" data-width="fit" title="@T["Status"]" data-style="btn-sm">
-                            <option value="any" selected>@T["Any status"]</option>
-                            <option value="enabled">@T["Enabled only"]</option>
-                            <option value="disabled">@T["Disabled only"]</option>
+                        <select id="status-filter" class="selectpicker show-tick nosubmit" data-list-filter data-list-filter-attribute="data-is-enabled" data-header="@T["Filter by status"]" data-selected-text-format="static" data-width="fit" title="@T["Status"]" data-style="btn-sm">
+                            <option value="" selected>@T["Any status"]</option>
+                            <option value="true">@T["Enabled only"]</option>
+                            <option value="false">@T["Disabled only"]</option>
                         </select>
                     </div>
                 </div>
@@ -245,196 +261,23 @@
         @T["<strong>Nothing here!</strong> Your search or filters returned no results."]
     </div>
 </form>
+</div>
+<script asp-name="list-management" at="Foot"></script>
 <script at="Foot">
     document.addEventListener('DOMContentLoaded', () => {
-        const EscapeKey = 'Escape';
-        const searchBox = document.getElementById('search-box');
-        const featureGroups = Array.from(document.querySelectorAll('.feature-group'));
-        const featureItems = featureGroups.flatMap((featureGroup) => Array.from(featureGroup.querySelectorAll('.list-group-item[data-search-text]')));
-        const visibilityFilter = document.getElementById('visibility-filter');
-        const statusFilter = document.getElementById('status-filter');
-        const listAlert = document.getElementById('list-alert');
-        const featuresSummary = document.getElementById('features-summary');
-        const bulkActionInput = document.querySelector("input[name='BulkAction']");
-        const bulkActionSubmit = document.querySelector("input[name='submit.BulkAction']");
-        const bulkActionLinks = Array.from(document.querySelectorAll("a[data-action]"));
-        const badgeShowMoreButtons = Array.from(document.querySelectorAll('.badge-show-more'));
-        const featureGroupSelectAllCheckboxes = Array.from(document.querySelectorAll('.feature-group-select-all'));
+        document.querySelectorAll('.badge-show-more').forEach((button) => {
+            button.addEventListener('click', (e) => {
+                e.preventDefault();
 
-        function isVisible(element) {
-            return !element.classList.contains('d-none');
-        }
+                const transitiveDependencies = button.previousElementSibling;
 
-        function getVisibleFeatureItemCheckboxes(featureGroup) {
-            return Array.from(featureGroup.querySelectorAll("input[name='featureIds']")).filter((checkbox) => {
-                const featureItem = checkbox.closest('.list-group-item');
-
-                return featureItem !== null && isVisible(featureItem);
-            });
-        }
-
-        function updateFeatureGroupSelectAllState(featureGroup) {
-            const featureGroupSelectAllCheckbox = featureGroup.querySelector('.feature-group-select-all');
-            const featureGroupToggleContainer = featureGroup.querySelector('.feature-group-toggle-container');
-
-            if (!featureGroupSelectAllCheckbox || !featureGroupToggleContainer) {
-                return;
-            }
-
-            const visibleFeatureCheckboxes = getVisibleFeatureItemCheckboxes(featureGroup);
-            const hasVisibleFeatureCheckboxes = visibleFeatureCheckboxes.length > 0;
-            const allVisibleFeatureCheckboxesChecked = hasVisibleFeatureCheckboxes && visibleFeatureCheckboxes.every((checkbox) => checkbox.checked);
-            const hasAnyVisibleFeatureCheckboxChecked = visibleFeatureCheckboxes.some((checkbox) => checkbox.checked);
-            const featureGroupSelectAllLabel = featureGroup.querySelector('.feature-group-select-all-label');
-            const featureGroupSelectAllText = featureGroup.querySelector('.feature-group-select-all-text');
-
-            const isHidden = !hasVisibleFeatureCheckboxes;
-            featureGroupToggleContainer.classList.toggle('d-none', isHidden);
-
-            let nextListItem = featureGroupToggleContainer.closest('li')?.nextElementSibling;
-            while (nextListItem && nextListItem.tagName !== 'LI') {
-                nextListItem = nextListItem.nextElementSibling;
-            }
-
-            if (nextListItem) {
-                nextListItem.classList.toggle('first-child-visible', isHidden);
-            }
-
-            featureGroupSelectAllCheckbox.disabled = isHidden;
-            featureGroupSelectAllCheckbox.checked = allVisibleFeatureCheckboxesChecked;
-            featureGroupSelectAllCheckbox.indeterminate = hasAnyVisibleFeatureCheckboxChecked && !allVisibleFeatureCheckboxesChecked;
-
-            if (featureGroupSelectAllLabel && featureGroupSelectAllText) {
-                const selectAllText = featureGroupSelectAllLabel.dataset.selectAllText ?? '';
-                featureGroupSelectAllText.textContent = selectAllText.replace('__COUNT__', visibleFeatureCheckboxes.length.toString());
-            }
-        }
-
-        function refreshVisibleItemClasses() {
-            featureGroups.forEach((featureGroup) => {
-                const items = Array.from(featureGroup.querySelectorAll('.list-group-item[data-search-text]'));
-                const visibleItems = items.filter((item) => isVisible(item));
-
-                items.forEach((item) => item.classList.remove('last-child-visible'));
-
-                if (visibleItems.length > 0) {
-                    visibleItems[visibleItems.length - 1].classList.add('last-child-visible');
+                if (!transitiveDependencies?.classList.contains('transitive-dependencies')) {
+                    return;
                 }
+
+                transitiveDependencies.classList.toggle('d-none');
+                button.classList.toggle('d-none');
             });
-        }
-
-        function applyFilters() {
-            const search = (searchBox?.value ?? '').trim().toLowerCase();
-            const selectedVisibility = Array.from(visibilityFilter?.selectedOptions ?? []).map((opt) => opt.value);
-            const hideOnDemandFeatures = selectedVisibility.includes('on-demand');
-            const hideAlwaysEnabledFeatures = selectedVisibility.includes('always-enabled');
-            const selectedStatus = statusFilter?.value ?? 'any';
-
-            featureItems.forEach((featureItem) => {
-                const searchText = (featureItem.dataset.searchText ?? '').toLowerCase();
-                const isOnDemandFeature = featureItem.dataset.isOnDemand === 'true';
-                const isAlwaysEnabledFeature = featureItem.dataset.isAlwaysEnabled === 'true';
-                const isEnabledFeature = featureItem.dataset.isEnabled === 'true';
-                const matchesSearch = search === '' || searchText.includes(search);
-                const shouldHideForOnDemandFilter = hideOnDemandFeatures && isOnDemandFeature;
-                const shouldHideForAlwaysEnabledFilter = hideAlwaysEnabledFeatures && isAlwaysEnabledFeature;
-                const matchesStatus =
-                    selectedStatus === 'any' ||
-                    (selectedStatus === 'enabled' && isEnabledFeature) ||
-                    (selectedStatus === 'disabled' && !isEnabledFeature);
-
-                featureItem.classList.toggle('d-none', !matchesSearch || shouldHideForOnDemandFilter || shouldHideForAlwaysEnabledFilter || !matchesStatus);
-            });
-
-            featureGroups.forEach((featureGroup) => {
-                const hasVisibleFeatures = featureGroup.querySelector('.list-group-item[data-search-text]:not(.d-none)') !== null;
-
-                featureGroup.classList.toggle('d-none', !hasVisibleFeatures);
-                updateFeatureGroupSelectAllState(featureGroup);
-            });
-
-            refreshVisibleItemClasses();
-            const visibleFeatureCount = featureItems.filter((featureItem) => isVisible(featureItem)).length;
-
-            listAlert?.classList.toggle('d-none', visibleFeatureCount > 0);
-
-            if (featuresSummary) {
-                const summaryText = featuresSummary.dataset.summaryText ?? '';
-                const totalFeatureCount = featuresSummary.dataset.totalCount ?? '0';
-                featuresSummary.textContent = summaryText
-                    .replace('__VISIBLE__', visibleFeatureCount.toString())
-                    .replace('__TOTAL__', totalFeatureCount);
-            }
-        }
-
-        searchBox?.addEventListener('keydown', (e) => {
-            if (e.key === EscapeKey) {
-                searchBox.value = '';
-                applyFilters();
-                e.preventDefault();
-                return;
-            }
-
-            if (e.key === 'Enter') {
-                e.preventDefault();
-            }
         });
-
-        searchBox?.addEventListener('input', applyFilters);
-        searchBox?.addEventListener('search', applyFilters);
-
-        document.querySelectorAll('.selectpicker.nosubmit').forEach((element) => {
-            element.addEventListener('changed.bs.select', applyFilters);
-        });
-
-        bulkActionLinks.forEach((link) => link.addEventListener('click', (e) => {
-            e.preventDefault();
-
-            if (!bulkActionInput || !bulkActionSubmit) {
-                return;
-            }
-
-            bulkActionInput.value = link.dataset.action ?? '';
-            bulkActionSubmit.click();
-        }));
-
-        badgeShowMoreButtons.forEach((button) => button.addEventListener('click', (e) => {
-            e.preventDefault();
-
-            const transitiveDependencies = button.previousElementSibling;
-
-            if (!transitiveDependencies?.classList.contains('transitive-dependencies')) {
-                return;
-            }
-
-            transitiveDependencies.classList.toggle('d-none');
-            button.classList.toggle('d-none');
-        }));
-
-        featureGroupSelectAllCheckboxes.forEach((checkbox) => checkbox.addEventListener('change', () => {
-            const featureGroup = checkbox.closest('.feature-group');
-
-            if (!featureGroup) {
-                return;
-            }
-
-            getVisibleFeatureItemCheckboxes(featureGroup).forEach((featureCheckbox) => {
-                featureCheckbox.checked = checkbox.checked;
-            });
-
-            updateFeatureGroupSelectAllState(featureGroup);
-        }));
-
-        featureGroups.forEach((featureGroup) => featureGroup.addEventListener('change', (e) => {
-            const target = e.target;
-
-            if (!(target instanceof HTMLInputElement) || target.name !== 'featureIds') {
-                return;
-            }
-
-            updateFeatureGroupSelectAllState(featureGroup);
-        }));
-
-        applyFilters();
     });
 </script>

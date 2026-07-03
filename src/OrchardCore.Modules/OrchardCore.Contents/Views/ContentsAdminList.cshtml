@@ -1,6 +1,7 @@
 @model ListContentsViewModel
 
 <script asp-name="bootstrap-select" at="Foot"></script>
+<div data-list-management data-selected-label="@T["selected"]" data-filter-submit="true">
 
 <!-- Hidden submit button do not remove -->
 <input type="submit" name="submit.Filter" id="submitFilter" class="visually-hidden" />
@@ -51,115 +52,6 @@
 
 @await DisplayAsync(Model.Pager)
 
-<script at="Foot">
-    function onDocumentReady(callback) {
-        if (document.readyState !== 'loading') {
-            callback();
-        } else {
-            document.addEventListener('DOMContentLoaded', callback);
-        }
-    }
+</div>
 
-    onDocumentReady(function () {
-        const submitFilterButton = document.querySelector("[name='submit.Filter']");
-        var actions = document.getElementById("actions");
-        var items = document.getElementById("items");
-        var filters = document.querySelectorAll(".filter");
-        var selectAllCtrl = document.getElementById("select-all");
-        var selectedItems = document.getElementById("selected-items");
-        var itemsCheckboxes = document.querySelectorAll("input[type='checkbox'][name='itemIds']");
-
-    @* This applies to all filter selectpickers on page. Add .nosubmit to not submit *@
-        document.querySelectorAll('.selectpicker:not(.nosubmit)').forEach((element) => {
-            element.addEventListener('changed.bs.select', () => submitFilterButton?.click());
-        });
-
-        function selectedItemsCount() {
-            return document.querySelectorAll("input[type='checkbox'][name='itemIds']:checked").length;
-        }
-
-        document.querySelectorAll(".dropdown-menu .dropdown-item").forEach(function (item) {
-            if (!item.dataset.action) {
-                return;
-            }
-
-            item.addEventListener("click", function () {
-                if (selectedItemsCount() > 1) {
-                    var data = { ...this.dataset };
-                    confirmDialog({
-                        ...data, callback: function (r) {
-                            if (r) {
-                                var bulkAction = document.querySelector("[name='Options.BulkAction']");
-                                if (bulkAction) {
-                                    bulkAction.value = data.action;
-                                }
-
-                                document.querySelector("[name='submit.BulkAction']")?.click();
-                            }
-                        }
-                    });
-                }
-            });
-        });
-
-        function displayActionsOrFilters() {
-            if (selectedItemsCount() > 1) {
-                if (actions) {
-                    actions.style.display = '';
-                }
-                filters.forEach(function (filter) {
-                    filter.style.display = 'none';
-                });
-                if (selectedItems) {
-                    selectedItems.style.display = '';
-                }
-                if (items) {
-                    items.style.display = 'none';
-                }
-            }
-            else {
-                if (actions) {
-                    actions.style.display = 'none';
-                }
-                filters.forEach(function (filter) {
-                    filter.style.display = '';
-                });
-                if (selectedItems) {
-                    selectedItems.style.display = 'none';
-                }
-                if (items) {
-                    items.style.display = '';
-                }
-            }
-        }
-
-        selectAllCtrl?.addEventListener("click", function () {
-            itemsCheckboxes.forEach(function (checkbox) {
-                if (checkbox !== selectAllCtrl) {
-                    checkbox.checked = selectAllCtrl.checked;
-                }
-            });
-            if (selectedItems) {
-                selectedItems.textContent = selectedItemsCount() + ' @T["selected"]';
-            }
-            displayActionsOrFilters();
-        });
-
-        itemsCheckboxes.forEach(function (checkbox) {
-            checkbox.addEventListener("click", function () {
-                var itemsCount = itemsCheckboxes.length;
-                var checkedItemsCount = selectedItemsCount();
-
-                if (selectAllCtrl) {
-                    selectAllCtrl.checked = checkedItemsCount == itemsCount;
-                    selectAllCtrl.indeterminate = checkedItemsCount > 0 && checkedItemsCount < itemsCount;
-                }
-
-                if (selectedItems) {
-                    selectedItems.textContent = checkedItemsCount + ' @T["selected"]';
-                }
-                displayActionsOrFilters();
-            });
-        });
-    });
-</script>
+<script asp-name="list-management" at="Foot"></script>
