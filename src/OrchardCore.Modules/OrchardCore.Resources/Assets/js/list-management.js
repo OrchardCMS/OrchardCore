@@ -26,6 +26,7 @@
         normalizeSearch: false,
         searchAlertSelector: '#list-alert',
         searchBoxSelector: '#search-box',
+        searchDomSelector: '',
         searchFirstElementClasses: '',
         searchGroupSelector: '',
         searchResultSelector: '[data-filter-value]',
@@ -101,6 +102,7 @@
         config.normalizeSearch = toBoolean(dataset.normalizeSearch, config.normalizeSearch);
         config.searchAlertSelector = dataset.searchAlertSelector || config.searchAlertSelector;
         config.searchBoxSelector = dataset.searchBoxSelector || config.searchBoxSelector;
+        config.searchDomSelector = dataset.searchDomSelector || config.searchDomSelector;
         config.searchFirstElementClasses = dataset.searchFirstElementClasses || config.searchFirstElementClasses;
         config.searchGroupSelector = dataset.searchGroupSelector || config.searchGroupSelector;
         config.searchGroupVisibleSelector = dataset.searchGroupVisibleSelector || config.searchGroupVisibleSelector || config.searchResultSelector;
@@ -178,82 +180,106 @@
     }
 
     function getSearchText(element, config) {
+        const sources = [];
+
         if (config.searchTextAttribute === 'textContent') {
-            return normalizeValue(element.textContent, config);
+            sources.push(element.textContent);
+        } else {
+            sources.push(element.getAttribute(config.searchTextAttribute));
         }
 
-        return normalizeValue(element.getAttribute(config.searchTextAttribute), config);
+        if (config.searchDomSelector) {
+            for (const searchElement of element.querySelectorAll(config.searchDomSelector)) {
+                sources.push(searchElement.textContent);
+            }
+        }
+
+        return normalizeValue(sources.join(' '), config);
+    }
+
+    function getActiveClientFilters(root, config) {
+        const filters = [];
+
+        for (const element of queryAll(root, config.clientFiltersSelector)) {
+            const selectedOptions = element instanceof HTMLSelectElement
+                ? Array.from(element.selectedOptions)
+                : [element];
+
+            for (const option of selectedOptions) {
+                if (!option.value || option.value === 'all') {
+                    continue;
+                }
+
+                filters.push({
+                    attribute: option.dataset.listFilterAttribute || element.dataset.listFilterAttribute,
+                    mode: option.dataset.listFilterMode || element.dataset.listFilterMode || 'include',
+                    value: option.dataset.listFilterValue || option.value
+                });
+            }
+        }
+
+        for (const link of queryAll(root, config.filterLinksSelector + '.active')) {
+            const value = link.dataset.listFilterValue || '';
+
+            if (!value || value === 'all') {
+                continue;
+            }
+
+            filters.push({
+                attribute: link.dataset.listFilterAttribute,
+                mode: link.dataset.listFilterMode || 'include',
+                value: value
+            });
+        }
+
+        return filters.filter((filter) => filter.attribute);
+    }
+
+    function matchesClientFilters(element, filters) {
+        for (const filter of filters) {
+            const value = element.getAttribute(filter.attribute) || '';
+            const matches = value === filter.value;
+
+            if ((filter.mode === 'exclude' && matches) || (filter.mode !== 'exclude' && !matches)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    function updateSearchSummary(root, config, visibleCount) {
+        const summary = query(root, config.searchSummarySelector);
+
+        if (!summary) {
+            return;
+        }
+
+        const summaryText = summary.getAttribute(config.searchSummaryTextAttribute) || '';
+        const totalCount = summary.getAttribute(config.searchSummaryTotalAttribute) || '0';
+
+        summary.textContent = summaryText
+            .replace('__VISIBLE__', visibleCount.toString())
+            .replace('__TOTAL__', totalCount);
+    }
+
+    function matchesSearchText(text, search) {
+        if (search === '') {
+            return true;
+        }
+
+        if (text.indexOf(search) > -1) {
+            return true;
+        }
+
+        const keywords = search.split(/\s+/).filter((keyword) => keyword);
+
+        return keywords.length > 1 && keywords.every((keyword) => text.indexOf(keyword) > -1);
     }
 
     function updateSearchGroups(root, config) {
         if (!config.searchGroupSelector) {
             return;
-        }
-
-        function getActiveClientFilters(root, config) {
-            const filters = [];
-
-            for (const element of queryAll(root, config.clientFiltersSelector)) {
-                const selectedOptions = element instanceof HTMLSelectElement
-                    ? Array.from(element.selectedOptions)
-                    : [element];
-
-                for (const option of selectedOptions) {
-                    if (!option.value || option.value === 'all') {
-                        continue;
-                    }
-
-                    filters.push({
-                        attribute: option.dataset.listFilterAttribute || element.dataset.listFilterAttribute,
-                        mode: option.dataset.listFilterMode || element.dataset.listFilterMode || 'include',
-                        value: option.dataset.listFilterValue || option.value
-                    });
-                }
-            }
-
-            for (const link of queryAll(root, config.filterLinksSelector + '.active')) {
-                const value = link.dataset.listFilterValue || '';
-
-                if (!value || value === 'all') {
-                    continue;
-                }
-
-                filters.push({
-                    attribute: link.dataset.listFilterAttribute,
-                    mode: link.dataset.listFilterMode || 'include',
-                    value: value
-                });
-            }
-
-            return filters.filter((filter) => filter.attribute);
-        }
-
-        function matchesClientFilters(element, filters) {
-            for (const filter of filters) {
-                const value = element.getAttribute(filter.attribute) || '';
-                const matches = value === filter.value;
-
-                if ((filter.mode === 'exclude' && matches) || (filter.mode !== 'exclude' && !matches)) {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        function updateSearchSummary(root, config, visibleCount) {
-            const summary = query(root, config.searchSummarySelector);
-
-            if (!summary) {
-                return;
-            }
-
-            const summaryText = summary.getAttribute(config.searchSummaryTextAttribute) || '';
-            const totalCount = summary.getAttribute(config.searchSummaryTotalAttribute) || '0';
-
-            summary.textContent = summaryText
-                .replace('__VISIBLE__', visibleCount.toString())
-                .replace('__TOTAL__', totalCount);
         }
 
         for (const group of queryAll(root, config.searchGroupSelector)) {
@@ -334,7 +360,7 @@
             } else {
                 for (const element of filterElements) {
                     const text = getSearchText(element, config);
-                    const matchesSearch = search === '' || text.indexOf(search) > -1;
+                    const matchesSearch = matchesSearchText(text, search);
                     const matchesFilters = matchesClientFilters(element, activeFilters);
 
                     element.classList.remove('first-child-visible', 'last-child-visible');

@@ -8,7 +8,7 @@
     string localizedDisplayName = D[Model.DisplayName, "Content Types"];
 }
 <div class="d-flex">
-    <div class="me-auto">
+    <div class="me-auto content-definition-search-text">
         <a asp-route-action="Edit" asp-route-area="OrchardCore.ContentTypes" asp-route-id="@Model.Name">@localizedDisplayName</a>
 
         <span class="badge rounded-pill ta-badge fw-normal" data-bs-toggle="tooltip" title="@T["Technical Name"]"><i class="fa-solid fa-file-alt text-danger" aria-hidden="true"></i> @Model.Name</span>
@@ -44,7 +44,7 @@
 {
     <div class="row">
         <div class="col">
-            <p class="mb-0"><small class="text-muted">@settings.Description</small></p>
+            <p class="mb-0"><small class="text-muted content-definition-search-text">@settings.Description</small></p>
         </div>
     </div>
 }
