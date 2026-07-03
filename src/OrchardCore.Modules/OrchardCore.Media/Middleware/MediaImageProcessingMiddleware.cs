@@ -216,7 +216,7 @@ internal sealed class MediaImageProcessingMiddleware : IMiddleware
 
             await content.CopyToAsync(response.Body, context.RequestAborted);
         }
-    } 
+    }
 
     // Maps the validated, string-based request commands to the engine-agnostic, typed command set
     // consumed by IImageProcessingEngine. Parsing happens once here so engines never touch raw

@@ -76,5 +76,4 @@ public static class MediaResizingConstants
         "webp" => "webp",
         _ => "jpg",
     };
-
 }
