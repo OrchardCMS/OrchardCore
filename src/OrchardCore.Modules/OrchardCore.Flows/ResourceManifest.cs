@@ -24,7 +24,7 @@ public sealed class ResourceManagementOptionsConfiguration : IConfigureOptions<R
         _manifest
             .DefineScript("content-type-picker")
             .SetDependencies("vuejs:2")
-            .SetUrl("~/OrchardCore.Flows/Scripts/content-type-picker.min.js", "~/OrchardCore.Flows/Scripts/content-type-picker.js");
+            .SetUrl("~/OrchardCore.Flows/Scripts/content-type-picker/content-type-picker.min.js", "~/OrchardCore.Flows/Scripts/content-type-picker/content-type-picker.js");
     }
 
     public void Configure(ResourceManagementOptions options)

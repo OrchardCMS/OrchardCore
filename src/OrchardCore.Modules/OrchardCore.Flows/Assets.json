@@ -13,9 +13,10 @@
     "tags": ["admin", "dashboard", "css"]
   },
   {
-    "action": "min",
+    "action": "parcel",
     "name": "content-type-picker",
-    "source": "Assets/js/content-type-picker.js",
+    "source": "Assets/ts/content-type-picker.ts",
+    "dest": "wwwroot/Scripts/content-type-picker/",
     "tags": ["admin", "dashboard", "js"]
   }
 ]
