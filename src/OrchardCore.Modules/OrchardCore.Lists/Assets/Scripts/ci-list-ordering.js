@@ -1,33 +1,37 @@
 function updateContentItemOrders(oldIndex, newIndex) {
-    var url = $('#ordering-url').data("url");
-    var containerId = $('#container-id').data("id");
-    var before = $('#pager-before').data("before");
-    var after = $('#pager-after').data("after");
-    var pageSize = $('#pager-pagesize').data("pagesize");
-    $.ajax({
-        url: url,
+    var url = document.getElementById('ordering-url').dataset.url;
+    var containerId = document.getElementById('container-id').dataset.id;
+    var before = document.getElementById('pager-before').dataset.before;
+    var after = document.getElementById('pager-after').dataset.after;
+    var pageSize = document.getElementById('pager-pagesize').dataset.pagesize;
+
+    fetch(url, {
         method: 'POST',
-        data: {
-            __RequestVerificationToken: $("input[name='__RequestVerificationToken']").val(),
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: new URLSearchParams({
+            __RequestVerificationToken: document.querySelector("input[name='__RequestVerificationToken']").value,
             containerId: containerId,
             oldIndex: oldIndex,
             newIndex: newIndex,
-            pagerSlimParameters: {
-                before: before,
-                after: after
-            },
+            'pagerSlimParameters[before]': before,
+            'pagerSlimParameters[after]': after,
             pageSize: pageSize
-        },
-        error: function (error) {
-            alert($('#update-order-error-message').data("message"));
+        })
+    }).then(function (response) {
+        if (!response.ok) {
+            throw new Error('Request failed');
         }
+    }).catch(function () {
+        alert(document.getElementById('update-order-error-message').dataset.message);
     });
 }
 
-$(function () {
+document.addEventListener('DOMContentLoaded', function () {
     var sortable = document.getElementById("ci-sortable");
 
-    var sortable = Sortable.create(sortable, {
+    Sortable.create(sortable, {
         handle: ".ui-sortable-handle",
         onSort: function (evt) {
             var oldIndex = evt.oldIndex;

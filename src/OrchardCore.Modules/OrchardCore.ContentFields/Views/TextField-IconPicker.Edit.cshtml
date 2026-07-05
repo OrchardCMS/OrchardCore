@@ -46,7 +46,15 @@
 </div>
 
 <script at="Foot">
-    $(function () {
+    function onDocumentReady(callback) {
+        if (document.readyState !== 'loading') {
+            callback();
+        } else {
+            document.addEventListener('DOMContentLoaded', callback);
+        }
+    }
+
+    onDocumentReady(function () {
 
         $('#@Html.IdForModel()').iconpicker();
 

@@ -1,4 +1,4 @@
-AdminIndexList = function () {
+window.AdminIndexList = function () {
 
     const initialize = (selectedLabel) => {
 

@@ -1,7 +1,7 @@
-var mdeToolbar;
+window.mdeToolbar = undefined;
 
-$(function () {
-    mdeToolbar = [
+document.addEventListener('DOMContentLoaded', function () {
+    window.mdeToolbar = [
         {
             name: "guide",
             action: "https://www.markdownguide.org/basic-syntax/",
@@ -84,21 +84,20 @@ $(function () {
         {
             name: "image",
             action: function (editor) {
-                $("#mediaApp").detach().appendTo('#mediaModalMarkdown .modal-body');
+                document.querySelector('#mediaModalMarkdown .modal-body').appendChild(document.getElementById("mediaApp"));
                 document.getElementById("mediaApp").classList.remove("d-none");
                 mediaApp.selectedMedias = [];
-                var modal = new bootstrap.Modal($('#mediaModalMarkdown'));
+                var modal = new bootstrap.Modal(document.getElementById('mediaModalMarkdown'));
                 modal.show();
-                $('#mediaMarkdownSelectButton').on('click', function (v) {
+                document.getElementById('mediaMarkdownSelectButton').addEventListener('click', function () {
                     var mediaMarkdownContent = "";
-                    for (i = 0; i < mediaApp.selectedMedias.length; i++) {
+                    for (var i = 0; i < mediaApp.selectedMedias.length; i++) {
                         mediaMarkdownContent += ' [image]' + mediaApp.selectedMedias[i].mediaPath + '[/image]';
                     }
                     var cm = editor.codemirror;
                     cm.replaceSelection(mediaMarkdownContent)
                     modal.hide();
-                    $(this).off('click');
-                });
+                }, { once: true });
             },
             className: "far fa-image fa-sm",
             title: "Insert Image",
@@ -152,8 +151,11 @@ $(function () {
     ];
 });
 
-function initializeMdeShortcodeWrapper(mde) {
+window.initializeMdeShortcodeWrapper = function (mde) {
     const toolbar = mde.gui.toolbar;
 
-    $(toolbar).wrap('<div class="shortcode-modal-wrapper"></div>');
-}
+    const wrapper = document.createElement('div');
+    wrapper.className = 'shortcode-modal-wrapper';
+    toolbar.parentNode.insertBefore(wrapper, toolbar);
+    wrapper.appendChild(toolbar);
+};

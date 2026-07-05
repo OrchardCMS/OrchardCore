@@ -1,8 +1,13 @@
 {
   "name": "@orchardcore/contentfields",
   "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "check": "vue-tsc --noEmit"
+  },
   "dependencies": {
     "@popperjs/core": "2.11.8",
-    "bootstrap": "5.3.8"
+    "bootstrap": "5.3.8",
+    "flatpickr": "4.6.13"
   }
 }

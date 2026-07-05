@@ -39,7 +39,15 @@ else
 </div>
 
 <script at="Foot">
-    $(function () {
+    function onDocumentReady(callback) {
+        if (document.readyState !== 'loading') {
+            callback();
+        } else {
+            document.addEventListener('DOMContentLoaded', callback);
+        }
+    }
+
+    onDocumentReady(function () {
         @* set dir while keeping trumbowg translations dictionary intact *@
         @if (culture.GetLanguageDirection() == LanguageDirection.RTL)
         {
@@ -72,7 +80,7 @@ else
         }
 
         $('#@Html.IdFor(m => m.Html)').trumbowyg(settings).on('tbwchange', function () {
-            $(document).trigger('contentpreview:render');
+            document.dispatchEvent(new CustomEvent('contentpreview:render'));
         });
     });
 </script>

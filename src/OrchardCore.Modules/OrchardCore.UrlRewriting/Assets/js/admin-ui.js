@@ -1,9 +1,9 @@
-urlRewritingAdmin = function () {
+window.urlRewritingAdmin = function () {
 
     const initialize = (url, errorLabel, selectedLabel) => {
 
         // Create the sortable UI.
-        sortingListManager.create('#rewrite-rules-sortable-list', url, errorLabel);
+        window.sortingListManager.create('#rewrite-rules-sortable-list', url, errorLabel);
 
         let searchBox = document.getElementById('search-box');
         let searchAlert = document.getElementById('list-alert');

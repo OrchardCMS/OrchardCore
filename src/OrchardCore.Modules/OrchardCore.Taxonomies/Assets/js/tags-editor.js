@@ -1,4 +1,4 @@
-function initializeTagsEditor(element) {
+window.initializeTagsEditor = function (element) {
     if (element) {
 
         var elementId = element.id;
@@ -26,7 +26,7 @@ function initializeTagsEditor(element) {
                 }
 
                 // Selected terms are show in selected tags field.
-                selectedTagTerms = allTagTerms.filter(function (tagTerm) { return tagTerm.selected });
+                var selectedTagTerms = allTagTerms.filter(function (tagTerm) { return tagTerm.selected });
 
                 return {
                     open: element.dataset.open,
@@ -58,46 +58,49 @@ function initializeTagsEditor(element) {
             },
             methods: {
                 createTagTerm(newTagTerm) {
-                    var self = this;
-                    $.ajax({
-                        url: self.createTagUrl,
+                    fetch(this.createTagUrl, {
                         method: 'POST',
-                        data: {
-                            __RequestVerificationToken: $("input[name='__RequestVerificationToken']").val(),
-                            taxonomyContentItemId: self.taxonomyContentItemId,
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        body: new URLSearchParams({
+                            __RequestVerificationToken: document.querySelector("input[name='__RequestVerificationToken']").value,
+                            taxonomyContentItemId: this.taxonomyContentItemId,
                             displayText: newTagTerm
-                        },
-                        success: function (data) {
-                            var tagTerm = {
-                                contentItemId: data.contentItemId,
-                                displayText: data.displayText,
-                                selected: true
-                            }
-                            // Add to allTagTerms array so model binding will save tag as selected.
-                            self.allTagTerms.push(tagTerm);
-
-                            // Add to selectedTerms to display in vue-multi-select.
-                            self.selectedTagTerms.push(tagTerm);
-
-                        },
-                        error: function () {
-                            alert(self.createTagErrorMessage);
+                        })
+                    }).then((response) => {
+                        if (!response.ok) {
+                            throw new Error('Request failed');
                         }
+                        return response.json();
+                    }).then((data) => {
+                        var tagTerm = {
+                            contentItemId: data.contentItemId,
+                            displayText: data.displayText,
+                            selected: true
+                        }
+                        // Add to allTagTerms array so model binding will save tag as selected.
+                        this.allTagTerms.push(tagTerm);
+
+                        // Add to selectedTerms to display in vue-multi-select.
+                        this.selectedTagTerms.push(tagTerm);
+                    }).catch(() => {
+                        alert(this.createTagErrorMessage);
                     });
                 },
                 onSelect(selectedTagTerm) {
                     var tagTerm = this.allTagTerms.find(function (tagTerm) { return tagTerm.contentItemId === selectedTagTerm.contentItemId });
                     tagTerm.selected = true;
-                    $(document).trigger('contentpreview:render');
+                    document.dispatchEvent(new CustomEvent('contentpreview:render'));
                 },
                 onRemove(removedTagTerm) {
                     var tagTerm = this.allTagTerms.find(function (tagTerm) { return tagTerm.contentItemId === removedTagTerm.contentItemId });
                     tagTerm.selected = false;
-                    $(document).trigger('contentpreview:render');
+                    document.dispatchEvent(new CustomEvent('contentpreview:render'));
                 }
             }
         });
 
         return vm;
     }
-}
+};

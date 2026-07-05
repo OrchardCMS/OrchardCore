@@ -7,7 +7,7 @@
 <style asp-src="~/OrchardCore.AdminMenu/Styles/admin-menu-icon-picker.min.css" debug-src="~/OrchardCore.AdminMenu/Styles/admin-menu-icon-picker.css" at="Head"></style>
 
 <script asp-name="vuejs" at="Foot" version="2"></script>
-<script asp-src="~/OrchardCore.AdminMenu/Scripts/admin-menu-icon-picker.min.js" debug-src="~/OrchardCore.AdminMenu/Scripts/admin-menu-icon-picker.js" at="Foot" depends-on="bootstrap, jQuery, jQuery.nestedSortable:2.1, fontawesome-iconpicker"></script>
+<script asp-src="~/OrchardCore.AdminMenu/Scripts/admin-menu-icon-picker.min.js" debug-src="~/OrchardCore.AdminMenu/Scripts/admin-menu-icon-picker.js" at="Foot" depends-on="bootstrap, jQuery, fontawesome-iconpicker"></script>
 
 <div class="ocat-wrapper">
     <div class="ocat-end-offset">
@@ -125,7 +125,15 @@
         </div>
     </div>
     <script at="Foot" depends-on="admin-menu-permission-picker">
-        document.addEventListener('DOMContentLoaded', () => {
+        function onDocumentReady(callback) {
+            if (document.readyState !== 'loading') {
+                callback();
+            } else {
+                document.addEventListener('DOMContentLoaded', callback);
+            }
+        }
+
+        onDocumentReady(() => {
             initAdminMenuPermissionsPicker(document.querySelector("#PermissionPicker"));
         });
     </script>
@@ -148,16 +156,29 @@
 </div>
 
 <script at="Foot">
-    $(function () {
-        $('.icon-picker-trigger').on('click', function (e) {
-            var node = $(e.target).data('related-node');
-            iconPickerVue.show(node, 'sample-icon-' + node);
+    function onDocumentReady(callback) {
+        if (document.readyState !== 'loading') {
+            callback();
+        } else {
+            document.addEventListener('DOMContentLoaded', callback);
+        }
+    }
+
+    onDocumentReady(function () {
+        document.querySelectorAll('.icon-picker-trigger').forEach(function (trigger) {
+            trigger.addEventListener('click', function (e) {
+                var node = e.currentTarget.dataset.relatedNode;
+                iconPickerVue.show(node, 'sample-icon-' + node);
+            });
         });
 
-        $('button.remove-icon').on('click', function (e) {
-            var node = $(e.target).data('related-node');
-            $('#' + node).val('');
-            $('#sample-icon-' + node).replaceWith('<i id="sample-icon-' + node + '" class=" "></i>'); // changing the class to empty string is not enough.
+        document.querySelectorAll('button.remove-icon').forEach(function (button) {
+            button.addEventListener('click', function (e) {
+                var node = e.currentTarget.dataset.relatedNode;
+                document.getElementById(node).value = '';
+                // Changing the class to empty string is not enough, the icon needs to be recreated.
+                document.getElementById('sample-icon-' + node).outerHTML = '<i id="sample-icon-' + node + '" class=" "></i>';
+            });
         });
     });
 </script>

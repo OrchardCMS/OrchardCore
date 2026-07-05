@@ -1,4 +1,4 @@
-function initializeShortcodesTemplateEditor(categoriesElement, contentElement, usageElement, previewElement, nameElement, hintElement) {
+window.initializeShortcodesTemplateEditor = function (categoriesElement, contentElement, usageElement, previewElement, nameElement, hintElement) {
     if (contentElement) {
         CodeMirror.fromTextArea(contentElement, {
             autoCloseTags: true,
@@ -23,24 +23,28 @@ function initializeShortcodesTemplateEditor(categoriesElement, contentElement, u
         });
         if (previewElement) {
             editor.on('change', function (e) {
-                $(previewElement).show();
-                $(previewElement).find('.shortcode-usage').html(e.doc.getValue());
+                previewElement.style.display = '';
+                previewElement.querySelector('.shortcode-usage').innerHTML = e.doc.getValue();
             });
         }
     }
 
     if (nameElement && previewElement) {
-        $(nameElement).on('keyup paste', function () {
-            $(previewElement).show();
-            $(previewElement).find('.shortcode-name').html($(this).val())
-        });
+        var updateNamePreview = function () {
+            previewElement.style.display = '';
+            previewElement.querySelector('.shortcode-name').innerHTML = nameElement.value;
+        };
+        nameElement.addEventListener('keyup', updateNamePreview);
+        nameElement.addEventListener('paste', updateNamePreview);
     }
 
     if (hintElement && previewElement) {
-        $(hintElement).on('keyup paste', function () {
-            $(previewElement).show();
-            $(previewElement).find('.shortcode-hint').html($(this).val())
-        });
+        var updateHintPreview = function () {
+            previewElement.style.display = '';
+            previewElement.querySelector('.shortcode-hint').innerHTML = hintElement.value;
+        };
+        hintElement.addEventListener('keyup', updateHintPreview);
+        hintElement.addEventListener('paste', updateHintPreview);
     }
 
     if (categoriesElement) {
@@ -70,4 +74,4 @@ function initializeShortcodesTemplateEditor(categoriesElement, contentElement, u
         });
         return vm;
     }
-}
+};

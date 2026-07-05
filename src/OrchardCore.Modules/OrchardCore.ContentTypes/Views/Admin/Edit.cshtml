@@ -227,8 +227,16 @@
     </div>
 </form>
 <script asp-name="Sortable" at="Foot"></script>
-<script at="Foot" depends-on="jquery-resizable,Sortable">
-    document.addEventListener('DOMContentLoaded', function () {
+<script at="Foot" depends-on="Sortable">
+    function onDocumentReady(callback) {
+        if (document.readyState !== 'loading') {
+            callback();
+        } else {
+            document.addEventListener('DOMContentLoaded', callback);
+        }
+    }
+
+    onDocumentReady(function () {
         const fields = document.getElementById("fields");
 
         if (fields) {
