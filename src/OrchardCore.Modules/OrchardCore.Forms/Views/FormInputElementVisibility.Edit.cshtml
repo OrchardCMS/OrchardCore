@@ -22,6 +22,14 @@
 <script asp-name="form-visibility" asp-src="~/OrchardCore.Forms/Scripts/form-visibility.min.js" debug-src="~/OrchardCore.Forms/Scripts/form-visibility.js" at="Foot" depends-on="vuejs:2"> </script>
 
 <script at="Foot" asp-name="InitializeGroups">
+    function onDocumentReady(callback) {
+        if (document.readyState !== 'loading') {
+            callback();
+        } else {
+            document.addEventListener('DOMContentLoaded', callback);
+        }
+    }
+
     function processContainers(containers) {
         containers.forEach(container => {
             initializeOrUpdateVue(container);
@@ -29,7 +37,7 @@
         });
     }
 
-    document.addEventListener('DOMContentLoaded', () =>
+    onDocumentReady(() =>
     {
         const flowWidgetObserver = new MutationObserver(mutationsList => {
             for (const mutation of mutationsList) {
