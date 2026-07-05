@@ -48,15 +48,15 @@ else
     </div>
 </div>
 
-<script at="Foot">
-@{ 
+<script at="Foot" type="module">
+@{
     if (culture.GetLanguageDirection() == LanguageDirection.RTL)
     {
         <text>
         var langs = jQuery.trumbowyg.langs.@culture.TwoLetterISOLanguageName;
 
         if (!langs) {
-            cloned = { 
+            var cloned = {
                 ...jQuery.trumbowyg.langs['en'],
                 _dir: '@culture.GetLanguageDirection()'
             };
@@ -64,35 +64,25 @@ else
         }
         </text>
     }
-}    
+}
 
-    function onDocumentReady(callback) {
-        if (document.readyState !== 'loading') {
-            callback();
-        } else {
-            document.addEventListener('DOMContentLoaded', callback);
+    @if (!string.IsNullOrEmpty(trumbowygSettings.Options))
+    {
+        <text>
+        var settings = @Html.Raw(trumbowygSettings.Options);
+        settings['lang'] = '@culture.TwoLetterISOLanguageName';
+        </text>
+    }
+    else
+    {
+        <text>
+        var settings = {
+            lang: '@culture.TwoLetterISOLanguageName'
         }
+        </text>
     }
 
-    onDocumentReady(function () {
-        @if (!string.IsNullOrEmpty(trumbowygSettings.Options))
-        {
-            <text>
-            var settings = @Html.Raw(trumbowygSettings.Options);
-            settings['lang'] = '@culture.TwoLetterISOLanguageName';
-            </text>
-        }
-        else
-        {
-            <text>
-            var settings = {
-                lang: '@culture.TwoLetterISOLanguageName'
-            }
-            </text>
-        }
-
-        $('#@Html.IdFor(m => m.Html)').trumbowyg(settings).on('tbwchange', function () {
-            document.dispatchEvent(new CustomEvent('contentpreview:render'));
-        });
+    $('#@Html.IdFor(m => m.Html)').trumbowyg(settings).on('tbwchange', function () {
+        document.dispatchEvent(new CustomEvent('contentpreview:render'));
     });
 </script>
