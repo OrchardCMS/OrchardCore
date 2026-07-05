@@ -1,7 +1,7 @@
 {
   "name": "EsModuleTests",
   "displayName": "EsModuleTests",
-  "description": "Testing the ES-module-converted field/part editors (TextField-IconPicker, HtmlField-Wysiwyg/Trumbowyg, HtmlBodyPart-Wysiwyg/Trumbowyg) on both a normal full page load and when injected via the FlowPart 'Add Widget' AJAX flow.",
+  "description": "Testing the ES-module-converted field/part editors (TextField-IconPicker, HtmlField-Wysiwyg/Trumbowyg/(default CodeMirror), HtmlBodyPart-Wysiwyg/Trumbowyg, LiquidPart) on both a normal full page load and when injected via the FlowPart 'Add Widget' AJAX flow.",
   "author": "The Orchard Core Team",
   "website": "https://orchardcore.net",
   "version": "1.0.0",
@@ -11,7 +11,8 @@
 
   "variables": {
     "seededPageId": "[js:uuid()]",
-    "seededWidgetId": "[js:uuid()]"
+    "seededWidgetId": "[js:uuid()]",
+    "seededLiquidWidgetId": "[js:uuid()]"
   },
 
   "steps": [
@@ -34,6 +35,7 @@
         "OrchardCore.ContentTypes",
         "OrchardCore.Flows",
         "OrchardCore.Html",
+        "OrchardCore.Liquid",
         "OrchardCore.Title",
         "OrchardCore.Widgets",
 
@@ -179,6 +181,38 @@
               }
             }
           ]
+        },
+        {
+          "Name": "EsModuleTestLiquidWidget",
+          "DisplayName": "Es Module Test Liquid Widget",
+          "Settings": {
+            "ContentTypeSettings": {
+              "Draftable": true,
+              "Versionable": true,
+              "Securable": true,
+              "Stereotype": "Widget"
+            }
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "TitlePart",
+              "Name": "TitlePart",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "0"
+                }
+              }
+            },
+            {
+              "PartName": "LiquidPart",
+              "Name": "LiquidPart",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "1"
+                }
+              }
+            }
+          ]
         }
       ],
       "ContentParts": [
@@ -216,6 +250,16 @@
                   "DisplayName": "Trumbowyg Content",
                   "Editor": "Trumbowyg",
                   "Position": "2"
+                }
+              }
+            },
+            {
+              "FieldName": "HtmlField",
+              "Name": "CodeMirrorField",
+              "Settings": {
+                "ContentPartFieldSettings": {
+                  "DisplayName": "CodeMirror Content",
+                  "Position": "3"
                 }
               }
             }
@@ -259,7 +303,25 @@
                   },
                   "TrumbowygField": {
                     "Html": "<p>Seeded trumbowyg content.</p>"
+                  },
+                  "CodeMirrorField": {
+                    "Html": "<p>Seeded codemirror content.</p>"
                   }
+                }
+              },
+              {
+                "ContentItemId": "[js: variables('seededLiquidWidgetId')]",
+                "ContentType": "EsModuleTestLiquidWidget",
+                "DisplayText": "Seeded Liquid Widget",
+                "Latest": true,
+                "Published": true,
+                "Owner": "[js: parameters('AdminUserId')]",
+                "Author": "[js: parameters('AdminUsername')]",
+                "TitlePart": {
+                  "Title": "Seeded Liquid Widget"
+                },
+                "LiquidPart": {
+                  "Liquid": "<p>{{ 'Seeded liquid content.' }}</p>"
                 }
               }
             ]

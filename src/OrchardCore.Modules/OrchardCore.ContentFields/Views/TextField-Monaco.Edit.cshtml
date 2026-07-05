@@ -31,24 +31,10 @@
 </div>
 
 <script asp-name="monaco" at="Foot"></script>
-<script at="Foot" depends-on="monaco">
-    function onDocumentReady(fn) {
-        if (document.readyState === "loading") {
-            document.addEventListener("DOMContentLoaded", fn);
-        } else {
-            fn();
-        }
-    }
-
-    onDocumentReady(function () {
+<script at="Foot" depends-on="monaco" type="module">
+    const divEditor = document.getElementById('@Html.IdFor(x => x.Text)_editor');
+    if (divEditor) {
         require(['vs/editor/editor.main'], function () {
-
-            const divEditor = document.getElementById('@Html.IdFor(x => x.Text)_editor');
-
-            if (!divEditor) {
-                return;
-            }
-
             var settings = @Html.Raw(string.IsNullOrWhiteSpace(monacoSettings.Options) ? "{}" : monacoSettings.Options);
             if (settings.automaticLayout == undefined) {
                 settings.automaticLayout = true;
@@ -82,5 +68,5 @@
                 document.dispatchEvent(new Event('contentpreview:render'));
             });
         });
-    });
+    }
 </script>

@@ -24,17 +24,8 @@
     </div>
 </div>
 
-<script at="Foot" depends-on="easymde-mediatoolbar">
-    function onDocumentReady(callback) {
-        if (document.readyState !== 'loading') {
-            callback();
-        } else {
-            document.addEventListener('DOMContentLoaded', callback);
-        }
-    }
-
-    onDocumentReady(function () {
-        var markdownElement = document.getElementById('@Html.IdFor(m => m.Markdown)');
+<script at="Foot" depends-on="easymde-mediatoolbar" type="module">
+    var markdownElement = document.getElementById('@Html.IdFor(m => m.Markdown)');
         var isRtl = '@(culture.IsRightToLeft() ? "true" : "false")';
 
         // When part is rendered by a flow part only the elements scripts are rendered, so the html element will not exist.
@@ -93,5 +84,4 @@ else
                 });
             }
         }
-    });
 </script>

@@ -4,17 +4,19 @@ using OrchardCore.Tests.Functional.Helpers;
 namespace OrchardCore.Tests.Functional.Tests.Cms;
 
 // Covers the field/part editors converted from the onDocumentReady pattern to real ES
-// modules (TextField-IconPicker.Edit.cshtml, HtmlField-Wysiwyg/Trumbowyg.Edit.cshtml,
-// HtmlBodyPart-Wysiwyg/Trumbowyg.Edit.cshtml). Module scripts never listen for
-// DOMContentLoaded, so unlike the onDocumentReady wrapper they need no verification on
-// that front - what actually needs checking is (a) they still run at all on a normal full
-// page load, and (b) they still run when injected after the fact via the FlowPart "Add
-// Widget" AJAX flow (src/OrchardCore.Modules/OrchardCore.Flows/Assets/ts/flows.edit.ts),
-// which is the scenario PR #19442 had to fix for the previous onDocumentReady-based
-// views. Uses the EsModuleTests recipe (test/OrchardCore.Tests.Functional/Fixtures/
+// modules (TextField-IconPicker.Edit.cshtml, HtmlField.Edit.cshtml (default CodeMirror)/
+// -Wysiwyg/-Trumbowyg.Edit.cshtml, HtmlBodyPart-Wysiwyg/Trumbowyg.Edit.cshtml,
+// LiquidPart.Edit.cshtml). Module scripts never listen for DOMContentLoaded, so unlike
+// the onDocumentReady wrapper they need no verification on that front - what actually
+// needs checking is (a) they still run at all on a normal full page load, and (b) they
+// still run when injected after the fact via the FlowPart "Add Widget" AJAX flow
+// (src/OrchardCore.Modules/OrchardCore.Flows/Assets/ts/flows.edit.ts), which is the
+// scenario PR #19442 had to fix for the previous onDocumentReady-based views. Uses the
+// EsModuleTests recipe (test/OrchardCore.Tests.Functional/Fixtures/
 // es-module-tests.recipe.json), which no shipped recipe covers (it needs an explicit
 // Trumbowyg HtmlField editor and an IconPicker field on a Widget-stereotype type,
-// combined with a Trumbowyg and a Wysiwyg HtmlBodyPart on two more Widget types).
+// combined with a Trumbowyg and a Wysiwyg HtmlBodyPart on two more Widget types, plus a
+// LiquidPart-attached Widget type).
 public sealed class EsModuleEditorTests : CmsTestBase<EsModuleTestsFixture>, IClassFixture<EsModuleTestsFixture>
 {
     public EsModuleEditorTests(EsModuleTestsFixture fixture) : base(fixture) { }
@@ -36,6 +38,13 @@ public sealed class EsModuleEditorTests : CmsTestBase<EsModuleTestsFixture>, ICl
     // presence proves the module ran, with no need to actually open the dropdown.
     private static ILocator IconPickerItemsOf(ILocator widget)
         => widget.Locator(".dropdown-menu .iconpicker-item");
+
+    // CodeMirror.fromTextArea() wraps the source <textarea> in a ".CodeMirror" element the
+    // moment it initializes successfully - covers HtmlField.Edit.cshtml's default editor
+    // and LiquidPart.Edit.cshtml, both plain CodeMirror.fromTextArea() calls with no
+    // wrapping settings object.
+    private static ILocator CodeMirrorEditorsOf(ILocator widget)
+        => widget.Locator(".CodeMirror");
 
     private static async Task AddWidgetAsync(IPage page, ILocator addWidgetDropdown, ILocator widgets, string contentType, int expectedCountAfter)
     {
@@ -65,9 +74,17 @@ public sealed class EsModuleEditorTests : CmsTestBase<EsModuleTestsFixture>, ICl
         var widget = WidgetOfType(page, "EsModuleTestFieldsWidget");
         await Assertions.Expect(widget).ToHaveCountAsync(1);
 
-        // Two HtmlField instances (Wysiwyg + Trumbowyg editors) on this one widget.
+        // Three HtmlField instances (Wysiwyg + Trumbowyg + default CodeMirror editors) on
+        // this one widget.
         await Assertions.Expect(TrumbowygBoxesOf(widget)).ToHaveCountAsync(2);
+        await Assertions.Expect(CodeMirrorEditorsOf(widget)).ToHaveCountAsync(1);
         await Assertions.Expect(IconPickerItemsOf(widget)).Not.ToHaveCountAsync(0);
+
+        // The seeded Liquid widget is a separate widget in the same Flow, also present
+        // from this same full page load.
+        var liquidWidget = WidgetOfType(page, "EsModuleTestLiquidWidget");
+        await Assertions.Expect(liquidWidget).ToHaveCountAsync(1);
+        await Assertions.Expect(CodeMirrorEditorsOf(liquidWidget)).ToHaveCountAsync(1);
 
         Assert.Empty(consoleErrors);
 
@@ -99,6 +116,7 @@ public sealed class EsModuleEditorTests : CmsTestBase<EsModuleTestsFixture>, ICl
         await AddWidgetAsync(page, addWidgetDropdown, widgets, "EsModuleTestFieldsWidget", 2);
         await AddWidgetAsync(page, addWidgetDropdown, widgets, "EsModuleTestHtmlBodyTrumbowyg", 3);
         await AddWidgetAsync(page, addWidgetDropdown, widgets, "EsModuleTestHtmlBodyWysiwyg", 4);
+        await AddWidgetAsync(page, addWidgetDropdown, widgets, "EsModuleTestLiquidWidget", 5);
 
         var fieldsWidgets = WidgetOfType(page, "EsModuleTestFieldsWidget");
         await Assertions.Expect(fieldsWidgets).ToHaveCountAsync(2);
@@ -107,11 +125,13 @@ public sealed class EsModuleEditorTests : CmsTestBase<EsModuleTestsFixture>, ICl
         {
             var instance = fieldsWidgets.Nth(i);
             await Assertions.Expect(TrumbowygBoxesOf(instance)).ToHaveCountAsync(2);
+            await Assertions.Expect(CodeMirrorEditorsOf(instance)).ToHaveCountAsync(1);
             await Assertions.Expect(IconPickerItemsOf(instance)).Not.ToHaveCountAsync(0);
         }
 
         await Assertions.Expect(TrumbowygBoxesOf(WidgetOfType(page, "EsModuleTestHtmlBodyTrumbowyg"))).ToHaveCountAsync(1);
         await Assertions.Expect(TrumbowygBoxesOf(WidgetOfType(page, "EsModuleTestHtmlBodyWysiwyg"))).ToHaveCountAsync(1);
+        await Assertions.Expect(CodeMirrorEditorsOf(WidgetOfType(page, "EsModuleTestLiquidWidget"))).ToHaveCountAsync(1);
 
         Assert.Empty(consoleErrors);
 
