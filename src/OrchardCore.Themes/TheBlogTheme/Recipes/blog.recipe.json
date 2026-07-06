@@ -6,9 +6,12 @@
   "website": "https://orchardcore.net",
   "version": "1.0.0",
   "issetuprecipe": true,
-  "categories": [ "default" ],
-  "tags": [ "blog" ],
-
+  "categories": [
+    "default"
+  ],
+  "tags": [
+    "blog"
+  ],
   // The variables are evaluated the first time they are accessed, and reused across steps
   "variables": {
     "adminUrlPrefix": "[js: configuration('OrchardCore_Admin:AdminUrlPrefix', 'Admin')]",
@@ -23,7 +26,6 @@
     "categoryTravelContentItemId": "[js:uuid()]"
     // "now": "[js: new Date().toISOString()]"
   },
-
   "steps": [
     {
       "name": "feature",
@@ -42,7 +44,6 @@
         "OrchardCore.Settings",
         "OrchardCore.Themes",
         "OrchardCore.Users",
-
         // Content Management
         "OrchardCore.Alias",
         "OrchardCore.AdminMenu",
@@ -72,7 +73,6 @@
         "OrchardCore.Title",
         "OrchardCore.Templates",
         "OrchardCore.Widgets",
-
         // Themes
         "TheBlogTheme",
         "TheAdmin",
@@ -118,7 +118,10 @@
         "ContentItemId": "[js: variables('blogContentItemId')]"
       },
       "LayerSettings": {
-        "Zones": [ "Content", "Footer" ]
+        "Zones": [
+          "Content",
+          "Footer"
+        ]
       }
     },
     {
@@ -1273,11 +1276,11 @@
                       "ContentTypeName": "Article"
                     },
                     {
-					            "ContentTypeDisplayName": "Page",
+                      "ContentTypeDisplayName": "Page",
                       "ContentTypeName": "Page"
                     },
                     {
-					            "ContentTypeDisplayName": "Taxonomy",
+                      "ContentTypeDisplayName": "Taxonomy",
                       "ContentTypeName": "Taxonomy"
                     }
                   ],
