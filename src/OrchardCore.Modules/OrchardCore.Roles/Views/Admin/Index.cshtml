@@ -1,6 +1,14 @@
+@using Microsoft.AspNetCore.Authorization
+@using OrchardCore.Roles
 @using System.Linq
 
 @model OrchardCore.Roles.ViewModels.RolesViewModel
+
+@inject IAuthorizationService AuthorizationService
+
+@{
+    var hasManagePermission = await AuthorizationService.AuthorizeAsync(User, RolesPermissions.ManageRoles);
+}
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Roles"])</h1></zone>
 
@@ -41,18 +49,32 @@
                             </span>
                         }
                     </div>
-
                     <div>
-                        <a class="edit btn btn-primary btn-sm" role="button" asp-action="Edit" asp-route-id="@entry.Name">@T["Edit"]</a>
-
-                        @if (!entry.IsAdminRole)
+                        @if (hasManagePermission)
                         {
-                            <a class="btn btn-warning btn-sm" asp-action="Clone" asp-route-id="@entry.Name">@T["Clone"]</a>
+                            <a class="edit-action btn btn-primary btn-sm" role="button" asp-action="Edit" asp-route-id="@entry.Name">@T["Edit"]</a>
                         }
 
-                        @if (!entry.IsSystemRole)
+                        <a class="display-action btn btn-success btn-sm" role="button" asp-action="Display" asp-route-id="@entry.Name">@T["View"]</a>
+                       
+                        @if (hasManagePermission && !(entry.IsAdminRole && entry.IsSystemRole))
                         {
-                            <a class="delete btn btn-danger btn-sm" asp-route-id="@entry.Name" role="button" asp-action="Delete" data-url-af="UnsafeUrl RemoveUrl" data-title="@T["Delete Role"]" data-message="@message">@T["Delete"]</a>
+                            <div class="btn-group" title="@T["Actions"]">
+                                <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" id="bulk-action-menu-button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    @T["Actions"]
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    @if (hasManagePermission && !entry.IsAdminRole)
+                                    {
+                                        <a class="dropdown-item" asp-action="Clone" asp-route-id="@entry.Name">@T["Clone"]</a>
+                                    }
+
+                                    @if (hasManagePermission && !entry.IsSystemRole)
+                                    {
+                                        <a class="dropdown-item text-danger" asp-route-id="@entry.Name" role="button" asp-action="Delete" data-url-af="UnsafeUrl RemoveUrl" data-title="@T["Delete Role"]" data-message="@message">@T["Delete"]</a>
+                                    }
+                                </ul>
+                            </div>
                         }
                     </div>
                 </div>
@@ -78,6 +100,7 @@
     }
 
     onDocumentReady(function () {
+        const hasManagePermission = @hasManagePermission.ToString().ToLower();
         var searchBox = document.getElementById('search-box');
         if (!searchBox) {
             return;
@@ -94,7 +117,7 @@
                 // Edit the role if there is a single filtered element
                 var visible = Array.from(document.querySelectorAll('.roles > ul > li')).filter(isVisible);
                 if (visible.length == 1) {
-                    window.location = visible[0].querySelector('.edit').getAttribute('href');
+                    window.location = visible[0].querySelector(hasManagePermission ? '.edit-action' : '.display-action').getAttribute('href');
                 }
                 e.preventDefault();
                 e.stopPropagation();
