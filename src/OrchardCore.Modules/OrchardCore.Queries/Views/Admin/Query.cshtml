@@ -112,7 +112,6 @@
             document.addEventListener('DOMContentLoaded', callback);
         }
     }
-    
     onDocumentReady(function () {
         CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(m => m.DecodedQuery)'), { mode: '@MediaTypeNamesExtended.Text.PostgreSQL', lineNumbers: true, viewportMargin: Infinity });
         CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(m => m.Parameters)'), { mode: "javascript", json: true, lineNumbers: true, viewportMargin: Infinity });
