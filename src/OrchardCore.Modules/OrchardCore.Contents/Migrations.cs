@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using OrchardCore.AdminMenu.Services;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
@@ -31,19 +32,22 @@ public sealed class Migrations : DataMigration
         // Data manipulation must be deferred so that it runs in a fresh scope after the
         // migration's schema transaction has been committed. Doing it inline in the migration
         // method would not reliably persist the changes made through the document store.
-        ShellScope.AddDeferredTask(async scope => await AdminMenuItemMigrator.MigrateItemTo(scope, async (menu, menuItem, scope) =>
+        ShellScope.AddDeferredTask(async scope => await AdminMenuItemMigrator.MigrateItemTo(scope,
+        async (menu, menuItem, scope) =>
                     {
                         var contentTypeMenuItem = menuItem as ContentTypesAdminNode;
                         if (contentTypeMenuItem != null)
                         {
                             foreach (var typeEntry in contentTypeMenuItem.ContentTypes)
                             {
+                               #pragma warning disable CS0618 // Type or member is obsolete
                                 if (!string.IsNullOrEmpty(typeEntry.ContentTypeId) && string.IsNullOrEmpty(typeEntry.ContentTypeName))
                                 {
                                     var typedef = await _contentDefinitionManager.GetTypeDefinitionAsync(typeEntry.ContentTypeId);
                                     typeEntry.ContentTypeName = typeEntry.ContentTypeId;
                                     typeEntry.ContentTypeDisplayName = typedef.DisplayName;
                                 }
+                                #pragma warning restore CS0618 // Type or member is obsolete
                             }
                         }
                     }));
