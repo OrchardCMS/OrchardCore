@@ -1,15 +1,22 @@
-@model EditRoleViewModel
+@model CloneRoleViewModel
 @using OrchardCore.Roles.ViewModels
 
 <zone Name="Title">
-    <h1>@RenderTitleSegments(T["Edit '{0}' Role", Model.Role.RoleName])</h1>
+    <h1>@RenderTitleSegments(T["Clone '{0}' Role", Model.Role.RoleName])</h1>
 </zone>
 
 <div asp-validation-summary="ModelOnly"></div>
 
 @await Html.PartialAsync("_DuplicatedPermissions")
 
-<form asp-action="Edit" asp-route-id="@ViewContext.HttpContext.Request.RouteValues["id"]" method="post" class="no-multisubmit">
+<form asp-action="Clone" asp-route-id="@ViewContext.HttpContext.Request.RouteValues["id"]" method="post" class="no-multisubmit">
+    <div class="ocat-wrapper" asp-validation-class-for="Name">
+        <label asp-for="Name" class="ocat-label">@T["Role name"]</label>
+        <div class="ocat-end">
+            <input asp-for="Name" class="form-control" autofocus />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+    </div>
     <div class="mb-3" asp-validation-class-for="RoleDescription">
         <label asp-for="RoleDescription" class="form-label">@T["Description"]</label>
         <textarea asp-for="RoleDescription" class="form-control"></textarea>

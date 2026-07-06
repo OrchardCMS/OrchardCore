@@ -154,21 +154,9 @@ public sealed class AdminController : Controller
         var model = new EditRoleViewModel
         {
             Role = role,
-            Name = role.RoleName,
             RoleDescription = role.RoleDescription,
-            IsAdminRole = await _roleService.IsAdminRoleAsync(role.RoleName),
+            Permissions = await GetRolePermissionsViewModelAsync(role, canEdit: true),
         };
-
-        var installedPermissions = await GetInstalledPermissionsAsync();
-        var allPermissions = installedPermissions.SelectMany(x => x.Value);
-
-        ViewData["DuplicatedPermissions"] = GetDuplicatedPermissions(allPermissions);
-
-        if (!await _roleService.IsAdminRoleAsync(role.RoleName))
-        {
-            model.EffectivePermissions = await GetEffectivePermissions(role, allPermissions);
-            model.RoleCategoryPermissions = installedPermissions;
-        }
 
         return View(model);
     }
@@ -216,19 +204,8 @@ public sealed class AdminController : Controller
         var model = new DisplayRoleViewModel
         {
             Role = role,
-            IsAdminRole = await _roleService.IsAdminRoleAsync(role.RoleName),
+            Permissions = await GetRolePermissionsViewModelAsync(role, canEdit: false),
         };
-
-        var installedPermissions = await GetInstalledPermissionsAsync();
-        var allPermissions = installedPermissions.SelectMany(x => x.Value);
-
-        ViewData["DuplicatedPermissions"] = GetDuplicatedPermissions(allPermissions);
-
-        if (!await _roleService.IsAdminRoleAsync(role.RoleName))
-        {
-            model.EffectivePermissions = await GetEffectivePermissions(role, allPermissions);
-            model.RoleCategoryPermissions = installedPermissions;
-        }
 
         return View(model);
     }
@@ -323,9 +300,9 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
-        var model = await GetEditRoleViewModelAsync(role, role.RoleName, role.RoleDescription);
+        var model = await GetCloneRoleViewModelAsync(role, role.RoleName, role.RoleDescription);
 
-        return View(nameof(Edit), model);
+        return View(model);
     }
 
     [HttpPost]
@@ -375,9 +352,9 @@ public sealed class AdminController : Controller
             }
         }
 
-        var model = await GetEditRoleViewModelAsync(sourceRole, name, roleDescription);
+        var model = await GetCloneRoleViewModelAsync(sourceRole, name, roleDescription);
 
-        return View(nameof(Edit), model);
+        return View(model);
     }
 
     private async Task<bool> ValidateRoleNameAsync(string roleName)
@@ -451,30 +428,44 @@ public sealed class AdminController : Controller
             .Where(key => key.StartsWith("Checkbox.", StringComparison.Ordinal) && Request.Form[key] == "true")
             .Select(key => RoleClaim.Create(key["Checkbox.".Length..]));
 
-    private async Task<EditRoleViewModel> GetEditRoleViewModelAsync(Role role, string cloneRoleName, string description)
-    {
-        var installedPermissions = await GetInstalledPermissionsAsync();
-        var allPermissions = installedPermissions.SelectMany(x => x.Value);
-
-        var model = new EditRoleViewModel
+    private async Task<CloneRoleViewModel> GetCloneRoleViewModelAsync(Role role, string cloneRoleName, string description)
+        => new CloneRoleViewModel
         {
             Role = role,
             Name = cloneRoleName,
             RoleDescription = description,
-            IsCloning = true,
-            RoleCategoryPermissions = installedPermissions,
-            EffectivePermissions = await GetEffectivePermissions(role, allPermissions),
+            Permissions = await GetRolePermissionsViewModelAsync(role, canEdit: true),
         };
 
-        ViewData["DuplicatedPermissions"] = GetDuplicatedPermissions(allPermissions);
+    private async Task<RolePermissionsViewModel> GetRolePermissionsViewModelAsync(Role role, bool canEdit)
+    {
+        var installedPermissions = await GetInstalledPermissionsAsync();
+        var allPermissions = installedPermissions.SelectMany(x => x.Value).ToArray();
+        var isAdminRole = await _roleService.IsAdminRoleAsync(role.RoleName);
 
-        return model;
+        if (canEdit)
+        {
+            ViewData["DuplicatedPermissions"] = allPermissions
+                .GroupBy(p => p.Name.ToUpperInvariant())
+                .Where(g => g.Count() > 1)
+                .Select(g => g.First().Name)
+                .ToArray();
+        }
+
+        return new RolePermissionsViewModel
+        {
+            IsAdminRole = isAdminRole,
+            CanEdit = canEdit,
+            AssignedPermissions = role.RoleClaims
+                .Where(c => c.ClaimType == Permission.ClaimType)
+                .Select(c => c.ClaimValue)
+                .ToHashSet(StringComparer.Ordinal),
+            RoleCategoryPermissions = isAdminRole
+                ? new Dictionary<PermissionGroupKey, IEnumerable<Permission>>()
+                : installedPermissions,
+            EffectivePermissions = isAdminRole
+                ? []
+                : await GetEffectivePermissions(role, allPermissions),
+        };
     }
-
-    private static string[] GetDuplicatedPermissions(IEnumerable<Permission> allPermissions)
-        => allPermissions
-            .GroupBy(p => p.Name.ToUpperInvariant())
-            .Where(g => g.Count() > 1)
-            .Select(g => g.First().Name)
-            .ToArray();
 }
