@@ -58,7 +58,7 @@ public sealed class AdminController : Controller
 
     public async Task<ActionResult> Index()
     {
-        if (!await _authorizationService.AuthorizeAsync(User, RolesPermissions.ManageRoles))
+        if (!await _authorizationService.AuthorizeAsync(User, RolesPermissions.ViewRoles))
         {
             return Forbid();
         }
@@ -162,11 +162,7 @@ public sealed class AdminController : Controller
         var installedPermissions = await GetInstalledPermissionsAsync();
         var allPermissions = installedPermissions.SelectMany(x => x.Value);
 
-        ViewData["DuplicatedPermissions"] = allPermissions
-            .GroupBy(p => p.Name.ToUpperInvariant())
-            .Where(g => g.Count() > 1)
-            .Select(g => g.First().Name)
-            .ToArray();
+        ViewData["DuplicatedPermissions"] = GetDuplicatedPermissions(allPermissions);
 
         if (!await _roleService.IsAdminRoleAsync(role.RoleName))
         {
@@ -203,6 +199,38 @@ public sealed class AdminController : Controller
         await _notifier.SuccessAsync(H["Role updated successfully."]);
 
         return RedirectToAction(nameof(Index));
+    }
+
+    public async Task<IActionResult> Display(string id)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, RolesPermissions.ViewRoles))
+        {
+            return Forbid();
+        }
+
+        if (await _roleManager.FindByIdAsync(id) is not Role role)
+        {
+            return NotFound();
+        }
+
+        var model = new DisplayRoleViewModel
+        {
+            Role = role,
+            IsAdminRole = await _roleService.IsAdminRoleAsync(role.RoleName),
+        };
+
+        var installedPermissions = await GetInstalledPermissionsAsync();
+        var allPermissions = installedPermissions.SelectMany(x => x.Value);
+
+        ViewData["DuplicatedPermissions"] = GetDuplicatedPermissions(allPermissions);
+
+        if (!await _roleService.IsAdminRoleAsync(role.RoleName))
+        {
+            model.EffectivePermissions = await GetEffectivePermissions(role, allPermissions);
+            model.RoleCategoryPermissions = installedPermissions;
+        }
+
+        return View(model);
     }
 
     [HttpPost]
@@ -438,12 +466,15 @@ public sealed class AdminController : Controller
             EffectivePermissions = await GetEffectivePermissions(role, allPermissions),
         };
 
-        ViewData["DuplicatedPermissions"] = allPermissions
+        ViewData["DuplicatedPermissions"] = GetDuplicatedPermissions(allPermissions);
+
+        return model;
+    }
+
+    private static string[] GetDuplicatedPermissions(IEnumerable<Permission> allPermissions)
+        => allPermissions
             .GroupBy(p => p.Name.ToUpperInvariant())
             .Where(g => g.Count() > 1)
             .Select(g => g.First().Name)
             .ToArray();
-
-        return model;
-    }
 }

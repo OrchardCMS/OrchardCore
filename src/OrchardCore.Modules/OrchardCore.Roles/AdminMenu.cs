@@ -22,7 +22,7 @@ public sealed class AdminMenu : AdminNavigationProvider
                         .AddClass("roles")
                         .Id("roles")
                         .Action("Index", "Admin", "OrchardCore.Roles")
-                        .Permission(RolesPermissions.ManageRoles)
+                        .Permission(RolesPermissions.ViewRoles)
                         .LocalNav()
                     )
                 );
@@ -36,7 +36,7 @@ public sealed class AdminMenu : AdminNavigationProvider
                     .AddClass("roles")
                     .Id("roles")
                     .Action("Index", "Admin", "OrchardCore.Roles")
-                    .Permission(RolesPermissions.ManageRoles)
+                    .Permission(RolesPermissions.ViewRoles)
                     .LocalNav()
                 )
             );
