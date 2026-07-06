@@ -1290,12 +1290,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@crestapps/bootstrap-select@npm:1.2.0":
-  version: 1.2.0
-  resolution: "@crestapps/bootstrap-select@npm:1.2.0"
+"@crestapps/bootstrap-select@npm:1.2.1":
+  version: 1.2.1
+  resolution: "@crestapps/bootstrap-select@npm:1.2.1"
   peerDependencies:
     bootstrap: ">=5.0.0"
-  checksum: 10/79dece50bd3e3b51706af4f37051422809cfffe2a8fad4453f73a7047cf2e52db84c3d0185550af77ed4dfce0690317f2e8325e1c7e9249b5001e2ebec7985f0
+  checksum: 10/be1357dc83519aa2d9cb780aa569252477cc16a2d97ddd26105b8e43c6abd8fcd4558bd55b0bdca2405fa547f48a96effa5ef5a2a4206ac3506e3b7e8afdf6f5
   languageName: node
   linkType: hard
 
@@ -2494,7 +2494,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@orchardcore/resources@workspace:src/OrchardCore.Modules/OrchardCore.Resources/Assets"
   dependencies:
-    "@crestapps/bootstrap-select": "npm:1.2.0"
+    "@crestapps/bootstrap-select": "npm:1.2.1"
     "@fortawesome/fontawesome-free": "npm:7.3.0"
     "@fortawesome/fontawesome-free-5.15.4": "npm:@fortawesome/fontawesome-free@5.15.4"
     "@fortawesome/fontawesome-free-6.6.0": "npm:@fortawesome/fontawesome-free@6.6.0"
@@ -2609,7 +2609,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@orchardcore/theadmin@workspace:src/OrchardCore.Themes/TheAdmin/Assets"
   dependencies:
-    "@crestapps/bootstrap-select": "npm:1.2.0"
+    "@crestapps/bootstrap-select": "npm:1.2.1"
     "@popperjs/core": "npm:2.11.8"
     "@types/jquery": "npm:3.5.32"
     "@types/js-cookie": "npm:^3.0.6"
