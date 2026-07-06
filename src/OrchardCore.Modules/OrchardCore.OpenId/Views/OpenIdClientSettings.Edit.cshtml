@@ -269,7 +269,15 @@
 
 <script at="Foot">
     ////<![CDATA[
-    window.onload = function () {
+    function onDocumentReady(callback) {
+        if (document.readyState !== 'loading') {
+            callback();
+        } else {
+            document.addEventListener('DOMContentLoaded', callback);
+        }
+    }
+
+    onDocumentReady(function () {
         function setCollapse(element, action) {
             if (element) {
                 bootstrap.Collapse.getOrCreateInstance(element, { toggle: false })[action]();
@@ -332,6 +340,6 @@
             }
 
         }
-    };
+    });
     //]]>
 </script>
