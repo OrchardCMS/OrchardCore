@@ -25,7 +25,7 @@ public sealed class Migrations : DataMigration
         return 1;
     }
 
-    //migrate admin menu to 3.0 format
+    // Migrate admin menu to 3.0 format.
     public async Task<int> UpdateFrom1Async()
     {
         // Data manipulation must be deferred so that it runs in a fresh scope after the
