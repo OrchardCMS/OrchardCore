@@ -1,6 +1,7 @@
 @model OrchardCore.Queries.Sql.ViewModels.AdminQueryViewModel
 @using OrchardCore.ContentManagement
 @using OrchardCore.Infrastructure
+
 @inject IContentManager ContentManager
 
 @{
@@ -103,7 +104,6 @@
     }
 }
 
-<script asp-name="monaco" at="Foot"></script>
 <script at="Foot" asp-name="jsonresult-editor" depends-on="monaco, the-admin">
     function onDocumentReady(callback) {
         if (document.readyState !== 'loading') {
