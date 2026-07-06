@@ -22,9 +22,12 @@
                     <input id="search-box" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
                 </div>
             </div>
-            <div class="col-auto">
-                <a asp-route-action="Create" class="btn btn-secondary create" role="button">@T["Add Role"]</a>
-            </div>
+            @if (hasManagePermission)
+            {
+                <div class="col-auto">
+                    <a asp-route-action="Create" class="btn btn-secondary create" role="button">@T["Add Role"]</a>
+                </div>
+            }
         </div>
     </div>
 </div>
