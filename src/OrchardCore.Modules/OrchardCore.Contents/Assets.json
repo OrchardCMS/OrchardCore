@@ -22,5 +22,19 @@
     "name": "content-localization",
     "source": "Assets/js/content-type-check-all.js",
     "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "deployment-modals",
+    "source": [
+      "Assets/ts/add-to-deployment-plan-action.ts",
+      "Assets/ts/add-to-deployment-plan-bulk.ts",
+      "Assets/ts/add-to-deployment-plan-bulk-button.ts",
+      "Assets/ts/export-to-deployment-target-action.ts",
+      "Assets/ts/export-to-deployment-target-bulk.ts",
+      "Assets/ts/export-to-deployment-target-bulk-button.ts"
+    ],
+    "dest": "wwwroot/Scripts/deployment-modals/",
+    "tags": ["admin", "dashboard", "js"]
   }
 ]

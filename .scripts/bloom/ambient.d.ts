@@ -78,3 +78,5 @@ declare const Sortable: {
 };
 
 declare const bootstrap: typeof import("bootstrap");
+
+declare const confirmDialog: (options: Record<string, unknown> & { callback: (response: boolean) => void }) => void;

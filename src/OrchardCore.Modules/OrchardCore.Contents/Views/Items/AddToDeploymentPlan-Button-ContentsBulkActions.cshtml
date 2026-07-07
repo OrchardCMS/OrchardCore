@@ -1,19 +1,2 @@
 <a id="addToDeploymentPlanBulkActions" class="dropdown-item" data-title="@T["Bulk Action"]" data-message="@T["Are you sure you want to add these items to a deployment plan?"]">@T["Add to deployment plan"]</a>
-<script at="Foot" type="module">
-    document.getElementById('addToDeploymentPlanBulkActions')?.addEventListener('click', function () {
-        if (document.querySelectorAll("input[type='checkbox'][name='itemIds']:checked").length > 1) {
-            var data = { ...this.dataset };
-            confirmDialog({
-                ...data, callback: function (r) {
-                    if (r) {
-                        var modalElement = document.getElementById('modalAddToDeploymentPlanContentsBulkActionsDeploymentPlan');
-                        if (modalElement) {
-                            var modal = new bootstrap.Modal(modalElement);
-                            modal.show();
-                        }
-                    }
-                }
-            });
-        }
-    });
-</script>
+<script asp-src="~/OrchardCore.Contents/Scripts/deployment-modals/add-to-deployment-plan-bulk-button.min.js" debug-src="~/OrchardCore.Contents/Scripts/deployment-modals/add-to-deployment-plan-bulk-button.js" at="Foot" type="module"></script>
