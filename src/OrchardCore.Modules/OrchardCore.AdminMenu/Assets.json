@@ -46,5 +46,12 @@
     ],
     "dest": "wwwroot/Scripts/admin-node-editors/",
     "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "menu-list",
+    "source": "Assets/ts/menu-list.ts",
+    "dest": "wwwroot/Scripts/menu-list/",
+    "tags": ["admin", "dashboard", "js"]
   }
 ]

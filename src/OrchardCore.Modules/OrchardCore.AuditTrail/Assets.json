@@ -23,5 +23,12 @@
     "source": "Assets/ts/audit-trail-settings.ts",
     "dest": "wwwroot/Scripts/audit-trail-settings/",
     "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "audit-trail-admin-list",
+    "source": "Assets/ts/audit-trail-admin-list.ts",
+    "dest": "wwwroot/Scripts/audit-trail-admin-list/",
+    "tags": ["admin", "dashboard", "js"]
   }
 ]
