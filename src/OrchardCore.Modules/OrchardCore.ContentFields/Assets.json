@@ -59,5 +59,12 @@
     "source": "Assets/ts/date-field-localized.ts",
     "dest": "wwwroot/Scripts/date-field-localized/",
     "tags": [ "admin", "dashboard", "js" ]
+  },
+  {
+    "action": "parcel",
+    "name": "text-field-editors",
+    "source": [ "Assets/ts/text-field-color.ts", "Assets/ts/text-field-icon-picker.ts" ],
+    "dest": "wwwroot/Scripts/text-field-editors/",
+    "tags": [ "admin", "dashboard", "js" ]
   }
 ]

@@ -2491,6 +2491,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@orchardcore/placements@workspace:src/OrchardCore.Modules/OrchardCore.Placements/Assets":
+  version: 0.0.0-use.local
+  resolution: "@orchardcore/placements@workspace:src/OrchardCore.Modules/OrchardCore.Placements/Assets"
+  languageName: unknown
+  linkType: soft
+
 "@orchardcore/resources@workspace:src/OrchardCore.Modules/OrchardCore.Resources/Assets":
   version: 0.0.0-use.local
   resolution: "@orchardcore/resources@workspace:src/OrchardCore.Modules/OrchardCore.Resources/Assets"

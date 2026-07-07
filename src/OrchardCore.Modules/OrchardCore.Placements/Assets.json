@@ -1,0 +1,9 @@
+[
+  {
+    "action": "parcel",
+    "name": "placement-edit",
+    "source": "Assets/ts/placement-edit.ts",
+    "dest": "wwwroot/Scripts/placement-edit/",
+    "tags": ["admin", "dashboard", "js"]
+  }
+]

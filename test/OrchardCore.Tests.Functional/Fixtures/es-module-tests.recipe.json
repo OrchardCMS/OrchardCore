@@ -1,7 +1,7 @@
 {
   "name": "EsModuleTests",
   "displayName": "EsModuleTests",
-  "description": "Testing the ES-module-converted field/part editors (TextField-IconPicker, HtmlField-Wysiwyg/Trumbowyg/(default CodeMirror), HtmlBodyPart-Wysiwyg/Trumbowyg, LiquidPart) on both a normal full page load and when injected via the FlowPart 'Add Widget' AJAX flow.",
+  "description": "Testing the ES-module-converted field/part editors (TextField-IconPicker, TextField-Color, HtmlField-Wysiwyg/Trumbowyg/(default CodeMirror), HtmlBodyPart-Wysiwyg/Trumbowyg, LiquidPart) on both a normal full page load and when injected via the FlowPart 'Add Widget' AJAX flow.",
   "author": "The Orchard Core Team",
   "website": "https://orchardcore.net",
   "version": "1.0.0",
@@ -232,13 +232,24 @@
               }
             },
             {
+              "FieldName": "TextField",
+              "Name": "ColorField",
+              "Settings": {
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Color",
+                  "Editor": "Color",
+                  "Position": "1"
+                }
+              }
+            },
+            {
               "FieldName": "HtmlField",
               "Name": "WysiwygField",
               "Settings": {
                 "ContentPartFieldSettings": {
                   "DisplayName": "Wysiwyg Content",
                   "Editor": "Wysiwyg",
-                  "Position": "1"
+                  "Position": "2"
                 }
               }
             },
@@ -249,7 +260,7 @@
                 "ContentPartFieldSettings": {
                   "DisplayName": "Trumbowyg Content",
                   "Editor": "Trumbowyg",
-                  "Position": "2"
+                  "Position": "3"
                 }
               }
             },
@@ -259,7 +270,7 @@
               "Settings": {
                 "ContentPartFieldSettings": {
                   "DisplayName": "CodeMirror Content",
-                  "Position": "3"
+                  "Position": "4"
                 }
               }
             }
@@ -297,6 +308,9 @@
                 "EsModuleTestFieldsWidget": {
                   "IconField": {
                     "Text": "fa-solid fa-car"
+                  },
+                  "ColorField": {
+                    "Text": "#336699"
                   },
                   "WysiwygField": {
                     "Html": "<p>Seeded wysiwyg content.</p>"

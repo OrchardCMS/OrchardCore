@@ -17,6 +17,15 @@ namespace OrchardCore.Tests.Functional.Tests.Cms;
 // Trumbowyg HtmlField editor and an IconPicker field on a Widget-stereotype type,
 // combined with a Trumbowyg and a Wysiwyg HtmlBodyPart on two more Widget types, plus a
 // LiquidPart-attached Widget type).
+//
+// Also covers TextField-Color.Edit.cshtml, the first view extracted from an inline
+// `type="module"` script into a real compiled .ts file (text-field-color.ts) that
+// self-registers via the shared observeAndInit() bloom helper instead of a per-instance
+// residual inline call. The AJAX test below adds two instances of the same widget type,
+// which is exactly the scenario observeAndInit exists for: the module's own top-level
+// `observeAndInit(".color_wrapper", initColorField)` call only ever runs once (module
+// bodies are evaluated once per page), so the *second* instance is only initialized if
+// the shared MutationObserver correctly picks up its later AJAX insertion.
 public sealed class EsModuleEditorTests : CmsTestBase<EsModuleTestsFixture>, IClassFixture<EsModuleTestsFixture>
 {
     public EsModuleEditorTests(EsModuleTestsFixture fixture) : base(fixture) { }
@@ -45,6 +54,13 @@ public sealed class EsModuleEditorTests : CmsTestBase<EsModuleTestsFixture>, ICl
     // wrapping settings object.
     private static ILocator CodeMirrorEditorsOf(ILocator widget)
         => widget.Locator(".CodeMirror");
+
+    // The color field's wrapper div always exists statically in the markup, so its mere
+    // presence proves nothing - text-field-color.ts's initColorField() sets its inline
+    // background-color from the color/opacity inputs' values, so only a correctly-computed
+    // background-color proves the module actually ran for *this* wrapper instance.
+    private static ILocator ColorWrapperOf(ILocator widget)
+        => widget.Locator(".color_wrapper");
 
     private static async Task AddWidgetAsync(IPage page, ILocator addWidgetDropdown, ILocator widgets, string contentType, int expectedCountAfter)
     {
@@ -79,6 +95,9 @@ public sealed class EsModuleEditorTests : CmsTestBase<EsModuleTestsFixture>, ICl
         await Assertions.Expect(TrumbowygBoxesOf(widget)).ToHaveCountAsync(2);
         await Assertions.Expect(CodeMirrorEditorsOf(widget)).ToHaveCountAsync(1);
         await Assertions.Expect(IconPickerItemsOf(widget)).Not.ToHaveCountAsync(0);
+
+        // Seeded with "#336699" (rgb(51, 102, 153)).
+        await Assertions.Expect(ColorWrapperOf(widget)).ToHaveCSSAsync("background-color", "rgb(51, 102, 153)");
 
         // The seeded Liquid widget is a separate widget in the same Flow, also present
         // from this same full page load.
@@ -127,6 +146,13 @@ public sealed class EsModuleEditorTests : CmsTestBase<EsModuleTestsFixture>, ICl
             await Assertions.Expect(TrumbowygBoxesOf(instance)).ToHaveCountAsync(2);
             await Assertions.Expect(CodeMirrorEditorsOf(instance)).ToHaveCountAsync(1);
             await Assertions.Expect(IconPickerItemsOf(instance)).Not.ToHaveCountAsync(0);
+
+            // Freshly-added widgets have no seeded value, so the color field falls back to
+            // its "#000000" default - both instances get this, which is exactly the point:
+            // the second instance's module-scoped registration only ever runs once (per the
+            // module-singleton hazard), so it can only have been initialized via the shared
+            // observeAndInit() MutationObserver picking up its later AJAX insertion.
+            await Assertions.Expect(ColorWrapperOf(instance)).ToHaveCSSAsync("background-color", "rgb(0, 0, 0)");
         }
 
         await Assertions.Expect(TrumbowygBoxesOf(WidgetOfType(page, "EsModuleTestHtmlBodyTrumbowyg"))).ToHaveCountAsync(1);

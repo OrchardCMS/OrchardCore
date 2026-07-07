@@ -30,7 +30,7 @@
     <div class="ocat-wrapper" asp-validation-class-for="Nodes">
         <label asp-for="Nodes" class="ocat-label">@T["Placement rules"]</label>
         <div class="ocat-end">
-        <textarea asp-for="Nodes" rows="10" class="form-control"></textarea>
+        <textarea asp-for="Nodes" rows="10" class="form-control placement-nodes-editor"></textarea>
         </div>
     </div>
 
@@ -56,16 +56,4 @@
     </div>
 </form>
 
-<script at="Foot" type="module">
-    var optionsTextArea = document.getElementById('@Html.IdFor(x => x.Nodes)');
-    if (optionsTextArea) {
-        var editor = CodeMirror.fromTextArea(optionsTextArea, {
-            autoRefresh: true,
-            lineNumbers: true,
-            lineWrapping: true,
-            matchBrackets: true,
-            styleActiveLine: true,
-            mode: { name: "javascript" }
-        });
-    }
-</script>
+<script asp-src="~/OrchardCore.Placements/Scripts/placement-edit/placement-edit.min.js" debug-src="~/OrchardCore.Placements/Scripts/placement-edit/placement-edit.js" at="Foot" type="module"></script>
