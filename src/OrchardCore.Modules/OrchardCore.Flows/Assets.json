@@ -25,5 +25,16 @@
     "source": "Assets/ts/bag-part-settings.ts",
     "dest": "wwwroot/Scripts/bag-part-settings/",
     "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "flow-blocks-editors",
+    "source": [
+      "Assets/ts/bag-part-blocks.ts",
+      "Assets/ts/flow-part-blocks.ts",
+      "Assets/ts/content-card-flow-part-blocks.ts"
+    ],
+    "dest": "wwwroot/Scripts/flow-blocks-editors/",
+    "tags": ["admin", "dashboard", "js"]
   }
 ]
