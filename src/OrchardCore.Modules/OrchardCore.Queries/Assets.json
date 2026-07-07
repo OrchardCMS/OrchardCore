@@ -1,0 +1,9 @@
+[
+  {
+    "action": "parcel",
+    "name": "sql-query-editor",
+    "source": "Assets/ts/sql-query.ts",
+    "dest": "wwwroot/Scripts/sql-query/",
+    "tags": ["admin", "dashboard", "js"]
+  }
+]

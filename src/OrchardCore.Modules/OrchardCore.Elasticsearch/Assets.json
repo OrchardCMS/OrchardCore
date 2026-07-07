@@ -1,0 +1,9 @@
+[
+  {
+    "action": "parcel",
+    "name": "elastic-query-editor",
+    "source": "Assets/ts/elastic-query.ts",
+    "dest": "wwwroot/Scripts/elastic-query/",
+    "tags": ["admin", "dashboard", "js"]
+  }
+]

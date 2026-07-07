@@ -10,12 +10,12 @@
     string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), DataLocalizationContext.ContentField(Model.PartFieldDefinition.PartDefinition.Name)];
 }
 
-<div class="ocat-wrapper field-wrapper @($"field-wrapper-{Model.PartFieldDefinition.PartDefinition.Name.HtmlClassify()}-{Model.PartFieldDefinition.Name.HtmlClassify()}" + (Model.PartFieldDefinition.IsNamedPart() ? $" field-wrapper-{Model.PartFieldDefinition.ContentTypePartDefinition.Name.HtmlClassify()}-{Model.PartFieldDefinition.Name.HtmlClassify()}" : string.Empty))" id="@Html.IdFor(x => x.Html)_FieldWrapper">
+<div class="ocat-wrapper field-wrapper @($"field-wrapper-{Model.PartFieldDefinition.PartDefinition.Name.HtmlClassify()}-{Model.PartFieldDefinition.Name.HtmlClassify()}" + (Model.PartFieldDefinition.IsNamedPart() ? $" field-wrapper-{Model.PartFieldDefinition.ContentTypePartDefinition.Name.HtmlClassify()}-{Model.PartFieldDefinition.Name.HtmlClassify()}" : string.Empty)) html-field-monaco" id="@Html.IdFor(x => x.Html)_FieldWrapper" data-options="@(string.IsNullOrWhiteSpace(monacoSettings.Options) ? "{}" : monacoSettings.Options)">
     <label asp-for="Html" class="ocat-label">@localizedFieldName</label>
     <div class="ocat-end">
         @await DisplayAsync(await New.ShortcodeModal())
-        <div id="@Html.IdFor(x => x.Html)_editor" asp-for="Text" style="min-height: 400px;" class="form-control" dir="@culture.GetLanguageDirection()"></div>
-        <textarea asp-for="Html" hidden>@Html.Raw(Model.Html)</textarea>
+        <div id="@Html.IdFor(x => x.Html)_editor" asp-for="Text" style="min-height: 400px;" class="form-control html-field-monaco-container" dir="@culture.GetLanguageDirection()"></div>
+        <textarea asp-for="Html" hidden class="html-field-monaco-value">@Html.Raw(Model.Html)</textarea>
         @if (!string.IsNullOrEmpty(settings.Hint))
         {
             <span class="hint">@settings.Hint</span>
@@ -24,66 +24,4 @@
 </div>
 
 <script asp-name="monaco" at="Foot"></script>
-<script at="Foot" depends-on="monaco" type="module">
-    const divEditor = document.getElementById('@Html.IdFor(x => x.Html)_editor');
-    if (divEditor) {
-        require(['vs/editor/editor.main'], function () {
-            var settings = @Html.Raw(string.IsNullOrWhiteSpace(monacoSettings.Options) ? "{}" : monacoSettings.Options);
-            if (settings.automaticLayout == undefined) {
-                settings.automaticLayout = true;
-            }
-            settings.language = 'html';
-
-            var html = document.documentElement;
-            const mutationObserver = new MutationObserver(setTheme);
-            mutationObserver.observe(html, { attributes: true });
-
-            function setTheme() {
-                var theme = html.dataset.bsTheme;
-                if (theme === 'dark' || (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                    monaco.editor.setTheme('vs-dark')
-                } else {
-                    monaco.editor.setTheme('vs')
-                }
-            }
-
-            setTheme();
-
-            var editor = monaco.editor.create(divEditor, settings);
-            var textArea = document.getElementById('@Html.IdFor(x => x.Html)');
-
-            editor.getModel().onDidChangeContent((event) => {
-                textArea.value = editor.getValue();
-                document.dispatchEvent(new Event('contentpreview:render'));
-            });
-
-            const shortcodesAction = {
-                id: "shortcodes",
-                label: "Add Shortcode",
-                run: function (editor) {
-                    shortcodesApp.init(function (value) {
-                        if (value) {
-                            var selection = editor.getSelection();
-                            var text = value;
-                            var op = { range: selection, text: text, forceMoveMarkers: true };
-                            editor.executeEdits("shortcodes", [op]);
-                        }
-                        editor.focus();
-                    })
-                },
-                contextMenuGroupId: 'orchardcore',
-                contextMenuOrder: 0,
-                keybindings: [
-                    monaco.KeyMod.Alt | monaco.KeyCode.KeyS,
-                ]
-            }
-            editor.addAction(shortcodesAction);
-
-            editor.getModel().setValue(textArea.value);
-
-            window.addEventListener("submit", function () {
-                textArea.value = editor.getValue();
-            });
-        });
-    }
-</script>
+<script asp-src="~/OrchardCore.ContentFields/Scripts/text-field-editors/html-field-monaco.min.js" debug-src="~/OrchardCore.ContentFields/Scripts/text-field-editors/html-field-monaco.js" depends-on="monaco" at="Foot" type="module"></script>

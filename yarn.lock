@@ -2413,6 +2413,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@orchardcore/elasticsearch@workspace:src/OrchardCore.Modules/OrchardCore.Elasticsearch/Assets":
+  version: 0.0.0-use.local
+  resolution: "@orchardcore/elasticsearch@workspace:src/OrchardCore.Modules/OrchardCore.Elasticsearch/Assets"
+  languageName: unknown
+  linkType: soft
+
 "@orchardcore/flows@workspace:src/OrchardCore.Modules/OrchardCore.Flows/Assets":
   version: 0.0.0-use.local
   resolution: "@orchardcore/flows@workspace:src/OrchardCore.Modules/OrchardCore.Flows/Assets"
@@ -2448,6 +2454,12 @@ __metadata:
 "@orchardcore/localization@workspace:src/OrchardCore.Modules/OrchardCore.Localization/Assets":
   version: 0.0.0-use.local
   resolution: "@orchardcore/localization@workspace:src/OrchardCore.Modules/OrchardCore.Localization/Assets"
+  languageName: unknown
+  linkType: soft
+
+"@orchardcore/lucene@workspace:src/OrchardCore.Modules/OrchardCore.Lucene/Assets":
+  version: 0.0.0-use.local
+  resolution: "@orchardcore/lucene@workspace:src/OrchardCore.Modules/OrchardCore.Lucene/Assets"
   languageName: unknown
   linkType: soft
 
@@ -2494,6 +2506,12 @@ __metadata:
 "@orchardcore/placements@workspace:src/OrchardCore.Modules/OrchardCore.Placements/Assets":
   version: 0.0.0-use.local
   resolution: "@orchardcore/placements@workspace:src/OrchardCore.Modules/OrchardCore.Placements/Assets"
+  languageName: unknown
+  linkType: soft
+
+"@orchardcore/queries@workspace:src/OrchardCore.Modules/OrchardCore.Queries/Assets":
+  version: 0.0.0-use.local
+  resolution: "@orchardcore/queries@workspace:src/OrchardCore.Modules/OrchardCore.Queries/Assets"
   languageName: unknown
   linkType: soft
 

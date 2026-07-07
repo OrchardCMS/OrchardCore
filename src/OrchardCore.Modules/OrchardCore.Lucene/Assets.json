@@ -1,0 +1,9 @@
+[
+  {
+    "action": "parcel",
+    "name": "lucene-query-editor",
+    "source": "Assets/ts/lucene-query.ts",
+    "dest": "wwwroot/Scripts/lucene-query/",
+    "tags": ["admin", "dashboard", "js"]
+  }
+]

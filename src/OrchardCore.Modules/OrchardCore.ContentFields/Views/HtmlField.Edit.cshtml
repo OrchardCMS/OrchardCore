@@ -13,7 +13,7 @@
     <label asp-for="Html" class="ocat-label">@localizedFieldName</label>
     <div class="ocat-end">
         @await DisplayAsync(await New.ShortcodeModal())
-        <textarea asp-for="Html" rows="5" class="form-control content-preview-text" dir="@culture.GetLanguageDirection()"></textarea>
+        <textarea asp-for="Html" rows="5" class="form-control content-preview-text html-field-codemirror" dir="@culture.GetLanguageDirection()"></textarea>
         @if (!string.IsNullOrEmpty(settings.Hint))
         {
             <span class="hint">@settings.Hint</span>
@@ -30,25 +30,4 @@
 <script asp-name="codemirror-mode-htmlmixed" at="Foot"></script>
 <script asp-name="codemirror-mode-javascript" at="Foot"></script>
 <script asp-name="codemirror-mode-xml" at="Foot"></script>
-<script at="Foot" type="module">
-    var optionsTextArea = document.getElementById('@Html.IdFor(x => x.Html)');
-@* When the field is rendered by a flow part only the elements scripts are rendered, so the html element will not exist. *@
-    if (optionsTextArea) {
-        var editor = CodeMirror.fromTextArea(optionsTextArea, {
-            autoCloseTags: true,
-            autoRefresh: true,
-            lineNumbers: true,
-            lineWrapping: true,
-            matchBrackets: true,
-            styleActiveLine: true,
-            mode: { name: "htmlmixed" }
-        });
-
-        initializeCodeMirrorShortcodeWrapper(editor);
-
-        editor.on('change', function (cmEditor) {
-            cmEditor.save();
-            document.dispatchEvent(new Event('contentpreview:render'));
-        });
-    }
-</script>
+<script asp-src="~/OrchardCore.ContentFields/Scripts/text-field-editors/html-field.min.js" debug-src="~/OrchardCore.ContentFields/Scripts/text-field-editors/html-field.js" at="Foot" type="module"></script>

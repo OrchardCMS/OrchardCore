@@ -63,7 +63,15 @@
   {
     "action": "parcel",
     "name": "text-field-editors",
-    "source": [ "Assets/ts/text-field-color.ts", "Assets/ts/text-field-icon-picker.ts" ],
+    "source": [
+      "Assets/ts/text-field-color.ts",
+      "Assets/ts/text-field-icon-picker.ts",
+      "Assets/ts/html-field.ts",
+      "Assets/ts/text-field-codemirror.ts",
+      "Assets/ts/text-field-monaco.ts",
+      "Assets/ts/html-field-monaco.ts",
+      "Assets/ts/monaco-json-settings-editor-entry.ts"
+    ],
     "dest": "wwwroot/Scripts/text-field-editors/",
     "tags": [ "admin", "dashboard", "js" ]
   }
