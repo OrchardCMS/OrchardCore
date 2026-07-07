@@ -33,7 +33,7 @@
     </div>
 
     <div class="mb-3">
-        <ul class="list-group with-checkbox" id="rewrite-rules-sortable-list">
+        <ul class="list-group with-checkbox bulk-select-list" id="rewrite-rules-sortable-list" data-selected-text="@T["selected"]">
                 @if (Model.Models.Count > 0)
                 {
                     int startIndex = 0;
@@ -141,8 +141,4 @@
     </div>
 </div>
 
-<script asp-src="~/OrchardCore.Indexing/Scripts/admin-ui.min.js" debug-src="~/OrchardCore.Indexing/Scripts/admin-ui.min.js" asp-name="generic-admin-ui" at="Foot"></script>
-
-<script at="Foot" depends-on="generic-admin-ui" type="module">
-    AdminIndexList.initialize('@T["selected"]');
-</script>
+<script asp-src="~/OrchardCore.Indexing/Scripts/indexing-admin-index/indexing-admin-index.min.js" debug-src="~/OrchardCore.Indexing/Scripts/indexing-admin-index/indexing-admin-index.js" at="Foot" type="module"></script>

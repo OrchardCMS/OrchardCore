@@ -92,6 +92,12 @@ declare class QRCode {
     constructor(element: HTMLElement, options: Record<string, unknown>);
 }
 
+// OrchardCore.UrlRewriting/Assets/js/sortable-rules.js - a classic global shared by any
+// admin list needing drag-to-reorder + a single AJAX call to persist the new position.
+declare const sortingListManager: {
+    create(selector: string, sortUrl: string, errorMessage?: string): void;
+};
+
 // EasyMDE (markdown Wysiwyg editor) and its toolbar/shortcode-wrapper helper, both loaded as
 // classic global resources (easymde.min.js, OrchardCore.Markdown's mde.mediatoolbar.js).
 interface EasyMdeInstance {
@@ -135,6 +141,10 @@ declare const iconPickerVue: {
 
 // Defined by OrchardCore.AdminMenu (Assets/js/admin-menu-permission-picker.js), consumed here.
 declare function initAdminMenuPermissionsPicker(element: Element | null): void;
+
+// Defined by OrchardCore.Menu (Assets/js/menu-permission-picker.js) - a separate, near-identical
+// copy of the picker above for MenuItemPermissionPart, unrelated to the AdminMenu tree editors.
+declare function initMenuPermissionsPicker(element: Element | null): void;
 
 interface NoUiSliderInstance {
     set(value: number | string): void;

@@ -119,5 +119,12 @@
     "source": "Assets/ts/user-picker-field-settings.ts",
     "dest": "wwwroot/Scripts/user-picker-field-settings/",
     "tags": [ "admin", "dashboard", "js" ]
+  },
+  {
+    "action": "parcel",
+    "name": "vue-multiselect-fields",
+    "source": "Assets/ts/vue-multiselect-fields.ts",
+    "dest": "wwwroot/Scripts/vue-multiselect-fields/",
+    "tags": [ "admin", "dashboard", "js" ]
   }
 ]

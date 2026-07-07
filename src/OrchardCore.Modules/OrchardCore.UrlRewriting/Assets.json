@@ -7,9 +7,10 @@
     "tags": ["admin", "dashboard", "js"]
   },
   {
-    "action": "min",
-    "name": "url-rewriting",
-    "source": "Assets/js/admin-ui.js",
+    "action": "parcel",
+    "name": "url-rewriting-admin-index",
+    "source": "Assets/ts/url-rewriting-admin-index.ts",
+    "dest": "wwwroot/Scripts/url-rewriting-admin-index/",
     "tags": ["admin", "dashboard", "js"]
   }
 ]
