@@ -9,7 +9,15 @@
 <zone Name="Title"><h1>@RenderTitleSegments(T["Edit an application"])</h1></zone>
 
 <div asp-validation-summary="ModelOnly"></div>
-<form asp-action="Edit" method="post" class="no-multisubmit">
+<form asp-action="Edit" method="post" class="no-multisubmit openid-application-editor"
+      data-settings-configured="@(settings != null ? "true" : "false")"
+      data-allow-authorization-code-flow="@(settings?.AllowAuthorizationCodeFlow == true ? "true" : "false")"
+      data-allow-client-credentials-flow="@(settings?.AllowClientCredentialsFlow == true ? "true" : "false")"
+      data-allow-implicit-flow="@(settings?.AllowImplicitFlow == true ? "true" : "false")"
+      data-allow-hybrid-flow="@(settings?.AllowHybridFlow == true ? "true" : "false")"
+      data-allow-password-flow="@(settings?.AllowPasswordFlow == true ? "true" : "false")"
+      data-allow-refresh-token-flow="@(settings?.AllowRefreshTokenFlow == true ? "true" : "false")"
+      data-logout-endpoint-configured="@(settings?.LogoutEndpointPath.HasValue == true ? "true" : "false")">
     <input type="hidden" asp-for="Id" />
 
     <div class="ocat-wrapper" asp-validation-class-for="DisplayName">
@@ -23,8 +31,8 @@
     <div class="ocat-wrapper" asp-validation-class-for="Type">
         <label asp-for="Type" class="ocat-label">@T["Type"]</label>
         <div class="ocat-end">
-            <select asp-for="Type" class="form-select">
-                <option value="@OpenIddictConstants.ClientTypes.Confidential">@T["Confidential client"]</option>
+            <select asp-for="Type" class="form-select" data-openid-field="Type">
+                <option value="@OpenIddictConstants.ClientTypes.Confidential" data-is-confidential="true">@T["Confidential client"]</option>
                 <option value="@OpenIddictConstants.ClientTypes.Public">@T["Public client"]</option>
             </select>
             <div class="hint">@T["Confidential applications MUST send their client secret when communicating with the token and revocation endpoints. This guarantees that only the legit client can exchange an authorization code or get a refresh token."]</div>
@@ -35,7 +43,7 @@
         <label asp-for="ClientId" class="ocat-label">@T["Client Id"]</label>
         <div class="ocat-end">
             <div class="input-group">
-                <input asp-for="ClientId" class="form-control" autocomplete="new-password" />
+                <input asp-for="ClientId" class="form-control" autocomplete="new-password" data-openid-field="ClientId" />
                 <button tabindex="-1" class="btn btn-outline-secondary" type="button" id="copyClientId" title="@T["Click here to copy the value"]"><i class="fa-solid fa-copy"></i></button>
                 <button tabindex="-1" class="btn btn-outline-secondary" type="button" id="generateClientId" title="@T["Click here to generate new value"]"><i class="fa-solid fa-shuffle"></i></button>
             </div>
@@ -47,7 +55,7 @@
         <label asp-for="ClientSecret" class="ocat-label">@T["Client Secret"]</label>
         <div class="ocat-end">
             <div class="input-group">
-                <input type="password" asp-for="ClientSecret" placeholder="@T["enter a new value to replace the existing secret"]" class="form-control" autocomplete="new-password" />
+                <input type="password" asp-for="ClientSecret" placeholder="@T["enter a new value to replace the existing secret"]" class="form-control" autocomplete="new-password" data-openid-field="ClientSecret" />
                 <button tabindex="-1" class="btn btn-outline-secondary" type="button" id="toggleClientSecret" title="@T["Click here toggle secret visibility"]"><i class="icon fa-solid fa-eye"></i></button>
                 <button tabindex="-1" class="btn btn-outline-secondary" type="button" id="copyClientSecret" title="@T["Click here to copy the value"]"><i class="fa-solid fa-copy"></i></button>
                 <button tabindex="-1" class="btn btn-outline-secondary" type="button" id="generateClientSecret" title="@T["Click here to generate new value"]"><i class="fa-solid fa-shuffle"></i></button>
@@ -259,263 +267,5 @@
         </div>
     </div>
 </form>
-<script at="Foot" asp-name="credential-helpers"></script>
-<script at="Foot" depends-on="credential-helpers" type="module">
-
-    const clientIdElement = document.getElementById('@Html.IdFor(m => m.ClientId)');
-        const clientSecretElement = document.getElementById('@Html.IdFor(m => m.ClientSecret)');
-        const toggleClientSecretElement = document.getElementById('toggleClientSecret');
-        const copyClientSecretElement = document.getElementById('copyClientSecret');
-        const copyClientIdElement = document.getElementById('copyClientId');
-        const generateClientIdElement = document.getElementById('generateClientId');
-        const generateClientSecretElement = document.getElementById('generateClientSecret');
-
-        toggleClientSecretElement.addEventListener('click', (e) => {
-            togglePasswordVisibility(clientSecretElement, toggleClientSecretElement)
-        });
-
-        copyClientIdElement.addEventListener('click', (e) => {
-            copyToClipboard(clientIdElement.value);
-        });
-
-        copyClientSecretElement.addEventListener('click', (e) => {
-            copyToClipboard(clientSecretElement.value);
-        });
-
-        generateClientIdElement.addEventListener('click', (e) => {
-            clientIdElement.value = randomUUID({ includeHyphens: false });
-        });
-
-        generateClientSecretElement.addEventListener('click', (e) => {
-            clientSecretElement.value = generateStrongPassword();
-        });
-
-    //<![CDATA[
-    function getElement(id) {
-            return document.getElementById(id);
-        }
-
-        function setDisplay(element, show) {
-            if (element) {
-                element.style.display = show ? '' : 'none';
-            }
-        }
-
-        function setCollapse(element, action) {
-            if (element) {
-                bootstrap.Collapse.getOrCreateInstance(element, { toggle: false })[action]();
-            }
-        }
-
-        refreshForbiddenFlows();
-        refreshClientSecret('@OpenIddictConstants.ClientTypes.Confidential');
-        refreshFlows();
-        refreshOfflineAccessTip(false);
-
-        function refreshForbiddenFlows() {
-    @if (settings == null)
-    {
-        <text>
-            setCollapse(getElement("AllowAuthorizationCodeFlowFieldSet"), "show");
-            setCollapse(getElement("AllowClientCredentialsFlowFieldSet"), "show");
-            setCollapse(getElement("AllowImplicitFlowFieldSet"), "show");
-            setCollapse(getElement("AllowPasswordFlowFieldSet"), "show");
-            setCollapse(getElement("AllowRefreshTokenFlowFieldSet"), "show");
-            setCollapse(getElement("AllowLogoutEndpointFieldSet"), "show");
-        </text>
-    }
-    else
-    {
-        if (settings.AllowAuthorizationCodeFlow)
-        {
-            <text>setCollapse(getElement("AllowAuthorizationCodeFlowFieldSet"), "show"); </text>
-        }
-        else
-        {
-            <text>
-                setCollapse(getElement("AllowAuthorizationCodeFlowFieldSet"), "hide");
-                getElement("AllowAuthorizationCodeFlow").checked = false;
-            </text>
-        }
-
-        if (settings.AllowClientCredentialsFlow)
-        {
-            <text>setCollapse(getElement("AllowClientCredentialsFlowFieldSet"), "show"); </text>
-        }
-        else
-        {
-            <text>
-                setCollapse(getElement("AllowClientCredentialsFlowFieldSet"), "hide");
-                getElement("AllowClientCredentialsFlow").checked = false;
-            </text>
-        }
-
-        if (settings.AllowImplicitFlow)
-        {
-            <text>setCollapse(getElement("AllowImplicitFlowFieldSet"), "show"); </text>
-        }
-        else
-        {
-            <text>
-                setCollapse(getElement("AllowImplicitFlowFieldSet"), "hide");
-                getElement("AllowImplicitFlow").checked = false;
-            </text>
-        }
-
-        if (settings.AllowHybridFlow)
-        {
-            <text>setCollapse(getElement("AllowHybridFlowFieldSet"), "show"); </text>
-        }
-        else
-        {
-            <text>
-                setCollapse(getElement("AllowHybridFlowFieldSet"), "hide");
-                if (getElement("AllowHybridFlowFlow")) {
-                    getElement("AllowHybridFlowFlow").checked = false;
-                }
-            </text>
-        }
-
-        if (settings.AllowPasswordFlow)
-        {
-            <text>setCollapse(getElement("AllowPasswordFlowFieldSet"), "show"); </text>
-        }
-        else
-        {
-            <text>
-                setCollapse(getElement("AllowPasswordFlowFieldSet"), "hide");
-                getElement("AllowPasswordFlow").checked = false;
-            </text>
-        }
-
-        if (settings.AllowRefreshTokenFlow)
-        {
-            <text>setCollapse(getElement("AllowRefreshTokenFlowFieldSet"), "show"); </text>
-        }
-        else
-        {
-            <text>
-                setCollapse(getElement("AllowRefreshTokenFlowFieldSet"), "hide");
-                getElement("AllowRefreshTokenFlow").checked = false;
-            </text>
-        }
-
-        if (settings.LogoutEndpointPath.HasValue)
-        {
-            <text>setCollapse(getElement("AllowLogoutEndpointFieldSet"), "show"); </text>
-        }
-        else
-        {
-            <text>
-                setCollapse(getElement("AllowLogoutEndpointFieldSet"), "hide");
-                getElement("AllowLogoutEndpointFieldSet").checked = false;
-            </text>
-        }
-    }
-            }
-
-        getElement("Type").addEventListener('change', function () {
-            refreshClientSecret();
-        });
-        function refreshClientSecret(defaultType) {
-            var type = getElement("Type"), secret = getElement("ClientSecret"), secretWrapper = getElement('ClientSecretWrapper');
-
-            var allowClientCredentialsFlow = getElement("AllowClientCredentialsFlow");
-            if (type.value === '@OpenIddictConstants.ClientTypes.Confidential') {
-                setDisplay(secretWrapper, true);
-                allowClientCredentialsFlow.disabled = false;
-            }
-            else {
-                secret.value = "";
-                setDisplay(secretWrapper, false);
-                allowClientCredentialsFlow.disabled = true;
-                allowClientCredentialsFlow.checked = false;
-            }
-
-            var clientSecretHints = document.querySelectorAll("#AllowPasswordFlowRecommendedHint, #AllowAuthorizationCodeFlowRecommendedHint, #AllowImplicitFlowRecommendedHint, #AllowRefreshTokenFlowRecommendedHint");
-
-            if (defaultType === getElement("Type").value)
-                return;
-
-            if (getElement("Type").value === '@OpenIddictConstants.ClientTypes.Confidential') {
-                clientSecretHints.forEach(function (element) { element.innerText = element.innerText.replace("client_id, ", "client_id, client_secret, "); });
-            }
-            else {
-                clientSecretHints.forEach(function (element) { element.innerText = element.innerText.replace("client_id, client_secret, ", "client_id, "); });
-            }
-        }
-
-        getElement("AllowRefreshTokenFlow").addEventListener('change', function () {
-            refreshOfflineAccessTip();
-        });
-
-        function refreshOfflineAccessTip(defaultValue) {
-            var offlineAccessHints = document.querySelectorAll("#AllowPasswordFlowRecommendedHint, #AllowAuthorizationCodeFlowRecommendedHint");
-            var allowRefreshTokenFlow = getElement("AllowRefreshTokenFlow");
-            if (defaultValue === allowRefreshTokenFlow.checked)
-                return;
-
-            if (allowRefreshTokenFlow.checked) {
-                offlineAccessHints.forEach(function (element) { element.innerText = element.innerText.replace("roles", "roles, offline_access"); });
-            }
-            else {
-                offlineAccessHints.forEach(function (element) { element.innerText = element.innerText.replace(", offline_access", ""); });
-            }
-        }
-
-        document.querySelectorAll("#AllowClientCredentialsFlow, #AllowPasswordFlow, #AllowAuthorizationCodeFlow, #AllowImplicitFlow, #AllowHybridFlow, #AllowRefreshTokenFlow").forEach(function (element) {
-            element.addEventListener('change', function () {
-                refreshFlows();
-            });
-        });
-
-        function refreshFlows() {
-            refreshRoleGroup();
-            refreshAllowRefreshTokenFlowVisibility();
-            refreshRedirectSettings();
-        }
-        function refreshRoleGroup() {
-            setCollapse(getElement("RoleGroup"), getElement("AllowClientCredentialsFlow").checked ? "show" : "hide");
-        }
-        function refreshAllowRefreshTokenFlowVisibility() {
-            var allowRefreshTokenFlow = getElement("AllowRefreshTokenFlow");
-
-            if (getElement("AllowPasswordFlow").checked ||
-                getElement("AllowAuthorizationCodeFlow").checked ||
-                getElement("AllowHybridFlow").checked) {
-                allowRefreshTokenFlow.disabled = false;
-            }
-            else {
-                allowRefreshTokenFlow.disabled = true;
-                allowRefreshTokenFlow.checked = false;
-                setCollapse(getElement("AllowRefreshTokenFlowRecommendedHint"), "hide");
-                refreshOfflineAccessTip();
-            }
-        }
-        function refreshRedirectSettings() {
-            var redirectSection = getElement("RedirectSection");
-            var skipConsent = getElement("SkipConsent");
-            var postLogoutRedirecUris = getElement("postLogoutRedirectUris")
-
-            if (getElement("AllowImplicitFlow").checked ||
-                getElement("AllowAuthorizationCodeFlow").checked ||
-                getElement("AllowHybridFlow").checked) {
-                setCollapse(redirectSection, "show");
-                if (getElement("AllowLogoutEndpoint").checked) {
-                    setCollapse(postLogoutRedirecUris, "show");
-                }
-                else {
-                    setCollapse(postLogoutRedirecUris, "hide");
-                }
-            }
-            else {
-                if (skipConsent) {
-                    skipConsent.checked = false;
-                }
-                setCollapse(redirectSection, "hide");
-                getElement("AllowLogoutEndpoint").checked = false;
-                setCollapse(postLogoutRedirecUris, "hide");
-            }
-        }
-    //]]>
-</script>
+<script asp-name="credential-helpers" at="Foot"></script>
+<script asp-src="~/OrchardCore.OpenId/Scripts/openid-application-editor/application-edit.min.js" debug-src="~/OrchardCore.OpenId/Scripts/openid-application-editor/application-edit.js" depends-on="credential-helpers" at="Foot" type="module"></script>

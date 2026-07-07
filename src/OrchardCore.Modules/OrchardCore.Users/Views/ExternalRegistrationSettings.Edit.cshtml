@@ -62,7 +62,7 @@
 <div class="ocat-wrapper" asp-validation-class-for="UseScriptToGenerateUsername">
     <div class="ocat-end-offset">
         <div class="form-check">
-            <input type="checkbox" class="form-check-input" asp-for="UseScriptToGenerateUsername" />
+            <input type="checkbox" class="form-check-input external-registration-use-script" asp-for="UseScriptToGenerateUsername" />
             <span asp-validation-for="UseScriptToGenerateUsername"></span>
             <label class="form-check-label" asp-for="UseScriptToGenerateUsername">@T["Use a script to generate userName based on external provider claims"]</label>
             <span class="hint dashed">@T["If selected, any IExternalLoginEventHandlers defined in modules are not triggered"]</span>
@@ -101,7 +101,7 @@
 
     <div class="ocat-wrapper" asp-validation-class-for="GenerateUsernameScript">
         <div class="ocat-end-offset">
-            <textarea asp-for="GenerateUsernameScript" rows="5" class="form-control content-preview-text"></textarea>
+            <textarea asp-for="GenerateUsernameScript" rows="5" class="form-control content-preview-text external-registration-script-value"></textarea>
         </div>
     </div>
 
@@ -112,64 +112,4 @@
     </div>
 </div>
 
-<script at="Foot" type="module">
-    function resetScript(element) {
-
-        if (element.editor.doc.getValue() != '') {
-            return;
-        }
-
-        element.editor.doc.setValue(`/* Uncomment to map AzureAd
-// Uncomment to output the context variable in the logs
-// log("warning", JSON.stringify(context));
-switch (context.loginProvider) {
-    case "AzureAd":
-        context.userName = "azad" + uuid();
-        break;
-    default:
-        log("Warning", "Provider " + context.loginProvider + " was not handled");
-        // Uncomment to generate a username as a uuid
-        // context.userName = "u" + uuid();
-        break;
-}
-*/
-`);
-    }
-
-    function toggleEditorState(element) {
-        if (element.checked) {
-            document.getElementById("ScriptToGenerateUsername_Wrapper").classList.remove('d-none');
-            document.getElementById('@Html.IdFor(x => x.GenerateUsernameScript)').classList.remove('d-none');
-        } else {
-            document.getElementById("ScriptToGenerateUsername_Wrapper").classList.add('d-none');
-            document.getElementById('@Html.IdFor(x => x.GenerateUsernameScript)').classList.add('d-none');
-        }
-    }
-    document.getElementById('ResetScriptButton').addEventListener('click', (e) => {
-
-        var textArea = document.getElementById('@Html.IdFor(x => x.GenerateUsernameScript)');
-
-        resetScript(textArea);
-    });
-
-    var useGenerateUserName = document.getElementById('@Html.IdFor(x => x.UseScriptToGenerateUsername)');
-
-    useGenerateUserName.addEventListener("change", (e) => toggleEditorState(e.target));
-    toggleEditorState(useGenerateUserName);
-
-    var textArea = document.getElementById('@Html.IdFor(x => x.GenerateUsernameScript)');
-    if (textArea != null) {
-        var editor = CodeMirror.fromTextArea(textArea, {
-            autoRefresh: true,
-            lineNumbers: true,
-            styleActiveLine: true,
-            matchBrackets: true,
-            autoCloseTags: true,
-            mode: "javascript"
-        });
-
-        textArea.editor = editor;
-
-        resetScript(textArea);
-    }
-</script>
+<script asp-src="~/OrchardCore.Users/Scripts/user-editors/external-registration-settings.min.js" debug-src="~/OrchardCore.Users/Scripts/user-editors/external-registration-settings.js" at="Foot" type="module"></script>

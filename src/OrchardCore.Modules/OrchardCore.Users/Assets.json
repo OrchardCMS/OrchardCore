@@ -17,7 +17,9 @@
     "source": [
       "Assets/ts/user-fields.ts",
       "Assets/ts/authenticator-app.ts",
-      "Assets/ts/request-verification-code.ts"
+      "Assets/ts/request-verification-code.ts",
+      "Assets/ts/external-login-settings.ts",
+      "Assets/ts/external-registration-settings.ts"
     ],
     "dest": "wwwroot/Scripts/user-editors/",
     "tags": ["admin", "dashboard", "js"]

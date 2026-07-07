@@ -21,7 +21,7 @@
 <div class="ocat-wrapper" asp-validation-class-for="UseScriptToSyncProperties">
     <div class="ocat-end-offset">
         <div class="form-check">
-            <input type="checkbox" class="form-check-input" asp-for="UseScriptToSyncProperties" />
+            <input type="checkbox" class="form-check-input external-login-use-script" asp-for="UseScriptToSyncProperties" />
             <span asp-validation-for="UseScriptToSyncProperties"></span>
             <label class="form-check-label" asp-for="UseScriptToSyncProperties">@T["Use a script to set user roles, user claims and user properties based on external provider claims"]</label>
             <span class="hint dashed">
@@ -40,147 +40,10 @@
 <div class="ocat-wrapper" asp-validation-class-for="SyncPropertiesScript" id="SyncRolesScript_wrapper">
     <div class="ocat-end-offset">
         <button type="button" class="btn btn-secondary mb-2" onclick="resetScript()">@T["Reset Script"]</button>
-        <div id="@Html.IdFor(x => x.SyncPropertiesScript)_editor" asp-for="Text" style="min-height: 400px;" class="form-control"></div>
-        <textarea asp-for="SyncPropertiesScript" hidden>@Html.Raw(Model.SyncPropertiesScript)</textarea>
+        <div id="@Html.IdFor(x => x.SyncPropertiesScript)_editor" asp-for="Text" style="min-height: 400px;" class="form-control external-login-script-editor"></div>
+        <textarea asp-for="SyncPropertiesScript" hidden class="external-login-script-value">@Html.Raw(Model.SyncPropertiesScript)</textarea>
     </div>
 </div>
 
 <script asp-name="monaco" at="Foot"></script>
-<script at="Foot" depends-on="monaco" type="module">
-
-    window.resetScript = function resetScript() {
-        codeEditor.getModel().setValue(`/* Uncomment to map AzureAd
-switch (context.loginProvider) {
-    case "AzureAd":
-        context.claimsToUpdate={"displayName":"UserDisplayName"}
-        context.propertiesToUpdate={"UserProfile":{"UserProfile":{"DisplayName":"UserDisplayNameValue"}}}
-        context.externalClaims.forEach(claim => {
-            if (claim.type === "http://schemas.microsoft.com/ws/2008/06/identity/claims/role") {
-                switch (claim.value) {
-                    case "Writer":
-                        context.rolesToAdd.push("Author");
-                        break;
-                    case "Admin":
-                        context.rolesToAdd.push("Administrator");
-                        break;
-                    default:
-                        log("Warning", "Role " + claim.value + " was not handled");
-                        break;
-                }
-            }
-        });
-        break;
-    default:
-        log("Warning", "Provider " + context.loginProvider + " was not handled");
-        break;
-}
-*/
-`);
-    }
-
-// don't format here.
-const suggestion = `/**                                                                     
-* Use the loginProvider and externalClaims properties of the context variable to inspect
-* who authenticated the user and with what claims. Check currentRoles property and apply
-* your business logic to fill the rolesToAdd and rolesToRemove arrays in order to update
-*/
-const context = {} as Context;
-type Context = {
-    readonly user: {  
-        userName: string;
-        userRoles: string[];
-        userClaims: { claimType: string; claimValue: string; }[];
-        userProperties: { [key: string]: string };
-    },
-    readonly loginProvider: string,
-    rolesToAdd: string[];
-    rolesToRemove: string[];
-    claimsToUpdate: { claimType: string; claimValue: string; }[];
-    claimsToRemove: { claimType: string; claimValue: string; }[];
-    propertiesToUpdate: { [key: string]: string };
-    externalClaims: readonly [{
-        valueType: string;
-        type: string;
-        value: string;
-        subject: string;
-        issuer: string;
-        originalIssuer: string;
-        properties: { [key: string]: string };
-    }]
-}`
-    var codeEditor;
-    require(['vs/editor/editor.main'], function () {
-
-            const html = document.documentElement;
-            const mutationObserver = new MutationObserver(setTheme);
-            mutationObserver.observe(html, { attributes: true });
-
-            function setTheme() {
-                var theme = html.dataset.bsTheme;
-                if (theme === 'dark' || (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                    monaco.editor.setTheme('vs-dark')
-                } else {
-                    monaco.editor.setTheme('vs')
-                }
-            }
-            setTheme();
-
-            var editor = monaco.editor.create(document.getElementById('@Html.IdFor(x => x.SyncPropertiesScript)_editor'), {
-                automaticLayout: true,
-                language: "javascript"
-            });
-            codeEditor = editor;
-            monaco.languages.typescript.javascriptDefaults.addExtraLib(suggestion + "const context = {} as Context", 'suggestion.d.ts');
-
-            var docEditor = monaco.editor.create(document.getElementById('doc_editor'), {
-                value: suggestion,
-                automaticLayout: true,
-                language: "typescript",
-                readOnly: true, // make the editor read-only
-                lineNumbers: "off", // hide line numbers
-                glyphMargin: false, // hide the glyph margin (which includes the line numbers)
-                lineDecorationsWidth: 0, // set the line decorations width to 0 to hide the line numbers
-                minimap: { enabled: false }, // hide the minimap
-                scrollbar: { horizontal: "hidden", vertical: "hidden" }, // hide the scrollbar
-                overviewRuler: { visible: false }, // hide the overview ruler
-                scrollbar: {
-                    handleMouseWheel: false
-                }
-            });
-            var textArea = document.getElementById('@Html.IdFor(x => x.SyncPropertiesScript)');
-            if (!textArea.value) {
-                resetScript();
-            } else {
-                editor.getModel().setValue(textArea.value);
-            }
-
-            window.addEventListener("submit", function () {
-                textArea.value = editor.getValue();
-            });
-        });
-
-</script>
-
-<script at="Foot" type="module">
-    function toggleEditorState() {
-        var syncRolesCheckbox = document.getElementById('@Html.IdFor(x => x.UseScriptToSyncProperties)');
-        var editorWrappers = document.querySelectorAll("#SyncRolesScript_wrapper,#doc_editor_wrapper");
-
-        if (syncRolesCheckbox.checked) {
-            editorWrappers.forEach(function (element) {
-                element.style.display = '';
-            });
-        } else {
-            editorWrappers.forEach(function (element) {
-                element.style.display = 'none';
-            });
-        }
-    }
-
-    var syncRolesCheckbox = document.getElementById('@Html.IdFor(x => x.UseScriptToSyncProperties)');
-
-    if (syncRolesCheckbox) {
-        syncRolesCheckbox.addEventListener("change", toggleEditorState);
-        toggleEditorState();
-    }
-</script>
+<script asp-src="~/OrchardCore.Users/Scripts/user-editors/external-login-settings.min.js" debug-src="~/OrchardCore.Users/Scripts/user-editors/external-login-settings.js" depends-on="monaco" at="Foot" type="module"></script>

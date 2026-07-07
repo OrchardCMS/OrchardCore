@@ -53,6 +53,11 @@ declare const monaco: {
                 setDiagnosticsOptions(options: Record<string, unknown>): void;
             };
         };
+        typescript: {
+            javascriptDefaults: {
+                addExtraLib(content: string, filePath?: string): void;
+            };
+        };
     };
     Uri: {
         parse(value: string): { toString(): string };
@@ -99,6 +104,12 @@ declare class EasyMDE implements EasyMdeInstance {
 
 declare const mdeToolbar: Array<string | Record<string, unknown>>;
 declare function initializeMdeShortcodeWrapper(mde: EasyMdeInstance): void;
+
+// Defined by OrchardCore.Resources (Assets/js/credential-helpers.js), consumed here.
+declare function randomUUID(options?: { includeHyphens?: boolean }): string;
+declare function togglePasswordVisibility(passwordCtl: HTMLElement, togglePasswordCtl: HTMLElement): void;
+declare function copyToClipboard(str: string): Promise<void>;
+declare function generateStrongPassword(options?: { generateBase64?: boolean }): string;
 
 // Defined by OrchardCore.Users (Assets/js/password-generator.js), consumed here.
 declare const passwordManager: {
