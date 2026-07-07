@@ -5,5 +5,19 @@
     "source": "Assets/ts/translations-deployment-step.ts",
     "dest": "wwwroot/Scripts/translations-deployment-step/",
     "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "translation-editor",
+    "source": "Assets/ts/translation-editor.ts",
+    "dest": "wwwroot/Scripts/translation-editor/",
+    "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "translation-statistics",
+    "source": "Assets/ts/translation-statistics.ts",
+    "dest": "wwwroot/Scripts/translation-statistics/",
+    "tags": ["admin", "dashboard", "js"]
   }
 ]

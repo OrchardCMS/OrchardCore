@@ -49,13 +49,13 @@
     <div class="ocat-limited-wrapper" asp-validation-class-for="SelectedMode">
         <label asp-for="SelectedMode" class="ocat-label">@T["Resize Mode"]</label>
         <div class="ocat-limited">
-            <select asp-for="SelectedMode" asp-items="Model.AvailableResizeModes" class="form-select content-preview-select" asp-validation-class-for="SelectedMode"></select>
+            <select asp-for="SelectedMode" asp-items="Model.AvailableResizeModes" class="form-select content-preview-select" asp-validation-class-for="SelectedMode" data-pad-value="@((int)ResizeMode.Pad)" data-box-pad-value="@((int)ResizeMode.BoxPad)"></select>
             <span asp-validation-for="SelectedMode"></span>
             <span class="hint">@T["Select the resize mode for the processed image."]</span>
         </div>
     </div>
 
-    <div class="ocat-limited-wrapper" asp-validation-class-for="BackgroundColor" style="@(Model.SelectedMode == ResizeMode.Pad || Model.SelectedMode == ResizeMode.BoxPad ? "" : "display: none;")">
+    <div class="ocat-limited-wrapper media-profile-background-color-wrapper" asp-validation-class-for="BackgroundColor" style="@(Model.SelectedMode == ResizeMode.Pad || Model.SelectedMode == ResizeMode.BoxPad ? "" : "display: none;")">
         <label asp-for="BackgroundColor" class="ocat-label">@T["Background Color"]</label>
         <div class="ocat-limited">
             <input type="text" asp-for="BackgroundColor" class="form-control" />
@@ -109,36 +109,4 @@
     </div>
 </form>
 
-<script at="Foot" type="module">
-    var selectedMode = document.getElementById('@Html.IdFor(x => x.SelectedMode)');
-        var backgroundColor = document.getElementById('@Html.IdFor(x => x.BackgroundColor)');
-        var selectedWidth = document.getElementById('@Html.IdFor(x => x.SelectedWidth)');
-        var customWidth = document.getElementById('@Html.IdFor(x => x.CustomWidth)');
-        var selectedHeight = document.getElementById('@Html.IdFor(x => x.SelectedHeight)');
-        var customHeight = document.getElementById('@Html.IdFor(x => x.CustomHeight)');
-
-        selectedMode.addEventListener('change', function () {
-            if ((this.value === '@((int)ResizeMode.Pad)') || (this.value === '@((int)ResizeMode.BoxPad)')) {
-                backgroundColor.closest('.ocat-limited-wrapper').style.display = '';
-            } else {
-                backgroundColor.closest('.ocat-limited-wrapper').style.display = 'none';
-                backgroundColor.value = '';
-            }
-        });
-        selectedWidth.addEventListener('change', function () {
-            if (this.value === "-1") {
-                customWidth.style.display = '';
-            } else {
-                customWidth.style.display = 'none';
-                customWidth.value = 0;
-            }
-        });
-        selectedHeight.addEventListener('change', function () {
-            if (this.value === "-1") {
-                customHeight.style.display = '';
-            } else {
-                customHeight.style.display = 'none';
-                customHeight.value = 0;
-            }
-        });
-</script>
+<script asp-src="~/OrchardCore.Media/Scripts/media-profile-editor/media-profile-editor.min.js" debug-src="~/OrchardCore.Media/Scripts/media-profile-editor/media-profile-editor.js" at="Foot" type="module"></script>

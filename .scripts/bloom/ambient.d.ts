@@ -35,6 +35,7 @@ interface MonacoEditorInstance {
     getSelection(): unknown;
     executeEdits(source: string, edits: unknown[]): void;
     addAction(action: Record<string, unknown>): void;
+    getAction(id: string): { run(): void } | undefined;
     focus(): void;
 }
 

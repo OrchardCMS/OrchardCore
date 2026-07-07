@@ -22,14 +22,4 @@
     </div>
 </form>
 
-<script at="Foot" type="module">
-var textArea = document.getElementById('@Html.IdFor(x => x.Json)');
-
-var editor = CodeMirror.fromTextArea(textArea, {
-    autoRefresh: true,
-    lineNumbers: true,
-    styleActiveLine: true,
-    matchBrackets: true,
-    mode: { name: "javascript" },
-});
-</script>
+<script asp-src="~/OrchardCore.Deployment/Scripts/import-json/import-json.min.js" debug-src="~/OrchardCore.Deployment/Scripts/import-json/import-json.js" at="Foot" type="module"></script>

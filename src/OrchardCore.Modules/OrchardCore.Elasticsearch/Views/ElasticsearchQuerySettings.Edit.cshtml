@@ -60,21 +60,4 @@
     </div>
 </div>
 
-<script at="Foot" type="module">
-    const menu = document.getElementById('@Html.IdFor(m => m.SearchType)');
-    const queryContainer = document.getElementById('DefaultQueryContainer');
-    const fieldsContainer = document.getElementById('DefaultQueryFields');
-
-    menu.addEventListener('change', function (e) {
-
-        if (e.target.value == e.target.getAttribute('data-raw-type')) {
-            queryContainer.classList.remove('d-none');
-            fieldsContainer.classList.add('d-none');
-        } else {
-            queryContainer.classList.add('d-none');
-            fieldsContainer.classList.remove('d-none');
-        }
-    });
-
-    menu.dispatchEvent(new Event('change'));
-</script>
+<script asp-src="~/OrchardCore.Elasticsearch/Scripts/elasticsearch-query-settings/elasticsearch-query-settings.min.js" debug-src="~/OrchardCore.Elasticsearch/Scripts/elasticsearch-query-settings/elasticsearch-query-settings.js" at="Foot" type="module"></script>

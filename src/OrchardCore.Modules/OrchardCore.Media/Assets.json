@@ -40,5 +40,19 @@
     ],
     "dest": "wwwroot/Scripts/media-editors/",
     "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "media-profiles-index",
+    "source": "Assets/ts/media-profiles-index.ts",
+    "dest": "wwwroot/Scripts/media-profiles-index/",
+    "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "media-profile-editor",
+    "source": "Assets/ts/media-profile-editor.ts",
+    "dest": "wwwroot/Scripts/media-profile-editor/",
+    "tags": ["admin", "dashboard", "js"]
   }
 ]

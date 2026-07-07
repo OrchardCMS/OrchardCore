@@ -53,21 +53,4 @@
 <script asp-name="codemirror-mode-htmlmixed" at="Foot"></script>
 <script asp-name="codemirror-mode-javascript" at="Foot"></script>
 <script asp-name="codemirror-mode-xml" at="Foot"></script>
-<script at="Foot" depends-on="codemirror" type="module">
-
-    const initializeEditor = (textArea) => {
-        textArea.CoreMirrorEditor = CodeMirror.fromTextArea(textArea, {
-            autoCloseTags: true,
-            autoRefresh: true,
-            lineNumbers: true,
-            lineWrapping: true,
-            matchBrackets: true,
-            styleActiveLine: true,
-            mode: { name: "htmlmixed" }
-        });
-    };
-
-    initializeEditor(document.getElementById('@Html.IdFor(x => x.Summary)'));
-    initializeEditor(document.getElementById('@Html.IdFor(x => x.HtmlBody)'));
-
-</script>
+<script asp-src="~/OrchardCore.Notifications/Scripts/notification-task-field-editor/notification-task-field-editor.min.js" debug-src="~/OrchardCore.Notifications/Scripts/notification-task-field-editor/notification-task-field-editor.js" depends-on="codemirror" at="Foot" type="module"></script>

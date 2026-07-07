@@ -11,5 +11,12 @@
     "source": "Assets/ts/notifications-admin-list.ts",
     "dest": "wwwroot/Scripts/notifications-admin-list/",
     "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "notification-task-field-editor",
+    "source": "Assets/ts/notification-task-field-editor.ts",
+    "dest": "wwwroot/Scripts/notification-task-field-editor/",
+    "tags": ["admin", "dashboard", "js"]
   }
 ]

@@ -18,5 +18,12 @@
     "source": "Assets/ts/content-type-picker.ts",
     "dest": "wwwroot/Scripts/content-type-picker/",
     "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "bag-part-settings",
+    "source": "Assets/ts/bag-part-settings.ts",
+    "dest": "wwwroot/Scripts/bag-part-settings/",
+    "tags": ["admin", "dashboard", "js"]
   }
 ]

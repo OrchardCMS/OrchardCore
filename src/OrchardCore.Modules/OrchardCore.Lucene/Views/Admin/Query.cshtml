@@ -27,7 +27,7 @@
     <div class="ocat-wrapper">
         <label asp-for="DecodedQuery" class="ocat-label">@T["Query"]</label>
         <div class="ocat-end">
-        <textarea asp-for="DecodedQuery" rows="12" class="form-control"></textarea>
+        <textarea asp-for="DecodedQuery" rows="12" class="form-control codemirror-query-editor" data-options='{"json":true}'></textarea>
         <span class="hint">@T["You can use the <a href=\"{0}\">Match All query</a> to search all documents.", Html.Raw(Url.Action("Query", "Admin", new { area = "OrchardCore.Lucene", query = Model.MatchAllQuery, id = Model.Id }))]</span>
         <span class="hint">@T["The search query uses the Elasticsearch format. Some documentation can be found here <a target=\"_blank\" href=\"https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html\">https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html</a>"]</span>
         </div>
@@ -36,7 +36,7 @@
     <div class="ocat-wrapper">
         <label asp-for="Parameters" class="ocat-label">@T["Parameters"]</label>
         <div class="ocat-end">
-        <textarea asp-for="Parameters" rows="6" class="form-control"></textarea>
+        <textarea asp-for="Parameters" rows="6" class="form-control codemirror-query-editor" data-options='{"json":true}'></textarea>
         <span class="hint">@T["An optional Json object containing the parameter values for this query."]</span>
         </div>
     </div>
@@ -97,7 +97,4 @@
         <p><span class="text-muted">@T["The results displayed are coming from the stored fields in Lucene."]</span></p>
     </div>
 }
-<script at="Foot" type="module">
-    CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(m => m.DecodedQuery)'), { mode: "javascript", json: true, lineNumbers: true, viewportMargin: Infinity });
-    CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(m => m.Parameters)'), { mode: "javascript", json: true, lineNumbers: true, viewportMargin: Infinity });
-</script>
+<script asp-src="~/OrchardCore.Lucene/Scripts/lucene-admin-query/lucene-admin-query.min.js" debug-src="~/OrchardCore.Lucene/Scripts/lucene-admin-query/lucene-admin-query.js" at="Foot" type="module"></script>

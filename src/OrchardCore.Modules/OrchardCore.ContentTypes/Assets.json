@@ -25,5 +25,16 @@
     "source": "Assets/js/content-definition-deployment-step.ts",
     "dest": "wwwroot/Scripts/content-definition-deployment-step",
     "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "content-type-editors",
+    "source": [
+      "Assets/js/edit-field-selector.ts",
+      "Assets/js/edit-type-part-selector.ts",
+      "Assets/js/add-parts-to.ts"
+    ],
+    "dest": "wwwroot/Scripts/content-type-editors/",
+    "tags": ["admin", "dashboard", "js"]
   }
 ]

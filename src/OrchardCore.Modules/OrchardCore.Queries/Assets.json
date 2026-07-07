@@ -15,5 +15,19 @@
     ],
     "dest": "wwwroot/Scripts/query-editors/",
     "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "queries-index",
+    "source": "Assets/ts/queries-index.ts",
+    "dest": "wwwroot/Scripts/queries-index/",
+    "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "queries-admin-query",
+    "source": "Assets/ts/queries-admin-query.ts",
+    "dest": "wwwroot/Scripts/queries-admin-query/",
+    "tags": ["admin", "dashboard", "js"]
   }
 ]
