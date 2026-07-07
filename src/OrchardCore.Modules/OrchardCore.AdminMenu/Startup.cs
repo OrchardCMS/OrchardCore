@@ -34,7 +34,7 @@ public sealed class Startup : StartupBase
         // link treeNode
         services.AddAdminNode<LinkAdminNode, LinkAdminNodeNavigationBuilder, LinkAdminNodeDriver>();
 
-        //migrate admin menu to 3.0 format
+        // Migrate admin menu to the 3.0 format.
         services.AddDataMigration<Migrations>();
     }
 }
