@@ -3,7 +3,7 @@
 @{
     var wrapperId = Html.IdFor(m => m);
 }
-<div class="ocat-wrapper" id="@wrapperId">
+<div class="ocat-wrapper input-part-editor" id="@wrapperId">
     <label asp-for="Type" class="ocat-label">@T["Type"]</label>
     <div class="ocat-end">
         <select asp-for="Type" class="form-select content-preview-select field-type-select-menu">
@@ -49,30 +49,4 @@
     </div>
 </div>
 
-<script at="Foot">
-    var initializeFieldType = (wrapper) => {
-        var selectMenus = wrapper.getElementsByClassName('field-type-select-menu');
-        for (let i = 0; i < selectMenus.length; i++) {
-            var selectMenu = selectMenus[i];
-            var widgetWrapper = selectMenu.closest('.widget-editor-body');
-            selectMenu.addEventListener('change', function (e) {
-                var visibleForInputContainers = (widgetWrapper || wrapper).getElementsByClassName('show-for-input');
-                if (visibleForInputContainers.length == 0) {
-                    return;
-                }
-                var value = e.target.value;
-                for (let i = 0; i < visibleForInputContainers.length; i++) {
-                    if (value == 'reset' || value == 'submit' || value == 'hidden') {
-                        visibleForInputContainers[i].classList.add('d-none');
-                    } else {
-                        visibleForInputContainers[i].classList.remove('d-none');
-                    }
-                }
-            });
-        }
-    };
-    var wrapper = document.getElementById('@wrapperId')
-    if (wrapper != null) {
-        initializeFieldType(wrapper);
-    }
-</script>
+<script asp-src="~/OrchardCore.Forms/Scripts/input-part/input-part.min.js" debug-src="~/OrchardCore.Forms/Scripts/input-part/input-part.js" at="Foot" type="module"></script>
