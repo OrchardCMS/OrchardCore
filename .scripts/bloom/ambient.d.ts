@@ -105,6 +105,9 @@ declare class EasyMDE implements EasyMdeInstance {
 declare const mdeToolbar: Array<string | Record<string, unknown>>;
 declare function initializeMdeShortcodeWrapper(mde: EasyMdeInstance): void;
 
+// Defined by OrchardCore.Liquid (wwwroot/monaco/liquid-intellisense.js), consumed here.
+declare function ConfigureLiquidIntellisense(monacoInstance: typeof monaco, registerHtml?: boolean): void;
+
 // Defined by OrchardCore.Resources (Assets/js/credential-helpers.js), consumed here.
 declare function randomUUID(options?: { includeHyphens?: boolean }): string;
 declare function togglePasswordVisibility(passwordCtl: HTMLElement, togglePasswordCtl: HTMLElement): void;

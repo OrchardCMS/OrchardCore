@@ -54,93 +54,12 @@
     <div class="ocat-wrapper" asp-validation-class-for="Content">
         <label asp-for="Content" class="ocat-label">@T["Content"]</label>
         <div class="ocat-end">
-        <div id="@Html.IdFor(x => x.Content)_editor" asp-for="Text" style="min-height: 600px;" class="form-control" dir="@culture.GetLanguageDirection()"></div>
-        <textarea asp-for="Content" class="content-preview-text" hidden>@Html.Raw(Model.Content)</textarea>
+        <div id="@Html.IdFor(x => x.Content)_editor" asp-for="Text" style="min-height: 600px;" class="form-control template-editor" dir="@culture.GetLanguageDirection()"></div>
+        <textarea asp-for="Content" class="content-preview-text template-editor-value" hidden>@Html.Raw(Model.Content)</textarea>
         <span asp-validation-for="Content"></span>
         <span class="hint">@T["The Liquid template."]</span>
         </div>
     </div>
 </form>
 
-<script asp-name="create-template" at="Foot" depends-on="liquid-intellisense monaco" type="module">
-    require(['vs/editor/editor.main'], function () {
-            var settings = {
-                automaticLayout: true,
-                language: 'liquid'
-            }
-
-            ConfigureLiquidIntellisense(monaco);
-
-            var html = document.documentElement;
-            const mutationObserver = new MutationObserver(setTheme);
-            mutationObserver.observe(html, { attributes: true });
-
-            function setTheme() {
-                var theme = html.dataset.bsTheme;
-                if (theme === 'dark' || (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                    monaco.editor.setTheme('vs-dark')
-                } else {
-                    monaco.editor.setTheme('vs')
-                }
-            }
-
-            setTheme();
-
-            var editor = monaco.editor.create(document.getElementById('@Html.IdFor(x => x.Content)_editor'), settings);
-            var textArea = document.getElementById('@Html.IdFor(x => x.Content)');
-
-            editor.getModel().onDidChangeContent((event) => {
-                textArea.value = editor.getValue();
-            });
-
-            editor.getModel().setValue(textArea.value);
-
-            window.addEventListener("submit", function () {
-                textArea.value = editor.getValue();
-            });
-        });
-</script>
-
-
-<script at="Foot" type="module">
-        function initializeTemplatePreview(element) {
-
-            var antiforgerytoken = document.querySelector("[name='__RequestVerificationToken']").value;
-
-            function toQueryString(data) {
-                return Object.keys(data).map(function (key) {
-                    return encodeURIComponent(key) + '=' + encodeURIComponent(data[key]);
-                }).join('&');
-            }
-
-            var sendFormData = function (element) {
-
-                var formData = {
-                    'Name': element.name,
-                    'Content': element.value,
-                    '__RequestVerificationToken': antiforgerytoken
-                };
-                // store the form data to pass it in the event handler
-                localStorage.setItem('OrchardCore.templates', JSON.stringify(toQueryString(formData)));
-            }
-
-            window.addEventListener('storage', function (ev) {
-                if (ev.key != 'OrchardCore.templates:ready') return; // ignore other keys
-
-                // triggered by the preview window the first time it is loaded in order
-                // to pre-render the view even if no contentpreview:render is already sent
-                sendFormData(element);
-            }, false);
-
-            element.addEventListener('change', function () { sendFormData(element); });
-
-            window.addEventListener('unload', function () {
-                localStorage.removeItem('OrchardCore.templates');
-                // this will raise an event in the preview window to notify that the live preview is no longer active.
-                localStorage.setItem('OrchardCore.templates:not-connected', '');
-                localStorage.removeItem('OrchardCore.templates:not-connected');
-            });
-        }
-
-        initializeTemplatePreview(document.getElementById('@Html.IdFor(x => x.Content)'));
-</script>
+<script asp-src="~/OrchardCore.Templates/Scripts/template-editors/template-create.min.js" debug-src="~/OrchardCore.Templates/Scripts/template-editors/template-create.js" depends-on="liquid-intellisense monaco" at="Foot" type="module"></script>
