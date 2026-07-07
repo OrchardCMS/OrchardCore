@@ -79,43 +79,4 @@
         }
     }
 </form>
-<script at="Foot" type="module">
-    var searchBox = document.getElementById('search-box');
-    if (searchBox) {
-        function isVisible(element) {
-            return !!(element.offsetWidth || element.offsetHeight || element.getClientRects().length);
-        }
-
-        // On each keypress filter the list of features
-        searchBox.addEventListener('keyup', function (e) {
-            var search = this.value.toLowerCase();
-            var elementsToFilter = document.querySelectorAll("[data-filter-value]");
-
-            // On ESC, clear the search box and display all features
-            if (e.key === "Escape" || search == '') {
-                searchBox.value = '';
-                elementsToFilter.forEach(function (element) {
-                    element.style.display = '';
-                });
-            }
-            else {
-                elementsToFilter.forEach(function (element) {
-                    var text = element.dataset.filterValue.toLowerCase();
-                    var found = text.indexOf(search) > -1;
-                    element.style.display = found ? '' : 'none';
-                });
-
-                var visible = Array.from(document.querySelectorAll('.recipe-group > ul > li')).filter(isVisible);
-                var listAlert = document.getElementById('list-alert');
-                if (listAlert) {
-                    if (visible.length == 0) {
-                        listAlert.classList.remove("d-none");
-                    }
-                    else {
-                        listAlert.classList.add("d-none");
-                    }
-                }
-            }
-        });
-    }
-</script>
+<script asp-src="~/OrchardCore.Recipes/Scripts/recipes-index/recipes-index.min.js" debug-src="~/OrchardCore.Recipes/Scripts/recipes-index/recipes-index.js" at="Foot" type="module"></script>

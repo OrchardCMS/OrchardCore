@@ -2545,6 +2545,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@orchardcore/recipes@workspace:src/OrchardCore.Modules/OrchardCore.Recipes/Assets":
+  version: 0.0.0-use.local
+  resolution: "@orchardcore/recipes@workspace:src/OrchardCore.Modules/OrchardCore.Recipes/Assets"
+  languageName: unknown
+  linkType: soft
+
 "@orchardcore/resources@workspace:src/OrchardCore.Modules/OrchardCore.Resources/Assets":
   version: 0.0.0-use.local
   resolution: "@orchardcore/resources@workspace:src/OrchardCore.Modules/OrchardCore.Resources/Assets"
@@ -2582,6 +2588,12 @@ __metadata:
     vue-multiselect-2.1.6: "npm:vue-multiselect@2.1.6"
     vuedraggable: "npm:^4.1.0"
     vuedraggable-2.24.3: "npm:vuedraggable@2.24.3"
+  languageName: unknown
+  linkType: soft
+
+"@orchardcore/roles@workspace:src/OrchardCore.Modules/OrchardCore.Roles/Assets":
+  version: 0.0.0-use.local
+  resolution: "@orchardcore/roles@workspace:src/OrchardCore.Modules/OrchardCore.Roles/Assets"
   languageName: unknown
   linkType: soft
 
