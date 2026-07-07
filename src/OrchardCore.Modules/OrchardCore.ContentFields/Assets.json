@@ -98,5 +98,19 @@
     "source": "Assets/ts/numeric-field-spinner.ts",
     "dest": "wwwroot/Scripts/numeric-field-spinner/",
     "tags": [ "admin", "dashboard", "js" ]
+  },
+  {
+    "action": "parcel",
+    "name": "text-field-settings",
+    "source": "Assets/ts/text-field-settings.ts",
+    "dest": "wwwroot/Scripts/text-field-settings/",
+    "tags": [ "admin", "dashboard", "js" ]
+  },
+  {
+    "action": "parcel",
+    "name": "content-picker-field-settings",
+    "source": "Assets/ts/content-picker-field-settings.ts",
+    "dest": "wwwroot/Scripts/content-picker-field-settings/",
+    "tags": [ "admin", "dashboard", "js" ]
   }
 ]

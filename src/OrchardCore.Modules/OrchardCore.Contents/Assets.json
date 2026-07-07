@@ -67,5 +67,19 @@
     "source": "Assets/ts/content-types-admin-node.ts",
     "dest": "wwwroot/Scripts/content-types-admin-node/",
     "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "full-text-aspect-settings",
+    "source": "Assets/ts/full-text-aspect-settings.ts",
+    "dest": "wwwroot/Scripts/full-text-aspect-settings/",
+    "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "content-task-editor",
+    "source": "Assets/ts/content-task-editor.ts",
+    "dest": "wwwroot/Scripts/content-task-editor/",
+    "tags": ["admin", "dashboard", "js"]
   }
 ]

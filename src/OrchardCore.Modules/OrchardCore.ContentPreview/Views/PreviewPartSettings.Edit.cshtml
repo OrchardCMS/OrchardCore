@@ -18,14 +18,4 @@
     </div>
 </div>
 
-<script at="Foot" type="module">
-    //<![CDATA[
-    var editor = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Pattern)'), {
-        autoRefresh: true,
-        lineNumbers: true,
-        styleActiveLine: true,
-        matchBrackets: true,
-        mode: { name: "liquid" },
-    });
-    //]]>
-</script>
+<script asp-src="~/OrchardCore.ContentPreview/Scripts/preview-part-settings/preview-part-settings.min.js" debug-src="~/OrchardCore.ContentPreview/Scripts/preview-part-settings/preview-part-settings.js" at="Foot" type="module"></script>

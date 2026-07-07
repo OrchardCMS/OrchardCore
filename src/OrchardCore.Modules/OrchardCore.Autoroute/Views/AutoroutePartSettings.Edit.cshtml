@@ -101,23 +101,4 @@
     </div>
 </fieldset>
 
-<script at="Foot" type="module">
-    //<![CDATA[
-    var editor = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Pattern)'), {
-        autoRefresh: true,
-        lineNumbers: true,
-        styleActiveLine: true,
-        matchBrackets: true,
-        mode: { name: "liquid" },
-    });
-    var manageContainedItemRoutesElement = document.getElementById('@Html.IdFor(i => i.ManageContainedItemRoutes)');
-    if (manageContainedItemRoutesElement) {
-        manageContainedItemRoutesElement.addEventListener('change', function (e) {
-            var checked = e.target.checked;
-            document.querySelectorAll('.manage-contained-item-routes').forEach(function (element) {
-                element.style.display = checked ? '' : 'none';
-            });
-        });
-    }
-                                                            //]]>
-</script>
+<script asp-src="~/OrchardCore.Autoroute/Scripts/autoroute-editors/autoroute-part-settings.min.js" debug-src="~/OrchardCore.Autoroute/Scripts/autoroute-editors/autoroute-part-settings.js" at="Foot" type="module"></script>

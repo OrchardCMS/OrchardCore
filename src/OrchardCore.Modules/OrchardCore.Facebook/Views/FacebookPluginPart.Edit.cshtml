@@ -11,26 +11,9 @@
 <div class="ocat-wrapper">
     <label asp-for="Liquid" class="ocat-label">@T["Body"]</label>
     <div class="ocat-end">
-        <textarea asp-for="Liquid" rows="5" class="form-control content-preview-text"></textarea>
+        <textarea asp-for="Liquid" rows="5" class="form-control content-preview-text facebook-plugin-part-editor"></textarea>
         <span class="hint">@T["The template of the plugin, in Liquid format."]</span>
     </div>
 </div>
 
-<script at="Foot" type="module">
-    var textArea = document.getElementById('@Html.IdFor(x => x.Liquid)');
-
-    if (textArea != null) {
-        var editor = CodeMirror.fromTextArea(textArea, {
-            autoRefresh: true,
-            lineNumbers: true,
-            styleActiveLine: true,
-            matchBrackets: true,
-            mode: { name: "liquid" },
-        });
-
-        editor.on('change', function (cmEditor) {
-            cmEditor.save()
-            document.dispatchEvent(new Event('contentpreview:render'));
-        });
-    }
-</script>
+<script asp-src="~/OrchardCore.Facebook/Scripts/facebook-plugin-part-editors/facebook-plugin-part.min.js" debug-src="~/OrchardCore.Facebook/Scripts/facebook-plugin-part-editors/facebook-plugin-part.js" at="Foot" type="module"></script>

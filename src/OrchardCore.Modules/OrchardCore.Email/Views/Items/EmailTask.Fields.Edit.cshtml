@@ -68,7 +68,7 @@
 <div class="ocat-wrapper">
     <label class="ocat-label">@T["Format"]</label>
     <div class="ocat-end">
-    <select class="form-select" asp-for="BodyFormat">
+    <select class="form-select" asp-for="BodyFormat" data-all-value="@MailMessageBodyFormat.All" data-text-value="@MailMessageBodyFormat.Text" data-html-value="@MailMessageBodyFormat.Html">
         <option selected="@(Model.BodyFormat == MailMessageBodyFormat.All)" value="@MailMessageBodyFormat.All">@T["All"]</option>
         <option selected="@(Model.BodyFormat == MailMessageBodyFormat.Text)" value="@MailMessageBodyFormat.Text">@T["Text"]</option>
         <option selected="@(Model.BodyFormat == MailMessageBodyFormat.Html)" value="@MailMessageBodyFormat.Html">@T["Html"]</option>
@@ -101,63 +101,4 @@
 <script asp-name="codemirror-mode-xml" at="Foot"></script>
 <script asp-src="~/OrchardCore.Liquid/codemirror/liquid.js" at="Foot"></script>
 
-<script at="Foot" type="module">
-    CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(m => m.HtmlBody)'), {
-            lineNumbers: true,
-            styleActiveLine: true,
-            matchBrackets: true,
-            mode: { name: "liquid" },
-        });
-        CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(m => m.TextBody)'), {
-            lineNumbers: true,
-            styleActiveLine: true,
-            matchBrackets: true,
-            mode: { name: "liquid" },
-        });
-        changeBodyFormat();
-
-        document.querySelectorAll('select').forEach(function (select) {
-            select.addEventListener('change', function () {
-                changeBodyFormat();
-            });
-        });
-
-    function changeBodyFormat() {
-        var select = document.querySelector('select');
-
-        if (!select) {
-            return;
-        }
-
-        var selectedValue = select.value;
-        var textBodyDiv = document.getElementById('textBodyDiv');
-        var htmlBodyDiv = document.getElementById('htmlBodyDiv');
-
-        switch (selectedValue) {
-            case '@MailMessageBodyFormat.All':
-                removeClass(textBodyDiv, 'd-none');
-                removeClass(htmlBodyDiv, 'd-none');
-                break;
-            case '@MailMessageBodyFormat.Text':
-                removeClass(textBodyDiv, 'd-none');
-                addClass(htmlBodyDiv, 'd-none');
-                break;
-            case '@MailMessageBodyFormat.Html':
-                addClass(textBodyDiv, 'd-none');
-                removeClass(htmlBodyDiv, 'd-none');
-                break;
-        }
-    }
-
-    function addClass(element, className) {
-        if (element) {
-            element.classList.add(className);
-        }
-    }
-
-    function removeClass(element, className) {
-        if (element) {
-            element.classList.remove(className);
-        }
-    }
-</script>
+<script asp-src="~/OrchardCore.Email/Scripts/email-task/email-task.min.js" debug-src="~/OrchardCore.Email/Scripts/email-task/email-task.js" at="Foot" type="module"></script>
