@@ -16,14 +16,4 @@
 }
 </div>
 
-<script at="Foot" type="module">
-    if (!window.bootstrap?.Toast) {
-        return;
-    }
-
-    for (const toastElement of document.querySelectorAll('.oc-notify-toast-container .toast')) {
-        const toast = bootstrap.Toast.getOrCreateInstance(toastElement);
-        toast.show();
-        toastElement.addEventListener('hidden.bs.toast', () => toastElement.remove(), { once: true });
-    }
-</script>
+<script asp-src="~/TheAdmin/js/notify-messages/NotifyMessages.min.js" debug-src="~/TheAdmin/js/notify-messages/NotifyMessages.js" at="Foot" type="module"></script>

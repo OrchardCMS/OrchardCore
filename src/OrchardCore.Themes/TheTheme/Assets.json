@@ -5,5 +5,12 @@
     "source": "Assets/scss/theme.scss",
     "dest": "wwwroot/styles/",
     "tags": ["theme", "css"]
+  },
+  {
+    "action": "parcel",
+    "name": "NotifyMessages",
+    "source": "Assets/ts/NotifyMessages.ts",
+    "dest": "wwwroot/js/notify-messages/",
+    "tags": ["theme", "js"]
   }
 ]

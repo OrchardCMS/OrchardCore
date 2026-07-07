@@ -36,5 +36,12 @@
     "source": "Assets/js/TheAdmin/TheAdmin.ts",
     "dest": "wwwroot/js/theadmin/",
     "tags": ["theme", "css"]
+  },
+  {
+    "action": "parcel",
+    "name": "NotifyMessages",
+    "source": "Assets/js/NotifyMessages/NotifyMessages.ts",
+    "dest": "wwwroot/js/notify-messages/",
+    "tags": ["theme", "js"]
   }
 ]
