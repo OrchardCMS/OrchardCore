@@ -36,5 +36,15 @@
     ],
     "dest": "wwwroot/Scripts/flow-blocks-editors/",
     "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "flow-part-editors",
+    "source": [
+      "Assets/ts/bag-part.ts",
+      "Assets/ts/flow-part.ts"
+    ],
+    "dest": "wwwroot/Scripts/flow-part-editors/",
+    "tags": ["admin", "dashboard", "js"]
   }
 ]

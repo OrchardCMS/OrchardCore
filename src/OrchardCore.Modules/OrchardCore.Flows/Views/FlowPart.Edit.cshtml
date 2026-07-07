@@ -20,7 +20,7 @@
 }
 
 <div>
-    <div id="@widgetTemplatePlaceholderId" class="widget-template-placeholder widget-template-placeholder-flowpart flowpart-@partName.HtmlClassify() row mx-0" data-buildeditorurl="@Url.Action("BuildEditor", "Admin", new { area = "OrchardCore.Flows" })" data-widget-types="@widgetTypesStringified">
+    <div id="@widgetTemplatePlaceholderId" class="widget-template-placeholder widget-template-placeholder-flowpart flowpart-@partName.HtmlClassify() flowpart-sortable-placeholder row mx-0" data-buildeditorurl="@Url.Action("BuildEditor", "Admin", new { area = "OrchardCore.Flows" })" data-content-types="@widgetTypesStringified" data-part-name="@partName">
         @{
             var index = 0;
             foreach (var widget in Model.FlowPart.Widgets)
@@ -112,7 +112,5 @@
         <style asp-name="flowpart-edit" at="Head"></style>
     }
 
-    <script at="Foot">
-        initFlowSortableWidgets('@widgetTemplatePlaceholderId', 'widgetTypes', 'flowpart-widgets', '@partName');
-    </script>
+    <script asp-src="~/OrchardCore.Flows/Scripts/flow-part-editors/flow-part.min.js" debug-src="~/OrchardCore.Flows/Scripts/flow-part-editors/flow-part.js" at="Foot" depends-on="flows" type="module"></script>
 </div>

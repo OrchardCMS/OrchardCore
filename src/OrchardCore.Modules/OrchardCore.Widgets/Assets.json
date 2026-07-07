@@ -11,5 +11,12 @@
     "source": "Assets/ts/widgetslist.edit.ts",
     "dest": "wwwroot/Scripts/widgets/",
     "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "widgets-list-part",
+    "source": "Assets/ts/widgets-list-part.ts",
+    "dest": "wwwroot/Scripts/widgets-list-part/",
+    "tags": ["admin", "dashboard", "js"]
   }
 ]
