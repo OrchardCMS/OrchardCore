@@ -14,8 +14,7 @@ using OrchardCore.Modules.Manifest;
     Dependencies =
     [
         "OrchardCore.Settings",
-        "OrchardCore.Liquid",
-        "OrchardCore.AdminMenu"
+        "OrchardCore.Liquid"
     ],
     Category = "Content Management"
 )]
