@@ -20,17 +20,8 @@
 </div>
 <script asp-name="monaco" at="Foot"></script>
 
-<script at="Foot" depends-on="monaco">
-    function onDocumentReady(callback) {
-        if (document.readyState !== 'loading') {
-            callback();
-        } else {
-            document.addEventListener('DOMContentLoaded', callback);
-        }
-    }
-
-    onDocumentReady(function () {
-        require(['vs/editor/editor.main'], function () {
+<script at="Foot" depends-on="monaco" type="module">
+    require(['vs/editor/editor.main'], function () {
 
             const html = document.documentElement;
             const mutationObserver = new MutationObserver(setTheme);
@@ -59,5 +50,4 @@
                 textArea.value = editor.getValue();
             });
         });
-    });
 </script>

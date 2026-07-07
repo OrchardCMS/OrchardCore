@@ -31,8 +31,7 @@
 <script asp-name="codemirror-addon-mode-multiplex" at="Foot"></script>
 <script asp-name="codemirror-mode-xml" at="Foot"></script>
 <script asp-src="~/OrchardCore.Liquid/codemirror/liquid.js" at="Foot" depends-on="codemirror"></script>
-<script at="Foot" depends-on="codemirror">
-
+<script at="Foot" depends-on="codemirror" type="module">
     const initializeEditor = (textArea) => {
         textArea.CoreMirrorEditor = CodeMirror.fromTextArea(textArea, {
             autoCloseTags: true,
@@ -47,20 +46,18 @@
         return textArea.CoreMirrorEditor;
     };
 
-    document.addEventListener('DOMContentLoaded', () => {
-        const editor = initializeEditor(document.getElementById('@Html.IdFor(x => x.Value)'));
+    const editor = initializeEditor(document.getElementById('@Html.IdFor(x => x.Value)'));
 
-        document.getElementById('@Html.IdFor(x => x.Syntax)').addEventListener("change", (e) => {
-            const syntax = e.target.value.toLowerCase();
-            editor.setOption('mode', syntax);
+    document.getElementById('@Html.IdFor(x => x.Syntax)').addEventListener("change", (e) => {
+        const syntax = e.target.value.toLowerCase();
+        editor.setOption('mode', syntax);
 
-            if (syntax == 'javascript') {
-                document.getElementById('liquid_hint').classList.add('d-none');
-                document.getElementById('javascript_hint').classList.remove('d-none');
-            } else {
-                document.getElementById('javascript_hint').classList.add('d-none');
-                document.getElementById('liquid_hint').classList.remove('d-none');
-            }
-        });
+        if (syntax == 'javascript') {
+            document.getElementById('liquid_hint').classList.add('d-none');
+            document.getElementById('javascript_hint').classList.remove('d-none');
+        } else {
+            document.getElementById('javascript_hint').classList.add('d-none');
+            document.getElementById('liquid_hint').classList.remove('d-none');
+        }
     });
 </script>

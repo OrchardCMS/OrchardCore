@@ -112,7 +112,7 @@
     </div>
 </div>
 
-<script at="Foot">
+<script at="Foot" type="module">
     function resetScript(element) {
 
         if (element.editor.doc.getValue() != '') {
@@ -152,17 +152,13 @@ switch (context.loginProvider) {
         resetScript(textArea);
     });
 
-    document.addEventListener('DOMContentLoaded', () => {
-        var useGenerateUserName = document.getElementById('@Html.IdFor(x => x.UseScriptToGenerateUsername)');
+    var useGenerateUserName = document.getElementById('@Html.IdFor(x => x.UseScriptToGenerateUsername)');
 
-        useGenerateUserName.addEventListener("change", (e) => toggleEditorState(e.target));
-        toggleEditorState(useGenerateUserName);
+    useGenerateUserName.addEventListener("change", (e) => toggleEditorState(e.target));
+    toggleEditorState(useGenerateUserName);
 
-        var textArea = document.getElementById('@Html.IdFor(x => x.GenerateUsernameScript)');
-        if (textArea == null) {
-            return;
-        }
-
+    var textArea = document.getElementById('@Html.IdFor(x => x.GenerateUsernameScript)');
+    if (textArea != null) {
         var editor = CodeMirror.fromTextArea(textArea, {
             autoRefresh: true,
             lineNumbers: true,
@@ -175,5 +171,5 @@ switch (context.loginProvider) {
         textArea.editor = editor;
 
         resetScript(textArea);
-    });
+    }
 </script>

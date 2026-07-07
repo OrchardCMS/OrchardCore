@@ -103,28 +103,17 @@
     }
 }
 
-<script at="Foot">
-    function onDocumentReady(callback) {
-        if (document.readyState !== 'loading') {
-            callback();
-        } else {
-            document.addEventListener('DOMContentLoaded', callback);
-        }
+<script at="Foot" type="module">
+    CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(m => m.DecodedQuery)'), { mode: '@MediaTypeNamesExtended.Text.PostgreSQL', lineNumbers: true, viewportMargin: Infinity });
+    CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(m => m.Parameters)'), { mode: "javascript", json: true, lineNumbers: true, viewportMargin: Infinity });
+    var rawSql = document.getElementById('@Html.IdFor(m => m.RawSql)');
+    if (rawSql) {
+        CodeMirror.fromTextArea(rawSql, { mode: "@sqlmode", lineNumbers: true, readonly: true, viewportMargin: Infinity });
     }
-
-    onDocumentReady(function () {
-        CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(m => m.DecodedQuery)'), { mode: '@MediaTypeNamesExtended.Text.PostgreSQL', lineNumbers: true, viewportMargin: Infinity });
-        CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(m => m.Parameters)'), { mode: "javascript", json: true, lineNumbers: true, viewportMargin: Infinity });
-        var rawSql = document.getElementById('@Html.IdFor(m => m.RawSql)');
-        if (rawSql) {
-            CodeMirror.fromTextArea(rawSql, { mode: "@sqlmode", lineNumbers: true, readonly: true, viewportMargin: Infinity });
-        }
-    });
 </script>
 <script asp-name="monaco" at="Foot"></script>
-<script at="Foot" asp-name="jsonrecipe-editor" depends-on="monaco, admin">
-    onDocumentReady(function () {
-        require(['vs/editor/editor.main'], function () {
+<script at="Foot" asp-name="jsonrecipe-editor" depends-on="monaco, admin" type="module">
+    require(['vs/editor/editor.main'], function () {
 
             const html = document.documentElement;
             const mutationObserver = new MutationObserver(setTheme);
@@ -168,5 +157,4 @@
                 textArea.value = editor.getValue();
             });
         });
-    });
 </script>

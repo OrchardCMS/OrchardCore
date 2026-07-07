@@ -46,9 +46,9 @@
 </div>
 
 <script asp-name="monaco" at="Foot"></script>
-<script at="Foot" depends-on="monaco">
+<script at="Foot" depends-on="monaco" type="module">
 
-    function resetScript() {
+    window.resetScript = function resetScript() {
         codeEditor.getModel().setValue(`/* Uncomment to map AzureAd
 switch (context.loginProvider) {
     case "AzureAd":
@@ -109,16 +109,7 @@ type Context = {
     }]
 }`
     var codeEditor;
-    function onDocumentReady(callback) {
-        if (document.readyState !== 'loading') {
-            callback();
-        } else {
-            document.addEventListener('DOMContentLoaded', callback);
-        }
-    }
-
-    onDocumentReady(function () {
-        require(['vs/editor/editor.main'], function () {
+    require(['vs/editor/editor.main'], function () {
 
             const html = document.documentElement;
             const mutationObserver = new MutationObserver(setTheme);
@@ -167,11 +158,10 @@ type Context = {
                 textArea.value = editor.getValue();
             });
         });
-    });
 
 </script>
 
-<script at="Foot">
+<script at="Foot" type="module">
     function toggleEditorState() {
         var syncRolesCheckbox = document.getElementById('@Html.IdFor(x => x.UseScriptToSyncProperties)');
         var editorWrappers = document.querySelectorAll("#SyncRolesScript_wrapper,#doc_editor_wrapper");
@@ -187,12 +177,10 @@ type Context = {
         }
     }
 
-    onDocumentReady(function () {
-        var syncRolesCheckbox = document.getElementById('@Html.IdFor(x => x.UseScriptToSyncProperties)');
+    var syncRolesCheckbox = document.getElementById('@Html.IdFor(x => x.UseScriptToSyncProperties)');
 
-        if (syncRolesCheckbox) {
-            syncRolesCheckbox.addEventListener("change", toggleEditorState);
-            toggleEditorState();
-        }
-    });
+    if (syncRolesCheckbox) {
+        syncRolesCheckbox.addEventListener("change", toggleEditorState);
+        toggleEditorState();
+    }
 </script>

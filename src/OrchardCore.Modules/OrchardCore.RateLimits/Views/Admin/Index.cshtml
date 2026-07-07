@@ -227,126 +227,124 @@
     </div>
 </div>
 
-<script at="Foot">
-    document.addEventListener('DOMContentLoaded', () => {
-        const actions = document.getElementById('actions');
-        const selectAll = document.getElementById('select-all');
-        const items = document.getElementById('items');
-        const selectedItems = document.getElementById('selected-items');
-        const hiddenBulkAction = document.querySelector('[name="BulkAction"]');
-        const submit = document.querySelector('[name="submit.BulkAction"]');
-        const deletePolicyForm = document.getElementById('delete-policy-form');
-        const deletePolicyId = document.getElementById('delete-policy-id');
-        const enablePolicyForm = document.getElementById('enable-policy-form');
-        const enablePolicyId = document.getElementById('enable-policy-id');
-        const disablePolicyForm = document.getElementById('disable-policy-form');
-        const disablePolicyId = document.getElementById('disable-policy-id');
-        const clonePolicyForm = document.getElementById('clone-policy-form');
-        const clonePolicyId = document.getElementById('clone-policy-id');
+<script at="Foot" type="module">
+    const actions = document.getElementById('actions');
+    const selectAll = document.getElementById('select-all');
+    const items = document.getElementById('items');
+    const selectedItems = document.getElementById('selected-items');
+    const hiddenBulkAction = document.querySelector('[name="BulkAction"]');
+    const submit = document.querySelector('[name="submit.BulkAction"]');
+    const deletePolicyForm = document.getElementById('delete-policy-form');
+    const deletePolicyId = document.getElementById('delete-policy-id');
+    const enablePolicyForm = document.getElementById('enable-policy-form');
+    const enablePolicyId = document.getElementById('enable-policy-id');
+    const disablePolicyForm = document.getElementById('disable-policy-form');
+    const disablePolicyId = document.getElementById('disable-policy-id');
+    const clonePolicyForm = document.getElementById('clone-policy-form');
+    const clonePolicyId = document.getElementById('clone-policy-id');
 
-        const getCheckboxes = () => [...document.querySelectorAll('input[name="policyIds"]')];
-        const updateSelection = () => {
-            const checkboxes = getCheckboxes();
-            const selectedCount = checkboxes.filter(x => x.checked).length;
-            const totalCount = checkboxes.length;
+    const getCheckboxes = () => [...document.querySelectorAll('input[name="policyIds"]')];
+    const updateSelection = () => {
+        const checkboxes = getCheckboxes();
+        const selectedCount = checkboxes.filter(x => x.checked).length;
+        const totalCount = checkboxes.length;
 
-            if (selectAll) {
-                selectAll.checked = totalCount > 0 && selectedCount === totalCount;
-                selectAll.indeterminate = selectedCount > 0 && selectedCount < totalCount;
-            }
+        if (selectAll) {
+            selectAll.checked = totalCount > 0 && selectedCount === totalCount;
+            selectAll.indeterminate = selectedCount > 0 && selectedCount < totalCount;
+        }
 
-            if (actions) {
-                actions.classList.toggle('d-none', selectedCount === 0);
-            }
+        if (actions) {
+            actions.classList.toggle('d-none', selectedCount === 0);
+        }
 
-            if (items && selectedItems) {
-                items.classList.toggle('d-none', selectedCount > 0);
-                selectedItems.classList.toggle('d-none', selectedCount === 0);
-                selectedItems.textContent = `${selectedCount} @T["selected"]`;
-            }
-        };
+        if (items && selectedItems) {
+            items.classList.toggle('d-none', selectedCount > 0);
+            selectedItems.classList.toggle('d-none', selectedCount === 0);
+            selectedItems.textContent = `${selectedCount} @T["selected"]`;
+        }
+    };
 
-        selectAll?.addEventListener('change', () => {
-            for (const checkbox of getCheckboxes()) {
-                checkbox.checked = selectAll.checked;
-            }
-
-            updateSelection();
-        });
-
+    selectAll?.addEventListener('change', () => {
         for (const checkbox of getCheckboxes()) {
-            checkbox.addEventListener('change', updateSelection);
+            checkbox.checked = selectAll.checked;
         }
 
-        for (const action of document.querySelectorAll('.dropdown-item[data-action]')) {
-            action.addEventListener('click', () => {
-                confirmDialog({
-                    ...action.dataset,
-                    callback: (confirmed) => {
-                        if (!confirmed) {
-                            return;
-                        }
-
-                        hiddenBulkAction.value = action.dataset.action;
-                        submit.click();
-                    }
-                });
-            });
-        }
-
-        for (const button of document.querySelectorAll('[data-delete-policy-id]')) {
-            button.addEventListener('click', () => {
-                confirmDialog({
-                    ...button.dataset,
-                    callback: (confirmed) => {
-                        if (!confirmed) {
-                            return;
-                        }
-
-                        deletePolicyId.value = button.dataset.deletePolicyId;
-                        deletePolicyForm.submit();
-                    }
-                });
-            });
-        }
-
-        for (const button of document.querySelectorAll('[data-enable-policy-id]')) {
-            button.addEventListener('click', () => {
-                confirmDialog({
-                    ...button.dataset,
-                    callback: (confirmed) => {
-                        if (!confirmed) {
-                            return;
-                        }
-
-                        enablePolicyId.value = button.dataset.enablePolicyId;
-                        enablePolicyForm.submit();
-                    }
-                });
-            });
-        }
-
-        for (const button of document.querySelectorAll('[data-disable-policy-id]')) {
-            button.addEventListener('click', () => {
-                confirmDialog({
-                    ...button.dataset,
-                    callback: (confirmed) => {
-                        if (!confirmed) {
-                            return;
-                        }
-
-                        disablePolicyId.value = button.dataset.disablePolicyId;
-                        disablePolicyForm.submit();
-                    }
-                });
-            });
-        }
-
-        for (const button of document.querySelectorAll('[data-clone-policy-id]')) {
-            button.addEventListener('click', () => {
-                clonePolicyId.value = button.dataset.clonePolicyId;
-                clonePolicyForm.submit();
-            });
-        }
+        updateSelection();
     });
+
+    for (const checkbox of getCheckboxes()) {
+        checkbox.addEventListener('change', updateSelection);
+    }
+
+    for (const action of document.querySelectorAll('.dropdown-item[data-action]')) {
+        action.addEventListener('click', () => {
+            confirmDialog({
+                ...action.dataset,
+                callback: (confirmed) => {
+                    if (!confirmed) {
+                        return;
+                    }
+
+                    hiddenBulkAction.value = action.dataset.action;
+                    submit.click();
+                }
+            });
+        });
+    }
+
+    for (const button of document.querySelectorAll('[data-delete-policy-id]')) {
+        button.addEventListener('click', () => {
+            confirmDialog({
+                ...button.dataset,
+                callback: (confirmed) => {
+                    if (!confirmed) {
+                        return;
+                    }
+
+                    deletePolicyId.value = button.dataset.deletePolicyId;
+                    deletePolicyForm.submit();
+                }
+            });
+        });
+    }
+
+    for (const button of document.querySelectorAll('[data-enable-policy-id]')) {
+        button.addEventListener('click', () => {
+            confirmDialog({
+                ...button.dataset,
+                callback: (confirmed) => {
+                    if (!confirmed) {
+                        return;
+                    }
+
+                    enablePolicyId.value = button.dataset.enablePolicyId;
+                    enablePolicyForm.submit();
+                }
+            });
+        });
+    }
+
+    for (const button of document.querySelectorAll('[data-disable-policy-id]')) {
+        button.addEventListener('click', () => {
+            confirmDialog({
+                ...button.dataset,
+                callback: (confirmed) => {
+                    if (!confirmed) {
+                        return;
+                    }
+
+                    disablePolicyId.value = button.dataset.disablePolicyId;
+                    disablePolicyForm.submit();
+                }
+            });
+        });
+    }
+
+    for (const button of document.querySelectorAll('[data-clone-policy-id]')) {
+        button.addEventListener('click', () => {
+            clonePolicyId.value = button.dataset.clonePolicyId;
+            clonePolicyForm.submit();
+        });
+    }
 </script>

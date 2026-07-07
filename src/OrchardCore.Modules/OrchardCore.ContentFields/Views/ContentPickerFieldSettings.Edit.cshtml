@@ -94,17 +94,8 @@
     </div>
 </div>
 
-<script at="Foot">
-    function onDocumentReady(callback) {
-        if (document.readyState !== 'loading') {
-            callback();
-        } else {
-            document.addEventListener('DOMContentLoaded', callback);
-        }
-    }
-
-    onDocumentReady(function() {
-        var sources = document.getElementsByName('@Html.NameFor(x => x.Source)');
+<script at="Foot" type="module">
+    var sources = document.getElementsByName('@Html.NameFor(x => x.Source)');
         var contentTypesContainer = document.getElementById('ContentTypesContainer');
         var stereotypeContainer = document.getElementById('StereotypesContainer');
         for (var i = 0; i < sources.length; i++) {
@@ -126,19 +117,16 @@
             });
             source.dispatchEvent(new Event('change'));
         }
-    });
 </script>
 
-<script at="Foot">
+<script at="Foot" type="module">
     //<![CDATA[
-    onDocumentReady(function () {
-        editor = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.TitlePattern)'), {
-            autoRefresh: true,
-            lineNumbers: true,
-            styleActiveLine: true,
-            matchBrackets: true,
-            mode: { name: "liquid" },
-        });
+    var editor = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.TitlePattern)'), {
+        autoRefresh: true,
+        lineNumbers: true,
+        styleActiveLine: true,
+        matchBrackets: true,
+        mode: { name: "liquid" },
     });
     //]]>
 </script>

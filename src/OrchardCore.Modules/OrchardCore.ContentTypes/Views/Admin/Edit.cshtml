@@ -227,26 +227,16 @@
     </div>
 </form>
 <script asp-name="Sortable" at="Foot"></script>
-<script at="Foot" depends-on="Sortable">
-    function onDocumentReady(callback) {
-        if (document.readyState !== 'loading') {
-            callback();
-        } else {
-            document.addEventListener('DOMContentLoaded', callback);
-        }
+<script at="Foot" depends-on="Sortable" type="module">
+    const fields = document.getElementById("fields");
+
+    if (fields) {
+        Sortable.create(document.getElementById("fields"));
     }
 
-    onDocumentReady(function () {
-        const fields = document.getElementById("fields");
+    const parts = document.getElementById("parts");
 
-        if (fields) {
-            Sortable.create(document.getElementById("fields"));
-        }
-
-        const parts = document.getElementById("parts");
-
-        if (parts) {
-            Sortable.create(document.getElementById("parts"));
-        }
-    });
+    if (parts) {
+        Sortable.create(document.getElementById("parts"));
+    }
 </script>

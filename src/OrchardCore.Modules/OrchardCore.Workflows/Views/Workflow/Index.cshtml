@@ -134,115 +134,113 @@
     <a class="btn btn-secondary" href="@Model.ReturnUrl">@T["Back"]</a>
 </div>
 
-<script at="Foot">
-    document.addEventListener('DOMContentLoaded', function () {
-        const submitFilterButton = document.querySelector("[name='submit.Filter']");
-        var actions = document.getElementById("actions");
-        var items = document.getElementById("items");
-        var filters = document.querySelectorAll(".filter");
-        var selectAllCtrl = document.getElementById("select-all");
-        var selectedItems = document.getElementById("selected-items");
-        var itemsCheckboxes = document.querySelectorAll("input[type='checkbox'][name='itemIds']");
-        var bulkActionInput = document.querySelector("[name='Options.BulkAction']");
-        var submitBulkActionButton = document.querySelector("[name='submit.BulkAction']");
+<script at="Foot" type="module">
+    const submitFilterButton = document.querySelector("[name='submit.Filter']");
+    var actions = document.getElementById("actions");
+    var items = document.getElementById("items");
+    var filters = document.querySelectorAll(".filter");
+    var selectAllCtrl = document.getElementById("select-all");
+    var selectedItems = document.getElementById("selected-items");
+    var itemsCheckboxes = document.querySelectorAll("input[type='checkbox'][name='itemIds']");
+    var bulkActionInput = document.querySelector("[name='Options.BulkAction']");
+    var submitBulkActionButton = document.querySelector("[name='submit.BulkAction']");
 
-        function show(element) {
-            if (element) {
-                element.style.display = '';
-            }
+    function show(element) {
+        if (element) {
+            element.style.display = '';
         }
+    }
 
-        function hide(element) {
-            if (element) {
-                element.style.display = 'none';
-            }
+    function hide(element) {
+        if (element) {
+            element.style.display = 'none';
         }
+    }
 
-        function selectedItemsCount() {
-            return document.querySelectorAll("input[type='checkbox'][name='itemIds']:checked").length;
+    function selectedItemsCount() {
+        return document.querySelectorAll("input[type='checkbox'][name='itemIds']:checked").length;
+    }
+
+    function setBulkAction(action) {
+        if (bulkActionInput && submitBulkActionButton) {
+            bulkActionInput.value = action;
+            submitBulkActionButton.click();
         }
+    }
 
-        function setBulkAction(action) {
-            if (bulkActionInput && submitBulkActionButton) {
-                bulkActionInput.value = action;
-                submitBulkActionButton.click();
-            }
-        }
+    document.querySelectorAll('.selectpicker').forEach((element) => {
+        element.addEventListener('changed.bs.select', () => submitFilterButton?.click());
+    });
 
-        document.querySelectorAll('.selectpicker').forEach((element) => {
-            element.addEventListener('changed.bs.select', () => submitFilterButton?.click());
+    document.querySelectorAll(".filter-options input").forEach(function (input) {
+        input.addEventListener("change", function () {
+            submitFilterButton?.click();
         });
+    });
 
-        document.querySelectorAll(".filter-options input").forEach(function (input) {
-            input.addEventListener("change", function () {
-                submitFilterButton?.click();
-            });
-        });
+    document.querySelectorAll(".dropdown-menu .dropdown-item").forEach(function (item) {
+        if (!item.dataset.action) {
+            return;
+        }
 
-        document.querySelectorAll(".dropdown-menu .dropdown-item").forEach(function (item) {
-            if (!item.dataset.action) {
-                return;
-            }
-
-            item.addEventListener("click", function () {
-                if (selectedItemsCount() > 1) {
-                    confirmDialog({
-                        title: item.dataset.title, message: item.dataset.message, callback: function (r) {
-                            if (r) {
-                                setBulkAction(item.dataset.action);
-                            }
-                        }
-                    });
-                }
-            });
-        });
-
-        function displayActionsOrFilters() {
+        item.addEventListener("click", function () {
             if (selectedItemsCount() > 1) {
-                show(actions);
-                filters.forEach(function (filter) {
-                    hide(filter);
+                confirmDialog({
+                    title: item.dataset.title, message: item.dataset.message, callback: function (r) {
+                        if (r) {
+                            setBulkAction(item.dataset.action);
+                        }
+                    }
                 });
-                show(selectedItems);
-                hide(items);
             }
-            else {
-                hide(actions);
-                filters.forEach(function (filter) {
-                    show(filter);
-                });
-                hide(selectedItems);
-                show(items);
+        });
+    });
+
+    function displayActionsOrFilters() {
+        if (selectedItemsCount() > 1) {
+            show(actions);
+            filters.forEach(function (filter) {
+                hide(filter);
+            });
+            show(selectedItems);
+            hide(items);
+        }
+        else {
+            hide(actions);
+            filters.forEach(function (filter) {
+                show(filter);
+            });
+            hide(selectedItems);
+            show(items);
+        }
+    }
+
+    if (selectAllCtrl) {
+        selectAllCtrl.addEventListener("click", function () {
+            itemsCheckboxes.forEach(function (checkbox) {
+                checkbox.checked = selectAllCtrl.checked;
+            });
+            if (selectedItems) {
+                selectedItems.textContent = selectedItemsCount() + ' @T["selected"]';
             }
-        }
+            displayActionsOrFilters();
+        });
+    }
 
-        if (selectAllCtrl) {
-            selectAllCtrl.addEventListener("click", function () {
-                itemsCheckboxes.forEach(function (checkbox) {
-                    checkbox.checked = selectAllCtrl.checked;
-                });
-                if (selectedItems) {
-                    selectedItems.textContent = selectedItemsCount() + ' @T["selected"]';
-                }
-                displayActionsOrFilters();
-            });
-        }
+    itemsCheckboxes.forEach(function (checkbox) {
+        checkbox.addEventListener("click", function () {
+            var itemsCount = document.querySelectorAll("input[type='checkbox'][name='itemIds']").length;
+            var selectedCount = selectedItemsCount();
 
-        itemsCheckboxes.forEach(function (checkbox) {
-            checkbox.addEventListener("click", function () {
-                var itemsCount = document.querySelectorAll("input[type='checkbox'][name='itemIds']").length;
-                var selectedCount = selectedItemsCount();
+            if (selectAllCtrl) {
+                selectAllCtrl.checked = selectedCount == itemsCount;
+                selectAllCtrl.indeterminate = selectedCount > 0 && selectedCount < itemsCount;
+            }
 
-                if (selectAllCtrl) {
-                    selectAllCtrl.checked = selectedCount == itemsCount;
-                    selectAllCtrl.indeterminate = selectedCount > 0 && selectedCount < itemsCount;
-                }
-
-                if (selectedItems) {
-                    selectedItems.textContent = selectedCount + ' @T["selected"]';
-                }
-                displayActionsOrFilters();
-            });
+            if (selectedItems) {
+                selectedItems.textContent = selectedCount + ' @T["selected"]';
+            }
+            displayActionsOrFilters();
         });
     });
 </script>

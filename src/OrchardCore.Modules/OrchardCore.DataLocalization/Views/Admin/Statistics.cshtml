@@ -132,8 +132,7 @@
 </div>
 
 <script asp-name="vuejs" at="Foot"></script>
-<script at="Foot">
-document.addEventListener('DOMContentLoaded', function () {
+<script at="Foot" type="module">
     const statsEl = document.getElementById('translation-statistics');
     if (!statsEl) return;
 
@@ -182,5 +181,4 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     app.mount('#translation-statistics');
-});
 </script>

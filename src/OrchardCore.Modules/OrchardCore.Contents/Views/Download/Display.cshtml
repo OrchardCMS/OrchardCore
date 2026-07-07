@@ -39,17 +39,8 @@
 
 </form>
 
-<script at="Foot">
-    function onDocumentReady(callback) {
-        if (document.readyState !== 'loading') {
-            callback();
-        } else {
-            document.addEventListener('DOMContentLoaded', callback);
-        }
-    }
-
-    onDocumentReady(function () {
-        var editor = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.ContentItemJson)'), {
+<script at="Foot" type="module">
+    var editor = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.ContentItemJson)'), {
             autoRefresh: true,
             lineNumbers: true,
             styleActiveLine: true,
@@ -65,5 +56,4 @@
             document.execCommand("copy");
             temp.remove();
         });
-    });
 </script>

@@ -60,23 +60,21 @@
     </div>
 </div>
 
-<script at="Foot">
-    document.addEventListener('DOMContentLoaded', function () {
-        const menu = document.getElementById('@Html.IdFor(m => m.SearchType)');
-        const queryContainer = document.getElementById('DefaultQueryContainer');
-        const fieldsContainer = document.getElementById('DefaultQueryFields');
+<script at="Foot" type="module">
+    const menu = document.getElementById('@Html.IdFor(m => m.SearchType)');
+    const queryContainer = document.getElementById('DefaultQueryContainer');
+    const fieldsContainer = document.getElementById('DefaultQueryFields');
 
-        menu.addEventListener('change', function (e) {
+    menu.addEventListener('change', function (e) {
 
-            if (e.target.value == e.target.getAttribute('data-raw-type')) {
-                queryContainer.classList.remove('d-none');
-                fieldsContainer.classList.add('d-none');
-            } else {
-                queryContainer.classList.add('d-none');
-                fieldsContainer.classList.remove('d-none');
-            }
-        });
-
-        menu.dispatchEvent(new Event('change'));
+        if (e.target.value == e.target.getAttribute('data-raw-type')) {
+            queryContainer.classList.remove('d-none');
+            fieldsContainer.classList.add('d-none');
+        } else {
+            queryContainer.classList.add('d-none');
+            fieldsContainer.classList.remove('d-none');
+        }
     });
+
+    menu.dispatchEvent(new Event('change'));
 </script>

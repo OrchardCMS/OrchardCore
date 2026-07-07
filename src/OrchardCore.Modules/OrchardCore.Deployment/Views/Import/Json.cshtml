@@ -22,24 +22,14 @@
     </div>
 </form>
 
-<script at="Foot">
-function onDocumentReady(callback) {
-    if (document.readyState !== 'loading') {
-        callback();
-    } else {
-        document.addEventListener('DOMContentLoaded', callback);
-    }
-}
+<script at="Foot" type="module">
+var textArea = document.getElementById('@Html.IdFor(x => x.Json)');
 
-onDocumentReady(function () {
-    var textArea = document.getElementById('@Html.IdFor(x => x.Json)');
-
-    var editor = CodeMirror.fromTextArea(textArea, {
-        autoRefresh: true,
-        lineNumbers: true,
-        styleActiveLine: true,
-        matchBrackets: true,
-        mode: { name: "javascript" },
-    });
+var editor = CodeMirror.fromTextArea(textArea, {
+    autoRefresh: true,
+    lineNumbers: true,
+    styleActiveLine: true,
+    matchBrackets: true,
+    mode: { name: "javascript" },
 });
 </script>

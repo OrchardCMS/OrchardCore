@@ -14,17 +14,8 @@
 <script asp-name="codemirror" at="Foot"></script>
 <script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
 <script asp-name="codemirror-mode-javascript" at="Foot"></script>
-<script at="Foot">
-    function onDocumentReady(callback) {
-        if (document.readyState !== 'loading') {
-            callback();
-        } else {
-            document.addEventListener('DOMContentLoaded', callback);
-        }
-    }
-
-    onDocumentReady(function () {
-        var optionsTextArea = document.getElementById('@Html.IdFor(x => x.Options)');
+<script at="Foot" type="module">
+    var optionsTextArea = document.getElementById('@Html.IdFor(x => x.Options)');
         var editor = CodeMirror.fromTextArea(optionsTextArea, {
             autoRefresh: true,
             lineNumbers: true,
@@ -55,5 +46,4 @@
 </text>
         }
 }
-    });
 </script>

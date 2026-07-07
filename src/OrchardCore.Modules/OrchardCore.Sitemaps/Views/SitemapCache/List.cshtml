@@ -49,17 +49,8 @@
     </div>
 </form>
 
-<script at="Foot">
-    function onDocumentReady(callback) {
-        if (document.readyState !== 'loading') {
-            callback();
-        } else {
-            document.addEventListener('DOMContentLoaded', callback);
-        }
-    }
-
-    onDocumentReady(function () {
-        var searchBox = document.getElementById('search-box');
+<script at="Foot" type="module">
+    var searchBox = document.getElementById('search-box');
 
         // On each keypress filter the list of cache entries
         searchBox.addEventListener('keyup', function (e) {
@@ -105,5 +96,4 @@
                 }
             }
         });
-    })
 </script>

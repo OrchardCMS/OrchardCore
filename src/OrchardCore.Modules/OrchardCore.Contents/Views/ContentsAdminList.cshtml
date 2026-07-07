@@ -51,17 +51,8 @@
 
 @await DisplayAsync(Model.Pager)
 
-<script at="Foot">
-    function onDocumentReady(callback) {
-        if (document.readyState !== 'loading') {
-            callback();
-        } else {
-            document.addEventListener('DOMContentLoaded', callback);
-        }
-    }
-
-    onDocumentReady(function () {
-        const submitFilterButton = document.querySelector("[name='submit.Filter']");
+<script at="Foot" type="module">
+    const submitFilterButton = document.querySelector("[name='submit.Filter']");
         var actions = document.getElementById("actions");
         var items = document.getElementById("items");
         var filters = document.querySelectorAll(".filter");
@@ -161,5 +152,4 @@
                 displayActionsOrFilters();
             });
         });
-    });
 </script>

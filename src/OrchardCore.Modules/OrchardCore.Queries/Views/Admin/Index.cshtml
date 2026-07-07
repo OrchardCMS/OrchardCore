@@ -112,17 +112,8 @@
     </div>
 </div>
 
-<script at="Foot">
-    function onDocumentReady(callback) {
-        if (document.readyState !== 'loading') {
-            callback();
-        } else {
-            document.addEventListener('DOMContentLoaded', callback);
-        }
-    }
-
-    onDocumentReady(function () {
-        var actions = document.getElementById("actions");
+<script at="Foot" type="module">
+    var actions = document.getElementById("actions");
         var items = document.getElementById("items");
         var filters = document.querySelectorAll(".filter");
         var selectAllCtrl = document.getElementById("select-all");
@@ -208,5 +199,4 @@
                 displayActionsOrFilters();
             });
         });
-    })
 </script>

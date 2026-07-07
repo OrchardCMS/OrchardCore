@@ -91,16 +91,12 @@
     </div>
 </div>
 
-<script at="Foot">
-    document.addEventListener('DOMContentLoaded', () => {
-        const scopeElement = document.getElementById('@Html.IdFor(m => m.Scope)');
-        const pathGroup = document.getElementById('@($"{Html.IdFor(m => m.Path)}_group")');
-        const rateLimitGroup = document.getElementById('@($"{Html.IdFor(m => m.GroupName)}_group")');
+<script at="Foot" type="module">
+    const scopeElement = document.getElementById('@Html.IdFor(m => m.Scope)');
+    const pathGroup = document.getElementById('@($"{Html.IdFor(m => m.Path)}_group")');
+    const rateLimitGroup = document.getElementById('@($"{Html.IdFor(m => m.GroupName)}_group")');
 
-        if (!scopeElement || !pathGroup || !rateLimitGroup) {
-            return;
-        }
-
+    if (scopeElement && pathGroup && rateLimitGroup) {
         const updateScopeFields = () => {
             if (@isTargetLocked.ToString().ToLowerInvariant()) {
                 return;
@@ -113,5 +109,5 @@
 
         scopeElement.addEventListener('change', updateScopeFields);
         updateScopeFields();
-    });
+    }
 </script>

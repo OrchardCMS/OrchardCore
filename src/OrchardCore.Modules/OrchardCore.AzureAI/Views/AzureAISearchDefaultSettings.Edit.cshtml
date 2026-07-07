@@ -63,24 +63,22 @@
     </div>
 </div>
 
-<script at="Foot">
-    document.addEventListener('DOMContentLoaded', () => {
-        const typeMenu = document.getElementById('@Html.IdFor(m => m.AuthenticationType)');
-        const keyWrapper = document.getElementById('@apiKeyWrapperHtmlId');
-        const identityWrapper = document.getElementById('@identityClientIdWrapperHtmlId');
+<script at="Foot" type="module">
+    const typeMenu = document.getElementById('@Html.IdFor(m => m.AuthenticationType)');
+    const keyWrapper = document.getElementById('@apiKeyWrapperHtmlId');
+    const identityWrapper = document.getElementById('@identityClientIdWrapperHtmlId');
 
-        typeMenu.addEventListener('change', e => {
+    typeMenu.addEventListener('change', e => {
 
-            if (e.target.value == '@nameof(AzureAIAuthenticationType.ApiKey)') {
-                keyWrapper.classList.remove('d-none');
-                identityWrapper.classList.add('d-none');
-            } else if (e.target.value == '@nameof(AzureAIAuthenticationType.ManagedIdentity)') {
-                keyWrapper.classList.add('d-none');
-                identityWrapper.classList.remove('d-none');
-            } else {
-                keyWrapper.classList.add('d-none');
-                identityWrapper.classList.add('d-none');
-            }
-        });
+        if (e.target.value == '@nameof(AzureAIAuthenticationType.ApiKey)') {
+            keyWrapper.classList.remove('d-none');
+            identityWrapper.classList.add('d-none');
+        } else if (e.target.value == '@nameof(AzureAIAuthenticationType.ManagedIdentity)') {
+            keyWrapper.classList.add('d-none');
+            identityWrapper.classList.remove('d-none');
+        } else {
+            keyWrapper.classList.add('d-none');
+            identityWrapper.classList.add('d-none');
+        }
     });
 </script>

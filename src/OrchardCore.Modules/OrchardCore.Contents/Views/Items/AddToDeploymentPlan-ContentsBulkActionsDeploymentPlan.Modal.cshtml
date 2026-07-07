@@ -38,17 +38,8 @@
     </div>
 </zone>
 
-<script at="Foot">
-    function onDocumentReady(callback) {
-        if (document.readyState !== 'loading') {
-            callback();
-        } else {
-            document.addEventListener('DOMContentLoaded', callback);
-        }
-    }
-
-    onDocumentReady(function () {
-        document.getElementById('modalAddToDeploymentPlanContentsBulkActionsDeploymentPlan')?.addEventListener('show.bs.modal', function () {
+<script at="Foot" type="module">
+    document.getElementById('modalAddToDeploymentPlanContentsBulkActionsDeploymentPlan')?.addEventListener('show.bs.modal', function () {
             var itemIds = document.querySelectorAll("input[type='checkbox'][name='itemIds']:checked");
             if (itemIds.length > 1) {
                 document.querySelectorAll('.add-to-deployment-plan-bulk-actions').forEach(function (button) {
@@ -91,5 +82,4 @@
                 });
             }
         });
-    });
 </script>

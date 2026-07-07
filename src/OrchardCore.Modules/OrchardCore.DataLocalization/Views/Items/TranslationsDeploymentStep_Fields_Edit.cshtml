@@ -40,16 +40,14 @@
     </div>
 </div>
 
-<script at="Foot">
-    document.addEventListener('DOMContentLoaded', function() {
-        var includeAllCheckbox = document.getElementById('@Html.IdFor(m => m.IncludeAll)');
-        var culturesSelection = document.getElementById('cultures-selection');
+<script at="Foot" type="module">
+    var includeAllCheckbox = document.getElementById('@Html.IdFor(m => m.IncludeAll)');
+    var culturesSelection = document.getElementById('cultures-selection');
 
-        function toggleCulturesSelection() {
-            culturesSelection.style.display = includeAllCheckbox.checked ? 'none' : 'block';
-        }
+    function toggleCulturesSelection() {
+        culturesSelection.style.display = includeAllCheckbox.checked ? 'none' : 'block';
+    }
 
-        includeAllCheckbox.addEventListener('change', toggleCulturesSelection);
-        toggleCulturesSelection();
-    });
+    includeAllCheckbox.addEventListener('change', toggleCulturesSelection);
+    toggleCulturesSelection();
 </script>

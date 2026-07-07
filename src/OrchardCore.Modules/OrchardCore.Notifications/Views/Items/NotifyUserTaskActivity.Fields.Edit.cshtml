@@ -55,7 +55,7 @@
 <script asp-name="codemirror-mode-htmlmixed" at="Foot"></script>
 <script asp-name="codemirror-mode-javascript" at="Foot"></script>
 <script asp-name="codemirror-mode-xml" at="Foot"></script>
-<script at="Foot" depends-on="codemirror">
+<script at="Foot" depends-on="codemirror" type="module">
 
     const initializeEditor = (textArea) => {
         textArea.CoreMirrorEditor = CodeMirror.fromTextArea(textArea, {
@@ -69,9 +69,7 @@
         });
     };
 
-    document.addEventListener('DOMContentLoaded', () => {
-        initializeEditor(document.getElementById('@Html.IdFor(x => x.Summary)'));
-        initializeEditor(document.getElementById('@Html.IdFor(x => x.HtmlBody)'));
-    });
+    initializeEditor(document.getElementById('@Html.IdFor(x => x.Summary)'));
+    initializeEditor(document.getElementById('@Html.IdFor(x => x.HtmlBody)'));
 
 </script>

@@ -62,17 +62,8 @@
     </div>
 </form>
 
-<script asp-name="create-template" at="Foot" depends-on="liquid-intellisense monaco">
-    function onDocumentReady(callback) {
-        if (document.readyState !== 'loading') {
-            callback();
-        } else {
-            document.addEventListener('DOMContentLoaded', callback);
-        }
-    }
-
-    onDocumentReady(function () {
-        require(['vs/editor/editor.main'], function () {
+<script asp-name="create-template" at="Foot" depends-on="liquid-intellisense monaco" type="module">
+    require(['vs/editor/editor.main'], function () {
             var settings = {
                 automaticLayout: true,
                 language: 'liquid'
@@ -108,13 +99,10 @@
                 textArea.value = editor.getValue();
             });
         });
-    });
 </script>
 
 
-<script at="Foot">
-    onDocumentReady(function () {
-
+<script at="Foot" type="module">
         function initializeTemplatePreview(element) {
 
             var antiforgerytoken = document.querySelector("[name='__RequestVerificationToken']").value;
@@ -125,7 +113,7 @@
                 }).join('&');
             }
 
-            sendFormData = function (element) {
+            var sendFormData = function (element) {
 
                 var formData = {
                     'Name': element.name,
@@ -155,5 +143,4 @@
         }
 
         initializeTemplatePreview(document.getElementById('@Html.IdFor(x => x.Content)'));
-    });
 </script>

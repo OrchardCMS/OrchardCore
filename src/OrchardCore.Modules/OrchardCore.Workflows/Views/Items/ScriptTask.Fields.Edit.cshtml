@@ -21,37 +21,35 @@
 </div>
 
 <script asp-name="monaco" at="Foot"></script>
-<script at="Foot" depends-on="monaco">
-    document.addEventListener('DOMContentLoaded', function () {
-        require(['vs/editor/editor.main'], function () {
-            var settings = {
-                "automaticLayout": true,
-                "language": "javascript"
-            };
+<script at="Foot" depends-on="monaco" type="module">
+    require(['vs/editor/editor.main'], function () {
+        var settings = {
+            "automaticLayout": true,
+            "language": "javascript"
+        };
 
-            const html = document.documentElement;
-            const mutationObserver = new MutationObserver(setTheme);
-            mutationObserver.observe(html, { attributes: true });
+        const html = document.documentElement;
+        const mutationObserver = new MutationObserver(setTheme);
+        mutationObserver.observe(html, { attributes: true });
 
-            function setTheme() {
-                var theme = html.dataset.bsTheme;
-                if (theme === 'dark' || (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                    monaco.editor.setTheme('vs-dark')
-                } else {
-                    monaco.editor.setTheme('vs')
-                }
+        function setTheme() {
+            var theme = html.dataset.bsTheme;
+            if (theme === 'dark' || (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                monaco.editor.setTheme('vs-dark')
+            } else {
+                monaco.editor.setTheme('vs')
             }
+        }
 
-            setTheme();
+        setTheme();
 
-            var editor = monaco.editor.create(document.getElementById('@Html.IdFor(x => x.Script)_editor'), settings);
-            var textArea = document.getElementById('@Html.IdFor(x => x.Script)');
+        var editor = monaco.editor.create(document.getElementById('@Html.IdFor(x => x.Script)_editor'), settings);
+        var textArea = document.getElementById('@Html.IdFor(x => x.Script)');
 
-            editor.getModel().setValue(textArea.value);
+        editor.getModel().setValue(textArea.value);
 
-            window.addEventListener("submit", function () {
-                textArea.value = editor.getValue();
-            });
+        window.addEventListener("submit", function () {
+            textArea.value = editor.getValue();
         });
     });
 </script>

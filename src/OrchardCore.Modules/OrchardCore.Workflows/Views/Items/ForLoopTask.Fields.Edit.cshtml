@@ -76,33 +76,31 @@
     </div>
 </div>
 
-<script at="Foot">
-    document.addEventListener('DOMContentLoaded', () => {
-        const syntaxElement = document.getElementById('@Html.IdFor(m => m.Syntax)');
-        const javaScriptGroups = [
-            document.getElementById('@($"{Html.IdFor(m => m.FromExpression)}_group")'),
-            document.getElementById('@($"{Html.IdFor(m => m.ToExpression)}_group")'),
-            document.getElementById('@($"{Html.IdFor(m => m.StepExpression)}_group")')
-        ];
-        const liquidGroups = [
-            document.getElementById('@($"{Html.IdFor(m => m.LiquidFromExpression)}_group")'),
-            document.getElementById('@($"{Html.IdFor(m => m.LiquidToExpression)}_group")'),
-            document.getElementById('@($"{Html.IdFor(m => m.LiquidStepExpression)}_group")')
-        ];
+<script at="Foot" type="module">
+    const syntaxElement = document.getElementById('@Html.IdFor(m => m.Syntax)');
+    const javaScriptGroups = [
+        document.getElementById('@($"{Html.IdFor(m => m.FromExpression)}_group")'),
+        document.getElementById('@($"{Html.IdFor(m => m.ToExpression)}_group")'),
+        document.getElementById('@($"{Html.IdFor(m => m.StepExpression)}_group")')
+    ];
+    const liquidGroups = [
+        document.getElementById('@($"{Html.IdFor(m => m.LiquidFromExpression)}_group")'),
+        document.getElementById('@($"{Html.IdFor(m => m.LiquidToExpression)}_group")'),
+        document.getElementById('@($"{Html.IdFor(m => m.LiquidStepExpression)}_group")')
+    ];
 
-        const toggleEditors = () => {
-            const useLiquid = syntaxElement.value === '@nameof(WorkflowScriptSyntax.Liquid)';
+    const toggleEditors = () => {
+        const useLiquid = syntaxElement.value === '@nameof(WorkflowScriptSyntax.Liquid)';
 
-            for (const group of javaScriptGroups) {
-                group.classList.toggle('d-none', useLiquid);
-            }
+        for (const group of javaScriptGroups) {
+            group.classList.toggle('d-none', useLiquid);
+        }
 
-            for (const group of liquidGroups) {
-                group.classList.toggle('d-none', !useLiquid);
-            }
-        };
+        for (const group of liquidGroups) {
+            group.classList.toggle('d-none', !useLiquid);
+        }
+    };
 
-        syntaxElement.addEventListener('change', toggleEditors);
-        toggleEditors();
-    });
+    syntaxElement.addEventListener('change', toggleEditors);
+    toggleEditors();
 </script>

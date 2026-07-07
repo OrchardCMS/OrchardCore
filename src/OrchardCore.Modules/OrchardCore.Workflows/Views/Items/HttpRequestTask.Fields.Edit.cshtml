@@ -77,17 +77,8 @@
 
 <script asp-src="~/OrchardCore.Liquid/codemirror/liquid.js" at="Foot"></script>
 
-<script at="Foot">
-    function onDocumentReady(callback) {
-        if (document.readyState !== 'loading') {
-            callback();
-        } else {
-            document.addEventListener('DOMContentLoaded', callback);
-        }
-    }
-
-    onDocumentReady(function () {
-        var codeMirrorOptions = {
+<script at="Foot" type="module">
+    var codeMirrorOptions = {
             autoRefresh: true,
             lineNumbers: true,
             styleActiveLine: true,
@@ -96,5 +87,4 @@
         };
         CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Headers)'), codeMirrorOptions);
         CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Body)'), codeMirrorOptions);
-    });
 </script>

@@ -86,10 +86,8 @@
     </div>
 </form>
 
-<script at="Foot">
-    document.addEventListener('DOMContentLoaded', function () {
-        document.getElementById('use-default-schedule').addEventListener('click', function (e) {
-            document.getElementById('@Html.IdFor(x => x.Schedule)').value = document.getElementById('@Html.IdFor(x => x.DefaultSchedule)').value;
-        });
-    })
+<script at="Foot" type="module">
+    document.getElementById('use-default-schedule').addEventListener('click', function (e) {
+        document.getElementById('@Html.IdFor(x => x.Schedule)').value = document.getElementById('@Html.IdFor(x => x.DefaultSchedule)').value;
+    });
 </script>

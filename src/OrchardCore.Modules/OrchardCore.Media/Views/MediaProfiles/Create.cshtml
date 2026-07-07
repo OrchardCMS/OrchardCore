@@ -124,17 +124,8 @@
     </div>
 </form>
 
-<script at="Foot">
-    function onDocumentReady(callback) {
-        if (document.readyState !== 'loading') {
-            callback();
-        } else {
-            document.addEventListener('DOMContentLoaded', callback);
-        }
-    }
-
-    onDocumentReady(function () {
-        var selectedMode = document.getElementById('@Html.IdFor(x => x.SelectedMode)');
+<script at="Foot" type="module">
+    var selectedMode = document.getElementById('@Html.IdFor(x => x.SelectedMode)');
         var backgroundColor = document.getElementById('@Html.IdFor(x => x.BackgroundColor)');
         var selectedWidth = document.getElementById('@Html.IdFor(x => x.SelectedWidth)');
         var customWidth = document.getElementById('@Html.IdFor(x => x.CustomWidth)');
@@ -165,5 +156,4 @@
                 customHeight.value = 0;
             }
         });
-    });
 </script>

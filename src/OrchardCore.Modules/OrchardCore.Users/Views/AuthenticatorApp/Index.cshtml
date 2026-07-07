@@ -55,14 +55,12 @@
 </div>
 
 <script asp-name="qrcode" at="Foot"></script>
-<script at="Foot" depends-on="qrcode">
-    document.addEventListener("DOMContentLoaded", () => {
-        const uri = document.getElementById("qrCodeData").getAttribute('data-url');
-        new QRCode(document.getElementById("qrCode"),
-            {
-                text: uri,
-                width: 150,
-                height: 150
-            });
-    });
+<script at="Foot" depends-on="qrcode" type="module">
+    const uri = document.getElementById("qrCodeData").getAttribute('data-url');
+    new QRCode(document.getElementById("qrCode"),
+        {
+            text: uri,
+            width: 150,
+            height: 150
+        });
 </script>

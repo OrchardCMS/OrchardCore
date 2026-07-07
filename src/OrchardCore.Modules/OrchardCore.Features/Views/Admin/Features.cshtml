@@ -245,9 +245,8 @@
         @T["<strong>Nothing here!</strong> Your search or filters returned no results."]
     </div>
 </form>
-<script at="Foot">
-    document.addEventListener('DOMContentLoaded', () => {
-        const EscapeKey = 'Escape';
+<script at="Foot" type="module">
+    const EscapeKey = 'Escape';
         const searchBox = document.getElementById('search-box');
         const featureGroups = Array.from(document.querySelectorAll('.feature-group'));
         const featureItems = featureGroups.flatMap((featureGroup) => Array.from(featureGroup.querySelectorAll('.list-group-item[data-search-text]')));
@@ -436,5 +435,4 @@
         }));
 
         applyFilters();
-    });
 </script>

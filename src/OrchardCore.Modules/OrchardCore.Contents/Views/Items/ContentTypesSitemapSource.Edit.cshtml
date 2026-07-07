@@ -214,17 +214,8 @@
     </div>
 </div>
 
-<script at="Foot">
-    function onDocumentReady(callback) {
-        if (document.readyState !== 'loading') {
-            callback();
-        } else {
-            document.addEventListener('DOMContentLoaded', callback);
-        }
-    }
-
-    onDocumentReady(function () {
-        function showElement(element) {
+<script at="Foot" type="module">
+    function showElement(element) {
             if (element) {
                 element.style.display = 'block';
             }
@@ -307,6 +298,4 @@
         document.getElementById('ContentTypesSitemapSource_LimitItems')?.addEventListener('change', function () {
             switchContentTypesCheckBoxes();
         });
-
-    });
 </script>

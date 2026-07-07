@@ -61,21 +61,19 @@
     </div>
 </div>
 
-<script at="Foot">
-    document.addEventListener('DOMContentLoaded', function () {
-        editor = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Pattern)'), {
-            autoRefresh: true,
-            lineNumbers: true,
-            styleActiveLine: true,
-            matchBrackets: true,
-            mode: { name: "liquid" },
-        });
+<script at="Foot" type="module">
+    const editor = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Pattern)'), {
+        autoRefresh: true,
+        lineNumbers: true,
+        styleActiveLine: true,
+        matchBrackets: true,
+        mode: { name: "liquid" },
+    });
 
+    setPatternVisibility();
+
+    document.getElementById('@Html.IdFor(x => x.Type)').addEventListener('change', function () {
         setPatternVisibility();
-
-        document.getElementById('@Html.IdFor(x => x.Type)').addEventListener('change', function () {
-            setPatternVisibility();
-        });
     });
 
     function setPatternVisibility() {

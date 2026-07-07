@@ -56,26 +56,16 @@
     </div>
 </form>
 
-<script at="Foot">
-    function onDocumentReady(callback) {
-        if (document.readyState !== 'loading') {
-            callback();
-        } else {
-            document.addEventListener('DOMContentLoaded', callback);
-        }
+<script at="Foot" type="module">
+    var optionsTextArea = document.getElementById('@Html.IdFor(x => x.Nodes)');
+    if (optionsTextArea) {
+        var editor = CodeMirror.fromTextArea(optionsTextArea, {
+            autoRefresh: true,
+            lineNumbers: true,
+            lineWrapping: true,
+            matchBrackets: true,
+            styleActiveLine: true,
+            mode: { name: "javascript" }
+        });
     }
-
-    onDocumentReady(function () {
-        var optionsTextArea = document.getElementById('@Html.IdFor(x => x.Nodes)');
-        if (optionsTextArea) {
-            var editor = CodeMirror.fromTextArea(optionsTextArea, {
-                autoRefresh: true,
-                lineNumbers: true,
-                lineWrapping: true,
-                matchBrackets: true,
-                styleActiveLine: true,
-                mode: { name: "javascript" }
-            });
-        }
-    });
 </script>

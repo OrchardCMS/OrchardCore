@@ -109,18 +109,9 @@
     </div>
 </form>
 
-<script at="Foot">
+<script at="Foot" type="module">
     //<![CDATA[
-    function onDocumentReady(callback) {
-        if (document.readyState !== 'loading') {
-            callback();
-        } else {
-            document.addEventListener('DOMContentLoaded', callback);
-        }
-    }
-
-    onDocumentReady(function () {
-        document.querySelectorAll('.field-editor').forEach(function (element) {
+    document.querySelectorAll('.field-editor').forEach(function (element) {
             element.style.display = 'none';
         });
         var fieldEditorContainer = document.getElementById('field-editor-container');
@@ -167,6 +158,5 @@
                 });
             });
         }
-    });
     //]]>
 </script>

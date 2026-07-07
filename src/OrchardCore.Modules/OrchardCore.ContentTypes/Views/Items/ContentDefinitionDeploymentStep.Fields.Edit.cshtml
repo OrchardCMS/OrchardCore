@@ -112,17 +112,8 @@
     </div>
 </div>
 
-<script at="Foot">
-    function onDocumentReady(callback) {
-        if (document.readyState !== 'loading') {
-            callback();
-        } else {
-            document.addEventListener('DOMContentLoaded', callback);
-        }
-    }
-
-    onDocumentReady(function () {
-        document.querySelectorAll("[data-reversetoggle]").forEach(function (element) {
+<script at="Foot" type="module">
+    document.querySelectorAll("[data-reversetoggle]").forEach(function (element) {
             element.addEventListener("click", function () {
                 var state = this.checked;
                 var selector = this.getAttribute("data-reversetoggle");
@@ -186,5 +177,4 @@
                 });
             });
         });
-    });
 </script>

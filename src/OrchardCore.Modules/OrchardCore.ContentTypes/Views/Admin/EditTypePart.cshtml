@@ -108,18 +108,9 @@
     </div>
 </form>
 
-<script at="Foot">
+<script at="Foot" type="module">
     //<![CDATA[
-    function onDocumentReady(callback) {
-        if (document.readyState !== 'loading') {
-            callback();
-        } else {
-            document.addEventListener('DOMContentLoaded', callback);
-        }
-    }
-
-    onDocumentReady(function () {
-        document.querySelectorAll('.type-part-editor').forEach(function (element) {
+    document.querySelectorAll('.type-part-editor').forEach(function (element) {
             element.style.display = 'none';
         });
         var typePartEditorContainer = document.getElementById('type-part-editor-container');
@@ -166,6 +157,5 @@
                 });
             });
         }
-    });
     //]]>
 </script>

@@ -56,17 +56,8 @@
     </div>
 </div>
 
-<script at="Foot">
-    function onDocumentReady(callback) {
-        if (document.readyState !== 'loading') {
-            callback();
-        } else {
-            document.addEventListener('DOMContentLoaded', callback);
-        }
-    }
-
-    onDocumentReady(function () {
-        var authority = document.getElementById('@Html.IdFor(model => model.Authority)');
+<script at="Foot" type="module">
+    var authority = document.getElementById('@Html.IdFor(model => model.Authority)');
         var audience = document.getElementById('@Html.IdFor(model => model.Audience)');
         var tenant = document.getElementById('@Html.IdFor(model => model.Tenant)');
         var disableTokenTypeValidation = document.getElementById('@Html.IdFor(model => model.DisableTokenTypeValidation)');
@@ -91,5 +82,4 @@
         });
 
         tenant.dispatchEvent(new Event('change'));
-    });
 </script>

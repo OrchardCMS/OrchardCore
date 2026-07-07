@@ -420,18 +420,9 @@
         </div>
     </div>
 </div>
-<script at="Foot">
+<script at="Foot" type="module">
     ////<![CDATA[
-    function onDocumentReady(callback) {
-        if (document.readyState !== 'loading') {
-            callback();
-        } else {
-            document.addEventListener('DOMContentLoaded', callback);
-        }
-    }
-
-    onDocumentReady(function () {
-        function getElement(id) {
+    function getElement(id) {
             return document.getElementById(id);
         }
 
@@ -608,6 +599,5 @@
                 setCollapse(allowRefreshTokenFlow.closest('.collapse'), "hide");
             }
         }
-    });
     //]]>
 </script>

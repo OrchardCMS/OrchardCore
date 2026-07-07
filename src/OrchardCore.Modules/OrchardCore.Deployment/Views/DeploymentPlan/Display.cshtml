@@ -138,7 +138,7 @@
         </div>
     </div>
 </div>
-<script at="Foot">
+<script at="Foot" type="module">
     function getDeploymentStepCategory() {
         var activeCategory = document.querySelector('#deployment-step-categories .nav-link.active');
 
@@ -159,16 +159,7 @@
         });
     }
 
-    function onDocumentReady(callback) {
-        if (document.readyState !== 'loading') {
-            callback();
-        } else {
-            document.addEventListener('DOMContentLoaded', callback);
-        }
-    }
-
-    onDocumentReady(function () {
-        var modalSteps = document.getElementById('modalSteps');
+    var modalSteps = document.getElementById('modalSteps');
         var searchBox = document.getElementById('search-box');
         var deploymentStepCategories = document.getElementById('deployment-step-categories');
 
@@ -217,7 +208,6 @@
                 filterDeploymentSteps();
             });
         }
-    });
 
     function replaceDiacritics(str) {
         return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");

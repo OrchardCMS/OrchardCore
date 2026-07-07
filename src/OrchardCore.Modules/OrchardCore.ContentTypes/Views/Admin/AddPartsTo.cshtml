@@ -46,16 +46,14 @@
     </div>
 </form>
 
-<script at="Foot">
-    document.addEventListener('DOMContentLoaded', function () {
-        const addSelectedPartsButton = document.getElementById('add-selected-parts-button');
-        const partSelectionCheckboxes = document.querySelectorAll('input[type="checkbox"][name$=".IsSelected"]');
+<script at="Foot" type="module">
+    const addSelectedPartsButton = document.getElementById('add-selected-parts-button');
+    const partSelectionCheckboxes = document.querySelectorAll('input[type="checkbox"][name$=".IsSelected"]');
 
-        const updateAddSelectedPartsButton = () => {
-            addSelectedPartsButton.hidden = !Array.from(partSelectionCheckboxes).some((checkbox) => checkbox.checked);
-        };
+    const updateAddSelectedPartsButton = () => {
+        addSelectedPartsButton.hidden = !Array.from(partSelectionCheckboxes).some((checkbox) => checkbox.checked);
+    };
 
-        partSelectionCheckboxes.forEach((checkbox) => checkbox.addEventListener('change', updateAddSelectedPartsButton));
-        updateAddSelectedPartsButton();
-    });
+    partSelectionCheckboxes.forEach((checkbox) => checkbox.addEventListener('change', updateAddSelectedPartsButton));
+    updateAddSelectedPartsButton();
 </script>

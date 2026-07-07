@@ -71,17 +71,8 @@ else
 </form>
 
 
-<script asp-name="edit-template" at="Foot" depends-on="liquid-intellisense monaco">
-    function onDocumentReady(callback) {
-        if (document.readyState !== 'loading') {
-            callback();
-        } else {
-            document.addEventListener('DOMContentLoaded', callback);
-        }
-    }
-
-    onDocumentReady(function () {
-        require(['vs/editor/editor.main'], function () {
+<script asp-name="edit-template" at="Foot" depends-on="liquid-intellisense monaco" type="module">
+    require(['vs/editor/editor.main'], function () {
             var settings = {
                 automaticLayout: true,
                 language: 'liquid'
@@ -117,7 +108,7 @@ else
                 }).join('&');
             }
 
-            sendFormData = function () {
+            var sendFormData = function () {
                 var formData = {
                     'Name': nameInput.value,
                     'Content': editor.getValue(),
@@ -156,12 +147,9 @@ else
             });
 
         });
-    });
 </script>
 
-<script at="Foot">
-    onDocumentReady(function () {
-
+<script at="Foot" type="module">
         function initializeTemplatePreview(element) {
 
             var antiforgerytoken = document.querySelector("[name='__RequestVerificationToken']").value;
@@ -172,7 +160,7 @@ else
                 }).join('&');
             }
 
-            sendFormData = function (element) {
+            var sendFormData = function (element) {
 
                 var formData = {
                     'Name': element.name,
@@ -202,6 +190,5 @@ else
         }
 
         initializeTemplatePreview(document.getElementById('@Html.IdFor(x => x.Content)'));
-    });
 </script>
 

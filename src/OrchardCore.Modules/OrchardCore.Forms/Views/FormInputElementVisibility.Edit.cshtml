@@ -21,15 +21,7 @@
 
 <script asp-name="form-visibility" asp-src="~/OrchardCore.Forms/Scripts/form-visibility.min.js" debug-src="~/OrchardCore.Forms/Scripts/form-visibility.js" at="Foot" depends-on="vuejs:2"> </script>
 
-<script at="Foot" asp-name="InitializeGroups">
-    function onDocumentReady(callback) {
-        if (document.readyState !== 'loading') {
-            callback();
-        } else {
-            document.addEventListener('DOMContentLoaded', callback);
-        }
-    }
-
+<script at="Foot" asp-name="InitializeGroups" type="module">
     function processContainers(containers) {
         containers.forEach(container => {
             initializeOrUpdateVue(container);
@@ -37,36 +29,32 @@
         });
     }
 
-    onDocumentReady(() =>
-    {
-        const flowWidgetObserver = new MutationObserver(mutationsList => {
-            for (const mutation of mutationsList) {
-                if (mutation.type === 'childList') {
-                    mutation.addedNodes.forEach(node => {
-                        if (node.nodeType === 1) {
-                            const containers = node.matches('.main-group-container')
-                                ? [node]
-                                : [...node.querySelectorAll('.main-group-container')];
+    const flowWidgetObserver = new MutationObserver(mutationsList => {
+        for (const mutation of mutationsList) {
+            if (mutation.type === 'childList') {
+                mutation.addedNodes.forEach(node => {
+                    if (node.nodeType === 1) {
+                        const containers = node.matches('.main-group-container')
+                            ? [node]
+                            : [...node.querySelectorAll('.main-group-container')];
 
-                            processContainers(containers);
-                        }
-                    });
-                }
+                        processContainers(containers);
+                    }
+                });
             }
-            document.querySelectorAll('.main-group-container').forEach(container =>
-                actionVisibilitySettings(container));
-        });
-
-        flowWidgetObserver.observe(document.body, { childList: true, subtree:   true });
-
-        Vue.config.productionTip = false;
-        Vue.config.devtools = false;
-
-        const containers = [...document.querySelectorAll('.main-group-container')];
-
-        processContainers(containers);
-
+        }
+        document.querySelectorAll('.main-group-container').forEach(container =>
+            actionVisibilitySettings(container));
     });
+
+    flowWidgetObserver.observe(document.body, { childList: true, subtree:   true });
+
+    Vue.config.productionTip = false;
+    Vue.config.devtools = false;
+
+    const containers = [...document.querySelectorAll('.main-group-container')];
+
+    processContainers(containers);
 
     function initializeOrUpdateVue(container) {
 

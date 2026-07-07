@@ -29,17 +29,8 @@ else
     <a id="@exportId" asp-action="Download" asp-controller="Download" asp-area="OrchardCore.Contents" asp-route-contentItemId="@contentItem.ContentItemId" class="dropdown-item" data-url-af="UnsafeUrl">@T["Download as JSON"]</a>
 }
 
-<script at="Foot">
-    function onDocumentReady(callback) {
-        if (document.readyState !== 'loading') {
-            callback();
-        } else {
-            document.addEventListener('DOMContentLoaded', callback);
-        }
-    }
-
-    onDocumentReady(function () {
-        function toggleDropdown(element) {
+<script at="Foot" type="module">
+    function toggleDropdown(element) {
             var dropdownMenu = element.closest(".dropdown-menu");
             var dropdownToggle = dropdownMenu?.previousElementSibling;
             if (dropdownToggle) {
@@ -58,5 +49,4 @@ else
         document.getElementById('@exportId')?.addEventListener('click', function () {
             toggleDropdown(this);
         });
-    });
 </script>

@@ -40,19 +40,17 @@
     </div>
 </div>
 
-<script at="Foot">
-    document.addEventListener('DOMContentLoaded', () => {
-        const syntaxElement = document.getElementById('@Html.IdFor(m => m.Syntax)');
-        const javaScriptGroup = document.getElementById('@($"{Html.IdFor(m => m.Value)}_group")');
-        const liquidGroup = document.getElementById('@($"{Html.IdFor(m => m.LiquidValue)}_group")');
+<script at="Foot" type="module">
+    const syntaxElement = document.getElementById('@Html.IdFor(m => m.Syntax)');
+    const javaScriptGroup = document.getElementById('@($"{Html.IdFor(m => m.Value)}_group")');
+    const liquidGroup = document.getElementById('@($"{Html.IdFor(m => m.LiquidValue)}_group")');
 
-        const toggleEditors = () => {
-            const useLiquid = syntaxElement.value === '@nameof(WorkflowScriptSyntax.Liquid)';
-            javaScriptGroup.classList.toggle('d-none', useLiquid);
-            liquidGroup.classList.toggle('d-none', !useLiquid);
-        };
+    const toggleEditors = () => {
+        const useLiquid = syntaxElement.value === '@nameof(WorkflowScriptSyntax.Liquid)';
+        javaScriptGroup.classList.toggle('d-none', useLiquid);
+        liquidGroup.classList.toggle('d-none', !useLiquid);
+    };
 
-        syntaxElement.addEventListener('change', toggleEditors);
-        toggleEditors();
-    });
+    syntaxElement.addEventListener('change', toggleEditors);
+    toggleEditors();
 </script>

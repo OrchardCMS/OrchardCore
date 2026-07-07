@@ -19,7 +19,7 @@
 
 <resources type="Footer" />
 
-<script>
+<script type="module">
     (function () {
         var frames = [
             document.getElementById('iframe-a'),
@@ -92,16 +92,7 @@
             }
         };
 
-        function onDocumentReady(callback) {
-            if (document.readyState !== 'loading') {
-                callback();
-            } else {
-                document.addEventListener('DOMContentLoaded', callback);
-            }
-        }
-
-        onDocumentReady(function () {
-            var closeConnectWarning = document.getElementById('close-connect-warning');
+        var closeConnectWarning = document.getElementById('close-connect-warning');
             if (closeConnectWarning) {
                 closeConnectWarning.addEventListener('click', function () {
                     document.getElementById('notConnectedWarning').style.display = 'none';
@@ -117,6 +108,5 @@
 
             // Signal the editor that the preview window is ready to receive updates.
             channel.postMessage({ type: 'ready' });
-        });
     })();
 </script>

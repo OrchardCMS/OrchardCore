@@ -31,7 +31,7 @@
     </div>
 </div>
 
-<script at="Foot">
+<script at="Foot" type="module">
     function setCollapse(element, action) {
         if (!element) {
             return;
@@ -59,28 +59,18 @@
         });
     }
 
-    function onDocumentReady(callback) {
-        if (document.readyState !== 'loading') {
-            callback();
-        } else {
-            document.addEventListener('DOMContentLoaded', callback);
-        }
-    }
-
-    onDocumentReady(function () {
-        document.querySelectorAll("[data-reverseToggle]").forEach(function (element) {
-            element.addEventListener("click", function () {
-                var state = this.checked;
-                document.querySelectorAll(this.getAttribute("data-reverseToggle")).forEach(function (toggleElement) {
-                    setCollapse(toggleElement, state ? 'hide' : 'show');
-                });
+    document.querySelectorAll("[data-reverseToggle]").forEach(function (element) {
+        element.addEventListener("click", function () {
+            var state = this.checked;
+            document.querySelectorAll(this.getAttribute("data-reverseToggle")).forEach(function (toggleElement) {
+                setCollapse(toggleElement, state ? 'hide' : 'show');
             });
         });
+    });
 
-        document.querySelectorAll("[data-parent-value]").forEach(function (element) {
-            element.addEventListener("click", function () {
-                checkboxClicked(this);
-            });
+    document.querySelectorAll("[data-parent-value]").forEach(function (element) {
+        element.addEventListener("click", function () {
+            checkboxClicked(this);
         });
     });
 </script>

@@ -32,43 +32,31 @@
     </div>
 </div>
 
-<script At="Foot">
-    function onDocumentReady(callback) {
-        if (document.readyState !== 'loading') {
-            callback();
-        } else {
-            document.addEventListener('DOMContentLoaded', callback);
-        }
+<script At="Foot" type="module">
+    var modalConditions = document.getElementById('modalConditions');
+    if (modalConditions) {
+        modalConditions.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget; // Button that triggered the modal
+            var conditionGroupId = button ? button.dataset.conditionGroupId : '';
+
+            document.querySelectorAll('.condition-thumbnail').forEach(function (thumbnail) {
+                thumbnail.addEventListener('click', function () {
+                    var url = this.dataset.targetUrl + "&conditionGroupId=" + conditionGroupId;
+                    window.location.href = url;
+                }, { once: true });
+            });
+        });
+
+        modalConditions.addEventListener('shown.bs.modal', function () {
+            var searchBox = document.getElementById('search-box');
+            if (searchBox) {
+                searchBox.focus();
+            }
+        });
     }
 
-    onDocumentReady(function () {
-        var modalConditions = document.getElementById('modalConditions');
-        if (modalConditions) {
-            modalConditions.addEventListener('show.bs.modal', function (event) {
-                var button = event.relatedTarget; // Button that triggered the modal
-                var conditionGroupId = button ? button.dataset.conditionGroupId : '';
-
-                document.querySelectorAll('.condition-thumbnail').forEach(function (thumbnail) {
-                    thumbnail.addEventListener('click', function () {
-                        var url = this.dataset.targetUrl + "&conditionGroupId=" + conditionGroupId;
-                        window.location.href = url;
-                    }, { once: true });
-                });
-            });
-
-            modalConditions.addEventListener('shown.bs.modal', function () {
-                var searchBox = document.getElementById('search-box');
-                if (searchBox) {
-                    searchBox.focus();
-                }
-            });
-        }
-
-        var searchBox = document.getElementById('search-box');
-        if (!searchBox) {
-            return;
-        }
-
+    var searchBox = document.getElementById('search-box');
+    if (searchBox) {
         // On each keypress filter the list of cards
         searchBox.addEventListener('keyup', function () {
             var search = replaceDiacritics(this.value.toLowerCase());
@@ -92,7 +80,7 @@
                 });
             }
         });
-    });
+    }
 
     function replaceDiacritics(str) {
         return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");

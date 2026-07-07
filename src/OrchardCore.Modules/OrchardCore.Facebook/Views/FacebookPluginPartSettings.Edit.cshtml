@@ -17,22 +17,10 @@
     </div>
 </div>
 
-<script at="Foot">
-function onDocumentReady(callback) {
-    if (document.readyState !== 'loading') {
-        callback();
-    } else {
-        document.addEventListener('DOMContentLoaded', callback);
-    }
-}
+<script at="Foot" type="module">
+var textArea = document.getElementById('@Html.IdFor(x => x.Liquid)');
 
-onDocumentReady(function () {
-    var textArea = document.getElementById('@Html.IdFor(x => x.Liquid)');
-
-    if (textArea == null) {
-        return;
-    }
-
+if (textArea != null) {
     var editor = CodeMirror.fromTextArea(textArea, {
         autoRefresh: true,
         lineNumbers: true,
@@ -45,5 +33,5 @@ onDocumentReady(function () {
         cmEditor.save();
         document.dispatchEvent(new Event('contentpreview:render'));
     });
-});
+}
 </script>

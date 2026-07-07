@@ -156,17 +156,8 @@
     </div>
 </div>
 
-<script at="Foot" depends-on="Sortable">
-    function onDocumentReady(callback) {
-        if (document.readyState !== 'loading') {
-            callback();
-        } else {
-            document.addEventListener('DOMContentLoaded', callback);
-        }
-    }
-
-    onDocumentReady(function () {
-        document.querySelectorAll('.list-group.zones').forEach(function (list) {
+<script at="Foot" depends-on="Sortable" type="module">
+    document.querySelectorAll('.list-group.zones').forEach(function (list) {
             Sortable.create(list, {
                 handle: '.properties',
                 group: 'layers-widgets',
@@ -243,5 +234,4 @@
                 });
             });
         });
-    });
 </script>

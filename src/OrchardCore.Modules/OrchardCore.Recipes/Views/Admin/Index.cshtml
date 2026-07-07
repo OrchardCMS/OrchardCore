@@ -79,21 +79,9 @@
         }
     }
 </form>
-<script at="Foot">
-    function onDocumentReady(callback) {
-        if (document.readyState !== 'loading') {
-            callback();
-        } else {
-            document.addEventListener('DOMContentLoaded', callback);
-        }
-    }
-
-    onDocumentReady(function () {
-        var searchBox = document.getElementById('search-box');
-        if (!searchBox) {
-            return;
-        }
-
+<script at="Foot" type="module">
+    var searchBox = document.getElementById('search-box');
+    if (searchBox) {
         function isVisible(element) {
             return !!(element.offsetWidth || element.offsetHeight || element.getClientRects().length);
         }
@@ -129,5 +117,5 @@
                 }
             }
         });
-    });
+    }
 </script>

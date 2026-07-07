@@ -18,17 +18,8 @@
     </div>
 </div>
 
-<script at="Foot" asp-name="jsonrecipe-editor" depends-on="monaco, admin">
-    function onDocumentReady(callback) {
-        if (document.readyState !== 'loading') {
-            callback();
-        } else {
-            document.addEventListener('DOMContentLoaded', callback);
-        }
-    }
-
-    onDocumentReady(function () {
-        require(['vs/editor/editor.main'], function () {
+<script at="Foot" asp-name="jsonrecipe-editor" depends-on="monaco, admin" type="module">
+    require(['vs/editor/editor.main'], function () {
 
             var html = document.documentElement;
             const mutationObserver = new MutationObserver(setTheme);
@@ -68,5 +59,4 @@
                 textArea.value = editor.getValue();
             });
         });
-    });
 </script>

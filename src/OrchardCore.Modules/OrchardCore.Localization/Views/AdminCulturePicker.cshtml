@@ -30,19 +30,17 @@
     </div>
 </li>
 
-<script at="Foot" asp-name="AdminCultureSelector" depends-on="js-cookie">
-    document.addEventListener('DOMContentLoaded', function (e) {
-        const picker = document.getElementById('oc-culture-picker');
-        const cookieName = picker.getAttribute('data-cookie-name');
-        const cookiePath = picker.getAttribute('data-cookie-path');
-        const items = document.getElementsByClassName('language-menu-item');
-        for (let i = 0; i < items.length; i++) {
-            let item = items[i];
-            let culture = item.getAttribute('data-language-value');
-            item.addEventListener('click', function () {
-                Cookies.set(cookieName, `c=${culture}|uic=${culture}`, { path: cookiePath });
-                window.location = window.location.href;
-            });
-        }
-    });
+<script at="Foot" asp-name="AdminCultureSelector" depends-on="js-cookie" type="module">
+    const picker = document.getElementById('oc-culture-picker');
+    const cookieName = picker.getAttribute('data-cookie-name');
+    const cookiePath = picker.getAttribute('data-cookie-path');
+    const items = document.getElementsByClassName('language-menu-item');
+    for (let i = 0; i < items.length; i++) {
+        let item = items[i];
+        let culture = item.getAttribute('data-language-value');
+        item.addEventListener('click', function () {
+            Cookies.set(cookieName, `c=${culture}|uic=${culture}`, { path: cookiePath });
+            window.location = window.location.href;
+        });
+    }
 </script>

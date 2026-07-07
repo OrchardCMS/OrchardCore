@@ -110,17 +110,9 @@
     }
 </div>
 
-<script>
+<script type="module">
     (function() {
         const currentFieldId = '@fieldId';
-
-        function onDocumentReady(fn) {
-            if (document.readyState === "loading") {
-                document.addEventListener("DOMContentLoaded", fn);
-            } else {
-                fn();
-            }
-        }
 
         // Define the global function only once
         if (!window.setColorField) {
@@ -142,12 +134,10 @@
             };
 
             // Initialize all color fields on document ready (for initial page load)
-            onDocumentReady(function() {
-                const colorWrappers = document.querySelectorAll('.color_wrapper');
-                colorWrappers.forEach(function(wrapper) {
-                    const fieldId = wrapper.id.replace('_color_wrapper', '');
-                    window.setColorField(fieldId);
-                });
+            const colorWrappers = document.querySelectorAll('.color_wrapper');
+            colorWrappers.forEach(function(wrapper) {
+                const fieldId = wrapper.id.replace('_color_wrapper', '');
+                window.setColorField(fieldId);
             });
         }
 

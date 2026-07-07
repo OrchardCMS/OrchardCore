@@ -260,19 +260,9 @@
     </div>
 </form>
 <script at="Foot" asp-name="credential-helpers"></script>
-<script at="Foot" depends-on="credential-helpers">
+<script at="Foot" depends-on="credential-helpers" type="module">
 
-    function onDocumentReady(callback) {
-        if (document.readyState !== 'loading') {
-            callback();
-        } else {
-            document.addEventListener('DOMContentLoaded', callback);
-        }
-    }
-
-    onDocumentReady(() => {
-
-        const clientIdElement = document.getElementById('@Html.IdFor(m => m.ClientId)');
+    const clientIdElement = document.getElementById('@Html.IdFor(m => m.ClientId)');
         const clientSecretElement = document.getElementById('@Html.IdFor(m => m.ClientSecret)');
         const toggleClientSecretElement = document.getElementById('toggleClientSecret');
         const copyClientSecretElement = document.getElementById('copyClientSecret');
@@ -299,19 +289,9 @@
         generateClientSecretElement.addEventListener('click', (e) => {
             clientSecretElement.value = generateStrongPassword();
         });
-    });
 
     //<![CDATA[
-    function onDocumentReady(callback) {
-        if (document.readyState !== 'loading') {
-            callback();
-        } else {
-            document.addEventListener('DOMContentLoaded', callback);
-        }
-    }
-
-    onDocumentReady(function () {
-        function getElement(id) {
+    function getElement(id) {
             return document.getElementById(id);
         }
 
@@ -537,6 +517,5 @@
                 setCollapse(postLogoutRedirecUris, "hide");
             }
         }
-    });
     //]]>
 </script>

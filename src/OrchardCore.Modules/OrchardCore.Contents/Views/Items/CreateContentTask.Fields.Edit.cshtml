@@ -38,22 +38,12 @@
 <script asp-name="codemirror-mode-xml" at="Foot"></script>
 <script asp-src="~/OrchardCore.Liquid/codemirror/liquid.js" at="Foot"></script>
 
-<script at="Foot">
-function onDocumentReady(callback) {
-    if (document.readyState !== 'loading') {
-        callback();
-    } else {
-        document.addEventListener('DOMContentLoaded', callback);
-    }
-}
-
-onDocumentReady(function () {
+<script at="Foot" type="module">
     var editor = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.ContentProperties)'), {
         autoRefresh: true,
         lineNumbers: true,
         styleActiveLine: true,
         matchBrackets: true,
         mode: { name: "liquid" },
-      });
-});
+    });
 </script>

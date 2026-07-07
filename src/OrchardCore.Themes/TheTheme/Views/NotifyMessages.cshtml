@@ -16,16 +16,14 @@
 }
 </div>
 
-<script at="Foot">
-    document.addEventListener('DOMContentLoaded', () => {
-        if (!window.bootstrap?.Toast) {
-            return;
-        }
+<script at="Foot" type="module">
+    if (!window.bootstrap?.Toast) {
+        return;
+    }
 
-        for (const toastElement of document.querySelectorAll('.oc-notify-toast-container .toast')) {
-            const toast = bootstrap.Toast.getOrCreateInstance(toastElement);
-            toast.show();
-            toastElement.addEventListener('hidden.bs.toast', () => toastElement.remove(), { once: true });
-        }
-    });
+    for (const toastElement of document.querySelectorAll('.oc-notify-toast-container .toast')) {
+        const toast = bootstrap.Toast.getOrCreateInstance(toastElement);
+        toast.show();
+        toastElement.addEventListener('hidden.bs.toast', () => toastElement.remove(), { once: true });
+    }
 </script>

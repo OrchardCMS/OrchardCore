@@ -39,17 +39,8 @@
     </div>
 </zone>
 
-<script at="Foot">
-    function onDocumentReady(callback) {
-        if (document.readyState !== 'loading') {
-            callback();
-        } else {
-            document.addEventListener('DOMContentLoaded', callback);
-        }
-    }
-
-    onDocumentReady(function () {
-        var modalElement = document.getElementById('modalExportContentToDeploymentTargetContentBulkActionsTarget');
+<script at="Foot" type="module">
+    var modalElement = document.getElementById('modalExportContentToDeploymentTargetContentBulkActionsTarget');
 
         if (!modalElement) {
             return;
@@ -94,5 +85,4 @@
                 });
             }
         });
-    });
 </script>
