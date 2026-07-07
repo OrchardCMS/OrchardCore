@@ -110,7 +110,7 @@ public sealed class AdminMenuStep : NamedRecipeStepHandler
                         if (string.IsNullOrEmpty(entry["ContentTypeDisplayName"]?.GetValue<string>()))
                         {
                             var typedef = await _contentDefinitionManager.GetTypeDefinitionAsync(contentTypeId);
-                            entry["ContentTypeDisplayName"] = typedef.DisplayName;
+                            entry["ContentTypeDisplayName"] = typedef?.DisplayName ?? contentTypeId;
                         }
                     }
                 }
