@@ -77,5 +77,26 @@
     ],
     "dest": "wwwroot/Scripts/text-field-editors/",
     "tags": [ "admin", "dashboard", "js" ]
+  },
+  {
+    "action": "parcel",
+    "name": "numeric-field-range",
+    "source": "Assets/ts/numeric-field-range.ts",
+    "dest": "wwwroot/Scripts/numeric-field-range/",
+    "tags": [ "admin", "dashboard", "js" ]
+  },
+  {
+    "action": "parcel",
+    "name": "numeric-field-slider",
+    "source": "Assets/ts/numeric-field-slider.ts",
+    "dest": "wwwroot/Scripts/numeric-field-slider/",
+    "tags": [ "admin", "dashboard", "js" ]
+  },
+  {
+    "action": "parcel",
+    "name": "numeric-field-spinner",
+    "source": "Assets/ts/numeric-field-spinner.ts",
+    "dest": "wwwroot/Scripts/numeric-field-spinner/",
+    "tags": [ "admin", "dashboard", "js" ]
   }
 ]

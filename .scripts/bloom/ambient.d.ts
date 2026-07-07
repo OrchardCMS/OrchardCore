@@ -127,3 +127,26 @@ declare const passwordManager: {
     ): string;
     copyPassword(password: string): void;
 };
+
+// Defined by OrchardCore.AdminMenu (Assets/js/admin-menu-icon-picker.js), consumed here.
+declare const iconPickerVue: {
+    show(relatedNodeId: string, sampleIconId: string): void;
+};
+
+// Defined by OrchardCore.AdminMenu (Assets/js/admin-menu-permission-picker.js), consumed here.
+declare function initAdminMenuPermissionsPicker(element: Element | null): void;
+
+interface NoUiSliderInstance {
+    set(value: number | string): void;
+    get(): string;
+    on(event: string, handler: () => void): void;
+}
+
+interface NoUiSliderElement extends HTMLElement {
+    noUiSlider: NoUiSliderInstance;
+}
+
+// Defined by the nouislider vendored resource, consumed here.
+declare const noUiSlider: {
+    create(element: HTMLElement, options: Record<string, unknown>): void;
+};

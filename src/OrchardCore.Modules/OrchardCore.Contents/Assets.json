@@ -60,5 +60,12 @@
     ],
     "dest": "wwwroot/Scripts/download-editors/",
     "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "content-types-admin-node",
+    "source": "Assets/ts/content-types-admin-node.ts",
+    "dest": "wwwroot/Scripts/content-types-admin-node/",
+    "tags": ["admin", "dashboard", "js"]
   }
 ]

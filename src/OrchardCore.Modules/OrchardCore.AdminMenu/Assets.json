@@ -36,5 +36,15 @@
     "source": "Assets/ts/admin-menu-node-list.ts",
     "dest": "wwwroot/Scripts/node-list/",
     "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "admin-node-editors",
+    "source": [
+      "Assets/ts/link-admin-node.ts",
+      "Assets/ts/placeholder-admin-node.ts"
+    ],
+    "dest": "wwwroot/Scripts/admin-node-editors/",
+    "tags": ["admin", "dashboard", "js"]
   }
 ]
