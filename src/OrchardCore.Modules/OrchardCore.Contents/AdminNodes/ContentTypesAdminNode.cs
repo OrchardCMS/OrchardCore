@@ -13,9 +13,6 @@ public class ContentTypesAdminNode : AdminNode
 
 public class ContentTypeEntry
 {
-    [Obsolete("use ContentTypeName and ContentTypeDisplayName, for compatiblity with pre 3.X OrchardCore sites")]
-    public string ContentTypeId { get; set; }
-
     public string ContentTypeName { get; set; }
 
     public string ContentTypeDisplayName { get; set; }
