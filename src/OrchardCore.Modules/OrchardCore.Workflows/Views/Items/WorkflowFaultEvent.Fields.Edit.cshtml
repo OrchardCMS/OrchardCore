@@ -1,11 +1,11 @@
 @using OrchardCore.Workflows.Models
 @model WorkflowFaultViewModel
 
-<div class="ocat-wrapper" asp-validation-class-for="ErrorFilter" xmlns="http://www.w3.org/1999/html">
+<div class="ocat-wrapper monaco-text-editor" asp-validation-class-for="ErrorFilter" xmlns="http://www.w3.org/1999/html" data-language="javascript">
     <label asp-for="ErrorFilter" class="ocat-label">@T["Trigger Condition"]</label>
     <div class="ocat-end">
-        <div id="@Html.IdFor(x => x.ErrorFilter)_editor" asp-for="Text" style="min-height: 400px;" class="form-control"></div>
-        <textarea asp-for="ErrorFilter" hidden>@Html.Raw(Model.ErrorFilter)</textarea>
+        <div id="@Html.IdFor(x => x.ErrorFilter)_editor" asp-for="Text" style="min-height: 400px;" class="form-control monaco-text-editor-container"></div>
+        <textarea asp-for="ErrorFilter" hidden class="monaco-text-editor-value">@Html.Raw(Model.ErrorFilter)</textarea>
         <span asp-validation-for="ErrorFilter"></span>
         <span class="hint">@T["Check the captured workflow error information and return a Boolean value. If it is true, it will be processed by the current workflow. Javascript syntax."]</span>
         <span class="hint">
@@ -27,35 +27,4 @@
 </div>
 
 <script asp-name="monaco" at="Foot"></script>
-<script at="Foot" depends-on="monaco" type="module">
-    require(['vs/editor/editor.main'], function () {
-        var settings = {
-            "automaticLayout": true,
-            "language": "javascript"
-        };
-
-        const html = document.documentElement;
-        const mutationObserver = new MutationObserver(setTheme);
-        mutationObserver.observe(html, { attributes: true });
-
-        function setTheme() {
-            var theme = html.dataset.bsTheme;
-            if (theme === 'dark' || (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                monaco.editor.setTheme('vs-dark')
-            } else {
-                monaco.editor.setTheme('vs')
-            }
-        }
-
-        setTheme();
-
-        var editor = monaco.editor.create(document.getElementById('@Html.IdFor(x => x.ErrorFilter)_editor'), settings);
-        var textArea = document.getElementById('@Html.IdFor(x => x.ErrorFilter)');
-
-        editor.getModel().setValue(textArea.value);
-
-        window.addEventListener("submit", function () {
-            textArea.value = editor.getValue();
-        });
-    });
-</script>
+<script asp-name="workflow-monaco-text-editor" at="Foot" type="module"></script>

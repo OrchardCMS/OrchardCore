@@ -57,5 +57,12 @@
     "source": "Assets/Scripts/workflow-syntax-toggle.ts",
     "dest": "wwwroot/Scripts/Workflows/syntax-toggle/",
     "tags": ["workflows", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "workflow-monaco-text-editor-js",
+    "source": "Assets/Scripts/workflow-monaco-text-editor.ts",
+    "dest": "wwwroot/Scripts/Workflows/monaco-text-editor/",
+    "tags": ["workflows", "js"]
   }
 ]

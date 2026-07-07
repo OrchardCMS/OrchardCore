@@ -9,6 +9,7 @@ interface CodeMirrorEditor {
     save(): void;
     getValue(): string;
     setValue(value: string): void;
+    setOption(key: string, value: unknown): void;
     display: { wrapper: HTMLElement };
 }
 
