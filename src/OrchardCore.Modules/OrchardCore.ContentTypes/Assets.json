@@ -18,5 +18,12 @@
     "source": "Assets/js/content-type-sortable.ts",
     "dest": "wwwroot/Scripts/content-type-sortable",
     "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "content-definition-deployment-step",
+    "source": "Assets/js/content-definition-deployment-step.ts",
+    "dest": "wwwroot/Scripts/content-definition-deployment-step",
+    "tags": ["admin", "dashboard", "js"]
   }
 ]

@@ -1,3 +1,4 @@
+@using System.Text.Json
 @using OrchardCore.Queries.ViewModels
 @model QueryBasedContentDeploymentStepViewModel
 @inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
@@ -48,12 +49,10 @@
 <div class="ocat-wrapper" asp-validation-class-for="QueryParameters">
     <label asp-for="QueryParameters" class="ocat-label">@T["Parameters"]</label>
     <div class="ocat-end">
-        <textarea asp-for="QueryParameters" class="form-control"></textarea>
+        <textarea asp-for="QueryParameters" class="form-control codemirror-query-editor" data-mode="javascript" data-options="@JsonSerializer.Serialize(new { json = true })"></textarea>
         <span asp-validation-for="QueryParameters"></span>
         <span class="hint">@T["An optional JSON object containing the parameter values for this query."]</span>
     </div>
  </div>
 
-<script at="Foot" type="module">
-    CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(m => m.QueryParameters)'), { mode: "javascript", json: true, lineNumbers: true, viewportMargin: Infinity });
-</script>
+<script asp-src="~/OrchardCore.Queries/Scripts/query-editors/query-based-content-deployment-step.min.js" debug-src="~/OrchardCore.Queries/Scripts/query-editors/query-based-content-deployment-step.js" at="Foot" type="module"></script>

@@ -16,19 +16,9 @@
 <div class="ocat-wrapper">
     <label asp-for="Script" class="ocat-label">@T["Script"]</label>
     <div class="ocat-end">
-        <textarea asp-for="Script" rows="5" class="form-control"></textarea>
+        <textarea asp-for="Script" rows="5" class="form-control javascript-condition-editor"></textarea>
         <span class="hint">@T["The script must return true or false."]</span>
     </div>
 </div>
 
-<script at="Foot" type="module">
-    //<![CDATA[
-    const editor = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Script)'), {
-        autoRefresh: true,
-        lineNumbers: true,
-        styleActiveLine: true,
-        matchBrackets: true,
-        mode: { name: "javascript" },
-    });
-    //]]>
-</script>
+<script asp-src="~/OrchardCore.Rules/Scripts/javascript-condition/javascript-condition.min.js" debug-src="~/OrchardCore.Rules/Scripts/javascript-condition/javascript-condition.js" at="Foot" type="module"></script>

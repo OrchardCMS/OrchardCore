@@ -1,0 +1,9 @@
+[
+  {
+    "action": "parcel",
+    "name": "translations-deployment-step",
+    "source": "Assets/ts/translations-deployment-step.ts",
+    "dest": "wwwroot/Scripts/translations-deployment-step/",
+    "tags": ["admin", "dashboard", "js"]
+  }
+]

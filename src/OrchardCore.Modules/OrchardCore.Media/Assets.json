@@ -30,5 +30,15 @@
       "Assets/js/app/MediaField/mediafield.js"
     ],
     "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "media-editors",
+    "source": [
+      "Assets/ts/media-deployment-step.ts",
+      "Assets/ts/media-field-settings.ts"
+    ],
+    "dest": "wwwroot/Scripts/media-editors/",
+    "tags": ["admin", "dashboard", "js"]
   }
 ]

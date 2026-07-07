@@ -2407,6 +2407,18 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@orchardcore/customsettings@workspace:src/OrchardCore.Modules/OrchardCore.CustomSettings/Assets":
+  version: 0.0.0-use.local
+  resolution: "@orchardcore/customsettings@workspace:src/OrchardCore.Modules/OrchardCore.CustomSettings/Assets"
+  languageName: unknown
+  linkType: soft
+
+"@orchardcore/datalocalization@workspace:src/OrchardCore.Modules/OrchardCore.DataLocalization/Assets":
+  version: 0.0.0-use.local
+  resolution: "@orchardcore/datalocalization@workspace:src/OrchardCore.Modules/OrchardCore.DataLocalization/Assets"
+  languageName: unknown
+  linkType: soft
+
 "@orchardcore/deployment@workspace:src/OrchardCore.Modules/OrchardCore.Deployment/Assets":
   version: 0.0.0-use.local
   resolution: "@orchardcore/deployment@workspace:src/OrchardCore.Modules/OrchardCore.Deployment/Assets"

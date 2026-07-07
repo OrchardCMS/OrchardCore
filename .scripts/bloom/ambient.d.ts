@@ -44,6 +44,7 @@ interface MonacoEditorInstance {
 declare const monaco: {
     editor: {
         create(element: HTMLElement, options?: Record<string, unknown>): MonacoEditorInstance;
+        createModel(value: string, language: string, uri?: { toString(): string }): MonacoTextModel;
         setTheme(theme: string): void;
     };
     languages: {
@@ -52,6 +53,9 @@ declare const monaco: {
                 setDiagnosticsOptions(options: Record<string, unknown>): void;
             };
         };
+    };
+    Uri: {
+        parse(value: string): { toString(): string };
     };
     KeyMod: Record<string, number>;
     KeyCode: Record<string, number>;
@@ -72,3 +76,5 @@ declare const Cookies: {
 declare const Sortable: {
     create(element: HTMLElement, options?: Record<string, unknown>): unknown;
 };
+
+declare const bootstrap: typeof import("bootstrap");

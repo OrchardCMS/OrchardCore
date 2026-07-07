@@ -5,5 +5,15 @@
     "source": "Assets/ts/sql-query.ts",
     "dest": "wwwroot/Scripts/sql-query/",
     "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "query-editors",
+    "source": [
+      "Assets/ts/query-fields.ts",
+      "Assets/ts/query-based-content-deployment-step.ts"
+    ],
+    "dest": "wwwroot/Scripts/query-editors/",
+    "tags": ["admin", "dashboard", "js"]
   }
 ]

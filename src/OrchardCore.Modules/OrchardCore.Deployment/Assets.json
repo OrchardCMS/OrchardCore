@@ -4,5 +4,15 @@
     "name": "deployment",
     "source": "Assets/js/steporder.js",
     "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "deployment-step-editors",
+    "source": [
+      "Assets/ts/deployment-plan-deployment-step.ts",
+      "Assets/ts/json-recipe-deployment-step.ts"
+    ],
+    "dest": "wwwroot/Scripts/deployment-step-editors/",
+    "tags": ["admin", "dashboard", "js"]
   }
 ]
