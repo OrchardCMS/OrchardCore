@@ -83,18 +83,4 @@
 
 <script asp-name="bootstrap-select" at="Foot"></script>
 
-<script at="Foot" type="module">
-    const submitFilterButton = document.querySelector("[name='submit.Filter']");
-
-    document.querySelectorAll('.selectpicker').forEach((element) => {
-        element.addEventListener('changed.bs.select', () => submitFilterButton?.click());
-    });
-
-    document.querySelectorAll('.filter-options select, .filter-options input').forEach((element) => {
-        element.addEventListener('change', () => submitFilterButton?.click());
-    });
-
-    document.querySelectorAll('.filter').forEach((element) => {
-        element.style.display = '';
-    });
-</script>
+<script asp-src="~/OrchardCore.BackgroundTasks/Scripts/background-task-editors/background-task-index.min.js" debug-src="~/OrchardCore.BackgroundTasks/Scripts/background-task-editors/background-task-index.js" at="Foot" type="module"></script>

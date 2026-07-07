@@ -4,7 +4,7 @@
 
 <div asp-validation-summary="ModelOnly"></div>
 <form asp-action="Edit" method="post" class="no-multisubmit">
-    <input asp-for="DefaultSchedule" class="form-control" type="hidden" />
+    <input asp-for="DefaultSchedule" class="form-control background-task-default-schedule" type="hidden" />
 
     <ul class="nav nav-tabs">
         <li class="nav-item pe-md-2">
@@ -36,7 +36,7 @@
                 <label asp-for="Schedule" class="ocat-label">@T["Schedule"]</label>
                 <div class="ocat-end">
                     <div class="input-group mb-3">
-                        <input asp-for="Schedule" class="form-control" />
+                        <input asp-for="Schedule" class="form-control background-task-schedule" />
                         <button type="button" id="use-default-schedule" class="btn btn-outline-danger">@T["Reset Schedule"]</button>
                     </div>
                     <span class="hint">@T["The task schedule as a cron expression."]</span>
@@ -86,8 +86,4 @@
     </div>
 </form>
 
-<script at="Foot" type="module">
-    document.getElementById('use-default-schedule').addEventListener('click', function (e) {
-        document.getElementById('@Html.IdFor(x => x.Schedule)').value = document.getElementById('@Html.IdFor(x => x.DefaultSchedule)').value;
-    });
-</script>
+<script asp-src="~/OrchardCore.BackgroundTasks/Scripts/background-task-editors/background-task-edit.min.js" debug-src="~/OrchardCore.BackgroundTasks/Scripts/background-task-editors/background-task-edit.js" at="Foot" type="module"></script>

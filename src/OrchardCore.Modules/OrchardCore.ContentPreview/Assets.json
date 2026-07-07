@@ -4,5 +4,12 @@
     "name": "contentfields",
     "source": "Assets/js/contentpreview.edit.js",
     "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "preview-swap",
+    "source": "Assets/ts/preview-swap.ts",
+    "dest": "wwwroot/Scripts/preview-swap/",
+    "tags": ["admin", "dashboard", "js"]
   }
 ]

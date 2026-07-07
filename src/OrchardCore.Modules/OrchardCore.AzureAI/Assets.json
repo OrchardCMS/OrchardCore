@@ -1,0 +1,9 @@
+[
+  {
+    "action": "parcel",
+    "name": "azure-ai-search-default-settings",
+    "source": "Assets/ts/azure-ai-search-default-settings.ts",
+    "dest": "wwwroot/Scripts/azure-ai-search-default-settings/",
+    "tags": ["admin", "dashboard", "js"]
+  }
+]

@@ -2367,6 +2367,18 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@orchardcore/azureai@workspace:src/OrchardCore.Modules/OrchardCore.AzureAI/Assets":
+  version: 0.0.0-use.local
+  resolution: "@orchardcore/azureai@workspace:src/OrchardCore.Modules/OrchardCore.AzureAI/Assets"
+  languageName: unknown
+  linkType: soft
+
+"@orchardcore/backgroundtasks@workspace:src/OrchardCore.Modules/OrchardCore.BackgroundTasks/Assets":
+  version: 0.0.0-use.local
+  resolution: "@orchardcore/backgroundtasks@workspace:src/OrchardCore.Modules/OrchardCore.BackgroundTasks/Assets"
+  languageName: unknown
+  linkType: soft
+
 "@orchardcore/bloom@workspace:.scripts/bloom":
   version: 0.0.0-use.local
   resolution: "@orchardcore/bloom@workspace:.scripts/bloom"

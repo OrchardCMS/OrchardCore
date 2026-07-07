@@ -36,5 +36,12 @@
     ],
     "dest": "wwwroot/Scripts/deployment-modals/",
     "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "content-types-sitemap-source",
+    "source": "Assets/ts/content-types-sitemap-source.ts",
+    "dest": "wwwroot/Scripts/content-types-sitemap-source/",
+    "tags": ["admin", "dashboard", "js"]
   }
 ]
