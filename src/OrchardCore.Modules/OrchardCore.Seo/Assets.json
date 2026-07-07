@@ -17,5 +17,12 @@
     "source": "Assets/ts/seo-meta-part-google-schema.ts",
     "dest": "wwwroot/Scripts/seo-meta-part-google-schema/",
     "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "seo-meta-part",
+    "source": "Assets/ts/seo-meta-part.ts",
+    "dest": "wwwroot/Scripts/seo-meta-part/",
+    "tags": ["admin", "dashboard", "js"]
   }
 ]

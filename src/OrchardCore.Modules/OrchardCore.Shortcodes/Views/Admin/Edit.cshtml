@@ -149,13 +149,4 @@
     </div>
 </form>
 
-<script at="Foot">
-    initializeShortcodesTemplateEditor(
-        document.getElementById('shortcodeCategories'),
-        document.getElementById('@Html.IdFor(x => x.Content)'),
-        document.getElementById('@Html.IdFor(x => x.Usage)'),
-        document.getElementById('shortcodePreview'),
-        document.getElementById('@Html.IdFor(x => x.Name)'),
-        document.getElementById('@Html.IdFor(x => x.Hint)')
-    );
-</script>
+<script asp-src="~/OrchardCore.Shortcodes/Scripts/shortcode-template-editor/shortcode-template-editor.min.js" debug-src="~/OrchardCore.Shortcodes/Scripts/shortcode-template-editor/shortcode-template-editor.js" at="Foot" type="module"></script>

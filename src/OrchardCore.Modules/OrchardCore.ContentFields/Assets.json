@@ -126,5 +126,12 @@
     "source": "Assets/ts/vue-multiselect-fields.ts",
     "dest": "wwwroot/Scripts/vue-multiselect-fields/",
     "tags": [ "admin", "dashboard", "js" ]
+  },
+  {
+    "action": "parcel",
+    "name": "options-editor-fields",
+    "source": "Assets/ts/options-editor-fields.ts",
+    "dest": "wwwroot/Scripts/options-editor-fields/",
+    "tags": [ "admin", "dashboard", "js" ]
   }
 ]
