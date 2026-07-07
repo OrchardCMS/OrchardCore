@@ -1,0 +1,9 @@
+[
+  {
+    "action": "parcel",
+    "name": "layers-index",
+    "source": "Assets/ts/layers-index.ts",
+    "dest": "wwwroot/Scripts/layers-index/",
+    "tags": ["admin", "dashboard", "js"]
+  }
+]

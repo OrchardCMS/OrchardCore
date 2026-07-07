@@ -16,7 +16,7 @@
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Edit Widgets and Layers"])</h1></zone>
 
-<form id="undo-form" asp-action="UpdatePosition" method="post" class="no-multisubmit">
+<form id="undo-form" asp-action="UpdatePosition" method="post" class="no-multisubmit" data-update-position-url="@Url.Action("UpdatePosition", "Admin", new { area = "OrchardCore.Layers" })">
     <div id="layer-undo-message" class="alert alert-success alert-dismissible show d-none" role="alert">
         @T["Widget successfully moved. <a href=\"javascript:document.getElementById('undo-form').submit();\"><strong>Undo</strong></a>."]
     </div>
@@ -156,82 +156,4 @@
     </div>
 </div>
 
-<script at="Foot" depends-on="Sortable" type="module">
-    document.querySelectorAll('.list-group.zones').forEach(function (list) {
-            Sortable.create(list, {
-                handle: '.properties',
-                group: 'layers-widgets',
-                animation: 150,
-                onEnd: function (evt) {
-                    var item = evt.item;
-                    var newZone = item.closest('.layer-zone').dataset.zone;
-                    var metadata = item.querySelector('.layer-metadata');
-                    var currentPosition = Number(metadata.dataset.position);
-                    var previous = item.previousElementSibling ? item.previousElementSibling.querySelector('.layer-metadata') : null;
-                    var next = item.nextElementSibling ? item.nextElementSibling.querySelector('.layer-metadata') : null;
-                    var contentItemId = metadata.dataset.contentItemId;
-
-                    var newPosition = currentPosition;
-
-                    if (!previous && !next) {
-                        // we can keep the current position
-                    }
-                    else if (!previous && next) {
-                        // first in the list
-                        newPosition = Number(next.dataset.position || 0) - 1;
-                    }
-                    else if (previous && !next) {
-                        // last in the list
-                        newPosition = Number(previous.dataset.position || 0) + 1;
-                    }
-                    else {
-                        newPosition = (Number(previous.dataset.position || 0) + Number(next.dataset.position || 0)) / 2;
-                    }
-
-                    var currentZone = metadata.dataset.zone;
-
-                    metadata.dataset.zone = newZone;
-                    metadata.dataset.position = newPosition;
-
-                    var url = "@Url.Action("UpdatePosition", "Admin", new { area = "OrchardCore.Layers" })" + "?" + "contentItemId=" + encodeURIComponent(contentItemId) + "&position=" + encodeURIComponent(newPosition) + "&zone=" + encodeURIComponent(newZone);
-                    var antiforgerytoken = document.querySelector("[name='__RequestVerificationToken']").value;
-
-                    fetch(url, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                        body: '__RequestVerificationToken=' + encodeURIComponent(antiforgerytoken)
-                    })
-                        .then(function (response) {
-                            if (!response.ok) {
-                                throw new Error('Request failed');
-                            }
-
-                            document.getElementById('layer-undo-message').classList.remove('d-none');
-                            document.getElementById('layer-undo-message-contentItemId').value = contentItemId;
-                            document.getElementById('layer-undo-message-position').value = currentPosition;
-                            document.getElementById('layer-undo-message-zone').value = currentZone;
-                        })
-                        .catch(function () {
-                            document.getElementById('layer-undo-message').classList.add('d-none');
-                        });
-                }
-            });
-        });
-
-        document.addEventListener('click', function (event) {
-            if (!event.target.closest('.layer-check')) {
-                return;
-            }
-
-            document.querySelectorAll('.list-group-item').forEach(function (item) {
-                item.classList.remove('list-group-item-success');
-            });
-
-            document.querySelectorAll('.layer-check:checked').forEach(function (checkbox) {
-                var layer = checkbox.value;
-                document.querySelectorAll('[data-layer="' + layer + '"]').forEach(function (el) {
-                    el.closest('.list-group-item').classList.add('list-group-item-success');
-                });
-            });
-        });
-</script>
+<script asp-src="~/OrchardCore.Layers/Scripts/layers-index/layers-index.min.js" debug-src="~/OrchardCore.Layers/Scripts/layers-index/layers-index.js" depends-on="Sortable" at="Foot" type="module"></script>

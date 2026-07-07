@@ -2449,6 +2449,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@orchardcore/layers@workspace:src/OrchardCore.Modules/OrchardCore.Layers/Assets":
+  version: 0.0.0-use.local
+  resolution: "@orchardcore/layers@workspace:src/OrchardCore.Modules/OrchardCore.Layers/Assets"
+  languageName: unknown
+  linkType: soft
+
 "@orchardcore/liquid@workspace:src/OrchardCore.Modules/OrchardCore.Liquid/Assets":
   version: 0.0.0-use.local
   resolution: "@orchardcore/liquid@workspace:src/OrchardCore.Modules/OrchardCore.Liquid/Assets"
@@ -2618,6 +2624,12 @@ __metadata:
   dependencies:
     "@popperjs/core": "npm:2.11.8"
     bootstrap: "npm:5.3.8"
+  languageName: unknown
+  linkType: soft
+
+"@orchardcore/sitemaps@workspace:src/OrchardCore.Modules/OrchardCore.Sitemaps/Assets":
+  version: 0.0.0-use.local
+  resolution: "@orchardcore/sitemaps@workspace:src/OrchardCore.Modules/OrchardCore.Sitemaps/Assets"
   languageName: unknown
   linkType: soft
 
