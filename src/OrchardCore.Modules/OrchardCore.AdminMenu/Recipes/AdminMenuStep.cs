@@ -116,7 +116,7 @@ public sealed class AdminMenuStep : NamedRecipeStepHandler
                 }
             }
 
-            // Recurse into child nodes.
+            // Recourse into child nodes.
             if (node["Items"] is JsonArray items)
             {
                 await MigrateContentTypesNodes(items);
