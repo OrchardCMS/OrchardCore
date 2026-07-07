@@ -64,5 +64,15 @@
     "source": "Assets/Scripts/workflow-monaco-text-editor.ts",
     "dest": "wwwroot/Scripts/Workflows/monaco-text-editor/",
     "tags": ["workflows", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "workflow-index-editors",
+    "source": [
+      "Assets/Scripts/workflow-index.ts",
+      "Assets/Scripts/workflow-type-index.ts"
+    ],
+    "dest": "wwwroot/Scripts/workflow-index-editors/",
+    "tags": ["workflows", "js"]
   }
 ]
