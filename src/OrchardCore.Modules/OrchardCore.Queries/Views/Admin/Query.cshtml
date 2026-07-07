@@ -9,9 +9,6 @@
 }
 
 <style asp-name="codemirror"></style>
-<script asp-name="codemirror" at="Foot"></script>
-<script asp-name="codemirror-mode-javascript" at="Foot"></script>
-<script asp-name="codemirror-mode-sql" at="Foot"></script>
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["SQL Query"])</h1></zone>
 
@@ -104,7 +101,7 @@
     }
 }
 
-<script at="Foot" asp-name="jsonresult-editor" depends-on="monaco, the-admin">
+<script at="Foot" asp-name="jsonresult-editor" depends-on="codemirror-mode-sql, monaco, the-admin">
     function onDocumentReady(callback) {
         if (document.readyState !== 'loading') {
             callback();
