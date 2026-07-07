@@ -1,31 +1,6 @@
 @model OrchardCore.Markdown.ViewModels.MarkdownFieldWysiwygEditorSettingsViewModel
-
-<div id="@Html.IdFor(m => m)" class="field-editor field-editor-wysiwyg">
-    <div class="ocat-limited-wrapper">
-        <label asp-for="Options" class="ocat-label">@T["Enter the editor options"]</label>
-        <div class="ocat-limited">
-            <span class="hint"><a href="https://github.com/Ionaru/easy-markdown-editor#configuration" target="_blank">@T["Documentation for options"]</a></span>
-            <textarea asp-for="Options" class="form-control" autofocus="autofocus"></textarea>
-        </div>
-    </div>
-</div>
-
-<style asp-name="codemirror"></style>
-<script asp-name="codemirror" at="Foot"></script>
-<script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
-<script asp-name="codemirror-mode-javascript" at="Foot"></script>
-<script at="Foot" type="module">
-    var optionsTextArea = document.getElementById('@Html.IdFor(x => x.Options)');
-        var editor = CodeMirror.fromTextArea(optionsTextArea, {
-            autoRefresh: true,
-            lineNumbers: true,
-            matchBrackets: true,
-            mode: { name: "javascript" },
-        });
 @{
-        if (string.IsNullOrEmpty(Model.Options))
-        {
-            string fullOptions = @"{
+    var fullOptions = @"{
     toolbar: [
         ""guide"", ""|"",
         ""undo"", ""redo"", ""|"",
@@ -41,9 +16,20 @@
     ],
     spellChecker: false
 }";
-<text>
-        editor.setValue(`@Html.Raw(fullOptions)`);
-</text>
-        }
 }
-</script>
+
+<div id="@Html.IdFor(m => m)" class="field-editor field-editor-wysiwyg codemirror-js-options-editor" data-default-options="@fullOptions">
+    <div class="ocat-limited-wrapper">
+        <label asp-for="Options" class="ocat-label">@T["Enter the editor options"]</label>
+        <div class="ocat-limited">
+            <span class="hint"><a href="https://github.com/Ionaru/easy-markdown-editor#configuration" target="_blank">@T["Documentation for options"]</a></span>
+            <textarea asp-for="Options" class="form-control" autofocus="autofocus"></textarea>
+        </div>
+    </div>
+</div>
+
+<style asp-name="codemirror"></style>
+<script asp-name="codemirror" at="Foot"></script>
+<script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
+<script asp-name="codemirror-mode-javascript" at="Foot"></script>
+<script asp-src="~/OrchardCore.Markdown/Scripts/markdown-editors/markdown-field-wysiwyg-settings.min.js" debug-src="~/OrchardCore.Markdown/Scripts/markdown-editors/markdown-field-wysiwyg-settings.js" at="Foot" type="module"></script>

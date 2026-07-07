@@ -86,6 +86,20 @@ declare class QRCode {
     constructor(element: HTMLElement, options: Record<string, unknown>);
 }
 
+// EasyMDE (markdown Wysiwyg editor) and its toolbar/shortcode-wrapper helper, both loaded as
+// classic global resources (easymde.min.js, OrchardCore.Markdown's mde.mediatoolbar.js).
+interface EasyMdeInstance {
+    codemirror: CodeMirrorEditor;
+}
+
+declare class EasyMDE implements EasyMdeInstance {
+    constructor(options: Record<string, unknown>);
+    codemirror: CodeMirrorEditor;
+}
+
+declare const mdeToolbar: Array<string | Record<string, unknown>>;
+declare function initializeMdeShortcodeWrapper(mde: EasyMdeInstance): void;
+
 // Defined by OrchardCore.Users (Assets/js/password-generator.js), consumed here.
 declare const passwordManager: {
     generatePassword(

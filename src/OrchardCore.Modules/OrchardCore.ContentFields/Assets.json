@@ -70,7 +70,10 @@
       "Assets/ts/text-field-codemirror.ts",
       "Assets/ts/text-field-monaco.ts",
       "Assets/ts/html-field-monaco.ts",
-      "Assets/ts/monaco-json-settings-editor-entry.ts"
+      "Assets/ts/monaco-json-settings-editor-entry.ts",
+      "Assets/ts/html-field-trumbowyg-settings.ts",
+      "Assets/ts/html-field-trumbowyg-editor.ts",
+      "Assets/ts/html-field-wysiwyg.ts"
     ],
     "dest": "wwwroot/Scripts/text-field-editors/",
     "tags": [ "admin", "dashboard", "js" ]
