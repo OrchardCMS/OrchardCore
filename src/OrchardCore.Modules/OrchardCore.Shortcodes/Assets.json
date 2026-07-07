@@ -17,5 +17,12 @@
     "name": "shortcodes-templates",
     "source": "Assets/js/shortcode-templates.js",
     "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "shortcodes-admin-list",
+    "source": "Assets/ts/shortcodes-admin-list.ts",
+    "dest": "wwwroot/Scripts/shortcodes-admin-list/",
+    "tags": ["admin", "dashboard", "js"]
   }
 ]

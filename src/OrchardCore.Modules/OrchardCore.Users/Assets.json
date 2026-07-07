@@ -21,5 +21,12 @@
     ],
     "dest": "wwwroot/Scripts/user-editors/",
     "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "users-admin-list",
+    "source": "Assets/ts/users-admin-list.ts",
+    "dest": "wwwroot/Scripts/users-admin-list/",
+    "tags": ["admin", "dashboard", "js"]
   }
 ]

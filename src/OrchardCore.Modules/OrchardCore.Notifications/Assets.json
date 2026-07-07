@@ -4,5 +4,12 @@
     "name": "notification-manager",
     "source": "Assets/js/notification-manager.js",
     "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "notifications-admin-list",
+    "source": "Assets/ts/notifications-admin-list.ts",
+    "dest": "wwwroot/Scripts/notifications-admin-list/",
+    "tags": ["admin", "dashboard", "js"]
   }
 ]

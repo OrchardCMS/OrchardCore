@@ -5,5 +5,12 @@
     "source": "Assets/ts/sitemap-cache-list.ts",
     "dest": "wwwroot/Scripts/sitemap-cache-list/",
     "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "sitemap-list",
+    "source": "Assets/ts/sitemap-list.ts",
+    "dest": "wwwroot/Scripts/sitemap-list/",
+    "tags": ["admin", "dashboard", "js"]
   }
 ]
