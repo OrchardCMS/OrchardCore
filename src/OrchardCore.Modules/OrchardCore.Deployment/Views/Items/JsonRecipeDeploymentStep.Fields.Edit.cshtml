@@ -6,13 +6,13 @@
     </div>
 </div>
 
-<div class="ocat-wrapper" asp-validation-class-for="Json">
+<div class="ocat-wrapper monaco-json-model-editor" asp-validation-class-for="Json" data-model-uri="x://orchardcore.deployments.steps.jsonrecipe.json" data-schema-uri="x://orchardcore.deployments.steps.jsonrecipe.schema.json" data-schema='@Model.Schema'>
     <label asp-for="Json" class="ocat-label">@T["Recipe"]</label>
     <div class="ocat-end">
         <div class="form-control" style="min-height: 400px;">
-            <div id="@Html.IdFor(x => x.Json)_editor" style="min-height: 385px;" dir="@Orchard.CultureDir()" class="json-recipe-editor" data-schema='@Model.Schema'></div>
+            <div id="@Html.IdFor(x => x.Json)_editor" style="min-height: 385px;" dir="@Orchard.CultureDir()" class="monaco-json-model-editor-container"></div>
         </div>
-        <textarea asp-for="Json" hidden class="json-recipe-editor-value"></textarea>
+        <textarea asp-for="Json" hidden class="monaco-json-model-editor-value"></textarea>
         <span class="hint">@T["The json recipe."]</span>
         <span asp-validation-for="Json"></span>
     </div>

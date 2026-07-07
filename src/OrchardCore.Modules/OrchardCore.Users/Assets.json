@@ -10,5 +10,16 @@
     "name": "users-qrcode",
     "source": "../../../node_modules/qrcodejs/qrcode.js",
     "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "user-editors",
+    "source": [
+      "Assets/ts/user-fields.ts",
+      "Assets/ts/authenticator-app.ts",
+      "Assets/ts/request-verification-code.ts"
+    ],
+    "dest": "wwwroot/Scripts/user-editors/",
+    "tags": ["admin", "dashboard", "js"]
   }
 ]

@@ -1,0 +1,9 @@
+[
+  {
+    "action": "parcel",
+    "name": "feature-profile-editor",
+    "source": "Assets/ts/feature-profile-editor.ts",
+    "dest": "wwwroot/Scripts/feature-profile-editor/",
+    "tags": ["admin", "dashboard", "js"]
+  }
+]

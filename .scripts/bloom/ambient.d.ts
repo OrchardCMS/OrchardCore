@@ -80,3 +80,21 @@ declare const Sortable: {
 declare const bootstrap: typeof import("bootstrap");
 
 declare const confirmDialog: (options: Record<string, unknown> & { callback: (response: boolean) => void }) => void;
+
+// The qrcodejs vendored library (loaded as a classic global "qrcode" resource).
+declare class QRCode {
+    constructor(element: HTMLElement, options: Record<string, unknown>);
+}
+
+// Defined by OrchardCore.Users (Assets/js/password-generator.js), consumed here.
+declare const passwordManager: {
+    generatePassword(
+        requiredPasswordLength: number,
+        requireUppercase: boolean,
+        requireLowercase: boolean,
+        requireDigit: boolean,
+        requireNonAlphanumeric: boolean,
+        requiredUniqueChars: boolean,
+    ): string;
+    copyPassword(password: string): void;
+};

@@ -2653,6 +2653,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@orchardcore/tenants@workspace:src/OrchardCore.Modules/OrchardCore.Tenants/Assets":
+  version: 0.0.0-use.local
+  resolution: "@orchardcore/tenants@workspace:src/OrchardCore.Modules/OrchardCore.Tenants/Assets"
+  languageName: unknown
+  linkType: soft
+
 "@orchardcore/theadmin@workspace:src/OrchardCore.Themes/TheAdmin/Assets":
   version: 0.0.0-use.local
   resolution: "@orchardcore/theadmin@workspace:src/OrchardCore.Themes/TheAdmin/Assets"
