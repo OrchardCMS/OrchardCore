@@ -2443,6 +2443,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@orchardcore/features@workspace:src/OrchardCore.Modules/OrchardCore.Features/Assets":
+  version: 0.0.0-use.local
+  resolution: "@orchardcore/features@workspace:src/OrchardCore.Modules/OrchardCore.Features/Assets"
+  languageName: unknown
+  linkType: soft
+
 "@orchardcore/flows@workspace:src/OrchardCore.Modules/OrchardCore.Flows/Assets":
   version: 0.0.0-use.local
   resolution: "@orchardcore/flows@workspace:src/OrchardCore.Modules/OrchardCore.Flows/Assets"

@@ -10,5 +10,14 @@
     "name": "parametersEditor",
     "source": "Assets/js/parametersEditor/parametersEditor.js",
     "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "openid-settings",
+    "source": [
+      "Assets/ts/openid-validation-settings.ts"
+    ],
+    "dest": "wwwroot/Scripts/openid-settings/",
+    "tags": ["admin", "dashboard", "js"]
   }
 ]

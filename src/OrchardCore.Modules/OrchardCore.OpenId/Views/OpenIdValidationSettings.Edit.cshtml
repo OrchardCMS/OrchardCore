@@ -14,7 +14,7 @@
 <div class="ocat-wrapper" asp-validation-class-for="Tenant">
     <label asp-for="Tenant" class="ocat-label">@T["Authorization server tenant"]</label>
     <div class="ocat-end">
-        <input asp-for="Tenant" class="form-control" />
+        <input asp-for="Tenant" class="form-control openid-validation-tenant" />
         <span asp-validation-for="Tenant"></span>
     </div>
 </div>
@@ -22,7 +22,7 @@
 <div id="AuthorityField" class="ocat-wrapper" asp-validation-class-for="Authority">
     <label asp-for="Authority" class="ocat-label">@T["Authority"]</label>
     <div class="ocat-end">
-        <input asp-for="Authority" class="form-control" />
+        <input asp-for="Authority" class="form-control openid-validation-authority" />
         <span asp-validation-for="Authority"></span>
         <span class="hint">@T["The URL of the remote OpenID Connect server. Using HTTPS is highly recommended for security."]</span>
     </div>
@@ -40,7 +40,7 @@
 <div id="AudienceField" class="ocat-wrapper" asp-validation-class-for="Audience">
     <label asp-for="Audience" class="ocat-label">@T["Audience"]</label>
     <div class="ocat-end">
-        <input asp-for="Audience" class="form-control" />
+        <input asp-for="Audience" class="form-control openid-validation-audience" />
         <span asp-validation-for="Audience"></span>
         <span class="hint">@T["The unique name associated with this tenant. If not specified, the tenant name will be used as the default audience."]</span>
     </div>
@@ -49,37 +49,11 @@
 <div id="DisableTokenTypeValidationField" class="ocat-wrapper" asp-validation-class-for="DisableTokenTypeValidation">
     <div class="ocat-end-offset">
         <div class="form-check">
-            <input type="checkbox" class="form-check-input" asp-for="DisableTokenTypeValidation">
+            <input type="checkbox" class="form-check-input openid-validation-disable-token-type" asp-for="DisableTokenTypeValidation">
             <label class="form-check-label" asp-for="DisableTokenTypeValidation">@T["Disable token type validation"]</label>
             <span class="hint dashed">@T["Token type validation can be disabled to accept JWT tokens from servers that do not support the '{0}' type header.", "at+jwt"]</span>
         </div>
     </div>
 </div>
 
-<script at="Foot" type="module">
-    var authority = document.getElementById('@Html.IdFor(model => model.Authority)');
-        var audience = document.getElementById('@Html.IdFor(model => model.Audience)');
-        var tenant = document.getElementById('@Html.IdFor(model => model.Tenant)');
-        var disableTokenTypeValidation = document.getElementById('@Html.IdFor(model => model.DisableTokenTypeValidation)');
-        var authorityField = document.getElementById('AuthorityField');
-        var audienceField = document.getElementById('AudienceField');
-        var disableTokenTypeValidationField = document.getElementById('DisableTokenTypeValidationField');
-
-        tenant.addEventListener('change', function () {
-            if (tenant.value != '') {
-                authority.value = null;
-                authorityField.style.display = 'none';
-                audience.value = null;
-                audienceField.style.display = 'none';
-                disableTokenTypeValidation.value = false;
-                disableTokenTypeValidationField.style.display = 'none';
-            }
-            else {
-                authorityField.style.display = '';
-                audienceField.style.display = '';
-                disableTokenTypeValidationField.style.display = '';
-            }
-        });
-
-        tenant.dispatchEvent(new Event('change'));
-</script>
+<script asp-src="~/OrchardCore.OpenId/Scripts/openid-settings/openid-validation-settings.min.js" debug-src="~/OrchardCore.OpenId/Scripts/openid-settings/openid-validation-settings.js" at="Foot" type="module"></script>
