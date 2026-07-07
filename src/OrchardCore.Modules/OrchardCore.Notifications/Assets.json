@@ -18,5 +18,19 @@
     "source": "Assets/ts/notification-task-field-editor.ts",
     "dest": "wwwroot/Scripts/notification-task-field-editor/",
     "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "user-notification-preferences-part",
+    "source": "Assets/ts/user-notification-preferences-part.ts",
+    "dest": "wwwroot/Scripts/user-notification-preferences-part/",
+    "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "user-notification-navbar",
+    "source": "Assets/ts/user-notification-navbar.ts",
+    "dest": "wwwroot/Scripts/user-notification-navbar/",
+    "tags": ["admin", "dashboard", "js"]
   }
 ]

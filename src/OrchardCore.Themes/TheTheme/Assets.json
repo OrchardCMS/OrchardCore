@@ -12,5 +12,12 @@
     "source": "Assets/ts/NotifyMessages.ts",
     "dest": "wwwroot/js/notify-messages/",
     "tags": ["theme", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "UserNotificationNavbar",
+    "source": "Assets/ts/UserNotificationNavbar.ts",
+    "dest": "wwwroot/js/user-notification-navbar/",
+    "tags": ["theme", "js"]
   }
 ]

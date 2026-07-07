@@ -112,5 +112,12 @@
     "source": "Assets/ts/content-picker-field-settings.ts",
     "dest": "wwwroot/Scripts/content-picker-field-settings/",
     "tags": [ "admin", "dashboard", "js" ]
+  },
+  {
+    "action": "parcel",
+    "name": "user-picker-field-settings",
+    "source": "Assets/ts/user-picker-field-settings.ts",
+    "dest": "wwwroot/Scripts/user-picker-field-settings/",
+    "tags": [ "admin", "dashboard", "js" ]
   }
 ]

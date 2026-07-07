@@ -43,5 +43,12 @@
     "source": "Assets/js/NotifyMessages/NotifyMessages.ts",
     "dest": "wwwroot/js/notify-messages/",
     "tags": ["theme", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "NavigationAdmin",
+    "source": "Assets/js/NavigationAdmin/NavigationAdmin.ts",
+    "dest": "wwwroot/js/navigation-admin/",
+    "tags": ["theme", "js"]
   }
 ]

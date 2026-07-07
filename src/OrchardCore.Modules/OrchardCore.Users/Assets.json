@@ -30,5 +30,12 @@
     "source": "Assets/ts/users-admin-list.ts",
     "dest": "wwwroot/Scripts/users-admin-list/",
     "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "login-form-credentials",
+    "source": "Assets/ts/login-form-credentials.ts",
+    "dest": "wwwroot/Scripts/login-form-credentials/",
+    "tags": ["admin", "dashboard", "js"]
   }
 ]

@@ -28,5 +28,12 @@
     "source": "Assets/ts/import-json.ts",
     "dest": "wwwroot/Scripts/import-json/",
     "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "deployment-plan-display",
+    "source": "Assets/ts/deployment-plan-display.ts",
+    "dest": "wwwroot/Scripts/deployment-plan-display/",
+    "tags": ["admin", "dashboard", "js"]
   }
 ]

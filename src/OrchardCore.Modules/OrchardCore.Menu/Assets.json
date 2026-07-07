@@ -29,5 +29,12 @@
     "name": "menu-permission-picker",
     "source": "Assets/js/menu-permission-picker.js",
     "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "menu-part",
+    "source": "Assets/ts/menu-part.ts",
+    "dest": "wwwroot/Scripts/menu-part/",
+    "tags": ["admin", "dashboard", "js"]
   }
 ]
