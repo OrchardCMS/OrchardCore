@@ -12,5 +12,12 @@
     "source": "Assets/ts/sitemap-list.ts",
     "dest": "wwwroot/Scripts/sitemap-list/",
     "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "sitemap-part",
+    "source": "Assets/ts/sitemap-part.ts",
+    "dest": "wwwroot/Scripts/sitemap-part/",
+    "tags": ["admin", "dashboard", "js"]
   }
 ]

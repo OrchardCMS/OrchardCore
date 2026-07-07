@@ -54,14 +54,4 @@
 
 <script asp-src="~/OrchardCore.Liquid/codemirror/liquid.js" at="Foot"></script>
 
-<script at="Foot" type="module">
-    var codeMirrorOptions = {
-        autoRefresh: true,
-        lineNumbers: true,
-        styleActiveLine: true,
-        matchBrackets: true,
-        mode: { name: "liquid" },
-    };
-    CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Headers)'), codeMirrorOptions);
-    CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Content)'), codeMirrorOptions);
-</script>
+<script asp-src="~/OrchardCore.Workflows/Scripts/task-editors/http-response-task.min.js" debug-src="~/OrchardCore.Workflows/Scripts/task-editors/http-response-task.js" at="Foot" type="module"></script>

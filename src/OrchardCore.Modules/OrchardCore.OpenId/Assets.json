@@ -30,5 +30,12 @@
     ],
     "dest": "wwwroot/Scripts/openid-application-editor/",
     "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "openid-client-settings",
+    "source": "Assets/ts/openid-client-settings.ts",
+    "dest": "wwwroot/Scripts/openid-client-settings/",
+    "tags": ["admin", "dashboard", "js"]
   }
 ]

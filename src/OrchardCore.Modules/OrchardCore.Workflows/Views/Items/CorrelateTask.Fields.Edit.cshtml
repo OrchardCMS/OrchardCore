@@ -16,7 +16,7 @@
 <div class="ocat-wrapper" asp-validation-class-for="Value">
     <label asp-for="Value" class="ocat-label">@T["Value"]</label>
     <div class="ocat-end">
-        <textarea asp-for="Value" class="form-control"></textarea>
+        <textarea asp-for="Value" class="form-control" data-mode="@(Model.Syntax.GetSyntaxName())"></textarea>
         <span asp-validation-for="Value"></span>
         <span id="liquid_hint" class="hint @(Model.Syntax == WorkflowScriptSyntax.Liquid ? "" : "d-none")">@T["The value to correlate workflow instances with. With Liquid support."]</span>
         <span id="javascript_hint" class="hint @(Model.Syntax == WorkflowScriptSyntax.JavaScript ? "" : "d-none")">@T["The value to correlate workflow instances with. With JavaScript support."]</span>
@@ -31,33 +31,4 @@
 <script asp-name="codemirror-addon-mode-multiplex" at="Foot"></script>
 <script asp-name="codemirror-mode-xml" at="Foot"></script>
 <script asp-src="~/OrchardCore.Liquid/codemirror/liquid.js" at="Foot" depends-on="codemirror"></script>
-<script at="Foot" depends-on="codemirror" type="module">
-    const initializeEditor = (textArea) => {
-        textArea.CoreMirrorEditor = CodeMirror.fromTextArea(textArea, {
-            autoCloseTags: true,
-            autoRefresh: true,
-            lineNumbers: true,
-            lineWrapping: true,
-            matchBrackets: true,
-            styleActiveLine: true,
-            mode: { name: '@(Model.Syntax.GetSyntaxName())' }
-        });
-
-        return textArea.CoreMirrorEditor;
-    };
-
-    const editor = initializeEditor(document.getElementById('@Html.IdFor(x => x.Value)'));
-
-    document.getElementById('@Html.IdFor(x => x.Syntax)').addEventListener("change", (e) => {
-        const syntax = e.target.value.toLowerCase();
-        editor.setOption('mode', syntax);
-
-        if (syntax == 'javascript') {
-            document.getElementById('liquid_hint').classList.add('d-none');
-            document.getElementById('javascript_hint').classList.remove('d-none');
-        } else {
-            document.getElementById('javascript_hint').classList.add('d-none');
-            document.getElementById('liquid_hint').classList.remove('d-none');
-        }
-    });
-</script>
+<script asp-src="~/OrchardCore.Workflows/Scripts/task-editors/correlate-task.min.js" debug-src="~/OrchardCore.Workflows/Scripts/task-editors/correlate-task.js" depends-on="codemirror" at="Foot" type="module"></script>

@@ -32,7 +32,8 @@
     "source": [
       "Assets/js/edit-field-selector.ts",
       "Assets/js/edit-type-part-selector.ts",
-      "Assets/js/add-parts-to.ts"
+      "Assets/js/add-parts-to.ts",
+      "Assets/js/graphql-content-type-part-settings.ts"
     ],
     "dest": "wwwroot/Scripts/content-type-editors/",
     "tags": ["admin", "dashboard", "js"]

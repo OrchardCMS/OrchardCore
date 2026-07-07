@@ -15,5 +15,15 @@
     ],
     "dest": "wwwroot/Scripts/tenants-admin-lists/",
     "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "tenant-task-editors",
+    "source": [
+      "Assets/ts/create-tenant-task.ts",
+      "Assets/ts/setup-tenant-task.ts"
+    ],
+    "dest": "wwwroot/Scripts/tenant-task-editors/",
+    "tags": ["admin", "dashboard", "js"]
   }
 ]

@@ -150,3 +150,10 @@ interface NoUiSliderElement extends HTMLElement {
 declare const noUiSlider: {
     create(element: HTMLElement, options: Record<string, unknown>): void;
 };
+
+// Defined by OrchardCore.OpenId (Scripts/parametersEditor.js), consumed here.
+declare function initializeParametersEditor(
+    element: Element | null,
+    parameters: unknown,
+    modalBodyElements: HTMLCollectionOf<Element>,
+): void;
