@@ -18,3 +18,7 @@ declare const Cookies: {
     set(name: string, value: string, options?: Record<string, unknown>): void;
     get(name: string): string | undefined;
 };
+
+declare const Sortable: {
+    create(element: HTMLElement, options?: Record<string, unknown>): unknown;
+};

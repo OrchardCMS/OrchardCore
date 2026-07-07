@@ -50,5 +50,12 @@
     "source": "Assets/Scripts/crossbrowserclipboardcopy.js",
     "dest": "wwwroot/Scripts/",
     "tags": ["workflows", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "workflow-syntax-toggle-js",
+    "source": "Assets/Scripts/workflow-syntax-toggle.ts",
+    "dest": "wwwroot/Scripts/Workflows/syntax-toggle/",
+    "tags": ["workflows", "js"]
   }
 ]

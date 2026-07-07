@@ -227,16 +227,4 @@
     </div>
 </form>
 <script asp-name="Sortable" at="Foot"></script>
-<script at="Foot" depends-on="Sortable" type="module">
-    const fields = document.getElementById("fields");
-
-    if (fields) {
-        Sortable.create(document.getElementById("fields"));
-    }
-
-    const parts = document.getElementById("parts");
-
-    if (parts) {
-        Sortable.create(document.getElementById("parts"));
-    }
-</script>
+<script asp-src="~/OrchardCore.ContentTypes/Scripts/content-type-sortable/content-type-sortable.min.js" debug-src="~/OrchardCore.ContentTypes/Scripts/content-type-sortable/content-type-sortable.js" depends-on="Sortable" at="Foot" type="module"></script>

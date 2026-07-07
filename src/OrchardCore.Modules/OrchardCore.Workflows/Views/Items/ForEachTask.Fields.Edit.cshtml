@@ -1,11 +1,17 @@
+@using System.Text.Json
 @using OrchardCore.Workflows.Models
 @using OrchardCore.Workflows.ViewModels
 @model ForEachTaskViewModel
 
+@{
+    var javaScriptGroupIds = new[] { $"{Html.IdFor(m => m.EnumerableExpression)}_group" };
+    var liquidGroupIds = new[] { $"{Html.IdFor(m => m.LiquidEnumerableExpression)}_group" };
+}
+
 <div class="ocat-wrapper" asp-validation-class-for="Syntax">
     <label asp-for="Syntax" class="ocat-label">@T["Syntax"]</label>
     <div class="ocat-end">
-        <select asp-for="Syntax" class="form-select">
+        <select asp-for="Syntax" class="form-select" data-syntax-toggle data-javascript-group-ids="@JsonSerializer.Serialize(javaScriptGroupIds)" data-liquid-group-ids="@JsonSerializer.Serialize(liquidGroupIds)">
             <option value="@nameof(WorkflowScriptSyntax.JavaScript)">@T["JavaScript"]</option>
             <option value="@nameof(WorkflowScriptSyntax.Liquid)">@T["Liquid"]</option>
         </select>
@@ -40,17 +46,4 @@
     </div>
 </div>
 
-<script at="Foot" type="module">
-    const syntaxElement = document.getElementById('@Html.IdFor(m => m.Syntax)');
-    const javaScriptGroup = document.getElementById('@($"{Html.IdFor(m => m.EnumerableExpression)}_group")');
-    const liquidGroup = document.getElementById('@($"{Html.IdFor(m => m.LiquidEnumerableExpression)}_group")');
-
-    const toggleEditors = () => {
-        const useLiquid = syntaxElement.value === '@nameof(WorkflowScriptSyntax.Liquid)';
-        javaScriptGroup.classList.toggle('d-none', useLiquid);
-        liquidGroup.classList.toggle('d-none', !useLiquid);
-    };
-
-    syntaxElement.addEventListener('change', toggleEditors);
-    toggleEditors();
-</script>
+<script asp-name="workflow-syntax-toggle" at="Foot" type="module"></script>
