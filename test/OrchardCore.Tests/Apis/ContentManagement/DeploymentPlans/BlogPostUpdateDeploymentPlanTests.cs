@@ -62,7 +62,7 @@ public class BlogPostUpdateDeploymentPlanTests
             var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x =>
                 x.ContentType == "BlogPost").ListAsync();
 
-            Assert.Equal(2, blogPosts.Count);
+            Assert.Equal(2, blogPosts.Count());
 
             var mutatedVersion = blogPosts.FirstOrDefault(x => x.ContentItemVersionId == context.OriginalBlogPostVersionId);
             Assert.True(mutatedVersion?.Latest);
@@ -102,7 +102,7 @@ public class BlogPostUpdateDeploymentPlanTests
             var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x =>
                 x.ContentType == "BlogPost").ListAsync();
 
-            Assert.Equal(2, blogPosts.Count);
+            Assert.Equal(2, blogPosts.Count());
 
             var originalVersion = blogPosts.FirstOrDefault(x => x.ContentItemVersionId == context.OriginalBlogPostVersionId);
             Assert.False(originalVersion?.Latest);

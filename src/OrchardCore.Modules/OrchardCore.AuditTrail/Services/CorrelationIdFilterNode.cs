@@ -1,4 +1,4 @@
-using YesSql.Filters.Nodes;
+using YesSql.Filters.Abstractions.Nodes;
 
 namespace OrchardCore.AuditTrail.Services;
 

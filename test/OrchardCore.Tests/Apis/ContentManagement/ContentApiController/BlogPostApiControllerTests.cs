@@ -71,7 +71,7 @@ public class BlogPostApiControllerTests
             var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x =>
                 x.ContentType == "BlogPost").ListAsync();
 
-            Assert.Equal(2, blogPosts.Count);
+            Assert.Equal(2, blogPosts.Count());
         });
     }
 

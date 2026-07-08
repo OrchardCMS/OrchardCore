@@ -5,7 +5,7 @@ using OrchardCore.Modules;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.ViewModels;
 using YesSql;
-using YesSql.Filters.Nodes;
+using YesSql.Filters.Abstractions.Nodes;
 
 namespace OrchardCore.Users.Services;
 

@@ -113,8 +113,14 @@ internal sealed class ShellDbTablesInfo : ISchemaBuilder
         return Task.CompletedTask;
     }
 
+    public ISchemaBuilder AlterIndexTable(Type indexType, Action<IAlterTableCommand> table, string collection)
+        => this;
+
     public Task AlterIndexTableAsync(Type indexType, Action<IAlterTableCommand> table, string collection)
         => Task.CompletedTask;
+
+    public ISchemaBuilder AlterTable(string name, Action<IAlterTableCommand> table)
+        => this;
 
     public Task AlterTableAsync(string name, Action<IAlterTableCommand> table)
         => Task.CompletedTask;
@@ -250,6 +256,9 @@ internal sealed class ShellDbTablesInfo : ISchemaBuilder
         }
     }
 
+    public ISchemaBuilder CreateForeignKey(string name, string srcTable, string[] srcColumns, string destTable, string[] destColumns)
+        => this;
+
     public Task CreateForeignKeyAsync(string name, string srcTable, string[] srcColumns, string destTable, string[] destColumns)
         => Task.CompletedTask;
 
@@ -279,6 +288,9 @@ internal sealed class ShellDbTablesInfo : ISchemaBuilder
 
         return Task.CompletedTask;
     }
+
+    public ISchemaBuilder CreateSchema(string schema)
+        => this;
 
     public Task CreateSchemaAsync(string schema)
         => Task.CompletedTask;

@@ -30,7 +30,7 @@ public class WorkflowStore : IWorkflowStore
         return (await _session.Query<Workflow, WorkflowBlockingActivitiesIndex>(x => x.WorkflowTypeId == workflowTypeId).FirstOrDefaultAsync()) != null;
     }
 
-    public async Task<IEnumerable<Workflow>> ListAsync(string workflowTypeId = null, int? skip = null, int? take = null)
+    public Task<IEnumerable<Workflow>> ListAsync(string workflowTypeId = null, int? skip = null, int? take = null)
     {
         var query = (IQuery<Workflow>)FilterByWorkflowTypeId(_session.Query<Workflow, WorkflowIndex>(), workflowTypeId)
             .OrderByDescending(x => x.CreatedUtc);
@@ -45,12 +45,12 @@ public class WorkflowStore : IWorkflowStore
             query = query.Take(take.Value);
         }
 
-        return await query.ListAsync();
+        return query.ListAsync();
     }
 
-    public async Task<IEnumerable<Workflow>> ListAsync(IEnumerable<string> workflowTypeIds)
+    public Task<IEnumerable<Workflow>> ListAsync(IEnumerable<string> workflowTypeIds)
     {
-        return await _session.Query<Workflow, WorkflowIndex>(x => x.WorkflowTypeId.IsIn(workflowTypeIds)).ListAsync();
+        return _session.Query<Workflow, WorkflowIndex>(x => x.WorkflowTypeId.IsIn(workflowTypeIds)).ListAsync();
     }
 
     public Task<Workflow> GetAsync(long id)
@@ -63,9 +63,9 @@ public class WorkflowStore : IWorkflowStore
         return _session.Query<Workflow, WorkflowBlockingActivitiesIndex>(x => x.WorkflowId == workflowId).FirstOrDefaultAsync();
     }
 
-    public async Task<IEnumerable<Workflow>> GetAsync(IEnumerable<string> workflowIds)
+    public Task<IEnumerable<Workflow>> GetAsync(IEnumerable<string> workflowIds)
     {
-        return await _session.Query<Workflow, WorkflowBlockingActivitiesIndex>(x => x.WorkflowId.IsIn(workflowIds)).ListAsync();
+        return _session.Query<Workflow, WorkflowBlockingActivitiesIndex>(x => x.WorkflowId.IsIn(workflowIds)).ListAsync();
     }
 
     public Task<IEnumerable<Workflow>> GetAsync(IEnumerable<long> ids)
@@ -73,16 +73,16 @@ public class WorkflowStore : IWorkflowStore
         return _session.GetAsync<Workflow>(ids.ToArray());
     }
 
-    public async Task<IEnumerable<Workflow>> ListAsync(string workflowTypeId, IEnumerable<string> blockingActivityIds)
+    public Task<IEnumerable<Workflow>> ListAsync(string workflowTypeId, IEnumerable<string> blockingActivityIds)
     {
-        return await _session
+        return _session
             .Query<Workflow, WorkflowBlockingActivitiesIndex>(index =>
                 index.WorkflowTypeId == workflowTypeId &&
                 index.ActivityId.IsIn(blockingActivityIds))
             .ListAsync();
     }
 
-    public async Task<IEnumerable<Workflow>> ListAsync(string workflowTypeId, string activityName, string correlationId = null, bool isAlwaysCorrelated = false)
+    public Task<IEnumerable<Workflow>> ListAsync(string workflowTypeId, string activityName, string correlationId = null, bool isAlwaysCorrelated = false)
     {
         var query = _session.Query<Workflow, WorkflowBlockingActivitiesIndex>();
 
@@ -95,10 +95,10 @@ public class WorkflowStore : IWorkflowStore
             query = query.Where(index => index.WorkflowTypeId == workflowTypeId && index.ActivityName == activityName && index.WorkflowCorrelationId == (correlationId ?? ""));
         }
 
-        return await query.ListAsync();
+        return query.ListAsync();
     }
 
-    public async Task<IEnumerable<Workflow>> ListByActivityNameAsync(string activityName, string correlationId = null, bool isAlwaysCorrelated = false)
+    public Task<IEnumerable<Workflow>> ListByActivityNameAsync(string activityName, string correlationId = null, bool isAlwaysCorrelated = false)
     {
         var query = _session.Query<Workflow, WorkflowBlockingActivitiesIndex>();
 
@@ -111,7 +111,7 @@ public class WorkflowStore : IWorkflowStore
             query = query.Where(index => index.ActivityName == activityName && index.WorkflowCorrelationId == (correlationId ?? ""));
         }
 
-        return await query.ListAsync();
+        return query.ListAsync();
     }
 
     public async Task SaveAsync(Workflow workflow)

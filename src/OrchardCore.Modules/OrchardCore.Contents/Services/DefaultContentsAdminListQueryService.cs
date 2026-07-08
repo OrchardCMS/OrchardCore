@@ -5,7 +5,7 @@ using OrchardCore.Contents.ViewModels;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Modules;
 using YesSql;
-using YesSql.Filters.Nodes;
+using YesSql.Filters.Abstractions.Nodes;
 
 namespace OrchardCore.Contents.Services;
 

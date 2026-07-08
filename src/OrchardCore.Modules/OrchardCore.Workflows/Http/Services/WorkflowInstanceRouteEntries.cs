@@ -29,7 +29,7 @@ internal sealed class WorkflowInstanceRouteEntries : WorkflowRouteEntries<Workfl
                 .Take(pageSize)
                 .ListAsync();
 
-            if (pendingWorkflows.Count == 0)
+            if (!pendingWorkflows.Any())
             {
                 break;
             }
@@ -41,7 +41,7 @@ internal sealed class WorkflowInstanceRouteEntries : WorkflowRouteEntries<Workfl
 
             AddEntries(document, workflowRouteEntries);
 
-            if (pendingWorkflows.Count < pageSize)
+            if (pendingWorkflows.Count() < pageSize)
             {
                 break;
             }
