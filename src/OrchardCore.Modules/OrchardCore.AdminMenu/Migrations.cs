@@ -64,7 +64,7 @@ public sealed class Migrations : DataMigration
             // Retrieve all admin menus
             if (!(jsonObject["AdminMenu"] is JsonArray adminMenuItems))
             {
-                logger.LogWarning("Convert to 3.x format: no admin menu item, strange AdminMenuList format.");
+                logger.LogWarning("Convert to 3.x format: no admin menu item in '{Identifier}', strange AdminMenuList format.", jsonObject["Identifier"]?.GetValue<string>() ?? "");
                 return;
             }
 
