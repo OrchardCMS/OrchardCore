@@ -77,6 +77,7 @@ public sealed class AdminMenuStep : NamedRecipeStepHandler
             {
                 menuItem.MenuName = menu.Name;
             }
+
             MigrateMenuItems(menu, menuItem.Items);
         }
     }
