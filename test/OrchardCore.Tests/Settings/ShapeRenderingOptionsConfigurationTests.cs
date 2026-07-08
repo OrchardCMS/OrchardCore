@@ -7,7 +7,7 @@ namespace OrchardCore.Tests.Settings;
 public class ShapeRenderingOptionsConfigurationTests
 {
     [Fact]
-    public void ConfigureDisablesShapeDebugInformationByDefault()
+    public void ConfigureDisablesShapeDebugInformationByDefault_Default_Succeeds()
     {
         var site = new SiteSettings();
         var siteService = new Mock<ISiteService>();
@@ -26,7 +26,7 @@ public class ShapeRenderingOptionsConfigurationTests
     }
 
     [Fact]
-    public void ConfigureEnablesShapeDebugInformationWhenConfiguredInSiteSettings()
+    public void ConfigureEnablesShapeDebugInformation_ConfiguredInSiteSettings_Succeeds()
     {
         var site = new SiteSettings();
         site.Put(new DebugSettings

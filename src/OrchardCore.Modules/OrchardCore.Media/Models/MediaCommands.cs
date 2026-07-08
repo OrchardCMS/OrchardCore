@@ -12,6 +12,8 @@ internal sealed class MediaCommands
     public const string BackgroundColorCommand = "bgcolor";
     public const string QualityCommand = "quality";
     public const string AutoOrientCommand = "autoorient";
+    public const string TokenCommand = "token";
+    public const string VersionCommand = "v";
 
     // Backing properties (null means "not set").
     public string? Width { get; set; }

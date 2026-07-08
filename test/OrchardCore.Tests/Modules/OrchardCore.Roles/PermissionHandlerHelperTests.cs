@@ -12,7 +12,7 @@ public class PermissionHandlerHelperTests
     [InlineData("AllowAnonymous", false, true)]
     [InlineData("AllowAuthenticated", true, true)]
     [InlineData("AllowAuthenticated", false, false)]
-    public async Task GrantsRolesPermissions(string required, bool authenticated, bool success)
+    public async Task GrantsRolesPermissions_Default_Succeeds(string required, bool authenticated, bool success)
     {
         // Arrange
         var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(new Permission(required), authenticated: authenticated);
@@ -44,7 +44,7 @@ public class PermissionHandlerHelperTests
     }
 
     [Fact]
-    public async Task DoNotRevokeExistingGrants()
+    public async Task DoNotRevokeExistingGrants_Default_Succeeds()
     {
         // Arrange
         var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(new Permission("Required"), ["Other"], true);
@@ -61,7 +61,7 @@ public class PermissionHandlerHelperTests
     }
 
     [Fact]
-    public async Task GrantsInheritedPermissions()
+    public async Task GrantsInheritedPermissions_Default_Succeeds()
     {
         // Arrange
         var level2 = new Permission("Implicit2");
@@ -91,7 +91,7 @@ public class PermissionHandlerHelperTests
     [Theory]
     [InlineData("AllowAnonymous", true)]
     [InlineData("AllowAuthenticated", true)]
-    public async Task IsCaseInsensitive(string required, bool authenticated)
+    public async Task IsCaseInsensitive_Default_Succeeds(string required, bool authenticated)
     {
         // Arrange
         var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(new Permission(required), authenticated: authenticated);
