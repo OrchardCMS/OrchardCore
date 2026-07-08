@@ -1,3 +1,4 @@
+using Azure.Storage.Blobs.Models;
 using Xunit;
 
 namespace OrchardCore.Tests.Integration.AzureBlob;
@@ -16,7 +17,7 @@ public sealed class BlobFileStoreGen1Tests : BlobFileStoreTestsBase
 
         // Gen1 simulates directories with a marker blob — verify it exists.
         var blobs = new List<string>();
-        await foreach (var blob in ContainerClient.GetBlobsAsync(Azure.Storage.Blobs.Models.BlobTraits.None, Azure.Storage.Blobs.Models.BlobStates.None, "gen1-dir/", CancellationToken.None))
+        await foreach (var blob in ContainerClient.GetBlobsAsync(BlobTraits.None, BlobStates.None, "gen1-dir/", CancellationToken.None))
         {
             blobs.Add(blob.Name);
         }

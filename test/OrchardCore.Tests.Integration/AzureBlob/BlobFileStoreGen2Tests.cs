@@ -1,3 +1,4 @@
+using Azure.Storage.Blobs.Models;
 using Azure.Storage.Files.DataLake;
 using OrchardCore.FileStorage;
 using Xunit;
@@ -22,7 +23,7 @@ public sealed class BlobFileStoreGen2Tests : BlobFileStoreTestsBase
 
         // Gen2 creates real directory objects via the DataLake API — no marker blob.
         var blobs = new List<string>();
-        await foreach (var blob in ContainerClient.GetBlobsAsync(Azure.Storage.Blobs.Models.BlobTraits.None, Azure.Storage.Blobs.Models.BlobStates.None, "gen2-dir/", CancellationToken.None))
+        await foreach (var blob in ContainerClient.GetBlobsAsync(BlobTraits.None, BlobStates.None, "gen2-dir/", CancellationToken.None))
         {
             blobs.Add(blob.Name);
         }
