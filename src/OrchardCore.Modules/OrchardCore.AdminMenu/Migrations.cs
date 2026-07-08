@@ -2,7 +2,6 @@ using System.Text.Json.Nodes;
 using Dapper;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using OrchardCore.AdminMenu.Services;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
@@ -17,15 +16,12 @@ public sealed class Migrations : DataMigration
     public static int Create()
     {
         // Then migrate pre-existing admin menus (created with pre-3.0 libraries) to the 3.0 format.
-        ShellScope.AddDeferredTask(async scope =>
-            await AdminMenuItemMigrator.MigrateItemTo(scope, async (menu, menuItem, scope) => menuItem.MenuName = menu.Name));
-
-        ShellScope.AddDeferredTask(MigrateAdminContentTypesAdminNode);
+        ShellScope.AddDeferredTask(MigrateAdminMenuNode);
 
         return 1;
     }
 
-    private static async Task MigrateAdminContentTypesAdminNode(ShellScope scope)
+    private static async Task MigrateAdminMenuNode(ShellScope scope)
     {
         var logger = scope.ServiceProvider.GetRequiredService<ILogger<Migrations>>();
 
@@ -73,7 +69,7 @@ public sealed class Migrations : DataMigration
                 // Work on menu items
                 if (adminMenu["MenuItems"] is JsonArray menuItems)
                 {
-                    await MigrateContentTypesNodes(menuItems, contentDefinitionManager, logger);
+                    await MigrateMenuItemNodes(adminMenu["Name"]?.GetValue<string>() ?? "", menuItems, contentDefinitionManager, logger);
                 }
             }
 
@@ -99,10 +95,13 @@ public sealed class Migrations : DataMigration
         }
     }
 
-    private static async Task MigrateContentTypesNodes(JsonArray nodes, IContentDefinitionManager contentDefinitionManager, ILogger<Migrations> logger)
+    private static async Task MigrateMenuItemNodes(string menuName, JsonArray nodes, IContentDefinitionManager contentDefinitionManager, ILogger<Migrations> logger)
     {
         foreach (var node in nodes.OfType<JsonObject>())
         {
+            //for each menu item add menu name
+            node["MenuName"] = menuName;
+
             // Only 'ContentTypesAdminNode' carries a 'ContentTypes' array.
             if (node["ContentTypes"] is JsonArray contentTypes)
             {
@@ -133,7 +132,7 @@ public sealed class Migrations : DataMigration
             // Recourse into child nodes.
             if (node["Items"] is JsonArray items)
             {
-                await MigrateContentTypesNodes(items, contentDefinitionManager, logger);
+                await MigrateMenuItemNodes(menuName, items, contentDefinitionManager, logger);
             }
         }
     }
