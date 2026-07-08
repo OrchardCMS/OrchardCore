@@ -16,6 +16,39 @@ Enabling the `OrchardCore.Security` module will allow the user to set the follow
 !!! note
     The `Content-Security-Policy` HTTP header contains the `frame-ancestors` directive which obsoleted the `X-Frame-Options` HTTP header.
 
+## Recipe Configuration
+
+Security settings can be configured using the `Settings` recipe step:
+
+```json
+{
+  "steps": [
+    {
+      "name": "settings",
+      "SecuritySettings": {
+        "ContentTypeOptions": "nosniff",
+        "ReferrerPolicy": "no-referrer",
+        "ContentSecurityPolicy": {
+          "default-src": "'self'",
+          "script-src": "'self' 'unsafe-inline'"
+        },
+        "PermissionsPolicy": {
+          "camera": "()",
+          "microphone": "()"
+        }
+      }
+    }
+  ]
+}
+```
+
+| Property                | Type   | Description                                                       |
+|-------------------------|--------|-------------------------------------------------------------------|
+| `ContentTypeOptions`    | String | The X-Content-Type-Options header value.                          |
+| `ReferrerPolicy`        | String | The Referrer-Policy header value.                                 |
+| `ContentSecurityPolicy` | Object | The Content-Security-Policy header directives as key-value pairs. |
+| `PermissionsPolicy`     | Object | The Permissions-Policy header directives as key-value pairs.      |
+
 ## Security Settings Configuration
 
 The `OrchardCore.Security` module allows the user to use configuration values to override the `AdminSettings` by calling `ConfigureSecuritySettings()` extension method.

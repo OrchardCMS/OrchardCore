@@ -23,7 +23,7 @@ const insertAtCaret = (element, myValue) => {
 
 const shortcodeBtnTemplate = `
 <button type="button" class="shortcode-modal-btn btn btn-sm">
-    <span class="icon-shortcode"></span>
+    <i class="fa-solid fa-code" aria-hidden="true"></i>
 </button>
 `;
 

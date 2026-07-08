@@ -32,7 +32,7 @@ public class ViewMediaFolderAuthorizationHandlerTests
     [InlineData("ManageMediaFolder", "/")]
     [InlineData("ManageMediaFolder", "filename.png")]
     [InlineData("ManageMediaFolder", "/filename.png")]
-    public async Task GrantsRootViewPermission(string permission, string resource)
+    public async Task GrantsRootViewPermission_Default_Succeeds(string permission, string resource)
     {
         // Arrange
         var handler = CreateHandler();
@@ -74,7 +74,7 @@ public class ViewMediaFolderAuthorizationHandlerTests
     [InlineData("ViewRootMediaContent", "/" + MediafieldsFolder)]
     [InlineData("ViewRootMediaContent", MediafieldsFolder + "/filename.png")]
     [InlineData("ViewRootMediaContent", "/" + MediafieldsFolder + "/filename.png")]
-    public async Task DoesNotGrantRootViewPermission(string permission, string resource)
+    public async Task DoesNotGrantRootViewPermission_Default_Succeeds(string permission, string resource)
     {
         // Arrange
         var handler = CreateHandler();
@@ -106,7 +106,7 @@ public class ViewMediaFolderAuthorizationHandlerTests
 
     [InlineData("ManageMediaFolder", "non-existent-folder")]
     [InlineData("ManageMediaFolder", "non-existent-folder/filename.png")]
-    public async Task GrantsAllFoldersViewPermission(string permission, string resource)
+    public async Task GrantsAllFoldersViewPermission_Default_Succeeds(string permission, string resource)
     {
         // Arrange
         var handler = CreateHandler();
@@ -127,7 +127,7 @@ public class ViewMediaFolderAuthorizationHandlerTests
     [InlineData("ViewMediaContent", UsersFolder + "/filename.png")]
     [InlineData("ViewMediaContent", MediafieldsFolder)]
     [InlineData("ViewMediaContent", MediafieldsFolder + "/filename.png")]
-    public async Task DoesNotGrantSpecialFoldersViewPermission(string permission, string resource)
+    public async Task DoesNotGrantSpecialFoldersViewPermission_Default_Succeeds(string permission, string resource)
     {
         // Arrange
         var handler = CreateHandler();
@@ -145,7 +145,7 @@ public class ViewMediaFolderAuthorizationHandlerTests
     [InlineData("ViewMediaContent_folder", "folder/filename.png")]
     [InlineData("ViewMediaContent_folder", "/folder")]
     [InlineData("ViewMediaContent_folder", "/folder/filename.png")]
-    public async Task GrantsFolderViewPermission(string permission, string resource)
+    public async Task GrantsFolderViewPermission_Default_Succeeds(string permission, string resource)
     {
         // Arrange
         var handler = CreateHandler();
@@ -179,7 +179,7 @@ public class ViewMediaFolderAuthorizationHandlerTests
 
     [InlineData("ViewMediaContent_folder", MediafieldsFolder)]
     [InlineData("ViewMediaContent_folder", MediafieldsFolder + "/filename.png")]
-    public async Task DoesNotGrantFolderViewPermission(string permission, string resource)
+    public async Task DoesNotGrantFolderViewPermission_Default_Succeeds(string permission, string resource)
     {
         // Arrange
         var handler = CreateHandler();
@@ -197,7 +197,7 @@ public class ViewMediaFolderAuthorizationHandlerTests
     [Theory]
     [InlineData("ViewContent", MediafieldsFolder + "/content-type/content-item-id")]
     [InlineData("ViewContent", MediafieldsFolder + "/content-type/content-item-id" + "/filename.png")]
-    public async Task GrantsMediafieldsFolderViewPermission(string permission, string resource)
+    public async Task GrantsMediafieldsFolderViewPermission_Default_Succeeds(string permission, string resource)
     {
         // Arrange
         var handler = CreateHandler();
@@ -219,7 +219,7 @@ public class ViewMediaFolderAuthorizationHandlerTests
 
     [InlineData("ManageMediaFolder", MediafieldsFolder)]
     [InlineData("ManageMediaFolder", MediafieldsFolder + "/filename.png")]
-    public async Task DoesNotGrantMediafieldsFolderViewPermission(string permission, string resource)
+    public async Task DoesNotGrantMediafieldsFolderViewPermission_Default_Succeeds(string permission, string resource)
     {
         // Arrange
         var handler = CreateHandler();
@@ -240,7 +240,7 @@ public class ViewMediaFolderAuthorizationHandlerTests
 
     [InlineData("ViewOwnMediaContent", MediafieldsFolder + "/temp/user-folder/")]
     [InlineData("ViewOwnMediaContent", MediafieldsFolder + "/temp/user-folder/filename.png")]
-    public async Task GrantsOwnUserFolderViewPermission(string permission, string resource)
+    public async Task GrantsOwnUserFolderViewPermission_Default_Succeeds(string permission, string resource)
     {
         // Arrange
         var handler = CreateHandler();
@@ -259,7 +259,7 @@ public class ViewMediaFolderAuthorizationHandlerTests
 
     [InlineData("ViewOwnMediaContent", MediafieldsFolder + "/temp/other-user-folder/")]
     [InlineData("ViewOwnMediaContent", MediafieldsFolder + "/temp/other-user-folder/filename.png")]
-    public async Task DoesNotGrantOwnUserFolderViewPermission(string permission, string resource)
+    public async Task DoesNotGrantOwnUserFolderViewPermission_Default_Succeeds(string permission, string resource)
     {
         // Arrange
         var handler = CreateHandler();
@@ -284,7 +284,7 @@ public class ViewMediaFolderAuthorizationHandlerTests
 
     [InlineData("ViewOthersMediaContent", MediafieldsFolder + "/temp/other-user-folder/")]
     [InlineData("ViewOthersMediaContent", MediafieldsFolder + "/temp/other-user-folder/filename.png")]
-    public async Task GrantsOtherUserFolderViewPermission(string permission, string resource)
+    public async Task GrantsOtherUserFolderViewPermission_Default_Succeeds(string permission, string resource)
     {
         // Arrange
         var handler = CreateHandler();

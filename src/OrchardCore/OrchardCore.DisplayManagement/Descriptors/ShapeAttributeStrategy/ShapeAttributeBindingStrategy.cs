@@ -120,7 +120,13 @@ public class ShapeAttributeBindingStrategy : ShapeTableProvider, IShapeTableHarv
 
         return context =>
         {
-            var serviceInstance = context.ServiceProvider.GetService(attributeOccurrence.ServiceType);
+            object serviceInstance = null;
+
+            if (!methodInfo.IsStatic)
+            {
+                serviceInstance = context.ServiceProvider.GetService(attributeOccurrence.ServiceType);
+            }
+
             return action(serviceInstance, context);
         };
     }
@@ -132,18 +138,17 @@ public class ShapeAttributeBindingStrategy : ShapeTableProvider, IShapeTableHarv
         var targetExp = Expression.Parameter(typeof(object), "target");
         var castTargetExp = Expression.Convert(targetExp, type);
 
-
         LambdaExpression lambdaExp;
 
         if (method.ReturnType != typeof(void))
         {
-            var resultExp = Expression.Convert(Expression.Call(castTargetExp, method, paramsExps), typeof(object));
+            var resultExp = Expression.Convert(Expression.Call(method.IsStatic ? null : castTargetExp, method, paramsExps), typeof(object));
             lambdaExp = Expression.Lambda(resultExp, targetExp, argsExp);
         }
         else
         {
             var constExp = Expression.Constant(null, typeof(object));
-            var blockExp = Expression.Block(Expression.Call(castTargetExp, method, paramsExps), constExp);
+            var blockExp = Expression.Block(Expression.Call(method.IsStatic ? null : castTargetExp, method, paramsExps), constExp);
             lambdaExp = Expression.Lambda(blockExp, targetExp, argsExp);
         }
 

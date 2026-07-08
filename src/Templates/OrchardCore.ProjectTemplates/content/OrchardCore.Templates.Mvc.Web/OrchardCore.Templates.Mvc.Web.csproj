@@ -11,11 +11,9 @@
     <Folder Include="wwwroot\" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Content Update="wwwroot\.placeholder">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-  </ItemGroup>
+  <Target Name="EnsureWwwRootExists" BeforeTargets="Build;Publish">
+    <MakeDir Directories="$(MSBuildProjectDirectory)\wwwroot" />
+  </Target>
 
   <ItemGroup>
     <PackageReference Include="OrchardCore.Application.Mvc.Targets" Version="$(TemplateOrchardPackageVersion)" />

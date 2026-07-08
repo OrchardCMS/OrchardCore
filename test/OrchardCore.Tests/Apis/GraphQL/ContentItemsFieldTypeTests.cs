@@ -139,7 +139,7 @@ public class ContentItemsFieldTypeTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task ShouldFilterByContentItemIndex()
+    public async Task Filter_ByContentItemIndex_Succeeds()
     {
         _store.RegisterIndexes<AnimalIndexProvider>();
 
@@ -173,7 +173,7 @@ public class ContentItemsFieldTypeTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task ShouldFilterByContentItemIndexWhenSqlTablePrefixIsUsed()
+    public async Task Filter_SqlTablePrefixIsUsed_Succeeds()
     {
         _prefixedStore.RegisterIndexes<AnimalIndexProvider>();
 
@@ -214,7 +214,7 @@ public class ContentItemsFieldTypeTests : IAsyncLifetime
     [InlineData("animal")]
     [InlineData("ANIMAL")]
     [InlineData("Animal")]
-    public async Task ShouldFilterByAliasIndexRegardlessOfInputFieldCase(string fieldName)
+    public async Task Filter_ByAliasIndexRegardlessOfInputFieldCase_Succeeds(string fieldName)
     {
         _store.RegisterIndexes<AnimalIndexProvider>();
 
@@ -252,7 +252,7 @@ public class ContentItemsFieldTypeTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task ShouldBeAbleToUseTheSameIndexForMultipleAliases()
+    public async Task Be_AbleToUseTheSameIndexForMultipleAliases_Succeeds()
     {
         _store.RegisterIndexes<AnimalIndexProvider>();
 
@@ -293,7 +293,7 @@ public class ContentItemsFieldTypeTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task ShouldFilterOnMultipleIndexesOnSameAlias()
+    public async Task Filter_MultipleIndexesOnSameAlias_Succeeds()
     {
         _store.RegisterIndexes<AnimalIndexProvider>();
         _store.RegisterIndexes<AnimalTraitsIndexProvider>();
@@ -342,7 +342,7 @@ public class ContentItemsFieldTypeTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task ShouldFilterPartsWithoutAPrefixWhenThePartHasNoPrefix()
+    public async Task Filter_ThePartHasNoPrefix_Succeeds()
     {
         _store.RegisterIndexes<AnimalIndexProvider>();
 
@@ -377,7 +377,7 @@ public class ContentItemsFieldTypeTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task ShouldFilterNestedPartInputWhenPartNameHasNoPrefix()
+    public async Task Filter_PartNameHasNoPrefix_Succeeds()
     {
         _store.RegisterIndexes<AnimalLocalizationIndexProvider>();
 
@@ -419,7 +419,7 @@ public class ContentItemsFieldTypeTests : IAsyncLifetime
     [InlineData("animal")]
     [InlineData("ANIMAL")]
     [InlineData("Animal")]
-    public async Task ShouldFilterNestedPartInputRegardlessOfInputFieldCase(string fieldName)
+    public async Task Filter_NestedPartInputRegardlessOfInputFieldCase_Succeeds(string fieldName)
     {
         _store.RegisterIndexes<AnimalLocalizationIndexProvider>();
 
@@ -454,7 +454,7 @@ public class ContentItemsFieldTypeTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task ShouldFilterByCollapsedWhereInputForCollapsedParts()
+    public async Task Filter_ByCollapsedWhereInputForCollapsedParts_Succeeds()
     {
         _store.RegisterIndexes<AnimalIndexProvider>();
 
@@ -518,15 +518,15 @@ public class ContentItemsFieldTypeTests : IAsyncLifetime
                 {
                     Name = "Animal",
                 }),
-                Arguments =
-                [
+                Arguments = new QueryArguments
+                {
                     new QueryArgument<WhereInputObjectGraphType>
                     {
                         Name = "where",
                         Description = "filters the animals",
                         ResolvedType = where,
-                    }
-                ],
+                    },
+                },
             },
             RequestServices = services,
         };

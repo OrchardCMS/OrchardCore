@@ -99,14 +99,14 @@ We can use the "Use custom full-text" to include the content of widgets or bags 
 
 ```html
 {% for contentItem in Model.Content.FlowPart.Widgets %}
-  {{ contentItem | full_text_aspect }}
+  {{ contentItem | full_text }}
 {% endfor %}
 ```
 
 Or simply use:
 
 ```html
-{{ Model.Content.FlowPart.Widgets | full_text_aspect }}
+{{ Model.Content.FlowPart.Widgets | full_text }}
 ```
 
 ## Optional : Search templates customization

@@ -1,3 +1,4 @@
+using Fluid;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Shell;
@@ -11,10 +12,11 @@ internal sealed class MediaBlobStorageOptionsConfiguration : BlobStorageOptionsC
     private readonly IShellConfiguration _shellConfiguration;
 
     public MediaBlobStorageOptionsConfiguration(
+        FluidParser fluidParser,
         IShellConfiguration shellConfiguration,
         ShellSettings shellSettings,
         ILogger<MediaBlobStorageOptionsConfiguration> logger)
-        : base(shellSettings, logger)
+        : base(fluidParser, shellSettings, logger)
     {
         _shellConfiguration = shellConfiguration;
     }
@@ -25,6 +27,7 @@ internal sealed class MediaBlobStorageOptionsConfiguration : BlobStorageOptionsC
 
     protected override void FurtherConfigure(MediaBlobStorageOptions rawOptions, MediaBlobStorageOptions options)
     {
+        options.CreateContainer = rawOptions.CreateContainer;
         options.RemoveContainer = rawOptions.RemoveContainer;
         options.RemoveFilesFromBasePath = rawOptions.RemoveFilesFromBasePath;
         options.UseHierarchicalNamespace = rawOptions.UseHierarchicalNamespace;

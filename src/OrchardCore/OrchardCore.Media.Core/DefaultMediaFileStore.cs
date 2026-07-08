@@ -36,7 +36,6 @@ public class DefaultMediaFileStore : IMediaFileStore
 
         // Media options configuration ensures any trailing slash is removed.
         _cdnBaseUrl = cdnBaseUrl;
-
         _mediaEventHandlers = mediaEventHandlers;
         _mediaCreatingEventHandlers = mediaCreatingEventHandlers;
         _logger = logger;
@@ -172,11 +171,12 @@ public class DefaultMediaFileStore : IMediaFileStore
 
     public virtual async Task<string> CreateFileFromStreamAsync(string path, Stream inputStream, bool overwrite = false)
     {
+        var outputStream = inputStream;
+
         if (_mediaCreatingEventHandlers.Any())
         {
-            // Follows https://rules.sonarsource.com/csharp/RSPEC-3966
-            // Assumes that each stream should be disposed of only once by its caller.
-            var outputStream = inputStream;
+            var mediaInputStream = outputStream;
+
             try
             {
                 var context = new MediaCreatingContext
@@ -197,37 +197,25 @@ public class DefaultMediaFileStore : IMediaFileStore
                     }
                     finally
                     {
-                        if (creatingStream != outputStream && creatingStream != inputStream)
+                        if (creatingStream != outputStream && creatingStream != mediaInputStream)
                         {
                             creatingStream.Dispose();
                         }
                     }
                 }
 
-                await ValidateAvailableStorageAsync(outputStream.Length);
-
-                var result = await _fileStore.CreateFileFromStreamAsync(context.Path, outputStream, overwrite);
-
-                await _mediaEventHandlers.InvokeAsync((handler, ctx) => handler.MediaCreatedFileAsync(ctx), new MediaCreatedContext { Path = result }, _logger);
-
-                return result;
+                return await CreateFileAsync(context.Path, outputStream, overwrite);
             }
             finally
             {
-                // This disposes the last outputStream.
-                outputStream?.Dispose();
+                if (outputStream != mediaInputStream)
+                {
+                    outputStream?.Dispose();
+                }
             }
         }
-        else
-        {
-            await ValidateAvailableStorageAsync(inputStream.Length);
 
-            var result = await _fileStore.CreateFileFromStreamAsync(path, inputStream, overwrite);
-
-            await _mediaEventHandlers.InvokeAsync((handler, ctx) => handler.MediaCreatedFileAsync(ctx), new MediaCreatedContext { Path = result }, _logger);
-
-            return result;
-        }
+        return await CreateFileAsync(path, outputStream, overwrite);
     }
 
     public virtual string MapPathToPublicUrl(string path)
@@ -281,5 +269,16 @@ public class DefaultMediaFileStore : IMediaFileStore
                 $"storage space, but only {FileSizeHelpers.FormatAsBytes(storageLimit)} is available. Try uploading " +
                 $"a file that fits the available space, or delete some unnecessary files.");
         }
+    }
+
+    private async Task<string> CreateFileAsync(string path, Stream stream, bool overwrite)
+    {
+        await ValidateAvailableStorageAsync(stream.Length);
+
+        var result = await _fileStore.CreateFileFromStreamAsync(path, stream, overwrite);
+
+        await _mediaEventHandlers.InvokeAsync((handler, ctx) => handler.MediaCreatedFileAsync(ctx), new MediaCreatedContext { Path = result }, _logger);
+
+        return result;
     }
 }

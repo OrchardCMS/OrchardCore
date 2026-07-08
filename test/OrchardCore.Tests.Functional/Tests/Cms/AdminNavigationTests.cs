@@ -13,7 +13,7 @@ public sealed class AdminNavigationTests : CmsTestBase<BlogFixture>, IClassFixtu
     public AdminNavigationTests(BlogFixture fixture) : base(fixture) { }
 
     [Fact]
-    public async Task AdminNavigationShouldNotUseAdminQueryParameter()
+    public async Task AdminNavigation_Default_NotUseAdminQueryParameter()
     {
         var page = await Fixture.CreatePageAsync();
         await page.LoginAsync();
@@ -33,6 +33,26 @@ public sealed class AdminNavigationTests : CmsTestBase<BlogFixture>, IClassFixtu
         var prefs = ParseAndDecodeCookieJson(prefsCookie.Value);
         var selectedNavHash = prefs?["selectedNavHash"]?.GetValue<string>();
         Assert.False(string.IsNullOrWhiteSpace(selectedNavHash));
+
+        await page.CloseAsync();
+    }
+
+    [Fact]
+    public async Task AdminRoot_Default_NotKeepPreviousMenuItemActive()
+    {
+        var page = await Fixture.CreatePageAsync();
+        await page.LoginAsync();
+
+        await page.GotoAndAssertOkAsync("/Admin/Features");
+
+        var featuresLink = page.Locator("#adminMenu a[data-admin-hash][href^=\"/Admin/Features\"]").First;
+        var activeFeaturesItem = featuresLink.Locator("xpath=ancestor::li[1][contains(concat(' ', normalize-space(@class), ' '), ' active ')]");
+
+        await Assertions.Expect(activeFeaturesItem).ToHaveCountAsync(1);
+
+        await page.GotoAndAssertOkAsync("/Admin");
+
+        await Assertions.Expect(activeFeaturesItem).ToHaveCountAsync(0);
 
         await page.CloseAsync();
     }

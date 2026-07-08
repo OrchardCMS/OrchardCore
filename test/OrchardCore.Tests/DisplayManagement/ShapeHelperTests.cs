@@ -34,7 +34,7 @@ public class ShapeHelperTests
     }
 
     [Fact]
-    public async Task CreatingNewShapeTypeByName()
+    public async Task CreatingNewShapeTypeByName_Default_Succeeds()
     {
         dynamic shape = _serviceProvider.GetService<IShapeFactory>();
 
@@ -44,7 +44,7 @@ public class ShapeHelperTests
     }
 
     [Fact]
-    public async Task CreatingShapeWithAdditionalNamedParameters()
+    public async Task CreatingShapeWithAdditionalNamedParameters_Default_Succeeds()
     {
         dynamic shape = _serviceProvider.GetService<IShapeFactory>();
 
@@ -56,7 +56,7 @@ public class ShapeHelperTests
     }
 
     [Fact]
-    public async Task WithPropertyBearingObjectInsteadOfNamedParameters()
+    public async Task WithPropertyBearingObjectInsteadOfNamedParameters_Default_Succeeds()
     {
         dynamic shape = _serviceProvider.GetService<IShapeFactory>();
 

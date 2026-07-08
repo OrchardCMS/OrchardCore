@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-386-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-393-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key))!
@@ -534,6 +534,15 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <tr>
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/canadacubachina"><img src="https://avatars.githubusercontent.com/u/190653773?v=4?s=100" width="100px;" alt="canadacubachina"/><br /><sub><b>canadacubachina</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=canadacubachina" title="Code">💻</a></td>
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/Yash5305"><img src="https://avatars.githubusercontent.com/u/133780112?v=4?s=100" width="100px;" alt="Yash5305"/><br /><sub><b>Yash5305</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=Yash5305" title="Code">💻</a></td>
+      <td align="center" valign="top" width="16.66%"><a href="https://github.com/yashicauni0405"><img src="https://avatars.githubusercontent.com/u/263265066?v=4?s=100" width="100px;" alt="yashicauni0405"/><br /><sub><b>yashicauni0405</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=yashicauni0405" title="Code">💻</a></td>
+      <td align="center" valign="top" width="16.66%"><a href="https://quocbaoandev.vercel.app/"><img src="https://avatars.githubusercontent.com/u/124328819?v=4?s=100" width="100px;" alt="Quoc Bao An Nguyen"/><br /><sub><b>Quoc Bao An Nguyen</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=JasonPG2007" title="Code">💻</a></td>
+      <td align="center" valign="top" width="16.66%"><a href="http://backendinsight.com"><img src="https://avatars.githubusercontent.com/u/68539411?v=4?s=100" width="100px;" alt="Kenneth Okalang"/><br /><sub><b>Kenneth Okalang</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=okalangkenneth" title="Code">💻</a></td>
+      <td align="center" valign="top" width="16.66%"><a href="https://github.com/ghazi1567"><img src="https://avatars.githubusercontent.com/u/38578399?v=4?s=100" width="100px;" alt="ghazi1567"/><br /><sub><b>ghazi1567</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=ghazi1567" title="Code">💻</a></td>
+    </tr>
+    <tr>
+      <td align="center" valign="top" width="16.66%"><a href="https://github.com/PUXVSE"><img src="https://avatars.githubusercontent.com/u/238208044?v=4?s=100" width="100px;" alt="PUXVSE"/><br /><sub><b>PUXVSE</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=PUXVSE" title="Code">💻</a></td>
+      <td align="center" valign="top" width="16.66%"><a href="https://soumilm.vercel.app/"><img src="https://avatars.githubusercontent.com/u/120581772?v=4?s=100" width="100px;" alt="Soumil Mukhopadhyay"/><br /><sub><b>Soumil Mukhopadhyay</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=Soumilgit" title="Code">💻</a></td>
+      <td align="center" valign="top" width="16.66%"><a href="https://github.com/kizaski"><img src="https://avatars.githubusercontent.com/u/81563289?v=4?s=100" width="100px;" alt="Kiril Z"/><br /><sub><b>Kiril Z</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=kizaski" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>

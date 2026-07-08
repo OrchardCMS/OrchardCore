@@ -1,9 +1,17 @@
 @model AllTemplatesDeploymentStepViewModel
 
-<h5>@T["All Templates"]</h5>
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
+        <h5>@T["All Templates"]</h5>
+    </div>
+</div>
 
-<div class="form-check">
-    <input type="checkbox" class="form-check-input" asp-for="ExportAsFiles" />
-    <label class="form-check-label" asp-for="ExportAsFiles">@T["Export templates as files"]</label>
-    <span class="hint dashed">@T["Check if the templates should be exported as files instead of inline."]</span>
+<div class="ocat-wrapper" asp-validation-class-for="ExportAsFiles">
+    <div class="ocat-end-offset">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" asp-for="ExportAsFiles" />
+            <label class="form-check-label" asp-for="ExportAsFiles">@T["Export templates as files"]</label>
+        </div>
+        <span class="hint dashed">@T["Check if the templates should be exported as files instead of inline."]</span>
+    </div>
 </div>

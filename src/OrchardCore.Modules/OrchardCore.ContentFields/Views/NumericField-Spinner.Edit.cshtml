@@ -18,11 +18,11 @@
     string serverDecimalSeparator = CultureInfo.CurrentUICulture.NumberFormat.NumberDecimalSeparator;
 }
 
-<div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.Value)_FieldWrapper">
-    <label asp-for="Value" class="@Orchard.GetLabelClasses(inputRequired: settings.Required)">@localizedFieldName</label>
-    <div class="@Orchard.GetEndClasses()">
-        <div class="@Orchard.GetLimitedWidthWrapperClasses()">
-            <div class="@Orchard.GetLimitedWidthClasses()">
+<div class="@($"ocat-wrapper field-wrapper field-wrapper-{Model.PartFieldDefinition.PartDefinition.Name.HtmlClassify()}-{Model.PartFieldDefinition.Name.HtmlClassify()}" + (Model.PartFieldDefinition.IsNamedPart() ? $" field-wrapper-{Model.PartFieldDefinition.ContentTypePartDefinition.Name.HtmlClassify()}-{Model.PartFieldDefinition.Name.HtmlClassify()}" : string.Empty))" id="@Html.IdFor(x => x.Value)_FieldWrapper">
+    <label asp-for="Value" class="ocat-label @(settings.Required ? "ocat-label-required" : "")">@localizedFieldName</label>
+    <div class="ocat-end">
+        <div class="ocat-limited-wrapper">
+            <div class="ocat-limited">
                 <div class="input-group">
                     @if (settings.Minimum.HasValue)
                     {
@@ -48,7 +48,12 @@
 <script asp-name="numericFieldSpinner" at="Foot">
 
     function numericFieldSpinner(id, scale, step, min, max) {
-        let value = $('#' + id).val();
+        let element = document.getElementById(id);
+        if (!element) {
+            return;
+        }
+
+        let value = element.value;
     @if (javascriptDecimalSeparator != serverDecimalSeparator)
     {
         <text>value = value.replace('@(serverDecimalSeparator)', '@(javascriptDecimalSeparator)'); </text>
@@ -61,7 +66,7 @@
     {
         <text>value = value.replace('@(javascriptDecimalSeparator)', '@(serverDecimalSeparator)'); </text>
     }
-            $('#' + id).val(value);
+            element.value = value;
     }
 
 </script>

@@ -5,7 +5,8 @@ using OrchardCore.DisplayManagement.ModelBinding;
 
 namespace OrchardCore.ContentTypes.Shapes;
 
-public class ContentCardShape
+[GenerateShape]
+public partial class ContentCardShape
 {
     public IUpdateModel Updater { get; set; }
     public string CollectionShapeType { get; set; }

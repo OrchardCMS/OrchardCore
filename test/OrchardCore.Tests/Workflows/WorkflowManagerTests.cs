@@ -1,14 +1,20 @@
+using System.Collections;
 using System.Text.Json.Nodes;
+using Fluid;
+using Fluid.Values;
 using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Liquid;
 using OrchardCore.Json;
 using OrchardCore.Locking.Distributed;
 using OrchardCore.Modules;
+using OrchardCore.Liquid;
 using OrchardCore.Scripting;
 using OrchardCore.Scripting.JavaScript;
 using OrchardCore.Tests.Workflows.Activities;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Evaluators;
+using OrchardCore.Workflows.Expressions;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 using OrchardCore.Workflows.WorkflowContextProviders;
@@ -18,7 +24,7 @@ namespace OrchardCore.Tests.Workflows;
 public class WorkflowManagerTests
 {
     [Fact]
-    public async Task CanExecuteSimpleWorkflow()
+    public async Task CanExecuteSimpleWorkflow_Default_Succeeds()
     {
         var serviceProvider = CreateServiceProvider();
         var scriptEvaluator = CreateWorkflowScriptEvaluator(serviceProvider);
@@ -28,7 +34,8 @@ public class WorkflowManagerTests
         var output = new StringWriter(stringBuilder);
         var addTask = new AddTask(scriptEvaluator, localizer.Object);
         var writeLineTask = new WriteLineTask(scriptEvaluator, localizer.Object, output);
-        var setOutputTask = new SetOutputTask(scriptEvaluator, new Mock<IStringLocalizer<SetOutputTask>>().Object);
+        var expressionEvaluator = new Mock<IWorkflowExpressionEvaluator>().Object;
+        var setOutputTask = new SetOutputTask(scriptEvaluator, expressionEvaluator, new Mock<IStringLocalizer<SetOutputTask>>().Object);
         var workflowType = new WorkflowType
         {
             Id = 1,
@@ -71,7 +78,324 @@ public class WorkflowManagerTests
     }
 
     [Fact]
-    public async Task TriggerEventAsync_ShouldAllowReexecutionAfterUnexpectedError()
+    public async Task SetOutputTask_Default_EvaluateLiquidExpression()
+    {
+        var serviceProvider = CreateServiceProvider();
+        var scriptEvaluator = CreateWorkflowScriptEvaluator(serviceProvider);
+        var expressionEvaluator = new Mock<IWorkflowExpressionEvaluator>();
+        using var workflowContext = new WorkflowExecutionContext(
+            new WorkflowType(),
+            new Workflow { WorkflowId = IdGenerator.GenerateId() },
+            null,
+            null,
+            null,
+            null,
+            null,
+            []);
+
+        workflowContext.Properties["Greeting"] = "Hello";
+        expressionEvaluator
+            .Setup(x => x.EvaluateAsync(It.IsAny<WorkflowExpression<object>>(), workflowContext, null))
+            .ReturnsAsync("Hello world");
+
+        var activity = new SetOutputTask(scriptEvaluator, expressionEvaluator.Object, new Mock<IStringLocalizer<SetOutputTask>>().Object)
+        {
+            OutputName = "Message",
+            Syntax = WorkflowScriptSyntax.Liquid,
+            LiquidValue = new WorkflowExpression<object>("{{ Workflow.Properties.Greeting }} world"),
+        };
+
+        await activity.ExecuteAsync(workflowContext, new ActivityContext());
+
+        Assert.Equal("Hello world", workflowContext.Output["Message"]);
+        expressionEvaluator.Verify(x => x.EvaluateAsync(
+            It.Is<WorkflowExpression<object>>(expression => expression.Expression == "{{ Workflow.Properties.Greeting }} world"),
+            workflowContext,
+            null), Times.Once);
+    }
+
+    [Fact]
+    public async Task SetPropertyTask_Default_EvaluateLiquidExpression()
+    {
+        var serviceProvider = CreateServiceProvider();
+        var scriptEvaluator = CreateWorkflowScriptEvaluator(serviceProvider);
+        var expressionEvaluator = new Mock<IWorkflowExpressionEvaluator>();
+        using var workflowContext = new WorkflowExecutionContext(
+            new WorkflowType(),
+            new Workflow { WorkflowId = IdGenerator.GenerateId() },
+            null,
+            null,
+            null,
+            null,
+            null,
+            []);
+
+        workflowContext.Output["Value"] = "Saved";
+        expressionEvaluator
+            .Setup(x => x.EvaluateAsync(It.IsAny<WorkflowExpression<object>>(), workflowContext, null))
+            .ReturnsAsync("Saved value");
+
+        var activity = new SetPropertyTask(scriptEvaluator, expressionEvaluator.Object, new Mock<IStringLocalizer<SetPropertyTask>>().Object)
+        {
+            PropertyName = "Message",
+            Syntax = WorkflowScriptSyntax.Liquid,
+            LiquidValue = new WorkflowExpression<object>("{{ Workflow.Output.Value }} value"),
+        };
+
+        await activity.ExecuteAsync(workflowContext, new ActivityContext());
+
+        Assert.Equal("Saved value", workflowContext.Properties["Message"]);
+        expressionEvaluator.Verify(x => x.EvaluateAsync(
+            It.Is<WorkflowExpression<object>>(expression => expression.Expression == "{{ Workflow.Output.Value }} value"),
+            workflowContext,
+            null), Times.Once);
+    }
+
+    [Fact]
+    public async Task Default_ElseTaskDefaultEvaluateLiquidExpression_Succeeds()
+    {
+        var serviceProvider = CreateServiceProvider();
+        var scriptEvaluator = CreateWorkflowScriptEvaluator(serviceProvider);
+        var expressionEvaluator = new Mock<IWorkflowExpressionEvaluator>();
+        using var workflowContext = new WorkflowExecutionContext(
+            new WorkflowType(),
+            new Workflow { WorkflowId = IdGenerator.GenerateId() },
+            null,
+            null,
+            null,
+            null,
+            null,
+            []);
+
+        expressionEvaluator
+            .Setup(x => x.EvaluateAsync(It.IsAny<WorkflowExpression<bool>>(), workflowContext, null))
+            .ReturnsAsync(true);
+
+        var activity = new IfElseTask(scriptEvaluator, expressionEvaluator.Object, new Mock<IStringLocalizer<IfElseTask>>().Object)
+        {
+            Syntax = WorkflowScriptSyntax.Liquid,
+            LiquidCondition = new WorkflowExpression<bool>("{{ Workflow.Properties.ShouldRun }}"),
+        };
+
+        var result = await activity.ExecuteAsync(workflowContext, new ActivityContext());
+
+        Assert.Contains("True", result.Outcomes);
+        expressionEvaluator.Verify(x => x.EvaluateAsync(
+            It.Is<WorkflowExpression<bool>>(expression => expression.Expression == "{{ Workflow.Properties.ShouldRun }}"),
+            workflowContext,
+            null), Times.Once);
+    }
+
+    [Fact]
+    public async Task WhileLoopTask_Default_EvaluateLiquidExpression()
+    {
+        var serviceProvider = CreateServiceProvider();
+        var scriptEvaluator = CreateWorkflowScriptEvaluator(serviceProvider);
+        var expressionEvaluator = new Mock<IWorkflowExpressionEvaluator>();
+        using var workflowContext = new WorkflowExecutionContext(
+            new WorkflowType(),
+            new Workflow { WorkflowId = IdGenerator.GenerateId() },
+            null,
+            null,
+            null,
+            null,
+            null,
+            []);
+
+        expressionEvaluator
+            .Setup(x => x.EvaluateAsync(It.IsAny<WorkflowExpression<bool>>(), workflowContext, null))
+            .ReturnsAsync(true);
+
+        var activity = new WhileLoopTask(scriptEvaluator, expressionEvaluator.Object, new Mock<IStringLocalizer<WhileLoopTask>>().Object)
+        {
+            Syntax = WorkflowScriptSyntax.Liquid,
+            LiquidCondition = new WorkflowExpression<bool>("{{ Workflow.Properties.ShouldLoop }}"),
+        };
+
+        var result = await activity.ExecuteAsync(workflowContext, new ActivityContext());
+
+        Assert.Contains("Iterate", result.Outcomes);
+        expressionEvaluator.Verify(x => x.EvaluateAsync(
+            It.Is<WorkflowExpression<bool>>(expression => expression.Expression == "{{ Workflow.Properties.ShouldLoop }}"),
+            workflowContext,
+            null), Times.Once);
+    }
+
+    [Fact]
+    public async Task ForLoopTask_Default_EvaluateLiquidExpressions()
+    {
+        var serviceProvider = CreateServiceProvider();
+        var scriptEvaluator = CreateWorkflowScriptEvaluator(serviceProvider);
+        var expressionEvaluator = new Mock<IWorkflowExpressionEvaluator>();
+        using var workflowContext = new WorkflowExecutionContext(
+            new WorkflowType(),
+            new Workflow { WorkflowId = IdGenerator.GenerateId() },
+            null,
+            null,
+            null,
+            null,
+            null,
+            []);
+
+        expressionEvaluator
+            .SetupSequence(x => x.EvaluateAsync(It.IsAny<WorkflowExpression<string>>(), workflowContext, null))
+            .ReturnsAsync("1")
+            .ReturnsAsync("3")
+            .ReturnsAsync("1");
+
+        var activity = new ForLoopTask(scriptEvaluator, expressionEvaluator.Object, new Mock<IStringLocalizer<ForLoopTask>>().Object)
+        {
+            Syntax = WorkflowScriptSyntax.Liquid,
+            LiquidFrom = new WorkflowExpression<string>("{{ Workflow.Properties.From }}"),
+            LiquidTo = new WorkflowExpression<string>("{{ Workflow.Properties.To }}"),
+            LiquidStep = new WorkflowExpression<string>("{{ Workflow.Properties.Step }}"),
+        };
+
+        var result = await activity.ExecuteAsync(workflowContext, new ActivityContext());
+
+        Assert.Contains("Iterate", result.Outcomes);
+        Assert.Equal(1d, workflowContext.LastResult);
+        Assert.Equal(1d, workflowContext.Properties["x"]);
+    }
+
+    [Fact]
+    public async Task ForEachTask_Default_EvaluateLiquidExpression()
+    {
+        var serviceProvider = CreateServiceProvider();
+        var scriptEvaluator = CreateWorkflowScriptEvaluator(serviceProvider);
+        var expressionEvaluator = new Mock<IWorkflowExpressionEvaluator>();
+        using var workflowContext = new WorkflowExecutionContext(
+            new WorkflowType(),
+            new Workflow { WorkflowId = IdGenerator.GenerateId() },
+            null,
+            null,
+            null,
+            null,
+            null,
+            []);
+
+        expressionEvaluator
+            .Setup(x => x.EvaluateAsync(It.IsAny<WorkflowExpression<object>>(), workflowContext, null))
+            .ReturnsAsync(new[] { "a", "b" });
+
+        var activity = new ForEachTask(scriptEvaluator, expressionEvaluator.Object, new Mock<IStringLocalizer<ForEachTask>>().Object)
+        {
+            Syntax = WorkflowScriptSyntax.Liquid,
+            LiquidEnumerable = new WorkflowExpression<object>("{{ Workflow.Properties.Items | json }}"),
+        };
+
+        var result = await activity.ExecuteAsync(workflowContext, new ActivityContext());
+
+        Assert.Contains("Iterate", result.Outcomes);
+        Assert.Equal("a", activity.Current?.ToString());
+        Assert.Equal("a", workflowContext.LastResult?.ToString());
+        Assert.Equal("a", workflowContext.Properties["x"]?.ToString());
+    }
+
+    [Fact]
+    public async Task LiquidTask_Default_SetsLastResult()
+    {
+        var serviceProvider = CreateServiceProvider();
+        var expressionEvaluator = new Mock<IWorkflowExpressionEvaluator>();
+        using var workflowContext = new WorkflowExecutionContext(
+            new WorkflowType(),
+            new Workflow { WorkflowId = IdGenerator.GenerateId() },
+            null,
+            null,
+            null,
+            null,
+            null,
+            []);
+
+        expressionEvaluator
+            .Setup(x => x.EvaluateAsync(It.IsAny<WorkflowExpression<object>>(), workflowContext, null))
+            .ReturnsAsync("Hello");
+
+        var activity = new LiquidTask(expressionEvaluator.Object, new Mock<IStringLocalizer<LiquidTask>>().Object)
+        {
+            Expression = new WorkflowExpression<object>("{{ Workflow.Properties.Greeting }}"),
+        };
+
+        var result = await activity.ExecuteAsync(workflowContext, new ActivityContext());
+
+        Assert.Contains("Done", result.Outcomes);
+        Assert.Equal("Hello", workflowContext.LastResult);
+    }
+
+    [Fact]
+    public async Task LiquidWorkflowExpressionEvaluator_Default_PreservesCollectionValues()
+    {
+        using var serviceProvider = CreateLiquidWorkflowServiceProvider();
+        var evaluator = CreateLiquidWorkflowExpressionEvaluator(serviceProvider);
+        using var workflowContext = new WorkflowExecutionContext(
+            new WorkflowType(),
+            new Workflow { WorkflowId = IdGenerator.GenerateId() },
+            null,
+            null,
+            null,
+            null,
+            null,
+            []);
+
+        var result = await evaluator.EvaluateAsync(
+            new WorkflowExpression<object>("{{ 'a,b' | split: ',' }}"),
+            workflowContext,
+            null);
+
+        var items = Assert.IsAssignableFrom<IEnumerable>(result).Cast<object>().Select(x => x?.ToString()).ToArray();
+        Assert.Equal(["a", "b"], items);
+    }
+
+    [Fact]
+    public async Task LiquidWorkflowExpressionEvaluator_Default_EvaluateBooleanComparison()
+    {
+        using var serviceProvider = CreateLiquidWorkflowServiceProvider();
+        var evaluator = CreateLiquidWorkflowExpressionEvaluator(serviceProvider);
+        using var workflowContext = new WorkflowExecutionContext(
+            new WorkflowType(),
+            new Workflow { WorkflowId = IdGenerator.GenerateId() },
+            null,
+            null,
+            null,
+            null,
+            null,
+            []);
+
+        workflowContext.Properties["Items"] = new[] { "a", "b" };
+
+        var result = await evaluator.EvaluateAsync(
+            new WorkflowExpression<bool>("{{ Workflow.Properties[\"Items\"].size > 0 }}"),
+            workflowContext,
+            null);
+
+        Assert.True(result);
+    }
+
+    [Fact]
+    public async Task WorkflowScriptEvaluator_Default_EvaluateAsyncScopedGlobalMethods()
+    {
+        var serviceProvider = CreateServiceProvider();
+        var scriptEvaluator = CreateWorkflowScriptEvaluator(serviceProvider);
+        using var workflowContext = new WorkflowExecutionContext(
+            new WorkflowType(),
+            new Workflow { WorkflowId = IdGenerator.GenerateId() },
+            null,
+            null,
+            null,
+            null,
+            null,
+            []);
+
+        var result = await scriptEvaluator.EvaluateAsync(
+            new WorkflowExpression<string>("getValueAsync()"),
+            workflowContext,
+            new AsyncStringMethodProvider());
+
+        Assert.Equal("async", result);
+    }
+
+    [Fact]
+    public async Task TriggerEventAsync_Default_AllowsReexecutionAfterUnexpectedError()
     {
         const string nonExistentActivityId = "missing";
 
@@ -106,7 +430,7 @@ public class WorkflowManagerTests
     }
 
     [Fact]
-    public async Task TriggerEventAsync_ShouldAllowFaultHandlerToTriggerWorkflowAfterActivityError()
+    public async Task TriggerEventAsync_Default_AllowsFaultHandlerToTriggerWorkflowAfterActivityError()
     {
         var serviceProvider = CreateServiceProvider();
         var executionCount = 0;
@@ -156,6 +480,33 @@ public class WorkflowManagerTests
 
         return services.BuildServiceProvider();
     }
+
+    private static ServiceProvider CreateLiquidWorkflowServiceProvider()
+    {
+        var services = new ServiceCollection();
+        services.Configure<FluidParserOptions>(_ => { });
+        services.Configure<LiquidViewOptions>(_ => { });
+        services.Configure<TemplateOptions>(options =>
+        {
+            options.MemberAccessStrategy.Register<LiquidPropertyAccessor, FluidValue>((obj, name) => obj.GetValueAsync(name));
+            options.MemberAccessStrategy.Register<WorkflowExecutionContext>();
+            options.MemberAccessStrategy.Register<WorkflowExecutionContext, LiquidPropertyAccessor>("Input", (obj, context) => new LiquidPropertyAccessor((LiquidTemplateContext)context, (name, context) => LiquidWorkflowExpressionEvaluator.ToFluidValue(obj.Input, name, context)));
+            options.MemberAccessStrategy.Register<WorkflowExecutionContext, LiquidPropertyAccessor>("Output", (obj, context) => new LiquidPropertyAccessor((LiquidTemplateContext)context, (name, context) => LiquidWorkflowExpressionEvaluator.ToFluidValue(obj.Output, name, context)));
+            options.MemberAccessStrategy.Register<WorkflowExecutionContext, LiquidPropertyAccessor>("Properties", (obj, context) => new LiquidPropertyAccessor((LiquidTemplateContext)context, (name, context) => LiquidWorkflowExpressionEvaluator.ToFluidValue(obj.Properties, name, context)));
+        });
+
+        return services.BuildServiceProvider();
+    }
+
+    private static LiquidWorkflowExpressionEvaluator CreateLiquidWorkflowExpressionEvaluator(ServiceProvider serviceProvider)
+        => new(
+            new LiquidViewParser(
+                serviceProvider.GetRequiredService<IOptions<LiquidViewOptions>>(),
+                serviceProvider.GetRequiredService<IOptions<FluidParserOptions>>()),
+            [],
+            serviceProvider,
+            new Mock<ILogger<LiquidWorkflowExpressionEvaluator>>().Object,
+            serviceProvider.GetRequiredService<IOptions<TemplateOptions>>());
 
     private static JavaScriptWorkflowScriptEvaluator CreateWorkflowScriptEvaluator(IServiceProvider serviceProvider)
     {
@@ -276,6 +627,23 @@ public class WorkflowManagerTests
             _onExecute();
 
             throw new InvalidOperationException("Simulated activity failure");
+        }
+    }
+
+    private sealed class AsyncStringMethodProvider : IGlobalMethodProvider
+    {
+        public IEnumerable<GlobalMethod> GetMethods()
+        {
+            yield return new GlobalMethod
+            {
+                Name = "getValue",
+                Method = serviceProvider => (Func<string>)(() => "sync"),
+                AsyncMethod = serviceProvider => (Func<Task<string>>)(async () =>
+                {
+                    await Task.Yield();
+                    return "async";
+                }),
+            };
         }
     }
 }

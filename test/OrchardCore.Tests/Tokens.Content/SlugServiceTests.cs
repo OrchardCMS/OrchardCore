@@ -1,3 +1,4 @@
+using OrchardCore.Localization;
 using OrchardCore.Modules.Services;
 
 namespace OrchardCore.Tests.Tokens.Content;
@@ -15,21 +16,21 @@ public class SlugServiceTests
     [InlineData("a - b", "a-b")]
     [InlineData("a  -  -      -  -   -   -b", "a-b")]
     [InlineData("a - b - c-- d", "a-b-c-d")]
-    public void ShouldStripContiguousDashes(string input, string expected)
+    public void Strip_ContiguousDashes_Succeeds(string input, string expected)
     {
         var slug = _slugService.Slugify(input);
         Assert.Equal(expected, slug);
     }
 
     [Fact]
-    public void ShouldChangePercentSymbolsToHyphans()
+    public void Change_PercentSymbolsToHyphans_Succeeds()
     {
         var slug = _slugService.Slugify("a%d");
         Assert.Equal("a-d", slug);
     }
 
     [Fact]
-    public void ShouldChangeDotSymbolsToHyphans()
+    public void Change_DotSymbolsToHyphans_Succeeds()
     {
         var slug = _slugService.Slugify("a,d");
         Assert.Equal("a-d", slug);
@@ -38,7 +39,7 @@ public class SlugServiceTests
     [Theory]
     [InlineData("Smith, John B.")]
     [InlineData("Smith, John B...")]
-    public void ShouldRemoveHyphansFromEnd(string input)
+    public void Remove_HyphansFromEnd_Succeeds(string input)
     {
         // Act
         var slug = _slugService.Slugify(input);
@@ -46,21 +47,21 @@ public class SlugServiceTests
     }
 
     [Fact]
-    public void ShouldMakeSureFunkycharactersAndHyphansOnlyReturnSingleHyphan()
+    public void Make_SureFunkycharactersAndHyphansOnlyReturnSingleHyphan_Succeeds()
     {
         var slug = _slugService.Slugify("«a»\"'-%-.d");
         Assert.Equal("a-d", slug);
     }
 
     [Fact]
-    public void ShouldConvertToLowercase()
+    public void Convert_ToLowercase_Succeeds()
     {
         var slug = _slugService.Slugify("ABCDE");
         Assert.Equal("abcde", slug);
     }
 
     [Fact]
-    public void ShouldRemoveDiacritics()
+    public void Remove_Diacritics_Succeeds()
     {
         var slug = _slugService.Slugify("àçéïôù");
         Assert.Equal("aceiou", slug);
@@ -72,23 +73,16 @@ public class SlugServiceTests
     [InlineData("调度模块允许后台任务调度", "调度模块允许后台任务调度")]
     [InlineData("فريق_الاورشارد", "فريق_الاورشارد")]
     [InlineData("不正なコンテナ", "不正なコンテナ")]
-    public void ShouldPreserveNonLatinCharacters(string input, string expected)
+    public void Preserve_NonLatinCharacters_Succeeds(string input, string expected)
     {
         var slug = _slugService.Slugify(input);
         Assert.Equal(expected, slug);
     }
 
     [Fact]
-    public void ShouldTransliterateWhenRequested()
+    public void Transliterate_Requested_Succeeds()
     {
-        var slug = _slugService.Slugify("Æneid", transliterate: true);
+        var slug = _slugService.SlugifyAndTransliterate("Æneid");
         Assert.Equal("aeneid", slug);
-    }
-
-    [Fact]
-    public void ShouldNotTransliterateWhenDisabled()
-    {
-        var slug = _slugService.Slugify("Æneid", transliterate: false);
-        Assert.Equal("æneid", slug);
     }
 }

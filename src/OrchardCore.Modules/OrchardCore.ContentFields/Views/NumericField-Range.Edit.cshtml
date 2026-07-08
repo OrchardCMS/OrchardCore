@@ -15,11 +15,11 @@
     string serverDecimalSeparator = CultureInfo.CurrentUICulture.NumberFormat.NumberDecimalSeparator;
 }
 
-<div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.Value)_FieldWrapper">
-    <label asp-for="Value" class="@Orchard.GetLabelClasses(inputRequired: settings.Required)">@localizedFieldName</label>
-    <div class="@Orchard.GetEndClasses()">
-        <div class="@Orchard.GetLimitedWidthWrapperClasses()">
-            <div class="@Orchard.GetLimitedWidthClasses()">
+<div class="@($"ocat-wrapper field-wrapper field-wrapper-{Model.PartFieldDefinition.PartDefinition.Name.HtmlClassify()}-{Model.PartFieldDefinition.Name.HtmlClassify()}" + (Model.PartFieldDefinition.IsNamedPart() ? $" field-wrapper-{Model.PartFieldDefinition.ContentTypePartDefinition.Name.HtmlClassify()}-{Model.PartFieldDefinition.Name.HtmlClassify()}" : string.Empty))" id="@Html.IdFor(x => x.Value)_FieldWrapper">
+    <label asp-for="Value" class="ocat-label @(settings.Required ? "ocat-label-required" : "")">@localizedFieldName</label>
+    <div class="ocat-end">
+        <div class="ocat-limited-wrapper">
+            <div class="ocat-limited">
                 <div class="input-group mb-2">
                     @if (settings.Minimum.HasValue)
                     {
@@ -48,7 +48,10 @@
         {
         <text>value = value.replace('@(javascriptDecimalSeparator)', '@(serverDecimalSeparator)'); </text>
         }
-        $('#' + id).val(value);
+        var element = document.getElementById(id);
+        if (element) {
+            element.value = value;
+        }
     }
 
     function numericFieldRangeSync(id, value) {
@@ -57,6 +60,9 @@
         <text>value = value.replace('@(serverDecimalSeparator)', '@(javascriptDecimalSeparator)'); </text>
         }
         value = (Number(value) || 0);
-        $('#' + id).val(value);
+        var element = document.getElementById(id);
+        if (element) {
+            element.value = value;
+        }
     }
 </script>
