@@ -130,7 +130,7 @@ public sealed class Migrations : DataMigration
                 }
             }
 
-            // Recurse into child nodes.
+            // Recourse into child nodes.
             if (node["Items"] is JsonArray items)
             {
                 await MigrateContentTypesNodes(items, contentDefinitionManager, logger);
