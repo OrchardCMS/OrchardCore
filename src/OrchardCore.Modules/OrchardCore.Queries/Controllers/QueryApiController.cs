@@ -26,10 +26,19 @@ public sealed class QueryApiController : ControllerBase
         _queryManager = queryManager;
     }
 
-    [HttpPost, HttpGet]
+    [HttpGet]
     [Route("{name}")]
-    [EndpointName("ApiExecuteQuery")]
-    public async Task<IActionResult> Query(
+    [EndpointName("ApiExecuteQueryGet")]
+    public Task<IActionResult> QueryGet(string name, string parameters)
+        => ExecuteQueryAsync(name, parameters);
+
+    [HttpPost]
+    [Route("{name}")]
+    [EndpointName("ApiExecuteQueryPost")]
+    public Task<IActionResult> QueryPost(string name, string parameters)
+        => ExecuteQueryAsync(name, parameters);
+
+    private async Task<IActionResult> ExecuteQueryAsync(
         string name,
         string parameters)
     {

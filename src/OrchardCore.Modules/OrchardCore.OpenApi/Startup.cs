@@ -44,6 +44,14 @@ public sealed class Startup : StartupBase
                     return apiDesc.HttpMethod != null;
                 }
             );
+
+            // Without this, operations are emitted in whatever order ASP.NET Core's action
+            // discovery happens to enumerate them, which follows assembly/feature load order —
+            // not source order. In OrchardCore's modular architecture that load order shifts
+            // whenever an unrelated feature is enabled/disabled, reshuffling unrelated methods
+            // in the generated NSwag clients on every regeneration. Sorting by path + verb is
+            // deterministic regardless of load order, so only actually-changed endpoints move.
+            c.OrderActionsBy(apiDesc => $"{apiDesc.RelativePath}_{apiDesc.HttpMethod}");
         });
 
         services.AddHttpClient();
