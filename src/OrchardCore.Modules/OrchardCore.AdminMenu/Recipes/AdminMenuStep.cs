@@ -39,7 +39,7 @@ public sealed class AdminMenuStep : NamedRecipeStepHandler
         foreach (var token in model.Data.Cast<JsonObject>())
         {
             // Migrate admin menus recipes (created with pre-3.0 libraries) to the 3.0 format. Probably to remove on future release.
-            await MigrateAdminContentTypesAdminNode(token);
+            await MigrateAdminMenuNode(token["Name"]?.GetValue<string>() ?? "", token);
 
             var adminMenu = token.ToObject<Models.AdminMenu>(_serializationOptions);
 
@@ -49,54 +49,28 @@ public sealed class AdminMenuStep : NamedRecipeStepHandler
                 adminMenu.Id = IdGenerator.GenerateId();
             }
 
-            // Migrate admin menus recipes (created with pre-3.0 libraries) to the 3.0 format. Probably to remove on future release.
-            MigrateAdminNode(adminMenu);
-
             await _adminMenuService.SaveAsync(adminMenu);
         }
     }
 
-    private static void MigrateAdminNode(Models.AdminMenu menu)
-    {
-        foreach (var menuItem in menu.MenuItems)
-        {
-            if (string.IsNullOrEmpty(menuItem.MenuName))
-            {
-                menuItem.MenuName = menu.Name;
-            }
-
-            MigrateMenuItems(menu, menuItem.Items);
-        }
-    }
-
-    private static void MigrateMenuItems(Models.AdminMenu menu, List<MenuItem> menuItems)
-    {
-        foreach (var menuItem in menuItems)
-        {
-            if (string.IsNullOrEmpty(menuItem.MenuName))
-            {
-                menuItem.MenuName = menu.Name;
-            }
-
-            MigrateMenuItems(menu, menuItem.Items);
-        }
-    }
-
     // Migrates 'ContentTypesAdminNode' entries created with pre-3.0 libraries, where only 'ContentTypeId'
-    // was set, to the 3.0 format that uses 'ContentTypeName' and 'ContentTypeDisplayName'. This works
-    // directly on the raw JSON so that the OrchardCore.Contents types don't need to be referenced here.
-    private async Task MigrateAdminContentTypesAdminNode(JsonObject token)
+    // was set, to the 3.0 format that uses 'ContentTypeName' and 'ContentTypeDisplayName'. Add `MenuName` to each menu items.
+    // This work directly on the raw JSON so that the OrchardCore.Contents types don't need to be referenced here.
+    private async Task MigrateAdminMenuNode(string menuName, JsonObject token)
     {
         if (token["MenuItems"] is JsonArray menuItems)
         {
-            await MigrateContentTypesNodes(menuItems);
+            await MigrateMenuItemNodes(menuName, menuItems);
         }
     }
 
-    private async Task MigrateContentTypesNodes(JsonArray nodes)
+    private async Task MigrateMenuItemNodes(string menuName, JsonArray nodes)
     {
         foreach (var node in nodes.OfType<JsonObject>())
         {
+            // For each menu item add menu name
+            node["MenuName"] = menuName;
+
             // Only 'ContentTypesAdminNode' carries a 'ContentTypes' array.
             if (node["ContentTypes"] is JsonArray contentTypes)
             {
@@ -120,7 +94,7 @@ public sealed class AdminMenuStep : NamedRecipeStepHandler
             // Recourse into child nodes.
             if (node["Items"] is JsonArray items)
             {
-                await MigrateContentTypesNodes(items);
+                await MigrateMenuItemNodes(menuName, items);
             }
         }
     }
