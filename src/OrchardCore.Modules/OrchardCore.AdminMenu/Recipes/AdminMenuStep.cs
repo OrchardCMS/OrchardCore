@@ -29,7 +29,6 @@ public sealed class AdminMenuStep : NamedRecipeStepHandler
 
         // The recipe step contains polymorphic types (menu items) which need to be resolved.
         _serializationOptions = serializationOptions.Value.SerializerOptions;
-
         _contentDefinitionManager = contentDefinitionManager;
     }
 
