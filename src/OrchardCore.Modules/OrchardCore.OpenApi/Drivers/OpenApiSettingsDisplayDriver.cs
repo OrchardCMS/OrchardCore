@@ -46,7 +46,7 @@ public sealed class OpenApiSettingsDisplayDriver : SiteDisplayDriver<OpenApiSett
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!await _authorizationService.AuthorizeAsync(user, OpenApiPermissions.ApiManage))
+        if (!await _authorizationService.AuthorizeAsync(user, OpenApiPermissions.ManageOpenApi))
         {
             return null;
         }
@@ -75,7 +75,7 @@ public sealed class OpenApiSettingsDisplayDriver : SiteDisplayDriver<OpenApiSett
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!await _authorizationService.AuthorizeAsync(user, OpenApiPermissions.ApiManage))
+        if (!await _authorizationService.AuthorizeAsync(user, OpenApiPermissions.ManageOpenApi))
         {
             return null;
         }
@@ -146,6 +146,13 @@ public sealed class OpenApiSettingsDisplayDriver : SiteDisplayDriver<OpenApiSett
         }
 
         var tokenUri = new Uri(tokenUrl, UriKind.Absolute);
+
+        if (!OpenApiUrlGuard.IsExternalUrlAllowed(tokenUri, out var blockedReason))
+        {
+            context.Updater.ModelState.AddModelError(Prefix, S[blockedReason]);
+            return;
+        }
+
         var issuerBase = $"{tokenUri.Scheme}://{tokenUri.Authority}";
 
         // Also include the path prefix before /connect/ if present (e.g., tenant prefix).

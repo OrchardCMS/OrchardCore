@@ -1,9 +1,13 @@
 using System.Net.Http.Headers;
 using System.Text.Json;
+using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using OrchardCore.OpenApi.Settings;
 
@@ -11,7 +15,8 @@ namespace OrchardCore.OpenApi.Controllers;
 
 [ApiController]
 [Route("api/openapi")]
-[Authorize(AuthenticationSchemes = "Api"), IgnoreAntiforgeryToken, AllowAnonymous]
+[Authorize(AuthenticationSchemes = OpenApiAuthenticationDefaults.CookieOrTokenScheme), IgnoreAntiforgeryToken, AllowAnonymous]
+[RequireAntiforgeryForCookieAuth]
 public sealed class OpenApiApiController : ControllerBase
 {
     private readonly IAuthorizationService _authorizationService;
@@ -45,9 +50,9 @@ public sealed class OpenApiApiController : ControllerBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> TestConnection([FromBody] TestConnectionRequest model)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, OpenApiPermissions.ApiManage))
+        if (!await _authorizationService.AuthorizeAsync(User, OpenApiPermissions.ManageOpenApi))
         {
-            return this.ChallengeOrForbid("Api");
+            return this.ChallengeOrForbid(OpenApiAuthenticationDefaults.CookieOrTokenScheme);
         }
 
         if (string.IsNullOrWhiteSpace(model.TokenUrl))
@@ -70,6 +75,11 @@ public sealed class OpenApiApiController : ControllerBase
         if (tokenUrl == null)
         {
             return this.ApiBadRequestProblem(detail: S["Could not resolve the Token URL."]);
+        }
+
+        if (!OpenApiUrlGuard.IsExternalUrlAllowed(new Uri(tokenUrl, UriKind.Absolute), out var blockedReason))
+        {
+            return this.ApiBadRequestProblem(detail: S[blockedReason]);
         }
 
         // Step 1: Validate the OpenID Connect discovery document.
@@ -356,6 +366,39 @@ public sealed class OpenApiApiController : ControllerBase
         }
 
         return $"{request.Scheme}://{request.Host}{request.PathBase}{url}";
+    }
+}
+
+/// <summary>
+/// The <see cref="OpenApiAuthenticationDefaults.CookieOrTokenScheme"/> policy scheme allows this
+/// controller to authenticate via the ambient session cookie, unlike bearer/OpenIddict-token
+/// requests. Requests that authenticated that way must also prove themselves with a valid
+/// antiforgery token, since they can be replayed cross-site by a browser that still holds the
+/// cookie. Bearer-token requests carry no antiforgery cookie and are left untouched.
+/// </summary>
+[AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
+public sealed class RequireAntiforgeryForCookieAuthAttribute : Attribute, IAsyncAuthorizationFilter
+{
+    public async Task OnAuthorizationAsync(AuthorizationFilterContext context)
+    {
+        var identity = context.HttpContext.User.Identity;
+
+        if (identity is not { IsAuthenticated: true }
+            || !string.Equals(identity.AuthenticationType, IdentityConstants.ApplicationScheme, StringComparison.Ordinal))
+        {
+            return;
+        }
+
+        var antiforgery = context.HttpContext.RequestServices.GetRequiredService<IAntiforgery>();
+
+        try
+        {
+            await antiforgery.ValidateRequestAsync(context.HttpContext);
+        }
+        catch (AntiforgeryValidationException)
+        {
+            context.Result = new BadRequestResult();
+        }
     }
 }
 

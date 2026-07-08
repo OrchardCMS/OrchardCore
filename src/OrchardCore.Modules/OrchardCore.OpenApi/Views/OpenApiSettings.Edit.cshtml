@@ -10,6 +10,10 @@
 <input asp-for="OAuthClientId" type="hidden" />
 <input asp-for="OAuthScopes" type="hidden" />
 
+@* Read by getAntiForgeryToken() so the Vue app's "Test Connection" call can prove it isn't a
+   cross-site request when it authenticates via the ambient session cookie. *@
+@Html.AntiForgeryToken()
+
 @{
     var jsLocalizations = Orchard.GetJSLocalizations("openapi-settings");
 }

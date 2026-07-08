@@ -15,11 +15,11 @@ It also ships UI explorers — Swagger UI, ReDoc, and Scalar — so developers c
 ## Getting Started
 
 1. Enable the **OrchardCore.OpenApi** feature from the admin dashboard (Configuration → Features).
-2. Log in with an account that has the **ApiViewContent** permission (granted to Administrators by default).
+2. Log in with an account that has the **ViewOpenApiContent** permission (granted to Administrators by default).
 3. Navigate to **Configuration → Settings → OpenApi** to enable the desired UI(s) and configure authentication.
 4. Navigate to one of the explorer URLs listed above.
 
-> **Note:** All OpenAPI documentation endpoints (`/swagger`, `/redoc`, `/scalar`, `/openapi`) require authentication and the `ApiViewContent` permission. Unauthenticated users are redirected to the admin login page. Authenticated users without the permission receive a `403 Forbidden` response.
+> **Note:** All OpenAPI documentation endpoints (`/swagger`, `/redoc`, `/scalar`, `/openapi`) require authentication and the `ViewOpenApiContent` permission. Unauthenticated users are redirected to the admin login page. Authenticated users without the permission receive a `403 Forbidden` response.
 
 ## Configuration
 

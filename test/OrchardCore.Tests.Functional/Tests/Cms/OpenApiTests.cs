@@ -428,4 +428,127 @@ public sealed class OpenApiTests : CmsTestBase, IClassFixture<CmsSetupFixture>
 
         await page.CloseAsync();
     }
+
+    private static async Task<string> GetAntiForgeryTokenAsync(IPage page, string prefix)
+    {
+        await page.GotoAsync($"{prefix}/Admin/Settings/openapi");
+        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+
+        return await page.Locator("input[name='__RequestVerificationToken']").First.InputValueAsync();
+    }
+
+    private static async Task CreateRoleWithPermissionAsync(IPage page, string prefix, string roleName, string permissionName)
+    {
+        await page.GotoAsync($"{prefix}/Admin/Roles/Create");
+        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+        await page.Locator("input[name='RoleName']").FillAsync(roleName);
+        await page.ClickCreateAsync();
+        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+
+        await page.GotoAsync($"{prefix}/Admin/Roles/Edit/{roleName}");
+        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+
+        var checkbox = page.Locator($"input[id='Checkbox.{permissionName}']");
+        await checkbox.WaitForAsync(new() { State = WaitForSelectorState.Attached, Timeout = 10000 });
+        if (!await checkbox.IsCheckedAsync())
+        {
+            await checkbox.CheckAsync();
+        }
+
+        await page.ClickSaveAsync();
+        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+    }
+
+    /// <summary>
+    /// Regression test for a permission-hierarchy bug where ManageOpenApi was (incorrectly)
+    /// implied by ViewOpenApiContent, letting a view-only role edit settings and call the
+    /// test-connection endpoint. A view-only role must be able to view the documentation UIs
+    /// (per the module's documented design) but must never be treated as ManageOpenApi.
+    /// </summary>
+    [Fact]
+    public async Task UserWithOnlyViewOpenApiContentCanViewButCannotManage()
+    {
+        var page = await Fixture.CreatePageAsync();
+        await EnableOpenApiWithSwaggerUIAsync(page);
+
+        await CreateRoleWithPermissionAsync(page, $"/{Tenant.Prefix}", "OpenApiViewer", "ViewOpenApiContent");
+        await UserHelper.CreateUserAsync(page, $"/{Tenant.Prefix}", "viewer1", "viewer1@test.com", "Orchard1!", "OpenApiViewer");
+        await UserHelper.LoginAsAsync(page, $"/{Tenant.Prefix}", "viewer1", "Orchard1!");
+
+        // Viewing the documentation UI is allowed with just ViewOpenApiContent.
+        var swaggerResponse = await page.GotoAsync($"/{Tenant.Prefix}/swagger");
+        Assert.Equal(200, swaggerResponse.Status);
+
+        // Managing settings must still require ManageOpenApi — the settings fields must stay hidden.
+        await page.GotoAsync($"/{Tenant.Prefix}/Admin/Settings/openapi");
+        await Assertions.Expect(page.Locator("#vue-AllowAnonymousSchemaAccess")).Not.ToBeAttachedAsync();
+
+        await page.CloseAsync();
+    }
+
+    /// <summary>
+    /// Regression test for an SSRF guard added to the test-connection endpoint: a TokenUrl
+    /// pointing at a link-local address (e.g. a cloud metadata endpoint) must be rejected
+    /// before the server makes any outbound request to it.
+    /// </summary>
+    [Fact]
+    public async Task TestConnectionRejectsPrivateNetworkTokenUrl()
+    {
+        var page = await Fixture.CreatePageAsync();
+        await EnableOpenApiAsync(page);
+
+        var antiForgeryToken = await GetAntiForgeryTokenAsync(page, $"/{Tenant.Prefix}");
+
+        var response = await page.APIRequest.PostAsync(
+            $"{Fixture.BaseUrl}/{Tenant.Prefix}/api/openapi/test-connection",
+            new APIRequestContextOptions
+            {
+                Headers = new Dictionary<string, string> { ["RequestVerificationToken"] = antiForgeryToken },
+                DataObject = new
+                {
+                    authenticationType = 2,
+                    tokenUrl = "http://169.254.169.254/latest/meta-data/",
+                    clientId = "test",
+                    clientSecret = "test",
+                },
+            });
+
+        Assert.Equal(400, response.Status);
+
+        var body = await response.TextAsync();
+        Assert.Contains("not allowed", body, StringComparison.OrdinalIgnoreCase);
+
+        await page.CloseAsync();
+    }
+
+    /// <summary>
+    /// Regression test for a CSRF fix: the test-connection endpoint now accepts ambient cookie
+    /// authentication (so the settings page's own "Test Connection" button can call it without
+    /// a bearer token). A cookie-authenticated request with no matching antiforgery token — the
+    /// only thing a cross-site attacker riding a victim's session cookie could produce, since
+    /// the token itself is never exposed to another origin — must be rejected.
+    /// </summary>
+    [Fact]
+    public async Task TestConnectionRejectsCookieAuthenticatedRequestWithoutAntiforgeryToken()
+    {
+        var page = await Fixture.CreatePageAsync();
+        await EnableOpenApiAsync(page);
+
+        var response = await page.APIRequest.PostAsync(
+            $"{Fixture.BaseUrl}/{Tenant.Prefix}/api/openapi/test-connection",
+            new APIRequestContextOptions
+            {
+                DataObject = new
+                {
+                    authenticationType = 2,
+                    tokenUrl = "https://example.com/connect/token",
+                    clientId = "test",
+                    clientSecret = "test",
+                },
+            });
+
+        Assert.Equal(400, response.Status);
+
+        await page.CloseAsync();
+    }
 }

@@ -1,4 +1,5 @@
 using System.Linq;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -45,6 +46,32 @@ public sealed class Startup : StartupBase
         });
 
         services.AddHttpClient();
+
+        // A policy scheme scoped to this module only: forwards to the shared "Api" (token)
+        // scheme when a request carries an Authorization header, otherwise falls back to the
+        // app's default (cookie) scheme so that same-origin requests from the OpenApi Vue
+        // settings page can call OpenApiApiController without a bearer token. This never
+        // affects the shared "Api" scheme used by other modules' controllers.
+        // The display name is left null (matching the "Api" scheme's own registration) so it
+        // never shows up as an external login provider on the standard login page.
+        services.AddAuthentication()
+            .AddPolicyScheme(OpenApiAuthenticationDefaults.CookieOrTokenScheme, null, policyOptions =>
+            {
+                policyOptions.ForwardDefaultSelector = context =>
+                {
+                    if (!string.IsNullOrEmpty(context.Request.Headers.Authorization))
+                    {
+                        return "Api";
+                    }
+
+                    var authenticationOptions = context.RequestServices
+                        .GetRequiredService<IOptions<AuthenticationOptions>>()
+                        .Value;
+
+                    return authenticationOptions.DefaultAuthenticateScheme;
+                };
+            });
+
         services.AddPermissionProvider<Permissions>();
         services.AddNavigationProvider<AdminMenu>();
         services.AddSiteDisplayDriver<OpenApiSettingsDisplayDriver>();
@@ -79,7 +106,7 @@ public sealed class Startup : StartupBase
         // Add security schemes to the Swagger document based on the selected authentication type.
         ConfigureSecurityScheme(app, settings);
 
-        // Protect OpenAPI documentation endpoints with the ApiManage permission.
+        // Protect OpenAPI documentation endpoints with the ViewOpenApiContent permission.
         // JSON spec endpoints can optionally be left open for NSwag / code generators
         // via the AllowAnonymousSchemaAccess setting.
         app.Use(
@@ -112,7 +139,7 @@ public sealed class Startup : StartupBase
                             if (
                                 !await authorizationService.AuthorizeAsync(
                                     user,
-                                    OpenApiPermissions.ApiManage
+                                    OpenApiPermissions.ViewOpenApiContent
                                 )
                             )
                             {
@@ -142,7 +169,7 @@ public sealed class Startup : StartupBase
                             if (
                                 !await authorizationService.AuthorizeAsync(
                                     user,
-                                    OpenApiPermissions.ApiManage
+                                    OpenApiPermissions.ViewOpenApiContent
                                 )
                             )
                             {
