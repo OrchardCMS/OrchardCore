@@ -7,7 +7,6 @@ using OrchardCore.Entities;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Queries.Sql.Models;
 using OrchardCore.Queries.Sql.ViewModels;
-using YesSql;
 
 namespace OrchardCore.Queries.Sql.Drivers;
 
@@ -15,18 +14,15 @@ public sealed class SqlQueryDisplayDriver : DisplayDriver<Query>
 {
     private readonly INotifier _notifier;
     private readonly SqlLiquidOutputExpressionDetector _outputExpressionDetector;
-    private readonly IStore _store;
 
     internal readonly IStringLocalizer S;
 
     public SqlQueryDisplayDriver(
         INotifier notifier,
-        IStore store,
         SqlLiquidOutputExpressionDetector outputExpressionDetector,
         IStringLocalizer<SqlQueryDisplayDriver> stringLocalizer)
     {
         _notifier = notifier;
-        _store = store;
         _outputExpressionDetector = outputExpressionDetector;
         S = stringLocalizer;
     }
@@ -69,7 +65,6 @@ public sealed class SqlQueryDisplayDriver : DisplayDriver<Query>
 
             model.Query = template;
             model.HasLiquidOutputExpressions = _outputExpressionDetector.ContainsOutputStatement(model.Query);
-            model.FactoryName = _store.Configuration.ConnectionFactory.GetType().FullName;
 
             // Extract query from the query string if we come from the main query editor.
             if (string.IsNullOrEmpty(template))

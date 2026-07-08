@@ -44,27 +44,6 @@
     </div>
 </div>
 
-@{
-    string sqlmode =  MediaTypeNamesExtended.Text.SQL;
-
-    if (Model.FactoryName.Contains("Sqlite"))
-    {
-        sqlmode = MediaTypeNamesExtended.Text.SQLite;
-    }
-    else if (Model.FactoryName.Contains("Mysql"))
-    {
-        sqlmode = MediaTypeNamesExtended.Text.MySQL;
-    }
-    else if (Model.FactoryName.Contains("Npgsql"))
-    {
-        sqlmode = MediaTypeNamesExtended.Text.PostgreSQL;
-    }
-    else if (Model.FactoryName.Contains("Sql"))
-    {
-        sqlmode = MediaTypeNamesExtended.Text.SqlServer;
-    }
-}
-
 <script at="Foot" depends-on="codemirror-mode-sql">
     function onDocumentReady(callback) {
         if (document.readyState !== 'loading') {
@@ -76,7 +55,7 @@
 
     onDocumentReady(function () {
         CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Query)'), {
-            mode: '@sqlmode',
+            mode: '@MediaTypeNamesExtended.Text.PostgreSQL',
             indentWithTabs: true, smartIndent: true, matchBrackets: true, lineNumbers: true, styleActiveLine: true, viewportMargin: Infinity,
             extraKeys: { "Ctrl-Space": "autocomplete" },
             hintOptions: {

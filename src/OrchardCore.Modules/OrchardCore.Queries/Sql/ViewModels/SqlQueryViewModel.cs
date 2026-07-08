@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-
 namespace OrchardCore.Queries.Sql.ViewModels;
 
 public class SqlQueryViewModel
@@ -9,7 +7,4 @@ public class SqlQueryViewModel
     public bool ReturnDocuments { get; set; }
 
     public bool HasLiquidOutputExpressions { get; set; }
-
-    [BindNever]
-    public string FactoryName { get; set; }
 }
