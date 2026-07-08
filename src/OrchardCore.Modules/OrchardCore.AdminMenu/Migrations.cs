@@ -99,7 +99,7 @@ public sealed class Migrations : DataMigration
     {
         foreach (var node in nodes.OfType<JsonObject>())
         {
-            //for each menu item add menu name
+            // For each menu item add menu name
             node["MenuName"] = menuName;
 
             // Only 'ContentTypesAdminNode' carries a 'ContentTypes' array.
