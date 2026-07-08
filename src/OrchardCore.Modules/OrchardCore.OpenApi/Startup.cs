@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Net.Http;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -46,6 +47,16 @@ public sealed class Startup : StartupBase
         });
 
         services.AddHttpClient();
+
+        // Used for outbound OAuth discovery/token requests to a configured or caller-supplied
+        // URL. The connect callback re-validates the actually-resolved IP at connection time
+        // (including for redirects), which OpenApiUrlGuard.IsExternalUrlAllowed's literal-URL
+        // check alone cannot do — see OpenApiUrlGuard for why both are needed.
+        services.AddHttpClient(OpenApiUrlGuard.HttpClientName)
+            .ConfigurePrimaryHttpMessageHandler(() => new SocketsHttpHandler
+            {
+                ConnectCallback = OpenApiUrlGuard.ConnectCallbackAsync,
+            });
 
         // A policy scheme scoped to this module only: forwards to the shared "Api" (token)
         // scheme when a request carries an Authorization header, otherwise falls back to the
@@ -162,7 +173,7 @@ public sealed class Startup : StartupBase
 
                             if (user?.Identity?.IsAuthenticated != true)
                             {
-                                context.Response.Redirect("/admin");
+                                context.Response.Redirect($"{context.Request.PathBase}/admin");
                                 return;
                             }
 
@@ -258,6 +269,7 @@ public sealed class Startup : StartupBase
 
         return scopes
             .Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Distinct(StringComparer.Ordinal)
             .ToDictionary(
                 scope => scope,
                 scope => scope[0..1].ToUpperInvariant() + scope[1..]

@@ -7,7 +7,7 @@ public class OpenApiSettings
 {
     /// <summary>
     /// Whether the OpenAPI JSON schema endpoints can be accessed without authentication.
-    /// When <c>false</c>, the schema endpoints require the <c>ApiManage</c> permission.
+    /// When <c>false</c>, the schema endpoints require the <c>ManageOpenApi</c> permission.
     /// </summary>
     public bool AllowAnonymousSchemaAccess { get; set; } = true;
 

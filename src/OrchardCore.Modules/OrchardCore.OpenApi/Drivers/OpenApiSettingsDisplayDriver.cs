@@ -168,7 +168,7 @@ public sealed class OpenApiSettingsDisplayDriver : SiteDisplayDriver<OpenApiSett
 
         try
         {
-            var client = _httpClientFactory.CreateClient();
+            var client = _httpClientFactory.CreateClient(OpenApiUrlGuard.HttpClientName);
             var response = await client.GetAsync(discoveryUrl);
 
             if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
@@ -244,6 +244,10 @@ public sealed class OpenApiSettingsDisplayDriver : SiteDisplayDriver<OpenApiSett
         catch (HttpRequestException)
         {
             context.Updater.ModelState.AddModelError(Prefix, S["Could not reach the OpenID Connect server at \"{0}\". Verify that the server is running and the URL is correct.", issuerBase]);
+        }
+        catch (System.Text.Json.JsonException)
+        {
+            context.Updater.ModelState.AddModelError(Prefix, S["The OpenID Connect discovery document at \"{0}\" could not be parsed.", discoveryUrl]);
         }
     }
 

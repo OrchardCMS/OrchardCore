@@ -163,7 +163,7 @@ public sealed class OpenApiApiController : ControllerBase
 
         try
         {
-            var client = _httpClientFactory.CreateClient();
+            var client = _httpClientFactory.CreateClient(OpenApiUrlGuard.HttpClientName);
             var response = await client.GetAsync(discoveryUrl);
 
             if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
@@ -239,6 +239,10 @@ public sealed class OpenApiApiController : ControllerBase
         {
             return S["Could not reach the OpenID Connect server. Verify that the server is running and the URL is correct."];
         }
+        catch (JsonException)
+        {
+            return S["The OpenID Connect discovery document could not be parsed."];
+        }
     }
 
     /// <summary>
@@ -252,7 +256,7 @@ public sealed class OpenApiApiController : ControllerBase
     {
         try
         {
-            var client = _httpClientFactory.CreateClient();
+            var client = _httpClientFactory.CreateClient(OpenApiUrlGuard.HttpClientName);
 
             var parameters = new Dictionary<string, string>
             {
@@ -305,9 +309,13 @@ public sealed class OpenApiApiController : ControllerBase
 
             return TokenExchangeResult.Ok(accessToken.GetString());
         }
-        catch (HttpRequestException ex)
+        catch (HttpRequestException)
         {
-            return TokenExchangeResult.Failure(S["Could not reach the token endpoint: {0}", ex.Message]);
+            return TokenExchangeResult.Failure(S["Could not reach the token endpoint. Verify that the server is running and the URL is correct."]);
+        }
+        catch (JsonException)
+        {
+            return TokenExchangeResult.Failure(S["The token endpoint returned an unexpected response."]);
         }
     }
 
@@ -319,7 +327,7 @@ public sealed class OpenApiApiController : ControllerBase
     {
         try
         {
-            var client = _httpClientFactory.CreateClient();
+            var client = _httpClientFactory.CreateClient(OpenApiUrlGuard.HttpClientName);
             var swaggerUrl = ResolveUrl("/swagger/v1/swagger.json");
 
             if (swaggerUrl == null)
@@ -340,9 +348,9 @@ public sealed class OpenApiApiController : ControllerBase
 
             return S["Token was obtained but the API endpoint returned status {0}. Verify the client has the required permissions.", (int)response.StatusCode];
         }
-        catch (HttpRequestException ex)
+        catch (HttpRequestException)
         {
-            return S["Token exchange successful, but could not verify the API endpoint: {0}", ex.Message];
+            return S["Token exchange successful, but could not verify the API endpoint. Verify that the server is running and the URL is correct."];
         }
     }
 
