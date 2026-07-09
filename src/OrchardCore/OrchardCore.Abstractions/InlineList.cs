@@ -265,9 +265,11 @@ public struct InlineList<T> : IList<T>, IReadOnlyList<T>
 
         items = items.Slice(0, _count);
 
+        var comparer = EqualityComparer<T>.Default;
+
         for (int i = 0; i < items.Length; i++)
         {
-            if (Equals(item, items[i]))
+            if (comparer.Equals(item, items[i]))
             {
                 return i;
             }
