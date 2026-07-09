@@ -34,7 +34,7 @@ assignees: ''
     - CLI templates and commands.
     - Relevant guides, such as the [Creating a new decoupled CMS Website](https://docs.orchardcore.net/en/latest/guides/decoupled-cms/) guide.
 - [ ] Create a **version PR** titled `Release <version number` (e.g., `Release 3.0.0) from the version branch (e.g., `release/3.0.0`) into the release branch (e.g., `release/3.0`)
-- [ ] In GitHub, manually run the `Preview - CI` workflow on your branch (NOT `main`). This will release a new preview version on Cloudsmith for testing.
+- [ ] In GitHub, manually run the [`Preview - CI` workflow](https://github.com/OrchardCMS/OrchardCore/actions/workflows/preview_ci.yml) on your branch (NOT `main`). This will release a new preview version on Cloudsmith for testing.
 
 ## Step 3: Translation Updates
 
@@ -105,7 +105,7 @@ dotnet run occms
 ## Step 7: Post-Release Tasks
 
 - [ ] **Create New Milestone**: Set up a new milestone for the next release and close the previous one.
-- [ ] **Prepare Documentation for Next Version**: Create a new release notes file for the next version in the `OrchardCore.Docs` project (e.g., `/releases/4.0.0.md`). Exclude it from navigation and validation under `not_in_nav` in `mkdocs.yml`.
+- [ ] **Prepare Documentation for Next Major Version**: Create a new release notes file for the next version in the `OrchardCore.Docs` project (e.g., `/releases/4.0.0.md`). Exclude it from navigation and validation under `not_in_nav` in `mkdocs.yml`.
 - [ ] **Update `OrchardCore.Commons.props` for Next Release**: Set `<VersionPrefix></VersionPrefix>` to the next planned release number, but at least a minor one.
 - [ ] **Reassign Issues**: Reassign all still open, postponed issues from the current version milestone to the upcoming version milestone.
 - [ ] Update [`OrchardCore.Samples`](https://github.com/OrchardCMS/OrchardCore.Samples) to the newly released version (just change the `OrchardCoreVersion` property in the root `Directory.Build.props` file).
