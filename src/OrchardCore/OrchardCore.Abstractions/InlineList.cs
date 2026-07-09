@@ -144,7 +144,7 @@ public struct InlineList<T> : IList<T>, IReadOnlyList<T>
     public readonly void CopyTo(T[] array, int arrayIndex)
     {
         ArgumentNullException.ThrowIfNull(array);
-        ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual((uint)arrayIndex, (uint)array.Length, nameof(arrayIndex));
+        ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)arrayIndex, (uint)array.Length, nameof(arrayIndex));
 
         CopyTo(array.AsSpan(arrayIndex));
     }
