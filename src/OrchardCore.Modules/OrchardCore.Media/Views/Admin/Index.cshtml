@@ -5,19 +5,10 @@
     initializeMediaApplication(true, '@Url.Action("MediaApplication", "Admin", new { area = "OrchardCore.Media" })', '@Context.Request.PathBase.ToString()');
 </script>
 
-<script at="Foot">
+<script at="Foot" type="module">
     @* mediaApp is absolutely positioned. When a warning is shown we need to move it down to avoid overlapping. *@
-    function onDocumentReady(callback) {
-        if (document.readyState !== 'loading') {
-            callback();
-        } else {
-            document.addEventListener('DOMContentLoaded', callback);
-        }
-    }
-
-    onDocumentReady(function () {
-        var messages = document.querySelectorAll('.message');
-        if (!messages.length) { return; };
+    var messages = document.querySelectorAll('.message');
+    if (messages.length) {
         var mediaAppInitialTop = 0;
         var mediaAppLoaded = false;
 
@@ -53,7 +44,7 @@
                 repositionMediaApp();
             }
         }, 100);
-    });
+    }
 </script>
 
 <h1 style="display:none">@RenderTitleSegments(T["Assets"])</h1>

@@ -33,7 +33,7 @@
             </div>
         </div>
     </div>
-    <ul class="list-group with-checkbox">
+    <ul class="list-group with-checkbox bulk-select-list" data-checkbox-name="tenantNames" data-bulk-action-name="BulkAction" data-selected-text="@T["selected"]">
         <li class="list-group-item text-bg-theme">
             <div class="row gx-3">
                 <div class="col text-nowrap">
@@ -119,112 +119,4 @@
 
 @await DisplayAsync(Model.Pager)
 
-<script at="Foot">
-    function onDocumentReady(callback) {
-        if (document.readyState !== 'loading') {
-            callback();
-        } else {
-            document.addEventListener('DOMContentLoaded', callback);
-        }
-    }
-
-    onDocumentReady(function () {
-        var submitFilterButton = document.querySelector("[name='submit.Filter']");
-        var actions = document.getElementById("actions");
-        var items = document.getElementById("items");
-        var filters = document.querySelectorAll(".filter");
-        var selectAllCtrl = document.getElementById("select-all");
-        var selectedItems = document.getElementById("selected-items");
-        var itemsCheckboxes = document.querySelectorAll("input[type='checkbox'][name='tenantNames']");
-
-        function show(element) {
-            if (element) {
-                element.style.display = '';
-            }
-        }
-
-        function hide(element) {
-            if (element) {
-                element.style.display = 'none';
-            }
-        }
-
-        function displayActionsOrFilters() {
-            if (document.querySelectorAll("input[type='checkbox'][name='tenantNames']:checked").length > 1) {
-                show(actions);
-                filters.forEach(hide);
-                show(selectedItems);
-                hide(items);
-            }
-            else {
-                hide(actions);
-                filters.forEach(show);
-                hide(selectedItems);
-                show(items);
-            }
-        }
-
-        document.querySelectorAll(".filter-options select, .filter-options input").forEach(function (input) {
-            input.addEventListener("change", function () {
-                submitFilterButton?.click();
-            });
-        });
-
-        document.querySelectorAll('.selectpicker').forEach((element) => {
-            element.addEventListener('changed.bs.select', () => submitFilterButton?.click());
-        });
-
-        document.querySelectorAll(".dropdown-menu .dropdown-item").forEach(function (item) {
-            if (!item.dataset.action) {
-                return;
-            }
-
-            item.addEventListener("click", function () {
-                if (document.querySelectorAll("input[type='checkbox'][name='tenantNames']:checked").length > 1) {
-                    confirmDialog({
-                        ...this.dataset, callback: function (r) {
-                            if (r) {
-                                document.querySelector("[name='BulkAction']").value = item.dataset.action;
-                                document.querySelector("[name='submit.BulkAction']").click();
-                            }
-                        }
-                    });
-                }
-            });
-        });
-
-        if (selectAllCtrl) {
-            selectAllCtrl.addEventListener("click", function () {
-                itemsCheckboxes.forEach(function (checkbox) {
-                    if (checkbox !== selectAllCtrl) {
-                        checkbox.checked = selectAllCtrl.checked;
-                    }
-                });
-
-                if (selectedItems) {
-                    selectedItems.textContent = document.querySelectorAll("input[type='checkbox'][name='tenantNames']:checked").length + ' @T["selected"]';
-                }
-
-                displayActionsOrFilters();
-            });
-        }
-
-        itemsCheckboxes.forEach(function (checkbox) {
-            checkbox.addEventListener("click", function () {
-                var itemsCount = document.querySelectorAll("input[type='checkbox'][name='tenantNames']").length;
-                var selectedItemsCount = document.querySelectorAll("input[type='checkbox'][name='tenantNames']:checked").length;
-
-                if (selectAllCtrl) {
-                    selectAllCtrl.checked = selectedItemsCount == itemsCount;
-                    selectAllCtrl.indeterminate = selectedItemsCount > 0 && selectedItemsCount < itemsCount;
-                }
-
-                if (selectedItems) {
-                    selectedItems.textContent = selectedItemsCount + ' @T["selected"]';
-                }
-
-                displayActionsOrFilters();
-            });
-        });
-    })
-</script>
+<script asp-src="~/OrchardCore.Tenants/Scripts/tenants-admin-lists/tenants-admin-list.min.js" debug-src="~/OrchardCore.Tenants/Scripts/tenants-admin-lists/tenants-admin-list.js" at="Foot" type="module"></script>

@@ -10,5 +10,32 @@
     "name": "parametersEditor",
     "source": "Assets/js/parametersEditor/parametersEditor.js",
     "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "openid-settings",
+    "source": [
+      "Assets/ts/openid-validation-settings.ts",
+      "Assets/ts/openid-server-settings.ts"
+    ],
+    "dest": "wwwroot/Scripts/openid-settings/",
+    "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "openid-application-editor",
+    "source": [
+      "Assets/ts/application-create.ts",
+      "Assets/ts/application-edit.ts"
+    ],
+    "dest": "wwwroot/Scripts/openid-application-editor/",
+    "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "openid-client-settings",
+    "source": "Assets/ts/openid-client-settings.ts",
+    "dest": "wwwroot/Scripts/openid-client-settings/",
+    "tags": ["admin", "dashboard", "js"]
   }
 ]

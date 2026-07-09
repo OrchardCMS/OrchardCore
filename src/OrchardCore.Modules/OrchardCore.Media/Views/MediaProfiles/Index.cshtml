@@ -28,7 +28,7 @@
             </div>
         </div>
     </div>
-    <ul class="list-group">
+    <ul class="list-group bulk-select-list" data-selected-text="@T["selected"]">
         @if (Model.MediaProfiles.Count > 0)
         {
             <li class="list-group-item text-bg-theme">
@@ -90,89 +90,4 @@
 
 @await DisplayAsync(Model.Pager)
 
-<script at="Foot">
-    function onDocumentReady(callback) {
-        if (document.readyState !== 'loading') {
-            callback();
-        } else {
-            document.addEventListener('DOMContentLoaded', callback);
-        }
-    }
-
-    onDocumentReady(function () {
-        var actions = document.getElementById("actions");
-        var items = document.getElementById("items");
-        var filters = document.querySelectorAll(".filter");
-        var selectAllCtrl = document.getElementById("select-all");
-        var selectedItems = document.getElementById("selected-items");
-        var itemsCheckboxes = document.querySelectorAll("input[type='checkbox'][name='itemIds']");
-        var checkedItems = function () {
-            return document.querySelectorAll("input[type='checkbox'][name='itemIds']:checked");
-        };
-        var setDisplay = function (element, show) {
-            if (element) {
-                element.style.display = show ? '' : 'none';
-            }
-        };
-
-        function displayActionsOrFilters() {
-            if (checkedItems().length > 1) {
-                setDisplay(actions, true);
-                filters.forEach(function (filter) { setDisplay(filter, false); });
-                setDisplay(selectedItems, true);
-                setDisplay(items, false);
-            }
-            else {
-                setDisplay(actions, false);
-                filters.forEach(function (filter) { setDisplay(filter, true); });
-                setDisplay(selectedItems, false);
-                setDisplay(items, true);
-            }
-        }
-
-        document.querySelectorAll(".dropdown-menu .dropdown-item").forEach(function (item) {
-            if (!item.dataset.action) {
-                return;
-            }
-
-            item.addEventListener("click", function () {
-                if (checkedItems().length > 1) {
-                    var data = this.dataset;
-                    confirmDialog({
-                        ...data, callback: function (r) {
-                            if (r) {
-                                document.querySelector("[name='Options.BulkAction']").value = data.action;
-                                document.querySelector("[name='submit.BulkAction']").click();
-                            }
-                        }
-                    });
-                }
-            });
-        });
-
-        if (selectAllCtrl) {
-            selectAllCtrl.addEventListener("click", function () {
-                itemsCheckboxes.forEach(function (checkbox) {
-                    if (checkbox !== selectAllCtrl) {
-                        checkbox.checked = selectAllCtrl.checked;
-                    }
-                });
-                selectedItems.textContent = checkedItems().length + ' @T["selected"]';
-                displayActionsOrFilters();
-            });
-
-            itemsCheckboxes.forEach(function (checkbox) {
-                checkbox.addEventListener("click", function () {
-                    var itemsCount = itemsCheckboxes.length;
-                    var selectedItemsCount = checkedItems().length;
-
-                    selectAllCtrl.checked = selectedItemsCount == itemsCount;
-                    selectAllCtrl.indeterminate = selectedItemsCount > 0 && selectedItemsCount < itemsCount;
-
-                    selectedItems.textContent = selectedItemsCount + ' @T["selected"]';
-                    displayActionsOrFilters();
-                });
-            });
-        }
-    });
-</script>
+<script asp-src="~/OrchardCore.Media/Scripts/media-profiles-index/media-profiles-index.min.js" debug-src="~/OrchardCore.Media/Scripts/media-profiles-index/media-profiles-index.js" at="Foot" type="module"></script>

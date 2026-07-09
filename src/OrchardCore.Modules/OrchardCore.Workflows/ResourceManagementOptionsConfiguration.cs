@@ -69,6 +69,23 @@ public sealed class ResourceManagementOptionsConfiguration
                 "~/OrchardCore.Workflows/Scripts/Workflows/url-generator/workflow-url-generator.js"
             )
             .SetVersion("1.0.0");
+
+        _manifest
+            .DefineScript("workflow-syntax-toggle")
+            .SetUrl(
+                "~/OrchardCore.Workflows/Scripts/Workflows/syntax-toggle/workflow-syntax-toggle.min.js",
+                "~/OrchardCore.Workflows/Scripts/Workflows/syntax-toggle/workflow-syntax-toggle.js"
+            )
+            .SetVersion("1.0.0");
+
+        _manifest
+            .DefineScript("workflow-monaco-text-editor")
+            .SetDependencies("monaco")
+            .SetUrl(
+                "~/OrchardCore.Workflows/Scripts/Workflows/monaco-text-editor/workflow-monaco-text-editor.min.js",
+                "~/OrchardCore.Workflows/Scripts/Workflows/monaco-text-editor/workflow-monaco-text-editor.js"
+            )
+            .SetVersion("1.0.0");
     }
 
     public void Configure(ResourceManagementOptions options)

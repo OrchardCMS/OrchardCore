@@ -139,22 +139,22 @@
                         <td>@GetPermissionPolicyName(key)</td>
                         <td>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="@key" value="None" @(originType == PermissionsPolicyOriginValue.None ? "checked" : null) onchange="changeOrigin(this, '@PermissionsPolicyOriginValue.None');">
+                                <input class="form-check-input permissions-policy-origin-radio" type="radio" name="@key" value="None" data-origin-value="@PermissionsPolicyOriginValue.None" @(originType == PermissionsPolicyOriginValue.None ? "checked" : null)>
                             </div>
                         </td>
                         <td>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="@key" value="Any" @(originType == PermissionsPolicyOriginValue.Any ? "checked" : null) onchange="changeOrigin(this, '@PermissionsPolicyOriginValue.Any');">
+                                <input class="form-check-input permissions-policy-origin-radio" type="radio" name="@key" value="Any" data-origin-value="@PermissionsPolicyOriginValue.Any" @(originType == PermissionsPolicyOriginValue.Any ? "checked" : null)>
                             </div>
                         </td>
                         <td>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="@key" value="Self" @(originType == PermissionsPolicyOriginValue.Self ? "checked" : null) onchange="changeOrigin(this, '@PermissionsPolicyOriginValue.Self');">
+                                <input class="form-check-input permissions-policy-origin-radio" type="radio" name="@key" value="Self" data-origin-value="@PermissionsPolicyOriginValue.Self" @(originType == PermissionsPolicyOriginValue.Self ? "checked" : null)>
                             </div>
                         </td>
                         <td>
                             <div class="mb-0">
-                                <input class="form-control d-@(originType == PermissionsPolicyOriginValue.Self ? "block" : "none")" id="@(key)AllowedOrigins" placeholder="https://www.domain.com https://www.another.domain.com" value="@allowedOrigins" oninput="changeAllowedOrigins(this)" />
+                                <input class="form-control permissions-policy-allowed-origins d-@(originType == PermissionsPolicyOriginValue.Self ? "block" : "none")" id="@(key)AllowedOrigins" placeholder="https://www.domain.com https://www.another.domain.com" value="@allowedOrigins" />
                                 <input id="@Html.IdFor(m => m.PermissionsPolicy[key])" name="@Html.NameFor(m => m.PermissionsPolicy[key])" type="hidden" value="@originType" />
                             </div>
                         </td>
@@ -165,37 +165,4 @@
         <span class="hint">@T["Allows a site to control which features and APIs can be used in the browser."]</span>
     </div>
 </div>
-<script>
-    function changeOrigin(e, origin) {
-        var allowedOrigins = document.getElementById(e.name + 'AllowedOrigins');
-        if (!allowedOrigins) {
-            return;
-        }
-
-        if (e.value == "Self") {
-            allowedOrigins.classList.remove('d-none');
-            allowedOrigins.classList.add('d-block');
-
-            if (allowedOrigins.value != '') {
-                origin += ' ' + allowedOrigins.value.trim();
-            }
-        }
-        else {
-            allowedOrigins.classList.remove('d-block');
-            allowedOrigins.classList.add('d-none');
-        }
-
-        var permissionValue = allowedOrigins.parentElement.querySelector('input[type="hidden"]');
-        if (permissionValue) {
-            permissionValue.value = origin;
-        }
-    }
-
-    function changeAllowedOrigins(e) {
-        var permissionValue = e.parentElement.querySelector('input[type="hidden"]');
-
-        if (permissionValue && permissionValue.value.startsWith('self')) {
-            permissionValue.value = 'self ' + e.value.trim();
-        }
-    }
-</script>
+<script asp-src="~/OrchardCore.Security/Scripts/permissions-policy-settings/permissions-policy-settings.min.js" debug-src="~/OrchardCore.Security/Scripts/permissions-policy-settings/permissions-policy-settings.js" at="Foot" type="module"></script>

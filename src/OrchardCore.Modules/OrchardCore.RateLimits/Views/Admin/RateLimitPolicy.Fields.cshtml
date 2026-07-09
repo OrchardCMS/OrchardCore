@@ -5,6 +5,8 @@
     var isTargetLocked = Model.InitialIsEnabled;
 }
 
+<div class="rate-limit-policy-fields" data-is-target-locked="@isTargetLocked.ToString().ToLowerInvariant()" data-endpoint-scope="@RateLimitPolicyScope.Endpoint" data-group-scope="@RateLimitPolicyScope.Group">
+
 <div class="ocat-wrapper" asp-validation-class-for="Name">
     <label asp-for="Name" class="ocat-label ocat-label-required">@T["Policy name"]</label>
     <div class="ocat-end">
@@ -47,7 +49,7 @@
     </div>
 </div>
 
-<div id="@(Html.IdFor(m => m.Path))_group" class="ocat-wrapper @(Model.Scope == RateLimitPolicyScope.Endpoint ? string.Empty : "d-none")" asp-validation-class-for="Path">
+<div id="Path_group" class="ocat-wrapper @(Model.Scope == RateLimitPolicyScope.Endpoint ? string.Empty : "d-none")" asp-validation-class-for="Path">
     <label asp-for="Path" class="ocat-label">@T["Request path"]</label>
     <div class="ocat-end">
         @if (isTargetLocked)
@@ -69,7 +71,7 @@
     </div>
 </div>
 
-<div id="@(Html.IdFor(m => m.GroupName))_group" class="ocat-wrapper @(Model.Scope == RateLimitPolicyScope.Group ? string.Empty : "d-none")" asp-validation-class-for="GroupName">
+<div id="GroupName_group" class="ocat-wrapper @(Model.Scope == RateLimitPolicyScope.Group ? string.Empty : "d-none")" asp-validation-class-for="GroupName">
     <label asp-for="GroupName" class="ocat-label">@T["Rate-limit group"]</label>
     <div class="ocat-end">
         @if (isTargetLocked)
@@ -91,27 +93,6 @@
     </div>
 </div>
 
-<script at="Foot">
-    document.addEventListener('DOMContentLoaded', () => {
-        const scopeElement = document.getElementById('@Html.IdFor(m => m.Scope)');
-        const pathGroup = document.getElementById('@($"{Html.IdFor(m => m.Path)}_group")');
-        const rateLimitGroup = document.getElementById('@($"{Html.IdFor(m => m.GroupName)}_group")');
+</div>
 
-        if (!scopeElement || !pathGroup || !rateLimitGroup) {
-            return;
-        }
-
-        const updateScopeFields = () => {
-            if (@isTargetLocked.ToString().ToLowerInvariant()) {
-                return;
-            }
-
-            const scope = scopeElement.value;
-            pathGroup.classList.toggle('d-none', scope !== '@RateLimitPolicyScope.Endpoint');
-            rateLimitGroup.classList.toggle('d-none', scope !== '@RateLimitPolicyScope.Group');
-        };
-
-        scopeElement.addEventListener('change', updateScopeFields);
-        updateScopeFields();
-    });
-</script>
+<script asp-src="~/OrchardCore.RateLimits/Scripts/rate-limit-policy-fields/rate-limit-policy-fields.min.js" debug-src="~/OrchardCore.RateLimits/Scripts/rate-limit-policy-fields/rate-limit-policy-fields.js" at="Foot" type="module"></script>

@@ -21,53 +21,6 @@
 </nav>
 @if (adminSettings.DisplayMenuFilter)
 {
-<script at="Foot">
-    document.addEventListener('keydown', function (e) {
-        var isFilterShortcut = e.key ? e.key.toUpperCase() == 'F' : e.which == 70;
-
-        if (e.ctrlKey && e.shiftKey && isFilterShortcut) {
-            document.getElementById('filter').focus();
-            e.preventDefault();
-            e.stopPropagation();
-        }
-    });
-
-    function hasChild(list) {
-        var filter = document.getElementById('filter').value.toUpperCase();
-        Array.from(list.children).filter(function (item) {
-            return item.matches('li');
-        }).forEach(function (item) {
-            var hasMatchingSpan = Array.from(item.querySelectorAll('span')).some(function (span) {
-                return span.textContent.toUpperCase().indexOf(filter) >= 0;
-            });
-
-            if (hasMatchingSpan) {
-                var firstNestedListItem = item.querySelector('ul li');
-
-                if (firstNestedListItem) {
-                    item.style.display = '';
-                    hasChild(firstNestedListItem.parentElement);
-                } else {
-                    item.style.display = '';
-                }
-            } else {
-                item.style.display = 'none';
-            }
-        });
-    };
-    document.getElementById('filter').addEventListener('keyup', function (e) {
-        var list = document.getElementById('adminMenu');
-        var filter = document.getElementById('filter').value;
-        if (filter) {
-            hasChild(list);
-        } else {
-            list.querySelectorAll("li").forEach(function (item) {
-                item.style.display = '';
-            });
-        }
-        e.preventDefault();
-        e.stopPropagation();
-    });
-</script>
+    <script asp-src="~/TheAdmin/js/navigation-admin/NavigationAdmin.min.js" debug-src="~/TheAdmin/js/navigation-admin/NavigationAdmin.js" at="Foot" type="module"></script>
 }
 <!-- Menu rendered on @DateTime.UtcNow.ToString("r") -->

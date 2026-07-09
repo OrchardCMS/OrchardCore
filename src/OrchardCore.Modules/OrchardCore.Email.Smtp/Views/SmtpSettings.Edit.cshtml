@@ -185,37 +185,4 @@
     </div>
 </div>
 
-<script at="Foot">
-    document.addEventListener('DOMContentLoaded', function () {
-        const deliveryMethod = document.getElementById('@Html.IdFor(m => m.DeliveryMethod)');
-        const autoSelectEncryption = document.getElementById('@Html.IdFor(m => m.AutoSelectEncryption)');
-        const encryptionMethod = document.getElementById('@Html.IdFor(m => m.EncryptionMethod)');
-
-        const showSelectedCollapse = () => {
-            const option = deliveryMethod?.selectedOptions?.[0];
-            const target = option?.dataset.bsTarget;
-
-            if (!target) {
-                return;
-            }
-
-            const collapseElement = document.querySelector(target);
-
-            if (collapseElement) {
-                bootstrap.Collapse.getOrCreateInstance(collapseElement).show();
-            }
-        };
-
-        const showEncryptionMethod = () => {
-            if (encryptionMethod && autoSelectEncryption) {
-                encryptionMethod.disabled = autoSelectEncryption.checked;
-            }
-        };
-
-        deliveryMethod?.addEventListener('change', showSelectedCollapse);
-        showSelectedCollapse();
-
-        autoSelectEncryption?.addEventListener('change', showEncryptionMethod);
-        showEncryptionMethod();
-    });
-</script>
+<script asp-src="~/OrchardCore.Email.Smtp/Scripts/smtp-settings/smtp-settings.min.js" debug-src="~/OrchardCore.Email.Smtp/Scripts/smtp-settings/smtp-settings.js" at="Foot" type="module"></script>

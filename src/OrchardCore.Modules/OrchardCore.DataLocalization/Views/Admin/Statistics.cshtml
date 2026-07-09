@@ -9,7 +9,7 @@
     <h1>@RenderTitleSegments(T["Dynamic Translation Statistics"])</h1>
 </zone>
 
-<div id="translation-statistics">
+<div id="translation-statistics" data-stats="@statisticsJson" data-editor-base-url="@Url.Action("Index", "Admin", new { area = "OrchardCore.DataLocalization" })">
     <!-- Overall Progress -->
     <fieldset class="mb-3">
         <legend>@T["Overall Progress"]</legend>
@@ -132,55 +132,4 @@
 </div>
 
 <script asp-name="vuejs" at="Foot"></script>
-<script at="Foot">
-document.addEventListener('DOMContentLoaded', function () {
-    const statsEl = document.getElementById('translation-statistics');
-    if (!statsEl) return;
-
-    // Data passed from server
-    const serverData = @Html.Raw(statisticsJson);
-
-    const { createApp } = Vue;
-
-    const app = createApp({
-        data() {
-            return {
-                stats: serverData,
-                selectedCulture: '',
-                editorBaseUrl: '@Url.Action("Index", "Admin", new { area = "OrchardCore.DataLocalization" })'
-            };
-        },
-        computed: {
-            selectedCultureCategories() {
-                if (!this.selectedCulture || !this.stats.byCategory) {
-                    return [];
-                }
-                return this.stats.byCategory[this.selectedCulture] || [];
-            }
-        },
-        methods: {
-            getProgressClass(percentage) {
-                if (percentage >= 75) return 'bg-success';
-                if (percentage >= 25) return 'bg-warning';
-                return 'bg-danger';
-            },
-            getBadgeClass(percentage) {
-                if (percentage >= 75) return 'text-bg-success';
-                if (percentage >= 25) return 'text-bg-warning';
-                return 'text-bg-danger';
-            },
-            getEditorUrl(culture) {
-                return `${this.editorBaseUrl}?culture=${encodeURIComponent(culture)}`;
-            }
-        },
-        mounted() {
-            // Default to first culture
-            if (this.stats.byCulture && this.stats.byCulture.length > 0) {
-                this.selectedCulture = this.stats.byCulture[0].culture;
-            }
-        }
-    });
-
-    app.mount('#translation-statistics');
-});
-</script>
+<script asp-src="~/OrchardCore.DataLocalization/Scripts/translation-statistics/translation-statistics.min.js" debug-src="~/OrchardCore.DataLocalization/Scripts/translation-statistics/translation-statistics.js" depends-on="vuejs" at="Foot" type="module"></script>

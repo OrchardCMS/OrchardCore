@@ -54,27 +54,4 @@
     </div>
 </div>
 
-<script at="Foot" asp-name="bagPartSettings">
-    document.addEventListener('DOMContentLoaded', function() {
-        var sources = document.getElementsByName('@Html.NameFor(x => x.Source)');
-        var contentTypesContainer = document.getElementById('ContentTypesContainer');
-        var stereotypeContainer = document.getElementById('StereotypesContainer');
-
-        for (var i = 0; i < sources.length; i++) {
-            var source = sources[i];
-            source.addEventListener('change', function(src) {
-                if (!src.target.checked) {
-                    return;
-                }
-                if (src.target.value == '@(BagPartSettingType.Stereotypes)') {
-                    contentTypesContainer.classList.add('d-none');
-                    stereotypeContainer.classList.remove('d-none');
-                } else {
-                    contentTypesContainer.classList.remove('d-none');
-                    stereotypeContainer.classList.add('d-none');
-                }
-            });
-            source.dispatchEvent(new Event('change'));
-        }
-    });
-</script>
+<script asp-src="~/OrchardCore.Flows/Scripts/bag-part-settings/bag-part-settings.min.js" debug-src="~/OrchardCore.Flows/Scripts/bag-part-settings/bag-part-settings.js" at="Foot" type="module"></script>

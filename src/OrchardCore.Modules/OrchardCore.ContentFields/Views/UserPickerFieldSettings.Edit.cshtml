@@ -62,14 +62,4 @@
     </div>
 </div>
 
-<script at="Foot" depends-on="vuejs:2">
-    var app = new Vue({
-        el: "#userRolesVue",
-        data: {
-            displayAllUsers: false
-        },
-        mounted() {
-            this.displayAllUsers = (this.$el.dataset.displayAllUsers === 'true');
-        }
-    });
-</script>
+<script asp-src="~/OrchardCore.ContentFields/Scripts/user-picker-field-settings/user-picker-field-settings.min.js" debug-src="~/OrchardCore.ContentFields/Scripts/user-picker-field-settings/user-picker-field-settings.js" depends-on="vuejs:2" at="Foot" type="module"></script>

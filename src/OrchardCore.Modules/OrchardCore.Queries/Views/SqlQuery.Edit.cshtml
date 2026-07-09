@@ -1,5 +1,18 @@
+@using System.Text.Json
 @using OrchardCore.Infrastructure
 @model OrchardCore.Queries.Sql.ViewModels.SqlQueryViewModel
+
+@{
+    var queryEditorOptions = new
+    {
+        indentWithTabs = true,
+        smartIndent = true,
+        matchBrackets = true,
+        styleActiveLine = true,
+        extraKeys = new Dictionary<string, string> { ["Ctrl-Space"] = "autocomplete" },
+        hintOptions = new { tables = new Dictionary<string, string[]> { ["ContentItemIndex"] = ["DocumentId"] } },
+    };
+}
 
 <style asp-name="codemirror"></style>
 <style asp-name="codemirror-addon-hint-show-hint"></style>
@@ -42,30 +55,9 @@
 <div class="ocat-wrapper">
     <label asp-for="Query" class="ocat-label">@T["Query"]</label>
     <div class="ocat-end">
-        <textarea asp-for="Query" rows="12" class="form-control"></textarea>
+        <textarea asp-for="Query" rows="12" class="form-control codemirror-query-editor" data-mode="@MediaTypeNamesExtended.Text.PostgreSQL" data-options="@JsonSerializer.Serialize(queryEditorOptions)"></textarea>
         <span class="hint">@T["The SQL query to execute."]</span>
     </div>
 </div>
 
-<script at="Foot">
-    function onDocumentReady(callback) {
-        if (document.readyState !== 'loading') {
-            callback();
-        } else {
-            document.addEventListener('DOMContentLoaded', callback);
-        }
-    }
-
-    onDocumentReady(function () {
-        CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Query)'), {
-            mode: '@MediaTypeNamesExtended.Text.PostgreSQL',
-            indentWithTabs: true, smartIndent: true, matchBrackets: true, lineNumbers: true, styleActiveLine: true, viewportMargin: Infinity,
-            extraKeys: { "Ctrl-Space": "autocomplete" },
-            hintOptions: {
-                tables: {
-                    ContentItemIndex: ["DocumentId"]
-                }
-            }
-        });
-    });
-</script>
+<script asp-src="~/OrchardCore.Queries/Scripts/sql-query/sql-query.min.js" debug-src="~/OrchardCore.Queries/Scripts/sql-query/sql-query.js" at="Foot" type="module"></script>

@@ -10,5 +10,19 @@
     "name": "trumbowyg.media.url",
     "source": "Assets/trumbowyg.media.url.js",
     "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "html-body-part-editors",
+    "source": [
+      "Assets/ts/html-body-part.ts",
+      "Assets/ts/html-body-part-monaco.ts",
+      "Assets/ts/html-body-part-monaco-settings.ts",
+      "Assets/ts/html-body-part-trumbowyg-settings.ts",
+      "Assets/ts/html-body-part-trumbowyg-editor.ts",
+      "Assets/ts/html-body-part-wysiwyg.ts"
+    ],
+    "dest": "wwwroot/Scripts/html-body-part-editors/",
+    "tags": ["admin", "dashboard", "js"]
   }
 ]

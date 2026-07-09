@@ -28,7 +28,7 @@
     </div>
 }
 
-<div class="list-group with-checkbox notification-container">
+<div class="list-group with-checkbox notification-container bulk-select-list" data-checkbox-name="itemIds" data-bulk-action-name="Options.BulkAction" data-selected-text="@T["selected"]">
     @if (Model.Header?.Summary != null || Model.Header?.Actions != null)
     {
         <div class="list-group-item text-bg-theme">
@@ -68,94 +68,4 @@
 @await DisplayAsync(Model.Pager)
 
 <script asp-name="bootstrap-select" at="Foot"></script>
-<script at="Foot">
-    function onDocumentReady(callback) {
-        if (document.readyState !== 'loading') {
-            callback();
-        } else {
-            document.addEventListener('DOMContentLoaded', callback);
-        }
-    }
-
-    onDocumentReady(function () {
-        const submitFilterButton = document.querySelector("[name='submit.Filter']");
-        var actions = document.getElementById("actions");
-        var items = document.getElementById("items");
-        var filters = document.querySelectorAll(".filter");
-        var selectAllCtrl = document.getElementById("select-all");
-        var selectedItems = document.getElementById("selected-items");
-        var itemsCheckboxes = document.querySelectorAll("input[type='checkbox'][name='itemIds']");
-        var checkedItems = function () {
-            return document.querySelectorAll("input[type='checkbox'][name='itemIds']:checked");
-        };
-        var setDisplay = function (element, show) {
-            if (element) {
-                element.style.display = show ? '' : 'none';
-            }
-        };
-
-        // This applies to all filter selectpickers on page. Add .nosubmit to not submit
-        document.querySelectorAll('.selectpicker:not(.nosubmit)').forEach((element) => {
-            element.addEventListener('changed.bs.select', () => submitFilterButton?.click());
-        });
-
-        document.querySelectorAll(".dropdown-menu .dropdown-item").forEach(function (item) {
-            if (!item.dataset.action) {
-                return;
-            }
-
-            item.addEventListener("click", function () {
-                if (checkedItems().length > 1) {
-                    var data = this.dataset;
-                    confirmDialog({
-                        ...data, callback: function (r) {
-                            if (r) {
-                                document.getElementById("@Html.IdFor(o => o.Options.BulkAction)").value = data.action;
-                                document.querySelector("[name='submit.BulkAction']").click();
-                            }
-                        }
-                    });
-                }
-            });
-        });
-        function displayActionsOrFilters() {
-            if (checkedItems().length > 1) {
-                setDisplay(actions, true);
-                filters.forEach(function (filter) { setDisplay(filter, false); });
-                setDisplay(selectedItems, true);
-                setDisplay(items, false);
-            }
-            else {
-                setDisplay(actions, false);
-                filters.forEach(function (filter) { setDisplay(filter, true); });
-                setDisplay(selectedItems, false);
-                setDisplay(items, true);
-            }
-        }
-
-        if (selectAllCtrl) {
-            selectAllCtrl.addEventListener("click", function () {
-                itemsCheckboxes.forEach(function (checkbox) {
-                    if (checkbox !== selectAllCtrl) {
-                        checkbox.checked = selectAllCtrl.checked;
-                    }
-                });
-                selectedItems.textContent = checkedItems().length + ' @T["selected"]';
-                displayActionsOrFilters();
-            });
-
-            itemsCheckboxes.forEach(function (checkbox) {
-                checkbox.addEventListener("click", function () {
-                    var itemsCount = itemsCheckboxes.length;
-                    var selectedItemsCount = checkedItems().length;
-
-                    selectAllCtrl.checked = selectedItemsCount == itemsCount;
-                    selectAllCtrl.indeterminate = selectedItemsCount > 0 && selectedItemsCount < itemsCount;
-
-                    selectedItems.textContent = selectedItemsCount + ' @T["selected"]';
-                    displayActionsOrFilters();
-                });
-            });
-        }
-    });
-</script>
+<script asp-src="~/OrchardCore.Notifications/Scripts/notifications-admin-list/notifications-admin-list.min.js" debug-src="~/OrchardCore.Notifications/Scripts/notifications-admin-list/notifications-admin-list.js" at="Foot" type="module"></script>

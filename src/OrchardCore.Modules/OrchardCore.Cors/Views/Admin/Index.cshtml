@@ -2,9 +2,7 @@
 
 <script asp-name="vuejs" at="Foot" version="2"></script>
 <script depends-on="vuejs:2" asp-src="~/OrchardCore.Cors/Scripts/cors-admin.min.js" debug-src="~/OrchardCore.Cors/Scripts/cors-admin.js" asp-name="cors-admin" at="Foot"></script>
-<script depends-on="cors-admin" at="Foot">
-    corsApp.policies = @Html.Raw(Json.Serialize(Model.Policies));
-</script>
+<script asp-src="~/OrchardCore.Cors/Scripts/cors-admin-index/cors-admin-index.min.js" debug-src="~/OrchardCore.Cors/Scripts/cors-admin-index/cors-admin-index.js" at="Foot" depends-on="cors-admin" type="module"></script>
 <style>
     [v-cloak] {
         display: none;

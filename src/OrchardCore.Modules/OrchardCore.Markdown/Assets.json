@@ -17,5 +17,17 @@
     "name": "markdown-mediatoolbar",
     "source": "Assets/Scripts/mde.mediatoolbar.js",
     "tags": ["admin", "markdown", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "markdown-editors",
+    "source": [
+      "Assets/ts/markdown-body-part-wysiwyg-settings.ts",
+      "Assets/ts/markdown-field-wysiwyg-settings.ts",
+      "Assets/ts/markdown-body-part-wysiwyg.ts",
+      "Assets/ts/markdown-field-wysiwyg.ts"
+    ],
+    "dest": "wwwroot/Scripts/markdown-editors/",
+    "tags": ["admin", "markdown", "js"]
   }
 ]

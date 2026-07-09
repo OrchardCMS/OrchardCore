@@ -57,8 +57,4 @@
     </div>
 </div>
 
-<script at="Foot" depends-on="menu-permission-picker,vuejs:2">
-    document.addEventListener('DOMContentLoaded', () => {
-        initMenuPermissionsPicker(document.querySelector("#PermissionPicker"))
-    });
-</script>
+<script asp-src="~/OrchardCore.Menu/Scripts/menu-item-permission-part/menu-item-permission-part.min.js" debug-src="~/OrchardCore.Menu/Scripts/menu-item-permission-part/menu-item-permission-part.js" at="Foot" depends-on="menu-permission-picker,vuejs:2" type="module"></script>

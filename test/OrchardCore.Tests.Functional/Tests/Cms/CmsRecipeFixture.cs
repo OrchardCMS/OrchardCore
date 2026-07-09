@@ -86,3 +86,8 @@ public sealed class WidgetDragTestsFixture : CmsRecipeFixture
     protected override string RecipeName => "WidgetDragTests";
 }
 
+public sealed class EsModuleTestsFixture : CmsRecipeFixture
+{
+    protected override string RecipeName => "EsModuleTests";
+}
+

@@ -48,12 +48,4 @@
 
 @await DisplayAsync(Model.Pager)
 
-<script at="Foot">
-    document.addEventListener('DOMContentLoaded', function () {
-        const submitFilterButton = document.querySelector("[name='submit.Filter']");
-
-        document.querySelectorAll('.selectpicker').forEach((element) => {
-            element.addEventListener('changed.bs.select', () => submitFilterButton?.click());
-        });
-    });
-</script>
+<script asp-src="~/OrchardCore.AuditTrail/Scripts/audit-trail-admin-list/audit-trail-admin-list.min.js" debug-src="~/OrchardCore.AuditTrail/Scripts/audit-trail-admin-list/audit-trail-admin-list.js" at="Foot" type="module"></script>

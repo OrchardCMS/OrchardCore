@@ -1,3 +1,4 @@
+@using System.Text.Json
 @model LuceneQueryViewModel
 
 <style asp-name="codemirror"></style>
@@ -27,21 +28,9 @@
 <div class="ocat-wrapper">
     <label asp-for="Query" class="ocat-label">@T["Query"]</label>
     <div class="ocat-end">
-    <textarea asp-for="Query" rows="12" class="form-control"></textarea>
+    <textarea asp-for="Query" rows="12" class="form-control codemirror-query-editor" data-mode="javascript" data-options="@JsonSerializer.Serialize(new { json = true })"></textarea>
     <span class="hint">@T["The search query uses the Lucene format. Some documentation can be found <a target=\"_blank\" href=\"{0}\">here</a>.", "https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html"]</span>
     </div>
 </div>
 
-<script at="Foot">
-    function onDocumentReady(callback) {
-        if (document.readyState !== 'loading') {
-            callback();
-        } else {
-            document.addEventListener('DOMContentLoaded', callback);
-        }
-    }
-
-    onDocumentReady(function () {
-        CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Query)'), { mode: "javascript", json: true, lineNumbers: true, viewportMargin: Infinity });
-    });
-</script>
+<script asp-src="~/OrchardCore.Lucene/Scripts/lucene-query/lucene-query.min.js" debug-src="~/OrchardCore.Lucene/Scripts/lucene-query/lucene-query.js" at="Foot" type="module"></script>

@@ -2257,6 +2257,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@orchardcore/alias@workspace:src/OrchardCore.Modules/OrchardCore.Alias/Assets":
+  version: 0.0.0-use.local
+  resolution: "@orchardcore/alias@workspace:src/OrchardCore.Modules/OrchardCore.Alias/Assets"
+  languageName: unknown
+  linkType: soft
+
 "@orchardcore/apis-graphql@workspace:src/OrchardCore.Modules/OrchardCore.Apis.GraphQL/Assets":
   version: 0.0.0-use.local
   resolution: "@orchardcore/apis-graphql@workspace:src/OrchardCore.Modules/OrchardCore.Apis.GraphQL/Assets"
@@ -2367,9 +2373,29 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@orchardcore/autoroute@workspace:src/OrchardCore.Modules/OrchardCore.Autoroute/Assets":
+  version: 0.0.0-use.local
+  resolution: "@orchardcore/autoroute@workspace:src/OrchardCore.Modules/OrchardCore.Autoroute/Assets"
+  languageName: unknown
+  linkType: soft
+
+"@orchardcore/azureai@workspace:src/OrchardCore.Modules/OrchardCore.AzureAI/Assets":
+  version: 0.0.0-use.local
+  resolution: "@orchardcore/azureai@workspace:src/OrchardCore.Modules/OrchardCore.AzureAI/Assets"
+  languageName: unknown
+  linkType: soft
+
+"@orchardcore/backgroundtasks@workspace:src/OrchardCore.Modules/OrchardCore.BackgroundTasks/Assets":
+  version: 0.0.0-use.local
+  resolution: "@orchardcore/backgroundtasks@workspace:src/OrchardCore.Modules/OrchardCore.BackgroundTasks/Assets"
+  languageName: unknown
+  linkType: soft
+
 "@orchardcore/bloom@workspace:.scripts/bloom":
   version: 0.0.0-use.local
   resolution: "@orchardcore/bloom@workspace:.scripts/bloom"
+  dependencies:
+    monaco-editor: "npm:0.52.2"
   languageName: unknown
   linkType: soft
 
@@ -2407,9 +2433,57 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@orchardcore/customsettings@workspace:src/OrchardCore.Modules/OrchardCore.CustomSettings/Assets":
+  version: 0.0.0-use.local
+  resolution: "@orchardcore/customsettings@workspace:src/OrchardCore.Modules/OrchardCore.CustomSettings/Assets"
+  languageName: unknown
+  linkType: soft
+
+"@orchardcore/datalocalization@workspace:src/OrchardCore.Modules/OrchardCore.DataLocalization/Assets":
+  version: 0.0.0-use.local
+  resolution: "@orchardcore/datalocalization@workspace:src/OrchardCore.Modules/OrchardCore.DataLocalization/Assets"
+  languageName: unknown
+  linkType: soft
+
+"@orchardcore/deployment-remote@workspace:src/OrchardCore.Modules/OrchardCore.Deployment.Remote/Assets":
+  version: 0.0.0-use.local
+  resolution: "@orchardcore/deployment-remote@workspace:src/OrchardCore.Modules/OrchardCore.Deployment.Remote/Assets"
+  languageName: unknown
+  linkType: soft
+
 "@orchardcore/deployment@workspace:src/OrchardCore.Modules/OrchardCore.Deployment/Assets":
   version: 0.0.0-use.local
   resolution: "@orchardcore/deployment@workspace:src/OrchardCore.Modules/OrchardCore.Deployment/Assets"
+  languageName: unknown
+  linkType: soft
+
+"@orchardcore/elasticsearch@workspace:src/OrchardCore.Modules/OrchardCore.Elasticsearch/Assets":
+  version: 0.0.0-use.local
+  resolution: "@orchardcore/elasticsearch@workspace:src/OrchardCore.Modules/OrchardCore.Elasticsearch/Assets"
+  languageName: unknown
+  linkType: soft
+
+"@orchardcore/email-smtp@workspace:src/OrchardCore.Modules/OrchardCore.Email.Smtp/Assets":
+  version: 0.0.0-use.local
+  resolution: "@orchardcore/email-smtp@workspace:src/OrchardCore.Modules/OrchardCore.Email.Smtp/Assets"
+  languageName: unknown
+  linkType: soft
+
+"@orchardcore/email@workspace:src/OrchardCore.Modules/OrchardCore.Email/Assets":
+  version: 0.0.0-use.local
+  resolution: "@orchardcore/email@workspace:src/OrchardCore.Modules/OrchardCore.Email/Assets"
+  languageName: unknown
+  linkType: soft
+
+"@orchardcore/facebook@workspace:src/OrchardCore.Modules/OrchardCore.Facebook/Assets":
+  version: 0.0.0-use.local
+  resolution: "@orchardcore/facebook@workspace:src/OrchardCore.Modules/OrchardCore.Facebook/Assets"
+  languageName: unknown
+  linkType: soft
+
+"@orchardcore/features@workspace:src/OrchardCore.Modules/OrchardCore.Features/Assets":
+  version: 0.0.0-use.local
+  resolution: "@orchardcore/features@workspace:src/OrchardCore.Modules/OrchardCore.Features/Assets"
   languageName: unknown
   linkType: soft
 
@@ -2431,6 +2505,18 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@orchardcore/indexing@workspace:src/OrchardCore.Modules/OrchardCore.Indexing/Assets":
+  version: 0.0.0-use.local
+  resolution: "@orchardcore/indexing@workspace:src/OrchardCore.Modules/OrchardCore.Indexing/Assets"
+  languageName: unknown
+  linkType: soft
+
+"@orchardcore/layers@workspace:src/OrchardCore.Modules/OrchardCore.Layers/Assets":
+  version: 0.0.0-use.local
+  resolution: "@orchardcore/layers@workspace:src/OrchardCore.Modules/OrchardCore.Layers/Assets"
+  languageName: unknown
+  linkType: soft
+
 "@orchardcore/liquid@workspace:src/OrchardCore.Modules/OrchardCore.Liquid/Assets":
   version: 0.0.0-use.local
   resolution: "@orchardcore/liquid@workspace:src/OrchardCore.Modules/OrchardCore.Liquid/Assets"
@@ -2448,6 +2534,12 @@ __metadata:
 "@orchardcore/localization@workspace:src/OrchardCore.Modules/OrchardCore.Localization/Assets":
   version: 0.0.0-use.local
   resolution: "@orchardcore/localization@workspace:src/OrchardCore.Modules/OrchardCore.Localization/Assets"
+  languageName: unknown
+  linkType: soft
+
+"@orchardcore/lucene@workspace:src/OrchardCore.Modules/OrchardCore.Lucene/Assets":
+  version: 0.0.0-use.local
+  resolution: "@orchardcore/lucene@workspace:src/OrchardCore.Modules/OrchardCore.Lucene/Assets"
   languageName: unknown
   linkType: soft
 
@@ -2491,6 +2583,30 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@orchardcore/placements@workspace:src/OrchardCore.Modules/OrchardCore.Placements/Assets":
+  version: 0.0.0-use.local
+  resolution: "@orchardcore/placements@workspace:src/OrchardCore.Modules/OrchardCore.Placements/Assets"
+  languageName: unknown
+  linkType: soft
+
+"@orchardcore/queries@workspace:src/OrchardCore.Modules/OrchardCore.Queries/Assets":
+  version: 0.0.0-use.local
+  resolution: "@orchardcore/queries@workspace:src/OrchardCore.Modules/OrchardCore.Queries/Assets"
+  languageName: unknown
+  linkType: soft
+
+"@orchardcore/rate-limits@workspace:src/OrchardCore.Modules/OrchardCore.RateLimits/Assets":
+  version: 0.0.0-use.local
+  resolution: "@orchardcore/rate-limits@workspace:src/OrchardCore.Modules/OrchardCore.RateLimits/Assets"
+  languageName: unknown
+  linkType: soft
+
+"@orchardcore/recipes@workspace:src/OrchardCore.Modules/OrchardCore.Recipes/Assets":
+  version: 0.0.0-use.local
+  resolution: "@orchardcore/recipes@workspace:src/OrchardCore.Modules/OrchardCore.Recipes/Assets"
+  languageName: unknown
+  linkType: soft
+
 "@orchardcore/resources@workspace:src/OrchardCore.Modules/OrchardCore.Resources/Assets":
   version: 0.0.0-use.local
   resolution: "@orchardcore/resources@workspace:src/OrchardCore.Modules/OrchardCore.Resources/Assets"
@@ -2531,6 +2647,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@orchardcore/roles@workspace:src/OrchardCore.Modules/OrchardCore.Roles/Assets":
+  version: 0.0.0-use.local
+  resolution: "@orchardcore/roles@workspace:src/OrchardCore.Modules/OrchardCore.Roles/Assets"
+  languageName: unknown
+  linkType: soft
+
 "@orchardcore/root@workspace:.":
   version: 0.0.0-use.local
   resolution: "@orchardcore/root@workspace:."
@@ -2561,6 +2683,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@orchardcore/security@workspace:src/OrchardCore.Modules/OrchardCore.Security/Assets":
+  version: 0.0.0-use.local
+  resolution: "@orchardcore/security@workspace:src/OrchardCore.Modules/OrchardCore.Security/Assets"
+  languageName: unknown
+  linkType: soft
+
 "@orchardcore/seo@workspace:src/OrchardCore.Modules/OrchardCore.Seo/Assets":
   version: 0.0.0-use.local
   resolution: "@orchardcore/seo@workspace:src/OrchardCore.Modules/OrchardCore.Seo/Assets"
@@ -2585,6 +2713,18 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@orchardcore/sitemaps@workspace:src/OrchardCore.Modules/OrchardCore.Sitemaps/Assets":
+  version: 0.0.0-use.local
+  resolution: "@orchardcore/sitemaps@workspace:src/OrchardCore.Modules/OrchardCore.Sitemaps/Assets"
+  languageName: unknown
+  linkType: soft
+
+"@orchardcore/sms@workspace:src/OrchardCore.Modules/OrchardCore.Sms/Assets":
+  version: 0.0.0-use.local
+  resolution: "@orchardcore/sms@workspace:src/OrchardCore.Modules/OrchardCore.Sms/Assets"
+  languageName: unknown
+  linkType: soft
+
 "@orchardcore/spatial@workspace:src/OrchardCore.Modules/OrchardCore.Spatial/Assets":
   version: 0.0.0-use.local
   resolution: "@orchardcore/spatial@workspace:src/OrchardCore.Modules/OrchardCore.Spatial/Assets"
@@ -2602,6 +2742,12 @@ __metadata:
 "@orchardcore/templates@workspace:src/OrchardCore.Modules/OrchardCore.Templates/Assets":
   version: 0.0.0-use.local
   resolution: "@orchardcore/templates@workspace:src/OrchardCore.Modules/OrchardCore.Templates/Assets"
+  languageName: unknown
+  linkType: soft
+
+"@orchardcore/tenants@workspace:src/OrchardCore.Modules/OrchardCore.Tenants/Assets":
+  version: 0.0.0-use.local
+  resolution: "@orchardcore/tenants@workspace:src/OrchardCore.Modules/OrchardCore.Tenants/Assets"
   languageName: unknown
   linkType: soft
 
@@ -2660,6 +2806,12 @@ __metadata:
   dependencies:
     "@popperjs/core": "npm:2.11.8"
     bootstrap: "npm:5.3.8"
+  languageName: unknown
+  linkType: soft
+
+"@orchardcore/title@workspace:src/OrchardCore.Modules/OrchardCore.Title/Assets":
+  version: 0.0.0-use.local
+  resolution: "@orchardcore/title@workspace:src/OrchardCore.Modules/OrchardCore.Title/Assets"
   languageName: unknown
   linkType: soft
 

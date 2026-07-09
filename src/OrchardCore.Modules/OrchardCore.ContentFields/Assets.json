@@ -59,5 +59,79 @@
     "source": "Assets/ts/date-field-localized.ts",
     "dest": "wwwroot/Scripts/date-field-localized/",
     "tags": [ "admin", "dashboard", "js" ]
+  },
+  {
+    "action": "parcel",
+    "name": "text-field-editors",
+    "source": [
+      "Assets/ts/text-field-color.ts",
+      "Assets/ts/text-field-icon-picker.ts",
+      "Assets/ts/html-field.ts",
+      "Assets/ts/text-field-codemirror.ts",
+      "Assets/ts/text-field-monaco.ts",
+      "Assets/ts/html-field-monaco.ts",
+      "Assets/ts/monaco-json-settings-editor-entry.ts",
+      "Assets/ts/html-field-trumbowyg-settings.ts",
+      "Assets/ts/html-field-trumbowyg-editor.ts",
+      "Assets/ts/html-field-wysiwyg.ts"
+    ],
+    "dest": "wwwroot/Scripts/text-field-editors/",
+    "tags": [ "admin", "dashboard", "js" ]
+  },
+  {
+    "action": "parcel",
+    "name": "numeric-field-range",
+    "source": "Assets/ts/numeric-field-range.ts",
+    "dest": "wwwroot/Scripts/numeric-field-range/",
+    "tags": [ "admin", "dashboard", "js" ]
+  },
+  {
+    "action": "parcel",
+    "name": "numeric-field-slider",
+    "source": "Assets/ts/numeric-field-slider.ts",
+    "dest": "wwwroot/Scripts/numeric-field-slider/",
+    "tags": [ "admin", "dashboard", "js" ]
+  },
+  {
+    "action": "parcel",
+    "name": "numeric-field-spinner",
+    "source": "Assets/ts/numeric-field-spinner.ts",
+    "dest": "wwwroot/Scripts/numeric-field-spinner/",
+    "tags": [ "admin", "dashboard", "js" ]
+  },
+  {
+    "action": "parcel",
+    "name": "text-field-settings",
+    "source": "Assets/ts/text-field-settings.ts",
+    "dest": "wwwroot/Scripts/text-field-settings/",
+    "tags": [ "admin", "dashboard", "js" ]
+  },
+  {
+    "action": "parcel",
+    "name": "content-picker-field-settings",
+    "source": "Assets/ts/content-picker-field-settings.ts",
+    "dest": "wwwroot/Scripts/content-picker-field-settings/",
+    "tags": [ "admin", "dashboard", "js" ]
+  },
+  {
+    "action": "parcel",
+    "name": "user-picker-field-settings",
+    "source": "Assets/ts/user-picker-field-settings.ts",
+    "dest": "wwwroot/Scripts/user-picker-field-settings/",
+    "tags": [ "admin", "dashboard", "js" ]
+  },
+  {
+    "action": "parcel",
+    "name": "vue-multiselect-fields",
+    "source": "Assets/ts/vue-multiselect-fields.ts",
+    "dest": "wwwroot/Scripts/vue-multiselect-fields/",
+    "tags": [ "admin", "dashboard", "js" ]
+  },
+  {
+    "action": "parcel",
+    "name": "options-editor-fields",
+    "source": "Assets/ts/options-editor-fields.ts",
+    "dest": "wwwroot/Scripts/options-editor-fields/",
+    "tags": [ "admin", "dashboard", "js" ]
   }
 ]

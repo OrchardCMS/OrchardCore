@@ -53,7 +53,7 @@
     </div>
 </div>
 
-<div class="ocat-limited-wrapper" id="patternEditor">
+<div class="ocat-limited-wrapper" id="patternEditor" data-generated-types="@nameof(FieldBehaviorType.GeneratedDisabled),@nameof(FieldBehaviorType.GeneratedHidden)">
     <label asp-for="Pattern" class="ocat-label">@T["Pattern"]</label>
     <div class="ocat-limited">
         <textarea asp-for="Pattern" rows="5" class="form-control"></textarea>
@@ -61,34 +61,4 @@
     </div>
 </div>
 
-<script at="Foot">
-    document.addEventListener('DOMContentLoaded', function () {
-        editor = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Pattern)'), {
-            autoRefresh: true,
-            lineNumbers: true,
-            styleActiveLine: true,
-            matchBrackets: true,
-            mode: { name: "liquid" },
-        });
-
-        setPatternVisibility();
-
-        document.getElementById('@Html.IdFor(x => x.Type)').addEventListener('change', function () {
-            setPatternVisibility();
-        });
-    });
-
-    function setPatternVisibility() {
-        var selectedValue = document.getElementById('@Html.IdFor(x => x.Type)').value;
-        var patternEditor = document.getElementById('patternEditor');
-        switch (selectedValue) {
-            case '@nameof(FieldBehaviorType.GeneratedDisabled)':
-            case '@nameof(FieldBehaviorType.GeneratedHidden)':
-                patternEditor.classList.remove('d-none');
-                break;
-            default:
-                patternEditor.classList.add('d-none');
-                break;
-        }
-    }
-</script>
+<script asp-src="~/OrchardCore.ContentFields/Scripts/text-field-settings/text-field-settings.min.js" debug-src="~/OrchardCore.ContentFields/Scripts/text-field-settings/text-field-settings.js" at="Foot" type="module"></script>

@@ -32,7 +32,7 @@
 
 <div class="ocat-wrapper">
     <label asp-for="Source" class="ocat-label">@T["Contained Content Types"]</label>
-    <div class="ocat-end" id="@Html.IdFor(x => x.Source)">
+    <div class="ocat-end" id="@Html.IdFor(x => x.Source)" data-content-types-value="@ContentPickerSettingType.ContentTypes" data-stereotypes-value="@ContentPickerSettingType.Stereotypes">
         <div class="form-check">
             <input class="form-check-input" type="radio" asp-for="Source" id="SourceAll" value="@ContentPickerSettingType.AllTypes" checked="@(Model.Source == ContentPickerSettingType.AllTypes)">
             <label for="SourceAll" class="form-check-label">
@@ -94,51 +94,4 @@
     </div>
 </div>
 
-<script at="Foot">
-    function onDocumentReady(callback) {
-        if (document.readyState !== 'loading') {
-            callback();
-        } else {
-            document.addEventListener('DOMContentLoaded', callback);
-        }
-    }
-
-    onDocumentReady(function() {
-        var sources = document.getElementsByName('@Html.NameFor(x => x.Source)');
-        var contentTypesContainer = document.getElementById('ContentTypesContainer');
-        var stereotypeContainer = document.getElementById('StereotypesContainer');
-        for (var i = 0; i < sources.length; i++) {
-            var source = sources[i];
-            source.addEventListener('change', function(src) {
-                if (!src.target.checked) {
-                    return;
-                }
-                if (src.target.value == '@(ContentPickerSettingType.Stereotypes)') {
-                    contentTypesContainer.classList.add('d-none');
-                    stereotypeContainer.classList.remove('d-none');
-                } else if (src.target.value == '@(ContentPickerSettingType.ContentTypes)') {
-                    contentTypesContainer.classList.remove('d-none');
-                    stereotypeContainer.classList.add('d-none');
-                } else {
-                    contentTypesContainer.classList.add('d-none');
-                    stereotypeContainer.classList.add('d-none');
-                }
-            });
-            source.dispatchEvent(new Event('change'));
-        }
-    });
-</script>
-
-<script at="Foot">
-    //<![CDATA[
-    onDocumentReady(function () {
-        editor = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.TitlePattern)'), {
-            autoRefresh: true,
-            lineNumbers: true,
-            styleActiveLine: true,
-            matchBrackets: true,
-            mode: { name: "liquid" },
-        });
-    });
-    //]]>
-</script>
+<script asp-src="~/OrchardCore.ContentFields/Scripts/content-picker-field-settings/content-picker-field-settings.min.js" debug-src="~/OrchardCore.ContentFields/Scripts/content-picker-field-settings/content-picker-field-settings.js" at="Foot" type="module"></script>

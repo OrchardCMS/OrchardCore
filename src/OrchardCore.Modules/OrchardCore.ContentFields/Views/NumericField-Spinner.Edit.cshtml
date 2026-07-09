@@ -18,7 +18,7 @@
     string serverDecimalSeparator = CultureInfo.CurrentUICulture.NumberFormat.NumberDecimalSeparator;
 }
 
-<div class="@($"ocat-wrapper field-wrapper field-wrapper-{Model.PartFieldDefinition.PartDefinition.Name.HtmlClassify()}-{Model.PartFieldDefinition.Name.HtmlClassify()}" + (Model.PartFieldDefinition.IsNamedPart() ? $" field-wrapper-{Model.PartFieldDefinition.ContentTypePartDefinition.Name.HtmlClassify()}-{Model.PartFieldDefinition.Name.HtmlClassify()}" : string.Empty))" id="@Html.IdFor(x => x.Value)_FieldWrapper">
+<div class="@($"ocat-wrapper field-wrapper field-wrapper-{Model.PartFieldDefinition.PartDefinition.Name.HtmlClassify()}-{Model.PartFieldDefinition.Name.HtmlClassify()}" + (Model.PartFieldDefinition.IsNamedPart() ? $" field-wrapper-{Model.PartFieldDefinition.ContentTypePartDefinition.Name.HtmlClassify()}-{Model.PartFieldDefinition.Name.HtmlClassify()}" : string.Empty)) numeric-field-spinner" id="@Html.IdFor(x => x.Value)_FieldWrapper" data-scale="@scale" data-min="@min" data-max="@max" data-js-decimal-separator="@javascriptDecimalSeparator" data-server-decimal-separator="@serverDecimalSeparator">
     <label asp-for="Value" class="ocat-label @(settings.Required ? "ocat-label-required" : "")">@localizedFieldName</label>
     <div class="ocat-end">
         <div class="ocat-limited-wrapper">
@@ -28,9 +28,9 @@
                     {
                         <span class="input-group-text">@min</span>
                     }
-                    <input asp-for="Value" typeof="text" class="form-control content-preview-select" placeholder="@settings.Placeholder" />
-                    <button class="btn btn-outline-secondary" type="button" onclick="numericFieldSpinner('@(id)', @(scale), -@(step), @(min), @(max))"><i class="fa-solid fa-minus" aria-hidden="true"></i></button>
-                    <button class="btn btn-outline-secondary" type="button" onclick="numericFieldSpinner('@(id)', @(scale), +@(step), @(min), @(max))"><i class="fa-solid fa-plus" aria-hidden="true"></i></button>
+                    <input asp-for="Value" typeof="text" class="form-control content-preview-select numeric-field-spinner-value" placeholder="@settings.Placeholder" />
+                    <button class="btn btn-outline-secondary numeric-field-spinner-step" type="button" data-step="-@(step)"><i class="fa-solid fa-minus" aria-hidden="true"></i></button>
+                    <button class="btn btn-outline-secondary numeric-field-spinner-step" type="button" data-step="@(step)"><i class="fa-solid fa-plus" aria-hidden="true"></i></button>
                     @if (settings.Maximum.HasValue)
                     {
                         <span class="input-group-text">@max</span>
@@ -45,28 +45,4 @@
     </div>
 </div>
 
-<script asp-name="numericFieldSpinner" at="Foot">
-
-    function numericFieldSpinner(id, scale, step, min, max) {
-        let element = document.getElementById(id);
-        if (!element) {
-            return;
-        }
-
-        let value = element.value;
-    @if (javascriptDecimalSeparator != serverDecimalSeparator)
-    {
-        <text>value = value.replace('@(serverDecimalSeparator)', '@(javascriptDecimalSeparator)'); </text>
-    }
-            value = (Number(value) || 0) + step;
-        value = Math.min(value, max); // Never go above max
-        value = Math.max(value, min); // or below min
-        value = Number(value.toFixed(scale)).toString(); // Drop insignificant trailing zeros
-    @if (javascriptDecimalSeparator != serverDecimalSeparator)
-    {
-        <text>value = value.replace('@(javascriptDecimalSeparator)', '@(serverDecimalSeparator)'); </text>
-    }
-            element.value = value;
-    }
-
-</script>
+<script asp-src="~/OrchardCore.ContentFields/Scripts/numeric-field-spinner/numeric-field-spinner.min.js" debug-src="~/OrchardCore.ContentFields/Scripts/numeric-field-spinner/numeric-field-spinner.js" at="Foot" type="module"></script>

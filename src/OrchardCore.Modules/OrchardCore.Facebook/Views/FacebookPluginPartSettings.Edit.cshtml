@@ -17,33 +17,4 @@
     </div>
 </div>
 
-<script at="Foot">
-function onDocumentReady(callback) {
-    if (document.readyState !== 'loading') {
-        callback();
-    } else {
-        document.addEventListener('DOMContentLoaded', callback);
-    }
-}
-
-onDocumentReady(function () {
-    var textArea = document.getElementById('@Html.IdFor(x => x.Liquid)');
-
-    if (textArea == null) {
-        return;
-    }
-
-    var editor = CodeMirror.fromTextArea(textArea, {
-        autoRefresh: true,
-        lineNumbers: true,
-        styleActiveLine: true,
-        matchBrackets: true,
-        mode: { name: "liquid" },
-    });
-
-    editor.on('change', function(cmEditor){
-        cmEditor.save();
-        document.dispatchEvent(new Event('contentpreview:render'));
-    });
-});
-</script>
+<script asp-src="~/OrchardCore.Facebook/Scripts/facebook-plugin-part-editors/facebook-plugin-part-settings.min.js" debug-src="~/OrchardCore.Facebook/Scripts/facebook-plugin-part-editors/facebook-plugin-part-settings.js" at="Foot" type="module"></script>

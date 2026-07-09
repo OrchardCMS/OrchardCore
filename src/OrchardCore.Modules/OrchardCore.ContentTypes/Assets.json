@@ -11,5 +11,31 @@
     "source": "Assets/js/autocomplete.ts",
     "dest": "wwwroot/Scripts/autocomplete",
     "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "content-type-sortable",
+    "source": "Assets/js/content-type-sortable.ts",
+    "dest": "wwwroot/Scripts/content-type-sortable",
+    "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "content-definition-deployment-step",
+    "source": "Assets/js/content-definition-deployment-step.ts",
+    "dest": "wwwroot/Scripts/content-definition-deployment-step",
+    "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "content-type-editors",
+    "source": [
+      "Assets/js/edit-field-selector.ts",
+      "Assets/js/edit-type-part-selector.ts",
+      "Assets/js/add-parts-to.ts",
+      "Assets/js/graphql-content-type-part-settings.ts"
+    ],
+    "dest": "wwwroot/Scripts/content-type-editors/",
+    "tags": ["admin", "dashboard", "js"]
   }
 ]
