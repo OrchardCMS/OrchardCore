@@ -77,6 +77,7 @@ public class MediaEventTests
 public class TestMediaEventHandler : IMediaCreatingEventHandler
 {
     public int Priority => 0;
+
     public async Task<Stream> MediaCreatingAsync(MediaCreatingContext context, Stream inputStream)
     {
         var outStream = MemoryStreamFactory.GetStream();
