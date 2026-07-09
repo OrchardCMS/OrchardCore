@@ -3,6 +3,7 @@
 <script asp-name="bootstrap-select" at="Foot"></script>
 <style asp-name="audittrailui" asp-src="~/OrchardCore.AuditTrail/Styles/audittrailui.min.css" debug-src="~/OrchardCore.AuditTrail/Styles/audittrailui.css" at="Head"></style>
 
+<div data-list-management>
 <!-- Hidden submit button do not remove -->
 <input type="submit" name="submit.Filter" id="submitFilter" class="visually-hidden" />
 
@@ -47,13 +48,6 @@
 </ul>
 
 @await DisplayAsync(Model.Pager)
+</div>
 
-<script at="Foot">
-    document.addEventListener('DOMContentLoaded', function () {
-        const submitFilterButton = document.querySelector("[name='submit.Filter']");
-
-        document.querySelectorAll('.selectpicker').forEach((element) => {
-            element.addEventListener('changed.bs.select', () => submitFilterButton?.click());
-        });
-    });
-</script>
+<script asp-name="list-management" at="Foot"></script>

@@ -64,6 +64,7 @@ The `OrchardCore.Resources` module provides some commonly used ones:
 | font-awesome          | Script | 6.7.2, 7.3.0 | -             |
 | font-awesome-v4-shims | Script | 6.7.2, 7.3.0 | -             |
 | Sortable              | Script | 1.10.2       | -             |
+| list-management      | Script | 1.0.0        | -             |
 | trumbowyg             | Style  | 2.28.0       | -             |
 | trumbowyg             | Script | 2.28.0       | -             |
 | vue-multiselect       | Script | 2.1.6        | -             |
@@ -143,6 +144,132 @@ In this example, we define a style that depends on Bootstrap version 4. In this 
 !!! note "Registration"
     Make sure to register this `IConfigureOptions<ResourceManagementOptions>` in the `Startup` or your theme or module.
     `services.AddResourceConfiguration<ResourceManagementOptionsConfiguration>();`
+
+## List management helper
+
+The `list-management` script is a reusable admin helper for searchable lists, bulk selection, filter auto-submit, grouped results, and grouped selection.
+
+Register it in a Razor view with:
+
+```html
+<script asp-name="list-management" at="Foot"></script>
+```
+
+Then opt a container into automatic initialization:
+
+```html
+<form data-list-management>
+    ...
+</form>
+```
+
+You can also initialize it manually:
+
+```javascript
+window.listManagement.initialize(element, {
+    clientSideSearch: true
+});
+```
+
+### Default markup conventions
+
+The script now follows a shared set of HTML conventions so most admin pages can use fewer custom `data-*` attributes:
+
+| Element | Default selector |
+|---|---|
+| Bulk action container | `#actions` |
+| Search box | `#search-box` |
+| Select-all checkbox | `#select-all` |
+| Unselected summary label | `#items` |
+| Selected summary label | `#selected-items` |
+| Search empty-state alert | `#list-empty` |
+| Search no-results alert | `#list-alert` |
+| Search summary text | `#list-summary` |
+| Searchable item text | `.list-item-search-text` |
+| Action to open when Enter is pressed | `.list-item-action` |
+| Search groups | `.list-management-group` |
+| Group select-all checkbox | `.list-group-select-all` |
+| Group select-all row | `.list-group-select-all-container` |
+| Group select-all label | `.list-group-select-all-label` |
+| Group select-all text | `.list-group-select-all-text` |
+| Create action used when no result matches | `#btnCreate` |
+
+When these elements are present, the script also infers common settings such as `submit.Filter`, `submit.BulkAction`, the bulk-action hidden input name, and the selected item checkbox name.
+
+### Supported settings
+
+All options can be provided either as `data-*` attributes on the `data-list-management` root element or as properties passed to `window.listManagement.initialize()`.
+
+| Attribute / option | Default | Purpose |
+|---|---|---|
+| `data-actions-selector` / `actionsSelector` | `#actions` | Container shown while a bulk selection is active. |
+| `data-bulk-action-input-name` / `bulkActionInputName` | `Options.BulkAction` | Hidden input name that receives the selected bulk action. |
+| `data-client-side-search` / `clientSideSearch` | `false` | Enables in-browser filtering instead of relying on form submit. |
+| `data-client-filters-selector` / `clientFiltersSelector` | `[data-list-filter]` | Inputs and selects that participate in client-side filtering. |
+| `data-empty-alert-selector` / `emptyAlertSelector` | `#list-empty` | Empty-state element shown when the original list has no items. |
+| `data-filter-change-selector` / `filterChangeSelector` | `.filter-options select, .filter-options input` | Elements that trigger `submit.Filter` when `filterSubmit` is enabled. |
+| `data-filter-links-selector` / `filterLinksSelector` | `[data-list-filter-link]` | Clickable links used as client-side filters. |
+| `data-filter-selector` / `filterSelector` | `.filter` | Elements hidden while a bulk selection is active. |
+| `data-filter-submit` / `filterSubmit` | `false` | Automatically submits the filter form when matching filter inputs change. |
+| `data-group-checkbox-selector` / `groupCheckboxSelector` | Inferred from the selected item checkbox name | Checkboxes affected by each grouped select-all toggle. |
+| `data-group-label-selector` / `groupLabelSelector` | `.list-group-select-all-label` | Label element that stores the group summary template. |
+| `data-group-select-all-selector` / `groupSelectAllSelector` | `.list-group-select-all` | Group-level select-all checkbox selector. |
+| `data-group-text-attribute` / `groupTextAttribute` | `data-select-all-text` | Attribute containing the group summary template text. |
+| `data-group-text-count-token` / `groupTextCountToken` | `__COUNT__` | Placeholder replaced with the visible item count in group text. |
+| `data-group-text-selector` / `groupTextSelector` | `.list-group-select-all-text` | Element whose text is updated with the visible item count. |
+| `data-group-toggle-container-selector` / `groupToggleContainerSelector` | `.list-group-select-all-container` | Container hidden when a group has no visible items. |
+| `data-item-input-name` / `itemInputName` | `itemIds` | Checkbox name used for bulk selection. |
+| `data-items-selector` / `itemsSelector` | `#items` | Summary element shown when no bulk selection is active. |
+| `data-min-selected-items` / `minSelectedItems` | `2` | Minimum selected item count required before bulk actions become active. |
+| `data-no-results-action-query-name` / `noResultsActionQueryName` | `suggestion` | Query-string name appended when navigating to the no-results action. |
+| `data-no-results-action-selector` / `noResultsActionSelector` | `#btnCreate` | Action invoked when Enter is pressed and no visible result matches. |
+| `data-normalize-search` / `normalizeSearch` | `false` | Removes diacritics before comparing search text. |
+| `data-search-alert-selector` / `searchAlertSelector` | `#list-alert` | Alert shown when search or filters produce no visible matches. |
+| `data-search-box-selector` / `searchBoxSelector` | `#search-box` | Search input selector. |
+| `data-search-dom-selector` / `searchDomSelector` | `.list-item-search-text` | Descendant elements whose text is added to the search index. |
+| `data-search-first-element-classes` / `searchFirstElementClasses` | empty | Extra classes applied to the first visible result. |
+| `data-search-group-selector` / `searchGroupSelector` | `.list-management-group` | Group containers hidden when none of their child results remain visible. |
+| `data-search-group-visible-selector` / `searchGroupVisibleSelector` | `searchResultSelector` | Visible child selector used to determine whether a group should remain visible. |
+| `data-search-result-selector` / `searchResultSelector` | `[data-filter-value]` | Searchable result elements inside the root container. |
+| `data-search-summary-selector` / `searchSummarySelector` | `#list-summary` | Summary element updated with visible and total result counts. |
+| `data-search-summary-text-attribute` / `searchSummaryTextAttribute` | `data-summary-text` | Attribute containing the summary template. |
+| `data-search-summary-total-attribute` / `searchSummaryTotalAttribute` | `data-total-count` | Attribute containing the total result count. |
+| `data-search-text-attribute` / `searchTextAttribute` | `data-filter-value` | Attribute read from each result to build searchable text. Use `textContent` to search rendered text directly. |
+| `data-select-all-selector` / `selectAllSelector` | `#select-all` | Main select-all checkbox selector. |
+| `data-selected-items-selector` / `selectedItemsSelector` | `#selected-items` | Summary element shown while a bulk selection is active. |
+| `data-selected-label` / `selectedLabel` | `selected` | Text appended to the selected item count. |
+| `data-selection-enabled` / `selectionEnabled` | `true` when selection controls exist, otherwise `false` | Enables bulk-selection behavior. |
+| `data-single-result-action-selector` / `singleResultActionSelector` | `.list-item-action` | Action opened when Enter is pressed on a matching result. |
+| `data-single-result-action-mode` / `singleResultActionMode` | `single` | Uses the action only when exactly one result matches; set to `first` to always use the first visible result. |
+| `data-submit-bulk-action-name` / `submitBulkActionName` | `submit.BulkAction` | Hidden submit button name used to post the current bulk action. |
+| `data-submit-filter-name` / `submitFilterName` | `submit.Filter` | Hidden submit button name used for filter submits. |
+
+### Client-side filters
+
+Client-side filters are opt-in and work together with `clientSideSearch`.
+
+```html
+<select data-list-filter data-list-filter-attribute="data-status">
+    <option value="" selected>Any status</option>
+    <option value="enabled">Enabled only</option>
+</select>
+```
+
+```html
+<a data-list-filter-link
+   data-list-filter-attribute="data-category"
+   data-list-filter-value="content"
+   href="#content">
+    Content
+</a>
+```
+
+Use `data-list-filter-mode="exclude"` to hide matching items instead of keeping them.
+
+### Events
+
+- Dispatch `listmanagement:update` on the root element to re-run the current search and filter state.
+- Listen for `listmanagement:updated` to react after the visible result set changes.
   
 ## Usage
 

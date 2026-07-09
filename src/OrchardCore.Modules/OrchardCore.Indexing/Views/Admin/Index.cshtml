@@ -11,7 +11,7 @@
 </zone>
 
 @* The form is necessary to generate an antiforgery token for the delete and toggle actions. *@
-<form asp-action="Index" method="post" class="no-multisubmit">
+<form asp-action="Index" method="post" class="no-multisubmit" data-list-management data-client-side-search="true" data-selected-label="@T["selected"]">
     <input type="submit" name="submit.Filter" id="submitFilter" class="visually-hidden" />
     <input asp-for="Options.BulkAction" type="hidden" />
     <input type="submit" name="submit.BulkAction" class="visually-hidden" />
@@ -81,7 +81,7 @@
                                 </div>
                             </div>
 
-                            <div class="flex-grow-1">
+                            <div class="flex-grow-1 list-item-search-text">
                                 @await DisplayAsync(entry.Shape)
                             </div>
                         </li>
@@ -141,10 +141,4 @@
     </div>
 </div>
 
-<script asp-src="~/OrchardCore.Indexing/Scripts/admin-ui.min.js" debug-src="~/OrchardCore.Indexing/Scripts/admin-ui.min.js" asp-name="generic-admin-ui" at="Foot"></script>
-
-<script at="Foot" depends-on="generic-admin-ui">
-    document.addEventListener('DOMContentLoaded', () => {
-        AdminIndexList.initialize('@T["selected"]');
-    });
-</script>
+<script asp-name="list-management" at="Foot"></script>

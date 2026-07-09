@@ -3,6 +3,10 @@
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Recipes"])</h1></zone>
 
+<div data-list-management
+     data-client-side-search="true"
+     data-search-result-selector=".recipe-group > ul > li"
+     data-search-group-visible-selector="ul > li">
 <p class="alert alert-warning">@T["The current tenant will be reloaded when the recipe is executed."]</p>
 
 <form autocomplete="off" class="position-sticky action-bar">
@@ -29,7 +33,7 @@
             {
                 var groupName = recipeGroup.Key;
 
-                <div class="recipe-group">
+                <div class="recipe-group list-management-group">
                     @{
                         var groupRecipeNames = string.Join(" ", recipeGroup.Select(r => r.DisplayName));
                     }
@@ -41,7 +45,7 @@
                                 <div class="row">
                                     <div class="col">
                                         <a id="btn-run-@Html.GenerateIdFromName(recipe.Name)" asp-action="Execute" asp-route-basePath="@recipe.BasePath" asp-route-fileName="@recipe.FileName" role="button" class="btn btn-primary btn-sm float-end" data-title="@T["Recipes"]" data-message="@T["Are you sure you want to run the recipe?"]" data-ok-text="@T["Yes"]" data-cancel-text="@T["No"]" data-ok-class="btn-primary" data-url-af="RemoveUrl UnsafeUrl">@T["Run"]</a>
-                                        <h6>
+                                        <h6 class="list-item-search-text">
                                             @recipe.DisplayName
                                             @if (recipe.IsSetupRecipe)
                                             {
@@ -59,17 +63,18 @@
                                                 }
                                             }
                                         </h6>
-                                        <small class="text-muted">@recipe.Description</small>
+                                        <small class="text-muted list-item-search-text">@recipe.Description</small>
                                     </div>
                                 </div>
                             </li>
                         }
                     </ul>
                 </div>
-                <div id="list-alert" class="alert alert-info d-none" role="alert">
-                    @T["<strong>Nothing here!</strong> Your search returned no results."]
-                </div>
             }
+
+            <div id="list-alert" class="alert alert-info d-none" role="alert">
+                @T["<strong>Nothing here!</strong> Your search returned no results."]
+            </div>
         }
         else
         {
@@ -79,55 +84,5 @@
         }
     }
 </form>
-<script at="Foot">
-    function onDocumentReady(callback) {
-        if (document.readyState !== 'loading') {
-            callback();
-        } else {
-            document.addEventListener('DOMContentLoaded', callback);
-        }
-    }
-
-    onDocumentReady(function () {
-        var searchBox = document.getElementById('search-box');
-        if (!searchBox) {
-            return;
-        }
-
-        function isVisible(element) {
-            return !!(element.offsetWidth || element.offsetHeight || element.getClientRects().length);
-        }
-
-        // On each keypress filter the list of features
-        searchBox.addEventListener('keyup', function (e) {
-            var search = this.value.toLowerCase();
-            var elementsToFilter = document.querySelectorAll("[data-filter-value]");
-
-            // On ESC, clear the search box and display all features
-            if (e.key === "Escape" || search == '') {
-                searchBox.value = '';
-                elementsToFilter.forEach(function (element) {
-                    element.style.display = '';
-                });
-            }
-            else {
-                elementsToFilter.forEach(function (element) {
-                    var text = element.dataset.filterValue.toLowerCase();
-                    var found = text.indexOf(search) > -1;
-                    element.style.display = found ? '' : 'none';
-                });
-
-                var visible = Array.from(document.querySelectorAll('.recipe-group > ul > li')).filter(isVisible);
-                var listAlert = document.getElementById('list-alert');
-                if (listAlert) {
-                    if (visible.length == 0) {
-                        listAlert.classList.remove("d-none");
-                    }
-                    else {
-                        listAlert.classList.add("d-none");
-                    }
-                }
-            }
-        });
-    });
-</script>
+</div>
+<script asp-name="list-management" at="Foot"></script>
