@@ -14,7 +14,7 @@ public class MediaBlobStorageOptionsConfigurationTests
     private const string ValidConnectionString = "DefaultEndpointsProtocol=https;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;";
 
     [Fact]
-    public void ParsesLiquidTemplate_AndLowercasesContainerName()
+    public void ParsesLiquidTemplate_LowercasesContainerName_Succeeds()
     {
         var (config, logger) = CreateConfiguration(new Dictionary<string, string>
         {
@@ -69,7 +69,7 @@ public class MediaBlobStorageOptionsConfigurationTests
     }
 
     [Fact]
-    public void CreateContainer_RoundTripsFromConfig_WhenFalse()
+    public void CreateContainer_False_RoundTripsFromConfig()
     {
         var (config, _) = CreateConfiguration(new Dictionary<string, string>
         {
@@ -85,7 +85,7 @@ public class MediaBlobStorageOptionsConfigurationTests
     }
 
     [Fact]
-    public void RemoveContainer_AndRemoveFilesFromBasePath_RoundTripFromConfig()
+    public void RemoveContainer_RemoveFilesFromBasePath_RoundTripFromConfig()
     {
         var (config, _) = CreateConfiguration(new Dictionary<string, string>
         {

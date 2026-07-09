@@ -33,7 +33,7 @@ public class ContainedPartHandlerTests
     }
 
     [Fact]
-    public async Task ValidatingAsync_ShouldNotFail_WhenContentTypeIsNotContained()
+    public async Task ValidatingAsync_ContentTypeIsNotContained_NotFail()
     {
         _contentDefinitionManager
             .Setup(m => m.ListTypeDefinitionsAsync())
@@ -48,7 +48,7 @@ public class ContainedPartHandlerTests
     }
 
     [Fact]
-    public async Task ValidatingAsync_ShouldNotFail_WhenContainedTypeHasNoContainedPart()
+    public async Task ValidatingAsync_ContainedTypeHasNoContainedPart_NotFail()
     {
         SetupBlogWithBlogPostContainedType();
 
@@ -61,7 +61,7 @@ public class ContainedPartHandlerTests
     }
 
     [Fact]
-    public async Task ValidatingAsync_ShouldFail_WhenListContentItemIdIsEmpty()
+    public async Task ValidatingAsync_ListContentItemIdIsEmpty_Failss()
     {
         SetupBlogWithBlogPostContainedType();
 
@@ -81,7 +81,7 @@ public class ContainedPartHandlerTests
     }
 
     [Fact]
-    public async Task ValidatingAsync_ShouldNotFail_WhenListContentTypeIsEmpty()
+    public async Task ValidatingAsync_ListContentTypeIsEmpty_NotFail()
     {
         SetupBlogWithBlogPostContainedType();
 
@@ -101,7 +101,7 @@ public class ContainedPartHandlerTests
     }
 
     [Fact]
-    public async Task ValidatingAsync_ShouldNotFail_WhenContainedPartIsValid()
+    public async Task ValidatingAsync_ContainedPartIsValid_NotFail()
     {
         SetupBlogWithBlogPostContainedType();
 
@@ -121,7 +121,7 @@ public class ContainedPartHandlerTests
     }
 
     [Fact]
-    public async Task ValidatingAsync_ShouldNotFail_WhenContentTypeIsNotInContainedTypes()
+    public async Task ValidatingAsync_ContentTypeIsNotInContainedTypes_NotFail()
     {
         SetupBlogWithBlogPostContainedType();
 
@@ -134,7 +134,7 @@ public class ContainedPartHandlerTests
     }
 
     [Fact]
-    public async Task ValidatingAsync_ShouldNotFail_WhenContentTypeIsCreatableWithoutContainedPart()
+    public async Task ValidatingAsync_ContentTypeIsCreatableWithoutContainedPart_NotFail()
     {
         SetupBlogWithBlogPostContainedType(creatable: true);
 
@@ -147,7 +147,7 @@ public class ContainedPartHandlerTests
     }
 
     [Fact]
-    public async Task ValidatingAsync_ShouldNotFail_WhenCreatableTypeHasEmptyContainedPart()
+    public async Task ValidatingAsync_CreatableTypeHasEmptyContainedPart_NotFail()
     {
         SetupBlogWithBlogPostContainedType(creatable: true);
 
@@ -166,7 +166,7 @@ public class ContainedPartHandlerTests
     }
 
     [Fact]
-    public async Task ValidatingAsync_ShouldFail_WhenNotCreatableTypeHasPartialContainedPartData()
+    public async Task ValidatingAsync_NotCreatableTypeHasPartialContainedPartData_Failss()
     {
         SetupBlogWithBlogPostContainedType(creatable: false);
 

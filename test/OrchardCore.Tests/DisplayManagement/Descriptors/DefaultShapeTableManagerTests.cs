@@ -315,14 +315,14 @@ public class DefaultShapeTableManagerTests : IDisposable
     }
 
     [Fact]
-    public void ManagerCanBeResolved()
+    public void ManagerCanBeResolved_Default_Succeeds()
     {
         var manager = _serviceProvider.GetService<IShapeTableManager>();
         Assert.NotNull(manager);
     }
 
     [Fact]
-    public async Task DefaultShapeTableIsReturnedForNullOrEmpty()
+    public async Task DefaultShapeTableIsReturnedForNullOrEmpty_Default_Succeeds()
     {
         var manager = _serviceProvider.GetService<IShapeTableManager>();
         var shapeTable1 = await manager.GetShapeTableAsync(null);
@@ -332,7 +332,7 @@ public class DefaultShapeTableManagerTests : IDisposable
     }
 
     [Fact]
-    public async Task CallbackAlterationsContributeToDescriptor()
+    public async Task CallbackAlterationsContributeToDescriptor_Default_Succeeds()
     {
         Func<ShapeCreatingContext, Task> cb1 = x => { return Task.CompletedTask; };
         Func<ShapeCreatedContext, Task> cb2 = x => { return Task.CompletedTask; };
@@ -357,18 +357,23 @@ public class DefaultShapeTableManagerTests : IDisposable
     }
 
     [Fact]
-    public async Task DefaultPlacementIsReturnedByDefault()
+    public async Task DefaultPlacementIsReturnedByDefault_Default_Succeeds()
     {
+        var shapeType = nameof(DefaultPlacementIsReturnedByDefault_Default_Succeeds);
+
+        _serviceProvider.GetService<TestShapeProvider>().Discover =
+            builder => builder.Describe(shapeType).From(TestFeature());
+
         var manager = _serviceProvider.GetService<IShapeTableManager>();
 
-        var hello = (await manager.GetShapeTableAsync(null)).Descriptors["Hello"];
+        var hello = (await manager.GetShapeTableAsync(null)).Descriptors[shapeType];
         hello.DefaultPlacement = "Header:5";
         var result = hello.Placement(null);
         Assert.Equal("Header:5", result.Location);
     }
 
     [Fact]
-    public async Task DescribedPlacementIsReturnedIfNotNull()
+    public async Task DescribedPlacementIsReturnedIfNotNull_Default_Succeeds()
     {
         var shapeDetail = new ShapePlacementContext("Foo", "Detail", string.Empty, null);
         var shapeSummary = new ShapePlacementContext("Foo", "Summary", string.Empty, null);
@@ -398,7 +403,7 @@ public class DefaultShapeTableManagerTests : IDisposable
     }
 
     [Fact]
-    public async Task TwoArgumentVariationDoesSameThing()
+    public async Task TwoArgumentVariationDoesSameThing_Default_Succeeds()
     {
         var shapeDetail = new ShapePlacementContext("Foo", "Detail", string.Empty, null);
         var shapeSummary = new ShapePlacementContext("Foo", "Summary", string.Empty, null);
@@ -429,7 +434,7 @@ public class DefaultShapeTableManagerTests : IDisposable
 
     // "Path not supported yet"
     [Fact]
-    internal async Task PathConstraintShouldMatch()
+    internal async Task PathConstraint_Default_Match()
     {
         // all path have a trailing / as per the current implementation
         // todo: (sebros) find a way to 'use' the current implementation in DefaultContentDisplay.BindPlacement instead of emulating it
@@ -451,13 +456,14 @@ public class DefaultShapeTableManagerTests : IDisposable
             var path = rule.Item1;
             var context = rule.Item2;
             var match = rule.Item3;
+            var shapeType = nameof(PathConstraint_Default_Match);
 
             _serviceProvider.GetService<TestShapeProvider>().Discover =
-                builder => builder.Describe("Hello").From(TestFeature())
+                builder => builder.Describe(shapeType).From(TestFeature())
                                .Placement(ctx => true, new PlacementInfo("Match"));
 
             var manager = _serviceProvider.GetService<IShapeTableManager>();
-            var hello = (await manager.GetShapeTableAsync(null)).Descriptors["Hello"];
+            var hello = (await manager.GetShapeTableAsync(null)).Descriptors[shapeType];
             //var result = hello.Placement(new ShapePlacementContext { Path = context });
 
             //if (match)
@@ -472,7 +478,7 @@ public class DefaultShapeTableManagerTests : IDisposable
     }
 
     [Fact]
-    public async Task OnlyShapesFromTheGivenThemeAreProvided()
+    public async Task OnlyShapesFromTheGivenThemeAreProvided_Default_Succeeds()
     {
         _serviceProvider.GetService<TestShapeProvider>();
         var manager = _serviceProvider.GetService<IShapeTableManager>();
@@ -483,7 +489,7 @@ public class DefaultShapeTableManagerTests : IDisposable
     }
 
     [Fact]
-    public async Task ShapesFromTheBaseThemeAreProvided()
+    public async Task ShapesFromTheBaseThemeAreProvided_Default_Succeeds()
     {
         _serviceProvider.GetService<TestShapeProvider>();
         var manager = _serviceProvider.GetService<IShapeTableManager>();
@@ -494,7 +500,7 @@ public class DefaultShapeTableManagerTests : IDisposable
     }
 
     [Fact]
-    public async Task DerivedThemesCanOverrideBaseThemeShapeBindings()
+    public async Task DerivedThemesCanOverrideBaseThemeShapeBindings_Default_Succeeds()
     {
         _serviceProvider.GetService<TestShapeProvider>();
         var manager = _serviceProvider.GetService<IShapeTableManager>();
@@ -510,7 +516,7 @@ public class DefaultShapeTableManagerTests : IDisposable
     /// Related to PR: https://github.com/OrchardCMS/OrchardCore/pull/18502
     /// </summary>
     [Fact]
-    public async Task ShapeTableProviderRegisteredInMultipleFeaturesIsProcessedForEachFeature()
+    public async Task ShapeTableProviderRegisteredInMultipleFeaturesIsProcessedForEachFeature_Default_Succeeds()
     {
         // Arrange
         IServiceCollection serviceCollection = new ServiceCollection();

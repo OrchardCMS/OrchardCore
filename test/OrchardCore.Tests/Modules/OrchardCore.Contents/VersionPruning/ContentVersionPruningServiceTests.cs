@@ -84,7 +84,7 @@ public class ContentVersionPruningServiceTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task PruneVersionsAsync_KeepsNewestAndVersionsWithinRetention()
+    public async Task PruneVersionsAsync_Default_KeepssNewestAndVersionsWithinRetention()
     {
         await SaveVersionsAsync(
             Version("item-1", "v1", "Blog", _now.AddDays(-90)),
@@ -107,7 +107,7 @@ public class ContentVersionPruningServiceTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task PruneVersionsAsync_OnlyPrunesSelectedContentTypes()
+    public async Task PruneVersionsAsync_LyPrunesSelectedContentTypes_Succeeds()
     {
         await SaveVersionsAsync(
             Version("blog-1", "b1", "Blog", _now.AddDays(-90)),
@@ -131,7 +131,7 @@ public class ContentVersionPruningServiceTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task PruneVersionsAsync_NeverDeletesLatestOrPublished()
+    public async Task PruneVersionsAsync_NeverDeletesLatestOrPublished_Succeeds()
     {
         await SaveVersionsAsync(
             new ContentItem { ContentItemId = "item-1", ContentItemVersionId = "v-latest", ContentType = "Blog", ModifiedUtc = _now.AddDays(-90), Latest = true },
@@ -174,7 +174,7 @@ public class ContentVersionPruningServiceTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task PruneVersionsAsync_ProcessesMoreThanOneBatch()
+    public async Task PruneVersionsAsync_ProcessesMoreThanOneBatch_Succeeds()
     {
         // Exercises the deletion batching/flush path with more candidates than the internal batch size.
         const int versionCount = 250;
@@ -200,7 +200,7 @@ public class ContentVersionPruningServiceTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task PruneVersionsAsync_ProcessesManyContentItemsAcrossBatches()
+    public async Task PruneVersionsAsync_ProcessesManyContentItemsAcrossBatches_Succeeds()
     {
         // Spans more content items than the per-query content item batch size to verify that the
         // "keep N newest" rule is correctly applied per item across batch boundaries.

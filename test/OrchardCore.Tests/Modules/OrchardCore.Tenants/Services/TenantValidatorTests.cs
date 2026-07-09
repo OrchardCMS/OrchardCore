@@ -29,7 +29,7 @@ public class TenantValidatorTests : SiteContext
     [InlineData("Tenant9", "tenant9", "", "Feature Profile", new string[] { })]
     [InlineData("Tenant9", "", "example6.com", "Feature Profile", new string[] { })]
     [InlineData("Tenant9", "tenant9", "example6.com", "Feature Profile", new string[] { })]
-    public async Task TenantValidationFailsIfInvalidConfigurationsWasProvided(string name, string urlPrefix, string hostName, string featureProfile, string[] errorMessages)
+    public async Task TenantValidationFailsIfInvalidConfigurationsWasProvided_Default_Succeeds(string name, string urlPrefix, string hostName, string featureProfile, string[] errorMessages)
     {
         // Arrange
         await ShellHost.InitializeAsync();
@@ -61,7 +61,7 @@ public class TenantValidatorTests : SiteContext
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
-    public async Task DuplicateTenantHostOrPrefixShouldFailValidation(bool isNewTenant)
+    public async Task DuplicateTenantHostOrPrefix_Default_FailssValidation(bool isNewTenant)
     {
         // Arrange
         await ShellHost.InitializeAsync();
@@ -96,7 +96,7 @@ public class TenantValidatorTests : SiteContext
     }
 
     [Fact]
-    public async Task RequireTablePrefixShouldFailValidation_WhenProviderSupportsPrefixes()
+    public async Task RequireTablePrefix_ProviderSupportsPrefixes_FailssValidation()
     {
         // Arrange
         await ShellHost.InitializeAsync();
@@ -122,7 +122,7 @@ public class TenantValidatorTests : SiteContext
     }
 
     [Fact]
-    public async Task RequireTablePrefixShouldNotFailValidation_WhenProviderDoesNotSupportPrefixes()
+    public async Task RequireTablePrefix_ProviderDoesNotSupportPrefixes_NotFailValidation()
     {
         // Arrange
         await ShellHost.InitializeAsync();
@@ -146,7 +146,7 @@ public class TenantValidatorTests : SiteContext
     }
 
     [Fact]
-    public async Task TablePrefixPatternShouldPopulatePrefix_WhenConfigured()
+    public async Task TablePrefixPattern_Configured_PopulatessPrefix()
     {
         // Arrange
         await ShellHost.InitializeAsync();
@@ -170,7 +170,7 @@ public class TenantValidatorTests : SiteContext
     }
 
     [Fact]
-    public async Task InvalidConfiguredTablePrefixPatternShouldFailValidation()
+    public async Task InvalidConfiguredTablePrefixPattern_Default_FailssValidation()
     {
         // Arrange
         await ShellHost.InitializeAsync();
@@ -195,7 +195,7 @@ public class TenantValidatorTests : SiteContext
     }
 
     [Fact]
-    public async Task InvalidSchemaShouldFailValidation()
+    public async Task InvalidSchema_Default_FailssValidation()
     {
         // Arrange
         await ShellHost.InitializeAsync();

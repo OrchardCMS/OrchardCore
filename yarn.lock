@@ -2,7 +2,7 @@
 # Manual changes might be lost - proceed with caution!
 
 __metadata:
-  version: 8
+  version: 10
   cacheKey: 10
 
 "@babel/cli@npm:^7.22.10":
@@ -1290,12 +1290,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@crestapps/bootstrap-select@npm:1.2.0":
-  version: 1.2.0
-  resolution: "@crestapps/bootstrap-select@npm:1.2.0"
+"@crestapps/bootstrap-select@npm:1.2.1":
+  version: 1.2.1
+  resolution: "@crestapps/bootstrap-select@npm:1.2.1"
   peerDependencies:
     bootstrap: ">=5.0.0"
-  checksum: 10/79dece50bd3e3b51706af4f37051422809cfffe2a8fad4453f73a7047cf2e52db84c3d0185550af77ed4dfce0690317f2e8325e1c7e9249b5001e2ebec7985f0
+  checksum: 10/be1357dc83519aa2d9cb780aa569252477cc16a2d97ddd26105b8e43c6abd8fcd4558bd55b0bdca2405fa547f48a96effa5ef5a2a4206ac3506e3b7e8afdf6f5
   languageName: node
   linkType: hard
 
@@ -1680,10 +1680,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fortawesome/fontawesome-free@npm:7.2.0":
-  version: 7.2.0
-  resolution: "@fortawesome/fontawesome-free@npm:7.2.0"
-  checksum: 10/a5c1aedc57017d57f7d836ab453b797c8423a11db4f06eae892f84544fa2a9c1efe322e47d49f83113552d4ddb104cab831bfaa8dc41ea782f8346553fa4c83f
+"@fortawesome/fontawesome-free@npm:7.3.0":
+  version: 7.3.0
+  resolution: "@fortawesome/fontawesome-free@npm:7.3.0"
+  checksum: 10/256440bd43917a3e90c412d9b8ad27eb53804a7815dfd4623d9e6895b4967182b59e95953cd690f685e73887892399e17195962c61ffe6ca86af3d52a5506535
   languageName: node
   linkType: hard
 
@@ -2494,8 +2494,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@orchardcore/resources@workspace:src/OrchardCore.Modules/OrchardCore.Resources/Assets"
   dependencies:
-    "@crestapps/bootstrap-select": "npm:1.2.0"
-    "@fortawesome/fontawesome-free": "npm:7.2.0"
+    "@crestapps/bootstrap-select": "npm:1.2.1"
+    "@fortawesome/fontawesome-free": "npm:7.3.0"
     "@fortawesome/fontawesome-free-5.15.4": "npm:@fortawesome/fontawesome-free@5.15.4"
     "@fortawesome/fontawesome-free-6.6.0": "npm:@fortawesome/fontawesome-free@6.6.0"
     "@fortawesome/fontawesome-free-6.7.2": "npm:@fortawesome/fontawesome-free@6.7.2"
@@ -2609,7 +2609,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@orchardcore/theadmin@workspace:src/OrchardCore.Themes/TheAdmin/Assets"
   dependencies:
-    "@crestapps/bootstrap-select": "npm:1.2.0"
+    "@crestapps/bootstrap-select": "npm:1.2.1"
     "@popperjs/core": "npm:2.11.8"
     "@types/jquery": "npm:3.5.32"
     "@types/js-cookie": "npm:^3.0.6"
