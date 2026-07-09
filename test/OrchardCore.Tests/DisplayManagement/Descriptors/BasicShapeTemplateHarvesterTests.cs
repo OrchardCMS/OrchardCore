@@ -13,44 +13,44 @@ public class BasicShapeTemplateHarvesterTests
     }
 
     [Fact]
-    public void BasicFileNamesComeBackAsShapes()
+    public void BasicFileNamesComeBackAsShapes_Default_Succeeds()
     {
         VerifyShapeType("Views", "Hello", "Hello");
         VerifyShapeType("Views", "World", "World");
     }
 
     [Fact]
-    public void DashBecomesBreakingSeperator()
+    public void DashBecomesBreakingSeperator_Default_Succeeds()
     {
         VerifyShapeType("Views", "Hello-World", "Hello__World");
     }
 
     [Fact]
-    public void DotBecomesNonBreakingSeperator()
+    public void DotBecomesNonBreakingSeperator_Default_Succeeds()
     {
         VerifyShapeType("Views", "Hello.World", "Hello_World");
     }
 
     [Fact]
-    public void DefaultItemsContentTemplate()
+    public void DefaultItemsContentTemplate_Default_Succeeds()
     {
         VerifyShapeType("Views/Items", "Content", "Content");
     }
 
     [Fact]
-    public void ImplicitSpecializationOfItemsContentTemplate()
+    public void ImplicitSpecializationOfItemsContentTemplate_Default_Succeeds()
     {
         VerifyShapeType("Views/Items", "MyType", "MyType");
     }
 
     [Fact]
-    public void ExplicitSpecializationOfItemsContentTemplate()
+    public void ExplicitSpecializationOfItemsContentTemplate_Default_Succeeds()
     {
         VerifyShapeType("Views/Items", "Content-MyType", "Content__MyType");
     }
 
     [Fact]
-    public void ContentItemDisplayTypes()
+    public void ContentItemDisplayTypes_Default_Succeeds()
     {
         VerifyShapeType("Views/Items", "Content", "Content");
         VerifyShapeType("Views/Items", "Content.Summary", "Content_Summary");
@@ -58,7 +58,7 @@ public class BasicShapeTemplateHarvesterTests
     }
 
     [Fact]
-    public void ExplicitSpecializationMixedWithDisplayTypes()
+    public void ExplicitSpecializationMixedWithDisplayTypes_Default_Succeeds()
     {
         VerifyShapeType("Views/Items", "Content-MyType", "Content__MyType");
         VerifyShapeType("Views/Items", "Content-MyType.Summary", "Content_Summary__MyType");
@@ -66,25 +66,25 @@ public class BasicShapeTemplateHarvesterTests
     }
 
     [Fact]
-    public void DefaultItemsContentTemplate2()
+    public void DefaultItemsContentTemplate2_Default_Succeeds()
     {
         VerifyShapeType("Views", "Content", "Content");
     }
 
     [Fact]
-    public void ImplicitSpecializationOfItemsContentTemplate2()
+    public void ImplicitSpecializationOfItemsContentTemplate2_Default_Succeeds()
     {
         VerifyShapeType("Views", "MyType", "MyType");
     }
 
     [Fact]
-    public void ExplicitSpecializationOfItemsContentTemplate2()
+    public void ExplicitSpecializationOfItemsContentTemplate2_Default_Succeeds()
     {
         VerifyShapeType("Views", "Content-MyType", "Content__MyType");
     }
 
     [Fact]
-    public void ContentItemDisplayTypes2()
+    public void ContentItemDisplayTypes2_Default_Succeeds()
     {
         VerifyShapeType("Views", "Content", "Content");
         VerifyShapeType("Views", "Content.Summary", "Content_Summary");
@@ -92,7 +92,7 @@ public class BasicShapeTemplateHarvesterTests
     }
 
     [Fact]
-    public void ExplicitSpecializationMixedWithDisplayTypes2()
+    public void ExplicitSpecializationMixedWithDisplayTypes2_Default_Succeeds()
     {
         VerifyShapeType("Views", "Content-MyType", "Content__MyType");
         VerifyShapeType("Views", "Content-MyType.Summary", "Content_Summary__MyType");
@@ -100,7 +100,7 @@ public class BasicShapeTemplateHarvesterTests
     }
 
     [Fact]
-    public void MultipleDotsAreNormalizedToUnderscore()
+    public void MultipleDotsAreNormalizedToUnderscore_Default_Succeeds()
     {
         VerifyShapeType("Views/Parts", "Common.Body", "Parts_Common_Body");
         VerifyShapeType("Views/Parts", "Common.Body.Summary", "Parts_Common_Body_Summary");
@@ -108,7 +108,7 @@ public class BasicShapeTemplateHarvesterTests
     }
 
     [Fact]
-    public void MultipleDotsAreNormalizedToUnderscore2()
+    public void MultipleDotsAreNormalizedToUnderscore2_Default_Succeeds()
     {
         VerifyShapeType("Views", "Parts.Common.Body", "Parts_Common_Body");
         VerifyShapeType("Views", "Parts.Common.Body.Summary", "Parts_Common_Body_Summary");
@@ -116,14 +116,14 @@ public class BasicShapeTemplateHarvesterTests
     }
 
     [Fact]
-    public void FieldNamesMayBeInSubfolderOrPrefixed()
+    public void FieldNamesMayBeInSubfolderOrPrefixed_Default_Succeeds()
     {
         VerifyShapeType("Views/Fields", "Common.Text", "Fields_Common_Text");
         VerifyShapeType("Views", "Fields.Common.Text", "Fields_Common_Text");
     }
 
     [Fact]
-    public void FieldNamesMayHaveLongOrShortAlternates()
+    public void FieldNamesMayHaveLongOrShortAlternates_Default_Succeeds()
     {
         VerifyShapeType("Views/Fields", "Common.Text-FirstName", "Fields_Common_Text__FirstName");
         VerifyShapeType("Views/Fields", "Common.Text-FirstName.SpecialCase", "Fields_Common_Text_SpecialCase__FirstName");

@@ -69,7 +69,8 @@ public sealed class Startup : StartupBase
 
         // Html Field
         services.AddContentField<HtmlField>()
-            .UseDisplayDriver<HtmlFieldDisplayDriver>();
+            .UseDisplayDriver<HtmlFieldDisplayDriver>()
+            .AddHandler<HtmlFieldHandler>();
         services.AddScoped<IContentPartFieldDefinitionDisplayDriver, HtmlFieldSettingsDriver>();
         services.AddScoped<IContentPartFieldDefinitionDisplayDriver, HtmlFieldTrumbowygEditorSettingsDriver>();
         services.AddScoped<IContentPartFieldDefinitionDisplayDriver, HtmlFieldMonacoEditorSettingsDriver>();

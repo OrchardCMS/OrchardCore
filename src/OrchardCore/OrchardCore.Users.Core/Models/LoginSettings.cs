@@ -12,6 +12,8 @@ public class LoginSettings
 
     public bool AllowChangingEmail { get; set; }
 
+    public bool AllowRememberMe { get; set; } = true;
+
     [DefaultValue(true)]
     public bool AllowChangingPhoneNumber { get; set; } = true;
 }

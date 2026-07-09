@@ -43,9 +43,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="NetVips" />
+    <PackageReference Include="NetVips.Native" />
     <PackageReference Include="Shortcodes" />
-    <PackageReference Include="SixLabors.ImageSharp.Web" />
-    <PackageReference Include="System.IO.Hashing" />
   </ItemGroup>
 
   <ItemGroup>

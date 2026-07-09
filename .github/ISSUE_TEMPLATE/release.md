@@ -27,6 +27,7 @@ assignees: ''
       - Highlights and goals of the release.
       - Prerequisites for running the new version.
       - Upgrade steps and any breaking changes.
+  - **Update Analyzer Release Tracking Files**: For analyzer projects (for example, `src/OrchardCore/OrchardCore.SourceGenerators`), move the rules being released from `AnalyzerReleases.Unshipped.md` to `AnalyzerReleases.Shipped.md`. Keep `AnalyzerReleases.Unshipped.md` checked in and reserve it for rules that have not shipped yet.
   - **Update Documentation Navigation**: Add the release notes page to `mkdocs.yml` navigation and remove it from `not_in_nav`.
   - **Version Mentions**: Update all references to the new version throughout the documentation, including:
     - [Status in the root README](https://docs.orchardcore.net/en/latest/#status)
@@ -56,7 +57,7 @@ assignees: ''
 ```
 cd \code\orchardcore
 
-dotnet build -c Release -f net10.0 -p:Version=3.0.0
+dotnet build -c Release -p:Version=3.0.0
 dotnet pack -c Release --no-build -p:Version=3.0.0 -p:TreatWarningsAsErrors=false
 
 mkdir c:\temp\orchardcorefeed
@@ -66,8 +67,8 @@ dotnet new install OrchardCore.ProjectTemplates::3.0.0 --nuget-source c:\temp\or
 
 cd c:\temp\orchardcorefeed
 mkdir occms
-dotnet new occms
 cd occms
+dotnet new occms
 dotnet nuget add source c:\temp\orchardcorefeed
 dotnet run occms
 ```

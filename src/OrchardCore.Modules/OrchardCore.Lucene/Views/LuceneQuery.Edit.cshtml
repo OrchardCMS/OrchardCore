@@ -4,30 +4,44 @@
 <script asp-name="codemirror" at="Foot"></script>
 <script asp-name="codemirror-mode-javascript" at="Foot"></script>
 
-<div class="mb-3">
-    <label asp-for="Index" class="form-label">@T["Index"]</label>
+<div class="ocat-wrapper">
+    <label asp-for="Index" class="ocat-label">@T["Index"]</label>
+    <div class="ocat-end">
     <select asp-for="Index" class="form-select" asp-items="Model.Indexes">
         <option value="">@T["Select an index"]</option>
     </select>
     <span class="hint">@T["The Lucene index to search on"]</span>
+    </div>
 </div>
 
-<div class="mb-3">
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
     <div class="form-check">
         <input type="checkbox" class="form-check-input" asp-for="ReturnContentItems" checked="@Model.ReturnContentItems" />
         <label class="form-check-label" asp-for="ReturnContentItems">@T["Return Content Items"]</label>
         <span class="hint dashed">@T["Check to return the corresponding content items."]</span>
     </div>
+    </div>
 </div>
 
-<div class="mb-3">
-    <label asp-for="Query" class="form-label">@T["Query"]</label>
+<div class="ocat-wrapper">
+    <label asp-for="Query" class="ocat-label">@T["Query"]</label>
+    <div class="ocat-end">
     <textarea asp-for="Query" rows="12" class="form-control"></textarea>
     <span class="hint">@T["The search query uses the Lucene format. Some documentation can be found <a target=\"_blank\" href=\"{0}\">here</a>.", "https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html"]</span>
+    </div>
 </div>
 
 <script at="Foot">
-    $(function () {
+    function onDocumentReady(callback) {
+        if (document.readyState !== 'loading') {
+            callback();
+        } else {
+            document.addEventListener('DOMContentLoaded', callback);
+        }
+    }
+
+    onDocumentReady(function () {
         CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Query)'), { mode: "javascript", json: true, lineNumbers: true, viewportMargin: Infinity });
     });
 </script>
