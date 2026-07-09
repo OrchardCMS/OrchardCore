@@ -670,7 +670,7 @@ public sealed class ResourceManagementOptionsConfiguration
 
         manifest
             .DefineScript("codemirror-addon-hint-sql-hint")
-            .SetDependencies("codemirror-addon-hint-show-hint")
+            .SetDependencies("codemirror-mode-sql", "codemirror-addon-hint-show-hint")
             .SetUrl(
                 "~/OrchardCore.Resources/Scripts/codemirror/addon/hint/sql-hint.min.js",
                 "~/OrchardCore.Resources/Scripts/codemirror/addon/hint/sql-hint.js"
@@ -719,6 +719,7 @@ public sealed class ResourceManagementOptionsConfiguration
 
         manifest
             .DefineScript("codemirror-addon-selection-active-line")
+            .SetDependencies("codemirror")
             .SetUrl(
                 "~/OrchardCore.Resources/Scripts/codemirror/addon/selection/active-line.min.js",
                 "~/OrchardCore.Resources/Scripts/codemirror/addon/selection/active-line.js"
@@ -780,6 +781,7 @@ public sealed class ResourceManagementOptionsConfiguration
 
         manifest
             .DefineScript("codemirror-mode-sql")
+            .SetDependencies("codemirror", "codemirror-mode-javascript")
             .SetUrl(
                 "~/OrchardCore.Resources/Scripts/codemirror/mode/sql/sql.min.js",
                 "~/OrchardCore.Resources/Scripts/codemirror/mode/sql/sql.js"
@@ -1112,7 +1114,7 @@ public sealed class ResourceManagementOptionsConfiguration
             )
             .SetVersion("1.0.0");
 
-        // Vue.js 
+        // Vue.js
 
         manifest
             .DefineScript("vuejs")

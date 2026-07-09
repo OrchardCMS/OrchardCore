@@ -90,6 +90,11 @@ public class SqlParserTests
     [InlineData("select a where b in (select b)", "SELECT [a] WHERE [b] IN (SELECT [b]);")]
     [InlineData("select a where b not in (1,2,3)", "SELECT [a] WHERE [b] NOT IN (1, 2, 3);")]
     [InlineData("select a where b not in (select b)", "SELECT [a] WHERE [b] NOT IN (SELECT [b]);")]
+    [InlineData("select a where b in (1,2,3) and c = d", "SELECT [a] WHERE [b] IN (1, 2, 3) AND [c] = [d];")]
+    [InlineData("select a where b not in (1,2,3) and c = d", "SELECT [a] WHERE [b] NOT IN (1, 2, 3) AND [c] = [d];")]
+    [InlineData("select a where b in (1,2,3) and c = d or e = f", "SELECT [a] WHERE [b] IN (1, 2, 3) AND [c] = [d] OR [e] = [f];")]
+    [InlineData("select a where a between b and c and d = e", "SELECT [a] WHERE [a] BETWEEN [b] AND [c] AND [d] = [e];")]
+    [InlineData("select a where a not between b and c and d = e", "SELECT [a] WHERE [a] NOT BETWEEN [b] AND [c] AND [d] = [e];")]
     [InlineData("select a where b = (select Avg(c) from d)", "SELECT [a] WHERE [b] = (SELECT Avg([c]) FROM [tp_d]);")]
     public void ShouldParseExpression(string sql, string expectedSql)
     {

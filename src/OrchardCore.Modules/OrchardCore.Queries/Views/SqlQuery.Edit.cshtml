@@ -3,10 +3,7 @@
 
 <style asp-name="codemirror"></style>
 <style asp-name="codemirror-addon-hint-show-hint"></style>
-<script asp-name="codemirror" at="Foot"></script>
 <script asp-name="codemirror-addon-selection-active-line" at="Foot"></script>
-<script asp-name="codemirror-mode-javascript" at="Foot"></script>
-<script asp-name="codemirror-mode-sql" at="Foot"></script>
 <script asp-name="codemirror-addon-hint-sql-hint" at="Foot"></script>
 
 <div class="ocat-wrapper">
@@ -47,7 +44,7 @@
     </div>
 </div>
 
-<script at="Foot">
+<script at="Foot" depends-on="codemirror-mode-sql">
     $(function () {
         CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Query)'), {
             mode: @MediaTypeNamesExtended.Text.PostgreSQL,
