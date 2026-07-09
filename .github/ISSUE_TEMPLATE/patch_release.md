@@ -38,7 +38,7 @@ assignees: ''
 ## Step 3: Validation
 
 - [ ] **Check Functionality**: Update [`OrchardCore.Samples`](https://github.com/OrchardCMS/OrchardCore.Samples) to the latest preview version generated in the previous step (just change the `OrchardCoreVersion` property in the root `Directory.Build.props` file). Ensure the samples work as expected.
-- [ ] **Test Guides**: Test the following guides with NuGet packages from the Cloudsmith feed:
+- [ ] **Test Guides**: Test the following guides with NuGet packages from the Cloudsmith feed. At this point, the versions of these pages in the version branch (e.g., `release-prep/2.1.1`), should contain the version number of the upcoming version.
   - [Creating a modular ASP.NET Core application](https://docs.orchardcore.net/en/latest/guides/create-modular-application-mvc/)
   - [Creating an Orchard Core CMS website](https://docs.orchardcore.net/en/latest/guides/create-cms-application/)
   - [Creating a new decoupled CMS Website](https://docs.orchardcore.net/en/latest/guides/decoupled-cms/)
