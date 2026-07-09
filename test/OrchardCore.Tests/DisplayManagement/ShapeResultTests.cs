@@ -135,6 +135,7 @@ public class ShapeResultTests
             => View("test", model)
                 .Location(GroupDisplayDriverStub.ZoneName)
                 .RenderWhen(static canRender => Task.FromResult(canRender), _canRender);
+    }
 
     private sealed class ObjectStateRenderPredicateDisplayDriverStub : DisplayDriver<GroupModel>
     {
