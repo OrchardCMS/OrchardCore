@@ -62,7 +62,7 @@ dotnet pack -c Release --no-build -p:Version=3.0.0 -p:TreatWarningsAsErrors=fals
 mkdir c:\temp\orchardcorefeed
 dotnet nuget push ".\src\**\*.nupkg" -s "c:\temp\orchardcorefeed"
 
-dotnet new install OrchardCore.ProjectTemplates::3.0.0 --nuget-source c:\temp\orchardcorefeed
+dotnet new install OrchardCore.ProjectTemplates@3.0.0 --nuget-source c:\temp\orchardcorefeed
 
 cd c:\temp\orchardcorefeed
 mkdir occms
