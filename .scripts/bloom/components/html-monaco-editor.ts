@@ -1,5 +1,6 @@
 import syncMonacoTheme from "../helpers/monacoTheme";
 import { getDatasetJson } from "../helpers/dataset";
+import waitForMonaco from "../helpers/monaco";
 
 // The "Monaco-based HTML source editor with an Insert Shortcode action" pattern is shared by
 // every HTML field/part editor that offers Monaco instead of CodeMirror/Trumbowyg/Wysiwyg
@@ -15,49 +16,53 @@ const initHtmlMonacoEditor = (element: HTMLElement) => {
 
     const options = getDatasetJson<Record<string, unknown>>(element, "options") ?? {};
 
-    // Monaco's own AMD/RequireJS loader, not a CommonJS import.
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    require(["vs/editor/editor.main"], () => {
-        if (options.automaticLayout === undefined) {
-            options.automaticLayout = true;
-        }
+    waitForMonaco()
+        .then((monaco) => {
+            if (options.automaticLayout === undefined) {
+                options.automaticLayout = true;
+            }
 
-        options.language = "html";
+            options.language = "html";
 
-        syncMonacoTheme();
+            syncMonacoTheme(monaco);
 
-        const editor = monaco.editor.create(editorContainer, options);
+            const editor = monaco.editor.create(editorContainer, options);
 
-        editor.getModel().onDidChangeContent(() => {
-            textArea.value = editor.getValue();
-            document.dispatchEvent(new Event("contentpreview:render"));
-        });
+            editor.getModel()?.onDidChangeContent(() => {
+                textArea.value = editor.getValue();
+                document.dispatchEvent(new Event("contentpreview:render"));
+            });
 
-        editor.addAction({
-            id: "shortcodes",
-            label: "Add Shortcode",
-            run: () => {
-                shortcodesApp.init((value) => {
-                    if (value) {
-                        const selection = editor.getSelection();
+            editor.addAction({
+                id: "shortcodes",
+                label: "Add Shortcode",
+                run: () => {
+                    shortcodesApp.init((value) => {
+                        if (value) {
+                            const selection = editor.getSelection();
 
-                        editor.executeEdits("shortcodes", [{ range: selection, text: value, forceMoveMarkers: true }]);
-                    }
+                            if (selection) {
+                                editor.executeEdits("shortcodes", [
+                                    { range: selection, text: value, forceMoveMarkers: true },
+                                ]);
+                            }
+                        }
 
-                    editor.focus();
-                });
-            },
-            contextMenuGroupId: "orchardcore",
-            contextMenuOrder: 0,
-            keybindings: [monaco.KeyMod.Alt | monaco.KeyCode.KeyS],
-        });
+                        editor.focus();
+                    });
+                },
+                contextMenuGroupId: "orchardcore",
+                contextMenuOrder: 0,
+                keybindings: [monaco.KeyMod.Alt | monaco.KeyCode.KeyS],
+            });
 
-        editor.getModel().setValue(textArea.value);
+            editor.getModel()?.setValue(textArea.value);
 
-        window.addEventListener("submit", () => {
-            textArea.value = editor.getValue();
-        });
-    });
+            window.addEventListener("submit", () => {
+                textArea.value = editor.getValue();
+            });
+        })
+        .catch((error: unknown) => console.error(error));
 };
 
 export default initHtmlMonacoEditor;

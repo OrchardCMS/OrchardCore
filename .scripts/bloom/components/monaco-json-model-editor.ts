@@ -1,5 +1,6 @@
 import syncMonacoTheme from "../helpers/monacoTheme";
 import { getDatasetJson } from "../helpers/dataset";
+import waitForMonaco from "../helpers/monaco";
 
 // A Monaco JSON editor backed by a named model + JSON-schema validation (monaco.editor.createModel
 // + monaco.Uri.parse), as opposed to the simpler monaco.editor.create(el, options) overload used
@@ -22,27 +23,27 @@ const initMonacoJsonModelEditor = (element: HTMLElement) => {
         return;
     }
 
-    // Monaco's own AMD/RequireJS loader, not a CommonJS import.
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    require(["vs/editor/editor.main"], () => {
-        syncMonacoTheme();
+    waitForMonaco()
+        .then((monaco) => {
+            syncMonacoTheme(monaco);
 
-        const uri = monaco.Uri.parse(modelUri);
-        const model = monaco.editor.createModel(textArea.value, "json", uri);
+            const uri = monaco.Uri.parse(modelUri);
+            const model = monaco.editor.createModel(textArea.value, "json", uri);
 
-        if (schema && schemaUri) {
-            monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
-                validate: true,
-                schemas: [{ uri: schemaUri, fileMatch: [uri.toString()], schema }],
+            if (schema && schemaUri) {
+                monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
+                    validate: true,
+                    schemas: [{ uri: schemaUri, fileMatch: [uri.toString()], schema }],
+                });
+            }
+
+            const editor = monaco.editor.create(editorContainer, { model });
+
+            window.addEventListener("submit", () => {
+                textArea.value = editor.getValue();
             });
-        }
-
-        const editor = monaco.editor.create(editorContainer, { model });
-
-        window.addEventListener("submit", () => {
-            textArea.value = editor.getValue();
-        });
-    });
+        })
+        .catch((error: unknown) => console.error(error));
 };
 
 export default initMonacoJsonModelEditor;

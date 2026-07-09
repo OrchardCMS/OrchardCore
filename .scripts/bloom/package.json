@@ -4,5 +4,8 @@
     "type": "module",
     "scripts": {
         "check": "vue-tsc --noEmit"
+    },
+    "dependencies": {
+        "monaco-editor": "0.52.2"
     }
 }

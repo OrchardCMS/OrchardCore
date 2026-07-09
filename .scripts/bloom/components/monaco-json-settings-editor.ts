@@ -1,4 +1,5 @@
 import syncMonacoTheme from "../helpers/monacoTheme";
+import waitForMonaco from "../helpers/monaco";
 
 // The "enter editor options as JSON" Monaco settings editors (HtmlField/TextField Monaco editor
 // settings) are functionally identical, differing only in id/label text - one shared component
@@ -13,33 +14,33 @@ const initMonacoJsonSettingsEditor = (element: HTMLElement) => {
 
     const schemaUri = element.dataset.schemaUri;
 
-    // Monaco's own AMD/RequireJS loader, not a CommonJS import.
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    require(["vs/editor/editor.main"], () => {
-        syncMonacoTheme();
+    waitForMonaco()
+        .then((monaco) => {
+            syncMonacoTheme(monaco);
 
-        if (schemaUri) {
-            monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
-                validate: true,
-                enableSchemaRequest: true,
-                allowComments: true,
-                schemas: [{ uri: schemaUri, fileMatch: ["*"] }],
+            if (schemaUri) {
+                monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
+                    validate: true,
+                    enableSchemaRequest: true,
+                    allowComments: true,
+                    schemas: [{ uri: schemaUri, fileMatch: ["*"] }],
+                });
+            }
+
+            const editor = monaco.editor.create(editorContainer, {
+                automaticLayout: true,
+                language: "json",
+                lineNumbers: "off",
+                minimap: { enabled: false },
             });
-        }
 
-        const editor = monaco.editor.create(editorContainer, {
-            automaticLayout: true,
-            language: "json",
-            lineNumbers: false,
-            minimap: { enabled: false },
-        });
+            editor.getModel()?.setValue(textArea.value);
 
-        editor.getModel().setValue(textArea.value);
-
-        window.addEventListener("submit", () => {
-            textArea.value = editor.getValue();
-        });
-    });
+            window.addEventListener("submit", () => {
+                textArea.value = editor.getValue();
+            });
+        })
+        .catch((error: unknown) => console.error(error));
 };
 
 export default initMonacoJsonSettingsEditor;

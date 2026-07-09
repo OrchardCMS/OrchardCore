@@ -23,51 +23,6 @@ declare const shortcodesApp: {
     init(callback: (value: string) => void): void;
 };
 
-interface MonacoTextModel {
-    setValue(value: string): void;
-    getValue(): string;
-    onDidChangeContent(listener: (event: unknown) => void): void;
-}
-
-interface MonacoEditorInstance {
-    getModel(): MonacoTextModel;
-    getValue(): string;
-    getSelection(): unknown;
-    executeEdits(source: string, edits: unknown[]): void;
-    addAction(action: Record<string, unknown>): void;
-    getAction(id: string): { run(): void } | undefined;
-    focus(): void;
-}
-
-// Monaco is lazy-loaded via its own RequireJS/AMD loader (the "monaco" resource just installs
-// `require`/`monaco` as globals), not bundled by Parcel - extracted views still call the global
-// `require(['vs/editor/editor.main'], callback)` rather than an ES `import`.
-declare const monaco: {
-    editor: {
-        create(element: HTMLElement, options?: Record<string, unknown>): MonacoEditorInstance;
-        createModel(value: string, language: string, uri?: { toString(): string }): MonacoTextModel;
-        setTheme(theme: string): void;
-    };
-    languages: {
-        json: {
-            jsonDefaults: {
-                setDiagnosticsOptions(options: Record<string, unknown>): void;
-            };
-        };
-        typescript: {
-            javascriptDefaults: {
-                addExtraLib(content: string, filePath?: string): void;
-            };
-        };
-    };
-    Uri: {
-        parse(value: string): { toString(): string };
-    };
-    KeyMod: Record<string, number>;
-    KeyCode: Record<string, number>;
-};
-declare function require(dependencies: string[], callback: () => void): void;
-
 // jQuery itself is typed as loosely as possible on purpose: its plugins (iconpicker, trumbowyg,
 // etc.) each attach their own chainable methods, which don't share a common shape worth modeling
 // centrally. Call sites cast the (unknown) result of `$(...)` to a small, file-local interface
@@ -113,7 +68,7 @@ declare const mdeToolbar: Array<string | Record<string, unknown>>;
 declare function initializeMdeShortcodeWrapper(mde: EasyMdeInstance): void;
 
 // Defined by OrchardCore.Liquid (wwwroot/monaco/liquid-intellisense.js), consumed here.
-declare function ConfigureLiquidIntellisense(monacoInstance: typeof monaco, registerHtml?: boolean): void;
+declare function ConfigureLiquidIntellisense(monacoInstance: typeof import("monaco-editor"), registerHtml?: boolean): void;
 
 // Defined by OrchardCore.Resources (Assets/js/credential-helpers.js), consumed here.
 declare function randomUUID(options?: { includeHyphens?: boolean }): string;

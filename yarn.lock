@@ -2394,6 +2394,8 @@ __metadata:
 "@orchardcore/bloom@workspace:.scripts/bloom":
   version: 0.0.0-use.local
   resolution: "@orchardcore/bloom@workspace:.scripts/bloom"
+  dependencies:
+    monaco-editor: "npm:0.52.2"
   languageName: unknown
   linkType: soft
 

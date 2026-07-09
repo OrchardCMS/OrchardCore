@@ -48,7 +48,12 @@
         {
             <div id="@vueElementId" class="tags" data-taxonomy-content-item-id="@Model.Taxonomy.ContentItemId" data-open="@open.ToString().ToLower()" data-leaves-only="@taxonomySettings.LeavesOnly.ToString().ToLower()" data-create-tag-error-message="@T["Error creating tag"]" data-all-tag-terms="@Model.TagTermEntries" data-create-tag-url="@createTagUrl">
 
-                <div class="w-100">
+                @* Vue mounts onto .tags-vue-root, not this element: Vue 2's el-mount replaces the
+                   mounted node, and since observeAndInit (helpers/observeAndInit.ts) tracks nodes
+                   matching ".tags" by identity, a replacement that kept that class would look like
+                   a brand-new unmatched element to the shared MutationObserver and get re-mounted
+                   forever. Keeping the outer #@vueElementId.tags node stable avoids that loop. *@
+                <div class="tags-vue-root w-100">
                     <input asp-for="TermContentItemIds" type="hidden" v-model="selectedTagTermsIds" />
 
                     <vue-multiselect asp-validation-class-for="TermContentItemIds" v-model="selectedTagTerms"

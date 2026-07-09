@@ -1,4 +1,5 @@
 import syncMonacoTheme from "../helpers/monacoTheme";
+import waitForMonaco from "../helpers/monaco";
 
 // A plain Monaco source editor with no shortcodes action and no live-preview hook - just create,
 // seed from the hidden textarea, and serialize back on submit. Shared by workflow task/event
@@ -13,19 +14,19 @@ const initMonacoTextEditor = (element: HTMLElement) => {
 
     const language = element.dataset.language ?? "javascript";
 
-    // Monaco's own AMD/RequireJS loader, not a CommonJS import.
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    require(["vs/editor/editor.main"], () => {
-        syncMonacoTheme();
+    waitForMonaco()
+        .then((monaco) => {
+            syncMonacoTheme(monaco);
 
-        const editor = monaco.editor.create(editorContainer, { automaticLayout: true, language });
+            const editor = monaco.editor.create(editorContainer, { automaticLayout: true, language });
 
-        editor.getModel().setValue(textArea.value);
+            editor.getModel()?.setValue(textArea.value);
 
-        window.addEventListener("submit", () => {
-            textArea.value = editor.getValue();
-        });
-    });
+            window.addEventListener("submit", () => {
+                textArea.value = editor.getValue();
+            });
+        })
+        .catch((error: unknown) => console.error(error));
 };
 
 export default initMonacoTextEditor;

@@ -1,4 +1,6 @@
 import syncMonacoTheme from "@orchardcore/bloom/helpers/monacoTheme";
+import waitForMonaco from "@orchardcore/bloom/helpers/monaco";
+import type * as Monaco from "monaco-editor";
 
 declare global {
     interface Window {
@@ -43,10 +45,10 @@ type Context = {
 }`;
 
 if (scriptEditorElement && scriptTextArea) {
-    let codeEditor: MonacoEditorInstance;
+    let codeEditor: Monaco.editor.IStandaloneCodeEditor;
 
     window.resetScript = function resetScript() {
-        codeEditor.getModel().setValue(`/* Uncomment to map AzureAd
+        codeEditor.getModel()?.setValue(`/* Uncomment to map AzureAd
 switch (context.loginProvider) {
     case "AzureAd":
         context.claimsToUpdate={"displayName":"UserDisplayName"}
@@ -75,45 +77,47 @@ switch (context.loginProvider) {
 `);
     };
 
-    // eslint-disable-next-line @typescript-eslint/no-require-imports -- Monaco's own AMD/RequireJS loader, not a CommonJS import.
-    require(["vs/editor/editor.main"], () => {
-        syncMonacoTheme();
+    waitForMonaco()
+        .then((monaco) => {
+            syncMonacoTheme(monaco);
 
-        const editor = monaco.editor.create(scriptEditorElement, {
-            automaticLayout: true,
-            language: "javascript",
-        });
-        codeEditor = editor;
-        monaco.languages.typescript.javascriptDefaults.addExtraLib(
-            `${suggestion}const context = {} as Context`,
-            "suggestion.d.ts",
-        );
-
-        if (docEditorElement) {
-            monaco.editor.create(docEditorElement, {
-                value: suggestion,
+            const editor = monaco.editor.create(scriptEditorElement, {
                 automaticLayout: true,
-                language: "typescript",
-                readOnly: true,
-                lineNumbers: "off",
-                glyphMargin: false,
-                lineDecorationsWidth: 0,
-                minimap: { enabled: false },
-                scrollbar: { horizontal: "hidden", vertical: "hidden", handleMouseWheel: false },
-                overviewRuler: { visible: false },
+                language: "javascript",
             });
-        }
+            codeEditor = editor;
+            monaco.languages.typescript.javascriptDefaults.addExtraLib(
+                `${suggestion}const context = {} as Context`,
+                "suggestion.d.ts",
+            );
 
-        if (!scriptTextArea.value) {
-            window.resetScript?.();
-        } else {
-            editor.getModel().setValue(scriptTextArea.value);
-        }
+            if (docEditorElement) {
+                monaco.editor.create(docEditorElement, {
+                    value: suggestion,
+                    automaticLayout: true,
+                    language: "typescript",
+                    readOnly: true,
+                    lineNumbers: "off",
+                    glyphMargin: false,
+                    lineDecorationsWidth: 0,
+                    minimap: { enabled: false },
+                    scrollbar: { horizontal: "hidden", vertical: "hidden", handleMouseWheel: false },
+                    overviewRulerLanes: 0,
+                    overviewRulerBorder: false,
+                });
+            }
 
-        window.addEventListener("submit", () => {
-            scriptTextArea.value = editor.getValue();
-        });
-    });
+            if (!scriptTextArea.value) {
+                window.resetScript?.();
+            } else {
+                editor.getModel()?.setValue(scriptTextArea.value);
+            }
+
+            window.addEventListener("submit", () => {
+                scriptTextArea.value = editor.getValue();
+            });
+        })
+        .catch((error: unknown) => console.error(error));
 }
 
 if (useScriptCheckbox) {

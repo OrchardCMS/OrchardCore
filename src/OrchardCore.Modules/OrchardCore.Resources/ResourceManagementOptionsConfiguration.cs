@@ -1275,19 +1275,23 @@ public sealed class ResourceManagementOptionsConfiguration
             )
             .SetVersion("3.0.5");
 
-        // Monaco Editor
-
-        manifest
-            .DefineScript("monaco-loader")
-            .SetUrl("~/OrchardCore.Resources/Scripts/monaco/vs/loader.js")
-            .SetPosition(ResourcePosition.Last)
-            .SetVersion(MonacoEditorVersion);
+        // Monaco Editor: loaded as a real `import * as monaco from "monaco-editor"` (see
+        // Assets/monaco/monaco-loader.ts), not the classic AMD/RequireJS loader this used to be.
 
         manifest
             .DefineScript("monaco")
-            .SetAttribute("data-tenant-prefix", _pathBase)
-            .SetUrl("~/OrchardCore.Resources/Scripts/monaco/ocmonaco.js")
-            .SetDependencies("monaco-loader")
+            .SetUrl(
+                "~/OrchardCore.Resources/Scripts/monaco-esm/monaco-loader.min.js",
+                "~/OrchardCore.Resources/Scripts/monaco-esm/monaco-loader.js"
+            )
+            .SetVersion(MonacoEditorVersion);
+
+        // The AMD build's CSS was loaded internally by its own loader; the ESM build's CSS is a
+        // plain `import "*.css"` inside monaco-editor's own modules, which Parcel extracts to a
+        // standalone file that has to be linked explicitly like any other stylesheet.
+        manifest
+            .DefineStyle("monaco")
+            .SetUrl("~/OrchardCore.Resources/Scripts/monaco-esm/monaco-loader.css")
             .SetVersion(MonacoEditorVersion);
 
         return manifest;
