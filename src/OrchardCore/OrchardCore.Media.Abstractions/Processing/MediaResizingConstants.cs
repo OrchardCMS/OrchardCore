@@ -19,7 +19,7 @@ public static class MediaResizingConstants
     /// <see cref="Format"/>. Unknown or unsupported names return <see cref="Format.Undefined"/>,
     /// which engines treat as the default JPEG output.
     /// </summary>
-    public static Format ParseFormat(string format) => format?.TrimStart('.').Trim().ToLowerInvariant() switch
+    public static Format ParseFormat(string format) => ExtensionToFormat(format) switch
     {
         "png" => Format.Png,
         "gif" => Format.Gif,
