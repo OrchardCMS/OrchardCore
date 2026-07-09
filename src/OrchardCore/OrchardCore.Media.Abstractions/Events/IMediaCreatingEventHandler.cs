@@ -8,7 +8,7 @@ public interface IMediaCreatingEventHandler
     /// <summary>
     /// The order of execution for this event handler. Lower values are executed first.
     /// </summary>
-    int Priority => 0;
+    double Priority => 0;
 
     /// <summary>
     /// Allows a stream to be mutated during creation of media.
