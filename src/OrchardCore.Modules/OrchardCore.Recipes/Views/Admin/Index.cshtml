@@ -5,10 +5,7 @@
 
 <div data-list-management
      data-client-side-search="true"
-     data-selection-enabled="false"
      data-search-result-selector=".recipe-group > ul > li"
-     data-search-dom-selector=".recipe-search-text"
-     data-search-group-selector=".recipe-group"
      data-search-group-visible-selector="ul > li">
 <p class="alert alert-warning">@T["The current tenant will be reloaded when the recipe is executed."]</p>
 
@@ -36,7 +33,7 @@
             {
                 var groupName = recipeGroup.Key;
 
-                <div class="recipe-group">
+                <div class="recipe-group list-management-group">
                     @{
                         var groupRecipeNames = string.Join(" ", recipeGroup.Select(r => r.DisplayName));
                     }
@@ -48,7 +45,7 @@
                                 <div class="row">
                                     <div class="col">
                                         <a id="btn-run-@Html.GenerateIdFromName(recipe.Name)" asp-action="Execute" asp-route-basePath="@recipe.BasePath" asp-route-fileName="@recipe.FileName" role="button" class="btn btn-primary btn-sm float-end" data-title="@T["Recipes"]" data-message="@T["Are you sure you want to run the recipe?"]" data-ok-text="@T["Yes"]" data-cancel-text="@T["No"]" data-ok-class="btn-primary" data-url-af="RemoveUrl UnsafeUrl">@T["Run"]</a>
-                                        <h6 class="recipe-search-text">
+                                        <h6 class="list-item-search-text">
                                             @recipe.DisplayName
                                             @if (recipe.IsSetupRecipe)
                                             {
@@ -66,17 +63,18 @@
                                                 }
                                             }
                                         </h6>
-                                        <small class="text-muted recipe-search-text">@recipe.Description</small>
+                                        <small class="text-muted list-item-search-text">@recipe.Description</small>
                                     </div>
                                 </div>
                             </li>
                         }
                     </ul>
                 </div>
-                <div id="list-alert" class="alert alert-info d-none" role="alert">
-                    @T["<strong>Nothing here!</strong> Your search returned no results."]
-                </div>
             }
+
+            <div id="list-alert" class="alert alert-info d-none" role="alert">
+                @T["<strong>Nothing here!</strong> Your search returned no results."]
+            </div>
         }
         else
         {

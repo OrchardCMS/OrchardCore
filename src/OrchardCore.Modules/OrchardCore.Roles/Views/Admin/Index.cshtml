@@ -4,7 +4,7 @@
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Roles"])</h1></zone>
 
-<div data-list-management data-client-side-search="true" data-selection-enabled="false" data-search-result-selector=".roles > ul > li" data-search-dom-selector=".role-search-text" data-single-result-action-selector=".edit">
+<div data-list-management data-client-side-search="true">
 <div class="card mb-3 text-bg-theme position-sticky action-bar">
     <div class="card-body">
         <div class="row gx-3">
@@ -32,7 +32,7 @@
 
             <li class="list-group-item" data-filter-value="@entry.Name">
                 <div class="d-flex justify-content-between">
-                    <div class="role-search-text">
+                    <div class="list-item-search-text">
                         <span>@entry.Name</span>
 
                         @if (entry.IsSystemRole)
@@ -44,7 +44,7 @@
                     </div>
 
                     <div>
-                        <a class="edit btn btn-primary btn-sm" role="button" asp-action="Edit" asp-route-id="@entry.Name">@T["Edit"]</a>
+                        <a class="edit btn btn-primary btn-sm list-item-action" role="button" asp-action="Edit" asp-route-id="@entry.Name">@T["Edit"]</a>
 
                         @if (!entry.IsAdminRole)
                         {
@@ -59,7 +59,7 @@
                 </div>
                 @if (!string.IsNullOrWhiteSpace(entry.Description))
                 {
-                    <p class="text-muted mb-0 role-search-text">@entry.Description</p>
+                    <p class="text-muted mb-0 list-item-search-text">@entry.Description</p>
                 }
             </li>
         }

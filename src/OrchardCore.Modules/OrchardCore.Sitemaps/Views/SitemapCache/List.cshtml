@@ -2,7 +2,7 @@
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Sitemaps Cache"])</h1></zone>
 
-<div data-list-management data-client-side-search="true" data-selection-enabled="false" data-search-alert-selector="#search-alert" data-empty-alert-selector="#none-alert" data-search-result-selector="#cache-entries > li[data-filter-value]">
+<div data-list-management data-client-side-search="true">
 <div class="card text-bg-theme mb-3 position-sticky action-bar">
     <div class="card-body">
         <div class="row gx-3">
@@ -23,7 +23,7 @@
 <form asp-action="List">
     @if (Model.CachedFileNames.Any())
     {
-        <ul id="cache-entries" class="list-group">
+        <ul class="list-group">
             @for (var i = 0; i < Model.CachedFileNames.Length; i++)
             {
                 <li class="list-group-item" data-filter-value="@Model.CachedFileNames[i]">
@@ -41,11 +41,11 @@
     }
     else
     {
-        <div id="none-alert" class="alert alert-info mb-1" role="alert">
+        <div id="list-empty" class="alert alert-info mb-1" role="alert">
             @T["<strong>Nothing here!</strong> There are no sitemaps cached for the moment."]
         </div>
     }
-    <div id="search-alert" class="alert alert-info mb-1 d-none" role="alert">
+    <div id="list-alert" class="alert alert-info mb-1 d-none" role="alert">
         @T["<strong>Nothing here!</strong> Your search returned no results."]
     </div>
 </form>

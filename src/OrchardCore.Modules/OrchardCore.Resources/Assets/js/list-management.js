@@ -8,29 +8,31 @@
         bulkActionInputName: 'Options.BulkAction',
         clientSideSearch: false,
         clientFiltersSelector: '[data-list-filter]',
+        emptyAlertSelector: '#list-empty',
         filterLinksSelector: '[data-list-filter-link]',
         filterChangeSelector: '.filter-options select, .filter-options input',
         filterSelector: '.filter',
         filterSubmit: false,
         groupCheckboxSelector: '',
-        groupLabelSelector: '',
-        groupSelectAllSelector: '',
+        groupLabelSelector: '.list-group-select-all-label',
+        groupSelectAllSelector: '.list-group-select-all',
         groupTextAttribute: 'data-select-all-text',
         groupTextCountToken: '__COUNT__',
-        groupTextSelector: '',
-        groupToggleContainerSelector: '',
+        groupTextSelector: '.list-group-select-all-text',
+        groupToggleContainerSelector: '.list-group-select-all-container',
         itemInputName: 'itemIds',
         itemsSelector: '#items',
         minSelectedItems: 2,
         noResultsActionQueryName: 'suggestion',
+        noResultsActionSelector: '#btnCreate',
         normalizeSearch: false,
         searchAlertSelector: '#list-alert',
         searchBoxSelector: '#search-box',
-        searchDomSelector: '',
+        searchDomSelector: '.list-item-search-text',
         searchFirstElementClasses: '',
-        searchGroupSelector: '',
+        searchGroupSelector: '.list-management-group',
         searchResultSelector: '[data-filter-value]',
-        searchSummarySelector: '',
+        searchSummarySelector: '#list-summary',
         searchSummaryTextAttribute: 'data-summary-text',
         searchSummaryTotalAttribute: 'data-total-count',
         searchTextAttribute: 'data-filter-value',
@@ -39,6 +41,7 @@
         selectedLabel: 'selected',
         selectionEnabled: true,
         singleResultActionMode: 'single',
+        singleResultActionSelector: '.list-item-action',
         submitBulkActionName: 'submit.BulkAction',
         submitFilterName: 'submit.Filter'
     };
@@ -74,6 +77,10 @@
         return '[' + name + '="' + value.replace(/"/g, '\\"') + '"]';
     }
 
+    function hasValue(value) {
+        return value !== undefined && value !== '';
+    }
+
     function getOptions(element, options) {
         const dataset = element.dataset;
         const config = Object.assign({}, defaultOptions, options || {});
@@ -104,9 +111,9 @@
         config.searchBoxSelector = dataset.searchBoxSelector || config.searchBoxSelector;
         config.searchDomSelector = dataset.searchDomSelector || config.searchDomSelector;
         config.searchFirstElementClasses = dataset.searchFirstElementClasses || config.searchFirstElementClasses;
+        config.searchResultSelector = dataset.searchResultSelector || config.searchResultSelector;
         config.searchGroupSelector = dataset.searchGroupSelector || config.searchGroupSelector;
         config.searchGroupVisibleSelector = dataset.searchGroupVisibleSelector || config.searchGroupVisibleSelector || config.searchResultSelector;
-        config.searchResultSelector = dataset.searchResultSelector || config.searchResultSelector;
         config.searchSummarySelector = dataset.searchSummarySelector || config.searchSummarySelector;
         config.searchSummaryTextAttribute = dataset.searchSummaryTextAttribute || config.searchSummaryTextAttribute;
         config.searchSummaryTotalAttribute = dataset.searchSummaryTotalAttribute || config.searchSummaryTotalAttribute;
@@ -120,11 +127,47 @@
         config.submitBulkActionName = dataset.submitBulkActionName || config.submitBulkActionName;
         config.submitFilterName = dataset.submitFilterName || config.submitFilterName;
 
+        if (!hasValue(dataset.bulkActionInputName)) {
+            const bulkActionInput = Array.from(element.querySelectorAll("input[type='hidden'][name]")).find((input) => input.name === 'BulkAction' || input.name.endsWith('.BulkAction'));
+
+            if (bulkActionInput) {
+                config.bulkActionInputName = bulkActionInput.name;
+            }
+        }
+
         config.bulkActionInputSelector = attributeSelector('name', config.bulkActionInputName);
-        config.checkedItemSelector = "input[type='checkbox']" + attributeSelector('name', config.itemInputName) + ':checked';
-        config.itemSelector = "input[type='checkbox']" + attributeSelector('name', config.itemInputName);
         config.submitBulkActionSelector = attributeSelector('name', config.submitBulkActionName);
         config.submitFilterSelector = attributeSelector('name', config.submitFilterName);
+
+        const selectionControlsExist = !!(
+            query(element, config.selectAllSelector) ||
+            query(element, config.actionsSelector) ||
+            query(element, config.selectedItemsSelector) ||
+            query(element, config.submitBulkActionSelector)
+        );
+
+        if (!hasValue(dataset.itemInputName) && selectionControlsExist) {
+            const itemCheckbox = Array.from(element.querySelectorAll("input[type='checkbox'][name]")).find((checkbox) => !checkbox.matches(config.selectAllSelector));
+
+            if (itemCheckbox) {
+                config.itemInputName = itemCheckbox.name;
+            }
+        }
+
+        config.checkedItemSelector = "input[type='checkbox']" + attributeSelector('name', config.itemInputName) + ':checked';
+        config.itemSelector = "input[type='checkbox']" + attributeSelector('name', config.itemInputName);
+
+        if (!hasValue(dataset.selectionEnabled) && !hasValue(options && options.selectionEnabled)) {
+            config.selectionEnabled = selectionControlsExist || !!query(element, config.itemSelector);
+        }
+
+        if (!hasValue(dataset.filterSubmit) && !hasValue(options && options.filterSubmit)) {
+            config.filterSubmit = !!query(element, config.submitFilterSelector);
+        }
+
+        if (!hasValue(dataset.groupCheckboxSelector) && query(element, config.groupSelectAllSelector)) {
+            config.groupCheckboxSelector = config.itemSelector;
+        }
 
         return config;
     }

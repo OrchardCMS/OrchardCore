@@ -7,7 +7,7 @@
 }
 <zone Name="Title"><h1>@RenderTitleSegments(T["Manage Workflows"])</h1></zone>
 
-<form asp-action="Index" id="workflows-types-form" method="post" class="no-multisubmit" data-list-management data-selected-label="@T["selected"]" data-filter-submit="true">
+<form asp-action="Index" id="workflows-types-form" method="post" class="no-multisubmit" data-list-management data-selected-label="@T["selected"]">
     <input type="submit" name="submit.Filter" id="submitFilter" class="visually-hidden" />
     <input type="submit" name="submit.BulkAction" class="visually-hidden" />
     <input asp-for="Options.BulkAction" type="hidden" />

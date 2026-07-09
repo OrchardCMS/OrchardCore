@@ -17,20 +17,9 @@
 
 <div data-list-management
      data-client-side-search="true"
-     data-item-input-name="featureIds"
-     data-bulk-action-input-name="BulkAction"
      data-min-selected-items="1"
      data-filter-selector=".list-management-unused"
-     data-search-result-selector=".feature-group .list-group-item[data-search-text]"
-     data-search-text-attribute="data-search-text"
-     data-search-group-selector=".feature-group"
-     data-search-group-visible-selector=".list-group-item[data-search-text]"
-     data-search-summary-selector="#features-summary"
-     data-group-select-all-selector=".feature-group-select-all"
-     data-group-checkbox-selector="input[name='featureIds']"
-     data-group-toggle-container-selector=".feature-group-toggle-container"
-     data-group-label-selector=".feature-group-select-all-label"
-     data-group-text-selector=".feature-group-select-all-text">
+     >
 <form autocomplete="off" class="position-sticky action-bar">
     <div class="card text-bg-theme mb-3">
         <div class="card-body">
@@ -71,7 +60,7 @@
                     @{
                         var totalFeatures = Model.Features.Count();
                     }
-                    <span id="features-summary"
+                    <span id="list-summary"
                           data-summary-text="@T["Showing {0} of {1} features", "__VISIBLE__", "__TOTAL__"]"
                           data-total-count="@totalFeatures">
                         @T["Showing {0} of {1} features", totalFeatures, totalFeatures]
@@ -101,14 +90,14 @@
             var features = featureGroup.OrderBy(f => f.Descriptor.Name);
             var categoryCheckboxId = Html.GenerateIdFromName($"select-all-{categoryName}");
 
-            <div class="feature-group">
+            <div class="feature-group list-management-group">
                 <h4 class="mb-1 mt-3">@categoryName</h4>
                 <ul class="list-group with-checkbox">
-                    <li class="list-group-item text-bg-theme feature-group-toggle-container">
+                    <li class="list-group-item text-bg-theme list-group-select-all-container">
                         <div class="form-check">
-                            <input type="checkbox" class="form-check-input feature-group-select-all" id="@categoryCheckboxId">
-                            <label class="form-check-label feature-group-select-all-label" for="@categoryCheckboxId" data-select-all-text="@T["Select all {0} features grouped under {1} category", "__COUNT__", categoryName]">
-                                <span class="feature-group-select-all-text">@T["Select all {0} features grouped under {1} category", 0, categoryName]</span>
+                            <input type="checkbox" class="form-check-input list-group-select-all" id="@categoryCheckboxId">
+                            <label class="form-check-label list-group-select-all-label" for="@categoryCheckboxId" data-select-all-text="@T["Select all {0} features grouped under {1} category", "__COUNT__", categoryName]">
+                                <span class="list-group-select-all-text">@T["Select all {0} features grouped under {1} category", 0, categoryName]</span>
                             </label>
                         </div>
                     </li>
@@ -143,7 +132,7 @@
                         ]);
 
                         <li class="list-group-item"
-                            data-search-text="@featureSearchText"
+                            data-filter-value="@featureSearchText"
                             data-is-on-demand="@feature.Descriptor.EnabledByDependencyOnly.ToString().ToLowerInvariant()"
                             data-is-always-enabled="@isAlwaysEnabled.ToString().ToLowerInvariant()"
                             data-is-enabled="@feature.IsEnabled.ToString().ToLowerInvariant()">

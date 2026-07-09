@@ -24,7 +24,7 @@
     </div>
 </form>
 
-<form asp-action="Index" method="post" class="no-multisubmit" data-list-management data-selected-label="@T["selected"]" data-item-input-name="policyIds" data-bulk-action-input-name="BulkAction" data-min-selected-items="1">
+<form asp-action="Index" method="post" class="no-multisubmit" data-list-management data-selected-label="@T["selected"]" data-min-selected-items="1">
     <input asp-for="BulkAction" type="hidden" />
     <input type="submit" name="submit.BulkAction" class="visually-hidden" />
 

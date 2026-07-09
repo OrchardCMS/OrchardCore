@@ -6,7 +6,7 @@
 <zone Name="Title"><h1>@RenderTitleSegments(T["URL Rewriting Rules"])</h1></zone>
 
 @* the form is necessary to generate an antiforgery token for the delete and toggle actions *@
-<form asp-action="Index" method="post" class="no-multisubmit" data-list-management data-client-side-search="true" data-search-dom-selector=".flex-grow-1" data-item-input-name="ruleIds" data-selected-label="@T["selected"]">
+<form asp-action="Index" method="post" class="no-multisubmit" data-list-management data-client-side-search="true" data-selected-label="@T["selected"]">
     <input type="submit" name="submit.Filter" id="submitFilter" class="visually-hidden" />
     <input asp-for="Options.BulkAction" type="hidden" />
     <input type="submit" name="submit.BulkAction" class="visually-hidden" />
@@ -74,7 +74,7 @@
                         </div>
                     </div>
 
-                    <div class="flex-grow-1">
+                    <div class="flex-grow-1 list-item-search-text">
                         @await DisplayAsync(entry.Shape)
                     </div>
                 </li>

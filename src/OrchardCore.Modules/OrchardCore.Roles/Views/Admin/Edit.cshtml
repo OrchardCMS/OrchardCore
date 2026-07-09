@@ -32,7 +32,7 @@
     </div>
 }
 
-<form asp-action="@(Model.IsCloning ? "Clone" : "Edit")" asp-route-id="@ViewContext.HttpContext.Request.RouteValues["id"]" method="post" class="no-multisubmit" data-list-management data-client-side-search="true" data-selection-enabled="false" data-search-result-selector=".permissions-list > table > tbody > tr" data-search-text-attribute="data-text" data-search-group-selector=".permissions-list" data-search-group-visible-selector="table > tbody > tr">
+<form asp-action="@(Model.IsCloning ? "Clone" : "Edit")" asp-route-id="@ViewContext.HttpContext.Request.RouteValues["id"]" method="post" class="no-multisubmit" data-list-management data-client-side-search="true" data-search-result-selector=".permissions-list > table > tbody > tr" data-search-text-attribute="data-text" data-search-group-selector=".permissions-list" data-search-group-visible-selector="table > tbody > tr">
     @if (Model.IsCloning)
     {
         <div class="ocat-wrapper" asp-validation-class-for="Name">
