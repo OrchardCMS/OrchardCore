@@ -102,10 +102,18 @@
 }
 
 <script at="Foot" asp-name="jsonresult-editor" depends-on="codemirror-mode-sql, monaco">
-    $(function () {
-        CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(m => m.DecodedQuery)'), { mode: @MediaTypeNamesExtended.Text.PostgreSQL, lineNumbers: true, viewportMargin: Infinity });
+    function onDocumentReady(callback) {
+        if (document.readyState !== 'loading') {
+            callback();
+        } else {
+            document.addEventListener('DOMContentLoaded', callback);
+        }
+    }
+    onDocumentReady(function () {
+        CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(m => m.DecodedQuery)'), { mode: '@MediaTypeNamesExtended.Text.PostgreSQL', lineNumbers: true, viewportMargin: Infinity });
         CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(m => m.Parameters)'), { mode: "javascript", json: true, lineNumbers: true, viewportMargin: Infinity });
-        if (rawSql = document.getElementById('@Html.IdFor(m => m.RawSql)')) {
+        var rawSql = document.getElementById('@Html.IdFor(m => m.RawSql)');
+        if (rawSql) {
             CodeMirror.fromTextArea(rawSql, { mode: "@sqlmode", lineNumbers: true, readonly: true, viewportMargin: Infinity });
         }
         
