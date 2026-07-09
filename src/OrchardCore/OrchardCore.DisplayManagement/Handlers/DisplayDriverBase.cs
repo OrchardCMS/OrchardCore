@@ -465,7 +465,7 @@ public class DisplayDriverBase
     }
 
     /// <summary>
-    /// Creates a new strongly typed shape an initializes its properties from an existing object.
+    /// Creates a new strongly typed shape and initializes its properties from an existing object.
     /// </summary>
     public ShapeResult Copy<TModel>(string shapeType, TModel model) where TModel : class
         => Factory(
