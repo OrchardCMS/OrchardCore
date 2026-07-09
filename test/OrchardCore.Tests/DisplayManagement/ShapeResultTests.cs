@@ -134,8 +134,7 @@ public class ShapeResultTests
         public override IDisplayResult Edit(GroupModel model, BuildEditorContext context)
             => View("test", model)
                 .Location(GroupDisplayDriverStub.ZoneName)
-                .RenderWhen(() => Task.FromResult(_canRender));
-    }
+                .RenderWhen(static canRender => Task.FromResult(canRender), _canRender);
 
     private sealed class ObjectStateRenderPredicateDisplayDriverStub : DisplayDriver<GroupModel>
     {
