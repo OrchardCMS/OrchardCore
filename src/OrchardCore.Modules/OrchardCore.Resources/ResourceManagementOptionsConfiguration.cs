@@ -471,10 +471,10 @@ public sealed class ResourceManagementOptionsConfiguration
                 "https://cdn.jsdelivr.net/npm/@crestapps/bootstrap-select@1.2.0/dist/css/bootstrap-select.css"
             )
             .SetCdnIntegrity(
-                "sha384-KzDBkgwkXTEVA1Iau40dlucVaS6DPnf0aPwxQyJAqrl7KO6DYv5pEC2AJlbO8OuQ",
-                "sha384-mixE2uOPb0SAd5Ojzb7TrFn3AawxOTutuGyL/Aq6gPkY/6CRfKq0dycrROKHJDT5"
+                "sha384-7yj05Iamc4rfesLo160W11ywhuIME+BcB43waDx0Y1rI1LEyCK368ml0MI9Lwzr7",
+                "sha384-jN5x01dkUiVJwxGy3x+e/53AB0jN9D9bBomsrbCJehtMMCIK5vOzd7aTNXV3/bze"
             )
-            .SetVersion("1.2.0");
+            .SetVersion("1.2.1");
 
         manifest
             .DefineScript("bootstrap-select")
@@ -484,16 +484,14 @@ public sealed class ResourceManagementOptionsConfiguration
                 "~/OrchardCore.Resources/Vendor/CrestApps/bootstrap-select/bootstrap-select.js"
             )
             .SetCdn(
-                "https://cdn.jsdelivr.net/npm/@crestapps/bootstrap-select@1.2.0/dist/js/bootstrap-select.min.js",
-                "https://cdn.jsdelivr.net/npm/@crestapps/bootstrap-select@1.2.0/dist/js/bootstrap-select.js"
+                "https://cdn.jsdelivr.net/npm/@crestapps/bootstrap-select@1.2.1/dist/js/bootstrap-select.min.js",
+                "https://cdn.jsdelivr.net/npm/@crestapps/bootstrap-select@1.2.1/dist/js/bootstrap-select.js"
             )
             .SetCdnIntegrity(
                 "sha384-R7aQ+h/YwfYWxwVbXnRupt5dDCEB+GFE5kGRXdMRqqTb8a44gKz4FhiTVCIl1utj",
                 "sha384-OoRqHGsY2f8cxSKpRli5U/ioHYo5CO4Nqz9+jMhs/Ah3slKOn36MzgaO3Dixk2D0"
             )
-            .SetVersion("1.2.0");
-
-        //
+            .SetVersion("1.2.1");
 
         manifest
             .DefineStyle("nouislider")
@@ -670,7 +668,7 @@ public sealed class ResourceManagementOptionsConfiguration
 
         manifest
             .DefineScript("codemirror-addon-hint-sql-hint")
-            .SetDependencies("codemirror-addon-hint-show-hint")
+            .SetDependencies("codemirror-mode-sql", "codemirror-addon-hint-show-hint")
             .SetUrl(
                 "~/OrchardCore.Resources/Scripts/codemirror/addon/hint/sql-hint.min.js",
                 "~/OrchardCore.Resources/Scripts/codemirror/addon/hint/sql-hint.js"
@@ -719,6 +717,7 @@ public sealed class ResourceManagementOptionsConfiguration
 
         manifest
             .DefineScript("codemirror-addon-selection-active-line")
+            .SetDependencies("codemirror")
             .SetUrl(
                 "~/OrchardCore.Resources/Scripts/codemirror/addon/selection/active-line.min.js",
                 "~/OrchardCore.Resources/Scripts/codemirror/addon/selection/active-line.js"
@@ -780,6 +779,7 @@ public sealed class ResourceManagementOptionsConfiguration
 
         manifest
             .DefineScript("codemirror-mode-sql")
+            .SetDependencies("codemirror", "codemirror-mode-javascript")
             .SetUrl(
                 "~/OrchardCore.Resources/Scripts/codemirror/mode/sql/sql.min.js",
                 "~/OrchardCore.Resources/Scripts/codemirror/mode/sql/sql.js"
@@ -1112,6 +1112,8 @@ public sealed class ResourceManagementOptionsConfiguration
             )
             .SetVersion("1.0.0");
 
+        // List Management
+        
         manifest
             .DefineScript("list-management")
             .SetUrl(
