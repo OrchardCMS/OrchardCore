@@ -58,18 +58,31 @@
                         @if (hasManagePermission)
                         {
                             <a class="edit btn btn-primary btn-sm list-item-action" role="button" asp-action="Edit" asp-route-id="@entry.Name">@T["Edit"]</a>
+                            <a class="btn btn-success btn-sm" role="button" asp-action="Display" asp-route-id="@entry.Name">@T["View"]</a>
+                        }
+                        else
+                        {
+                            <a class="btn btn-success btn-sm list-item-action" role="button" asp-action="Display" asp-route-id="@entry.Name">@T["View"]</a>
                         }
 
-                        <a class="display-action btn btn-success btn-sm" role="button" asp-action="Display" asp-route-id="@entry.Name">@T["View"]</a>
-
-                        @if (!entry.IsAdminRole && hasManagePermission)
+                        @if (hasManagePermission && !(entry.IsAdminRole && entry.IsSystemRole))
                         {
-                            <a class="btn btn-warning btn-sm" asp-action="Clone" asp-route-id="@entry.Name">@T["Clone"]</a>
-                        }
+                            <div class="btn-group" title="@T["Actions"]">
+                                <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    @T["Actions"]
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    @if (!entry.IsAdminRole)
+                                    {
+                                        <a class="dropdown-item" asp-action="Clone" asp-route-id="@entry.Name">@T["Clone"]</a>
+                                    }
 
-                        @if (!entry.IsSystemRole && hasManagePermission)
-                        {
-                            <a class="delete btn btn-danger btn-sm" asp-route-id="@entry.Name" role="button" asp-action="Delete" data-url-af="UnsafeUrl RemoveUrl" data-title="@T["Delete Role"]" data-message="@message">@T["Delete"]</a>
+                                    @if (!entry.IsSystemRole)
+                                    {
+                                        <a class="dropdown-item text-danger" asp-route-id="@entry.Name" role="button" asp-action="Delete" data-url-af="UnsafeUrl RemoveUrl" data-title="@T["Delete Role"]" data-message="@message">@T["Delete"]</a>
+                                    }
+                                </ul>
+                            </div>
                         }
                     </div>
                 </div>
