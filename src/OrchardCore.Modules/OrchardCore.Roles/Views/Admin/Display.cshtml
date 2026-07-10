@@ -9,6 +9,7 @@
 
 <div data-list-management data-client-side-search="true" data-search-result-selector=".permissions-list > table > tbody > tr" data-search-text-attribute="data-text" data-search-group-selector=".permissions-list" data-search-group-visible-selector="table > tbody > tr">
     <div class="mb-3">@Model.Role.RoleDescription</div>
+
     @await Html.PartialAsync("_RolePermissions", Model.Permissions)
 </div>
 
