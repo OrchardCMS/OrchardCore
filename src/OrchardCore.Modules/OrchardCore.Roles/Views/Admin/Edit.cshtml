@@ -32,7 +32,7 @@
     </div>
 }
 
-<form asp-action="@(Model.IsCloning ? "Clone" : "Edit")" asp-route-id="@ViewContext.HttpContext.Request.RouteValues["id"]" method="post" class="no-multisubmit">
+<form asp-action="@(Model.IsCloning ? "Clone" : "Edit")" asp-route-id="@ViewContext.HttpContext.Request.RouteValues["id"]" method="post" class="no-multisubmit" data-list-management data-client-side-search="true" data-search-result-selector=".permissions-list > table > tbody > tr" data-search-text-attribute="data-text" data-search-group-selector=".permissions-list" data-search-group-visible-selector="table > tbody > tr">
     @if (Model.IsCloning)
     {
         <div class="ocat-wrapper" asp-validation-class-for="Name">
@@ -136,60 +136,4 @@
     </div>
 </form>
 
-<script at="Foot">
-    function onDocumentReady(callback) {
-        if (document.readyState !== 'loading') {
-            callback();
-        } else {
-            document.addEventListener('DOMContentLoaded', callback);
-        }
-    }
-
-    onDocumentReady(function () {
-        var searchBox = document.getElementById('search-box');
-        if (!searchBox) {
-            return;
-        }
-
-        function setVisible(element, visible) {
-            element.style.display = visible ? '' : 'none';
-        }
-
-        function isVisible(element) {
-            return !!(element.offsetWidth || element.offsetHeight || element.getClientRects().length);
-        }
-
-        // On each keypress filter the list of roles
-        searchBox.addEventListener('keyup', function (e) {
-            var search = this.value.toLowerCase();
-
-            // On ESC, clear the search box and display all roles
-            if (e.key === "Escape" || search == '') {
-                searchBox.value = '';
-                document.querySelectorAll('.permissions-list').forEach(function (list) {
-                    setVisible(list, true);
-                });
-                document.querySelectorAll('.permissions-list > table > tbody > tr').forEach(function (row) {
-                    setVisible(row, true);
-                });
-            }
-            else {
-                document.querySelectorAll('.permissions-list > table > tbody > tr').forEach(function (row) {
-                    var text = row.dataset.text.toLowerCase();
-                    var found = text.indexOf(search) > -1;
-                    setVisible(row, found);
-
-                    if (found) {
-                        setVisible(row.closest('.permissions-list'), true);
-                    }
-                });
-
-                // Hide any section without visible permission
-                document.querySelectorAll('.permissions-list').forEach(function (list) {
-                    var hasVisiblePermissions = Array.from(list.querySelectorAll('table > tbody > tr')).some(isVisible);
-                    setVisible(list, hasVisiblePermissions);
-                });
-            }
-        });
-    })
-</script>
+<script asp-name="list-management" at="Foot"></script>

@@ -3,7 +3,7 @@
     var thumbnails = (Dictionary<string, dynamic>)Model.Thumbnails;
 }
 
-<div class="modal fade" id="modalConditions" tabindex="-1" role="dialog" aria-labelledby="available-rules-title" aria-hidden="true">
+<div class="modal fade" id="modalConditions" tabindex="-1" role="dialog" aria-labelledby="available-rules-title" aria-hidden="true" data-list-management data-client-side-search="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -18,7 +18,7 @@
                     <div class="row row-cols-1 row-cols-md-2 g-2">
                         @foreach (var thumbnail in thumbnails.OrderBy(t => t.Key))
                         {
-                            <div class="col item">
+                            <div class="col item" data-filter-value="@thumbnail.Key">
                                 @await DisplayAsync(thumbnail.Value)
                             </div>
                         }
@@ -31,6 +31,8 @@
         </div>
     </div>
 </div>
+
+<script asp-name="list-management" at="Foot"></script>
 
 <script At="Foot">
     function onDocumentReady(callback) {
@@ -64,37 +66,5 @@
             });
         }
 
-        var searchBox = document.getElementById('search-box');
-        if (!searchBox) {
-            return;
-        }
-
-        // On each keypress filter the list of cards
-        searchBox.addEventListener('keyup', function () {
-            var search = replaceDiacritics(this.value.toLowerCase());
-            if (search == '') {
-                searchBox.value = '';
-                document.querySelectorAll('.item').forEach(function (item) {
-                    item.style.display = '';
-                });
-            }
-            else {
-                document.querySelectorAll('.item').forEach(function (item) {
-                    var titleElement;
-                    Array.from(item.children).some(function (child) {
-                        titleElement = child.firstElementChild;
-                        return !!titleElement;
-                    });
-                    var title = titleElement ? titleElement.innerHTML : '';
-                    var filter = replaceDiacritics(title.toLowerCase());
-                    var found = filter.indexOf(search) > -1;
-                    item.style.display = found ? '' : 'none';
-                });
-            }
-        });
     });
-
-    function replaceDiacritics(str) {
-        return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-    }
 </script>
