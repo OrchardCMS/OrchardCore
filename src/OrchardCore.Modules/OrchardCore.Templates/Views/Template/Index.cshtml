@@ -15,7 +15,7 @@ else
 }
 
 @* the form is necessary to generate and antiforgery token for the delete action *@
-<form asp-action="@formAction">
+<form asp-action="@formAction" data-list-management data-selected-label="@T["selected"]">
     <input type="submit" name="submit.Filter" id="submitFilter" class="visually-hidden" />
     <input asp-for="Options.AdminTemplates" type="hidden" />
     <input asp-for="Options.BulkAction" type="hidden" />
@@ -50,7 +50,7 @@ else
                         </div>
                     </div>
                     <div class="col-auto">
-                        <div class="dropdown" style="display:none" id="actions">
+                        <div class="dropdown d-none" id="actions">
                             <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="bulk-action-menu-button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 @T["Actions"]
                             </button>
@@ -99,86 +99,4 @@ else
 
 @await DisplayAsync(Model.Pager)
 
-<script at="Foot">
-    function onDocumentReady(callback) {
-        if (document.readyState !== 'loading') {
-            callback();
-        } else {
-            document.addEventListener('DOMContentLoaded', callback);
-        }
-    }
-
-    onDocumentReady(function () {
-        var actions = document.getElementById("actions");
-        var items = document.getElementById("items");
-        var filters = document.querySelectorAll(".filter");
-        var selectAllCtrl = document.getElementById("select-all");
-        var selectedItems = document.getElementById("selected-items");
-        var itemsCheckboxes = document.querySelectorAll("input[type='checkbox'][name='itemIds']");
-
-        if (!selectAllCtrl) {
-            return;
-        }
-
-        function getSelectedItemsCount() {
-            return document.querySelectorAll("input[type='checkbox'][name='itemIds']:checked").length;
-        }
-
-        function displayActionsOrFilters() {
-            if (getSelectedItemsCount() > 1) {
-                actions.style.display = '';
-                filters.forEach(function (filter) { filter.style.display = 'none'; });
-                selectedItems.style.display = '';
-                items.style.display = 'none';
-            }
-            else {
-                actions.style.display = 'none';
-                filters.forEach(function (filter) { filter.style.display = ''; });
-                selectedItems.style.display = 'none';
-                items.style.display = '';
-            }
-        }
-
-        document.querySelectorAll(".dropdown-menu .dropdown-item").forEach(function (dropdownItem) {
-            if (!dropdownItem.dataset.action) {
-                return;
-            }
-
-            dropdownItem.addEventListener("click", function () {
-                if (getSelectedItemsCount() > 1) {
-                    confirmDialog({
-                        ...this.dataset, callback: function (r) {
-                            if (r) {
-                                document.querySelector("[name='Options.BulkAction']").value = dropdownItem.dataset.action;
-                                document.querySelector("[name='submit.BulkAction']").click();
-                            }
-                        }
-                    });
-                }
-            });
-        });
-
-        selectAllCtrl.addEventListener("click", function () {
-            itemsCheckboxes.forEach(function (checkbox) {
-                if (checkbox !== selectAllCtrl) {
-                    checkbox.checked = selectAllCtrl.checked;
-                }
-            });
-            selectedItems.textContent = getSelectedItemsCount() + ' @T["selected"]';
-            displayActionsOrFilters();
-        });
-
-        itemsCheckboxes.forEach(function (checkbox) {
-            checkbox.addEventListener("click", function () {
-                var itemsCount = itemsCheckboxes.length;
-                var selectedItemsCount = getSelectedItemsCount();
-
-                selectAllCtrl.checked = selectedItemsCount == itemsCount;
-                selectAllCtrl.indeterminate = selectedItemsCount > 0 && selectedItemsCount < itemsCount;
-
-                selectedItems.textContent = selectedItemsCount + ' @T["selected"]';
-                displayActionsOrFilters();
-            });
-        });
-    })
-</script>
+<script asp-name="list-management" at="Foot"></script>

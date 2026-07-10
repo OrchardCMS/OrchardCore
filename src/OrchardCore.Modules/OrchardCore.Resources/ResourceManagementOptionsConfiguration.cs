@@ -1112,7 +1112,17 @@ public sealed class ResourceManagementOptionsConfiguration
             )
             .SetVersion("1.0.0");
 
-        // Vue.js
+        // List Management
+        
+        manifest
+            .DefineScript("list-management")
+            .SetUrl(
+                "~/OrchardCore.Resources/Scripts/list-management.min.js",
+                "~/OrchardCore.Resources/Scripts/list-management.js"
+            )
+            .SetVersion("1.0.0");
+
+        // Vue.js 
 
         manifest
             .DefineScript("vuejs")

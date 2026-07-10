@@ -11,7 +11,7 @@
 <zone Name="Title"><h1>@RenderTitleSegments(T["Admin Menus"])</h1></zone>
 
 @* the form is necessary to generate an antiforgery token for the delete and toggle actions *@
-<form asp-action="List">
+<form asp-action="List" data-list-management data-selected-label="@T["selected"]">
     <input type="submit" name="submit.Filter" id="submitFilter" class="visually-hidden" />
     <input asp-for="Options.BulkAction" type="hidden" />
     <input type="submit" name="submit.BulkAction" class="visually-hidden" />
@@ -46,7 +46,7 @@
                         </div>
                     </div>
                     <div class="col col-md-auto text-end">
-                        <div class="dropdown" style="display:none" id="actions">
+                        <div class="dropdown d-none" id="actions">
                             <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="bulk-action-menu-button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 @T["Actions"]
                             </button>
@@ -99,101 +99,4 @@
 
 @await DisplayAsync(Model.Pager)
 
-<script at="Foot">
-    function onDocumentReady(callback) {
-        if (document.readyState !== 'loading') {
-            callback();
-        } else {
-            document.addEventListener('DOMContentLoaded', callback);
-        }
-    }
-
-    onDocumentReady(function () {
-        var actions = document.getElementById("actions");
-        var items = document.getElementById("items");
-        var filters = document.querySelectorAll(".filter");
-        var selectAllCtrl = document.getElementById("select-all");
-        var selectedItems = document.getElementById("selected-items");
-        var itemsCheckboxes = document.querySelectorAll("input[type='checkbox'][name='itemIds']");
-
-        function checkedItems() {
-            return document.querySelectorAll("input[type='checkbox'][name='itemIds']:checked");
-        }
-
-        function setDisplay(elements, display) {
-            if (!elements) {
-                return;
-            }
-
-            if (elements instanceof NodeList) {
-                elements.forEach(function (element) {
-                    element.style.display = display;
-                });
-            } else {
-                elements.style.display = display;
-            }
-        }
-
-        function displayActionsOrFilters() {
-            if (checkedItems().length > 1) {
-                setDisplay(actions, '');
-                setDisplay(filters, 'none');
-                setDisplay(selectedItems, '');
-                setDisplay(items, 'none');
-            }
-            else {
-                setDisplay(actions, 'none');
-                setDisplay(filters, '');
-                setDisplay(selectedItems, 'none');
-                setDisplay(items, '');
-            }
-        }
-
-        document.querySelectorAll(".dropdown-menu .dropdown-item").forEach(function (item) {
-            if (!item.dataset.action) {
-                return;
-            }
-
-            item.addEventListener("click", function () {
-                if (checkedItems().length > 1) {
-                    confirmDialog({
-                        ...this.dataset, callback: function (r) {
-                            if (r) {
-                                document.querySelector("[name='Options.BulkAction']").value = item.dataset.action;
-                                document.querySelector("[name='submit.BulkAction']").click();
-                            }
-                        }
-                    });
-                }
-            });
-        });
-
-        if (selectAllCtrl) {
-            selectAllCtrl.addEventListener("click", function () {
-                itemsCheckboxes.forEach(function (item) {
-                    if (item !== selectAllCtrl) {
-                        item.checked = selectAllCtrl.checked;
-                    }
-                });
-
-                selectedItems.textContent = checkedItems().length + ' @T["selected"]';
-                displayActionsOrFilters();
-            });
-        }
-
-        itemsCheckboxes.forEach(function (item) {
-            item.addEventListener("click", function () {
-                var itemsCount = document.querySelectorAll("input[type='checkbox'][name='itemIds']").length;
-                var selectedItemsCount = checkedItems().length;
-
-                if (selectAllCtrl) {
-                    selectAllCtrl.checked = selectedItemsCount == itemsCount;
-                    selectAllCtrl.indeterminate = selectedItemsCount > 0 && selectedItemsCount < itemsCount;
-                }
-
-                selectedItems.textContent = selectedItemsCount + ' @T["selected"]';
-                displayActionsOrFilters();
-            });
-        });
-    });
-</script>
+<script asp-name="list-management" at="Foot"></script>
