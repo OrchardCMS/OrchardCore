@@ -1,29 +1,71 @@
 using Jint;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Options;
+using JintOptions = Jint.Options;
 
 namespace OrchardCore.Scripting.JavaScript;
 
-public class JavaScriptScope : IScriptingScope
+public sealed class JavaScriptEngine : IScriptingEngine
 {
-    public JavaScriptScope(Engine engine, IServiceProvider serviceProvider, IEnumerable<GlobalMethod> methods)
+    private static readonly MemoryCacheEntryOptions ScriptCacheEntryOptions = new MemoryCacheEntryOptions()
+        .SetSlidingExpiration(TimeSpan.FromMinutes(30))
+        .SetAbsoluteExpiration(TimeSpan.FromHours(2));
+
+    private readonly IMemoryCache _memoryCache;
+    private readonly JintOptions _jintOptions;
+
+    public JavaScriptEngine(IMemoryCache memoryCache, IOptions<JintOptions> jintOptions)
     {
-        Engine = engine;
-        ServiceProvider = serviceProvider;
-        
-        foreach (var method in methods)
-        {
-            if (method.Method != null)
-            {
-                Engine.SetValue(method.Name, method.Method(ServiceProvider));
-            }
-            
-            if (method.AsyncMethod != null)
-            {
-                Engine.SetValue(method.Name + "Async", method.AsyncMethod(ServiceProvider));
-            }
-        }
+        _memoryCache = memoryCache;
+        _jintOptions = jintOptions.Value;
+        _jintOptions.ExperimentalFeatures |= ExperimentalFeature.TaskInterop;
     }
 
-    public Engine Engine { get; }
+    public string Prefix => "js";
 
-    public IServiceProvider ServiceProvider { get; }
+    public IScriptingScope CreateScope(IEnumerable<GlobalMethod> methods, IServiceProvider serviceProvider, IFileProvider fileProvider, string basePath)
+    {
+        var engine = new Engine(_jintOptions);
+
+        return new JavaScriptScope(engine, serviceProvider, methods);
+    }
+
+    public object Evaluate(IScriptingScope scope, string script)
+    {
+        var jsScope = GetJavaScriptScope(scope);
+
+        var parsedAst = _memoryCache.GetOrCreate(
+            script,
+            static entry => Engine.PrepareScript((string)entry.Key),
+            ScriptCacheEntryOptions);
+
+        var result = jsScope.Engine.Evaluate(parsedAst).ToObject();
+
+        return result;
+    }
+
+    public async Task<object> EvaluateAsync(IScriptingScope scope, string script, CancellationToken cancellationToken = default)
+    {
+        var jsScope = GetJavaScriptScope(scope);
+
+        var parsedAst = _memoryCache.GetOrCreate(
+            script,
+            static entry => Engine.PrepareScript((string)entry.Key),
+            ScriptCacheEntryOptions);
+
+        var result = await jsScope.Engine.EvaluateAsync(parsedAst, cancellationToken);
+
+        return result.ToObject();
+    }
+
+    private static JavaScriptScope GetJavaScriptScope(IScriptingScope scope)
+    {
+        if (scope is not JavaScriptScope jsScope)
+        {
+            throw new ArgumentException($"Expected a scope of type {nameof(JavaScriptScope)}", nameof(scope));
+        }
+
+        return jsScope;
+    }
 }
