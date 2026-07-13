@@ -184,7 +184,7 @@ public sealed class ExtensionManager : IExtensionManager
                 var manifestInfo = new ManifestInfo(module.ModuleInfo);
                 var extensionInfo = new ExtensionInfo(module.SubPath, manifestInfo, (manifestInfo, extensionInfo) =>
                 {
-                    return featuresProviders.SelectMany(p => p.GetFeatures(extensionInfo, manifestInfo));
+                    return featuresProviders.SelectMany(p => p.GetFeatures(extensionInfo, manifestInfo)).ToArray();
                 });
 
                 var entry = new ExtensionEntry
