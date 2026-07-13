@@ -1,6 +1,6 @@
 # Creating an Orchard Core CMS website
 
-In this guide you will setup Orchard Core as a Content Management System from a project template.
+In this guide you will set up Orchard Core as a Content Management System from a project template.
 
 ## What you will need
 
@@ -13,7 +13,7 @@ There are different ways to create sites and modules for Orchard Core. You can l
 
 In this guide we will use our "Code Generation Templates". You can install the latest stable release of the templates using this command:
 
-```dotnet new install OrchardCore.ProjectTemplates@2.2.1-*```
+```dotnet new install OrchardCore.ProjectTemplates::3.0.1-*```
 
 !!! note
     To use the development branch of the template add `--nuget-source https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json`.
@@ -26,7 +26,7 @@ This creates a new Orchard Core CMS project in a folder named `MySite`.
 
 ## Setting up the site
 
-The application has been created by the template, but it has not been setup yet.
+The application has been created by the template, but it has not been set up yet.
 
 Run the application by executing this command:
 

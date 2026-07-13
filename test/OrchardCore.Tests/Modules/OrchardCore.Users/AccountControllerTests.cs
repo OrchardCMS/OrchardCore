@@ -14,7 +14,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Users;
 public class AccountControllerTests
 {
     [Fact]
-    public async Task ExternalLoginSignIn_Test()
+    public async Task ExternalLoginSignIn_Default_Succeeds()
     {
         // Arrange
         var context = await GetSiteContextAsync(new RegistrationSettings(), true, true, true);
@@ -162,7 +162,7 @@ public class AccountControllerTests
     }
 
     [Fact]
-    public async Task Register_WhenAllowed_RegisterUser()
+    public async Task Register_AllowedRegisterUser_Succeeds()
     {
         // Arrange
         var context = await GetSiteContextAsync(new RegistrationSettings());
@@ -198,7 +198,7 @@ public class AccountControllerTests
     }
 
     [Fact]
-    public async Task Register_WhenNotAllowed_ReturnNotFound()
+    public async Task Register_NotAllowedReturnNotFound_Succeeds()
     {
         // Arrange
         var context = await GetSiteContextAsync(new RegistrationSettings(), false);
@@ -211,7 +211,7 @@ public class AccountControllerTests
     }
 
     [Fact]
-    public async Task Register_WhenFeatureIsNotEnable_ReturnNotFound()
+    public async Task Register_FeatureIsNotEnableReturnNotFound_Succeeds()
     {
         // Arrange
         var context = await GetSiteContextAsync(new RegistrationSettings(), enableRegistrationFeature: false);
@@ -224,7 +224,7 @@ public class AccountControllerTests
     }
 
     [Fact]
-    public async Task Register_WhenRequireUniqueEmailIsTrue_PreventRegisteringMultipleUsersWithTheSameEmails()
+    public async Task Register_RequireUniqueEmailIsTruePreventRegisteringMultipleUsersWithTheSameEmails_Succeeds()
     {
         // Arrange
         var context = await GetSiteContextAsync(new RegistrationSettings());
@@ -268,7 +268,7 @@ public class AccountControllerTests
     }
 
     [Fact]
-    public async Task Register_WhenRequireUniqueEmailIsFalse_AllowRegisteringMultipleUsersWithTheSameEmails()
+    public async Task Register_RequireUniqueEmailIsFalseAllowRegisteringMultipleUsersWithTheSameEmails_Succeeds()
     {
         // Arrange
         var context = await GetSiteContextAsync(new RegistrationSettings(), enableRegistrationFeature: true, requireUniqueEmail: false);
@@ -314,7 +314,7 @@ public class AccountControllerTests
     }
 
     [Fact]
-    public async Task Register_WhenModeration_RedirectToRegistrationPending()
+    public async Task Register_ModerationRedirectToRegistrationPending_Succeeds()
     {
         // Arrange
         var context = await GetSiteContextAsync(new RegistrationSettings()
@@ -354,7 +354,7 @@ public class AccountControllerTests
     }
 
     [Fact]
-    public async Task Register_WhenRequireEmailConfirmation_RedirectToConfirmEmailSent()
+    public async Task Register_RequireEmailConfirmationRedirectToConfirmEmailSent_Succeeds()
     {
         // Arrange
         var context = await GetSiteContextAsync(new RegistrationSettings
@@ -396,7 +396,7 @@ public class AccountControllerTests
     }
 
     [Fact]
-    public async Task Login_WhenUserIsDisabled_RedirectsToLoginWithError()
+    public async Task Login_UserIsDisabledRedirectsToLoginWithError_Succeeds()
     {
         // Arrange
         var context = await GetSiteContextAsync(new RegistrationSettings());
@@ -440,7 +440,7 @@ public class AccountControllerTests
     }
 
     [Fact]
-    public async Task Login_WhenUserIsEnabled_Succeeds()
+    public async Task Login_UserIsEnabledSucceeds_Succeeds()
     {
         // Arrange
         var context = await GetSiteContextAsync(new RegistrationSettings());
@@ -474,7 +474,78 @@ public class AccountControllerTests
     }
 
     [Fact]
-    public async Task Login_WhenUserDisabledUnderModeration_DefersToModerationHandler()
+    public async Task Register_RateLimitExceededReturnsTooManyRequests_Succeeds()
+    {
+        // Arrange
+        var context = await GetSiteContextAsync(new RegistrationSettings(), enableRateLimits: true);
+
+        var registerGet = await context.Client.GetAsync("Register", TestContext.Current.CancellationToken);
+        Assert.True(registerGet.IsSuccessStatusCode);
+
+        // Act
+        HttpResponseMessage response = null;
+
+        for (var i = 0; i < 4; i++)
+        {
+            var model = new RegisterViewModel()
+            {
+                UserName = $"RateLimitUser{i}",
+                Email = $"ratelimit{i}@orchardcore.com",
+                Password = "Password1!",
+                ConfirmPassword = "Password1!",
+            };
+
+            response = await context.Client.SendAsync(await CreateRequestMessageAsync(model, registerGet), TestContext.Current.CancellationToken);
+        }
+
+        // Assert
+        Assert.Equal(HttpStatusCode.TooManyRequests, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task Login_UsernameIsInvalidReturnsGenericError_Succeeds()
+    {
+        // Arrange
+        var context = await GetSiteContextAsync(new RegistrationSettings());
+
+        var loginGet = await context.Client.GetAsync("Login", TestContext.Current.CancellationToken);
+        Assert.True(loginGet.IsSuccessStatusCode);
+
+        // Act
+        var loginPost = await context.Client.SendAsync(await CreateLoginRequestMessageAsync("missing-user", "Password1!", loginGet), TestContext.Current.CancellationToken);
+        var body = await loginPost.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+
+        // Assert
+        Assert.True(loginPost.IsSuccessStatusCode);
+        Assert.Contains("Invalid login attempt.", body);
+
+        var cookies = CookiesHelper.ExtractCookies(loginPost);
+        Assert.DoesNotContain("orchauth_" + context.TenantName, cookies.Keys);
+    }
+
+    [Fact]
+    public async Task Login_RateLimitExceededReturnsTooManyRequests_Succeeds()
+    {
+        // Arrange
+        var context = await GetSiteContextAsync(new RegistrationSettings(), enableRateLimits: true);
+
+        var loginGet = await context.Client.GetAsync("Login", TestContext.Current.CancellationToken);
+        Assert.True(loginGet.IsSuccessStatusCode);
+
+        // Act
+        HttpResponseMessage response = null;
+
+        for (var i = 0; i < 11; i++)
+        {
+            response = await context.Client.SendAsync(await CreateLoginRequestMessageAsync("missing-user", "Password1!", loginGet), TestContext.Current.CancellationToken);
+        }
+
+        // Assert
+        Assert.Equal(HttpStatusCode.TooManyRequests, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task Login_UserDisabledUnderModerationDefersToModerationHandler_Succeeds()
     {
         // Arrange
         var context = await GetSiteContextAsync(new RegistrationSettings()
@@ -541,7 +612,7 @@ public class AccountControllerTests
         return HttpRequestHelper.CreatePostMessageWithCookies("Login", data, response);
     }
 
-    private static async Task<SiteContext> GetSiteContextAsync(RegistrationSettings settings, bool enableRegistrationFeature = true, bool requireUniqueEmail = true, bool enableExternalAuthentication = false)
+    private static async Task<SiteContext> GetSiteContextAsync(RegistrationSettings settings, bool enableRegistrationFeature = true, bool requireUniqueEmail = true, bool enableExternalAuthentication = false, bool enableRateLimits = false)
     {
         var context = new SiteContext();
 
@@ -575,6 +646,11 @@ public class AccountControllerTests
             if (enableExternalAuthentication)
             {
                 featureIds.Add(UserConstants.Features.ExternalAuthentication);
+            }
+
+            if (enableRateLimits)
+            {
+                featureIds.Add("OrchardCore.RateLimits");
             }
 
             recipeSteps.Add(new JsonObject

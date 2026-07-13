@@ -10,7 +10,7 @@ public class BlobContainerNameValidatorTests
     [InlineData("tenant1-media")]
     [InlineData("a1-b2-c3")]
     [InlineData("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")] // 63 chars
-    public void Valid(string name)
+    public void Valid_Default_Succeeds(string name)
         => Assert.True(BlobContainerNameValidator.IsValid(name));
 
     [Theory]
@@ -24,6 +24,6 @@ public class BlobContainerNameValidatorTests
     [InlineData("-leading")]                        // starts with hyphen
     [InlineData("trailing-")]                       // ends with hyphen
     [InlineData("double--hyphen")]                  // consecutive hyphens
-    public void Invalid(string name)
+    public void Invalid_Default_Succeeds(string name)
         => Assert.False(BlobContainerNameValidator.IsValid(name));
 }

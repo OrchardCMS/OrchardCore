@@ -7,7 +7,7 @@ namespace OrchardCore.Tests.Email;
 public class EmailTests
 {
     [Fact]
-    public async Task SendEmail_UsesDefaultSender()
+    public async Task SendEmail_Default_UsesDefaultSender()
     {
         // Arrange
         var message = new MailMessage
@@ -25,7 +25,7 @@ public class EmailTests
     }
 
     [Fact]
-    public async Task SendEmail_WithCcHeader()
+    public async Task SendEmail_CcHeader_Succeeds()
     {
         // Arrange
         var message = new MailMessage
@@ -43,7 +43,7 @@ public class EmailTests
     }
 
     [Fact]
-    public async Task SendEmail_WithBccHeader()
+    public async Task SendEmail_BccHeader_Succeeds()
     {
         // Arrange
         var message = new MailMessage
@@ -61,7 +61,7 @@ public class EmailTests
     }
 
     [Fact]
-    public async Task SendEmail_WithDisplayName()
+    public async Task SendEmail_DisplayName_Succeeds()
     {
         var message = new MailMessage
         {
@@ -74,7 +74,7 @@ public class EmailTests
     }
 
     [Fact]
-    public async Task SendEmail_UsesCustomSender()
+    public async Task SendEmail_Default_UsesCustomSender()
     {
         var message = new MailMessage
         {
@@ -90,7 +90,7 @@ public class EmailTests
     }
 
     [Fact]
-    public async Task SendEmail_UsesCustomAuthorAndSender()
+    public async Task SendEmail_Default_UsesCustomAuthorAndSender()
     {
         var message = new MailMessage
         {
@@ -106,7 +106,7 @@ public class EmailTests
     }
 
     [Fact]
-    public async Task SendEmail_UsesMultipleAuthors()
+    public async Task SendEmail_Default_UsesMultipleAuthors()
     {
         var message = new MailMessage
         {
@@ -122,7 +122,7 @@ public class EmailTests
     }
 
     [Fact]
-    public async Task SendEmail_UsesReplyTo()
+    public async Task SendEmail_Default_UsesReplyTo()
     {
         var message = new MailMessage
         {
@@ -139,7 +139,7 @@ public class EmailTests
     }
 
     [Fact]
-    public async Task ReplyTo_ShouldHaveAuthors_IfNotSet()
+    public async Task ReplyTo_NotSet_HasAuthors()
     {
         var message = new MailMessage
         {
@@ -162,7 +162,7 @@ public class EmailTests
     [InlineData("mailbox@domain.com", "", "mailbox@domain.com")]
     [InlineData("(comment)mailbox(comment)@(comment)domain.com(me) ", "me", "mailbox@domain.com")]
     [InlineData("Sébastien <sébastien@domain.com>", "Sébastien", "sébastien@domain.com")]
-    public void MailBoxAddress_ShouldParseEmail(string text, string name, string address)
+    public void MailBoxAddress_Default_ParsesEmail(string text, string name, string address)
     {
         Assert.True(MailboxAddress.TryParse(text, out var mailboxAddress));
         Assert.Equal(name, mailboxAddress.Name);
@@ -170,7 +170,7 @@ public class EmailTests
     }
 
     [Fact]
-    public async Task SendEmail_WithoutToAndCcAndBccHeaders_ShouldThrowsException()
+    public async Task SendEmail_OutToAndCcAndBccHeaders_ThrowsException()
     {
         // Arrange
         var message = new MailMessage
@@ -194,7 +194,7 @@ public class EmailTests
     }
 
     [Fact]
-    public async Task SendEmail_WithTextAndHtmlFormats()
+    public async Task SendEmail_TextAndHtmlFormats_Succeeds()
     {
         // Arrange
         var message = new MailMessage
@@ -213,6 +213,42 @@ public class EmailTests
         Assert.Contains("Plain text Message", content);
         Assert.Contains("Content-Type: text/html; charset=utf-8", content);
         Assert.Contains("<p>HTML Message</p>", content);
+    }
+
+    [Fact]
+    public async Task SendEmail_Default_CreatesMissingPickupDirectory()
+    {
+        // Arrange
+        var pickupDirectoryPath = Path.Combine(Directory.GetCurrentDirectory(), "Email", "Sites", "Blog1", "Emails");
+
+        if (Directory.Exists(pickupDirectoryPath))
+        {
+            Directory.Delete(pickupDirectoryPath, recursive: true);
+        }
+
+        var message = new MailMessage
+        {
+            To = "info@oc.com",
+            Subject = "Test",
+            TextBody = "Plain text Message",
+        };
+
+        var options = new SmtpOptions
+        {
+            DeliveryMethod = SmtpDeliveryMethod.SpecifiedPickupDirectory,
+            PickupDirectoryLocation = pickupDirectoryPath,
+            IsEnabled = true,
+        };
+
+        var smtp = CreateSmtpService(options);
+
+        // Act
+        var result = await smtp.SendAsync(message, TestContext.Current.CancellationToken);
+
+        // Assert
+        Assert.True(result.Succeeded);
+        Assert.True(Directory.Exists(pickupDirectoryPath));
+        Assert.NotNull(new DirectoryInfo(pickupDirectoryPath).GetFiles().FirstOrDefault());
     }
 
     private static async Task<string> SendEmailAsync(MailMessage message, string defaultSender = null)

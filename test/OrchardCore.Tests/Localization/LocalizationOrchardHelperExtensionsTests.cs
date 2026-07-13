@@ -5,7 +5,7 @@ namespace OrchardCore.Tests.Localization;
 public class LocalizationOrchardHelperExtensionsTests
 {
     [Fact]
-    public void GetJSLocalizations_ThrowsArgumentNullException_WhenGroupsIsNull()
+    public void GetJSLocalizations_GroupsIsNull_ThrowsArgumentNullException()
     {
         var orchardHelper = CreateOrchardHelper([]);
 
@@ -13,7 +13,7 @@ public class LocalizationOrchardHelperExtensionsTests
     }
 
     [Fact]
-    public void GetJSLocalizations_CallsLocalizersPerRequestedGroupAndMergesResults()
+    public void GetJSLocalizations_CallsLocalizersPerRequestedGroupAndMergesResults_Succeeds()
     {
         var firstLocalizer = new TrackingJSLocalizer(new Dictionary<string, IDictionary<string, string>>
         {
@@ -45,7 +45,7 @@ public class LocalizationOrchardHelperExtensionsTests
     }
 
     [Fact]
-    public void GetJSLocalizations_IgnoresNullResults()
+    public void GetJSLocalizations_Default_IgnoressNullResults()
     {
         var orchardHelper = CreateOrchardHelper([new NullReturningJSLocalizer()]);
 

@@ -140,8 +140,8 @@ When the appropriate event is triggered (which could happen seconds, days, weeks
 ## Scripts and Expressions
 
 Many activities have settings that can contain either **JavaScript** or **Liquid** syntax.  
-For example, when adding the **Notify** activity, its editor shows the following fields:  
-These type of fields allow you to enter Liquid markup, enabling access to system-wide variables and filters as well as variables from the **workflow execution context**.
+For example, activities such as **Correlate**, **For Each**, **For Loop**, **If / Else**, **Set Output**, **Set Property**, and **While Loop** provide a syntax selector in their editors.  
+Liquid-enabled fields allow you to enter Liquid markup, enabling access to system-wide variables and filters as well as variables from the **workflow execution context**.
 
 ### JavaScript Functions
 
@@ -215,17 +215,18 @@ The following activities are available with any default Orchard installation:
 |-------------------------------|-------|-------------------------------------------------------------------------------------|
 | **Workflows**                 | *     | *                                                                                   |
 | Correlate                     | Task  | Correlate the current workflow instance with a value.                               |
-| For Each                      | Task  | Iterate over a list.                                                                |
+| For Each                      | Task  | Iterate over a JavaScript list or a Liquid-rendered JSON or comma-separated list.  |
 | Fork                          | Task  | Fork workflow execution into separate paths of execution.                           |
-| For Loop                      | Task  | Iterates for N times.                                                               |
-| If / Else                     | Task  | Evaluate a boolean condition and continues execution based on the outcome.          |
+| For Loop                      | Task  | Iterate between JavaScript or Liquid numeric start and end values.                  |
+| If / Else                     | Task  | Evaluate a JavaScript or Liquid boolean condition and continue execution based on the outcome. |
 | Join                          | Task  | Join a forked workflow execution back into a single path of execution.              |
+| Liquid                        | Task  | Evaluate a Liquid expression and store the result as the workflow's last result.    |
 | Log                           | Task  | Write a log entry.                                                                  |
 | Notify                        | Task  | Display a notification.                                                             |
 | Script                        | Task  | Execute script and continue execution based on the returned outcome.                |
-| Set Output                    | Task  | Evaluate a script expression and store the result into the workflow's output.       |
-| Set Property                  | Task  | Execute script and continue execution based on the returned outcome.                |
-| While Loop                    | Task  | Iterate while a condition is true.                                                  |
+| Set Output                    | Task  | Evaluate a JavaScript or Liquid expression and store the result into the workflow's output. |
+| Set Property                  | Task  | Evaluate a JavaScript or Liquid expression and store the result into workflow properties. |
+| While Loop                    | Task  | Iterate while a JavaScript or Liquid condition is true.                             |
 | **HTTP Workflow Activities**  | *     | *                                                                                   | * |
 | HTTP Redirect                 | Task  | Redirect the user agent to the specified URL (301/302).                             |
 | HTTP Request                  | Task  | Perform a HTTP request to a given URL.                                              |

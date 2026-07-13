@@ -9,54 +9,69 @@
 <script asp-name="codemirror-addon-mode-multiplex" at="Foot"></script>
 <script asp-name="codemirror-mode-xml" at="Foot"></script>
 
-<h5 class="mb-3">@T["Configuring External Authentication for User Registration with Third-Party Providers"]</h5>
-
-<div class="mb-3" asp-validation-class-for="DisableNewRegistrations">
-    <div class="form-check">
-        <input type="checkbox" class="form-check-input" asp-for="DisableNewRegistrations" />
-        <span asp-validation-for="DisableNewRegistrations"></span>
-        <label class="form-check-label" asp-for="DisableNewRegistrations">@T["Disable new external registration"]</label>
-        <span class="hint dashed">@T["If selected, only users with existing local accounts will be able to authenticate, and new users will not be able to register using external authentication. Users without a local account will not be able to authenticate."]</span>
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
+        <h5>@T["Configuring External Authentication for User Registration with Third-Party Providers"]</h5>
     </div>
 </div>
 
-<div class="mb-3" asp-validation-class-for="NoUsername">
-    <div class="form-check">
-        <input type="checkbox" class="form-check-input" asp-for="NoUsername" />
-        <span asp-validation-for="NoUsername"></span>
-        <label class="form-check-label" asp-for="NoUsername">@T["Do not ask username"]</label>
-        <span class="hint dashed">@T["When a new user logs in with an external provider, they are not required to provide a local username. You can customize how it works by providing an IExternalLoginEventHandler or writing a script."]</span>
+<div class="ocat-wrapper" asp-validation-class-for="DisableNewRegistrations">
+    <div class="ocat-end-offset">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" asp-for="DisableNewRegistrations" />
+            <span asp-validation-for="DisableNewRegistrations"></span>
+            <label class="form-check-label" asp-for="DisableNewRegistrations">@T["Disable new external registration"]</label>
+            <span class="hint dashed">@T["If selected, only users with existing local accounts will be able to authenticate, and new users will not be able to register using external authentication. Users without a local account will not be able to authenticate."]</span>
+        </div>
     </div>
 </div>
 
-<div class="mb-3" asp-validation-class-for="NoEmail">
-    <div class="form-check">
-        <input type="checkbox" class="form-check-input" asp-for="NoEmail" />
-        <span asp-validation-for="NoEmail"></span>
-        <label class="form-check-label" asp-for="NoEmail">@T["Do not ask email address"]</label>
-        <span class="hint dashed">@T["When a new user logs in with an external provider and the email claim is defined, they are not required to provide a local email address."]</span>
+<div class="ocat-wrapper" asp-validation-class-for="NoUsername">
+    <div class="ocat-end-offset">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" asp-for="NoUsername" />
+            <span asp-validation-for="NoUsername"></span>
+            <label class="form-check-label" asp-for="NoUsername">@T["Do not ask username"]</label>
+            <span class="hint dashed">@T["When a new user logs in with an external provider, they are not required to provide a local username. You can customize how it works by providing an IExternalLoginEventHandler or writing a script."]</span>
+        </div>
     </div>
 </div>
 
-<div class="mb-3" asp-validation-class-for="NoPassword">
-    <div class="form-check">
-        <input type="checkbox" class="form-check-input" asp-for="NoPassword" />
-        <span asp-validation-for="NoPassword"></span>
-        <label class="form-check-label" asp-for="NoPassword">@T["Do not create local password"]</label>
-        <span class="hint dashed">@T["When a new user logs in with an external provider, they are not required to provide a local password."]</span>
+<div class="ocat-wrapper" asp-validation-class-for="NoEmail">
+    <div class="ocat-end-offset">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" asp-for="NoEmail" />
+            <span asp-validation-for="NoEmail"></span>
+            <label class="form-check-label" asp-for="NoEmail">@T["Do not ask email address"]</label>
+            <span class="hint dashed">@T["When a new user logs in with an external provider and the email claim is defined, they are not required to provide a local email address."]</span>
+        </div>
     </div>
 </div>
 
-<div class="mb-3" asp-validation-class-for="UseScriptToGenerateUsername">
-    <div class="form-check">
-        <input type="checkbox" class="form-check-input" asp-for="UseScriptToGenerateUsername" />
-        <span asp-validation-for="UseScriptToGenerateUsername"></span>
-        <label class="form-check-label" asp-for="UseScriptToGenerateUsername">@T["Use a script to generate userName based on external provider claims"]</label>
-        <span class="hint dashed">@T["If selected, any IExternalLoginEventHandlers defined in modules are not triggered"]</span>
+<div class="ocat-wrapper" asp-validation-class-for="NoPassword">
+    <div class="ocat-end-offset">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" asp-for="NoPassword" />
+            <span asp-validation-for="NoPassword"></span>
+            <label class="form-check-label" asp-for="NoPassword">@T["Do not create local password"]</label>
+            <span class="hint dashed">@T["When a new user logs in with an external provider, they are not required to provide a local password."]</span>
+        </div>
     </div>
 </div>
 
-<div class="@(Model.UseScriptToGenerateUsername ? string.Empty : "d-none")" id="ScriptToGenerateUsername_Wrapper">
+<div class="ocat-wrapper" asp-validation-class-for="UseScriptToGenerateUsername">
+    <div class="ocat-end-offset">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" asp-for="UseScriptToGenerateUsername" />
+            <span asp-validation-for="UseScriptToGenerateUsername"></span>
+            <label class="form-check-label" asp-for="UseScriptToGenerateUsername">@T["Use a script to generate userName based on external provider claims"]</label>
+            <span class="hint dashed">@T["If selected, any IExternalLoginEventHandlers defined in modules are not triggered"]</span>
+        </div>
+    </div>
+</div>
+
+<div class="@("ocat-wrapper " + (Model.UseScriptToGenerateUsername ? string.Empty : "d-none"))" id="ScriptToGenerateUsername_Wrapper">
+    <div class="ocat-end-offset">
 <pre>
 ********************************************************************************************
 * context          : {userName,loginProvider,externalClaims[]}                             *
@@ -82,15 +97,19 @@
 *                                                                                          *
 ********************************************************************************************
 </pre>
-
-    <div class="mb-3" asp-validation-class-for="GenerateUsernameScript">
-        <textarea asp-for="GenerateUsernameScript" rows="5" class="form-control content-preview-text"></textarea>
     </div>
 
-    <div class="mb-3">
-        <button type="button" class="btn btn-secondary mb-2" id="ResetScriptButton">@T["Reset Script"]</button>
+    <div class="ocat-wrapper" asp-validation-class-for="GenerateUsernameScript">
+        <div class="ocat-end-offset">
+            <textarea asp-for="GenerateUsernameScript" rows="5" class="form-control content-preview-text"></textarea>
+        </div>
     </div>
 
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
+            <button type="button" class="btn btn-secondary mb-2" id="ResetScriptButton">@T["Reset Script"]</button>
+        </div>
+    </div>
 </div>
 
 <script at="Foot">
@@ -100,22 +119,21 @@
             return;
         }
 
-        element.editor.doc.setValue(
-            '/* Uncomment to map AzureAd\n' +
-            '// Uncomment to output the context variable in the logs\n' +
-            '// log("warning", JSON.stringify(context));\n' +
-            'switch (context.loginProvider) {\n' +
-            '    case "AzureAd":\n' +
-            '        context.userName = "azad" + uuid();\n' +
-            '        break;\n' +
-            '    default:\n' +
-            '        log("Warning", "Provider " + context.loginProvider + " was not handled");\n' +
-            '        // Uncomment to generate a username as a uuid\n' +
-            '        // context.userName = "u" + uuid();\n' +
-            '        break;\n' +
-            '}\n' +
-            '*/\n'
-        );
+        element.editor.doc.setValue(`/* Uncomment to map AzureAd
+// Uncomment to output the context variable in the logs
+// log("warning", JSON.stringify(context));
+switch (context.loginProvider) {
+    case "AzureAd":
+        context.userName = "azad" + uuid();
+        break;
+    default:
+        log("Warning", "Provider " + context.loginProvider + " was not handled");
+        // Uncomment to generate a username as a uuid
+        // context.userName = "u" + uuid();
+        break;
+}
+*/
+`);
     }
 
     function toggleEditorState(element) {

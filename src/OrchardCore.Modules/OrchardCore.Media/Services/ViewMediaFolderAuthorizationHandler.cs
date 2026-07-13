@@ -155,7 +155,7 @@ public sealed class ViewMediaFolderAuthorizationHandler : AuthorizationHandler<P
             // Authorize by using the content item permission. The user must have access to the content item to allow its media
             // as well.
             var contentItemId = attachedMediaPathParts.Length > 1 ? attachedMediaPathParts[1] : null;
-            var contentItem = !string.IsNullOrEmpty(contentItemId) ? await _contentManager.GetAsync(contentItemId) : null;
+            var contentItem = !string.IsNullOrEmpty(contentItemId) ? await _contentManager.GetAsync(contentItemId, VersionOptions.Latest) : null;
 
             // Disallow if content item is not found or allowed
             if (contentItem is not null)

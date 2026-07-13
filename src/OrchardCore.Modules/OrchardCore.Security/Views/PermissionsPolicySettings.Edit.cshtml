@@ -106,86 +106,96 @@
     }
 }
 
-<div class="mb-3">
-    <table class="table table-striped table-hover">
-        <thead>
-            <tr>
-                <th>@T["Name"]</th>
-                <th>@T["None"]</th>
-                <th>@T["Any"]</th>
-                <th>@T["Self"]</th>
-                <th style="width:40%"></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var key in Model.PermissionsPolicy.Keys)
-            {
-                var value = Model.PermissionsPolicy[key];
-                var originType = value ?? PermissionsPolicyOriginValue.None;
-                var allowedOrigins = string.Empty;
-
-                if (value != null)
-                {
-                    var originsSeparatorIndex = value.IndexOf(' ');
-                    if (originsSeparatorIndex > -1)
-                    {
-                        originType = value.Substring(0, originsSeparatorIndex);
-                        allowedOrigins = value.Substring(originsSeparatorIndex + 1);
-                    }
-                }
-
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
+        <table class="table table-striped table-hover">
+            <thead>
                 <tr>
-                    <td>@GetPermissionPolicyName(key)</td>
-                    <td>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="@key" value="None" @(originType == PermissionsPolicyOriginValue.None ? "checked" : null) onchange="changeOrigin(this, '@PermissionsPolicyOriginValue.None');">
-                        </div>
-                    </td>
-                    <td>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="@key" value="Any" @(originType == PermissionsPolicyOriginValue.Any ? "checked" : null) onchange="changeOrigin(this, '@PermissionsPolicyOriginValue.Any');">
-                        </div>
-                    </td>
-                    <td>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="@key" value="Self" @(originType == PermissionsPolicyOriginValue.Self ? "checked" : null) onchange="changeOrigin(this, '@PermissionsPolicyOriginValue.Self');">
-                        </div>
-                    </td>
-                    <td>
-                        <div class="form-group mb-0">
-                            <input class="form-control d-@(originType == PermissionsPolicyOriginValue.Self ? "block" : "none")" id="@(key)AllowedOrigins" placeholder="https://www.domain.com https://www.another.domain.com" value="@allowedOrigins" oninput="changeAllowedOrigins(this)" />
-                            <input id="@Html.IdFor(m => m.PermissionsPolicy[key])" name="@Html.NameFor(m => m.PermissionsPolicy[key])" type="hidden" value="@originType" />
-                        </div>
-                    </td>
+                    <th>@T["Name"]</th>
+                    <th>@T["None"]</th>
+                    <th>@T["Any"]</th>
+                    <th>@T["Self"]</th>
+                    <th style="width:40%"></th>
                 </tr>
-            }
-        </tbody>
-    </table>
-    <span class="hint">@T["Allows a site to control which features and APIs can be used in the browser."]</span>
+            </thead>
+            <tbody>
+                @foreach (var key in Model.PermissionsPolicy.Keys)
+                {
+                    var value = Model.PermissionsPolicy[key];
+                    var originType = value ?? PermissionsPolicyOriginValue.None;
+                    var allowedOrigins = string.Empty;
+
+                    if (value != null)
+                    {
+                        var originsSeparatorIndex = value.IndexOf(' ');
+                        if (originsSeparatorIndex > -1)
+                        {
+                            originType = value.Substring(0, originsSeparatorIndex);
+                            allowedOrigins = value.Substring(originsSeparatorIndex + 1);
+                        }
+                    }
+
+                    <tr>
+                        <td>@GetPermissionPolicyName(key)</td>
+                        <td>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="@key" value="None" @(originType == PermissionsPolicyOriginValue.None ? "checked" : null) onchange="changeOrigin(this, '@PermissionsPolicyOriginValue.None');">
+                            </div>
+                        </td>
+                        <td>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="@key" value="Any" @(originType == PermissionsPolicyOriginValue.Any ? "checked" : null) onchange="changeOrigin(this, '@PermissionsPolicyOriginValue.Any');">
+                            </div>
+                        </td>
+                        <td>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="@key" value="Self" @(originType == PermissionsPolicyOriginValue.Self ? "checked" : null) onchange="changeOrigin(this, '@PermissionsPolicyOriginValue.Self');">
+                            </div>
+                        </td>
+                        <td>
+                            <div class="mb-0">
+                                <input class="form-control d-@(originType == PermissionsPolicyOriginValue.Self ? "block" : "none")" id="@(key)AllowedOrigins" placeholder="https://www.domain.com https://www.another.domain.com" value="@allowedOrigins" oninput="changeAllowedOrigins(this)" />
+                                <input id="@Html.IdFor(m => m.PermissionsPolicy[key])" name="@Html.NameFor(m => m.PermissionsPolicy[key])" type="hidden" value="@originType" />
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <span class="hint">@T["Allows a site to control which features and APIs can be used in the browser."]</span>
+    </div>
 </div>
 <script>
     function changeOrigin(e, origin) {
-        var allowedOrigins = $('#' + e.name + 'AllowedOrigins');
+        var allowedOrigins = document.getElementById(e.name + 'AllowedOrigins');
+        if (!allowedOrigins) {
+            return;
+        }
 
         if (e.value == "Self") {
-            allowedOrigins.removeClass('d-none').addClass('d-block');
+            allowedOrigins.classList.remove('d-none');
+            allowedOrigins.classList.add('d-block');
 
-            if (allowedOrigins.val() != '') {
-                origin += ' ' + allowedOrigins.val().trim();
+            if (allowedOrigins.value != '') {
+                origin += ' ' + allowedOrigins.value.trim();
             }
         }
         else {
-            allowedOrigins.removeClass('d-block').addClass('d-none');
+            allowedOrigins.classList.remove('d-block');
+            allowedOrigins.classList.add('d-none');
         }
 
-        allowedOrigins.siblings().val(origin);
+        var permissionValue = allowedOrigins.parentElement.querySelector('input[type="hidden"]');
+        if (permissionValue) {
+            permissionValue.value = origin;
+        }
     }
 
     function changeAllowedOrigins(e) {
-        var permissionValue = $(e).siblings();
+        var permissionValue = e.parentElement.querySelector('input[type="hidden"]');
 
-        if (permissionValue.val().startsWith('self')) {
-            permissionValue.val('self ' + e.value.trim());
+        if (permissionValue && permissionValue.value.startsWith('self')) {
+            permissionValue.value = 'self ' + e.value.trim();
         }
     }
 </script>

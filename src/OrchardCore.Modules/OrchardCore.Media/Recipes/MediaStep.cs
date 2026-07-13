@@ -2,6 +2,7 @@ using System.Text.Json.Nodes;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
+using OrchardCore.FileStorage;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 
@@ -13,6 +14,7 @@ namespace OrchardCore.Media.Recipes;
 public sealed class MediaStep : NamedRecipeStepHandler
 {
     private readonly IMediaFileStore _mediaFileStore;
+    private readonly FileCreationService _fileCreationService;
     private readonly HashSet<string> _allowedFileExtensions;
     private readonly IHttpClientFactory _httpClientFactory;
 
@@ -20,12 +22,14 @@ public sealed class MediaStep : NamedRecipeStepHandler
 
     public MediaStep(
         IMediaFileStore mediaFileStore,
+        FileCreationService fileCreationService,
         IOptions<MediaOptions> options,
         IHttpClientFactory httpClientFactory,
         IStringLocalizer<MediaStep> stringLocalizer)
         : base("media")
     {
         _mediaFileStore = mediaFileStore;
+        _fileCreationService = fileCreationService;
         _allowedFileExtensions = options.Value.AllowedFileExtensions;
         _httpClientFactory = httpClientFactory;
         S = stringLocalizer;
@@ -72,7 +76,7 @@ public sealed class MediaStep : NamedRecipeStepHandler
 
                 if (stream != null)
                 {
-                    await _mediaFileStore.CreateFileFromStreamAsync(file.TargetPath, stream, true);
+                    await _mediaFileStore.CreateFileFromStreamAsync(_fileCreationService, file.TargetPath, stream, overwrite: true);
                 }
             }
             finally

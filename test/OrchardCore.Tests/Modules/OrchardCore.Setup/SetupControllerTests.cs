@@ -1,8 +1,3 @@
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using OrchardCore.Abstractions.Setup;
 using OrchardCore.Data;
 using OrchardCore.Email;
@@ -17,7 +12,7 @@ namespace OrchardCore.Modules.OrchardCore.Setup.Tests;
 public class SetupControllerTests
 {
     [Fact]
-    public async Task IndexShouldKeepDatabaseOptionsVisible_WhenOnlyTablePrefixIsPreset()
+    public async Task Index_LyTablePrefixIsPreset_KeepssDatabaseOptionsVisible()
     {
         // Arrange
         var controller = CreateController(new ShellSettings
@@ -36,7 +31,7 @@ public class SetupControllerTests
     }
 
     [Fact]
-    public async Task IndexShouldHideDatabaseOptions_WhenDatabaseProviderOrConnectionIsPreset()
+    public async Task Index_DatabaseProviderOrConnectionIsPreset_HidessDatabaseOptions()
     {
         // Arrange
         var shellSettings = new ShellSettings();
@@ -58,7 +53,7 @@ public class SetupControllerTests
     }
 
     [Fact]
-    public async Task IndexShouldKeepConnectionOptionsVisible_WhenOnlyDatabaseProviderIsConfigured()
+    public async Task Index_LyDatabaseProviderIsConfigured_KeepssConnectionOptionsVisible()
     {
         // Arrange
         var shellSettings = new ShellSettings();
@@ -78,7 +73,22 @@ public class SetupControllerTests
     }
 
     [Fact]
-    public async Task IndexPostShouldUsePresetDatabaseProviderAndPostedConnectionString_WhenOnlyDatabaseProviderIsConfigured()
+    public async Task Index_Default_DefaultSiteTimeZoneToSystemTimeZone()
+    {
+        // Arrange
+        var controller = CreateController(new ShellSettings());
+
+        // Act
+        var result = await controller.Index(null);
+
+        // Assert
+        var viewResult = Assert.IsType<ViewResult>(result);
+        var model = Assert.IsType<SetupViewModel>(viewResult.Model);
+        Assert.Equal("Europe/Paris", model.SiteTimeZone);
+    }
+
+    [Fact]
+    public async Task IndexPost_LyDatabaseProviderIsConfigured_UsesPresetDatabaseProviderAndPostedConnectionString()
     {
         // Arrange
         SetupContext capturedContext = null;
@@ -128,6 +138,14 @@ public class SetupControllerTests
 
     private static SetupController CreateController(ShellSettings shellSettings, ISetupService setupService = null)
     {
+        var systemTimeZone = new Mock<ITimeZone>();
+        systemTimeZone.SetupProperty(x => x.TimeZoneId, "Europe/Paris");
+
+        var clock = new Mock<IClock>();
+        clock
+            .Setup(x => x.GetSystemTimeZone())
+            .Returns(systemTimeZone.Object);
+
         var recipes = new[]
         {
             new RecipeDescriptor
@@ -156,7 +174,7 @@ public class SetupControllerTests
             .Returns(true);
 
         return new SetupController(
-            Mock.Of<IClock>(),
+            clock.Object,
             setupService,
             shellSettings,
             Mock.Of<IShellHost>(),

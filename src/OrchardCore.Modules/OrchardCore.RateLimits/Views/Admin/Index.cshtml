@@ -1,0 +1,298 @@
+@using System.Globalization
+@model OrchardCore.RateLimits.ViewModels.RateLimitsIndexViewModel
+
+<zone Name="Title"><h1>@RenderTitleSegments(T["Rate Limit Policies"])</h1></zone>
+
+<form asp-action="Index" method="get" class="mb-3">
+    <div class="card text-bg-theme position-sticky action-bar">
+        <div class="card-body">
+            <div class="row g-3 align-items-end">
+                <div class="col">
+                    <label for="search-text" class="visually-hidden">@T["Search policies"]</label>
+                    <input id="search-text" name="searchText" value="@Model.SearchText" class="form-control" placeholder="@T["Search policies"]" />
+                </div>
+                <div class="col-auto d-flex gap-1">
+                    <button class="btn btn-secondary" type="submit">@T["Search"]</button>
+                    @if (!string.IsNullOrWhiteSpace(Model.SearchText))
+                    {
+                        <a asp-action="Index" class="btn btn-outline-secondary">@T["Clear"]</a>
+                    }
+                    <a asp-action="Create" class="btn btn-primary">@T["Add Policy"]</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<form asp-action="Index" method="post" class="no-multisubmit" data-list-management data-selected-label="@T["selected"]" data-min-selected-items="1">
+    <input asp-for="BulkAction" type="hidden" />
+    <input type="submit" name="submit.BulkAction" class="visually-hidden" />
+
+    <ul class="list-group with-checkbox">
+        @if (Model.Policies.Count > 0)
+        {
+            <li class="list-group-item text-bg-theme">
+                <div class="row gx-3">
+                    <div class="col">
+                        <div class="form-check my-1">
+                            <input type="checkbox" class="form-check-input" id="select-all">
+                            <label class="form-check-label" for="select-all" id="select-all-label" title="@T["Select All"]"></label>
+                            <label id="items" for="select-all">@T.Plural(Model.Policies.Count, "{0} policy", "{0} policies")</label>
+                            <label id="selected-items" class="text-muted d-none" for="select-all"></label>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <div class="dropdown d-none" id="actions">
+                            <button class="btn btn-sm btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                @T["Actions"]
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                @foreach (var item in Model.BulkActions)
+                                {
+                                    <li><a class="dropdown-item"
+                                           href="javascript:void(0)"
+                                           data-action="@item.Value"
+                                           data-title="@(item.Value == nameof(OrchardCore.RateLimits.ViewModels.RateLimitPolicyBulkAction.Enable) ? T["Enable Policies"] : item.Value == nameof(OrchardCore.RateLimits.ViewModels.RateLimitPolicyBulkAction.Disable) ? T["Disable Policies"] : T["Delete Policies"])"
+                                           data-message="@(item.Value == nameof(OrchardCore.RateLimits.ViewModels.RateLimitPolicyBulkAction.Enable)
+                                               ? T["Are you sure you want to enable the selected policies? This website will restart after the policy status changes."]
+                                               : item.Value == nameof(OrchardCore.RateLimits.ViewModels.RateLimitPolicyBulkAction.Disable)
+                                                   ? T["Are you sure you want to disable the selected policies? This website will restart after the policy status changes."]
+                                                   : T["Are you sure you want to delete the selected policies? If any selected policy is enabled, this website will restart after deletion."])">@item.Text</a></li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </li>
+
+            @foreach (var entry in Model.Policies)
+            {
+                var enabledUtc = entry.EnabledUtc?.ToString("yyyy-MM-ddTHH:mm:sszzz", CultureInfo.InvariantCulture);
+                <li class="list-group-item">
+                    <div class="d-flex gap-3">
+                        <div class="form-check mt-1">
+                            <input type="checkbox" class="form-check-input" value="@entry.PolicyId" name="policyIds" id="policy-@entry.PolicyId">
+                            <label class="form-check-label" for="policy-@entry.PolicyId">&nbsp;</label>
+                        </div>
+                        <div class="flex-grow-1">
+                            <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap">
+                                <div>
+                                    <div class="summary d-flex flex-column flex-md-row">
+                                        <div class="me-2">
+                                            <h5 class="mb-0">@entry.Name</h5>
+                                        </div>
+                                        <div class="tags me-1">
+                                            <span class="badge ta-badge text-bg-@(entry.IsEnabled ? "success" : "secondary")">
+                                                @(entry.IsEnabled ? T["Enabled"] : T["Disabled"])
+                                            </span>
+                                        </div>
+                                        @if (entry.EnabledUtc is not null)
+                                        {
+                                            <div class="metadata me-1">
+                                                <span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@await DisplayAsync(await New.DateTime(Utc: entry.EnabledUtc, Format: "g"))">
+                                                    <i class="fa-solid fa-calendar text-secondary" aria-hidden="true"></i> <time datetime="@enabledUtc">@await DisplayAsync(await New.Timespan(Utc: entry.EnabledUtc))</time>
+                                                </span>
+                                            </div>
+                                        }
+                                        @if (entry.Policy is not null)
+                                        {
+                                            var authorShape = await New.RateLimitPolicy_DefaultMeta_SummaryAdmin(Value: entry.Policy);
+                                            authorShape.Metadata.DisplayType = "SummaryAdmin";
+                                            <div class="metadata me-1">@await DisplayAsync(authorShape)</div>
+                                        }
+                                    </div>
+                                    <div class="metadata mt-1 text-muted">@entry.TargetDescription</div>
+                                    @if (!string.IsNullOrWhiteSpace(entry.Description))
+                                    {
+                                        <div class="metadata mt-1 text-muted">@entry.Description</div>
+                                    }
+                                </div>
+                                <div class="d-flex gap-1 flex-wrap">
+                                    <a asp-action="Edit" asp-route-policyId="@entry.PolicyId" class="btn btn-primary btn-sm">@T["Edit"]</a>
+                                    <div class="dropdown">
+                                        <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                            @T["Actions"]
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end">
+                                            @if (entry.ActionsMenu != null && entry.ActionsMenu.HasItems)
+                                            {
+                                                @await DisplayAsync(entry.ActionsMenu)
+                                            }
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            }
+        }
+        else
+        {
+            <li class="list-group-item">
+                <div class="alert alert-info mb-0" role="alert">
+                    @if (!string.IsNullOrWhiteSpace(Model.SearchText))
+                    {
+                        @T["<strong>Nothing here!</strong> No policies match the current search."]
+                    }
+                    else
+                    {
+                        @T["<strong>Nothing here!</strong> There are no rate limit policies yet."]
+                    }
+                </div>
+            </li>
+        }
+    </ul>
+</form>
+
+<form asp-action="Delete" method="post" id="delete-policy-form" class="d-none">
+    <input type="hidden" name="policyId" id="delete-policy-id" />
+</form>
+
+<form asp-action="Enable" method="post" id="enable-policy-form" class="d-none">
+    <input type="hidden" name="policyId" id="enable-policy-id" />
+</form>
+
+<form asp-action="Disable" method="post" id="disable-policy-form" class="d-none">
+    <input type="hidden" name="policyId" id="disable-policy-id" />
+</form>
+
+<form asp-action="Clone" method="post" id="clone-policy-form" class="d-none">
+    <input type="hidden" name="policyId" id="clone-policy-id" />
+</form>
+
+@if (Model.Pager is not null)
+{
+    @await DisplayAsync(Model.Pager)
+}
+
+<div class="card mt-4">
+    <div class="card-header">
+        <h5 class="mb-0">@T["Read-only Policies"]</h5>
+    </div>
+    <div class="card-body">
+        @if (Model.BuiltInRouteLimits.Count == 0 && Model.BuiltInGroupLimits.Count == 0)
+        {
+            <p class="mb-0 text-muted">@T["No read-only policies are currently registered by enabled features."]</p>
+        }
+        else
+        {
+            <p class="text-muted">@T["These policies are set by features and are read-only."]</p>
+
+            @if (Model.BuiltInRouteLimits.Count > 0)
+            {
+                <h6>@T["Route limits"]</h6>
+                <ul class="list-group list-group-flush">
+                    @foreach (var route in Model.BuiltInRouteLimits)
+                    {
+                        <li class="list-group-item px-0">
+                            <div class="summary d-flex flex-column flex-md-row align-items-md-center gap-1">
+                                <div class="me-2">
+                                    <strong>@route.Path</strong>
+                                </div>
+                                <div class="tags d-flex gap-1 flex-wrap">
+                                    @foreach (var method in route.Methods)
+                                    {
+                                        <span class="badge ta-badge bg-primary-subtle text-primary-emphasis">@method</span>
+                                    }
+                                </div>
+                            </div>
+                        </li>
+                    }
+                </ul>
+            }
+
+            @if (Model.BuiltInGroupLimits.Count > 0)
+            {
+                <h6 class="mt-4">@T["Group limits"]</h6>
+                <ul class="list-group list-group-flush">
+                    @foreach (var group in Model.BuiltInGroupLimits)
+                    {
+                        <li class="list-group-item px-0">
+                            <div class="summary d-flex flex-column flex-md-row align-items-md-center gap-1">
+                                <div class="me-2">
+                                    <strong>@group.GroupName</strong>
+                                </div>
+                                <div class="tags d-flex gap-1 flex-wrap">
+                                    <span class="badge ta-badge bg-primary-subtle text-primary-emphasis">
+                                        @T.Plural(group.LimiterCount, "{0} limiter", "{0} limiters")
+                                    </span>
+                                </div>
+                            </div>
+                        </li>
+                    }
+                </ul>
+            }
+        }
+    </div>
+</div>
+
+<script asp-name="list-management" at="Foot"></script>
+
+<script at="Foot">
+    document.addEventListener('DOMContentLoaded', () => {
+        const deletePolicyForm = document.getElementById('delete-policy-form');
+        const deletePolicyId = document.getElementById('delete-policy-id');
+        const enablePolicyForm = document.getElementById('enable-policy-form');
+        const enablePolicyId = document.getElementById('enable-policy-id');
+        const disablePolicyForm = document.getElementById('disable-policy-form');
+        const disablePolicyId = document.getElementById('disable-policy-id');
+        const clonePolicyForm = document.getElementById('clone-policy-form');
+        const clonePolicyId = document.getElementById('clone-policy-id');
+
+        for (const button of document.querySelectorAll('[data-delete-policy-id]')) {
+            button.addEventListener('click', () => {
+                confirmDialog({
+                    ...button.dataset,
+                    callback: (confirmed) => {
+                        if (!confirmed) {
+                            return;
+                        }
+
+                        deletePolicyId.value = button.dataset.deletePolicyId;
+                        deletePolicyForm.submit();
+                    }
+                });
+            });
+        }
+
+        for (const button of document.querySelectorAll('[data-enable-policy-id]')) {
+            button.addEventListener('click', () => {
+                confirmDialog({
+                    ...button.dataset,
+                    callback: (confirmed) => {
+                        if (!confirmed) {
+                            return;
+                        }
+
+                        enablePolicyId.value = button.dataset.enablePolicyId;
+                        enablePolicyForm.submit();
+                    }
+                });
+            });
+        }
+
+        for (const button of document.querySelectorAll('[data-disable-policy-id]')) {
+            button.addEventListener('click', () => {
+                confirmDialog({
+                    ...button.dataset,
+                    callback: (confirmed) => {
+                        if (!confirmed) {
+                            return;
+                        }
+
+                        disablePolicyId.value = button.dataset.disablePolicyId;
+                        disablePolicyForm.submit();
+                    }
+                });
+            });
+        }
+
+        for (const button of document.querySelectorAll('[data-clone-policy-id]')) {
+            button.addEventListener('click', () => {
+                clonePolicyId.value = button.dataset.clonePolicyId;
+                clonePolicyForm.submit();
+            });
+        }
+    });
+</script>
