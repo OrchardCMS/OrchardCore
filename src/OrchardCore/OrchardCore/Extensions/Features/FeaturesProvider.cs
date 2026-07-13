@@ -20,80 +20,87 @@ public class FeaturesProvider : IFeaturesProvider
     {
         var featuresInfos = new List<IFeatureInfo>();
 
+        // Features and Dependencies live within this section
         var features = manifestInfo.ModuleInfo.Features;
-
-        // Synthesize the main feature from module-level metadata in two cases:
-        //   1. No explicit [Feature] attributes at all (original single-feature-extension path).
-        //   2. The extension is a theme that has explicit sub-features but has NOT declared its
-        //      own main feature — without synthesis IsTheme() can never return true for the
-        //      extension, and the Themes admin page cannot find it.
-        // Regular modules whose explicit features intentionally carry different IDs (e.g. Sample1,
-        // Sample2, …) satisfy neither condition and are left unchanged.
-        if (features.Count == 0 ||
-            (manifestInfo.Type.Equals("Theme", StringComparison.OrdinalIgnoreCase) &&
-             !features.Any(f => f.Id == extensionInfo.Id)))
+        if (features.Count > 0)
         {
-            var mainContext = new FeatureBuildingContext
+            foreach (var feature in features)
             {
-                FeatureId = extensionInfo.Id,
-                FeatureName = manifestInfo.Name,
-                Category = manifestInfo.ModuleInfo.Categorize(),
-                Description = manifestInfo.ModuleInfo.Describe(),
-                ExtensionInfo = extensionInfo,
-                ManifestInfo = manifestInfo,
-                Priority = manifestInfo.ModuleInfo.Prioritize(),
-                FeatureDependencyIds = manifestInfo.ModuleInfo.Dependencies,
-                DefaultTenantOnly = manifestInfo.ModuleInfo.DefaultTenantOnly,
-                IsAlwaysEnabled = manifestInfo.ModuleInfo.IsAlwaysEnabled,
-                EnabledByDependencyOnly = manifestInfo.ModuleInfo.EnabledByDependencyOnly,
-            };
+                if (string.IsNullOrWhiteSpace(feature.Id))
+                {
+                    throw new ArgumentException(
+                        $"A {nameof(feature)} is missing a mandatory '{nameof(feature.Id)}' property in the Module '{extensionInfo.Id}'");
+                }
 
-            foreach (var builder in _featureBuilderEvents)
-            {
-                builder.Building(mainContext);
+                // Attribute properties are transparently resolved by the instances themselves for convenience
+                var featureId = feature.Id;
+                var featureName = feature.Name;
+
+                var featureDependencyIds = feature.Dependencies;
+
+                // Categorize, Prioritize, Describe, using the ModuleInfo (ModuleAttribute) as the back stop
+                var featureCategory = feature.Categorize(manifestInfo.ModuleInfo);
+                var featurePriority = feature.Prioritize(manifestInfo.ModuleInfo);
+                var featureDescription = feature.Describe(manifestInfo.ModuleInfo);
+                var featureDefaultTenantOnly = feature.DefaultTenantOnly;
+                var featureIsAlwaysEnabled = feature.IsAlwaysEnabled;
+                var featureEnabledByDependencyOnly = feature.EnabledByDependencyOnly;
+
+                var context = new FeatureBuildingContext
+                {
+                    FeatureId = featureId,
+                    FeatureName = featureName,
+                    Category = featureCategory,
+                    Description = featureDescription,
+                    ExtensionInfo = extensionInfo,
+                    ManifestInfo = manifestInfo,
+                    Priority = featurePriority,
+                    FeatureDependencyIds = featureDependencyIds,
+                    DefaultTenantOnly = featureDefaultTenantOnly,
+                    IsAlwaysEnabled = featureIsAlwaysEnabled,
+                    EnabledByDependencyOnly = featureEnabledByDependencyOnly,
+                };
+
+                foreach (var builder in _featureBuilderEvents)
+                {
+                    builder.Building(context);
+                }
+
+                var featureInfo = new FeatureInfo(
+                    context.FeatureId,
+                    context.FeatureName,
+                    context.Priority,
+                    context.Category,
+                    context.Description,
+                    context.ExtensionInfo,
+                    context.FeatureDependencyIds,
+                    context.DefaultTenantOnly,
+                    context.IsAlwaysEnabled,
+                    context.EnabledByDependencyOnly);
+
+                foreach (var builder in _featureBuilderEvents)
+                {
+                    builder.Built(featureInfo);
+                }
+
+                featuresInfos.Add(featureInfo);
             }
-
-            var mainFeatureInfo = new FeatureInfo(
-                mainContext.FeatureId,
-                mainContext.FeatureName,
-                mainContext.Priority,
-                mainContext.Category,
-                mainContext.Description,
-                mainContext.ExtensionInfo,
-                mainContext.FeatureDependencyIds,
-                mainContext.DefaultTenantOnly,
-                mainContext.IsAlwaysEnabled,
-                mainContext.EnabledByDependencyOnly);
-
-            foreach (var builder in _featureBuilderEvents)
-            {
-                builder.Built(mainFeatureInfo);
-            }
-
-            featuresInfos.Add(mainFeatureInfo);
         }
-
-        foreach (var feature in features)
+        else
         {
-            if (string.IsNullOrWhiteSpace(feature.Id))
-            {
-                throw new ArgumentException(
-                    $"A {nameof(feature)} is missing a mandatory '{nameof(feature.Id)}' property in the Module '{extensionInfo.Id}'");
-            }
+            // The Extension has only one feature, itself, and that can have dependencies
+            var featureId = extensionInfo.Id;
+            var featureName = manifestInfo.Name;
 
-            // Attribute properties are transparently resolved by the instances themselves for convenience
-            var featureId = feature.Id;
-            var featureName = feature.Name;
+            var featureDependencyIds = manifestInfo.ModuleInfo.Dependencies;
 
-            var featureDependencyIds = feature.Dependencies;
-
-            // Categorize, Prioritize, Describe, using the ModuleInfo (ModuleAttribute) as the back stop
-            var featureCategory = feature.Categorize(manifestInfo.ModuleInfo);
-            var featurePriority = feature.Prioritize(manifestInfo.ModuleInfo);
-            var featureDescription = feature.Describe(manifestInfo.ModuleInfo);
-            var featureDefaultTenantOnly = feature.DefaultTenantOnly;
-            var featureIsAlwaysEnabled = feature.IsAlwaysEnabled;
-            var featureEnabledByDependencyOnly = feature.EnabledByDependencyOnly;
+            // Ditto Categorize, Prioritize, Describe, in this case the root Module 'is' the back stop
+            var featureCategory = manifestInfo.ModuleInfo.Categorize();
+            var featurePriority = manifestInfo.ModuleInfo.Prioritize();
+            var featureDescription = manifestInfo.ModuleInfo.Describe();
+            var featureDefaultTenantOnly = manifestInfo.ModuleInfo.DefaultTenantOnly;
+            var featureIsAlwaysEnabled = manifestInfo.ModuleInfo.IsAlwaysEnabled;
+            var featureEnabledByDependencyOnly = manifestInfo.ModuleInfo.EnabledByDependencyOnly;
 
             var context = new FeatureBuildingContext
             {

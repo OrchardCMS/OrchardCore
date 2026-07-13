@@ -165,7 +165,7 @@ public sealed class ExtensionManager : IExtensionManager
 
             var applicationContext = _serviceProvider.GetRequiredService<IApplicationContext>();
             var typeFeatureProvider = _serviceProvider.GetRequiredService<ITypeFeatureProvider>();
-            var featuresProvider = _serviceProvider.GetRequiredService<IFeaturesProvider>();
+            var featuresProviders = _serviceProvider.GetServices<IFeaturesProvider>();
 
             var extensionDependencyStrategies = _serviceProvider.GetServices<IExtensionDependencyStrategy>();
             var extensionPriorityStrategies = _serviceProvider.GetServices<IExtensionPriorityStrategy>();
@@ -184,7 +184,7 @@ public sealed class ExtensionManager : IExtensionManager
                 var manifestInfo = new ManifestInfo(module.ModuleInfo);
                 var extensionInfo = new ExtensionInfo(module.SubPath, manifestInfo, (manifestInfo, extensionInfo) =>
                 {
-                    return featuresProvider.GetFeatures(extensionInfo, manifestInfo);
+                    return featuresProviders.SelectMany(p => p.GetFeatures(extensionInfo, manifestInfo));
                 });
 
                 var entry = new ExtensionEntry
