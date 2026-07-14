@@ -1,3 +1,4 @@
+using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Extensions.Manifests;
@@ -10,18 +11,16 @@ namespace OrchardCore.DisplayManagement.Events;
 /// Without this, such themes would have no feature whose Id matches the extension Id, and
 /// <c>IsTheme()</c> would never return true for the extension.
 /// </summary>
-public class ThemeFeaturesProvider : IFeaturesProvider
+public sealed class ThemeFeaturesProvider : FeaturesProviderBase
 {
-    private readonly IEnumerable<IFeatureBuilderEvents> _featureBuilderEvents;
-
     public ThemeFeaturesProvider(IEnumerable<IFeatureBuilderEvents> featureBuilderEvents)
+        : base(featureBuilderEvents)
     {
-        _featureBuilderEvents = featureBuilderEvents;
     }
 
-    public IEnumerable<IFeatureInfo> GetFeatures(IExtensionInfo extensionInfo, IManifestInfo manifestInfo)
+    public override IEnumerable<IFeatureInfo> GetFeatures(IExtensionInfo extensionInfo, IManifestInfo manifestInfo)
     {
-        if (!manifestInfo.Type.Equals("Theme", StringComparison.OrdinalIgnoreCase))
+        if (!manifestInfo.IsTheme())
         {
             return [];
         }
@@ -55,27 +54,17 @@ public class ThemeFeaturesProvider : IFeaturesProvider
             EnabledByDependencyOnly = moduleInfo.EnabledByDependencyOnly,
         };
 
-        foreach (var builder in _featureBuilderEvents)
-        {
-            builder.Building(mainContext);
-        }
-
-        var mainFeatureInfo = new ThemeFeatureInfo(
-            mainContext.FeatureId,
-            mainContext.FeatureName,
-            mainContext.Priority,
-            mainContext.Category,
-            mainContext.Description,
-            mainContext.ExtensionInfo,
-            mainContext.FeatureDependencyIds,
-            mainContext.DefaultTenantOnly,
-            mainContext.IsAlwaysEnabled,
-            mainContext.EnabledByDependencyOnly);
-
-        foreach (var builder in _featureBuilderEvents)
-        {
-            builder.Built(mainFeatureInfo);
-        }
+        var mainFeatureInfo = BuildFeature(mainContext, ctx => new ThemeFeatureInfo(
+            ctx.FeatureId,
+            ctx.FeatureName,
+            ctx.Priority,
+            ctx.Category,
+            ctx.Description,
+            ctx.ExtensionInfo,
+            ctx.FeatureDependencyIds,
+            ctx.DefaultTenantOnly,
+            ctx.IsAlwaysEnabled,
+            ctx.EnabledByDependencyOnly));
 
         return [mainFeatureInfo];
     }
