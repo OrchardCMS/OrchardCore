@@ -370,13 +370,6 @@ public sealed class ScalarUIStartup : StartupBase
         IEndpointRouteBuilder routes,
         IServiceProvider serviceProvider)
     {
-        var shellSettings = app.ApplicationServices.GetRequiredService<ShellSettings>();
-        var prefix = shellSettings?.RequestUrlPrefix;
-
-        var swaggerJson = !string.IsNullOrEmpty(prefix)
-            ? $"/{prefix}/swagger/v1/swagger.json"
-            : "/swagger/v1/swagger.json";
-
         var siteService = app.ApplicationServices.GetRequiredService<ISiteService>();
         var settings = siteService.GetSettingsAsync<OpenApiSettings>()
             .GetAwaiter()
@@ -387,8 +380,13 @@ public sealed class ScalarUIStartup : StartupBase
 
         routes.MapScalarApiReference(options =>
         {
+            // Scalar's own client script re-derives the tenant's URL prefix from
+            // window.location.pathname and prepends it to this route pattern. On a
+            // path-prefixed tenant, passing an already-prefixed path here (as the
+            // Swagger UI/ReDoc endpoints below do) makes the prefix apply twice and the
+            // spec 404s, leaving Scalar's sidebar empty. Keep this one app-root-relative.
             options
-                .WithOpenApiRoutePattern(swaggerJson)
+                .WithOpenApiRoutePattern("/swagger/v1/swagger.json")
                 .WithTitle("OrchardCore OpenAPI Documentation")
                 // Disable Scalar's default external proxy so all requests (token + API)
                 // go directly from the browser to this server.
