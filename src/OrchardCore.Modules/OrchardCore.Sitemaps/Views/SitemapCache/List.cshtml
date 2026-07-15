@@ -2,6 +2,7 @@
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Sitemaps Cache"])</h1></zone>
 
+<div data-list-management data-client-side-search="true">
 <div class="card text-bg-theme mb-3 position-sticky action-bar">
     <div class="card-body">
         <div class="row gx-3">
@@ -22,10 +23,10 @@
 <form asp-action="List">
     @if (Model.CachedFileNames.Any())
     {
-        <ul id="cache-entries" class="list-group">
+        <ul class="list-group">
             @for (var i = 0; i < Model.CachedFileNames.Length; i++)
             {
-                <li class="list-group-item" data-cacheentry="@Model.CachedFileNames[i]">
+                <li class="list-group-item" data-filter-value="@Model.CachedFileNames[i]">
                     <div class="row">
                         <div class="col">
                             @Model.CachedFileNames[i]
@@ -40,70 +41,14 @@
     }
     else
     {
-        <div id="none-alert" class="alert alert-info mb-1" role="alert">
+        <div id="list-empty" class="alert alert-info mb-1" role="alert">
             @T["<strong>Nothing here!</strong> There are no sitemaps cached for the moment."]
         </div>
     }
-    <div id="search-alert" class="alert alert-info mb-1 d-none" role="alert">
+    <div id="list-alert" class="alert alert-info mb-1 d-none" role="alert">
         @T["<strong>Nothing here!</strong> Your search returned no results."]
     </div>
 </form>
+</div>
 
-<script at="Foot">
-    function onDocumentReady(callback) {
-        if (document.readyState !== 'loading') {
-            callback();
-        } else {
-            document.addEventListener('DOMContentLoaded', callback);
-        }
-    }
-
-    onDocumentReady(function () {
-        var searchBox = document.getElementById('search-box');
-
-        // On each keypress filter the list of cache entries
-        searchBox.addEventListener('keyup', function (e) {
-            var search = this.value.toLowerCase();
-            var elementsToFilter = document.querySelectorAll("[data-cacheentry]");
-
-            // On ESC, clear the search box and display all cache entries
-            if (e.key === "Escape" || search == '') {
-                searchBox.value = '';
-                elementsToFilter.forEach(function (element) {
-                    element.classList.remove("d-none", "first-child-visible", "last-child-visible");
-                });
-            }
-            else {
-                document.querySelectorAll('#cache-entries > li').forEach(function (element) {
-                    var cacheEntry = element.dataset.cacheentry.toLowerCase();
-                    var found = cacheEntry.indexOf(search) > -1;
-
-                    if (found) {
-                        element.classList.remove("d-none", "first-child-visible", "last-child-visible");
-                    }
-                    else {
-                        element.classList.add("d-none");
-                    }
-                });
-
-                var visibleElements = Array.from(elementsToFilter).filter(function (element) {
-                    return !element.classList.contains("d-none");
-                });
-
-                if (visibleElements.length) {
-                    visibleElements[0].classList.add("first-child-visible");
-                    visibleElements[visibleElements.length - 1].classList.add("last-child-visible");
-                }
-
-                // We display an alert if a search is not found
-                if (document.querySelectorAll('#cache-entries > li:not(.d-none)').length == 0) {
-                    document.getElementById('search-alert').classList.remove("d-none");
-                    document.getElementById('none-alert').classList.add("d-none");
-                }
-                else {
-                    document.getElementById('search-alert').classList.add("d-none");
-                }
-            }
-        });
-    })
-</script>
+<script asp-name="list-management" at="Foot"></script>
