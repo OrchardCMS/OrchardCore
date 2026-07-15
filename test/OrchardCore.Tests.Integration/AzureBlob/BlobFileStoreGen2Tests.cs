@@ -103,4 +103,21 @@ public sealed class BlobFileStoreGen2Tests : BlobFileStoreTestsBase
         // A real Gen2 directory should exist even with no files inside.
         Assert.Empty(entries);
     }
+
+    [AzuriteFact]
+    public async Task GetDirectoryContent_Hierarchy_IncludesEmptyGen2Directory()
+    {
+        await TryCreateDirectoryAsync("hierarchy-parent");
+        await TryCreateDirectoryAsync("hierarchy-parent/empty-child");
+
+        var entries = new List<IFileStoreEntry>();
+        await foreach (var entry in GetDirectoryContentAsync("hierarchy-parent"))
+        {
+            entries.Add(entry);
+        }
+
+        // A real Gen2 empty directory has no content to be grouped into a prefix by the
+        // hierarchy listing, so it must be recognized via its 'hdi_isfolder' metadata instead.
+        Assert.Contains(entries, e => e.IsDirectory && e.Name == "empty-child");
+    }
 }

@@ -52,6 +52,13 @@ public class BlobFileStore : IFileStore
 
     private readonly string _basePrefix;
 
+    /// <summary>
+    /// Whether the storage account has Hierarchical Namespace (ADLS Gen2) enabled, as determined by
+    /// <see cref="EnsureCapabilitiesAsync"/>. <c>null</c> until that method has run, or if it could
+    /// not determine the account type (in which case flat-namespace operations are used as a safe fallback).
+    /// </summary>
+    public bool? IsHierarchicalNamespaceEnabled => _hnsEnabled;
+
     public BlobFileStore(
         BlobStorageOptions options,
         IClock clock,
@@ -285,6 +292,21 @@ public class BlobFileStore : IFileStore
             }
 
             var itemName = Path.GetFileName(WebUtility.UrlDecode(blob.Blob.Name)).Trim('/');
+
+            // Gen2 (HNS) empty directories are returned as a blob at exactly the directory's path
+            // (nothing exists beneath them to be grouped into a prefix), identified by this metadata flag.
+            if (blob.Blob.Metadata.TryGetValue("hdi_isfolder", out var isFolder) &&
+                isFolder.Equals("true", StringComparison.OrdinalIgnoreCase))
+            {
+                var itemPath = this.Combine(path?.Trim('/'), itemName);
+                yield return new BlobDirectory(
+                    itemPath,
+                    blob.Blob.Properties.LastModified.HasValue
+                        ? blob.Blob.Properties.LastModified.Value.DateTime
+                        : _clock.UtcNow);
+
+                continue;
+            }
 
             // Ignore directory marker files.
             if (!string.Equals(itemName, DirectoryMarkerFileName, StringComparison.Ordinal))

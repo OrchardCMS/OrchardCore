@@ -37,7 +37,20 @@ public sealed class MediaBlobContainerTenantEvents : ModularTenantEvents
 
     public override async Task ActivatingAsync()
     {
-        await _blobFileStore.EnsureCapabilitiesAsync();
+        try
+        {
+            await _blobFileStore.EnsureCapabilitiesAsync();
+        }
+        catch (Exception ex)
+        {
+            // Don't let a failed capability probe (e.g. restricted SAS token, transient network
+            // error) take down the whole tenant. The store falls back to flat-namespace (Gen1)
+            // operations, which remain safe (if suboptimal) even against a Gen2 account.
+            _logger.LogError(
+                ex,
+                "Unable to determine the Azure Media Storage account type (Gen1 flat namespace or Gen2 Hierarchical Namespace). " +
+                "Falling back to flat-namespace blob operations.");
+        }
 
         // Only create container if options are valid.
         if (_shellSettings.IsUninitialized() || !_options.IsConfigured() || !_options.CreateContainer)
