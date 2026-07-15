@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,6 +13,7 @@ using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.FileStorage;
 using OrchardCore.FileStorage.AzureBlob;
+using OrchardCore.Media.Azure.Filters;
 using OrchardCore.Media.Azure.Services;
 using OrchardCore.Media.Core;
 using OrchardCore.Media.Core.Events;
@@ -122,6 +124,8 @@ public sealed class Startup : Modules.StartupBase
             services.AddSingleton<IMediaEventHandler, DefaultMediaFileStoreCacheEventHandler>();
 
             services.AddScoped<IModularTenantEvents, MediaBlobContainerTenantEvents>();
+
+            services.Configure<MvcOptions>(options => options.Filters.Add<MediaGalleryCapabilitiesFilter>());
         }
     }
 
