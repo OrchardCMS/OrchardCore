@@ -288,6 +288,9 @@ public sealed class Startup : StartupBase
 [Feature("OrchardCore.OpenApi.SwaggerUI")]
 public sealed class SwaggerUIStartup : StartupBase
 {
+    public override void ConfigureServices(IServiceCollection services)
+        => services.AddSingleton<IOpenApiUIFeature, SwaggerUIFeature>();
+
     public override void Configure(
         IApplicationBuilder app,
         IEndpointRouteBuilder routes,
@@ -341,6 +344,9 @@ public sealed class SwaggerUIStartup : StartupBase
 [Feature("OrchardCore.OpenApi.ReDocUI")]
 public sealed class ReDocUIStartup : StartupBase
 {
+    public override void ConfigureServices(IServiceCollection services)
+        => services.AddSingleton<IOpenApiUIFeature, ReDocUIFeature>();
+
     public override void Configure(
         IApplicationBuilder app,
         IEndpointRouteBuilder routes,
@@ -365,6 +371,9 @@ public sealed class ReDocUIStartup : StartupBase
 [Feature("OrchardCore.OpenApi.ScalarUI")]
 public sealed class ScalarUIStartup : StartupBase
 {
+    public override void ConfigureServices(IServiceCollection services)
+        => services.AddSingleton<IOpenApiUIFeature, ScalarUIFeature>();
+
     public override void Configure(
         IApplicationBuilder app,
         IEndpointRouteBuilder routes,

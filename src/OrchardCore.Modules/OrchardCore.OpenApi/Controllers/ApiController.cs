@@ -420,7 +420,7 @@ public sealed class TestConnectionRequest
     public string Scopes { get; set; }
 }
 
-public sealed class TestConnectionResult
+internal sealed class TestConnectionResult
 {
     public string Message { get; set; }
 }

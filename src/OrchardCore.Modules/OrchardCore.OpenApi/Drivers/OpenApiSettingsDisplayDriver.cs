@@ -15,7 +15,7 @@ public sealed class OpenApiSettingsDisplayDriver : SiteDisplayDriver<OpenApiSett
 {
     public const string GroupId = "openapi";
 
-    private readonly IShellFeaturesManager _shellFeaturesManager;
+    private readonly IEnumerable<IOpenApiUIFeature> _uiFeatures;
     private readonly IShellReleaseManager _shellReleaseManager;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
@@ -24,14 +24,14 @@ public sealed class OpenApiSettingsDisplayDriver : SiteDisplayDriver<OpenApiSett
     internal readonly IStringLocalizer S;
 
     public OpenApiSettingsDisplayDriver(
-        IShellFeaturesManager shellFeaturesManager,
+        IEnumerable<IOpenApiUIFeature> uiFeatures,
         IShellReleaseManager shellReleaseManager,
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
         IHttpClientFactory httpClientFactory,
         IStringLocalizer<OpenApiSettingsDisplayDriver> stringLocalizer)
     {
-        _shellFeaturesManager = shellFeaturesManager;
+        _uiFeatures = uiFeatures;
         _shellReleaseManager = shellReleaseManager;
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
@@ -53,14 +53,11 @@ public sealed class OpenApiSettingsDisplayDriver : SiteDisplayDriver<OpenApiSett
 
         context.AddTenantReloadWarningWrapper();
 
-        var enabledFeatures = await _shellFeaturesManager.GetEnabledFeaturesAsync();
-        var enabledFeatureIds = enabledFeatures.Select(f => f.Id).ToHashSet();
-
         return Initialize<OpenApiSettingsViewModel>("OpenApiSettings_Edit", model =>
         {
-            model.IsSwaggerUIEnabled = enabledFeatureIds.Contains("OrchardCore.OpenApi.SwaggerUI");
-            model.IsReDocUIEnabled = enabledFeatureIds.Contains("OrchardCore.OpenApi.ReDocUI");
-            model.IsScalarUIEnabled = enabledFeatureIds.Contains("OrchardCore.OpenApi.ScalarUI");
+            model.IsSwaggerUIEnabled = _uiFeatures.Any(f => f is SwaggerUIFeature);
+            model.IsReDocUIEnabled = _uiFeatures.Any(f => f is ReDocUIFeature);
+            model.IsScalarUIEnabled = _uiFeatures.Any(f => f is ScalarUIFeature);
             model.AllowAnonymousSchemaAccess = settings.AllowAnonymousSchemaAccess;
             model.AuthenticationType = settings.AuthenticationType;
             model.AuthorizationUrl = settings.AuthorizationUrl;

@@ -19,7 +19,7 @@ public sealed class Permissions : IPermissionProvider
             new PermissionStereotype
             {
                 Name = OrchardCoreConstants.Roles.Administrator,
-                Permissions = [OpenApiPermissions.ManageOpenApi],
+                Permissions = _allPermissions,
             },
         ];
 }

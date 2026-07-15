@@ -3,8 +3,15 @@ using OrchardCore.Localization;
 
 namespace OrchardCore.OpenApi.Services;
 
-public sealed class OpenApiJSLocalizer(IStringLocalizer<OpenApiJSLocalizer> S) : IJSLocalizer
+public sealed class OpenApiJSLocalizer : IJSLocalizer
 {
+    private readonly IStringLocalizer S;
+
+    public OpenApiJSLocalizer(IStringLocalizer<OpenApiJSLocalizer> stringLocalizer)
+    {
+        S = stringLocalizer;
+    }
+
     public IDictionary<string, string> GetLocalizations(string group)
     {
         if (!string.Equals(group, "openapi-settings", StringComparison.OrdinalIgnoreCase))
