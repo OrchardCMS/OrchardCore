@@ -24,6 +24,8 @@ public abstract class BlobFileStoreTestsBase : IAsyncLifetime
     /// </summary>
     protected virtual bool? UseHierarchicalNamespaceOverride => null;
 
+    protected virtual string BasePath => "";
+
     /// <summary>
     /// Creates the test container. Gen1 uses the Blob SDK (flat namespace).
     /// Gen2 subclasses override to use the DataLake SDK, which stamps the container as an HNS filesystem.
@@ -37,6 +39,8 @@ public abstract class BlobFileStoreTestsBase : IAsyncLifetime
 
     protected BlobContainerClient ContainerClient => _containerClient;
 
+    protected BlobFileStore Store => _store;
+
     public async ValueTask InitializeAsync()
     {
         var connectionString = System.Environment.GetEnvironmentVariable(ConnectionStringEnvVar);
@@ -46,7 +50,7 @@ public abstract class BlobFileStoreTestsBase : IAsyncLifetime
         {
             ConnectionString = connectionString,
             ContainerName = _containerName,
-            BasePath = "",
+            BasePath = BasePath,
             UseHierarchicalNamespace = UseHierarchicalNamespaceOverride,
         };
 
@@ -57,7 +61,6 @@ public abstract class BlobFileStoreTestsBase : IAsyncLifetime
         var contentTypeProvider = new FileExtensionContentTypeProvider();
 
         _store = new BlobFileStore(options, clock, contentTypeProvider);
-        await _store.EnsureCapabilitiesAsync();
     }
 
     public async ValueTask DisposeAsync()

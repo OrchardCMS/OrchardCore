@@ -32,8 +32,8 @@ The following configuration values are used by default and can be customized:
       // Whether the 'Container' is deleted if the tenant is removed, false by default.
       "RemoveContainer": true,
       // Overrides auto-detection of Hierarchical Namespace (HNS / ADLS Gen2) support. Leave unset to
-      // auto-detect at startup. Set to 'true' or 'false' to skip detection and force the behavior
-      // explicitly, which is required when connecting with a container-scoped SAS token.
+      // auto-detect. Set explicitly when account-level detection is unavailable, such as when
+      // connecting with a container-scoped SAS token.
       "UseHierarchicalNamespace": true
     }
   }
@@ -54,17 +54,17 @@ If these are not present in `appSettings.json`, it will not enable the feature, 
 Azure Media Storage supports Azure Storage accounts with Hierarchical Namespace (HNS), also known as
 Azure Data Lake Storage Gen2, in addition to standard flat-namespace (Gen1) accounts.
 
-On startup, the store probes the storage account to auto-detect whether HNS is enabled. When it is,
+The store probes the storage account to auto-detect whether HNS is enabled. When it is,
 directory creation, directory deletion, and file moves use native Data Lake Storage APIs, which provide
 atomic moves and real (non-virtual) directories. On flat-namespace (Gen1) accounts, directories continue
 to be emulated with a marker file, matching the existing behavior.
 
 Auto-detection requires storage account-level permissions and will fail if you connect with a
 container-scoped SAS token. In that case, set `UseHierarchicalNamespace` explicitly to `true` for a
-Gen2 account or `false` for a Gen1 account to skip detection.
+Gen2 account or `false` for a Gen1 account so the configured behavior is used when detection fails.
 
-Data Lake Storage traffic is served over the same blob endpoint as regular blob operations, so no
-separate DFS endpoint configuration is required.
+The Data Lake SDK derives the account's DFS endpoint from the configured connection string, so no
+separate DFS endpoint setting is required.
 
 ### Templating Configuration
 
