@@ -43,13 +43,11 @@ public sealed class MediaBlobContainerTenantEvents : ModularTenantEvents
         }
         catch (Exception ex)
         {
-            // Don't let a failed capability probe (e.g. restricted SAS token, transient network
-            // error) take down the whole tenant. The store falls back to flat-namespace (Gen1)
-            // operations, which remain safe (if suboptimal) even against a Gen2 account.
+            // Don't let invalid HNS configuration take down the whole tenant. Namespace-sensitive
+            // operations will surface the configuration error when the media store is used.
             _logger.LogError(
                 ex,
-                "Unable to determine the Azure Media Storage account type (Gen1 flat namespace or Gen2 Hierarchical Namespace). " +
-                "Falling back to flat-namespace blob operations.");
+                "Unable to initialize the Azure Media Storage account type (Gen1 flat namespace or Gen2 Hierarchical Namespace).");
         }
 
         // Only create container if options are valid.

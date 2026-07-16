@@ -19,14 +19,14 @@ public abstract class BlobStorageOptions
 
     /// <summary>
     /// Overrides auto-detection of Hierarchical Namespace (HNS / ADLS Gen2) support.
-    /// Leave <c>null</c> (default) to auto-detect via <c>GetAccountInfo</c> at startup.
-    /// Set to <c>true</c> or <c>false</c> to skip detection and force the behavior explicitly.
+    /// Leave <c>null</c> (default) to auto-detect via <c>GetAccountInfo</c>.
+    /// Set to <c>true</c> or <c>false</c> to select the behavior explicitly if detection fails.
     /// </summary>
     /// <remarks>
     /// Auto-detection requires storage account-level permissions. If you are using a
-    /// container-scoped SAS token, detection will fail and startup will be blocked.
-    /// In that case, set this to <c>true</c> for a Gen2 (HNS-enabled) account, or
-    /// <c>false</c> for a Gen1 (flat namespace) account.
+    /// container-scoped SAS token, detection can fail and the store will use flat-namespace
+    /// operations. In that case, set this to <c>true</c> for a Gen2 (HNS-enabled) account
+    /// to use native Data Lake operations, or <c>false</c> for a Gen1 account.
     /// </remarks>
     public bool? UseHierarchicalNamespace { get; set; }
 
