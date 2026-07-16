@@ -44,6 +44,7 @@ public class MediaApiController : Controller
     private readonly IServiceProvider _serviceProvider;
     private readonly AttachedMediaFieldFileService _attachedMediaFieldFileService;
     private readonly IFileVersionProvider _fileVersionProvider;
+    private readonly FileCreationService _fileCreationService;
 
     public MediaApiController(
         IMediaFileStore mediaFileStore,
@@ -58,7 +59,8 @@ public class MediaApiController : Controller
         MediaDirectoryTreeCache directoryTreeCache,
         IServiceProvider serviceProvider,
         AttachedMediaFieldFileService attachedMediaFieldFileService,
-        IFileVersionProvider fileVersionProvider
+        IFileVersionProvider fileVersionProvider,
+        FileCreationService fileCreationService
         )
     {
         _mediaFileStore = mediaFileStore;
@@ -74,6 +76,7 @@ public class MediaApiController : Controller
         _serviceProvider = serviceProvider;
         _attachedMediaFieldFileService = attachedMediaFieldFileService;
         _fileVersionProvider = fileVersionProvider;
+        _fileCreationService = fileCreationService;
     }
 
     [HttpGet]
@@ -547,13 +550,31 @@ public class MediaApiController : Controller
                         }
 
                         stream = file.OpenReadStream();
-                        mediaFilePath = await _mediaFileStore.CreateFileFromStreamAsync(mediaFilePath, stream);
+                        mediaFilePath = await _mediaFileStore.CreateFileFromStreamAsync(
+                            _fileCreationService,
+                            mediaFilePath,
+                            stream,
+                            length: file.Length,
+                            contentType: file.ContentType,
+                            cancellationToken: HttpContext.RequestAborted);
 
                         var mediaFile = await _mediaFileStore.GetFileInfoAsync(mediaFilePath);
 
                         await PreCacheRemoteMediaAsync(mediaFile);
 
                         result.Add(CreateFileResult(mediaFile));
+                    }
+                    catch (ExistsFileStoreException ex)
+                    {
+                        _logger.LogWarning(ex, "An error occurred while uploading a media");
+
+                        result.Add(new
+                        {
+                            name = fileName,
+                            size = file.Length,
+                            folder = path,
+                            error = ex.Message,
+                        });
                     }
                     catch (Exception ex)
                     {
