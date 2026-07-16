@@ -11168,14 +11168,10 @@ input:not([type=checkbox]):not([type=radio]).input-validation-error {
 
 [dir="ltr"] [dir=rtl] input:not([type=checkbox]):not([type=radio]).input-validation-error {
   background-position: left calc(0.375em + 0.1875rem) center;
-  padding-right: 0.75rem;
-  padding-left: calc(1.5rem + 0.375em + 0.1875rem);
 }
 
 [dir="rtl"] [dir=rtl] input:not([type=checkbox]):not([type=radio]).input-validation-error {
   background-position: right calc(0.375em + 0.1875rem) center;
-  padding-left: 0.75rem;
-  padding-right: calc(1.5rem + 0.375em + 0.1875rem);
 }
 
 .input-validation-error:invalid:focus, .form-control.input-validation-error:focus {
