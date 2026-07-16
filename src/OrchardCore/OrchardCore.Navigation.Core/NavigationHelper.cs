@@ -113,34 +113,36 @@ public static class NavigationHelper
         var requestPath = RemovePathBase(
             viewContext.HttpContext.Request.Path.Value ?? "/",
             viewContext.HttpContext.Request.PathBase);
-        var segmentCount = hrefPath.Split('/', StringSplitOptions.RemoveEmptyEntries).Length;
 
+        var hrefSegmentCount = CountPathSegments(hrefPath);
+        var requestSegmentCount = CountPathSegments(requestPath);
+        var matchingSegmentCount = CountLeadingMatchingPathSegments(requestPath, hrefPath);
 
-        // Ancestor paths (e.g. "/Admin" while evaluating "/Admin/Features") are not
-        // within the menu item branch and should not reuse a stale clicked hash.
-        if (!IsAncestorPath(requestPath, hrefPath))
+        if (matchingSegmentCount > 0)
         {
-            // Use the selectedNavHash stored in the admin preferences cookie, which JS writes proactively when
-            // the user clicks a nav link. Give it a high score to ensure it wins over any URL-matched items.
-            var selectedNavHash = GetSelectedNavHashFromPrefs(viewContext);
+            // Score by matching leading segments so routes with more shared context
+            // (like a specific content item id) outrank broader ancestors.
+            menuItemShape.Score += matchingSegmentCount * 2;
 
-            if (selectedNavHash == menuItemShape.Hash)
+            // Slightly favor complete href prefix matches over partial overlap.
+            if (matchingSegmentCount == hrefSegmentCount)
             {
-                menuItemShape.Score += 100;
+                menuItemShape.Score += 1;
+
+                // Exact path match gets a small additional boost.
+                if (hrefSegmentCount == requestSegmentCount)
+                {
+                    menuItemShape.Score += 1;
+                }
             }
         }
 
-        if (requestPath.Equals(hrefPath, StringComparison.OrdinalIgnoreCase))
+        // Keep hash-based selection as a low-priority signal for tie/fallback scenarios.
+        var selectedNavHash = GetSelectedNavHashFromPrefs(viewContext);
+
+        if (selectedNavHash == menuItemShape.Hash)
         {
-            // Exact URL match — score by path depth so deeper (more specific) links beat
-            // shallower ones that share the same prefix.
-            menuItemShape.Score += segmentCount + 2;
-        }
-        else if (segmentCount > 0 && requestPath.StartsWith(hrefPath.TrimEnd('/') + "/", StringComparison.OrdinalIgnoreCase))
-        {
-            // Prefix match (e.g. "/Admin/ContentTypes" matches "/Admin/ContentTypes/Edit/Blog").
-            // Deeper prefix = higher score, ensuring the most specific ancestor wins.
-            menuItemShape.Score += segmentCount;
+            menuItemShape.Score += 3;
         }
 
         menuItemShape.Selected = menuItemShape.Score > 0;
@@ -168,23 +170,30 @@ public static class NavigationHelper
         return path;
     }
 
-    private static bool IsAncestorPath(string requestPath, string hrefPath)
+    private static int CountPathSegments(string path)
     {
-        var normalizedRequestPath = requestPath.AsSpan().TrimEnd('/');
-        var normalizedHrefPath = hrefPath.AsSpan().TrimEnd('/');
+        return path.Split('/', StringSplitOptions.RemoveEmptyEntries).Length;
+    }
 
-        if (normalizedRequestPath.IsEmpty)
+    private static int CountLeadingMatchingPathSegments(string requestPath, string hrefPath)
+    {
+        var requestSegments = requestPath.Split('/', StringSplitOptions.RemoveEmptyEntries);
+        var hrefSegments = hrefPath.Split('/', StringSplitOptions.RemoveEmptyEntries);
+
+        var max = Math.Min(requestSegments.Length, hrefSegments.Length);
+        var matchCount = 0;
+
+        for (var i = 0; i < max; i++)
         {
-            normalizedRequestPath = "/";
+            if (!requestSegments[i].Equals(hrefSegments[i], StringComparison.OrdinalIgnoreCase))
+            {
+                break;
+            }
+
+            matchCount++;
         }
 
-        if (normalizedHrefPath.IsEmpty || normalizedRequestPath.Length >= normalizedHrefPath.Length)
-        {
-            return false;
-        }
-
-        return normalizedHrefPath[normalizedRequestPath.Length] == '/'
-            && normalizedHrefPath.StartsWith(normalizedRequestPath, StringComparison.OrdinalIgnoreCase);
+        return matchCount;
     }
 
     /// <summary>
