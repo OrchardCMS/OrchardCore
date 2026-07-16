@@ -1,13 +1,13 @@
 import { ref } from 'vue'
 import axios from 'axios'
 import { ApiService } from '@bloom/services/api-service'
-import { Client, TestConnectionRequest, TestConnectionResult, OpenApiAuthenticationType } from '@bloom/services/OpenApiClient'
+import { OpenApiApiClient, TestConnectionRequest, TestConnectionResult, OpenApiAuthenticationType } from '@bloom/services/OpenApiClient'
 import { notify } from '@bloom/services/notifications/notifier'
 import { SeverityLevel } from '@bloom/services/notifications/interfaces'
 import { getTenantPathBase } from '@bloom/helpers/globals'
 
 const apiService = new ApiService()
-const client = new Client(getTenantPathBase(), apiService.getAxiosInstance())
+const client = new OpenApiApiClient(getTenantPathBase(), apiService.getAxiosInstance())
 
 export function useOpenApi() {
     const testing = ref(false)
@@ -19,7 +19,6 @@ export function useOpenApi() {
         tokenUrl: string
         authorizationUrl?: string
         clientId: string
-        clientSecret?: string
         scopes?: string
     }): Promise<void> {
         testing.value = true
@@ -32,7 +31,6 @@ export function useOpenApi() {
                 tokenUrl: config.tokenUrl,
                 authorizationUrl: config.authorizationUrl,
                 clientId: config.clientId,
-                clientSecret: config.clientSecret,
                 scopes: config.scopes,
             })
 

@@ -43,7 +43,6 @@ public enum OpenApiAuthenticationType
 {
     None = 0,
     AuthorizationCodePkce = 1,
-    ClientCredentials = 2,
 }
 
 /// <summary>

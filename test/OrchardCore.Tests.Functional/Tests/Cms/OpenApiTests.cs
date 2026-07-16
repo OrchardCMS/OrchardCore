@@ -234,13 +234,6 @@ public sealed class OpenApiTests : CmsTestBase, IClassFixture<CmsSetupFixture>
         }
 
         // Wait for flow checkboxes to appear (Bootstrap collapse animation).
-        var allowClientCreds = page.Locator("label:has-text('Allow Client Credentials Flow')").Locator("..").Locator("input[type='checkbox']");
-        await allowClientCreds.WaitForAsync(new() { State = WaitForSelectorState.Visible, Timeout = 10000 });
-        if (!await allowClientCreds.IsCheckedAsync())
-        {
-            await allowClientCreds.CheckAsync();
-        }
-
         var allowAuthCode = page.Locator("label:has-text('Allow Authorization Code Flow')").Locator("..").Locator("input[type='checkbox']");
         await allowAuthCode.WaitForAsync(new() { State = WaitForSelectorState.Visible, Timeout = 10000 });
         if (!await allowAuthCode.IsCheckedAsync())
@@ -253,44 +246,6 @@ public sealed class OpenApiTests : CmsTestBase, IClassFixture<CmsSetupFixture>
         await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
 
         return authTenant;
-    }
-
-    /// <summary>
-    /// Creates an OpenID Connect application on the auth server tenant.
-    /// </summary>
-    private static async Task CreateOpenIdApplicationAsync(IPage page, string authPrefix, string clientId, string clientSecret)
-    {
-        await page.GotoAsync($"/{authPrefix}/Admin/OpenId/Application/Create");
-        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
-
-        // The Application Create form uses asp-for with IDs like DisplayName, ClientId, etc.
-        // These are direct form fields (not display driver shapes), so IDs should be direct.
-        await page.Locator("input[name='DisplayName']").FillAsync("OpenApi Test Client");
-        await page.Locator("input[name='ClientId']").FillAsync(clientId);
-        await page.Locator("input[name='ClientSecret']").FillAsync(clientSecret);
-
-        // Show and check the Client Credentials flow checkbox.
-        var clientCredsFieldset = page.Locator("#AllowClientCredentialsFlowFieldSet");
-        await clientCredsFieldset.WaitForAsync(new() { State = WaitForSelectorState.Visible, Timeout = 10000 });
-        var allowClientCreds = page.Locator("#AllowClientCredentialsFlow");
-        if (!await allowClientCreds.IsCheckedAsync())
-        {
-            await allowClientCreds.CheckAsync();
-        }
-
-        // Wait for the Role Group to appear and assign Administrator role.
-        var roleGroup = page.Locator("#RoleGroup");
-        await roleGroup.WaitForAsync(new() { State = WaitForSelectorState.Visible, Timeout = 5000 });
-
-        // Find the Administrator role checkbox within the role group.
-        var adminRoleCheckbox = roleGroup.Locator("input[type='checkbox']").First;
-        if (!await adminRoleCheckbox.IsCheckedAsync())
-        {
-            await adminRoleCheckbox.CheckAsync();
-        }
-
-        await page.Locator(".btn.save").ClickAsync();
-        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
     }
 
     /// <summary>
@@ -335,35 +290,6 @@ public sealed class OpenApiTests : CmsTestBase, IClassFixture<CmsSetupFixture>
     }
 
     [Fact]
-    public async Task SettingsValidateDiscoveryDocumentFromCrossTenantAuthServer()
-    {
-        var page = await Fixture.CreatePageAsync();
-        await EnableOpenApiAsync(page);
-
-        var authTenant = await SetupAuthServerTenantAsync(page);
-
-        // Navigate back to the main tenant and login.
-        await AuthHelper.LoginAsync(page, $"/{Tenant.Prefix}");
-        await page.GotoAsync($"/{Tenant.Prefix}/Admin/Settings/openapi");
-        await page.Locator("#vue-AuthenticationType").WaitForAsync(new() { State = WaitForSelectorState.Visible, Timeout = 15000 });
-
-        // Select Client Credentials auth type (value = 2).
-        await page.Locator("#vue-AuthenticationType").SelectOptionAsync("2");
-
-        // Fill in Token URL pointing to the auth server tenant.
-        var tokenUrl = $"{Fixture.BaseUrl}/{authTenant.Prefix}/connect/token";
-        await page.Locator("#vue-TokenUrl").FillAsync(tokenUrl);
-        await page.Locator("#vue-OAuthClientId").FillAsync("openapi-test");
-
-        await ButtonHelper.ClickSaveAsync(page);
-        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
-
-        // Verify no validation errors — success message should appear.
-        await Assertions.Expect(page.Locator(".message-success")).ToBeVisibleAsync();
-        await page.CloseAsync();
-    }
-
-    [Fact]
     public async Task SettingsShowErrorForInvalidAuthServerUrl()
     {
         var page = await Fixture.CreatePageAsync();
@@ -372,11 +298,13 @@ public sealed class OpenApiTests : CmsTestBase, IClassFixture<CmsSetupFixture>
         await page.GotoAsync($"/{Tenant.Prefix}/Admin/Settings/openapi");
         await page.Locator("#vue-AuthenticationType").WaitForAsync(new() { State = WaitForSelectorState.Visible, Timeout = 15000 });
 
-        // Select Client Credentials auth type.
-        await page.Locator("#vue-AuthenticationType").SelectOptionAsync("2");
+        // Select Authorization Code + PKCE auth type.
+        await page.Locator("#vue-AuthenticationType").SelectOptionAsync("1");
 
-        // Fill in a bogus Token URL.
+        // Fill in a bogus Authorization URL and Token URL.
+        var authorizationUrl = $"{Fixture.BaseUrl}/nonexistent-tenant/connect/authorize";
         var tokenUrl = $"{Fixture.BaseUrl}/nonexistent-tenant/connect/token";
+        await page.Locator("#vue-AuthorizationUrl").FillAsync(authorizationUrl);
         await page.Locator("#vue-TokenUrl").FillAsync(tokenUrl);
         await page.Locator("#vue-OAuthClientId").FillAsync("test");
 
@@ -420,7 +348,7 @@ public sealed class OpenApiTests : CmsTestBase, IClassFixture<CmsSetupFixture>
     }
 
     [Fact]
-    public async Task ConnectionTesterUIAppearsWithCrossTenantClientCredentials()
+    public async Task ConnectionTesterUIAppearsWithCrossTenantPkce()
     {
         var page = await Fixture.CreatePageAsync();
         await EnableOpenApiAsync(page);
@@ -436,10 +364,12 @@ public sealed class OpenApiTests : CmsTestBase, IClassFixture<CmsSetupFixture>
         // Wait for the Vue app to mount before interacting with its elements.
         await page.Locator("#vue-AuthenticationType").WaitForAsync(new() { State = WaitForSelectorState.Visible, Timeout = 15000 });
 
-        // Select Client Credentials auth type.
-        await page.Locator("#vue-AuthenticationType").SelectOptionAsync("2");
+        // Select Authorization Code + PKCE auth type.
+        await page.Locator("#vue-AuthenticationType").SelectOptionAsync("1");
 
+        var authorizationUrl = $"{Fixture.BaseUrl}/{authTenant.Prefix}/connect/authorize";
         var tokenUrl = $"{Fixture.BaseUrl}/{authTenant.Prefix}/connect/token";
+        await page.Locator("#vue-AuthorizationUrl").FillAsync(authorizationUrl);
         await page.Locator("#vue-TokenUrl").FillAsync(tokenUrl);
         await page.Locator("#vue-OAuthClientId").FillAsync(clientId);
 
@@ -450,19 +380,12 @@ public sealed class OpenApiTests : CmsTestBase, IClassFixture<CmsSetupFixture>
         // Navigate back to settings page to verify the connection tester UI appears.
         await page.GotoAsync($"/{Tenant.Prefix}/Admin/Settings/openapi");
 
-        // Verify the ConnectionTester component rendered: client secret field and button visible.
-        var clientSecretInput = page.Locator("#vue-ClientSecret");
-        await clientSecretInput.WaitForAsync(new() { State = WaitForSelectorState.Visible, Timeout = 15000 });
-        await Assertions.Expect(clientSecretInput).ToBeVisibleAsync();
+        // Verify the ConnectionTester component rendered: no client secret field (PKCE is a
+        // public-client flow), and the button is enabled since all required fields are set.
+        await Assertions.Expect(page.Locator("#vue-ClientSecret")).Not.ToBeAttachedAsync();
 
         var testButton = page.Locator("button:has-text('Test Connection')");
         await Assertions.Expect(testButton).ToBeVisibleAsync();
-
-        // Verify the button is disabled until a secret is provided (canTest computed is false).
-        await Assertions.Expect(testButton).ToBeDisabledAsync();
-
-        // Fill in the secret — button should become enabled.
-        await clientSecretInput.FillAsync("some-secret");
         await Assertions.Expect(testButton).ToBeEnabledAsync();
 
         await page.CloseAsync();
@@ -545,10 +468,9 @@ public sealed class OpenApiTests : CmsTestBase, IClassFixture<CmsSetupFixture>
                 Headers = new Dictionary<string, string> { ["RequestVerificationToken"] = antiForgeryToken },
                 DataObject = new
                 {
-                    authenticationType = 2,
+                    authenticationType = 1,
                     tokenUrl = "http://169.254.169.254/latest/meta-data/",
                     clientId = "test",
-                    clientSecret = "test",
                 },
             });
 
@@ -579,10 +501,9 @@ public sealed class OpenApiTests : CmsTestBase, IClassFixture<CmsSetupFixture>
             {
                 DataObject = new
                 {
-                    authenticationType = 2,
+                    authenticationType = 1,
                     tokenUrl = "https://example.com/connect/token",
                     clientId = "test",
-                    clientSecret = "test",
                 },
             });
 
@@ -599,32 +520,6 @@ public sealed class OpenApiTests : CmsTestBase, IClassFixture<CmsSetupFixture>
     // that UI's own "try it out" / "test request" action against a real protected endpoint
     // and assert the request was authenticated (not a 401/403), rather than just checking
     // that settings save or that the UI is reachable.
-
-    private static async Task ConfigureOpenIdServerForClientCredentialsAsync(IPage page, string prefix)
-    {
-        await FeatureHelper.EnableFeatureAsync(page, prefix, "OrchardCore.OpenId.Server");
-        await FeatureHelper.EnableFeatureAsync(page, prefix, "OrchardCore.OpenId.Validation");
-
-        await page.GotoAsync($"{prefix}/Admin/OpenId/ServerConfiguration");
-        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
-
-        var enableTokenEndpoint = page.Locator("label:has-text('Enable Token Endpoint')").Locator("..").Locator("input[type='checkbox']");
-        await enableTokenEndpoint.WaitForAsync(new() { State = WaitForSelectorState.Attached, Timeout = 15000 });
-        if (!await enableTokenEndpoint.IsCheckedAsync())
-        {
-            await enableTokenEndpoint.CheckAsync();
-        }
-
-        var allowClientCreds = page.Locator("label:has-text('Allow Client Credentials Flow')").Locator("..").Locator("input[type='checkbox']");
-        await allowClientCreds.WaitForAsync(new() { State = WaitForSelectorState.Visible, Timeout = 10000 });
-        if (!await allowClientCreds.IsCheckedAsync())
-        {
-            await allowClientCreds.CheckAsync();
-        }
-
-        await page.Locator("button.btn-primary[type='submit']").ClickAsync();
-        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
-    }
 
     private static async Task ConfigureOpenIdServerForAuthorizationCodeAsync(IPage page, string prefix)
     {
@@ -656,56 +551,6 @@ public sealed class OpenApiTests : CmsTestBase, IClassFixture<CmsSetupFixture>
 
         await page.Locator("button.btn-primary[type='submit']").ClickAsync();
         await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
-    }
-
-    [Fact]
-    public async Task SwaggerUIAuthorizesAndCallsProtectedEndpointWithClientCredentials()
-    {
-        var page = await Fixture.CreatePageAsync();
-        await EnableOpenApiWithSwaggerUIAsync(page);
-
-        var clientId = "openapi-swagger-cc";
-        var clientSecret = "swagger-cc-secret";
-
-        await ConfigureOpenIdServerForClientCredentialsAsync(page, $"/{Tenant.Prefix}");
-        await CreateOpenIdApplicationAsync(page, Tenant.Prefix, clientId, clientSecret);
-
-        await AuthHelper.LoginAsync(page, $"/{Tenant.Prefix}");
-        await page.GotoAsync($"/{Tenant.Prefix}/Admin/Settings/openapi");
-        await page.Locator("#vue-AuthenticationType").WaitForAsync(new() { State = WaitForSelectorState.Visible, Timeout = 15000 });
-        await page.Locator("#vue-AuthenticationType").SelectOptionAsync("2");
-        await page.Locator("#vue-TokenUrl").FillAsync($"{Fixture.BaseUrl}/{Tenant.Prefix}/connect/token");
-        await page.Locator("#vue-OAuthClientId").FillAsync(clientId);
-        await ButtonHelper.ClickSaveAsync(page);
-        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
-
-        await page.GotoAsync($"/{Tenant.Prefix}/swagger");
-        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
-
-        await page.Locator(".btn.authorize").First.ClickAsync();
-        await page.Locator("#client_id_clientCredentials").FillAsync(clientId);
-        await page.Locator("#client_secret_clientCredentials").FillAsync(clientSecret);
-        await page.Locator(".auth-btn-wrapper button.authorize").ClickAsync();
-
-        // A successful token exchange flips the modal's Authorize button to Logout.
-        await Assertions.Expect(page.Locator(".auth-btn-wrapper button.authorize")).ToHaveTextAsync("Logout");
-        await page.Locator(".auth-btn-wrapper button.btn-done").ClickAsync();
-
-        var operation = page.Locator("#operations-OpenApiApi-ApiTestOpenApiConnection");
-        await operation.Locator(".opblock-summary").ClickAsync();
-        await operation.Locator("button.try-out__btn").ClickAsync();
-
-        var response = await page.RunAndWaitForResponseAsync(
-            async () => await operation.Locator("button.execute").ClickAsync(),
-            r => r.Url.Contains("/api/openapi/test-connection"));
-
-        // The default example body is invalid (bogus token URL), so a 400 is expected —
-        // what matters is that the OAuth token obtained via Swagger UI's own Authorize
-        // flow got past authentication/authorization, i.e. it is not 401/403.
-        Assert.NotEqual(401, response.Status);
-        Assert.NotEqual(403, response.Status);
-
-        await page.CloseAsync();
     }
 
     [Fact]
@@ -787,59 +632,6 @@ public sealed class OpenApiTests : CmsTestBase, IClassFixture<CmsSetupFixture>
 
         Assert.Equal(200, response.Status);
         await Assertions.Expect(page.Locator(".sidebar").First).ToContainTextAsync("OpenApiApi");
-
-        await page.CloseAsync();
-    }
-
-    [Fact]
-    public async Task ScalarUIAuthorizesAndCallsProtectedEndpointWithClientCredentials()
-    {
-        var page = await Fixture.CreatePageAsync();
-        await EnableOpenApiAsync(page);
-        await FeatureHelper.EnableFeatureAsync(page, $"/{Tenant.Prefix}", "OrchardCore.OpenApi.ScalarUI");
-
-        var clientId = "openapi-scalar-cc";
-        var clientSecret = "scalar-cc-secret";
-
-        await ConfigureOpenIdServerForClientCredentialsAsync(page, $"/{Tenant.Prefix}");
-        await CreateOpenIdApplicationAsync(page, Tenant.Prefix, clientId, clientSecret);
-
-        await AuthHelper.LoginAsync(page, $"/{Tenant.Prefix}");
-        await page.GotoAsync($"/{Tenant.Prefix}/Admin/Settings/openapi");
-        await page.Locator("#vue-AuthenticationType").WaitForAsync(new() { State = WaitForSelectorState.Visible, Timeout = 15000 });
-        await page.Locator("#vue-AuthenticationType").SelectOptionAsync("2");
-        await page.Locator("#vue-TokenUrl").FillAsync($"{Fixture.BaseUrl}/{Tenant.Prefix}/connect/token");
-        await page.Locator("#vue-OAuthClientId").FillAsync(clientId);
-        await ButtonHelper.ClickSaveAsync(page);
-        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
-
-        await page.GotoAsync($"/{Tenant.Prefix}/scalar/v1");
-        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
-        await page.WaitForTimeoutAsync(1000);
-
-        // The Client Secret field is duplicated (main Authentication panel + the per-operation
-        // API client), always take the first (main panel) match.
-        await page.Locator("input[placeholder='XYZ123']").First.FillAsync(clientSecret);
-
-        var tokenResponse = await page.RunAndWaitForResponseAsync(
-            async () => await page.Locator("button:has-text('Authorize')").First.ClickAsync(),
-            r => r.Url.Contains("/connect/token"));
-        Assert.Equal(200, tokenResponse.Status);
-
-        // Navigate to the test-connection operation and open its built-in API client panel.
-        await page.Locator(".sidebar a", new() { HasText = "OpenApiApi" }).First.ClickAsync();
-        var operation = page.Locator("[id='tag/openapiapi/POST/api/openapi/test-connection']");
-        await operation.Locator("button.show-api-client-button").ClickAsync();
-
-        var response = await page.RunAndWaitForResponseAsync(
-            async () => await page.GetByRole(AriaRole.Button, new() { Name = "Send Request", Exact = true }).ClickAsync(),
-            r => r.Url.Contains("/api/openapi/test-connection"));
-
-        // The default example body is invalid (null token URL/client ID), so a 400 is
-        // expected — what matters is that the token obtained via Scalar's own Authorize
-        // widget got past authentication/authorization, i.e. it is not 401/403.
-        Assert.NotEqual(401, response.Status);
-        Assert.NotEqual(403, response.Status);
 
         await page.CloseAsync();
     }

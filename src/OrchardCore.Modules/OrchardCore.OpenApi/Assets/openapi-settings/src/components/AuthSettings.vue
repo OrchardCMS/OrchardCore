@@ -33,8 +33,6 @@ function update<K extends keyof Settings>(key: K, value: Settings[K]) {
 }
 
 const isPkce = () => props.settings.authenticationType === 1
-const isClientCreds = () => props.settings.authenticationType === 2
-const isOAuth = () => isPkce() || isClientCreds()
 </script>
 
 <template>
@@ -102,7 +100,6 @@ const isOAuth = () => isPkce() || isClientCreds()
         >
             <option :value="0">{{ t('cookieDefault') }}</option>
             <option :value="1">{{ t('oauth2Pkce') }}</option>
-            <option :value="2">{{ t('oauth2ClientCredentials') }}</option>
         </select>
         <span class="hint">{{ t('authenticationTypeHint') }}</span>
     </div>
@@ -123,17 +120,6 @@ const isOAuth = () => isPkce() || isClientCreds()
         <p class="mb-0">{{ t('sessionCookieHint') }}</p>
     </div>
 
-    <!-- Client Credentials info -->
-    <div v-if="isClientCreds()" class="alert alert-info mb-3">
-        <p>{{ t('clientCredsInfo') }}</p>
-        <hr />
-        <p v-html="t('clientCredsEnsure')"></p>
-        <hr />
-        <p v-html="t('openIdTokenValidation')"></p>
-        <hr />
-        <p class="mb-0">{{ t('sessionCookieHint') }}</p>
-    </div>
-
     <!-- Authorization URL (PKCE only) -->
     <div v-if="isPkce()" class="mb-3">
         <label class="form-label" for="vue-AuthorizationUrl">{{ t('authorizationUrl') }}</label>
@@ -148,8 +134,8 @@ const isOAuth = () => isPkce() || isClientCreds()
         <span class="hint">{{ t('authorizationUrlHint') }}</span>
     </div>
 
-    <!-- Shared OAuth2 fields -->
-    <template v-if="isOAuth()">
+    <!-- OAuth2 fields -->
+    <template v-if="isPkce()">
         <div class="mb-3">
             <label class="form-label" for="vue-TokenUrl">{{ t('tokenUrl') }}</label>
             <input
