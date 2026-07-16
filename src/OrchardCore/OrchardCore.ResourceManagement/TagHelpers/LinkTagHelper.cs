@@ -20,6 +20,8 @@ public class LinkTagHelper : TagHelper
 
     public string Type { get; set; }
 
+    public string Sizes { get; set; }
+
     public string Condition { get; set; }
 
     private readonly IResourceManager _resourceManager;
@@ -56,6 +58,11 @@ public class LinkTagHelper : TagHelper
         if (!string.IsNullOrEmpty(Type))
         {
             linkEntry.Type = Type;
+        }
+
+        if (!string.IsNullOrEmpty(Sizes))
+        {
+            linkEntry.Sizes = Sizes;
         }
 
         if (AppendVersion.HasValue)

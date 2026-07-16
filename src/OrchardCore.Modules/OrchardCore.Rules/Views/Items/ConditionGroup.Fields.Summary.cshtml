@@ -3,7 +3,9 @@
 
 @if (Model.Entries.Length == 0)
 {
-    <p class="alert alert-warning message-warning mb-0 ms-0 mt-3 me-3">@T["No conditions found. Please add at least one condition."]</p>
+    <div class="ocat-end-offset">
+        <p class="alert alert-warning message-warning mb-0 ms-0 mt-3 me-3">@T["No conditions found. Please add at least one condition."]</p>
+    </div>
 
     return;
 }

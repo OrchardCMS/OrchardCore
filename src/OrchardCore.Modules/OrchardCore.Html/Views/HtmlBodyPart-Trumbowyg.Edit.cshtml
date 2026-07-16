@@ -1,4 +1,3 @@
-@using OrchardCore
 @model HtmlBodyPartViewModel
 
 @{
@@ -22,9 +21,9 @@ else
 
 @await DisplayAsync(await New.ShortcodeModal())
 
-<div class="@Orchard.GetWrapperClasses()">
-    <label asp-for="Html" class="@Orchard.GetLabelClasses()">@Model.TypePartDefinition.DisplayName()</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper">
+    <label asp-for="Html" class="ocat-label">@Model.TypePartDefinition.DisplayName()</label>
+    <div class="ocat-end">
         @if (culture.IsRightToLeft())
         {
             <div style="text-align:right">

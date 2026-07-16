@@ -16,7 +16,7 @@ public class DateTimeRangeTests
     //[InlineData(">2019-10-12", ">2019-10-12T00:00:00.0000000")]
     //[InlineData("2017-01-01T01:00:00+07:00", "2017-01-01T01:00:00.0000000+07:00")]
     //[InlineData("2017-01-01T01:00:00+07:00..2017-01-01T01:00:00+07:00", "2017-01-01T01:00:00.0000000+07:00..2017-01-01T01:00:00.0000000+07:00")]
-    public void DateParserTests(string text, string expected)
+    public void DateParser_Default_Succeeds(string text, string expected)
     {
         var context = new DateTimeParseContext(CultureInfo.InvariantCulture, Mock.Of<IClock>(), Mock.Of<ITimeZone>(), new Scanner(text));
         Assert.True(DateTimeParser.Parser.TryParse(context, out var result, out _));

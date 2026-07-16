@@ -25,19 +25,20 @@ assignees: ''
   - **Release Notes**: Finalize the release notes in the documentation, including:
       - Highlights and goals of the release.
       - Prerequisites for running the new version.
-      - Upgrade steps and any breaking changes.
+      - Upgrade steps.
+      - A What's Changed section that simply lists all commits (PRs). You can generate this by adding a temporary tag (e.g., `2.1.1-temp`;  **don't** prefix it with `v` since that can cause a NuGet publish to trigger) to the latest commit in the release branch (e.g., `release/2.1`), then generating release notes for [a draft release](https://github.com/OrchardCMS/OrchardCore/releases/new). Be sure to remove the tag immediately after this.
   - **Update Documentation Navigation**: Add the release notes page to the `mkdocs.yml` navigation and remove it from `not_in_nav`.
   - **Version Mentions**: Update all references to the new version throughout the documentation, including:
     - [Status in the root README](https://docs.orchardcore.net/en/latest/#status)
     - CLI templates and commands.
     - Relevant guides, such as the [Creating a new decoupled CMS Website](https://docs.orchardcore.net/en/latest/guides/decoupled-cms/) guide.
-- [ ] Create a **version PR** titled `Release <version number>` (e.g., `Release 2.1.1`) from the version branch (e.g., `release/2.1.1`) into the release branch (e.g., `release/2.1`)
-- [ ] In GitHub, manually run the `Preview - CI` workflow on your branch (NOT `main`). This will release a new preview version on Cloudsmith for testing.
+- [ ] Create a **version PR** titled `Release <version number>` (e.g., `Release 2.1.1`) from the version branch (e.g., `release-prep/2.1.1`) into the release branch (e.g., `release/2.1`)
+- [ ] In GitHub, manually run the [`Preview - CI` workflow](https://github.com/OrchardCMS/OrchardCore/actions/workflows/preview_ci.yml) on your branch (NOT `main`). This will release a new preview version on Cloudsmith for testing.
 
 ## Step 3: Validation
 
 - [ ] **Check Functionality**: Update [`OrchardCore.Samples`](https://github.com/OrchardCMS/OrchardCore.Samples) to the latest preview version generated in the previous step (just change the `OrchardCoreVersion` property in the root `Directory.Build.props` file). Ensure the samples work as expected.
-- [ ] **Test Guides**: Test the following guides with NuGet packages from the Cloudsmith feed:
+- [ ] **Test Guides**: Test the following guides with NuGet packages from the Cloudsmith feed. At this point, the versions of these pages in the version branch (e.g., `release-prep/2.1.1`), should contain the version number of the upcoming version.
   - [Creating a modular ASP.NET Core application](https://docs.orchardcore.net/en/latest/guides/create-modular-application-mvc/)
   - [Creating an Orchard Core CMS website](https://docs.orchardcore.net/en/latest/guides/create-cms-application/)
   - [Creating a new decoupled CMS Website](https://docs.orchardcore.net/en/latest/guides/decoupled-cms/)
@@ -62,7 +63,7 @@ assignees: ''
 - [ ] Merge the PR if all checks pass. If there are merge conflicts, then you'll need to merge to `main` manually using the following steps:
   1. Fetch the latest changes from the Git repository.
   2. `git checkout` the `main` branch.
-  3. Merge the release branch (e.g., `release/2.1`) into `main` with a merge commit (NOT a squash merge). Use the commit message pattern `Merge release/2.1.1 to main`.
+  3. Merge the release branch (e.g., `release/2.1`) into `main` with a merge commit (NOT a squash merge). Use the commit message pattern `Merge release-prep/2.1.1 to main`.
   4. Resolve any conflicts.
   5. Push the changes to `main`. This action requires a user with the ability to force-push into `main`, as it is protected by default.
   6. GitHub will automatically delete the release branch; to restore it, go back to the new merged PR.

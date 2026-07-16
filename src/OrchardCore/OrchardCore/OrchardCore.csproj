@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <!-- NuGet properties-->
@@ -14,9 +14,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="AnyAscii" />
     <PackageReference Include="ncrontab" />
     <PackageReference Include="NodaTime" />
+    <PackageReference Include="Fluid.Core" />
   </ItemGroup>
 
   <ItemGroup>

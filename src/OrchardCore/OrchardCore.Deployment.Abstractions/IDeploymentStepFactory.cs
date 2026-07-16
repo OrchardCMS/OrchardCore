@@ -1,3 +1,5 @@
+using Microsoft.Extensions.DependencyInjection;
+
 namespace OrchardCore.Deployment;
 
 public interface IDeploymentStepFactory
@@ -6,14 +8,20 @@ public interface IDeploymentStepFactory
     DeploymentStep Create();
 }
 
-public class DeploymentStepFactory<TStep> : IDeploymentStepFactory where TStep : DeploymentStep, new()
+public class DeploymentStepFactory<TStep> : IDeploymentStepFactory where TStep : DeploymentStep
 {
+    private readonly IServiceProvider _serviceProvider;
     private static readonly string _typeName = typeof(TStep).Name;
+
+    public DeploymentStepFactory(IServiceProvider serviceProvider)
+    {
+        _serviceProvider = serviceProvider;
+    }
 
     public string Name => _typeName;
 
     public DeploymentStep Create()
     {
-        return new TStep();
+        return ActivatorUtilities.CreateInstance<TStep>(_serviceProvider);
     }
 }

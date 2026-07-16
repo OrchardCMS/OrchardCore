@@ -5,14 +5,18 @@
 <div asp-validation-summary="ModelOnly"></div>
 
 <form asp-action="Create" method="post" class="no-multisubmit">
-    <div class="mb-3" asp-validation-class-for="Name">
-        <label asp-for="Name" class="form-label">@T["Name"]</label>
-        <input asp-for="Name" class="form-control" autofocus />
-        <span asp-validation-for="Name" class="text-danger"></span>
+    <div class="ocat-wrapper" asp-validation-class-for="Name">
+        <label asp-for="Name" class="ocat-label">@T["Name"]</label>
+        <div class="ocat-end">
+            <input asp-for="Name" class="form-control" autofocus />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
     </div>
 
-    <div class="mb-3">
-        <button class="btn btn-success create" type="submit">@T["Create"]</button>
-        <a class="btn btn-secondary cancel" role="button" asp-route-action="List">@T["Cancel"]</a>
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
+            <button class="btn btn-success create" type="submit">@T["Create"]</button>
+            <a class="btn btn-secondary cancel" role="button" asp-route-action="List">@T["Cancel"]</a>
+        </div>
     </div>
 </form>

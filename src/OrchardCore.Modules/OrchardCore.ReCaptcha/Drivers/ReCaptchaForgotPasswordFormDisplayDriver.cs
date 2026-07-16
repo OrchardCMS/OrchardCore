@@ -1,4 +1,5 @@
 using System.Globalization;
+using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.ReCaptcha.Configuration;
@@ -9,18 +10,16 @@ namespace OrchardCore.ReCaptcha.Drivers;
 
 public sealed class ReCaptchaForgotPasswordFormDisplayDriver : DisplayDriver<ForgotPasswordForm>
 {
-    private readonly ISiteService _siteService;
+    private readonly ReCaptchaSettings _settings;
 
-    public ReCaptchaForgotPasswordFormDisplayDriver(ISiteService siteService)
+    public ReCaptchaForgotPasswordFormDisplayDriver(IOptions<ReCaptchaSettings> options)
     {
-        _siteService = siteService;
+        _settings = options.Value;
     }
 
     public override async Task<IDisplayResult> EditAsync(ForgotPasswordForm model, BuildEditorContext context)
     {
-        var settings = await _siteService.GetSettingsAsync<ReCaptchaSettings>();
-
-        if (!settings.ConfigurationExists())
+        if (!_settings.ConfigurationExists())
         {
             return null;
         }

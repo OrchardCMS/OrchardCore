@@ -4,6 +4,7 @@
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Roles"])</h1></zone>
 
+<div data-list-management data-client-side-search="true">
 <div class="card mb-3 text-bg-theme position-sticky action-bar">
     <div class="card-body">
         <div class="row gx-3">
@@ -31,19 +32,19 @@
 
             <li class="list-group-item" data-filter-value="@entry.Name">
                 <div class="d-flex justify-content-between">
-                    <div>
+                    <div class="list-item-search-text">
                         <span>@entry.Name</span>
 
                         @if (entry.IsSystemRole)
                         {
-                            <span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@T["The '{0}' role cannot be deleted.", entry.Name]">
+                            <span class="badge ta-badge fw-normal" data-bs-toggle="tooltip" title="@T["The '{0}' role cannot be deleted.", entry.Name]">
                                 <i class="fa-solid fa-shield text-secondary me-1" aria-hidden="true"></i>@T["System"]
                             </span>
                         }
                     </div>
 
                     <div>
-                        <a class="edit btn btn-primary btn-sm" role="button" asp-action="Edit" asp-route-id="@entry.Name">@T["Edit"]</a>
+                        <a class="edit btn btn-primary btn-sm list-item-action" role="button" asp-action="Edit" asp-route-id="@entry.Name">@T["Edit"]</a>
 
                         @if (!entry.IsAdminRole)
                         {
@@ -58,7 +59,7 @@
                 </div>
                 @if (!string.IsNullOrWhiteSpace(entry.Description))
                 {
-                    <p class="text-muted mb-0">@entry.Description</p>
+                    <p class="text-muted mb-0 list-item-search-text">@entry.Description</p>
                 }
             </li>
         }
@@ -68,58 +69,6 @@
     </div>
 </form>
 
-<script at="Foot">
-    $(function () {
-        var searchBox = $('#search-box');
+</div>
 
-        // On Enter, edit the role if there is a single one
-        searchBox.keydown(function (e) {
-            if (e.key == 'Enter') {
-
-                // Edit the role if there is a single filtered element
-                var visible = $('.roles > ul > li:visible');
-                if (visible.length == 1) {
-                    window.location = visible.find('.edit').attr('href');
-                }
-                return false;
-            }
-        });
-
-        // On each keypress filter the list of roles
-        searchBox.keyup(function (e) {
-            var search = $(this).val().toLowerCase();
-            var elementsToFilter = $("[data-filter-value]");
-
-            // On ESC, clear the search box and display all roles
-            if (e.key === "Escape" || search == '') {
-                searchBox.val('');
-                elementsToFilter.removeClass("d-none first-child-visible last-child-visible");
-            }
-            else {
-                elementsToFilter.each(function () {
-                    var text = $(this).data('filter-value').toLowerCase();
-                    var found = text.indexOf(search) > -1;
-
-                    if (found) {
-                        $(this).removeClass("d-none first-child-visible last-child-visible");
-                    }
-                    else {
-                        $(this).addClass("d-none");
-                    }
-                });
-
-                elementsToFilter.filter(":not(.d-none)").first().addClass("first-child-visible");
-                elementsToFilter.filter(":not(.d-none)").last().addClass("last-child-visible");
-
-                // We display an alert if a search is not found
-                var visible = $('.roles > ul > li:visible');
-                if (visible.length == 0) {
-                    $('#list-alert').removeClass("d-none");
-                }
-                else {
-                    $('#list-alert').addClass("d-none");
-                }
-            }
-        });
-    })
-</script>
+<script asp-name="list-management" at="Foot"></script>

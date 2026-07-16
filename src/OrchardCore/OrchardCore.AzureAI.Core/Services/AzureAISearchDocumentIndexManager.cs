@@ -2,12 +2,13 @@ using System.Reflection;
 using Azure.Search.Documents;
 using Azure.Search.Documents.Models;
 using Microsoft.Extensions.Logging;
+using OrchardCore.AzureAI.Models;
+using OrchardCore.ContentManagement;
 using OrchardCore.Contents.Indexing;
 using OrchardCore.Entities;
 using OrchardCore.Indexing;
 using OrchardCore.Indexing.Models;
 using OrchardCore.Modules;
-using OrchardCore.AzureAI.Models;
 using static OrchardCore.Indexing.DocumentIndex;
 
 namespace OrchardCore.AzureAI.Services;
@@ -16,17 +17,20 @@ public sealed class AzureAISearchDocumentIndexManager : IDocumentIndexManager
 {
     private readonly AzureAIClientFactory _clientFactory;
     private readonly IEnumerable<IAzureAISearchDocumentEvents> _documentEvents;
+    private readonly IEnumerable<IDocumentIndexHandler> _documentIndexHandlers;
     private readonly IIndexProfileStore _indexStore;
     private readonly ILogger _logger;
 
     public AzureAISearchDocumentIndexManager(
         AzureAIClientFactory clientFactory,
         IEnumerable<IAzureAISearchDocumentEvents> documentEvents,
+        IEnumerable<IDocumentIndexHandler> documentIndexHandlers,
         IIndexProfileStore indexStore,
         ILogger<AzureAISearchDocumentIndexManager> logger)
     {
         _clientFactory = clientFactory;
         _documentEvents = documentEvents;
+        _documentIndexHandlers = documentIndexHandlers;
         _indexStore = indexStore;
         _logger = logger;
     }
@@ -92,6 +96,8 @@ public sealed class AzureAISearchDocumentIndexManager : IDocumentIndexManager
             var keyName = GetKeyFieldNameOrThrow(index);
 
             await client.DeleteDocumentsAsync(keyName, documentIds);
+
+            await _documentIndexHandlers.InvokeAsync((handler, indexProfile, documentIds) => handler.DocumentsDeletedAsync(indexProfile, documentIds), index, documentIds, _logger);
 
             return true;
         }
@@ -165,6 +171,8 @@ public sealed class AzureAISearchDocumentIndexManager : IDocumentIndexManager
 
                 await client.MergeOrUploadDocumentsAsync(docs);
             }
+
+            await _documentIndexHandlers.InvokeAsync((handler, indexProfile, docs) => handler.DocumentsAddedOrUpdatedAsync(indexProfile, docs), index, indexDocuments, _logger);
 
             return true;
         }

@@ -27,14 +27,14 @@ assignees: ''
       - Highlights and goals of the release.
       - Prerequisites for running the new version.
       - Upgrade steps and any breaking changes.
+  - **Update Analyzer Release Tracking Files**: For analyzer projects (for example, `src/OrchardCore/OrchardCore.SourceGenerators`), move the rules being released from `AnalyzerReleases.Unshipped.md` to `AnalyzerReleases.Shipped.md`. Keep `AnalyzerReleases.Unshipped.md` checked in and reserve it for rules that have not shipped yet.
   - **Update Documentation Navigation**: Add the release notes page to `mkdocs.yml` navigation and remove it from `not_in_nav`.
   - **Version Mentions**: Update all references to the new version throughout the documentation, including:
     - [Status in the root README](https://docs.orchardcore.net/en/latest/#status)
     - CLI templates and commands.
     - Relevant guides, such as the [Creating a new decoupled CMS Website](https://docs.orchardcore.net/en/latest/guides/decoupled-cms/) guide.
-- [ ] **Check CI Workflow**: Verify that the [release_ci](https://github.com/OrchardCMS/OrchardCore/blob/main/.github/workflows/release_ci.yml) workflow is using the correct .NET version for the release, and change it in the version branch if necessary.
 - [ ] Create a **version PR** titled `Release <version number` (e.g., `Release 3.0.0) from the version branch (e.g., `release/3.0.0`) into the release branch (e.g., `release/3.0`)
-- [ ] In GitHub, manually run the `Preview - CI` workflow on your branch (NOT `main`). This will release a new preview version on Cloudsmith for testing.
+- [ ] In GitHub, manually run the [`Preview - CI` workflow](https://github.com/OrchardCMS/OrchardCore/actions/workflows/preview_ci.yml) on your branch (NOT `main`). This will release a new preview version on Cloudsmith for testing.
 
 ## Step 3: Translation Updates
 
@@ -47,7 +47,7 @@ assignees: ''
 ## Step 4: Validation
 
 - [ ] **Check Functionality**: Update [`OrchardCore.Samples`](https://github.com/OrchardCMS/OrchardCore.Samples) to the latest preview version generated in the previous step (just change the `OrchardCoreVersion` property in the root `Directory.Build.props` file). Ensure the samples work as expected.
-- [ ] **Test Guides**: Test the following guides with NuGet packages from the Cloudsmith feed:
+- [ ] **Test Guides**: Test the following guides with NuGet packages from the Cloudsmith feed. At this point, the versions of these pages in the version branch (e.g., `release-prep/2.1.1`), should contain the version number of the upcoming version.
   - [Creating a modular ASP.NET Core application](https://docs.orchardcore.net/en/latest/guides/create-modular-application-mvc/)
   - [Creating an Orchard Core CMS website](https://docs.orchardcore.net/en/latest/guides/create-cms-application/)
   - [Creating a new decoupled CMS Website](https://docs.orchardcore.net/en/latest/guides/decoupled-cms/)
@@ -56,18 +56,18 @@ assignees: ''
 ```
 cd \code\orchardcore
 
-dotnet build -c Release -f net10.0 -p:Version=3.0.0
+dotnet build -c Release -p:Version=3.0.0
 dotnet pack -c Release --no-build -p:Version=3.0.0 -p:TreatWarningsAsErrors=false
 
 mkdir c:\temp\orchardcorefeed
 dotnet nuget push ".\src\**\*.nupkg" -s "c:\temp\orchardcorefeed"
 
-dotnet new install OrchardCore.ProjectTemplates::3.0.0 --nuget-source c:\temp\orchardcorefeed
+dotnet new install OrchardCore.ProjectTemplates@3.0.0 --nuget-source c:\temp\orchardcorefeed
 
 cd c:\temp\orchardcorefeed
 mkdir occms
-dotnet new occms
 cd occms
+dotnet new occms
 dotnet nuget add source c:\temp\orchardcorefeed
 dotnet run occms
 ```
@@ -105,7 +105,7 @@ dotnet run occms
 ## Step 7: Post-Release Tasks
 
 - [ ] **Create New Milestone**: Set up a new milestone for the next release and close the previous one.
-- [ ] **Prepare Documentation for Next Version**: Create a new release notes file for the next version in the `OrchardCore.Docs` project (e.g., `/releases/4.0.0.md`). Exclude it from navigation and validation under `not_in_nav` in `mkdocs.yml`.
+- [ ] **Prepare Documentation for Next Major Version**: Create a new release notes file for the next version in the `OrchardCore.Docs` project (e.g., `/releases/4.0.0.md`). Exclude it from navigation and validation under `not_in_nav` in `mkdocs.yml`.
 - [ ] **Update `OrchardCore.Commons.props` for Next Release**: Set `<VersionPrefix></VersionPrefix>` to the next planned release number, but at least a minor one.
 - [ ] **Reassign Issues**: Reassign all still open, postponed issues from the current version milestone to the upcoming version milestone.
 - [ ] Update [`OrchardCore.Samples`](https://github.com/OrchardCMS/OrchardCore.Samples) to the newly released version (just change the `OrchardCoreVersion` property in the root `Directory.Build.props` file).

@@ -19,18 +19,16 @@ public abstract class BlobStorageOptions
 
     /// <summary>
     /// Overrides auto-detection of Hierarchical Namespace (HNS / ADLS Gen2) support.
-    /// Set to <c>true</c> to force HNS-aware behavior, <c>false</c> to force flat-namespace behavior,
-    /// or leave <c>null</c> to auto-detect from the storage account at startup.
+    /// Leave <c>null</c> (default) to auto-detect via <c>GetAccountInfo</c> at startup.
+    /// Set to <c>true</c> or <c>false</c> to skip detection and force the behavior explicitly.
     /// </summary>
+    /// <remarks>
+    /// Auto-detection requires storage account-level permissions. If you are using a
+    /// container-scoped SAS token, detection will fail and startup will be blocked.
+    /// In that case, set this to <c>true</c> for a Gen2 (HNS-enabled) account, or
+    /// <c>false</c> for a Gen1 (flat namespace) account.
+    /// </remarks>
     public bool? UseHierarchicalNamespace { get; set; }
-
-    /// <summary>
-    /// Optional DFS (Data Lake Storage) endpoint URL for Gen2 operations.
-    /// When set, the <see cref="Azure.Storage.Files.DataLake.DataLakeServiceClient"/> uses this
-    /// endpoint instead of deriving one from the connection string.
-    /// Required for local emulators (e.g. Azurite) where the DFS endpoint runs on a separate port.
-    /// </summary>
-    public string DfsEndpoint { get; set; }
 
     /// <summary>
     /// Returns a value indicating whether the basic state of the configuration is valid.

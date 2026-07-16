@@ -8,11 +8,16 @@ namespace OrchardCore.Workflows.Activities;
 public class SetPropertyTask : TaskActivity<SetPropertyTask>
 {
     private readonly IWorkflowScriptEvaluator _scriptEvaluator;
+    private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
     protected readonly IStringLocalizer S;
 
-    public SetPropertyTask(IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<SetPropertyTask> localizer)
+    public SetPropertyTask(
+        IWorkflowScriptEvaluator scriptEvaluator,
+        IWorkflowExpressionEvaluator expressionEvaluator,
+        IStringLocalizer<SetPropertyTask> localizer)
     {
         _scriptEvaluator = scriptEvaluator;
+        _expressionEvaluator = expressionEvaluator;
         S = localizer;
     }
 
@@ -32,6 +37,18 @@ public class SetPropertyTask : TaskActivity<SetPropertyTask>
         set => SetProperty(value);
     }
 
+    public WorkflowExpression<object> LiquidValue
+    {
+        get => GetProperty(() => new WorkflowExpression<object>());
+        set => SetProperty(value);
+    }
+
+    public WorkflowScriptSyntax Syntax
+    {
+        get => GetProperty(() => WorkflowScriptSyntax.JavaScript);
+        set => SetProperty(value);
+    }
+
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
         return Outcomes(S["Done"]);
@@ -39,7 +56,13 @@ public class SetPropertyTask : TaskActivity<SetPropertyTask>
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
-        var value = await _scriptEvaluator.EvaluateAsync(Value, workflowContext);
+        var value = Syntax switch
+        {
+            WorkflowScriptSyntax.Liquid => await _expressionEvaluator.EvaluateAsync(LiquidValue, workflowContext, null),
+            WorkflowScriptSyntax.JavaScript => await _scriptEvaluator.EvaluateAsync(Value, workflowContext),
+            _ => throw new NotSupportedException($"The syntax {Syntax} isn't supported for SetPropertyTask.")
+        };
+
         workflowContext.Properties[PropertyName] = value;
 
         return Outcomes("Done");

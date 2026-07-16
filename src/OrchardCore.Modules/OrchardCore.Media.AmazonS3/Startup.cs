@@ -7,8 +7,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.Data.Migration;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
+using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.FileStorage;
 using OrchardCore.FileStorage.AmazonS3;
 using OrchardCore.Media.AmazonS3.Services;
@@ -19,8 +21,6 @@ using OrchardCore.Media.Services;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
-using SixLabors.ImageSharp.Web.Caching;
-using SixLabors.ImageSharp.Web.Caching.AWS;
 
 namespace OrchardCore.Media.AmazonS3;
 
@@ -140,29 +140,28 @@ public sealed class Startup : Modules.StartupBase
         => PathExtensions.Combine(hostingEnvironment.WebRootPath, shellSettings.Name, assetsPath);
 }
 
-[Feature("OrchardCore.Media.AmazonS3.ImageSharpImageCache")]
-public sealed class ImageSharpAmazonS3CacheStartup : Modules.StartupBase
+[Feature("OrchardCore.Media.AmazonS3.ImageCache")]
+public sealed class MediaAmazonS3ImageCacheStartup : Modules.StartupBase
 {
     private readonly IShellConfiguration _configuration;
     private readonly ILogger _logger;
 
-    public ImageSharpAmazonS3CacheStartup(
+    public MediaAmazonS3ImageCacheStartup(
         IShellConfiguration configuration,
-        ILogger<ImageSharpAmazonS3CacheStartup> logger)
+        ILogger<MediaAmazonS3ImageCacheStartup> logger)
     {
         _configuration = configuration;
         _logger = logger;
     }
 
     public override int Order
-        => OrchardCoreConstants.ConfigureOrder.ImageSharpCache;
+        => OrchardCoreConstants.ConfigureOrder.ResizedImageCache;
 
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddTransient<IConfigureOptions<AwsImageSharpImageCacheOptions>, AwsImageSharpImageCacheOptionsConfiguration>();
-        services.AddTransient<IConfigureOptions<AWSS3StorageCacheOptions>, AWSS3StorageCacheOptionsConfiguration>();
+        services.AddTransient<IConfigureOptions<AwsMediaImageCacheOptions>, AwsMediaImageCacheOptionsConfiguration>();
 
-        var storeOptions = new AwsStorageOptions().BindConfiguration(AmazonS3Constants.ConfigSections.AmazonS3ImageSharpCache, _configuration, _logger);
+        var storeOptions = new AwsStorageOptions().BindConfiguration(AmazonS3Constants.ConfigSections.AmazonS3ImageCache, _configuration, _logger);
         var validationErrors = storeOptions.Validate().ToList();
         var stringBuilder = new StringBuilder();
 
@@ -173,22 +172,19 @@ public sealed class ImageSharpAmazonS3CacheStartup : Modules.StartupBase
                 stringBuilder.Append(error.ErrorMessage);
             }
 
-            _logger.LogError("S3 ImageSharp Image Cache configuration validation failed with errors: {Errors} fallback to local file storage.", stringBuilder);
+            _logger.LogError("S3 Media Image Cache configuration validation failed with errors: {Errors} — falling back to local file storage.", stringBuilder);
         }
         else
         {
             if (_logger.IsEnabled(LogLevel.Information))
             {
                 _logger.LogInformation(
-                    "Starting with ImageSharp Image Cache configuration. BucketName: {BucketName}; BasePath: {BasePath}", storeOptions.BucketName, storeOptions.BasePath);
+                    "Starting with S3 Media Image Cache configuration. BucketName: {BucketName}; BasePath: {BasePath}", storeOptions.BucketName, storeOptions.BasePath);
             }
 
-            // Following https://docs.sixlabors.com/articles/imagesharp.web/imagecaches.html we'd use
-            // SetCache<AWSS3StorageCache>() but that's only available on IImageSharpBuilder after AddImageSharp(),
-            // what happens in OrchardCore.Media. Thus, an explicit Replace() is necessary.
-            services.Replace(ServiceDescriptor.Singleton<IImageCache, AWSS3StorageCache>());
+            services.Replace(ServiceDescriptor.Singleton<IResizedImageCache, AWSS3ResizedImageCache>());
 
-            services.AddScoped<IModularTenantEvents, ImageSharpS3ImageCacheBucketTenantEvents>();
+            services.AddScoped<IModularTenantEvents, AwsS3MediaImageCacheTenantEvents>();
         }
     }
 }
@@ -199,5 +195,38 @@ public sealed class MediaAmazonS3TusStartup : Modules.StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.Replace(ServiceDescriptor.Singleton<ITusTempStore, S3TusTempStore>());
+    }
+}
+
+// Keeps the renamed feature enabled on sites that had the legacy
+// "OrchardCore.Media.AmazonS3.ImageSharpImageCache" feature enabled before the rename. The legacy
+// feature depends on the new one, and this migration explicitly enables the new feature so it
+// remains active in its own right once the obsolete feature is removed.
+[Feature("OrchardCore.Media.AmazonS3.ImageSharpImageCache")]
+public sealed class LegacyImageCacheFeatureStartup : Modules.StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddDataMigration<LegacyImageCacheFeatureMigrations>();
+    }
+}
+
+internal sealed class LegacyImageCacheFeatureMigrations : DataMigration
+{
+    public static int Create()
+    {
+        ShellScope.AddDeferredTask(async scope =>
+        {
+            var featuresManager = scope.ServiceProvider.GetRequiredService<IShellFeaturesManager>();
+
+            if (await featuresManager.IsFeatureEnabledAsync("OrchardCore.Media.AmazonS3.ImageCache"))
+            {
+                return;
+            }
+
+            await featuresManager.EnableFeaturesAsync("OrchardCore.Media.AmazonS3.ImageCache");
+        });
+
+        return 1;
     }
 }

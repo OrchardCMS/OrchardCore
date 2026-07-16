@@ -37,7 +37,20 @@ public sealed class MediaBlobContainerTenantEvents : ModularTenantEvents
 
     public override async Task ActivatingAsync()
     {
-        await _blobFileStore.EnsureCapabilitiesAsync();
+        try
+        {
+            await _blobFileStore.EnsureCapabilitiesAsync();
+        }
+        catch (Exception ex)
+        {
+            // Don't let a failed capability probe (e.g. restricted SAS token, transient network
+            // error) take down the whole tenant. The store falls back to flat-namespace (Gen1)
+            // operations, which remain safe (if suboptimal) even against a Gen2 account.
+            _logger.LogError(
+                ex,
+                "Unable to determine the Azure Media Storage account type (Gen1 flat namespace or Gen2 Hierarchical Namespace). " +
+                "Falling back to flat-namespace blob operations.");
+        }
 
         // Only create container if options are valid.
         if (_shellSettings.IsUninitialized() || !_options.IsConfigured() || !_options.CreateContainer)
@@ -60,9 +73,17 @@ public sealed class MediaBlobContainerTenantEvents : ModularTenantEvents
                 _logger.LogDebug("Azure Media Storage container {ContainerName} created.", _options.ContainerName);
             }
         }
+        catch (RequestFailedException ex) when (ex.ErrorCode == "InvalidResourceName" || ex.ErrorCode == "OutOfRangeInput")
+        {
+            _logger.LogError(
+                ex,
+                "Unable to create Azure Media Storage Container '{ContainerName}': the container name is invalid per Azure Blob naming rules. " +
+                "See https://learn.microsoft.com/rest/api/storageservices/naming-and-referencing-containers--blobs--and-metadata.",
+                _options.ContainerName);
+        }
         catch (RequestFailedException ex)
         {
-            _logger.LogError(ex, "Unable to create Azure Media Storage Container.");
+            _logger.LogError(ex, "Unable to create Azure Media Storage Container '{ContainerName}'.", _options.ContainerName);
         }
     }
 

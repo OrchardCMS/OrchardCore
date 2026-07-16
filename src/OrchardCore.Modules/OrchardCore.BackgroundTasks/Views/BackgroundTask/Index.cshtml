@@ -2,7 +2,7 @@
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Background Tasks"])</h1></zone>
 
-<form asp-action="Index" method="post" class="no-multisubmit">
+<form asp-action="Index" method="post" class="no-multisubmit" data-list-management>
     <input type="submit" name="submit.Filter" id="submitFilter" class="visually-hidden" />
 
     <div class="card text-bg-theme mb-3 position-sticky action-bar">
@@ -83,17 +83,4 @@
 
 <script asp-name="bootstrap-select" at="Foot"></script>
 
-<script at="Foot">
-    $(function () {
-        $('.selectpicker').selectpicker();
-        $('.selectpicker').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
-            $("[name='submit.Filter']").click();
-        });
-        $(".filter-options select, .filter-options input").on("change", function () {
-            $("[name='submit.Filter']").click();
-        });
-
-        var filters = $(".filter");
-        filters.show();
-    });
-</script>
+<script asp-name="list-management" at="Foot"></script>

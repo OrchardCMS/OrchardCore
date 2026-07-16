@@ -112,6 +112,14 @@
             ],
             enabled: false,
         },
+        // Not updating to ImageSharp v4 yet, see https://github.com/orgs/OrchardCMS/discussions/19306.
+        {
+            matchPackageNames: [
+                '/^SixLabors\\.ImageSharp.*$/',
+            ],
+            matchUpdateTypes: ['major'],
+            enabled: false,
+        },
 
         // Groups of packages that we want to update together.
         {
@@ -156,6 +164,12 @@
             matchPackageNames: [
                 'MailKit',
                 'MimeKit',
+            ],
+        },
+        {
+            groupName: 'NetVips packages',
+            matchPackageNames: [
+                '/^NetVips.*$/',
             ],
         },
         {

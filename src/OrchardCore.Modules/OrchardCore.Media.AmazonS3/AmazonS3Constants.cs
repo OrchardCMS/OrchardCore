@@ -17,6 +17,6 @@ internal static class AmazonS3Constants
     internal static class ConfigSections
     {
         public const string AmazonS3 = "OrchardCore_Media_AmazonS3";
-        public const string AmazonS3ImageSharpCache = "OrchardCore_Media_AmazonS3_ImageSharp_Cache";
+        public const string AmazonS3ImageCache = "OrchardCore_Media_AmazonS3_Image_Cache";
     }
 }

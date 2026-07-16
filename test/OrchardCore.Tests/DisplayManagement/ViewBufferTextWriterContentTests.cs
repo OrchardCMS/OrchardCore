@@ -13,7 +13,7 @@ public class ViewBufferTextWriterContentTests
     }
 
     [Fact]
-    public void ShouldWriteString()
+    public void Write_String_Succeeds()
     {
         var buffer = new ViewBufferTextWriterContent();
 
@@ -25,7 +25,7 @@ public class ViewBufferTextWriterContentTests
     }
 
     [Fact]
-    public void ShouldWriteChar()
+    public void Write_Char_Succeeds()
     {
         var buffer = new ViewBufferTextWriterContent();
 
@@ -37,7 +37,7 @@ public class ViewBufferTextWriterContentTests
     }
 
     [Fact]
-    public void ShouldWriteBufferFragment()
+    public void Write_BufferFragment_Succeeds()
     {
         var buffer = new ViewBufferTextWriterContent();
 
@@ -49,7 +49,7 @@ public class ViewBufferTextWriterContentTests
     }
 
     [Fact]
-    public void ShouldWriteBuffer()
+    public void Write_Buffer_Succeeds()
     {
         var buffer = new ViewBufferTextWriterContent();
 
@@ -61,7 +61,7 @@ public class ViewBufferTextWriterContentTests
     }
 
     [Fact]
-    public void ShouldWriteObject()
+    public void Write_Object_Succeeds()
     {
         var buffer = new ViewBufferTextWriterContent();
 
@@ -73,7 +73,7 @@ public class ViewBufferTextWriterContentTests
     }
 
     [Fact]
-    public void ShouldWriteMultipleFragments()
+    public void Write_MultipleFragments_Succeeds()
     {
         var buffer = new ViewBufferTextWriterContent();
 
@@ -86,7 +86,7 @@ public class ViewBufferTextWriterContentTests
     }
 
     [Fact]
-    public void ShouldWriteMultipleStringPages()
+    public void Write_MultipleStringPages_Succeeds()
     {
         var buffer = new ViewBufferTextWriterContent();
 
@@ -101,7 +101,7 @@ public class ViewBufferTextWriterContentTests
     }
 
     [Fact]
-    public void ShouldWriteMultipleCharPages()
+    public void Write_MultipleCharPages_Succeeds()
     {
         var buffer = new ViewBufferTextWriterContent();
 
@@ -116,7 +116,7 @@ public class ViewBufferTextWriterContentTests
     }
 
     [Fact]
-    public void ShouldWriteMultipleBufferFragmentPages()
+    public void Write_MultipleBufferFragmentPages_Succeeds()
     {
         var buffer = new ViewBufferTextWriterContent();
 

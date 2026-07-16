@@ -5,7 +5,7 @@ namespace OrchardCore.Tests.Shell;
 public class RunningShellTableTests
 {
     [Fact]
-    public void NoShellsGiveNoMatch()
+    public void NoShellsGiveNoMatch_Default_Succeeds()
     {
         var table = new RunningShellTable();
         var match = table.Match(new HostString("localhost"), "/yadda");
@@ -13,7 +13,7 @@ public class RunningShellTableTests
     }
 
     [Fact]
-    public void DefaultShellMatchesByDefault()
+    public void DefaultShellMatchesByDefault_Default_Succeeds()
     {
         var table = new RunningShellTable();
         var settings = new ShellSettings().AsDefaultShell();
@@ -23,7 +23,7 @@ public class RunningShellTableTests
     }
 
     [Fact]
-    public void DefaultShellMatchesAllPortsByDefault()
+    public void DefaultShellMatchesAllPortsByDefault_Default_Succeeds()
     {
         var table = new RunningShellTable();
         var settings = new ShellSettings().AsDefaultShell();
@@ -33,7 +33,7 @@ public class RunningShellTableTests
     }
 
     [Fact]
-    public void AnotherShellMatchesByHostHeader()
+    public void AnotherShellMatchesByHostHeader_Default_Succeeds()
     {
         var table = new RunningShellTable();
         var settings = new ShellSettings().AsDefaultShell();
@@ -45,7 +45,7 @@ public class RunningShellTableTests
     }
 
     [Fact]
-    public void DefaultStillCatchesWhenOtherShellsMiss()
+    public void DefaultStillCatches_OtherShellsMiss_Succeeds()
     {
         var table = new RunningShellTable();
         var settings = new ShellSettings().AsDefaultShell();
@@ -57,7 +57,7 @@ public class RunningShellTableTests
     }
 
     [Fact]
-    public void DefaultWontFallbackIfItHasCriteria()
+    public void DefaultWontFallbackIfItHasCriteria_Default_Succeeds()
     {
         var table = new RunningShellTable();
         var settings = new ShellSettings { RequestUrlHost = "www.example.com" }.AsDefaultShell();
@@ -69,7 +69,7 @@ public class RunningShellTableTests
     }
 
     [Fact]
-    public void DefaultWillCatchRequestsIfItMatchesCriteria()
+    public void DefaultWillCatchRequestsIfItMatchesCriteria_Default_Succeeds()
     {
         var table = new RunningShellTable();
         var settings = new ShellSettings { RequestUrlHost = "www.example.com" }.AsDefaultShell();
@@ -81,7 +81,7 @@ public class RunningShellTableTests
     }
 
     [Fact]
-    public void NonDefaultCatchallWillFallbackIfNothingElseMatches()
+    public void NonDefaultCatchallWillFallbackIfNothingElseMatches_Default_Succeeds()
     {
         var table = new RunningShellTable();
         var settings = new ShellSettings { RequestUrlHost = "www.example.com" }.AsDefaultShell();
@@ -93,7 +93,7 @@ public class RunningShellTableTests
     }
 
     [Fact]
-    public void DefaultCatchallIsFallbackEvenWhenOthersAreUnqualified()
+    public void DefaultCatchallIsFallbackEven_OthersAreUnqualified_Succeeds()
     {
         var table = new RunningShellTable();
         var settings = new ShellSettings().AsDefaultShell();
@@ -109,7 +109,7 @@ public class RunningShellTableTests
     }
 
     [Fact]
-    public void PathAlsoCausesMatch()
+    public void PathAlsoCausesMatch_Default_Succeeds()
     {
         var table = new RunningShellTable();
         var settings = new ShellSettings().AsDefaultShell();
@@ -121,7 +121,7 @@ public class RunningShellTableTests
     }
 
     [Fact]
-    public void PathAndHostMustBothMatch()
+    public void PathAndHost_Default_BothMatch()
     {
         var table = new RunningShellTable();
         var settings = new ShellSettings { RequestUrlHost = "www.example.com" }.AsDefaultShell();
@@ -153,7 +153,7 @@ public class RunningShellTableTests
     }
 
     [Fact]
-    public void PathAndHostMustMatchOnFullUrl()
+    public void PathAndHost_Default_MatchOnFullUrl()
     {
         var table = new RunningShellTable();
         var settings = new ShellSettings { RequestUrlHost = "www.example.com" }.AsDefaultShell();
@@ -169,7 +169,7 @@ public class RunningShellTableTests
         Assert.Equal(settingsG, table.Match(new HostString("wiki.example.com"), "/barbaz"));
     }
     [Fact]
-    public void PathAloneWillMatch()
+    public void PathAloneWillMatch_Default_Succeeds()
     {
         var table = new RunningShellTable();
         var settingsA = new ShellSettings { Name = "Alpha", RequestUrlPrefix = "foo" };
@@ -180,7 +180,7 @@ public class RunningShellTableTests
     }
 
     [Fact]
-    public void HostNameMatchesRightmostIfRequestIsLonger()
+    public void HostNameMatchesRightmostIfRequestIsLonger_Default_Succeeds()
     {
         var table = new RunningShellTable();
         var settings = new ShellSettings().AsDefaultShell();
@@ -194,7 +194,7 @@ public class RunningShellTableTests
     }
 
     [Fact]
-    public void HostNameMatchesRightmostIfStar()
+    public void HostNameMatchesRightmostIfStar_Default_Succeeds()
     {
         var table = new RunningShellTable();
         var settings = new ShellSettings().AsDefaultShell();
@@ -208,7 +208,7 @@ public class RunningShellTableTests
     }
 
     [Fact]
-    public void LongestMatchingHostHasPriority()
+    public void LongestMatchingHostHasPriority_Default_Succeeds()
     {
         var table = new RunningShellTable();
         var settings = new ShellSettings().AsDefaultShell();
@@ -227,7 +227,7 @@ public class RunningShellTableTests
     }
 
     [Fact]
-    public void ShellNameUsedToDistinctThingsAsTheyAreAdded()
+    public void ShellNameUsedToDistinctThingsAsTheyAreAdded_Default_Succeeds()
     {
         var table = new RunningShellTable();
         var settings = new ShellSettings().AsDefaultShell();
@@ -244,7 +244,7 @@ public class RunningShellTableTests
     }
 
     [Fact]
-    public void MultipleHostsOnShellAreAdded()
+    public void MultipleHostsOnShellAreAdded_Default_Succeeds()
     {
         var table = new RunningShellTable();
         var settingsAlpha = new ShellSettings { Name = "Alpha", RequestUrlHost = "a.example.com,b.example.com" };
@@ -260,7 +260,7 @@ public class RunningShellTableTests
     }
 
     [Fact]
-    public void HostContainsSpaces()
+    public void HostContainsSpaces_Default_Succeeds()
     {
         var table = new RunningShellTable();
         var settingsAlpha = new ShellSettings { Name = "Alpha", RequestUrlHost = "   a.example.com,  b.example.com     " };
@@ -271,7 +271,7 @@ public class RunningShellTableTests
     }
 
     [Fact]
-    public void PortAreIgnoredIfNotSetInSettings()
+    public void PortAreIgnoredIfNotSetInSettings_Default_Succeeds()
     {
         var table = new RunningShellTable();
         var settings = new ShellSettings().AsDefaultShell();
@@ -283,7 +283,7 @@ public class RunningShellTableTests
     }
 
     [Fact]
-    public void ShouldNotFallBackToDefault()
+    public void Not_FallBackToDefault_Succeeds()
     {
         var table = new RunningShellTable();
         var settings = new ShellSettings().AsDefaultShell();
@@ -296,7 +296,7 @@ public class RunningShellTableTests
     }
 
     [Fact]
-    public void PortAreNotIgnoredIfSetInSettings()
+    public void PortAreNotIgnoredIfSetInSettings_Default_Succeeds()
     {
         var table = new RunningShellTable();
         var settings = new ShellSettings().AsDefaultShell();
@@ -312,7 +312,7 @@ public class RunningShellTableTests
     }
 
     [Fact]
-    public void IPv6AddressesAreSupported()
+    public void IPv6AddressesAreSupported_Default_Succeeds()
     {
         var table = new RunningShellTable();
         var settings = new ShellSettings().AsDefaultShell();

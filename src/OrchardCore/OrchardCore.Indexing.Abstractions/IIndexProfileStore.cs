@@ -78,14 +78,6 @@ public interface IIndexProfileStore
     ValueTask UpdateAsync(IndexProfile indexProfile);
 
     /// <summary>
-    /// Asynchronously saves all pending changes in the store.
-    /// </summary>
-    /// <returns>
-    /// A <see cref="ValueTask"/> representing the asynchronous operation. No result is returned.
-    /// </returns>
-    ValueTask SaveChangesAsync();
-
-    /// <summary>
     /// Asynchronously finds data sources by the given provider-name.
     /// </summary>
     /// <param name="providerName"></param>

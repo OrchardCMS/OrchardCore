@@ -7,7 +7,7 @@ public class ContentTypeQueryResourceBuilderTests
     [Theory]
     [InlineData("someContentType")]
     [InlineData("SomeContentType")]
-    public void ShouldReturnContentTypeNameAsPascalCase(string contentType)
+    public void Return_ContentTypeNameAsPascalCase_Succeeds(string contentType)
     {
         var result = new ContentTypeQueryResourceBuilder(contentType)
                         .Build();
@@ -16,7 +16,7 @@ public class ContentTypeQueryResourceBuilderTests
     }
 
     [Fact]
-    public void ShouldbeAbleToAddArgument()
+    public void Be_AbleToAddArgument_Succeeds()
     {
         var builder = new ContentTypeQueryResourceBuilder("someContentType");
         builder.WithQueryArgument("arg", "1");
@@ -25,7 +25,7 @@ public class ContentTypeQueryResourceBuilderTests
     }
 
     [Fact]
-    public void ShouldbeAbleToAddMultipleArguments()
+    public void Be_AbleToAddMultipleArguments_Succeeds()
     {
         var builder = new ContentTypeQueryResourceBuilder("someContentType");
         builder.WithQueryArgument("arg", "1");
@@ -35,7 +35,7 @@ public class ContentTypeQueryResourceBuilderTests
     }
 
     [Fact]
-    public void ShouldbeAbleToAddStringArgument()
+    public void Be_AbleToAddStringArgument_Succeeds()
     {
         var builder = new ContentTypeQueryResourceBuilder("someContentType");
         builder.WithQueryStringArgument("arg", "a string");
@@ -44,7 +44,7 @@ public class ContentTypeQueryResourceBuilderTests
     }
 
     [Fact]
-    public void ShouldbeAbleToAddMultiInputArgument()
+    public void Be_AbleToAddMultiInputArgument_Succeeds()
     {
         var builder = new ContentTypeQueryResourceBuilder("someContentType");
         builder.WithQueryArgument("arg", "a", "1");
@@ -54,7 +54,7 @@ public class ContentTypeQueryResourceBuilderTests
     }
 
     [Fact]
-    public void ShouldNotBeAbleToAddDuplicateArguments()
+    public void Not_BeAbleToAddDuplicateArguments_Succeeds()
     {
         var builder = new ContentTypeQueryResourceBuilder("someContentType");
         builder.WithQueryArgument("arg", "a");
@@ -67,7 +67,7 @@ public class ContentTypeQueryResourceBuilderTests
     [Theory]
     [InlineData("someField")]
     [InlineData("SomeField")]
-    public void ShouldAddFieldWithNameAsPascalCase(string fieldName)
+    public void Add_FieldWithNameAsPascalCase_Succeeds(string fieldName)
     {
         var builder = new ContentTypeQueryResourceBuilder("someContentType");
         builder.WithField(fieldName);
@@ -78,7 +78,7 @@ public class ContentTypeQueryResourceBuilderTests
     [Theory]
     [InlineData("someNestedField")]
     [InlineData("SomeNestedField")]
-    public void ShouldAddNestedFieldWithNameAsPascalCase(string fieldName)
+    public void Add_NestedFieldWithNameAsPascalCase_Succeeds(string fieldName)
     {
         var builder = new ContentTypeQueryResourceBuilder("someContentType");
         builder.WithNestedField(fieldName);
@@ -87,7 +87,7 @@ public class ContentTypeQueryResourceBuilderTests
     }
 
     [Fact]
-    public void ShouldbeAbleToAddMultipleNestedFields()
+    public void Be_AbleToAddMultipleNestedFields_Succeeds()
     {
         var builder = new ContentTypeQueryResourceBuilder("someContentType");
         builder.WithField("field");
@@ -98,7 +98,7 @@ public class ContentTypeQueryResourceBuilderTests
     }
 
     [Fact]
-    public void ShouldbeAbleToCombineNonNestedAndNestedFields()
+    public void Be_AbleToCombineNonNestedAndNestedFields_Succeeds()
     {
         var builder = new ContentTypeQueryResourceBuilder("someContentType");
         builder.WithField("field");
@@ -108,7 +108,7 @@ public class ContentTypeQueryResourceBuilderTests
     }
 
     [Fact]
-    public void ShouldbeAbleToAddNestedFieldsMultipleLevelsDeep()
+    public void Be_AbleToAddNestedFieldsMultipleLevelsDeep_Succeeds()
     {
         var builder = new ContentTypeQueryResourceBuilder("someContentType");
         builder.WithField("field");
