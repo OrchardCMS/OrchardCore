@@ -1,3 +1,5 @@
+using System.IO.Hashing;
+using System.Runtime.InteropServices;
 using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -10,6 +12,11 @@ public static class NavigationHelper
 {
     private const string SelectedNavHashCacheKey = "OrchardCore.Navigation.SelectedNavHash";
     private static readonly object SelectedNavHashMissing = new();
+
+    // Selection scoring tiers. An exact URL match must beat the clicked-item fallback, which in
+    // turn must beat any prefix match, whose score is the segment count of the matched href.
+    private const int ExactMatchScore = 100;
+    private const int SelectedNavHashScore = 50;
 
     public static bool UseLegacyFormat()
     {
@@ -76,10 +83,10 @@ public static class NavigationHelper
             shape.Item = menuItem;
             shape.Menu = menu;
             shape.Parent = parentShape;
-            shape.Level = GetLevel(parentShape) + 1;   
+            shape.Level = GetLevel(parentShape) + 1;
             shape.Priority = menuItem.Priority;
             shape.Local = menuItem.LocalNav;
-            shape.Hash = (GetHash(parentShape) + menuItem.Text.Value).GetHashCode().ToString();
+            shape.Hash = ComputeStableHash(GetHash(parentShape) + menuItem.Text.Value);
             shape.Score = 0;
         }, (menuItem, parentShape, menu));
 
@@ -95,11 +102,16 @@ public static class NavigationHelper
         return menuItemShape;
     }
 
+    /// <summary>
+    /// Scores a menu item against the current request. Selection is resolved from the strongest
+    /// to the weakest signal: the path declared by the page itself (see
+    /// <see cref="NavigationHttpContextExtensions.SetNavigationSelectionPath"/>), an exact URL
+    /// match, the last clicked menu item, and finally a URL prefix match.
+    /// </summary>
     private static void MarkAsSelectedIfMatchesPathOrPreferences(MenuItem menuItem, NavigationItemViewModel menuItemShape, ViewContext viewContext)
     {
         if (string.IsNullOrEmpty(menuItem.Href) || menuItem.Href[0] != '/')
         {
-            menuItemShape.Selected = menuItemShape.Score > 0;
             return;
         }
 
@@ -110,38 +122,33 @@ public static class NavigationHelper
             (queryIndex >= 0 ? hrefSpan[..queryIndex] : hrefSpan).ToString(),
             viewContext.HttpContext.Request.PathBase);
 
+        // A page can declare the menu path it belongs to (e.g. an edit page declaring the list
+        // page of its content type), which is authoritative over any URL or preference heuristic.
         var requestPath = RemovePathBase(
-            viewContext.HttpContext.Request.Path.Value ?? "/",
+            viewContext.HttpContext.GetNavigationSelectionPath() ?? viewContext.HttpContext.Request.Path.Value ?? "/",
             viewContext.HttpContext.Request.PathBase);
         var segmentCount = hrefPath.Split('/', StringSplitOptions.RemoveEmptyEntries).Length;
+
+        // The clicked-item fallback, restored from the admin preferences cookie written by the
+        // admin theme. It only decides the selection for pages that neither declare a selection
+        // path nor exactly match a menu item href. Ancestor paths (e.g. "/Admin" while evaluating
+        // "/Admin/Features") are not within the menu item branch and must not reuse a stale hash.
+        if (!IsAncestorPath(requestPath, hrefPath) && GetSelectedNavHashFromPrefs(viewContext) == menuItemShape.Hash)
+        {
+            menuItemShape.Score += SelectedNavHashScore;
+        }
 
         if (requestPath.Equals(hrefPath, StringComparison.OrdinalIgnoreCase))
         {
             // Exact URL match — score by path depth so deeper (more specific) links beat
-            // shallower ones that share the same prefix.
-            menuItemShape.Score += segmentCount + 2;
+            // shallower ones that share the same prefix, and above the clicked-hash fallback.
+            menuItemShape.Score += ExactMatchScore + segmentCount;
         }
         else if (segmentCount > 0 && requestPath.StartsWith(hrefPath.TrimEnd('/') + "/", StringComparison.OrdinalIgnoreCase))
         {
             // Prefix match (e.g. "/Admin/ContentTypes" matches "/Admin/ContentTypes/Edit/Blog").
             // Deeper prefix = higher score, ensuring the most specific ancestor wins.
             menuItemShape.Score += segmentCount;
-        }
-        else if (IsAncestorPath(requestPath, hrefPath))
-        {
-            // Ancestor paths (e.g. "/Admin" while evaluating "/Admin/Features") are not
-            // within the menu item branch and should not reuse a stale clicked hash.
-        }
-        else
-        { 
-            // No URL match — fall back to the selectedNavHash stored in the admin preferences
-            // cookie, which JS writes proactively when the user clicks a nav link.
-            var selectedNavHash = GetSelectedNavHashFromPrefs(viewContext);
-
-            if (selectedNavHash == menuItemShape.Hash)
-            {
-                menuItemShape.Score++;
-            }
         }
 
         menuItemShape.Selected = menuItemShape.Score > 0;
@@ -217,7 +224,9 @@ public static class NavigationHelper
     /// <summary>
     /// Reads the <c>selectedNavHash</c> field from the admin preferences cookie.
     /// The cookie is written by JS (js-cookie) using <c>encodeURIComponent</c>, so the
-    /// raw value must be URL-decoded before JSON parsing.
+    /// raw value must be URL-decoded before JSON parsing. This is a fallback for pages that
+    /// do not declare a selection path; prefer
+    /// <see cref="NavigationHttpContextExtensions.SetNavigationSelectionPath"/>.
     /// </summary>
     private static string GetSelectedNavHashFromPrefs(ViewContext viewContext)
     {
@@ -335,6 +344,15 @@ public static class NavigationHelper
 
         return result;
     }
+
+    /// <summary>
+    /// Computes a deterministic hash identifying a menu item across requests. Unlike
+    /// <see cref="string.GetHashCode()"/>, which is randomized per process, the result is stable
+    /// across restarts and load-balanced instances, so the hash persisted in the admin
+    /// preferences cookie keeps matching the rendered menu.
+    /// </summary>
+    private static string ComputeStableHash(string value)
+        => XxHash32.HashToUInt32(MemoryMarshal.AsBytes(value.AsSpan())).ToString();
 
     private static int GetLevel(IShape shape)
         => shape is NavigationItemViewModel menuItemShape ? menuItemShape.Level : shape.GetProperty<int>(nameof(NavigationItemViewModel.Level));
