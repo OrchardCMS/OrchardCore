@@ -146,6 +146,7 @@
     <Project Path="src/OrchardCore.Modules/OrchardCore.MiniProfiler/OrchardCore.MiniProfiler.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Navigation/OrchardCore.Navigation.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Notifications/OrchardCore.Notifications.csproj" />
+    <Project Path="src/OrchardCore.Modules/OrchardCore.OpenApi/OrchardCore.OpenApi.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.OpenId/OrchardCore.OpenId.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.RateLimits/OrchardCore.RateLimits.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.ReCaptcha/OrchardCore.ReCaptcha.csproj" />
@@ -239,6 +240,7 @@
     <Project Path="src/OrchardCore/OrchardCore.Navigation.Core/OrchardCore.Navigation.Core.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Notifications.Abstractions/OrchardCore.Notifications.Abstractions.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Notifications.Core/OrchardCore.Notifications.Core.csproj" />
+    <Project Path="src/OrchardCore/OrchardCore.OpenApi.Core/OrchardCore.OpenApi.Core.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.OpenId.Core/OrchardCore.OpenId.Core.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Queries.Abstractions/OrchardCore.Queries.Abstractions.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Queries.Core/OrchardCore.Queries.Core.csproj" />
