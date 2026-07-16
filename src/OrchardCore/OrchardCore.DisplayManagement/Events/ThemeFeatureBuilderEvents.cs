@@ -1,7 +1,5 @@
 using OrchardCore.DisplayManagement.Extensions;
-using OrchardCore.DisplayManagement.Manifest;
 using OrchardCore.Environment.Extensions.Features;
-using OrchardCore.Modules.Manifest;
 
 namespace OrchardCore.DisplayManagement.Events;
 
@@ -9,14 +7,11 @@ public class ThemeFeatureBuilderEvents : FeatureBuilderEvents
 {
     public override void Building(FeatureBuildingContext context)
     {
-        var moduleInfo = context.ExtensionInfo.Manifest.ModuleInfo;
-
-        if (moduleInfo is ThemeAttribute || (moduleInfo is ModuleMarkerAttribute &&
-            moduleInfo.Type.Equals("Theme", StringComparison.OrdinalIgnoreCase)))
+        if (context.ExtensionInfo.Manifest.IsTheme())
         {
             var extensionInfo = new ThemeExtensionInfo(context.ExtensionInfo);
 
-            if (extensionInfo.HasBaseTheme())
+            if (extensionInfo.HasBaseTheme() && context.FeatureId == context.ExtensionInfo.Id)
             {
                 context.FeatureDependencyIds = context
                     .FeatureDependencyIds

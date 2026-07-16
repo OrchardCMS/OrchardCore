@@ -11158,10 +11158,12 @@ input:not([type=checkbox]):not([type=radio]).input-validation-error {
 
 [dir="ltr"] input:not([type=checkbox]):not([type=radio]).input-validation-error {
   background-position: right calc(0.375em + 0.1875rem) center;
+  padding-right: calc(1.5rem + 0.375em + 0.1875rem);
 }
 
 [dir="rtl"] input:not([type=checkbox]):not([type=radio]).input-validation-error {
   background-position: left calc(0.375em + 0.1875rem) center;
+  padding-left: calc(1.5rem + 0.375em + 0.1875rem);
 }
 
 [dir="ltr"] [dir=rtl] input:not([type=checkbox]):not([type=radio]).input-validation-error {
