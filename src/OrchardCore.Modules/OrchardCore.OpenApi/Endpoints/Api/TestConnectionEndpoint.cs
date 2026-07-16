@@ -1,93 +1,87 @@
 using System.Net.Http.Headers;
 using System.Text.Json;
-using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
+using OrchardCore.Modules;
 using OrchardCore.OpenApi.Settings;
 
-namespace OrchardCore.OpenApi.Controllers;
+namespace OrchardCore.OpenApi.Endpoints.Api;
 
-[ApiController]
-[Route("api/openapi")]
-[Authorize(AuthenticationSchemes = OpenApiAuthenticationDefaults.CookieOrTokenScheme), IgnoreAntiforgeryToken, AllowAnonymous]
-[RequireAntiforgeryForCookieAuth]
-public sealed class OpenApiApiController : ControllerBase
+public static class TestConnectionEndpoint
 {
-    private readonly IAuthorizationService _authorizationService;
-    private readonly IHttpClientFactory _httpClientFactory;
-    private readonly IHttpContextAccessor _httpContextAccessor;
-
-    internal readonly IStringLocalizer S;
-
-    public OpenApiApiController(
-        IAuthorizationService authorizationService,
-        IHttpClientFactory httpClientFactory,
-        IHttpContextAccessor httpContextAccessor,
-        IStringLocalizer<OpenApiApiController> stringLocalizer
-    )
+    public static IEndpointRouteBuilder AddTestConnectionEndpoint(this IEndpointRouteBuilder builder)
     {
-        _authorizationService = authorizationService;
-        _httpClientFactory = httpClientFactory;
-        _httpContextAccessor = httpContextAccessor;
-        S = stringLocalizer;
+        builder.MapPost("api/openapi/test-connection", HandleAsync)
+            .WithName("ApiTestOpenApiConnection")
+            .WithTags("OpenApiApi")
+            .AllowAnonymous()
+            .AddEndpointFilter<RequireAntiforgeryForCookieAuthFilter>()
+            .DisableAntiforgery()
+            .Produces<TestConnectionResult>()
+            .ProducesProblem(StatusCodes.Status400BadRequest)
+            .ProducesProblem(StatusCodes.Status401Unauthorized)
+            .ProducesProblem(StatusCodes.Status403Forbidden);
+
+        return builder;
     }
 
     /// <summary>
     /// Tests the connection to an OpenID Connect server by validating the discovery
     /// document and optionally performing a token exchange for Client Credentials.
     /// </summary>
-    [HttpPost("test-connection")]
-    [EndpointName("ApiTestOpenApiConnection")]
-    [ProducesResponseType(typeof(TestConnectionResult), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
-    public async Task<IActionResult> TestConnection([FromBody] TestConnectionRequest model)
+    [Authorize(AuthenticationSchemes = OpenApiAuthenticationDefaults.CookieOrTokenScheme)]
+    private static async Task<IResult> HandleAsync(
+        TestConnectionRequest model,
+        HttpContext httpContext,
+        IAuthorizationService authorizationService,
+        IHttpClientFactory httpClientFactory,
+        IStringLocalizer<TestConnectionEndpointResources> S)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, OpenApiPermissions.ManageOpenApi))
+        if (!await authorizationService.AuthorizeAsync(httpContext.User, OpenApiPermissions.ManageOpenApi))
         {
-            return this.ChallengeOrForbid(OpenApiAuthenticationDefaults.CookieOrTokenScheme);
+            return httpContext.ChallengeOrForbid(OpenApiAuthenticationDefaults.CookieOrTokenScheme);
         }
+
+        var modelState = new ModelStateDictionary();
 
         if (string.IsNullOrWhiteSpace(model.TokenUrl))
         {
-            ModelState.AddModelError(nameof(model.TokenUrl), S["Token URL is required."]);
+            modelState.AddModelError(nameof(model.TokenUrl), S["Token URL is required."]);
         }
 
         if (string.IsNullOrWhiteSpace(model.ClientId))
         {
-            ModelState.AddModelError(nameof(model.ClientId), S["Client ID is required."]);
+            modelState.AddModelError(nameof(model.ClientId), S["Client ID is required."]);
         }
 
-        if (!ModelState.IsValid)
+        if (!modelState.IsValid)
         {
-            return this.ApiValidationProblem(modelState: ModelState);
+            return httpContext.ApiValidationProblem(modelState: modelState);
         }
 
-        var tokenUrl = ResolveUrl(model.TokenUrl);
+        var tokenUrl = ResolveUrl(model.TokenUrl, httpContext);
 
         if (tokenUrl == null)
         {
-            return this.ApiBadRequestProblem(detail: S["Could not resolve the Token URL."]);
+            return httpContext.ApiBadRequestProblem(detail: S["Could not resolve the Token URL."]);
         }
 
         if (!OpenApiUrlGuard.IsExternalUrlAllowed(new Uri(tokenUrl, UriKind.Absolute), out var blockedReason))
         {
-            return this.ApiBadRequestProblem(detail: S[blockedReason]);
+            return httpContext.ApiBadRequestProblem(detail: S[blockedReason]);
         }
 
         // Step 1: Validate the OpenID Connect discovery document.
-        var discoveryError = await ValidateDiscoveryAsync(tokenUrl, model.AuthenticationType);
+        var discoveryError = await ValidateDiscoveryAsync(tokenUrl, model.AuthenticationType, httpClientFactory, S);
 
         if (discoveryError != null)
         {
-            return this.ApiBadRequestProblem(detail: discoveryError);
+            return httpContext.ApiBadRequestProblem(detail: discoveryError);
         }
 
         // Step 2: For Client Credentials, perform a real token exchange.
@@ -95,30 +89,30 @@ public sealed class OpenApiApiController : ControllerBase
         {
             if (string.IsNullOrWhiteSpace(model.ClientSecret))
             {
-                ModelState.AddModelError(
+                modelState.AddModelError(
                     nameof(model.ClientSecret),
                     S["Client Secret is required for Client Credentials flow testing."]
                 );
 
-                return this.ApiValidationProblem(modelState: ModelState);
+                return httpContext.ApiValidationProblem(modelState: modelState);
             }
 
-            var tokenResult = await ExchangeClientCredentialsAsync(tokenUrl, model);
+            var tokenResult = await ExchangeClientCredentialsAsync(tokenUrl, model, httpClientFactory, S);
 
             if (!tokenResult.Success)
             {
-                return this.ApiBadRequestProblem(detail: tokenResult.Error);
+                return httpContext.ApiBadRequestProblem(detail: tokenResult.Error);
             }
 
             // Step 3: Verify the token works by calling the swagger endpoint.
-            var verifyError = await VerifyTokenAsync(tokenResult.Token);
+            var verifyError = await VerifyTokenAsync(tokenResult.Token, httpClientFactory, httpContext, S);
 
             if (verifyError != null)
             {
-                return this.ApiBadRequestProblem(detail: verifyError);
+                return httpContext.ApiBadRequestProblem(detail: verifyError);
             }
 
-            return Ok(new TestConnectionResult
+            return Results.Ok(new TestConnectionResult
             {
                 Message = S["Connection successful! Token exchange and API endpoint verification passed."],
             });
@@ -127,13 +121,13 @@ public sealed class OpenApiApiController : ControllerBase
         // For PKCE, we can only validate the discovery document since PKCE requires a browser redirect.
         if (model.AuthenticationType == OpenApiAuthenticationType.AuthorizationCodePkce)
         {
-            return Ok(new TestConnectionResult
+            return Results.Ok(new TestConnectionResult
             {
                 Message = S["OpenID Connect server validated successfully. Authorization Code + PKCE requires a browser redirect and cannot be fully tested here."],
             });
         }
 
-        return Ok(new TestConnectionResult
+        return Results.Ok(new TestConnectionResult
         {
             Message = S["Connection validated successfully."],
         });
@@ -143,9 +137,11 @@ public sealed class OpenApiApiController : ControllerBase
     /// Validates the OpenID Connect discovery document.
     /// Returns null on success, or a localized error message on failure.
     /// </summary>
-    private async Task<LocalizedString> ValidateDiscoveryAsync(
+    private static async Task<LocalizedString> ValidateDiscoveryAsync(
         string tokenUrl,
-        OpenApiAuthenticationType authType
+        OpenApiAuthenticationType authType,
+        IHttpClientFactory httpClientFactory,
+        IStringLocalizer S
     )
     {
         var tokenUri = new Uri(tokenUrl, UriKind.Absolute);
@@ -163,7 +159,7 @@ public sealed class OpenApiApiController : ControllerBase
 
         try
         {
-            var client = _httpClientFactory.CreateClient(OpenApiUrlGuard.HttpClientName);
+            var client = httpClientFactory.CreateClient(OpenApiUrlGuard.HttpClientName);
             var response = await client.GetAsync(discoveryUrl);
 
             if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
@@ -249,14 +245,16 @@ public sealed class OpenApiApiController : ControllerBase
     /// Exchanges client credentials for an access token.
     /// Returns a result with the token on success, or a localized error on failure.
     /// </summary>
-    private async Task<TokenExchangeResult> ExchangeClientCredentialsAsync(
+    private static async Task<TokenExchangeResult> ExchangeClientCredentialsAsync(
         string tokenUrl,
-        TestConnectionRequest model
+        TestConnectionRequest model,
+        IHttpClientFactory httpClientFactory,
+        IStringLocalizer S
     )
     {
         try
         {
-            var client = _httpClientFactory.CreateClient(OpenApiUrlGuard.HttpClientName);
+            var client = httpClientFactory.CreateClient(OpenApiUrlGuard.HttpClientName);
 
             var parameters = new Dictionary<string, string>
             {
@@ -323,12 +321,17 @@ public sealed class OpenApiApiController : ControllerBase
     /// Verifies a Bearer token by calling the Swagger endpoint.
     /// Returns null on success, or a localized error message on failure.
     /// </summary>
-    private async Task<LocalizedString> VerifyTokenAsync(string token)
+    private static async Task<LocalizedString> VerifyTokenAsync(
+        string token,
+        IHttpClientFactory httpClientFactory,
+        HttpContext httpContext,
+        IStringLocalizer S
+    )
     {
         try
         {
-            var client = _httpClientFactory.CreateClient(OpenApiUrlGuard.HttpClientName);
-            var swaggerUrl = ResolveUrl("/swagger/v1/swagger.json");
+            var client = httpClientFactory.CreateClient(OpenApiUrlGuard.HttpClientName);
+            var swaggerUrl = ResolveUrl("/swagger/v1/swagger.json", httpContext);
 
             if (swaggerUrl == null)
             {
@@ -354,7 +357,7 @@ public sealed class OpenApiApiController : ControllerBase
         }
     }
 
-    private string ResolveUrl(string url)
+    private static string ResolveUrl(string url, HttpContext httpContext)
     {
         if (string.IsNullOrWhiteSpace(url))
         {
@@ -366,7 +369,7 @@ public sealed class OpenApiApiController : ControllerBase
             return url;
         }
 
-        var request = _httpContextAccessor.HttpContext?.Request;
+        var request = httpContext?.Request;
 
         if (request == null)
         {
@@ -378,39 +381,12 @@ public sealed class OpenApiApiController : ControllerBase
 }
 
 /// <summary>
-/// The <see cref="OpenApiAuthenticationDefaults.CookieOrTokenScheme"/> policy scheme allows this
-/// controller to authenticate via the ambient session cookie, unlike bearer/OpenIddict-token
-/// requests. Requests that authenticated that way must also prove themselves with a valid
-/// antiforgery token, since they can be replayed cross-site by a browser that still holds the
-/// cookie. Bearer-token requests carry no antiforgery cookie and are left untouched.
+/// Pure marker type for <see cref="IStringLocalizer{T}"/> resource resolution — this endpoint's
+/// handler is a static method, which cannot itself be used as a generic type argument.
 /// </summary>
-[AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
-public sealed class RequireAntiforgeryForCookieAuthAttribute : Attribute, IAsyncAuthorizationFilter
-{
-    public async Task OnAuthorizationAsync(AuthorizationFilterContext context)
-    {
-        var identity = context.HttpContext.User.Identity;
+internal sealed class TestConnectionEndpointResources;
 
-        if (identity is not { IsAuthenticated: true }
-            || !string.Equals(identity.AuthenticationType, IdentityConstants.ApplicationScheme, StringComparison.Ordinal))
-        {
-            return;
-        }
-
-        var antiforgery = context.HttpContext.RequestServices.GetRequiredService<IAntiforgery>();
-
-        try
-        {
-            await antiforgery.ValidateRequestAsync(context.HttpContext);
-        }
-        catch (AntiforgeryValidationException)
-        {
-            context.Result = new BadRequestResult();
-        }
-    }
-}
-
-public sealed class TestConnectionRequest
+internal sealed class TestConnectionRequest
 {
     public OpenApiAuthenticationType AuthenticationType { get; set; }
     public string TokenUrl { get; set; }

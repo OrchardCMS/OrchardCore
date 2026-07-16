@@ -116,4 +116,104 @@ public static class ProblemDetailsApiControllerExtensions
             modelStateDictionary: modelState
         );
     }
+
+    /// <summary>
+    /// Returns a Problem response for unauthenticated or forbidden requests when using
+    /// cookie authentication on a minimal API endpoint.
+    /// </summary>
+    public static IResult ApiChallengeOrForbidForCookieAuth(this HttpContext httpContext)
+    {
+        var S = httpContext.RequestServices.GetRequiredService<
+            IStringLocalizer<ProblemDetailsApiLocalization>
+        >();
+
+        if (httpContext.User?.Identity?.IsAuthenticated is false)
+        {
+            return TypedResults.Problem(
+                title: S["Unauthorized"],
+                detail: S["You must be authenticated to complete this request"],
+                statusCode: StatusCodes.Status401Unauthorized
+            );
+        }
+
+        return TypedResults.Problem(
+            title: S["Forbidden"],
+            detail: S["You do not have sufficient permissions to complete this request"],
+            statusCode: StatusCodes.Status403Forbidden
+        );
+    }
+
+    /// <summary>
+    /// Returns a Problem with a 400 Bad Request status code, for a minimal API endpoint.
+    /// </summary>
+    public static IResult ApiBadRequestProblem(
+        this HttpContext httpContext,
+        LocalizedString detail = null,
+        LocalizedString title = null
+    )
+    {
+        if (string.IsNullOrEmpty(title))
+        {
+            var S = httpContext.RequestServices.GetRequiredService<
+                IStringLocalizer<ProblemDetailsApiLocalization>
+            >();
+
+            return TypedResults.Problem(title: S["Bad request"], detail: detail, statusCode: StatusCodes.Status400BadRequest);
+        }
+
+        return TypedResults.Problem(title: title, detail: detail, statusCode: StatusCodes.Status400BadRequest);
+    }
+
+    /// <summary>
+    /// Returns a Problem with a 404 Not Found status code, for a minimal API endpoint.
+    /// </summary>
+    public static IResult ApiNotFoundProblem(
+        this HttpContext httpContext,
+        LocalizedString detail = null,
+        LocalizedString title = null
+    )
+    {
+        if (string.IsNullOrEmpty(title))
+        {
+            var S = httpContext.RequestServices.GetRequiredService<
+                IStringLocalizer<ProblemDetailsApiLocalization>
+            >();
+
+            return TypedResults.Problem(title: S["Not Found"], detail: detail, statusCode: StatusCodes.Status404NotFound);
+        }
+
+        return TypedResults.Problem(title: title, detail: detail, statusCode: StatusCodes.Status404NotFound);
+    }
+
+    /// <summary>
+    /// Returns a ValidationProblem with a 400 Bad Request status code, for a minimal API endpoint.
+    /// </summary>
+    public static IResult ApiValidationProblem(
+        this HttpContext httpContext,
+        LocalizedString detail = null,
+        LocalizedString title = null,
+        ModelStateDictionary modelState = null
+    )
+    {
+        var errors = modelState is null
+            ? new Dictionary<string, string[]>()
+            : modelState
+                .Where(entry => entry.Value.Errors.Count > 0)
+                .ToDictionary(entry => entry.Key, entry => entry.Value.Errors.Select(error => error.ErrorMessage).ToArray());
+
+        if (string.IsNullOrEmpty(title))
+        {
+            var S = httpContext.RequestServices.GetRequiredService<
+                IStringLocalizer<ProblemDetailsApiLocalization>
+            >();
+
+            return TypedResults.ValidationProblem(
+                errors,
+                detail: detail,
+                title: S["A validation error occurred."]
+            );
+        }
+
+        return TypedResults.ValidationProblem(errors, detail: detail, title: title);
+    }
 }

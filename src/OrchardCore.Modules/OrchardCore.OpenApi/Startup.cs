@@ -14,6 +14,7 @@ using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Localization;
 using OrchardCore.OpenApi.Drivers;
+using OrchardCore.OpenApi.Endpoints.Api;
 using OrchardCore.OpenApi.Settings;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
@@ -206,6 +207,8 @@ public sealed class Startup : StartupBase
         // The OpenAPI JSON and Swagger generator are always registered.
         routes.MapOpenApi();
         app.UseSwagger();
+
+        routes.AddTestConnectionEndpoint();
     }
 
     private static void ConfigureSecurityScheme(IApplicationBuilder app, OpenApiSettings settings)
