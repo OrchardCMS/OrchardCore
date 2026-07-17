@@ -1,0 +1,25 @@
+{
+  "name": "OpenApiGenerationSetup",
+  "displayName": "OpenApi Client Generation",
+  "description": "First-boot setup recipe used by tools/OpenApiClientGenerator to provision a Default tenant with the full OrchardCore.OpenApi API surface, matching the OpenApiGeneration recipe's feature list (src/OrchardCore.Modules/OrchardCore.OpenApi/Recipes/openapi-generation.recipe.json). Not intended for production sites.",
+  "author": "The Orchard Core Team",
+  "website": "https://orchardcore.net",
+  "version": "1.0.0",
+  "issetuprecipe": true,
+  "categories": [ "api" ],
+  "tags": [ "openapi", "api", "nswag" ],
+  "steps": [
+    {
+      "name": "feature",
+      "enable": [
+        "OrchardCore.Contents",
+        "OrchardCore.Media",
+        "OrchardCore.Queries",
+        "OrchardCore.Tenants",
+        "OrchardCore.Search.Lucene",
+        "OrchardCore.Search.Elasticsearch",
+        "OrchardCore.OpenApi"
+      ]
+    }
+  ]
+}

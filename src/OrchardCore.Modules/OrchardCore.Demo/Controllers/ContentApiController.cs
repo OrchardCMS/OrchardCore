@@ -21,18 +21,6 @@ public sealed class ContentApiController : ControllerBase
         _contentManager = contentManager;
     }
 
-    public async Task<IActionResult> GetById(string id)
-    {
-        var contentItem = await _contentManager.GetAsync(id);
-
-        if (contentItem == null)
-        {
-            return NotFound();
-        }
-
-        return new ObjectResult(contentItem);
-    }
-
     public async Task<IActionResult> GetAuthorizedById(string id)
     {
         if (!await _authorizationService.AuthorizeAsync(User, Permissions.DemoAPIAccess))

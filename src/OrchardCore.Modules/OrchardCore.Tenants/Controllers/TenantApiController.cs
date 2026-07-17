@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -85,6 +86,7 @@ public sealed class TenantApiController : ControllerBase
 
     [HttpPost]
     [Route("create")]
+    [EndpointName("ApiCreateTenant")]
     public async Task<IActionResult> Create(TenantApiModel model)
     {
         if (!_currentShellSettings.IsDefaultShell())
@@ -162,6 +164,7 @@ public sealed class TenantApiController : ControllerBase
 
     [HttpPost]
     [Route("edit")]
+    [EndpointName("ApiEditTenant")]
     public async Task<IActionResult> Edit(TenantApiModel model)
     {
         if (!_currentShellSettings.IsDefaultShell())
@@ -230,6 +233,7 @@ public sealed class TenantApiController : ControllerBase
 
     [HttpPost]
     [Route("disable/{tenantName}")]
+    [EndpointName("ApiDisableTenant")]
     public async Task<IActionResult> Disable(string tenantName)
     {
         if (!_currentShellSettings.IsDefaultShell())
@@ -259,6 +263,7 @@ public sealed class TenantApiController : ControllerBase
 
     [HttpPost]
     [Route("enable/{tenantName}")]
+    [EndpointName("ApiEnableTenant")]
     public async Task<IActionResult> Enable(string tenantName)
     {
         if (!_currentShellSettings.IsDefaultShell())
@@ -288,6 +293,7 @@ public sealed class TenantApiController : ControllerBase
 
     [HttpPost]
     [Route("remove/{tenantName}")]
+    [EndpointName("ApiRemoveTenant")]
     public async Task<IActionResult> Remove(string tenantName)
     {
         if (!_currentShellSettings.IsDefaultShell() || !_tenantsOptions.TenantRemovalAllowed)
@@ -329,6 +335,7 @@ public sealed class TenantApiController : ControllerBase
 
     [HttpPost]
     [Route("setup")]
+    [EndpointName("ApiSetupTenant")]
     public async Task<ActionResult> Setup(SetupApiViewModel model)
     {
         if (!_currentShellSettings.IsDefaultShell())
