@@ -8,6 +8,7 @@ interface OpenApiSettingsData {
     authenticationType: number
     authorizationUrl: string
     tokenUrl: string
+    serverMetadataUrl: string
     oAuthClientId: string
     oAuthScopes: string
     pathBase?: string
@@ -26,6 +27,7 @@ const settings = reactive<OpenApiSettingsData>({
     authenticationType: 0,
     authorizationUrl: '',
     tokenUrl: '',
+    serverMetadataUrl: '',
     oAuthClientId: '',
     oAuthScopes: '',
 })
@@ -86,6 +88,7 @@ watch(() => settings.allowAnonymousSchemaAccess, (v) => syncToHiddenInput('Allow
 watch(() => settings.authenticationType, (v) => syncToHiddenInput('AuthenticationType', v))
 watch(() => settings.authorizationUrl, (v) => syncToHiddenInput('AuthorizationUrl', v))
 watch(() => settings.tokenUrl, (v) => syncToHiddenInput('TokenUrl', v))
+watch(() => settings.serverMetadataUrl, (v) => syncToHiddenInput('ServerMetadataUrl', v))
 watch(() => settings.oAuthClientId, (v) => syncToHiddenInput('OAuthClientId', v))
 watch(() => settings.oAuthScopes, (v) => syncToHiddenInput('OAuthScopes', v))
 </script>

@@ -301,11 +301,14 @@ public sealed class OpenApiTests : CmsTestBase, IClassFixture<CmsSetupFixture>
         // Select Authorization Code + PKCE auth type.
         await page.Locator("#vue-AuthenticationType").SelectOptionAsync("1");
 
-        // Fill in a bogus Authorization URL and Token URL.
+        // Fill in a bogus configuration, including a metadata URL pointing at a tenant that
+        // does not exist. Validation only runs against the explicitly configured metadata URL —
+        // the metadata location is never inferred from the endpoint URLs.
         var authorizationUrl = $"{Fixture.BaseUrl}/nonexistent-tenant/connect/authorize";
         var tokenUrl = $"{Fixture.BaseUrl}/nonexistent-tenant/connect/token";
         await page.Locator("#vue-AuthorizationUrl").FillAsync(authorizationUrl);
         await page.Locator("#vue-TokenUrl").FillAsync(tokenUrl);
+        await page.Locator("#vue-ServerMetadataUrl").FillAsync($"{Fixture.BaseUrl}/nonexistent-tenant/.well-known/openid-configuration");
         await page.Locator("#vue-OAuthClientId").FillAsync("test");
 
         await ButtonHelper.ClickSaveAsync(page);
@@ -332,11 +335,14 @@ public sealed class OpenApiTests : CmsTestBase, IClassFixture<CmsSetupFixture>
         // Select Authorization Code + PKCE auth type (value = 1).
         await page.Locator("#vue-AuthenticationType").SelectOptionAsync("1");
 
-        // Fill in Authorization URL and Token URL pointing to the auth server tenant.
+        // Fill in Authorization URL and Token URL pointing to the auth server tenant, plus
+        // the explicit metadata URL so the configuration is validated against the discovery
+        // document on save.
         var authorizationUrl = $"{Fixture.BaseUrl}/{authTenant.Prefix}/connect/authorize";
         var tokenUrl = $"{Fixture.BaseUrl}/{authTenant.Prefix}/connect/token";
         await page.Locator("#vue-AuthorizationUrl").FillAsync(authorizationUrl);
         await page.Locator("#vue-TokenUrl").FillAsync(tokenUrl);
+        await page.Locator("#vue-ServerMetadataUrl").FillAsync($"{Fixture.BaseUrl}/{authTenant.Prefix}/.well-known/openid-configuration");
         await page.Locator("#vue-OAuthClientId").FillAsync("openapi-pkce");
 
         await ButtonHelper.ClickSaveAsync(page);
@@ -397,12 +403,12 @@ public sealed class OpenApiTests : CmsTestBase, IClassFixture<CmsSetupFixture>
     }
 
     /// <summary>
-    /// Regression test for the SSRF guard on the settings-save validation: a TokenUrl pointing
-    /// at a link-local address (e.g. a cloud metadata endpoint) must be rejected before the
-    /// server makes any outbound discovery request to it.
+    /// Regression test for the SSRF guard on the settings-save validation: a Server Metadata
+    /// URL pointing at a link-local address (e.g. a cloud metadata endpoint) must be rejected
+    /// before the server makes any outbound discovery request to it.
     /// </summary>
     [Fact]
-    public async Task SettingsRejectPrivateNetworkTokenUrl()
+    public async Task SettingsRejectPrivateNetworkMetadataUrl()
     {
         var page = await Fixture.CreatePageAsync();
         await EnableOpenApiAsync(page);
@@ -411,8 +417,9 @@ public sealed class OpenApiTests : CmsTestBase, IClassFixture<CmsSetupFixture>
         await page.Locator("#vue-AuthenticationType").WaitForAsync(new() { State = WaitForSelectorState.Visible, Timeout = 15000 });
 
         await page.Locator("#vue-AuthenticationType").SelectOptionAsync("1");
-        await page.Locator("#vue-AuthorizationUrl").FillAsync("http://169.254.169.254/connect/authorize");
-        await page.Locator("#vue-TokenUrl").FillAsync("http://169.254.169.254/latest/meta-data/");
+        await page.Locator("#vue-AuthorizationUrl").FillAsync("/connect/authorize");
+        await page.Locator("#vue-TokenUrl").FillAsync("/connect/token");
+        await page.Locator("#vue-ServerMetadataUrl").FillAsync("http://169.254.169.254/latest/meta-data/");
         await page.Locator("#vue-OAuthClientId").FillAsync("test");
 
         await ButtonHelper.ClickSaveAsync(page);
