@@ -151,6 +151,32 @@ public sealed class AdminNavigationTests : CmsTestBase<BlogFixture>, IClassFixtu
         await page.CloseAsync();
     }
 
+    [Fact]
+    public async Task AdminNavigation_LinkToContentItemEdit_KeepsLinkMenuItemActive()
+    {
+        var page = await Fixture.CreatePageAsync();
+        await page.LoginAsync();
+        await page.GotoAndAssertOkAsync("/Admin");
+
+        // "Main Menu" is an admin menu link pointing directly at the edit page of a Menu content
+        // item, so it must stay active instead of the list page of the Menu content type, which
+        // that edit page declares as its owner.
+        var mainMenuLink = page.GetByRole(AriaRole.Link, new() { Name = "Main Menu", Exact = true });
+        await mainMenuLink.ClickAsync();
+        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+
+        Assert.Contains("/Edit", page.Url, StringComparison.OrdinalIgnoreCase);
+
+        var activeMainMenuItem = mainMenuLink.Locator("xpath=ancestor::li[1][contains(concat(' ', normalize-space(@class), ' '), ' active ')]");
+        var menusLink = page.Locator("#adminMenu a[data-admin-hash][href=\"/Admin/Contents/ContentItems/Menu\"]");
+        var activeMenusItem = menusLink.Locator("xpath=ancestor::li[1][contains(concat(' ', normalize-space(@class), ' '), ' active ')]");
+
+        await Assertions.Expect(activeMainMenuItem).ToHaveCountAsync(1);
+        await Assertions.Expect(activeMenusItem).ToHaveCountAsync(0);
+
+        await page.CloseAsync();
+    }
+
     private static JsonNode ParseAndDecodeCookieJson(string value)
     {
         var raw = value;

@@ -13,9 +13,12 @@ public static class NavigationHelper
     private const string SelectedNavHashCacheKey = "OrchardCore.Navigation.SelectedNavHash";
     private static readonly object SelectedNavHashMissing = new();
 
-    // Selection scoring tiers. An exact URL match must beat the clicked-item fallback, which in
-    // turn must beat any prefix match, whose score is the segment count of the matched href.
-    private const int ExactMatchScore = 100;
+    // Selection scoring tiers. A menu item linking directly to the requested page is the most
+    // specific match there is and must win over the path a page declares as its owner, which in
+    // turn must beat the clicked-item fallback, which must beat any prefix match, whose score is
+    // the segment count of the matched href.
+    private const int ExactRequestMatchScore = 200;
+    private const int DeclaredMatchScore = 100;
     private const int SelectedNavHashScore = 50;
 
     public static bool UseLegacyFormat()
@@ -104,9 +107,10 @@ public static class NavigationHelper
 
     /// <summary>
     /// Scores a menu item against the current request. Selection is resolved from the strongest
-    /// to the weakest signal: the path declared by the page itself (see
-    /// <see cref="NavigationHttpContextExtensions.SetNavigationSelectionPath"/>), an exact URL
-    /// match, the last clicked menu item, and finally a URL prefix match.
+    /// to the weakest signal: a menu item linking to the requested page itself, the path the page
+    /// declares as its owner (see
+    /// <see cref="NavigationHttpContextExtensions.SetNavigationSelectionPath"/>), the last clicked
+    /// menu item, and finally a URL prefix match.
     /// </summary>
     private static void MarkAsSelectedIfMatchesPathOrPreferences(MenuItem menuItem, NavigationItemViewModel menuItemShape, ViewContext viewContext)
     {
@@ -122,29 +126,41 @@ public static class NavigationHelper
             (queryIndex >= 0 ? hrefSpan[..queryIndex] : hrefSpan).ToString(),
             viewContext.HttpContext.Request.PathBase);
 
-        // A page can declare the menu path it belongs to (e.g. an edit page declaring the list
-        // page of its content type), which is authoritative over any URL or preference heuristic.
         var requestPath = RemovePathBase(
-            viewContext.HttpContext.GetNavigationSelectionPath() ?? viewContext.HttpContext.Request.Path.Value ?? "/",
+            viewContext.HttpContext.Request.Path.Value ?? "/",
             viewContext.HttpContext.Request.PathBase);
+
+        // A page can declare the menu path it belongs to (e.g. an edit page declaring the list
+        // page of its content type). It only applies to pages that no menu item links to
+        // directly, so it never overrides a menu item pointing at the requested page itself.
+        var declaredPath = viewContext.HttpContext.GetNavigationSelectionPath();
+        var selectionPath = declaredPath is null
+            ? requestPath
+            : RemovePathBase(declaredPath, viewContext.HttpContext.Request.PathBase);
+
         var segmentCount = hrefPath.Split('/', StringSplitOptions.RemoveEmptyEntries).Length;
 
         // The clicked-item fallback, restored from the admin preferences cookie written by the
         // admin theme. It only decides the selection for pages that neither declare a selection
         // path nor exactly match a menu item href. Ancestor paths (e.g. "/Admin" while evaluating
         // "/Admin/Features") are not within the menu item branch and must not reuse a stale hash.
-        if (!IsAncestorPath(requestPath, hrefPath) && GetSelectedNavHashFromPrefs(viewContext) == menuItemShape.Hash)
+        if (!IsAncestorPath(selectionPath, hrefPath) && GetSelectedNavHashFromPrefs(viewContext) == menuItemShape.Hash)
         {
             menuItemShape.Score += SelectedNavHashScore;
         }
 
         if (requestPath.Equals(hrefPath, StringComparison.OrdinalIgnoreCase))
         {
-            // Exact URL match — score by path depth so deeper (more specific) links beat
-            // shallower ones that share the same prefix, and above the clicked-hash fallback.
-            menuItemShape.Score += ExactMatchScore + segmentCount;
+            // The menu item links to the requested page itself, e.g. an admin menu link pointing
+            // at a specific content item. Nothing identifies the page more precisely than that.
+            menuItemShape.Score += ExactRequestMatchScore + segmentCount;
         }
-        else if (segmentCount > 0 && requestPath.StartsWith(hrefPath.TrimEnd('/') + "/", StringComparison.OrdinalIgnoreCase))
+        else if (selectionPath.Equals(hrefPath, StringComparison.OrdinalIgnoreCase))
+        {
+            // The page declared this menu item as the one owning it.
+            menuItemShape.Score += DeclaredMatchScore + segmentCount;
+        }
+        else if (segmentCount > 0 && selectionPath.StartsWith(hrefPath.TrimEnd('/') + "/", StringComparison.OrdinalIgnoreCase))
         {
             // Prefix match (e.g. "/Admin/ContentTypes" matches "/Admin/ContentTypes/Edit/Blog").
             // Deeper prefix = higher score, ensuring the most specific ancestor wins.
