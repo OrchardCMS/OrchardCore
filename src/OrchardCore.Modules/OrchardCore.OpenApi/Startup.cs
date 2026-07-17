@@ -1,6 +1,5 @@
 using System.Linq;
 using System.Net.Http;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -14,7 +13,6 @@ using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Localization;
 using OrchardCore.OpenApi.Drivers;
-using OrchardCore.OpenApi.Endpoints.Api;
 using OrchardCore.OpenApi.Settings;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
@@ -65,31 +63,6 @@ public sealed class Startup : StartupBase
             .ConfigurePrimaryHttpMessageHandler(() => new SocketsHttpHandler
             {
                 ConnectCallback = OpenApiUrlGuard.ConnectCallbackAsync,
-            });
-
-        // A policy scheme scoped to this module only: forwards to the shared "Api" (token)
-        // scheme when a request carries an Authorization header, otherwise falls back to the
-        // app's default (cookie) scheme so that same-origin requests from the OpenApi Vue
-        // settings page can call OpenApiApiController without a bearer token. This never
-        // affects the shared "Api" scheme used by other modules' controllers.
-        // The display name is left null (matching the "Api" scheme's own registration) so it
-        // never shows up as an external login provider on the standard login page.
-        services.AddAuthentication()
-            .AddPolicyScheme(OpenApiAuthenticationDefaults.CookieOrTokenScheme, null, policyOptions =>
-            {
-                policyOptions.ForwardDefaultSelector = context =>
-                {
-                    if (!string.IsNullOrEmpty(context.Request.Headers.Authorization))
-                    {
-                        return "Api";
-                    }
-
-                    var authenticationOptions = context.RequestServices
-                        .GetRequiredService<IOptions<AuthenticationOptions>>()
-                        .Value;
-
-                    return authenticationOptions.DefaultAuthenticateScheme;
-                };
             });
 
         services.AddPermissionProvider<Permissions>();
@@ -207,8 +180,6 @@ public sealed class Startup : StartupBase
         // The OpenAPI JSON and Swagger generator are always registered.
         routes.MapOpenApi();
         app.UseSwagger();
-
-        routes.AddTestConnectionEndpoint();
     }
 
     private static void ConfigureSecurityScheme(IApplicationBuilder app, OpenApiSettings settings)

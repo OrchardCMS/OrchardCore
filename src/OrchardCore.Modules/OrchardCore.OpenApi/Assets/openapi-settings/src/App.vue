@@ -2,7 +2,6 @@
 import { reactive, ref, watch } from 'vue'
 import { getTranslations, setTranslations } from '@bloom/helpers/localizations'
 import AuthSettings from './components/AuthSettings.vue'
-import ConnectionTester from './components/ConnectionTester.vue'
 
 interface OpenApiSettingsData {
     allowAnonymousSchemaAccess: boolean
@@ -89,18 +88,8 @@ watch(() => settings.authorizationUrl, (v) => syncToHiddenInput('AuthorizationUr
 watch(() => settings.tokenUrl, (v) => syncToHiddenInput('TokenUrl', v))
 watch(() => settings.oAuthClientId, (v) => syncToHiddenInput('OAuthClientId', v))
 watch(() => settings.oAuthScopes, (v) => syncToHiddenInput('OAuthScopes', v))
-
-const isPkce = () => settings.authenticationType === 1
 </script>
 
 <template>
     <AuthSettings :settings="settings" :feature-status="featureStatus" :path-base="pathBase" @update:settings="Object.assign(settings, $event)" />
-    <ConnectionTester
-        v-if="isPkce()"
-        :authentication-type="settings.authenticationType"
-        :token-url="settings.tokenUrl"
-        :authorization-url="settings.authorizationUrl"
-        :client-id="settings.oAuthClientId"
-        :scopes="settings.oAuthScopes"
-    />
 </template>

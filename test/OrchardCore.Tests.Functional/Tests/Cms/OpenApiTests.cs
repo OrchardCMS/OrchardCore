@@ -347,58 +347,6 @@ public sealed class OpenApiTests : CmsTestBase, IClassFixture<CmsSetupFixture>
         await page.CloseAsync();
     }
 
-    [Fact]
-    public async Task ConnectionTesterUIAppearsWithCrossTenantPkce()
-    {
-        var page = await Fixture.CreatePageAsync();
-        await EnableOpenApiAsync(page);
-
-        var clientId = "openapi-conn-test";
-
-        var authTenant = await SetupAuthServerTenantAsync(page);
-
-        // Navigate back to the main tenant and configure OpenApi settings.
-        await AuthHelper.LoginAsync(page, $"/{Tenant.Prefix}");
-        await page.GotoAsync($"/{Tenant.Prefix}/Admin/Settings/openapi");
-
-        // Wait for the Vue app to mount before interacting with its elements.
-        await page.Locator("#vue-AuthenticationType").WaitForAsync(new() { State = WaitForSelectorState.Visible, Timeout = 15000 });
-
-        // Select Authorization Code + PKCE auth type.
-        await page.Locator("#vue-AuthenticationType").SelectOptionAsync("1");
-
-        var authorizationUrl = $"{Fixture.BaseUrl}/{authTenant.Prefix}/connect/authorize";
-        var tokenUrl = $"{Fixture.BaseUrl}/{authTenant.Prefix}/connect/token";
-        await page.Locator("#vue-AuthorizationUrl").FillAsync(authorizationUrl);
-        await page.Locator("#vue-TokenUrl").FillAsync(tokenUrl);
-        await page.Locator("#vue-OAuthClientId").FillAsync(clientId);
-
-        // Save settings first (required for the connection tester to appear).
-        await ButtonHelper.ClickSaveAsync(page);
-        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
-
-        // Navigate back to settings page to verify the connection tester UI appears.
-        await page.GotoAsync($"/{Tenant.Prefix}/Admin/Settings/openapi");
-
-        // Verify the ConnectionTester component rendered: no client secret field (PKCE is a
-        // public-client flow), and the button is enabled since all required fields are set.
-        await Assertions.Expect(page.Locator("#vue-ClientSecret")).Not.ToBeAttachedAsync();
-
-        var testButton = page.Locator("button:has-text('Test Connection')");
-        await Assertions.Expect(testButton).ToBeVisibleAsync();
-        await Assertions.Expect(testButton).ToBeEnabledAsync();
-
-        await page.CloseAsync();
-    }
-
-    private static async Task<string> GetAntiForgeryTokenAsync(IPage page, string prefix)
-    {
-        await page.GotoAsync($"{prefix}/Admin/Settings/openapi");
-        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
-
-        return await page.Locator("input[name='__RequestVerificationToken']").First.InputValueAsync();
-    }
-
     private static async Task CreateRoleWithPermissionAsync(IPage page, string prefix, string roleName, string permissionName)
     {
         await page.GotoAsync($"{prefix}/Admin/Roles/Create");
@@ -423,9 +371,9 @@ public sealed class OpenApiTests : CmsTestBase, IClassFixture<CmsSetupFixture>
 
     /// <summary>
     /// Regression test for a permission-hierarchy bug where ManageOpenApi was (incorrectly)
-    /// implied by ViewOpenApiContent, letting a view-only role edit settings and call the
-    /// test-connection endpoint. A view-only role must be able to view the documentation UIs
-    /// (per the module's documented design) but must never be treated as ManageOpenApi.
+    /// implied by ViewOpenApiContent, letting a view-only role edit settings. A view-only role
+    /// must be able to view the documentation UIs (per the module's documented design) but must
+    /// never be treated as ManageOpenApi.
     /// </summary>
     [Fact]
     public async Task UserWithOnlyViewOpenApiContentCanViewButCannotManage()
@@ -449,65 +397,28 @@ public sealed class OpenApiTests : CmsTestBase, IClassFixture<CmsSetupFixture>
     }
 
     /// <summary>
-    /// Regression test for an SSRF guard added to the test-connection endpoint: a TokenUrl
-    /// pointing at a link-local address (e.g. a cloud metadata endpoint) must be rejected
-    /// before the server makes any outbound request to it.
+    /// Regression test for the SSRF guard on the settings-save validation: a TokenUrl pointing
+    /// at a link-local address (e.g. a cloud metadata endpoint) must be rejected before the
+    /// server makes any outbound discovery request to it.
     /// </summary>
     [Fact]
-    public async Task TestConnectionRejectsPrivateNetworkTokenUrl()
+    public async Task SettingsRejectPrivateNetworkTokenUrl()
     {
         var page = await Fixture.CreatePageAsync();
         await EnableOpenApiAsync(page);
 
-        var antiForgeryToken = await GetAntiForgeryTokenAsync(page, $"/{Tenant.Prefix}");
+        await page.GotoAsync($"/{Tenant.Prefix}/Admin/Settings/openapi");
+        await page.Locator("#vue-AuthenticationType").WaitForAsync(new() { State = WaitForSelectorState.Visible, Timeout = 15000 });
 
-        var response = await page.APIRequest.PostAsync(
-            $"{Fixture.BaseUrl}/{Tenant.Prefix}/api/openapi/test-connection",
-            new APIRequestContextOptions
-            {
-                Headers = new Dictionary<string, string> { ["RequestVerificationToken"] = antiForgeryToken },
-                DataObject = new
-                {
-                    authenticationType = 1,
-                    tokenUrl = "http://169.254.169.254/latest/meta-data/",
-                    clientId = "test",
-                },
-            });
+        await page.Locator("#vue-AuthenticationType").SelectOptionAsync("1");
+        await page.Locator("#vue-AuthorizationUrl").FillAsync("http://169.254.169.254/connect/authorize");
+        await page.Locator("#vue-TokenUrl").FillAsync("http://169.254.169.254/latest/meta-data/");
+        await page.Locator("#vue-OAuthClientId").FillAsync("test");
 
-        Assert.Equal(400, response.Status);
+        await ButtonHelper.ClickSaveAsync(page);
+        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
 
-        var body = await response.TextAsync();
-        Assert.Contains("not allowed", body, StringComparison.OrdinalIgnoreCase);
-
-        await page.CloseAsync();
-    }
-
-    /// <summary>
-    /// Regression test for a CSRF fix: the test-connection endpoint now accepts ambient cookie
-    /// authentication (so the settings page's own "Test Connection" button can call it without
-    /// a bearer token). A cookie-authenticated request with no matching antiforgery token — the
-    /// only thing a cross-site attacker riding a victim's session cookie could produce, since
-    /// the token itself is never exposed to another origin — must be rejected.
-    /// </summary>
-    [Fact]
-    public async Task TestConnectionRejectsCookieAuthenticatedRequestWithoutAntiforgeryToken()
-    {
-        var page = await Fixture.CreatePageAsync();
-        await EnableOpenApiAsync(page);
-
-        var response = await page.APIRequest.PostAsync(
-            $"{Fixture.BaseUrl}/{Tenant.Prefix}/api/openapi/test-connection",
-            new APIRequestContextOptions
-            {
-                DataObject = new
-                {
-                    authenticationType = 1,
-                    tokenUrl = "https://example.com/connect/token",
-                    clientId = "test",
-                },
-            });
-
-        Assert.Equal(400, response.Status);
+        await Assertions.Expect(page.Locator(".validation-summary-errors")).ToContainTextAsync("not allowed");
 
         await page.CloseAsync();
     }
@@ -596,13 +507,17 @@ public sealed class OpenApiTests : CmsTestBase, IClassFixture<CmsSetupFixture>
         await Assertions.Expect(page.Locator(".auth-btn-wrapper button.authorize")).ToHaveTextAsync("Logout");
         await page.Locator(".auth-btn-wrapper button.btn-done").ClickAsync();
 
-        var operation = page.Locator("#operations-OpenApiApi-ApiTestOpenApiConnection");
+        // Use the Contents module's GET content-item endpoint (enabled by the Blog recipe) as
+        // the protected "Api"-scheme endpoint to prove the token is attached: an unauthenticated
+        // request to it returns 401, an authenticated one 404 for an unknown id.
+        var operation = page.Locator("#operations-GetEndpoint-ApiGetContentItem");
         await operation.Locator(".opblock-summary").ClickAsync();
         await operation.Locator("button.try-out__btn").ClickAsync();
+        await operation.Locator("tr[data-param-name='contentItemId'] input").FillAsync("does-not-exist");
 
         var response = await page.RunAndWaitForResponseAsync(
             async () => await operation.Locator("button.execute").ClickAsync(),
-            r => r.Url.Contains("/api/openapi/test-connection"));
+            r => r.Url.Contains("/api/content/"));
 
         Assert.NotEqual(401, response.Status);
         Assert.NotEqual(403, response.Status);
@@ -631,7 +546,7 @@ public sealed class OpenApiTests : CmsTestBase, IClassFixture<CmsSetupFixture>
             r => r.Url.Contains("/swagger/v1/swagger.json"));
 
         Assert.Equal(200, response.Status);
-        await Assertions.Expect(page.Locator(".sidebar").First).ToContainTextAsync("OpenApiApi");
+        await Assertions.Expect(page.Locator(".sidebar").First).ToContainTextAsync("GetEndpoint");
 
         await page.CloseAsync();
     }
@@ -687,13 +602,17 @@ public sealed class OpenApiTests : CmsTestBase, IClassFixture<CmsSetupFixture>
 
         await Assertions.Expect(page.Locator("tr:has-text('Access Token') input").First).Not.ToHaveValueAsync(string.Empty);
 
-        await page.Locator(".sidebar a", new() { HasText = "OpenApiApi" }).First.ClickAsync();
-        var operation = page.Locator("[id='tag/openapiapi/POST/api/openapi/test-connection']");
+        // Use the Contents module's GET content-item endpoint (enabled by the Blog recipe) as
+        // the protected "Api"-scheme endpoint to prove the token is attached: an unauthenticated
+        // request to it returns 401. The unfilled {contentItemId} placeholder is sent as a
+        // literal segment, which still matches the route and exercises authentication.
+        await page.Locator(".sidebar a", new() { HasText = "GetEndpoint" }).First.ClickAsync();
+        var operation = page.Locator("[id='tag/getendpoint/GET/api/content/{contentItemId}']");
         await operation.Locator("button.show-api-client-button").ClickAsync();
 
         var response = await page.RunAndWaitForResponseAsync(
             async () => await page.GetByRole(AriaRole.Button, new() { Name = "Send Request", Exact = true }).ClickAsync(),
-            r => r.Url.Contains("/api/openapi/test-connection"));
+            r => r.Url.Contains("/api/content/"));
 
         Assert.NotEqual(401, response.Status);
         Assert.NotEqual(403, response.Status);

@@ -52,8 +52,6 @@ public sealed class OpenApiJSLocalizer : IJSLocalizer
             ["clientIdHint"] = S["The OAuth2 client ID registered for the API documentation UIs."].Value,
             ["scopes"] = S["Scopes"].Value,
             ["scopesHint"] = S["A space-separated list of OAuth2 scopes to request."].Value,
-            ["testConnection"] = S["Test Connection"].Value,
-            ["testing"] = S["Testing..."].Value,
         };
     }
 }
