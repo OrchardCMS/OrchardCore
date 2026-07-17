@@ -50,7 +50,7 @@ For OAuth2 Authorization Code + PKCE authentication, you need to:
    - Select the authentication type.
    - Enter the **Token URL** (e.g., `/connect/token`).
    - Enter the **Authorization URL** (e.g., `/connect/authorize`).
-   - Optionally enter the **Server Metadata URL** (e.g., `/.well-known/openid-configuration`). When provided, the configuration is validated against the OpenID Connect server metadata document on save; when empty, no validation is performed. The metadata location is never inferred from the endpoint URLs.
+   - Optionally enter the **Server Metadata URL** (e.g., `/.well-known/openid-configuration`). When provided, the configuration is validated against the OpenID Connect server metadata document on save, and the Authorization and Token URLs are filled from it when left empty (explicitly entered values always win). When empty, no validation is performed. The metadata location is never inferred from the endpoint URLs.
    - Enter the **Client ID** from the OpenID application.
    - Enter the **Scopes** (e.g., `api`).
 

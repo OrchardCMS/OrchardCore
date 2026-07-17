@@ -353,6 +353,39 @@ public sealed class OpenApiTests : CmsTestBase, IClassFixture<CmsSetupFixture>
         await page.CloseAsync();
     }
 
+    [Fact]
+    public async Task SettingsAutoFillEndpointsFromServerMetadata()
+    {
+        var page = await Fixture.CreatePageAsync();
+        await EnableOpenApiAsync(page);
+
+        var authTenant = await SetupAuthServerTenantAsync(page);
+
+        await AuthHelper.LoginAsync(page, $"/{Tenant.Prefix}");
+        await page.GotoAsync($"/{Tenant.Prefix}/Admin/Settings/openapi");
+        await page.Locator("#vue-AuthenticationType").WaitForAsync(new() { State = WaitForSelectorState.Visible, Timeout = 15000 });
+
+        await page.Locator("#vue-AuthenticationType").SelectOptionAsync("1");
+
+        // Only the metadata URL and client ID are provided: the endpoint URLs are left empty
+        // and must be filled from the discovery document's authorization_endpoint and
+        // token_endpoint values on save.
+        await page.Locator("#vue-ServerMetadataUrl").FillAsync($"{Fixture.BaseUrl}/{authTenant.Prefix}/.well-known/openid-configuration");
+        await page.Locator("#vue-OAuthClientId").FillAsync("openapi-pkce");
+
+        await ButtonHelper.ClickSaveAsync(page);
+        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+
+        await Assertions.Expect(page.Locator(".message-success")).ToBeVisibleAsync();
+
+        // The re-rendered form must show the endpoints resolved from the metadata document.
+        await page.Locator("#vue-AuthorizationUrl").WaitForAsync(new() { State = WaitForSelectorState.Visible, Timeout = 15000 });
+        await Assertions.Expect(page.Locator("#vue-AuthorizationUrl")).ToHaveValueAsync($"{Fixture.BaseUrl}/{authTenant.Prefix}/connect/authorize");
+        await Assertions.Expect(page.Locator("#vue-TokenUrl")).ToHaveValueAsync($"{Fixture.BaseUrl}/{authTenant.Prefix}/connect/token");
+
+        await page.CloseAsync();
+    }
+
     private static async Task CreateRoleWithPermissionAsync(IPage page, string prefix, string roleName, string permissionName)
     {
         await page.GotoAsync($"{prefix}/Admin/Roles/Create");

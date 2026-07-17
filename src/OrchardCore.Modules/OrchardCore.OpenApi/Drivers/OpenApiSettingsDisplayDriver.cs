@@ -84,6 +84,20 @@ public sealed class OpenApiSettingsDisplayDriver : SiteDisplayDriver<OpenApiSett
 
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
+        // When a server metadata URL is explicitly configured, validate the configuration
+        // against that document and fill any endpoint URLs the user left empty from it —
+        // the spec-correct direction of inference (endpoints derive from the issuer's
+        // metadata, never the reverse). Explicitly entered endpoint URLs always win.
+        // This runs before the required-field checks so auto-filled values satisfy them.
+        // The metadata location itself is never inferred from the endpoint URLs: the spec
+        // does not tie endpoint locations to the issuer, so any such inference (e.g. assuming
+        // an OpenIddict-style "/connect/" path) breaks valid third-party setups.
+        if (model.AuthenticationType != OpenApiAuthenticationType.None
+            && !string.IsNullOrWhiteSpace(model.ServerMetadataUrl))
+        {
+            await ValidateServerMetadataAsync(model, context);
+        }
+
         if (model.AuthenticationType == OpenApiAuthenticationType.AuthorizationCodePkce)
         {
             if (string.IsNullOrWhiteSpace(model.AuthorizationUrl))
@@ -100,17 +114,6 @@ public sealed class OpenApiSettingsDisplayDriver : SiteDisplayDriver<OpenApiSett
             {
                 context.Updater.ModelState.AddModelError(Prefix, S["The Client ID is required for Authorization Code + PKCE."]);
             }
-        }
-
-        // When a server metadata URL is explicitly configured, validate the configuration
-        // against that document. The metadata location is never inferred from the endpoint
-        // URLs: the spec does not tie endpoint locations to the issuer, so any such inference
-        // (e.g. assuming an OpenIddict-style "/connect/" path) breaks valid third-party setups.
-        if (model.AuthenticationType != OpenApiAuthenticationType.None
-            && context.Updater.ModelState.IsValid
-            && !string.IsNullOrWhiteSpace(model.ServerMetadataUrl))
-        {
-            await ValidateServerMetadataAsync(model, context);
         }
 
         if (!context.Updater.ModelState.IsValid)
@@ -165,6 +168,16 @@ public sealed class OpenApiSettingsDisplayDriver : SiteDisplayDriver<OpenApiSett
                 retriever);
 
             var configuration = await configurationManager.GetConfigurationAsync(CancellationToken.None);
+
+            if (string.IsNullOrWhiteSpace(model.AuthorizationUrl) && !string.IsNullOrEmpty(configuration.AuthorizationEndpoint))
+            {
+                model.AuthorizationUrl = configuration.AuthorizationEndpoint;
+            }
+
+            if (string.IsNullOrWhiteSpace(model.TokenUrl) && !string.IsNullOrEmpty(configuration.TokenEndpoint))
+            {
+                model.TokenUrl = configuration.TokenEndpoint;
+            }
 
             if (model.AuthenticationType == OpenApiAuthenticationType.AuthorizationCodePkce)
             {

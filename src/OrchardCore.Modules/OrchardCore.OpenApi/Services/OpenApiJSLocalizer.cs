@@ -49,7 +49,7 @@ public sealed class OpenApiJSLocalizer : IJSLocalizer
             ["tokenUrl"] = S["Token URL"].Value,
             ["tokenUrlHint"] = S["The OAuth2 token endpoint. Relative URLs are resolved against the current tenant."].Value,
             ["serverMetadataUrl"] = S["Server Metadata URL"].Value,
-            ["serverMetadataUrlHint"] = S["Optional. The OpenID Connect server metadata document used to validate this configuration on save. Relative URLs are resolved against the current tenant. When empty, no validation is performed."].Value,
+            ["serverMetadataUrlHint"] = S["Optional. The OpenID Connect server metadata document used to validate this configuration on save. The Authorization and Token URLs are filled from it when left empty. Relative URLs are resolved against the current tenant. When empty, no validation is performed."].Value,
             ["clientId"] = S["Client ID"].Value,
             ["clientIdHint"] = S["The OAuth2 client ID registered for the API documentation UIs."].Value,
             ["scopes"] = S["Scopes"].Value,
