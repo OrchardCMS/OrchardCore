@@ -226,86 +226,13 @@ public sealed class MyFeatureController : ControllerBase
 }
 ```
 
-## ProblemDetails Error Handling
-
-API controllers should return standardized [RFC 9457 Problem Details](https://www.rfc-editor.org/rfc/rfc9457) responses for error conditions. The `ProblemDetailsApiControllerExtensions` class in `OrchardCore.Abstractions` provides convenient extension methods for this.
-
-### Available Extension Methods
-
-| Method | Status Code | Purpose |
-|--------|-------------|---------|
-| `ApiChallengeOrForbidForCookieAuth()` | 401 / 403 | Returns `Unauthorized` or `Forbidden` depending on the authentication state. |
-| `ApiBadRequestProblem()` | 400 | Generic bad-request error. |
-| `ApiNotFoundProblem()` | 404 | Resource not found. |
-| `ApiValidationProblem()` | 400 | Validation error with a `ModelStateDictionary` containing field-level errors. |
-
-All methods support localized `title` and `detail` parameters via `LocalizedString`.
-
-### Usage in Controllers
-
-```csharp
-[ApiController]
-[Route("api/media")]
-public class MediaApiController : ControllerBase
-{
-    [HttpGet("{path}")]
-    [ProducesResponseType(typeof(FileStoreEntryDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetMediaItem(string path)
-    {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMedia))
-        {
-            return this.ApiChallengeOrForbidForCookieAuth();
-        }
-
-        var item = await _mediaFileStore.GetFileInfoAsync(path);
-
-        if (item == null)
-        {
-            return this.ApiNotFoundProblem(S["Media not found: {0}", path]);
-        }
-
-        return Ok(ToDto(item));
-    }
-}
-```
-
-### JSON Response Shape
-
-A `ProblemDetails` response looks like this:
-
-```json
-{
-  "type": "https://tools.ietf.org/html/rfc9110#section-15.5.5",
-  "title": "Not Found",
-  "detail": "Media not found: images/photo.jpg",
-  "status": 404
-}
-```
-
-A `ValidationProblemDetails` response includes an `errors` dictionary:
-
-```json
-{
-  "type": "https://tools.ietf.org/html/rfc9110#section-15.5.1",
-  "title": "A validation error occurred.",
-  "status": 400,
-  "errors": {
-    "Name": ["The Name field is required."],
-    "Path": ["The path contains invalid characters."]
-  }
-}
-```
-
 ## Frontend Notification System
 
-The Bloom frontend framework includes a notification service (`@bloom/services/notifications/notifier`) that understands `ProblemDetails` responses out of the box. This creates a seamless error-handling pipeline from the API to the user interface.
+The Bloom frontend framework includes a notification service (`@bloom/services/notifications/notifier`) that understands [RFC 9457 Problem Details](https://www.rfc-editor.org/rfc/rfc9457) responses out of the box. This creates a seamless error-handling pipeline from the API to the user interface.
 
 ### How It Works
 
-1. An API controller returns a `ProblemDetails` response (e.g. `ApiNotFoundProblem()`).
+1. An API endpoint returns a `ProblemDetails` response (e.g. via `Problem()` or `TypedResults.Problem()`).
 2. The NSwag-generated client throws the response as an error.
 3. The calling code passes the error to `notify()`.
 4. The notifier detects the `ProblemDetails` shape and converts it to a UI notification.
