@@ -102,8 +102,8 @@ public sealed partial class TextFieldSettingsDriver : ContentPartFieldDefinition
             DefaultValue = model.DefaultValue,
             Type = model.Type,
             Pattern = model.Pattern,
-            MinLength = model.MinLength ?? 0,
-            MaxLength = model.MaxLength ?? 0,
+            MinLength = model.MinLength,
+            MaxLength = model.MaxLength,
         });
 
         return Edit(partFieldDefinition, context);

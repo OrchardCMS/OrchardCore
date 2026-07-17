@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using OrchardCore.ContentManagement.Metadata.Settings;
 
 namespace OrchardCore.ContentFields.Settings;
@@ -16,12 +17,14 @@ public class TextFieldSettings : FieldSettings
     public string Placeholder { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets or sets the minimum number of characters allowed. A value of <c>0</c> means no minimum.
+    /// Gets or sets the minimum number of characters allowed. A value of <c>null</c> means no minimum.
     /// </summary>
-    public int MinLength { get; set; }
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    public int? MinLength { get; set; }
 
     /// <summary>
-    /// Gets or sets the maximum number of characters allowed. A value of <c>0</c> means no maximum.
+    /// Gets or sets the maximum number of characters allowed. A value of <c>null</c> means no maximum.
     /// </summary>
-    public int MaxLength { get; set; }
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    public int? MaxLength { get; set; }
 }

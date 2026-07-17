@@ -55,12 +55,12 @@ public sealed class TextFieldDisplayDriver : ContentFieldDisplayDriver<TextField
 
         var length = field.Text?.Length ?? 0;
 
-        if (settings.MinLength > 0 && length < settings.MinLength)
+        if (settings.MinLength.HasValue && length > 0 && length < settings.MinLength)
         {
             context.Updater.ModelState.AddModelError(Prefix, nameof(field.Text), S["{0} must be at least {1} characters long.", context.PartFieldDefinition.DisplayName(), settings.MinLength]);
         }
 
-        if (settings.MaxLength > 0 && length > settings.MaxLength)
+        if (settings.MaxLength.HasValue && length > settings.MaxLength)
         {
             context.Updater.ModelState.AddModelError(Prefix, nameof(field.Text), S["{0} can't be longer than {1} characters.", context.PartFieldDefinition.DisplayName(), settings.MaxLength]);
         }
