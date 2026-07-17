@@ -181,25 +181,6 @@ public static class NavigationHelper
         return path;
     }
 
-    private static bool IsAncestorPath(string requestPath, string hrefPath)
-    {
-        var normalizedRequestPath = requestPath.AsSpan().TrimEnd('/');
-        var normalizedHrefPath = hrefPath.AsSpan().TrimEnd('/');
-
-        if (normalizedRequestPath.IsEmpty)
-        {
-            normalizedRequestPath = "/";
-        }
-
-        if (normalizedHrefPath.IsEmpty || normalizedRequestPath.Length >= normalizedHrefPath.Length)
-        {
-            return false;
-        }
-
-        return normalizedHrefPath[normalizedRequestPath.Length] == '/'
-            && normalizedHrefPath.StartsWith(normalizedRequestPath, StringComparison.OrdinalIgnoreCase);
-    }
-
     /// <summary>
     /// Ensures only one menuitem (and its ancestors) are marked as selected for the menu.
     /// </summary>
