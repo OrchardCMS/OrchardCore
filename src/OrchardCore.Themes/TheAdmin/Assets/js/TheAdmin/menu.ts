@@ -28,13 +28,55 @@ $('#left-nav li.has-items').click(function () {
     $(this).addClass("visible");
 });
 
-// When navigating via a real nav link, persist the selected item hash inside the
-// existing admin preferences cookie so the server can restore the correct selection.
+// Remember which nav item was clicked. The server selects the active item deterministically
+// from the URL, but it can't tell apart two items that resolve to the same rank (e.g. two
+// links with the same href). This records the clicked item so we can break that tie below.
 $('#left-nav').on('click', 'a[data-admin-hash][href^="/"]', function () {
     const prefs = getAdminPreferences() as Record<string, unknown>;
     prefs.selectedNavHash = String($(this).data('admin-hash'));
     setAdminPreferences(prefs);
 });
+
+// On load, if the page has several menu items pointing at it and the server highlighted one
+// other than the one this tab last clicked, move the highlight to the clicked one. Runs only
+// for genuine duplicates on the current page, so a stale click from another page is ignored.
+const resolveClickedDuplicate = () => {
+    const prefs = getAdminPreferences() as Record<string, unknown>;
+    const clickedHash = prefs.selectedNavHash ? String(prefs.selectedNavHash) : '';
+
+    if (!clickedHash) {
+        return;
+    }
+
+    const target = document.querySelector<HTMLAnchorElement>(
+        `#adminMenu a[data-admin-hash="${CSS.escape(clickedHash)}"]`);
+
+    // Only act when the clicked link actually points at the current page: that makes it a
+    // genuine duplicate of what the server selected, not a leftover selection from elsewhere.
+    if (!target || target.pathname.toLowerCase() !== window.location.pathname.toLowerCase()) {
+        return;
+    }
+
+    const targetItem = target.closest('li');
+
+    if (!targetItem || targetItem.classList.contains('active')) {
+        return;
+    }
+
+    // Hand the active state from the server-selected sibling to the clicked one. Siblings share
+    // a parent, so the ancestor chain the server already expanded stays correct.
+    const activeSibling = targetItem.parentElement
+        ? Array.from(targetItem.parentElement.children)
+            .find(el => el !== targetItem && el.classList.contains('active'))
+        : undefined;
+
+    if (activeSibling) {
+        activeSibling.classList.remove('active');
+        targetItem.classList.add('active');
+    }
+};
+
+$(resolveClickedDuplicate);
 
 $(document).on("click", function (event) {
     var $trigger = $("#left-nav li.has-items");

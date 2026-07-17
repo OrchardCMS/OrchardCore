@@ -242,10 +242,13 @@ At this time, the Admin Menu is the only navigation with code dynamically adding
 
 When a menu is rendered, the menu item owning the current page is marked as selected (e.g. highlighted in the admin sidebar). Selection is resolved in this order:
 
-1. **A menu item linking to the requested page itself.** Nothing identifies the page more precisely, so an exact URL match always wins, e.g. an admin menu link pointing at a specific content item.
-2. **Declared selection path.** A page can declare the path of the menu item that owns it, for pages whose URL cannot be matched to a menu item, such as edit pages containing an opaque id. It only applies when no menu item links to the page directly.
-3. **Last clicked menu item**, persisted by the admin theme in the preferences cookie, used as a fallback when the URL is ambiguous.
-4. **Prefix match** against the menu item's href (the deepest, most specific match wins).
+The server resolves the active item **deterministically**, from the strongest signal to the weakest, with no stored state:
+
+1. **A menu item linking to the requested page itself** — an exact URL match. Nothing identifies the page more precisely, e.g. an admin menu link pointing at a specific content item.
+2. **Declared selection path** — a page can declare the path of the menu item that owns it, for pages whose URL cannot be matched to a menu item, such as edit pages containing an opaque id. It applies only when no menu item links to the page directly.
+3. **Prefix match** against the menu item's href (the deepest, most specific match wins).
+
+Items that resolve to the same rank (for example, two menu items with the same URL) are ordered by `Priority`, then by menu order. Deciding *which* of several identical links you actually clicked is a per-tab concern the admin theme resolves in the browser (using the `data-admin-hash` rendered on each link), so it never relies on shared server-side state and works correctly across restarts, load-balanced instances and multiple tabs.
 
 To declare the owning menu item from a controller action (or anywhere with access to the `HttpContext`), generate the path through routing so it matches the menu item's href exactly:
 
@@ -261,7 +264,7 @@ public async Task<IActionResult> Edit(string contentItemId)
 }
 ```
 
-`OrchardCore.Contents` declares the content type's list page from its edit and display actions, so the menu item listing that content type stays selected while editing an item. Custom modules with their own admin routes should do the same, this is the only reliable way to keep the correct menu item selected for bookmarked URLs, load-balanced environments and multiple browser tabs.
+`OrchardCore.Contents` declares the content type's list page from its edit and display actions, so the menu item listing that content type stays selected while editing an item. Custom modules with their own admin routes should do the same; declaring the owner is the reliable way to keep the correct menu item selected for bookmarked URLs, load-balanced environments and multiple browser tabs.
 
 ## Video
 

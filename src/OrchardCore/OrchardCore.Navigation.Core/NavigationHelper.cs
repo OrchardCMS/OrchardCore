@@ -1,25 +1,20 @@
 using System.IO.Hashing;
 using System.Runtime.InteropServices;
-using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using OrchardCore.DisplayManagement;
-using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.Navigation;
 
 public static class NavigationHelper
 {
-    private const string SelectedNavHashCacheKey = "OrchardCore.Navigation.SelectedNavHash";
-    private static readonly object SelectedNavHashMissing = new();
-
-    // Selection scoring tiers. A menu item linking directly to the requested page is the most
-    // specific match there is and must win over the path a page declares as its owner, which in
-    // turn must beat the clicked-item fallback, which must beat any prefix match, whose score is
-    // the segment count of the matched href.
+    // Selection ranks, highest wins. A menu item linking directly to the requested page is the
+    // most specific match there is and must win over the path a page declares as its owner, which
+    // in turn must beat any prefix match, whose rank is the segment count of the matched href.
+    // The gaps between tiers exceed any realistic path depth, so exact always beats declared,
+    // which always beats prefix.
     private const int ExactRequestMatchScore = 200;
     private const int DeclaredMatchScore = 100;
-    private const int SelectedNavHashScore = 50;
 
     public static bool UseLegacyFormat()
     {
@@ -37,7 +32,7 @@ public static class NavigationHelper
     public static async Task PopulateMenuAsync(IShapeFactory shapeFactory, IShape parentShape, IShape menu, IEnumerable<MenuItem> menuItems, ViewContext viewContext)
     {
         await PopulateMenuLevelAsync(shapeFactory, parentShape, menu, menuItems, viewContext);
-        ApplySelection(parentShape, viewContext);
+        ApplySelection(parentShape);
     }
 
     /// <summary>
@@ -95,7 +90,7 @@ public static class NavigationHelper
 
         menuItemShape.Id = menuItem.Id;
 
-        MarkAsSelectedIfMatchesPathOrPreferences(menuItem, menuItemShape, viewContext);
+        MarkAsSelected(menuItem, menuItemShape, viewContext);
 
         foreach (var className in menuItem.Classes)
         {
@@ -106,13 +101,14 @@ public static class NavigationHelper
     }
 
     /// <summary>
-    /// Scores a menu item against the current request. Selection is resolved from the strongest
-    /// to the weakest signal: a menu item linking to the requested page itself, the path the page
-    /// declares as its owner (see
-    /// <see cref="NavigationHttpContextExtensions.SetNavigationSelectionPath"/>), the last clicked
-    /// menu item, and finally a URL prefix match.
+    /// Ranks a menu item against the current request, deterministically and without any stored
+    /// state. From strongest to weakest: a menu item linking to the requested page itself, the
+    /// path the page declares as its owner (see
+    /// <see cref="NavigationHttpContextExtensions.SetNavigationSelectionPath"/>), and finally a
+    /// URL prefix match. Disambiguating between items that resolve to the same rank (e.g. two
+    /// links with the same href) is a per-tab concern handled client-side by the admin theme.
     /// </summary>
-    private static void MarkAsSelectedIfMatchesPathOrPreferences(MenuItem menuItem, NavigationItemViewModel menuItemShape, ViewContext viewContext)
+    private static void MarkAsSelected(MenuItem menuItem, NavigationItemViewModel menuItemShape, ViewContext viewContext)
     {
         if (string.IsNullOrEmpty(menuItem.Href) || menuItem.Href[0] != '/')
         {
@@ -131,8 +127,8 @@ public static class NavigationHelper
             viewContext.HttpContext.Request.PathBase);
 
         // A page can declare the menu path it belongs to (e.g. an edit page declaring the list
-        // page of its content type). It only applies to pages that no menu item links to
-        // directly, so it never overrides a menu item pointing at the requested page itself.
+        // page of its content type). It only decides pages that no menu item links to directly,
+        // so it never overrides a menu item pointing at the requested page itself.
         var declaredPath = viewContext.HttpContext.GetNavigationSelectionPath();
         var selectionPath = declaredPath is null
             ? requestPath
@@ -140,31 +136,22 @@ public static class NavigationHelper
 
         var segmentCount = hrefPath.Split('/', StringSplitOptions.RemoveEmptyEntries).Length;
 
-        // The clicked-item fallback, restored from the admin preferences cookie written by the
-        // admin theme. It only decides the selection for pages that neither declare a selection
-        // path nor exactly match a menu item href. Ancestor paths (e.g. "/Admin" while evaluating
-        // "/Admin/Features") are not within the menu item branch and must not reuse a stale hash.
-        if (!IsAncestorPath(selectionPath, hrefPath) && GetSelectedNavHashFromPrefs(viewContext) == menuItemShape.Hash)
-        {
-            menuItemShape.Score += SelectedNavHashScore;
-        }
-
         if (requestPath.Equals(hrefPath, StringComparison.OrdinalIgnoreCase))
         {
             // The menu item links to the requested page itself, e.g. an admin menu link pointing
             // at a specific content item. Nothing identifies the page more precisely than that.
-            menuItemShape.Score += ExactRequestMatchScore + segmentCount;
+            menuItemShape.Score = ExactRequestMatchScore + segmentCount;
         }
         else if (selectionPath.Equals(hrefPath, StringComparison.OrdinalIgnoreCase))
         {
             // The page declared this menu item as the one owning it.
-            menuItemShape.Score += DeclaredMatchScore + segmentCount;
+            menuItemShape.Score = DeclaredMatchScore + segmentCount;
         }
         else if (segmentCount > 0 && selectionPath.StartsWith(hrefPath.TrimEnd('/') + "/", StringComparison.OrdinalIgnoreCase))
         {
             // Prefix match (e.g. "/Admin/ContentTypes" matches "/Admin/ContentTypes/Edit/Blog").
             // Deeper prefix = higher score, ensuring the most specific ancestor wins.
-            menuItemShape.Score += segmentCount;
+            menuItemShape.Score = segmentCount;
         }
 
         menuItemShape.Selected = menuItemShape.Score > 0;
@@ -215,18 +202,12 @@ public static class NavigationHelper
     /// Ensures only one menuitem (and its ancestors) are marked as selected for the menu.
     /// </summary>
     /// <param name="parentShape">The menu shape.</param>
-    /// <param name="viewContext">The current <see cref="ViewContext"/>.</param>
-    private static void ApplySelection(IShape parentShape, ViewContext viewContext)
+    private static void ApplySelection(IShape parentShape)
     {
         var selectedItem = GetHighestPrioritySelectedMenuItem(parentShape);
 
-        // Persist the selected item hash inside the existing admin preferences cookie so
-        // that direct URL navigations (not triggered by a nav click) also update the stored
-        // selection, keeping the fallback in sync with URL-path-matched selections.
         if (selectedItem != null)
         {
-            UpdateSelectedNavHashInPrefs(viewContext, selectedItem.Hash);
-
             var ancestor = selectedItem.Parent;
 
             while (ancestor is NavigationItemViewModel ancestorItem)
@@ -238,80 +219,9 @@ public static class NavigationHelper
     }
 
     /// <summary>
-    /// Reads the <c>selectedNavHash</c> field from the admin preferences cookie.
-    /// The cookie is written by JS (js-cookie) using <c>encodeURIComponent</c>, so the
-    /// raw value must be URL-decoded before JSON parsing. This is a fallback for pages that
-    /// do not declare a selection path; prefer
-    /// <see cref="NavigationHttpContextExtensions.SetNavigationSelectionPath"/>.
-    /// </summary>
-    private static string GetSelectedNavHashFromPrefs(ViewContext viewContext)
-    {
-        if (viewContext.HttpContext.Items.TryGetValue(SelectedNavHashCacheKey, out var cached))
-        {
-            return ReferenceEquals(cached, SelectedNavHashMissing) ? null : cached as string;
-        }
-
-        var key = $"{ShellScope.Context.Settings.Name}-adminPreferences";
-        var raw = viewContext.HttpContext.Request.Cookies[key];
-
-        if (string.IsNullOrEmpty(raw))
-        {
-            viewContext.HttpContext.Items[SelectedNavHashCacheKey] = SelectedNavHashMissing;
-            return null;
-        }
-
-        try
-        {
-            var json = Uri.UnescapeDataString(raw);
-            var node = JsonNode.Parse(json);
-            var selectedNavHash = node?["selectedNavHash"]?.GetValue<string>();
-            viewContext.HttpContext.Items[SelectedNavHashCacheKey] = selectedNavHash ?? SelectedNavHashMissing;
-            return selectedNavHash;
-        }
-        catch
-        {
-            viewContext.HttpContext.Items[SelectedNavHashCacheKey] = SelectedNavHashMissing;
-            return null;
-        }
-    }
-
-    /// <summary>
-    /// Merges the <c>selectedNavHash</c> field into the existing admin preferences cookie,
-    /// preserving all other fields (e.g. <c>leftSidebarCompact</c>).
-    /// The value is URL-encoded to match the encoding js-cookie uses when reading.
-    /// </summary>
-    private static void UpdateSelectedNavHashInPrefs(ViewContext viewContext, string hash)
-    {
-        var key = $"{ShellScope.Context.Settings.Name}-adminPreferences";
-        var raw = viewContext.HttpContext.Request.Cookies[key];
-
-        JsonObject prefs;
-
-        try
-        {
-            var json = string.IsNullOrEmpty(raw) ? "{}" : Uri.UnescapeDataString(raw);
-            prefs = JsonNode.Parse(json)?.AsObject() ?? new JsonObject();
-        }
-        catch
-        {
-            prefs = new JsonObject();
-        }
-
-        prefs["selectedNavHash"] = hash;
-
-        var options = new CookieOptions
-        {
-            Path = "/",
-            Expires = DateTimeOffset.UtcNow.AddDays(360),
-            MaxAge = TimeSpan.FromDays(360),
-        };
-
-        viewContext.HttpContext.Response.Cookies.Append(key, Uri.EscapeDataString(prefs.ToJsonString()), options);
-        viewContext.HttpContext.Items[SelectedNavHashCacheKey] = hash ?? SelectedNavHashMissing;
-    }
-
-    /// <summary>
-    /// Traverses the menu and returns the selected item with the highest priority.
+    /// Traverses the menu and returns the single selected item, resolving ties by rank
+    /// (<see cref="NavigationItemViewModel.Score"/>), then by <see cref="MenuItem.Priority"/>,
+    /// then by menu order (the first matching item wins). Items that lose the tie are unselected.
     /// </summary>
     /// <param name="parentShape">The menu shape.</param>
     /// <returns>The selected menu item shape.</returns>
@@ -332,29 +242,27 @@ public static class NavigationHelper
                 {
                     result = item;
                 }
-                else // found more selected: tie break required.
+                // Higher rank wins; on equal rank, higher priority wins. Equal rank and priority
+                // keeps the item found first in menu order (children are pushed in reverse below).
+                else if (item.Score > result.Score || (item.Score == result.Score && item.Priority > result.Priority))
                 {
-                    if (item.Score > result.Score)
-                    {
-                        result.Selected = false;
-                        result = item;
-                    }
-                    else if (item.Priority > result.Priority)
-                    {
-                        result.Selected = false;
-                        result = item;
-                    }
-                    else
-                    {
-                        item.Selected = false;
-                    }
+                    result.Selected = false;
+                    result = item;
+                }
+                else
+                {
+                    item.Selected = false;
                 }
             }
 
-            // add children to the stack to be evaluated too
-            foreach (var child in shape.Items.OfType<IShape>())
+            // Push children in reverse so the stack pops them in menu order, making the first
+            // item in menu order win an otherwise-equal tie.
+            for (var i = shape.Items.Count - 1; i >= 0; i--)
             {
-                tempStack.Push(child);
+                if (shape.Items[i] is IShape child)
+                {
+                    tempStack.Push(child);
+                }
             }
         }
 
@@ -364,8 +272,9 @@ public static class NavigationHelper
     /// <summary>
     /// Computes a deterministic hash identifying a menu item across requests. Unlike
     /// <see cref="string.GetHashCode()"/>, which is randomized per process, the result is stable
-    /// across restarts and load-balanced instances, so the hash persisted in the admin
-    /// preferences cookie keeps matching the rendered menu.
+    /// across restarts and load-balanced instances. It is rendered as the <c>data-admin-hash</c>
+    /// attribute so the admin theme can recognise the clicked item on the next page and break
+    /// ties between items that resolve to the same rank.
     /// </summary>
     private static string ComputeStableHash(string value)
         => XxHash32.HashToUInt32(MemoryMarshal.AsBytes(value.AsSpan())).ToString();
