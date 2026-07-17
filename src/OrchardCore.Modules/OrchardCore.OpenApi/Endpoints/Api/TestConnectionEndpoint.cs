@@ -1,4 +1,3 @@
-using System.Net.Http.Headers;
 using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -31,8 +30,7 @@ public static class TestConnectionEndpoint
     }
 
     /// <summary>
-    /// Tests the connection to an OpenID Connect server by validating the discovery
-    /// document and optionally performing a token exchange for Client Credentials.
+    /// Tests the connection to an OpenID Connect server by validating the discovery document.
     /// </summary>
     [Authorize(AuthenticationSchemes = OpenApiAuthenticationDefaults.CookieOrTokenScheme)]
     private static async Task<IResult> HandleAsync(
@@ -76,46 +74,12 @@ public static class TestConnectionEndpoint
             return httpContext.ApiBadRequestProblem(detail: S[blockedReason]);
         }
 
-        // Step 1: Validate the OpenID Connect discovery document.
+        // Validate the OpenID Connect discovery document.
         var discoveryError = await ValidateDiscoveryAsync(tokenUrl, model.AuthenticationType, httpClientFactory, S);
 
         if (discoveryError != null)
         {
             return httpContext.ApiBadRequestProblem(detail: discoveryError);
-        }
-
-        // Step 2: For Client Credentials, perform a real token exchange.
-        if (model.AuthenticationType == OpenApiAuthenticationType.ClientCredentials)
-        {
-            if (string.IsNullOrWhiteSpace(model.ClientSecret))
-            {
-                modelState.AddModelError(
-                    nameof(model.ClientSecret),
-                    S["Client Secret is required for Client Credentials flow testing."]
-                );
-
-                return httpContext.ApiValidationProblem(modelState: modelState);
-            }
-
-            var tokenResult = await ExchangeClientCredentialsAsync(tokenUrl, model, httpClientFactory, S);
-
-            if (!tokenResult.Success)
-            {
-                return httpContext.ApiBadRequestProblem(detail: tokenResult.Error);
-            }
-
-            // Step 3: Verify the token works by calling the swagger endpoint.
-            var verifyError = await VerifyTokenAsync(tokenResult.Token, httpClientFactory, httpContext, S);
-
-            if (verifyError != null)
-            {
-                return httpContext.ApiBadRequestProblem(detail: verifyError);
-            }
-
-            return Results.Ok(new TestConnectionResult
-            {
-                Message = S["Connection successful! Token exchange and API endpoint verification passed."],
-            });
         }
 
         // For PKCE, we can only validate the discovery document since PKCE requires a browser redirect.
@@ -202,27 +166,6 @@ public static class TestConnectionEndpoint
                     }
                 }
             }
-            else if (authType == OpenApiAuthenticationType.ClientCredentials)
-            {
-                if (root.TryGetProperty("grant_types_supported", out var grantTypes))
-                {
-                    var hasClientCredentials = false;
-
-                    foreach (var gt in grantTypes.EnumerateArray())
-                    {
-                        if (gt.GetString() == "client_credentials")
-                        {
-                            hasClientCredentials = true;
-                            break;
-                        }
-                    }
-
-                    if (!hasClientCredentials)
-                    {
-                        return S["The OpenID Connect server does not support the Client Credentials grant type."];
-                    }
-                }
-            }
 
             if (!root.TryGetProperty("token_endpoint", out _))
             {
@@ -238,122 +181,6 @@ public static class TestConnectionEndpoint
         catch (JsonException)
         {
             return S["The OpenID Connect discovery document could not be parsed."];
-        }
-    }
-
-    /// <summary>
-    /// Exchanges client credentials for an access token.
-    /// Returns a result with the token on success, or a localized error on failure.
-    /// </summary>
-    private static async Task<TokenExchangeResult> ExchangeClientCredentialsAsync(
-        string tokenUrl,
-        TestConnectionRequest model,
-        IHttpClientFactory httpClientFactory,
-        IStringLocalizer S
-    )
-    {
-        try
-        {
-            var client = httpClientFactory.CreateClient(OpenApiUrlGuard.HttpClientName);
-
-            var parameters = new Dictionary<string, string>
-            {
-                ["grant_type"] = "client_credentials",
-                ["client_id"] = model.ClientId,
-                ["client_secret"] = model.ClientSecret,
-            };
-
-            if (!string.IsNullOrWhiteSpace(model.Scopes))
-            {
-                parameters["scope"] = model.Scopes;
-            }
-
-            var content = new FormUrlEncodedContent(parameters);
-            var response = await client.PostAsync(tokenUrl, content);
-
-            if (!response.IsSuccessStatusCode)
-            {
-                var body = await response.Content.ReadAsStringAsync();
-                LocalizedString errorMessage = S["Token request failed with status {0}.", (int)response.StatusCode];
-
-                try
-                {
-                    var errorDoc = JsonDocument.Parse(body);
-
-                    if (errorDoc.RootElement.TryGetProperty("error_description", out var desc))
-                    {
-                        errorMessage = S["Token request failed: {0}", desc.GetString()];
-                    }
-                    else if (errorDoc.RootElement.TryGetProperty("error", out var error))
-                    {
-                        errorMessage = S["Token request failed: {0}", error.GetString()];
-                    }
-                }
-                catch (JsonException)
-                {
-                    // Use the default error message.
-                }
-
-                return TokenExchangeResult.Failure(errorMessage);
-            }
-
-            var tokenJson = await response.Content.ReadAsStringAsync();
-            var tokenDoc = JsonDocument.Parse(tokenJson);
-
-            if (!tokenDoc.RootElement.TryGetProperty("access_token", out var accessToken))
-            {
-                return TokenExchangeResult.Failure(S["Token response did not contain an access_token."]);
-            }
-
-            return TokenExchangeResult.Ok(accessToken.GetString());
-        }
-        catch (HttpRequestException)
-        {
-            return TokenExchangeResult.Failure(S["Could not reach the token endpoint. Verify that the server is running and the URL is correct."]);
-        }
-        catch (JsonException)
-        {
-            return TokenExchangeResult.Failure(S["The token endpoint returned an unexpected response."]);
-        }
-    }
-
-    /// <summary>
-    /// Verifies a Bearer token by calling the Swagger endpoint.
-    /// Returns null on success, or a localized error message on failure.
-    /// </summary>
-    private static async Task<LocalizedString> VerifyTokenAsync(
-        string token,
-        IHttpClientFactory httpClientFactory,
-        HttpContext httpContext,
-        IStringLocalizer S
-    )
-    {
-        try
-        {
-            var client = httpClientFactory.CreateClient(OpenApiUrlGuard.HttpClientName);
-            var swaggerUrl = ResolveUrl("/swagger/v1/swagger.json", httpContext);
-
-            if (swaggerUrl == null)
-            {
-                // Not a failure — we just can't verify.
-                return null;
-            }
-
-            var request = new HttpRequestMessage(HttpMethod.Get, swaggerUrl);
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-
-            var response = await client.SendAsync(request);
-
-            if (response.IsSuccessStatusCode)
-            {
-                return null;
-            }
-
-            return S["Token was obtained but the API endpoint returned status {0}. Verify the client has the required permissions.", (int)response.StatusCode];
-        }
-        catch (HttpRequestException)
-        {
-            return S["Token exchange successful, but could not verify the API endpoint. Verify that the server is running and the URL is correct."];
         }
     }
 
@@ -392,21 +219,10 @@ internal sealed class TestConnectionRequest
     public string TokenUrl { get; set; }
     public string AuthorizationUrl { get; set; }
     public string ClientId { get; set; }
-    public string ClientSecret { get; set; }
     public string Scopes { get; set; }
 }
 
 internal sealed class TestConnectionResult
 {
     public string Message { get; set; }
-}
-
-internal sealed class TokenExchangeResult
-{
-    public bool Success { get; set; }
-    public string Token { get; set; }
-    public LocalizedString Error { get; set; }
-
-    public static TokenExchangeResult Ok(string token) => new() { Success = true, Token = token };
-    public static TokenExchangeResult Failure(LocalizedString error) => new() { Error = error };
 }

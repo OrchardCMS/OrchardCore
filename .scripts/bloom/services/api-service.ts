@@ -8,20 +8,6 @@ const debug = dbg("orchardcore:bloom:api-service");
 export type AuthType = "cookie" | "bearer";
 
 /**
- * Client Credentials configuration for automatic token acquisition.
- */
-export interface ClientCredentialsConfig {
-    /** The token endpoint URL (e.g., "/connect/token"). */
-    tokenUrl: string;
-    /** The OAuth2 client ID. */
-    clientId: string;
-    /** The OAuth2 client secret. */
-    clientSecret: string;
-    /** Space-separated scopes (e.g., "api"). */
-    scopes?: string;
-}
-
-/**
  * Options for creating an ApiService instance.
  */
 export interface ApiServiceOptions {
@@ -31,11 +17,6 @@ export interface ApiServiceOptions {
     authType?: AuthType;
     /** Bearer token for "bearer" auth. Can be updated later via setToken(). */
     token?: string;
-    /**
-     * Client Credentials configuration. When provided, the service automatically
-     * acquires a Bearer token on the first request. Sets authType to "bearer".
-     */
-    clientCredentials?: ClientCredentialsConfig;
 }
 
 /**
@@ -45,14 +26,11 @@ export interface ApiServiceOptions {
 export class ApiService {
     private readonly instance: AxiosInstance;
     private readonly authType: AuthType;
-    private readonly clientCredentials: ClientCredentialsConfig | null;
     private token: string | null;
-    private tokenPromise: Promise<string> | null = null;
 
     constructor(options?: ApiServiceOptions) {
         const baseUrl = options?.baseUrl ?? "";
-        this.clientCredentials = options?.clientCredentials ?? null;
-        this.authType = this.clientCredentials ? "bearer" : (options?.authType ?? "cookie");
+        this.authType = options?.authType ?? "cookie";
         this.token = options?.token ?? null;
 
         this.instance = axios.create({
@@ -63,16 +41,13 @@ export class ApiService {
             },
         });
 
-        this.instance.interceptors.request.use(async (config) => {
+        this.instance.interceptors.request.use((config) => {
             if (this.authType === "cookie") {
                 const antiForgeryToken = getAntiForgeryToken();
                 if (antiForgeryToken) {
                     config.headers["RequestVerificationToken"] = antiForgeryToken;
                 }
             } else if (this.authType === "bearer") {
-                if (!this.token && this.clientCredentials) {
-                    await this.acquireToken();
-                }
                 if (this.token) {
                     config.headers["Authorization"] = `Bearer ${this.token}`;
                 }
@@ -86,7 +61,6 @@ export class ApiService {
      */
     setToken(token: string): void {
         this.token = token;
-        this.tokenPromise = null;
     }
 
     /**
@@ -137,51 +111,6 @@ export class ApiService {
         return this.instance.delete<T>(url, config);
     }
 
-    /**
-     * Acquires a Bearer token using the Client Credentials flow.
-     * Deduplicates concurrent requests so the token endpoint is called only once.
-     */
-    private async acquireToken(): Promise<void> {
-        if (!this.clientCredentials) {
-            return;
-        }
-
-        if (!this.tokenPromise) {
-            this.tokenPromise = this.exchangeClientCredentials();
-        }
-
-        this.token = await this.tokenPromise;
-    }
-
-    private async exchangeClientCredentials(): Promise<string> {
-        const { tokenUrl, clientId, clientSecret, scopes } = this.clientCredentials!;
-
-        debug("Acquiring token from %s", tokenUrl);
-
-        const params = new URLSearchParams({
-            grant_type: "client_credentials",
-            client_id: clientId,
-            client_secret: clientSecret,
-        });
-
-        if (scopes) {
-            params.set("scope", scopes);
-        }
-
-        const response = await axios.post(tokenUrl, params, {
-            headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        });
-
-        const accessToken = response.data?.access_token;
-
-        if (!accessToken) {
-            throw new Error("Token response did not contain an access_token.");
-        }
-
-        debug("Token acquired successfully");
-
-        return accessToken;
-    }
 }
 
 /**

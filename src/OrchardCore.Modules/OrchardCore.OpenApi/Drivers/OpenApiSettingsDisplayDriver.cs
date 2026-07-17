@@ -98,13 +98,6 @@ public sealed class OpenApiSettingsDisplayDriver : SiteDisplayDriver<OpenApiSett
                 context.Updater.ModelState.AddModelError(Prefix, S["The Client ID is required for Authorization Code + PKCE."]);
             }
         }
-        else if (model.AuthenticationType == OpenApiAuthenticationType.ClientCredentials)
-        {
-            if (string.IsNullOrWhiteSpace(model.TokenUrl))
-            {
-                context.Updater.ModelState.AddModelError(Prefix, S["The Token URL is required for Client Credentials."]);
-            }
-        }
 
         // Validate the OAuth2 server by fetching its OpenID Connect discovery document.
         if (model.AuthenticationType != OpenApiAuthenticationType.None
@@ -208,27 +201,6 @@ public sealed class OpenApiSettingsDisplayDriver : SiteDisplayDriver<OpenApiSett
                     if (!hasAuthCode)
                     {
                         context.Updater.ModelState.AddModelError(Prefix, S["The OpenID Connect server does not support the Authorization Code grant type. Enable it in the OpenID Connect server settings."]);
-                    }
-                }
-            }
-            else if (model.AuthenticationType == OpenApiAuthenticationType.ClientCredentials)
-            {
-                if (root.TryGetProperty("grant_types_supported", out var grantTypes))
-                {
-                    var hasClientCredentials = false;
-
-                    foreach (var gt in grantTypes.EnumerateArray())
-                    {
-                        if (gt.GetString() == "client_credentials")
-                        {
-                            hasClientCredentials = true;
-                            break;
-                        }
-                    }
-
-                    if (!hasClientCredentials)
-                    {
-                        context.Updater.ModelState.AddModelError(Prefix, S["The OpenID Connect server does not support the Client Credentials grant type. Enable it in the OpenID Connect server settings."]);
                     }
                 }
             }

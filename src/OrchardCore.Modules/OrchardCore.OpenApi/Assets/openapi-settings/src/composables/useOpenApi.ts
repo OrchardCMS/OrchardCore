@@ -19,7 +19,6 @@ export function useOpenApi() {
         tokenUrl: string
         authorizationUrl?: string
         clientId: string
-        clientSecret?: string
         scopes?: string
     }): Promise<void> {
         testing.value = true
@@ -32,7 +31,6 @@ export function useOpenApi() {
                 tokenUrl: config.tokenUrl,
                 authorizationUrl: config.authorizationUrl,
                 clientId: config.clientId,
-                clientSecret: config.clientSecret,
                 scopes: config.scopes,
             })
 

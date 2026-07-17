@@ -7,6 +7,35 @@ description: Regenerate the OrchardCore.OpenApi module's NSwag-generated C#/Type
 
 Regenerates the OpenApi module's NSwag-generated C#/TypeScript API clients and verifies the regeneration produces a stable, non-reshuffled diff.
 
+## Preferred: `tools/OpenApiClientGenerator` (automated, no browser/dev-server needed)
+
+A console project that does the whole pipeline headlessly:
+
+```bash
+dotnet run --project tools/OpenApiClientGenerator -c Release
+yarn build   # refreshes the Vue app's bundled JS against the new TS client
+```
+
+It boots the CMS in-process on an ephemeral port, uses `OrchardCore.AutoSetup` with
+`src/OrchardCore.Cms.Web/Recipes/openapi-generation-setup.recipe.json` (`issetuprecipe: true`)
+to provision the **Default** tenant with the same feature set as `openapi-generation.recipe.json`
+below, fetches `swagger.json`, writes a scratch `.nswag` config pointing at that capture, and
+shells out to the `nswag` CLI (same prerequisite as the manual path: `dotnet tool install -g
+NSwag.ConsoleCore`). Source: `tools/OpenApiClientGenerator/Program.cs`.
+
+**Why Default tenant specifically**: `OrchardCore.Tenants` (and `.Distributed`,
+`.FeatureProfiles`) have `DefaultTenantOnly = true` in their `[Feature]` manifest attribute —
+they can only be enabled on the Default/Host shell, never a secondary tenant. A Blog-recipe
+functional-test tenant cannot enable `OrchardCore.Tenants`, which is why this tool targets the
+Default shell via `AutoSetup` rather than reusing the functional-test harness's tenant pattern.
+
+This tool only regenerates the clients against whatever API surface the current source produces
+— it does not add a CI drift-check gate (that was scoped out; see `nswag-automation-plan.md` in
+git stash history for the fuller original proposal, "Part 1" of which this tool implements).
+
+The manual procedure below still applies if you need to regenerate against a real running dev
+server (e.g. to inspect `swagger.json` interactively) or investigate the tool's own behavior.
+
 ## Where things live
 
 - Config: `src/OrchardCore.Modules/OrchardCore.OpenApi/OrchardCore.OpenApi.nswag` — **this file already exists**, do not assume it's missing. It defines both generators:
@@ -16,7 +45,9 @@ Regenerates the OpenApi module's NSwag-generated C#/TypeScript API clients and v
 - Recipe: `src/OrchardCore.Modules/OrchardCore.OpenApi/Recipes/openapi-generation.recipe.json` (name `OpenApiGeneration`) enables every feature that exposes an API endpoint: `OrchardCore.Contents`, `OrchardCore.Queries`, `OrchardCore.Tenants`, `OrchardCore.Search.Lucene`, `OrchardCore.Search.Elasticsearch`, `OrchardCore.OpenApi`.
   - It has `"issetuprecipe": false`, so it does **not** appear in the new-tenant/site-setup recipe dropdown. Run it against an already-set-up tenant instead, via **Admin ▸ Configuration ▸ Recipes**, click "Run" next to "OpenApi Generation", confirm the modal. (`/Admin/Recipes`, `AdminController.Execute` in `OrchardCore.Recipes`.)
 
-## NSwag CLI
+## Manual procedure (fallback)
+
+### NSwag CLI
 
 Installed as a dotnet tool: `~/.dotnet/tools/nswag` (or `dotnet tool install -g NSwag.ConsoleCore` if missing). Run with:
 

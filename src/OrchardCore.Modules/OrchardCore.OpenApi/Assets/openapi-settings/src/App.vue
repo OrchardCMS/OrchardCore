@@ -90,13 +90,13 @@ watch(() => settings.tokenUrl, (v) => syncToHiddenInput('TokenUrl', v))
 watch(() => settings.oAuthClientId, (v) => syncToHiddenInput('OAuthClientId', v))
 watch(() => settings.oAuthScopes, (v) => syncToHiddenInput('OAuthScopes', v))
 
-const isOAuth = () => settings.authenticationType === 1 || settings.authenticationType === 2
+const isPkce = () => settings.authenticationType === 1
 </script>
 
 <template>
     <AuthSettings :settings="settings" :feature-status="featureStatus" :path-base="pathBase" @update:settings="Object.assign(settings, $event)" />
     <ConnectionTester
-        v-if="isOAuth()"
+        v-if="isPkce()"
         :authentication-type="settings.authenticationType"
         :token-url="settings.tokenUrl"
         :authorization-url="settings.authorizationUrl"

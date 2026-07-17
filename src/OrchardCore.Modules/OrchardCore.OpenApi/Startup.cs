@@ -223,32 +223,21 @@ public sealed class Startup : StartupBase
         var swaggerGenOptions = app.ApplicationServices.GetRequiredService<IOptions<SwaggerGenOptions>>();
         var tokenUrl = new Uri(settings.TokenUrl, UriKind.RelativeOrAbsolute);
 
-        var flows = new OpenApiOAuthFlows();
-
-        switch (settings.AuthenticationType)
+        if (settings.AuthenticationType != OpenApiAuthenticationType.AuthorizationCodePkce
+            || string.IsNullOrEmpty(settings.AuthorizationUrl))
         {
-            case OpenApiAuthenticationType.AuthorizationCodePkce:
-                if (string.IsNullOrEmpty(settings.AuthorizationUrl))
-                {
-                    return;
-                }
-
-                flows.AuthorizationCode = new OpenApiOAuthFlow
-                {
-                    AuthorizationUrl = new Uri(settings.AuthorizationUrl, UriKind.RelativeOrAbsolute),
-                    TokenUrl = tokenUrl,
-                    Scopes = scopes,
-                };
-                break;
-
-            case OpenApiAuthenticationType.ClientCredentials:
-                flows.ClientCredentials = new OpenApiOAuthFlow
-                {
-                    TokenUrl = tokenUrl,
-                    Scopes = scopes,
-                };
-                break;
+            return;
         }
+
+        var flows = new OpenApiOAuthFlows
+        {
+            AuthorizationCode = new OpenApiOAuthFlow
+            {
+                AuthorizationUrl = new Uri(settings.AuthorizationUrl, UriKind.RelativeOrAbsolute),
+                TokenUrl = tokenUrl,
+                Scopes = scopes,
+            },
+        };
 
         swaggerGenOptions.Value.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
         {
@@ -328,11 +317,7 @@ public sealed class SwaggerUIStartup : StartupBase
             {
                 options.OAuthClientId(settings.OAuthClientId);
                 options.OAuthAppName("OrchardCore Swagger UI");
-
-                if (settings.AuthenticationType == OpenApiAuthenticationType.AuthorizationCodePkce)
-                {
-                    options.OAuthUsePkce();
-                }
+                options.OAuthUsePkce();
 
                 // Strip cookies from API requests so that OAuth is enforced and
                 // users must click "Authorize" instead of silently falling back

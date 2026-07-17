@@ -2426,6 +2426,356 @@ export class QueryApiClient implements IQueryApiClient {
     }
 }
 
+export interface ITenantApiClient {
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    apiCreateTenant(body: TenantApiModel | undefined,  cancelToken?: CancelToken): Promise<void>;
+    /**
+     * @return OK
+     */
+    apiDisableTenant(tenantName: string,  cancelToken?: CancelToken): Promise<void>;
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    apiEditTenant(body: TenantApiModel | undefined,  cancelToken?: CancelToken): Promise<void>;
+    /**
+     * @return OK
+     */
+    apiEnableTenant(tenantName: string,  cancelToken?: CancelToken): Promise<void>;
+    /**
+     * @return OK
+     */
+    apiRemoveTenant(tenantName: string,  cancelToken?: CancelToken): Promise<void>;
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    apiSetupTenant(body: SetupApiViewModel | undefined,  cancelToken?: CancelToken): Promise<void>;
+}
+
+export class TenantApiClient implements ITenantApiClient {
+    protected instance: AxiosInstance;
+    protected baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, instance?: AxiosInstance) {
+
+        this.instance = instance || axios.create();
+
+        this.baseUrl = baseUrl ?? "/";
+
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    apiCreateTenant(body: TenantApiModel | undefined, cancelToken?: CancelToken): Promise<void> {
+        let url_ = this.baseUrl + "/api/tenants/create";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json",
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processApiCreateTenant(_response);
+        });
+    }
+
+    protected processApiCreateTenant(response: AxiosResponse): Promise<void> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            return Promise.resolve<void>(null as any);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    apiDisableTenant(tenantName: string, cancelToken?: CancelToken): Promise<void> {
+        let url_ = this.baseUrl + "/api/tenants/disable/{tenantName}";
+        if (tenantName === undefined || tenantName === null)
+            throw new globalThis.Error("The parameter 'tenantName' must be defined.");
+        url_ = url_.replace("{tenantName}", encodeURIComponent("" + tenantName));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: AxiosRequestConfig = {
+            method: "POST",
+            url: url_,
+            headers: {
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processApiDisableTenant(_response);
+        });
+    }
+
+    protected processApiDisableTenant(response: AxiosResponse): Promise<void> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            return Promise.resolve<void>(null as any);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    apiEditTenant(body: TenantApiModel | undefined, cancelToken?: CancelToken): Promise<void> {
+        let url_ = this.baseUrl + "/api/tenants/edit";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json",
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processApiEditTenant(_response);
+        });
+    }
+
+    protected processApiEditTenant(response: AxiosResponse): Promise<void> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            return Promise.resolve<void>(null as any);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    apiEnableTenant(tenantName: string, cancelToken?: CancelToken): Promise<void> {
+        let url_ = this.baseUrl + "/api/tenants/enable/{tenantName}";
+        if (tenantName === undefined || tenantName === null)
+            throw new globalThis.Error("The parameter 'tenantName' must be defined.");
+        url_ = url_.replace("{tenantName}", encodeURIComponent("" + tenantName));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: AxiosRequestConfig = {
+            method: "POST",
+            url: url_,
+            headers: {
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processApiEnableTenant(_response);
+        });
+    }
+
+    protected processApiEnableTenant(response: AxiosResponse): Promise<void> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            return Promise.resolve<void>(null as any);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    apiRemoveTenant(tenantName: string, cancelToken?: CancelToken): Promise<void> {
+        let url_ = this.baseUrl + "/api/tenants/remove/{tenantName}";
+        if (tenantName === undefined || tenantName === null)
+            throw new globalThis.Error("The parameter 'tenantName' must be defined.");
+        url_ = url_.replace("{tenantName}", encodeURIComponent("" + tenantName));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: AxiosRequestConfig = {
+            method: "POST",
+            url: url_,
+            headers: {
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processApiRemoveTenant(_response);
+        });
+    }
+
+    protected processApiRemoveTenant(response: AxiosResponse): Promise<void> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            return Promise.resolve<void>(null as any);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    apiSetupTenant(body: SetupApiViewModel | undefined, cancelToken?: CancelToken): Promise<void> {
+        let url_ = this.baseUrl + "/api/tenants/setup";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json",
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processApiSetupTenant(_response);
+        });
+    }
+
+    protected processApiSetupTenant(response: AxiosResponse): Promise<void> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            return Promise.resolve<void>(null as any);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<void>(null as any);
+    }
+}
+
 export interface IGetIntellisenseEndpointClient {
     /**
      * @return OK
@@ -2897,7 +3247,6 @@ export interface IMoveMedias {
 export enum OpenApiAuthenticationType {
     _0 = 0,
     _1 = 1,
-    _2 = 2,
 }
 
 export class PaginatedFoldersDto implements IPaginatedFoldersDto {
@@ -3052,12 +3401,179 @@ export interface IProblemDetails {
     [key: string]: any;
 }
 
+export class SetupApiViewModel implements ISetupApiViewModel {
+    name!: string;
+    siteName!: string;
+    databaseProvider?: string | undefined;
+    connectionString?: string | undefined;
+    tablePrefix?: string | undefined;
+    userName!: string;
+    email!: string;
+    password?: string | undefined;
+    recipeName?: string | undefined;
+    recipe?: string | undefined;
+    siteTimeZone?: string | undefined;
+    schema?: string | undefined;
+
+    constructor(data?: ISetupApiViewModel) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.name = _data["name"];
+            this.siteName = _data["siteName"];
+            this.databaseProvider = _data["databaseProvider"];
+            this.connectionString = _data["connectionString"];
+            this.tablePrefix = _data["tablePrefix"];
+            this.userName = _data["userName"];
+            this.email = _data["email"];
+            this.password = _data["password"];
+            this.recipeName = _data["recipeName"];
+            this.recipe = _data["recipe"];
+            this.siteTimeZone = _data["siteTimeZone"];
+            this.schema = _data["schema"];
+        }
+    }
+
+    static fromJS(data: any): SetupApiViewModel {
+        data = typeof data === 'object' ? data : {};
+        let result = new SetupApiViewModel();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["name"] = this.name;
+        data["siteName"] = this.siteName;
+        data["databaseProvider"] = this.databaseProvider;
+        data["connectionString"] = this.connectionString;
+        data["tablePrefix"] = this.tablePrefix;
+        data["userName"] = this.userName;
+        data["email"] = this.email;
+        data["password"] = this.password;
+        data["recipeName"] = this.recipeName;
+        data["recipe"] = this.recipe;
+        data["siteTimeZone"] = this.siteTimeZone;
+        data["schema"] = this.schema;
+        return data;
+    }
+}
+
+export interface ISetupApiViewModel {
+    name: string;
+    siteName: string;
+    databaseProvider?: string | undefined;
+    connectionString?: string | undefined;
+    tablePrefix?: string | undefined;
+    userName: string;
+    email: string;
+    password?: string | undefined;
+    recipeName?: string | undefined;
+    recipe?: string | undefined;
+    siteTimeZone?: string | undefined;
+    schema?: string | undefined;
+}
+
+export class TenantApiModel implements ITenantApiModel {
+    description?: string | undefined;
+    name!: string;
+    category?: string | undefined;
+    databaseProvider?: string | undefined;
+    requestUrlPrefix?: string | undefined;
+    requestUrlHost?: string | undefined;
+    connectionString?: string | undefined;
+    tablePrefix?: string | undefined;
+    schema?: string | undefined;
+    recipeName?: string | undefined;
+    featureProfiles?: string[] | undefined;
+    isNewTenant?: boolean;
+
+    constructor(data?: ITenantApiModel) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.description = _data["description"];
+            this.name = _data["name"];
+            this.category = _data["category"];
+            this.databaseProvider = _data["databaseProvider"];
+            this.requestUrlPrefix = _data["requestUrlPrefix"];
+            this.requestUrlHost = _data["requestUrlHost"];
+            this.connectionString = _data["connectionString"];
+            this.tablePrefix = _data["tablePrefix"];
+            this.schema = _data["schema"];
+            this.recipeName = _data["recipeName"];
+            if (Array.isArray(_data["featureProfiles"])) {
+                this.featureProfiles = [] as any;
+                for (let item of _data["featureProfiles"])
+                    this.featureProfiles!.push(item);
+            }
+            this.isNewTenant = _data["isNewTenant"];
+        }
+    }
+
+    static fromJS(data: any): TenantApiModel {
+        data = typeof data === 'object' ? data : {};
+        let result = new TenantApiModel();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["description"] = this.description;
+        data["name"] = this.name;
+        data["category"] = this.category;
+        data["databaseProvider"] = this.databaseProvider;
+        data["requestUrlPrefix"] = this.requestUrlPrefix;
+        data["requestUrlHost"] = this.requestUrlHost;
+        data["connectionString"] = this.connectionString;
+        data["tablePrefix"] = this.tablePrefix;
+        data["schema"] = this.schema;
+        data["recipeName"] = this.recipeName;
+        if (Array.isArray(this.featureProfiles)) {
+            data["featureProfiles"] = [];
+            for (let item of this.featureProfiles)
+                data["featureProfiles"].push(item);
+        }
+        data["isNewTenant"] = this.isNewTenant;
+        return data;
+    }
+}
+
+export interface ITenantApiModel {
+    description?: string | undefined;
+    name: string;
+    category?: string | undefined;
+    databaseProvider?: string | undefined;
+    requestUrlPrefix?: string | undefined;
+    requestUrlHost?: string | undefined;
+    connectionString?: string | undefined;
+    tablePrefix?: string | undefined;
+    schema?: string | undefined;
+    recipeName?: string | undefined;
+    featureProfiles?: string[] | undefined;
+    isNewTenant?: boolean;
+}
+
 export class TestConnectionRequest implements ITestConnectionRequest {
     authenticationType?: OpenApiAuthenticationType;
     tokenUrl?: string | undefined;
     authorizationUrl?: string | undefined;
     clientId?: string | undefined;
-    clientSecret?: string | undefined;
     scopes?: string | undefined;
 
     constructor(data?: ITestConnectionRequest) {
@@ -3075,7 +3591,6 @@ export class TestConnectionRequest implements ITestConnectionRequest {
             this.tokenUrl = _data["tokenUrl"];
             this.authorizationUrl = _data["authorizationUrl"];
             this.clientId = _data["clientId"];
-            this.clientSecret = _data["clientSecret"];
             this.scopes = _data["scopes"];
         }
     }
@@ -3093,7 +3608,6 @@ export class TestConnectionRequest implements ITestConnectionRequest {
         data["tokenUrl"] = this.tokenUrl;
         data["authorizationUrl"] = this.authorizationUrl;
         data["clientId"] = this.clientId;
-        data["clientSecret"] = this.clientSecret;
         data["scopes"] = this.scopes;
         return data;
     }
@@ -3104,7 +3618,6 @@ export interface ITestConnectionRequest {
     tokenUrl?: string | undefined;
     authorizationUrl?: string | undefined;
     clientId?: string | undefined;
-    clientSecret?: string | undefined;
     scopes?: string | undefined;
 }
 

@@ -33,8 +33,7 @@ The OpenAPI settings page (**Configuration → Settings → OpenApi**) allows yo
 | Type | Description |
 |------|-------------|
 | **Cookie (default)** | No additional configuration needed. If you are logged in, the UIs automatically use your session cookie. |
-| **OAuth2 Authorization Code + PKCE** | Interactive login. The "Authorize" button redirects to the authorization server. Suitable for browser-based API access. |
-| **OAuth2 Client Credentials** | Machine-to-machine authentication. The "Authorize" dialog prompts for a client ID and secret, then exchanges them for a Bearer token. |
+| **OAuth2 Authorization Code + PKCE** | Interactive login. The "Authorize" button redirects to the authorization server. Suitable for browser-based API access. This is the only OAuth2 flow supported here — it requires no client secret embedded in the browser, unlike Client Credentials or the deprecated Password grant. |
 
 ### Cookie Authentication
 
@@ -42,19 +41,19 @@ This is the simplest option. The API documentation UIs include the session cooki
 
 ### OAuth2 Setup
 
-For OAuth2 authentication (either PKCE or Client Credentials), you need to:
+For OAuth2 Authorization Code + PKCE authentication, you need to:
 
 1. **Enable the OpenID Server** feature (Configuration → Features → OpenID Authorization Server).
 2. **Enable the OpenID Token Validation** feature — this is required for the API to validate Bearer tokens. Without it, API requests will return `401 Unauthorized` even with a valid token.
-3. **Create an OpenID application** (Security → OpenID Connect → Applications):
-   - For **Client Credentials**: set the type to **Confidential client**, enable **Allow Client Credentials Flow**, and assign the appropriate **Client Credentials Roles** (e.g., Administrator) so the token has permissions to access API endpoints.
-   - For **PKCE**: enable **Allow Authorization Code Flow** and configure a redirect URI for the Swagger UI callback.
+3. **Create an OpenID application** (Security → OpenID Connect → Applications): enable **Allow Authorization Code Flow** and configure a redirect URI for the Swagger UI callback.
 4. **Configure the OpenAPI settings** (Configuration → Settings → OpenApi):
    - Select the authentication type.
    - Enter the **Token URL** (e.g., `/connect/token`).
-   - Enter the **Authorization URL** (PKCE only, e.g., `/connect/authorize`).
+   - Enter the **Authorization URL** (e.g., `/connect/authorize`).
    - Enter the **Client ID** from the OpenID application.
    - Enter the **Scopes** (e.g., `api`).
+
+> **Note:** Client Credentials and Password grant are intentionally not supported by these JavaScript-based documentation UIs — both require a client secret to be embedded in browser-delivered code, which cannot be kept confidential. PKCE is the recommended flow for public/browser-based clients per the OAuth 2.0 Security Best Current Practice.
 
 ## OpenAPI Client Generation
 
@@ -171,31 +170,6 @@ await client.contentGET("my-content-item-id");
 
 This gives the NSwag-generated client all the authentication handling (cookies + anti-forgery token, or Bearer token) without any additional configuration.
 
-### Automatic Token Acquisition (Client Credentials)
-
-For machine-to-machine access, pass a `clientCredentials` config and the service acquires the Bearer token automatically on the first request:
-
-```typescript
-import { ApiService } from "@bloom/services/api-service";
-import { Client } from "@bloom/services/OpenApiClient";
-
-const apiService = new ApiService({
-    clientCredentials: {
-        tokenUrl: "/connect/token",
-        clientId: "your-client-id",
-        clientSecret: "your-client-secret",
-        scopes: "api",
-    },
-});
-
-const client = new Client("", apiService.getAxiosInstance());
-
-// The token is acquired automatically on the first call.
-const content = await client.contentGET("my-content-item-id");
-```
-
-The token is acquired lazily on the first request and cached for subsequent calls. Concurrent requests are deduplicated so the token endpoint is called only once.
-
 ### Manual Token Management
 
 If you already have a token (e.g., from a different auth flow), pass it directly:
@@ -207,28 +181,6 @@ const client = new Client("", apiService.getAxiosInstance());
 // Update the token later (e.g., after refresh).
 apiService.setToken("newToken...");
 ```
-
-### Using cURL
-
-You can also obtain a token from the command line:
-
-```bash
-curl -X POST https://localhost:5001/connect/token \
-  -H "Content-Type: application/x-www-form-urlencoded" \
-  -d "grant_type=client_credentials&client_id=your-client-id&client_secret=your-client-secret&scope=api"
-```
-
-The response contains the access token:
-
-```json
-{
-  "access_token": "eyJ...",
-  "token_type": "Bearer",
-  "expires_in": 3600
-}
-```
-
-> **Prerequisites:** The OpenID Server and OpenID Token Validation features must be enabled, and the OpenID application must be configured with the Client Credentials flow and appropriate roles. See the [OAuth2 Setup](#oauth2-setup) section for details.
 
 ### Available Methods
 
@@ -463,7 +415,6 @@ The `SeverityLevel` enum (`@bloom/services/notifications/interfaces`) defines fo
 ### OAuth2 "Failed to authorize" or `401 Unauthorized` on API Requests
 
 - **Enable OpenID Token Validation**: The most common cause. Go to Configuration → Features and enable the **OpenID Token Validation** feature. Without it, the API cannot validate Bearer tokens.
-- **Assign Client Credentials Roles**: For the Client Credentials flow, the OpenID application must have roles assigned (e.g., Administrator) under "Client Credentials Roles". Without roles, the token has no permissions.
 - **Restart after settings changes**: OAuth2 settings are applied at startup. After changing authentication settings, the tenant must be reloaded.
 
 ### Endpoints Not Appearing in Swagger

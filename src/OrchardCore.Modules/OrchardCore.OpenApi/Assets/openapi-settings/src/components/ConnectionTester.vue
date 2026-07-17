@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { computed } from 'vue'
 import { useOpenApi } from '../composables/useOpenApi'
 import { getTranslations } from '@bloom/helpers/localizations'
 
@@ -13,13 +13,11 @@ const props = defineProps<{
     scopes: string
 }>()
 
-const clientSecret = ref('')
 const { testing, testSuccess, testResult, testConnection, clearResult } = useOpenApi()
 
 const canTest = computed(() => {
     if (!props.tokenUrl || !props.clientId) return false
     if (props.authenticationType === 1 && !props.authorizationUrl) return false
-    if (props.authenticationType === 2 && !clientSecret.value) return false
     return true
 })
 
@@ -31,14 +29,10 @@ async function onTestClick() {
         tokenUrl: props.tokenUrl,
         authorizationUrl: props.authorizationUrl || undefined,
         clientId: props.clientId,
-        clientSecret: clientSecret.value || undefined,
         scopes: props.scopes || undefined,
     }
 
     await testConnection(request)
-
-    // Clear the secret from the DOM after the test.
-    clientSecret.value = ''
 }
 </script>
 
@@ -48,20 +42,6 @@ async function onTestClick() {
             <h6 class="mb-0">{{ t('testConnection') }}</h6>
         </div>
         <div class="card-body">
-            <!-- Client Secret field (Client Credentials only) -->
-            <div v-if="authenticationType === 2" class="mb-3">
-                <label class="form-label" for="vue-ClientSecret">{{ t('clientSecret') }}</label>
-                <input
-                    type="password"
-                    class="form-control"
-                    id="vue-ClientSecret"
-                    v-model="clientSecret"
-                    :placeholder="t('enterClientSecret')"
-                    autocomplete="off"
-                />
-                <span class="hint">{{ t('clientSecretHint') }}</span>
-            </div>
-
             <button
                 type="button"
                 class="btn btn-secondary"
