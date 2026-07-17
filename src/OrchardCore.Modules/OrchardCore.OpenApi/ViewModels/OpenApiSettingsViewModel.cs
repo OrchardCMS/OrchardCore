@@ -18,6 +18,8 @@ public class OpenApiSettingsViewModel
 
     public string TokenUrl { get; set; }
 
+    public string ServerMetadataUrl { get; set; }
+
     public string OAuthClientId { get; set; }
 
     public string OAuthScopes { get; set; }

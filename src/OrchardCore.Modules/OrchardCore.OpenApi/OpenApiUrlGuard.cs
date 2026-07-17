@@ -6,7 +6,7 @@ namespace OrchardCore.OpenApi;
 /// <summary>
 /// Blocks outbound OAuth discovery/token requests from targeting link-local (e.g. cloud
 /// metadata endpoints) or private network addresses, since the target URL is supplied by
-/// whoever configures the OpenApi settings or calls the test-connection endpoint.
+/// whoever configures the OpenApi settings.
 /// Loopback is intentionally allowed: OrchardCore's own multi-tenancy model routinely hosts
 /// one tenant's OpenID Connect server as another tenant on the very same host/port, which is
 /// a legitimate, first-party configuration rather than an attack target.
