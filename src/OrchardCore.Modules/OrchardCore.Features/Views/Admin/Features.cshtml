@@ -193,7 +193,7 @@
                                             @foreach (var d in missingDependencies)
                                             {
                                                 <span class="badge text-bg-warning fw-normal">
-                                                    @d
+                                                    @d.Name
                                                 </span>
                                             }
                                         </div>
@@ -266,6 +266,12 @@
 
                 transitiveDependencies.classList.toggle('d-none');
                 button.classList.toggle('d-none');
+
+                const tooltip = bootstrap.Tooltip.getInstance(button);
+
+                if (tooltip) {
+                    tooltip.dispose();
+                }
             });
         });
     });
