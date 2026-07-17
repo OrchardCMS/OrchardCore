@@ -22,7 +22,7 @@ using OrchardCore.Routing;
 
 namespace OrchardCore.Apis.GraphQL;
 
-public class GraphQLMiddleware : IMiddleware
+public sealed class GraphQLMiddleware
 {
     private readonly ILogger _logger;
     private readonly GraphQLSettings _settings;

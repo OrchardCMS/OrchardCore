@@ -2,7 +2,8 @@
   "name": "@orchardcore/resources",
   "version": "1.0.0",
   "dependencies": {
-    "@fortawesome/fontawesome-free": "7.2.0",
+    "@crestapps/bootstrap-select": "1.2.1",
+    "@fortawesome/fontawesome-free": "7.3.1",
     "@fortawesome/fontawesome-free-5.15.4": "npm:@fortawesome/fontawesome-free@5.15.4",
     "@fortawesome/fontawesome-free-6.6.0": "npm:@fortawesome/fontawesome-free@6.6.0",
     "@fortawesome/fontawesome-free-6.7.2": "npm:@fortawesome/fontawesome-free@6.7.2",
@@ -10,7 +11,6 @@
     "blueimp-file-upload": "^10.32.0",
     "bootstrap": "5.3.8",
     "bootstrap-4.6.1": "npm:bootstrap@4.6.1",
-    "bootstrap-select": "1.14.0-beta3",
     "codemirror": "5.65.7",
     "fontawesome-iconpicker": "3.2.0",
     "jquery": "3.7.1",

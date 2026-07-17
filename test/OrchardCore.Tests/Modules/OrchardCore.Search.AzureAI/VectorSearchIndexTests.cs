@@ -11,7 +11,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.AzureAI;
 public class VectorSearchIndexTests
 {
     [Fact]
-    public void GetSearchIndex_CreatesDefaultProfileAndAlgorithm_ForVectorField()
+    public void GetSearchIndex_VectorField_CreatesDefaultProfileAndAlgorithm()
     {
         var indexProfile = CreateIndexProfile();
         var metadata = indexProfile.GetOrCreate<AzureAISearchIndexMetadata>();
@@ -39,7 +39,7 @@ public class VectorSearchIndexTests
     }
 
     [Fact]
-    public void GetSearchIndex_UsesConfiguredVectorSearchMetadata()
+    public void GetSearchIndex_Default_UsesConfiguredVectorSearchMetadata()
     {
         var indexProfile = CreateIndexProfile();
         var metadata = indexProfile.GetOrCreate<AzureAISearchIndexMetadata>();
@@ -85,7 +85,7 @@ public class VectorSearchIndexTests
     }
 
     [Fact]
-    public void GetSearchIndex_UsesConfiguredProfileAsFallback_WhenVectorFieldOmitsProfile()
+    public void GetSearchIndex_VectorFieldOmitsProfile_UsesConfiguredProfileAsFallback()
     {
         var indexProfile = CreateIndexProfile();
         var metadata = indexProfile.GetOrCreate<AzureAISearchIndexMetadata>();

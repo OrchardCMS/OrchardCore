@@ -12,7 +12,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media;
 public class MoveAttachedMediaFieldsStepTests
 {
     [Fact]
-    public async Task MoveAttachedMediaFieldsStep_MovesOnlySelectedContentTypes()
+    public async Task MoveAttachedMediaFieldsStep_Default_MovesOnlySelectedContentTypes()
     {
         using var context = new SiteContext();
         await context.InitializeAsync();
@@ -37,7 +37,7 @@ public class MoveAttachedMediaFieldsStepTests
     }
 
     [Fact]
-    public async Task MoveAttachedMediaFieldsStep_EvaluatesAllContentTypes_WhenFilterIsMissing()
+    public async Task MoveAttachedMediaFieldsStepEvaluatesAllContentTypes_FilterIsMissing_Succeeds()
     {
         using var context = new SiteContext();
         await context.InitializeAsync();

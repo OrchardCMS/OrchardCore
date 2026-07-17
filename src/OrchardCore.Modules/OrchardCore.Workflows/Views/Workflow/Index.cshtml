@@ -20,7 +20,7 @@
     </nav>
 </zone>
 
-<form asp-action="Index" id="workflows-form" method="post" class="no-multisubmit">
+<form asp-action="Index" id="workflows-form" method="post" class="no-multisubmit" data-list-management data-selected-label="@T["selected"]">
     <input type="submit" name="submit.Filter" id="submitFilter" class="visually-hidden" />
     <input type="submit" name="submit.BulkAction" class="visually-hidden" />
     <input asp-for="Options.BulkAction" type="hidden" />
@@ -39,7 +39,7 @@
                                     <label id="selected-items" class="text-muted" for="select-all"></label>
                                 </div>
                             </div>
-                            <div class="col-2 mb-1" style="display:none" id="actions">
+                            <div class="col-2 mb-1 d-none" id="actions">
                                 <div class="dropdown float-end mt-1">
                                     <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="bulk-action-menu-button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                         @T["Actions"]
@@ -134,69 +134,4 @@
     <a class="btn btn-secondary" href="@Model.ReturnUrl">@T["Back"]</a>
 </div>
 
-<script at="Foot">
-    $(function () {
-        $('.selectpicker').selectpicker();
-        $('.selectpicker').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
-            $("[name='submit.Filter']").click();
-        });
-        var actions = $("#actions");
-        var items = $("#items");
-        var filters = $(".filter");
-        var selectAllCtrl = $("#select-all");
-        var selectedItems = $("#selected-items");
-        var itemsCheckboxes = $(":checkbox[name='itemIds']");
-
-        $(".filter-options input").on("change", function () {
-            $("[name='submit.Filter']").click();
-        });
-
-        $(".dropdown-menu .dropdown-item").filter(function () {
-            return $(this).data("action");
-        }).on("click", function () {
-            if ($(":checkbox[name='itemIds']:checked").length > 1) {
-                var $this = $(this);
-                confirmDialog({
-                    title: $this.data('title'), message: $this.data('message'), callback: function (r) {
-                        if (r) {
-                            $("[name='Options.BulkAction']").val($this.data("action"));
-                            $("[name='submit.BulkAction']").click();
-                        }
-                    }
-                });
-            }
-        });
-
-        function displayActionsOrFilters() {
-            if ($(":checkbox[name='itemIds']:checked").length > 1) {
-                actions.show();
-                filters.hide();
-                selectedItems.show();
-                items.hide();
-            }
-            else {
-                actions.hide();
-                filters.show();
-                selectedItems.hide();
-                items.show();
-            }
-        }
-
-        selectAllCtrl.click(function () {
-            itemsCheckboxes.not(this).prop("checked", this.checked);
-            selectedItems.text($(":checkbox[name='itemIds']:checked").length + ' @T["selected"]');
-            displayActionsOrFilters();
-        });
-
-        itemsCheckboxes.on("click", function () {
-            var itemsCount = $(":checkbox[name='itemIds']").length;
-            var selectedItemsCount = $(":checkbox[name='itemIds']:checked").length;
-
-            selectAllCtrl.prop("checked", selectedItemsCount == itemsCount);
-            selectAllCtrl.prop("indeterminate", selectedItemsCount > 0 && selectedItemsCount < itemsCount);
-
-            selectedItems.text(selectedItemsCount + ' @T["selected"]');
-            displayActionsOrFilters();
-        });
-    });
-</script>
+<script asp-name="list-management" at="Foot"></script>

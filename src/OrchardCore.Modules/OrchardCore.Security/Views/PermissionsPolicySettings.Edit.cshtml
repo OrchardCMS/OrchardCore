@@ -167,27 +167,35 @@
 </div>
 <script>
     function changeOrigin(e, origin) {
-        var allowedOrigins = $('#' + e.name + 'AllowedOrigins');
+        var allowedOrigins = document.getElementById(e.name + 'AllowedOrigins');
+        if (!allowedOrigins) {
+            return;
+        }
 
         if (e.value == "Self") {
-            allowedOrigins.removeClass('d-none').addClass('d-block');
+            allowedOrigins.classList.remove('d-none');
+            allowedOrigins.classList.add('d-block');
 
-            if (allowedOrigins.val() != '') {
-                origin += ' ' + allowedOrigins.val().trim();
+            if (allowedOrigins.value != '') {
+                origin += ' ' + allowedOrigins.value.trim();
             }
         }
         else {
-            allowedOrigins.removeClass('d-block').addClass('d-none');
+            allowedOrigins.classList.remove('d-block');
+            allowedOrigins.classList.add('d-none');
         }
 
-        allowedOrigins.siblings().val(origin);
+        var permissionValue = allowedOrigins.parentElement.querySelector('input[type="hidden"]');
+        if (permissionValue) {
+            permissionValue.value = origin;
+        }
     }
 
     function changeAllowedOrigins(e) {
-        var permissionValue = $(e).siblings();
+        var permissionValue = e.parentElement.querySelector('input[type="hidden"]');
 
-        if (permissionValue.val().startsWith('self')) {
-            permissionValue.val('self ' + e.value.trim());
+        if (permissionValue && permissionValue.value.startsWith('self')) {
+            permissionValue.value = 'self ' + e.value.trim();
         }
     }
 </script>

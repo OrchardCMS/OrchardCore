@@ -7,7 +7,7 @@ public class PlacementInfoExtensionsCombineTests
     #region Combine - Null Handling
 
     [Fact]
-    public void Combine_BothNull_ShouldReturnNull()
+    public void Combine_BothNull_ReturnsNull()
     {
         // Act
         PlacementInfo first = null;
@@ -18,7 +18,7 @@ public class PlacementInfoExtensionsCombineTests
     }
 
     [Fact]
-    public void Combine_FirstNull_ShouldReturnSecond()
+    public void Combine_FirstNull_ReturnsSecond()
     {
         // Arrange
         var second = new PlacementInfo("Content:1");
@@ -31,7 +31,7 @@ public class PlacementInfoExtensionsCombineTests
     }
 
     [Fact]
-    public void Combine_SecondNull_ShouldReturnFirst()
+    public void Combine_SecondNull_ReturnsFirst()
     {
         // Arrange
         var first = new PlacementInfo("Content:1");
@@ -48,7 +48,7 @@ public class PlacementInfoExtensionsCombineTests
     #region Combine - Location Overriding (Last Non-Empty Wins)
 
     [Fact]
-    public void Combine_SecondHasLocation_ShouldOverrideFirst()
+    public void Combine_SecondHasLocation_OverrideFirst()
     {
         // Arrange
         var first = new PlacementInfo("Content:1");
@@ -62,7 +62,7 @@ public class PlacementInfoExtensionsCombineTests
     }
 
     [Fact]
-    public void Combine_SecondHasEmptyLocation_ShouldKeepFirst()
+    public void Combine_SecondHasEmptyLocation_KeepsFirst()
     {
         // Arrange
         var first = new PlacementInfo("Content:1");
@@ -76,7 +76,7 @@ public class PlacementInfoExtensionsCombineTests
     }
 
     [Fact]
-    public void Combine_SecondHasNullLocation_ShouldKeepFirst()
+    public void Combine_SecondHasNullLocation_KeepsFirst()
     {
         // Arrange
         var first = new PlacementInfo("Content:1");
@@ -115,7 +115,7 @@ public class PlacementInfoExtensionsCombineTests
     /// This proves that only providers with explicit locations can override.
     /// </summary>
     [Fact]
-    public void Combine_LaterProviderEmptyLocation_ShouldNotOverride()
+    public void Combine_LaterProviderEmptyLocation_NotOverride()
     {
         // Arrange
         var providerA = new PlacementInfo("Content:1");
@@ -136,7 +136,7 @@ public class PlacementInfoExtensionsCombineTests
     #region Combine - ShapeType Overriding
 
     [Fact]
-    public void Combine_SecondHasShapeType_ShouldOverrideFirst()
+    public void Combine_SecondHasShapeType_OverrideFirst()
     {
         // Arrange
         var first = new PlacementInfo("Content", shapeType: "TypeA");
@@ -150,7 +150,7 @@ public class PlacementInfoExtensionsCombineTests
     }
 
     [Fact]
-    public void Combine_SecondHasEmptyShapeType_ShouldKeepFirst()
+    public void Combine_SecondHasEmptyShapeType_KeepsFirst()
     {
         // Arrange
         var first = new PlacementInfo("Content", shapeType: "TypeA");
@@ -168,7 +168,7 @@ public class PlacementInfoExtensionsCombineTests
     #region Combine - DefaultPosition Overriding
 
     [Fact]
-    public void Combine_SecondHasDefaultPosition_ShouldOverrideFirst()
+    public void Combine_SecondHasDefaultPosition_OverrideFirst()
     {
         // Arrange
         var first = new PlacementInfo("Content", defaultPosition: "1");
@@ -182,7 +182,7 @@ public class PlacementInfoExtensionsCombineTests
     }
 
     [Fact]
-    public void Combine_SecondHasEmptyDefaultPosition_ShouldKeepFirst()
+    public void Combine_SecondHasEmptyDefaultPosition_KeepsFirst()
     {
         // Arrange
         var first = new PlacementInfo("Content", defaultPosition: "1");
@@ -200,7 +200,7 @@ public class PlacementInfoExtensionsCombineTests
     #region Combine - Source Tracking
 
     [Fact]
-    public void Combine_ShouldConcatenateSources()
+    public void Combine_Default_ConcatenateSources()
     {
         // Arrange
         var first = new PlacementInfo("Content", source: "ModuleA");
@@ -214,7 +214,7 @@ public class PlacementInfoExtensionsCombineTests
     }
 
     [Fact]
-    public void Combine_MultipleProviders_ShouldTrackAllSources()
+    public void Combine_MultipleProviders_TrackAllSources()
     {
         // Arrange
         var providerA = new PlacementInfo("Content:1", source: "ProjectA");
@@ -235,7 +235,7 @@ public class PlacementInfoExtensionsCombineTests
     #region Combine - Alternates and Wrappers Merging
 
     [Fact]
-    public void Combine_ShouldMergeAlternates()
+    public void Combine_Default_MergeAlternates()
     {
         // Arrange
         var first = new PlacementInfo("Content", alternates: ["Alt1"]);
@@ -250,7 +250,7 @@ public class PlacementInfoExtensionsCombineTests
     }
 
     [Fact]
-    public void Combine_ShouldMergeWrappers()
+    public void Combine_Default_MergeWrappers()
     {
         // Arrange
         var first = new PlacementInfo("Content", wrappers: ["Wrapper1"]);
@@ -265,7 +265,7 @@ public class PlacementInfoExtensionsCombineTests
     }
 
     [Fact]
-    public void Combine_NullAlternates_ShouldHandleGracefully()
+    public void Combine_NullAlternates_HandlesGracefully()
     {
         // Arrange
         var first = new PlacementInfo("Content", alternates: null);
@@ -283,7 +283,7 @@ public class PlacementInfoExtensionsCombineTests
     #region Combine - Creates New Instance
 
     [Fact]
-    public void Combine_ShouldReturnNewInstance_WhenBothNonNull()
+    public void Combine_BothNonNull_ReturnsNewInstance()
     {
         // Arrange
         var first = new PlacementInfo("Content:1");

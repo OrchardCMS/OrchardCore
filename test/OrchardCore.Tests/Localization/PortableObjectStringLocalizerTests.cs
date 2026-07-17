@@ -15,7 +15,7 @@ public class PortableObjectStringLocalizerTests
     }
 
     [Fact]
-    public void LocalizerReturnsTranslationsFromProvidedDictionary()
+    public void LocalizerReturnsTranslationsFromProvidedDictionary_Default_Succeeds()
     {
         SetupDictionary("cs", new[] {
             new CultureDictionaryRecord("ball", "míč", "míče", "míčů"),
@@ -32,7 +32,7 @@ public class PortableObjectStringLocalizerTests
     }
 
     [Fact]
-    public void LocalizerReturnsOriginalTextIfTranslationsDoesntExistInProvidedDictionary()
+    public void LocalizerReturnsOriginalTextIfTranslationsDoesntExistInProvidedDictionary_Default_Succeeds()
     {
         SetupDictionary("cs", new[] {
             new CultureDictionaryRecord("ball", "míč", "míče", "míčů"),
@@ -48,7 +48,7 @@ public class PortableObjectStringLocalizerTests
     }
 
     [Fact]
-    public void LocalizerReturnsOriginalTextIfDictionaryIsEmpty()
+    public void LocalizerReturnsOriginalTextIfDictionaryIsEmpty_Default_Succeeds()
     {
         SetupDictionary("cs", Array.Empty<CultureDictionaryRecord>());
 
@@ -62,7 +62,7 @@ public class PortableObjectStringLocalizerTests
     }
 
     [Fact]
-    public void LocalizerFallbacksToParentCultureIfTranslationDoesntExistInSpecificCulture()
+    public void LocalizerFallbacksToParentCultureIfTranslationDoesntExistInSpecificCulture_Default_Succeeds()
     {
         SetupDictionary("cs", new[] {
             new CultureDictionaryRecord("ball", "míč", "míče", "míčů"),
@@ -82,7 +82,7 @@ public class PortableObjectStringLocalizerTests
     }
 
     [Fact]
-    public void LocalizerReturnsTranslationFromSpecificCultureIfItExists()
+    public void LocalizerReturnsTranslationFromSpecificCultureIfItExists_Default_Succeeds()
     {
         SetupDictionary("cs", new[] {
             new CultureDictionaryRecord("ball", "míč", "míče", "míčů"),
@@ -102,7 +102,7 @@ public class PortableObjectStringLocalizerTests
     }
 
     [Fact]
-    public void LocalizerReturnsTranslationWithSpecificContext()
+    public void LocalizerReturnsTranslationWithSpecificContext_Default_Succeeds()
     {
         SetupDictionary("cs", new[] {
             new CultureDictionaryRecord("ball", "míč", "míče", "míčů"),
@@ -119,7 +119,7 @@ public class PortableObjectStringLocalizerTests
     }
 
     [Fact]
-    public void LocalizerReturnsTranslationWithoutContextIfTranslationWithContextDoesntExist()
+    public void LocalizerReturnsTranslationWithoutContextIfTranslationWithContextDoesntExist_Default_Succeeds()
     {
         SetupDictionary("cs", new[] {
             new CultureDictionaryRecord("ball", "míč", "míče", "míčů"),
@@ -136,7 +136,7 @@ public class PortableObjectStringLocalizerTests
     }
 
     [Fact]
-    public void LocalizerReturnsFormattedTranslation()
+    public void LocalizerReturnsFormattedTranslation_Default_Succeeds()
     {
         SetupDictionary("cs", new[] {
             new CultureDictionaryRecord("The page (ID:{0}) was deleted.", "Stránka (ID:{0}) byla smazána."),
@@ -152,7 +152,7 @@ public class PortableObjectStringLocalizerTests
     }
 
     [Fact]
-    public void HtmlLocalizerDoesNotFormatTwiceIfFormattedTranslationContainsCurlyBraces()
+    public void HtmlLocalizerDoesNotFormatTwiceIfFormattedTranslationContainsCurlyBraces_Default_Succeeds()
     {
         SetupDictionary("cs", new[] {
             new CultureDictionaryRecord("The page (ID:{0}) was deleted.", "Stránka (ID:{0}) byla smazána."),
@@ -184,7 +184,7 @@ public class PortableObjectStringLocalizerTests
     [Theory]
     [InlineData("car", 1)]
     [InlineData("cars", 2)]
-    public void LocalizerReturnsOriginalTextForPluralIfTranslationDoesntExist(string expected, int count)
+    public void LocalizerReturnsOriginalTextForPluralIfTranslationDoesntExist_Default_Succeeds(string expected, int count)
     {
         SetupDictionary("cs", new[] {
             new CultureDictionaryRecord("ball", "míč", "míče", "míčů"),
@@ -201,7 +201,7 @@ public class PortableObjectStringLocalizerTests
     [Theory]
     [InlineData("zh-Hans", "球", 1, new string[] { "球" })]
     [InlineData("zh-Hans", "球", 2, new string[] { "球" })]
-    public void LocalizerReturnsCorrectTranslationForPluralIfNoPluralFormsSpecified(string culture, string expected, int count, string[] translations)
+    public void LocalizerReturnsCorrectTranslationForPluralIfNoPluralFormsSpecified_Default_Succeeds(string culture, string expected, int count, string[] translations)
     {
         using var cultureScope = CultureScope.Create(culture);
 
@@ -222,7 +222,7 @@ public class PortableObjectStringLocalizerTests
     [InlineData("míč", 1)]
     [InlineData("2 míče", 2)]
     [InlineData("5 míčů", 5)]
-    public void LocalizerReturnsTranslationInCorrectPluralForm(string expected, int count)
+    public void LocalizerReturnsTranslationInCorrectPluralForm_Default_Succeeds(string expected, int count)
     {
         SetupDictionary("cs", new[] {
             new CultureDictionaryRecord("ball", "míč", "{0} míče", "{0} míčů"),
@@ -241,7 +241,7 @@ public class PortableObjectStringLocalizerTests
     [InlineData("míč", 1)]
     [InlineData("2 míče", 2)]
     [InlineData("5 míčů", 5)]
-    public void LocalizerReturnsOriginalValuesIfTranslationDoesntExistAndMultiplePluraflFormsAreSpecified(string expected, int count)
+    public void LocalizerReturnsOriginalValuesIfTranslationDoesntExistAndMultiplePluraflFormsAreSpecified_Default_Succeeds(string expected, int count)
     {
         SetupDictionary("en", Array.Empty<CultureDictionaryRecord>());
 
@@ -257,7 +257,7 @@ public class PortableObjectStringLocalizerTests
     [Theory]
     [InlineData("ball", 1)]
     [InlineData("2 balls", 2)]
-    public void LocalizerReturnsCorrectPluralFormIfMultiplePluraflFormsAreSpecified(string expected, int count)
+    public void LocalizerReturnsCorrectPluralFormIfMultiplePluraflFormsAreSpecified_Default_Succeeds(string expected, int count)
     {
         SetupDictionary("en", new CultureDictionaryRecord[]
         {
@@ -276,7 +276,7 @@ public class PortableObjectStringLocalizerTests
     [Theory]
     [InlineData(false, "hello", "hello")]
     [InlineData(true, "hello", "مرحبا")]
-    public void LocalizerFallBackToParentCultureIfFallBackToParentUICulturesIsTrue(bool fallBackToParentCulture, string resourceKey, string expected)
+    public void LocalizerFallBackToParentCultureIfFallBackToParentUICulturesIsTrue_Default_Succeeds(bool fallBackToParentCulture, string resourceKey, string expected)
     {
         SetupDictionary("ar", new CultureDictionaryRecord[]
         {
@@ -297,7 +297,7 @@ public class PortableObjectStringLocalizerTests
     [Theory]
     [InlineData(false, new[] { "مدونة", "منتج" })]
     [InlineData(true, new[] { "مدونة", "منتج", "قائمة", "صفحة", "مقالة" })]
-    public void LocalizerReturnsGetAllStrings(bool includeParentCultures, string[] expected)
+    public void LocalizerReturnsGetAllStrings_Default_Succeeds(bool includeParentCultures, string[] expected)
     {
         SetupDictionary("ar", new CultureDictionaryRecord[]
         {
@@ -323,7 +323,7 @@ public class PortableObjectStringLocalizerTests
     }
 
     [Fact]
-    public async Task PortableObjectStringLocalizerShouldRegisterIStringLocalizerOfT()
+    public async Task PortableObjectStringLocalizer_Default_RegisterIStringLocalizerOfT()
         => await StartupRunner.Run(typeof(PortableObjectLocalizationStartup), "en", "Hello");
 
     [Theory]
@@ -331,7 +331,7 @@ public class PortableObjectStringLocalizerTests
     [InlineData("ar-YE", 2)]
     [InlineData("zh-Hans-CN", 3)]
     [InlineData("zh-Hant-TW", 3)]
-    public void LocalizerWithContextShouldCallGetDictionaryOncePerCulture(string culture, int expectedCalls)
+    public void LocalizerWithContext_Default_CallGetDictionaryOncePerCulture(string culture, int expectedCalls)
     {
         // Arrange
         SetupDictionary(culture, Array.Empty<CultureDictionaryRecord>());

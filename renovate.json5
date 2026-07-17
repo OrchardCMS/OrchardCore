@@ -167,6 +167,12 @@
             ],
         },
         {
+            groupName: 'NetVips packages',
+            matchPackageNames: [
+                '/^NetVips.*$/',
+            ],
+        },
+        {
             groupName: 'SixLabors.ImageSharp.Web packages',
             matchPackageNames: [
                 '/^SixLabors\\.ImageSharp\\.Web.*$/',

@@ -1,6 +1,7 @@
 using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using OrchardCore.DisplayManagement;
 using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.Navigation;
@@ -23,7 +24,7 @@ public static class NavigationHelper
     /// <param name="menu">The menu shape.</param>
     /// <param name="menuItems">The current level to populate.</param>
     /// <param name="viewContext">The current <see cref="ViewContext"/>.</param>
-    public static async Task PopulateMenuAsync(dynamic shapeFactory, dynamic parentShape, dynamic menu, IEnumerable<MenuItem> menuItems, ViewContext viewContext)
+    public static async Task PopulateMenuAsync(IShapeFactory shapeFactory, IShape parentShape, IShape menu, IEnumerable<MenuItem> menuItems, ViewContext viewContext)
     {
         await PopulateMenuLevelAsync(shapeFactory, parentShape, menu, menuItems, viewContext);
         ApplySelection(parentShape, viewContext);
@@ -37,11 +38,11 @@ public static class NavigationHelper
     /// <param name="menu">The menu shape.</param>
     /// <param name="menuItems">The current level to populate.</param>
     /// <param name="viewContext">The current <see cref="ViewContext"/>.</param>
-    public static async Task PopulateMenuLevelAsync(dynamic shapeFactory, dynamic parentShape, dynamic menu, IEnumerable<MenuItem> menuItems, ViewContext viewContext)
+    public static async Task PopulateMenuLevelAsync(IShapeFactory shapeFactory, IShape parentShape, IShape menu, IEnumerable<MenuItem> menuItems, ViewContext viewContext)
     {
         foreach (var menuItem in menuItems)
         {
-            dynamic menuItemShape = await BuildMenuItemShapeAsync(shapeFactory, parentShape, menu, menuItem, viewContext);
+            var menuItemShape = await BuildMenuItemShapeAsync(shapeFactory, parentShape, menu, menuItem, viewContext);
 
             if (menuItem.Items != null && menuItem.Items.Count > 0)
             {
@@ -61,23 +62,26 @@ public static class NavigationHelper
     /// <param name="menuItem">The menu item to build the shape for.</param>
     /// <param name="viewContext">The current <see cref="ViewContext"/>.</param>
     /// <returns>The menu item shape.</returns>
-    private static async Task<dynamic> BuildMenuItemShapeAsync(dynamic shapeFactory, dynamic parentShape, dynamic menu, MenuItem menuItem, ViewContext viewContext)
+    private static async Task<NavigationItemViewModel> BuildMenuItemShapeAsync(IShapeFactory shapeFactory, IShape parentShape, IShape menu, MenuItem menuItem, ViewContext viewContext)
     {
-        var menuItemShape = (await shapeFactory.NavigationItem())
-            .Text(menuItem.Text)
-            .Href(menuItem.Href)
-            .Target(menuItem.Target)
-            .Url(menuItem.Url)
-            .LinkToFirstChild(menuItem.LinkToFirstChild)
-            .RouteValues(menuItem.RouteValues)
-            .Item(menuItem)
-            .Menu(menu)
-            .Parent(parentShape)
-            .Level(parentShape.Level == null ? 1 : (int)parentShape.Level + 1)
-            .Priority(menuItem.Priority)
-            .Local(menuItem.LocalNav)
-            .Hash((parentShape.Hash + menuItem.Text.Value).GetHashCode().ToString())
-            .Score(0);
+        var menuItemShape = (NavigationItemViewModel)await shapeFactory.CreateAsync<NavigationItemViewModel, (MenuItem, IShape, IShape)>("NavigationItem", static (shape, state) =>
+        {
+            var (menuItem, parentShape, menu) = state;
+            shape.Text = menuItem.Text;
+            shape.Href = menuItem.Href;
+            shape.Target = menuItem.Target;
+            shape.Url = menuItem.Url;
+            shape.LinkToFirstChild = menuItem.LinkToFirstChild;
+            shape.RouteValues = menuItem.RouteValues;
+            shape.Item = menuItem;
+            shape.Menu = menu;
+            shape.Parent = parentShape;
+            shape.Level = GetLevel(parentShape) + 1;   
+            shape.Priority = menuItem.Priority;
+            shape.Local = menuItem.LocalNav;
+            shape.Hash = (GetHash(parentShape) + menuItem.Text.Value).GetHashCode().ToString();
+            shape.Score = 0;
+        }, (menuItem, parentShape, menu));
 
         menuItemShape.Id = menuItem.Id;
 
@@ -91,7 +95,7 @@ public static class NavigationHelper
         return menuItemShape;
     }
 
-    private static void MarkAsSelectedIfMatchesPathOrPreferences(MenuItem menuItem, dynamic menuItemShape, ViewContext viewContext)
+    private static void MarkAsSelectedIfMatchesPathOrPreferences(MenuItem menuItem, NavigationItemViewModel menuItemShape, ViewContext viewContext)
     {
         if (string.IsNullOrEmpty(menuItem.Href) || menuItem.Href[0] != '/')
         {
@@ -129,7 +133,7 @@ public static class NavigationHelper
             // within the menu item branch and should not reuse a stale clicked hash.
         }
         else
-        {
+        { 
             // No URL match — fall back to the selectedNavHash stored in the admin preferences
             // cookie, which JS writes proactively when the user clicks a nav link.
             var selectedNavHash = GetSelectedNavHashFromPrefs(viewContext);
@@ -189,7 +193,7 @@ public static class NavigationHelper
     /// </summary>
     /// <param name="parentShape">The menu shape.</param>
     /// <param name="viewContext">The current <see cref="ViewContext"/>.</param>
-    private static void ApplySelection(dynamic parentShape, ViewContext viewContext)
+    private static void ApplySelection(IShape parentShape, ViewContext viewContext)
     {
         var selectedItem = GetHighestPrioritySelectedMenuItem(parentShape);
 
@@ -200,10 +204,12 @@ public static class NavigationHelper
         {
             UpdateSelectedNavHashInPrefs(viewContext, selectedItem.Hash);
 
-            while (selectedItem.Parent != null)
+            var ancestor = selectedItem.Parent;
+
+            while (ancestor is NavigationItemViewModel ancestorItem)
             {
-                selectedItem = selectedItem.Parent;
-                selectedItem.Selected = true;
+                ancestorItem.Selected = true;
+                ancestor = ancestorItem.Parent;
             }
         }
     }
@@ -284,18 +290,18 @@ public static class NavigationHelper
     /// </summary>
     /// <param name="parentShape">The menu shape.</param>
     /// <returns>The selected menu item shape.</returns>
-    private static dynamic GetHighestPrioritySelectedMenuItem(dynamic parentShape)
+    private static NavigationItemViewModel GetHighestPrioritySelectedMenuItem(IShape parentShape)
     {
-        dynamic result = null;
+        NavigationItemViewModel result = null;
 
-        var tempStack = new Stack<dynamic>(new dynamic[] { parentShape });
+        var tempStack = new Stack<IShape>([parentShape]);
 
         while (tempStack.Count > 0)
         {
             // evaluate first
-            dynamic item = tempStack.Pop();
+            var shape = tempStack.Pop();
 
-            if (item.Selected == true)
+            if (shape is NavigationItemViewModel item && item.Selected)
             {
                 if (result == null) // found the first one
                 {
@@ -321,12 +327,18 @@ public static class NavigationHelper
             }
 
             // add children to the stack to be evaluated too
-            foreach (var i in item.Items)
+            foreach (var child in shape.Items.OfType<IShape>())
             {
-                tempStack.Push(i);
+                tempStack.Push(child);
             }
         }
 
         return result;
     }
+
+    private static int GetLevel(IShape shape)
+        => shape is NavigationItemViewModel menuItemShape ? menuItemShape.Level : shape.GetProperty<int>(nameof(NavigationItemViewModel.Level));
+
+    private static string GetHash(IShape shape)
+        => shape is NavigationItemViewModel menuItemShape ? menuItemShape.Hash : shape.GetProperty<string>(nameof(NavigationItemViewModel.Hash));
 }

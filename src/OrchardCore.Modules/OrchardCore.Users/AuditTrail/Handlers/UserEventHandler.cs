@@ -56,7 +56,7 @@ public class UserEventHandler : UserEventHandlerBase, ILoginFormEvent
     }
 
     public Task IsLockedOutAsync(IUser user)
-        => RecordAuditTrailEventAsync(UserAuditTrailEventConfiguration.LogInFailed, user);
+        => RecordAuditTrailEventAsync(UserAuditTrailEventConfiguration.LogInIsLockedOut, user);
 
     public override Task DisabledAsync(UserContext context)
         => RecordAuditTrailEventAsync(UserAuditTrailEventConfiguration.Disabled, context.User, GetCurrentUserId(), GetCurrentUserName());
