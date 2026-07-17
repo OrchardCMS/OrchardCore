@@ -37,10 +37,12 @@ $('#left-nav').on('click', 'a[data-admin-hash][href^="/"]', function () {
     setAdminPreferences(prefs);
 });
 
-// On load, if the page has several menu items pointing at it and the server highlighted one
-// other than the one this tab last clicked, move the highlight to the clicked one. Runs only
-// for genuine duplicates on the current page, so a stale click from another page is ignored.
-const resolveClickedDuplicate = () => {
+// The server picks the active item deterministically from the URL, preferring the owner a page
+// declares (e.g. a content type list while editing an item) over a menu item that merely links
+// to the same URL. If this tab actually clicked a link pointing at the current page, promote
+// that link instead - the one piece of intent the server can't see. Runs only when the clicked
+// link truly targets the current page, so a stale selection from another page is left alone.
+const promoteClickedLink = () => {
     const prefs = getAdminPreferences() as Record<string, unknown>;
     const clickedHash = prefs.selectedNavHash ? String(prefs.selectedNavHash) : '';
 
@@ -48,12 +50,10 @@ const resolveClickedDuplicate = () => {
         return;
     }
 
-    const target = document.querySelector<HTMLAnchorElement>(
-        `#adminMenu a[data-admin-hash="${CSS.escape(clickedHash)}"]`);
+    const menu = document.getElementById('adminMenu');
+    const target = menu?.querySelector<HTMLAnchorElement>(`a[data-admin-hash="${CSS.escape(clickedHash)}"]`);
 
-    // Only act when the clicked link actually points at the current page: that makes it a
-    // genuine duplicate of what the server selected, not a leftover selection from elsewhere.
-    if (!target || target.pathname.toLowerCase() !== window.location.pathname.toLowerCase()) {
+    if (!menu || !target || target.pathname.toLowerCase() !== window.location.pathname.toLowerCase()) {
         return;
     }
 
@@ -63,20 +63,20 @@ const resolveClickedDuplicate = () => {
         return;
     }
 
-    // Hand the active state from the server-selected sibling to the clicked one. Siblings share
-    // a parent, so the ancestor chain the server already expanded stays correct.
-    const activeSibling = targetItem.parentElement
-        ? Array.from(targetItem.parentElement.children)
-            .find(el => el !== targetItem && el.classList.contains('active'))
-        : undefined;
+    // Clear the server's selection, then activate the clicked item and expand its ancestors.
+    menu.querySelectorAll('li.active').forEach(li => li.classList.remove('active'));
+    menu.querySelectorAll('ul.show').forEach(ul => ul.classList.remove('show'));
 
-    if (activeSibling) {
-        activeSibling.classList.remove('active');
-        targetItem.classList.add('active');
+    for (let el: HTMLElement | null = targetItem; el && el !== menu; el = el.parentElement) {
+        if (el.tagName === 'LI') {
+            el.classList.add('active');
+        } else if (el.tagName === 'UL') {
+            el.classList.add('show');
+        }
     }
 };
 
-$(resolveClickedDuplicate);
+$(promoteClickedLink);
 
 $(document).on("click", function (event) {
     var $trigger = $("#left-nav li.has-items");

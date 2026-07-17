@@ -8,13 +8,14 @@ namespace OrchardCore.Navigation;
 
 public static class NavigationHelper
 {
-    // Selection ranks, highest wins. A menu item linking directly to the requested page is the
-    // most specific match there is and must win over the path a page declares as its owner, which
-    // in turn must beat any prefix match, whose rank is the segment count of the matched href.
-    // The gaps between tiers exceed any realistic path depth, so exact always beats declared,
-    // which always beats prefix.
-    private const int ExactRequestMatchScore = 200;
-    private const int DeclaredMatchScore = 100;
+    // Selection ranks, highest wins. When a page declares the menu item that owns it, that owner
+    // is the default selection: it beats an incidental menu item that merely happens to link to
+    // the same URL (a directly-clicked link is promoted over the owner client-side instead, where
+    // the click is known). A declared owner beats an exact URL match beats a prefix match, whose
+    // rank is the segment count of the matched href. The gaps between tiers exceed any realistic
+    // path depth, so the ordering never inverts.
+    private const int DeclaredMatchScore = 200;
+    private const int ExactRequestMatchScore = 100;
 
     public static bool UseLegacyFormat()
     {
@@ -102,11 +103,11 @@ public static class NavigationHelper
 
     /// <summary>
     /// Ranks a menu item against the current request, deterministically and without any stored
-    /// state. From strongest to weakest: a menu item linking to the requested page itself, the
-    /// path the page declares as its owner (see
-    /// <see cref="NavigationHttpContextExtensions.SetNavigationSelectionPath"/>), and finally a
-    /// URL prefix match. Disambiguating between items that resolve to the same rank (e.g. two
-    /// links with the same href) is a per-tab concern handled client-side by the admin theme.
+    /// state. From strongest to weakest: the item a page declares as its owner (see
+    /// <see cref="NavigationHttpContextExtensions.SetNavigationSelectionPath"/>), an exact URL
+    /// match, and finally a URL prefix match. Promoting a directly-clicked link over the declared
+    /// owner, and disambiguating items that resolve to the same rank (e.g. two links with the same
+    /// href), are per-tab concerns handled client-side by the admin theme.
     /// </summary>
     private static void MarkAsSelected(MenuItem menuItem, NavigationItemViewModel menuItemShape, ViewContext viewContext)
     {
@@ -127,8 +128,8 @@ public static class NavigationHelper
             viewContext.HttpContext.Request.PathBase);
 
         // A page can declare the menu path it belongs to (e.g. an edit page declaring the list
-        // page of its content type). It only decides pages that no menu item links to directly,
-        // so it never overrides a menu item pointing at the requested page itself.
+        // page of its content type). When set, that owner is matched instead of the request path,
+        // except for a menu item that links exactly at the request path (handled below).
         var declaredPath = viewContext.HttpContext.GetNavigationSelectionPath();
         var selectionPath = declaredPath is null
             ? requestPath
@@ -136,16 +137,17 @@ public static class NavigationHelper
 
         var segmentCount = hrefPath.Split('/', StringSplitOptions.RemoveEmptyEntries).Length;
 
-        if (requestPath.Equals(hrefPath, StringComparison.OrdinalIgnoreCase))
+        if (declaredPath is not null && selectionPath.Equals(hrefPath, StringComparison.OrdinalIgnoreCase))
+        {
+            // The page declared this menu item as the one owning it - the default selection.
+            menuItemShape.Score = DeclaredMatchScore + segmentCount;
+        }
+        else if (requestPath.Equals(hrefPath, StringComparison.OrdinalIgnoreCase))
         {
             // The menu item links to the requested page itself, e.g. an admin menu link pointing
-            // at a specific content item. Nothing identifies the page more precisely than that.
+            // at a specific content item. It only wins over a declared owner when it was actually
+            // clicked, which the admin theme applies client-side.
             menuItemShape.Score = ExactRequestMatchScore + segmentCount;
-        }
-        else if (selectionPath.Equals(hrefPath, StringComparison.OrdinalIgnoreCase))
-        {
-            // The page declared this menu item as the one owning it.
-            menuItemShape.Score = DeclaredMatchScore + segmentCount;
         }
         else if (segmentCount > 0 && selectionPath.StartsWith(hrefPath.TrimEnd('/') + "/", StringComparison.OrdinalIgnoreCase))
         {
