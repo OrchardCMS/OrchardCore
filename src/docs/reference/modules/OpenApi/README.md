@@ -32,12 +32,12 @@ The OpenAPI settings page (**Configuration → Settings → OpenApi**) allows yo
 
 | Type | Description |
 |------|-------------|
-| **Cookie (default)** | No additional configuration needed. If you are logged in, the UIs automatically use your session cookie. |
+| **None (browse documentation only)** | No additional configuration needed. Your admin session grants access to the documentation UIs themselves, but API endpoints only accept Bearer tokens, so "Try it out" requests are sent unauthenticated. |
 | **OAuth2 Authorization Code + PKCE** | Interactive login. The "Authorize" button redirects to the authorization server. Suitable for browser-based API access. This is the only OAuth2 flow supported here — it requires no client secret embedded in the browser, unlike Client Credentials or the deprecated Password grant. |
 
-### Cookie Authentication
+### No Authentication
 
-This is the simplest option. The API documentation UIs include the session cookie with every request, so if you are logged into the admin panel, API calls work automatically.
+The default. The documentation UIs are protected by the `ViewOpenApiContent` permission (via your admin session), but OrchardCore API endpoints authenticate with the `"Api"` scheme, which only accepts Bearer tokens — session cookies are never used for API calls. "Try it out" works only against endpoints that allow anonymous access; for authenticated requests, configure OAuth2 Authorization Code + PKCE.
 
 ### OAuth2 Setup
 

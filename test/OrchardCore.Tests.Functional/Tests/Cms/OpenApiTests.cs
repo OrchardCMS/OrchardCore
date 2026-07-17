@@ -306,6 +306,9 @@ public sealed class OpenApiTests : CmsTestBase, IClassFixture<CmsSetupFixture>
         // the metadata location is never inferred from the endpoint URLs.
         var authorizationUrl = $"{Fixture.BaseUrl}/nonexistent-tenant/connect/authorize";
         var tokenUrl = $"{Fixture.BaseUrl}/nonexistent-tenant/connect/token";
+        // The endpoint URLs are read-only by default (they derive from the server metadata);
+        // enable manual editing to fill them directly.
+        await page.Locator("#vue-EditEndpointsManually").CheckAsync();
         await page.Locator("#vue-AuthorizationUrl").FillAsync(authorizationUrl);
         await page.Locator("#vue-TokenUrl").FillAsync(tokenUrl);
         await page.Locator("#vue-ServerMetadataUrl").FillAsync($"{Fixture.BaseUrl}/nonexistent-tenant/.well-known/openid-configuration");
@@ -340,6 +343,9 @@ public sealed class OpenApiTests : CmsTestBase, IClassFixture<CmsSetupFixture>
         // document on save.
         var authorizationUrl = $"{Fixture.BaseUrl}/{authTenant.Prefix}/connect/authorize";
         var tokenUrl = $"{Fixture.BaseUrl}/{authTenant.Prefix}/connect/token";
+        // The endpoint URLs are read-only by default (they derive from the server metadata);
+        // enable manual editing to fill them directly.
+        await page.Locator("#vue-EditEndpointsManually").CheckAsync();
         await page.Locator("#vue-AuthorizationUrl").FillAsync(authorizationUrl);
         await page.Locator("#vue-TokenUrl").FillAsync(tokenUrl);
         await page.Locator("#vue-ServerMetadataUrl").FillAsync($"{Fixture.BaseUrl}/{authTenant.Prefix}/.well-known/openid-configuration");
@@ -450,6 +456,9 @@ public sealed class OpenApiTests : CmsTestBase, IClassFixture<CmsSetupFixture>
         await page.Locator("#vue-AuthenticationType").WaitForAsync(new() { State = WaitForSelectorState.Visible, Timeout = 15000 });
 
         await page.Locator("#vue-AuthenticationType").SelectOptionAsync("1");
+        // The endpoint URLs are read-only by default (they derive from the server metadata);
+        // enable manual editing to fill them directly.
+        await page.Locator("#vue-EditEndpointsManually").CheckAsync();
         await page.Locator("#vue-AuthorizationUrl").FillAsync("/connect/authorize");
         await page.Locator("#vue-TokenUrl").FillAsync("/connect/token");
         await page.Locator("#vue-ServerMetadataUrl").FillAsync("http://169.254.169.254/latest/meta-data/");
@@ -521,6 +530,9 @@ public sealed class OpenApiTests : CmsTestBase, IClassFixture<CmsSetupFixture>
         await page.GotoAsync($"/{Tenant.Prefix}/Admin/Settings/openapi");
         await page.Locator("#vue-AuthenticationType").WaitForAsync(new() { State = WaitForSelectorState.Visible, Timeout = 15000 });
         await page.Locator("#vue-AuthenticationType").SelectOptionAsync("1");
+        // The endpoint URLs are read-only by default (they derive from the server metadata);
+        // enable manual editing to fill them directly.
+        await page.Locator("#vue-EditEndpointsManually").CheckAsync();
         await page.Locator("#vue-AuthorizationUrl").FillAsync($"{Fixture.BaseUrl}/{Tenant.Prefix}/connect/authorize");
         await page.Locator("#vue-TokenUrl").FillAsync($"{Fixture.BaseUrl}/{Tenant.Prefix}/connect/token");
         await page.Locator("#vue-OAuthClientId").FillAsync(clientId);
@@ -609,6 +621,9 @@ public sealed class OpenApiTests : CmsTestBase, IClassFixture<CmsSetupFixture>
         await page.GotoAsync($"/{Tenant.Prefix}/Admin/Settings/openapi");
         await page.Locator("#vue-AuthenticationType").WaitForAsync(new() { State = WaitForSelectorState.Visible, Timeout = 15000 });
         await page.Locator("#vue-AuthenticationType").SelectOptionAsync("1");
+        // The endpoint URLs are read-only by default (they derive from the server metadata);
+        // enable manual editing to fill them directly.
+        await page.Locator("#vue-EditEndpointsManually").CheckAsync();
         await page.Locator("#vue-AuthorizationUrl").FillAsync($"{Fixture.BaseUrl}/{Tenant.Prefix}/connect/authorize");
         await page.Locator("#vue-TokenUrl").FillAsync($"{Fixture.BaseUrl}/{Tenant.Prefix}/connect/token");
         await page.Locator("#vue-OAuthClientId").FillAsync(clientId);
