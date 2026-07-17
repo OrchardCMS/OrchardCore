@@ -3,8 +3,10 @@ using OrchardCore.Security;
 
 namespace OrchardCore.Roles.ViewModels;
 
-public class EditRoleViewModel
+public class CloneRoleViewModel
 {
+    public string Name { get; set; }
+
     public string RoleDescription { get; set; }
 
     [BindNever]
