@@ -49,13 +49,15 @@ public class BlobFileStore : IFileStore
     private readonly bool? _useHierarchicalNamespaceOverride;
     private readonly SemaphoreSlim _capabilitiesLock = new(1, 1);
     private FileStoreCapabilities _capabilities;
+    private bool _capabilitiesInitialized;
 
     private readonly string _basePrefix;
 
     /// <summary>
     /// The capabilities of the storage account, as determined by <see cref="EnsureCapabilitiesAsync"/>.
     /// Returns <see cref="FileStoreCapabilities.Default"/> (all capabilities <see langword="false"/>) until
-    /// that method has run.
+    /// detection has run, or if it could not determine the account type (in which case flat-namespace
+    /// operations are used as a safe fallback).
     /// </summary>
     public IFileStoreCapabilities Capabilities => _capabilities ?? FileStoreCapabilities.Default;
 
@@ -88,11 +90,11 @@ public class BlobFileStore : IFileStore
 
     /// <summary>
     /// Probes the storage account to determine whether Hierarchical Namespace (HNS) is enabled.
-    /// Must be called once at startup.
+    /// Namespace-sensitive operations call this automatically.
     /// </summary>
     public async Task EnsureCapabilitiesAsync()
     {
-        if (_capabilities is not null)
+        if (_capabilitiesInitialized)
         {
             return;
         }
@@ -100,7 +102,7 @@ public class BlobFileStore : IFileStore
         await _capabilitiesLock.WaitAsync();
         try
         {
-            if (_capabilities is not null)
+            if (_capabilitiesInitialized)
             {
                 return;
             }
@@ -159,11 +161,14 @@ public class BlobFileStore : IFileStore
             }
             catch (Exception ex)
             {
-                throw new FileStoreException(
+                _logger?.LogWarning(
+                    ex,
                     "Unable to determine the Azure Blob Storage account type (Gen1 flat namespace or Gen2 Hierarchical Namespace). " +
-                    "This is required to select the correct storage operations. " +
-                    "If you are using a container-scoped SAS token, set 'UseHierarchicalNamespace' explicitly in your configuration.", ex);
+                    "Falling back to flat-namespace operations. If you are using a container-scoped SAS token with a Gen2 account, " +
+                    "set 'UseHierarchicalNamespace' to 'true' explicitly in your configuration.");
             }
+
+            _capabilitiesInitialized = true;
         }
         finally
         {
@@ -194,6 +199,8 @@ public class BlobFileStore : IFileStore
 
     public async Task<IFileStoreEntry> GetDirectoryInfoAsync(string path)
     {
+        await EnsureCapabilitiesAsync();
+
         if (_capabilities?.HasHierarchicalNamespace == true)
         {
             try
@@ -266,6 +273,8 @@ public class BlobFileStore : IFileStore
 
     private async IAsyncEnumerable<IFileStoreEntry> GetDirectoryContentByHierarchyAsync(string path = null)
     {
+        await EnsureCapabilitiesAsync();
+
         path = this.NormalizePath(path);
 
         var prefix = this.Combine(_basePrefix, path);
@@ -278,12 +287,7 @@ public class BlobFileStore : IFileStore
             if (blob.IsPrefix)
             {
                 var folderPath = blob.Prefix;
-                if (!string.IsNullOrEmpty(_basePrefix))
-                {
-                    folderPath = folderPath[(_basePrefix.Length - 1)..];
-                }
-
-                folderPath = folderPath.Trim('/');
+                folderPath = RemoveBasePrefix(folderPath);
 
                 if (blob.Blob is not null && blob.Blob.Properties is not null)
                 {
@@ -329,6 +333,8 @@ public class BlobFileStore : IFileStore
 
     private async IAsyncEnumerable<IFileStoreEntry> GetDirectoryContentFlatAsync(string path = null)
     {
+        await EnsureCapabilitiesAsync();
+
         path = this.NormalizePath(path);
 
         var prefix = this.Combine(_basePrefix, path);
@@ -344,11 +350,7 @@ public class BlobFileStore : IFileStore
                 if (blob.Metadata.TryGetValue("hdi_isfolder", out var value) &&
                     value.Equals("true", StringComparison.OrdinalIgnoreCase))
                 {
-                    var directoryName = name;
-                    if (!string.IsNullOrEmpty(_basePrefix))
-                    {
-                        directoryName = directoryName[(_basePrefix.Length - 1)..];
-                    }
+                    var directoryName = RemoveBasePrefix(name);
 
                     if (blob.Properties is not null)
                     {
@@ -371,10 +373,7 @@ public class BlobFileStore : IFileStore
                     continue;
                 }
 
-                if (!string.IsNullOrEmpty(_basePrefix))
-                {
-                    name = name[(_basePrefix.Length - 1)..];
-                }
+                name = RemoveBasePrefix(name);
 
                 yield return new BlobFile(name, blob.Properties.ContentLength, blob.Properties.LastModified);
             }
@@ -396,10 +395,7 @@ public class BlobFileStore : IFileStore
             var directory = Path.GetDirectoryName(name);
 
             // Strip base folder from directory name.
-            if (!string.IsNullOrEmpty(_basePrefix))
-            {
-                directory = directory[(_basePrefix.Length - 1)..];
-            }
+            directory = RemoveBasePrefix(directory);
 
             // Do not include root folder, or current path, or multiple folders in folder listing.
             if (!string.IsNullOrEmpty(directory) &&
@@ -414,27 +410,20 @@ public class BlobFileStore : IFileStore
             // Ignore directory marker files.
             if (!name.EndsWith(DirectoryMarkerFileName))
             {
-                if (!string.IsNullOrEmpty(_basePrefix))
-                {
-                    name = name[(_basePrefix.Length - 1)..];
-                }
-                yield return new BlobFile(name.Trim('/'), blob.Properties.ContentLength, blob.Properties.LastModified);
+                yield return new BlobFile(RemoveBasePrefix(name), blob.Properties.ContentLength, blob.Properties.LastModified);
             }
         }
     }
 
     public async Task<bool> TryCreateDirectoryAsync(string path)
     {
+        await EnsureCapabilitiesAsync();
+
         if (_capabilities?.HasHierarchicalNamespace == true)
         {
             try
             {
-                var prefix = this.Combine(_basePrefix, path);
-                var directoryClient = _dataLakeFileSystemClient.GetDirectoryClient(prefix);
-                var response = await directoryClient.CreateIfNotExistsAsync();
-
-                // CreateIfNotExistsAsync returns null if it already existed.
-                return response is not null;
+                return await TryCreateDataLakeDirectoryAsync(path);
             }
             catch (Exception ex)
             {
@@ -488,6 +477,8 @@ public class BlobFileStore : IFileStore
 
     public async Task<bool> TryDeleteDirectoryAsync(string path)
     {
+        await EnsureCapabilitiesAsync();
+
         if (_capabilities?.HasHierarchicalNamespace == true)
         {
             try
@@ -555,6 +546,8 @@ public class BlobFileStore : IFileStore
 
     public async Task MoveFileAsync(string oldPath, string newPath)
     {
+        await EnsureCapabilitiesAsync();
+
         if (_capabilities?.SupportsAtomicMove == true)
         {
             try
@@ -731,6 +724,41 @@ public class BlobFileStore : IFileStore
         using var stream = new MemoryStream(MarkerFileContent);
 
         await placeholderBlob.UploadAsync(stream);
+    }
+
+    private async Task<bool> TryCreateDataLakeDirectoryAsync(string path)
+    {
+        var fullPath = this.Combine(_basePrefix, path);
+        var segments = fullPath.Split('/', StringSplitOptions.RemoveEmptyEntries);
+        var currentPath = string.Empty;
+        var targetCreated = false;
+
+        for (var i = 0; i < segments.Length; i++)
+        {
+            currentPath = this.Combine(currentPath, segments[i]);
+            var response = await _dataLakeFileSystemClient
+                .GetDirectoryClient(currentPath)
+                .CreateIfNotExistsAsync();
+
+            if (i == segments.Length - 1)
+            {
+                // CreateIfNotExistsAsync returns null if the target already existed.
+                targetCreated = response is not null;
+            }
+        }
+
+        return targetCreated;
+    }
+
+    private string RemoveBasePrefix(string path)
+    {
+        if (!string.IsNullOrEmpty(_basePrefix) &&
+            path.StartsWith(_basePrefix, StringComparison.Ordinal))
+        {
+            path = path[_basePrefix.Length..];
+        }
+
+        return path?.Trim('/');
     }
 
     /// <summary>

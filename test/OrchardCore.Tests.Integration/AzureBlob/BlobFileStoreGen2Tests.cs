@@ -11,6 +11,8 @@ namespace OrchardCore.Tests.Integration.AzureBlob;
 /// </summary>
 public sealed class BlobFileStoreGen2Tests : BlobFileStoreTestsBase
 {
+    protected override string BasePath => "gen2/base";
+
     protected override async Task CreateContainerAsync(string connectionString, string containerName)
         => await new DataLakeServiceClient(connectionString)
             .GetFileSystemClient(containerName)
@@ -23,7 +25,7 @@ public sealed class BlobFileStoreGen2Tests : BlobFileStoreTestsBase
 
         // Gen2 creates real directory objects via the DataLake API — no marker blob.
         var blobs = new List<string>();
-        await foreach (var blob in ContainerClient.GetBlobsAsync(BlobTraits.None, BlobStates.None, "gen2-dir/", CancellationToken.None))
+        await foreach (var blob in ContainerClient.GetBlobsAsync(BlobTraits.None, BlobStates.None, $"{BasePath}/gen2-dir/", CancellationToken.None))
         {
             blobs.Add(blob.Name);
         }
@@ -39,6 +41,7 @@ public sealed class BlobFileStoreGen2Tests : BlobFileStoreTestsBase
         Assert.NotNull(await GetDirectoryInfoAsync("a/b/c"));
         Assert.NotNull(await GetDirectoryInfoAsync("a/b"));
         Assert.NotNull(await GetDirectoryInfoAsync("a"));
+        Assert.True(Store.Capabilities.HasHierarchicalNamespace);
     }
 
     [AzuriteFact]
@@ -59,6 +62,7 @@ public sealed class BlobFileStoreGen2Tests : BlobFileStoreTestsBase
         Assert.Contains(entries, e => e.IsDirectory && e.Name == "subdir");
         Assert.Contains(entries, e => !e.IsDirectory && e.Name == "file.txt");
         Assert.Contains(entries, e => !e.IsDirectory && e.Name == "nested.txt");
+        Assert.DoesNotContain(entries, e => e.Path.StartsWith('/'));
     }
 
     [AzuriteFact]
