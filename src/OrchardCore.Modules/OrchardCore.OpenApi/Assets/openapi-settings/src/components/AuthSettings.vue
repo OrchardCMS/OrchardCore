@@ -121,6 +121,20 @@ const isPkce = () => props.settings.authenticationType === 1
         <p class="mb-0">{{ t('sessionCookieHint') }}</p>
     </div>
 
+    <!-- Server Metadata URL (PKCE only) — first, since it can fill the endpoint URLs below. -->
+    <div v-if="isPkce()" class="mb-3">
+        <label class="form-label" for="vue-ServerMetadataUrl">{{ t('serverMetadataUrl') }}</label>
+        <input
+            type="text"
+            class="form-control"
+            id="vue-ServerMetadataUrl"
+            placeholder="/.well-known/openid-configuration"
+            :value="settings.serverMetadataUrl"
+            @input="update('serverMetadataUrl', ($event.target as HTMLInputElement).value)"
+        />
+        <span class="hint">{{ t('serverMetadataUrlHint') }}</span>
+    </div>
+
     <!-- Authorization URL (PKCE only) -->
     <div v-if="isPkce()" class="mb-3">
         <label class="form-label" for="vue-AuthorizationUrl">{{ t('authorizationUrl') }}</label>
@@ -148,19 +162,6 @@ const isPkce = () => props.settings.authenticationType === 1
                 @input="update('tokenUrl', ($event.target as HTMLInputElement).value)"
             />
             <span class="hint">{{ t('tokenUrlHint') }}</span>
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label" for="vue-ServerMetadataUrl">{{ t('serverMetadataUrl') }}</label>
-            <input
-                type="text"
-                class="form-control"
-                id="vue-ServerMetadataUrl"
-                placeholder="/.well-known/openid-configuration"
-                :value="settings.serverMetadataUrl"
-                @input="update('serverMetadataUrl', ($event.target as HTMLInputElement).value)"
-            />
-            <span class="hint">{{ t('serverMetadataUrlHint') }}</span>
         </div>
 
         <div class="mb-3">
