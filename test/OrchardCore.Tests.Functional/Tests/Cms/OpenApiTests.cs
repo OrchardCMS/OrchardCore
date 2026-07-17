@@ -577,6 +577,78 @@ public sealed class OpenApiTests : CmsTestBase, IClassFixture<CmsSetupFixture>
         await page.CloseAsync();
     }
 
+    /// <summary>
+    /// Full-chain test for the metadata-driven configuration: the endpoint URLs are filled by
+    /// the client-side "Auto-fill endpoints" button (a browser fetch of the discovery
+    /// document), the settings are saved, and Swagger UI's Authorize button then completes a
+    /// real PKCE flow whose token authenticates a protected "Api"-scheme endpoint call.
+    /// </summary>
+    [Fact]
+    public async Task SwaggerUIAuthorizesWithMetadataAutoFilledEndpoints()
+    {
+        var page = await Fixture.CreatePageAsync();
+        await EnableOpenApiWithSwaggerUIAsync(page);
+
+        var clientId = "openapi-swagger-meta";
+        var clientSecret = "swagger-meta-secret";
+        var redirectUri = $"{Fixture.BaseUrl}/{Tenant.Prefix}/swagger/oauth2-redirect.html";
+
+        await ConfigureOpenIdServerForAuthorizationCodeAsync(page, $"/{Tenant.Prefix}");
+        await CreateOpenIdPkceApplicationAsync(page, Tenant.Prefix, clientId, clientSecret, redirectUri);
+
+        await AuthHelper.LoginAsync(page, $"/{Tenant.Prefix}");
+        await page.GotoAsync($"/{Tenant.Prefix}/Admin/Settings/openapi");
+        await page.Locator("#vue-AuthenticationType").WaitForAsync(new() { State = WaitForSelectorState.Visible, Timeout = 15000 });
+        await page.Locator("#vue-AuthenticationType").SelectOptionAsync("1");
+
+        // Only the metadata URL and client ID are typed; the endpoint URLs stay read-only and
+        // are filled by the client-side fetch button.
+        await page.Locator("#vue-ServerMetadataUrl").FillAsync($"{Fixture.BaseUrl}/{Tenant.Prefix}/.well-known/openid-configuration");
+        await page.Locator("#vue-OAuthClientId").FillAsync(clientId);
+
+        await page.GetByRole(AriaRole.Button, new() { Name = "Auto-fill endpoints", Exact = true }).ClickAsync();
+        await Assertions.Expect(page.Locator("#vue-AuthorizationUrl")).ToHaveValueAsync($"{Fixture.BaseUrl}/{Tenant.Prefix}/connect/authorize");
+        await Assertions.Expect(page.Locator("#vue-TokenUrl")).ToHaveValueAsync($"{Fixture.BaseUrl}/{Tenant.Prefix}/connect/token");
+
+        await ButtonHelper.ClickSaveAsync(page);
+        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+        await Assertions.Expect(page.Locator(".message-success")).ToBeVisibleAsync();
+
+        await page.GotoAsync($"/{Tenant.Prefix}/swagger");
+        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+
+        await page.Locator(".btn.authorize").First.ClickAsync();
+        await page.Locator("#client_id_authorizationCode").FillAsync(clientId);
+        await page.Locator("#client_secret_authorizationCode").FillAsync(clientSecret);
+
+        // The Authorization Code + PKCE flow opens a popup to /connect/authorize. The admin
+        // is already logged into this tenant, and the app's ConsentType is "implicit", so the
+        // popup redirects straight back to Swagger's oauth2-redirect.html and self-closes.
+        await page.RunAndWaitForPopupAsync(
+            async () => await page.Locator(".auth-btn-wrapper button.authorize").ClickAsync());
+
+        // The popup closes itself once the redirect completes; give the main page time to
+        // finish the token exchange it triggers.
+        await page.WaitForTimeoutAsync(3000);
+
+        await Assertions.Expect(page.Locator(".auth-btn-wrapper button.authorize")).ToHaveTextAsync("Logout");
+        await page.Locator(".auth-btn-wrapper button.btn-done").ClickAsync();
+
+        var operation = page.Locator("#operations-GetEndpoint-ApiGetContentItem");
+        await operation.Locator(".opblock-summary").ClickAsync();
+        await operation.Locator("button.try-out__btn").ClickAsync();
+        await operation.Locator("tr[data-param-name='contentItemId'] input").FillAsync("does-not-exist");
+
+        var response = await page.RunAndWaitForResponseAsync(
+            async () => await operation.Locator("button.execute").ClickAsync(),
+            r => r.Url.Contains("/api/content/"));
+
+        Assert.NotEqual(401, response.Status);
+        Assert.NotEqual(403, response.Status);
+
+        await page.CloseAsync();
+    }
+
     [Fact]
     public async Task ScalarUIRendersOperationsUnderTenantPrefix()
     {
