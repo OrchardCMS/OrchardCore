@@ -555,6 +555,41 @@ public sealed class OpenApiTests : CmsTestBase, IClassFixture<CmsSetupFixture>
         await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
     }
 
+    /// <summary>
+    /// With OpenID token validation enabled, an anonymous schema fetch must carry the full
+    /// RFC-compliant challenge: 401 status, a WWW-Authenticate header, and the RFC 9457
+    /// Problem Details body attached by the validation feature's challenge handler —
+    /// matching the responses of the API endpoints the schema describes.
+    /// </summary>
+    [Fact]
+    public async Task SwaggerJsonChallengeCarriesProblemDetailsWhenValidationEnabled()
+    {
+        var page = await Fixture.CreatePageAsync();
+        await EnableOpenApiAsync(page);
+        await ConfigureOpenIdServerForAuthorizationCodeAsync(page, $"/{Tenant.Prefix}");
+
+        // Force anonymous schema access off so this test does not depend on whether
+        // another test has enabled it on this shared tenant.
+        await page.GotoAsync($"/{Tenant.Prefix}/Admin/Settings/openapi");
+        await page.Locator("#vue-AllowAnonymousSchemaAccess").UncheckAsync();
+        await ButtonHelper.ClickSaveAsync(page);
+        await Assertions.Expect(page.Locator(".message-success")).ToBeVisibleAsync();
+        await page.CloseAsync();
+
+        var anonPage = await Fixture.CreatePageAsync();
+        var response = await anonPage.GotoAsync($"/{Tenant.Prefix}/swagger/v1/swagger.json");
+        Assert.Equal(401, response.Status);
+
+        var headers = await response.AllHeadersAsync();
+        Assert.Contains("Bearer", headers["www-authenticate"]);
+        Assert.Contains("application/problem+json", headers["content-type"]);
+
+        var body = await response.TextAsync();
+        Assert.Contains("\"status\":401", body);
+        Assert.Contains("\"title\"", body);
+        await anonPage.CloseAsync();
+    }
+
     [Fact]
     public async Task SwaggerUIAuthorizesAndCallsProtectedEndpointWithPkce()
     {
