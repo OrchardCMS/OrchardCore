@@ -43,15 +43,28 @@ public sealed class OpenApiTests : CmsTestBase, IClassFixture<CmsSetupFixture>
     }
 
     [Fact]
-    public async Task SwaggerJsonIsAccessibleWithoutAuthentication()
+    public async Task SwaggerJsonRequiresAuthenticationUntilAnonymousAccessIsEnabled()
     {
         var page = await Fixture.CreatePageAsync();
         await EnableOpenApiAsync(page);
-        await page.CloseAsync();
 
-        // New page without auth cookies.
+        // Anonymous schema access is disabled by default: a page without auth
+        // cookies must get a 401 for the JSON schema endpoint.
         var anonPage = await Fixture.CreatePageAsync();
         var response = await anonPage.GotoAsync($"/{Tenant.Prefix}/swagger/v1/swagger.json");
+        Assert.Equal(401, response.Status);
+
+        // Opt in to anonymous schema access via the settings UI.
+        await page.GotoAsync($"/{Tenant.Prefix}/Admin/Settings/openapi");
+        var checkbox = page.Locator("#vue-AllowAnonymousSchemaAccess");
+        await checkbox.WaitForAsync(new() { State = WaitForSelectorState.Visible, Timeout = 15000 });
+        await checkbox.CheckAsync();
+        await ButtonHelper.ClickSaveAsync(page);
+        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+        await page.CloseAsync();
+
+        // The same anonymous page can now fetch the schema.
+        response = await anonPage.GotoAsync($"/{Tenant.Prefix}/swagger/v1/swagger.json");
         Assert.Equal(200, response.Status);
         var content = await anonPage.ContentAsync();
         Assert.Contains("\"openapi\"", content);

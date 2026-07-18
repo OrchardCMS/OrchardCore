@@ -20,6 +20,12 @@
         "OrchardCore.Search.Elasticsearch",
         "OrchardCore.OpenApi"
       ]
+    },
+    {
+      "name": "settings",
+      "OpenApiSettings": {
+        "AllowAnonymousSchemaAccess": true
+      }
     }
   ]
 }
