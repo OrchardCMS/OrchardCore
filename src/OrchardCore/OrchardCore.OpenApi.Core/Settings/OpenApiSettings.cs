@@ -29,6 +29,14 @@ public class OpenApiSettings
     public string TokenUrl { get; set; }
 
     /// <summary>
+    /// Optional URL of the OpenID Connect server metadata document
+    /// (e.g., "/.well-known/openid-configuration"). When provided, the configuration is
+    /// validated against this document on save. The issuer is never inferred from the
+    /// endpoint URLs, since the spec does not tie endpoint locations to the issuer.
+    /// </summary>
+    public string ServerMetadataUrl { get; set; }
+
+    /// <summary>
     /// The OAuth2 client ID used by the API documentation UIs.
     /// </summary>
     public string OAuthClientId { get; set; }

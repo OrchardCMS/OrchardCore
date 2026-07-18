@@ -32,12 +32,12 @@ The OpenAPI settings page (**Configuration → Settings → OpenApi**) allows yo
 
 | Type | Description |
 |------|-------------|
-| **Cookie (default)** | No additional configuration needed. If you are logged in, the UIs automatically use your session cookie. |
+| **None (browse documentation only)** | No additional configuration needed. Your admin session grants access to the documentation UIs themselves, but API endpoints only accept Bearer tokens, so "Try it out" requests are sent unauthenticated. |
 | **OAuth2 Authorization Code + PKCE** | Interactive login. The "Authorize" button redirects to the authorization server. Suitable for browser-based API access. This is the only OAuth2 flow supported here — it requires no client secret embedded in the browser, unlike Client Credentials or the deprecated Password grant. |
 
-### Cookie Authentication
+### No Authentication
 
-This is the simplest option. The API documentation UIs include the session cookie with every request, so if you are logged into the admin panel, API calls work automatically.
+The default. The documentation UIs are protected by the `ViewOpenApiContent` permission (via your admin session), but OrchardCore API endpoints authenticate with the `"Api"` scheme, which only accepts Bearer tokens — session cookies are never used for API calls. "Try it out" works only against endpoints that allow anonymous access; for authenticated requests, configure OAuth2 Authorization Code + PKCE.
 
 ### OAuth2 Setup
 
@@ -50,6 +50,7 @@ For OAuth2 Authorization Code + PKCE authentication, you need to:
    - Select the authentication type.
    - Enter the **Token URL** (e.g., `/connect/token`).
    - Enter the **Authorization URL** (e.g., `/connect/authorize`).
+   - Optionally enter the **Server Metadata URL** (e.g., `/.well-known/openid-configuration`). When provided, the configuration is validated against the OpenID Connect server metadata document on save, and the Authorization and Token URLs are filled from it when left empty (explicitly entered values always win). When empty, no validation is performed. The metadata location is never inferred from the endpoint URLs.
    - Enter the **Client ID** from the OpenID application.
    - Enter the **Scopes** (e.g., `api`).
 
@@ -226,86 +227,13 @@ public sealed class MyFeatureController : ControllerBase
 }
 ```
 
-## ProblemDetails Error Handling
-
-API controllers should return standardized [RFC 9457 Problem Details](https://www.rfc-editor.org/rfc/rfc9457) responses for error conditions. The `ProblemDetailsApiControllerExtensions` class in `OrchardCore.Abstractions` provides convenient extension methods for this.
-
-### Available Extension Methods
-
-| Method | Status Code | Purpose |
-|--------|-------------|---------|
-| `ApiChallengeOrForbidForCookieAuth()` | 401 / 403 | Returns `Unauthorized` or `Forbidden` depending on the authentication state. |
-| `ApiBadRequestProblem()` | 400 | Generic bad-request error. |
-| `ApiNotFoundProblem()` | 404 | Resource not found. |
-| `ApiValidationProblem()` | 400 | Validation error with a `ModelStateDictionary` containing field-level errors. |
-
-All methods support localized `title` and `detail` parameters via `LocalizedString`.
-
-### Usage in Controllers
-
-```csharp
-[ApiController]
-[Route("api/media")]
-public class MediaApiController : ControllerBase
-{
-    [HttpGet("{path}")]
-    [ProducesResponseType(typeof(FileStoreEntryDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetMediaItem(string path)
-    {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMedia))
-        {
-            return this.ApiChallengeOrForbidForCookieAuth();
-        }
-
-        var item = await _mediaFileStore.GetFileInfoAsync(path);
-
-        if (item == null)
-        {
-            return this.ApiNotFoundProblem(S["Media not found: {0}", path]);
-        }
-
-        return Ok(ToDto(item));
-    }
-}
-```
-
-### JSON Response Shape
-
-A `ProblemDetails` response looks like this:
-
-```json
-{
-  "type": "https://tools.ietf.org/html/rfc9110#section-15.5.5",
-  "title": "Not Found",
-  "detail": "Media not found: images/photo.jpg",
-  "status": 404
-}
-```
-
-A `ValidationProblemDetails` response includes an `errors` dictionary:
-
-```json
-{
-  "type": "https://tools.ietf.org/html/rfc9110#section-15.5.1",
-  "title": "A validation error occurred.",
-  "status": 400,
-  "errors": {
-    "Name": ["The Name field is required."],
-    "Path": ["The path contains invalid characters."]
-  }
-}
-```
-
 ## Frontend Notification System
 
-The Bloom frontend framework includes a notification service (`@bloom/services/notifications/notifier`) that understands `ProblemDetails` responses out of the box. This creates a seamless error-handling pipeline from the API to the user interface.
+The Bloom frontend framework includes a notification service (`@bloom/services/notifications/notifier`) that understands [RFC 9457 Problem Details](https://www.rfc-editor.org/rfc/rfc9457) responses out of the box. This creates a seamless error-handling pipeline from the API to the user interface.
 
 ### How It Works
 
-1. An API controller returns a `ProblemDetails` response (e.g. `ApiNotFoundProblem()`).
+1. An API endpoint returns a `ProblemDetails` response (e.g. via `Problem()` or `TypedResults.Problem()`).
 2. The NSwag-generated client throws the response as an error.
 3. The calling code passes the error to `notify()`.
 4. The notifier detects the `ProblemDetails` shape and converts it to a UI notification.

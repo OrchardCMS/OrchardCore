@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
+using Microsoft.IdentityModel.Protocols;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -62,6 +64,7 @@ public sealed class OpenApiSettingsDisplayDriver : SiteDisplayDriver<OpenApiSett
             model.AuthenticationType = settings.AuthenticationType;
             model.AuthorizationUrl = settings.AuthorizationUrl;
             model.TokenUrl = settings.TokenUrl;
+            model.ServerMetadataUrl = settings.ServerMetadataUrl;
             model.OAuthClientId = settings.OAuthClientId;
             model.OAuthScopes = settings.OAuthScopes;
         }).Location("Content")
@@ -81,6 +84,20 @@ public sealed class OpenApiSettingsDisplayDriver : SiteDisplayDriver<OpenApiSett
 
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
+        // When a server metadata URL is explicitly configured, validate the configuration
+        // against that document and fill any endpoint URLs the user left empty from it —
+        // the spec-correct direction of inference (endpoints derive from the issuer's
+        // metadata, never the reverse). Explicitly entered endpoint URLs always win.
+        // This runs before the required-field checks so auto-filled values satisfy them.
+        // The metadata location itself is never inferred from the endpoint URLs: the spec
+        // does not tie endpoint locations to the issuer, so any such inference (e.g. assuming
+        // an OpenIddict-style "/connect/" path) breaks valid third-party setups.
+        if (model.AuthenticationType != OpenApiAuthenticationType.None
+            && !string.IsNullOrWhiteSpace(model.ServerMetadataUrl))
+        {
+            await ValidateServerMetadataAsync(model, context);
+        }
+
         if (model.AuthenticationType == OpenApiAuthenticationType.AuthorizationCodePkce)
         {
             if (string.IsNullOrWhiteSpace(model.AuthorizationUrl))
@@ -99,14 +116,6 @@ public sealed class OpenApiSettingsDisplayDriver : SiteDisplayDriver<OpenApiSett
             }
         }
 
-        // Validate the OAuth2 server by fetching its OpenID Connect discovery document.
-        if (model.AuthenticationType != OpenApiAuthenticationType.None
-            && context.Updater.ModelState.IsValid
-            && !string.IsNullOrWhiteSpace(model.TokenUrl))
-        {
-            await ValidateOAuthServerAsync(model, context);
-        }
-
         if (!context.Updater.ModelState.IsValid)
         {
             return await EditAsync(site, settings, context);
@@ -116,6 +125,7 @@ public sealed class OpenApiSettingsDisplayDriver : SiteDisplayDriver<OpenApiSett
         settings.AuthenticationType = model.AuthenticationType;
         settings.AuthorizationUrl = model.AuthorizationUrl;
         settings.TokenUrl = model.TokenUrl;
+        settings.ServerMetadataUrl = model.ServerMetadataUrl;
         settings.OAuthClientId = model.OAuthClientId;
         settings.OAuthScopes = model.OAuthScopes;
 
@@ -124,99 +134,73 @@ public sealed class OpenApiSettingsDisplayDriver : SiteDisplayDriver<OpenApiSett
         return await EditAsync(site, settings, context);
     }
 
-    private async Task ValidateOAuthServerAsync(OpenApiSettingsViewModel model, UpdateEditorContext context)
+    private async Task ValidateServerMetadataAsync(OpenApiSettingsViewModel model, UpdateEditorContext context)
     {
-        // Derive the issuer base URL from the token URL to find the discovery document.
-        // e.g., "/connect/token" → base is the tenant root; "https://auth.example.com/connect/token" → base is "https://auth.example.com".
-        var tokenUrl = ResolveUrl(model.TokenUrl);
+        var metadataUrl = ResolveUrl(model.ServerMetadataUrl);
 
-        if (tokenUrl == null)
+        if (metadataUrl == null || !Uri.TryCreate(metadataUrl, UriKind.Absolute, out var metadataUri))
         {
+            context.Updater.ModelState.AddModelError(Prefix, S["Could not resolve the Server Metadata URL."]);
             return;
         }
 
-        var tokenUri = new Uri(tokenUrl, UriKind.Absolute);
-
-        if (!OpenApiUrlGuard.IsExternalUrlAllowed(tokenUri, out var blockedReason))
+        if (!OpenApiUrlGuard.IsExternalUrlAllowed(metadataUri, out var blockedReason))
         {
             context.Updater.ModelState.AddModelError(Prefix, S[blockedReason]);
             return;
         }
 
-        var issuerBase = $"{tokenUri.Scheme}://{tokenUri.Authority}";
-
-        // Also include the path prefix before /connect/ if present (e.g., tenant prefix).
-        var tokenPath = tokenUri.AbsolutePath;
-        var connectIndex = tokenPath.IndexOf("/connect/", StringComparison.OrdinalIgnoreCase);
-
-        if (connectIndex > 0)
-        {
-            issuerBase += tokenPath[..connectIndex];
-        }
-
-        var discoveryUrl = $"{issuerBase}/.well-known/openid-configuration";
-
         try
         {
             var client = _httpClientFactory.CreateClient(OpenApiUrlGuard.HttpClientName);
-            var response = await client.GetAsync(discoveryUrl);
 
-            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+            // RequireHttps is relaxed because this is a validation-only fetch over the
+            // SSRF-guarded client, and same-host tenants commonly serve metadata over
+            // plain http in local setups.
+            var retriever = new HttpDocumentRetriever(client)
             {
-                context.Updater.ModelState.AddModelError(Prefix, S["Could not find the OpenID Connect discovery document at \"{0}\". Verify that the OpenID Connect server is enabled.", discoveryUrl]);
-                return;
+                RequireHttps = false,
+            };
+
+            var configurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(
+                metadataUri.AbsoluteUri,
+                new OpenIdConnectConfigurationRetriever(),
+                retriever);
+
+            var configuration = await configurationManager.GetConfigurationAsync(CancellationToken.None);
+
+            if (string.IsNullOrWhiteSpace(model.AuthorizationUrl) && !string.IsNullOrEmpty(configuration.AuthorizationEndpoint))
+            {
+                model.AuthorizationUrl = configuration.AuthorizationEndpoint;
             }
 
-            if (!response.IsSuccessStatusCode)
+            if (string.IsNullOrWhiteSpace(model.TokenUrl) && !string.IsNullOrEmpty(configuration.TokenEndpoint))
             {
-                context.Updater.ModelState.AddModelError(Prefix, S["The OpenID Connect discovery document at \"{0}\" returned status {1}.", discoveryUrl, (int)response.StatusCode]);
-                return;
+                model.TokenUrl = configuration.TokenEndpoint;
             }
-
-            // Parse the discovery document to verify the configured endpoints exist.
-            var json = await response.Content.ReadAsStringAsync();
-            var doc = System.Text.Json.JsonDocument.Parse(json);
-            var root = doc.RootElement;
 
             if (model.AuthenticationType == OpenApiAuthenticationType.AuthorizationCodePkce)
             {
-                if (!root.TryGetProperty("authorization_endpoint", out _))
+                if (string.IsNullOrEmpty(configuration.AuthorizationEndpoint))
                 {
                     context.Updater.ModelState.AddModelError(Prefix, S["The OpenID Connect server does not expose an authorization endpoint. Verify that the Authorization Code flow is enabled."]);
                 }
 
-                if (root.TryGetProperty("grant_types_supported", out var grantTypes))
+                if (configuration.GrantTypesSupported.Count > 0
+                    && !configuration.GrantTypesSupported.Contains("authorization_code"))
                 {
-                    var hasAuthCode = false;
-
-                    foreach (var gt in grantTypes.EnumerateArray())
-                    {
-                        if (gt.GetString() == "authorization_code")
-                        {
-                            hasAuthCode = true;
-                            break;
-                        }
-                    }
-
-                    if (!hasAuthCode)
-                    {
-                        context.Updater.ModelState.AddModelError(Prefix, S["The OpenID Connect server does not support the Authorization Code grant type. Enable it in the OpenID Connect server settings."]);
-                    }
+                    context.Updater.ModelState.AddModelError(Prefix, S["The OpenID Connect server does not support the Authorization Code grant type. Enable it in the OpenID Connect server settings."]);
                 }
             }
 
-            if (!root.TryGetProperty("token_endpoint", out _))
+            if (string.IsNullOrEmpty(configuration.TokenEndpoint))
             {
                 context.Updater.ModelState.AddModelError(Prefix, S["The OpenID Connect server does not expose a token endpoint. Verify the server configuration."]);
             }
         }
-        catch (HttpRequestException)
+        catch (Exception exception) when (exception is InvalidOperationException or ArgumentException or IOException)
         {
-            context.Updater.ModelState.AddModelError(Prefix, S["Could not reach the OpenID Connect server at \"{0}\". Verify that the server is running and the URL is correct.", issuerBase]);
-        }
-        catch (System.Text.Json.JsonException)
-        {
-            context.Updater.ModelState.AddModelError(Prefix, S["The OpenID Connect discovery document at \"{0}\" could not be parsed.", discoveryUrl]);
+            context.Updater.ModelState.AddModelError(Prefix, S["Could not retrieve valid OpenID Connect server metadata from \"{0}\". Verify that the server is running and the URL is correct.", metadataUri.AbsoluteUri]);
         }
     }
 
