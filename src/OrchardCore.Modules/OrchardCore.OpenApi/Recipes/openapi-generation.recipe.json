@@ -1,7 +1,7 @@
 {
   "name": "OpenApiGeneration",
   "displayName": "OpenApi Generation",
-  "description": "Enables all features that expose API endpoints for OpenApi schema generation and NSwag client generation.",
+  "description": "Enables all features that expose API endpoints for OpenApi schema generation and NSwag client generation. Also enables anonymous schema access (replacing any existing OpenApi settings) so NSwag can fetch swagger.json without authentication. The settings step must stay after the feature step: during tenant setup the settings handler is only registered once features are enabled, and a step with no handler is silently skipped.",
   "author": "The Orchard Core Team",
   "website": "https://orchardcore.net",
   "version": "1.0.0",
@@ -20,6 +20,12 @@
         "OrchardCore.Search.Elasticsearch",
         "OrchardCore.OpenApi"
       ]
+    },
+    {
+      "name": "settings",
+      "OpenApiSettings": {
+        "AllowAnonymousSchemaAccess": true
+      }
     }
   ]
 }

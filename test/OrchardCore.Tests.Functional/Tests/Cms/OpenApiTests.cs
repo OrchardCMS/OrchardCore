@@ -43,15 +43,57 @@ public sealed class OpenApiTests : CmsTestBase, IClassFixture<CmsSetupFixture>
     }
 
     [Fact]
-    public async Task SwaggerJsonIsAccessibleWithoutAuthentication()
+    public async Task SwaggerJsonRequiresAuthenticationUntilAnonymousAccessIsEnabled()
     {
         var page = await Fixture.CreatePageAsync();
         await EnableOpenApiAsync(page);
-        await page.CloseAsync();
 
-        // New page without auth cookies.
+        // Anonymous schema access is disabled by default: a page without auth
+        // cookies must get a 401 for the JSON schema endpoint. The 401 is issued
+        // through the "Api" scheme, so it must advertise a challenge
+        // (RFC 9110 §15.5.2) — the Bearer fallback when OpenID validation is off.
         var anonPage = await Fixture.CreatePageAsync();
         var response = await anonPage.GotoAsync($"/{Tenant.Prefix}/swagger/v1/swagger.json");
+        Assert.Equal(401, response.Status);
+        Assert.Contains("Bearer", (await response.AllHeadersAsync())["www-authenticate"]);
+
+        // Opt in to anonymous schema access via the settings UI.
+        await page.GotoAsync($"/{Tenant.Prefix}/Admin/Settings/openapi");
+        await page.Locator("#vue-AllowAnonymousSchemaAccess").CheckAsync();
+        await ButtonHelper.ClickSaveAsync(page);
+        await Assertions.Expect(page.Locator(".message-success")).ToBeVisibleAsync();
+        await page.CloseAsync();
+
+        // The same anonymous page can now fetch the schema.
+        response = await anonPage.GotoAsync($"/{Tenant.Prefix}/swagger/v1/swagger.json");
+        Assert.Equal(200, response.Status);
+        var content = await anonPage.ContentAsync();
+        Assert.Contains("\"openapi\"", content);
+        await anonPage.CloseAsync();
+    }
+
+    /// <summary>
+    /// Covers the recipe delivery path for anonymous schema access, the mechanism NSwag
+    /// generation depends on: running the OpenApiGeneration recipe must both enable the
+    /// OpenApi feature and turn on AllowAnonymousSchemaAccess, and the change must be
+    /// live (shell released) once the recipe reports success. Runs on the Default tenant
+    /// because the recipe enables OrchardCore.Tenants, which is Default-tenant-only.
+    /// </summary>
+    [Fact]
+    public async Task OpenApiGenerationRecipeEnablesAnonymousSchemaAccess()
+    {
+        var page = await Fixture.CreatePageAsync();
+        await AuthHelper.LoginAsync(page);
+
+        await page.GotoAsync("/Admin/Recipes");
+        await page.Locator("#btn-run-OpenApiGeneration").ClickAsync();
+        await page.ClickModalOkAsync();
+        await Assertions.Expect(page.Locator(".message-success")).ToBeVisibleAsync(new() { Timeout = 60000 });
+        await page.CloseAsync();
+
+        // The schema must be anonymously fetchable without any further action.
+        var anonPage = await Fixture.CreatePageAsync();
+        var response = await anonPage.GotoAsync("/swagger/v1/swagger.json");
         Assert.Equal(200, response.Status);
         var content = await anonPage.ContentAsync();
         Assert.Contains("\"openapi\"", content);
@@ -511,6 +553,41 @@ public sealed class OpenApiTests : CmsTestBase, IClassFixture<CmsSetupFixture>
 
         await page.Locator("button.btn-primary[type='submit']").ClickAsync();
         await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+    }
+
+    /// <summary>
+    /// With OpenID token validation enabled, an anonymous schema fetch must carry the full
+    /// RFC-compliant challenge: 401 status, a WWW-Authenticate header, and the RFC 9457
+    /// Problem Details body attached by the validation feature's challenge handler —
+    /// matching the responses of the API endpoints the schema describes.
+    /// </summary>
+    [Fact]
+    public async Task SwaggerJsonChallengeCarriesProblemDetailsWhenValidationEnabled()
+    {
+        var page = await Fixture.CreatePageAsync();
+        await EnableOpenApiAsync(page);
+        await ConfigureOpenIdServerForAuthorizationCodeAsync(page, $"/{Tenant.Prefix}");
+
+        // Force anonymous schema access off so this test does not depend on whether
+        // another test has enabled it on this shared tenant.
+        await page.GotoAsync($"/{Tenant.Prefix}/Admin/Settings/openapi");
+        await page.Locator("#vue-AllowAnonymousSchemaAccess").UncheckAsync();
+        await ButtonHelper.ClickSaveAsync(page);
+        await Assertions.Expect(page.Locator(".message-success")).ToBeVisibleAsync();
+        await page.CloseAsync();
+
+        var anonPage = await Fixture.CreatePageAsync();
+        var response = await anonPage.GotoAsync($"/{Tenant.Prefix}/swagger/v1/swagger.json");
+        Assert.Equal(401, response.Status);
+
+        var headers = await response.AllHeadersAsync();
+        Assert.Contains("Bearer", headers["www-authenticate"]);
+        Assert.Contains("application/problem+json", headers["content-type"]);
+
+        var body = await response.TextAsync();
+        Assert.Contains("\"status\":401", body);
+        Assert.Contains("\"title\"", body);
+        await anonPage.CloseAsync();
     }
 
     [Fact]

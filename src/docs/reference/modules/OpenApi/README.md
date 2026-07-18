@@ -19,13 +19,14 @@ It also ships UI explorers — Swagger UI, ReDoc, and Scalar — so developers c
 3. Navigate to **Configuration → Settings → OpenApi** to enable the desired UI(s) and configure authentication.
 4. Navigate to one of the explorer URLs listed above.
 
-> **Note:** All OpenAPI documentation endpoints (`/swagger`, `/redoc`, `/scalar`, `/openapi`) require authentication and the `ViewOpenApiContent` permission. Unauthenticated users are redirected to the admin login page. Authenticated users without the permission receive a `403 Forbidden` response.
+> **Note:** All OpenAPI documentation endpoints (`/swagger`, `/redoc`, `/scalar`, `/openapi`) require authentication and the `ViewOpenApiContent` permission. Unauthenticated users are redirected to the admin login page. Authenticated users without the permission receive a `403 Forbidden` response. The JSON schema endpoints (e.g. `/swagger/v1/swagger.json`) also require the `ViewOpenApiContent` permission by default — unauthenticated requests receive `401 Unauthorized` — unless **Allow anonymous access to the API schema** is enabled in the OpenApi settings.
 
 ## Configuration
 
 The OpenAPI settings page (**Configuration → Settings → OpenApi**) allows you to:
 
 - **Enable/disable each UI** independently (Swagger UI, ReDoc, Scalar). Disabled UIs return `404 Not Found`.
+- **Allow anonymous access to the API schema** — disabled by default. When enabled, the JSON schema endpoints can be fetched without authentication, which external tools like NSwag rely on. The OpenApi generation recipes (`OpenApiGeneration` and the `OpenApiGenerationSetup` recipe used by `tools/OpenApiClientGenerator`) enable this setting automatically.
 - **Choose the authentication method** used by the "Try it out" / "Send" buttons in the documentation UIs.
 
 ### Authentication Types
@@ -69,6 +70,10 @@ The module uses an NSwag configuration (`OrchardCore.OpenApi.nswag`) to generate
     ```
 
 2. **Running application** — the site must be running so NSwag can fetch the OpenAPI JSON.
+
+3. **Anonymous schema access** — the JSON schema endpoints require authentication by default, and the NSwag CLI fetches them anonymously. Run the **OpenApi Generation** recipe on the tenant (Configuration → Recipes), which enables the full API feature set *and* the **Allow anonymous access to the API schema** setting — or enable the setting manually in **Configuration → Settings → OpenApi**.
+
+    > **Warning:** the recipe's settings step **replaces the tenant's stored OpenApi settings**, so any configured OAuth2 authentication (client ID, endpoint URLs, scopes) is reset. Prefer running it on a throwaway generation tenant; on a configured tenant, enable the setting manually instead.
 
 ### Regeneration Steps
 

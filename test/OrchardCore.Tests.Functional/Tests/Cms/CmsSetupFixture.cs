@@ -5,7 +5,13 @@ namespace OrchardCore.Tests.Functional;
 
 public sealed class CmsSetupFixture : IAsyncLifetime
 {
-    private readonly OrchardTestFixture _testFixture = new();
+    private static int _instanceCounter;
+
+    // IClassFixture creates one instance per test class and classes run in parallel, so each
+    // instance needs its own App_Data directory — InitializeAsync deletes it, which would
+    // otherwise wipe the data of another class's already-running server.
+    private readonly OrchardTestFixture _testFixture = new(
+        instanceId: $"{nameof(CmsSetupFixture)}_{Interlocked.Increment(ref _instanceCounter)}");
 
     public IBrowser Browser => _testFixture.Browser;
     public string BaseUrl => _testFixture.BaseUrl;

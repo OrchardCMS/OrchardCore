@@ -23,7 +23,7 @@ const props = defineProps<{
 }>()
 
 const settings = reactive<OpenApiSettingsData>({
-    allowAnonymousSchemaAccess: true,
+    allowAnonymousSchemaAccess: false,
     authenticationType: 0,
     authorizationUrl: '',
     tokenUrl: '',

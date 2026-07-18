@@ -128,6 +128,7 @@ static async Task<string> WaitForSwaggerJsonAsync(string url, int timeoutSeconds
     using var client = new HttpClient();
     var deadline = DateTime.UtcNow.AddSeconds(timeoutSeconds);
     Exception? lastError = null;
+    System.Net.HttpStatusCode? lastStatus = null;
 
     while (DateTime.UtcNow < deadline)
     {
@@ -138,6 +139,8 @@ static async Task<string> WaitForSwaggerJsonAsync(string url, int timeoutSeconds
             {
                 return await response.Content.ReadAsStringAsync();
             }
+
+            lastStatus = response.StatusCode;
         }
         catch (Exception ex)
         {
@@ -147,8 +150,15 @@ static async Task<string> WaitForSwaggerJsonAsync(string url, int timeoutSeconds
         await Task.Delay(1000);
     }
 
+    // A persistent 401 usually means the setup recipe's settings step did not enable
+    // AllowAnonymousSchemaAccess (e.g. the step was reordered before the feature step
+    // and silently skipped) — surface the status so that is diagnosable.
+    var lastStatusHint = lastStatus is not null
+        ? $" Last response status: {(int)lastStatus} {lastStatus}."
+        : string.Empty;
+
     throw new TimeoutException(
-        $"'{url}' did not return a successful response within {timeoutSeconds} seconds.", lastError);
+        $"'{url}' did not return a successful response within {timeoutSeconds} seconds.{lastStatusHint}", lastError);
 }
 
 static void WriteScratchNSwagConfig(string realConfigPath, string scratchConfigPath, string swaggerJsonPath)
