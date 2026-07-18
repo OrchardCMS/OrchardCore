@@ -1,3 +1,4 @@
+using idunno.Security;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
@@ -144,15 +145,15 @@ public sealed class OpenApiSettingsDisplayDriver : SiteDisplayDriver<OpenApiSett
             return;
         }
 
-        if (!OpenApiUrlGuard.IsExternalUrlAllowed(metadataUri, out var blockedReason))
+        if (await Ssrf.IsUnsafe(metadataUri, allowedSchemes: ["http", "https"], allowLoopback: true))
         {
-            context.Updater.ModelState.AddModelError(Prefix, S[blockedReason]);
+            context.Updater.ModelState.AddModelError(Prefix, S["The Server Metadata URL is not allowed. Only http and https URLs that do not resolve to a link-local or private network address are accepted."]);
             return;
         }
 
         try
         {
-            var client = _httpClientFactory.CreateClient(OpenApiUrlGuard.HttpClientName);
+            var client = _httpClientFactory.CreateClient(OpenApiConstants.OAuthValidationHttpClientName);
 
             // RequireHttps is relaxed because this is a validation-only fetch over the
             // SSRF-guarded client, and same-host tenants commonly serve metadata over

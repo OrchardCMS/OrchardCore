@@ -1,10 +1,13 @@
+using System.Diagnostics.Metrics;
 using System.Linq;
 using System.Net.Http;
+using idunno.Security;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi;
 using OrchardCore.DisplayManagement.Handlers;
@@ -56,14 +59,21 @@ public sealed class Startup : StartupBase
         services.AddHttpClient();
 
         // Used for outbound OAuth discovery/token requests to a configured or caller-supplied
-        // URL. The connect callback re-validates the actually-resolved IP at connection time
-        // (including for redirects), which OpenApiUrlGuard.IsExternalUrlAllowed's literal-URL
-        // check alone cannot do — see OpenApiUrlGuard for why both are needed.
-        services.AddHttpClient(OpenApiUrlGuard.HttpClientName)
-            .ConfigurePrimaryHttpMessageHandler(() => new SocketsHttpHandler
-            {
-                ConnectCallback = OpenApiUrlGuard.ConnectCallbackAsync,
-            });
+        // URL. The handler validates every resolved IP at connection time (including redirect
+        // hops), so a hostname that only resolves to a blocked address at request time (DNS
+        // rebinding) cannot slip past a URL-string check done at save time. Loopback stays
+        // allowed: OrchardCore's multi-tenancy routinely hosts one tenant's OpenID Connect
+        // server as another tenant on the very same host/port.
+        services.AddHttpClient(OpenApiConstants.OAuthValidationHttpClientName)
+            .ConfigurePrimaryHttpMessageHandler(sp => SsrfSocketsHttpHandlerFactory.Create(
+                new SsrfOptions
+                {
+                    AllowedSchemes = ["http", "https"],
+                    AllowLoopback = true,
+                    AllowAutoRedirect = true,
+                },
+                sp.GetService<ILoggerFactory>(),
+                sp.GetService<IMeterFactory>()));
 
         services.AddPermissionProvider<Permissions>();
         services.AddNavigationProvider<AdminMenu>();
