@@ -183,7 +183,13 @@ describe("fileMenu", () => {
   it("toggle emits CloseFileMenus and calls menu.toggle", async () => {
     const w = mountMenu();
     const setupState = (w.vm.$ as any).setupState; // eslint-disable-line @typescript-eslint/no-explicit-any
-    const { emit } = useEventBus();
+
+    // Replace the PrimeVue Menu ref with a mock (same approach as the CloseFileMenus
+    // test below). toggle() calls menu.value?.toggle(event); the real PrimeVue Menu's
+    // popup slot render dereferences a null rendering instance under jsdom, and it is
+    // not what this test covers — FileMenu's own toggle logic is.
+    const toggleSpy = vi.fn();
+    setupState.menu = { toggle: toggleSpy, hide: vi.fn() };
 
     // Spy on the event bus emit
     const closeFileMenusSpy = vi.fn();
@@ -195,6 +201,7 @@ describe("fileMenu", () => {
 
     // toggle() calls emit("CloseFileMenus", menu) and menu.value?.toggle(event)
     expect(closeFileMenusSpy).toHaveBeenCalled();
+    expect(toggleSpy).toHaveBeenCalled();
   });
 
   it("CloseFileMenus handler hides menu when sender is different", () => {
