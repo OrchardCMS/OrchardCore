@@ -49,10 +49,13 @@ public sealed class OpenApiTests : CmsTestBase, IClassFixture<CmsSetupFixture>
         await EnableOpenApiAsync(page);
 
         // Anonymous schema access is disabled by default: a page without auth
-        // cookies must get a 401 for the JSON schema endpoint.
+        // cookies must get a 401 for the JSON schema endpoint. The 401 is issued
+        // through the "Api" scheme, so it must advertise a challenge
+        // (RFC 9110 §15.5.2) — the Bearer fallback when OpenID validation is off.
         var anonPage = await Fixture.CreatePageAsync();
         var response = await anonPage.GotoAsync($"/{Tenant.Prefix}/swagger/v1/swagger.json");
         Assert.Equal(401, response.Status);
+        Assert.Contains("Bearer", (await response.AllHeadersAsync())["www-authenticate"]);
 
         // Opt in to anonymous schema access via the settings UI.
         await page.GotoAsync($"/{Tenant.Prefix}/Admin/Settings/openapi");
