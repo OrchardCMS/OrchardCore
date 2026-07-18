@@ -33,7 +33,7 @@ public sealed class OpenApiJSLocalizer : IJSLocalizer
             ["enableDisableUIsHint"] = S["Enable or disable API documentation UIs via the Features page."].Value,
             ["apiSchemaAccess"] = S["API Schema Access"].Value,
             ["allowAnonymousSchemaAccess"] = S["Allow anonymous access to the API schema"].Value,
-            ["allowAnonymousSchemaAccessHint"] = S["When enabled, the JSON schema endpoints can be accessed without authentication. When disabled (the default), they require the <strong>View OpenAPI Content</strong> permission, and external tools like NSwag must provide authentication. The OpenApi Generation recipes enable this setting."].Value,
+            ["allowAnonymousSchemaAccessHint"] = S["When enabled, the JSON schema endpoints can be accessed without authentication. When disabled (the default), they require the <strong>View OpenAPI Content</strong> permission, and external tools like NSwag must provide authentication."].Value,
             ["apiAuthentication"] = S["API Authentication"].Value,
             ["authenticationType"] = S["Authentication Type"].Value,
             ["cookieDefault"] = S["None (browse documentation only)"].Value,

@@ -1,7 +1,7 @@
 {
   "name": "OpenApiGenerationSetup",
   "displayName": "OpenApi Client Generation",
-  "description": "First-boot setup recipe used by tools/OpenApiClientGenerator to provision a Default tenant with the full OrchardCore.OpenApi API surface, matching the OpenApiGeneration recipe's feature list (src/OrchardCore.Modules/OrchardCore.OpenApi/Recipes/openapi-generation.recipe.json). Not intended for production sites.",
+  "description": "First-boot setup recipe used by tools/OpenApiClientGenerator to provision a Default tenant with the full OrchardCore.OpenApi API surface, matching the OpenApiGeneration recipe's feature list (src/OrchardCore.Modules/OrchardCore.OpenApi/Recipes/openapi-generation.recipe.json). Not intended for production sites. The settings step must stay after the feature step: during tenant setup the settings handler is only registered once features are enabled, and a step with no handler is silently skipped.",
   "author": "The Orchard Core Team",
   "website": "https://orchardcore.net",
   "version": "1.0.0",

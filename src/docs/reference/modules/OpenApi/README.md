@@ -73,6 +73,8 @@ The module uses an NSwag configuration (`OrchardCore.OpenApi.nswag`) to generate
 
 3. **Anonymous schema access** — the JSON schema endpoints require authentication by default, and the NSwag CLI fetches them anonymously. Run the **OpenApi Generation** recipe on the tenant (Configuration → Recipes), which enables the full API feature set *and* the **Allow anonymous access to the API schema** setting — or enable the setting manually in **Configuration → Settings → OpenApi**.
 
+    > **Warning:** the recipe's settings step **replaces the tenant's stored OpenApi settings**, so any configured OAuth2 authentication (client ID, endpoint URLs, scopes) is reset. Prefer running it on a throwaway generation tenant; on a configured tenant, enable the setting manually instead.
+
 ### Regeneration Steps
 
 #### 1. Start the Application

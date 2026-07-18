@@ -56,15 +56,41 @@ public sealed class OpenApiTests : CmsTestBase, IClassFixture<CmsSetupFixture>
 
         // Opt in to anonymous schema access via the settings UI.
         await page.GotoAsync($"/{Tenant.Prefix}/Admin/Settings/openapi");
-        var checkbox = page.Locator("#vue-AllowAnonymousSchemaAccess");
-        await checkbox.WaitForAsync(new() { State = WaitForSelectorState.Visible, Timeout = 15000 });
-        await checkbox.CheckAsync();
+        await page.Locator("#vue-AllowAnonymousSchemaAccess").CheckAsync();
         await ButtonHelper.ClickSaveAsync(page);
-        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+        await Assertions.Expect(page.Locator(".message-success")).ToBeVisibleAsync();
         await page.CloseAsync();
 
         // The same anonymous page can now fetch the schema.
         response = await anonPage.GotoAsync($"/{Tenant.Prefix}/swagger/v1/swagger.json");
+        Assert.Equal(200, response.Status);
+        var content = await anonPage.ContentAsync();
+        Assert.Contains("\"openapi\"", content);
+        await anonPage.CloseAsync();
+    }
+
+    /// <summary>
+    /// Covers the recipe delivery path for anonymous schema access, the mechanism NSwag
+    /// generation depends on: running the OpenApiGeneration recipe must both enable the
+    /// OpenApi feature and turn on AllowAnonymousSchemaAccess, and the change must be
+    /// live (shell released) once the recipe reports success. Runs on the Default tenant
+    /// because the recipe enables OrchardCore.Tenants, which is Default-tenant-only.
+    /// </summary>
+    [Fact]
+    public async Task OpenApiGenerationRecipeEnablesAnonymousSchemaAccess()
+    {
+        var page = await Fixture.CreatePageAsync();
+        await AuthHelper.LoginAsync(page);
+
+        await page.GotoAsync("/Admin/Recipes");
+        await page.Locator("#btn-run-OpenApiGeneration").ClickAsync();
+        await page.ClickModalOkAsync();
+        await Assertions.Expect(page.Locator(".message-success")).ToBeVisibleAsync(new() { Timeout = 60000 });
+        await page.CloseAsync();
+
+        // The schema must be anonymously fetchable without any further action.
+        var anonPage = await Fixture.CreatePageAsync();
+        var response = await anonPage.GotoAsync("/swagger/v1/swagger.json");
         Assert.Equal(200, response.Status);
         var content = await anonPage.ContentAsync();
         Assert.Contains("\"openapi\"", content);

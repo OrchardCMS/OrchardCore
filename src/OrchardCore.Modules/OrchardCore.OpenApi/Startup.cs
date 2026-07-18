@@ -129,8 +129,6 @@ public sealed class Startup : StartupBase
                         // JSON spec endpoints — skip auth when anonymous access is allowed.
                         if (!settings.AllowAnonymousSchemaAccess)
                         {
-                            var authorizationService =
-                                context.RequestServices.GetRequiredService<IAuthorizationService>();
                             var user = context.User;
 
                             if (user?.Identity?.IsAuthenticated != true)
@@ -138,6 +136,9 @@ public sealed class Startup : StartupBase
                                 context.Response.StatusCode = StatusCodes.Status401Unauthorized;
                                 return;
                             }
+
+                            var authorizationService =
+                                context.RequestServices.GetRequiredService<IAuthorizationService>();
 
                             if (
                                 !await authorizationService.AuthorizeAsync(
@@ -159,8 +160,6 @@ public sealed class Startup : StartupBase
 
                         if (isSwaggerUI || isReDoc || isScalar)
                         {
-                            var authorizationService =
-                                context.RequestServices.GetRequiredService<IAuthorizationService>();
                             var user = context.User;
 
                             if (user?.Identity?.IsAuthenticated != true)
@@ -168,6 +167,9 @@ public sealed class Startup : StartupBase
                                 context.Response.Redirect($"{context.Request.PathBase}/admin");
                                 return;
                             }
+
+                            var authorizationService =
+                                context.RequestServices.GetRequiredService<IAuthorizationService>();
 
                             if (
                                 !await authorizationService.AuthorizeAsync(
