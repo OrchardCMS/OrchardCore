@@ -192,7 +192,7 @@ function addMediaFiles(files: IMediaFieldItem[]) {
 }
 
 function showPicker() {
-  pickerModalRef.value?.open();
+  pickerModalRef.value?.open?.();
 }
 
 function onPickerSelect(files: IMediaFieldItem[]) {
