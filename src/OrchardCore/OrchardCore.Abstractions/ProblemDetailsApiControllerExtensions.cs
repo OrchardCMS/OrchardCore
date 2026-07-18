@@ -10,23 +10,20 @@ public class ProblemDetailsApiLocalization();
 public static class ProblemDetailsApiControllerExtensions
 {
     /// <summary>
-    /// Returns a Problem response for unauthenticated or forbidden requests
-    /// when using cookie authentication on an API controller.
+    /// Returns a 403 Problem response for failed permission checks on an API controller,
+    /// regardless of the authentication scheme. Unlike a real <c>Forbid()</c> — which under
+    /// the cookie scheme redirects to the HTML access-denied page, unusable for JSON
+    /// clients — this always produces a Problem Details body. Callers must be gated by
+    /// <c>[Authorize]</c>, which rejects unauthenticated requests through the authentication
+    /// stack before any action runs. This method deliberately never returns a 401: emitting
+    /// one here would bypass the authentication handlers and omit the
+    /// <c>WWW-Authenticate</c> header that RFC 9110 §15.5.2 requires on every 401 response.
     /// </summary>
-    public static ActionResult ApiChallengeOrForbidForCookieAuth(this ControllerBase controllerBase)
+    public static ActionResult ApiForbidProblem(this ControllerBase controllerBase)
     {
         var S = controllerBase.HttpContext.RequestServices.GetRequiredService<
             IStringLocalizer<ProblemDetailsApiLocalization>
         >();
-
-        if (controllerBase.User?.Identity?.IsAuthenticated is false)
-        {
-            return controllerBase.Problem(
-                title: S["Unauthorized"],
-                detail: S["You must be authenticated to complete this request"],
-                statusCode: StatusCodes.Status401Unauthorized
-            );
-        }
 
         return controllerBase.Problem(
             title: S["Forbidden"],
@@ -118,23 +115,20 @@ public static class ProblemDetailsApiControllerExtensions
     }
 
     /// <summary>
-    /// Returns a Problem response for unauthenticated or forbidden requests when using
-    /// cookie authentication on a minimal API endpoint.
+    /// Returns a 403 Problem response for failed permission checks on a minimal API endpoint,
+    /// regardless of the authentication scheme. Unlike a real forbid — which under the cookie
+    /// scheme redirects to the HTML access-denied page, unusable for JSON clients — this
+    /// always produces a Problem Details body. Callers must require authorization so that
+    /// unauthenticated requests are rejected through the authentication stack before the
+    /// handler runs. This method deliberately never returns a 401: emitting one here would
+    /// bypass the authentication handlers and omit the <c>WWW-Authenticate</c> header that
+    /// RFC 9110 §15.5.2 requires on every 401 response.
     /// </summary>
-    public static IResult ApiChallengeOrForbidForCookieAuth(this HttpContext httpContext)
+    public static IResult ApiForbidProblem(this HttpContext httpContext)
     {
         var S = httpContext.RequestServices.GetRequiredService<
             IStringLocalizer<ProblemDetailsApiLocalization>
         >();
-
-        if (httpContext.User?.Identity?.IsAuthenticated is false)
-        {
-            return TypedResults.Problem(
-                title: S["Unauthorized"],
-                detail: S["You must be authenticated to complete this request"],
-                statusCode: StatusCodes.Status401Unauthorized
-            );
-        }
 
         return TypedResults.Problem(
             title: S["Forbidden"],

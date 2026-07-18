@@ -90,7 +90,7 @@ public class MediaApiController : Controller
         if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMedia)
             || !await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaFolder, (object)string.Empty))
         {
-            return this.ApiChallengeOrForbidForCookieAuth();
+            return this.ApiForbidProblem();
         }
 
         var bytes = await _mediaFileStore.GetPermittedStorageAsync();
@@ -109,7 +109,7 @@ public class MediaApiController : Controller
     {
         if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMedia))
         {
-            return this.ApiChallengeOrForbidForCookieAuth();
+            return this.ApiForbidProblem();
         }
 
         // Create default user folder if needed.
@@ -147,7 +147,7 @@ public class MediaApiController : Controller
 
         if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMedia))
         {
-            return this.ApiChallengeOrForbidForCookieAuth();
+            return this.ApiForbidProblem();
         }
 
         if (String.IsNullOrEmpty(path))
@@ -244,7 +244,7 @@ public class MediaApiController : Controller
 
         if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMedia))
         {
-            return this.ApiChallengeOrForbidForCookieAuth();
+            return this.ApiForbidProblem();
         }
 
         var authMs = sw.ElapsedMilliseconds;
@@ -298,7 +298,7 @@ public class MediaApiController : Controller
 
         if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMedia))
         {
-            return this.ApiChallengeOrForbidForCookieAuth();
+            return this.ApiForbidProblem();
         }
 
         // Only check directory existence for non-root paths (root always exists).
@@ -374,7 +374,7 @@ public class MediaApiController : Controller
     {
         if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMedia))
         {
-            return this.ApiChallengeOrForbidForCookieAuth();
+            return this.ApiForbidProblem();
         }
 
         if (String.IsNullOrEmpty(path))
@@ -402,7 +402,7 @@ public class MediaApiController : Controller
     {
         if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMedia))
         {
-            return this.ApiChallengeOrForbidForCookieAuth();
+            return this.ApiForbidProblem();
         }
 
         var requestedPaths = paths
@@ -434,7 +434,7 @@ public class MediaApiController : Controller
     {
         if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMedia))
         {
-            return this.ApiChallengeOrForbidForCookieAuth();
+            return this.ApiForbidProblem();
         }
 
         // create default folders if not exist
@@ -492,7 +492,7 @@ public class MediaApiController : Controller
         if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMedia)
             || !await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaFolder, (object)path))
         {
-            return this.ApiChallengeOrForbidForCookieAuth();
+            return this.ApiForbidProblem();
         }
 
         var allowedExtensions = GetRequestedExtensions(extensions, true);
@@ -612,7 +612,7 @@ public class MediaApiController : Controller
             || !await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaFolder, (object)oldPath)
             || !await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaFolder, (object)newPath))
         {
-            return this.ApiChallengeOrForbidForCookieAuth();
+            return this.ApiForbidProblem();
         }
 
         if (String.IsNullOrEmpty(oldPath) || String.IsNullOrEmpty(newPath))
@@ -656,7 +656,7 @@ public class MediaApiController : Controller
         if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMedia)
             || !await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaFolder, (object)path))
         {
-            return this.ApiChallengeOrForbidForCookieAuth();
+            return this.ApiForbidProblem();
         }
 
         if (String.IsNullOrEmpty(path))
@@ -697,7 +697,7 @@ public class MediaApiController : Controller
         if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMedia)
             || !await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaFolder, (object)path))
         {
-            return this.ApiChallengeOrForbidForCookieAuth();
+            return this.ApiForbidProblem();
         }
 
         if (String.IsNullOrEmpty(path))
@@ -727,7 +727,7 @@ public class MediaApiController : Controller
             || !await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaFolder, (object)oldPath)
             || !await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaFolder, (object)newPath))
         {
-            return this.ApiChallengeOrForbidForCookieAuth();
+            return this.ApiForbidProblem();
         }
 
         if (String.IsNullOrEmpty(oldPath) || String.IsNullOrEmpty(newPath))
@@ -776,14 +776,14 @@ public class MediaApiController : Controller
 
         if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMedia))
         {
-            return this.ApiChallengeOrForbidForCookieAuth();
+            return this.ApiForbidProblem();
         }
 
         foreach (var path in paths)
         {
             if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaFolder, (object)path))
             {
-                return this.ApiChallengeOrForbidForCookieAuth();
+                return this.ApiForbidProblem();
             }
         }
 
@@ -812,7 +812,7 @@ public class MediaApiController : Controller
             || !await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaFolder, (object)model.sourceFolder)
             || !await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaFolder, (object)model.targetFolder))
         {
-            return this.ApiChallengeOrForbidForCookieAuth();
+            return this.ApiForbidProblem();
         }
 
         if ((model.mediaNames == null) || (model.mediaNames.Length < 1)
@@ -882,7 +882,7 @@ public class MediaApiController : Controller
         if (!await authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMedia)
             || !await authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaFolder, (object)newPath))
         {
-            return this.ApiChallengeOrForbidForCookieAuth();
+            return this.ApiForbidProblem();
         }
 
         var mediaFolder = await _mediaFileStore.GetDirectoryInfoAsync(newPath);
@@ -960,7 +960,7 @@ public class MediaApiController : Controller
     {
         if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMedia))
         {
-            return this.ApiChallengeOrForbidForCookieAuth();
+            return this.ApiForbidProblem();
         }
 
         var entry = await tusMetadataStore.GetAsync(uploadId);
