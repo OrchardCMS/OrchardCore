@@ -38,6 +38,10 @@ public class ApiAuthenticationHandler : AuthenticationHandler<ApiAuthorizationOp
     {
         if (!_authenticationOptions.Value.SchemeMap.ContainsKey(Options.ApiAuthenticationScheme))
         {
+            // RFC 9110 §15.5.2 requires a WWW-Authenticate header on every 401 response.
+            // No handler is registered for the forwarded scheme, so no real challenge can be
+            // issued; advertise the Bearer scheme this API scheme expects when configured.
+            Response.Headers.WWWAuthenticate = "Bearer";
             Response.StatusCode = (int)System.Net.HttpStatusCode.Unauthorized;
             return Task.CompletedTask;
         }
