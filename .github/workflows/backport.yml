@@ -16,7 +16,7 @@ permissions:
 jobs:
   backport:
     if: ${{ contains(github.event.comment.body, '/backport to') || github.event_name == 'schedule' }}
-    uses: dotnet/arcade/.github/workflows/backport-base.yml@14cd9af54942c8f3da8d3c587fa7af8d54bd5757 # main
+    uses: dotnet/arcade/.github/workflows/backport-base.yml@09bc8c946f4c4ae5d031c8875b85a6b8f1876b93 # main
     with:
       repository_owners: 'OrchardCMS'
       
