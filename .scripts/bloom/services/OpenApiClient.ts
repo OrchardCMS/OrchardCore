@@ -934,7 +934,7 @@ export class MediaApiClient implements IMediaApiClient {
             const _responseText = response.data;
             let result400: any = null;
             let resultData400  = _responseText;
-            result400 = ValidationProblemDetails.fromJS(resultData400);
+            result400 = HttpValidationProblemDetails.fromJS(resultData400);
             return throwException("Bad Request", status, _responseText, _headers, result400);
 
         } else if (status === 401) {
@@ -1023,7 +1023,7 @@ export class MediaApiClient implements IMediaApiClient {
             const _responseText = response.data;
             let result400: any = null;
             let resultData400  = _responseText;
-            result400 = ValidationProblemDetails.fromJS(resultData400);
+            result400 = HttpValidationProblemDetails.fromJS(resultData400);
             return throwException("Bad Request", status, _responseText, _headers, result400);
 
         } else if (status === 401) {
@@ -1939,7 +1939,7 @@ export class MediaApiClient implements IMediaApiClient {
             const _responseText = response.data;
             let result400: any = null;
             let resultData400  = _responseText;
-            result400 = ValidationProblemDetails.fromJS(resultData400);
+            result400 = HttpValidationProblemDetails.fromJS(resultData400);
             return throwException("Bad Request", status, _responseText, _headers, result400);
 
         } else if (status === 401) {
@@ -2019,7 +2019,7 @@ export class MediaApiClient implements IMediaApiClient {
             const _responseText = response.data;
             let result400: any = null;
             let resultData400  = _responseText;
-            result400 = ValidationProblemDetails.fromJS(resultData400);
+            result400 = HttpValidationProblemDetails.fromJS(resultData400);
             return throwException("Bad Request", status, _responseText, _headers, result400);
 
         } else if (status === 401) {
@@ -3049,6 +3049,86 @@ export interface IFileStoreEntryDto {
     hasChildren?: boolean | undefined;
 }
 
+export class HttpValidationProblemDetails implements IHttpValidationProblemDetails {
+    type?: string | undefined;
+    title?: string | undefined;
+    status?: number | undefined;
+    detail?: string | undefined;
+    instance?: string | undefined;
+    errors?: { [key: string]: string[]; } | undefined;
+
+    [key: string]: any;
+
+    constructor(data?: IHttpValidationProblemDetails) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.type = _data["type"];
+            this.title = _data["title"];
+            this.status = _data["status"];
+            this.detail = _data["detail"];
+            this.instance = _data["instance"];
+            if (_data["errors"]) {
+                this.errors = {} as any;
+                for (let key in _data["errors"]) {
+                    if (_data["errors"].hasOwnProperty(key))
+                        (this.errors as any)![key] = _data["errors"][key] !== undefined ? _data["errors"][key] : [];
+                }
+            }
+        }
+    }
+
+    static fromJS(data: any): HttpValidationProblemDetails {
+        data = typeof data === 'object' ? data : {};
+        let result = new HttpValidationProblemDetails();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["type"] = this.type;
+        data["title"] = this.title;
+        data["status"] = this.status;
+        data["detail"] = this.detail;
+        data["instance"] = this.instance;
+        if (this.errors) {
+            data["errors"] = {};
+            for (let key in this.errors) {
+                if (this.errors.hasOwnProperty(key))
+                    (data["errors"] as any)[key] = (this.errors as any)[key];
+            }
+        }
+        return data;
+    }
+}
+
+export interface IHttpValidationProblemDetails {
+    type?: string | undefined;
+    title?: string | undefined;
+    status?: number | undefined;
+    detail?: string | undefined;
+    instance?: string | undefined;
+    errors?: { [key: string]: string[]; } | undefined;
+
+    [key: string]: any;
+}
+
 export class LuceneQueryModel implements ILuceneQueryModel {
     indexName?: string | undefined;
     query?: string | undefined;
@@ -3463,86 +3543,6 @@ export interface ITenantApiModel {
     recipeName?: string | undefined;
     featureProfiles?: string[] | undefined;
     isNewTenant?: boolean;
-}
-
-export class ValidationProblemDetails implements IValidationProblemDetails {
-    type?: string | undefined;
-    title?: string | undefined;
-    status?: number | undefined;
-    detail?: string | undefined;
-    instance?: string | undefined;
-    errors?: { [key: string]: string[]; } | undefined;
-
-    [key: string]: any;
-
-    constructor(data?: IValidationProblemDetails) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            for (var property in _data) {
-                if (_data.hasOwnProperty(property))
-                    this[property] = _data[property];
-            }
-            this.type = _data["type"];
-            this.title = _data["title"];
-            this.status = _data["status"];
-            this.detail = _data["detail"];
-            this.instance = _data["instance"];
-            if (_data["errors"]) {
-                this.errors = {} as any;
-                for (let key in _data["errors"]) {
-                    if (_data["errors"].hasOwnProperty(key))
-                        (this.errors as any)![key] = _data["errors"][key] !== undefined ? _data["errors"][key] : [];
-                }
-            }
-        }
-    }
-
-    static fromJS(data: any): ValidationProblemDetails {
-        data = typeof data === 'object' ? data : {};
-        let result = new ValidationProblemDetails();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        for (var property in this) {
-            if (this.hasOwnProperty(property))
-                data[property] = this[property];
-        }
-        data["type"] = this.type;
-        data["title"] = this.title;
-        data["status"] = this.status;
-        data["detail"] = this.detail;
-        data["instance"] = this.instance;
-        if (this.errors) {
-            data["errors"] = {};
-            for (let key in this.errors) {
-                if (this.errors.hasOwnProperty(key))
-                    (data["errors"] as any)[key] = (this.errors as any)[key];
-            }
-        }
-        return data;
-    }
-}
-
-export interface IValidationProblemDetails {
-    type?: string | undefined;
-    title?: string | undefined;
-    status?: number | undefined;
-    detail?: string | undefined;
-    instance?: string | undefined;
-    errors?: { [key: string]: string[]; } | undefined;
-
-    [key: string]: any;
 }
 
 export class ApiException extends Error {

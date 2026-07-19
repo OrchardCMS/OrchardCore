@@ -30,6 +30,7 @@ using OrchardCore.Media.Controllers;
 using OrchardCore.Media.Core;
 using OrchardCore.Media.Deployment;
 using OrchardCore.Media.Drivers;
+using OrchardCore.Media.Endpoints.Api;
 using OrchardCore.Media.Events;
 using OrchardCore.Media.Fields;
 using OrchardCore.Media.Filters;
@@ -226,6 +227,22 @@ public sealed class Startup : StartupBase
         IServiceProvider serviceProvider
     )
     {
+        routes.AddGetPermittedStorageEndpoint()
+            .AddGetDirectoryTreeEndpoint()
+            .AddGetFoldersEndpoint()
+            .AddGetMediaItemsEndpoint()
+            .AddGetDirectoryContentEndpoint()
+            .AddGetMediaItemEndpoint()
+            .AddGetMediaFieldItemsEndpoint()
+            .AddGetAllMediaItemsEndpoint()
+            .AddCopyMediaEndpoint()
+            .AddDeleteFolderEndpoint()
+            .AddDeleteMediaEndpoint()
+            .AddMoveMediaEndpoint()
+            .AddDeleteMediaListEndpoint()
+            .AddMoveMediaListEndpoint()
+            .AddCreateFolderEndpoint();
+
         var mediaFileProvider = serviceProvider.GetRequiredService<IMediaFileProvider>();
         var mediaOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>().Value;
         var mediaFileStoreCache = serviceProvider.GetService<IMediaFileStoreCache>();

@@ -16,7 +16,7 @@
     "allowSyntheticDefaultImports": true,
     "baseUrl": ".",
     "paths": {
-      "@bloom/*": ["../../../../../../../.scripts/bloom/*"],
+      "@bloom/*": ["../../../../../.scripts/bloom/*"],
       "@media-gallery": ["../media-gallery/src/main.ts"]
     }
   },
