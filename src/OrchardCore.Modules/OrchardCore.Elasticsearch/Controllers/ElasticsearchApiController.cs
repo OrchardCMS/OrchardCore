@@ -1,7 +1,6 @@
 using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Routing;
 using OrchardCore.Entities;
 using OrchardCore.Queries;
 using OrchardCore.Elasticsearch.Core.Services;
@@ -28,7 +27,6 @@ public sealed class ElasticsearchApiController : ControllerBase
 
     [HttpGet]
     [Route("content")]
-    [EndpointName("ApiGetElasticsearchContent")]
     public async Task<IActionResult> Content([FromQuery] ElasticApiQueryViewModel queryModel)
     {
         if (!await _authorizationService.AuthorizeAsync(User, ElasticsearchPermissions.QueryElasticApi))
@@ -43,7 +41,6 @@ public sealed class ElasticsearchApiController : ControllerBase
 
     [HttpPost]
     [Route("content")]
-    [EndpointName("ApiPostElasticsearchContent")]
     public async Task<IActionResult> ContentPost(ElasticApiQueryViewModel queryModel)
     {
         if (!await _authorizationService.AuthorizeAsync(User, ElasticsearchPermissions.QueryElasticApi))
@@ -58,7 +55,6 @@ public sealed class ElasticsearchApiController : ControllerBase
 
     [HttpGet]
     [Route("documents")]
-    [EndpointName("ApiGetElasticsearchDocuments")]
     public async Task<IActionResult> Documents([FromQuery] ElasticApiQueryViewModel queryModel)
     {
         if (!await _authorizationService.AuthorizeAsync(User, ElasticsearchPermissions.QueryElasticApi))
@@ -73,7 +69,6 @@ public sealed class ElasticsearchApiController : ControllerBase
 
     [HttpPost]
     [Route("documents")]
-    [EndpointName("ApiPostElasticsearchDocuments")]
     public async Task<IActionResult> DocumentsPost(ElasticApiQueryViewModel queryModel)
     {
         if (!await _authorizationService.AuthorizeAsync(User, ElasticsearchPermissions.QueryElasticApi))

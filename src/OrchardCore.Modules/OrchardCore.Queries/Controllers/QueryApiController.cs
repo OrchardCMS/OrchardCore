@@ -3,7 +3,6 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Routing;
 
 namespace OrchardCore.Queries.Controllers;
 
@@ -26,19 +25,9 @@ public sealed class QueryApiController : ControllerBase
         _queryManager = queryManager;
     }
 
-    [HttpGet]
+    [HttpPost, HttpGet]
     [Route("{name}")]
-    [EndpointName("ApiExecuteQueryGet")]
-    public Task<IActionResult> QueryGet(string name, string parameters)
-        => ExecuteQueryAsync(name, parameters);
-
-    [HttpPost]
-    [Route("{name}")]
-    [EndpointName("ApiExecuteQueryPost")]
-    public Task<IActionResult> QueryPost(string name, string parameters)
-        => ExecuteQueryAsync(name, parameters);
-
-    private async Task<IActionResult> ExecuteQueryAsync(
+    public async Task<IActionResult> Query(
         string name,
         string parameters)
     {

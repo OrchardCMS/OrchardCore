@@ -1,8 +1,0 @@
-[
-  {
-    "action": "vite",
-    "name": "openapi-settings",
-    "source": "Assets/openapi-settings/",
-    "tags": ["admin", "js"]
-  }
-]

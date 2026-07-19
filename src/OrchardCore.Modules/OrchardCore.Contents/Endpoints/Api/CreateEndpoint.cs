@@ -24,7 +24,6 @@ public static class CreateEndpoint
     public static IEndpointRouteBuilder AddCreateContentEndpoint(this IEndpointRouteBuilder builder)
     {
         builder.MapPost("api/content", HandleAsync)
-            .WithName("ApiCreateContentItem")
             .AllowAnonymous()
             .DisableAntiforgery();
 
