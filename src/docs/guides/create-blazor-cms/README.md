@@ -190,7 +190,7 @@ Now, your project explorer should look like the image below.
                 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
                 <base href="/" />
                 <link rel="stylesheet" href="OrchardCore.Resources/Styles/bootstrap.min.css" />
-                <link rel="stylesheet" href="_content/OCBlazor.styles.css" />
+                <link rel="stylesheet" href="@stylesheet" />
                 <HeadOutlet />
             </head>
             
@@ -199,6 +199,23 @@ Now, your project explorer should look like the image below.
                 <script src="_framework/blazor.web.js"></script>
             </body>
         </html>
+
+        @code {
+            private string stylesheet = "";
+
+            protected override void OnInitialized()
+            {
+                // Get the name of the host assembly, which is the one with the entry point,
+                // and use it to build the name of the blazor stylesheet.
+                var name = AppDomain.CurrentDomain
+                    .GetAssemblies()
+                    .First(a => a.EntryPoint != null)
+                    .GetName()
+                    .Name;
+
+                stylesheet = $"{name}.styles.css";
+            }
+        }
     ```
 
 === "App.razor.css"
