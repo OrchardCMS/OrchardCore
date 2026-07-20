@@ -39,3 +39,11 @@ body {
   color: #dee2e6;
   background-color: #212529;
 }
+
+/* The app sizes itself for the embedded admin layout (100vh minus the admin top nav and content
+   padding — see #media-gallery in file.css), which leaves an empty band at the bottom when there is
+   no admin chrome. Standalone fills the whole viewport. This file is imported after the App styles,
+   so the equal-specificity override wins. */
+#media-gallery {
+  height: 100vh;
+}

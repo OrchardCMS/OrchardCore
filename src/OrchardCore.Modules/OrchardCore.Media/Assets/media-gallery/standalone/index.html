@@ -27,8 +27,10 @@
         height: 100%;
         margin: 0;
       }
+      /* Full viewport — the app's own stylesheet subtracts admin chrome that standalone doesn't
+         have (standalone.css carries the same override for the bundled order). */
       #media-gallery {
-        height: 100%;
+        height: 100vh;
       }
     </style>
   </head>
