@@ -9,6 +9,9 @@ export interface SignalRAppOptions {
     getToken?: () => string | Promise<string>;
     transportType?: "ws" | "lp" | "sse";
     skipNegotiation?: boolean;
+    /** The SignalR client sends cookies by default (credentials: include). Set false for
+     * bearer-authenticated cross-origin hubs whose CORS policy is credential-less. */
+    withCredentials?: boolean;
     url: string;
 }
 
@@ -45,6 +48,10 @@ export default class SignalRApp {
 
         if (options.skipNegotiation !== undefined) {
             configuration.skipNegotiation = options.skipNegotiation;
+        }
+
+        if (options.withCredentials !== undefined) {
+            configuration.withCredentials = options.withCredentials;
         }
 
         this.connection = new SignalR.HubConnectionBuilder()

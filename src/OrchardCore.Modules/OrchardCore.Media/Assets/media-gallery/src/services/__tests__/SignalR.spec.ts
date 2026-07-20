@@ -67,6 +67,23 @@ describe("SignalR", () => {
     expect(mockApp.init).toHaveBeenCalledWith({ url: "/hubs/media", isTokenRequired: false, getToken: expect.any(Function) });
   });
 
+  it("disables credentials on the hub connection in bearer mode", async () => {
+    // Bearer authenticates with the token alone; the client's default credentials:include would
+    // fail the cross-origin negotiate against the credential-less CORS policy (standalone app).
+    vi.resetModules();
+    vi.doMock("../auth", () => ({
+      isAuthConfigured: () => true,
+      getAccessToken: vi.fn(async () => "token"),
+    }));
+    const { useSignalR } = await import("../SignalR");
+    useSignalR();
+    expect(mockApp.init).toHaveBeenCalledWith(
+      expect.objectContaining({ isTokenRequired: true, withCredentials: false }),
+    );
+    vi.doUnmock("../auth");
+    vi.resetModules();
+  });
+
   it("registers MediaChanged handler on the connection", async () => {
     const { useSignalR } = await import("../SignalR");
     useSignalR();

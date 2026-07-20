@@ -22,6 +22,10 @@ export function useSignalR() {
     url: hubUrl,
     isTokenRequired: isAuthConfigured(),
     getToken: async () => (await getAccessToken()) ?? "",
+    // Bearer mode authenticates with the token alone; the SignalR client's default
+    // credentials:include would make the cross-origin negotiate fail against the
+    // credential-less CORS policy. Cookie mode keeps the default so the admin cookie flows.
+    ...(isAuthConfigured() ? { withCredentials: false } : {}),
   });
 
   if (app.connection) {
