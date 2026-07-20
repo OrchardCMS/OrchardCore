@@ -208,6 +208,7 @@ public sealed class Startup : StartupBase
         services.AddDataMigration<Migrations>();
         services.AddRecipeExecutionStep<MediaStep>();
         services.AddRecipeExecutionStep<MoveAttachedMediaFieldsStep>();
+        services.AddRecipeExecutionStep<ReloadTenantStep>();
 
         // MIME types
         services.TryAddSingleton<IContentTypeProvider, FileExtensionContentTypeProvider>();
@@ -234,7 +235,8 @@ public sealed class Startup : StartupBase
         IServiceProvider serviceProvider
     )
     {
-        routes.AddGetPermittedStorageEndpoint()
+        routes.AddGetLocalizationsEndpoint()
+            .AddGetPermittedStorageEndpoint()
             .AddGetDirectoryTreeEndpoint()
             .AddGetFoldersEndpoint()
             .AddGetMediaItemsEndpoint()
