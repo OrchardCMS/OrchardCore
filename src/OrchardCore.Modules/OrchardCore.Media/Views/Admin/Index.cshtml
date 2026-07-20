@@ -22,6 +22,9 @@
         tus-file-info-url="@Href("~/api/media/TusFileInfo")"
         signalr-enabled="@(Model.SignalrEnabled ? "true" : "false")"
 
+        oidc-client-id="media_gallery"
+        oidc-scope="openid email profile roles"
+
         debug-enabled="@(Model.DebugEnabled ? "true" : "false")"
     >
     </media-gallery>

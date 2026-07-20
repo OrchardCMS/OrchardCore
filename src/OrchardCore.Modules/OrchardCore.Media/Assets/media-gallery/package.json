@@ -24,6 +24,7 @@
     "@uppy/tus": "4.2.0",
     "@uppy/xhr-upload": "4.2.0",
     "debug": "^4.3.4",
+    "oidc-client-ts": "^3.1.0",
     "primevue": "^4.3.0",
     "uuid": "9.0.1",
     "vue": "3.5.10",

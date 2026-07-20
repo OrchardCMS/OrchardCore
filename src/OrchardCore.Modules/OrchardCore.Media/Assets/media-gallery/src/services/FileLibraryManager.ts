@@ -7,6 +7,7 @@ import { useEventBus } from "./UseEventBus";
 import { useHierarchicalTreeBuilder } from "./HierarchicalTreeBuilder";
 import { FileDataService, IFileDataService } from "@bloom/media/api/file-data-service";
 import { getTranslations } from "@bloom/helpers/localizations";
+import { getSharedAxios } from "./apiClient";
 
 function isNotFoundError(error: unknown): boolean {
   return typeof error === "object" && error !== null && "status" in error && (error as { status: number }).status === 404;
@@ -45,7 +46,7 @@ function isBeingDeleted(path: string): boolean {
 }
 
 export function useFileLibraryManager() {
-  const fileDataService: IFileDataService = new FileDataService(basePath.value);
+  const fileDataService: IFileDataService = new FileDataService(basePath.value, getSharedAxios());
 
   const getFileItem = async (path: string): Promise<IFileLibraryItemDto> => {
     let result = {} as IFileLibraryItemDto;

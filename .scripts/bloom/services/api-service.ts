@@ -17,6 +17,16 @@ export interface ApiServiceOptions {
     authType?: AuthType;
     /** Bearer token for "bearer" auth. Can be updated later via setToken(). */
     token?: string;
+    /**
+     * Dynamic token provider for "bearer" auth. When set, it is awaited on every request
+     * and takes precedence over the static token, letting a caller acquire/renew silently.
+     */
+    getToken?: () => string | null | Promise<string | null>;
+    /**
+     * Called once per request when a "bearer" call returns 401, to obtain a fresh token.
+     * If it resolves to a token, the request is retried a single time with it.
+     */
+    onRenew?: () => Promise<string | null>;
 }
 
 /**
@@ -27,11 +37,15 @@ export class ApiService {
     private readonly instance: AxiosInstance;
     private readonly authType: AuthType;
     private token: string | null;
+    private readonly getToken?: () => string | null | Promise<string | null>;
+    private readonly onRenew?: () => Promise<string | null>;
 
     constructor(options?: ApiServiceOptions) {
         const baseUrl = options?.baseUrl ?? "";
         this.authType = options?.authType ?? "cookie";
         this.token = options?.token ?? null;
+        this.getToken = options?.getToken;
+        this.onRenew = options?.onRenew;
 
         this.instance = axios.create({
             baseURL: baseUrl,
@@ -41,19 +55,44 @@ export class ApiService {
             },
         });
 
-        this.instance.interceptors.request.use((config) => {
+        this.instance.interceptors.request.use(async (config) => {
             if (this.authType === "cookie") {
                 const antiForgeryToken = getAntiForgeryToken();
                 if (antiForgeryToken) {
                     config.headers["RequestVerificationToken"] = antiForgeryToken;
                 }
             } else if (this.authType === "bearer") {
-                if (this.token) {
-                    config.headers["Authorization"] = `Bearer ${this.token}`;
+                const token = this.getToken ? await this.getToken() : this.token;
+                if (token) {
+                    config.headers["Authorization"] = `Bearer ${token}`;
                 }
             }
             return config;
         });
+
+        // On a 401 for a bearer call, renew the token once and retry the request.
+        this.instance.interceptors.response.use(
+            (response) => response,
+            async (error) => {
+                const config = error?.config;
+                if (
+                    this.authType === "bearer" &&
+                    this.onRenew &&
+                    error?.response?.status === 401 &&
+                    config &&
+                    !config.__isRetry
+                ) {
+                    config.__isRetry = true;
+                    const token = await this.onRenew();
+                    if (token) {
+                        config.headers = config.headers ?? {};
+                        config.headers["Authorization"] = `Bearer ${token}`;
+                        return this.instance.request(config);
+                    }
+                }
+                return Promise.reject(error);
+            },
+        );
     }
 
     /**

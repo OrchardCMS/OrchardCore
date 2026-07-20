@@ -22,6 +22,7 @@ import Menu from 'primevue/menu';
 import TreeSelect from 'primevue/treeselect';
 import { useGlobals } from "./services/Globals";
 import { useEventBus } from "./services/UseEventBus";
+import { handleSilentRenewCallback } from "./services/auth";
 import type { IFileLibraryItemDto } from "@bloom/media/interfaces";
 
 /* add icons to the library (once) */
@@ -59,7 +60,15 @@ function configureMediaApp(app: VueApp) {
  * Auto-mount the full media app on the admin Media Library page.
  * Only mounts if #media-gallery exists in the DOM.
  */
-const mediaAppEl = document.getElementById("media-gallery");
+// When this bundle is loaded inside the hidden OIDC silent-renew iframe
+// (media-gallery-oidc-silent.html sets this marker), complete the handshake and do not
+// mount the app.
+const isOidcSilentRenew = !!(window as unknown as { __mediaGalleryOidcSilent?: boolean }).__mediaGalleryOidcSilent;
+if (isOidcSilentRenew) {
+  void handleSilentRenewCallback();
+}
+
+const mediaAppEl = isOidcSilentRenew ? null : document.getElementById("media-gallery");
 if (mediaAppEl) {
   const app = createApp({ name: "media-library" });
   app.component("media-gallery", AppComponent);

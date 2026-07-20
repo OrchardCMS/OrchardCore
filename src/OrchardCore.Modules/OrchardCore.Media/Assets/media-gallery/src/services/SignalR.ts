@@ -2,6 +2,7 @@ import SignalRApp from "@bloom/services/signalr/signalr-app";
 import { signalRReceivedData } from "@bloom/services/signalr/eventbus";
 import { useFileLibraryManager } from "./FileLibraryManager";
 import { useGlobals } from "./Globals";
+import { getAccessTokenSync, isAuthConfigured } from "./auth";
 
 /**
  * Connects to the OrchardCore MediaHub and listens for MediaChanged events.
@@ -12,8 +13,12 @@ export function useSignalR() {
   const { selectedDirectory } = useGlobals();
   const app = new SignalRApp("/hubs/media");
 
+  // In bearer mode, hand the MediaHub the silently-acquired access token. getAccessTokenSync
+  // returns the cached token, which is populated once the first Media API request resolves.
   app.init({
     url: "/hubs/media",
+    isTokenRequired: isAuthConfigured(),
+    getToken: getAccessTokenSync,
   });
 
   if (app.connection) {

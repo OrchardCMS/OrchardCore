@@ -233,6 +233,7 @@ import { useSignalR } from "./services/SignalR";
 import { useEventBus } from "./services/UseEventBus";
 import { useRouterService } from "./services/RouterService";
 import { getTranslations, setTranslations } from "@bloom/helpers/localizations";
+import { configureAuth } from "./services/auth";
 import { useFileListFiltering } from "./composables/useFileListFiltering";
 import { useBreadcrumbs } from "./composables/useBreadcrumbs";
 import { useStoragePopover } from "./composables/useStoragePopover";
@@ -288,6 +289,18 @@ const props = defineProps({
     type: String,
     default: "false",
   },
+  oidcAuthority: {
+    type: String,
+    default: "",
+  },
+  oidcClientId: {
+    type: String,
+    default: "",
+  },
+  oidcScope: {
+    type: String,
+    default: "openid email profile roles",
+  },
 })
 
 const {
@@ -335,6 +348,20 @@ setBasePath(props.basePath);
 setAllowMultipleSelection(parseBoolean(props.allowMultipleSelection, true));
 setAllowedExtensions(props.allowedExtensions);
 setIsDownloading(false);
+
+// Configure silent OIDC (authorization-code + PKCE) auth for the bearer-only Media API.
+// The token is acquired lazily on the first request; when no authority/client-id is
+// available the app stays unconfigured and Media API calls will 401 until the
+// MediaApiPkce recipe is applied and the config attributes are present.
+const oidcBase = props.basePath.endsWith("/") ? props.basePath : `${props.basePath}/`;
+const oidcSilentUri = `${window.location.origin}${oidcBase}OrchardCore.Media/media-gallery-oidc-silent.html`;
+configureAuth({
+  authority: props.oidcAuthority || `${window.location.origin}${oidcBase}`.replace(/\/$/, ""),
+  clientId: props.oidcClientId || "media_gallery",
+  scope: props.oidcScope,
+  redirectUri: oidcSilentUri,
+  silentRedirectUri: oidcSilentUri,
+});
 
 const translations = getTranslations();
 if (props.translations) {

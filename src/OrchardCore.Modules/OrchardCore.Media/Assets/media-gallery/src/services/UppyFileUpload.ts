@@ -15,6 +15,20 @@ import { SeverityLevel } from "@bloom/services/notifications/interfaces";
 import { usePermissions } from "./Permissions";
 import { MinimalRequiredUppyFile } from "@uppy/utils/lib/UppyFile";
 import { getTranslations } from "@bloom/helpers/localizations";
+import { getAccessTokenSync, isAuthConfigured } from "./auth";
+
+/**
+ * Bearer Authorization header for Uppy uploads, or an empty object when OIDC auth is not
+ * configured (falls back to the ambient session). Uses the synchronously-cached token,
+ * which is populated once the first Media API request resolves.
+ */
+function bearerUploadHeaders(): Record<string, string> {
+  if (!isAuthConfigured()) {
+    return {};
+  }
+  const token = getAccessTokenSync();
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
 import { Restrictions } from "@uppy/core/lib/Restricter";
 import { OptionalPluralizeLocale } from "@uppy/utils/lib/Translator";
 import { useEventBus } from "./UseEventBus";
@@ -186,6 +200,7 @@ export const useFileUpload = (model: IFileUploadModel): void => {
       if (!uppy.getPlugin("Tus")) {
         uppy.use(Tus, {
           endpoint: model.tusEndpointUrl,
+          headers: bearerUploadHeaders,
           retryDelays: [0, 1000, 3000, 5000],
           chunkSize: model.maxUploadChunkSize > 0
             ? model.maxUploadChunkSize
@@ -220,6 +235,7 @@ export const useFileUpload = (model: IFileUploadModel): void => {
         uppy.use(XHRUpload, {
           endpoint: setUppyUrl(),
           fieldName: "files",
+          headers: bearerUploadHeaders,
           bundle: false,
           limit: 5,
           shouldRetry: () => false,

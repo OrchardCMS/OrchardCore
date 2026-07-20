@@ -37,6 +37,7 @@ import { useGlobals } from '../services/Globals';
 import { useEventBus } from '../services/UseEventBus';
 import { IFileLibraryItemDto, IHFileLibraryItemDto } from '@bloom/media/interfaces';
 import { FileDataService } from '@bloom/media/api/file-data-service';
+import { getSharedAxios } from '../services/apiClient';
 
 const { visibleFolderNodes } = useHierarchicalTreeBuilder();
 const { selectedDirectory, expandedFolders, basePath, loadedFolders, hierarchicalDirectories, expandFolder, toggleFolder, setFolderLoading, setFolderLoaded } = useGlobals();
@@ -142,7 +143,7 @@ on("DirChildrenLoaded", (data: { directoryPath: string; folders: IFileLibraryIte
  * Lazy-load children via a separate API call (used only for toggle without selection).
  */
 const loadChildrenFromApi = async (folder: IHFileLibraryItemDto) => {
-  const fileDataService = new FileDataService(basePath.value);
+  const fileDataService = new FileDataService(basePath.value, getSharedAxios());
 
   setFolderLoading(folder.directoryPath, true);
   try {

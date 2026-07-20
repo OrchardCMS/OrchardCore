@@ -12288,6 +12288,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"jwt-decode@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "jwt-decode@npm:4.0.0"
+  checksum: 10/87b569e4a9a0067fb0d592bcf3b2ac3e638e49beee28620eeb07bef1b4470f4077dea68c15d191dd68e076846c3af8394be3bcaecffedc6e97433b221fdbbcf3
+  languageName: node
+  linkType: hard
+
 "keyv@npm:^4.5.3, keyv@npm:^4.5.4":
   version: 4.5.4
   resolution: "keyv@npm:4.5.4"
@@ -13675,6 +13682,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"oidc-client-ts@npm:^3.1.0":
+  version: 3.5.0
+  resolution: "oidc-client-ts@npm:3.5.0"
+  dependencies:
+    jwt-decode: "npm:^4.0.0"
+  checksum: 10/8ffe30c5b73bbde33b7a2f6a4c97a9fb26e33aec0e6643be79bfda8e6e2b39a256d8ef4434f06c3a8687cdbac8895e3b6f09ae443f48d10d80145555effcdcaf
+  languageName: node
+  linkType: hard
+
 "on-finished@npm:^2.4.1, on-finished@npm:~2.4.1":
   version: 2.4.1
   resolution: "on-finished@npm:2.4.1"
@@ -13779,6 +13795,7 @@ __metadata:
     eslint-plugin-vue: "npm:^9.22.0"
     jsdom: "npm:^28.1.0"
     mitt: "npm:^3.0.0"
+    oidc-client-ts: "npm:^3.1.0"
     postcss-rtlcss: "npm:^5.6.0"
     prettier: "npm:^3.4.2"
     primevue: "npm:^4.3.0"

@@ -1,3 +1,4 @@
+import type { AxiosInstance } from "axios";
 import { IFileLibraryItemDto, IDirectoryTreeNode, IPaginatedFoldersResult, IDirectoryContentResult, IPermittedStorageResult } from "../interfaces";
 import { MediaApiClient, FileStoreEntryDto, MoveMedias, DirectoryTreeNodeDto } from "@bloom/services/OpenApiClient";
 
@@ -47,11 +48,13 @@ function toDirectoryTreeNode(dto: DirectoryTreeNodeDto): IDirectoryTreeNode {
 export class FileDataService implements IFileDataService {
   private client: MediaApiClient;
 
-  constructor(baseUrl: string = "") {
+  constructor(baseUrl: string = "", instance?: AxiosInstance) {
     // NSwag appends "/api/..." to baseUrl; a trailing "/" would produce
     // "//api/..." which the browser parses as protocol-relative.
     const normalized = baseUrl.endsWith("/") ? baseUrl.slice(0, -1) : baseUrl;
-    this.client = new MediaApiClient(normalized);
+    // The optional axios instance carries bearer auth (and 401 retry); when omitted the
+    // generated client falls back to a plain same-origin instance.
+    this.client = new MediaApiClient(normalized, instance);
   }
 
   async getFileItem(path: string): Promise<IFileLibraryItemDto> {

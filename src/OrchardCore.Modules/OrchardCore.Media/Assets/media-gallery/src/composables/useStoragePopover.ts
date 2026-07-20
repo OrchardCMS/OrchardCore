@@ -1,6 +1,7 @@
 import { ref, onMounted, onUnmounted } from "vue";
 import { IPermittedStorageResult } from "@bloom/media/interfaces";
 import { FileDataService } from "@bloom/media/api/file-data-service";
+import { getSharedAxios } from "../services/apiClient";
 
 export function useStoragePopover(basePath: string) {
   const storageInfo = ref<IPermittedStorageResult | null>(null);
@@ -10,7 +11,7 @@ export function useStoragePopover(basePath: string) {
   const fetchStorageInfo = async () => {
     storageLoading.value = true;
     try {
-      const service = new FileDataService(basePath);
+      const service = new FileDataService(basePath, getSharedAxios());
       storageInfo.value = await service.getPermittedStorage();
     } catch (e) {
       console.error("Failed to fetch storage info", e);
