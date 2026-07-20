@@ -1138,6 +1138,7 @@ describe("UppyFileUpload", () => {
 
         expect(global.fetch).toHaveBeenCalledWith(
           "http://localhost/tus/fileinfo/abc123",
+          { headers: {} },
         );
 
         const placeholder = globals.assetsStore.value.find((a) => a.name === "tusfile.jpg");

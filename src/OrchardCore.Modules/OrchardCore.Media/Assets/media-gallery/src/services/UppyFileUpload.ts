@@ -424,7 +424,7 @@ export const useFileUpload = (model: IFileUploadModel): void => {
         const fileInfoUrl = `${model.tusFileInfoUrl}/${uploadId}`;
 
         try {
-          const res = await fetch(fileInfoUrl);
+          const res = await fetch(fileInfoUrl, { headers: bearerUploadHeaders() });
           if (res.ok) {
             const serverFile = await res.json();
             const matchName = serverFile.name || file.name;
