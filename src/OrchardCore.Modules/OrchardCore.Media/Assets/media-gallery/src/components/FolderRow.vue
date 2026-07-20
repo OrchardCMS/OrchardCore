@@ -19,7 +19,7 @@
               fill="#2c84d8" />
           </svg>
         </span>
-        <div class="folder-name tw:ms-2 tw:overflow-hidden">
+        <div class="folder-name tw:ms-4 tw:overflow-hidden">
           <div class="tw:pr-2 tw:truncate">{{ node.item.name }}</div>
         </div>
         <div class="folder-actions tw:shrink-0" @click.stop>

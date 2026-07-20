@@ -692,7 +692,7 @@ ol.file-items-grid.large-thumbs .thumb-container {
   display: flex;
   align-items: center;
   font-size: 0.875rem;
-  margin-right: 0;
+  margin-right: 12px;
 }
 
 #folder-tree .folder-menu-item .folder-actions .action-button {
