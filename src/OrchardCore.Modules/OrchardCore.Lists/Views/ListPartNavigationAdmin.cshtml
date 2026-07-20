@@ -9,6 +9,7 @@
 @inject IAuthorizationService AuthorizationService
 @inject IDataLocalizer D
 @{
+    var actionName = ViewContext.RouteData.Values["action"]?.ToString();
     var authorizedContentTypeDefinitions = new List<ContentTypeDefinition>();
     foreach (var contentTypeDefinition in Model.ContainedContentTypeDefinitions)
     {
@@ -24,7 +25,7 @@
     <div class="card-body">
         <div class="d-flex justify-content-end">
 
-            @if (await AuthorizationService.AuthorizeContentTypeDefinitionsAsync(User, CommonPermissions.ViewContent, Model.ContainedContentTypeDefinitions, ContentManager))
+            @if (actionName != "Display" && await AuthorizationService.AuthorizeContentTypeDefinitionsAsync(User, CommonPermissions.ViewContent, Model.ContainedContentTypeDefinitions, ContentManager))
             {
                 if (Model.ContainedContentTypeDefinitions.Length == 1)
                 {
