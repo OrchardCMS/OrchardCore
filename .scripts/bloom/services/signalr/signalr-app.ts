@@ -6,7 +6,7 @@ const debug = dbg("orchardcore:bloom:signalr");
 
 export interface SignalRAppOptions {
     isTokenRequired?: boolean;
-    getToken?: () => string;
+    getToken?: () => string | Promise<string>;
     transportType?: "ws" | "lp" | "sse";
     skipNegotiation?: boolean;
     url: string;

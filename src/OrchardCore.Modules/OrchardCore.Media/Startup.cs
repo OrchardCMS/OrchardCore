@@ -1,6 +1,7 @@
 using Fluid;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Routing;
@@ -480,6 +481,17 @@ public sealed class MediaTusStartup : StartupBase
             "/api/media/tus",
             async httpContext =>
             {
+                // Authenticate the bearer "Api" scheme and adopt its principal so this handler and
+                // the tus event callbacks below authorize against the token's identity.
+                var authenticateResult = await httpContext.AuthenticateAsync("Api");
+                if (!authenticateResult.Succeeded)
+                {
+                    httpContext.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                    return null;
+                }
+
+                httpContext.User = authenticateResult.Principal;
+
                 var authService =
                     httpContext.RequestServices.GetRequiredService<IAuthorizationService>();
                 if (
@@ -670,6 +682,9 @@ public sealed class MediaTusStartup : StartupBase
 [Feature("OrchardCore.Media.SignalR")]
 public sealed class MediaSignalRStartup : StartupBase
 {
+    // Run the access-token promotion middleware before UseAuthentication (Authentication == -150).
+    public override int Order => OrchardCoreConstants.ConfigureOrder.Authentication - 10;
+
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddSignalR();
@@ -681,6 +696,22 @@ public sealed class MediaSignalRStartup : StartupBase
         IEndpointRouteBuilder routes,
         IServiceProvider serviceProvider)
     {
+        // The MediaHub uses the bearer "Api" scheme. SignalR sends the access token as an
+        // "access_token" query-string parameter for the WebSocket/SSE transports (which can't set
+        // request headers), so promote it to the Authorization header for the hub before
+        // authentication runs, allowing the "Api" scheme to validate it as usual.
+        app.Use(async (context, next) =>
+        {
+            if (context.Request.Path.StartsWithSegments("/hubs/media") &&
+                string.IsNullOrEmpty(context.Request.Headers.Authorization) &&
+                context.Request.Query.TryGetValue("access_token", out var accessToken))
+            {
+                context.Request.Headers.Authorization = $"Bearer {accessToken}";
+            }
+
+            await next();
+        });
+
         routes.MapHub<MediaHub>("/hubs/media");
     }
 }

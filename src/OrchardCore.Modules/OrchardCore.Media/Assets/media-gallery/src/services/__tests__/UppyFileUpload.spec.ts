@@ -54,6 +54,7 @@ const {
     setOptions: mockSetOptions,
     getPlugin: mockGetPlugin,
     use: mockUse,
+    addPreProcessor: vi.fn(),
     opts: { restrictions: {} },
   };
 

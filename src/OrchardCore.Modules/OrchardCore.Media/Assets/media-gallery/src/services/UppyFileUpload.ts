@@ -15,7 +15,7 @@ import { SeverityLevel } from "@bloom/services/notifications/interfaces";
 import { usePermissions } from "./Permissions";
 import { MinimalRequiredUppyFile } from "@uppy/utils/lib/UppyFile";
 import { getTranslations } from "@bloom/helpers/localizations";
-import { getAccessTokenSync, isAuthConfigured } from "./auth";
+import { getAccessToken, getAccessTokenSync, isAuthConfigured } from "./auth";
 import { IFileLibraryItemDto } from "@bloom/media/interfaces";
 
 /**
@@ -51,6 +51,14 @@ if (culture == "fr") {
 }
 
 const uppy = new Uppy({ locale: uppyLocale });
+
+// Before any upload starts, refresh the bearer token so both the XHR request headers (read
+// synchronously) and the first tus chunk carry a valid token. No-op in cookie mode.
+uppy.addPreProcessor(async () => {
+  if (isAuthConfigured()) {
+    await getAccessToken();
+  }
+});
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const handleRestrictionFailed = (_file: any, error: { message: any }) => {
@@ -201,7 +209,17 @@ export const useFileUpload = (model: IFileUploadModel): void => {
       if (!uppy.getPlugin("Tus")) {
         uppy.use(Tus, {
           endpoint: model.tusEndpointUrl,
-          headers: bearerUploadHeaders,
+          // Refresh the bearer token per request so long/resumed uploads that outlive the token
+          // still send a valid one. No-op in cookie mode.
+          onBeforeRequest: async (req) => {
+            if (!isAuthConfigured()) {
+              return;
+            }
+            const token = await getAccessToken();
+            if (token) {
+              req.setHeader("Authorization", `Bearer ${token}`);
+            }
+          },
           retryDelays: [0, 1000, 3000, 5000],
           chunkSize: model.maxUploadChunkSize > 0
             ? model.maxUploadChunkSize
