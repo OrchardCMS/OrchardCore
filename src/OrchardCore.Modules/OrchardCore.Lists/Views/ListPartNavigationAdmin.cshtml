@@ -25,7 +25,7 @@
     <div class="card-body">
         <div class="d-flex justify-content-end">
 
-            @if (await AuthorizationService.AuthorizeContentTypeDefinitionsAsync(User, CommonPermissions.ViewContent, Model.ContainedContentTypeDefinitions, ContentManager) && actionName != "Display")
+            @if (actionName != "Display" && await AuthorizationService.AuthorizeContentTypeDefinitionsAsync(User, CommonPermissions.ViewContent, Model.ContainedContentTypeDefinitions, ContentManager))
             {
                 <a class="btn btn-secondary me-1" asp-action="Display" asp-controller="Admin" asp-route-contentItemId="@Model.Container.ContentItemId">@T["List Items"]</a>
             }
