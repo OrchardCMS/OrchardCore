@@ -1,7 +1,7 @@
 {
   "name": "MediaApiPkce",
   "displayName": "Media API — Bearer/PKCE",
-  "description": "Configures OpenID Connect so the Media gallery/picker SPA can call the bearer-only Media API (api/media) with an OAuth2 authorization-code + PKCE access token. Enables the OpenID Server, Token Validation and Management features, turns on authorization-code flow with PKCE required, enables local (same-tenant) token validation for the 'Api' scheme, and registers a public (secret-less) PKCE client. The OpenIdServerSettings and OpenIdApplication steps are handled by the OpenID Server feature and OpenIdValidationSettings by the Validation feature, so they must stay after the feature step (a step with no registered handler is silently skipped). IMPORTANT: replace the https://localhost:5001 host in RedirectUris/PostLogoutRedirectUris with your tenant's real origin (the RedirectUris path — /OrchardCore.Media/media-gallery-oidc-silent.html — is the silent-renew page the SPA uses and must match exactly, including any tenant prefix), and make sure signed-in users have roles — the 'roles' scope carries them into the token, which the Media permission checks require.",
+  "description": "Configures OpenID Connect so the Media gallery/picker SPA can call the bearer-only Media API (api/media) with an OAuth2 authorization-code + PKCE access token. Enables the OpenID Server, Token Validation and Management features, turns on authorization-code flow with PKCE required, enables local (same-tenant) token validation for the 'Api' scheme (Tenant must be set to the name of the tenant where this recipe runs — 'Default' here — because OpenIdValidationSettings requires exactly one of Tenant or Authority; leaving both empty makes the settings invalid, so the validation scheme silently never registers and every bearer call 401s), and registers a public (secret-less) PKCE client. The OpenIdServerSettings and OpenIdApplication steps are handled by the OpenID Server feature and OpenIdValidationSettings by the Validation feature, so they must stay after the feature step (a step with no registered handler is silently skipped). IMPORTANT: replace the https://localhost:5001 host in RedirectUris/PostLogoutRedirectUris with your tenant's real origin (the RedirectUris path — /OrchardCore.Media/media-gallery-oidc-silent.html — is the silent-renew page the SPA uses and must match exactly, including any tenant prefix), and make sure signed-in users have roles — the 'roles' scope carries them into the token, which the Media permission checks require.",
   "author": "The Orchard Core Team",
   "website": "https://orchardcore.net",
   "version": "1.0.0",
@@ -27,7 +27,8 @@
       "RequireProofKeyForCodeExchange": true
     },
     {
-      "name": "OpenIdValidationSettings"
+      "name": "OpenIdValidationSettings",
+      "Tenant": "Default"
     },
     {
       "name": "OpenIdApplication",
