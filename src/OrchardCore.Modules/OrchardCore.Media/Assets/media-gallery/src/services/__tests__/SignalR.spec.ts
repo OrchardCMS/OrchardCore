@@ -64,7 +64,7 @@ describe("SignalR", () => {
     const { useSignalR } = await import("../SignalR");
     useSignalR();
     expect(SignalRApp).toHaveBeenCalledWith("/hubs/media");
-    expect(mockApp.init).toHaveBeenCalledWith({ url: "/hubs/media" });
+    expect(mockApp.init).toHaveBeenCalledWith({ url: "/hubs/media", isTokenRequired: false, getToken: expect.any(Function) });
   });
 
   it("registers MediaChanged handler on the connection", async () => {

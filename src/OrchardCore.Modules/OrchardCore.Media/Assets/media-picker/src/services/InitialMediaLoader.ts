@@ -17,7 +17,7 @@ function createErrorItem(path: IMediaFieldPath, index: number, errorType: "trans
 }
 
 function createLoadedItem(data: Record<string, unknown>, path: IMediaFieldPath, index: number): IMediaFieldItem {
-  const resolvedPath = normalizeMediaPath(data.mediaPath ?? data.filePath) ?? path.path;
+  const resolvedPath = normalizeMediaPath((data.mediaPath ?? data.filePath) as string | null | undefined) ?? path.path;
   const name = typeof data.name === "string" ? data.name : path.path;
 
   return {
@@ -72,7 +72,7 @@ async function loadMediaItemsBatch(paths: IMediaFieldPath[], config: IMediaField
 
     const mediaItemsByPath = new Map<string, Record<string, unknown>>();
     for (const item of data) {
-      const mediaPath = normalizeMediaPath(item.mediaPath ?? item.filePath);
+      const mediaPath = normalizeMediaPath((item.mediaPath ?? item.filePath) as string | null | undefined);
       if (mediaPath) {
         mediaItemsByPath.set(mediaPath, item);
       }

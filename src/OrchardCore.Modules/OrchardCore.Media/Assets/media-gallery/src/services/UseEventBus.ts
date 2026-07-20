@@ -26,6 +26,7 @@ export type MittEvents = {
     FileDeleted: any; // eslint-disable-line @typescript-eslint/no-explicit-any
     SelectAll: any; // eslint-disable-line @typescript-eslint/no-explicit-any
     ResetModalFolderAction: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+    CloseFileMenus: any; // eslint-disable-line @typescript-eslint/no-explicit-any
     UploadFileAdded: { name: string };
     UploadProgress: { name: string; percentage: number; bytesUploaded: number; bytesTotal: number };
     UploadSuccess: { name: string; resumed?: boolean };

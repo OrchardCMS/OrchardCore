@@ -1172,7 +1172,7 @@ describe("UppyFileUpload", () => {
         const wrapper = await mountWithFileUpload(tusModel);
 
         mockGetFile.mockReturnValue({ id: "f1", name: "resumed.jpg", tus: { uploadUrl: "http://localhost/tus/existing" } });
-        emitUppyEvent("upload", { fileIDs: ["f1"] });
+        emitUppyEvent("upload", "upload-1", [{ id: "f1", name: "resumed.jpg", tus: { uploadUrl: "http://localhost/tus/existing" } }]);
 
         let successData: any = null; // eslint-disable-line @typescript-eslint/no-explicit-any
         eventBus.on("UploadSuccess", (data) => {
@@ -1301,7 +1301,7 @@ describe("UppyFileUpload", () => {
         const wrapper = await mountWithFileUpload(tusModel);
 
         mockGetFile.mockReturnValue({ id: "f1", name: "fresh.jpg" });
-        emitUppyEvent("upload", { fileIDs: ["f1"] });
+        emitUppyEvent("upload", "upload-1", [{ id: "f1", name: "fresh.jpg" }]);
 
         global.fetch = vi.fn().mockResolvedValue({
           ok: true,
@@ -1335,8 +1335,8 @@ describe("UppyFileUpload", () => {
       it("should handle upload event with empty fileIDs", async () => {
         const wrapper = await mountWithFileUpload(tusModel);
 
-        emitUppyEvent("upload", { fileIDs: [] });
-        emitUppyEvent("upload", {});
+        emitUppyEvent("upload", "upload-1", []);
+        emitUppyEvent("upload", "upload-1", undefined);
 
         wrapper.unmount();
       });

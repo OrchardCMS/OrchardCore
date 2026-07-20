@@ -10,7 +10,7 @@
 
 <script setup lang="ts">
 import { computed, PropType, ref } from "vue";
-import { FileAction, IModalFileEvent, IRenameFileLibraryItemDto, IFileLibraryItemDto } from "@bloom/media/interfaces";
+import { FileAction, IModalFileEvent, IFileLibraryItemDto } from "@bloom/media/interfaces";
 import { v4 as uuidv4 } from 'uuid';
 import { useConfirmModal } from "../services/ConfirmModalService";
 import { useFileActionModal } from "../services/FileActionModalService";
@@ -25,7 +25,7 @@ const debug = dbg("orchardcore:file-app");
 
 const props = defineProps({
   fileItem: {
-    type: Object as PropType<IRenameFileLibraryItemDto>,
+    type: Object as PropType<IFileLibraryItemDto>,
     required: true
   },
   showModalProp: {

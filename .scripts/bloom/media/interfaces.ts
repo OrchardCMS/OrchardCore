@@ -55,6 +55,8 @@ export interface ILocalStorageData {
   smallThumbs: boolean;
   selectedDirectory: IFileLibraryItemDto;
   gridView: boolean;
+  pageSize?: number;
+  largeThumbs?: boolean;
 }
 
 /**

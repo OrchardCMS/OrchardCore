@@ -16,6 +16,7 @@ import { usePermissions } from "./Permissions";
 import { MinimalRequiredUppyFile } from "@uppy/utils/lib/UppyFile";
 import { getTranslations } from "@bloom/helpers/localizations";
 import { getAccessTokenSync, isAuthConfigured } from "./auth";
+import { IFileLibraryItemDto } from "@bloom/media/interfaces";
 
 /**
  * Bearer Authorization header for Uppy uploads, or an empty object when OIDC auth is not
@@ -220,13 +221,11 @@ export const useFileUpload = (model: IFileUploadModel): void => {
       // Detect resumed uploads: when tus-js-client finds a previous partial upload
       // in localStorage, it sets file.tus.uploadUrl before the upload begins.
       // We capture this in the "upload" event (fired before actual upload starts).
-      uppy.on("upload", (data) => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (data.fileIDs ?? []).forEach((fileId: string) => {
-          const file = uppy.getFile(fileId);
+      uppy.on("upload", (_uploadID, files) => {
+        (files ?? []).forEach((file) => {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           if ((file as any)?.tus?.uploadUrl) {
-            resumedFileIds.add(fileId);
+            resumedFileIds.add(file.id);
           }
         });
       });
@@ -350,7 +349,7 @@ export const useFileUpload = (model: IFileUploadModel): void => {
           // In TUS mode, only remove completed/failed files — paused files must
           // stay in Uppy's state so they can be resumed via pauseResume().
           uppy.getFiles().forEach((f) => {
-            if (!pausedFileNames.has(f.name)) {
+            if (!pausedFileNames.has(f.name ?? "")) {
               uppy.removeFile(f.id);
             }
           });

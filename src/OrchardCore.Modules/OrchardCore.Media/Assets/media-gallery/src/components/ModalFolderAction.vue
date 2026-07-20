@@ -30,7 +30,7 @@
         {{ t.Cancel }}
       </button>
       <button id="btn-submit" class="tw:inline-flex tw:items-center tw:justify-center tw:gap-1.5 tw:px-3 tw:py-1.5 tw:text-sm tw:font-normal tw:leading-normal tw:cursor-pointer tw:select-none tw:border tw:rounded-md tw:transition-colors tw:text-white tw:bg-[#0d6efd] tw:border-[#0d6efd] hover:tw:bg-[#0b5ed7] hover:tw:border-[#0a58ca]"
-        @click="emit('confirm', { action: folderAction, folder: folder, inputValue: inputValue })">
+        @click="emit('confirm', { action: folderAction!, folder: folder, inputValue: inputValue })">
         <slot name="submit"></slot>
       </button>
     </div>
