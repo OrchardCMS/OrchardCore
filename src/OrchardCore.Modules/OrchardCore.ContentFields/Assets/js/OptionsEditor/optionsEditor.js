@@ -19,6 +19,9 @@ function initializeOptionsEditor(elem, data, defaultValue, modalBodyElement) {
         getOptionsFormattedList: function () {
             if (this.debug) { console.log('getOptionsFormattedList triggered') };
             return JSON.stringify(this.state.options.filter(function (x) { return !IsNullOrWhiteSpace(x.name) }));
+        },
+        changeName: function (index) {
+            this.state.options[index].value = this.state.options[index].name;
         }
     }
 
@@ -45,6 +48,9 @@ function initializeOptionsEditor(elem, data, defaultValue, modalBodyElement) {
             },
             getOptionsFormattedList: function () {
                 return store.getOptionsFormattedList();
+            },
+            changeName: function (index) {
+                return store.changeName(index);
             }
         }
     };

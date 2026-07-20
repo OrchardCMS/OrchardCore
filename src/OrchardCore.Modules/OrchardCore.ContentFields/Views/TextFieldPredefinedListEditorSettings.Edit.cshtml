@@ -20,7 +20,7 @@
         <draggable v-model="data.options" :tag="'tbody'">
             <tr v-for="(option, index) in data.options" :key="index">
                 <td>
-                    <input type="text" class="form-control" v-model="option.name" placeholder="Enter a name" />
+                    <input type="text" class="form-control" v-model="option.name" placeholder="Enter a name" v-on:input="changeName(index)" />
                 </td>
                 <td>
                     <input type="text" class="form-control courrier" v-model="option.value" placeholder="Enter a value" />
