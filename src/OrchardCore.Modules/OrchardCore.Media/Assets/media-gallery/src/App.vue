@@ -64,7 +64,7 @@
                 <div class="settings-popover-content">
                   <div class="settings-popover-row">
                     <label class="settings-popover-label" for="settings-page-size">{{ t.ItemsPerPage || 'Items per page' }}</label>
-                    <select id="settings-page-size" class="tw:block tw:w-full tw:px-3 tw:py-1.5 tw:text-sm tw:font-normal tw:leading-normal tw:text-[var(--bs-body-color)] tw:bg-[var(--bs-body-bg)] tw:border tw:border-[var(--bs-border-color)] tw:rounded-md tw:transition-colors focus:tw:border-[#0d6efd] focus:tw:outline-none settings-select" v-model.number="pageSize">
+                    <select id="settings-page-size" class="tw:block tw:w-full tw:px-3 tw:py-1.5 tw:text-sm tw:font-normal tw:leading-normal tw:text-[var(--mg-text)] tw:bg-[var(--mg-surface)] tw:border tw:border-[var(--mg-border)] tw:rounded-md tw:transition-colors focus:tw:border-[#0d6efd] focus:tw:outline-none settings-select" v-model.number="pageSize">
                       <option :value="10">10</option>
                       <option :value="20">20</option>
                       <option :value="50">50</option>
@@ -76,13 +76,13 @@
                     <div class="tw:inline-flex tw:align-middle">
                       <button type="button"
                         class="tw:inline-flex tw:items-center tw:justify-center tw:gap-1.5 tw:px-2 tw:py-1 tw:text-[0.8125rem] tw:font-normal tw:leading-normal tw:cursor-pointer tw:select-none tw:border tw:rounded-md tw:rounded-r-none tw:transition-colors"
-                        :class="!largeThumbs ? 'tw:text-white tw:bg-[#0d6efd] tw:border-[#0d6efd] hover:tw:bg-[#0b5ed7]' : 'tw:text-[var(--bs-body-color)] tw:bg-[var(--bs-secondary-bg)] tw:border-[var(--bs-border-color)] hover:tw:bg-[var(--bs-tertiary-bg)]'"
+                        :class="!largeThumbs ? 'tw:text-white tw:bg-[#0d6efd] tw:border-[#0d6efd] hover:tw:bg-[#0b5ed7]' : 'tw:text-[var(--mg-text)] tw:bg-[var(--mg-surface-secondary)] tw:border-[var(--mg-border)] hover:tw:bg-[var(--mg-surface-tertiary)]'"
                         @click="largeThumbs = false">
                         {{ t.Normal || 'Normal' }}
                       </button>
                       <button type="button"
                         class="tw:inline-flex tw:items-center tw:justify-center tw:gap-1.5 tw:px-2 tw:py-1 tw:text-[0.8125rem] tw:font-normal tw:leading-normal tw:cursor-pointer tw:select-none tw:border tw:rounded-md tw:rounded-l-none tw:-ml-px tw:transition-colors"
-                        :class="largeThumbs ? 'tw:text-white tw:bg-[#0d6efd] tw:border-[#0d6efd] hover:tw:bg-[#0b5ed7]' : 'tw:text-[var(--bs-body-color)] tw:bg-[var(--bs-secondary-bg)] tw:border-[var(--bs-border-color)] hover:tw:bg-[var(--bs-tertiary-bg)]'"
+                        :class="largeThumbs ? 'tw:text-white tw:bg-[#0d6efd] tw:border-[#0d6efd] hover:tw:bg-[#0b5ed7]' : 'tw:text-[var(--mg-text)] tw:bg-[var(--mg-surface-secondary)] tw:border-[var(--mg-border)] hover:tw:bg-[var(--mg-surface-tertiary)]'"
                         @click="largeThumbs = true">
                         {{ t.Large || 'Large' }}
                       </button>
@@ -100,21 +100,21 @@
                     <fa-icon icon="fa-solid fa-cloud-arrow-up"></fa-icon>
                     {{ t.UploadFiles }}
                   </label>
-                <a :title="t.DeleteAll" href="javascript:void(0)" class="tw:inline-flex tw:items-center tw:justify-center tw:gap-1.5 tw:px-3 tw:py-1.5 tw:text-sm tw:font-normal tw:leading-normal tw:text-center tw:cursor-pointer tw:select-none tw:border tw:rounded-md tw:transition-colors tw:text-[var(--bs-body-color)] tw:bg-[var(--bs-secondary-bg)] tw:border-[var(--bs-border-color)] hover:tw:bg-[var(--bs-tertiary-bg)] tw:no-underline tw:mr-2"
+                <a :title="t.DeleteAll" href="javascript:void(0)" class="tw:inline-flex tw:items-center tw:justify-center tw:gap-1.5 tw:px-3 tw:py-1.5 tw:text-sm tw:font-normal tw:leading-normal tw:text-center tw:cursor-pointer tw:select-none tw:border tw:rounded-md tw:transition-colors tw:text-[var(--mg-text)] tw:bg-[var(--mg-surface-secondary)] tw:border-[var(--mg-border)] hover:tw:bg-[var(--mg-surface-tertiary)] tw:no-underline tw:mr-2"
                   @click="() => deleteSelectedFiles()" :class="{ 'tw:cursor-default tw:pointer-events-none tw:opacity-65': selectedFiles.length < 1 }">
                   <fa-icon icon="fa-solid fa-trash"></fa-icon>
-                  <span class="tw:inline-flex tw:items-center tw:justify-center tw:px-[0.65em] tw:py-[0.25em] tw:text-[0.75em] tw:font-bold tw:leading-none tw:text-[var(--bs-body-color)] tw:bg-[var(--bs-tertiary-bg)] tw:rounded-full tw:ml-1" v-show="selectedFiles.length > 0">{{ selectedFiles.length
+                  <span class="tw:inline-flex tw:items-center tw:justify-center tw:px-[0.65em] tw:py-[0.25em] tw:text-[0.75em] tw:font-bold tw:leading-none tw:text-[var(--mg-text)] tw:bg-[var(--mg-surface-tertiary)] tw:rounded-full tw:ml-1" v-show="selectedFiles.length > 0">{{ selectedFiles.length
                     }}</span>
                 </a>
-                <a :title="t.DownloadAll" href="javascript:void(0)" class="tw:inline-flex tw:items-center tw:justify-center tw:gap-1.5 tw:px-3 tw:py-1.5 tw:text-sm tw:font-normal tw:leading-normal tw:text-center tw:cursor-pointer tw:select-none tw:border tw:rounded-md tw:transition-colors tw:text-[var(--bs-body-color)] tw:bg-[var(--bs-secondary-bg)] tw:border-[var(--bs-border-color)] hover:tw:bg-[var(--bs-tertiary-bg)] tw:no-underline tw:mr-2"
+                <a :title="t.DownloadAll" href="javascript:void(0)" class="tw:inline-flex tw:items-center tw:justify-center tw:gap-1.5 tw:px-3 tw:py-1.5 tw:text-sm tw:font-normal tw:leading-normal tw:text-center tw:cursor-pointer tw:select-none tw:border tw:rounded-md tw:transition-colors tw:text-[var(--mg-text)] tw:bg-[var(--mg-surface-secondary)] tw:border-[var(--mg-border)] hover:tw:bg-[var(--mg-surface-tertiary)] tw:no-underline tw:mr-2"
                   @click="() => downloadSelectedFiles()"
                   :class="{ 'tw:cursor-default tw:pointer-events-none tw:opacity-65': selectedFiles.length < 1 || isDownloading }">
                   <fa-icon icon="fa-solid fa-download"></fa-icon>
-                  <span class="tw:inline-flex tw:items-center tw:justify-center tw:px-[0.65em] tw:py-[0.25em] tw:text-[0.75em] tw:font-bold tw:leading-none tw:text-[var(--bs-body-color)] tw:bg-[var(--bs-tertiary-bg)] tw:rounded-full tw:ml-1" v-show="selectedFiles.length > 0">{{ selectedFiles.length
+                  <span class="tw:inline-flex tw:items-center tw:justify-center tw:px-[0.65em] tw:py-[0.25em] tw:text-[0.75em] tw:font-bold tw:leading-none tw:text-[var(--mg-text)] tw:bg-[var(--mg-surface-tertiary)] tw:rounded-full tw:ml-1" v-show="selectedFiles.length > 0">{{ selectedFiles.length
                     }}</span>
                 </a>
                 <a :title="gridView ? (t.TableView ?? 'Table view') : (t.GridView ?? 'Grid view')"
-                  href="javascript:void(0)" class="tw:inline-flex tw:items-center tw:justify-center tw:gap-1.5 tw:px-3 tw:py-1.5 tw:text-sm tw:font-normal tw:leading-normal tw:text-center tw:cursor-pointer tw:select-none tw:border tw:rounded-md tw:transition-colors tw:text-[var(--bs-body-color)] tw:bg-[var(--bs-secondary-bg)] tw:border-[var(--bs-border-color)] hover:tw:bg-[var(--bs-tertiary-bg)] tw:no-underline tw:mr-2"
+                  href="javascript:void(0)" class="tw:inline-flex tw:items-center tw:justify-center tw:gap-1.5 tw:px-3 tw:py-1.5 tw:text-sm tw:font-normal tw:leading-normal tw:text-center tw:cursor-pointer tw:select-none tw:border tw:rounded-md tw:transition-colors tw:text-[var(--mg-text)] tw:bg-[var(--mg-surface-secondary)] tw:border-[var(--mg-border)] hover:tw:bg-[var(--mg-surface-tertiary)] tw:no-underline tw:mr-2"
                   @click="gridView = !gridView">
                   <fa-icon :icon="gridView ? 'fa-solid fa-list' : 'fa-solid fa-grip'"></fa-icon>
                 </a>
@@ -123,12 +123,12 @@
             <div>
               <div class="file-filter">
                 <div class="tw:flex tw:flex-nowrap tw:items-stretch tw:w-full">
-                  <span class="tw:flex tw:items-center tw:px-3 tw:border tw:border-r-0 tw:border-[var(--bs-border-color)] tw:bg-[var(--bs-tertiary-bg)] tw:text-[var(--bs-secondary-color)] tw:rounded-l-md">
+                  <span class="tw:flex tw:items-center tw:px-3 tw:border tw:border-r-0 tw:border-[var(--mg-border)] tw:bg-[var(--mg-surface-tertiary)] tw:text-[var(--mg-text-muted)] tw:rounded-l-md">
                     <fa-icon icon="fa-solid fa-filter"></fa-icon>
                   </span>
-                  <input type="text" id="file-filter-input" v-model="fileFilter" class="tw:flex-auto tw:min-w-0 tw:block tw:px-3 tw:py-1.5 tw:text-sm tw:font-normal tw:leading-normal tw:text-[var(--bs-body-color)] tw:bg-[var(--bs-body-bg)] tw:border tw:border-[var(--bs-border-color)] tw:rounded-none tw:transition-colors focus:tw:border-[#0d6efd] focus:tw:outline-none input-filter"
+                  <input type="text" id="file-filter-input" v-model="fileFilter" class="tw:flex-auto tw:min-w-0 tw:block tw:px-3 tw:py-1.5 tw:text-sm tw:font-normal tw:leading-normal tw:text-[var(--mg-text)] tw:bg-[var(--mg-surface)] tw:border tw:border-[var(--mg-border)] tw:rounded-none tw:transition-colors focus:tw:border-[#0d6efd] focus:tw:outline-none input-filter"
                     :placeholder="t.Filter" :aria-label="t.Filter" />
-                  <button id="clear-file-filter-button" class="tw:inline-flex tw:items-center tw:justify-center tw:gap-1.5 tw:px-3 tw:py-1.5 tw:text-sm tw:font-normal tw:leading-normal tw:cursor-pointer tw:select-none tw:border tw:border-l-0 tw:rounded-r-md tw:transition-colors tw:text-[var(--bs-secondary-color)] tw:border-[var(--bs-border-color)] tw:bg-[var(--bs-tertiary-bg)] hover:tw:text-[var(--bs-body-color)] hover:tw:bg-[var(--bs-secondary-bg)]" :disabled="fileFilter == ''"
+                  <button id="clear-file-filter-button" class="tw:inline-flex tw:items-center tw:justify-center tw:gap-1.5 tw:px-3 tw:py-1.5 tw:text-sm tw:font-normal tw:leading-normal tw:cursor-pointer tw:select-none tw:border tw:border-l-0 tw:rounded-r-md tw:transition-colors tw:text-[var(--mg-text-muted)] tw:border-[var(--mg-border)] tw:bg-[var(--mg-surface-tertiary)] hover:tw:text-[var(--mg-text)] hover:tw:bg-[var(--mg-surface-secondary)]" :disabled="fileFilter == ''"
                     v-on:click="fileFilter = ''">
                     <fa-icon icon="fa-solid fa-times"></fa-icon>
                   </button>
@@ -148,7 +148,7 @@
               class="card" draggable="true"
               @dragstart="dragFileStart(file, $event)">
               <div class="thumb-container" @click.stop="toggleFile(file)">
-                <img v-if="isImage(file)" :src="buildMediaUrl(file.url!, thumbSize)" :alt="file.name" loading="lazy" />
+                <img v-if="isImage(file)" :src="buildMediaUrl(resolveMediaUrl(file.url), thumbSize)" :alt="file.name" loading="lazy" />
                 <div v-else class="file-icon-placeholder">
                   <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path
@@ -212,7 +212,7 @@
 </style>
 
 <script setup lang="ts">
-import { ref, defineProps } from "vue";
+import { ref, defineProps, type PropType } from "vue";
 import FolderTree from "./components/FolderTree.vue";
 import UploadToast from "./components/UploadToast.vue";
 import NotificationToast from "./components/NotificationToast.vue";
@@ -233,11 +233,12 @@ import { useSignalR } from "./services/SignalR";
 import { useEventBus } from "./services/UseEventBus";
 import { useRouterService } from "./services/RouterService";
 import { getTranslations, setTranslations } from "@bloom/helpers/localizations";
-import { configureMediaAuth } from "./services/auth";
+import { configureAuth, ensureAuthenticated } from "./services/auth";
+import { resolveEmbeddedConfig, setRuntimeConfig, type IMediaRuntimeConfig } from "./services/RuntimeConfig";
 import { useFileListFiltering } from "./composables/useFileListFiltering";
 import { useBreadcrumbs } from "./composables/useBreadcrumbs";
 import { useStoragePopover } from "./composables/useStoragePopover";
-import { downloadSelectedFiles, getFileExtension, isFileSelected, buildMediaUrl } from "./services/Utils";
+import { downloadSelectedFiles, getFileExtension, isFileSelected, buildMediaUrl, resolveMediaUrl } from "./services/Utils";
 import FileMenu from "./components/FileMenu.vue";
 
 const props = defineProps({
@@ -305,6 +306,12 @@ const props = defineProps({
     type: String,
     default: "Cookie",
   },
+  // Standalone mode injects an already-resolved two-origin config object here (see standalone.ts).
+  // When absent (embedded), the config is resolved from the string attributes above.
+  runtimeConfig: {
+    type: Object as PropType<IMediaRuntimeConfig | null>,
+    default: null,
+  },
 })
 
 const {
@@ -348,21 +355,35 @@ function parseBoolean(value: unknown, defaultValue: boolean): boolean {
   return defaultValue;
 }
 
-setBasePath(props.basePath);
+// The runtime config is the single source of truth for every origin/URL/auth setting downstream.
+// Standalone mode injects an already-resolved (two-origin) config via the `runtimeConfig` prop;
+// embedded mode resolves it from the element's string attributes (both origins collapse to current).
+const runtimeConfig: IMediaRuntimeConfig = props.runtimeConfig ?? resolveEmbeddedConfig({
+  basePath: props.basePath,
+  oidcAuthority: props.oidcAuthority,
+  oidcClientId: props.oidcClientId,
+  oidcScope: props.oidcScope,
+  apiAuthScheme: props.apiAuthScheme,
+});
+setRuntimeConfig(runtimeConfig);
+
+setBasePath(runtimeConfig.apiBaseUrl);
 setAllowMultipleSelection(parseBoolean(props.allowMultipleSelection, true));
 setAllowedExtensions(props.allowedExtensions);
 setIsDownloading(false);
 
 // The Media API authenticates with exactly one scheme, chosen by the site's MediaApiSettings and
-// injected via api-auth-scheme. In "Bearer" mode, configure silent OIDC (authorization-code + PKCE)
-// so requests carry a token; in "Cookie" mode we leave auth unconfigured and the shared ApiService
+// injected via api-auth-scheme. In "Bearer" mode, configure OIDC (authorization-code + PKCE) so
+// requests carry a token; in "Cookie" mode we leave auth unconfigured and the shared ApiService
 // falls back to the ambient admin cookie (with antiforgery). Exactly one is ever active — never both.
-if (props.apiAuthScheme === "Bearer") {
-  configureMediaAuth({
-    basePath: props.basePath,
-    authority: props.oidcAuthority,
-    clientId: props.oidcClientId,
-    scope: props.oidcScope,
+if (runtimeConfig.apiAuthScheme === "Bearer") {
+  configureAuth({
+    authority: runtimeConfig.authority,
+    clientId: runtimeConfig.clientId,
+    scope: runtimeConfig.scope,
+    redirectUri: runtimeConfig.redirectUri,
+    silentRedirectUri: runtimeConfig.silentRedirectUri,
+    authFlow: runtimeConfig.authFlow,
   });
 }
 
@@ -381,7 +402,19 @@ const { on, emit } = useEventBus();
 setIsLoading(true);
 
 const { getFileLibraryStoreAsync } = useFileLibraryManager();
-getFileLibraryStoreAsync().then(() => {
+
+// Standalone (interactive) must establish a session before any Media API call; if none can be
+// acquired silently, ensureAuthenticated() redirects the page to the login endpoint and we stop.
+// Embedded (silent) skips this — it keeps the lazy per-request token acquisition it always had.
+async function bootstrapLibrary() {
+  if (runtimeConfig.authFlow === "interactive") {
+    const authenticated = await ensureAuthenticated();
+    if (!authenticated) {
+      return; // navigating to the interactive login
+    }
+  }
+
+  await getFileLibraryStoreAsync();
   setIsLoading(false);
   setLocalStorage();
 
@@ -391,7 +424,9 @@ getFileLibraryStoreAsync().then(() => {
   on("SelectAll", () => {
     selectAll();
   });
-});
+}
+
+void bootstrapLibrary();
 
 const { setLocalStorage, gridView, pageSize, largeThumbs } = useLocalStorage();
 
@@ -415,7 +450,7 @@ if (props.signalrEnabled === "true") {
   useSignalR();
 }
 
-const { storageInfo, showStoragePopover, storageLoading, toggleStoragePopover } = useStoragePopover(props.basePath);
+const { storageInfo, showStoragePopover, storageLoading, toggleStoragePopover } = useStoragePopover(runtimeConfig.apiBaseUrl);
 
 setUploadFilesUrl(props.uploadFilesUrl);
 

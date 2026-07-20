@@ -1,10 +1,40 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import { getFileExtension, humanFileSize, printDateTime, downloadFile, downloadSelectedFiles } from "../Utils";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { getFileExtension, humanFileSize, printDateTime, downloadFile, downloadSelectedFiles, resolveMediaUrl } from "../Utils";
 import { useGlobals } from "../Globals";
 import { translationsData } from "../../__tests__/mockdata";
 import { setTranslations } from "@bloom/helpers/localizations";
+import { resolveEmbeddedConfig, resolveStandaloneConfig, setRuntimeConfig } from "../RuntimeConfig";
 
 setTranslations(translationsData);
+
+describe("resolveMediaUrl", () => {
+  it("returns root-relative media URLs unchanged in embedded (same-origin) mode", () => {
+    setRuntimeConfig(resolveEmbeddedConfig({ basePath: "/" }));
+    expect(resolveMediaUrl("/media/photo.jpg")).toBe("/media/photo.jpg");
+    expect(resolveMediaUrl("")).toBe("");
+    expect(resolveMediaUrl(undefined)).toBe("");
+  });
+
+  it("prefixes the Orchard origin in standalone (cross-origin) mode", () => {
+    setRuntimeConfig(resolveStandaloneConfig({
+      orchardBaseUrl: "https://cms.example.com/team-a/",
+      appBaseUrl: "https://media.example.com/",
+    }));
+    // Root-relative URL already carries the tenant prefix, so only the origin is prepended.
+    expect(resolveMediaUrl("/team-a/media/photo.jpg")).toBe("https://cms.example.com/team-a/media/photo.jpg");
+  });
+
+  it("leaves already-absolute URLs untouched", () => {
+    setRuntimeConfig(resolveStandaloneConfig({ orchardBaseUrl: "https://cms.example.com/" }));
+    expect(resolveMediaUrl("https://cdn.example.com/x.jpg")).toBe("https://cdn.example.com/x.jpg");
+    expect(resolveMediaUrl("//cdn.example.com/x.jpg")).toBe("//cdn.example.com/x.jpg");
+  });
+
+  afterEach(() => {
+    // Reset to embedded so the download tests below keep their same-origin (relative) expectations.
+    setRuntimeConfig(resolveEmbeddedConfig({ basePath: "/" }));
+  });
+});
 
 describe("GetFileExtension", () => {
   it("should return a correct file extension when file has extension", () => {

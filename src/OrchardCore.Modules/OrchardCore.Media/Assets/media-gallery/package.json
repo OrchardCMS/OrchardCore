@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc && vite build",
+    "build:standalone": "vue-tsc && vite build --config vite.standalone.config.ts",
+    "dev:standalone": "vite --config vite.standalone.config.ts --port 5173 --strictPort",
     "preview": "vite preview",
     "test:unit": "vitest",
     "test:coverage": "vitest run --coverage",

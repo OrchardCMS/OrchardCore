@@ -67,7 +67,7 @@ const emit = defineEmits<{
       <div class="tw:font-bold tw:text-lg tw:ml-2 tw:min-w-0 tw:break-all">{{ fileItem?.name }}</div>
     </div>
     <div class="tw:mt-3 tw:flex tw:flex-row tw:justify-end tw:gap-2">
-      <button class="ma-btn ma-btn-light tw:inline-flex tw:items-center tw:justify-center tw:gap-1.5 tw:px-3 tw:py-1.5 tw:text-sm tw:font-normal tw:leading-normal tw:cursor-pointer tw:select-none tw:border tw:rounded-md tw:transition-colors tw:text-[var(--bs-body-color)] tw:bg-[var(--bs-secondary-bg)] tw:border-[var(--bs-border-color)] hover:tw:bg-[var(--bs-tertiary-bg)]" @click="emit('closed')">
+      <button class="ma-btn ma-btn-light tw:inline-flex tw:items-center tw:justify-center tw:gap-1.5 tw:px-3 tw:py-1.5 tw:text-sm tw:font-normal tw:leading-normal tw:cursor-pointer tw:select-none tw:border tw:rounded-md tw:transition-colors tw:text-[var(--mg-text)] tw:bg-[var(--mg-surface-secondary)] tw:border-[var(--mg-border)] hover:tw:bg-[var(--mg-surface-tertiary)]" @click="emit('closed')">
         {{ t.Cancel }}
       </button>
       <button class="ma-btn ma-btn-primary tw:inline-flex tw:items-center tw:justify-center tw:gap-1.5 tw:px-3 tw:py-1.5 tw:text-sm tw:font-normal tw:leading-normal tw:cursor-pointer tw:select-none tw:border tw:rounded-md tw:transition-colors tw:text-white tw:bg-[#0d6efd] tw:border-[#0d6efd] hover:tw:bg-[#0b5ed7] hover:tw:border-[#0a58ca]"

@@ -9,6 +9,7 @@ lerna-debug.log*
 
 node_modules
 dist
+dist-standalone
 dist-ssr
 *.local
 coverage
@@ -23,3 +24,4 @@ testing
 *.njsproj
 *.sln
 *.sw?
+standalone/config.json

@@ -1,0 +1,39 @@
+<!doctype html>
+<!-- dir is REQUIRED: the stylesheet is RTL-processed (postcss-rtlcss combined mode), so every
+     direction-sensitive rule is gated on [dir=ltr] / [dir=rtl]. Without it, all those rules
+     (margins, paddings, alignment) silently don't apply. Set dir="rtl" for RTL cultures. -->
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Media Gallery</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAxNiAxNic+PHJlY3Qgd2lkdGg9JzE2JyBoZWlnaHQ9JzE2JyByeD0nMycgZmlsbD0nIzJjODRkOCcvPjxjaXJjbGUgY3g9JzUuNScgY3k9JzYnIHI9JzEuNycgZmlsbD0nI2ZmZicvPjxwYXRoIGQ9J00yIDEyLjVsMy42LTQuMiAyLjQgMi45IDMuMS00LjEgMy4zIDUuNHonIGZpbGw9JyNmZmYnLz48L3N2Zz4="
+    />
+    <!-- Follow the OS light/dark preference. The gallery's --mg-* tokens (file.css) key off
+         [data-bs-theme], and the standalone base layer (standalone.css) styles the shell to match.
+         No Bootstrap needed — the app owns its design tokens. -->
+    <script>
+      document.documentElement.dataset.bsTheme = window.matchMedia(
+        "(prefers-color-scheme: dark)",
+      ).matches
+        ? "dark"
+        : "light";
+    </script>
+    <style>
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+      }
+      #media-gallery {
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="media-gallery"></div>
+    <script type="module" src="./entry-app.ts"></script>
+  </body>
+</html>

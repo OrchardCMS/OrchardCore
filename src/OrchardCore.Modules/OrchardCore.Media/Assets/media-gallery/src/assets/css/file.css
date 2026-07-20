@@ -5,6 +5,11 @@
 
 /* Tailwind v4 — no preflight, tw: prefix, BS dark mode selector */
 @import "tailwindcss" prefix(tw);
+/* Explicit source globs (relative to this file) so class detection covers all of src/ regardless of
+   the Vite root. The standalone build roots at standalone/, which would otherwise miss ../src/**
+   and drop utilities used only in components (e.g. the toolbar buttons' bg-[var(--mg-*)]). */
+@source "../../**/*.vue";
+@source "../../**/*.ts";
 @layer base {
   /* Remove Tailwind preflight — would conflict with Bootstrap admin styles */
 }
@@ -56,14 +61,19 @@
   --media-upload-list-header-color: var(--gray-600);
   --media-thumb-checker-color: var(--gray-200);
 
-  /* Bootstrap compat (fallbacks for when not in OC admin) */
-  --bs-body-bg: #fff;
-  --bs-body-color: #212529;
-  --bs-border-color: #dee2e6;
-  --bs-border-color-translucent: rgba(0, 0, 0, 0.175);
-  --bs-secondary-color: #6c757d;
-  --bs-breadcrumb-divider-color: #6c757d;
-  --bs-breadcrumb-divider: "/";
+  /* Semantic design tokens (app-owned — the style rules below reference these, not Bootstrap).
+     Each inherits the OrchardCore admin's live Bootstrap theme variable when the app is embedded
+     (so the admin look, incl. its light/dark switching, is unchanged) and falls back to a default
+     when the app runs standalone on its own origin. */
+  --mg-surface: var(--bs-body-bg, #fff);
+  --mg-surface-secondary: var(--bs-secondary-bg, #e9ecef);
+  --mg-surface-tertiary: var(--bs-tertiary-bg, #f8f9fa);
+  --mg-text: var(--bs-body-color, #212529);
+  --mg-text-muted: var(--bs-secondary-color, #6c757d);
+  --mg-border: var(--bs-border-color, #dee2e6);
+  --mg-border-subtle: var(--bs-border-color-translucent, rgba(0, 0, 0, 0.175));
+  --mg-warning: var(--bs-warning, #ffc107);
+  --mg-breadcrumb-divider: "/";
 }
 
 /* ============================================================
@@ -374,8 +384,8 @@
 
 .breadcrumb-item::before {
   float: left;
-  color: var(--bs-breadcrumb-divider-color);
-  content: var(--bs-breadcrumb-divider, "/");
+  color: var(--mg-text-muted);
+  content: var(--mg-breadcrumb-divider, "/");
   padding-right: 2px;
 }
 
@@ -477,8 +487,8 @@
   z-index: 10000;
   min-width: 200px;
   margin-top: 4px;
-  background: var(--bs-body-bg, #fff);
-  border: 1px solid var(--bs-border-color, #dee2e6);
+  background: var(--mg-surface, #fff);
+  border: 1px solid var(--mg-border, #dee2e6);
   border-radius: 6px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   padding: 12px 16px;
@@ -507,7 +517,7 @@
    Settings Popover
    ============================================================ */
 .settings-btn {
-  color: var(--bs-body-color, #333);
+  color: var(--mg-text, #333);
   cursor: pointer;
   font-size: 1rem;
 }
@@ -523,8 +533,8 @@
   z-index: 1000;
   min-width: 240px;
   margin-top: 4px;
-  background: var(--bs-body-bg, #fff);
-  border: 1px solid var(--bs-border-color, #dee2e6);
+  background: var(--mg-surface, #fff);
+  border: 1px solid var(--mg-border, #dee2e6);
   border-radius: 6px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   padding: 12px 16px;
@@ -654,7 +664,7 @@ ol.file-items-grid.large-thumbs .thumb-container {
 }
 
 #folder-tree .folder {
-  color: var(--bs-body-color, #212529);
+  color: var(--mg-text, #212529);
 }
 
 #folder-tree li {
@@ -980,7 +990,7 @@ ol.file-items-grid .file-icon-placeholder .file-ext {
 }
 
 .file-app .p-menu-item-link .p-menu-item-icon {
-  color: var(--bs-secondary-color, var(--gray-600));
+  color: var(--mg-text-muted, var(--gray-600));
 }
 
 .file-app .p-menu-item-link:hover {
@@ -1112,8 +1122,8 @@ ol.file-items-grid .file-icon-placeholder .file-ext {
 
 .ma-vfm .vfm__content {
   background: #fff;
-  color: var(--bs-body-color, #212529);
-  border: 1px solid var(--bs-border-color, #dee2e6);
+  color: var(--mg-text, #212529);
+  border: 1px solid var(--mg-border, #dee2e6);
   border-radius: 0.3rem;
   width: 50vw;
 }
@@ -1122,7 +1132,7 @@ ol.file-items-grid .file-icon-placeholder .file-ext {
   margin: 0 2rem 0 0;
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--bs-body-color, #212529);
+  color: var(--mg-text, #212529);
 }
 
 .ma-vfm .file-wrapper {
@@ -1148,7 +1158,7 @@ ol.file-items-grid .file-icon-placeholder .file-ext {
 }
 
 .ma-vfm .file-wrapper .img-wrapper svg path {
-  fill: var(--bs-body-color, #2d2d2d);
+  fill: var(--mg-text, #2d2d2d);
 }
 
 .ma-vfm .file-wrapper .file-ext {
@@ -1165,9 +1175,9 @@ ol.file-items-grid .file-icon-placeholder .file-ext {
 }
 
 .ma-vfm .p-inputtext {
-  background-color: var(--bs-body-bg, #fff);
-  border: 1px solid var(--bs-border-color, #dee2e6);
-  color: var(--bs-body-color, #212529);
+  background-color: var(--mg-surface, #fff);
+  border: 1px solid var(--mg-border, #dee2e6);
+  color: var(--mg-text, #212529);
   padding: 0.375rem 0.75rem;
   border-radius: 0.25rem;
 }
@@ -1318,7 +1328,7 @@ ol.file-items-grid .file-icon-placeholder .file-ext {
   cursor: pointer;
   font-size: 0.8125rem;
   font-weight: 600;
-  color: var(--bs-body-color, #212529);
+  color: var(--mg-text, #212529);
   user-select: none;
 }
 
@@ -1342,7 +1352,7 @@ ol.file-items-grid .file-icon-placeholder .file-ext {
 .upload-toast-item {
   padding: 0.375rem 0.75rem;
   font-size: 0.8125rem;
-  border-bottom: 1px solid var(--bs-border-color-translucent, rgba(0, 0, 0, 0.05));
+  border-bottom: 1px solid var(--mg-border-subtle, rgba(0, 0, 0, 0.05));
 }
 
 .upload-toast-item:last-child {
@@ -1391,7 +1401,7 @@ ol.file-items-grid .file-icon-placeholder .file-ext {
 .upload-toast-progress {
   margin-top: 0.25rem;
   height: 3px;
-  background: var(--bs-border-color-translucent, rgba(0, 0, 0, 0.1));
+  background: var(--mg-border-subtle, rgba(0, 0, 0, 0.1));
   border-radius: 2px;
   overflow: hidden;
 }
@@ -1404,7 +1414,7 @@ ol.file-items-grid .file-icon-placeholder .file-ext {
 }
 
 .upload-toast-progress-bar.is-paused {
-  background: var(--bs-warning, #ffc107);
+  background: var(--mg-warning, #ffc107);
   animation: paused-pulse 1.5s ease-in-out infinite;
 }
 
@@ -1415,7 +1425,7 @@ ol.file-items-grid .file-icon-placeholder .file-ext {
 
 .upload-toast-speed {
   font-size: 0.7rem;
-  color: var(--bs-secondary-color, #6c757d);
+  color: var(--mg-text-muted, #6c757d);
   white-space: nowrap;
   min-width: 65px;
   text-align: right;
@@ -1500,12 +1510,12 @@ ol.file-items-grid .file-icon-placeholder .file-ext {
 .notification-toast-summary {
   font-weight: 600;
   font-size: 0.8125rem;
-  color: var(--bs-body-color, #212529);
+  color: var(--mg-text, #212529);
 }
 
 .notification-toast-detail {
   font-size: 0.8125rem;
-  color: var(--bs-secondary-color, #6c757d);
+  color: var(--mg-text-muted, #6c757d);
   margin-top: 0.125rem;
   word-break: break-word;
   white-space: pre-line;
@@ -1516,7 +1526,7 @@ ol.file-items-grid .file-icon-placeholder .file-ext {
   flex-shrink: 0;
   background: none;
   border: none;
-  color: var(--bs-secondary-color, #6c757d);
+  color: var(--mg-text-muted, #6c757d);
   cursor: pointer;
   padding: 0;
   font-size: 0.75rem;
@@ -1800,37 +1810,41 @@ ol.file-items-grid .file-icon-placeholder .file-ext {
    Dark Mode
    ============================================================ */
 [data-bs-theme="dark"] .fileApp {
-  /* Override Bootstrap compat fallbacks for dark mode */
-  --bs-body-bg: #212529;
-  --bs-body-color: #dee2e6;
-  --bs-border-color: #495057;
-  --bs-border-color-translucent: rgba(255, 255, 255, 0.175);
-  --bs-secondary-color: #adb5bd;
+  /* Dark values for the semantic tokens. When embedded, these still resolve to the admin theme's
+     dark Bootstrap variables (the var() aliases); standalone falls back to these defaults. */
+  --mg-surface: var(--bs-body-bg, #212529);
+  --mg-surface-secondary: var(--bs-secondary-bg, #343a40);
+  --mg-surface-tertiary: var(--bs-tertiary-bg, #2b3035);
+  --mg-text: var(--bs-body-color, #dee2e6);
+  --mg-text-muted: var(--bs-secondary-color, #adb5bd);
+  --mg-border: var(--bs-border-color, #495057);
+  --mg-border-subtle: var(--bs-border-color-translucent, rgba(255, 255, 255, 0.15));
+  --mg-warning: var(--bs-warning, #ffc107);
 
   --media-selected-bg: rgba(13, 110, 253, 0.15);
   --media-accent: #7bc143;
-  --media-card-bg: var(--bs-body-bg);
-  --media-card-border: var(--bs-border-color);
+  --media-card-bg: var(--mg-surface);
+  --media-card-border: var(--mg-border);
   --media-card-footer-bg: rgba(255, 255, 255, 0.05);
   --media-breadcrumb-bg: rgba(255, 255, 255, 0.05);
   --media-upload-bg: rgba(255, 255, 255, 0.05);
   --media-upload-list-header-bg: rgba(255, 255, 255, 0.05);
-  --media-upload-list-header-color: var(--bs-secondary-color);
+  --media-upload-list-header-color: var(--mg-text-muted);
   --media-thumb-checker-color: #3a3a3a;
-  --surface-border: var(--bs-border-color);
+  --surface-border: var(--mg-border);
 }
 
 [data-bs-theme="dark"] .fileApp {
-  color: var(--bs-body-color);
+  color: var(--mg-text);
   box-shadow: 0 3px 12px rgba(0, 0, 0, 0.5);
 }
 
 [data-bs-theme="dark"] .fileApp #fileContainer {
-  border-color: var(--bs-border-color);
+  border-color: var(--mg-border);
 }
 
 [data-bs-theme="dark"] .fileApp #navigationApp {
-  border-right-color: var(--bs-border-color);
+  border-right-color: var(--mg-border);
 }
 
 [data-bs-theme="dark"] .fileApp #navigationApp .vue-recycle-scroller {
@@ -1860,11 +1874,11 @@ ol.file-items-grid .file-icon-placeholder .file-ext {
 }
 
 [data-bs-theme="dark"] .fileApp #folder-tree .treeroot {
-  border-bottom-color: var(--bs-border-color);
+  border-bottom-color: var(--mg-border);
 }
 
 [data-bs-theme="dark"] .fileApp #folder-tree .folder-menu-item {
-  color: var(--bs-body-color);
+  color: var(--mg-text);
 }
 
 [data-bs-theme="dark"] .fileApp #folder-tree svg path {
@@ -1872,16 +1886,16 @@ ol.file-items-grid .file-icon-placeholder .file-ext {
 }
 
 [data-bs-theme="dark"] .fileApp .file-items-table .header-row .table-cell {
-  color: var(--bs-body-color);
+  color: var(--mg-text);
 }
 
 [data-bs-theme="dark"] .fileApp .file-items-table .table-head .table-row {
-  border-bottom-color: var(--bs-border-color);
+  border-bottom-color: var(--mg-border);
 }
 
 [data-bs-theme="dark"] .fileApp .file-items-table .file-item {
-  border-top-color: var(--bs-border-color);
-  color: var(--bs-body-color);
+  border-top-color: var(--mg-border);
+  color: var(--mg-text);
 }
 
 [data-bs-theme="dark"] .fileApp .file-items-table .file-item:hover {
@@ -1889,7 +1903,7 @@ ol.file-items-grid .file-icon-placeholder .file-ext {
 }
 
 [data-bs-theme="dark"] .fileApp .file-items-table .img-wrapper svg path {
-  fill: var(--bs-secondary-color);
+  fill: var(--mg-text-muted);
 }
 
 [data-bs-theme="dark"] .fileApp ol.file-items-grid li.selected {
@@ -1901,15 +1915,15 @@ ol.file-items-grid .file-icon-placeholder .file-ext {
 }
 
 [data-bs-theme="dark"] .fileApp ol.file-items-grid li .thumb-container {
-  background: var(--bs-body-bg);
+  background: var(--mg-surface);
 }
 
 [data-bs-theme="dark"] .fileApp ol.file-items-grid li .file-icon-placeholder .file-icon-path {
-  fill: var(--bs-secondary-color);
+  fill: var(--mg-text-muted);
 }
 
 [data-bs-theme="dark"] .fileApp .action-bar {
-  border-bottom-color: var(--bs-border-color);
+  border-bottom-color: var(--mg-border);
 }
 
 [data-bs-theme="dark"] .fileApp .action-bar .ma-badge {
@@ -1919,8 +1933,8 @@ ol.file-items-grid .file-icon-placeholder .file-ext {
 
 [data-bs-theme="dark"] .fileApp .action-bar .ma-btn-light {
   background-color: rgba(255, 255, 255, 0.1);
-  border-color: var(--bs-border-color);
-  color: var(--bs-body-color);
+  border-color: var(--mg-border);
+  color: var(--mg-text);
 }
 
 [data-bs-theme="dark"] .fileApp .action-bar .ma-btn-light:hover {
@@ -1929,53 +1943,53 @@ ol.file-items-grid .file-icon-placeholder .file-ext {
 
 [data-bs-theme="dark"] .fileApp #breadcrumb {
   background-color: var(--media-breadcrumb-bg);
-  border-bottom-color: var(--bs-border-color);
+  border-bottom-color: var(--mg-border);
 }
 
 [data-bs-theme="dark"] .fileApp #breadcrumb .breadcrumb-item a {
-  color: var(--bs-secondary-color);
+  color: var(--mg-text-muted);
 }
 
 [data-bs-theme="dark"] .fileApp #fileContainer #fileContainerMain .file-container-footer {
-  border-top-color: var(--bs-border-color);
+  border-top-color: var(--mg-border);
 }
 
 [data-bs-theme="dark"] .fileApp .p-message-info {
   background: rgba(13, 202, 240, 0.1);
-  border-color: var(--bs-border-color);
-  color: var(--bs-body-color);
+  border-color: var(--mg-border);
+  color: var(--mg-text);
 }
 
 [data-bs-theme="dark"] .fileApp .alert-info-box {
   background-color: rgba(13, 110, 253, 0.1);
-  border-color: var(--bs-border-color);
-  color: var(--bs-body-color);
+  border-color: var(--mg-border);
+  color: var(--mg-text);
 }
 
 [data-bs-theme="dark"] .fileApp .file-filter button {
-  border-color: var(--bs-border-color);
-  color: var(--bs-border-color);
+  border-color: var(--mg-border);
+  color: var(--mg-border);
 }
 
 [data-bs-theme="dark"] .fileApp .file-filter button:not(:disabled) {
   background-color: rgba(255, 255, 255, 0.12);
-  color: var(--bs-body-color);
+  color: var(--mg-text);
 }
 
 [data-bs-theme="dark"] .fileApp .file-filter .input-filter {
-  border-color: var(--bs-border-color);
+  border-color: var(--mg-border);
 }
 
 [data-bs-theme="dark"] .fileApp .visibility-buttons button {
-  color: var(--bs-secondary-color);
+  color: var(--mg-text-muted);
 }
 
 [data-bs-theme="dark"] .fileApp .file-items-table .ma-btn-link {
-  color: var(--bs-secondary-color);
+  color: var(--mg-text-muted);
 }
 
 [data-bs-theme="dark"] .file-app .p-menu-item-link {
-  color: var(--bs-body-color);
+  color: var(--mg-text);
 }
 
 [data-bs-theme="dark"] .file-app .p-menu-item-link:hover {
@@ -1984,8 +1998,8 @@ ol.file-items-grid .file-icon-placeholder .file-ext {
 
 [data-bs-theme="dark"] .fileApp #file-pager .ma-page-link {
   background-color: transparent;
-  color: var(--bs-body-color);
-  border-color: var(--bs-border-color);
+  color: var(--mg-text);
+  border-color: var(--mg-border);
 }
 
 [data-bs-theme="dark"] .fileApp ol.file-items-grid .card {
@@ -1995,18 +2009,18 @@ ol.file-items-grid .file-icon-placeholder .file-ext {
 
 [data-bs-theme="dark"] .fileApp ol.file-items-grid .card-footer {
   background-color: var(--media-card-footer-bg);
-  border-top-color: var(--bs-border-color);
-  color: var(--bs-body-color);
+  border-top-color: var(--mg-border);
+  color: var(--mg-text);
 }
 
 [data-bs-theme="dark"] .fileApp .file-filter .input-filter {
-  background-color: var(--bs-body-bg);
-  color: var(--bs-body-color);
+  background-color: var(--mg-surface);
+  color: var(--mg-text);
 }
 
 [data-bs-theme="dark"] .fileApp .ma-check-input {
-  background-color: var(--bs-body-bg);
-  border-color: var(--bs-border-color);
+  background-color: var(--mg-surface);
+  border-color: var(--mg-border);
 }
 
 [data-bs-theme="dark"] .fileApp .ma-check-input:checked {
@@ -2015,29 +2029,29 @@ ol.file-items-grid .file-icon-placeholder .file-ext {
 }
 
 [data-bs-theme="dark"] .fileApp .ma-input {
-  background-color: var(--bs-body-bg);
-  color: var(--bs-body-color);
-  border-color: var(--bs-border-color);
+  background-color: var(--mg-surface);
+  color: var(--mg-text);
+  border-color: var(--mg-border);
 }
 
 /* Dark mode — Modals */
 [data-bs-theme="dark"] .ma-vfm .vfm__content {
-  background: var(--bs-body-bg) !important;
-  color: var(--bs-body-color);
-  border-color: var(--bs-border-color) !important;
+  background: var(--mg-surface) !important;
+  color: var(--mg-text);
+  border-color: var(--mg-border) !important;
 }
 
 [data-bs-theme="dark"] .ma-vfm .modal__title {
-  color: var(--bs-body-color);
+  color: var(--mg-text);
 }
 
 [data-bs-theme="dark"] .ma-vfm .file-wrapper {
   background-color: rgba(255, 255, 255, 0.06);
-  border-color: var(--bs-border-color);
+  border-color: var(--mg-border);
 }
 
 [data-bs-theme="dark"] .ma-vfm .file-wrapper svg path {
-  fill: var(--bs-secondary-color);
+  fill: var(--mg-text-muted);
 }
 
 [data-bs-theme="dark"] .ma-vfm .file-wrapper .file-ext {
@@ -2045,30 +2059,30 @@ ol.file-items-grid .file-icon-placeholder .file-ext {
 }
 
 [data-bs-theme="dark"] .ma-vfm .p-inputtext {
-  background-color: var(--bs-body-bg);
-  border-color: var(--bs-border-color);
-  color: var(--bs-body-color);
+  background-color: var(--mg-surface);
+  border-color: var(--mg-border);
+  color: var(--mg-text);
 }
 
 [data-bs-theme="dark"] .ma-vfm .p-treeselect {
-  background-color: var(--bs-body-bg);
-  border-color: var(--bs-border-color);
+  background-color: var(--mg-surface);
+  border-color: var(--mg-border);
 }
 
 [data-bs-theme="dark"] .ma-vfm .p-treeselect .p-treeselect-label {
-  color: var(--bs-body-color);
+  color: var(--mg-text);
 }
 
 [data-bs-theme="dark"] .p-treeselect-overlay {
-  background: var(--bs-body-bg);
-  border-color: var(--bs-border-color);
-  color: var(--bs-body-color);
+  background: var(--mg-surface);
+  border-color: var(--mg-border);
+  color: var(--mg-text);
 }
 
 [data-bs-theme="dark"] .ma-vfm .ma-btn-light {
   background-color: rgba(255, 255, 255, 0.1);
-  border-color: var(--bs-border-color);
-  color: var(--bs-body-color);
+  border-color: var(--mg-border);
+  color: var(--mg-text);
 }
 
 [data-bs-theme="dark"] .ma-vfm .ma-btn-light:hover {
@@ -2076,12 +2090,12 @@ ol.file-items-grid .file-icon-placeholder .file-ext {
 }
 
 [data-bs-theme="dark"] .ma-vfm .p-radiobutton-box {
-  background-color: var(--bs-body-bg);
-  border-color: var(--bs-border-color);
+  background-color: var(--mg-surface);
+  border-color: var(--mg-border);
 }
 
 [data-bs-theme="dark"] .ma-vfm label {
-  color: var(--bs-body-color);
+  color: var(--mg-text);
 }
 
 [data-bs-theme="dark"] .action-modal .file-list .stepper-header {
@@ -2090,15 +2104,15 @@ ol.file-items-grid .file-icon-placeholder .file-ext {
 
 /* Dark mode — Upload toast */
 [data-bs-theme="dark"] .upload-toast-container {
-  background: var(--bs-body-bg);
-  border-color: var(--bs-border-color);
+  background: var(--mg-surface);
+  border-color: var(--mg-border);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
 }
 
 [data-bs-theme="dark"] .upload-toast-header {
   background: rgba(255, 255, 255, 0.05);
-  border-bottom-color: var(--bs-border-color);
-  color: var(--bs-body-color);
+  border-bottom-color: var(--mg-border);
+  color: var(--mg-text);
 }
 
 [data-bs-theme="dark"] .upload-toast-item {
@@ -2114,21 +2128,21 @@ ol.file-items-grid .file-icon-placeholder .file-ext {
 }
 
 [data-bs-theme="dark"] .upload-toast-filename {
-  color: var(--bs-body-color);
+  color: var(--mg-text);
 }
 
 /* Dark mode — Notification toast */
 [data-bs-theme="dark"] .notification-toast-item {
-  background: var(--bs-body-bg);
+  background: var(--mg-surface);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
 [data-bs-theme="dark"] .notification-toast-summary {
-  color: var(--bs-body-color);
+  color: var(--mg-text);
 }
 
 [data-bs-theme="dark"] .notification-toast-detail {
-  color: var(--bs-secondary-color);
+  color: var(--mg-text-muted);
 }
 
 /* Empty folder state */
@@ -2138,7 +2152,7 @@ ol.file-items-grid .file-icon-placeholder .file-ext {
   align-items: center;
   justify-content: center;
   flex-grow: 1;
-  color: var(--bs-secondary-color, #6c757d);
+  color: var(--mg-text-muted, #6c757d);
   font-size: 0.9rem;
   user-select: none;
 }

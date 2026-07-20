@@ -15,19 +15,27 @@ import { UserManager, WebStorageStateStore, type UserManagerSettings } from "oid
 
 const CONFIG_STORAGE_KEY = "media-gallery:oidc-settings";
 
+/** How the bearer token is first acquired. `silent` (embedded) uses a hidden iframe against an
+ * existing Orchard admin session; `interactive` (standalone) redirects to the login page. */
+export type AuthFlow = "silent" | "interactive";
+
 export interface IOidcConfig {
   /** Absolute issuer URL (tenant root); discovery is at {authority}/.well-known/openid-configuration. */
   authority: string;
   clientId: string;
   scope: string;
-  /** Redirect URI used for the (unused) interactive flow; kept equal to the silent URI. */
+  /** Redirect URI for the interactive flow (equals the silent URI in embedded mode; a dedicated
+   * callback page on the app origin in standalone mode). */
   redirectUri: string;
   /** Silent-renew redirect URI — must match a RedirectUris entry registered for the client. */
   silentRedirectUri: string;
+  /** Token-acquisition flow; defaults to `silent` (embedded). */
+  authFlow?: AuthFlow;
 }
 
 let userManager: UserManager | null = null;
 let cachedToken: string | null = null;
+let authFlow: AuthFlow = "silent";
 
 function buildSettings(config: IOidcConfig): UserManagerSettings {
   return {
@@ -56,6 +64,7 @@ export function configureAuth(config: IOidcConfig): boolean {
 
   window.sessionStorage.setItem(CONFIG_STORAGE_KEY, JSON.stringify(config));
 
+  authFlow = config.authFlow ?? "silent";
   userManager = new UserManager(buildSettings(config));
   userManager.events.addUserLoaded((user) => {
     cachedToken = user.access_token ?? null;
@@ -124,6 +133,76 @@ export async function getAccessToken(): Promise<string | null> {
  */
 export function getAccessTokenSync(): string {
   return cachedToken ?? "";
+}
+
+/**
+ * Ensure a bearer token is available before the app loads data.
+ *
+ * Embedded (silent): a hidden-iframe `signinSilent()` against the existing Orchard admin session —
+ * unchanged from the lazy per-request behavior, just eager. Standalone (interactive): if no session
+ * can be established silently, redirect the whole page to the login endpoint; the caller should stop
+ * (navigation has begun). Returns true when authenticated, false otherwise.
+ */
+export async function ensureAuthenticated(): Promise<boolean> {
+  if (!userManager) {
+    return false;
+  }
+
+  try {
+    let user = await userManager.getUser();
+    if (!user || user.expired) {
+      user = await userManager.signinSilent();
+    }
+    cachedToken = user?.access_token ?? null;
+    if (cachedToken) {
+      return true;
+    }
+  } catch (err) {
+    console.error("[media-gallery] silent authentication failed", err);
+  }
+
+  // No silent session. In standalone we must send the user through an interactive login.
+  if (authFlow === "interactive") {
+    try {
+      await userManager.signinRedirect();
+    } catch (err) {
+      console.error("[media-gallery] interactive sign-in redirect failed", err);
+    }
+  }
+
+  return false;
+}
+
+/**
+ * Begin an interactive login (full-page redirect to the authorization endpoint). Used by standalone
+ * hosts; the round trip returns to the configured `redirectUri` callback page.
+ */
+export async function signinRedirect(): Promise<void> {
+  if (!userManager) {
+    return;
+  }
+
+  await userManager.signinRedirect();
+}
+
+/**
+ * Complete the interactive login. Runs on the callback page (callback.html), which re-enters this
+ * module; rebuilds the UserManager from the persisted settings (the callback page has no config
+ * source) and exchanges the authorization code for tokens.
+ */
+export async function handleRedirectCallback(): Promise<void> {
+  try {
+    const raw = window.sessionStorage.getItem(CONFIG_STORAGE_KEY);
+    if (!raw) {
+      return;
+    }
+
+    const config = JSON.parse(raw) as IOidcConfig;
+    const manager = new UserManager(buildSettings(config));
+    await manager.signinRedirectCallback();
+  } catch (err) {
+    console.error("[media-gallery] interactive sign-in callback failed", err);
+  }
 }
 
 /**
