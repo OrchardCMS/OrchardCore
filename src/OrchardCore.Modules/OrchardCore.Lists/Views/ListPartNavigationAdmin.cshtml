@@ -26,7 +26,14 @@
 
             @if (await AuthorizationService.AuthorizeContentTypeDefinitionsAsync(User, CommonPermissions.ViewContent, Model.ContainedContentTypeDefinitions, ContentManager))
             {
-                <a class="btn btn-secondary me-1" asp-action="Display" asp-controller="Admin" asp-route-contentItemId="@Model.Container.ContentItemId">@T["List Items"]</a>
+                if (Model.ContainedContentTypeDefinitions.Length == 1)
+                {
+                    <a class="btn btn-secondary me-1" asp-action="Display" asp-controller="Admin" asp-route-contentItemId="@Model.Container.ContentItemId">@T["List {0} Items", D[Model.ContainedContentTypeDefinitions[0].DisplayName, DataLocalizationContext.ContentType]]</a>
+                }
+                else
+                {
+                    <a class="btn btn-secondary me-1" asp-action="Display" asp-controller="Admin" asp-route-contentItemId="@Model.Container.ContentItemId">@T["List Items"]</a>
+                }
             }
 
             @if (await AuthorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, Model.Container))
