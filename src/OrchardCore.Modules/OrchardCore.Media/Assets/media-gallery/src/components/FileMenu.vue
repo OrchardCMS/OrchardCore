@@ -4,8 +4,10 @@
       <fa-icon icon="fas fa-ellipsis-v" size="xl"></fa-icon>
     </a>
     <p-menu ref="menu" id="overlay_file_menu" class="file-app" :model="items" :popup="true" />
+    <!-- Kept inside the single root element so a fallthrough `click` listener (e.g. `@click.stop`
+         from the grid item) can bind to the root; ModalsContainer teleports to <body> regardless. -->
+    <ModalsContainer v-if="showModal" />
   </div>
-  <ModalsContainer v-if="showModal" />
 </template>
 
 <script setup lang="ts">

@@ -202,7 +202,10 @@ const pageLinks = computed(() => {
   return links;
 });
 
-watch(props.sourceItems, () => {
-  current.value = 0; // resetting current page after receiving a new list of unpaged items
-});
+// Reset to the first page whenever the item list changes — either replaced with a new array
+// (reference change) or mutated in place (deep). A getter source avoids the "invalid watch source"
+// warning that a bare `props.sourceItems` produced; `deep` preserves in-place-mutation detection.
+watch(() => props.sourceItems, () => {
+  current.value = 0;
+}, { deep: true });
 </script>

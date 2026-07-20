@@ -5,8 +5,9 @@
       <fa-icon icon="fas fa-ellipsis-v" size="xl"></fa-icon>
     </a>
     <p-menu ref="menu" id="overlay_folder_menu" class="file-app" :model="items" :popup="true" />
+    <!-- Single root (see FileMenu): keeps a fallthrough listener bindable; ModalsContainer teleports. -->
+    <ModalsContainer v-if="showModal" />
   </div>
-  <ModalsContainer v-if="showModal" />
 </template>
 
 <script setup lang="ts">
