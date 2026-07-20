@@ -16,6 +16,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.FileStorage;
 using OrchardCore.Media.Services;
+using OrchardCore.Media.ViewModels;
 
 namespace OrchardCore.Media.Endpoints.Api;
 
@@ -27,7 +28,7 @@ public static class UploadMediaEndpoint
             .WithName("ApiUploadMedia")
             .WithTags("MediaApi")
             .DisableAntiforgery()
-            .Produces(StatusCodes.Status200OK)
+            .Produces<UploadFilesResultDto>(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status403Forbidden);
 
@@ -77,7 +78,7 @@ public static class UploadMediaEndpoint
             (_, _, _) => Task.FromResult<IActionResult>(new OkObjectResult(new { })),
             async (files) =>
             {
-                var result = new List<object>();
+                var result = new List<UploadFileResultDto>();
 
                 // Loop through each file in the request.
                 foreach (var file in files)
@@ -86,12 +87,12 @@ public static class UploadMediaEndpoint
 
                     if (!allowedExtensions.Contains(extension))
                     {
-                        result.Add(new
+                        result.Add(new UploadFileResultDto
                         {
-                            name = file.FileName,
-                            size = file.Length,
-                            folder = path,
-                            error = localizer["This file extension is not allowed: {0}", extension].ToString(),
+                            Name = file.FileName,
+                            Size = file.Length,
+                            Folder = path,
+                            Error = localizer["This file extension is not allowed: {0}", extension].ToString(),
                         });
 
                         if (logger.IsEnabled(LogLevel.Information))
@@ -111,12 +112,12 @@ public static class UploadMediaEndpoint
 
                         if (await mediaFileStore.GetFileInfoAsync(mediaFilePath) != null)
                         {
-                            result.Add(new
+                            result.Add(new UploadFileResultDto
                             {
-                                name = fileName,
-                                size = file.Length,
-                                folder = path,
-                                error = localizer["A file with this name already exists in the current folder."].ToString(),
+                                Name = fileName,
+                                Size = file.Length,
+                                Folder = path,
+                                Error = localizer["A file with this name already exists in the current folder."].ToString(),
                             });
 
                             continue;
@@ -135,30 +136,30 @@ public static class UploadMediaEndpoint
 
                         await MediaEndpointHelpers.PreCacheRemoteMediaAsync(mediaFile, serviceProvider, mediaFileStore, httpContext);
 
-                        result.Add(MediaEndpointHelpers.CreateFileResult(mediaFile, httpContext, contentTypeProvider, fileVersionProvider, mediaFileStore));
+                        result.Add(new UploadFileResultDto(MediaEndpointHelpers.CreateFileResult(mediaFile, httpContext, contentTypeProvider, fileVersionProvider, mediaFileStore)));
                     }
                     catch (ExistsFileStoreException ex)
                     {
                         logger.LogWarning(ex, "An error occurred while uploading a media");
 
-                        result.Add(new
+                        result.Add(new UploadFileResultDto
                         {
-                            name = fileName,
-                            size = file.Length,
-                            folder = path,
-                            error = ex.Message,
+                            Name = fileName,
+                            Size = file.Length,
+                            Folder = path,
+                            Error = ex.Message,
                         });
                     }
                     catch (Exception ex)
                     {
                         logger.LogError(ex, "An error occurred while uploading a media");
 
-                        result.Add(new
+                        result.Add(new UploadFileResultDto
                         {
-                            name = fileName,
-                            size = file.Length,
-                            folder = path,
-                            error = ex.Message,
+                            Name = fileName,
+                            Size = file.Length,
+                            Folder = path,
+                            Error = ex.Message,
                         });
                     }
                     finally
@@ -167,7 +168,7 @@ public static class UploadMediaEndpoint
                     }
                 }
 
-                return new OkObjectResult(new { files = result.ToArray() });
+                return new OkObjectResult(new UploadFilesResultDto { Files = result });
             });
 
         // The chunk upload service is expressed in MVC IActionResult terms; bridge its result to

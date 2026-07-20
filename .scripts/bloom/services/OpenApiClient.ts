@@ -860,7 +860,7 @@ export interface IMediaApiClient {
      * @param extensions (optional) 
      * @return OK
      */
-    apiUploadMedia(path: string | undefined, extensions: string | undefined,  cancelToken?: CancelToken): Promise<void>;
+    apiUploadMedia(path: string | undefined, extensions: string | undefined,  cancelToken?: CancelToken): Promise<UploadFilesResultDto>;
 }
 
 export class MediaApiClient implements IMediaApiClient {
@@ -2123,7 +2123,7 @@ export class MediaApiClient implements IMediaApiClient {
      * @param extensions (optional) 
      * @return OK
      */
-    apiUploadMedia(path: string | undefined, extensions: string | undefined, cancelToken?: CancelToken): Promise<void> {
+    apiUploadMedia(path: string | undefined, extensions: string | undefined, cancelToken?: CancelToken): Promise<UploadFilesResultDto> {
         let url_ = this.baseUrl + "/api/media/Upload?";
         if (path === null)
             throw new globalThis.Error("The parameter 'path' cannot be null.");
@@ -2139,6 +2139,7 @@ export class MediaApiClient implements IMediaApiClient {
             method: "POST",
             url: url_,
             headers: {
+                "Accept": "application/json"
             },
             cancelToken
         };
@@ -2154,7 +2155,7 @@ export class MediaApiClient implements IMediaApiClient {
         });
     }
 
-    protected processApiUploadMedia(response: AxiosResponse): Promise<void> {
+    protected processApiUploadMedia(response: AxiosResponse): Promise<UploadFilesResultDto> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -2166,7 +2167,10 @@ export class MediaApiClient implements IMediaApiClient {
         }
         if (status === 200) {
             const _responseText = response.data;
-            return Promise.resolve<void>(null as any);
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = UploadFilesResultDto.fromJS(resultData200);
+            return Promise.resolve<UploadFilesResultDto>(result200);
 
         } else if (status === 401) {
             const _responseText = response.data;
@@ -2186,7 +2190,7 @@ export class MediaApiClient implements IMediaApiClient {
             const _responseText = response.data;
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
         }
-        return Promise.resolve<void>(null as any);
+        return Promise.resolve<UploadFilesResultDto>(null as any);
     }
 }
 
@@ -3543,6 +3547,126 @@ export interface ITenantApiModel {
     recipeName?: string | undefined;
     featureProfiles?: string[] | undefined;
     isNewTenant?: boolean;
+}
+
+export class UploadFileResultDto implements IUploadFileResultDto {
+    name?: string | undefined;
+    size?: number;
+    directoryPath?: string | undefined;
+    filePath?: string | undefined;
+    lastModifiedUtc?: Date;
+    isDirectory?: boolean;
+    url?: string | undefined;
+    mime?: string | undefined;
+    hasChildren?: boolean | undefined;
+    folder?: string | undefined;
+    error?: string | undefined;
+
+    constructor(data?: IUploadFileResultDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.name = _data["name"];
+            this.size = _data["size"];
+            this.directoryPath = _data["directoryPath"];
+            this.filePath = _data["filePath"];
+            this.lastModifiedUtc = _data["lastModifiedUtc"] ? new Date(_data["lastModifiedUtc"].toString()) : undefined as any;
+            this.isDirectory = _data["isDirectory"];
+            this.url = _data["url"];
+            this.mime = _data["mime"];
+            this.hasChildren = _data["hasChildren"];
+            this.folder = _data["folder"];
+            this.error = _data["error"];
+        }
+    }
+
+    static fromJS(data: any): UploadFileResultDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new UploadFileResultDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["name"] = this.name;
+        data["size"] = this.size;
+        data["directoryPath"] = this.directoryPath;
+        data["filePath"] = this.filePath;
+        data["lastModifiedUtc"] = this.lastModifiedUtc ? this.lastModifiedUtc.toISOString() : undefined as any;
+        data["isDirectory"] = this.isDirectory;
+        data["url"] = this.url;
+        data["mime"] = this.mime;
+        data["hasChildren"] = this.hasChildren;
+        data["folder"] = this.folder;
+        data["error"] = this.error;
+        return data;
+    }
+}
+
+export interface IUploadFileResultDto {
+    name?: string | undefined;
+    size?: number;
+    directoryPath?: string | undefined;
+    filePath?: string | undefined;
+    lastModifiedUtc?: Date;
+    isDirectory?: boolean;
+    url?: string | undefined;
+    mime?: string | undefined;
+    hasChildren?: boolean | undefined;
+    folder?: string | undefined;
+    error?: string | undefined;
+}
+
+export class UploadFilesResultDto implements IUploadFilesResultDto {
+    files?: UploadFileResultDto[] | undefined;
+
+    constructor(data?: IUploadFilesResultDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["files"])) {
+                this.files = [] as any;
+                for (let item of _data["files"])
+                    this.files!.push(UploadFileResultDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): UploadFilesResultDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new UploadFilesResultDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.files)) {
+            data["files"] = [];
+            for (let item of this.files)
+                data["files"].push(item ? item.toJSON() : undefined as any);
+        }
+        return data;
+    }
+}
+
+export interface IUploadFilesResultDto {
+    files?: UploadFileResultDto[] | undefined;
 }
 
 export class ApiException extends Error {

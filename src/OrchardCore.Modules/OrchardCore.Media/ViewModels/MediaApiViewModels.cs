@@ -48,3 +48,34 @@ public class MoveMedias
     public string sourceFolder { get; set; }
     public string targetFolder { get; set; }
 }
+
+public class UploadFileResultDto : FileStoreEntryDto
+{
+    public UploadFileResultDto()
+    {
+    }
+
+    public UploadFileResultDto(FileStoreEntryDto entry)
+    {
+        Name = entry.Name;
+        Size = entry.Size;
+        DirectoryPath = entry.DirectoryPath;
+        FilePath = entry.FilePath;
+        LastModifiedUtc = entry.LastModifiedUtc;
+        IsDirectory = entry.IsDirectory;
+        Url = entry.Url;
+        Mime = entry.Mime;
+        HasChildren = entry.HasChildren;
+    }
+
+    /// <summary>The folder the upload targeted. Set on failed items.</summary>
+    public string Folder { get; set; }
+
+    /// <summary>The per-file error message. Null when the file uploaded successfully.</summary>
+    public string Error { get; set; }
+}
+
+public class UploadFilesResultDto
+{
+    public List<UploadFileResultDto> Files { get; set; }
+}
