@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
-using OrchardCore.Media.Controllers;
 using OrchardCore.Media.Services;
 
 namespace OrchardCore.Media.Endpoints.Api;
@@ -35,7 +34,7 @@ public static class DeleteFolderEndpoint
         IOptions<MediaOptions> options,
         AttachedMediaFieldFileService attachedMediaFieldFileService,
         MediaDirectoryTreeCache directoryTreeCache,
-        IStringLocalizer<MediaApiController> localizer,
+        IStringLocalizer<MediaApiEndpoints> localizer,
         string path)
     {
         if (!await authorizationService.AuthorizeAsync(httpContext.User, MediaPermissions.ManageMedia)

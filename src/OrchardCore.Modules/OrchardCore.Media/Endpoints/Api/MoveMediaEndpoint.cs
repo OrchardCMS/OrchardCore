@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
-using OrchardCore.Media.Controllers;
 
 namespace OrchardCore.Media.Endpoints.Api;
 
@@ -37,7 +36,7 @@ public static class MoveMediaEndpoint
         IMediaFileStore mediaFileStore,
         IOptions<MediaOptions> options,
         IServiceProvider serviceProvider,
-        IStringLocalizer<MediaApiController> localizer,
+        IStringLocalizer<MediaApiEndpoints> localizer,
         string oldPath,
         string newPath)
     {

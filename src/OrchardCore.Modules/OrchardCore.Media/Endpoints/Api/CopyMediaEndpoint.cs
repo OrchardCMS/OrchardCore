@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
-using OrchardCore.Media.Controllers;
 using OrchardCore.Media.ViewModels;
 
 namespace OrchardCore.Media.Endpoints.Api;
@@ -40,7 +39,7 @@ public static class CopyMediaEndpoint
         IContentTypeProvider contentTypeProvider,
         IFileVersionProvider fileVersionProvider,
         IOptions<MediaOptions> options,
-        IStringLocalizer<MediaApiController> localizer,
+        IStringLocalizer<MediaApiEndpoints> localizer,
         string oldPath,
         string newPath)
     {

@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.FileStorage;
-using OrchardCore.Media.Controllers;
 using OrchardCore.Media.Services;
 using OrchardCore.Media.ViewModels;
 
@@ -39,7 +38,7 @@ public static class CreateFolderEndpoint
         IOptions<MediaOptions> options,
         AttachedMediaFieldFileService attachedMediaFieldFileService,
         MediaDirectoryTreeCache directoryTreeCache,
-        IStringLocalizer<MediaApiController> localizer,
+        IStringLocalizer<MediaApiEndpoints> localizer,
         string path,
         string name)
     {

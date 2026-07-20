@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
-using OrchardCore.Media.Controllers;
 using OrchardCore.Media.Core.Helpers;
 using OrchardCore.Media.ViewModels;
 
@@ -31,7 +30,7 @@ public static class GetPermittedStorageEndpoint
         HttpContext httpContext,
         IAuthorizationService authorizationService,
         IMediaFileStore mediaFileStore,
-        IStringLocalizer<MediaApiController> localizer)
+        IStringLocalizer<MediaApiEndpoints> localizer)
     {
         if (!await authorizationService.AuthorizeAsync(httpContext.User, MediaPermissions.ManageMedia)
             || !await authorizationService.AuthorizeAsync(httpContext.User, MediaPermissions.ManageMediaFolder, (object)string.Empty))

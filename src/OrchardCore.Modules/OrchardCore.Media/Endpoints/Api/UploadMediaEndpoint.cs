@@ -15,7 +15,6 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.FileStorage;
-using OrchardCore.Media.Controllers;
 using OrchardCore.Media.Services;
 
 namespace OrchardCore.Media.Endpoints.Api;
@@ -47,8 +46,8 @@ public static class UploadMediaEndpoint
         FileCreationService fileCreationService,
         IServiceProvider serviceProvider,
         IOptions<MediaOptions> options,
-        ILogger<MediaApiController> logger,
-        IStringLocalizer<MediaApiController> localizer,
+        ILogger<MediaApiEndpoints> logger,
+        IStringLocalizer<MediaApiEndpoints> localizer,
         string path,
         string extensions)
     {
