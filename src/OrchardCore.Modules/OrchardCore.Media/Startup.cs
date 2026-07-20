@@ -241,7 +241,9 @@ public sealed class Startup : StartupBase
             .AddMoveMediaEndpoint()
             .AddDeleteMediaListEndpoint()
             .AddMoveMediaListEndpoint()
-            .AddCreateFolderEndpoint();
+            .AddCreateFolderEndpoint()
+            .AddUploadMediaEndpoint()
+            .AddGetTusFileInfoEndpoint();
 
         var mediaFileProvider = serviceProvider.GetRequiredService<IMediaFileProvider>();
         var mediaOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>().Value;
