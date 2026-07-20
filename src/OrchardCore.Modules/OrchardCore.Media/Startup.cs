@@ -242,8 +242,7 @@ public sealed class Startup : StartupBase
             .AddDeleteMediaListEndpoint()
             .AddMoveMediaListEndpoint()
             .AddCreateFolderEndpoint()
-            .AddUploadMediaEndpoint()
-            .AddGetTusFileInfoEndpoint();
+            .AddUploadMediaEndpoint();
 
         var mediaFileProvider = serviceProvider.GetRequiredService<IMediaFileProvider>();
         var mediaOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>().Value;
@@ -472,6 +471,10 @@ public sealed class MediaTusStartup : StartupBase
                 await next();
             }
         );
+
+        // The TusFileInfo endpoint depends on DistributedTusUploadMetadataStore, which is only
+        // registered by this feature, so it must be mapped here (not in the base Media feature).
+        routes.AddGetTusFileInfoEndpoint();
 
         routes.MapTus(
             "/api/media/tus",
