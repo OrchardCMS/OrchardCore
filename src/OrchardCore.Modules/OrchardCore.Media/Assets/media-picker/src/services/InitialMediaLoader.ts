@@ -1,5 +1,6 @@
 import type { IMediaFieldConfig, IMediaFieldItem, IMediaFieldPath } from "../interfaces/MediaFieldTypes";
 import { normalizeMediaPath } from "./MediaPath";
+import { authorizedFetch } from "./authorizedFetch";
 
 type IMediaFieldLookupConfig = Pick<IMediaFieldConfig, "mediaItemUrl" | "mediaItemsUrl">;
 
@@ -35,7 +36,7 @@ async function loadMediaItemsIndividually(paths: IMediaFieldPath[], config: IMed
     paths.map(async (path, index) => {
       try {
         const url = `${config.mediaItemUrl}?path=${encodeURIComponent(path.path)}`;
-        const response = await fetch(url);
+        const response = await authorizedFetch(url);
         if (!response.ok) {
           return createErrorItem(path, index, response.status === 404 ? "not-found" : "transient");
         }
@@ -60,7 +61,7 @@ async function loadMediaItemsBatch(paths: IMediaFieldPath[], config: IMediaField
       searchParams.append("paths", path.path);
     }
 
-    const response = await fetch(`${config.mediaItemsUrl}?${searchParams.toString()}`);
+    const response = await authorizedFetch(`${config.mediaItemsUrl}?${searchParams.toString()}`);
     if (!response.ok) {
       return null;
     }

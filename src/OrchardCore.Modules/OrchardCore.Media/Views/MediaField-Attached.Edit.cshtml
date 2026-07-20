@@ -6,6 +6,7 @@
 
 @{
     var tusEnabled = Context.RequestServices.IsMediaTusEnabled();
+    var apiAuthScheme = Context.RequestServices.GetRequiredService<ISiteService>().GetSettings<MediaApiSettings>().AuthenticationScheme.ToString();
     var settings = Model.PartFieldDefinition.GetSettings<MediaFieldSettings>();
     var fieldId = Html.IdFor(m => m);
     var jsLocalizations = Orchard.GetJSLocalizations("media-field");
@@ -44,6 +45,7 @@
              data-debug-enabled="@(HostEnvironment.IsDevelopment() ? "true" : "false")"
              data-media-gallery-translations="@mediaAppTranslationsJson"
              data-base-path="@Url.Content("~/")"
+             data-api-auth-scheme="@apiAuthScheme"
              data-upload-files-url="@Url.Content("~/api/media/Upload")"
              data-tus-enabled="@(tusEnabled ? "true" : "false")"
              data-tus-endpoint-url="@Url.Content("~/api/media/tus")"

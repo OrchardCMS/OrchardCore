@@ -4,6 +4,8 @@ import Tus from "@uppy/tus";
 import { getTranslations } from "@bloom/helpers/localizations";
 import { humanFileSize } from "@bloom/media/utils";
 import { normalizeMediaPath } from "./MediaPath";
+import { authorizedFetch } from "./authorizedFetch";
+import { getAccessToken, isAuthConfigured } from "@media-gallery-auth";
 
 export interface IUploadFileEntry {
   name: string;
@@ -70,6 +72,16 @@ export function useFieldUpload(config: IFieldUploadConfig) {
     });
     uppy.use(Tus, {
       endpoint: config.tusEndpointUrl!,
+      // Attach a fresh bearer token per request in bearer mode; no-op in cookie mode.
+      onBeforeRequest: async (req) => {
+        if (!isAuthConfigured()) {
+          return;
+        }
+        const token = await getAccessToken();
+        if (token) {
+          req.setHeader("Authorization", `Bearer ${token}`);
+        }
+      },
       retryDelays: [0, 1000, 3000, 5000],
       chunkSize:
         config.maxUploadChunkSize && config.maxUploadChunkSize > 0
@@ -106,7 +118,7 @@ export function useFieldUpload(config: IFieldUploadConfig) {
         const fileInfoUrl = `${config.tusFileInfoUrl}/${uploadId}`;
 
         try {
-          const res = await fetch(fileInfoUrl);
+          const res = await authorizedFetch(fileInfoUrl);
           if (res.ok) {
             const serverFile = normalizeUploadedFileResult(await res.json());
             resolve({
@@ -145,6 +157,10 @@ export function useFieldUpload(config: IFieldUploadConfig) {
     formData.append("files", file, uniqueName);
     formData.append("path", config.tempUploadFolder);
     formData.append("__RequestVerificationToken", getAntiForgeryToken());
+
+    // Acquire the bearer token up front (the Promise executor below is synchronous). Null in
+    // cookie mode, where the ambient cookie + the antiforgery token above authenticate instead.
+    const bearerToken = isAuthConfigured() ? await getAccessToken() : null;
 
     const xhr = new XMLHttpRequest();
     return new Promise<UploadedFileResult | null>((resolve, reject) => {
@@ -185,6 +201,9 @@ export function useFieldUpload(config: IFieldUploadConfig) {
       });
 
       xhr.open("POST", config.uploadAction);
+      if (bearerToken) {
+        xhr.setRequestHeader("Authorization", `Bearer ${bearerToken}`);
+      }
       xhr.send(formData);
     });
   }

@@ -21,6 +21,7 @@ import type { IMediaFieldConfig, IMediaFieldPath } from "./interfaces/MediaField
 import type { IAttachedFieldConfig } from "./components/MediaFieldAttached.vue";
 import type { IMediaFieldItem } from "./interfaces/MediaFieldTypes";
 import { sanitizeFieldPaths } from "./services/MediaPath";
+import { configureMediaAuth } from "@media-gallery-auth";
 
 import "vue-final-modal/style.css";
 import "./assets/css/field.css";
@@ -252,6 +253,17 @@ const mountFns: Record<string, (el: HTMLElement) => void> = {
   gallery: mountGalleryMediaField,
 };
 
+// Configure silent OIDC auth for the media fields when the Media API is in bearer mode. The mode
+// (and base path) are read from any field element on the page — it is a site-wide setting, so all
+// fields share it. This must run before the fields mount and start calling the API. No-op in
+// cookie mode. The configured state is shared with the media-gallery app the picker mounts.
+function configureFieldAuth() {
+  const el = document.querySelector<HTMLElement>("[data-media-field-type]");
+  if (el?.dataset.apiAuthScheme === "Bearer") {
+    configureMediaAuth({ basePath: el.dataset.basePath || "/" });
+  }
+}
+
 function autoMount() {
   document.querySelectorAll<HTMLElement>("[data-media-field-type]").forEach((el) => {
     // Skip already-mounted elements
@@ -266,6 +278,7 @@ function autoMount() {
 }
 
 // Auto-mount when the module loads (DOM is ready for module scripts)
+configureFieldAuth();
 autoMount();
 
 // Register openMediaPicker on the config element so that picker-api.ts (bundled

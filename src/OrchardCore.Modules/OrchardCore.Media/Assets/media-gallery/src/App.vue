@@ -233,7 +233,7 @@ import { useSignalR } from "./services/SignalR";
 import { useEventBus } from "./services/UseEventBus";
 import { useRouterService } from "./services/RouterService";
 import { getTranslations, setTranslations } from "@bloom/helpers/localizations";
-import { configureAuth } from "./services/auth";
+import { configureMediaAuth } from "./services/auth";
 import { useFileListFiltering } from "./composables/useFileListFiltering";
 import { useBreadcrumbs } from "./composables/useBreadcrumbs";
 import { useStoragePopover } from "./composables/useStoragePopover";
@@ -358,14 +358,11 @@ setIsDownloading(false);
 // so requests carry a token; in "Cookie" mode we leave auth unconfigured and the shared ApiService
 // falls back to the ambient admin cookie (with antiforgery). Exactly one is ever active — never both.
 if (props.apiAuthScheme === "Bearer") {
-  const oidcBase = props.basePath.endsWith("/") ? props.basePath : `${props.basePath}/`;
-  const oidcSilentUri = `${window.location.origin}${oidcBase}OrchardCore.Media/media-gallery-oidc-silent.html`;
-  configureAuth({
-    authority: props.oidcAuthority || `${window.location.origin}${oidcBase}`.replace(/\/$/, ""),
-    clientId: props.oidcClientId || "media_gallery",
+  configureMediaAuth({
+    basePath: props.basePath,
+    authority: props.oidcAuthority,
+    clientId: props.oidcClientId,
     scope: props.oidcScope,
-    redirectUri: oidcSilentUri,
-    silentRedirectUri: oidcSilentUri,
   });
 }
 

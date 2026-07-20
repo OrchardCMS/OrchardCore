@@ -72,6 +72,29 @@ export function isAuthConfigured(): boolean {
 }
 
 /**
+ * Configure silent OIDC auth using the media gallery's conventional client id and silent-renew
+ * page, derived from the current origin and base path. Shared by the gallery App and the
+ * media-picker so both authenticate the same way. No-op-returns false if clientId resolves empty.
+ */
+export function configureMediaAuth(options: {
+  basePath: string;
+  authority?: string;
+  clientId?: string;
+  scope?: string;
+}): boolean {
+  const base = options.basePath.endsWith("/") ? options.basePath : `${options.basePath}/`;
+  const silentUri = `${window.location.origin}${base}OrchardCore.Media/media-gallery-oidc-silent.html`;
+
+  return configureAuth({
+    authority: options.authority || `${window.location.origin}${base}`.replace(/\/$/, ""),
+    clientId: options.clientId || "media_gallery",
+    scope: options.scope || "openid email profile roles",
+    redirectUri: silentUri,
+    silentRedirectUri: silentUri,
+  });
+}
+
+/**
  * Return a valid access token, silently acquiring/renewing one if needed.
  * Used by the axios request interceptor.
  */
