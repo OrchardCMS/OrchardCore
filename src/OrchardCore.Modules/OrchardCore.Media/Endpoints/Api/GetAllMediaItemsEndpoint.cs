@@ -29,7 +29,7 @@ public static class GetAllMediaItemsEndpoint
         return builder;
     }
 
-    [Authorize(AuthenticationSchemes = "Api")]
+    [Authorize(Policy = MediaApiConstants.AuthorizationPolicyName)]
     private static async Task<IResult> HandleAsync(
         HttpContext httpContext,
         IAuthorizationService authorizationService,

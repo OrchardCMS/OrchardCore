@@ -21,6 +21,7 @@ public static class CreateFolderEndpoint
             .WithName("ApiCreateFolder")
             .WithTags("MediaApi")
             .DisableAntiforgery()
+            .AddEndpointFilter<MediaApiAntiforgeryEndpointFilter>()
             .Produces<FileStoreEntryDto>(StatusCodes.Status200OK)
             .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status401Unauthorized)
@@ -29,7 +30,7 @@ public static class CreateFolderEndpoint
         return builder;
     }
 
-    [Authorize(AuthenticationSchemes = "Api")]
+    [Authorize(Policy = MediaApiConstants.AuthorizationPolicyName)]
     private static async Task<IResult> HandleAsync(
         HttpContext httpContext,
         IAuthorizationService authorizationService,

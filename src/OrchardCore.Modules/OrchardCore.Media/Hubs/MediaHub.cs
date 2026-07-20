@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace OrchardCore.Media.Hubs;
 
-[Authorize(AuthenticationSchemes = "Api")]
+[Authorize(Policy = MediaApiConstants.AuthorizationPolicyName)]
 public class MediaHub : Hub
 {
 }

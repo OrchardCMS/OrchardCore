@@ -301,6 +301,10 @@ const props = defineProps({
     type: String,
     default: "openid email profile roles",
   },
+  apiAuthScheme: {
+    type: String,
+    default: "Cookie",
+  },
 })
 
 const {
@@ -349,19 +353,21 @@ setAllowMultipleSelection(parseBoolean(props.allowMultipleSelection, true));
 setAllowedExtensions(props.allowedExtensions);
 setIsDownloading(false);
 
-// Configure silent OIDC (authorization-code + PKCE) auth for the bearer-only Media API.
-// The token is acquired lazily on the first request; when no authority/client-id is
-// available the app stays unconfigured and Media API calls will 401 until the
-// MediaApiPkce recipe is applied and the config attributes are present.
-const oidcBase = props.basePath.endsWith("/") ? props.basePath : `${props.basePath}/`;
-const oidcSilentUri = `${window.location.origin}${oidcBase}OrchardCore.Media/media-gallery-oidc-silent.html`;
-configureAuth({
-  authority: props.oidcAuthority || `${window.location.origin}${oidcBase}`.replace(/\/$/, ""),
-  clientId: props.oidcClientId || "media_gallery",
-  scope: props.oidcScope,
-  redirectUri: oidcSilentUri,
-  silentRedirectUri: oidcSilentUri,
-});
+// The Media API authenticates with exactly one scheme, chosen by the site's MediaApiSettings and
+// injected via api-auth-scheme. In "Bearer" mode, configure silent OIDC (authorization-code + PKCE)
+// so requests carry a token; in "Cookie" mode we leave auth unconfigured and the shared ApiService
+// falls back to the ambient admin cookie (with antiforgery). Exactly one is ever active — never both.
+if (props.apiAuthScheme === "Bearer") {
+  const oidcBase = props.basePath.endsWith("/") ? props.basePath : `${props.basePath}/`;
+  const oidcSilentUri = `${window.location.origin}${oidcBase}OrchardCore.Media/media-gallery-oidc-silent.html`;
+  configureAuth({
+    authority: props.oidcAuthority || `${window.location.origin}${oidcBase}`.replace(/\/$/, ""),
+    clientId: props.oidcClientId || "media_gallery",
+    scope: props.oidcScope,
+    redirectUri: oidcSilentUri,
+    silentRedirectUri: oidcSilentUri,
+  });
+}
 
 const translations = getTranslations();
 if (props.translations) {

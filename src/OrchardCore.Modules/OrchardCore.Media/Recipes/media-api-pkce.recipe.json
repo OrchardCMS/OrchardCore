@@ -18,6 +18,12 @@
       ]
     },
     {
+      "name": "settings",
+      "MediaApiSettings": {
+        "AuthenticationScheme": "Bearer"
+      }
+    },
+    {
       "name": "OpenIdServerSettings",
       "EnableTokenEndpoint": true,
       "EnableAuthorizationEndpoint": true,

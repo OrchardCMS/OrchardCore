@@ -19,6 +19,7 @@ using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Liquid.Tags;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
@@ -48,6 +49,7 @@ using OrchardCore.Media.TagHelpers;
 using OrchardCore.Media.ViewModels;
 using OrchardCore.Modules;
 using OrchardCore.Modules.FileProviders;
+using OrchardCore.Settings;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
@@ -92,6 +94,10 @@ public sealed class Startup : StartupBase
         services.AddResourceConfiguration<ResourceManagementOptionsConfiguration>();
 
         services.AddTransient<IConfigureOptions<MediaOptions>, MediaOptionsConfiguration>();
+
+        // Builds the "MediaApi" authorization policy from MediaApiSettings (cookie default / bearer).
+        services.AddTransient<IConfigureOptions<AuthorizationOptions>, MediaApiAuthorizationOptionsConfiguration>();
+        services.AddSiteDisplayDriver<MediaApiSettingsDisplayDriver>();
         services.TryAddTransient<FileCreationService>();
 
         services.AddSingleton<IMediaFileProvider>(serviceProvider =>
@@ -481,9 +487,18 @@ public sealed class MediaTusStartup : StartupBase
             "/api/media/tus",
             async httpContext =>
             {
-                // Authenticate the bearer "Api" scheme and adopt its principal so this handler and
-                // the tus event callbacks below authorize against the token's identity.
-                var authenticateResult = await httpContext.AuthenticateAsync("Api");
+                // Authenticate against the configured Media API scheme (cookie by default, bearer
+                // "Api" when enabled) and adopt its principal so this handler and the tus event
+                // callbacks below authorize against that identity.
+                var mediaApiSettings = httpContext.RequestServices
+                    .GetRequiredService<ISiteService>()
+                    .GetSettings<MediaApiSettings>();
+
+                var authenticationScheme = mediaApiSettings.AuthenticationScheme == MediaApiAuthenticationScheme.Bearer
+                    ? MediaApiConstants.ApiScheme
+                    : MediaApiConstants.CookieScheme;
+
+                var authenticateResult = await httpContext.AuthenticateAsync(authenticationScheme);
                 if (!authenticateResult.Succeeded)
                 {
                     httpContext.Response.StatusCode = StatusCodes.Status401Unauthorized;

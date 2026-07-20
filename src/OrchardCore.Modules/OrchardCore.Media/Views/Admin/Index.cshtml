@@ -8,6 +8,10 @@
 
 <h1 style="display:none">@RenderTitleSegments(T["Assets"])</h1>
 
+@* Emits __RequestVerificationToken (and sets the antiforgery cookie) so the media gallery can send
+   it on writes when the Media API is in cookie authentication mode. *@
+@Html.AntiForgeryToken()
+
 <div id="media-gallery">
     <media-gallery
         site-id="@Model.SiteId"
@@ -22,6 +26,7 @@
         tus-file-info-url="@Href("~/api/media/TusFileInfo")"
         signalr-enabled="@(Model.SignalrEnabled ? "true" : "false")"
 
+        api-auth-scheme="@Model.ApiAuthenticationScheme"
         oidc-client-id="media_gallery"
         oidc-scope="openid email profile roles"
 

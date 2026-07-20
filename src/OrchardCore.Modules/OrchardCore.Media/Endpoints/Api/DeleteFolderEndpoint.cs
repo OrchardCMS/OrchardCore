@@ -18,6 +18,7 @@ public static class DeleteFolderEndpoint
             .WithName("ApiDeleteFolder")
             .WithTags("MediaApi")
             .DisableAntiforgery()
+            .AddEndpointFilter<MediaApiAntiforgeryEndpointFilter>()
             .Produces(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status403Forbidden)
@@ -26,7 +27,7 @@ public static class DeleteFolderEndpoint
         return builder;
     }
 
-    [Authorize(AuthenticationSchemes = "Api")]
+    [Authorize(Policy = MediaApiConstants.AuthorizationPolicyName)]
     private static async Task<IResult> HandleAsync(
         HttpContext httpContext,
         IAuthorizationService authorizationService,

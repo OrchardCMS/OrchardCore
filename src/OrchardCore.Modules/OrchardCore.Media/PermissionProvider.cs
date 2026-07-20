@@ -13,6 +13,7 @@ public sealed class PermissionProvider : IPermissionProvider
         MediaPermissions.ManageAttachedMediaFieldsFolder,
         MediaPermissions.ManageMediaProfiles,
         MediaPermissions.ViewMediaOptions,
+        MediaPermissions.ManageMediaApiSettings,
     ];
 
     private readonly IEnumerable<Permission> _generalPermissions =
@@ -32,6 +33,7 @@ public sealed class PermissionProvider : IPermissionProvider
                 MediaPermissions.ManageMediaFolder,
                 MediaPermissions.ManageMediaProfiles,
                 MediaPermissions.ViewMediaOptions,
+                MediaPermissions.ManageMediaApiSettings,
             ],
         },
         new PermissionStereotype

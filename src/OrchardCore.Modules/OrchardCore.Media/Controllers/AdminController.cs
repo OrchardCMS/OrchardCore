@@ -9,6 +9,7 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Media.Core.Helpers;
+using OrchardCore.Settings;
 using OrchardCore.Media.Hubs;
 using OrchardCore.Media.Services;
 using OrchardCore.Media.ViewModels;
@@ -48,6 +49,7 @@ public sealed class AdminController : Controller
         var signalrEnabled = HttpContext.RequestServices.GetService<IHubContext<MediaHub>>() is not null;
         var shellSettings = HttpContext.RequestServices.GetRequiredService<ShellSettings>();
         var hostEnvironment = HttpContext.RequestServices.GetRequiredService<IHostEnvironment>();
+        var mediaApiSettings = HttpContext.RequestServices.GetRequiredService<ISiteService>().GetSettings<MediaApiSettings>();
 
         var model = new MediaIndexViewModel
         {
@@ -57,6 +59,7 @@ public sealed class AdminController : Controller
             TusEnabled = tusEnabled,
             SignalrEnabled = signalrEnabled,
             DebugEnabled = hostEnvironment.IsDevelopment(),
+            ApiAuthenticationScheme = mediaApiSettings.AuthenticationScheme.ToString(),
         };
 
         return View(model);

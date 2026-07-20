@@ -13,4 +13,6 @@ public sealed class MediaIndexViewModel
     public bool SignalrEnabled { get; set; }
 
     public bool DebugEnabled { get; set; }
+
+    public string ApiAuthenticationScheme { get; set; } = nameof(MediaApiAuthenticationScheme.Cookie);
 }
