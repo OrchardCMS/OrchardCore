@@ -202,10 +202,16 @@ const pageLinks = computed(() => {
   return links;
 });
 
-// Reset to the first page whenever the item list changes — either replaced with a new array
-// (reference change) or mutated in place (deep). A getter source avoids the "invalid watch source"
-// warning that a bare `props.sourceItems` produced; `deep` preserves in-place-mutation detection.
+// Keep the current page valid whenever the item list changes — replaced with a new array
+// (reference change) or mutated in place (deep). Clamping (rather than resetting to 0) preserves
+// the user's position across background refreshes of the same list (e.g. a SignalR MediaChanged
+// reload) while still landing on a real page when the list shrinks; directory changes remount the
+// pager via :key, which resets to the first page. A getter source avoids the "invalid watch
+// source" warning a bare `props.sourceItems` produced.
 watch(() => props.sourceItems, () => {
-  current.value = 0;
+  const lastPage = Math.max(0, totalPages.value - 1);
+  if (current.value > lastPage) {
+    current.value = lastPage;
+  }
 }, { deep: true });
 </script>

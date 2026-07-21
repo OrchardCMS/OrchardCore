@@ -61,10 +61,16 @@
   --media-upload-list-header-color: var(--gray-600);
   --media-thumb-checker-color: var(--gray-200);
 
-  /* Semantic design tokens (app-owned — the style rules below reference these, not Bootstrap).
-     Each inherits the OrchardCore admin's live Bootstrap theme variable when the app is embedded
-     (so the admin look, incl. its light/dark switching, is unchanged) and falls back to a default
-     when the app runs standalone on its own origin. */
+}
+
+/* Semantic design tokens (app-owned — the style rules below reference these, not Bootstrap).
+   Each inherits the OrchardCore admin's live Bootstrap theme variable when the app is embedded
+   (so the admin look, incl. its light/dark switching, is unchanged) and falls back to a default
+   when the app runs standalone on its own origin.
+   Defined at :root — NOT scoped to .fileApp — because modals (vue-final-modal), the PrimeVue popup
+   menus and the toasts teleport to <body>, outside .fileApp; a .fileApp scope would leave their
+   var(--mg-*) references unresolved. The --mg- prefix keeps them collision-free on the host page. */
+:root {
   --mg-surface: var(--bs-body-bg, #fff);
   --mg-surface-secondary: var(--bs-secondary-bg, #e9ecef);
   --mg-surface-tertiary: var(--bs-tertiary-bg, #f8f9fa);
@@ -1809,9 +1815,12 @@ ol.file-items-grid .file-icon-placeholder .file-ext {
 /* ============================================================
    Dark Mode
    ============================================================ */
-[data-bs-theme="dark"] .fileApp {
-  /* Dark values for the semantic tokens. When embedded, these still resolve to the admin theme's
-     dark Bootstrap variables (the var() aliases); standalone falls back to these defaults. */
+/* Dark values for the semantic tokens. Root-level (not .fileApp) for the same teleported-UI reason
+   as the light block; when embedded these still resolve to the admin theme's dark Bootstrap
+   variables (the var() aliases), and standalone falls back to these defaults. Declared after the
+   :root light block so the equal-specificity dark override wins when [data-bs-theme="dark"] is set
+   on the root element. */
+[data-bs-theme="dark"] {
   --mg-surface: var(--bs-body-bg, #212529);
   --mg-surface-secondary: var(--bs-secondary-bg, #343a40);
   --mg-surface-tertiary: var(--bs-tertiary-bg, #2b3035);
@@ -1820,7 +1829,9 @@ ol.file-items-grid .file-icon-placeholder .file-ext {
   --mg-border: var(--bs-border-color, #495057);
   --mg-border-subtle: var(--bs-border-color-translucent, rgba(255, 255, 255, 0.15));
   --mg-warning: var(--bs-warning, #ffc107);
+}
 
+[data-bs-theme="dark"] .fileApp {
   --media-selected-bg: rgba(13, 110, 253, 0.15);
   --media-accent: #7bc143;
   --media-card-bg: var(--mg-surface);

@@ -93,8 +93,9 @@ it can't run in a single-origin unit test. Checklist against a real deployment:
 - [ ] Upload (XHR and, if enabled, tus) succeeds cross-origin.
 - [ ] With `signalrEnabled: true`, the MediaHub negotiate + WebSocket connect cross-origin and a media
       change in another tab refreshes the gallery.
-- [ ] Leaving the tab idle past the token lifetime silently renews via `silent-callback.html` (no
-      re-login prompt).
+- [ ] Leaving the tab idle past the token lifetime silently renews via `silent-callback.html` when
+      the IdP session is still alive; when it isn't (or third-party-cookie blocking defeats the
+      silent iframe), the app automatically restarts the interactive login instead of dying on 401s.
 - [ ] Behind **Azure SignalR**: confirm the `roles` claim survives the negotiate → client-token round
       trip (the `ManageMedia` check in `MediaHub.OnConnectedAsync` fails closed otherwise). See the
       Scalability section of `media-api-bearer-pkce-plan.md`.

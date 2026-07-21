@@ -114,7 +114,11 @@ export function resolveEmbeddedConfig(source: IEmbeddedConfigSource): IMediaRunt
  * interactive login (there is no ambient Orchard cookie on the app origin).
  */
 export function resolveStandaloneConfig(source: IStandaloneConfigSource): IMediaRuntimeConfig {
-  const appBaseUrl = withTrailingSlash(source.appBaseUrl || `${window.location.origin}${window.location.pathname}`);
+  // Default the app base to the current directory: strip everything after the last "/" so opening
+  // the app via its document path (e.g. /index.html) doesn't bake the filename into the redirect
+  // URIs (".../index.html/callback.html" would match no registered RedirectUri).
+  const currentDirectory = `${window.location.origin}${window.location.pathname.replace(/[^/]*$/, "")}`;
+  const appBaseUrl = withTrailingSlash(source.appBaseUrl || currentDirectory);
   const orchardBaseUrl = withTrailingSlash(source.orchardBaseUrl);
   const silentUri = `${appBaseUrl}silent-callback.html`;
   const redirectUri = `${appBaseUrl}callback.html`;

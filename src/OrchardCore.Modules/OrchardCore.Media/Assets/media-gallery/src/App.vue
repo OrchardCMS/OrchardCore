@@ -328,6 +328,7 @@ const {
   isLoadingFiles,
   setIsLoading,
   setBasePath,
+  setErrors,
   setSelectedFiles,
   setAllowMultipleSelection,
   setSelectedAll,
@@ -408,9 +409,16 @@ const { getFileLibraryStoreAsync } = useFileLibraryManager();
 // Embedded (silent) skips this — it keeps the lazy per-request token acquisition it always had.
 async function bootstrapLibrary() {
   if (runtimeConfig.authFlow === "interactive") {
-    const authenticated = await ensureAuthenticated();
-    if (!authenticated) {
-      return; // navigating to the interactive login
+    const auth = await ensureAuthenticated();
+    if (auth === "redirecting") {
+      return; // navigating to the interactive login — keep the loading state until we leave
+    }
+    if (auth === "failed") {
+      // No redirect happened (e.g. the authority is unreachable): stop the spinner and say so
+      // instead of hanging forever.
+      setIsLoading(false);
+      setErrors([`Authentication failed — could not reach the sign-in service at ${runtimeConfig.authority}.`]);
+      return;
     }
   }
 

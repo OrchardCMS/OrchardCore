@@ -15,6 +15,9 @@ import path from "path";
  */
 export default defineConfig({
   root: path.resolve(__dirname, "standalone"),
+  // Relative asset URLs so dist-standalone/ works from any sub-path, not just an origin root
+  // (safe: the app router is hash-based, so the document URL never varies within a deployment).
+  base: "./",
   resolve: {
     alias: {
       vue: "vue/dist/vue.esm-bundler.js",

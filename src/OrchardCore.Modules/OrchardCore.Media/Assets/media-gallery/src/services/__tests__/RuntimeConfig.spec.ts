@@ -81,6 +81,19 @@ describe("resolveStandaloneConfig", () => {
     expect(config.hubUrl).toBe("https://cms.example.com/team-a/hubs/media");
     expect(config.authority).toBe("https://cms.example.com/team-a");
   });
+
+  it("strips the document filename when defaulting the app base from the page URL", () => {
+    window.history.replaceState(null, "", "/subdir/index.html");
+    try {
+      const config = resolveStandaloneConfig({ orchardBaseUrl: "https://cms.example.com/" });
+      // Without the strip, the redirect URIs would be ".../index.html/callback.html" — matching no
+      // registered RedirectUri and no real page.
+      expect(config.appBaseUrl).toBe(`${ORIGIN}/subdir/`);
+      expect(config.redirectUri).toBe(`${ORIGIN}/subdir/callback.html`);
+    } finally {
+      window.history.replaceState(null, "", "/");
+    }
+  });
 });
 
 describe("useRuntimeConfig", () => {

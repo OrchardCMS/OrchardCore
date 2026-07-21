@@ -1,4 +1,5 @@
 import { UserManager, WebStorageStateStore, type UserManagerSettings } from "oidc-client-ts";
+import { resolveEmbeddedConfig } from "./RuntimeConfig";
 
 /**
  * OAuth2 authorization-code + PKCE authentication for the media gallery SPA.
@@ -91,21 +92,32 @@ export function configureMediaAuth(options: {
   clientId?: string;
   scope?: string;
 }): boolean {
-  const base = options.basePath.endsWith("/") ? options.basePath : `${options.basePath}/`;
-  const silentUri = `${window.location.origin}${base}OrchardCore.Media/media-gallery-oidc-silent.html`;
+  // Delegate the derivation to the runtime-config resolver so the gallery and the picker share a
+  // single source of truth for the OIDC defaults (client id, scope, silent page, authority).
+  const config = resolveEmbeddedConfig({
+    basePath: options.basePath,
+    oidcAuthority: options.authority,
+    oidcClientId: options.clientId,
+    oidcScope: options.scope,
+  });
 
   return configureAuth({
-    authority: options.authority || `${window.location.origin}${base}`.replace(/\/$/, ""),
-    clientId: options.clientId || "media_gallery",
-    scope: options.scope || "openid email profile roles",
-    redirectUri: silentUri,
-    silentRedirectUri: silentUri,
+    authority: config.authority,
+    clientId: config.clientId,
+    scope: config.scope,
+    redirectUri: config.redirectUri,
+    silentRedirectUri: config.silentRedirectUri,
+    authFlow: config.authFlow,
   });
 }
 
 /**
  * Return a valid access token, silently acquiring/renewing one if needed.
  * Used by the axios request interceptor.
+ *
+ * In interactive (standalone) mode, a definitive silent failure means the IdP session is gone
+ * (e.g. it expired while the tab was open), so a fresh interactive login is started — otherwise
+ * every subsequent call would 401 until a manual reload.
  */
 export async function getAccessToken(): Promise<string | null> {
   if (!userManager) {
@@ -122,6 +134,9 @@ export async function getAccessToken(): Promise<string | null> {
   } catch (err) {
     console.error("[media-gallery] silent sign-in failed", err);
     cachedToken = null;
+    if (authFlow === "interactive") {
+      void signinRedirect();
+    }
     return null;
   }
 }
@@ -135,54 +150,63 @@ export function getAccessTokenSync(): string {
   return cachedToken ?? "";
 }
 
+/** Distinguishes "we are navigating to the login page" from a real failure, so callers can decide
+ * whether to stop quietly or surface an error. */
+export type EnsureAuthResult = "authenticated" | "redirecting" | "failed";
+
 /**
  * Ensure a bearer token is available before the app loads data.
  *
- * Embedded (silent): a hidden-iframe `signinSilent()` against the existing Orchard admin session —
- * unchanged from the lazy per-request behavior, just eager. Standalone (interactive): if no session
- * can be established silently, redirect the whole page to the login endpoint; the caller should stop
- * (navigation has begun). Returns true when authenticated, false otherwise.
+ * Embedded (silent): the same lazy silent acquisition getAccessToken() performs per request, just
+ * eager. Standalone (interactive): if no session can be established silently, redirect the whole
+ * page to the login endpoint ("redirecting" — the caller should stop, navigation has begun).
+ * "failed" means neither worked and the caller should surface an error.
  */
-export async function ensureAuthenticated(): Promise<boolean> {
+export async function ensureAuthenticated(): Promise<EnsureAuthResult> {
+  if (!userManager) {
+    return "failed";
+  }
+
+  // getAccessToken already starts the interactive redirect on silent failure in interactive mode.
+  const token = await getAccessToken();
+  if (token) {
+    return "authenticated";
+  }
+
+  if (authFlow === "interactive") {
+    return (await signinRedirect()) ? "redirecting" : "failed";
+  }
+
+  return "failed";
+}
+
+let interactiveSigninStarted = false;
+
+/**
+ * Begin an interactive login (full-page redirect to the authorization endpoint); the round trip
+ * returns to the configured `redirectUri` callback page. Guarded so concurrent failures (parallel
+ * API calls all 401ing at once) start the redirect only once. Returns true when the redirect was
+ * started (or already in flight), false when it could not be.
+ */
+export async function signinRedirect(): Promise<boolean> {
   if (!userManager) {
     return false;
   }
 
+  if (interactiveSigninStarted) {
+    return true;
+  }
+  interactiveSigninStarted = true;
+
   try {
-    let user = await userManager.getUser();
-    if (!user || user.expired) {
-      user = await userManager.signinSilent();
-    }
-    cachedToken = user?.access_token ?? null;
-    if (cachedToken) {
-      return true;
-    }
+    await userManager.signinRedirect();
+    return true;
   } catch (err) {
-    console.error("[media-gallery] silent authentication failed", err);
+    // Allow a later attempt (e.g. transient network failure reaching the discovery document).
+    interactiveSigninStarted = false;
+    console.error("[media-gallery] interactive sign-in redirect failed", err);
+    return false;
   }
-
-  // No silent session. In standalone we must send the user through an interactive login.
-  if (authFlow === "interactive") {
-    try {
-      await userManager.signinRedirect();
-    } catch (err) {
-      console.error("[media-gallery] interactive sign-in redirect failed", err);
-    }
-  }
-
-  return false;
-}
-
-/**
- * Begin an interactive login (full-page redirect to the authorization endpoint). Used by standalone
- * hosts; the round trip returns to the configured `redirectUri` callback page.
- */
-export async function signinRedirect(): Promise<void> {
-  if (!userManager) {
-    return;
-  }
-
-  await userManager.signinRedirect();
 }
 
 /**
@@ -190,23 +214,30 @@ export async function signinRedirect(): Promise<void> {
  * module; rebuilds the UserManager from the persisted settings (the callback page has no config
  * source) and exchanges the authorization code for tokens.
  */
-export async function handleRedirectCallback(): Promise<void> {
+export async function handleRedirectCallback(): Promise<boolean> {
   try {
     const raw = window.sessionStorage.getItem(CONFIG_STORAGE_KEY);
     if (!raw) {
-      return;
+      return false;
     }
 
     const config = JSON.parse(raw) as IOidcConfig;
     const manager = new UserManager(buildSettings(config));
     await manager.signinRedirectCallback();
+    return true;
   } catch (err) {
+    // Returning false (instead of swallowing) lets the callback page show the error rather than
+    // bounce back to the app, which would immediately redirect to the IdP again — an infinite
+    // authorize/callback loop when the failure is persistent (e.g. access_denied, lost state).
     console.error("[media-gallery] interactive sign-in callback failed", err);
+    return false;
   }
 }
 
 /**
- * Force a silent renewal (used by the API 401-retry interceptor).
+ * Force a silent renewal (used by the API 401-retry interceptor). In interactive mode a definitive
+ * renewal failure starts a fresh interactive login (see getAccessToken) instead of leaving the app
+ * dead with 401s until a manual reload.
  */
 export async function renewAccessToken(): Promise<string | null> {
   if (!userManager) {
@@ -219,6 +250,9 @@ export async function renewAccessToken(): Promise<string | null> {
     return cachedToken;
   } catch (err) {
     console.error("[media-gallery] token renewal failed", err);
+    if (authFlow === "interactive") {
+      void signinRedirect();
+    }
     return null;
   }
 }

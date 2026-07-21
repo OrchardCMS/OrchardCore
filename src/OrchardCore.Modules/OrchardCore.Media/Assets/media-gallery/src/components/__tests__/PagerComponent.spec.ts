@@ -138,11 +138,11 @@ describe('PagerComponent', () => {
     expect(getActivePage(wrapper)).toBe(1);
   });
 
-  it('watch resets current page when sourceItems array is mutated', async () => {
+  it('watch clamps the current page when sourceItems shrinks and preserves it otherwise', async () => {
     // Use a parent wrapper component so the reactive prop and the watcher share
     // the same underlying reactive array.  The parent re-renders with the SAME
-    // array reference while mutating it, which triggers the deep watcher set up
-    // via `watch(props.sourceItems, () => { current.value = 0 })` in PagerComponent.
+    // array reference while mutating it, which triggers the deep watcher in
+    // PagerComponent (clamp to the last valid page; keep position on refreshes).
     const { defineComponent, reactive, h } = await import('vue');
 
     const state = reactive({ items: Array(30).fill(null) as any[] }); // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -164,8 +164,17 @@ describe('PagerComponent', () => {
     await nextTick();
     expect(pagerState.current).toBe(1);
 
-    // Mutate the same reactive array in place to trigger the deep watcher
+    // Growing the list (background refresh, upload) keeps the user's position.
     state.items.push(null);
+    await nextTick();
+    await nextTick();
+    await nextTick();
+    await nextTick();
+
+    expect(pagerState.current).toBe(1);
+
+    // Shrinking below the current page clamps to the last valid page.
+    state.items.splice(0, 25); // 6 items left → a single page
     await nextTick();
     await nextTick();
     await nextTick();
