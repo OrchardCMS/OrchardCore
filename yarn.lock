@@ -3178,17 +3178,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@orchardcore/openapi-settings@workspace:src/OrchardCore.Modules/OrchardCore.OpenApi/Assets/openapi-settings":
+"@orchardcore/openapi-ui-auth@workspace:src/OrchardCore.Modules/OrchardCore.OpenApi/Assets/openapi-ui-auth":
   version: 0.0.0-use.local
-  resolution: "@orchardcore/openapi-settings@workspace:src/OrchardCore.Modules/OrchardCore.OpenApi/Assets/openapi-settings"
+  resolution: "@orchardcore/openapi-ui-auth@workspace:src/OrchardCore.Modules/OrchardCore.OpenApi/Assets/openapi-ui-auth"
   dependencies:
-    "@vitejs/plugin-vue": "npm:^5.2.1"
-    axios: "npm:^1.7.9"
-    debug: "npm:^4.4.0"
-    mitt: "npm:^3.0.1"
+    oidc-client-ts: "npm:^3.1.0"
     typescript: "npm:^5.7.3"
     vite: "npm:^6.2.0"
-    vue: "npm:^3.5.26"
   languageName: unknown
   linkType: soft
 
@@ -7789,17 +7785,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:^1.7.9":
-  version: 1.14.0
-  resolution: "axios@npm:1.14.0"
-  dependencies:
-    follow-redirects: "npm:^1.15.11"
-    form-data: "npm:^4.0.5"
-    proxy-from-env: "npm:^2.1.0"
-  checksum: 10/c3444e9e3da1714916e4ddd7cda05bb41a5d5d80e3e27b099a116439684c63f2280c88503d1acd65841698b63af0b542b4d5780454e28fd0aed2d783ef90943e
-  languageName: node
-  linkType: hard
-
 "babel-plugin-emotion@npm:^10.0.27":
   version: 10.2.2
   resolution: "babel-plugin-emotion@npm:10.2.2"
@@ -9105,7 +9090,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"debug@npm:4, debug@npm:^4.1.0, debug@npm:^4.1.1, debug@npm:^4.3.1, debug@npm:^4.3.2, debug@npm:^4.3.4, debug@npm:^4.3.6, debug@npm:^4.4.0, debug@npm:^4.4.3, debug@npm:~4.4.1":
+"debug@npm:4, debug@npm:^4.1.0, debug@npm:^4.1.1, debug@npm:^4.3.1, debug@npm:^4.3.2, debug@npm:^4.3.4, debug@npm:^4.3.6, debug@npm:^4.4.3, debug@npm:~4.4.1":
   version: 4.4.3
   resolution: "debug@npm:4.4.3"
   dependencies:
@@ -10558,7 +10543,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"follow-redirects@npm:^1.0.0, follow-redirects@npm:^1.14.0, follow-redirects@npm:^1.15.11":
+"follow-redirects@npm:^1.0.0, follow-redirects@npm:^1.14.0":
   version: 1.15.11
   resolution: "follow-redirects@npm:1.15.11"
   peerDependenciesMeta:
@@ -13254,7 +13239,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mitt@npm:^3.0.0, mitt@npm:^3.0.1":
+"mitt@npm:^3.0.0":
   version: 3.0.1
   resolution: "mitt@npm:3.0.1"
   checksum: 10/287c70d8e73ffc25624261a4989c783768aed95ecb60900f051d180cf83e311e3e59865bfd6e9d029cdb149dc20ba2f128a805e9429c5c4ce33b1416c65bbd14

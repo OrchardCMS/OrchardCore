@@ -1,8 +1,8 @@
 [
   {
     "action": "vite",
-    "name": "openapi-settings",
-    "source": "Assets/openapi-settings/",
+    "name": "openapi-ui-auth",
+    "source": "Assets/openapi-ui-auth/",
     "tags": ["admin", "js"]
   }
 ]
