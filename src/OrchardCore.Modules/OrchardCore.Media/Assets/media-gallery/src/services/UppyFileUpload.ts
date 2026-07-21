@@ -16,19 +16,24 @@ import { usePermissions } from "./Permissions";
 import { MinimalRequiredUppyFile } from "@uppy/utils/lib/UppyFile";
 import { getTranslations } from "@bloom/helpers/localizations";
 import { getAccessToken, getAccessTokenSync, isAuthConfigured } from "./auth";
+import { getAntiForgeryToken } from "@bloom/helpers/globals";
 import { IFileLibraryItemDto } from "@bloom/media/interfaces";
 
 /**
- * Bearer Authorization header for Uppy uploads, or an empty object when OIDC auth is not
- * configured (falls back to the ambient session). Uses the synchronously-cached token,
- * which is populated once the first Media API request resolves.
+ * Auth headers for Uppy uploads, matching the mode the shared ApiService uses for the Media API.
+ * Bearer mode: the synchronously-cached access token (populated once the first Media API request
+ * resolves). Cookie mode: the ambient session cookie authenticates, but the POST endpoints validate
+ * antiforgery (MediaApiAntiforgeryEndpointFilter), so the request token must ride along — Uppy does
+ * not go through ApiService, which is what sends it everywhere else.
  */
-function bearerUploadHeaders(): Record<string, string> {
-  if (!isAuthConfigured()) {
-    return {};
+function uploadHeaders(): Record<string, string> {
+  if (isAuthConfigured()) {
+    const token = getAccessTokenSync();
+    return token ? { Authorization: `Bearer ${token}` } : {};
   }
-  const token = getAccessTokenSync();
-  return token ? { Authorization: `Bearer ${token}` } : {};
+
+  const antiForgeryToken = getAntiForgeryToken();
+  return antiForgeryToken ? { RequestVerificationToken: antiForgeryToken } : {};
 }
 import { Restrictions } from "@uppy/core/lib/Restricter";
 import { OptionalPluralizeLocale } from "@uppy/utils/lib/Translator";
@@ -252,7 +257,7 @@ export const useFileUpload = (model: IFileUploadModel): void => {
         uppy.use(XHRUpload, {
           endpoint: setUppyUrl(),
           fieldName: "files",
-          headers: bearerUploadHeaders,
+          headers: uploadHeaders,
           bundle: false,
           limit: 5,
           shouldRetry: () => false,
@@ -424,7 +429,7 @@ export const useFileUpload = (model: IFileUploadModel): void => {
         const fileInfoUrl = `${model.tusFileInfoUrl}/${uploadId}`;
 
         try {
-          const res = await fetch(fileInfoUrl, { headers: bearerUploadHeaders() });
+          const res = await fetch(fileInfoUrl, { headers: uploadHeaders() });
           if (res.ok) {
             const serverFile = await res.json();
             const matchName = serverFile.name || file.name;
