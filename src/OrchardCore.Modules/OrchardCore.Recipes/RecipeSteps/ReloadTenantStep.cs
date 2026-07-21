@@ -2,13 +2,13 @@ using OrchardCore.Environment.Shell;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 
-namespace OrchardCore.Media.Recipes;
+namespace OrchardCore.Recipes.RecipeSteps;
 
 /// <summary>
 /// Recipe step that requests a tenant reload on completion of the recipe. Settings written by the
 /// generic "Settings" step (e.g. CORS policies, which are cached in <c>CorsOptions</c> at startup)
-/// otherwise only take effect after a manual restart — this step lets a recipe activate them
-/// immediately. Place it after the steps whose settings need to become live.
+/// otherwise only take effect after a feature change or a manual restart — this step lets a recipe
+/// activate them immediately. Place it after the steps whose settings need to become live.
 /// </summary>
 public sealed class ReloadTenantStep : NamedRecipeStepHandler
 {

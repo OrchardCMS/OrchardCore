@@ -208,7 +208,6 @@ public sealed class Startup : StartupBase
         services.AddDataMigration<Migrations>();
         services.AddRecipeExecutionStep<MediaStep>();
         services.AddRecipeExecutionStep<MoveAttachedMediaFieldsStep>();
-        services.AddRecipeExecutionStep<ReloadTenantStep>();
 
         // MIME types
         services.TryAddSingleton<IContentTypeProvider, FileExtensionContentTypeProvider>();
