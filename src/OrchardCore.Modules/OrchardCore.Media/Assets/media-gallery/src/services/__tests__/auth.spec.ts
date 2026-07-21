@@ -111,6 +111,30 @@ describe("ensureAuthenticated", () => {
   });
 });
 
+describe("signinRedirect visibility gating", () => {
+  it("defers the redirect until the tab becomes visible", async () => {
+    auth.configureAuth({ ...baseConfig, authFlow: "interactive" });
+
+    // Simulate a hidden tab (e.g. token expired while the user was on another tab).
+    Object.defineProperty(document, "visibilityState", { configurable: true, get: () => "hidden" });
+    try {
+      const pending = auth.signinRedirect();
+      await Promise.resolve();
+      expect(lastInstance().signinRedirect).not.toHaveBeenCalled();
+
+      // The user returns: redirect proceeds so the login form is never parked unattended
+      // (OpenIddict's cached authorization request would expire).
+      Object.defineProperty(document, "visibilityState", { configurable: true, get: () => "visible" });
+      document.dispatchEvent(new Event("visibilitychange"));
+
+      expect(await pending).toBe(true);
+      expect(lastInstance().signinRedirect).toHaveBeenCalledOnce();
+    } finally {
+      Object.defineProperty(document, "visibilityState", { configurable: true, get: () => "visible" });
+    }
+  });
+});
+
 describe("token renewal after session expiry", () => {
   it("starts a fresh interactive login when renewal fails in interactive mode", async () => {
     auth.configureAuth({ ...baseConfig, authFlow: "interactive" });

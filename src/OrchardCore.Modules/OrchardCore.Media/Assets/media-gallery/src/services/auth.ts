@@ -182,11 +182,32 @@ export async function ensureAuthenticated(): Promise<EnsureAuthResult> {
 
 let interactiveSigninStarted = false;
 
+/** Resolves when the tab is visible (immediately if it already is). */
+function whenVisible(): Promise<void> {
+  if (document.visibilityState === "visible") {
+    return Promise.resolve();
+  }
+
+  return new Promise((resolve) => {
+    const onChange = () => {
+      if (document.visibilityState === "visible") {
+        document.removeEventListener("visibilitychange", onChange);
+        resolve();
+      }
+    };
+    document.addEventListener("visibilitychange", onChange);
+  });
+}
+
 /**
  * Begin an interactive login (full-page redirect to the authorization endpoint); the round trip
  * returns to the configured `redirectUri` callback page. Guarded so concurrent failures (parallel
- * API calls all 401ing at once) start the redirect only once. Returns true when the redirect was
- * started (or already in flight), false when it could not be.
+ * API calls all 401ing at once) start the redirect only once, and deferred until the tab is
+ * visible: OpenIddict caches the authorization request server-side while the login form is shown
+ * (authorize?request_uri=urn:...), and that cached entry expires — redirecting a hidden tab parks
+ * the login form unattended, so by the time the user returns and submits, the request is stale and
+ * OpenIddict rejects it with invalid_token ("The specified token is no longer valid").
+ * Returns true when the redirect was started (or already in flight), false when it could not be.
  */
 export async function signinRedirect(): Promise<boolean> {
   if (!userManager) {
@@ -199,6 +220,7 @@ export async function signinRedirect(): Promise<boolean> {
   interactiveSigninStarted = true;
 
   try {
+    await whenVisible();
     await userManager.signinRedirect();
     return true;
   } catch (err) {
