@@ -11,6 +11,11 @@ public sealed class OpenApiTests : CmsTestBase, IClassFixture<CmsSetupFixture>
 
     protected override string RecipeName => "Blog";
 
+    // The checkbox is rendered by a site-settings display driver, so its element id carries the
+    // shape's model prefix. Target the accessible name instead, which is stable.
+    private static ILocator AllowAnonymousSchemaAccessCheckbox(IPage page) =>
+        page.GetByRole(AriaRole.Checkbox, new() { Name = "Allow anonymous access to the API schema" });
+
     private async Task EnableOpenApiAsync(IPage page)
     {
         await AuthHelper.LoginAsync(page, $"/{Tenant.Prefix}");
@@ -59,7 +64,7 @@ public sealed class OpenApiTests : CmsTestBase, IClassFixture<CmsSetupFixture>
 
         // Opt in to anonymous schema access via the settings UI.
         await page.GotoAsync($"/{Tenant.Prefix}/Admin/Settings/openapi");
-        await page.Locator("#AllowAnonymousSchemaAccess").CheckAsync();
+        await AllowAnonymousSchemaAccessCheckbox(page).CheckAsync();
         await ButtonHelper.ClickSaveAsync(page);
         await Assertions.Expect(page.Locator(".message-success")).ToBeVisibleAsync();
         await page.CloseAsync();
@@ -157,7 +162,7 @@ public sealed class OpenApiTests : CmsTestBase, IClassFixture<CmsSetupFixture>
         await page.GotoAsync($"/{Tenant.Prefix}/Admin/Settings/openapi");
 
         // The settings page should not render the OpenApi settings fields.
-        await Assertions.Expect(page.Locator("#AllowAnonymousSchemaAccess")).Not.ToBeAttachedAsync();
+        await Assertions.Expect(AllowAnonymousSchemaAccessCheckbox(page)).Not.ToBeAttachedAsync();
         await page.CloseAsync();
     }
 
@@ -168,7 +173,7 @@ public sealed class OpenApiTests : CmsTestBase, IClassFixture<CmsSetupFixture>
         await EnableOpenApiAsync(page);
 
         await page.GotoAsync($"/{Tenant.Prefix}/Admin/Settings/openapi");
-        await Assertions.Expect(page.Locator("#AllowAnonymousSchemaAccess")).ToBeVisibleAsync();
+        await Assertions.Expect(AllowAnonymousSchemaAccessCheckbox(page)).ToBeVisibleAsync();
         await page.CloseAsync();
     }
 
@@ -252,7 +257,7 @@ public sealed class OpenApiTests : CmsTestBase, IClassFixture<CmsSetupFixture>
 
         // Managing settings must still require ManageOpenApi — the settings fields must stay hidden.
         await page.GotoAsync($"/{Tenant.Prefix}/Admin/Settings/openapi");
-        await Assertions.Expect(page.Locator("#AllowAnonymousSchemaAccess")).Not.ToBeAttachedAsync();
+        await Assertions.Expect(AllowAnonymousSchemaAccessCheckbox(page)).Not.ToBeAttachedAsync();
 
         await page.CloseAsync();
     }
@@ -368,7 +373,7 @@ public sealed class OpenApiTests : CmsTestBase, IClassFixture<CmsSetupFixture>
         // Force anonymous schema access off so this test does not depend on whether
         // another test has enabled it on this shared tenant.
         await page.GotoAsync($"/{Tenant.Prefix}/Admin/Settings/openapi");
-        await page.Locator("#AllowAnonymousSchemaAccess").UncheckAsync();
+        await AllowAnonymousSchemaAccessCheckbox(page).UncheckAsync();
         await ButtonHelper.ClickSaveAsync(page);
         await Assertions.Expect(page.Locator(".message-success")).ToBeVisibleAsync();
         await page.CloseAsync();
