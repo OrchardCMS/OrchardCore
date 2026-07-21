@@ -64,7 +64,7 @@ public sealed class ListPartDisplayDriver : ContentPartDisplayDriver<ListPart>
             InitializeDisplayListPartNavigationAdminShape(listPart, context, settings),
             InitializeDisplayListPartDetailAdminSearchPanelShape(),
             InitializeDisplayListPartHeaderAdminShape(listPart, settings),
-            InitializeDisplayListPartSummaryAdmin(listPart)
+            InitializeDisplayListPartSummaryAdminShape(listPart)
         );
     }
 
@@ -92,10 +92,20 @@ public sealed class ListPartDisplayDriver : ContentPartDisplayDriver<ListPart>
         .RenderWhen(() => Task.FromResult(!context.IsNew));
     }
 
-    private ShapeResult InitializeDisplayListPartSummaryAdmin(ListPart listPart)
+    private ShapeResult InitializeDisplayListPartSummaryAdminShape(ListPart listPart)
     {
-        return Initialize<ContentItemViewModel>("ListPartSummaryAdmin", model => model.ContentItem = listPart.ContentItem)
-            .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Actions:4");
+        return Initialize<ListPartSummaryAdminViewModel>("ListPartSummaryAdmin", async model =>
+        {
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(listPart.ContentItem.ContentType);
+
+            var listPartSettings = contentTypeDefinition.Parts
+                .First(part => part.Name == nameof(ListPart))
+                .GetSettings<ListPartSettings>();
+
+            model.ContentItem = listPart.ContentItem;
+            model.ContainedContentTypes = listPartSettings.ContainedContentTypes ?? Array.Empty<string>();
+        })
+        .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Actions:4");
     }
 
     private ShapeResult InitializeDisplayListPartHeaderAdminShape(ListPart listPart, ListPartSettings settings)

@@ -18,9 +18,7 @@ jobs:
     steps:
     # We don't use the actions/first-interaction action because it can't reference the author, nor can it comment after
     # PR merge.
-    # Once https://github.com/wow-actions/welcome/pull/12 is merged, we should use https://github.com/wow-actions/welcome
-    # directly.
-    - uses: OrchardCMS/welcome-action@57bfc593d0b0d8159f497eeb5994b25e170639b7 # task/update-to-node-20
+    - uses: wow-actions/welcome@68019c2c271561f63162fea75bb7707ef8a02c85 #v1.3.1
       with:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         FIRST_ISSUE_COMMENT: >
