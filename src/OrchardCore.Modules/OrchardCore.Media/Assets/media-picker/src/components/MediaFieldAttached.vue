@@ -441,17 +441,21 @@ watch(smallThumbs, (val) => {
 });
 
 // --- Trigger content preview on media changes ---
+// Debounced so rapid changes dispatch once, and cleared on unmount so the timer never fires
+// after the component is gone (which would otherwise throw once the DOM is torn down).
+let previewTimer: ReturnType<typeof setTimeout> | undefined;
 watch(
   mediaItems,
   () => {
-    setTimeout(() => {
-      if (typeof document !== "undefined") {
-        document.dispatchEvent(new CustomEvent("contentpreview:render"));
-      }
+    clearTimeout(previewTimer);
+    previewTimer = setTimeout(() => {
+      document.dispatchEvent(new CustomEvent("contentpreview:render"));
     }, 100);
   },
   { deep: true }
 );
+
+onBeforeUnmount(() => clearTimeout(previewTimer));
 
 onMounted(() => {
   document.addEventListener("click", onDocumentClick);

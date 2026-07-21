@@ -370,15 +370,21 @@ watch(smallThumbs, (val) => {
 });
 
 // --- Trigger content preview on media changes ---
+// Debounced so rapid changes dispatch once, and cleared on unmount so the timer never fires
+// after the component is gone (which would otherwise throw once the DOM is torn down).
+let previewTimer: ReturnType<typeof setTimeout> | undefined;
 watch(
   mediaItems,
   () => {
-    setTimeout(() => {
+    clearTimeout(previewTimer);
+    previewTimer = setTimeout(() => {
       document.dispatchEvent(new CustomEvent("contentpreview:render"));
     }, 100);
   },
   { deep: true }
 );
+
+onBeforeUnmount(() => clearTimeout(previewTimer));
 
 // Expose addMediaFiles for external use (parent/mount function)
 defineExpose({ addMediaFiles, mediaItems, selectedMedia, smallThumbs });

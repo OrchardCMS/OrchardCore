@@ -28,6 +28,11 @@ vi.mock("@bloom/media/api/file-data-service", () => ({
   }); }),
 }));
 
+vi.mock("../../services/Utils", () => ({
+  downloadFile: vi.fn(),
+  getFileExtension: vi.fn(),
+}));
+
 vi.mock("@bloom/services/notifications/notifier", () => ({
   notify: vi.fn(),
   NotificationMessage: vi.fn().mockImplementation(function (data: any) { return data; }), // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -156,11 +161,6 @@ describe("fileMenu", () => {
   });
 
   it("download command calls downloadFile", () => {
-    vi.mock("../../services/Utils", () => ({
-      downloadFile: vi.fn(),
-      getFileExtension: vi.fn(),
-    }));
-
     const w = mountMenu();
     const setupState = (w.vm.$ as any).setupState; // eslint-disable-line @typescript-eslint/no-explicit-any
     const downloadItem = setupState.items[0].items[3];

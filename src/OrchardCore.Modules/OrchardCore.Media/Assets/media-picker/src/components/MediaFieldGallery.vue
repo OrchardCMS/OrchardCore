@@ -89,7 +89,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from "vue";
+import { ref, computed, watch, onMounted, onBeforeUnmount } from "vue";
 import { VueFinalModal } from "vue-final-modal";
 import GalleryContainer from "./GalleryContainer.vue";
 import MediaPickerModal from "./MediaPickerModal.vue";
@@ -251,15 +251,21 @@ function cancelAnchor() {
 }
 
 // --- Trigger content preview on media changes ---
+// Debounced so rapid changes dispatch once, and cleared on unmount so the timer never fires
+// after the component is gone (which would otherwise throw once the DOM is torn down).
+let previewTimer: ReturnType<typeof setTimeout> | undefined;
 watch(
   mediaItems,
   () => {
-    setTimeout(() => {
+    clearTimeout(previewTimer);
+    previewTimer = setTimeout(() => {
       document.dispatchEvent(new CustomEvent("contentpreview:render"));
     }, 100);
   },
   { deep: true }
 );
+
+onBeforeUnmount(() => clearTimeout(previewTimer));
 
 defineExpose({
   addMediaFiles,
