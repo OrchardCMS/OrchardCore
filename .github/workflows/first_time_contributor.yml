@@ -18,7 +18,7 @@ jobs:
     steps:
     # We don't use the actions/first-interaction action because it can't reference the author, nor can it comment after
     # PR merge.
-    - uses: wow-actions/welcome@v1
+    - uses: wow-actions/welcome@94dfed590b0bf4853a7f7c3e43d8a6d61eb3d7be
       with:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         FIRST_ISSUE_COMMENT: >
