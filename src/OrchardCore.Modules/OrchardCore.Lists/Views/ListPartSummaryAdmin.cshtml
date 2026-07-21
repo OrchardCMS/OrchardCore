@@ -1,3 +1,15 @@
-@model OrchardCore.ContentManagement.Display.ViewModels.ContentItemViewModel
+@using OrchardCore.ContentTypes
+@using OrchardCore.Lists.ViewModels
+@using OrchardCore.Localization.Data
+@model ListPartSummaryAdminViewModel
 
-<a class="btn btn-sm btn-secondary" admin-for="@Model.ContentItem">@T["List Items"]</a>
+@inject IDataLocalizer D
+
+@if (Model.ContainedContentTypes.Length == 1)
+{
+    <a class="btn btn-sm btn-secondary" admin-for="@Model.ContentItem">@T["List {0} Items", D[Model.ContainedContentTypes[0], DataLocalizationContext.ContentType]]</a>
+}
+else
+{
+    <a class="btn btn-sm btn-secondary" admin-for="@Model.ContentItem">@T["List Items"]</a>
+}
