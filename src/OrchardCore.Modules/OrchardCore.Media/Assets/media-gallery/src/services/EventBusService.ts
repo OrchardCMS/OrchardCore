@@ -24,7 +24,6 @@ export const useEventBusService = () => {
     setSortBy,
     setSortAsc,
     setFileFilter,
-    setErrors,
     setSelectedFiles,
     setItemsInPage,
     setSelectedDirectory,
@@ -103,7 +102,6 @@ export const useEventBusService = () => {
     setSelectedAll(false);
     setFileFilter("");
     setSelectedFiles([]);
-    setErrors([]);
 
     const uploadInput = document.querySelector("#fileupload");
     if (allowMultipleSelection.value) {
@@ -135,7 +133,6 @@ export const useEventBusService = () => {
 
   on("FileListMoved", async () => {
     setSelectedFiles([]);
-    setErrors([]);
   });
 
   on("FileCopy", (elem: IFileCopyDto) => {
@@ -144,7 +141,6 @@ export const useEventBusService = () => {
 
   on("FileRenamed", () => {
     setSelectedFiles([]);
-    setErrors([]);
   });
 
   on("DirCreateReq", (directory: IFileLibraryItemDto) => {

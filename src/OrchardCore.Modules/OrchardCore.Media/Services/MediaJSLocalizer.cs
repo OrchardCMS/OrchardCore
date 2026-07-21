@@ -89,6 +89,7 @@ public class MediaJSLocalizer(IStringLocalizer<MediaJSLocalizer> S) : IJSLocaliz
                 { "ErrorDeleteRootFolder", S["Cannot delete the root folder"].Value },
                 { "FailedDownload", S["Failed to download file"].Value },
                 // Authorization messages
+                { "MediaAuthFailed", S["Could not sign in to the Media API. The sign-in service at {0} could not be reached — check that OpenID Connect is enabled and the Media API bearer client is configured, or switch the Media API to Cookie authentication in the Media settings."].Value },
                 { "Unauthorized", S["Unauthorized"].Value },
                 { "UnauthorizedFile", S["You are not authorized to perform this action on this file"].Value },
                 { "UnauthorizedFiles", S["You are not authorized to perform this action on these files"].Value },

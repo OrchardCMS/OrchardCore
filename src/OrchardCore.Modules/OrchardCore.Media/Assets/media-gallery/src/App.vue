@@ -1,10 +1,5 @@
 <template>
   <div class="fileApp" v-on:dragover="handleScrollWhileDrag">
-    <div class="tw:p-4 tw:rounded-md tw:border tw:text-[#842029] tw:bg-[#f8d7da] tw:border-[#f5c2c7] message-warning" v-if="errors.length > 0">
-      <ul>
-        <li v-for="(e, i) in errors" :key="i">{{ e }}</li>
-      </ul>
-    </div>
     <div id="customdropzone">
       <h3>{{ t.DropHere }}</h3>
       <p>{{ t.DropTitle }}</p>
@@ -233,6 +228,8 @@ import { useSignalR } from "./services/SignalR";
 import { useEventBus } from "./services/UseEventBus";
 import { useRouterService } from "./services/RouterService";
 import { getTranslations, setTranslations } from "@bloom/helpers/localizations";
+import { notify, NotificationMessage } from "@bloom/services/notifications/notifier";
+import { SeverityLevel } from "@bloom/services/notifications/interfaces";
 import { configureAuth, ensureAuthenticated } from "./services/media-gallery-auth";
 import { resolveEmbeddedConfig, setRuntimeConfig, type IMediaRuntimeConfig } from "./services/RuntimeConfig";
 import { useFileListFiltering } from "./composables/useFileListFiltering";
@@ -316,7 +313,6 @@ const props = defineProps({
 
 const {
   isSelectedAll,
-  errors,
   isLoading,
   fileFilter,
   itemsInPage,
@@ -328,7 +324,6 @@ const {
   isLoadingFiles,
   setIsLoading,
   setBasePath,
-  setErrors,
   setSelectedFiles,
   setAllowMultipleSelection,
   setSelectedAll,
@@ -404,20 +399,33 @@ setIsLoading(true);
 
 const { getFileLibraryStoreAsync } = useFileLibraryManager();
 
-// Standalone (interactive) must establish a session before any Media API call; if none can be
-// acquired silently, ensureAuthenticated() redirects the page to the login endpoint and we stop.
-// Embedded (silent) skips this — it keeps the lazy per-request token acquisition it always had.
+// In Bearer mode a token must be acquired before any Media API call, so do it up front. This turns
+// a configuration problem (the OpenID server unreachable — e.g. a 404 on the discovery document —
+// or the Media API bearer client not provisioned) into one clear, actionable message, instead of
+// letting the first data request go out unauthenticated and surface a raw "401" toast that says
+// nothing about the real cause. Standalone (interactive) redirects to the login page on a silent
+// failure; embedded (silent) simply reports why. Cookie mode has no token to acquire and skips this.
 async function bootstrapLibrary() {
-  if (runtimeConfig.authFlow === "interactive") {
+  if (runtimeConfig.apiAuthScheme === "Bearer") {
     const auth = await ensureAuthenticated();
     if (auth === "redirecting") {
       return; // navigating to the interactive login — keep the loading state until we leave
     }
     if (auth === "failed") {
-      // No redirect happened (e.g. the authority is unreachable): stop the spinner and say so
-      // instead of hanging forever.
+      // No token could be acquired (e.g. the authority is unreachable or OIDC isn't configured):
+      // stop the spinner and explain how to fix it instead of hanging or 401-ing on every call.
+      // Surface it as an error toast (same channel as every other Media API failure); the localized
+      // message (MediaJSLocalizer, "media-gallery" group) carries a {0} placeholder for the
+      // authority; fall back to an English string if translations aren't present.
       setIsLoading(false);
-      setErrors([`Authentication failed — could not reach the sign-in service at ${runtimeConfig.authority}.`]);
+      const template = t.MediaAuthFailed
+        ?? "Could not sign in to the Media API. The sign-in service at {0} could not be reached — "
+         + "check that OpenID Connect is enabled and the Media API bearer client is configured, "
+         + "or switch the Media API to Cookie authentication in the Media settings.";
+      notify(new NotificationMessage({
+        detail: template.replace("{0}", runtimeConfig.authority),
+        severity: SeverityLevel.Error,
+      }));
       return;
     }
   }

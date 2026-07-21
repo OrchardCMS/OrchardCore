@@ -10,7 +10,6 @@ const basePath = ref("");
 const selectedFiles = ref([] as IFileLibraryItemDto[]);
 const allowMultipleSelection = ref(true);
 const isSelectedAll = ref(false);
-const errors = ref(<any>[]); // eslint-disable-line @typescript-eslint/no-explicit-any
 const fileFilter = ref("");
 const sortBy = ref("");
 const sortAsc = ref(true);
@@ -89,10 +88,6 @@ export const useGlobals = () => {
 
   const setFileFilter = (value: string) => {
     fileFilter.value = value;
-  };
-
-  const setErrors = (value: any[]) => { // eslint-disable-line @typescript-eslint/no-explicit-any
-    errors.value = value;
   };
 
   const setSelectedAll = (value: boolean) => {
@@ -184,7 +179,6 @@ export const useGlobals = () => {
   };
 
   return {
-    errors,
     fileFilter,
     sortBy,
     sortAsc,
@@ -213,7 +207,6 @@ export const useGlobals = () => {
     setAllowMultipleSelection,
     setSelectedFiles,
     setSelectedAll,
-    setErrors,
     setFileFilter,
     setSortBy,
     setSortAsc,
