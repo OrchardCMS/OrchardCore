@@ -1,4 +1,4 @@
-import { handleSilentRenewCallback } from "./services/auth";
+import { handleSilentRenewCallback } from "./services/media-gallery-auth";
 
 /**
  * Silent-renew callback (silent-callback.html). Loaded inside the hidden iframe oidc-client-ts

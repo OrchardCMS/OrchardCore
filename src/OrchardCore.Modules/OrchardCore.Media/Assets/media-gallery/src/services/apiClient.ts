@@ -1,6 +1,6 @@
 import type { AxiosInstance } from "axios";
 import { ApiService } from "@bloom/services/api-service";
-import { getAccessToken, renewAccessToken, isAuthConfigured } from "./auth";
+import { getAccessToken, renewAccessToken, isAuthConfigured } from "./media-gallery-auth";
 
 /**
  * Shared ApiService for the media gallery, whose axios instance is passed to the NSwag-generated

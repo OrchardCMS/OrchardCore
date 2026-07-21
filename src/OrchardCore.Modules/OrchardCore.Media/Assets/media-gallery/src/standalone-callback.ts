@@ -1,4 +1,4 @@
-import { handleRedirectCallback } from "./services/auth";
+import { handleRedirectCallback } from "./services/media-gallery-auth";
 
 /**
  * Interactive-login callback (callback.html). oidc-client-ts persists the auth state (code verifier,

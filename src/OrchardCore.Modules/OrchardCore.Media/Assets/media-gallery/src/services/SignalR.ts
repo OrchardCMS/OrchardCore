@@ -2,7 +2,7 @@ import SignalRApp from "@bloom/services/signalr/signalr-app";
 import { signalRReceivedData } from "@bloom/services/signalr/eventbus";
 import { useFileLibraryManager } from "./FileLibraryManager";
 import { useGlobals } from "./Globals";
-import { getAccessToken, isAuthConfigured } from "./auth";
+import { getAccessToken, isAuthConfigured } from "./media-gallery-auth";
 import { useRuntimeConfig } from "./RuntimeConfig";
 
 /**

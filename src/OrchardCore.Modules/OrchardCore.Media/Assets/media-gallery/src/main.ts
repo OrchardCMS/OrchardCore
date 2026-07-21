@@ -10,7 +10,7 @@ import { registerNotificationBus } from "@bloom/services/notifications/notifier"
 import { configureMediaApp } from "./appSetup";
 import { useGlobals } from "./services/Globals";
 import { useEventBus } from "./services/UseEventBus";
-import { handleSilentRenewCallback } from "./services/auth";
+import { handleSilentRenewCallback } from "./services/media-gallery-auth";
 import type { IFileLibraryItemDto } from "@bloom/media/interfaces";
 
 /**

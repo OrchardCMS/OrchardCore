@@ -26,5 +26,5 @@ internal static class OpenApiConstants
     /// Module-relative path (served from the module's <c>wwwroot</c>) of the bundled
     /// oidc-client-ts silent-auth script injected into the Swagger and Scalar pages.
     /// </summary>
-    public const string AuthScriptPath = "/OrchardCore.OpenApi/Scripts/openapi-ui-auth/openapi-ui-auth.js";
+    public const string AuthScriptPath = "/OrchardCore.OpenApi/Scripts/openapi-ui-auth/openapi-auth.js";
 }

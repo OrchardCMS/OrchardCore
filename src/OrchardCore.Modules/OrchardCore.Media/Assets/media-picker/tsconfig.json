@@ -18,7 +18,7 @@
     "paths": {
       "@bloom/*": ["../../../../../.scripts/bloom/*"],
       "@media-gallery": ["../media-gallery/src/main.ts"],
-      "@media-gallery-auth": ["../media-gallery/src/services/auth.ts"]
+      "@media-gallery-auth": ["../media-gallery/src/services/media-gallery-auth.ts"]
     }
   },
   "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"],

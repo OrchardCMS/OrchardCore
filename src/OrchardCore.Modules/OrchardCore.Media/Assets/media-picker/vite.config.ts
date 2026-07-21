@@ -13,7 +13,7 @@ export default defineConfig({
             vue: "vue/dist/vue.esm-bundler.js",
             "@bloom": path.resolve(__dirname, "../../../../../.scripts/bloom"),
             "@media-gallery": mediaAppSrc,
-            "@media-gallery-auth": path.resolve(__dirname, "../media-gallery/src/services/auth.ts"),
+            "@media-gallery-auth": path.resolve(__dirname, "../media-gallery/src/services/media-gallery-auth.ts"),
         },
     },
     plugins: [tailwindcss(), vue()],

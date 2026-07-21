@@ -14,7 +14,7 @@ import { NotificationMessage, notify } from "@bloom/services/notifications/notif
 import { SeverityLevel } from "@bloom/services/notifications/interfaces";
 import { usePermissions } from "./Permissions";
 import { getTranslations } from "@bloom/helpers/localizations";
-import { getAccessToken, getAccessTokenSync, isAuthConfigured } from "./auth";
+import { getAccessToken, getAccessTokenSync, isAuthConfigured } from "./media-gallery-auth";
 import { getAntiForgeryToken } from "@bloom/helpers/globals";
 import { IFileLibraryItemDto } from "@bloom/media/interfaces";
 

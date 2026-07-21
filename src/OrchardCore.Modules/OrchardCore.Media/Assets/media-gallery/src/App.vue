@@ -233,7 +233,7 @@ import { useSignalR } from "./services/SignalR";
 import { useEventBus } from "./services/UseEventBus";
 import { useRouterService } from "./services/RouterService";
 import { getTranslations, setTranslations } from "@bloom/helpers/localizations";
-import { configureAuth, ensureAuthenticated } from "./services/auth";
+import { configureAuth, ensureAuthenticated } from "./services/media-gallery-auth";
 import { resolveEmbeddedConfig, setRuntimeConfig, type IMediaRuntimeConfig } from "./services/RuntimeConfig";
 import { useFileListFiltering } from "./composables/useFileListFiltering";
 import { useBreadcrumbs } from "./composables/useBreadcrumbs";

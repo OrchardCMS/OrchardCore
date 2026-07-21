@@ -71,7 +71,7 @@ describe("SignalR", () => {
     // Bearer authenticates with the token alone; the client's default credentials:include would
     // fail the cross-origin negotiate against the credential-less CORS policy (standalone app).
     vi.resetModules();
-    vi.doMock("../auth", () => ({
+    vi.doMock("../media-gallery-auth", () => ({
       isAuthConfigured: () => true,
       getAccessToken: vi.fn(async () => "token"),
     }));
@@ -80,7 +80,7 @@ describe("SignalR", () => {
     expect(mockApp.init).toHaveBeenCalledWith(
       expect.objectContaining({ isTokenRequired: true, withCredentials: false }),
     );
-    vi.doUnmock("../auth");
+    vi.doUnmock("../media-gallery-auth");
     vi.resetModules();
   });
 
