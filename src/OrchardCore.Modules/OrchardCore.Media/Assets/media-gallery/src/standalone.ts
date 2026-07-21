@@ -45,8 +45,10 @@ async function loadConfigSource(): Promise<IStandaloneConfigSource> {
  * anonymous, so this runs before authentication. Falls back to an empty set on failure. */
 async function loadTranslations(apiBaseUrl: string): Promise<string> {
   try {
+    // Default fetch caching: the endpoint serves Cache-Control/ETag, so repeat loads hit the
+    // browser cache or revalidate to a 304 instead of re-downloading the label set every boot.
     const base = apiBaseUrl.endsWith("/") ? apiBaseUrl : `${apiBaseUrl}/`;
-    const response = await fetch(`${base}api/media/localizations`, { cache: "no-store" });
+    const response = await fetch(`${base}api/media/localizations`);
     if (response.ok) {
       return JSON.stringify(await response.json());
     }

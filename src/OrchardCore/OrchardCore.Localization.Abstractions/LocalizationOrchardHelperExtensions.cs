@@ -33,28 +33,8 @@ public static class LocalizationOrchardHelperExtensions
     {
         ArgumentNullException.ThrowIfNull(groups);
 
-        var jsLocalizerServices = orchardHelper.HttpContext.RequestServices.GetServices<IJSLocalizer>();
-
-        var result = new Dictionary<string, string>();
-
-        foreach (var group in groups)
-        {
-            foreach (var jsLocalizerService in jsLocalizerServices)
-            {
-                var jsLocDict = jsLocalizerService.GetLocalizations(group);
-
-                if (jsLocDict is null)
-                {
-                    continue;
-                }
-
-                foreach (var kvp in jsLocDict)
-                {
-                    result[kvp.Key] = kvp.Value;
-                }
-            }
-        }
-
-        return result;
+        return orchardHelper.HttpContext.RequestServices
+            .GetServices<IJSLocalizer>()
+            .GetMergedLocalizations(groups);
     }
 }
