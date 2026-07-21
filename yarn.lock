@@ -2907,6 +2907,7 @@ __metadata:
     axios: "npm:^1.7.0"
     debug: "npm:^4.3.4"
     mitt: "npm:^3.0.0"
+    oidc-client-ts: "npm:^3.1.0"
   languageName: unknown
   linkType: soft
 
