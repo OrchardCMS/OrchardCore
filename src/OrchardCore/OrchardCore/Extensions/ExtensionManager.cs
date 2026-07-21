@@ -5,7 +5,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Extensions.Manifests;
-using OrchardCore.Environment.Extensions.Utility;
 using OrchardCore.Modules;
 
 // ReSharper disable ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
@@ -353,12 +352,82 @@ public sealed class ExtensionManager : IExtensionManager
 
     private static IFeatureInfo[] Order(IEnumerable<IFeatureInfo> featuresToOrder, IExtensionDependencyStrategy[] extensionDependencyStrategies, IExtensionPriorityStrategy[] extensionPriorityStrategies)
     {
-        return featuresToOrder
-            .OrderBy(x => x.Id)
-            .OrderByDependenciesAndPriorities(
-                (feature1, feature2) => HasDependency(feature1, feature2, extensionDependencyStrategies),
-                feature => GetPriority(feature, extensionPriorityStrategies))
-            .ToArray();
+        var features = featuresToOrder.OrderBy(x => x.Id).ToArray();
+
+        var featureById = features.ToDictionary(feature => feature.Id, feature => feature);
+        var edges = featureById.Keys.ToDictionary(id => id, _ => new HashSet<string>());
+        var indegrees = featureById.Keys.ToDictionary(id => id, _ => 0);
+
+        foreach (var observer in features)
+        {
+            foreach (var subject in features)
+            {
+                if (ReferenceEquals(observer, subject))
+                {
+                    continue;
+                }
+
+                if (HasDependency(observer, subject, extensionDependencyStrategies) && edges[subject.Id].Add(observer.Id))
+                {
+                    indegrees[observer.Id]++;
+                }
+            }
+        }
+
+        var queueComparer = Comparer<string>.Create((left, right) =>
+        {
+            if (left == right)
+            {
+                return 0;
+            }
+
+            var priorityComparison = GetPriority(featureById[left], extensionPriorityStrategies)
+                .CompareTo(GetPriority(featureById[right], extensionPriorityStrategies));
+
+            return priorityComparison != 0 ? priorityComparison : string.CompareOrdinal(left, right);
+        });
+
+        var queue = new SortedSet<string>(queueComparer);
+
+        foreach (var feature in features)
+        {
+            if (indegrees[feature.Id] == 0)
+            {
+                queue.Add(feature.Id);
+            }
+        }
+
+        var orderedIds = new List<string>(features.Length);
+
+        while (queue.Count > 0)
+        {
+            var nextId = queue.Min;
+            queue.Remove(nextId);
+            orderedIds.Add(nextId);
+
+            foreach (var dependentId in edges[nextId])
+            {
+                indegrees[dependentId]--;
+
+                if (indegrees[dependentId] == 0)
+                {
+                    queue.Add(dependentId);
+                }
+            }
+        }
+
+        if (orderedIds.Count != features.Length)
+        {
+            foreach (var remainingFeature in features
+                .Where(feature => !orderedIds.Contains(feature.Id))
+                .OrderBy(feature => GetPriority(feature, extensionPriorityStrategies))
+                .ThenBy(feature => feature.Id, StringComparer.Ordinal))
+            {
+                orderedIds.Add(remainingFeature.Id);
+            }
+        }
+
+        return orderedIds.Select(id => featureById[id]).ToArray();
     }
 
     private static bool HasDependency(IFeatureInfo observer, IFeatureInfo subject, IExtensionDependencyStrategy[] extensionDependencyStrategies)

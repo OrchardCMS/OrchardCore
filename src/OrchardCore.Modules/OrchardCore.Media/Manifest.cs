@@ -67,9 +67,13 @@ using OrchardCore.Modules.Manifest;
     Id = "OrchardCore.Media.Security",
     Name = "Secure Media",
     Description = "Adds permissions to restrict access to media folders.",
-    Dependencies =
+    Before =
     [
         "OrchardCore.Media"
+    ],
+    After =
+    [
+        "OrchardCore.Users"
     ],
     Category = "Content Management"
 )]

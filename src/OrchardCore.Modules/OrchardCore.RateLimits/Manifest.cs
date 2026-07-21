@@ -11,5 +11,9 @@ using OrchardCore.Modules.Manifest;
     Id = "OrchardCore.RateLimits",
     Name = "Rate Limits",
     Description = "Provides a way to manage rate limiting to the website.",
+    After =
+    [
+        "OrchardCore.Media"
+    ],
     Category = "Security"
 )]

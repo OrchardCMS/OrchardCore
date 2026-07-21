@@ -56,39 +56,24 @@ public static class OrchardCoreConstants
         public const int Security = ReverseProxy + 10;
 
         /// <summary>
-        /// When the .UseStaticFiles() is registered and should be early before rate limitting.
+        /// Image cache overrides Media configurations and services.
         /// </summary>
-        public const int StaticFiles = -50;
+        public const int ResizedImageCache = Default + 5;
 
         /// <summary>
-        /// The Media module should be registered after the StaticFiles module to ensure that media assets are served correctly.
+        /// Image cache overrides Media configurations and services.
         /// </summary>
-        public const int Media = Default + StaticFiles + 5;
+        public const int AzureResizedImageCache = Default + 5;
 
         /// <summary>
-        /// Image cache overrides Media configurations and services. The order number should always be greater than Media module.
+        /// Azure media storage overrides Media configurations and services.
         /// </summary>
-        public const int ResizedImageCache = Media + 5;
+        public const int AzureMediaStorage = Default + 10;
 
         /// <summary>
-        /// Image cache overrides Media configurations and services. The order number should always be greater than Media module.
+        /// The FileProvider module should be registered after static file middleware so that the tenant file provider is used for static assets.
         /// </summary>
-        public const int AzureResizedImageCache = Media + 5;
-
-        /// <summary>
-        /// Azure media storage overrides Media configurations and services. The order number should always be greater than Media module.
-        /// </summary>
-        public const int AzureMediaStorage = Media + 10;
-
-        /// <summary>
-        /// The FileProvider module should be registered after the StaticFiles module to ensure that the tenant file provider is used for static assets.
-        /// </summary>
-        public const int FileProvider = StaticFiles + 20;
-
-        /// <summary>
-        /// The RateLimiter module should be registered after the FileProvider module to ensure that the rate limiting policies do not impact assets.
-        /// </summary>
-        public const int RateLimiter = FileProvider + 5;
+        public const int FileProvider = Default + 20;
 
         public const int DataProtection = Default;
 
