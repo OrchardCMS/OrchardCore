@@ -148,6 +148,30 @@ For multi-instance deployments, a backplane is required. Two options are availab
 - **`OrchardCore.Media.SignalR.Azure`** — Uses Azure SignalR Service as the backplane.
 - **`OrchardCore.Media.SignalR.Redis`** — Uses Redis as the backplane.
 
+### Backplane Configuration
+
+The Redis backplane reuses the same connection string as the `OrchardCore.Redis` module (`OrchardCore_Redis:Configuration`), so a single Redis instance can serve the backplane and the other Redis-backed features (cache, lock, Data Protection):
+
+```json
+{
+  "OrchardCore_Redis": {
+    "Configuration": "your-redis-host:6379,password=...,ssl=true"
+  }
+}
+```
+
+The Azure SignalR Service backplane is configured with its own connection string:
+
+```json
+{
+  "OrchardCore_Media_SignalR": {
+    "ConnectionString": "Endpoint=https://<your-service>.service.signalr.net;AccessKey=...;Version=1.0;"
+  }
+}
+```
+
+If a backplane feature is enabled but its connection string is missing, a warning is logged at startup and SignalR keeps working in single-instance (in-memory) mode — updates then only reach clients connected to the same instance.
+
 ## Multi-instance Deployment
 
 To fully scale the Media Library across multiple application instances, the following components must be configured:
@@ -157,9 +181,30 @@ To fully scale the Media Library across multiple application instances, the foll
 | **SignalR backplane** | Broadcast real-time updates across instances | Enable `OrchardCore.Media.SignalR.Azure` or `OrchardCore.Media.SignalR.Redis` |
 | **Sticky sessions** or **shared TUS path** | Ensure TUS upload chunks are accessible across instances | Configure session affinity on your load balancer, or set `TusTempPath` to a shared filesystem |
 | **Shared media storage** | Store media files accessible from all instances | Configure Azure Blob Storage, Amazon S3, or a shared filesystem |
+| **Shared Data Protection keys** | Let cookies, antiforgery tokens, and bearer tokens issued by one instance be validated by another | Enable `OrchardCore.Redis.DataProtection`, or configure Azure Blob key storage via `OrchardCore.DataProtection.Azure` |
 
 !!! note
     Without a SignalR backplane, real-time updates only work within a single instance. Without sticky sessions (or a shared temp filesystem), TUS resumable uploads may fail when chunks are routed to different instances. Standard (non-TUS) uploads are not affected since each file is uploaded in a single request.
+
+!!! warning
+    Sharing the Data Protection key ring is not optional once you scale out — it affects both authentication modes. The admin cookie and the antiforgery token (cookie mode) and the OAuth2 access tokens issued by the tenant's OpenID Connect server (bearer mode, which uses OpenIddict's Data Protection token format) are all encrypted with the instance's key ring. With per-instance keys, a token or cookie minted by one instance is rejected by the next with a `401`, which surfaces as intermittent gallery failures behind a round-robin load balancer.
+
+### Reference Configuration (Redis)
+
+A single Redis instance can carry the whole cross-instance coordination load. Enable the **`OrchardCore.Redis`**, **`OrchardCore.Redis.DataProtection`**, and **`OrchardCore.Media.SignalR.Redis`** features, and configure:
+
+```json
+{
+  "OrchardCore_Redis": {
+    "Configuration": "your-redis-host:6379,password=...,ssl=true"
+  },
+  "OrchardCore_Media": {
+    "TusTempPath": "/mnt/shared/TusUploads"
+  }
+}
+```
+
+This gives you the SignalR backplane, a shared Data Protection key ring, and Redis-backed cache/lock, leaving only media storage (blob/S3/shared filesystem) and the shared TUS path (or sticky sessions) to provision. TUS chunk data itself is filesystem-based and is not stored in Redis.
 
 ## Media Field Editor Types
 
