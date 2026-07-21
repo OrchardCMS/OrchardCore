@@ -2,6 +2,27 @@
 
 The Media Gallery is a Vue 3 application that provides the admin UI for managing media files and folders.
 
+## Authentication
+
+The gallery talks to the Media API — the `api/media` endpoints, the TUS upload endpoint, and the media SignalR hub. The API authenticates through one of two schemes, selected by the **Authentication scheme** setting (**Configuration → Settings → Media API**, `MediaApiSettings.AuthenticationScheme`). Exactly one is active at a time:
+
+### Cookie (default)
+
+The gallery works out of the box: requests use the ambient same-origin admin cookie, and mutating requests (uploads, renames, moves, deletes) carry the antiforgery token, which the API validates. No additional setup is needed.
+
+### Bearer (OAuth2 + PKCE)
+
+The API accepts only Bearer tokens via the `"Api"` scheme, and the gallery acquires one **silently**: an OAuth2 authorization-code + PKCE flow runs in a hidden iframe (`prompt=none`) against the tenant's OpenID Connect server, using the existing admin cookie session — no interactive login. The token auto-renews and is attached to every API call, Uppy/TUS upload request, and the SignalR connection. A request rejected with `401` is retried once after a silent renewal.
+
+To provision this mode, run the **Media API — Bearer/PKCE** recipe (Configuration → Recipes). It switches the authentication scheme to `Bearer`, enables the OpenID Server, Token Validation, and Management features, turns on the authorization-code flow with PKCE required, and registers a public (secret-less) `media_gallery` OpenID application whose redirect URI points at the gallery's silent-renew page. Adjust the recipe's `https://localhost:5001` origins to your tenant's real origin before running it, and make sure gallery users have roles granting the media permissions — the `roles` scope carries them into the token.
+
+### Standalone external app
+
+The gallery SPA can also run on its own origin, outside the Orchard admin. Since there is no ambient Orchard cookie on the app origin, the first token acquisition uses an interactive redirect login instead of the hidden iframe; renewal is still silent. Two additional recipes configure this:
+
+- **Media API — Standalone external app** — layers the cross-origin (CORS) configuration and the standalone redirect URIs on top of the Bearer/PKCE recipe. Apply **Media API — Bearer/PKCE** first.
+- **Media API — Standalone external app (localhost dev)** — the same configuration with localhost origins baked in (app at `http://localhost:5173`, the pinned Vite dev port, against a tenant at `https://localhost:5001`), for local development.
+
 ## File Operations
 
 The gallery supports the following operations on files:

@@ -14,52 +14,65 @@ It also ships UI explorers — Swagger UI, ReDoc, and Scalar — so developers c
 
 ## Getting Started
 
-1. Enable the **OrchardCore.OpenApi** feature from the admin dashboard (Configuration → Features).
+1. Enable the **OrchardCore.OpenApi** feature and the desired UI sub-feature(s) — **OpenApi Swagger UI**, **OpenApi ReDoc UI**, **OpenApi Scalar UI** — from the admin dashboard (Configuration → Features).
 2. Log in with an account that has the **ViewOpenApiContent** permission (granted to Administrators by default).
-3. Navigate to **Configuration → Settings → OpenApi** to enable the desired UI(s) and configure authentication.
+3. To make "Try it out" / "Send" requests work against secured API endpoints, run the **OpenAPI Documentation — Bearer/PKCE** recipe (Configuration → Recipes) — see [API Authentication](#api-authentication) below. Browsing the documentation itself needs no extra setup.
 4. Navigate to one of the explorer URLs listed above.
 
 > **Note:** All OpenAPI documentation endpoints (`/swagger`, `/redoc`, `/scalar`, `/openapi`) require authentication and the `ViewOpenApiContent` permission. Unauthenticated users are redirected to the admin login page. Authenticated users without the permission receive a `403 Forbidden` response. The JSON schema endpoints (e.g. `/swagger/v1/swagger.json`) also require the `ViewOpenApiContent` permission by default — unauthenticated requests receive `401 Unauthorized` — unless **Allow anonymous access to the API schema** is enabled in the OpenApi settings.
 
 ## Configuration
 
-The OpenAPI settings page (**Configuration → Settings → OpenApi**) allows you to:
+The OpenAPI settings page (**Configuration → Settings → OpenApi**) shows the enablement status of each documentation UI (they are toggled on the **Features** page, not here; disabled UIs return `404 Not Found`) and exposes a single setting:
 
-- **Enable/disable each UI** independently (Swagger UI, ReDoc, Scalar). Disabled UIs return `404 Not Found`.
 - **Allow anonymous access to the API schema** — disabled by default. When enabled, the JSON schema endpoints can be fetched without authentication, which external tools like NSwag rely on. The OpenApi generation recipes (`OpenApiGeneration` and the `OpenApiGenerationSetup` recipe used by `tools/OpenApiClientGenerator`) enable this setting automatically.
-- **Choose the authentication method** used by the "Try it out" / "Send" buttons in the documentation UIs.
 
-### Authentication Types
+There is nothing else to configure: API authentication for the documentation UIs is automatic once provisioned, as described below.
 
-| Type | Description |
-|------|-------------|
-| **None (browse documentation only)** | No additional configuration needed. Your admin session grants access to the documentation UIs themselves, but API endpoints only accept Bearer tokens, so "Try it out" requests are sent unauthenticated. |
-| **OAuth2 Authorization Code + PKCE** | Interactive login. The "Authorize" button redirects to the authorization server. Suitable for browser-based API access. This is the only OAuth2 flow supported here — it requires no client secret embedded in the browser, unlike Client Credentials or the deprecated Password grant. |
+## API Authentication
 
-### No Authentication
+Orchard Core API endpoints authenticate with the `"Api"` scheme, which only accepts Bearer tokens — session cookies are never used for API calls. Instead of an interactive "Authorize" step, the Swagger and Scalar UIs acquire a token **silently**: a script injected into the pages runs an OAuth2 **authorization-code + PKCE** flow against the same tenant's OpenID Connect server in a hidden iframe (`prompt=none`), using your existing admin cookie session. The token is renewed the same way before it expires and is attached automatically to every "Try it out" / "Send" request. ReDoc is read-only documentation with no request surface, so it needs no token.
 
-The default. The documentation UIs are protected by the `ViewOpenApiContent` permission (via your admin session), but OrchardCore API endpoints authenticate with the `"Api"` scheme, which only accepts Bearer tokens — session cookies are never used for API calls. "Try it out" works only against endpoints that allow anonymous access; for authenticated requests, configure OAuth2 Authorization Code + PKCE.
+### Provisioning with the OpenApiPkce recipe
 
-### OAuth2 Setup
+Run the **OpenAPI Documentation — Bearer/PKCE** recipe (Configuration → Recipes). It:
 
-For OAuth2 Authorization Code + PKCE authentication, you need to:
+- enables the **OpenApi**, **OpenID Authorization Server**, **OpenID Token Validation**, and **OpenID Management** features;
+- turns on the authorization-code flow with **PKCE required** and enables local (same-tenant) token validation for the `"Api"` scheme;
+- registers a **public** (secret-less) OpenID application with client ID `openapi`, whose redirect URI points at the module's silent-renew page (`/OrchardCore.OpenApi/openapi-oidc-silent.html`).
 
-1. **Enable the OpenID Server** feature (Configuration → Features → OpenID Authorization Server).
-2. **Enable the OpenID Token Validation** feature — this is required for the API to validate Bearer tokens. Without it, API requests will return `401 Unauthorized` even with a valid token.
-3. **Create an OpenID application** (Security → OpenID Connect → Applications): enable **Allow Authorization Code Flow** and configure a redirect URI for the Swagger UI callback.
-4. **Configure the OpenAPI settings** (Configuration → Settings → OpenApi):
-   - Select the authentication type.
-   - Enter the **Token URL** (e.g., `/connect/token`).
-   - Enter the **Authorization URL** (e.g., `/connect/authorize`).
-   - Optionally enter the **Server Metadata URL** (e.g., `/.well-known/openid-configuration`). When provided, the configuration is validated against the OpenID Connect server metadata document on save, and the Authorization and Token URLs are filled from it when left empty (explicitly entered values always win). When empty, no validation is performed. The metadata location is never inferred from the endpoint URLs.
-   - Enter the **Client ID** from the OpenID application.
-   - Enter the **Scopes** (e.g., `api`).
+Before running it, adjust two things to your environment:
 
-> **Note:** Client Credentials and Password grant are intentionally not supported by these JavaScript-based documentation UIs — both require a client secret to be embedded in browser-delivered code, which cannot be kept confidential. PKCE is the recommended flow for public/browser-based clients per the OAuth 2.0 Security Best Current Practice.
+1. Replace the `https://localhost:5001` host in `RedirectUris`/`PostLogoutRedirectUris` with your tenant's real origin. The redirect URI path must match exactly, including any tenant URL prefix.
+2. Make sure the users who will use "Try it out" have **roles granting the relevant API permissions** — the `roles` scope carries them into the access token, and the API's permission checks evaluate them.
+
+> **Note:** Client Credentials and Password grant are intentionally not supported by these JavaScript-based documentation UIs — both require a client secret to be embedded in browser-delivered code, which cannot be kept confidential. Authorization code + PKCE with a public client is the recommended flow for browser-based clients per the OAuth 2.0 Security Best Current Practice.
+
+### Security properties
+
+The injected script is a self-contained ES module configured through `data-*` attributes on its own `<script>` tag — no inline scripts, so the pages work under a strict Content Security Policy. It is designed conservatively:
+
+- **Tokens never touch web storage.** Access tokens are held in memory only; each page load performs one cheap same-origin silent sign-in.
+- **Same-origin only.** The Bearer token is attached exclusively to same-origin requests whose path contains `/api/` — a spec listing external servers, or an edited target URL in Scalar, cannot exfiltrate it. Schema, UI-asset, and OIDC requests keep the admin cookie instead.
+- **Self-healing.** If the server rejects the cached token (for example after the site was set up again and the old token can no longer be decrypted), the script discards it, silently signs in once, and retries the request one time.
+- **Manual tokens are respected.** A token pasted into Swagger's Authorize dialog is sent untouched, with no override or retry.
 
 ## OpenAPI Client Generation
 
 The module uses an NSwag configuration (`OrchardCore.OpenApi.nswag`) to generate typed clients from the live OpenAPI specification.
+
+### Automated regeneration (recommended)
+
+The `tools/OpenApiClientGenerator` console project runs the whole pipeline headlessly — no running dev server or browser needed:
+
+```powershell
+dotnet run --project tools/OpenApiClientGenerator -c Release
+yarn build   # refreshes the bundled JS against the regenerated TypeScript client
+```
+
+It boots the CMS in-process on an ephemeral port, provisions the Default tenant via `OrchardCore.AutoSetup` with the `OpenApiGenerationSetup` recipe (the same feature set as the `OpenApiGeneration` recipe), captures `swagger.json`, and shells out to the NSwag CLI (the same prerequisite as the manual path below). Generation is deterministic: operations are sorted by route path + HTTP verb, so regenerating without API changes produces byte-identical clients.
+
+The manual procedure below remains useful when you want to regenerate against a real running dev server or inspect `swagger.json` interactively.
 
 ### Prerequisites
 
@@ -345,10 +358,12 @@ The `SeverityLevel` enum (`@bloom/services/notifications/interfaces`) defines fo
 
 ## Troubleshooting
 
-### OAuth2 "Failed to authorize" or `401 Unauthorized` on API Requests
+### `401 Unauthorized` on "Try it out" Requests
 
-- **Enable OpenID Token Validation**: The most common cause. Go to Configuration → Features and enable the **OpenID Token Validation** feature. Without it, the API cannot validate Bearer tokens.
-- **Restart after settings changes**: OAuth2 settings are applied at startup. After changing authentication settings, the tenant must be reloaded.
+- **Run the OpenApiPkce recipe**: The most common cause is that the silent-auth client is not provisioned, or the **OpenID Token Validation** feature is disabled — without it the API cannot validate Bearer tokens. The recipe sets up both; see [API Authentication](#api-authentication).
+- **Redirect URI mismatch**: The registered redirect URI must exactly match your tenant's origin plus `/OrchardCore.OpenApi/openapi-oidc-silent.html` (including any tenant URL prefix). A mismatch makes the silent sign-in fail — check the browser console for `[openapi-ui]` errors.
+- **Missing roles**: A token is acquired but the endpoint returns `401`/`403` — verify the signed-in user has roles granting the API permissions being exercised; the `roles` scope carries them into the token.
+- **Stale token after re-setup**: If the site was set up again while a documentation tab stayed open, the first rejected request triggers one automatic silent re-sign-in and retry; at worst, reload the page.
 
 ### Endpoints Not Appearing in Swagger
 

@@ -449,7 +449,7 @@ services.Configure<StaticFileOptions>(o => ...);
 
 ## Media Gallery
 
-For documentation on the Media Gallery admin UI, including file operations, upload behavior, TUS resumable uploads, SignalR real-time updates, multi-instance deployment, and media field editor types, see the [Media Gallery documentation](MediaGallery.md).
+For documentation on the Media Gallery admin UI, including authentication (cookie or bearer/PKCE), file operations, upload behavior, TUS resumable uploads, SignalR real-time updates, multi-instance deployment, and media field editor types, see the [Media Gallery documentation](MediaGallery.md).
 
 ## Media Profiles
 
