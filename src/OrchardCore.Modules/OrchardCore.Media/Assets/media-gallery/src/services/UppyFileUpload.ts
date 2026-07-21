@@ -1,6 +1,6 @@
 import { onMounted } from "vue";
 import { useGlobals } from "./Globals";
-import Uppy, { debugLogger, Meta, UppyOptions } from "@uppy/core";
+import Uppy, { debugLogger, Meta, UppyOptions, MinimalRequiredUppyFile, Restrictions } from "@uppy/core";
 import DropTarget from "@uppy/drop-target";
 import XHRUpload from "@uppy/xhr-upload";
 import Tus from "@uppy/tus";
@@ -9,11 +9,10 @@ import French from "@uppy/locales/lib/fr_FR";
 import Italian from "@uppy/locales/lib/it_IT";
 import Spanish from "@uppy/locales/lib/es_ES";
 
-import "@uppy/drop-target/dist/style.css";
+import "@uppy/drop-target/css/style.css";
 import { NotificationMessage, notify } from "@bloom/services/notifications/notifier";
 import { SeverityLevel } from "@bloom/services/notifications/interfaces";
 import { usePermissions } from "./Permissions";
-import { MinimalRequiredUppyFile } from "@uppy/utils/lib/UppyFile";
 import { getTranslations } from "@bloom/helpers/localizations";
 import { getAccessToken, getAccessTokenSync, isAuthConfigured } from "./auth";
 import { getAntiForgeryToken } from "@bloom/helpers/globals";
@@ -35,8 +34,7 @@ function uploadHeaders(): Record<string, string> {
   const antiForgeryToken = getAntiForgeryToken();
   return antiForgeryToken ? { RequestVerificationToken: antiForgeryToken } : {};
 }
-import { Restrictions } from "@uppy/core/lib/Restricter";
-import { OptionalPluralizeLocale } from "@uppy/utils/lib/Translator";
+import { OptionalPluralizeLocale } from "@uppy/utils";
 import { useEventBus } from "./UseEventBus";
 
 const { on, emit } = useEventBus();

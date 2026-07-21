@@ -92,7 +92,7 @@ vi.mock("@uppy/locales/lib/en_US", () => ({ default: { strings: {} } }));
 vi.mock("@uppy/locales/lib/fr_FR", () => ({ default: { strings: {} } }));
 vi.mock("@uppy/locales/lib/it_IT", () => ({ default: { strings: {} } }));
 vi.mock("@uppy/locales/lib/es_ES", () => ({ default: { strings: {} } }));
-vi.mock("@uppy/drop-target/dist/style.css", () => ({}));
+vi.mock("@uppy/drop-target/css/style.css", () => ({}));
 
 vi.mock("@bloom/services/notifications/notifier", () => ({
   notify: (...args: any[]) => mockNotify(...args), // eslint-disable-line @typescript-eslint/no-explicit-any
