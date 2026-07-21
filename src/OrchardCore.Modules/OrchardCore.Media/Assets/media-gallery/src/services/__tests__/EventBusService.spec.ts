@@ -10,7 +10,7 @@ import {
 
 // Mock the NSwag-generated OpenApiClient so FileDataService can be constructed in tests.
 vi.mock("@bloom/services/OpenApiClient", () => ({
-  MediaApiClient: vi.fn().mockImplementation(() => ({
+  MediaApiClient: vi.fn().mockImplementation(function () { return ({
     getMediaItem: vi.fn(),
     getFolders: vi.fn().mockResolvedValue({ items: [], hasMore: false }),
     getMediaItems: vi.fn().mockResolvedValue([]),
@@ -25,7 +25,7 @@ vi.mock("@bloom/services/OpenApiClient", () => ({
     getDirectoryTree: vi.fn().mockResolvedValue({ children: [] }),
     getDirectoryContent: vi.fn().mockResolvedValue({ folders: [], files: [] }),
     getPermittedStorage: vi.fn().mockResolvedValue({ bytes: null, text: "" }),
-  })),
+  }); }),
   MoveMedias: vi.fn().mockImplementation((data: any) => data), // eslint-disable-line @typescript-eslint/no-explicit-any
   DirectoryTreeNodeDto: vi.fn(),
 }));

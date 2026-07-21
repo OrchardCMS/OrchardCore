@@ -78,7 +78,7 @@ const {
 
 // ---------- Mock modules ----------
 vi.mock("@uppy/core", () => {
-  const MockUppy = vi.fn(() => mockUppyInstance);
+  const MockUppy = vi.fn(function () { return mockUppyInstance; });
   return {
     default: MockUppy,
     debugLogger: {},

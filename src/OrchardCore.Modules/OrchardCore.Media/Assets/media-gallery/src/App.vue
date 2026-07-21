@@ -212,7 +212,7 @@
 </style>
 
 <script setup lang="ts">
-import { ref, defineProps, type PropType } from "vue";
+import { ref, type PropType } from "vue";
 import FolderTree from "./components/FolderTree.vue";
 import UploadToast from "./components/UploadToast.vue";
 import NotificationToast from "./components/NotificationToast.vue";

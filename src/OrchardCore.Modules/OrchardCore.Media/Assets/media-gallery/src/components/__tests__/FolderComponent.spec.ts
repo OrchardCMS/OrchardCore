@@ -13,7 +13,7 @@ import { useEventBusService } from "../../services/EventBusService";
 
 // Mock FileDataService
 vi.mock("@bloom/media/api/file-data-service", () => ({
-  FileDataService: vi.fn().mockImplementation(() => ({
+  FileDataService: vi.fn().mockImplementation(function () { return ({
     getFileItem: vi.fn().mockResolvedValue({} as IFileLibraryItemDto),
     moveMedia: vi.fn().mockResolvedValue(undefined),
     moveMediaList: vi.fn().mockResolvedValue(undefined),
@@ -30,12 +30,12 @@ vi.mock("@bloom/media/api/file-data-service", () => ({
     ] as IFileLibraryItemDto[]),
     getFolders: vi.fn().mockResolvedValue([]),
     getMediaItems: vi.fn().mockResolvedValue([]),
-  })),
+  }); }),
 }));
 
 vi.mock("@bloom/services/notifications/notifier", () => ({
   notify: vi.fn(),
-  NotificationMessage: vi.fn().mockImplementation((data: any) => data), // eslint-disable-line @typescript-eslint/no-explicit-any
+  NotificationMessage: vi.fn().mockImplementation(function (data: any) { return data; }), // eslint-disable-line @typescript-eslint/no-explicit-any
 }));
 
 const { mockCanManageFolder } = vi.hoisted(() => {

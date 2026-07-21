@@ -62,7 +62,7 @@ class MockUppy {
 }
 
 vi.mock("@uppy/core", () => ({
-  default: vi.fn((...args: any[]) => new MockUppy(...args)),
+  default: vi.fn(function (...args: any[]) { return new MockUppy(...args); }),
 }));
 
 vi.mock("@uppy/tus", () => ({
@@ -129,7 +129,7 @@ describe("useFieldUpload", () => {
   beforeEach(() => {
     xhrInstances = [];
     OriginalXHR = global.XMLHttpRequest;
-    global.XMLHttpRequest = vi.fn(() => {
+    global.XMLHttpRequest = vi.fn(function () {
       const instance = new MockXHR();
       xhrInstances.push(instance);
       return instance;

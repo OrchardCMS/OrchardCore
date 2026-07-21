@@ -1,10 +1,17 @@
-import { describe, expect, it, vi, beforeEach } from "vitest";
+import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
 import { notify, NotificationMessage, registerNotificationBus } from "@bloom/services/notifications/notifier";
 import { SeverityLevel } from "@bloom/services/notifications/interfaces";
 
 describe("notifier", () => {
   beforeEach(() => {
     registerNotificationBus();
+  });
+
+  // registerNotificationBus() reuses the singleton window.notificationBus, so restore the emit
+  // spy after each test. Vitest 4 no longer resets a re-applied spy's call history on its own,
+  // so without this the spy would accumulate calls across tests.
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   describe("notify", () => {

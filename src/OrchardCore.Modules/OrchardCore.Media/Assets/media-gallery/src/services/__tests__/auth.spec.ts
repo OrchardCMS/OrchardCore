@@ -6,7 +6,7 @@ const instances: Array<Record<string, ReturnType<typeof vi.fn>>> = [];
 vi.mock("oidc-client-ts", () => {
   return {
     WebStorageStateStore: vi.fn(),
-    UserManager: vi.fn().mockImplementation(() => {
+    UserManager: vi.fn().mockImplementation(function () {
       const inst = {
         getUser: vi.fn().mockResolvedValue(null),
         signinSilent: vi.fn().mockResolvedValue(null),

@@ -3,7 +3,7 @@ import { IFileLibraryItemDto } from "@bloom/media/interfaces";
 
 // Mock the NSwag-generated OpenApiClient so FileDataService can be constructed in tests.
 vi.mock("@bloom/services/OpenApiClient", () => ({
-  MediaApiClient: vi.fn().mockImplementation(() => ({
+  MediaApiClient: vi.fn().mockImplementation(function () { return ({
     getMediaItem: vi.fn(),
     getFolders: vi.fn(),
     getMediaItems: vi.fn(),
@@ -18,7 +18,7 @@ vi.mock("@bloom/services/OpenApiClient", () => ({
     getDirectoryTree: vi.fn(),
     getDirectoryContent: vi.fn(),
     getPermittedStorage: vi.fn(),
-  })),
+  }); }),
   MoveMedias: vi.fn().mockImplementation((data: any) => data), // eslint-disable-line @typescript-eslint/no-explicit-any
   DirectoryTreeNodeDto: vi.fn(),
 }));

@@ -26,7 +26,7 @@ const mockApp = {
 };
 
 vi.mock("@bloom/services/signalr/signalr-app", () => ({
-  default: vi.fn(() => mockApp),
+  default: vi.fn(function () { return mockApp; }),
 }));
 
 vi.mock("@bloom/services/signalr/eventbus", () => ({

@@ -9,7 +9,7 @@ import { FileDataService } from "@bloom/media/api/file-data-service";
 // Mock the FileDataService
 vi.mock("@bloom/media/api/file-data-service", () => {
   return {
-    FileDataService: vi.fn().mockImplementation(() => ({
+    FileDataService: vi.fn().mockImplementation(function () { return ({
       getFileItem: vi.fn().mockResolvedValue({
         filePath: "/Images/photo1.jpg",
         directoryPath: "/Images",
@@ -53,14 +53,14 @@ vi.mock("@bloom/media/api/file-data-service", () => {
           { name: "Documents", path: "/Documents", hasChildren: false, children: [] },
         ],
       }),
-    })),
+    }); }),
   };
 });
 
 // Mock the notification system
 vi.mock("@bloom/services/notifications/notifier", () => ({
   notify: vi.fn(),
-  NotificationMessage: vi.fn().mockImplementation((data: any) => data), // eslint-disable-line @typescript-eslint/no-explicit-any
+  NotificationMessage: vi.fn().mockImplementation(function (data: any) { return data; }), // eslint-disable-line @typescript-eslint/no-explicit-any
 }));
 
 const { setAssetsStore, setSelectedFiles, setSelectedDirectory, setFileItems, assetsStore, fileItems, setRootDirectory, setHierarchicalData } = useGlobals();
