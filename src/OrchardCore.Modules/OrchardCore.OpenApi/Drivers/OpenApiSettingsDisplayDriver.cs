@@ -1,9 +1,5 @@
-using idunno.Security;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Localization;
-using Microsoft.IdentityModel.Protocols;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -22,24 +18,17 @@ public sealed class OpenApiSettingsDisplayDriver : SiteDisplayDriver<OpenApiSett
     private readonly IShellReleaseManager _shellReleaseManager;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
-    private readonly IHttpClientFactory _httpClientFactory;
-
-    internal readonly IStringLocalizer S;
 
     public OpenApiSettingsDisplayDriver(
         IEnumerable<IOpenApiUIFeature> uiFeatures,
         IShellReleaseManager shellReleaseManager,
         IHttpContextAccessor httpContextAccessor,
-        IAuthorizationService authorizationService,
-        IHttpClientFactory httpClientFactory,
-        IStringLocalizer<OpenApiSettingsDisplayDriver> stringLocalizer)
+        IAuthorizationService authorizationService)
     {
         _uiFeatures = uiFeatures;
         _shellReleaseManager = shellReleaseManager;
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
-        _httpClientFactory = httpClientFactory;
-        S = stringLocalizer;
     }
 
     protected override string SettingsGroupId
@@ -62,12 +51,6 @@ public sealed class OpenApiSettingsDisplayDriver : SiteDisplayDriver<OpenApiSett
             model.IsReDocUIEnabled = _uiFeatures.Any(f => f is ReDocUIFeature);
             model.IsScalarUIEnabled = _uiFeatures.Any(f => f is ScalarUIFeature);
             model.AllowAnonymousSchemaAccess = settings.AllowAnonymousSchemaAccess;
-            model.AuthenticationType = settings.AuthenticationType;
-            model.AuthorizationUrl = settings.AuthorizationUrl;
-            model.TokenUrl = settings.TokenUrl;
-            model.ServerMetadataUrl = settings.ServerMetadataUrl;
-            model.OAuthClientId = settings.OAuthClientId;
-            model.OAuthScopes = settings.OAuthScopes;
         }).Location("Content")
         .OnGroup(SettingsGroupId);
     }
@@ -85,147 +68,10 @@ public sealed class OpenApiSettingsDisplayDriver : SiteDisplayDriver<OpenApiSett
 
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-        // When a server metadata URL is explicitly configured, validate the configuration
-        // against that document and fill any endpoint URLs the user left empty from it —
-        // the spec-correct direction of inference (endpoints derive from the issuer's
-        // metadata, never the reverse). Explicitly entered endpoint URLs always win.
-        // This runs before the required-field checks so auto-filled values satisfy them.
-        // The metadata location itself is never inferred from the endpoint URLs: the spec
-        // does not tie endpoint locations to the issuer, so any such inference (e.g. assuming
-        // an OpenIddict-style "/connect/" path) breaks valid third-party setups.
-        if (model.AuthenticationType != OpenApiAuthenticationType.None
-            && !string.IsNullOrWhiteSpace(model.ServerMetadataUrl))
-        {
-            await ValidateServerMetadataAsync(model, context);
-        }
-
-        if (model.AuthenticationType == OpenApiAuthenticationType.AuthorizationCodePkce)
-        {
-            if (string.IsNullOrWhiteSpace(model.AuthorizationUrl))
-            {
-                context.Updater.ModelState.AddModelError(Prefix, S["The Authorization URL is required for Authorization Code + PKCE."]);
-            }
-
-            if (string.IsNullOrWhiteSpace(model.TokenUrl))
-            {
-                context.Updater.ModelState.AddModelError(Prefix, S["The Token URL is required for Authorization Code + PKCE."]);
-            }
-
-            if (string.IsNullOrWhiteSpace(model.OAuthClientId))
-            {
-                context.Updater.ModelState.AddModelError(Prefix, S["The Client ID is required for Authorization Code + PKCE."]);
-            }
-        }
-
-        if (!context.Updater.ModelState.IsValid)
-        {
-            return await EditAsync(site, settings, context);
-        }
-
         settings.AllowAnonymousSchemaAccess = model.AllowAnonymousSchemaAccess;
-        settings.AuthenticationType = model.AuthenticationType;
-        settings.AuthorizationUrl = model.AuthorizationUrl;
-        settings.TokenUrl = model.TokenUrl;
-        settings.ServerMetadataUrl = model.ServerMetadataUrl;
-        settings.OAuthClientId = model.OAuthClientId;
-        settings.OAuthScopes = model.OAuthScopes;
 
         _shellReleaseManager.RequestRelease();
 
         return await EditAsync(site, settings, context);
-    }
-
-    private async Task ValidateServerMetadataAsync(OpenApiSettingsViewModel model, UpdateEditorContext context)
-    {
-        var metadataUrl = ResolveUrl(model.ServerMetadataUrl);
-
-        if (metadataUrl == null || !Uri.TryCreate(metadataUrl, UriKind.Absolute, out var metadataUri))
-        {
-            context.Updater.ModelState.AddModelError(Prefix, S["Could not resolve the Server Metadata URL."]);
-            return;
-        }
-
-        if (await Ssrf.IsUnsafe(metadataUri, allowedSchemes: ["http", "https"], allowLoopback: true))
-        {
-            context.Updater.ModelState.AddModelError(Prefix, S["The Server Metadata URL is not allowed. Only http and https URLs that do not resolve to a link-local or private network address are accepted."]);
-            return;
-        }
-
-        try
-        {
-            var client = _httpClientFactory.CreateClient(OpenApiConstants.OAuthValidationHttpClientName);
-
-            // RequireHttps is relaxed because this is a validation-only fetch over the
-            // SSRF-guarded client, and same-host tenants commonly serve metadata over
-            // plain http in local setups.
-            var retriever = new HttpDocumentRetriever(client)
-            {
-                RequireHttps = false,
-            };
-
-            var configurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(
-                metadataUri.AbsoluteUri,
-                new OpenIdConnectConfigurationRetriever(),
-                retriever);
-
-            var configuration = await configurationManager.GetConfigurationAsync(CancellationToken.None);
-
-            if (string.IsNullOrWhiteSpace(model.AuthorizationUrl) && !string.IsNullOrEmpty(configuration.AuthorizationEndpoint))
-            {
-                model.AuthorizationUrl = configuration.AuthorizationEndpoint;
-            }
-
-            if (string.IsNullOrWhiteSpace(model.TokenUrl) && !string.IsNullOrEmpty(configuration.TokenEndpoint))
-            {
-                model.TokenUrl = configuration.TokenEndpoint;
-            }
-
-            if (model.AuthenticationType == OpenApiAuthenticationType.AuthorizationCodePkce)
-            {
-                if (string.IsNullOrEmpty(configuration.AuthorizationEndpoint))
-                {
-                    context.Updater.ModelState.AddModelError(Prefix, S["The OpenID Connect server does not expose an authorization endpoint. Verify that the Authorization Code flow is enabled."]);
-                }
-
-                if (configuration.GrantTypesSupported.Count > 0
-                    && !configuration.GrantTypesSupported.Contains("authorization_code"))
-                {
-                    context.Updater.ModelState.AddModelError(Prefix, S["The OpenID Connect server does not support the Authorization Code grant type. Enable it in the OpenID Connect server settings."]);
-                }
-            }
-
-            if (string.IsNullOrEmpty(configuration.TokenEndpoint))
-            {
-                context.Updater.ModelState.AddModelError(Prefix, S["The OpenID Connect server does not expose a token endpoint. Verify the server configuration."]);
-            }
-        }
-        catch (Exception exception) when (exception is InvalidOperationException or ArgumentException or IOException)
-        {
-            context.Updater.ModelState.AddModelError(Prefix, S["Could not retrieve valid OpenID Connect server metadata from \"{0}\". Verify that the server is running and the URL is correct.", metadataUri.AbsoluteUri]);
-        }
-    }
-
-    private string ResolveUrl(string url)
-    {
-        if (string.IsNullOrWhiteSpace(url))
-        {
-            return null;
-        }
-
-        // If the URL is already absolute, use it as-is.
-        if (Uri.TryCreate(url, UriKind.Absolute, out _))
-        {
-            return url;
-        }
-
-        // Resolve relative URLs against the current request (includes tenant prefix via PathBase).
-        var request = _httpContextAccessor.HttpContext?.Request;
-
-        if (request == null)
-        {
-            return null;
-        }
-
-        return $"{request.Scheme}://{request.Host}{request.PathBase}{url}";
     }
 }

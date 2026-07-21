@@ -1,39 +1,51 @@
-@using OrchardCore.OpenApi.Settings
 @using OrchardCore.OpenApi.ViewModels
 @model OpenApiSettingsViewModel
 
-@* Hidden inputs for ASP.NET model binding - Vue syncs values to these. *@
-<input asp-for="AllowAnonymousSchemaAccess" type="hidden" />
-<input asp-for="AuthenticationType" type="hidden" />
-<input asp-for="AuthorizationUrl" type="hidden" />
-<input asp-for="TokenUrl" type="hidden" />
-<input asp-for="ServerMetadataUrl" type="hidden" />
-<input asp-for="OAuthClientId" type="hidden" />
-<input asp-for="OAuthScopes" type="hidden" />
+<h5>@T["API Documentation UIs"]</h5>
 
-@{
-    var jsLocalizations = Orchard.GetJSLocalizations("openapi-settings");
-}
-
-@* Vue app mount point *@
-<div id="vue-openapi-settings">
-    <openapi-settings
-        settings-data='@Html.Raw(Json.Serialize(new
+<div class="mb-3">
+    <div class="d-flex align-items-center mb-2">
+        <span class="badge me-2 @(Model.IsSwaggerUIEnabled ? "bg-success" : "bg-secondary")">
+            @(Model.IsSwaggerUIEnabled ? T["Enabled"] : T["Disabled"])
+        </span>
+        <strong>@T["Swagger UI"]</strong>
+        @if (Model.IsSwaggerUIEnabled)
         {
-            isSwaggerUIEnabled = Model.IsSwaggerUIEnabled,
-            isReDocUIEnabled = Model.IsReDocUIEnabled,
-            isScalarUIEnabled = Model.IsScalarUIEnabled,
-            allowAnonymousSchemaAccess = Model.AllowAnonymousSchemaAccess,
-            authenticationType = (int)Model.AuthenticationType,
-            authorizationUrl = Model.AuthorizationUrl ?? "",
-            tokenUrl = Model.TokenUrl ?? "",
-            serverMetadataUrl = Model.ServerMetadataUrl ?? "",
-            oAuthClientId = Model.OAuthClientId ?? "",
-            oAuthScopes = Model.OAuthScopes ?? "",
-            pathBase = Context.Request.PathBase.Value ?? "",
-        }))'
-        translations='@Html.Raw(Json.Serialize(jsLocalizations))'>
-    </openapi-settings>
+            <span class="hint dashed ms-2">@T["Interactive API explorer at"] <a href="@Href("~/swagger")" target="_blank">~/swagger</a></span>
+        }
+    </div>
+
+    <div class="d-flex align-items-center mb-2">
+        <span class="badge me-2 @(Model.IsReDocUIEnabled ? "bg-success" : "bg-secondary")">
+            @(Model.IsReDocUIEnabled ? T["Enabled"] : T["Disabled"])
+        </span>
+        <strong>@T["ReDoc UI"]</strong>
+        @if (Model.IsReDocUIEnabled)
+        {
+            <span class="hint dashed ms-2">@T["Read-only API documentation at"] <a href="@Href("~/redoc")" target="_blank">~/redoc</a></span>
+        }
+    </div>
+
+    <div class="d-flex align-items-center mb-2">
+        <span class="badge me-2 @(Model.IsScalarUIEnabled ? "bg-success" : "bg-secondary")">
+            @(Model.IsScalarUIEnabled ? T["Enabled"] : T["Disabled"])
+        </span>
+        <strong>@T["Scalar UI"]</strong>
+        @if (Model.IsScalarUIEnabled)
+        {
+            <span class="hint dashed ms-2">@T["Modern API reference at"] <a href="@Href("~/scalar/v1")" target="_blank">~/scalar/v1</a></span>
+        }
+    </div>
+
+    <span class="hint">@T["Enable or disable API documentation UIs via the Features page."]</span>
 </div>
 
-<script asp-src="~/OrchardCore.OpenApi/Scripts/openapi-settings/openapi-settings.js" at="Foot"></script>
+<h5 class="mt-4">@T["API Schema Access"]</h5>
+
+<div class="mb-3">
+    <div class="form-check">
+        <input asp-for="AllowAnonymousSchemaAccess" type="checkbox" class="form-check-input" />
+        <label class="form-check-label" asp-for="AllowAnonymousSchemaAccess">@T["Allow anonymous access to the API schema"]</label>
+        <span class="hint dashed">@T["When enabled, the JSON schema endpoints can be accessed without authentication. When disabled (the default), they require the <strong>View OpenAPI Content</strong> permission, and external tools like NSwag must provide authentication."]</span>
+    </div>
+</div>
