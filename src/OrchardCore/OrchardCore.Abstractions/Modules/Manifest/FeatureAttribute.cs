@@ -209,6 +209,7 @@ public class FeatureAttribute : Attribute
     /// </summary>
     /// <remarks>
     /// If this feature lists "FeatureB" in <see cref="Before"/>, then this feature is ordered before "FeatureB".
+    /// This is an ordering-only constraint and does not imply a hard feature dependency.
     /// Values are automatically trimmed when set.
     /// </remarks>
     public virtual string[] Before
