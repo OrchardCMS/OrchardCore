@@ -13,7 +13,8 @@ using OrchardCore.Modules.Manifest;
     Description = "Provides a way to manage rate limiting to the website.",
     After =
     [
-        "OrchardCore.Media"
+        "OrchardCore.Media",
+        "OrchardCore.Tenants.FileProvider"
     ],
     Category = "Security"
 )]

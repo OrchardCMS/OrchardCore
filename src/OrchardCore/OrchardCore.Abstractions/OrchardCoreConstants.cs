@@ -56,24 +56,9 @@ public static class OrchardCoreConstants
         public const int Security = ReverseProxy + 10;
 
         /// <summary>
-        /// Image cache overrides Media configurations and services.
+        /// The Media module should use Default order to ensure other modules can correctly order by dependency.
         /// </summary>
-        public const int ResizedImageCache = Default + 5;
-
-        /// <summary>
-        /// Image cache overrides Media configurations and services.
-        /// </summary>
-        public const int AzureResizedImageCache = Default + 5;
-
-        /// <summary>
-        /// Azure media storage overrides Media configurations and services.
-        /// </summary>
-        public const int AzureMediaStorage = Default + 10;
-
-        /// <summary>
-        /// The FileProvider module should be registered after static file middleware so that the tenant file provider is used for static assets.
-        /// </summary>
-        public const int FileProvider = Default + 20;
+        public const int Media = Default;
 
         public const int DataProtection = Default;
 
