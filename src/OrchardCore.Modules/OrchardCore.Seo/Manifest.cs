@@ -13,5 +13,9 @@ using OrchardCore.Modules.Manifest;
         "OrchardCore.Recipes.Core",
         "OrchardCore.Media",
         "OrchardCore.Shortcodes",
+    ],
+    After =
+    [
+        "OrchardCore.RateLimits"
     ]
 )]
