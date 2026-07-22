@@ -6,8 +6,6 @@ public class ExtensionDependencyStrategy : IExtensionDependencyStrategy
 {
     public bool HasDependency(IFeatureInfo observer, IFeatureInfo subject)
     {
-        return observer.Dependencies.Contains(subject.Id)
-            || observer.After.Contains(subject.Id)
-            || subject.Before.Contains(observer.Id);
+        return observer.Dependencies.Contains(subject.Id);
     }
 }

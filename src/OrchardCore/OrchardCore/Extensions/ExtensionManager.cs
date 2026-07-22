@@ -374,6 +374,57 @@ public sealed class ExtensionManager : IExtensionManager
             }
         }
 
+        // Apply ordering constraints.
+        // After:  observer.After = ["X"] means X -> observer.
+        // Before: observer.Before = ["X"] means observer -> X.
+        // In both cases, remove any conflicting reverse edge first.
+        foreach (var observer in features)
+        {
+            var observerId = observer.Id;
+
+            foreach (var afterId in observer.After)
+            {
+                ApplyOrderingConstraint(
+                    constrainedId: afterId,
+                    reverseFromId: observerId,
+                    reverseToId: afterId,
+                    forwardFromId: afterId,
+                    forwardToId: observerId);
+            }
+
+            foreach (var beforeId in observer.Before)
+            {
+                ApplyOrderingConstraint(
+                    constrainedId: beforeId,
+                    reverseFromId: beforeId,
+                    reverseToId: observerId,
+                    forwardFromId: observerId,
+                    forwardToId: beforeId);
+            }
+        }
+
+        void ApplyOrderingConstraint(string constrainedId, string reverseFromId, string reverseToId, string forwardFromId, string forwardToId)
+        {
+            if (!featureById.ContainsKey(constrainedId))
+            {
+                return;
+            }
+
+            if (edges[reverseFromId].Remove(reverseToId))
+            {
+                indegrees[reverseToId]--;
+            }
+
+            if (edges[forwardFromId].Add(forwardToId))
+            {
+                indegrees[forwardToId]++;
+            }
+        }
+
+        var priorities = featureById.Keys.ToDictionary(
+            id => id,
+            id => GetPriority(featureById[id], extensionPriorityStrategies));
+
         var queueComparer = Comparer<string>.Create((left, right) =>
         {
             if (left == right)
@@ -381,8 +432,7 @@ public sealed class ExtensionManager : IExtensionManager
                 return 0;
             }
 
-            var priorityComparison = GetPriority(featureById[left], extensionPriorityStrategies)
-                .CompareTo(GetPriority(featureById[right], extensionPriorityStrategies));
+            var priorityComparison = priorities[left].CompareTo(priorities[right]);
 
             return priorityComparison != 0 ? priorityComparison : string.CompareOrdinal(left, right);
         });
