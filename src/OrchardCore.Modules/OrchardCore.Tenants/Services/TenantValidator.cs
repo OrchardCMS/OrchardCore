@@ -109,7 +109,7 @@ public partial class TenantValidator : ITenantValidator
         {
             errors.Add(new ModelError(nameof(model.Name), S["The existing tenant to be validated was not found."]));
         }
-        else if (existingShellSettings.IsUninitialized())
+        else if (existingShellSettings.IsSetupReady())
         {
             // Database settings may still have been changed.
             shellSettings = existingShellSettings;
@@ -130,7 +130,7 @@ public partial class TenantValidator : ITenantValidator
             }
         }
 
-        if ((model.IsNewTenant || existingShellSettings?.IsUninitialized() == true) &&
+        if ((model.IsNewTenant || existingShellSettings?.IsSetupReady() == true) &&
             IsTablePrefixRequired(model.DatabaseProvider) &&
             string.IsNullOrWhiteSpace(model.TablePrefix))
         {

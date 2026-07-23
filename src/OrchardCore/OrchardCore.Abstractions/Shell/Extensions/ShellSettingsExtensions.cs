@@ -7,42 +7,57 @@ public static class ShellSettingsExtensions
     /// <summary>
     /// Whether the tenant is the 'Default' tenant or not.
     /// </summary>
-    public static bool IsDefaultShell(this ShellSettings settings) => settings is { Name: ShellSettings.DefaultShellName };
+    public static bool IsDefaultShell(this ShellSettings settings)
+        => settings is { Name: ShellSettings.DefaultShellName };
 
     /// <summary>
     /// Whether the tenant is uninitialized or not.
     /// </summary>
-    public static bool IsUninitialized(this ShellSettings settings) => settings is { State: TenantState.Uninitialized };
+    public static bool IsUninitialized(this ShellSettings settings)
+        => settings is { State: TenantState.Uninitialized };
 
     /// <summary>
     /// Whether the tenant is initializing or not.
     /// </summary>
-    public static bool IsInitializing(this ShellSettings settings) => settings is { State: TenantState.Initializing };
+    public static bool IsInitializing(this ShellSettings settings)
+        => settings is { State: TenantState.Initializing };
 
     /// <summary>
     /// Whether the tenant is running or not.
     /// </summary>
-    public static bool IsRunning(this ShellSettings settings) => settings is { State: TenantState.Running };
+    public static bool IsRunning(this ShellSettings settings)
+        => settings is { State: TenantState.Running };
 
     /// <summary>
     /// Whether the tenant is disabled or not.
     /// </summary>
-    public static bool IsDisabled(this ShellSettings settings) => settings is { State: TenantState.Disabled };
+    public static bool IsDisabled(this ShellSettings settings)
+        => settings is { State: TenantState.Disabled };
 
     /// <summary>
     /// Whether the tenant is initialized or not.
     /// </summary>
-    public static bool IsInitialized(this ShellSettings settings) => settings.IsRunning() || settings.IsDisabled();
+    public static bool IsInitialized(this ShellSettings settings)
+        => settings.IsRunning() || settings.IsDisabled();
 
     /// <summary>
-    /// Whether the tenant is removable or not.
+    /// Whether the tenant is removable or not. A tenant can be removed when it is uninitialized or disabled.
     /// </summary>
-    public static bool IsRemovable(this ShellSettings settings) => settings.IsUninitialized() || settings.IsDisabled();
+    public static bool IsRemovable(this ShellSettings settings)
+        => settings.IsUninitialized() || settings.IsDisabled();
+
+    /// <summary>
+    /// Whether the tenant can be set up. A tenant can be set up when it is uninitialized
+    /// or still in the initializing state (indicating a previous setup attempt failed).
+    /// </summary>
+    public static bool IsSetupReady(this ShellSettings settings)
+        => settings.IsUninitialized() || settings.IsInitializing();
 
     /// <summary>
     /// Whether or not the tenant configuration has not been disposed.
     /// </summary>
-    public static bool HasConfiguration(this ShellSettings settings) => settings is { Disposed: false };
+    public static bool HasConfiguration(this ShellSettings settings)
+        => settings is { Disposed: false };
 
     /// <summary>
     /// Whether or not the tenant has the provided url prefix.

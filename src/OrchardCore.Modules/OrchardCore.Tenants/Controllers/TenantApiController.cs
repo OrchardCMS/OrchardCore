@@ -36,6 +36,7 @@ public sealed class TenantApiController : ControllerBase
     private readonly IShellSettingsManager _shellSettingsManager;
     private readonly IDataProtectionProvider _dataProtectorProvider;
     private readonly ISetupService _setupService;
+    private readonly ISetupTracker _setupTracker;
     private readonly IClock _clock;
     private readonly IEmailAddressValidator _emailAddressValidator;
     private readonly IdentityOptions _identityOptions;
@@ -55,6 +56,7 @@ public sealed class TenantApiController : ControllerBase
         IShellSettingsManager shellSettingsManager,
         IDataProtectionProvider dataProtectorProvider,
         ISetupService setupService,
+        ISetupTracker setupTracker,
         IClock clock,
         IEmailAddressValidator emailAddressValidator,
         IOptions<IdentityOptions> identityOptions,
@@ -72,6 +74,7 @@ public sealed class TenantApiController : ControllerBase
         _dataProtectorProvider = dataProtectorProvider;
         _shellSettingsManager = shellSettingsManager;
         _setupService = setupService;
+        _setupTracker = setupTracker;
         _clock = clock;
         _emailAddressValidator = emailAddressValidator;
         _identityOptions = identityOptions.Value;
@@ -204,7 +207,7 @@ public sealed class TenantApiController : ControllerBase
                 shellSettings.RequestUrlHost = model.RequestUrlHost;
                 shellSettings["FeatureProfile"] = string.Join(',', model.FeatureProfiles ?? []);
 
-                if (shellSettings.IsUninitialized())
+                if (shellSettings.IsSetupReady())
                 {
                     shellSettings["DatabaseProvider"] = model.DatabaseProvider;
                     shellSettings["TablePrefix"] = model.TablePrefix;
@@ -307,7 +310,7 @@ public sealed class TenantApiController : ControllerBase
 
         if (!shellSettings.IsRemovable())
         {
-            return BadRequest(S["You can only remove a 'Disabled' or an 'Uninitialized' tenant."]);
+            return BadRequest(S["You can only remove a 'Disabled' or 'Uninitialized' tenant."]);
         }
 
         var context = await _shellRemovalManager.RemoveAsync(shellSettings);
@@ -367,9 +370,14 @@ public sealed class TenantApiController : ControllerBase
             return Created(GetEncodedUrl(shellSettings, null), null);
         }
 
-        if (!shellSettings.IsUninitialized())
+        if (!shellSettings.IsSetupReady())
         {
             return BadRequest(S["The tenant can't be setup."]);
+        }
+
+        if (await _setupTracker.IsSetupInProgressAsync(shellSettings))
+        {
+            return Conflict(S["Setup is already in progress for this tenant."]);
         }
 
         var databaseProvider = shellSettings["DatabaseProvider"];

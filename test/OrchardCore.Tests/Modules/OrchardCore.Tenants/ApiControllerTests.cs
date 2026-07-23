@@ -468,6 +468,7 @@ public class ApiControllerTests
             shellSettingsManagerMock.Object,
             dataProtectionProviderMock.Object,
             Mock.Of<ISetupService>(),
+            Mock.Of<ISetupTracker>(),
             _clockMock.Object,
             Mock.Of<IEmailAddressValidator>(),
             Options.Create(new IdentityOptions()),
