@@ -10,7 +10,7 @@ public sealed class JavaScriptEngine : IScriptingEngine
 {
     private static readonly MemoryCacheEntryOptions ScriptCacheEntryOptions = new MemoryCacheEntryOptions()
         .SetSlidingExpiration(TimeSpan.FromMinutes(30))
-        .SetAbsoluteExpiration(TimeSpan.FromHours(2));
+        ;
 
     private readonly IMemoryCache _memoryCache;
     private readonly JintOptions _jintOptions;
