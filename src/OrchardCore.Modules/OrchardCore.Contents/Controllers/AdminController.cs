@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using OrchardCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
@@ -19,6 +18,7 @@ using OrchardCore.Contents.ViewModels;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
 using OrchardCore.Security.Permissions;
@@ -72,10 +72,8 @@ public sealed class AdminController : Controller, IUpdateModel
         [ModelBinder(BinderType = typeof(ContentItemFilterEngineModelBinder), Name = "q")] QueryFilterResult<ContentItem> queryFilterResult,
         ContentOptionsViewModel options,
         PagerParameters pagerParameters,
-        string contentTypeId = "",
-        string stereotype = "",
-        [ModelBinder(BinderType = typeof(CommaSeparatedStringArrayModelBinder))] string[] contentTypeIds = null,
-        [ModelBinder(BinderType = typeof(CommaSeparatedStringArrayModelBinder))] string[] stereotypes = null)
+        [ModelBinder(BinderType = typeof(CommaSeparatedStringArrayModelBinder))] string[] contentTypeId = null,
+        [ModelBinder(BinderType = typeof(CommaSeparatedStringArrayModelBinder))] string[] stereotype = null)
     {
         var contentTypeDefinitions = (await _contentDefinitionManager.ListTypeDefinitionsAsync())
             .OrderBy(ctd => ctd.DisplayName)
@@ -86,24 +84,14 @@ public sealed class AdminController : Controller, IUpdateModel
             return Forbid();
         }
 
+        var contentTypeIds = contentTypeId is { Length: > 1 }
+            ? contentTypeId.Distinct(StringComparer.Ordinal).ToArray()
+            : contentTypeId;
+
         // The parameter contentTypeId is used by the AdminMenus. Pass it to the options.
-        if (!string.IsNullOrEmpty(contentTypeId))
+        if (contentTypeIds is { Length: 1 })
         {
-            options.SelectedContentType = contentTypeId;
-        }
-
-        // If contentTypeIds contains exactly one non-empty entry and no contentTypeId was set,
-        // treat it as a single selected content type.
-        string[] effectiveContentTypeIds = null;
-
-        if (contentTypeIds is { Length: > 0 })
-        {
-            effectiveContentTypeIds = contentTypeIds.Where(s => !string.IsNullOrEmpty(s)).Distinct().ToArray();
-        }
-
-        if (string.IsNullOrEmpty(options.SelectedContentType) && effectiveContentTypeIds is { Length: 1 })
-        {
-            options.SelectedContentType = effectiveContentTypeIds[0];
+            options.SelectedContentType = contentTypeIds[0];
         }
 
         // The filter is bound separately and mapped to the options.
@@ -111,7 +99,7 @@ public sealed class AdminController : Controller, IUpdateModel
         options.FilterResult = queryFilterResult;
 
         var hasSelectedContentType = !string.IsNullOrEmpty(options.SelectedContentType);
-        var hasMultipleContentTypes = !hasSelectedContentType && effectiveContentTypeIds is { Length: > 1 };
+        var hasMultipleContentTypes = !hasSelectedContentType && contentTypeIds is { Length: > 1 };
 
         if (hasSelectedContentType)
         {
@@ -129,9 +117,9 @@ public sealed class AdminController : Controller, IUpdateModel
         else if (hasMultipleContentTypes)
         {
             // When multiple content type IDs are provided, a placeholder node is used to apply a filter for all of them.
-            options.FilterResult.TryAddOrReplace(new ContentTypesFilterNode(effectiveContentTypeIds));
+            options.FilterResult.TryAddOrReplace(new ContentTypeFilterNode(contentTypeIds));
 
-            var typeDefinitions = effectiveContentTypeIds
+            var typeDefinitions = contentTypeIds
                 .Select(id => contentTypeDefinitions.FirstOrDefault(d => string.Equals(d.Name, id, StringComparison.Ordinal)))
                 .Where(d => d != null)
                 .ToArray();
@@ -143,31 +131,15 @@ public sealed class AdminController : Controller, IUpdateModel
             }
         }
 
-        // Combine single and multiple stereotype parameters, filtering out empty entries and deduplicating.
-        string[] effectiveStereotypes = null;
-
-        if (!string.IsNullOrEmpty(stereotype) || stereotypes is { Length: > 0 })
-        {
-            var combined = new List<string>();
-
-            if (!string.IsNullOrEmpty(stereotype))
-            {
-                combined.Add(stereotype);
-            }
-
-            if (stereotypes != null)
-            {
-                combined.AddRange(stereotypes.Where(s => !string.IsNullOrEmpty(s)));
-            }
-
-            effectiveStereotypes = [.. combined.Distinct(StringComparer.OrdinalIgnoreCase)];
-        }
+        var stereotypes = stereotype is { Length: > 1 }
+            ? stereotype.Distinct(StringComparer.OrdinalIgnoreCase).ToArray()
+            : stereotype;
 
         if (!hasSelectedContentType && !hasMultipleContentTypes)
         {
-            if (effectiveStereotypes is { Length: 1 })
+            if (stereotypes is { Length: 1 })
             {
-                var singleStereotype = effectiveStereotypes[0];
+                var singleStereotype = stereotypes[0];
 
                 // When a stereotype is provided via the query parameter or options a placeholder node is used to apply a filter.
                 options.FilterResult.TryAddOrReplace(new StereotypeFilterNode(singleStereotype));
@@ -182,13 +154,13 @@ public sealed class AdminController : Controller, IUpdateModel
                     options.CreatableTypes = await GetCreatableTypeOptionsAsync(options.CanCreateSelectedContentType, availableContentTypeDefinitions);
                 }
             }
-            else if (effectiveStereotypes is { Length: > 1 })
+            else if (stereotypes is { Length: > 1 })
             {
                 // When multiple stereotypes are provided, a placeholder node is used to apply a filter for all of them.
-                options.FilterResult.TryAddOrReplace(new StereotypesFilterNode(effectiveStereotypes));
+                options.FilterResult.TryAddOrReplace(new StereotypeFilterNode(stereotypes));
 
                 var availableContentTypeDefinitions = contentTypeDefinitions
-                    .Where(definition => effectiveStereotypes.Any(s => definition.StereotypeEquals(s, StringComparison.OrdinalIgnoreCase)))
+                    .Where(definition => stereotypes.Any(s => definition.StereotypeEquals(s, StringComparison.OrdinalIgnoreCase)))
                     .ToArray();
 
                 if (availableContentTypeDefinitions.Length > 0)
@@ -239,7 +211,7 @@ public sealed class AdminController : Controller, IUpdateModel
         ];
 
         if (options.ContentTypeOptions == null
-            && (string.IsNullOrEmpty(options.SelectedContentType) || string.IsNullOrEmpty(contentTypeId)))
+            && (string.IsNullOrEmpty(options.SelectedContentType) || contentTypeIds is not { Length: > 0 }))
         {
             options.ContentTypeOptions = await GetListableContentTypeOptionsAsync(contentTypeDefinitions, options.SelectedContentType, true);
         }
