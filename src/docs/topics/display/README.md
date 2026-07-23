@@ -9,4 +9,4 @@ Orchard Core allows you to customize the look and feel of your application by in
 - [Learn the Liquid Syntax](../../reference/modules/Liquid/README.md)
 - [Define the Placement](../../reference/modules/Placement/README.md)
 - TBD Create an Orchard Core theme from an HTML template
-- [What is a shape?](shapes.md)
+- [Learn about Shapes](shapes.md)
