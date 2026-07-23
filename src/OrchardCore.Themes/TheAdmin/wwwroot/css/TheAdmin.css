@@ -343,10 +343,27 @@ select.selectpicker {
 }
 
 .bootstrap-select > select.mobile-device:focus + .dropdown-toggle,
-.bootstrap-select .dropdown-toggle:focus {
-  outline: thin dotted #333333 !important;
-  outline: 5px auto -webkit-focus-ring-color !important;
-  outline-offset: -2px;
+.bootstrap-select .dropdown-toggle:focus,
+.bootstrap-select .dropdown-toggle:focus-visible {
+  outline: 0 !important;
+  border-color: var(--bs-primary, #86b7fe);
+  box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb, 13, 110, 253), 0.25);
+}
+
+.bootstrap-select > .dropdown-toggle.btn-light {
+  --bs-btn-color: var(--bs-body-color, #212529);
+  --bs-btn-bg: var(--bs-body-bg, #fff);
+  --bs-btn-border-color: var(--bs-border-color, #dee2e6);
+  --bs-btn-hover-color: var(--bs-body-color, #212529);
+  --bs-btn-hover-bg: var(--bs-body-bg, #fff);
+  --bs-btn-hover-border-color: var(--bs-border-color, #dee2e6);
+  --bs-btn-active-color: var(--bs-body-color, #212529);
+  --bs-btn-active-bg: var(--bs-body-bg, #fff);
+  --bs-btn-active-border-color: var(--bs-border-color, #dee2e6);
+  --bs-btn-disabled-color: var(--bs-secondary-color, #6c757d);
+  --bs-btn-disabled-bg: var(--bs-secondary-bg, #e9ecef);
+  --bs-btn-disabled-border-color: var(--bs-border-color, #dee2e6);
+  --bs-btn-focus-shadow-rgb: var(--bs-primary-rgb, 13, 110, 253);
 }
 
 .bootstrap-select.form-control {
@@ -609,8 +626,9 @@ select.selectpicker {
   margin: 0 2%;
   min-height: 26px;
   padding: 3px 5px;
-  background: rgb(245, 245, 245);
-  border: 1px solid rgb(227, 227, 227);
+  background: var(--bs-tertiary-bg, rgb(245, 245, 245));
+  color: var(--bs-secondary-color, inherit);
+  border: 1px solid var(--bs-border-color, rgb(227, 227, 227));
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
   pointer-events: none;
   opacity: 0.9;
@@ -623,7 +641,8 @@ select.selectpicker {
 
 .bootstrap-select .no-results {
   padding: 3px;
-  background: #f5f5f5;
+  background: var(--bs-tertiary-bg, #f5f5f5);
+  color: var(--bs-secondary-color, inherit);
   margin: 0 5px;
   white-space: nowrap;
 }
@@ -913,6 +932,19 @@ select.selectpicker {
 
 .bs-actionsbox .btn-group button {
   width: 50%;
+}
+
+.bs-actionsbox .btn-light {
+  --bs-btn-color: var(--bs-body-color, #212529);
+  --bs-btn-bg: var(--bs-tertiary-bg, #f8f9fa);
+  --bs-btn-border-color: var(--bs-border-color, #dee2e6);
+  --bs-btn-hover-color: var(--bs-body-color, #212529);
+  --bs-btn-hover-bg: var(--bs-secondary-bg, #e9ecef);
+  --bs-btn-hover-border-color: var(--bs-border-color, #dee2e6);
+  --bs-btn-active-color: var(--bs-body-color, #212529);
+  --bs-btn-active-bg: var(--bs-secondary-bg, #e9ecef);
+  --bs-btn-active-border-color: var(--bs-border-color, #dee2e6);
+  --bs-btn-focus-shadow-rgb: var(--bs-primary-rgb, 13, 110, 253);
 }
 
 .bs-donebutton {
@@ -10289,29 +10321,6 @@ input[type=password]::-ms-clear {
   border-bottom-right-radius: var(--bs-border-radius) !important;
 }
 
-/*
- Fix stacking issues with Bootstrap dropdown menus inside content item rows.
-
- Context:
- The sticky action bar above the list creates a separate stacking context.
- Combined with Bootstrap's card layout (`position: sticky`, `position: relative`)
- and Popper.js positioning, an open dropdown menu may render behind the action
- bar while the user moves the mouse over menu items.
-
- Solution:
- Raise the list item that contains the currently open dropdown menu.
- This keeps the dropdown visible above the action bar, although the active row 
- may temporarily overlap the action bar while its dropdown is open.
-
- Note:
- Uses the Bootstrap/Orchard dropdown z-index variable to stay aligned with the
- application's existing layering scheme.
-*/
-.list-group-item:has(.dropdown-menu.show) {
-  position: relative;
-  z-index: var(--oc-zindex-dropdown);
-}
-
 .EasyMDEContainer blockquote:not(.blockquote) {
   background: var(--bs-secondary-bg-subtle);
   margin: 1.5em 10px;
@@ -11149,10 +11158,12 @@ input:not([type=checkbox]):not([type=radio]).input-validation-error {
 
 [dir="ltr"] input:not([type=checkbox]):not([type=radio]).input-validation-error {
   background-position: right calc(0.375em + 0.1875rem) center;
+  padding-right: calc(1.5rem + 0.375em + 0.1875rem);
 }
 
 [dir="rtl"] input:not([type=checkbox]):not([type=radio]).input-validation-error {
   background-position: left calc(0.375em + 0.1875rem) center;
+  padding-left: calc(1.5rem + 0.375em + 0.1875rem);
 }
 
 [dir="ltr"] [dir=rtl] input:not([type=checkbox]):not([type=radio]).input-validation-error {

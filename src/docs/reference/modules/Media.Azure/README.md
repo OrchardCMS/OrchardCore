@@ -30,7 +30,11 @@ The following configuration values are used by default and can be customized:
        // Activates an event to create the container if it does not already exist.
       "CreateContainer": true,
       // Whether the 'Container' is deleted if the tenant is removed, false by default.
-      "RemoveContainer": true
+      "RemoveContainer": true,
+      // Overrides auto-detection of Hierarchical Namespace (HNS / ADLS Gen2) support. Leave unset to
+      // auto-detect. Set explicitly when account-level detection is unavailable, such as when
+      // connecting with a container-scoped SAS token.
+      "UseHierarchicalNamespace": true
     }
   }
 }
@@ -44,6 +48,23 @@ valid connection string, and test that the container exists, creating if it does
 Set `CreateContainer` to `false` to disable this check if your container already exists.
 
 If these are not present in `appSettings.json`, it will not enable the feature, and report an error message in the log file.
+
+#### Hierarchical Namespace (ADLS Gen2) Support
+
+Azure Media Storage supports Azure Storage accounts with Hierarchical Namespace (HNS), also known as
+Azure Data Lake Storage Gen2, in addition to standard flat-namespace (Gen1) accounts.
+
+The store probes the storage account to auto-detect whether HNS is enabled. When it is,
+directory creation, directory deletion, and file moves use native Data Lake Storage APIs, which provide
+atomic moves and real (non-virtual) directories. On flat-namespace (Gen1) accounts, directories continue
+to be emulated with a marker file, matching the existing behavior.
+
+Auto-detection requires storage account-level permissions and will fail if you connect with a
+container-scoped SAS token. In that case, set `UseHierarchicalNamespace` explicitly to `true` for a
+Gen2 account or `false` for a Gen1 account so the configured behavior is used when detection fails.
+
+The Data Lake SDK derives the account's DFS endpoint from the configured connection string, so no
+separate DFS endpoint setting is required.
 
 ### Templating Configuration
 

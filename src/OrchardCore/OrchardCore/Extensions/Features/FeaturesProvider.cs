@@ -1,22 +1,20 @@
 namespace OrchardCore.Environment.Extensions.Features;
 
 /// <inheritdoc/>
-public class FeaturesProvider : IFeaturesProvider
+public sealed class FeaturesProvider : FeaturesProviderBase
 {
     public const string FeatureProviderStateKey = "FeatureProvider:Features";
-
-    private readonly IEnumerable<IFeatureBuilderEvents> _featureBuilderEvents;
 
     /// <summary>
     /// Constructs a provider instance.
     /// </summary>
     /// <param name="featureBuilderEvents"></param>
     public FeaturesProvider(IEnumerable<IFeatureBuilderEvents> featureBuilderEvents)
+        : base(featureBuilderEvents)
     {
-        _featureBuilderEvents = featureBuilderEvents;
     }
 
-    public IEnumerable<IFeatureInfo> GetFeatures(IExtensionInfo extensionInfo, IManifestInfo manifestInfo)
+    public override IEnumerable<IFeatureInfo> GetFeatures(IExtensionInfo extensionInfo, IManifestInfo manifestInfo)
     {
         var featuresInfos = new List<IFeatureInfo>();
 
@@ -61,27 +59,17 @@ public class FeaturesProvider : IFeaturesProvider
                     EnabledByDependencyOnly = featureEnabledByDependencyOnly,
                 };
 
-                foreach (var builder in _featureBuilderEvents)
-                {
-                    builder.Building(context);
-                }
-
-                var featureInfo = new FeatureInfo(
-                    context.FeatureId,
-                    context.FeatureName,
-                    context.Priority,
-                    context.Category,
-                    context.Description,
-                    context.ExtensionInfo,
-                    context.FeatureDependencyIds,
-                    context.DefaultTenantOnly,
-                    context.IsAlwaysEnabled,
-                    context.EnabledByDependencyOnly);
-
-                foreach (var builder in _featureBuilderEvents)
-                {
-                    builder.Built(featureInfo);
-                }
+                var featureInfo = BuildFeature(context, ctx => new FeatureInfo(
+                    ctx.FeatureId,
+                    ctx.FeatureName,
+                    ctx.Priority,
+                    ctx.Category,
+                    ctx.Description,
+                    ctx.ExtensionInfo,
+                    ctx.FeatureDependencyIds,
+                    ctx.DefaultTenantOnly,
+                    ctx.IsAlwaysEnabled,
+                    ctx.EnabledByDependencyOnly));
 
                 featuresInfos.Add(featureInfo);
             }
@@ -117,27 +105,17 @@ public class FeaturesProvider : IFeaturesProvider
                 EnabledByDependencyOnly = featureEnabledByDependencyOnly,
             };
 
-            foreach (var builder in _featureBuilderEvents)
-            {
-                builder.Building(context);
-            }
-
-            var featureInfo = new FeatureInfo(
-                context.FeatureId,
-                context.FeatureName,
-                context.Priority,
-                context.Category,
-                context.Description,
-                context.ExtensionInfo,
-                context.FeatureDependencyIds,
-                context.DefaultTenantOnly,
-                context.IsAlwaysEnabled,
-                context.EnabledByDependencyOnly);
-
-            foreach (var builder in _featureBuilderEvents)
-            {
-                builder.Built(featureInfo);
-            }
+            var featureInfo = BuildFeature(context, ctx => new FeatureInfo(
+                ctx.FeatureId,
+                ctx.FeatureName,
+                ctx.Priority,
+                ctx.Category,
+                ctx.Description,
+                ctx.ExtensionInfo,
+                ctx.FeatureDependencyIds,
+                ctx.DefaultTenantOnly,
+                ctx.IsAlwaysEnabled,
+                ctx.EnabledByDependencyOnly));
 
             featuresInfos.Add(featureInfo);
         }

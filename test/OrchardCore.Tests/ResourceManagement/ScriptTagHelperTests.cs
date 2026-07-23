@@ -20,7 +20,7 @@ public class ScriptTagHelperTests : IDisposable
     }
 
     [Fact]
-    public async Task AnonymousScriptWithSrcOnly_RegistersUrlWithDebugSrc()
+    public async Task AnonymousScriptWithSrcOnly_RegistersUrlWithDebugSrc_Succeeds()
     {
         // Arrange
         var resourceManager = CreateResourceManager();
@@ -48,7 +48,7 @@ public class ScriptTagHelperTests : IDisposable
     }
 
     [Fact]
-    public async Task AnonymousScriptWithSrcAndDependsOn_DefinesInInlineManifest()
+    public async Task AnonymousScriptWithSrcAndDependsOn_DefinesInInlineManifest_Succeeds()
     {
         // Arrange
         var options = new ResourceManagementOptions();
@@ -217,7 +217,7 @@ public class ScriptTagHelperTests : IDisposable
     }
 
     [Fact]
-    public async Task NamedScriptWithNameAndSrc_DefinesInInlineManifest()
+    public async Task NamedScriptWithNameAndSrc_DefinesInInlineManifest_Succeeds()
     {
         // Arrange
         var resourceManager = CreateResourceManager();
@@ -280,7 +280,7 @@ public class ScriptTagHelperTests : IDisposable
     }
 
     [Fact]
-    public async Task NamedScriptRequireOnly_RegistersResource()
+    public async Task NamedScriptRequireOnly_RegistersResource_Succeeds()
     {
         // Arrange
         var options = new ResourceManagementOptions();
@@ -312,7 +312,7 @@ public class ScriptTagHelperTests : IDisposable
     }
 
     [Fact]
-    public async Task NamedScriptRequireOnly_WithDependsOn_AddsDependencies()
+    public async Task NamedScriptRequireOnly_DependsOn_AddsDependencies()
     {
         // Arrange
         var options = new ResourceManagementOptions();
@@ -347,7 +347,7 @@ public class ScriptTagHelperTests : IDisposable
     }
 
     [Fact]
-    public async Task DuplicateAnonymousScriptsWithDependencies_DeduplicateByName()
+    public async Task DuplicateAnonymousScriptsWithDependencies_DeduplicateByName_Succeeds()
     {
         // Arrange
         var options = new ResourceManagementOptions();

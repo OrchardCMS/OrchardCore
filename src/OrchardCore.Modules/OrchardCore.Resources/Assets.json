@@ -12,6 +12,12 @@
     "tags": [ "resources", "js" ]
   },
   {
+    "action": "min",
+    "name": "list-management",
+    "source": "Assets/js/list-management.js",
+    "tags": [ "admin", "resources", "js" ]
+  },
+  {
     "action": "copy",
     "name": "bootstrap",
     "source": [

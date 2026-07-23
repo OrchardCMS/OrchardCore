@@ -13,7 +13,8 @@ function addMapPicker() {
 
     var map = L.map('map', { center: mapCenter, zoom: zoom });
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        referrerPolicy: 'strict-origin-when-cross-origin'
     }).addTo(map);
     var marker = L.marker(mapCenter, { draggable: true }).addTo(map);
 

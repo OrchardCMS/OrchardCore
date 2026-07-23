@@ -9,7 +9,7 @@ public class SlugifyFilterTests
     [Theory]
     [InlineData("Æneid Æneid", "æneid-æneid")]
     [InlineData("Aeneid Aeneid", "aeneid-aeneid")]
-    public async Task SlugifyFilterShouldReturnSlugifiedString(string text, string expected)
+    public async Task SlugifyFilter_Default_ReturnsSlugifiedString(string text, string expected)
     {
         // Arrange
         var context = new SiteContext();
@@ -31,7 +31,7 @@ public class SlugifyFilterTests
     }
 
     [Fact]
-    public async Task SlugifyThenTransliterateFilterShouldReturnSlugifiedTransliteratedString()
+    public async Task SlugifyThenTransliterateFilter_Default_ReturnsSlugifiedTransliteratedString()
     {
         // Arrange
         var context = new SiteContext();

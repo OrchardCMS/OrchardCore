@@ -58,12 +58,12 @@ public static class OrchardCoreConstants
         /// <summary>
         /// When the .UseStaticFiles() is registered and should be early before rate limitting.
         /// </summary>
-        public const int StaticFiles = -5;
+        public const int StaticFiles = -50;
 
         /// <summary>
         /// The Media module should be registered after the StaticFiles module to ensure that media assets are served correctly.
         /// </summary>
-        public const int Media = Default + StaticFiles;
+        public const int Media = Default + StaticFiles + 5;
 
         /// <summary>
         /// Image cache overrides Media configurations and services. The order number should always be greater than Media module.
@@ -83,7 +83,7 @@ public static class OrchardCoreConstants
         /// <summary>
         /// The FileProvider module should be registered after the StaticFiles module to ensure that the tenant file provider is used for static assets.
         /// </summary>
-        public const int FileProvider = StaticFiles + 10;
+        public const int FileProvider = StaticFiles + 20;
 
         /// <summary>
         /// The RateLimiter module should be registered after the FileProvider module to ensure that the rate limiting policies do not impact assets.

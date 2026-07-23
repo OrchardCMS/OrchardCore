@@ -1,0 +1,22 @@
+@model DisplayRoleViewModel
+@using OrchardCore.Roles.ViewModels
+
+<zone Name="Title">
+    <h1>
+        @RenderTitleSegments(Model.Role.RoleName)
+    </h1>
+</zone>
+
+<div data-list-management data-client-side-search="true" data-search-result-selector=".permissions-list > table > tbody > tr" data-search-text-attribute="data-text" data-search-group-selector=".permissions-list" data-search-group-visible-selector="table > tbody > tr">
+    <div class="mb-3">@Model.Role.RoleDescription</div>
+
+    @await Html.PartialAsync("_RolePermissions", Model.Permissions)
+</div>
+
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
+        <a class="btn btn-secondary" role="button" asp-route-action="Index">@T["Back"]</a>
+    </div>
+</div>
+
+<script asp-name="list-management" at="Foot"></script>
