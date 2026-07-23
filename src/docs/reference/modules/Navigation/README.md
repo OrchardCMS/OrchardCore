@@ -238,6 +238,36 @@ At this time, the Admin Menu is the only navigation with code dynamically adding
     }
     ```
 
+## Menu Item Selection
+
+When a menu is rendered, the menu item owning the current page is marked as selected (e.g. highlighted in the admin sidebar).
+
+The server resolves the active item **deterministically**, from the strongest signal to the weakest, with no stored state:
+
+1. **Declared owner** — a page can declare the path of the menu item that owns it, for pages whose URL cannot be matched to a menu item (such as edit pages containing an opaque id) or where several items link to the same URL. This is the default selection.
+2. **Exact URL match** — a menu item whose href equals the request path, e.g. an admin menu link pointing at a specific content item.
+3. **Prefix match** against the menu item's href (the deepest, most specific match wins).
+
+Items that resolve to the same rank (for example, two menu items with the same URL) are ordered by `Priority`, then by menu order.
+
+The admin theme then applies the one piece of intent the server cannot see — **what you actually clicked**. If this browser tab clicked a menu link that points directly at the current page, that link is promoted over the declared owner. So editing an item keeps its content-type list highlighted, unless you reached the page by clicking a specific link to it. This runs in the browser (using the `data-admin-hash` rendered on each link) and is per-tab, so it relies on no shared server-side state and works correctly across restarts, load-balanced instances and multiple tabs.
+
+To declare the owning menu item from a controller action (or anywhere with access to the `HttpContext`), generate the path through routing so it matches the menu item's href exactly:
+
+```csharp
+using OrchardCore.Navigation;
+
+public async Task<IActionResult> Edit(string contentItemId)
+{
+    // ...
+    HttpContext.SetNavigationSelectionPath(
+        Url.Action(nameof(List), new { area = "OrchardCore.Contents", contentTypeId = contentItem.ContentType }));
+    // ...
+}
+```
+
+`OrchardCore.Contents` declares the content type's list page from its edit and display actions, so the menu item listing that content type stays selected while editing an item. Custom modules with their own admin routes should do the same; declaring the owner is the reliable way to keep the correct menu item selected for bookmarked URLs, load-balanced environments and multiple browser tabs.
+
 ## Video
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/3w68lDwUzFQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

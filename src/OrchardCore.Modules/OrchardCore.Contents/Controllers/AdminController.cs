@@ -422,6 +422,8 @@ public sealed class AdminController : Controller, IUpdateModel
             return Forbid();
         }
 
+        DeclareNavigationSelection(contentItem.ContentType);
+
         var model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, this, "DetailAdmin");
 
         return View(model);
@@ -441,6 +443,8 @@ public sealed class AdminController : Controller, IUpdateModel
         {
             return Forbid();
         }
+
+        DeclareNavigationSelection(contentItem.ContentType);
 
         var model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, this, false);
 
@@ -849,6 +853,14 @@ public sealed class AdminController : Controller, IUpdateModel
 
     private async Task<bool> IsAuthorizedAsync(Permission permission, object resource)
         => await _authorizationService.AuthorizeAsync(User, permission, resource);
+
+    /// <summary>
+    /// Pages whose URL contains an opaque content item id (edit, display) can't be matched to a
+    /// menu item by URL, so declare the list page of the content type as the owning menu item.
+    /// </summary>
+    private void DeclareNavigationSelection(string contentType)
+        => HttpContext.SetNavigationSelectionPath(
+            Url.Action(nameof(List), new { area = "OrchardCore.Contents", contentTypeId = contentType }));
 
     private RedirectToActionResult RedirectToListActionWithModelState()
     {

@@ -28,13 +28,55 @@ $('#left-nav li.has-items').click(function () {
     $(this).addClass("visible");
 });
 
-// When navigating via a real nav link, persist the selected item hash inside the
-// existing admin preferences cookie so the server can restore the correct selection.
+// Remember which nav item was clicked. The server selects the active item deterministically
+// from the URL, but it can't tell apart two items that resolve to the same rank (e.g. two
+// links with the same href). This records the clicked item so we can break that tie below.
 $('#left-nav').on('click', 'a[data-admin-hash][href^="/"]', function () {
     const prefs = getAdminPreferences() as Record<string, unknown>;
     prefs.selectedNavHash = String($(this).data('admin-hash'));
     setAdminPreferences(prefs);
 });
+
+// The server picks the active item deterministically from the URL, preferring the owner a page
+// declares (e.g. a content type list while editing an item) over a menu item that merely links
+// to the same URL. If this tab actually clicked a link pointing at the current page, promote
+// that link instead - the one piece of intent the server can't see. Runs only when the clicked
+// link truly targets the current page, so a stale selection from another page is left alone.
+const promoteClickedLink = () => {
+    const prefs = getAdminPreferences() as Record<string, unknown>;
+    const clickedHash = prefs.selectedNavHash ? String(prefs.selectedNavHash) : '';
+
+    if (!clickedHash) {
+        return;
+    }
+
+    const menu = document.getElementById('adminMenu');
+    const target = menu?.querySelector<HTMLAnchorElement>(`a[data-admin-hash="${CSS.escape(clickedHash)}"]`);
+
+    if (!menu || !target || target.pathname.toLowerCase() !== window.location.pathname.toLowerCase()) {
+        return;
+    }
+
+    const targetItem = target.closest('li');
+
+    if (!targetItem || targetItem.classList.contains('active')) {
+        return;
+    }
+
+    // Clear the server's selection, then activate the clicked item and expand its ancestors.
+    menu.querySelectorAll('li.active').forEach(li => li.classList.remove('active'));
+    menu.querySelectorAll('ul.show').forEach(ul => ul.classList.remove('show'));
+
+    for (let el: HTMLElement | null = targetItem; el && el !== menu; el = el.parentElement) {
+        if (el.tagName === 'LI') {
+            el.classList.add('active');
+        } else if (el.tagName === 'UL') {
+            el.classList.add('show');
+        }
+    }
+};
+
+$(promoteClickedLink);
 
 $(document).on("click", function (event) {
     var $trigger = $("#left-nav li.has-items");

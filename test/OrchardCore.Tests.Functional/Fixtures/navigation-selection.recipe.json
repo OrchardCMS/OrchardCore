@@ -1,0 +1,196 @@
+{
+  "name": "NavigationSelection",
+  "displayName": "Navigation Selection",
+  "description": "Admin menu with both a content-type list link (declared owner) and a direct link to an item's edit page, to test menu selection.",
+  "author": "The Orchard Core Team",
+  "website": "https://orchardcore.net",
+  "version": "1.0.0",
+  "issetuprecipe": true,
+  "categories": [ "tests" ],
+  "tags": [ "tests" ],
+
+  "variables": {
+    "adminUrlPrefix": "[js: configuration('OrchardCore_Admin:AdminUrlPrefix', 'Admin')]",
+    "homeContentItemId": "[js:uuid()]"
+  },
+
+  "steps": [
+    {
+      "name": "feature",
+      "enable": [
+        "OrchardCore.HomeRoute",
+        "OrchardCore.Admin",
+        "OrchardCore.Diagnostics",
+        "OrchardCore.DynamicCache",
+        "OrchardCore.Features",
+        "OrchardCore.Navigation",
+        "OrchardCore.Recipes",
+        "OrchardCore.Resources",
+        "OrchardCore.Roles",
+        "OrchardCore.Security",
+        "OrchardCore.Settings",
+        "OrchardCore.Themes",
+        "OrchardCore.Users",
+
+        "OrchardCore.AdminMenu",
+        "OrchardCore.Autoroute",
+        "OrchardCore.Contents",
+        "OrchardCore.ContentTypes",
+        "OrchardCore.Html",
+        "OrchardCore.Lists",
+        "OrchardCore.Media",
+        "OrchardCore.Menu",
+        "OrchardCore.Title",
+        "OrchardCore.Widgets",
+
+        "TheBlogTheme",
+        "TheAdmin",
+        "SafeMode"
+      ]
+    },
+    {
+      "name": "themes",
+      "admin": "TheAdmin",
+      "site": "TheBlogTheme"
+    },
+    {
+      "name": "settings",
+      "HomeRoute": {
+        "Action": "Display",
+        "Controller": "Item",
+        "Area": "OrchardCore.Contents",
+        "ContentItemId": "[js: variables('homeContentItemId')]"
+      }
+    },
+    {
+      "name": "ContentDefinition",
+      "ContentTypes": [
+        {
+          "Name": "Article",
+          "DisplayName": "Article",
+          "Hidden": false,
+          "Settings": {
+            "ContentTypeSettings": {
+              "Creatable": true,
+              "Draftable": true,
+              "Versionable": true,
+              "Listable": true
+            }
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "AutoroutePart",
+              "Name": "AutoroutePart",
+              "Settings": {
+                "AutoroutePartSettings": {
+                  "AllowCustomPath": true,
+                  "Pattern": "{{ Model.ContentItem | display_text | slugify }}",
+                  "ShowHomepageOption": true
+                },
+                "ContentTypePartSettings": {
+                  "Position": "1"
+                }
+              }
+            },
+            {
+              "PartName": "HtmlBodyPart",
+              "Name": "HtmlBodyPart",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Editor": "Wysiwyg",
+                  "Position": "2"
+                }
+              }
+            },
+            {
+              "PartName": "TitlePart",
+              "Name": "TitlePart",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "0"
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "ContentParts": []
+    },
+    {
+      "name": "content",
+      "Data": [
+        {
+          "ContentItemId": "[js: variables('homeContentItemId')]",
+          "ContentType": "Article",
+          "DisplayText": "Home",
+          "Latest": true,
+          "Published": true,
+          "Owner": "[js: parameters('AdminUserId')]",
+          "Author": "[js: parameters('AdminUsername')]",
+          "AutoroutePart": {
+            "Path": "home",
+            "SetHomepage": false
+          },
+          "HtmlBodyPart": {
+            "Html": "<p>Navigation selection test.</p>"
+          },
+          "TitlePart": {
+            "Title": "Home"
+          }
+        }
+      ]
+    },
+    {
+      "name": "AdminMenu",
+      "data": [
+        {
+          "Id": "navigationselectionadminmenu00001",
+          "Name": "Admin menus",
+          "Enabled": true,
+          "MenuItems": [
+            {
+              "$type": "OrchardCore.AdminMenu.AdminNodes.LinkAdminNode, OrchardCore.AdminMenu",
+              "LinkText": "Home Direct",
+              "LinkUrl": "[js: variables('adminUrlPrefix') + '/Contents/ContentItems/' + variables('homeContentItemId') + '/Edit']",
+              "IconClass": "fas fa-file",
+              "PermissionNames": [],
+              "UniqueId": "navigationselection00000000000001",
+              "Enabled": true,
+              "Text": null,
+              "Id": null,
+              "Href": null,
+              "Url": null,
+              "Position": null,
+              "LinkToFirstChild": true,
+              "LocalNav": false,
+              "Culture": null,
+              "Items": [],
+              "Classes": [],
+              "MenuName": "Admin menus"
+            },
+            {
+              "$type": "OrchardCore.AdminMenu.AdminNodes.LinkAdminNode, OrchardCore.AdminMenu",
+              "LinkText": "Articles List",
+              "LinkUrl": "[js: variables('adminUrlPrefix') + '/Contents/ContentItems/Article']",
+              "IconClass": "fas fa-list",
+              "PermissionNames": [],
+              "UniqueId": "navigationselection00000000000002",
+              "Enabled": true,
+              "Text": null,
+              "Id": null,
+              "Href": null,
+              "Url": null,
+              "Position": null,
+              "LinkToFirstChild": true,
+              "LocalNav": false,
+              "Culture": null,
+              "Items": [],
+              "Classes": [],
+              "MenuName": "Admin menus"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
