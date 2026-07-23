@@ -24,7 +24,8 @@ public static class MediaOrchardRazorHelperExtensions
             return assetPath;
         }
 
-        var resolvedAssetPath = mediaFileStore.MapPathToPublicUrl(assetPath);
+        assetPath = assetPath.RemoveQueryString(out string queryString);
+        var resolvedAssetPath = mediaFileStore.MapPathToPublicUrl(assetPath) + queryString;
 
         if (appendVersion)
         {
@@ -48,7 +49,8 @@ public static class MediaOrchardRazorHelperExtensions
             return Task.FromResult(assetPath);
         }
 
-        var resolvedAssetPath = mediaFileStore.MapPathToPublicUrl(assetPath);
+        assetPath = assetPath.RemoveQueryString(out string queryString);
+        var resolvedAssetPath = mediaFileStore.MapPathToPublicUrl(assetPath) + queryString;
 
         if (appendVersion)
         {
