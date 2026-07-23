@@ -94,8 +94,7 @@ public class SetupService : ISetupService
             if (context.Errors.Count > 0)
             {
                 // Always reset to Uninitialized on failure so the tenant can be retried or removed.
-                context.ShellSettings.AsUninitialized();
-                await _shellHost.ReloadShellContextAsync(context.ShellSettings, eventSource: false);
+                await _shellHost.UpdateShellSettingsAsync(context.ShellSettings.AsUninitialized());
             }
 
             return executionId;
@@ -103,14 +102,20 @@ public class SetupService : ISetupService
         catch
         {
             // Always reset to Uninitialized on failure so the tenant can be retried or removed.
-            context.ShellSettings.AsUninitialized();
-            await _shellHost.ReloadShellContextAsync(context.ShellSettings, eventSource: false);
+            await _shellHost.UpdateShellSettingsAsync(context.ShellSettings.AsUninitialized());
 
             throw;
         }
         finally
         {
-            await _setupTracker.MarkSetupCompletedAsync(context.ShellSettings);
+            try
+            {
+                await _setupTracker.MarkSetupCompletedAsync(context.ShellSettings);
+            }
+            catch (Exception ex) when (!ex.IsFatal())
+            {
+                _logger.LogError(ex, "Failed to clear the setup marker for tenant '{TenantName}'.", context.ShellSettings.Name);
+            }
         }
     }
 
@@ -200,20 +205,7 @@ public class SetupService : ISetupService
                 context.Errors.Add(string.Empty, S["The security certificate on the server is from a non-trusted source (the certificate issuing authority isn't listed as a trusted authority in Trusted Root Certification Authorities on the client machine). In a development environment, you have the option to use the '{0}' parameter in your connection string to bypass the validation performed by the certificate authority.", "TrustServerCertificate=True"]);
                 break;
             case DbConnectionValidatorResult.DocumentTableFound:
-                // For non-default shells, the Document table may exist from a previous failed setup attempt.
-                // Since tenant creation already validates database/prefix uniqueness, we allow the setup to
-                // proceed and overwrite the partially created tables from the earlier attempt.
-                if (context.ShellSettings.IsDefaultShell())
-                {
-                    context.Errors.Add(string.Empty, S["The provided database, table prefix and schema are already in use."]);
-                }
-                else
-                {
-                    _logger.LogWarning(
-                        "The Document table already exists for tenant '{TenantName}'. This may indicate a previous failed setup attempt. Proceeding with setup.",
-                        context.ShellSettings.Name);
-                }
-
+                context.Errors.Add(string.Empty, S["The provided database, table prefix and schema are already in use."]);
                 break;
         }
 

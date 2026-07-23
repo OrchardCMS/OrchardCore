@@ -46,11 +46,34 @@ public class ShellRemovalManager : IShellRemovalManager
             return context;
         }
 
-        if (await _setupTracker.IsSetupInProgressAsync(shellSettings))
+        // Use the same atomic gate as setup so neither operation can start after
+        // the other has passed a point-in-time status check.
+        if (!await _setupTracker.TryMarkSetupStartedAsync(shellSettings))
         {
             context.ErrorMessage = S["The tenant '{0}' cannot be removed because setup is currently in progress.", shellSettings.Name];
             return context;
         }
+
+        try
+        {
+            return await RemoveInternalAsync(context);
+        }
+        finally
+        {
+            try
+            {
+                await _setupTracker.MarkSetupCompletedAsync(shellSettings);
+            }
+            catch (Exception ex) when (!ex.IsFatal())
+            {
+                _logger.LogError(ex, "Failed to clear the operation marker for tenant '{TenantName}'.", shellSettings.Name);
+            }
+        }
+    }
+
+    private async Task<ShellRemovingContext> RemoveInternalAsync(ShellRemovingContext context)
+    {
+        var shellSettings = context.ShellSettings;
 
         // A disabled tenant may be still in use in at least one active scope.
         if (!shellSettings.IsRemovable() || _shellHost.IsShellActive(shellSettings))
@@ -70,69 +93,65 @@ public class ShellRemovalManager : IShellRemovalManager
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(
+                _logger.LogError(
                     ex,
-                    "Failed to create a 'ShellContext' before removing the tenant '{TenantName}'. " +
-                    "The database may be missing or inaccessible. Skipping tenant-level removal handlers.",
+                    "Failed to create a 'ShellContext' before removing the tenant '{TenantName}'.",
                     shellSettings.Name);
 
-                // If the shell context cannot be created (e.g., the database file is missing or
-                // the connection is unavailable), we skip the tenant-level removal handlers and
-                // proceed with the host-level handlers and local resource cleanup. The database
-                // resources are effectively already gone if they can't be reached.
+                context.ErrorMessage = S["Failed to create a 'ShellContext' before removing the tenant."];
+                context.Error = ex;
+
+                return context;
             }
 
-            if (maximumContext != null)
+            await using var shellContext = maximumContext;
+            (var locker, var locked) = await shellContext.TryAcquireShellRemovingLockAsync();
+            if (!locked)
             {
-                await using var shellContext = maximumContext;
-                (var locker, var locked) = await shellContext.TryAcquireShellRemovingLockAsync();
-                if (!locked)
+                _logger.LogError(
+                    "Failed to acquire a lock before executing the tenant handlers while removing the tenant '{TenantName}'.",
+                    shellSettings.Name);
+
+                context.ErrorMessage = S["Failed to acquire a lock before executing the tenant handlers."];
+                return context;
+            }
+
+            await using var acquiredLock = locker;
+
+            await (await shellContext.CreateScopeAsync()).UsingServiceScopeAsync(async scope =>
+            {
+                // Execute tenant level removing handlers (singletons or scoped) in a reverse order.
+                // If feature A depends on feature B, the activating handler of feature B should run
+                // before the handler of the dependent feature A, but on removing the resources of
+                // feature B should be removed after the resources of the dependent feature A.
+                var tenantHandlers = scope.ServiceProvider.GetServices<IModularTenantEvents>().Reverse();
+                foreach (var handler in tenantHandlers)
                 {
-                    _logger.LogError(
-                        "Failed to acquire a lock before executing the tenant handlers while removing the tenant '{TenantName}'.",
-                        shellSettings.Name);
-
-                    context.ErrorMessage = S["Failed to acquire a lock before executing the tenant handlers."];
-                    return context;
-                }
-
-                await using var acquiredLock = locker;
-
-                await (await shellContext.CreateScopeAsync()).UsingServiceScopeAsync(async scope =>
-                {
-                    // Execute tenant level removing handlers (singletons or scoped) in a reverse order.
-                    // If feature A depends on feature B, the activating handler of feature B should run
-                    // before the handler of the dependent feature A, but on removing the resources of
-                    // feature B should be removed after the resources of the dependent feature A.
-                    var tenantHandlers = scope.ServiceProvider.GetServices<IModularTenantEvents>().Reverse();
-                    foreach (var handler in tenantHandlers)
+                    try
                     {
-                        try
+                        await handler.RemovingAsync(context);
+                        if (!context.Success)
                         {
-                            await handler.RemovingAsync(context);
-                            if (!context.Success)
-                            {
-                                break;
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            var type = handler.GetType().FullName;
-
-                            _logger.LogError(
-                                ex,
-                                "Failed to execute the tenant handler '{TenantHandler}' while removing the tenant '{TenantName}'.",
-                                type,
-                                shellSettings.Name);
-
-                            context.ErrorMessage = S["Failed to execute the tenant handler '{0}'.", type];
-                            context.Error = ex;
-
                             break;
                         }
                     }
-                });
-            }
+                    catch (Exception ex)
+                    {
+                        var type = handler.GetType().FullName;
+
+                        _logger.LogError(
+                            ex,
+                            "Failed to execute the tenant handler '{TenantHandler}' while removing the tenant '{TenantName}'.",
+                            type,
+                            shellSettings.Name);
+
+                        context.ErrorMessage = S["Failed to execute the tenant handler '{0}'.", type];
+                        context.Error = ex;
+
+                        break;
+                    }
+                }
+            });
         }
 
         if (_shellHost.TryGetSettings(ShellSettings.DefaultShellName, out var defaultSettings))

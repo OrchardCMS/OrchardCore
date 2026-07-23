@@ -18,8 +18,8 @@ public class ShellRemovalManagerTests
 
         var setupTracker = new Mock<ISetupTracker>();
         setupTracker
-            .Setup(x => x.IsSetupInProgressAsync(It.Is<ShellSettings>(s => s.Name == "TestTenant")))
-            .ReturnsAsync(true);
+            .Setup(x => x.TryMarkSetupStartedAsync(It.Is<ShellSettings>(s => s.Name == "TestTenant")))
+            .ReturnsAsync(false);
 
         var shellHost = new Mock<IShellHost>();
 
@@ -41,8 +41,8 @@ public class ShellRemovalManagerTests
 
         var setupTracker = new Mock<ISetupTracker>();
         setupTracker
-            .Setup(x => x.IsSetupInProgressAsync(It.IsAny<ShellSettings>()))
-            .ReturnsAsync(false);
+            .Setup(x => x.TryMarkSetupStartedAsync(It.IsAny<ShellSettings>()))
+            .ReturnsAsync(true);
 
         var shellHost = new Mock<IShellHost>();
         // TryGetShellContext returns false by default, so IsShellActive returns false.
@@ -54,6 +54,7 @@ public class ShellRemovalManagerTests
 
         // Assert - Should pass the setup-in-progress check.
         Assert.True(context.Success);
+        setupTracker.Verify(x => x.MarkSetupCompletedAsync(shellSettings), Times.Once);
     }
 
     [Fact]
@@ -64,8 +65,8 @@ public class ShellRemovalManagerTests
 
         var setupTracker = new Mock<ISetupTracker>();
         setupTracker
-            .Setup(x => x.IsSetupInProgressAsync(It.IsAny<ShellSettings>()))
-            .ReturnsAsync(false);
+            .Setup(x => x.TryMarkSetupStartedAsync(It.IsAny<ShellSettings>()))
+            .ReturnsAsync(true);
 
         var shellHost = new Mock<IShellHost>();
 
@@ -86,8 +87,8 @@ public class ShellRemovalManagerTests
 
         var setupTracker = new Mock<ISetupTracker>();
         setupTracker
-            .Setup(x => x.IsSetupInProgressAsync(It.IsAny<ShellSettings>()))
-            .ReturnsAsync(false);
+            .Setup(x => x.TryMarkSetupStartedAsync(It.IsAny<ShellSettings>()))
+            .ReturnsAsync(true);
 
         var shellHost = new Mock<IShellHost>();
 

@@ -16,14 +16,14 @@ namespace OrchardCore.Modules.OrchardCore.Setup.Tests;
 public class SetupServiceTests
 {
     [Fact]
-    public async Task SetupAsync_ShouldResetStateToUninitialized_WhenDbValidationFails()
+    public async Task SetupAsync_ShouldPersistUninitializedState_WhenDbValidationFails()
     {
         // Arrange
         var shellSettings = new ShellSettings { Name = "TestTenant" }.AsUninitialized();
         var shellHost = new Mock<IShellHost>();
 
         shellHost
-            .Setup(x => x.ReloadShellContextAsync(It.IsAny<ShellSettings>(), It.IsAny<bool>()))
+            .Setup(x => x.UpdateShellSettingsAsync(It.IsAny<ShellSettings>()))
             .Returns(Task.CompletedTask);
 
         var dbConnectionValidator = new Mock<IDbConnectionValidator>();
@@ -41,17 +41,19 @@ public class SetupServiceTests
         // Assert - The state should be reset to Uninitialized after failure.
         Assert.True(setupContext.Errors.Count > 0);
         Assert.Equal(TenantState.Uninitialized, shellSettings.State);
+        shellHost.Verify(x => x.UpdateShellSettingsAsync(
+            It.Is<ShellSettings>(s => s.State == TenantState.Uninitialized)), Times.Once);
     }
 
     [Fact]
-    public async Task SetupAsync_ShouldCallReloadShellContextAsync_WhenSetupFails()
+    public async Task SetupAsync_ShouldUpdateShellSettingsAsync_WhenSetupFails()
     {
         // Arrange
         var shellSettings = new ShellSettings { Name = "TestTenant" }.AsUninitialized();
         var shellHost = new Mock<IShellHost>();
 
         shellHost
-            .Setup(x => x.ReloadShellContextAsync(It.IsAny<ShellSettings>(), It.IsAny<bool>()))
+            .Setup(x => x.UpdateShellSettingsAsync(It.IsAny<ShellSettings>()))
             .Returns(Task.CompletedTask);
 
         var dbConnectionValidator = new Mock<IDbConnectionValidator>();
@@ -66,10 +68,9 @@ public class SetupServiceTests
         // Act
         await setupService.SetupAsync(setupContext);
 
-        // Assert - ReloadShellContextAsync must be called to properly reset the shell.
-        shellHost.Verify(x => x.ReloadShellContextAsync(
-            It.Is<ShellSettings>(s => s.State == TenantState.Uninitialized),
-            false), Times.Once);
+        // Assert - UpdateShellSettingsAsync must persist the reset state before reloading the shell.
+        shellHost.Verify(x => x.UpdateShellSettingsAsync(
+            It.Is<ShellSettings>(s => s.State == TenantState.Uninitialized)), Times.Once);
     }
 
     [Fact]
@@ -80,7 +81,7 @@ public class SetupServiceTests
         var shellHost = new Mock<IShellHost>();
 
         shellHost
-            .Setup(x => x.ReloadShellContextAsync(It.IsAny<ShellSettings>(), It.IsAny<bool>()))
+            .Setup(x => x.UpdateShellSettingsAsync(It.IsAny<ShellSettings>()))
             .Returns(Task.CompletedTask);
 
         var dbConnectionValidator = new Mock<IDbConnectionValidator>();
@@ -105,7 +106,7 @@ public class SetupServiceTests
         var shellHost = new Mock<IShellHost>();
 
         shellHost
-            .Setup(x => x.ReloadShellContextAsync(It.IsAny<ShellSettings>(), It.IsAny<bool>()))
+            .Setup(x => x.UpdateShellSettingsAsync(It.IsAny<ShellSettings>()))
             .Returns(Task.CompletedTask);
 
         var dbConnectionValidator = new Mock<IDbConnectionValidator>();
@@ -126,22 +127,20 @@ public class SetupServiceTests
         await setupService.SetupAsync(setupContext2);
         Assert.Equal(TenantState.Uninitialized, shellSettings.State);
 
-        // Verify reload was called both times.
-        shellHost.Verify(x => x.ReloadShellContextAsync(
-            It.Is<ShellSettings>(s => s.State == TenantState.Uninitialized),
-            false), Times.Exactly(2));
+        // Verify the reset state was persisted both times.
+        shellHost.Verify(x => x.UpdateShellSettingsAsync(
+            It.Is<ShellSettings>(s => s.State == TenantState.Uninitialized)), Times.Exactly(2));
     }
 
     [Fact]
-    public async Task SetupAsync_ShouldNotBlockOnDocumentTableFound_ForNonDefaultShell()
+    public async Task SetupAsync_ShouldBlockOnDocumentTableFound_ForNonDefaultShell()
     {
-        // Arrange - Simulate a non-default shell where Document table already exists
-        // (from a previous failed setup attempt).
+        // Arrange - Simulate a non-default shell where another tenant's Document table exists.
         var shellSettings = new ShellSettings { Name = "TestTenant" }.AsUninitialized();
         var shellHost = new Mock<IShellHost>();
 
         shellHost
-            .Setup(x => x.ReloadShellContextAsync(It.IsAny<ShellSettings>(), It.IsAny<bool>()))
+            .Setup(x => x.UpdateShellSettingsAsync(It.IsAny<ShellSettings>()))
             .Returns(Task.CompletedTask);
 
         var dbConnectionValidator = new Mock<IDbConnectionValidator>();
@@ -156,16 +155,10 @@ public class SetupServiceTests
         // Act
         var executionId = await setupService.SetupAsync(setupContext);
 
-        // Assert - The DocumentTableFound should NOT block setup for non-default shells.
-        // The setup continues past validation (may fail later due to unrelated mock limitations).
-        // Verify that the DB connection validator was called AND setup proceeded past it.
+        // Assert - Existing tenant data must never be reused implicitly.
         dbConnectionValidator.Verify(x => x.ValidateAsync(It.IsAny<DbConnectionValidatorContext>()), Times.Once);
-
-        // If DocumentTableFound had blocked, there would be exactly 1 error from validation.
-        // Since it didn't block, any errors are from subsequent steps (shell context creation etc.).
-        // The key assertion: the setup proceeded past the document table check.
-        Assert.DoesNotContain(setupContext.Errors, kvp =>
-            kvp.Value is not null && kvp.Value.ToString().Contains("already in use"));
+        Assert.Contains(setupContext.Errors, kvp =>
+            kvp.Value is not null && kvp.Value.Contains("already in use"));
     }
 
     [Fact]
@@ -176,7 +169,7 @@ public class SetupServiceTests
         var shellHost = new Mock<IShellHost>();
 
         shellHost
-            .Setup(x => x.ReloadShellContextAsync(It.IsAny<ShellSettings>(), It.IsAny<bool>()))
+            .Setup(x => x.UpdateShellSettingsAsync(It.IsAny<ShellSettings>()))
             .Returns(Task.CompletedTask);
 
         var dbConnectionValidator = new Mock<IDbConnectionValidator>();
@@ -203,7 +196,7 @@ public class SetupServiceTests
         var shellHost = new Mock<IShellHost>();
 
         shellHost
-            .Setup(x => x.ReloadShellContextAsync(It.IsAny<ShellSettings>(), It.IsAny<bool>()))
+            .Setup(x => x.UpdateShellSettingsAsync(It.IsAny<ShellSettings>()))
             .Returns(Task.CompletedTask);
 
         // Use a TaskCompletionSource to hold the first setup in progress.
@@ -242,7 +235,7 @@ public class SetupServiceTests
         var shellHost = new Mock<IShellHost>();
 
         shellHost
-            .Setup(x => x.ReloadShellContextAsync(It.IsAny<ShellSettings>(), It.IsAny<bool>()))
+            .Setup(x => x.UpdateShellSettingsAsync(It.IsAny<ShellSettings>()))
             .Returns(Task.CompletedTask);
 
         var dbConnectionValidator = new Mock<IDbConnectionValidator>();
@@ -277,7 +270,7 @@ public class SetupServiceTests
         var shellHost = new Mock<IShellHost>();
 
         shellHost
-            .Setup(x => x.ReloadShellContextAsync(It.IsAny<ShellSettings>(), It.IsAny<bool>()))
+            .Setup(x => x.UpdateShellSettingsAsync(It.IsAny<ShellSettings>()))
             .Returns(Task.CompletedTask);
 
         var dbConnectionValidator = new Mock<IDbConnectionValidator>();
@@ -294,6 +287,37 @@ public class SetupServiceTests
 
         // Assert - Tracker should be released even after exception.
         Assert.False(await setupTracker.IsSetupInProgressAsync(shellSettings));
+    }
+
+    [Fact]
+    public async Task SetupAsync_ShouldNotFail_WhenTrackerCleanupFails()
+    {
+        var shellSettings = new ShellSettings { Name = "TestTenant" }.AsUninitialized();
+        var shellHost = new Mock<IShellHost>();
+        shellHost
+            .Setup(x => x.UpdateShellSettingsAsync(It.IsAny<ShellSettings>()))
+            .Returns(Task.CompletedTask);
+
+        var dbConnectionValidator = new Mock<IDbConnectionValidator>();
+        dbConnectionValidator
+            .Setup(x => x.ValidateAsync(It.IsAny<DbConnectionValidatorContext>()))
+            .ReturnsAsync(DbConnectionValidatorResult.InvalidConnection);
+
+        var setupTracker = new Mock<ISetupTracker>();
+        setupTracker
+            .Setup(x => x.TryMarkSetupStartedAsync(It.IsAny<ShellSettings>()))
+            .ReturnsAsync(true);
+        setupTracker
+            .Setup(x => x.MarkSetupCompletedAsync(It.IsAny<ShellSettings>()))
+            .ThrowsAsync(new InvalidOperationException("Simulated cleanup failure"));
+
+        var setupService = CreateSetupService(shellHost.Object, dbConnectionValidator.Object, setupTracker.Object);
+        var setupContext = CreateSetupContext(shellSettings);
+
+        var executionId = await setupService.SetupAsync(setupContext);
+
+        Assert.Null(executionId);
+        Assert.NotEmpty(setupContext.Errors);
     }
 
     private static SetupContext CreateSetupContext(ShellSettings shellSettings)

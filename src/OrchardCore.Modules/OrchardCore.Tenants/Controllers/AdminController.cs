@@ -31,6 +31,7 @@ public sealed class AdminController : Controller
     private readonly IShellHost _shellHost;
     private readonly IShellSettingsManager _shellSettingsManager;
     private readonly IShellRemovalManager _shellRemovalManager;
+    private readonly ISetupTracker _setupTracker;
     private readonly IAuthorizationService _authorizationService;
     private readonly ShellSettings _currentShellSettings;
     private readonly IFeatureProfilesService _featureProfilesService;
@@ -53,6 +54,7 @@ public sealed class AdminController : Controller
         IShellHost shellHost,
         IShellSettingsManager shellSettingsManager,
         IShellRemovalManager shellRemovalManager,
+        ISetupTracker setupTracker,
         IAuthorizationService authorizationService,
         ShellSettings currentShellSettings,
         IFeatureProfilesService featureProfilesService,
@@ -73,6 +75,7 @@ public sealed class AdminController : Controller
         _shellHost = shellHost;
         _shellSettingsManager = shellSettingsManager;
         _shellRemovalManager = shellRemovalManager;
+        _setupTracker = setupTracker;
         _authorizationService = authorizationService;
         _currentShellSettings = currentShellSettings;
         _featureProfilesService = featureProfilesService;
@@ -509,6 +512,12 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
+        if (await _setupTracker.IsSetupInProgressAsync(shellSettings))
+        {
+            await _notifier.ErrorAsync(H["The tenant cannot be edited while setup is in progress."]);
+            return RedirectToAction(nameof(Index));
+        }
+
         if (shellSettings.IsSetupReady())
         {
             model.ConnectionString = TenantConnectionStringRedactor.RestoreIfRedacted(shellSettings["ConnectionString"], model.ConnectionString);
@@ -535,6 +544,12 @@ public sealed class AdminController : Controller
 
         if (ModelState.IsValid)
         {
+            if (!await _setupTracker.TryMarkSetupStartedAsync(shellSettings))
+            {
+                await _notifier.ErrorAsync(H["The tenant cannot be edited while setup is in progress."]);
+                return RedirectToAction(nameof(Index));
+            }
+
             try
             {
                 shellSettings["Description"] = model.Description;
@@ -563,6 +578,10 @@ public sealed class AdminController : Controller
             {
                 _logger.LogError(ex, "An error occurred while saving the tenant '{TenantName}'.", model.Name);
                 ModelState.AddModelError(string.Empty, S["An error occurred while saving the tenant settings."]);
+            }
+            finally
+            {
+                await CompleteTrackedOperationAsync(shellSettings);
             }
         }
 
@@ -703,7 +722,7 @@ public sealed class AdminController : Controller
 
         if (!shellSettings.IsRemovable())
         {
-            await _notifier.ErrorAsync(H["You can only remove a 'Disabled', 'Uninitialized', or 'Initializing' tenant."]);
+            await _notifier.ErrorAsync(H["You can only remove a 'Disabled' or 'Uninitialized' tenant."]);
             return RedirectToAction(nameof(Index));
         }
 
@@ -772,6 +791,18 @@ public sealed class AdminController : Controller
 
     private static string GetDisplayedConnectionString(string connectionString) =>
         TenantConnectionStringRedactor.RedactPassword(connectionString);
+
+    private async Task CompleteTrackedOperationAsync(ShellSettings shellSettings)
+    {
+        try
+        {
+            await _setupTracker.MarkSetupCompletedAsync(shellSettings);
+        }
+        catch (Exception ex) when (!ex.IsFatal())
+        {
+            _logger.LogError(ex, "Failed to clear the operation marker for tenant '{TenantName}'.", shellSettings.Name);
+        }
+    }
 
     private void ApplyConfiguredDatabasePatterns(EditTenantViewModel model)
     {

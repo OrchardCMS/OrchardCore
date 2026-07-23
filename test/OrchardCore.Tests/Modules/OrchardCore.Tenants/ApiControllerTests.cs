@@ -460,6 +460,14 @@ public class ApiControllerTests
             tenantDatabasePatternResolver,
             stringLocalizerMock.Object);
 
+        var setupTracker = new Mock<ISetupTracker>();
+        setupTracker
+            .Setup(x => x.TryMarkSetupStartedAsync(It.IsAny<ShellSettings>()))
+            .ReturnsAsync(true);
+        setupTracker
+            .Setup(x => x.MarkSetupCompletedAsync(It.IsAny<ShellSettings>()))
+            .Returns(Task.CompletedTask);
+
         return new TenantApiController(
             shellHostMock.Object,
             defaultShellSettings,
@@ -468,7 +476,7 @@ public class ApiControllerTests
             shellSettingsManagerMock.Object,
             dataProtectionProviderMock.Object,
             Mock.Of<ISetupService>(),
-            Mock.Of<ISetupTracker>(),
+            setupTracker.Object,
             _clockMock.Object,
             Mock.Of<IEmailAddressValidator>(),
             Options.Create(new IdentityOptions()),

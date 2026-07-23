@@ -34,7 +34,7 @@ public sealed class SetupTracker : ISetupTracker
     /// </summary>
     private static readonly TimeSpan _lockExpiration = TimeSpan.FromSeconds(30);
 
-    private readonly ConcurrentDictionary<string, bool> _activeSetups = new(StringComparer.OrdinalIgnoreCase);
+    private readonly ConcurrentDictionary<string, string> _activeSetups = new(StringComparer.OrdinalIgnoreCase);
     private readonly IShellHost _shellHost;
 
     public SetupTracker(IShellHost shellHost)
@@ -72,6 +72,7 @@ public sealed class SetupTracker : ISetupTracker
         }
 
         var distributedCache = await GetDistributedCacheAsync();
+        var marker = Guid.NewGuid().ToString("n");
 
         if (distributedCache is not null)
         {
@@ -100,7 +101,7 @@ public sealed class SetupTracker : ISetupTracker
                     // Write the "in progress" flag to the distributed cache.
                     await distributedCache.SetStringAsync(
                         GetCacheKey(shellSettings),
-                        "1",
+                        marker,
                         new DistributedCacheEntryOptions
                         {
                             AbsoluteExpirationRelativeToNow = _cacheExpiration,
@@ -116,7 +117,7 @@ public sealed class SetupTracker : ISetupTracker
 
         // Add to local dictionary. If another thread beat us, the cache entry still exists
         // and will be cleaned up on expiration.
-        if (!_activeSetups.TryAdd(shellSettings.Name, true))
+        if (!_activeSetups.TryAdd(shellSettings.Name, marker))
         {
             return false;
         }
@@ -127,13 +128,38 @@ public sealed class SetupTracker : ISetupTracker
     /// <inheritdoc />
     public async Task MarkSetupCompletedAsync(ShellSettings shellSettings)
     {
-        _activeSetups.TryRemove(shellSettings.Name, out _);
+        if (!_activeSetups.TryRemove(shellSettings.Name, out var marker))
+        {
+            return;
+        }
 
-        // Remove the distributed cache entry so other instances can see it's complete.
+        // Only remove this operation's marker. A long-running operation may outlive the
+        // cache entry and must not clear a newer operation's marker after it expires.
         var distributedCache = await GetDistributedCacheAsync();
         if (distributedCache is not null)
         {
-            await distributedCache.RemoveAsync(GetCacheKey(shellSettings));
+            var distributedLock = await GetDistributedLockAsync();
+            if (distributedLock is not null)
+            {
+                var (locker, locked) = await distributedLock.TryAcquireLockAsync(
+                    GetLockKey(shellSettings),
+                    _lockTimeout,
+                    _lockExpiration);
+
+                if (!locked)
+                {
+                    return;
+                }
+
+                await using (locker)
+                {
+                    var existing = await distributedCache.GetStringAsync(GetCacheKey(shellSettings));
+                    if (string.Equals(existing, marker, StringComparison.Ordinal))
+                    {
+                        await distributedCache.RemoveAsync(GetCacheKey(shellSettings));
+                    }
+                }
+            }
         }
     }
 

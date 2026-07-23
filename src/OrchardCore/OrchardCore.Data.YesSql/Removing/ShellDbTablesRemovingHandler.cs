@@ -67,24 +67,7 @@ public class ShellDbTablesRemovingHandler : IShellRemovingHandler
             return;
         }
 
-        ShellDbTablesInfo shellDbTablesInfo;
-        try
-        {
-            shellDbTablesInfo = await GetTablesToRemoveAsync(shellSettings);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogWarning(
-                ex,
-                "Failed to determine the tables to remove for tenant '{TenantName}'. " +
-                "The database may be missing or inaccessible. Skipping table removal.",
-                shellSettings.Name);
-
-            // If we can't even determine which tables to remove (e.g., the database is
-            // unreachable or ISession is null), we skip table removal gracefully.
-            return;
-        }
-
+        var shellDbTablesInfo = await GetTablesToRemoveAsync(shellSettings);
         if (!context.Success)
         {
             return;
@@ -101,11 +84,7 @@ public class ShellDbTablesRemovingHandler : IShellRemovingHandler
             {
                 // Clear the pool to unlock the file and remove it.
                 SqliteConnection.ClearPool(sqliteConnection);
-
-                if (File.Exists(connection.DataSource))
-                {
-                    File.Delete(connection.DataSource);
-                }
+                File.Delete(connection.DataSource);
             }
             else
             {
@@ -126,16 +105,6 @@ public class ShellDbTablesRemovingHandler : IShellRemovingHandler
                 }
             }
         }
-        catch (Exception ex) when (IsDatabaseNotFoundException(ex, shellSettings))
-        {
-            // The database file or server is not reachable. Since there's nothing to clean up,
-            // log a warning and allow the removal to continue.
-            _logger.LogWarning(
-                ex,
-                "The database for tenant '{TenantName}' is not accessible. " +
-                "Skipping table removal as the database may have already been removed.",
-                shellSettings.Name);
-        }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to remove the tables of tenant '{TenantName}'.", shellSettings.Name);
@@ -150,9 +119,9 @@ public class ShellDbTablesRemovingHandler : IShellRemovingHandler
     private async Task<ShellDbTablesInfo> GetTablesToRemoveAsync(ShellSettings shellSettings)
     {
         var shellDbTablesInfo = new ShellDbTablesInfo();
-        if (shellSettings["DatabaseProvider"] is null || shellSettings["DatabaseProvider"] == DatabaseProviderValue.Sqlite)
+        if (shellSettings["DatabaseProvider"] == DatabaseProviderValue.Sqlite)
         {
-            // No database provider configured or the whole SQLite database file will be removed.
+            // The whole database file will be removed.
             return shellDbTablesInfo;
         }
 
@@ -201,30 +170,5 @@ public class ShellDbTablesRemovingHandler : IShellRemovingHandler
         });
 
         return shellDbTablesInfo;
-    }
-
-    /// <summary>
-    /// Determines whether the exception indicates the database file or server does not exist,
-    /// as opposed to being locked or otherwise inaccessible.
-    /// </summary>
-    private static bool IsDatabaseNotFoundException(Exception ex, ShellSettings shellSettings)
-    {
-        if (shellSettings["DatabaseProvider"] == DatabaseProviderValue.Sqlite)
-        {
-            // SQLite Error 14 (SQLITE_CANTOPEN) with "unable to open database file"
-            // indicates the file doesn't exist. A locked file produces a different error code.
-            if (ex is SqliteException sqliteEx && sqliteEx.SqliteErrorCode == 14)
-            {
-                return true;
-            }
-
-            // Also handle the case where an inner SqliteException is wrapped.
-            if (ex.InnerException is SqliteException innerSqliteEx && innerSqliteEx.SqliteErrorCode == 14)
-            {
-                return true;
-            }
-        }
-
-        return false;
     }
 }

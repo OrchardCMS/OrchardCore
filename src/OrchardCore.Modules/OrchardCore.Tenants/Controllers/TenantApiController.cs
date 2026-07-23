@@ -197,8 +197,18 @@ public sealed class TenantApiController : ControllerBase
             return NotFound();
         }
 
+        if (await _setupTracker.IsSetupInProgressAsync(shellSettings))
+        {
+            return Conflict(S["The tenant cannot be edited while setup is in progress."]);
+        }
+
         if (ModelState.IsValid)
         {
+            if (!await _setupTracker.TryMarkSetupStartedAsync(shellSettings))
+            {
+                return Conflict(S["The tenant cannot be edited while setup is in progress."]);
+            }
+
             try
             {
                 shellSettings["Description"] = model.Description;
@@ -225,6 +235,10 @@ public sealed class TenantApiController : ControllerBase
             {
                 _logger.LogError(ex, "An error occurred while saving the tenant '{TenantName}'.", model.Name);
                 ModelState.AddModelError(string.Empty, S["An error occurred while saving the tenant settings."]);
+            }
+            finally
+            {
+                await CompleteTrackedOperationAsync(shellSettings);
             }
         }
 
@@ -600,6 +614,18 @@ public sealed class TenantApiController : ControllerBase
         }
 
         _tenantDatabasePatternResolver.Apply(model);
+    }
+
+    private async Task CompleteTrackedOperationAsync(ShellSettings shellSettings)
+    {
+        try
+        {
+            await _setupTracker.MarkSetupCompletedAsync(shellSettings);
+        }
+        catch (Exception ex) when (!ex.IsFatal())
+        {
+            _logger.LogError(ex, "Failed to clear the operation marker for tenant '{TenantName}'.", shellSettings.Name);
+        }
     }
 
     private (bool HasDatabaseProviderPreset, bool HasConnectionStringPreset, string DatabaseProvider, string ConnectionString, string Schema) GetPresetDatabaseConfiguration()
