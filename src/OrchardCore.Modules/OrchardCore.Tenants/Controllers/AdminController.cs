@@ -104,60 +104,61 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        var allSettings = _shellHost.GetAllSettings().OrderBy(s => s.Name);
+        var allSettings = _shellHost.GetAllSettings();
         var dataProtector = _dataProtectorProvider.CreateProtector("Tokens").ToTimeLimitedDataProtector();
 
         var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
 
-        var entries = allSettings.Select(settings =>
-           {
-               var entry = new ShellSettingsEntry
-               {
-                   Category = settings["Category"],
-                   Description = settings["Description"],
-                   Name = settings.Name,
-                   ShellSettings = settings,
-               };
-
-               if (settings.IsUninitialized() && !string.IsNullOrEmpty(settings["Secret"]))
-               {
-                   entry.Token = dataProtector.Protect(settings["Secret"], _clock.UtcNow.Add(new TimeSpan(24, 0, 0)));
-               }
-
-               return entry;
-           }).ToList();
+        var filteredSettings = allSettings;
 
         if (!string.IsNullOrWhiteSpace(options.Search))
         {
-            entries = entries.Where(t => t.Name.IndexOf(options.Search, StringComparison.OrdinalIgnoreCase) > -1 ||
-                (t.ShellSettings != null &&
-                 ((t.ShellSettings.RequestUrlHost != null && t.ShellSettings.RequestUrlHost.IndexOf(options.Search, StringComparison.OrdinalIgnoreCase) > -1) ||
-                 (t.ShellSettings.RequestUrlPrefix != null && t.ShellSettings.RequestUrlPrefix.IndexOf(options.Search, StringComparison.OrdinalIgnoreCase) > -1)))).ToList();
+            filteredSettings = filteredSettings.Where(settings =>
+                settings.Name.IndexOf(options.Search, StringComparison.OrdinalIgnoreCase) > -1 ||
+                (settings.RequestUrlHost != null && settings.RequestUrlHost.IndexOf(options.Search, StringComparison.OrdinalIgnoreCase) > -1) ||
+                (settings.RequestUrlPrefix != null && settings.RequestUrlPrefix.IndexOf(options.Search, StringComparison.OrdinalIgnoreCase) > -1));
         }
 
         if (!string.IsNullOrWhiteSpace(options.Category))
         {
-            entries = entries.Where(t => t.Category?.Equals(options.Category, StringComparison.OrdinalIgnoreCase) == true).ToList();
+            filteredSettings = filteredSettings.Where(settings => settings["Category"]?.Equals(options.Category, StringComparison.OrdinalIgnoreCase) == true);
         }
 
-        entries = options.Status switch
+        filteredSettings = options.Status switch
         {
-            TenantsState.Disabled => entries.Where(t => t.ShellSettings.IsDisabled()).ToList(),
-            TenantsState.Running => entries.Where(t => t.ShellSettings.IsRunning()).ToList(),
-            TenantsState.Uninitialized => entries.Where(t => t.ShellSettings.IsUninitialized()).ToList(),
-            _ => entries,
+            TenantsState.Disabled => filteredSettings.Where(settings => settings.IsDisabled()),
+            TenantsState.Running => filteredSettings.Where(settings => settings.IsRunning()),
+            TenantsState.Uninitialized => filteredSettings.Where(settings => settings.IsUninitialized()),
+            _ => filteredSettings,
         };
 
-        entries = options.OrderBy switch
+        var sortedSettings = (options.OrderBy switch
         {
-            TenantsOrder.Name => entries.OrderBy(t => t.Name).ToList(),
-            TenantsOrder.State => entries.OrderBy(t => t.ShellSettings?.State).ToList(),
-            _ => entries.OrderByDescending(t => t.Name).ToList(),
-        };
+            TenantsOrder.Name => filteredSettings.OrderBy(settings => settings.Name),
+            TenantsOrder.State => filteredSettings.OrderBy(settings => settings.State),
+            _ => filteredSettings.OrderByDescending(settings => settings.Name),
+        }).ToList();
 
-        var results = entries
+        var results = sortedSettings
             .Skip(pager.GetStartIndex())
-            .Take(pager.PageSize).ToList();
+            .Take(pager.PageSize)
+            .Select(settings =>
+            {
+                var entry = new ShellSettingsEntry
+                {
+                    Category = settings["Category"],
+                    Description = settings["Description"],
+                    Name = settings.Name,
+                    ShellSettings = settings,
+                };
+
+                if (settings.IsUninitialized() && !string.IsNullOrEmpty(settings["Secret"]))
+                {
+                    entry.Token = dataProtector.Protect(settings["Secret"], _clock.UtcNow.Add(new TimeSpan(24, 0, 0)));
+                }
+
+                return entry;
+            }).ToList();
 
         // Maintain previous route data when generating page links
         var routeData = new RouteData();
@@ -174,7 +175,7 @@ public sealed class AdminController : Controller
             routeData.Values.TryAdd("Options.Search", options.Search);
         }
 
-        var pagerShape = await _shapeFactory.PagerAsync(pager, entries.Count, routeData);
+        var pagerShape = await _shapeFactory.PagerAsync(pager, sortedSettings.Count, routeData);
 
         var model = new AdminIndexViewModel
         {
@@ -185,6 +186,7 @@ public sealed class AdminController : Controller
 
         // We populate the SelectLists
         model.Options.TenantsCategories = allSettings
+            .OrderBy(settings => settings.Name)
             .GroupBy(settings => settings["Category"])
             .Where(group => !string.IsNullOrEmpty(group.Key))
             .Select(group => new SelectListItem(group.Key, group.Key, string.Equals(options.Category, group.Key, StringComparison.OrdinalIgnoreCase)))
