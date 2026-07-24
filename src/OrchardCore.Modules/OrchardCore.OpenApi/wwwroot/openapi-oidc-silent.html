@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="robots" content="noindex" />
+    <title>OpenAPI documentation — silent sign-in</title>
+</head>
+<body>
+    <!--
+      Loaded in a hidden iframe by oidc-client-ts to complete a silent (prompt=none) token
+      renewal for the Swagger/Scalar documentation UIs. The data-silent attribute tells the auth
+      bundle (see openapi-ui-auth.ts) to run the silent-renew callback instead of configuring the
+      app. The redirect URI ending in this file's path must be registered on the OIDC client
+      (see the OpenApiPkce recipe).
+    -->
+    <script type="module" src="Scripts/openapi-ui-auth/openapi-auth.js" data-openapi-ui-auth data-silent></script>
+</body>
+</html>

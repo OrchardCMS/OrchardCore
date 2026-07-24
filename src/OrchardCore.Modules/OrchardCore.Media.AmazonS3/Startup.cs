@@ -17,6 +17,7 @@ using OrchardCore.Media.AmazonS3.Services;
 using OrchardCore.Media.Core;
 using OrchardCore.Media.Core.Events;
 using OrchardCore.Media.Events;
+using OrchardCore.Media.Services;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
@@ -185,6 +186,15 @@ public sealed class MediaAmazonS3ImageCacheStartup : Modules.StartupBase
 
             services.AddScoped<IModularTenantEvents, AwsS3MediaImageCacheTenantEvents>();
         }
+    }
+}
+
+[RequireFeatures("OrchardCore.Media.Tus")]
+public sealed class MediaAmazonS3TusStartup : Modules.StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.Replace(ServiceDescriptor.Singleton<ITusTempStore, S3TusTempStore>());
     }
 }
 

@@ -56,6 +56,5 @@ jobs:
         name: functional-test-failure
         path: |
           src/OrchardCore.Cms.Web/App_Data_Tests_*/logs
-          src/OrchardCore.Mvc.Web/App_Data_Tests/logs
           test/OrchardCore.Tests.Functional/traces
         retention-days: 3

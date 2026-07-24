@@ -1,7 +1,13 @@
 @model OrchardCore.Media.MediaOptions
+@inject IMediaFileStore MediaFileStore
 @{
     var supportedSizes = string.Join(", ", Model.SupportedSizes.Select(s => s.ToString()).ToArray());
     var allowedFileExtensions = string.Join(", ", Model.AllowedFileExtensions.Select(s => s.ToString()).ToArray());
+    var storageName = MediaFileStore.StorageName;
+    var hasHierarchicalNamespace = MediaFileStore.Capabilities.HasHierarchicalNamespace;
+    var supportsAtomicMove = MediaFileStore.Capabilities.SupportsAtomicMove;
+    var tusEnabled = Context.RequestServices.IsMediaTusEnabled();
+    var signalrEnabled = Context.RequestServices.GetService<IHubContext<MediaHub>>() != null;
 }
 <h1>@RenderTitleSegments(T["Media options"])</h1>
 
@@ -100,5 +106,45 @@
     <div class="col-sm-10">
         <code><input asp-for="AssetsUsersFolder" type="text" class="form-control-plaintext" readonly /></code>
         <span class="hint">@T["The folder under AssetsPath used to store users own media assets."]</span>
+    </div>
+</div>
+
+<div class="mb-3 row">
+    <label class="col-sm-2 col-form-label">@T["Storage provider"]</label>
+    <div class="col-sm-10">
+        <code><input type="text" class="form-control-plaintext" value="@storageName" readonly /></code>
+        <span class="hint">@T["The name of the configured media storage provider."]</span>
+    </div>
+</div>
+
+<div class="mb-3 row">
+    <label class="col-sm-2 col-form-label">@T["Hierarchical namespace"]</label>
+    <div class="col-sm-10">
+        <i class="fa-solid @(hasHierarchicalNamespace ? "fa-check text-success" : "fa-xmark text-danger")" aria-hidden="true"></i>
+        <span class="hint">@T["Indicates whether the storage provider supports a true hierarchical folder structure."]</span>
+    </div>
+</div>
+
+<div class="mb-3 row">
+    <label class="col-sm-2 col-form-label">@T["Atomic move"]</label>
+    <div class="col-sm-10">
+        <i class="fa-solid @(supportsAtomicMove ? "fa-check text-success" : "fa-xmark text-danger")" aria-hidden="true"></i>
+        <span class="hint">@T["Indicates whether the storage provider supports atomic move operations."]</span>
+    </div>
+</div>
+
+<div class="mb-3 row">
+    <label class="col-sm-2 col-form-label">@T["SignalR"]</label>
+    <div class="col-sm-10">
+        <i class="fa-solid @(signalrEnabled ? "fa-check text-success" : "fa-xmark text-danger")" aria-hidden="true"></i>
+        <span class="hint">@T["Indicates whether SignalR is enabled for real-time media updates."]</span>
+    </div>
+</div>
+
+<div class="mb-3 row">
+    <label class="col-sm-2 col-form-label">@T["TUS uploads"]</label>
+    <div class="col-sm-10">
+        <i class="fa-solid @(tusEnabled ? "fa-check text-success" : "fa-xmark text-danger")" aria-hidden="true"></i>
+        <span class="hint">@T["Indicates whether the TUS resumable upload protocol is enabled."]</span>
     </div>
 </div>

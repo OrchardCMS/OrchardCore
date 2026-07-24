@@ -1,0 +1,213 @@
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
+
+namespace Microsoft.AspNetCore.Mvc;
+
+public class ProblemDetailsApiLocalization();
+
+public static class ProblemDetailsApiControllerExtensions
+{
+    /// <summary>
+    /// Returns a 403 Problem response for failed permission checks on an API controller,
+    /// regardless of the authentication scheme. Unlike a real <c>Forbid()</c> — which under
+    /// the cookie scheme redirects to the HTML access-denied page, unusable for JSON
+    /// clients — this always produces a Problem Details body. Callers must be gated by
+    /// <c>[Authorize]</c>, which rejects unauthenticated requests through the authentication
+    /// stack before any action runs. This method deliberately never returns a 401: emitting
+    /// one here would bypass the authentication handlers and omit the
+    /// <c>WWW-Authenticate</c> header that RFC 9110 §15.5.2 requires on every 401 response.
+    /// </summary>
+    public static ActionResult ApiForbidProblem(this ControllerBase controllerBase)
+    {
+        var S = controllerBase.HttpContext.RequestServices.GetRequiredService<
+            IStringLocalizer<ProblemDetailsApiLocalization>
+        >();
+
+        return controllerBase.Problem(
+            title: S["Forbidden"],
+            detail: S["You do not have sufficient permissions to complete this request"],
+            statusCode: StatusCodes.Status403Forbidden
+        );
+    }
+
+    /// <summary>
+    /// Returns a Problem with a 400 Bad Request status code.
+    /// </summary>
+    public static ObjectResult ApiBadRequestProblem(
+        this ControllerBase controllerBase,
+        LocalizedString detail = null,
+        LocalizedString title = null
+    )
+    {
+        if (string.IsNullOrEmpty(title))
+        {
+            var S = controllerBase.HttpContext.RequestServices.GetRequiredService<
+                IStringLocalizer<ProblemDetailsApiLocalization>
+            >();
+
+            return controllerBase.Problem(
+                title: S["Bad request"],
+                detail: detail,
+                statusCode: StatusCodes.Status400BadRequest
+            );
+        }
+
+        return controllerBase.Problem(title: title, detail: detail, statusCode: StatusCodes.Status400BadRequest);
+    }
+
+    /// <summary>
+    /// Returns a Problem with a 404 Not Found status code.
+    /// </summary>
+    public static ObjectResult ApiNotFoundProblem(
+        this ControllerBase controllerBase,
+        LocalizedString detail = null,
+        LocalizedString title = null
+    )
+    {
+        if (string.IsNullOrEmpty(title))
+        {
+            var S = controllerBase.HttpContext.RequestServices.GetRequiredService<
+                IStringLocalizer<ProblemDetailsApiLocalization>
+            >();
+
+            return controllerBase.Problem(
+                title: S["Not Found"],
+                detail: detail,
+                statusCode: StatusCodes.Status404NotFound
+            );
+        }
+
+        return controllerBase.Problem(title: title, detail: detail, statusCode: StatusCodes.Status404NotFound);
+    }
+
+    /// <summary>
+    /// Returns a ValidationProblem with a 400 Bad Request status code.
+    /// </summary>
+    public static ActionResult ApiValidationProblem(
+        this ControllerBase controllerBase,
+        LocalizedString detail = null,
+        LocalizedString title = null,
+        ModelStateDictionary modelState = null
+    )
+    {
+        if (string.IsNullOrEmpty(title))
+        {
+            var S = controllerBase.HttpContext.RequestServices.GetRequiredService<
+                IStringLocalizer<ProblemDetailsApiLocalization>
+            >();
+
+            return controllerBase.ValidationProblem(
+                detail: detail,
+                title: S["A validation error occurred."],
+                statusCode: StatusCodes.Status400BadRequest,
+                modelStateDictionary: modelState
+            );
+        }
+
+        return controllerBase.ValidationProblem(
+            detail: detail,
+            title: title,
+            statusCode: StatusCodes.Status400BadRequest,
+            modelStateDictionary: modelState
+        );
+    }
+
+    /// <summary>
+    /// Returns a 403 Problem response for failed permission checks on a minimal API endpoint,
+    /// regardless of the authentication scheme. Unlike a real forbid — which under the cookie
+    /// scheme redirects to the HTML access-denied page, unusable for JSON clients — this
+    /// always produces a Problem Details body. Callers must require authorization so that
+    /// unauthenticated requests are rejected through the authentication stack before the
+    /// handler runs. This method deliberately never returns a 401: emitting one here would
+    /// bypass the authentication handlers and omit the <c>WWW-Authenticate</c> header that
+    /// RFC 9110 §15.5.2 requires on every 401 response.
+    /// </summary>
+    public static IResult ApiForbidProblem(this HttpContext httpContext)
+    {
+        var S = httpContext.RequestServices.GetRequiredService<
+            IStringLocalizer<ProblemDetailsApiLocalization>
+        >();
+
+        return TypedResults.Problem(
+            title: S["Forbidden"],
+            detail: S["You do not have sufficient permissions to complete this request"],
+            statusCode: StatusCodes.Status403Forbidden
+        );
+    }
+
+    /// <summary>
+    /// Returns a Problem with a 400 Bad Request status code, for a minimal API endpoint.
+    /// </summary>
+    public static IResult ApiBadRequestProblem(
+        this HttpContext httpContext,
+        LocalizedString detail = null,
+        LocalizedString title = null
+    )
+    {
+        if (string.IsNullOrEmpty(title))
+        {
+            var S = httpContext.RequestServices.GetRequiredService<
+                IStringLocalizer<ProblemDetailsApiLocalization>
+            >();
+
+            return TypedResults.Problem(title: S["Bad request"], detail: detail, statusCode: StatusCodes.Status400BadRequest);
+        }
+
+        return TypedResults.Problem(title: title, detail: detail, statusCode: StatusCodes.Status400BadRequest);
+    }
+
+    /// <summary>
+    /// Returns a Problem with a 404 Not Found status code, for a minimal API endpoint.
+    /// </summary>
+    public static IResult ApiNotFoundProblem(
+        this HttpContext httpContext,
+        LocalizedString detail = null,
+        LocalizedString title = null
+    )
+    {
+        if (string.IsNullOrEmpty(title))
+        {
+            var S = httpContext.RequestServices.GetRequiredService<
+                IStringLocalizer<ProblemDetailsApiLocalization>
+            >();
+
+            return TypedResults.Problem(title: S["Not Found"], detail: detail, statusCode: StatusCodes.Status404NotFound);
+        }
+
+        return TypedResults.Problem(title: title, detail: detail, statusCode: StatusCodes.Status404NotFound);
+    }
+
+    /// <summary>
+    /// Returns a ValidationProblem with a 400 Bad Request status code, for a minimal API endpoint.
+    /// </summary>
+    public static IResult ApiValidationProblem(
+        this HttpContext httpContext,
+        LocalizedString detail = null,
+        LocalizedString title = null,
+        ModelStateDictionary modelState = null
+    )
+    {
+        var errors = modelState is null
+            ? new Dictionary<string, string[]>()
+            : modelState
+                .Where(entry => entry.Value.Errors.Count > 0)
+                .ToDictionary(entry => entry.Key, entry => entry.Value.Errors.Select(error => error.ErrorMessage).ToArray());
+
+        if (string.IsNullOrEmpty(title))
+        {
+            var S = httpContext.RequestServices.GetRequiredService<
+                IStringLocalizer<ProblemDetailsApiLocalization>
+            >();
+
+            return TypedResults.ValidationProblem(
+                errors,
+                detail: detail,
+                title: S["A validation error occurred."]
+            );
+        }
+
+        return TypedResults.ValidationProblem(errors, detail: detail, title: title);
+    }
+}

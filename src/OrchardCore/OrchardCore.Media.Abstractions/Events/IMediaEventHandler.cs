@@ -13,5 +13,7 @@ public interface IMediaEventHandler
     Task MediaMovedAsync(MediaMoveContext context) => Task.CompletedTask;
     Task MediaCreatingDirectoryAsync(MediaCreatingContext context) => Task.CompletedTask;
     Task MediaCreatedDirectoryAsync(MediaCreatedContext context) => Task.CompletedTask;
+    Task MediaCreatedFileAsync(MediaCreatedContext context) => Task.CompletedTask;
+    Task MediaCopiedFileAsync(MediaMoveContext context) => Task.CompletedTask;
     Task MediaPermittedStorageAsync(MediaPermittedStorageContext context) => Task.CompletedTask;
 }

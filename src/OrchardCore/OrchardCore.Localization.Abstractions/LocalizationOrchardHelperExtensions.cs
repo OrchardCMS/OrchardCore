@@ -26,35 +26,15 @@ public static class LocalizationOrchardHelperExtensions
     /// <example>
     /// In a Razor view or layout:
     /// <code>
-    /// var localizations = Orchard.GetJSLocalizations("media-app");
+    /// var localizations = Orchard.GetJSLocalizations("media-gallery");
     /// </code>
     /// </example>
     public static IDictionary<string, string> GetJSLocalizations(this IOrchardHelper orchardHelper, params string[] groups)
     {
         ArgumentNullException.ThrowIfNull(groups);
 
-        var jsLocalizerServices = orchardHelper.HttpContext.RequestServices.GetServices<IJSLocalizer>();
-
-        var result = new Dictionary<string, string>();
-
-        foreach (var group in groups)
-        {
-            foreach (var jsLocalizerService in jsLocalizerServices)
-            {
-                var jsLocDict = jsLocalizerService.GetLocalizations(group);
-
-                if (jsLocDict is null)
-                {
-                    continue;
-                }
-
-                foreach (var kvp in jsLocDict)
-                {
-                    result[kvp.Key] = kvp.Value;
-                }
-            }
-        }
-
-        return result;
+        return orchardHelper.HttpContext.RequestServices
+            .GetServices<IJSLocalizer>()
+            .GetMergedLocalizations(groups);
     }
 }
