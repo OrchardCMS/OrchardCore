@@ -355,8 +355,7 @@ public class PagerShapes : IShapeAttributeProvider
     }
 
     [Shape]
-#pragma warning disable CA1822 // Mark members as static
-    public Task<IHtmlContent> Pager(Shape shape, DisplayContext displayContext)
+    public static Task<IHtmlContent> Pager(Shape shape, DisplayContext displayContext)
     {
         shape.Metadata.Alternates.Clear();
         shape.Metadata.Type = "Pager_Links";
@@ -445,7 +444,7 @@ public class PagerShapes : IShapeAttributeProvider
     }
 
     [Shape]
-    public Task<IHtmlContent> Pager_First(Shape shape, DisplayContext displayContext)
+    public static Task<IHtmlContent> Pager_First(Shape shape, DisplayContext displayContext)
     {
         shape.Metadata.Alternates.Clear();
         shape.Metadata.Type = "Pager_Link";
@@ -453,7 +452,7 @@ public class PagerShapes : IShapeAttributeProvider
     }
 
     [Shape]
-    public Task<IHtmlContent> Pager_Previous(Shape shape, DisplayContext displayContext)
+    public static Task<IHtmlContent> Pager_Previous(Shape shape, DisplayContext displayContext)
     {
         shape.Metadata.Alternates.Clear();
         shape.Metadata.Type = "Pager_Link";
@@ -467,7 +466,7 @@ public class PagerShapes : IShapeAttributeProvider
     }
 
     [Shape]
-    public Task<IHtmlContent> Pager_CurrentPage(Shape shape, DisplayContext displayContext)
+    public static Task<IHtmlContent> Pager_CurrentPage(Shape shape, DisplayContext displayContext)
     {
         shape.Metadata.Alternates.Clear();
         shape.Metadata.Type = "Pager_Link";
@@ -478,7 +477,7 @@ public class PagerShapes : IShapeAttributeProvider
     }
 
     [Shape]
-    public Task<IHtmlContent> Pager_Next(Shape shape, DisplayContext displayContext)
+    public static Task<IHtmlContent> Pager_Next(Shape shape, DisplayContext displayContext)
     {
         shape.Metadata.Alternates.Clear();
         shape.Metadata.Type = "Pager_Link";
@@ -492,7 +491,7 @@ public class PagerShapes : IShapeAttributeProvider
     }
 
     [Shape]
-    public Task<IHtmlContent> Pager_Last(Shape shape, DisplayContext displayContext)
+    public static Task<IHtmlContent> Pager_Last(Shape shape, DisplayContext displayContext)
     {
         shape.Metadata.Alternates.Clear();
         shape.Metadata.Type = "Pager_Link";
@@ -500,7 +499,7 @@ public class PagerShapes : IShapeAttributeProvider
     }
 
     [Shape]
-    public Task<IHtmlContent> Pager_Link(Shape shape, DisplayContext displayContext)
+    public static Task<IHtmlContent> Pager_Link(Shape shape, DisplayContext displayContext)
     {
         shape.Metadata.Alternates.Clear();
         shape.Metadata.Type = "ActionLink";
@@ -508,7 +507,7 @@ public class PagerShapes : IShapeAttributeProvider
     }
 
     [Shape]
-    public IHtmlContent ActionLink(Shape shape, IUrlHelper Url, object Value, bool Disabled = false)
+    public static IHtmlContent ActionLink(Shape shape, IUrlHelper Url, object Value, bool Disabled = false)
     {
         if (Disabled)
         {
@@ -535,7 +534,7 @@ public class PagerShapes : IShapeAttributeProvider
     }
 
     [Shape]
-    public Task<IHtmlContent> Pager_Gap(IShape shape, DisplayContext displayContext)
+    public static Task<IHtmlContent> Pager_Gap(IShape shape, DisplayContext displayContext)
     {
         shape.Metadata.Alternates.Clear();
         shape.Metadata.Type = "Pager_Link";
@@ -543,7 +542,6 @@ public class PagerShapes : IShapeAttributeProvider
         parentTag.AddCssClass("disabled");
         return displayContext.DisplayHelper.ShapeExecuteAsync(shape);
     }
-#pragma warning restore CA1822 // Mark members as static
 
     private static IHtmlContent CoerceHtmlString(object value)
     {

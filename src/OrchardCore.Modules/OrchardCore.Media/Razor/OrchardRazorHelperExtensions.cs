@@ -24,7 +24,8 @@ public static class MediaOrchardRazorHelperExtensions
             return assetPath;
         }
 
-        var resolvedAssetPath = mediaFileStore.MapPathToPublicUrl(assetPath);
+        assetPath = assetPath.RemoveQueryString(out string queryString);
+        var resolvedAssetPath = mediaFileStore.MapPathToPublicUrl(assetPath) + queryString;
 
         if (appendVersion)
         {
@@ -48,7 +49,8 @@ public static class MediaOrchardRazorHelperExtensions
             return Task.FromResult(assetPath);
         }
 
-        var resolvedAssetPath = mediaFileStore.MapPathToPublicUrl(assetPath);
+        assetPath = assetPath.RemoveQueryString(out string queryString);
+        var resolvedAssetPath = mediaFileStore.MapPathToPublicUrl(assetPath) + queryString;
 
         if (appendVersion)
         {
@@ -65,7 +67,7 @@ public static class MediaOrchardRazorHelperExtensions
     /// </summary>
     public static string ImageResizeUrl(this IOrchardHelper orchardHelper, string imagePath, int? width = null, int? height = null, ResizeMode resizeMode = ResizeMode.Undefined, int? quality = null, Format format = Format.Undefined, Anchor anchor = null, string bgcolor = null, bool? autoorient = null)
     {
-        var resizedUrl = ImageSharpUrlFormatter.GetImageResizeUrl(imagePath, null, width, height, resizeMode, quality, format, anchor, bgcolor, autoorient);
+        var resizedUrl = MediaImageUrlFormatter.GetImageResizeUrl(imagePath, null, width, height, resizeMode, quality, format, anchor, bgcolor, autoorient);
 
         return orchardHelper.TokenizeUrl(resizedUrl);
     }
@@ -78,7 +80,7 @@ public static class MediaOrchardRazorHelperExtensions
         var mediaProfileService = orchardHelper.HttpContext.RequestServices.GetRequiredService<IMediaProfileService>();
         var queryStringParams = await mediaProfileService.GetMediaProfileCommands(imageProfile);
 
-        var resizedUrl = ImageSharpUrlFormatter.GetImageResizeUrl(imagePath, queryStringParams, width, height, resizeMode, quality, format, anchor, bgcolor, autoorient);
+        var resizedUrl = MediaImageUrlFormatter.GetImageResizeUrl(imagePath, queryStringParams, width, height, resizeMode, quality, format, anchor, bgcolor, autoorient);
 
         return orchardHelper.TokenizeUrl(resizedUrl);
     }

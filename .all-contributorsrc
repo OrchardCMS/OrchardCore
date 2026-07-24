@@ -3619,6 +3619,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "kizaski",
+      "name": "Kiril Z",
+      "avatar_url": "https://avatars.githubusercontent.com/u/81563289?v=4",
+      "profile": "https://github.com/kizaski",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,

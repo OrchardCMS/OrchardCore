@@ -12,6 +12,12 @@
     "tags": [ "resources", "js" ]
   },
   {
+    "action": "min",
+    "name": "list-management",
+    "source": "Assets/js/list-management.js",
+    "tags": [ "admin", "resources", "js" ]
+  },
+  {
     "action": "copy",
     "name": "bootstrap",
     "source": [
@@ -215,6 +221,13 @@
     "action": "min",
     "name": "jquery-nestedSortable",
     "source": "node_modules/nestedSortable/jquery.mjs.nestedSortable.js",
+    "tags": [ "resources", "js" ]
+  },
+  {
+    "action": "min",
+    "name": "jquery-nestedSortable-2.1a",
+    "source": "Assets/Vendor/nestedSortable-2.1a/jquery.mjs.nestedSortable.js",
+    "dest": "wwwroot/Vendor/nestedSortable-2.1a/",
     "tags": [ "resources", "js" ]
   },
   {

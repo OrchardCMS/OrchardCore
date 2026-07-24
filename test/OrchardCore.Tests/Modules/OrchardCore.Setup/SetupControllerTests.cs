@@ -12,7 +12,7 @@ namespace OrchardCore.Modules.OrchardCore.Setup.Tests;
 public class SetupControllerTests
 {
     [Fact]
-    public async Task IndexShouldKeepDatabaseOptionsVisible_WhenOnlyTablePrefixIsPreset()
+    public async Task Index_LyTablePrefixIsPreset_KeepssDatabaseOptionsVisible()
     {
         // Arrange
         var controller = CreateController(new ShellSettings
@@ -31,7 +31,7 @@ public class SetupControllerTests
     }
 
     [Fact]
-    public async Task IndexShouldHideDatabaseOptions_WhenDatabaseProviderOrConnectionIsPreset()
+    public async Task Index_DatabaseProviderOrConnectionIsPreset_HidessDatabaseOptions()
     {
         // Arrange
         var shellSettings = new ShellSettings();
@@ -53,7 +53,7 @@ public class SetupControllerTests
     }
 
     [Fact]
-    public async Task IndexShouldKeepConnectionOptionsVisible_WhenOnlyDatabaseProviderIsConfigured()
+    public async Task Index_LyDatabaseProviderIsConfigured_KeepssConnectionOptionsVisible()
     {
         // Arrange
         var shellSettings = new ShellSettings();
@@ -73,7 +73,7 @@ public class SetupControllerTests
     }
 
     [Fact]
-    public async Task IndexShouldDefaultSiteTimeZoneToSystemTimeZone()
+    public async Task Index_Default_DefaultSiteTimeZoneToSystemTimeZone()
     {
         // Arrange
         var controller = CreateController(new ShellSettings());
@@ -88,7 +88,7 @@ public class SetupControllerTests
     }
 
     [Fact]
-    public async Task IndexPostShouldUsePresetDatabaseProviderAndPostedConnectionString_WhenOnlyDatabaseProviderIsConfigured()
+    public async Task IndexPost_LyDatabaseProviderIsConfigured_UsesPresetDatabaseProviderAndPostedConnectionString()
     {
         // Arrange
         SetupContext capturedContext = null;

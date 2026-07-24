@@ -45,7 +45,7 @@ public class ShellContainerFactoryTests
     }
 
     [Fact]
-    public async Task CanRegisterDefaultServiceWithFeatureInfo()
+    public async Task CanRegisterDefaultServiceWithFeatureInfo_Default_Succeeds()
     {
         var shellBlueprint = CreateBlueprint();
 
@@ -63,7 +63,7 @@ public class ShellContainerFactoryTests
     }
 
     [Fact]
-    public async Task CanReplaceDefaultServiceWithCustomService()
+    public async Task CanReplaceDefaultServiceWithCustomService_Default_Succeeds()
     {
         var shellBlueprint = CreateBlueprint();
 
@@ -83,7 +83,7 @@ public class ShellContainerFactoryTests
     }
 
     [Fact]
-    public async Task HostServiceLifeTimesShouldBePreserved()
+    public async Task HostServiceLifeTimes_Default_BePreserved()
     {
         var shellBlueprint = CreateBlueprint();
         var container = (await _shellContainerFactory
@@ -122,7 +122,7 @@ public class ShellContainerFactoryTests
     }
 
     [Fact]
-    public async Task WhenTwoHostSingletons_GetServices_Returns_HostAndShellServices()
+    public async Task Default_TwoHostSingletonsTwoHostSingletonsGetServicesReturnsHostAndShellServicesSucceeds_Succeeds()
     {
         var shellBlueprint = CreateBlueprint();
         AddStartup(shellBlueprint, typeof(ServicesOfTheSameTypeStartup));
@@ -138,7 +138,7 @@ public class ShellContainerFactoryTests
     }
 
     [Fact]
-    public async Task WhenHostSingletonAndScoped_GetServices_Returns_CorrectImplementations()
+    public async Task Default_HostSingletonAndScopedHostSingletonAndScopedGetServicesReturnsCorrectImplementationsSucceeds_Succeeds()
     {
         var shellBlueprint = CreateBlueprint();
 
@@ -155,7 +155,7 @@ public class ShellContainerFactoryTests
     }
 
     [Fact]
-    public async Task AssignsTypeToMultipleFeatures()
+    public async Task AssignsTypeToMultipleFeatures_Default_Succeeds()
     {
         var shellBlueprint = CreateBlueprint();
 
@@ -173,7 +173,7 @@ public class ShellContainerFactoryTests
     }
 
     [Fact]
-    public async Task RawStartupIsAssignedToCorrectFeature()
+    public async Task RawStartupIsAssignedToCorrectFeature_Default_Succeeds()
     {
         var shellBlueprint = CreateBlueprint();
 

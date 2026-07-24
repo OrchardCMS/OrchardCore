@@ -6,9 +6,12 @@
   "website": "https://orchardcore.net",
   "version": "1.0.0",
   "issetuprecipe": true,
-  "categories": [ "default" ],
-  "tags": [ "blog" ],
-
+  "categories": [
+    "default"
+  ],
+  "tags": [
+    "blog"
+  ],
   // The variables are evaluated the first time they are accessed, and reused across steps
   "variables": {
     "adminUrlPrefix": "[js: configuration('OrchardCore_Admin:AdminUrlPrefix', 'Admin')]",
@@ -23,7 +26,6 @@
     "categoryTravelContentItemId": "[js:uuid()]"
     // "now": "[js: new Date().toISOString()]"
   },
-
   "steps": [
     {
       "name": "feature",
@@ -42,7 +44,6 @@
         "OrchardCore.Settings",
         "OrchardCore.Themes",
         "OrchardCore.Users",
-
         // Content Management
         "OrchardCore.Alias",
         "OrchardCore.AdminMenu",
@@ -72,7 +73,6 @@
         "OrchardCore.Title",
         "OrchardCore.Templates",
         "OrchardCore.Widgets",
-
         // Themes
         "TheBlogTheme",
         "TheAdmin",
@@ -118,7 +118,10 @@
         "ContentItemId": "[js: variables('blogContentItemId')]"
       },
       "LayerSettings": {
-        "Zones": [ "Content", "Footer" ]
+        "Zones": [
+          "Content",
+          "Footer"
+        ]
       }
     },
     {
@@ -1206,7 +1209,8 @@
               "LocalNav": false,
               "Culture": null,
               "Items": [],
-              "Classes": []
+              "Classes": [],
+              "MenuName": "Admin menus"
             },
             {
               "$type": "OrchardCore.AdminMenu.AdminNodes.LinkAdminNode, OrchardCore.AdminMenu",
@@ -1225,7 +1229,8 @@
               "LocalNav": false,
               "Culture": null,
               "Items": [],
-              "Classes": []
+              "Classes": [],
+              "MenuName": "Admin menus"
             },
             {
               "$type": "OrchardCore.AdminMenu.AdminNodes.PlaceholderAdminNode, OrchardCore.AdminMenu",
@@ -1259,20 +1264,24 @@
                   "LocalNav": false,
                   "Culture": null,
                   "Items": [],
-                  "Classes": []
+                  "Classes": [],
+                  "MenuName": "Admin menus"
                 },
                 {
                   "$type": "OrchardCore.Contents.AdminNodes.ContentTypesAdminNode, OrchardCore.Contents",
                   "ShowAll": false,
                   "ContentTypes": [
                     {
-                      "ContentTypeId": "Article"
+                      "ContentTypeDisplayName": "Article",
+                      "ContentTypeName": "Article"
                     },
                     {
-                      "ContentTypeId": "Page"
+                      "ContentTypeDisplayName": "Page",
+                      "ContentTypeName": "Page"
                     },
                     {
-                      "ContentTypeId": "Taxonomy"
+                      "ContentTypeDisplayName": "Taxonomy",
+                      "ContentTypeName": "Taxonomy"
                     }
                   ],
                   "UniqueId": "ee18224e1b814c638b0732678b74cfd9",
@@ -1286,7 +1295,8 @@
                   "LocalNav": false,
                   "Culture": null,
                   "Items": [],
-                  "Classes": []
+                  "Classes": [],
+                  "MenuName": "Admin menus"
                 }
               ]
             }

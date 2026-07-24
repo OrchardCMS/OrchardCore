@@ -30,7 +30,7 @@ public class OpenIdScopeStepTests
     }
 
     [Fact]
-    public async Task OpenIdScopeCanBeParsed()
+    public async Task OpenIdScopeCanBeParsed_Default_Succeeds()
     {
         // Arrange
 
@@ -83,7 +83,7 @@ public class OpenIdScopeStepTests
     }
 
     [Fact]
-    public async Task OpenIdScopeCanBeUpdated()
+    public async Task OpenIdScopeCanBeUpdated_Default_Succeeds()
     {
         // Arrange
 

@@ -747,6 +747,10 @@ body:not(.left-sidebar-compact) #ta-left-sidebar #filter:focus {
   display: none;
 }
 
+.left-sidebar-compact #ta-left-sidebar #left-nav > ul > li > figure > figcaption > .item-label > span.icon-none::before {
+  content: "⋯";
+}
+
 .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li > figure > ul > li {
   line-height: 2.5em;
 }

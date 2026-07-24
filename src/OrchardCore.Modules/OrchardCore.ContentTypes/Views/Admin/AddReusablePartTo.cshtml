@@ -15,9 +15,9 @@
     @if (Model.PartSelections.Any())
     {
         <div class="ocat-limited-wrapper">
-            <label data-displayname="@Html.IdFor(m => m.DisplayName)" asp-for="DisplayName" class="ocat-label">@T["Display Name"]</label>
+            <label asp-for="DisplayName" class="ocat-label">@T["Display Name"]</label>
             <div class="ocat-limited">
-                <input asp-for="DisplayName" class="form-control" autofocus />
+                <input data-displayname="@Html.IdFor(m => m.DisplayName)" asp-for="DisplayName" class="form-control" autofocus />
                 <span class="hint">@T["Name of the reusable part as it will be displayed in screens."]</span>
             </div>
         </div>

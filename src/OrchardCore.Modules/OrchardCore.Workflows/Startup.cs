@@ -107,3 +107,12 @@ public sealed class SessionStartup : StartupBase
         services.AddActivity<CommitTransactionTask, CommitTransactionTaskDisplayDriver>();
     }
 }
+
+[Feature("OrchardCore.Liquid")]
+public sealed class LiquidStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddScoped<IWorkflowExecutionContextHandler, LiquidViewTemplateWorkflowExecutionContextHandler>();
+    }
+}

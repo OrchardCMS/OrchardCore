@@ -187,7 +187,7 @@ public class AutorouteEntries : IAutorouteEntries
                 RemoveEntries(entriesToRemove);
                 AddEntries(entriesToAdd);
 
-                _lastIndexId = indexes.LastOrDefault()?.Id ?? 0;
+                _lastIndexId = indexes.Count > 0 ? indexes[indexes.Count - 1].Id : 0;
                 _stateIdentifier = state.Identifier;
             }
         }
@@ -223,7 +223,7 @@ public class AutorouteEntries : IAutorouteEntries
 
                 AddEntries(entries);
 
-                _lastIndexId = indexes.LastOrDefault()?.Id ?? 0;
+                _lastIndexId = indexes.Count > 0 ? indexes[indexes.Count - 1].Id : 0;
                 _stateIdentifier = state.Identifier;
 
                 _initialized = true;

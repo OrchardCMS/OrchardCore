@@ -125,29 +125,44 @@
 </form>
 
 <script at="Foot">
-    $(function () {
-        $('#@Html.IdFor(x => x.SelectedMode)').on('change', function () {
+    function onDocumentReady(callback) {
+        if (document.readyState !== 'loading') {
+            callback();
+        } else {
+            document.addEventListener('DOMContentLoaded', callback);
+        }
+    }
+
+    onDocumentReady(function () {
+        var selectedMode = document.getElementById('@Html.IdFor(x => x.SelectedMode)');
+        var backgroundColor = document.getElementById('@Html.IdFor(x => x.BackgroundColor)');
+        var selectedWidth = document.getElementById('@Html.IdFor(x => x.SelectedWidth)');
+        var customWidth = document.getElementById('@Html.IdFor(x => x.CustomWidth)');
+        var selectedHeight = document.getElementById('@Html.IdFor(x => x.SelectedHeight)');
+        var customHeight = document.getElementById('@Html.IdFor(x => x.CustomHeight)');
+
+        selectedMode.addEventListener('change', function () {
             if ((this.value === '@((int)ResizeMode.Pad)') || (this.value === '@((int)ResizeMode.BoxPad)')) {
-                $('#@Html.IdFor(x => x.BackgroundColor)').closest('.form-g').show();
+                backgroundColor.closest('.form-g').style.display = '';
             } else {
-                $('#@Html.IdFor(x => x.BackgroundColor)').closest('.form-g').hide();
-                $('#@Html.IdFor(x => x.BackgroundColor)').val('');
+                backgroundColor.closest('.form-g').style.display = 'none';
+                backgroundColor.value = '';
             }
         });
-        $('#@Html.IdFor(x => x.SelectedWidth)').on('change', function () {
+        selectedWidth.addEventListener('change', function () {
             if (this.value === "-1") {
-                $('#@Html.IdFor(x => x.CustomWidth)').show();
+                customWidth.style.display = '';
             } else {
-                $('#@Html.IdFor(x => x.CustomWidth)').hide();
-                $('#@Html.IdFor(x => x.CustomWidth)').val(0);
+                customWidth.style.display = 'none';
+                customWidth.value = 0;
             }
         });
-        $('#@Html.IdFor(x => x.SelectedHeight)').on('change', function () {
+        selectedHeight.addEventListener('change', function () {
             if (this.value === "-1") {
-                $('#@Html.IdFor(x => x.CustomHeight)').show();
+                customHeight.style.display = '';
             } else {
-                $('#@Html.IdFor(x => x.CustomHeight)').hide();
-                $('#@Html.IdFor(x => x.CustomHeight)').val(0);
+                customHeight.style.display = 'none';
+                customHeight.value = 0;
             }
         });
     });

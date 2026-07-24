@@ -16,8 +16,14 @@ public static class UserManagerExtensions
 
     public static async Task<bool> UpdateUserPropertiesAsync(this UserManager<IUser> userManager, User user, UpdateUserContext context)
     {
-        await userManager.AddToRolesAsync(user, context.RolesToAdd.Distinct());
-        await userManager.RemoveFromRolesAsync(user, context.RolesToRemove.Distinct());
+        if (context.RolesToAdd.Count > 0)
+        {
+            await userManager.AddToRolesAsync(user, context.RolesToAdd.Distinct());
+        }
+        if (context.RolesToRemove.Count > 0)
+        {
+            await userManager.RemoveFromRolesAsync(user, context.RolesToRemove.Distinct());
+        }
 
         var userNeedUpdate = false;
         if (context.PropertiesToUpdate != null)

@@ -61,8 +61,16 @@
         </div>
     </div>
 </div>
-<script at="Foot" depends-on="jquery">
-    $(function() {
+<script at="Foot">
+    function onDocumentReady(callback) {
+        if (document.readyState !== 'loading') {
+            callback();
+        } else {
+            document.addEventListener('DOMContentLoaded', callback);
+        }
+    }
+
+    onDocumentReady(function () {
         editor = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.FullTextTemplate)'), {
             autoRefresh: true,
             lineNumbers: true,

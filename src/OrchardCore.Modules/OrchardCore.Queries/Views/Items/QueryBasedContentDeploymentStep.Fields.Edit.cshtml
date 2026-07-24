@@ -55,7 +55,15 @@
  </div>
 
 <script at="Foot">
-    $(function () {
+    function onDocumentReady(callback) {
+        if (document.readyState !== 'loading') {
+            callback();
+        } else {
+            document.addEventListener('DOMContentLoaded', callback);
+        }
+    }
+
+    onDocumentReady(function () {
         CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(m => m.QueryParameters)'), { mode: "javascript", json: true, lineNumbers: true, viewportMargin: Infinity });
     });
 </script>

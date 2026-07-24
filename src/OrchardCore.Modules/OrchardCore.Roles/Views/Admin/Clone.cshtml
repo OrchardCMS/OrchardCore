@@ -1,0 +1,36 @@
+@model CloneRoleViewModel
+@using OrchardCore.Roles.ViewModels
+
+<zone Name="Title">
+    <h1>@RenderTitleSegments(T["Clone '{0}' Role", Model.Role.RoleName])</h1>
+</zone>
+
+<div asp-validation-summary="ModelOnly"></div>
+
+@await Html.PartialAsync("_DuplicatedPermissions")
+
+<form asp-action="Clone" asp-route-id="@ViewContext.HttpContext.Request.RouteValues["id"]" method="post" class="no-multisubmit" data-list-management data-client-side-search="true" data-search-result-selector=".permissions-list > table > tbody > tr" data-search-text-attribute="data-text" data-search-group-selector=".permissions-list" data-search-group-visible-selector="table > tbody > tr">
+    <div class="ocat-wrapper" asp-validation-class-for="Name">
+        <label asp-for="Name" class="ocat-label">@T["Role name"]</label>
+        <div class="ocat-end">
+            <input asp-for="Name" class="form-control" autofocus />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="mb-3" asp-validation-class-for="RoleDescription">
+        <label asp-for="RoleDescription" class="form-label">@T["Description"]</label>
+        <textarea asp-for="RoleDescription" class="form-control"></textarea>
+        <span asp-validation-for="RoleDescription" class="text-danger"></span>
+    </div>
+
+    @await Html.PartialAsync("_RolePermissions", Model.Permissions)
+
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
+            <button class="btn btn-primary save" type="submit">@T["Save"]</button>
+            <a class="btn btn-secondary cancel" role="button" asp-route-action="Index">@T["Cancel"]</a>
+        </div>
+    </div>
+</form>
+
+<script asp-name="list-management" at="Foot"></script>

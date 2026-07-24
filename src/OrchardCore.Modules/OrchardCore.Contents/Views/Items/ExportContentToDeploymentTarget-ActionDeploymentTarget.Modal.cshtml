@@ -42,37 +42,67 @@
         </div>
     </zone>
 
-    <script at="Foot" depends-on="jQuery">
-        $(function () {
-            $('#modalExportContentToDeploymentTargetActionTarget').on('show.bs.modal', function (event) {
-                var button = $(event.relatedTarget) // Button that triggered the modal
-                var contentItemId = button.data('content-item-id');
-                var latest = button.data('latest');
+    <script at="Foot">
+        function onDocumentReady(callback) {
+            if (document.readyState !== 'loading') {
+                callback();
+            } else {
+                document.addEventListener('DOMContentLoaded', callback);
+            }
+        }
 
-                $('.export-to-deployment-target').one('click', function () {
-                    var targetButton = this;
-                    var magicToken = $("input[name=__RequestVerificationToken]").first();
-                    if (magicToken) {
-                        var hrefParts = $(targetButton).data("target-url").split("?");
-                        var exportForm = $("<form action=\"" + hrefParts[0] + "\" method=\"POST\" />");
-                        exportForm.append(magicToken.clone());
+        onDocumentReady(function () {
+            var modal = document.getElementById('modalExportContentToDeploymentTargetActionTarget');
+            modal?.addEventListener('show.bs.modal', function (event) {
+                var button = event.relatedTarget;
+                var contentItemId = button?.dataset.contentItemId;
+                var latest = button?.dataset.latest;
+
+                document.querySelectorAll('.export-to-deployment-target').forEach(function (button) {
+                    button.addEventListener('click', function () {
+                        var targetButton = this;
+                        var magicToken = document.querySelector("input[name=__RequestVerificationToken]");
+                        var hrefParts = targetButton.dataset.targetUrl.split("?");
+                        var exportForm = document.createElement("form");
+                        exportForm.action = hrefParts[0];
+                        exportForm.method = "POST";
+
+                        if (magicToken) {
+                            exportForm.appendChild(magicToken.cloneNode(true));
+                        }
+
                         if (hrefParts.length > 1) {
                             var queryParts = hrefParts[1].split("&");
                             for (var i = 0; i < queryParts.length; i++) {
                                 var queryPartKVP = queryParts[i].split("=");
                                 //trusting hrefs in the page here
-                                exportForm.append($("<input type=\"hidden\" name=\"" + decodeURIComponent(queryPartKVP[0]) + "\" value=\"" + decodeURIComponent(queryPartKVP[1]) + "\" />"));
+                                var input = document.createElement("input");
+                                input.type = "hidden";
+                                input.name = decodeURIComponent(queryPartKVP[0]);
+                                input.value = decodeURIComponent(queryPartKVP[1]);
+                                exportForm.appendChild(input);
                             }
                         }
-                        exportForm.append($("<input type=\"hidden\" name=\"ExportContentToDeploymentTarget.ContentItemId\" + value=\"" + contentItemId + "\"/>"));
+
+                        var contentItemInput = document.createElement("input");
+                        contentItemInput.type = "hidden";
+                        contentItemInput.name = "ExportContentToDeploymentTarget.ContentItemId";
+                        contentItemInput.value = contentItemId;
+                        exportForm.appendChild(contentItemInput);
+
                         if (latest) {
-                            exportForm.append($("<input type=\"hidden\" name=\"ExportContentToDeploymentTarget.Latest\" + value=\"" + latest + "\"/>"));
+                            var latestInput = document.createElement("input");
+                            latestInput.type = "hidden";
+                            latestInput.name = "ExportContentToDeploymentTarget.Latest";
+                            latestInput.value = latest;
+                            exportForm.appendChild(latestInput);
                         }
-                        $("body").append(exportForm);
+
+                        document.body.appendChild(exportForm);
                         exportForm.submit();
-                    }
-                })
-            })
+                    }, { once: true });
+                });
+            });
         });
     </script>
 }

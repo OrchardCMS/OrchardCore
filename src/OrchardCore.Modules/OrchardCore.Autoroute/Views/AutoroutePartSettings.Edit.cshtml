@@ -101,9 +101,17 @@
     </div>
 </fieldset>
 
-<script at="Foot" depends-on="jquery">
+<script at="Foot">
     //<![CDATA[
-    $(function () {
+    function onDocumentReady(callback) {
+        if (document.readyState !== 'loading') {
+            callback();
+        } else {
+            document.addEventListener('DOMContentLoaded', callback);
+        }
+    }
+
+    onDocumentReady(function () {
         editor = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Pattern)'), {
             autoRefresh: true,
             lineNumbers: true,
@@ -112,11 +120,14 @@
             mode: { name: "liquid" },
         });
     });
-    $('#@Html.IdFor(i => i.ManageContainedItemRoutes)').change(function (e) {
-        var checked = $(e.target).prop('checked');
-        $('.manage-contained-item-routes').each(function () {
-            checked ? $(this).show() : $(this).hide();
+    var manageContainedItemRoutesElement = document.getElementById('@Html.IdFor(i => i.ManageContainedItemRoutes)');
+    if (manageContainedItemRoutesElement) {
+        manageContainedItemRoutesElement.addEventListener('change', function (e) {
+            var checked = e.target.checked;
+            document.querySelectorAll('.manage-contained-item-routes').forEach(function (element) {
+                element.style.display = checked ? '' : 'none';
+            });
         });
-    });
+    }
                                                             //]]>
 </script>

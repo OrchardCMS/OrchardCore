@@ -20,7 +20,7 @@ public class RequiresPermissionValidationRuleTests
     };
 
     [Fact]
-    public async Task FieldsWithNoRequirePermissionsShouldResolve()
+    public async Task FieldsWithNoRequirePermissions_Default_Resolves()
     {
         var options = BuildExecutionOptions("query { test { noPermissions } }",
                         new PermissionsContext
@@ -43,7 +43,7 @@ public class RequiresPermissionValidationRuleTests
     [Theory]
     [InlineData("permissionOne", "Fantastic Fox Loves Permission One")]
     [InlineData("permissionTwo", "Fantastic Fox Loves Permission Two")]
-    public async Task FieldsWithRequirePermissionsShouldResolveWhenUserHasPermissions(string fieldName, string expectedFieldValue)
+    public async Task FieldsWithRequirePermissions_UserHasPermissions_Resolves(string fieldName, string expectedFieldValue)
     {
         var options = BuildExecutionOptions($"query {{ test {{{fieldName}}} }}",
                         new PermissionsContext
@@ -65,7 +65,7 @@ public class RequiresPermissionValidationRuleTests
     }
 
     [Fact]
-    public async Task FieldsWithRequirePermissionsShouldNotResolveWhenUserDoesntHavePermissions()
+    public async Task FieldsWithRequirePermissions_UserDoesntHavePermissions_DoesNotResolve()
     {
         var options = BuildExecutionOptions("query { test { permissionOne } }",
             new PermissionsContext
@@ -81,7 +81,7 @@ public class RequiresPermissionValidationRuleTests
     }
 
     [Fact]
-    public async Task FieldsWithMultipleRequirePermissionsShouldResolveWhenUserHasAllPermissions()
+    public async Task FieldsWithMultipleRequirePermissions_UserHasAllPermissions_Resolves()
     {
         var options = BuildExecutionOptions("query { test { permissionMultiple  } }",
                         new PermissionsContext

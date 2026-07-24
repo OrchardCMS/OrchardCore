@@ -3,8 +3,6 @@
     var previewId = ViewContext.RouteData.Values["id"];
 }
 
-<script asp-name="jQuery" at="Foot"></script>
-
 <iframe id="iframe-a" title="preview" style="position:fixed; top:0; left:0; bottom:0; right:0; width:100%; height:100%; border:none; margin:0; padding:0; overflow:hidden; z-index:999990;"></iframe>
 <iframe id="iframe-b" title="preview-staging" style="position:fixed; top:0; left:0; bottom:0; right:0; width:100%; height:100%; border:none; margin:0; padding:0; overflow:hidden; z-index:999989;"></iframe>
 
@@ -94,13 +92,28 @@
             }
         };
 
-        $(function () {
-            $('#close-connect-warning').on('click', function () {
-                $('#notConnectedWarning').hide();
-            });
-            $('#close-server-warning').on('click', function () {
-                $('#serverErrorWarning').hide();
-            });
+        function onDocumentReady(callback) {
+            if (document.readyState !== 'loading') {
+                callback();
+            } else {
+                document.addEventListener('DOMContentLoaded', callback);
+            }
+        }
+
+        onDocumentReady(function () {
+            var closeConnectWarning = document.getElementById('close-connect-warning');
+            if (closeConnectWarning) {
+                closeConnectWarning.addEventListener('click', function () {
+                    document.getElementById('notConnectedWarning').style.display = 'none';
+                });
+            }
+
+            var closeServerWarning = document.getElementById('close-server-warning');
+            if (closeServerWarning) {
+                closeServerWarning.addEventListener('click', function () {
+                    document.getElementById('serverErrorWarning').style.display = 'none';
+                });
+            }
 
             // Signal the editor that the preview window is ready to receive updates.
             channel.postMessage({ type: 'ready' });
