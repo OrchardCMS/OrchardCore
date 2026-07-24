@@ -1,33 +1,62 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Compliance.Redaction;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.AuditTrail.Models;
 using OrchardCore.AuditTrail.Services;
 using OrchardCore.AuditTrail.Services.Models;
+using OrchardCore.Entities;
+using OrchardCore.Settings;
+using OrchardCore.Users.AuditTrail.Indexes;
 using OrchardCore.Users.AuditTrail.Models;
 using OrchardCore.Users.AuditTrail.Services;
 using OrchardCore.Users.Events;
 using OrchardCore.Users.Handlers;
+using OrchardCore.Users.Models;
+using System.Security.Claims;
+using System.Text.Json.Nodes;
+using YesSql;
+using ISession = YesSql.ISession;
 
 namespace OrchardCore.Users.AuditTrail.Handlers;
 
 public class UserEventHandler : UserEventHandlerBase, ILoginFormEvent
 {
+    /// <summary>
+    /// Properties of <see cref="User"/> which may never be stored for security reasons.
+    /// </summary>
+    public static readonly HashSet<string> BannedProperties = new(
+        [
+            nameof(User.PasswordHash),
+            nameof(User.ResetToken),
+            nameof(User.UserTokens)
+        ],
+        StringComparer.OrdinalIgnoreCase);
+    
     private readonly IAuditTrailManager _auditTrailManager;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IServiceProvider _serviceProvider;
+    private readonly ISession _session;
+    private readonly ISiteService _siteService;
+    private readonly IEnumerable<Redactor> _redactors;
 
     private UserManager<IUser> _userManager;
 
     public UserEventHandler(
         IAuditTrailManager auditTrailManager,
         IHttpContextAccessor httpContextAccessor,
-        IServiceProvider serviceProvider)
+        IServiceProvider serviceProvider,
+        ISession session,
+        ISiteService siteService,
+        IEnumerable<Redactor> redactors)
     {
         _auditTrailManager = auditTrailManager;
         _httpContextAccessor = httpContextAccessor;
         _serviceProvider = serviceProvider;
+        _session = session;
+        _siteService = siteService;
+        _redactors = redactors.Where(redactor => redactor is not null);
     }
 
     public Task LoggedInAsync(IUser user)
@@ -41,7 +70,7 @@ public class UserEventHandler : UserEventHandlerBase, ILoginFormEvent
         var context = new AuditTrailContext<AuditTrailUserEvent>
             (
                 name: UserAuditTrailEventConfiguration.LogInFailed,
-                category: UserAuditTrailEventConfiguration.User,
+                category: UserAuditTrailEventConfiguration.CategoryName,
                 correlationId: string.Empty,
                 userId: string.Empty,
                 userName: userName,
@@ -59,21 +88,48 @@ public class UserEventHandler : UserEventHandlerBase, ILoginFormEvent
         => RecordAuditTrailEventAsync(UserAuditTrailEventConfiguration.LogInIsLockedOut, user);
 
     public override Task DisabledAsync(UserContext context)
-        => RecordAuditTrailEventAsync(UserAuditTrailEventConfiguration.Disabled, context.User, GetCurrentUserId(), GetCurrentUserName());
+        => RecordAuditTrailUserEventAsync(UserAuditTrailEventConfiguration.Disabled, context, _httpContextAccessor);
 
     public override Task EnabledAsync(UserContext context)
-         => RecordAuditTrailEventAsync(UserAuditTrailEventConfiguration.Enabled, context.User, GetCurrentUserId(), GetCurrentUserName());
+         => RecordAuditTrailUserEventAsync(UserAuditTrailEventConfiguration.Enabled, context, _httpContextAccessor);
 
     public override Task CreatedAsync(UserCreateContext context)
-         => RecordAuditTrailEventAsync(UserAuditTrailEventConfiguration.Created, context.User, GetCurrentUserId(), GetCurrentUserName());
+         => RecordAuditTrailUserEventAsync(UserAuditTrailEventConfiguration.Created, context, _httpContextAccessor);
 
     public override Task UpdatedAsync(UserUpdateContext context)
-         => RecordAuditTrailEventAsync(UserAuditTrailEventConfiguration.Updated, context.User, GetCurrentUserId(), GetCurrentUserName());
+         => RecordAuditTrailUserEventAsync(UserAuditTrailEventConfiguration.Updated, context, _httpContextAccessor);
 
-    public override Task DeletedAsync(UserDeleteContext context)
-         => RecordAuditTrailEventAsync(UserAuditTrailEventConfiguration.Deleted, context.User, GetCurrentUserId(), GetCurrentUserName());
+    public override async Task DeletedAsync(UserDeleteContext context)
+    {
+        // Don't store snapshot in the delete user event for compliance with regulations about deleting personal data.
+        await RecordAuditTrailEventAsync(UserAuditTrailEventConfiguration.Deleted, context.User);
 
-    private async Task RecordAuditTrailEventAsync(string name, IUser user, string userIdActual = "", string userNameActual = "")
+        // Delete snapshots from existing events.
+        if (context.User is User { UserId: { Length: > 0 } userId })
+        {
+            var eventsToUpdate = await _session
+                .Query<AuditTrailEvent, AuditTrailUserEventIndex>(
+                    index => index.UserId == userId && index.HasUserSnapshot,
+                    collection: AuditTrailEvent.Collection)
+                .ListAsync();
+
+            foreach (var eventToUpdate in eventsToUpdate)
+            {
+                eventToUpdate.Alter<AuditTrailUserEvent>(data => data.Snapshot = null);
+                await _session.SaveAsync(eventToUpdate, collection: AuditTrailEvent.Collection);
+            }
+        }
+    }
+
+    public override Task ConfirmedAsync(UserConfirmContext context)
+        => RecordAuditTrailUserEventAsync(UserAuditTrailEventConfiguration.Confirmed, context, _httpContextAccessor);
+
+    private async Task RecordAuditTrailEventAsync(
+        string name,
+        IUser user,
+        string userIdActual = "",
+        string userNameActual = "",
+        bool storeSnapshot = false)
     {
         var userName = user.UserName;
         _userManager ??= _serviceProvider.GetRequiredService<UserManager<IUser>>();
@@ -94,12 +150,15 @@ public class UserEventHandler : UserEventHandlerBase, ILoginFormEvent
         {
             UserName = userName,
             UserId = userId,
+            Snapshot = storeSnapshot && user is User fullUser 
+                ? CreateSnapshotObject(fullUser, await _siteService.GetSettingsAsync<AuditTrailUserEventSettings>())
+                : null,
         };
 
         var context = new AuditTrailContext<AuditTrailUserEvent>
             (
                 name: name,
-                category: UserAuditTrailEventConfiguration.User,
+                category: UserAuditTrailEventConfiguration.CategoryName,
                 correlationId: userId,
                 userId: userIdActual,
                 userName: userNameActual,
@@ -107,6 +166,46 @@ public class UserEventHandler : UserEventHandlerBase, ILoginFormEvent
             );
 
         await _auditTrailManager.RecordEventAsync(context);
+    }
+    private JsonObject CreateSnapshotObject(User fullUser, AuditTrailUserEventSettings settings)
+    {
+        var redactors = _redactors.ToDictionary(item => item.GetType().Name);
+
+        JsonValue Redact(string propertyName, JsonNode value)
+        {
+            var text = value?.ToString();
+            if (string.IsNullOrEmpty(text))
+            {
+                return null;
+            }
+            
+            var redactor = redactors[settings.UserSnapshotRedactors[propertyName]];
+            return JsonValue.Create(redactor.Redact(text));
+        }
+
+        Dictionary<string, JsonNode> CreateDictionary(JsonObject data)
+        {
+            return data
+                .Where(pair =>
+                    !BannedProperties.Contains(pair.Key) &&
+                    settings.UserSnapshotRedactors.TryGetValue(pair.Key, out var redactorName) &&
+                    redactors.ContainsKey(redactorName))
+                .Select(pair => new
+                {
+                    pair.Key,
+                    Value = Redact(pair.Key, pair.Value),
+                })
+                .Where(pair => pair.Value != null)
+                .ToDictionary(pair => pair.Key, pair => (JsonNode)pair.Value);
+        }
+        
+        // Ensure that the User object only has the allowed properties and none of the banned ones.
+        var dictionary = CreateDictionary(JObject.FromObject(fullUser));
+        
+        // Custom user settings have to be handled separately.
+        dictionary[nameof(User.Properties)] = JObject.FromObject(CreateDictionary(fullUser.Properties));
+
+        return JObject.FromObject(dictionary);
     }
 
     #region Unused login events
@@ -120,9 +219,11 @@ public class UserEventHandler : UserEventHandlerBase, ILoginFormEvent
         => Task.FromResult<IActionResult>(null);
     #endregion
 
-    private string GetCurrentUserName()
-        => _httpContextAccessor.HttpContext.User?.Identity?.Name;
-
-    private string GetCurrentUserId()
-        => _httpContextAccessor.HttpContext.User?.FindFirstValue(ClaimTypes.NameIdentifier);
+    private Task RecordAuditTrailUserEventAsync(string name, UserContextBase context, IHttpContextAccessor accessor)
+        => RecordAuditTrailEventAsync(
+            name,
+            context.User,
+            accessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier),
+            accessor.HttpContext?.User?.Identity?.Name,
+            storeSnapshot: true);
 }

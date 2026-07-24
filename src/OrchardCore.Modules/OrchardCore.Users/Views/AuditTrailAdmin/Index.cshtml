@@ -1,0 +1,40 @@
+@using Microsoft.Extensions.Compliance.Redaction
+@using OrchardCore
+@using OrchardCore.Users.AuditTrail.Services
+@model OrchardCore.Users.AuditTrail.ViewModels.AuditTrailUserEventSettingsViewModel
+
+<script asp-name="bootstrap-select" at="Foot"></script>
+
+<zone Name="Title"><h1>@RenderTitleSegments(T["Audit Trail User Event Settings"])</h1></zone>
+
+<form asp-action="Index" method="post" class="no-multisubmit">
+    @if (Model.UserSnapshotProperties.Length > 0)
+    {
+        <h6>@T["User Properties to Store"]</h6>
+        <div class="mb-3">
+            @for (var i = 0; i < Model.UserSnapshotProperties.Length; i++)
+            {
+                var name = Model.UserSnapshotProperties[i].Name;
+                var value = Model.UserSnapshotProperties[i].Redactor;
+                var items = Model.RedactorNames
+                    .Select(redactor => new SelectListItem
+                    {
+                        Text = redactor == nameof(RemoveRedactor)
+                            ? string.Empty
+                            : (redactor == nameof(NullRedactor) ? T["Store"].Value : redactor),
+                        Value = redactor,
+                        Selected = redactor == value,
+                    })
+                    .OrderBy(item => item.Text)
+                    .ToArray();
+                <input asp-for="UserSnapshotProperties[i].Name" hidden>
+                <label asp-for="UserSnapshotProperties[i].Redactor" class="ocat-label">@name</label>
+                <select asp-for="UserSnapshotProperties[i].Redactor" class="form-select" asp-items="@items"></select>
+                <span asp-validation-for="UserSnapshotProperties[i].Redactor"></span>
+            }
+            <span class="hint">@T["The properties of the <code>User</code> object are stored in the event's \"User Snapshot\" property. If no option is selected, that property will not be stored. The property is retained as text if the \"Store\" option is selected. Otherwise, the selected service is used to redact its content. You can learn more about data redaction <a href=\"{0}\">here</a>.", new Uri("https://learn.microsoft.com/en-us/dotnet/core/extensions/data-redaction")]</span>
+        </div>
+    }
+    
+    <input type="submit" value="Save" class="btn btn-primary"/>
+</form>
