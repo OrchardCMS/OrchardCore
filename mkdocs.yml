@@ -169,7 +169,9 @@ nav:
           - Overview: topics/display/README.md
           - Shapes: topics/display/shapes.md
       - Localize your site: topics/localize/README.md
-      - Handle the Media: topics/media/README.md
+      - Handle the Media:
+          - Overview: topics/media/README.md
+          - Media Picker: topics/media/media-picker.md
       - Navigate between pages: topics/navigation/README.md
       - Query and Search data: topics/search/README.md
       - Secure your application: topics/security/README.md
