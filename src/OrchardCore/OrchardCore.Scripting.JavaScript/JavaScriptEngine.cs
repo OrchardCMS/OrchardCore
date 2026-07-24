@@ -8,6 +8,10 @@ namespace OrchardCore.Scripting.JavaScript;
 
 public sealed class JavaScriptEngine : IScriptingEngine
 {
+    private static readonly MemoryCacheEntryOptions ScriptCacheEntryOptions = new MemoryCacheEntryOptions()
+        .SetSlidingExpiration(TimeSpan.FromMinutes(30))
+        ;
+
     private readonly IMemoryCache _memoryCache;
     private readonly JintOptions _jintOptions;
 
@@ -31,7 +35,10 @@ public sealed class JavaScriptEngine : IScriptingEngine
     {
         var jsScope = GetJavaScriptScope(scope);
 
-        var parsedAst = _memoryCache.GetOrCreate(script, static entry => Engine.PrepareScript((string)entry.Key));
+        var parsedAst = _memoryCache.GetOrCreate(
+            script,
+            static entry => Engine.PrepareScript((string)entry.Key),
+            ScriptCacheEntryOptions);
 
         var result = jsScope.Engine.Evaluate(parsedAst).ToObject();
 
@@ -42,7 +49,10 @@ public sealed class JavaScriptEngine : IScriptingEngine
     {
         var jsScope = GetJavaScriptScope(scope);
 
-        var parsedAst = _memoryCache.GetOrCreate(script, static entry => Engine.PrepareScript((string)entry.Key));
+        var parsedAst = _memoryCache.GetOrCreate(
+            script,
+            static entry => Engine.PrepareScript((string)entry.Key),
+            ScriptCacheEntryOptions);
 
         var result = await jsScope.Engine.EvaluateAsync(parsedAst, cancellationToken);
 
