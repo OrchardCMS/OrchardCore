@@ -172,7 +172,13 @@ nav:
       - Handle the Media: topics/media/README.md
       - Navigate between pages: topics/navigation/README.md
       - Query and Search data: topics/search/README.md
-      - Secure your application: topics/security/README.md
+      - Secure your application:
+          - Overview: topics/security/README.md
+          - Users: topics/security/users.md
+          - Roles and Permissions: topics/security/roles.md
+          - Login: topics/security/login.md
+          - Registration: topics/security/registration.md
+          - Security Settings: topics/security/security-settings.md
       - Data: topics/data/README.md
       - Configuration: topics/configuration/README.md
       - Workflows: topics/workflows/README.md
