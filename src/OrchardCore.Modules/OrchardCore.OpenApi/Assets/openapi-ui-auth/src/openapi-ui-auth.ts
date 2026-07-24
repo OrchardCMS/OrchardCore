@@ -2,6 +2,7 @@ import {
   InMemoryWebStorage,
   UserManager,
   WebStorageStateStore,
+  type User,
   type UserManagerSettings,
 } from "oidc-client-ts";
 
@@ -13,6 +14,14 @@ import {
  * redirects anonymous visitors to /admin), so we acquire a bearer access token silently
  * (prompt=none in a hidden iframe) against the same-tenant OpenID Connect server and renew it the
  * same way — no interactive "Authorize" step.
+ *
+ * If the silent (prompt=none) request comes back with a standard interaction-required OIDC error —
+ * the admin has no OpenID session yet, or consent hasn't been granted because the client uses a
+ * non-implicit consent type (explicit/systematic) — the bundle falls back to a real, visible
+ * authorization flow (a full-page redirect). The OpenID server establishes the session / records
+ * consent and redirects back through the silent-renew page, which returns the browser to the doc
+ * UI; the reload's silent sign-in then succeeds. A sessionStorage flag guards against a redirect
+ * loop when the silent flow still can't complete after a visible attempt.
  *
  * The bundle is a self-bootstrapping ES module: the server injects a single
  * <script type="module" src="…" data-openapi-ui-auth data-client-id="…" …> tag (see
@@ -33,6 +42,25 @@ import {
  */
 
 const CONFIG_STORAGE_KEY = "openapi-ui:oidc-config";
+
+/**
+ * Set right before a visible authorization redirect and cleared once a silent sign-in succeeds.
+ * If we come back from the visible flow and the silent request still can't complete, its presence
+ * stops us from redirecting again (which would loop).
+ */
+const INTERACTIVE_ATTEMPT_KEY = "openapi-ui:interactive-signin";
+
+/**
+ * Standard OAuth 2.0 / OpenID Connect error codes a prompt=none authorization request returns when
+ * the user cannot be signed in without interaction. On any of these we start a visible flow rather
+ * than failing; anything else (a real configuration/transport error) is surfaced as-is.
+ */
+const INTERACTION_REQUIRED_ERRORS = new Set([
+  "login_required",
+  "consent_required",
+  "interaction_required",
+  "account_selection_required",
+]);
 
 interface OpenApiAuthConfig {
   /** Tenant path base (e.g. "" for the Default tenant, "/team1" for a prefixed tenant). */
@@ -96,6 +124,36 @@ function isApiRequest(url: string | undefined): boolean {
   }
 }
 
+function isInteractionRequired(err: unknown): boolean {
+  const code = (err as { error?: unknown } | null)?.error;
+  return typeof code === "string" && INTERACTION_REQUIRED_ERRORS.has(code);
+}
+
+/**
+ * Silent sign-in, with a visible authorization flow as the fallback. When prompt=none fails with a
+ * standard interaction-required error, we start a full-page redirect to the OpenID server carrying
+ * the current doc URL as the returned state; control does not come back here — the silent-renew
+ * page brings the browser back to that URL after the server completes the authorization, and the
+ * reload signs in silently. Any non-interactive error is rethrown.
+ */
+async function signinSilentOrInteractive(): Promise<User | null> {
+  try {
+    const user = await userManager!.signinSilent();
+    window.sessionStorage.removeItem(INTERACTIVE_ATTEMPT_KEY);
+    return user;
+  } catch (err) {
+    // Already tried the visible flow this session and silent still can't complete: surface the
+    // error instead of redirecting again, which would loop.
+    if (!isInteractionRequired(err) || window.sessionStorage.getItem(INTERACTIVE_ATTEMPT_KEY)) {
+      throw err;
+    }
+
+    window.sessionStorage.setItem(INTERACTIVE_ATTEMPT_KEY, "1");
+    await userManager!.signinRedirect({ state: { returnUrl: window.location.href } });
+    return null;
+  }
+}
+
 async function getToken(): Promise<string | null> {
   if (!userManager) {
     return null;
@@ -104,11 +162,11 @@ async function getToken(): Promise<string | null> {
   try {
     let user = await userManager.getUser();
     if (!user || user.expired) {
-      user = await userManager.signinSilent();
+      user = await signinSilentOrInteractive();
     }
     cachedToken = user?.access_token ?? null;
   } catch (err) {
-    console.error("[openapi-ui] silent sign-in failed", err);
+    console.error("[openapi-ui] sign-in failed", err);
     cachedToken = null;
   }
 
@@ -229,22 +287,39 @@ function preauthorizeSwagger(): void {
 }
 
 /**
- * Completes the silent-renew handshake. Runs inside the hidden iframe that loaded
- * openapi-oidc-silent.html; rebuilds the UserManager from the persisted config and posts the
- * result back to the parent window.
+ * Completes an authorization callback on openapi-oidc-silent.html, rebuilding the UserManager from
+ * the persisted config. The same page is the redirect URI for two flows:
+ *  - loaded in the hidden renew iframe (window.parent !== window): the automaticSilentRenew
+ *    handshake — post the result back to the parent window;
+ *  - loaded top-level: the landing of the visible authorization redirect — finish it, then send the
+ *    browser back to the doc UI that started the flow (the returnUrl carried through OIDC state).
  */
 async function handleSilentRenewCallback(): Promise<void> {
+  const raw = window.sessionStorage.getItem(CONFIG_STORAGE_KEY);
+  if (!raw) {
+    return;
+  }
+
+  const config = JSON.parse(raw) as OpenApiAuthConfig;
+  const manager = new UserManager(buildSettings(config));
+  const topLevel = window.parent === window;
+
   try {
-    const raw = window.sessionStorage.getItem(CONFIG_STORAGE_KEY);
-    if (!raw) {
+    if (topLevel) {
+      const user = await manager.signinRedirectCallback();
+      const returnUrl = (user?.state as { returnUrl?: string } | null)?.returnUrl;
+      window.location.replace(returnUrl ?? `${window.location.origin}${config.pathBase || ""}`);
       return;
     }
 
-    const config = JSON.parse(raw) as OpenApiAuthConfig;
-    const manager = new UserManager(buildSettings(config));
     await manager.signinSilentCallback();
   } catch (err) {
-    console.error("[openapi-ui] silent renew callback failed", err);
+    console.error("[openapi-ui] renew callback failed", err);
+    // A stranded blank silent page is a dead end for the interactive flow; return to the origin so
+    // the doc UI (and its silent sign-in) can retry rather than leaving the admin on a blank page.
+    if (topLevel) {
+      window.location.replace(`${window.location.origin}${config.pathBase || ""}`);
+    }
   }
 }
 

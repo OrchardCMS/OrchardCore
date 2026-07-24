@@ -33,6 +33,8 @@ There is nothing else to configure: API authentication for the documentation UIs
 
 Orchard Core API endpoints authenticate with the `"Api"` scheme, which only accepts Bearer tokens — session cookies are never used for API calls. Instead of an interactive "Authorize" step, the Swagger and Scalar UIs acquire a token **silently**: a script injected into the pages runs an OAuth2 **authorization-code + PKCE** flow against the same tenant's OpenID Connect server in a hidden iframe (`prompt=none`), using your existing admin cookie session. The token is renewed the same way before it expires and is attached automatically to every "Try it out" / "Send" request. ReDoc is read-only documentation with no request surface, so it needs no token.
 
+If the silent request can't complete because interaction is required — the admin has no OpenID session yet, or consent hasn't been granted because the client uses a non-implicit consent type (`explicit`/`systematic`) — the script falls back to a **visible authorization flow**: a one-time full-page redirect to the OpenID server that establishes the session / records consent and returns to the documentation page, after which silent sign-in and renewal proceed as usual. This means the doc UIs work regardless of the client's configured consent type.
+
 ### Provisioning with the OpenApiPkce recipe
 
 Run the **OpenAPI Documentation — Bearer/PKCE** recipe (Configuration → Recipes). It:
@@ -139,79 +141,6 @@ The generation is configured via `OrchardCore.OpenApi.nswag`:
 - **JSON library (C#)**: `System.Text.Json` — Newtonsoft.Json is **not** used.
 - **TypeScript template**: Axios
 - **C# HTTP layer**: `System.Net.Http.HttpClient`
-
-## ApiService (`api-service.ts`)
-
-The `ApiService` class (`.scripts/bloom/services/api-service.ts`) is a reusable HTTP service that wraps Axios with authentication handling. It supports both cookie and Bearer token authentication and provides the configured Axios instance to NSwag-generated clients.
-
-### Authentication Types
-
-| Type | Behavior |
-|------|----------|
-| `"cookie"` (default) | Sets `withCredentials: true` and attaches the anti-forgery token from the page. |
-| `"bearer"` | Sets `withCredentials: false` and attaches an `Authorization: Bearer <token>` header. |
-
-### Basic Usage
-
-```typescript
-import { ApiService, createApiService } from "@bloom/services/api-service";
-
-// Cookie auth (default) — for admin pages where the user is logged in.
-const api = new ApiService();
-const response = await api.get("/api/content/my-item-id");
-
-// Bearer auth — for machine-to-machine or external consumers.
-const api = new ApiService({ authType: "bearer", token: "eyJ..." });
-await api.post("/api/content", { contentType: "Article" });
-
-// Update the token later (e.g., after refresh).
-api.setToken("newToken...");
-```
-
-### Using with the NSwag-Generated Client
-
-The `ApiService` exposes its underlying Axios instance via `getAxiosInstance()`, which can be passed directly to the NSwag-generated `Client` constructor:
-
-```typescript
-import { ApiService } from "@bloom/services/api-service";
-import { Client } from "@bloom/services/OpenApiClient";
-
-// Cookie auth — admin pages.
-const apiService = new ApiService();
-const client = new Client("", apiService.getAxiosInstance());
-await client.contentGET("my-content-item-id");
-
-// Bearer auth — external consumers.
-const apiService = new ApiService({ authType: "bearer", token: accessToken });
-const client = new Client("", apiService.getAxiosInstance());
-await client.contentGET("my-content-item-id");
-```
-
-This gives the NSwag-generated client all the authentication handling (cookies + anti-forgery token, or Bearer token) without any additional configuration.
-
-### Manual Token Management
-
-If you already have a token (e.g., from a different auth flow), pass it directly:
-
-```typescript
-const apiService = new ApiService({ authType: "bearer", token: "eyJ..." });
-const client = new Client("", apiService.getAxiosInstance());
-
-// Update the token later (e.g., after refresh).
-apiService.setToken("newToken...");
-```
-
-### Available Methods
-
-| Method | Description |
-|--------|-------------|
-| `get<T>(url, config?)` | Perform a GET request. |
-| `post<T>(url, data?, config?)` | Perform a POST request. |
-| `put<T>(url, data?, config?)` | Perform a PUT request. |
-| `patch<T>(url, data?, config?)` | Perform a PATCH request. |
-| `delete<T>(url, config?)` | Perform a DELETE request. |
-| `setToken(token)` | Update the Bearer token for subsequent requests. |
-| `getAxiosInstance()` | Returns the underlying Axios instance for use with generated clients. |
 
 ## Adding New API Endpoints
 
