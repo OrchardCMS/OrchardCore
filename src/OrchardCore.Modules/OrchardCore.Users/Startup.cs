@@ -286,6 +286,17 @@ public sealed class ExternalAuthenticationStartup : StartupBase
 }
 
 [Feature(UserConstants.Features.ExternalAuthentication)]
+[RequireFeatures("OrchardCore.Deployment")]
+public sealed class ExternalAuthenticationDeploymentStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddSiteSettingsPropertyDeploymentStep<ExternalRegistrationSettings, ExternalAuthenticationDeploymentStartup>(S => S["External registration settings"], S => S["Exports the external registration settings."]);
+        services.AddSiteSettingsPropertyDeploymentStep<ExternalLoginSettings, ExternalAuthenticationDeploymentStartup>(S => S["External login settings"], S => S["Exports the external login settings."]);
+    }
+}
+
+[Feature(UserConstants.Features.ExternalAuthentication)]
 [RequireFeatures("OrchardCore.RateLimits")]
 public sealed class ExternalAuthenticationRateLimitsStartup : StartupBase
 {
