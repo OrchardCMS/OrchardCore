@@ -2412,6 +2412,17 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@orchardcore/etl@workspace:src/OrchardCore.Modules/OrchardCore.DataOrchestrator/Assets":
+  version: 0.0.0-use.local
+  resolution: "@orchardcore/etl@workspace:src/OrchardCore.Modules/OrchardCore.DataOrchestrator/Assets"
+  dependencies:
+    "@popperjs/core": "npm:2.11.8"
+    "@types/bootstrap": "npm:5.2.7"
+    bootstrap: "npm:5.3.8"
+    jsplumb: "npm:2.15.6"
+  languageName: unknown
+  linkType: soft
+
 "@orchardcore/flows@workspace:src/OrchardCore.Modules/OrchardCore.Flows/Assets":
   version: 0.0.0-use.local
   resolution: "@orchardcore/flows@workspace:src/OrchardCore.Modules/OrchardCore.Flows/Assets"

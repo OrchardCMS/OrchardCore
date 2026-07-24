@@ -1,0 +1,94 @@
+@model FtpExportLoadViewModel
+
+<div class="ocat-wrapper" asp-validation-class-for="Host">
+    <label asp-for="Host" class="ocat-label">@T["Host"]</label>
+    <div class="ocat-end">
+        <input asp-for="Host" class="form-control" />
+        <span asp-validation-for="Host"></span>
+        <span class="hint">@T["The FTP server host name or IP address."]</span>
+    </div>
+</div>
+
+<div class="ocat-limited-wrapper" asp-validation-class-for="Port">
+    <label asp-for="Port" class="ocat-label">@T["Port"]</label>
+    <div class="ocat-limited">
+        <input asp-for="Port" type="number" min="1" max="65535" class="form-control" />
+        <span asp-validation-for="Port"></span>
+    </div>
+</div>
+
+<div class="ocat-wrapper" asp-validation-class-for="Username">
+    <label asp-for="Username" class="ocat-label">@T["User Name"]</label>
+    <div class="ocat-end">
+        <input asp-for="Username" class="form-control" autocomplete="off" />
+        <span asp-validation-for="Username"></span>
+    </div>
+</div>
+
+<div class="ocat-wrapper" asp-validation-class-for="Password">
+    <label asp-for="Password" class="ocat-label">@T["Password"]</label>
+    <div class="ocat-end">
+        <input asp-for="Password" type="password" class="form-control" autocomplete="new-password" />
+        <span asp-validation-for="Password"></span>
+        <span class="hint">@T["Leave empty to keep the existing password."]</span>
+    </div>
+</div>
+
+<div class="ocat-wrapper" asp-validation-class-for="RemoteDirectory">
+    <label asp-for="RemoteDirectory" class="ocat-label">@T["Remote Directory"]</label>
+    <div class="ocat-end">
+        <input asp-for="RemoteDirectory" class="form-control" />
+        <span asp-validation-for="RemoteDirectory"></span>
+        <span class="hint">@T["The directory on the server the file is uploaded to, for example `/exports`. It is created when missing."]</span>
+    </div>
+</div>
+
+<div class="ocat-wrapper" asp-validation-class-for="SecurityMode">
+    <label asp-for="SecurityMode" class="ocat-label">@T["Security"]</label>
+    <div class="ocat-end">
+        <select asp-for="SecurityMode" class="form-select">
+            <option value="@FtpExportLoad.SecurityAuto">@T["Auto (negotiate FTPS, fall back to FTP)"]</option>
+            <option value="@FtpExportLoad.SecurityExplicit">@T["Explicit FTPS"]</option>
+            <option value="@FtpExportLoad.SecurityImplicit">@T["Implicit FTPS"]</option>
+            <option value="@FtpExportLoad.SecurityNone">@T["None (plain FTP)"]</option>
+        </select>
+        <span asp-validation-for="SecurityMode"></span>
+    </div>
+</div>
+
+<div class="ocat-wrapper" asp-validation-class-for="Format">
+    <label asp-for="Format" class="ocat-label">@T["Format"]</label>
+    <div class="ocat-end">
+        <select asp-for="Format" asp-items="Model.Formats" class="form-select"></select>
+        <span asp-validation-for="Format"></span>
+    </div>
+</div>
+
+<div class="ocat-wrapper" asp-validation-class-for="FileName">
+    <label asp-for="FileName" class="ocat-label">@T["File Name"]</label>
+    <div class="ocat-end">
+        <input asp-for="FileName" class="form-control" />
+        <span asp-validation-for="FileName"></span>
+        <span class="hint">@T["The name of the file created on the server. Leave empty to use a default name based on the format."]</span>
+    </div>
+</div>
+
+<div class="ocat-wrapper" asp-validation-class-for="Passive">
+    <div class="ocat-end-offset">
+        <div class="form-check">
+            <input asp-for="Passive" class="form-check-input" />
+            <label asp-for="Passive" class="form-check-label">@T["Use passive mode (recommended behind a firewall or NAT)"]</label>
+        </div>
+        <span asp-validation-for="Passive"></span>
+    </div>
+</div>
+
+<div class="ocat-wrapper" asp-validation-class-for="AcceptAnyCertificate">
+    <div class="ocat-end-offset">
+        <div class="form-check">
+            <input asp-for="AcceptAnyCertificate" class="form-check-input" />
+            <label asp-for="AcceptAnyCertificate" class="form-check-label">@T["Accept any TLS certificate (including self-signed)"]</label>
+        </div>
+        <span asp-validation-for="AcceptAnyCertificate"></span>
+    </div>
+</div>

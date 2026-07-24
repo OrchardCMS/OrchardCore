@@ -1,0 +1,32 @@
+@model FilterTransformViewModel
+
+<div class="mb-3">
+    <label asp-for="Field" class="form-label">@T["Field Name"]</label>
+    <input asp-for="Field" class="form-control" />
+    <span class="hint">@T["The name of the field to filter on. Supports dot-notation for nested fields."]</span>
+</div>
+
+<div class="mb-3">
+    <label asp-for="Operator" class="form-label">@T["Operator"]</label>
+    <select asp-for="Operator" class="form-select">
+        <option value="equals">@T["Equals"]</option>
+        <option value="not_equals">@T["Not Equals"]</option>
+        <option value="contains">@T["Contains"]</option>
+        <option value="not_contains">@T["Not Contains"]</option>
+        <option value="starts_with">@T["Starts With"]</option>
+        <option value="ends_with">@T["Ends With"]</option>
+        <option value="greater_than">@T["Greater Than"]</option>
+        <option value="greater_than_or_equal">@T["Greater Than Or Equal"]</option>
+        <option value="less_than">@T["Less Than"]</option>
+        <option value="less_than_or_equal">@T["Less Than Or Equal"]</option>
+        <option value="is_empty">@T["Is Empty"]</option>
+        <option value="is_not_empty">@T["Is Not Empty"]</option>
+    </select>
+    <span class="hint">@T["The comparison operator to use. Numeric and date values support greater/less-than comparisons."]</span>
+</div>
+
+<div class="mb-3">
+    <label asp-for="Value" class="form-label">@T["Value"]</label>
+    <input asp-for="Value" class="form-control" />
+    <span class="hint">@T["The value to compare the field against. Leave empty for operators like Is Empty."]</span>
+</div>

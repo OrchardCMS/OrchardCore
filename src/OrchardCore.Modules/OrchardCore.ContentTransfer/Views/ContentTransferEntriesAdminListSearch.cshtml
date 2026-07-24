@@ -1,0 +1,8 @@
+@model ListContentTransferEntryOptions
+
+<input asp-for="OriginalSearchText" type="hidden" />
+<div class="has-search">
+    <i class="fa-solid fa-search form-control-feedback" aria-hidden="true"></i>
+    <label asp-for="SearchText" class="visually-hidden">@T["Search"]</label>
+    <input asp-for="SearchText" class="form-control" placeholder="@T["Search"]" inputmode="search" type="search" autofocus />
+</div>

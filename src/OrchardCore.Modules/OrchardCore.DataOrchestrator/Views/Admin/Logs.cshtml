@@ -1,0 +1,90 @@
+@model EtlExecutionLogListViewModel
+
+<zone Name="Title"><h1>@T["Execution Logs — {0}", Model.Pipeline.Name]</h1></zone>
+
+<zone name="Breadcrumbs">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-action="Index">@T["Data Pipelines"]</a></li>
+            <li class="breadcrumb-item"><a asp-action="Edit" asp-route-id="@Model.Pipeline.Id">@Model.Pipeline.Name</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@T["Logs"]</li>
+        </ol>
+    </nav>
+</zone>
+
+<div class="card text-bg-theme position-sticky action-bar mb-3">
+    <div class="card-body">
+        <div class="row gx-3">
+            <div class="col">
+                <div class="text-muted">@T["Recent runs and execution details for this data pipeline."]</div>
+            </div>
+            <div class="col-auto d-flex gap-2">
+                <a class="btn btn-secondary btn-sm" href="~/Admin/Media">@T["Media Library"]</a>
+                <a class="btn btn-secondary btn-sm" asp-action="Edit" asp-route-id="@Model.Pipeline.Id">@T["Back to Pipeline"]</a>
+                <a class="btn btn-primary btn-sm" asp-action="Index">@T["All Pipelines"]</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (Model.Logs.Count == 0)
+{
+    <ul class="list-group">
+        <li class="list-group-item">
+            <div class="alert alert-info mb-0">@T["No execution logs found."]</div>
+        </li>
+    </ul>
+}
+else
+{
+    <ul class="list-group">
+        @foreach (var log in Model.Logs)
+        {
+            <li class="list-group-item">
+                <div class="properties">
+                    <div class="float-end">
+                        @switch (log.Status)
+                        {
+                            case "Success":
+                                <span class="badge bg-success">@T["Success"]</span>
+                                break;
+                            case "Failed":
+                                <span class="badge bg-danger">@T["Failed"]</span>
+                                break;
+                            case "Running":
+                                <span class="badge bg-info">@T["Running"]</span>
+                                break;
+                            case "Cancelled":
+                                <span class="badge bg-warning">@T["Cancelled"]</span>
+                                break;
+                        }
+                    </div>
+
+                    <strong>@T["Run started {0}", log.StartedUtc.ToString("g")]</strong>
+
+                    <div class="metadata">
+                        <span class="me-3"><strong>@T["Completed:"]</strong> @(log.CompletedUtc?.ToString("g") ?? "-")</span>
+                        <span class="me-3"><strong>@T["Duration:"]</strong> @(log.CompletedUtc.HasValue ? (log.CompletedUtc.Value - log.StartedUtc).ToString(@"hh\:mm\:ss") : "-")</span>
+                        <span class="me-3"><strong>@T["Records:"]</strong> @log.RecordsProcessed / @log.RecordsLoaded</span>
+                        <span><strong>@T["Errors:"]</strong> @log.ErrorCount</span>
+                    </div>
+
+                    @if (log.Errors.Count > 0)
+                    {
+                        <details class="mt-2">
+                            <summary class="text-danger">@T["Show error details"]</summary>
+                            <div class="alert alert-danger mt-2 mb-0">
+                                <ul class="mb-0">
+                                    @foreach (var error in log.Errors)
+                                    {
+                                        <li>@error</li>
+                                    }
+                                </ul>
+                            </div>
+                        </details>
+                    }
+                </div>
+            </li>
+        }
+    </ul>
+}
