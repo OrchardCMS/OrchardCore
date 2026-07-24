@@ -173,7 +173,9 @@ nav:
       - Navigate between pages: topics/navigation/README.md
       - Query and Search data: topics/search/README.md
       - Secure your application: topics/security/README.md
-      - Data: topics/data/README.md
+      - Data:
+          - Overview: topics/data/README.md
+          - How YesSql works: topics/data/yessql.md
       - Configuration: topics/configuration/README.md
       - Workflows: topics/workflows/README.md
       - Publishing a new release: topics/publishing-releases/README.md
