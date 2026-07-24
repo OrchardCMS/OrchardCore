@@ -229,8 +229,26 @@ public sealed class ExtensionManager : IExtensionManager
             _featureInfos = Order(
                 loadedExtensions.SelectMany(extension => extension.Value.ExtensionInfo.Features),
                 extensionDependencyStrategies as IExtensionDependencyStrategy[] ?? extensionDependencyStrategies.ToArray(),
-                extensionPriorityStrategies as IExtensionPriorityStrategy[] ?? extensionPriorityStrategies.ToArray());
+                extensionPriorityStrategies as IExtensionPriorityStrategy[] ?? extensionPriorityStrategies.ToArray(),
+                out var unresolvedFeatureIds,
+                out var violatedConstraints);
             _features = _featureInfos.ToFrozenDictionary(feature => feature.Id, feature => feature);
+
+            if (unresolvedFeatureIds.Length > 0)
+            {
+                L.LogWarning(
+                    "A cyclic feature ordering constraint was detected while ordering extensions. " +
+                    "Fallback ordering was applied for unresolved features: {FeatureIds}. " +
+                    "Check feature Dependencies, Before, and After declarations.",
+                    string.Join(", ", unresolvedFeatureIds));
+            }
+
+            if (violatedConstraints.Length > 0)
+            {
+                L.LogWarning(
+                    "Feature ordering constraints could not be fully satisfied. Violated constraints: {ViolatedConstraints}",
+                    string.Join(", ", violatedConstraints));
+            }
 
             // Extensions are also ordered according to the weight of their first features.
             _extensionsInfos = _featureInfos
@@ -397,7 +415,12 @@ public sealed class ExtensionManager : IExtensionManager
         return list;
     }
 
-    private static IFeatureInfo[] Order(IEnumerable<IFeatureInfo> featuresToOrder, IExtensionDependencyStrategy[] extensionDependencyStrategies, IExtensionPriorityStrategy[] extensionPriorityStrategies)
+    private static IFeatureInfo[] Order(
+        IEnumerable<IFeatureInfo> featuresToOrder,
+        IExtensionDependencyStrategy[] extensionDependencyStrategies,
+        IExtensionPriorityStrategy[] extensionPriorityStrategies,
+        out string[] unresolvedFeatureIds,
+        out string[] violatedConstraints)
     {
         var features = featuresToOrder.OrderBy(x => x.Id).ToArray();
 
@@ -566,16 +589,82 @@ public sealed class ExtensionManager : IExtensionManager
             }
         }
 
+        unresolvedFeatureIds = [];
+
         if (orderedIds.Count != features.Length)
         {
-            foreach (var remainingFeature in features
-                .Where(feature => !orderedIds.Contains(feature.Id))
+            var orderedIdSet = orderedIds.ToHashSet(StringComparer.Ordinal);
+
+            var remainingFeatures = features
+                .Where(feature => !orderedIdSet.Contains(feature.Id))
                 .OrderBy(feature => effectivePriorities[feature.Id])
-                .ThenBy(feature => feature.Id, StringComparer.Ordinal))
+                .ThenBy(feature => feature.Id, StringComparer.Ordinal)
+                .ToArray();
+
+            unresolvedFeatureIds = remainingFeatures
+                .Select(feature => feature.Id)
+                .ToArray();
+
+            foreach (var remainingFeature in remainingFeatures)
             {
                 orderedIds.Add(remainingFeature.Id);
             }
         }
+
+        bool HasExplicitOrderingConstraint(IFeatureInfo observer, IFeatureInfo subject)
+        {
+            var observerId = observer.Id;
+            var subjectId = subject.Id;
+
+            return observer.Before.Contains(subjectId)
+                || observer.After.Contains(subjectId)
+                || subject.Before.Contains(observerId)
+                || subject.After.Contains(observerId);
+        }
+
+        var positions = orderedIds
+            .Select((id, index) => (id, index))
+            .ToDictionary(x => x.id, x => x.index, StringComparer.Ordinal);
+
+        var violations = new HashSet<string>(StringComparer.Ordinal);
+
+        foreach (var observer in features)
+        {
+            var observerPosition = positions[observer.Id];
+
+            foreach (var subject in features)
+            {
+                if (ReferenceEquals(observer, subject))
+                {
+                    continue;
+                }
+
+                if (HasDependency(observer, subject, extensionDependencyStrategies)
+                    && !HasExplicitOrderingConstraint(observer, subject)
+                    && positions[subject.Id] >= observerPosition)
+                {
+                    violations.Add($"dependency: '{observer.Id}' depends on '{subject.Id}'");
+                }
+            }
+
+            foreach (var afterId in observer.After)
+            {
+                if (positions.TryGetValue(afterId, out var afterPosition) && afterPosition >= observerPosition)
+                {
+                    violations.Add($"after: '{observer.Id}' after '{afterId}'");
+                }
+            }
+
+            foreach (var beforeId in observer.Before)
+            {
+                if (positions.TryGetValue(beforeId, out var beforePosition) && observerPosition >= beforePosition)
+                {
+                    violations.Add($"before: '{observer.Id}' before '{beforeId}'");
+                }
+            }
+        }
+
+        violatedConstraints = violations.OrderBy(x => x, StringComparer.Ordinal).ToArray();
 
         return orderedIds.Select(id => featureById[id]).ToArray();
     }
