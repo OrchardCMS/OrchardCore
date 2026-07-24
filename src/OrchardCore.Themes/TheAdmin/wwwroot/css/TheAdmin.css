@@ -10339,7 +10339,7 @@ input[type=password]::-ms-clear {
  Uses the Bootstrap/Orchard dropdown z-index variable to stay aligned with the
  application's existing layering scheme.
 */
-.list-group-item:has(.dropdown-menu.show) {
+.list-group-item:has(.dropdown-menu.show:not(.inner)) {
   position: relative;
   z-index: var(--oc-zindex-dropdown);
 }
