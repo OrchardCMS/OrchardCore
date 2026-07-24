@@ -45,8 +45,8 @@ public abstract class SiteDisplayDriver<TSettings> : SectionDisplayDriverBase<IS
     public sealed override IDisplayResult Edit(ISite site, BuildEditorContext context)
         => base.Edit(site, context);
 
-    public sealed override ShapeResult Factory(string shapeType, Func<IBuildShapeContext, ValueTask<IShape>> shapeBuilder, Func<IShape, Task> initializeAsync)
-        => base.Factory(shapeType, shapeBuilder, initializeAsync);
+    public sealed override ShapeResult Factory<TBuilderState, TInitState>(string shapeType, Func<IBuildShapeContext, TBuilderState, ValueTask<IShape>> shapeBuilder, TBuilderState shapeBuilderState, Func<IShape, TInitState, ValueTask> initializingAsync, TInitState initializingState)
+        => base.Factory(shapeType, shapeBuilder, shapeBuilderState, initializingAsync, initializingState);
 
     public sealed override bool CanHandleModel(ISite model)
         => base.CanHandleModel(model);

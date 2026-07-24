@@ -33,7 +33,7 @@ public sealed class ContentCulturePickerNavbarDisplayDriver : DisplayDriver<Navb
             .HttpContext
             .Features
             .Get<IRequestCultureFeature>()?.RequestCulture?.Culture ?? CultureInfo.CurrentUICulture;
-        }).RenderWhen(() => Task.FromResult(supportedCultures.Count() > 1))
+        }).RenderWhen(static (supportedCultures) => Task.FromResult(supportedCultures.Count() > 1), supportedCultures)
         .Location(OrchardCoreConstants.DisplayType.Detail, "Content:5");
     }
 }

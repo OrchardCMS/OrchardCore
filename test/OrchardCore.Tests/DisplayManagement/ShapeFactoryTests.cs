@@ -278,21 +278,19 @@ public class ShapeFactoryTests
     private static async Task<IShape> BuildShapeAsync(ShapeResult shapeResult, IShapeFactory factory)
     {
         // ShapeResult only populates Shape during the full display pipeline, so this test
-        // invokes the stored builder and initializer directly to verify generated wrapper usage.
-        var shapeBuilderField = typeof(ShapeResult).GetField("_shapeBuilder", BindingFlags.Instance | BindingFlags.NonPublic);
-        var initializingAsyncField = typeof(ShapeResult).GetField("_initializingAsync", BindingFlags.Instance | BindingFlags.NonPublic);
+        // invokes the protected BuildShapeAsync and InitializeShapeAsync methods directly
+        // to verify generated wrapper usage. These virtual methods are overridden by
+        // TypedShapeResult subclasses, which store the builder in their own typed fields
+        // rather than the base _shapeBuilder field.
+        var buildShapeAsyncMethod = typeof(ShapeResult).GetMethod("BuildShapeAsync", BindingFlags.Instance | BindingFlags.NonPublic);
+        var initializeShapeAsyncMethod = typeof(ShapeResult).GetMethod("InitializeShapeAsync", BindingFlags.Instance | BindingFlags.NonPublic);
 
-        Assert.NotNull(shapeBuilderField);
-        Assert.NotNull(initializingAsyncField);
+        Assert.NotNull(buildShapeAsyncMethod);
+        Assert.NotNull(initializeShapeAsyncMethod);
 
-        var shapeBuilder = Assert.IsType<Func<IBuildShapeContext, ValueTask<IShape>>>(shapeBuilderField.GetValue(shapeResult));
-        var initializingAsync = (Func<IShape, Task>)initializingAsyncField.GetValue(shapeResult);
-        var shape = await shapeBuilder(new BuildDisplayContext(new Shape(), "Detail", string.Empty, factory, null, null));
-
-        if (initializingAsync is not null)
-        {
-            await initializingAsync(shape);
-        }
+        var context = new BuildDisplayContext(new Shape(), "Detail", string.Empty, factory, null, null);
+        var shape = await (ValueTask<IShape>)buildShapeAsyncMethod.Invoke(shapeResult, [context]);
+        await (ValueTask)initializeShapeAsyncMethod.Invoke(shapeResult, [shape]);
 
         return shape;
     }
