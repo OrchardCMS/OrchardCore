@@ -53,7 +53,7 @@ internal static class LiquidViewTemplate
 
         // Defer the buffer disposing so that a template can be rendered twice.
         var content = new ViewBufferTextWriterContent(releaseOnWrite: false);
-        ShellScope.Current.RegisterBeforeDispose(scope => content.Dispose());
+        ShellScope.Current.RegisterBeforeDispose(static (scope, content) => content.Dispose(), content);
 
         try
         {
