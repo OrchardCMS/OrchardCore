@@ -71,13 +71,13 @@ using OrchardCore.Modules.Manifest;
     [
         "OrchardCore.Media"
     ],
-    Before =
-    [
-        "OrchardCore.Media"
-    ],
     After =
     [
         "OrchardCore.Users"
+    ],
+    Before =
+    [
+        "OrchardCore.Media"
     ],
     Category = "Content Management"
 )]
