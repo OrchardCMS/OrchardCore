@@ -36,16 +36,19 @@ public class ApiAuthenticationHandler : AuthenticationHandler<ApiAuthorizationOp
 
     protected override Task HandleChallengeAsync(AuthenticationProperties properties)
     {
+        // Keep API status codes as-is in every path: without this, an empty-body 401 on an
+        // extension-less API route is re-executed into an HTML error page when the
+        // Diagnostics feature's status-code pages are enabled.
+        DisableStatusCodePages();
+
         if (!_authenticationOptions.Value.SchemeMap.ContainsKey(Options.ApiAuthenticationScheme))
         {
+            // RFC 9110 §15.5.2 requires a WWW-Authenticate header on every 401 response.
+            // No handler is registered for the forwarded scheme, so no real challenge can be
+            // issued; advertise the Bearer scheme this API scheme expects when configured.
+            Response.Headers.WWWAuthenticate = "Bearer";
             Response.StatusCode = (int)System.Net.HttpStatusCode.Unauthorized;
             return Task.CompletedTask;
-        }
-
-        var statusCodePagesFeature = Context.Features.Get<IStatusCodePagesFeature>();
-        if (statusCodePagesFeature != null)
-        {
-            statusCodePagesFeature.Enabled = false;
         }
 
         return Context.ChallengeAsync(Options.ApiAuthenticationScheme);
@@ -53,18 +56,23 @@ public class ApiAuthenticationHandler : AuthenticationHandler<ApiAuthorizationOp
 
     protected override Task HandleForbiddenAsync(AuthenticationProperties properties)
     {
+        DisableStatusCodePages();
+
         if (!_authenticationOptions.Value.SchemeMap.ContainsKey(Options.ApiAuthenticationScheme))
         {
             Response.StatusCode = (int)System.Net.HttpStatusCode.Forbidden;
             return Task.CompletedTask;
         }
 
+        return Context.ForbidAsync(Options.ApiAuthenticationScheme);
+    }
+
+    private void DisableStatusCodePages()
+    {
         var statusCodePagesFeature = Context.Features.Get<IStatusCodePagesFeature>();
         if (statusCodePagesFeature != null)
         {
             statusCodePagesFeature.Enabled = false;
         }
-
-        return Context.ForbidAsync(Options.ApiAuthenticationScheme);
     }
 }

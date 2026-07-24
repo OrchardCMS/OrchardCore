@@ -238,3 +238,4 @@ jobs:
           src/OrchardCore.Cms.Web/App_Data_Tests_*/logs
           test/OrchardCore.Tests.Functional/traces
         retention-days: 3
+

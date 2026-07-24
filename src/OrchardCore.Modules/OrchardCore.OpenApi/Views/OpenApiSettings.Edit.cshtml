@@ -1,0 +1,51 @@
+@using OrchardCore.OpenApi.ViewModels
+@model OpenApiSettingsViewModel
+
+<h5>@T["API Documentation UIs"]</h5>
+
+<div class="mb-3">
+    <div class="d-flex align-items-center mb-2">
+        <span class="badge me-2 @(Model.IsSwaggerUIEnabled ? "bg-success" : "bg-secondary")">
+            @(Model.IsSwaggerUIEnabled ? T["Enabled"] : T["Disabled"])
+        </span>
+        <strong>@T["Swagger UI"]</strong>
+        @if (Model.IsSwaggerUIEnabled)
+        {
+            <span class="hint dashed ms-2">@T["Interactive API explorer at"] <a href="@Href("~/swagger")" target="_blank">~/swagger</a></span>
+        }
+    </div>
+
+    <div class="d-flex align-items-center mb-2">
+        <span class="badge me-2 @(Model.IsReDocUIEnabled ? "bg-success" : "bg-secondary")">
+            @(Model.IsReDocUIEnabled ? T["Enabled"] : T["Disabled"])
+        </span>
+        <strong>@T["ReDoc UI"]</strong>
+        @if (Model.IsReDocUIEnabled)
+        {
+            <span class="hint dashed ms-2">@T["Read-only API documentation at"] <a href="@Href("~/redoc")" target="_blank">~/redoc</a></span>
+        }
+    </div>
+
+    <div class="d-flex align-items-center mb-2">
+        <span class="badge me-2 @(Model.IsScalarUIEnabled ? "bg-success" : "bg-secondary")">
+            @(Model.IsScalarUIEnabled ? T["Enabled"] : T["Disabled"])
+        </span>
+        <strong>@T["Scalar UI"]</strong>
+        @if (Model.IsScalarUIEnabled)
+        {
+            <span class="hint dashed ms-2">@T["Modern API reference at"] <a href="@Href("~/scalar/v1")" target="_blank">~/scalar/v1</a></span>
+        }
+    </div>
+
+    <span class="hint">@T["Enable or disable API documentation UIs via the Features page."]</span>
+</div>
+
+<h5 class="mt-4">@T["API Schema Access"]</h5>
+
+<div class="mb-3">
+    <div class="form-check">
+        <input asp-for="AllowAnonymousSchemaAccess" type="checkbox" class="form-check-input" />
+        <label class="form-check-label" asp-for="AllowAnonymousSchemaAccess">@T["Allow anonymous access to the API schema"]</label>
+        <span class="hint dashed">@T["When enabled, the JSON schema endpoints can be accessed without authentication. When disabled (the default), they require the <strong>View OpenAPI Content</strong> permission, and external tools like NSwag must provide authentication."]</span>
+    </div>
+</div>
