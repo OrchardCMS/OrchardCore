@@ -6,33 +6,38 @@
 <zone Name="Title"><h1>@RenderTitleSegments(T["Content Types"])</h1></zone>
 
 <div data-list-management data-client-side-search="true" data-single-result-action-mode="first" data-search-first-element-classes="border-top rounded-top">
-<div class="card mb-3 text-bg-theme position-sticky action-bar">
-    <div class="card-body">
-        <div class="row gx-3">
-            <div class="col">
-                <div class="has-search">
-                    <i class="fa-solid fa-search form-control-feedback" aria-hidden="true"></i>
-                    <input id="search-box" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
+    <div class="card mb-3 text-bg-theme position-sticky action-bar">
+        <div class="card-body">
+            <div class="row gx-3">
+                <div class="col">
+                    <div class="has-search">
+                        <i class="fa-solid fa-search form-control-feedback" aria-hidden="true"></i>
+                        <input id="search-box" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
+                    </div>
                 </div>
-            </div>
-            <div class="col-auto">
-                <a asp-route-action="Create" id="btnCreate" class="btn btn-secondary create" role="button">@T["Create new type"]</a>
+                <div class="col-auto">
+                    <a asp-route-action="Create" id="btnCreate" class="btn btn-secondary create" role="button">@T["Create new type"]</a>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<ul id="list-items" class="list-group">
-    @foreach (var type in Model.Types)
+    @foreach (var contentTypeGroup in Model.Types.GroupBy(t => t.Category))
     {
-        <li class="list-group-item" data-filter-value="@D[type.DisplayName, DataLocalizationContext.ContentType]" data-type-name="@type.Name">
-            @Html.DisplayFor(m => type)
-        </li>
+        <h3 class="mt-3">@contentTypeGroup.Key</h3>
+        <ul id="list-items" class="list-group">
+            @foreach (var type in contentTypeGroup)
+            {
+                <li class="list-group-item" data-filter-value="@D[type.DisplayName, DataLocalizationContext.ContentType]" data-type-name="@type.Name">
+                    @Html.DisplayFor(m => type)
+                </li>
+            }
+        </ul>
     }
-</ul>
-<div id="list-alert" class="alert alert-info d-none" role="alert">
-    @T["<strong>Nothing here!</strong> Your search returned no results."]
-</div>
+
+    <div id="list-alert" class="alert alert-info d-none" role="alert">
+        @T["<strong>Nothing here!</strong> Your search returned no results."]
+    </div>
 </div>
 
 <script asp-name="list-management" at="Foot"></script>
