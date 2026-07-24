@@ -168,6 +168,7 @@ nav:
       - Customize the Display:
           - Overview: topics/display/README.md
           - Shapes: topics/display/shapes.md
+          - Create a Theme from an HTML Template: topics/display/theme-from-html-template.md
       - Localize your site: topics/localize/README.md
       - Handle the Media: topics/media/README.md
       - Navigate between pages: topics/navigation/README.md
