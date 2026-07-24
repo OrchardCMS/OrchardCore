@@ -6,9 +6,5 @@ using OrchardCore.Modules.Manifest;
     Website = ManifestConstants.OrchardCoreWebsite,
     Version = ManifestConstants.OrchardCoreVersion,
     Description = "Apis using the GraphQL Specification.",
-    Category = "Api",
-    After =
-    [
-        "OrchardCore.RateLimits"
-    ]
+    Category = "Api"
 )]

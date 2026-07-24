@@ -20,11 +20,7 @@ using OrchardCore.Modules.Manifest;
     Name = "Static File Provider",
     Description = "Provides a way to serve independent static files for each tenant.",
     Category = "Infrastructure",
-    DefaultTenantOnly = false,
-    Before =
-    [
-        "OrchardCore.RateLimits"
-    ]
+    DefaultTenantOnly = false
 )]
 
 [assembly: Feature(
