@@ -20,6 +20,8 @@ public class FeatureAttribute : Attribute
     private string _name;
     private string _category = "";
     private string[] _dependencies = [];
+    private string[] _before = [];
+    private string[] _after = [];
 
     /// <summary>
     /// Gets the default list delimiters used for parsing dependency strings.
@@ -128,7 +130,7 @@ public class FeatureAttribute : Attribute
         Category = category ?? "";
         Priority = priority ?? "";
         Description = description ?? "";
-        _dependencies = ParseDependencies(featureDependencies);
+        Dependencies = ParseDependencies(featureDependencies);
         DefaultTenantOnly = Convert.ToBoolean(defaultTenant);
         IsAlwaysEnabled = Convert.ToBoolean(alwaysEnabled);
         EnabledByDependencyOnly = Convert.ToBoolean(enabledByDependencyOnly);
@@ -203,17 +205,44 @@ public class FeatureAttribute : Attribute
     internal int? InternalPriority => int.TryParse(Priority, out var result) ? result : null;
 
     /// <summary>
-    /// Gets or sets the array of feature dependencies.
+    /// Gets or sets feature IDs that the current feature should load before.
     /// </summary>
     /// <remarks>
-    /// Dependencies are used to arrange the order in which drivers and handlers are invoked during startup.
-    /// Each dependency should correspond to another feature's <see cref="Id"/>.
+    /// If this feature lists "FeatureB" in <see cref="Before"/>, then this feature is ordered before "FeatureB".
+    /// This is an ordering-only constraint and does not imply a hard feature dependency.
+    /// Values are automatically trimmed when set.
+    /// </remarks>
+    public virtual string[] Before
+    {
+        get => _before;
+        set => _before = NormalizeDependencies(value);
+    }
+
+    /// <summary>
+    /// Gets or sets feature IDs that the current feature should load after.
+    /// </summary>
+    /// <remarks>
+    /// If this feature lists "FeatureA" in <see cref="After"/>, then this feature is ordered after "FeatureA".
+    /// This is an ordering-only constraint and does not imply a hard feature dependency.
+    /// Values are automatically trimmed when set.
+    /// </remarks>
+    public virtual string[] After
+    {
+        get => _after;
+        set => _after = NormalizeDependencies(value);
+    }
+
+    /// <summary>
+    /// Gets or sets hard feature dependencies.
+    /// </summary>
+    /// <remarks>
+    /// Dependencies determine feature activation/closure semantics and should correspond to required features.
     /// Values are automatically trimmed when set.
     /// </remarks>
     public virtual string[] Dependencies
     {
         get => _dependencies;
-        set => _dependencies = value?.Select(d => d.Trim()).ToArray() ?? [];
+        set => _dependencies = NormalizeDependencies(value);
     }
 
     /// <summary>
@@ -315,5 +344,14 @@ public class FeatureAttribute : Attribute
         }
 
         return dependencies.Split(ListDelimiters, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+    }
+
+    private static string[] NormalizeDependencies(string[] dependencies)
+    {
+        return dependencies?
+            .Select(d => d?.Trim())
+            .Where(d => !string.IsNullOrWhiteSpace(d))
+            .Distinct()
+            .ToArray() ?? [];
     }
 }

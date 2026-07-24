@@ -18,20 +18,21 @@ using OrchardCore.Modules.Manifest;
 [assembly: Feature(
     Id = "Sample2",
     Name = "Sample 2",
-    Description = "Module with dependency one sample 1.",
+    Description = "Module with dependency on sample 1.",
     Dependencies = ["Sample1"]
 )]
 
 [assembly: Feature(
     Id = "Sample3",
     Name = "Sample 3",
-    Description = "Module with dependency one sample 2.",
-    Dependencies = ["Sample2"]
+    Description = "Module with dependency on sample 2 and ordered before sample 4.",
+    Dependencies = ["Sample2"],
+    Before = ["Sample4"]
 )]
 
 [assembly: Feature(
     Id = "Sample4",
     Name = "Sample 4",
-    Description = "Module with dependency one sample 2.",
+    Description = "Module with dependency on sample 2.",
     Dependencies = ["Sample2"]
 )]

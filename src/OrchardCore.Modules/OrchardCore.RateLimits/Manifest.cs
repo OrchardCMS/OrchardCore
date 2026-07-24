@@ -11,5 +11,6 @@ using OrchardCore.Modules.Manifest;
     Id = "OrchardCore.RateLimits",
     Name = "Rate Limits",
     Description = "Provides a way to manage rate limiting to the website.",
-    Category = "Security"
+    Category = "Security",
+    Priority = "-100" // Ensure that the Rate Limits feature is loaded before other features that may depend on it.
 )]

@@ -5,7 +5,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Extensions.Manifests;
-using OrchardCore.Environment.Extensions.Utility;
 using OrchardCore.Modules;
 
 // ReSharper disable ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
@@ -243,10 +242,57 @@ public sealed class ExtensionManager : IExtensionManager
 
             if (L.IsEnabled(LogLevel.Trace))
             {
-                foreach (var featureInfo in _featureInfos)
+                var sb = new System.Text.StringBuilder();
+                sb.AppendLine("Feature load order:");
+
+                var featureSet = new HashSet<string>(_featureInfos.Select(f => f.Id));
+
+                for (var i = 0; i < _featureInfos.Length; i++)
                 {
-                    L.LogTrace("Loaded feature: {ExtensionId} - {FeatureId} ({FeatureName})", featureInfo.Extension.Id, featureInfo.Id, featureInfo.Name);
+                    var f = _featureInfos[i];
+
+                    sb.Append($"  [{i + 1,4}] {f.Id}");
+
+                    if (f.Priority != 0)
+                    {
+                        sb.Append($"  (priority: {f.Priority})");
+                    }
+
+                    var edges = new List<string>();
+
+                    foreach (var dep in f.Dependencies)
+                    {
+                        if (featureSet.Contains(dep))
+                        {
+                            edges.Add($"depends on '{dep}'");
+                        }
+                    }
+
+                    foreach (var after in f.After)
+                    {
+                        if (featureSet.Contains(after))
+                        {
+                            edges.Add($"after '{after}'");
+                        }
+                    }
+
+                    foreach (var before in f.Before)
+                    {
+                        if (featureSet.Contains(before))
+                        {
+                            edges.Add($"before '{before}'");
+                        }
+                    }
+
+                    if (edges.Count > 0)
+                    {
+                        sb.Append($"  [{string.Join(", ", edges)}]");
+                    }
+
+                    sb.AppendLine();
                 }
+
+                L.LogTrace("{FeatureGraph}", sb.ToString());
             }
 
             _isInitialized = true;
@@ -353,12 +399,185 @@ public sealed class ExtensionManager : IExtensionManager
 
     private static IFeatureInfo[] Order(IEnumerable<IFeatureInfo> featuresToOrder, IExtensionDependencyStrategy[] extensionDependencyStrategies, IExtensionPriorityStrategy[] extensionPriorityStrategies)
     {
-        return featuresToOrder
-            .OrderBy(x => x.Id)
-            .OrderByDependenciesAndPriorities(
-                (feature1, feature2) => HasDependency(feature1, feature2, extensionDependencyStrategies),
-                feature => GetPriority(feature, extensionPriorityStrategies))
-            .ToArray();
+        var features = featuresToOrder.OrderBy(x => x.Id).ToArray();
+
+        var featureById = features.ToDictionary(feature => feature.Id, feature => feature);
+        var edges = featureById.Keys.ToDictionary(id => id, _ => new HashSet<string>());
+        var indegrees = featureById.Keys.ToDictionary(id => id, _ => 0);
+
+        foreach (var observer in features)
+        {
+            foreach (var subject in features)
+            {
+                if (ReferenceEquals(observer, subject))
+                {
+                    continue;
+                }
+
+                if (HasDependency(observer, subject, extensionDependencyStrategies) && edges[subject.Id].Add(observer.Id))
+                {
+                    indegrees[observer.Id]++;
+                }
+            }
+        }
+
+        // Apply ordering constraints and simultaneously record the Before/After adjacency used
+        // for priority propagation. Only Before/After hints (not structural dependency edges)
+        // participate in propagation: they express "I want to sit adjacent to this feature",
+        // whereas Dependencies express a load-order requirement that should not drag unrelated
+        // features into a priority band.
+        // After:  observer.After = ["X"] means X -> observer.
+        // Before: observer.Before = ["X"] means observer -> X.
+        // In both cases, remove any conflicting reverse edge first.
+        var orderingHintNeighbors = featureById.Keys.ToDictionary(id => id, _ => new HashSet<string>());
+
+        foreach (var observer in features)
+        {
+            var observerId = observer.Id;
+
+            foreach (var afterId in observer.After)
+            {
+                if (featureById.ContainsKey(afterId))
+                {
+                    orderingHintNeighbors[observerId].Add(afterId);
+                    orderingHintNeighbors[afterId].Add(observerId);
+                }
+
+                ApplyOrderingConstraint(
+                    constrainedId: afterId,
+                    reverseFromId: observerId,
+                    reverseToId: afterId,
+                    forwardFromId: afterId,
+                    forwardToId: observerId);
+            }
+
+            foreach (var beforeId in observer.Before)
+            {
+                if (featureById.ContainsKey(beforeId))
+                {
+                    orderingHintNeighbors[observerId].Add(beforeId);
+                    orderingHintNeighbors[beforeId].Add(observerId);
+                }
+
+                ApplyOrderingConstraint(
+                    constrainedId: beforeId,
+                    reverseFromId: beforeId,
+                    reverseToId: observerId,
+                    forwardFromId: observerId,
+                    forwardToId: beforeId);
+            }
+        }
+
+        void ApplyOrderingConstraint(string constrainedId, string reverseFromId, string reverseToId, string forwardFromId, string forwardToId)
+        {
+            if (!featureById.ContainsKey(constrainedId))
+            {
+                return;
+            }
+
+            if (edges[reverseFromId].Remove(reverseToId))
+            {
+                indegrees[reverseToId]--;
+            }
+
+            if (edges[forwardFromId].Add(forwardToId))
+            {
+                indegrees[forwardToId]++;
+            }
+        }
+
+        var basePriorities = featureById.Keys.ToDictionary(
+            id => id,
+            id => GetPriority(featureById[id], extensionPriorityStrategies));
+
+        var effectivePriorities = new Dictionary<string, int>(basePriorities);
+        var propagated = new HashSet<string>();
+        var bfsQueue = new Queue<(string Id, int Priority)>();
+
+        // Seed the BFS with all features that carry an explicit non-default priority.
+        // Sort by priority value so that the most extreme priority wins when two sources
+        // are equidistant from the same default-priority feature.
+        foreach (var id in basePriorities.Keys
+            .Where(id => basePriorities[id] != 0)
+            .OrderBy(id => basePriorities[id]))
+        {
+            propagated.Add(id);
+            bfsQueue.Enqueue((id, basePriorities[id]));
+        }
+
+        while (bfsQueue.Count > 0)
+        {
+            var (currentId, priority) = bfsQueue.Dequeue();
+
+            foreach (var neighborId in orderingHintNeighbors[currentId])
+            {
+                // Do not propagate into a neighbor that has its own explicit non-default priority.
+                if (basePriorities[neighborId] != 0)
+                {
+                    continue;
+                }
+
+                if (propagated.Add(neighborId))
+                {
+                    effectivePriorities[neighborId] = priority;
+                    bfsQueue.Enqueue((neighborId, priority));
+                }
+            }
+        }
+
+        var queueComparer = Comparer<string>.Create((left, right) =>
+        {
+            if (left == right)
+            {
+                return 0;
+            }
+
+            var priorityComparison = effectivePriorities[left].CompareTo(effectivePriorities[right]);
+
+            return priorityComparison != 0 ? priorityComparison : string.CompareOrdinal(left, right);
+        });
+
+        var queue = new SortedSet<string>(queueComparer);
+
+        foreach (var feature in features)
+        {
+            if (indegrees[feature.Id] == 0)
+            {
+                queue.Add(feature.Id);
+            }
+        }
+
+        var orderedIds = new List<string>(features.Length);
+
+        while (queue.Count > 0)
+        {
+            var nextId = queue.Min;
+            queue.Remove(nextId);
+            orderedIds.Add(nextId);
+
+            foreach (var dependentId in edges[nextId])
+            {
+                indegrees[dependentId]--;
+
+                if (indegrees[dependentId] == 0)
+                {
+                    queue.Add(dependentId);
+                }
+            }
+        }
+
+        if (orderedIds.Count != features.Length)
+        {
+            foreach (var remainingFeature in features
+                .Where(feature => !orderedIds.Contains(feature.Id))
+                .OrderBy(feature => effectivePriorities[feature.Id])
+                .ThenBy(feature => feature.Id, StringComparer.Ordinal))
+            {
+                orderedIds.Add(remainingFeature.Id);
+            }
+        }
+
+        return orderedIds.Select(id => featureById[id]).ToArray();
     }
 
     private static bool HasDependency(IFeatureInfo observer, IFeatureInfo subject, IExtensionDependencyStrategy[] extensionDependencyStrategies)

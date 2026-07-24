@@ -131,6 +131,18 @@ public class ExtensionManagerTests
     }
 
     [Fact]
+    public void GetFeatures_Default_OrdersMixedDirectionalDependencies()
+    {
+        var featureIds = _moduleScopedExtensionManager.GetFeatures()
+            .Where(f => f.Category == "Test" && !f.IsTheme())
+            .Select(f => f.Id)
+            .ToArray();
+
+        Assert.True(Array.IndexOf(featureIds, "Sample2") < Array.IndexOf(featureIds, "Sample3"));
+        Assert.True(Array.IndexOf(featureIds, "Sample3") < Array.IndexOf(featureIds, "Sample4"));
+    }
+
+    [Fact]
     public void GetFeaturesWithAId_Default_ReturnsThatFeatureWithDependenciesOrdered()
     {
         var features = _moduleScopedExtensionManager.GetFeatures((IEnumerable<string>)["Sample2"]);
