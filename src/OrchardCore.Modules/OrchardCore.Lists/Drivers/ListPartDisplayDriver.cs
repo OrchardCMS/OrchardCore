@@ -99,11 +99,11 @@ public sealed class ListPartDisplayDriver : ContentPartDisplayDriver<ListPart>
             var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(listPart.ContentItem.ContentType);
 
             var listPartSettings = contentTypeDefinition.Parts
-                .First(part => part.Name == nameof(ListPart))
-                .GetSettings<ListPartSettings>();
+                .FirstOrDefault(part => part.Name == nameof(ListPart))
+                ?.GetSettings<ListPartSettings>();
 
             model.ContentItem = listPart.ContentItem;
-            model.ContainedContentTypes = listPartSettings.ContainedContentTypes ?? Array.Empty<string>();
+            model.ContainedContentTypes = listPartSettings?.ContainedContentTypes ?? Array.Empty<string>();
         })
         .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Actions:4");
     }
