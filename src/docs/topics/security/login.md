@@ -3,7 +3,7 @@
 The login screen is available at `/Login` by default (the path is [configurable](../../reference/modules/Users/README.md#custom-paths)). Its behavior is configured under `Security → Settings → User Login`:
 
 - Render the login page with the site theme instead of the admin theme.
-- Disable local (username/password) login entirely, to force authentication through an external provider.
+- Disable local (username/password) login entirely to force authentication through an external provider.
 - Require and configure two-factor authentication, optionally only for specific roles.
 
 Related options live in their own places:
