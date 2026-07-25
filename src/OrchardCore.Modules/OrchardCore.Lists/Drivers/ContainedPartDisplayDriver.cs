@@ -110,7 +110,7 @@ public sealed class ContainedPartDisplayDriver : ContentDisplayDriver
 
             if (definition != null)
             {
-                var listPart = definition.Parts.FirstOrDefault(x => x.PartDefinition.Name == nameof(ListPart));
+                var listPart = definition.Parts.FirstOrDefault(p => p.Name == nameof(ListPart));
                 var settings = listPart?.GetSettings<ListPartSettings>();
 
                 if (settings != null)

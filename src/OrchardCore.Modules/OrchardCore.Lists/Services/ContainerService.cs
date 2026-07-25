@@ -393,6 +393,11 @@ public class ContainerService : IContainerService
             query.With<ContentItemIndex>(i => i.DisplayText.Contains(containedItemOptions.DisplayText));
         }
 
+        if (!string.IsNullOrEmpty(containedItemOptions.ContentType))
+        {
+            query.With<ContentItemIndex>(i => i.ContentType == containedItemOptions.ContentType);
+        }
+
         switch (containedItemOptions.Status)
         {
             case ContentsStatus.Published:

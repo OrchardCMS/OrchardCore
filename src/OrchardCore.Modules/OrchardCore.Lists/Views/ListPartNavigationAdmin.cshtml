@@ -29,7 +29,7 @@
             {
                 if (Model.ContainedContentTypeDefinitions.Length == 1)
                 {
-                    <a class="btn btn-secondary me-1" asp-action="Display" asp-controller="Admin" asp-route-contentItemId="@Model.Container.ContentItemId">@T["List {0} Items", D[Model.ContainedContentTypeDefinitions[0].DisplayName, DataLocalizationContext.ContentType]]</a>
+                    <a class="btn btn-secondary me-1" asp-action="Display" asp-controller="Admin" asp-route-contentItemId="@Model.Container.ContentItemId" asp-route-contentType="@Model.ContainedContentTypeDefinitions[0].Name">@T["List {0} Items", D[Model.ContainedContentTypeDefinitions[0].DisplayName, DataLocalizationContext.ContentType]]</a>
                 }
                 else
                 {
@@ -49,7 +49,7 @@
                 var contentTypeDefinition = authorizedContentTypeDefinitions.FirstOrDefault();
 
                 <a class="btn btn-secondary" asp-action="Create" asp-controller="Admin" asp-route-id="@contentTypeDefinition.Name" asp-route-area="OrchardCore.Contents" asp-route-ListPart.ContainerId="@Model.Container.ContentItemId" asp-route-ListPart.ContainerContentType="@Model.ContainerContentTypeDefinition?.Name" asp-route-ListPart.ContentType="@contentTypeDefinition.Name" asp-route-ListPart.EnableOrdering="@Model.EnableOrdering" asp-route-returnUrl="@FullRequestPath">
-                    @T["Create {0}", D[contentTypeDefinition.DisplayName, DataLocalizationContext.ContentType]]
+                    @T["New {0}", D[contentTypeDefinition.DisplayName, DataLocalizationContext.ContentType]]
                 </a>
             }
             else if (authorizedContentTypeDefinitions.Count > 1)

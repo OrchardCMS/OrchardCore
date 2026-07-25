@@ -11,5 +11,8 @@ public enum ContentsStatus
 public class ContainedItemOptions
 {
     public string DisplayText { get; set; }
+
+    public string ContentType { get; set; }
+
     public ContentsStatus Status { get; set; } = ContentsStatus.Published;
 }
