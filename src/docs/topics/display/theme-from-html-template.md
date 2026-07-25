@@ -98,58 +98,98 @@ Take the template's main HTML page (usually `index.html`), copy it to `Views/Lay
 
 1. **Keep the overall markup** — the point of using a template is to preserve its design.
 2. **Replace the hardcoded `<link>` and `<script>` tags** with the resources declared in step 2.
-3. **Replace the hardcoded page content** with `{% render_body %}`.
-4. **Add zones** with `{% render_section %}` where widgets should be able to appear (header, footer, sidebars).
+3. **Replace the hardcoded page content** with `{% render_body %}` (Liquid) or `@await RenderBodyAsync()` (Razor).
+4. **Add zones** with `{% render_section %}` (Liquid) or `@await RenderSectionAsync()` (Razor) where widgets should be able to appear (header, footer, sidebars).
 
 A typical result looks like this:
 
-```liquid
-<!DOCTYPE html>
-<html lang="{{ Culture.Name }}">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>{{ "PageTitle" | shape_new | shape_stringify }}</title>
-    {% resources type: "Meta" %}
-    {% link type: "image/x-icon", rel: "shortcut icon", href: "~/MyTheme/favicon.ico" %}
-    {% style name: "MyTheme" %}
-    {% script name: "MyTheme", at: "Foot" %}
-    {% resources type: "HeadScript" %}
-    {% resources type: "HeadLink" %}
-    {% resources type: "Stylesheet" %}
-    {% render_section "HeadMeta", required: false %}
-</head>
-<body dir="{{ Culture.Dir }}">
-    <nav class="navbar navbar-expand-lg" id="mainNav">
+=== "Liquid"
+
+    ``` liquid
+    <!DOCTYPE html>
+    <html lang="{{ Culture.Name }}">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <title>{{ "PageTitle" | shape_new | shape_stringify }}</title>
+        {% resources type: "Meta" %}
+        {% link type: "image/x-icon", rel: "shortcut icon", href: "~/MyTheme/favicon.ico" %}
+        {% style name: "MyTheme" %}
+        {% script name: "MyTheme", at: "Foot" %}
+        {% resources type: "HeadScript" %}
+        {% resources type: "HeadLink" %}
+        {% resources type: "Stylesheet" %}
+        {% render_section "HeadMeta", required: false %}
+    </head>
+    <body dir="{{ Culture.Dir }}">
+        <nav class="navbar navbar-expand-lg" id="mainNav">
+            <div class="container">
+                <a class="navbar-brand" href="{{ '~/' | href }}">{{ Site.SiteName }}</a>
+                {% shape "menu", alias: "alias:main-menu" %}
+            </div>
+        </nav>
+        {% render_section "Header", required: false %}
         <div class="container">
-            <a class="navbar-brand" href="{{ '~/' | href }}">{{ Site.SiteName }}</a>
-            {% shape "menu", alias: "alias:main-menu" %}
+            {% render_section "Messages", required: false %}
+            {% render_body %}
         </div>
-    </nav>
-    {% render_section "Header", required: false %}
-    <div class="container">
-        {% render_section "Messages", required: false %}
-        {% render_body %}
-    </div>
-    <footer>
-        {% render_section "Footer", required: false %}
-    </footer>
-    {% resources type: "FootScript" %}
-</body>
-</html>
-```
+        <footer>
+            {% render_section "Footer", required: false %}
+        </footer>
+        {% resources type: "FootScript" %}
+    </body>
+    </html>
+    ```
+
+=== "Razor"
+
+    ``` html
+    <!DOCTYPE html>
+    <html lang="@Orchard.CultureName()">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <title>@RenderTitleSegments(Site.SiteName, "before")</title>
+        <resources type="Meta" />
+        <link type="image/x-icon" rel="shortcut icon" href="~/MyTheme/favicon.ico" />
+        <style asp-name="MyTheme"></style>
+        <script asp-name="MyTheme" at="Foot"></script>
+        <resources type="HeadScript" />
+        <resources type="HeadLink" />
+        <resources type="Stylesheet" />
+        @await RenderSectionAsync("HeadMeta", required: false)
+    </head>
+    <body dir="@Orchard.CultureDir()">
+        <nav class="navbar navbar-expand-lg" id="mainNav">
+            <div class="container">
+                <a class="navbar-brand" href="~/">@Site.SiteName</a>
+                <menu alias="alias:main-menu" />
+            </div>
+        </nav>
+        @await RenderSectionAsync("Header", required: false)
+        <div class="container">
+            @await RenderSectionAsync("Messages", required: false)
+            @await RenderBodyAsync()
+        </div>
+        <footer>
+            @await RenderSectionAsync("Footer", required: false)
+        </footer>
+        <resources type="FootScript" />
+    </body>
+    </html>
+    ```
 
 Some notable replacements:
 
-| In the HTML template | In the theme layout |
-| --- | --- |
-| `<title>My Site</title>` | `{{ "PageTitle" \| shape_new \| shape_stringify }}` |
-| Hardcoded site name | `{{ Site.SiteName }}` |
-| `<link href="css/styles.css">` | `{% style name: "MyTheme" %}` |
-| `<script src="js/scripts.js">` | `{% script name: "MyTheme", at: "Foot" %}` |
-| Static `<ul>` navigation menu | `{% shape "menu", alias: "alias:main-menu" %}` |
-| Page-specific markup | `{% render_body %}` |
-| Areas meant for reusable blocks | `{% render_section "Footer", required: false %}` |
+| In the HTML template | Liquid | Razor |
+| --- | --- | --- |
+| `<title>My Site</title>` | `{{ "PageTitle" \| shape_new \| shape_stringify }}` | `@RenderTitleSegments(Site.SiteName, "before")` |
+| Hardcoded site name | `{{ Site.SiteName }}` | `@Site.SiteName` |
+| `<link href="css/styles.css">` | `{% style name: "MyTheme" %}` | `<style asp-name="MyTheme"></style>` |
+| `<script src="js/scripts.js">` | `{% script name: "MyTheme", at: "Foot" %}` | `<script asp-name="MyTheme" at="Foot"></script>` |
+| Static `<ul>` navigation menu | `{% shape "menu", alias: "alias:main-menu" %}` | `<menu alias="alias:main-menu" />` |
+| Page-specific markup | `{% render_body %}` | `@await RenderBodyAsync()` |
+| Areas meant for reusable blocks | `{% render_section "Footer", required: false %}` | `@await RenderSectionAsync("Footer", required: false)` |
 
 The `{% resources %}` tags render the stylesheets, scripts, and meta tags that other modules (and your own templates) register at runtime, so keep them even if the layout does not use them directly.
 
@@ -157,7 +197,7 @@ The zones declared with `render_section` must also be listed in the site's zones
 
 ### Styling the menu
 
-The `menu` shape renders the main menu content items as a `<ul>` list. If the template's navigation requires specific CSS classes, override the menu templates in your theme (`Views/Menu.liquid`, `Views/MenuItem.liquid`, `Views/MenuItemLink.liquid`). `TheBlogTheme` contains examples of [these overrides](https://github.com/OrchardCMS/OrchardCore/tree/main/src/OrchardCore.Themes/TheBlogTheme/Views).
+The `menu` shape renders the main menu content items as a `<ul>` list. If the template's navigation requires specific CSS classes, override the menu templates in your theme (`Views/Menu.liquid`, `Views/MenuItem.liquid`, `Views/MenuItemLink.liquid` — or their `.cshtml` equivalents). `TheBlogTheme` contains examples of [these overrides](https://github.com/OrchardCMS/OrchardCore/tree/main/src/OrchardCore.Themes/TheBlogTheme/Views).
 
 ## 4. Template the content
 
@@ -172,14 +212,27 @@ For each content type, create a template in the `Views` folder named after the [
 | `Content-Article.liquid` | An `Article` content item in detail view |
 | `Widget-Paragraph.liquid` | A `Paragraph` widget |
 
+For Razor, use the same file names with the `.cshtml` extension (e.g. `Content-BlogPost.cshtml`).
+
 Copy the corresponding markup from the HTML template into these files, then replace the sample text and images with the content item's fields and parts:
 
-```liquid
-<article>
-    <h1>{{ Model.ContentItem.DisplayText }}</h1>
-    {{ Model.Content.HtmlBodyPart | shape_render }}
-</article>
-```
+=== "Liquid"
+
+    ``` liquid
+    <article>
+        <h1>{{ Model.ContentItem.DisplayText }}</h1>
+        {{ Model.Content.HtmlBodyPart | shape_render }}
+    </article>
+    ```
+
+=== "Razor"
+
+    ``` html
+    <article>
+        <h1>@Model.ContentItem.DisplayText</h1>
+        @await DisplayAsync(Model.Content.HtmlBodyPart)
+    </article>
+    ```
 
 Use the [placement](../../reference/modules/Placement/README.md) file (`placement.json`) to control which shapes are rendered, in which order, and to hide the ones the design doesn't need.
 
@@ -192,6 +245,6 @@ If the theme is meant to be reusable, add a [recipe](../../reference/modules/Rec
 ## Summary
 
 - Copy the template assets to `wwwroot` and declare them as named resources.
-- Convert the main HTML page into `Views/Layout.liquid`, replacing static parts with `render_body`, `render_section` zones, resource tags, and the menu shape.
+- Convert the main HTML page into `Views/Layout.liquid` (or `Views/Layout.cshtml`), replacing static parts with `render_body`, `render_section` zones, resource tags, and the menu shape.
 - Convert the inner pages into content templates using alternates, and tune the output with placement.
 - Optionally ship a setup recipe so the theme works out of the box.
