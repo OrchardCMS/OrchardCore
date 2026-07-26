@@ -116,6 +116,7 @@ public class UserEventHandler : UserEventHandlerBase, ILoginFormEvent
             foreach (var eventToUpdate in eventsToUpdate)
             {
                 eventToUpdate.Alter<AuditTrailUserEvent>(data => data.Snapshot = null);
+
                 await _session.SaveAsync(eventToUpdate, collection: AuditTrailEvent.Collection);
             }
         }
@@ -180,6 +181,7 @@ public class UserEventHandler : UserEventHandlerBase, ILoginFormEvent
             }
             
             var redactor = redactors[settings.UserSnapshotRedactors[propertyName]];
+
             return JsonValue.Create(redactor.Redact(text));
         }
 

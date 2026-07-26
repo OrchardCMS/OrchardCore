@@ -80,6 +80,7 @@ public sealed class AuditTrailAdminController : Controller
         var settings = siteSettings.GetOrCreate<AuditTrailUserEventSettings>();
         settings.UserSnapshotRedactors = selected;
         siteSettings.Put(nameof(AuditTrailUserEventSettings), settings);
+
         await _siteService.UpdateSiteSettingsAsync(siteSettings);
 
         return RedirectToAction(nameof(Index));

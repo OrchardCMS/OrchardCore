@@ -9,6 +9,7 @@ namespace OrchardCore.Users.AuditTrail.Indexes;
 public class AuditTrailUserEventIndex : MapIndex
 {
     public string UserId { get; set; }
+
     public bool HasUserSnapshot { get; set; }
 }
 
@@ -24,6 +25,7 @@ public class AuditTrailUserEventIndexProvider : IndexProvider<AuditTrailEvent>
         .Map(auditTrailEvent =>
         {
             var userEvent = auditTrailEvent.GetOrCreate<AuditTrailUserEvent>();
+
             return new AuditTrailUserEventIndex
             {
                 UserId = userEvent.UserId,

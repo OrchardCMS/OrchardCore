@@ -8,6 +8,7 @@ public class AuditTrailUserEventSettingsViewModel
     public class UserSnapshotPropertiesEntry
     {
         public string Name { get; set; }
+
         public string Redactor { get; set; }
     };
 }
