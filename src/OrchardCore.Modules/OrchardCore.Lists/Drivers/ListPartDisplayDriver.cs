@@ -105,7 +105,7 @@ public sealed class ListPartDisplayDriver : ContentPartDisplayDriver<ListPart>
         return Initialize<ListPartSummaryAdminViewModel>("ListPartSummaryAdmin", async model =>
         {
             model.ContentItem = listPart.ContentItem;
-            model.ContainedContentTypes = settings.ContainedContentTypes?.ToArray() ?? Array.Empty<string>();
+            model.ContainedContentTypes = settings.ContainedContentTypes ?? Array.Empty<string>();
         })
         .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Actions:4");
     }
