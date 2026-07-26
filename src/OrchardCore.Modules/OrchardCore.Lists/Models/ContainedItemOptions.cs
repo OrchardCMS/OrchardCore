@@ -12,7 +12,7 @@ public class ContainedItemOptions
 {
     public string DisplayText { get; set; }
 
-    public string ContentType { get; set; }
+    public string[] ContentTypes { get; set; }
 
     public ContentsStatus Status { get; set; } = ContentsStatus.Published;
 }

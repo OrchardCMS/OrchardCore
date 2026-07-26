@@ -393,9 +393,9 @@ public class ContainerService : IContainerService
             query.With<ContentItemIndex>(i => i.DisplayText.Contains(containedItemOptions.DisplayText));
         }
 
-        if (!string.IsNullOrEmpty(containedItemOptions.ContentType))
+        if (containedItemOptions.ContentTypes is not null && containedItemOptions.ContentTypes.Length > 0)
         {
-            query.With<ContentItemIndex>(i => i.ContentType == containedItemOptions.ContentType);
+            query.With<ContentItemIndex>(i => i.ContentType.IsIn(containedItemOptions.ContentTypes));
         }
 
         switch (containedItemOptions.Status)

@@ -58,10 +58,10 @@ public sealed class ListPartDisplayDriver : ContentPartDisplayDriver<ListPart>
         var settings = context.TypePartDefinition.GetSettings<ListPartSettings>();
 
         // 1. If the content item has a ListPart display all contained items in a list.
-        // 2. If the content item has a named part of ListPart, avoid displaying the items that their content type is not matching the query string.
-        var contentType = _httpContextAccessor.HttpContext.Request.Query["contentType"].ToString();
+        // 2. If the content item has a named part of ListPart, display only the content items where their content types in the contained content types and part name macthes the query string.
+        var partName = _httpContextAccessor.HttpContext.Request.Query["partName"].ToString();
         var render = Task.FromResult(context.TypePartDefinition.Name == nameof(ListPart) ||
-            (context.TypePartDefinition.IsNamedPart() && contentType == settings.ContainedContentTypes[0]));
+            (context.TypePartDefinition.IsNamedPart() && context.TypePartDefinition.Name == partName));
 
         return Combine(
             InitializeDisplayListPartDisplayShape(listPart, context),
@@ -72,7 +72,7 @@ public sealed class ListPartDisplayDriver : ContentPartDisplayDriver<ListPart>
             InitializeDisplayListPartDetailAdminSearchPanelShape()
                 .RenderWhen(() => render),
             InitializeDisplayListPartHeaderAdminShape(listPart, settings),
-            InitializeDisplayListPartSummaryAdminShape(listPart, settings)
+            InitializeDisplayListPartSummaryAdminShape(listPart, settings, context.TypePartDefinition)
         );
     }
 
@@ -91,6 +91,7 @@ public sealed class ListPartDisplayDriver : ContentPartDisplayDriver<ListPart>
     {
         return Initialize<ListPartNavigationAdminViewModel>("ListPartNavigationAdmin", async model =>
         {
+            model.TypePartDefinition = context.TypePartDefinition;
             model.Container = part.ContentItem;
             model.ContainedContentTypeDefinitions = (await GetContainedContentTypesAsync(settings)).ToArray();
             model.EnableOrdering = settings.EnableOrdering;
@@ -100,12 +101,13 @@ public sealed class ListPartDisplayDriver : ContentPartDisplayDriver<ListPart>
         .RenderWhen(() => Task.FromResult(!context.IsNew));
     }
 
-    private ShapeResult InitializeDisplayListPartSummaryAdminShape(ListPart listPart, ListPartSettings settings)
+    private ShapeResult InitializeDisplayListPartSummaryAdminShape(ListPart listPart, ListPartSettings settings, ContentTypePartDefinition typePartDefinition)
     {
         return Initialize<ListPartSummaryAdminViewModel>("ListPartSummaryAdmin", async model =>
         {
             model.ContentItem = listPart.ContentItem;
             model.ContainedContentTypes = settings.ContainedContentTypes ?? Array.Empty<string>();
+            model.TypePartDefinition = typePartDefinition;
         })
         .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Actions:4");
     }
@@ -155,7 +157,7 @@ public sealed class ListPartDisplayDriver : ContentPartDisplayDriver<ListPart>
             await _updateModelAccessor.ModelUpdater.TryUpdateModelAsync(listPartFilterViewModel, Prefix);
 
             containedItemOptions.DisplayText = listPartFilterViewModel.DisplayText;
-            containedItemOptions.ContentType = listPartFilterViewModel.ContentType;
+            containedItemOptions.ContentTypes = context.TypePartDefinition.GetSettings<ListPartSettings>().ContainedContentTypes;
             containedItemOptions.Status = listPartFilterViewModel.Status;
 
             model.ListPart = listPart;

@@ -7,7 +7,7 @@
 
 @if (Model.ContainedContentTypes.Length == 1)
 {
-    <a class="btn btn-sm btn-secondary" admin-for="@Model.ContentItem" asp-route-contentType="@Model.ContainedContentTypes[0]">@T["List {0} Items", D[Model.ContainedContentTypes[0], DataLocalizationContext.ContentType]]</a>
+    <a class="btn btn-sm btn-secondary" admin-for="@Model.ContentItem" asp-route-partName="@Model.TypePartDefinition.Name">@T["List {0} Items", D[Model.TypePartDefinition.DisplayName(), DataLocalizationContext.ContentType]]</a>
 }
 else
 {
