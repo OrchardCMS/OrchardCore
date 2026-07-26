@@ -126,6 +126,7 @@ public sealed class ContainedPartDisplayDriver : ContentDisplayDriver
                             model.Container = container;
                             model.EnableOrdering = settings.EnableOrdering;
                             model.ContainerContentTypeDefinition = definition;
+                            model.TypePartDefinition = listPart;
                         }).Location("Content:1.5"));
 
                         if (settings.ShowHeader)
