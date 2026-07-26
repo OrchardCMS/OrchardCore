@@ -62,10 +62,10 @@ public class ModuleService : IModuleService
             .GetFeatures()
             .Where(x => featureIds.Contains(x.Id));
 
-        var enabledFeatures = await _shellFeaturesManager.EnableFeaturesAsync(featuresToEnable, force);
-        foreach (var enabledFeature in enabledFeatures)
+        var enabledFeatures = (await _shellFeaturesManager.EnableFeaturesAsync(featuresToEnable, force)).ToArray();
+        if (enabledFeatures.Length > 0)
         {
-            await _notifier.SuccessAsync(H["{0} was enabled.", enabledFeature.Name]);
+            await _notifier.SuccessAsync(H.Plural(enabledFeatures.Length, "The feature {1} was enabled.", "The following features were enabled: {1}.", string.Join(", ", enabledFeatures.Select(f => f.Name ?? f.Id))));
         }
     }
 
@@ -89,10 +89,10 @@ public class ModuleService : IModuleService
             .GetFeatures()
             .Where(x => featureIds.Contains(x.Id));
 
-        var features = await _shellFeaturesManager.DisableFeaturesAsync(featuresToDisable, force);
-        foreach (var feature in features)
+        var features = (await _shellFeaturesManager.DisableFeaturesAsync(featuresToDisable, force)).ToArray();
+        if (features.Length > 0)
         {
-            await _notifier.SuccessAsync(H["{0} was disabled.", feature.Name]);
+            await _notifier.SuccessAsync(H.Plural(features.Length, "The feature {1} was disabled.", "The following features were disabled: {1}.", string.Join(", ", features.Select(f => f.Name ?? f.Id))));
         }
     }
 

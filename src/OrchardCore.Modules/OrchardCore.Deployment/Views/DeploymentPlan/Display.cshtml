@@ -57,7 +57,7 @@
 </form>
 
 <!-- Modal -->
-<div class="modal fade" id="modalSteps" tabindex="-1" role="dialog" aria-labelledby="available-steps-title" aria-hidden="true">
+<div class="modal fade" id="modalSteps" tabindex="-1" role="dialog" aria-labelledby="available-steps-title" aria-hidden="true" data-list-management data-client-side-search="true" data-search-result-selector=".deployment-step-item" data-search-text-attribute="textContent" data-normalize-search="true" data-search-group-selector=".modal-body section" data-search-group-visible-selector=".deployment-step-item">
     <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -72,12 +72,12 @@
                         </div>
                         <ul class="nav nav-pills flex-column" id="deployment-step-categories">
                             <li class="nav-item">
-                                <a class="nav-link active" href="#all" data-category="all">@T["All"]</a>
+                                <a class="nav-link active" href="#all" data-list-filter-link data-list-filter-attribute="data-category" data-list-filter-value="all">@T["All"]</a>
                             </li>
                             @foreach (var category in Model.Categories)
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link" href="#@category.Id" data-category="@category.Id">@category.Name</a>
+                                    <a class="nav-link" href="#@category.Id" data-list-filter-link data-list-filter-attribute="data-category" data-list-filter-value="@category.Id">@category.Name</a>
                                 </li>
                             }
                         </ul>
@@ -138,55 +138,36 @@
         </div>
     </div>
 </div>
+<script asp-name="list-management" at="Foot"></script>
+
 <script at="Foot">
-    function getDeploymentStepCategory() {
-        return $('#deployment-step-categories .nav-link.active').data('category') || 'all';
-    }
+    document.addEventListener('DOMContentLoaded', () => {
+        var modalSteps = document.getElementById('modalSteps');
+        var searchBox = document.getElementById('search-box');
 
-    function filterDeploymentSteps() {
-        var search = replaceDiacritics(String($('#search-box').val() || '').toLowerCase());
-        var selectedCategory = getDeploymentStepCategory();
+        if (modalSteps) {
+            modalSteps.addEventListener('shown.bs.modal', function () {
+                if (searchBox) {
+                    searchBox.focus();
+                }
 
-        $('.deployment-step-item').each(function () {
-            var card = $(this);
-            var cardText = replaceDiacritics(card.text().toLowerCase());
-            var matchesSearch = search === '' || cardText.indexOf(search) > -1;
-            var matchesCategory = selectedCategory === 'all' || card.data('category') === selectedCategory;
+                modalSteps.dispatchEvent(new CustomEvent('listmanagement:update'));
+            });
 
-            card.toggle(matchesSearch && matchesCategory);
-        });
-    }
+            modalSteps.addEventListener('hidden.bs.modal', function () {
+                if (searchBox) {
+                    searchBox.value = '';
+                }
+                document.querySelectorAll('#deployment-step-categories .nav-link').forEach(function (link) {
+                    link.classList.remove('active');
+                });
+                var allCategory = document.querySelector('#deployment-step-categories .nav-link[data-list-filter-value="all"]');
+                if (allCategory) {
+                    allCategory.classList.add('active');
+                }
 
-    $(document).ready(function () {
-        $('#modalSteps').on('shown.bs.modal', function () {
-            $('#search-box').trigger('focus');
-            filterDeploymentSteps();
-        });
-
-        $('#modalSteps').on('hidden.bs.modal', function () {
-            $('#search-box').val('');
-            $('#deployment-step-categories .nav-link').removeClass('active');
-            $('#deployment-step-categories .nav-link[data-category="all"]').addClass('active');
-            filterDeploymentSteps();
-        });
-    });
-
-    function replaceDiacritics(str) {
-        return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-    }
-
-    $(function () {
-        var searchBox = $('#search-box');
-
-        searchBox.on('input', function () {
-            filterDeploymentSteps();
-        });
-
-        $('#deployment-step-categories').on('click', '.nav-link', function (e) {
-            e.preventDefault();
-            $('#deployment-step-categories .nav-link').removeClass('active');
-            $(this).addClass('active');
-            filterDeploymentSteps();
-        });
+                modalSteps.dispatchEvent(new CustomEvent('listmanagement:update'));
+            });
+        }
     });
 </script>

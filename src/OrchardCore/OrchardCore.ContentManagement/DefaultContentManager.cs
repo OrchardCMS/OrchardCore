@@ -914,7 +914,7 @@ public class DefaultContentManager : IContentManager
             return true;
         }
 
-        var context = new RemoveContentContext(contentItem, true);
+        var context = new RemoveContentContext(contentItem, true, RemoveContentReason.Deletion);
 
         await Handlers.InvokeAsync((handler, context) => handler.RemovingAsync(context), context, _logger);
 
@@ -1219,7 +1219,7 @@ public class DefaultContentManager : IContentManager
 
         if (publishedVersion != null)
         {
-            var removeContext = new RemoveContentContext(contentItem, true);
+            var removeContext = new RemoveContentContext(contentItem, true, RemoveContentReason.NewVersion);
 
             await Handlers.InvokeAsync((handler, context) => handler.RemovingAsync(context), removeContext, _logger);
 
@@ -1247,7 +1247,7 @@ public class DefaultContentManager : IContentManager
 
         if (activeVersions.Any())
         {
-            var removeContext = new RemoveContentContext(contentItem, true);
+            var removeContext = new RemoveContentContext(contentItem, true, RemoveContentReason.NewVersion);
 
             await Handlers.InvokeAsync((handler, context) => handler.RemovingAsync(context), removeContext, _logger);
 

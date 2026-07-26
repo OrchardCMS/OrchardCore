@@ -15,8 +15,16 @@ public class Result<TValue> : Result
     /// Initializes a new instance of the <see cref="Result{TValue}"/> class.
     /// </summary>
     /// <param name="value">The value returned by the operation.</param>
-    /// <param name="succeeded">Indicates whether the operation succeeded.</param>
     /// <param name="errors">The errors that occurred during the operation.</param>
-    protected internal Result(TValue value, bool succeeded, List<ResultError> errors)
-        : base(succeeded, errors) => Value = value;
+    protected internal Result(TValue value, IEnumerable<ResultError> errors)
+        : base(errors)
+    {
+        Value = value;
+    }
+
+    protected internal Result(TValue value)
+        : base(true)
+    {
+        Value = value;
+    }
 }

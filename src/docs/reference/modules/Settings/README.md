@@ -87,3 +87,9 @@ Site settings can be set from a recipe using the `settings` step. Recognized key
 ## Deployment
 
 Use the **Site Settings** deployment step to export and import the site settings between environments as part of a deployment plan.
+
+## Time zone select list customization
+
+The built-in site settings editor, setup screen, and user time zone editor all resolve their time zone `<option>` items through `ITimeZoneSelectListProvider`.
+
+Replace the default `DefaultTimeZoneSelectListProvider` service to change the rendered labels, ordering, or filtering of the available time zones anywhere Orchard Core consumes that shared list.

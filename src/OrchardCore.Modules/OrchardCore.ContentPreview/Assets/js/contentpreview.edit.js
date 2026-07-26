@@ -17,47 +17,72 @@ $(function () {
         });
 });
 
-
 $(function () {
-    
-    var previewButton, contentItemType, previewId, previewContentItemId, previewContentItemVersionId, form, formData;
+    var previewButton, contentItemType, previewId, previewContentItemId, previewContentItemVersionId, draftUrl, form, channel, draftTimer, currentXHR, currentToken;
 
     previewButton = document.getElementById('previewButton');
     contentItemType = $(document.getElementById('contentItemType')).data('value');
     previewId = $(document.getElementById('previewId')).data('value');
     previewContentItemId = $(document.getElementById('previewContentItemId')).data('value');
     previewContentItemVersionId = $(document.getElementById('previewContentItemVersionId')).data('value');
+    draftUrl = $(document.getElementById('draftUrl')).data('value');
     form = $(previewButton).closest('form');
+    channel = new BroadcastChannel('contentpreview-' + previewId);
 
-    sendFormData = function () {
+    // When the preview window signals it is ready, send the current draft immediately.
+    channel.onmessage = function (ev) {
+        if (ev.data && ev.data.type === 'ready') {
+            sendDraft();
+        }
+    };
 
-        formData = form.serializeArray(); // convert form to array
-        formData.push({ name: "ContentItemType", value: contentItemType });
-        formData.push({ name: "PreviewId", value: previewId });
-        formData.push({ name: "PreviewContentItemId", value: previewContentItemId });
-        formData.push({ name: "PreviewContentItemVersionId", value: previewContentItemVersionId });
+    // Announce that this editor is connected. An already-open preview window replies with
+    // a 'ready' message, which triggers a draft send. This re-establishes the connection
+    // after the editor page reloads (e.g. "Save and continue") without the user having to
+    // edit a field first, and clears the "Preview Disconnected" banner automatically.
+    channel.postMessage({ type: 'hello' });
 
-        // store the form data to pass it in the event handler
-        localStorage.setItem('contentpreview:' + previewId, JSON.stringify($.param(formData)));
+    function sendDraft() {
+        // Cancel any in-flight request so stale responses don't overwrite a newer preview.
+        if (currentXHR) {
+            currentXHR.abort();
+            currentXHR = null;
+        }
+
+        var formData = form.serializeArray();
+        formData.push({ name: 'ContentItemType', value: contentItemType });
+        formData.push({ name: 'PreviewContentItemId', value: previewContentItemId });
+        formData.push({ name: 'PreviewContentItemVersionId', value: previewContentItemVersionId });
+        formData.push({ name: 'PreviewToken', value: currentToken });
+
+        currentXHR = $.post(draftUrl, $.param(formData))
+            .done(function (data) {
+                currentXHR = null;
+                if (data.previewUrl) {
+                    currentToken = data.token;
+                    channel.postMessage({ type: 'token', previewUrl: data.previewUrl });
+                }
+            })
+            .fail(function (data) {
+                currentXHR = null;
+                if (data.statusText !== 'abort' && data.status !== 422) {
+                    console.error('Preview draft request failed', data.status, data.statusText);
+                }
+            });
     }
 
+    // 500ms debounce: collapses rapid keystrokes (e.g. from a WYSIWYG editor) into a
+    // single draft submission after the user pauses, preventing server spam.
     $(document).on('contentpreview:render', function () {
-        sendFormData();
+        clearTimeout(draftTimer);
+        draftTimer = setTimeout(sendDraft, 500);
     });
 
-
-    $(window).on('storage', function (ev) {
-        if (ev.originalEvent.key != 'contentpreview:ready:' + previewId) return; // ignore other keys
-
-        // triggered by the preview window the first time it is loaded in order
-        // to pre-render the view even if no contentpreview:render is already sent
-        sendFormData();
-    });    
-
-    $(window).on('unload', function () {
-        localStorage.removeItem('contentpreview:' + previewId);
-        // this will raise an event in the preview window to notify that the live preview is no longer active.
-        localStorage.setItem('contentpreview:not-connected:' + previewId, '');
-        localStorage.removeItem('contentpreview:not-connected:' + previewId);
+    // 'pagehide' is the modern, reliable replacement for the deprecated 'unload' event;
+    // it fires on navigation away (including when the page enters the bfcache), letting us
+    // notify the preview window that the editor is disconnecting.
+    $(window).on('pagehide', function () {
+        channel.postMessage({ type: 'disconnected' });
+        channel.close();
     });
 });

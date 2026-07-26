@@ -5,7 +5,7 @@ namespace OrchardCore.Roles.Tests;
 public class DefaultSystemRoleProviderTests
 {
     [Fact]
-    public void GetSystemRoles_WhenCalledByDefault_ContainsAdministratorAuthenticatedAndAnonymousRoles()
+    public void GetSystemRoles_CalledByDefaultContainsAdministratorAuthenticatedAndAnonymousRoles_Succeeds()
     {
         // Arrange
         var shellSettings = new ShellSettings();
@@ -28,7 +28,7 @@ public class DefaultSystemRoleProviderTests
     }
 
     [Fact]
-    public void GetAdminRole_FromOptions_ReturnAdminRoleName()
+    public void GetAdminRole_FromOptions_ReturnsAdminRoleName()
     {
         // Arrange
         var shellSettings = new ShellSettings();
@@ -85,7 +85,7 @@ public class DefaultSystemRoleProviderTests
     [InlineData("TEST", false)]
     [InlineData("TesT", false)]
     [InlineData("test", false)]
-    public void IsSystemRole_IfTheRoleExists_ReturnsTrue(string roleName, bool expectedResult)
+    public void IsSystemRole_TheRoleExistsReturnsTrue_IsSystemRole(string roleName, bool expectedResult)
     {
         // Arrange
         var shellSettings = new ShellSettings();
@@ -113,7 +113,7 @@ public class DefaultSystemRoleProviderTests
     [InlineData("TEST", false)]
     [InlineData("TesT", false)]
     [InlineData("test", false)]
-    public void IsAdminRole_WhenCalled_ReturnsAdministrator(string roleName, bool expectedResult)
+    public void IsAdminRole_CalledReturnsAdministrator_IsAdminRole(string roleName, bool expectedResult)
     {
         // Arrange
         var shellSettings = new ShellSettings();

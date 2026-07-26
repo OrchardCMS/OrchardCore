@@ -13,6 +13,10 @@
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="OrchardCore.Tests.Integration" />
+  </ItemGroup>
   
   <ItemGroup>
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Admin.Abstractions\OrchardCore.Admin.Abstractions.csproj" />
@@ -26,8 +30,5 @@
     <ProjectReference Include="..\OrchardCore.Media\OrchardCore.Media.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="SixLabors.ImageSharp.Web.Providers.AWS" />
-  </ItemGroup>
 
 </Project>

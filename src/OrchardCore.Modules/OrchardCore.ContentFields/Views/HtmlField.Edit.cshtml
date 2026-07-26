@@ -31,7 +31,15 @@
 <script asp-name="codemirror-mode-javascript" at="Foot"></script>
 <script asp-name="codemirror-mode-xml" at="Foot"></script>
 <script at="Foot">
-    $(function () {
+    function onDocumentReady(callback) {
+        if (document.readyState !== 'loading') {
+            callback();
+        } else {
+            document.addEventListener('DOMContentLoaded', callback);
+        }
+    }
+
+    onDocumentReady(function () {
         var optionsTextArea = document.getElementById('@Html.IdFor(x => x.Html)');
     @* When the field is rendered by a flow part only the elements scripts are rendered, so the html element will not exist. *@
         if (optionsTextArea) {
@@ -49,7 +57,7 @@
 
             editor.on('change', function (cmEditor) {
                 cmEditor.save();
-                $(document).trigger('contentpreview:render');
+                document.dispatchEvent(new Event('contentpreview:render'));
             });
         }
     });

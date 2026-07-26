@@ -5,7 +5,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media;
 public class MediaCommandsTests
 {
     [Fact]
-    public void GetValues_OnNewInstance_IsEmpty()
+    public void GetValues_NewInstance_IsEmpty()
     {
         var commands = new MediaCommands();
 
@@ -15,7 +15,7 @@ public class MediaCommandsTests
     }
 
     [Fact]
-    public void IndividualSetters_Then_GetValues_ReturnsExpectedPairs_InSortedOrder()
+    public void IndividualSetters_ThenGetValuesReturnsExpectedPairs_InSortedOrder()
     {
         var commands = new MediaCommands();
 
@@ -45,7 +45,7 @@ public class MediaCommandsTests
     }
 
     [Fact]
-    public void SetCommands_WithShuffledInput_IgnoresUnknowns_AndReturnsSorted()
+    public void SetCommands_ShuffledInputIgnoresUnknowns_AndReturnsSorted()
     {
         var commands = new MediaCommands();
 
@@ -78,7 +78,7 @@ public class MediaCommandsTests
     }
 
     [Fact]
-    public void SettingSameCommandTwice_OverwritesPreviousValue()
+    public void SettingSameCommandTwice_Default_OverwritesPreviousValue()
     {
         var commands = new MediaCommands();
 
@@ -93,7 +93,7 @@ public class MediaCommandsTests
     }
 
     [Fact]
-    public void SettingCommandToNull_RemovesValue()
+    public void SettingCommandToNull_Default_RemovesValue()
     {
         var commands = new MediaCommands();
 

@@ -24,7 +24,7 @@ namespace OrchardCore.Tests.Workflows;
 public class WorkflowManagerTests
 {
     [Fact]
-    public async Task CanExecuteSimpleWorkflow()
+    public async Task CanExecuteSimpleWorkflow_Default_Succeeds()
     {
         var serviceProvider = CreateServiceProvider();
         var scriptEvaluator = CreateWorkflowScriptEvaluator(serviceProvider);
@@ -78,7 +78,7 @@ public class WorkflowManagerTests
     }
 
     [Fact]
-    public async Task SetOutputTaskShouldEvaluateLiquidExpression()
+    public async Task SetOutputTask_Default_EvaluateLiquidExpression()
     {
         var serviceProvider = CreateServiceProvider();
         var scriptEvaluator = CreateWorkflowScriptEvaluator(serviceProvider);
@@ -115,7 +115,7 @@ public class WorkflowManagerTests
     }
 
     [Fact]
-    public async Task SetPropertyTaskShouldEvaluateLiquidExpression()
+    public async Task SetPropertyTask_Default_EvaluateLiquidExpression()
     {
         var serviceProvider = CreateServiceProvider();
         var scriptEvaluator = CreateWorkflowScriptEvaluator(serviceProvider);
@@ -152,7 +152,7 @@ public class WorkflowManagerTests
     }
 
     [Fact]
-    public async Task IfElseTaskShouldEvaluateLiquidExpression()
+    public async Task Default_ElseTaskDefaultEvaluateLiquidExpression_Succeeds()
     {
         var serviceProvider = CreateServiceProvider();
         var scriptEvaluator = CreateWorkflowScriptEvaluator(serviceProvider);
@@ -187,7 +187,7 @@ public class WorkflowManagerTests
     }
 
     [Fact]
-    public async Task WhileLoopTaskShouldEvaluateLiquidExpression()
+    public async Task WhileLoopTask_Default_EvaluateLiquidExpression()
     {
         var serviceProvider = CreateServiceProvider();
         var scriptEvaluator = CreateWorkflowScriptEvaluator(serviceProvider);
@@ -222,7 +222,7 @@ public class WorkflowManagerTests
     }
 
     [Fact]
-    public async Task ForLoopTaskShouldEvaluateLiquidExpressions()
+    public async Task ForLoopTask_Default_EvaluateLiquidExpressions()
     {
         var serviceProvider = CreateServiceProvider();
         var scriptEvaluator = CreateWorkflowScriptEvaluator(serviceProvider);
@@ -259,7 +259,7 @@ public class WorkflowManagerTests
     }
 
     [Fact]
-    public async Task ForEachTaskShouldEvaluateLiquidExpression()
+    public async Task ForEachTask_Default_EvaluateLiquidExpression()
     {
         var serviceProvider = CreateServiceProvider();
         var scriptEvaluator = CreateWorkflowScriptEvaluator(serviceProvider);
@@ -293,7 +293,7 @@ public class WorkflowManagerTests
     }
 
     [Fact]
-    public async Task LiquidTaskShouldSetLastResult()
+    public async Task LiquidTask_Default_SetsLastResult()
     {
         var serviceProvider = CreateServiceProvider();
         var expressionEvaluator = new Mock<IWorkflowExpressionEvaluator>();
@@ -323,7 +323,7 @@ public class WorkflowManagerTests
     }
 
     [Fact]
-    public async Task LiquidWorkflowExpressionEvaluatorShouldPreserveCollectionValues()
+    public async Task LiquidWorkflowExpressionEvaluator_Default_PreservesCollectionValues()
     {
         using var serviceProvider = CreateLiquidWorkflowServiceProvider();
         var evaluator = CreateLiquidWorkflowExpressionEvaluator(serviceProvider);
@@ -347,7 +347,7 @@ public class WorkflowManagerTests
     }
 
     [Fact]
-    public async Task LiquidWorkflowExpressionEvaluatorShouldEvaluateBooleanComparison()
+    public async Task LiquidWorkflowExpressionEvaluator_Default_EvaluateBooleanComparison()
     {
         using var serviceProvider = CreateLiquidWorkflowServiceProvider();
         var evaluator = CreateLiquidWorkflowExpressionEvaluator(serviceProvider);
@@ -372,7 +372,7 @@ public class WorkflowManagerTests
     }
 
     [Fact]
-    public async Task WorkflowScriptEvaluatorShouldEvaluateAsyncScopedGlobalMethods()
+    public async Task WorkflowScriptEvaluator_Default_EvaluateAsyncScopedGlobalMethods()
     {
         var serviceProvider = CreateServiceProvider();
         var scriptEvaluator = CreateWorkflowScriptEvaluator(serviceProvider);
@@ -395,7 +395,7 @@ public class WorkflowManagerTests
     }
 
     [Fact]
-    public async Task TriggerEventAsync_ShouldAllowReexecutionAfterUnexpectedError()
+    public async Task TriggerEventAsync_Default_AllowsReexecutionAfterUnexpectedError()
     {
         const string nonExistentActivityId = "missing";
 
@@ -430,7 +430,7 @@ public class WorkflowManagerTests
     }
 
     [Fact]
-    public async Task TriggerEventAsync_ShouldAllowFaultHandlerToTriggerWorkflowAfterActivityError()
+    public async Task TriggerEventAsync_Default_AllowsFaultHandlerToTriggerWorkflowAfterActivityError()
     {
         var serviceProvider = CreateServiceProvider();
         var executionCount = 0;

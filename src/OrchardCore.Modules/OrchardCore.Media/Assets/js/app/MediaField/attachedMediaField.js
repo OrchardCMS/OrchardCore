@@ -25,7 +25,7 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
         created: function () {
             var self = this;
 
-            self.currentPrefs = JSON.parse(localStorage.getItem('mediaFieldPrefs'));
+            self.currentPrefs = JSON.parse(localStorage.getItem(getTenantStorageKey('mediaFieldPrefs')));
         },
         computed: {
             paths: {
@@ -365,7 +365,7 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
                 }
             },
             currentPrefs: function (newPrefs) {
-                localStorage.setItem('mediaFieldPrefs', JSON.stringify(newPrefs));
+                localStorage.setItem(getTenantStorageKey('mediaFieldPrefs'), JSON.stringify(newPrefs));
             }
         }
     }));

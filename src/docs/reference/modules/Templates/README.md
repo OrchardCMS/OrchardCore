@@ -735,7 +735,7 @@ This morphing behavior allows you to customize the icon and text independently b
 === "Razor"
 
     ```cshtml
-    <span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@Model.Title">
+    <span class="badge ta-badge fw-normal" data-bs-toggle="tooltip" title="@Model.Title">
         @await DisplayAsAsync(Model, "UserDisplayNameIcon")
         @await DisplayAsAsync(Model, "UserDisplayNameText")
     </span>
@@ -744,7 +744,7 @@ This morphing behavior allows you to customize the icon and text independently b
 === "Liquid"
 
     ```liquid
-    <span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="{{ Model.Title }}">
+    <span class="badge ta-badge fw-normal" data-bs-toggle="tooltip" title="{{ Model.Title }}">
         {{ "UserDisplayNameIcon" | shape_new | shape_render }}
         {{ "UserDisplayNameText" | shape_new | shape_render }}
     </span>
@@ -940,7 +940,7 @@ Create a user-specific template for a particular username (e.g., for user "admin
     **Filename:** `UserDisplayName-admin.SummaryAdmin.cshtml`
 
     ```cshtml
-    <span class="badge ta-badge font-weight-normal text-danger" data-bs-toggle="tooltip" title="@Model.Title">
+    <span class="badge ta-badge fw-normal text-danger" data-bs-toggle="tooltip" title="@Model.Title">
         <i class="fa-solid fa-user-shield" aria-hidden="true"></i>
         <strong>@Model.UserName</strong>
     </span>
@@ -951,7 +951,7 @@ Create a user-specific template for a particular username (e.g., for user "admin
     **Filename:** `UserDisplayName-admin.SummaryAdmin.liquid`
 
     ```liquid
-    <span class="badge ta-badge font-weight-normal text-danger" data-bs-toggle="tooltip" title="{{ Model.Title }}">
+    <span class="badge ta-badge fw-normal text-danger" data-bs-toggle="tooltip" title="{{ Model.Title }}">
         <i class="fa-solid fa-user-shield" aria-hidden="true"></i>
         <strong>{{ Model.UserName }}</strong>
     </span>

@@ -1,6 +1,7 @@
 @model OrchardCore.Queries.Sql.ViewModels.AdminQueryViewModel
 @using OrchardCore.ContentManagement
 @using OrchardCore.Infrastructure
+
 @inject IContentManager ContentManager
 
 @{
@@ -8,9 +9,6 @@
 }
 
 <style asp-name="codemirror"></style>
-<script asp-name="codemirror" at="Foot"></script>
-<script asp-name="codemirror-mode-javascript" at="Foot"></script>
-<script asp-name="codemirror-mode-sql" at="Foot"></script>
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["SQL Query"])</h1></zone>
 
@@ -103,18 +101,22 @@
     }
 }
 
-<script at="Foot">
-    $(function () {
-        CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(m => m.DecodedQuery)'), { mode: @MediaTypeNamesExtended.Text.PostgreSQL, lineNumbers: true, viewportMargin: Infinity });
+<script at="Foot" asp-name="jsonresult-editor" depends-on="codemirror-mode-sql, monaco">
+    function onDocumentReady(callback) {
+        if (document.readyState !== 'loading') {
+            callback();
+        } else {
+            document.addEventListener('DOMContentLoaded', callback);
+        }
+    }
+    onDocumentReady(function () {
+        CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(m => m.DecodedQuery)'), { mode: '@MediaTypeNamesExtended.Text.PostgreSQL', lineNumbers: true, viewportMargin: Infinity });
         CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(m => m.Parameters)'), { mode: "javascript", json: true, lineNumbers: true, viewportMargin: Infinity });
-        if (rawSql = document.getElementById('@Html.IdFor(m => m.RawSql)')) {
+        var rawSql = document.getElementById('@Html.IdFor(m => m.RawSql)');
+        if (rawSql) {
             CodeMirror.fromTextArea(rawSql, { mode: "@sqlmode", lineNumbers: true, readonly: true, viewportMargin: Infinity });
         }
-    });
-</script>
-<script asp-name="monaco" at="Foot"></script>
-<script at="Foot" asp-name="jsonrecipe-editor" depends-on="monaco, admin">
-    document.addEventListener('DOMContentLoaded', function () {
+        
         require(['vs/editor/editor.main'], function () {
 
             const html = document.documentElement;

@@ -91,7 +91,7 @@ public class ImageResizeTagHelper : TagHelper
             queryStringParams = await _mediaProfileService.GetMediaProfileCommands(ImageProfile);
         }
 
-        var resizedSrc = ImageSharpUrlFormatter.GetImageResizeUrl(imgSrc, queryStringParams, ImageWidth, ImageHeight, ResizeMode, ImageQuality, ImageFormat, ImageAnchor, ImageBackgroundColor, ImageAutoOrient);
+        var resizedSrc = MediaImageUrlFormatter.GetImageResizeUrl(imgSrc, queryStringParams, ImageWidth, ImageHeight, ResizeMode, ImageQuality, ImageFormat, ImageAnchor, ImageBackgroundColor, ImageAutoOrient);
 
         if (_mediaOptions.UseTokenizedQueryString)
         {

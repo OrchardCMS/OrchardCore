@@ -423,77 +423,109 @@
 <script at="Foot">
     ////<![CDATA[
     window.onload = function () {
+        function getElement(id) {
+            return document.getElementById(id);
+        }
+
+        function setDisplay(element, show) {
+            if (element) {
+                element.style.display = show ? '' : 'none';
+            }
+        }
+
+        function setCollapse(element, action) {
+            if (element) {
+                bootstrap.Collapse.getOrCreateInstance(element, { toggle: false })[action]();
+            }
+        }
+
         refreshEncryptionCertificates();
         refreshSigningCertificates();
         refreshEndpoints();
         refreshDisableAccessTokenEncryption();
 
-        $("#@Html.IdFor(m => m.AccessTokenFormat)").change(function () {
+        getElement("@Html.IdFor(m => m.AccessTokenFormat)").addEventListener('change', function () {
             refreshDisableAccessTokenEncryption();
         });
-        $("#@Html.IdFor(m => m.EncryptionCertificateStoreLocation)").change(function () {
+        getElement("@Html.IdFor(m => m.EncryptionCertificateStoreLocation)").addEventListener('change', function () {
             refreshEncryptionCertificates();
         });
-        $("#@Html.IdFor(m => m.EncryptionCertificateStoreName)").change(function () {
+        getElement("@Html.IdFor(m => m.EncryptionCertificateStoreName)").addEventListener('change', function () {
             refreshEncryptionCertificates();
         });
-        $("#@Html.IdFor(m => m.SigningCertificateStoreLocation)").change(function () {
+        getElement("@Html.IdFor(m => m.SigningCertificateStoreLocation)").addEventListener('change', function () {
             refreshSigningCertificates();
         });
-        $("#@Html.IdFor(m => m.SigningCertificateStoreName)").change(function () {
+        getElement("@Html.IdFor(m => m.SigningCertificateStoreName)").addEventListener('change', function () {
             refreshSigningCertificates();
         });
-        $("#@Html.IdFor(m => m.EnableTokenEndpoint), #@Html.IdFor(m => m.EnableAuthorizationEndpoint), #@Html.IdFor(m => m.AllowPasswordFlow), #@Html.IdFor(m => m.AllowAuthorizationCodeFlow), #@Html.IdFor(m => m.AllowAuthorizationCodeFlow), #@Html.IdFor(m => m.AllowHybridFlow)").change(function () {
+        document.querySelectorAll("#@Html.IdFor(m => m.EnableTokenEndpoint), #@Html.IdFor(m => m.EnableAuthorizationEndpoint), #@Html.IdFor(m => m.AllowPasswordFlow), #@Html.IdFor(m => m.AllowAuthorizationCodeFlow), #@Html.IdFor(m => m.AllowAuthorizationCodeFlow), #@Html.IdFor(m => m.AllowHybridFlow)").forEach(function (element) {
+            element.addEventListener('change', function () {
             refreshEndpoints();
+            });
         });
         function refreshEncryptionCertificates() {
-            var location = $("#@Html.IdFor(m => m.EncryptionCertificateStoreLocation)"),
-                name = $("#@Html.IdFor(m => m.EncryptionCertificateStoreName)"),
-                thumbprint = $("#@Html.IdFor(m => m.EncryptionCertificateThumbprint)");
+            var location = getElement("@Html.IdFor(m => m.EncryptionCertificateStoreLocation)"),
+                name = getElement("@Html.IdFor(m => m.EncryptionCertificateStoreName)"),
+                thumbprint = getElement("@Html.IdFor(m => m.EncryptionCertificateThumbprint)");
 
-            if (location.val()) {
-                $("#EncryptionCertificateStoreNameField").show();
+            if (location.value) {
+                setDisplay(getElement("EncryptionCertificateStoreNameField"), true);
 
-                if (name.val()) {
-                    $("#EncryptionCertificateThumbprintField").show();
-                    thumbprint.children("option[value!='']").hide();
-                    thumbprint.children("option[data-StoreLocation=" + location.val() + "][data-StoreName=" + name.val() + "]").show();
+                if (name.value) {
+                    setDisplay(getElement("EncryptionCertificateThumbprintField"), true);
+                    thumbprint.querySelectorAll("option").forEach(function (option) {
+                        if (option.value !== '') {
+                            setDisplay(option, false);
+                        }
+
+                        if (option.getAttribute("data-StoreLocation") === location.value && option.getAttribute("data-StoreName") === name.value) {
+                            setDisplay(option, true);
+                        }
+                    });
                 }
                 else {
-                    $("#EncryptionCertificateThumbprintField").hide();
-                    thumbprint.val("");
+                    setDisplay(getElement("EncryptionCertificateThumbprintField"), false);
+                    thumbprint.value = "";
                 }
             }
             else {
-                $("#EncryptionCertificateStoreNameField").hide();
-                name.val("");
-                $("#EncryptionCertificateThumbprintField").hide();
-                thumbprint.val("");
+                setDisplay(getElement("EncryptionCertificateStoreNameField"), false);
+                name.value = "";
+                setDisplay(getElement("EncryptionCertificateThumbprintField"), false);
+                thumbprint.value = "";
             }
         }
         function refreshSigningCertificates() {
-            var location = $("#@Html.IdFor(m => m.SigningCertificateStoreLocation)"),
-                name = $("#@Html.IdFor(m => m.SigningCertificateStoreName)"),
-                thumbprint = $("#@Html.IdFor(m => m.SigningCertificateThumbprint)");
+            var location = getElement("@Html.IdFor(m => m.SigningCertificateStoreLocation)"),
+                name = getElement("@Html.IdFor(m => m.SigningCertificateStoreName)"),
+                thumbprint = getElement("@Html.IdFor(m => m.SigningCertificateThumbprint)");
 
-            if (location.val()) {
-                $("#SigningCertificateStoreNameField").show();
+            if (location.value) {
+                setDisplay(getElement("SigningCertificateStoreNameField"), true);
 
-                if (name.val()) {
-                    $("#SigningCertificateThumbprintField").show();
-                    thumbprint.children("option[value!='']").hide();
-                    thumbprint.children("option[data-StoreLocation=" + location.val() + "][data-StoreName=" + name.val() + "]").show();
+                if (name.value) {
+                    setDisplay(getElement("SigningCertificateThumbprintField"), true);
+                    thumbprint.querySelectorAll("option").forEach(function (option) {
+                        if (option.value !== '') {
+                            setDisplay(option, false);
+                        }
+
+                        if (option.getAttribute("data-StoreLocation") === location.value && option.getAttribute("data-StoreName") === name.value) {
+                            setDisplay(option, true);
+                        }
+                    });
                 }
                 else {
-                    $("#SigningCertificateThumbprintField").hide();
-                    thumbprint.val("");
+                    setDisplay(getElement("SigningCertificateThumbprintField"), false);
+                    thumbprint.value = "";
                 }
             }
             else {
-                $("#SigningCertificateStoreNameField").hide();
-                name.val("");
-                $("#SigningCertificateThumbprintField").hide();
-                thumbprint.val("");
+                setDisplay(getElement("SigningCertificateStoreNameField"), false);
+                name.value = "";
+                setDisplay(getElement("SigningCertificateThumbprintField"), false);
+                thumbprint.value = "";
             }
         }
         function refreshEndpoints() {
@@ -504,68 +536,68 @@
             refreshAllowRefreshTokenFlowVisibility();
         }
         function refreshDisableAccessTokenEncryption() {
-            var accessTokenFormat = $("#@Html.IdFor(m => m.AccessTokenFormat)");
-            var disableAccessTokenEncryption = $("#@Html.IdFor(m => m.DisableAccessTokenEncryption)");
+            var accessTokenFormat = getElement("@Html.IdFor(m => m.AccessTokenFormat)");
+            var disableAccessTokenEncryption = getElement("@Html.IdFor(m => m.DisableAccessTokenEncryption)");
 
-            if (accessTokenFormat.val() === '@OpenIdServerSettings.TokenFormat.JsonWebToken') {
-                disableAccessTokenEncryption.removeAttr("disabled");
+            if (accessTokenFormat.value === '@OpenIdServerSettings.TokenFormat.JsonWebToken') {
+                disableAccessTokenEncryption.disabled = false;
             }
             else {
-                disableAccessTokenEncryption.attr('disabled', true);
-                disableAccessTokenEncryption.prop("checked", false);
+                disableAccessTokenEncryption.disabled = true;
+                disableAccessTokenEncryption.checked = false;
             }
         }
         function refreshEnableTokenEndpoint() {
-            var enableTokenEndpoint = $("#@Html.IdFor(m => m.EnableTokenEndpoint)");
-            var allowPasswordFlow = $("#@Html.IdFor(m => m.AllowPasswordFlow)");
-            var allowClientCredentialsFlow = $("#@Html.IdFor(m => m.AllowClientCredentialsFlow)");
-            if (!enableTokenEndpoint.prop("checked")) {
-                allowPasswordFlow.prop("checked", false);
-                allowClientCredentialsFlow.prop("checked", false);
+            var enableTokenEndpoint = getElement("@Html.IdFor(m => m.EnableTokenEndpoint)");
+            var allowPasswordFlow = getElement("@Html.IdFor(m => m.AllowPasswordFlow)");
+            var allowClientCredentialsFlow = getElement("@Html.IdFor(m => m.AllowClientCredentialsFlow)");
+            if (!enableTokenEndpoint.checked) {
+                allowPasswordFlow.checked = false;
+                allowClientCredentialsFlow.checked = false;
             }
-            var showOrHide = enableTokenEndpoint.prop("checked") ? "show" : "hide";
-            allowPasswordFlow.closest('.collapse').collapse(showOrHide);
-            allowClientCredentialsFlow.closest('.collapse').collapse(showOrHide);
+            var showOrHide = enableTokenEndpoint.checked ? "show" : "hide";
+            setCollapse(allowPasswordFlow.closest('.collapse'), showOrHide);
+            setCollapse(allowClientCredentialsFlow.closest('.collapse'), showOrHide);
         }
         function refreshEnableAuthorizationEndpoint() {
-            var enableAuthorizationEndpoint = $("#@Html.IdFor(m => m.EnableAuthorizationEndpoint)");
-            var allowImplicitFlow = $("#@Html.IdFor(m => m.AllowImplicitFlow)");
-            if (!enableAuthorizationEndpoint.prop("checked")) {
-                allowImplicitFlow.prop("checked", false);
+            var enableAuthorizationEndpoint = getElement("@Html.IdFor(m => m.EnableAuthorizationEndpoint)");
+            var allowImplicitFlow = getElement("@Html.IdFor(m => m.AllowImplicitFlow)");
+            if (!enableAuthorizationEndpoint.checked) {
+                allowImplicitFlow.checked = false;
             }
-            allowImplicitFlow.closest('.collapse').collapse(enableAuthorizationEndpoint.prop("checked") ? "show" : "hide");
+            setCollapse(allowImplicitFlow.closest('.collapse'), enableAuthorizationEndpoint.checked ? "show" : "hide");
         }
         function refreshAllowAuthorizationCodeFlowVisibility() {
-            var allowAuthorizationCodeFlow = $("#@Html.IdFor(m => m.AllowAuthorizationCodeFlow)");
-            if ($("#@Html.IdFor(m => m.EnableTokenEndpoint)").prop("checked") && $("#@Html.IdFor(m => m.EnableAuthorizationEndpoint)").prop("checked")) {
-                allowAuthorizationCodeFlow.closest('.collapse').collapse("show");
+            var allowAuthorizationCodeFlow = getElement("@Html.IdFor(m => m.AllowAuthorizationCodeFlow)");
+            if (getElement("@Html.IdFor(m => m.EnableTokenEndpoint)").checked && getElement("@Html.IdFor(m => m.EnableAuthorizationEndpoint)").checked) {
+                setCollapse(allowAuthorizationCodeFlow.closest('.collapse'), "show");
             }
             else {
-                allowAuthorizationCodeFlow.prop("checked", false);
-                allowAuthorizationCodeFlow.closest('.collapse').collapse("hide");
+                allowAuthorizationCodeFlow.checked = false;
+                setCollapse(allowAuthorizationCodeFlow.closest('.collapse'), "hide");
             }
         }
         function refreshAllowHybridFlowVisibility() {
-            var allowHybridFlow = $("#@Html.IdFor(m => m.AllowHybridFlow)");
-            if ($("#@Html.IdFor(m => m.EnableTokenEndpoint)").prop("checked") && $("#@Html.IdFor(m => m.EnableAuthorizationEndpoint)").prop("checked")) {
-                allowHybridFlow.closest('.collapse').collapse("show");
+            var allowHybridFlow = getElement("@Html.IdFor(m => m.AllowHybridFlow)");
+            if (getElement("@Html.IdFor(m => m.EnableTokenEndpoint)").checked && getElement("@Html.IdFor(m => m.EnableAuthorizationEndpoint)").checked) {
+                setCollapse(allowHybridFlow.closest('.collapse'), "show");
             }
             else {
-                allowHybridFlow.prop("checked", false);
-                allowHybridFlow.closest('.collapse').collapse("hide");
+                allowHybridFlow.checked = false;
+                setCollapse(allowHybridFlow.closest('.collapse'), "hide");
             }
         }
         function refreshAllowRefreshTokenFlowVisibility() {
-            var allowRefreshTokenFlow = $("#@Html.IdFor(m => m.AllowRefreshTokenFlow)");
-            if ($("#@Html.IdFor(m => m.EnableTokenEndpoint)").prop("checked")
-                && ($("#@Html.IdFor(m => m.AllowPasswordFlow)").prop("checked") ||
-                    $("#@Html.IdFor(m => m.AllowAuthorizationCodeFlow)").prop("checked") ||
-                    $("#@Html.IdFor(m => m.AllowHybridFlow)").prop("checked"))) {
-                allowRefreshTokenFlow.closest('.collapse').collapse("show");
+            var allowRefreshTokenFlow = getElement("@Html.IdFor(m => m.AllowRefreshTokenFlow)");
+            if (getElement("@Html.IdFor(m => m.EnableTokenEndpoint)").checked
+                && (getElement("@Html.IdFor(m => m.AllowPasswordFlow)").checked ||
+                    getElement("@Html.IdFor(m => m.AllowAuthorizationCodeFlow)").checked ||
+                    getElement("@Html.IdFor(m => m.AllowHybridFlow)").checked)) {
+                setCollapse(allowRefreshTokenFlow.closest('.collapse'), "show");
             }
             else {
-                allowRefreshTokenFlow.prop("checked", false);
-                allowRefreshTokenFlow.closest('.collapse').collapse("hide");
+                allowRefreshTokenFlow.checked = false;
+                setCollapse(allowRefreshTokenFlow.closest('.collapse'), "hide");
             }
         }
     };

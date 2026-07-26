@@ -20,7 +20,7 @@ public class RecipeExecutorTests
     [InlineData("recipe3", "js: valiables('now')")]
     [InlineData("recipe4", "[locale en]This text contains a colon ':' symbol[/locale][locale fr]Ce texte contient un deux-points ':'[/locale]")]
     [InlineData("recipe5", "[sc text='some : text'/]")]
-    public async Task ShouldTrimValidScriptExpression(string recipeName, string expected)
+    public async Task Trim_ValidScriptExpression_Succeeds(string recipeName, string expected)
     {
         await (await CreateShellContext().CreateScopeAsync()).UsingAsync(async scope =>
         {
@@ -57,7 +57,7 @@ public class RecipeExecutorTests
     }
 
     [Fact]
-    public async Task ContentDefinitionStep_WhenPartNameIsMissing_RecipeExecutionException()
+    public async Task ContentDefinitionStep_PartNameIsMissingRecipeExecutionException_Succeeds()
     {
         using var context = new BlogContext();
         await context.InitializeAsync();

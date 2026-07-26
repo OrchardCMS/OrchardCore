@@ -14,9 +14,7 @@ public class ZoneShapes : IShapeAttributeProvider
     private const string ContentKey = "Content";
 
     [Shape]
-#pragma warning disable CA1822 // Mark members as static
-    public async Task<IHtmlContent> Zone(IDisplayHelper DisplayAsync, IEnumerable<object> Shape)
-#pragma warning restore CA1822 // Mark members as static
+    public static async Task<IHtmlContent> Zone(IDisplayHelper DisplayAsync, IEnumerable<object> Shape)
     {
         var htmlContentBuilder = new HtmlContentBuilder();
         foreach (var item in Shape)
@@ -28,9 +26,7 @@ public class ZoneShapes : IShapeAttributeProvider
     }
 
     [Shape]
-#pragma warning disable CA1822 // Mark members as static
-    public async Task<IHtmlContent> ContentZone(IDisplayHelper DisplayAsync, dynamic Shape, IShapeFactory ShapeFactory)
-#pragma warning restore CA1822 // Mark members as static
+    public static async Task<IHtmlContent> ContentZone(IDisplayHelper DisplayAsync, dynamic Shape, IShapeFactory ShapeFactory)
     {
         var htmlContentBuilder = new HtmlContentBuilder();
 
@@ -130,9 +126,7 @@ public class ZoneShapes : IShapeAttributeProvider
     }
 
     [Shape]
-#pragma warning disable CA1822 // Mark members as static
-    public async Task<IHtmlContent> CardGrouping(IDisplayHelper DisplayAsync, GroupingViewModel Shape, IShapeFactory ShapeFactory)
-#pragma warning restore CA1822 // Mark members as static
+    public static async Task<IHtmlContent> CardGrouping(IDisplayHelper DisplayAsync, GroupingViewModel Shape, IShapeFactory ShapeFactory)
     {
         var htmlContentBuilder = new HtmlContentBuilder();
 
@@ -208,9 +202,7 @@ public class ZoneShapes : IShapeAttributeProvider
     }
 
     [Shape]
-#pragma warning disable CA1822 // Mark members as static
-    public async Task<IHtmlContent> ColumnGrouping(IDisplayHelper DisplayAsync, GroupingViewModel Shape, IShapeFactory ShapeFactory)
-#pragma warning restore CA1822 // Mark members as static
+    public static async Task<IHtmlContent> ColumnGrouping(IDisplayHelper DisplayAsync, GroupingViewModel Shape, IShapeFactory ShapeFactory)
     {
         var htmlContentBuilder = new HtmlContentBuilder();
 
@@ -320,5 +312,4 @@ public class ZoneShapes : IShapeAttributeProvider
 
         return htmlContentBuilder;
     }
-
 }

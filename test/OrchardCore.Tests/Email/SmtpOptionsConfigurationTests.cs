@@ -20,7 +20,7 @@ public class SmtpOptionsConfigurationTests
     [InlineData("/Outbound", "Outbound")]
     [InlineData("Outbound", "Outbound")]
     [InlineData("Email/Outbound", "Email\\Outbound")]
-    public void Configure_ResolvesPickupDirectoryLocationUnderDefaultTenantBase(string pickupDirectoryLocation, string expectedRelativePath)
+    public void Configure_Default_ResolvesPickupDirectoryLocationUnderDefaultTenantBase(string pickupDirectoryLocation, string expectedRelativePath)
     {
         var appDataPath = GetRootedPath("App", "App_Data");
         var shellSettings = new ShellSettings
@@ -46,7 +46,7 @@ public class SmtpOptionsConfigurationTests
     }
 
     [Fact]
-    public void Configure_UsesConfiguredPickupDirectoryLocationBaseWithFluidTokens()
+    public void Configure_Default_UsesConfiguredPickupDirectoryLocationBaseWithFluidTokens()
     {
         var appDataPath = GetRootedPath("App", "App_Data");
         var shellSettings = new ShellSettings
@@ -78,7 +78,7 @@ public class SmtpOptionsConfigurationTests
     [InlineData("Email\\..\\Shared")]
     [InlineData("C:\\Emails")]
     [InlineData("\\\\server\\share\\Emails")]
-    public void Configure_DisablesPickupDirectoryOutsideConfiguredBase(string pickupDirectoryLocation)
+    public void Configure_DisablesPickupDirectoryOutsideConfiguredBase_Succeeds(string pickupDirectoryLocation)
     {
         var appDataPath = GetRootedPath("App", "App_Data");
         var shellSettings = new ShellSettings
@@ -100,7 +100,7 @@ public class SmtpOptionsConfigurationTests
     }
 
     [Fact]
-    public void PostConfigure_ResolvesDefaultPickupDirectoryLocationBase()
+    public void PostConfigure_Default_ResolvesDefaultPickupDirectoryLocationBase()
     {
         var appDataPath = GetRootedPath("App", "App_Data");
         var shellSettings = new ShellSettings
@@ -130,7 +130,7 @@ public class SmtpOptionsConfigurationTests
     }
 
     [Fact]
-    public void PostConfigure_DisablesDefaultPickupDirectoryLocationOutsideConfiguredBase()
+    public void PostConfigure_DisablesDefaultPickupDirectoryLocationOutsideConfiguredBase_Succeeds()
     {
         var appDataPath = GetRootedPath("App", "App_Data");
         var shellSettings = new ShellSettings
@@ -160,7 +160,7 @@ public class SmtpOptionsConfigurationTests
     }
 
     [Fact]
-    public void PostConfigure_UsesSlashRootForConfiguredPickupDirectoryLocation()
+    public void PostConfigure_Default_UsesSlashRootForConfiguredPickupDirectoryLocation()
     {
         var appDataPath = GetRootedPath("App", "App_Data");
         var shellSettings = new ShellSettings

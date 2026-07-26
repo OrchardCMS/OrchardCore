@@ -69,7 +69,7 @@ This will allow for the Razor Pages to be reloaded without the need to recompile
 
 ```xml
 <ItemGroup>
-  <PackageReference Include="OrchardCore.Application.Cms.Core.Targets" Version="2.2.1" />
+  <PackageReference Include="OrchardCore.Application.Cms.Core.Targets" Version="3.0.1" />
 </ItemGroup>
 ```
 
@@ -109,23 +109,17 @@ builder.Services.AddOrchardCms();
 Here is a sample of a bare minimum `Program.cs` file
 
 ```csharp
-public class Program
-{
-    public static void Main(string[] args)
-    {
-        var builder = WebApplication.CreateBuilder(args);
+var builder = WebApplication.CreateBuilder(args);
 
-        // Add services to the container.
-        builder.Services.AddOrchardCms();
+// Add services to the container.
+builder.Services.AddOrchardCms();
 
-        var app = builder.Build();
+var app = builder.Build();
 
-        app.UseStaticFiles();
-        app.UseOrchardCore();
-        
-        app.Run();
-    }
-}
+app.UseStaticFiles();
+app.UseOrchardCore();
+
+app.Run();
 ```
 
 Start the application, the Setup screen shows up:
@@ -201,12 +195,12 @@ The __Blog Post__ content type is ready to use.
 
 ### Creating blog posts
 
-- In the left menu, select __New__ then click on __Blog Post__ to reveal an editor for the newly created `BlogPost` content type.
+- In the left menu, select __Content__ then __ContentItems__
+- Click on __New Blog Post__ to reveal an editor for the newly created `BlogPost` content type.
 
 ![Edit Blog Post](images/edit-blogpost.jpg)
 
 - Fill in the __Title__ and the __MarkdownBody__ form elements with some content, then click on __Publish__. For the sake of this example we'll use `This is a new day` and some Lorem Ipsum text.
-- In the menu, click on __Content > Content Items__ to display all the available content items.
 
 ![Content Items](images/content-items-1.jpg)
 
@@ -245,7 +239,8 @@ Each content item in Orchard Core has a unique and immutable Content Item Identi
 
 ```html hl_lines="2 10"
 @page "/blogpost/{id}"
-@inject OrchardCore.IOrchardHelper Orchard
+@using OrchardCore
+@inject IOrchardHelper Orchard
 
 @{
     var blogPost = await Orchard.GetContentItemByIdAsync(Id);
@@ -333,7 +328,8 @@ We can now update the Razor Page to use the alias instead of the content item id
 
 ```html
 @page "/blogpost/{slug}"
-@inject OrchardCore.IOrchardHelper Orchard
+@using OrchardCore
+@inject IOrchardHelper Orchard
 
 @{
     var blogPost = await Orchard.GetContentItemByHandleAsync($"alias:{Slug}");

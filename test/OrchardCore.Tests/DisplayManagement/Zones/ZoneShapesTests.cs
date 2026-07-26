@@ -12,14 +12,12 @@ using OrchardCore.Tests.Stubs;
 
 namespace OrchardCore.Tests.DisplayManagement.Zones;
 
-[System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "<Pending>")]
 public class ZoneShapesTests
 {
     private readonly ShapeTable _defaultShapeTable;
     private readonly IServiceProvider _serviceProvider;
     private readonly IShapeFactory _shapeFactory;
     private readonly IDisplayHelper _displayHelper;
-    private readonly ZoneShapes _zoneShapes;
 
     public ZoneShapesTests()
     {
@@ -46,7 +44,6 @@ public class ZoneShapesTests
         _serviceProvider = services.BuildServiceProvider();
         _shapeFactory = _serviceProvider.GetRequiredService<IShapeFactory>();
         _displayHelper = _serviceProvider.GetRequiredService<IDisplayHelper>();
-        _zoneShapes = new ZoneShapes();
 
         // Add shape descriptors for all the shapes used in tests
         AddBasicShapeDescriptors();
@@ -123,7 +120,7 @@ public class ZoneShapesTests
         {
             var displayHelper = ctx.ServiceProvider.GetRequiredService<IDisplayHelper>();
             var groupingViewModel = (GroupingViewModel)ctx.Value;
-            return await _zoneShapes.CardGrouping(displayHelper, groupingViewModel, _shapeFactory);
+            return await ZoneShapes.CardGrouping(displayHelper, groupingViewModel, _shapeFactory);
         });
         AddShapeDescriptor(cardDescriptor);
 
@@ -133,7 +130,7 @@ public class ZoneShapesTests
         {
             var displayHelper = ctx.ServiceProvider.GetRequiredService<IDisplayHelper>();
             var groupingViewModel = (GroupingViewModel)ctx.Value;
-            return await _zoneShapes.CardGrouping(displayHelper, groupingViewModel, _shapeFactory);
+            return await ZoneShapes.CardGrouping(displayHelper, groupingViewModel, _shapeFactory);
         });
         AddShapeDescriptor(cardGroupingDescriptor);
 
@@ -184,7 +181,7 @@ public class ZoneShapesTests
         {
             var displayHelper = ctx.ServiceProvider.GetRequiredService<IDisplayHelper>();
             var groupingViewModel = (GroupingViewModel)ctx.Value;
-            return await _zoneShapes.ColumnGrouping(displayHelper, groupingViewModel, _shapeFactory);
+            return await ZoneShapes.ColumnGrouping(displayHelper, groupingViewModel, _shapeFactory);
         });
         AddShapeDescriptor(columnGroupingDescriptor);
     }
@@ -210,7 +207,7 @@ public class ZoneShapesTests
     #region Zone Shape Tests
 
     [Fact]
-    public async Task Zone_ShouldRenderAllShapes()
+    public async Task Zone_Default_RenderAllShapes()
     {
         // Arrange
         var shapes = new List<object>
@@ -221,7 +218,7 @@ public class ZoneShapesTests
         };
 
         // Act
-        var result = await _zoneShapes.Zone(_displayHelper, shapes);
+        var result = await ZoneShapes.Zone(_displayHelper, shapes);
 
         // Assert
         Assert.NotNull(result);
@@ -232,13 +229,13 @@ public class ZoneShapesTests
     }
 
     [Fact]
-    public async Task Zone_WithEmptyCollection_ShouldReturnEmpty()
+    public async Task Zone_EmptyCollection_ReturnsEmpty()
     {
         // Arrange
         var shapes = new List<object>();
 
         // Act
-        var result = await _zoneShapes.Zone(_displayHelper, shapes);
+        var result = await ZoneShapes.Zone(_displayHelper, shapes);
 
         // Assert
         Assert.NotNull(result);
@@ -251,7 +248,7 @@ public class ZoneShapesTests
     #region ContentZone Tests - No Grouping
 
     [Fact]
-    public async Task ContentZone_WithoutGrouping_ShouldRenderDirectly()
+    public async Task ContentZone_OutGrouping_RenderDirectly()
     {
         // Arrange
         var shape = await _shapeFactory.CreateAsync<Shape>("TestShape");
@@ -262,7 +259,7 @@ public class ZoneShapesTests
 
         // Act
         dynamic dynamicZone = zone;
-        var result = await _zoneShapes.ContentZone(_displayHelper, dynamicZone, _shapeFactory);
+        var result = await ZoneShapes.ContentZone(_displayHelper, dynamicZone, _shapeFactory);
 
         // Assert
         Assert.NotNull(result);
@@ -272,14 +269,14 @@ public class ZoneShapesTests
     }
 
     [Fact]
-    public async Task ContentZone_WithEmptyShapes_ShouldReturnEmpty()
+    public async Task ContentZone_EmptyShapes_ReturnsEmpty()
     {
         // Arrange
         var zone = new Shape();
 
         // Act
         dynamic dynamicZone = zone;
-        var result = await _zoneShapes.ContentZone(_displayHelper, dynamicZone, _shapeFactory);
+        var result = await ZoneShapes.ContentZone(_displayHelper, dynamicZone, _shapeFactory);
 
         // Assert
         Assert.NotNull(result);
@@ -288,7 +285,7 @@ public class ZoneShapesTests
     }
 
     [Fact]
-    public async Task ContentZone_WithoutGrouping_ShouldPreserveExistingPositionOrder()
+    public async Task ContentZone_OutGrouping_PreservesExistingPositionOrder()
     {
         // Arrange
         var first = CreateTestShape("First");
@@ -302,7 +299,7 @@ public class ZoneShapesTests
 
         // Act
         dynamic dynamicZone = zone;
-        var result = await _zoneShapes.ContentZone(_displayHelper, dynamicZone, _shapeFactory);
+        var result = await ZoneShapes.ContentZone(_displayHelper, dynamicZone, _shapeFactory);
 
         // Assert
         var html = GetHtmlString(result);
@@ -315,7 +312,7 @@ public class ZoneShapesTests
     #region ContentZone Tests - Tab Grouping
 
     [Fact]
-    public async Task ContentZone_WithMultipleTabs_ShouldCreateTabContainer()
+    public async Task ContentZone_MultipleTabs_CreatesTabContainer()
     {
         // Arrange
         var shape1 = CreateShapeWithTabGrouping("Tab1", "1");
@@ -330,7 +327,7 @@ public class ZoneShapesTests
 
         // Act
         dynamic dynamicZone = zone;
-        var result = await _zoneShapes.ContentZone(_displayHelper, dynamicZone, _shapeFactory);
+        var result = await ZoneShapes.ContentZone(_displayHelper, dynamicZone, _shapeFactory);
 
         // Assert
         Assert.NotNull(result);
@@ -342,7 +339,7 @@ public class ZoneShapesTests
     }
 
     [Fact]
-    public async Task ContentZone_WithSingleTab_ShouldRenderDirectlyWithoutTabContainer()
+    public async Task ContentZone_SingleTab_RenderDirectlyWithoutTabContainer()
     {
         // Arrange
         var shape1 = CreateShapeWithTabGrouping("Tab1", "1");
@@ -355,7 +352,7 @@ public class ZoneShapesTests
 
         // Act
         dynamic dynamicZone = zone;
-        var result = await _zoneShapes.ContentZone(_displayHelper, dynamicZone, _shapeFactory);
+        var result = await ZoneShapes.ContentZone(_displayHelper, dynamicZone, _shapeFactory);
 
         // Assert
         Assert.NotNull(result);
@@ -372,7 +369,7 @@ public class ZoneShapesTests
     }
 
     [Fact]
-    public async Task ContentZone_TabsWithPosition_ShouldOrderCorrectly()
+    public async Task ContentZone_TabsWithPosition_OrderCorrectly()
     {
         // Arrange
         var shape1 = CreateShapeWithTabGrouping("Tab3", "5");
@@ -387,7 +384,7 @@ public class ZoneShapesTests
 
         // Act
         dynamic dynamicZone = zone;
-        var result = await _zoneShapes.ContentZone(_displayHelper, dynamicZone, _shapeFactory);
+        var result = await ZoneShapes.ContentZone(_displayHelper, dynamicZone, _shapeFactory);
 
         // Assert
         Assert.NotNull(result);
@@ -406,7 +403,7 @@ public class ZoneShapesTests
     }
 
     [Fact]
-    public async Task ContentZone_TabsWithContentKey_ShouldHandleDefault()
+    public async Task ContentZone_TabsWithContentKey_HandlesDefault()
     {
         // Arrange
         var shape1 = CreateShapeWithTabGrouping("Tab1", "1");
@@ -419,7 +416,7 @@ public class ZoneShapesTests
 
         // Act
         dynamic dynamicZone = zone;
-        var result = await _zoneShapes.ContentZone(_displayHelper, dynamicZone, _shapeFactory);
+        var result = await ZoneShapes.ContentZone(_displayHelper, dynamicZone, _shapeFactory);
 
         // Assert
         Assert.NotNull(result);
@@ -444,7 +441,7 @@ public class ZoneShapesTests
     #region CardGrouping Tests
 
     [Fact]
-    public async Task CardGrouping_WithMultipleCards_ShouldCreateCardContainer()
+    public async Task CardGrouping_MultipleCards_CreatesCardContainer()
     {
         // Arrange
         var shape1 = CreateShapeWithCardGrouping("Card1", "1");
@@ -459,7 +456,7 @@ public class ZoneShapesTests
         };
 
         // Act
-        var result = await _zoneShapes.CardGrouping(_displayHelper, viewModel, _shapeFactory);
+        var result = await ZoneShapes.CardGrouping(_displayHelper, viewModel, _shapeFactory);
 
         // Assert
         Assert.NotNull(result);
@@ -470,7 +467,7 @@ public class ZoneShapesTests
     }
 
     [Fact]
-    public async Task CardGrouping_WithSingleCard_ShouldProceedToColumnGrouping()
+    public async Task CardGrouping_SingleCard_ProceedToColumnGrouping()
     {
         // Arrange
         var shape1 = CreateShapeWithCardGrouping("Card1", "1");
@@ -484,7 +481,7 @@ public class ZoneShapesTests
         };
 
         // Act
-        var result = await _zoneShapes.CardGrouping(_displayHelper, viewModel, _shapeFactory);
+        var result = await ZoneShapes.CardGrouping(_displayHelper, viewModel, _shapeFactory);
 
         // Assert
         Assert.NotNull(result);
@@ -495,7 +492,7 @@ public class ZoneShapesTests
     }
 
     [Fact]
-    public async Task CardGrouping_CardsWithPosition_ShouldOrderCorrectly()
+    public async Task CardGrouping_CardsWithPosition_OrderCorrectly()
     {
         // Arrange
         var shape1 = CreateShapeWithCardGrouping("Card3", "3");
@@ -513,7 +510,7 @@ public class ZoneShapesTests
         };
 
         // Act
-        var result = await _zoneShapes.CardGrouping(_displayHelper, viewModel, _shapeFactory);
+        var result = await ZoneShapes.CardGrouping(_displayHelper, viewModel, _shapeFactory);
 
         // Assert
         Assert.NotNull(result);
@@ -537,7 +534,7 @@ public class ZoneShapesTests
     }
 
     [Fact]
-    public async Task CardGrouping_WithContentKey_ShouldHandleDefault()
+    public async Task CardGrouping_ContentKey_HandlesDefault()
     {
         // Arrange
         var shape1 = CreateShapeWithCardGrouping("Card1", "1");
@@ -551,7 +548,7 @@ public class ZoneShapesTests
         };
 
         // Act
-        var result = await _zoneShapes.CardGrouping(_displayHelper, viewModel, _shapeFactory);
+        var result = await ZoneShapes.CardGrouping(_displayHelper, viewModel, _shapeFactory);
 
         // Assert
         Assert.NotNull(result);
@@ -569,7 +566,7 @@ public class ZoneShapesTests
     #region ColumnGrouping Tests
 
     [Fact]
-    public async Task ColumnGrouping_WithMultipleColumns_ShouldCreateColumnContainer()
+    public async Task ColumnGrouping_MultipleColumns_CreatesColumnContainer()
     {
         // Arrange
         var shape1 = CreateShapeWithColumnGrouping("Col1", "1", null);
@@ -584,7 +581,7 @@ public class ZoneShapesTests
         };
 
         // Act
-        var result = await _zoneShapes.ColumnGrouping(_displayHelper, viewModel, _shapeFactory);
+        var result = await ZoneShapes.ColumnGrouping(_displayHelper, viewModel, _shapeFactory);
 
         // Assert
         Assert.NotNull(result);
@@ -593,7 +590,7 @@ public class ZoneShapesTests
     }
 
     [Fact]
-    public async Task ColumnGrouping_WithSameColumnName_ShouldCreateSeparateColumns()
+    public async Task ColumnGrouping_SameColumnName_CreatesSeparateColumns()
     {
         // Arrange - items with same column name each get their own column wrapper
         var shape1 = CreateShapeWithColumnGrouping("Col1", "1", null);
@@ -607,7 +604,7 @@ public class ZoneShapesTests
         };
 
         // Act
-        var result = await _zoneShapes.ColumnGrouping(_displayHelper, viewModel, _shapeFactory);
+        var result = await ZoneShapes.ColumnGrouping(_displayHelper, viewModel, _shapeFactory);
 
         // Assert
         Assert.NotNull(result);
@@ -625,7 +622,7 @@ public class ZoneShapesTests
     }
 
     [Fact]
-    public async Task ColumnGrouping_ColumnsWithPosition_ShouldOrderCorrectly()
+    public async Task ColumnGrouping_ColumnsWithPosition_OrderCorrectly()
     {
         // Arrange
         var shape1 = CreateShapeWithColumnGrouping("Col3", "3", null);
@@ -640,7 +637,7 @@ public class ZoneShapesTests
         };
 
         // Act
-        var result = await _zoneShapes.ColumnGrouping(_displayHelper, viewModel, _shapeFactory);
+        var result = await ZoneShapes.ColumnGrouping(_displayHelper, viewModel, _shapeFactory);
 
         // Assert
         Assert.NotNull(result);
@@ -666,7 +663,7 @@ public class ZoneShapesTests
     }
 
     [Fact]
-    public async Task ColumnGrouping_WithWidthModifier_ShouldApplyColumnClasses()
+    public async Task ColumnGrouping_WidthModifier_ApplyColumnClasses()
     {
         // Arrange
         var shape1 = CreateShapeWithColumnGrouping("Col1", "1", "6");
@@ -680,7 +677,7 @@ public class ZoneShapesTests
         };
 
         // Act
-        var result = await _zoneShapes.ColumnGrouping(_displayHelper, viewModel, _shapeFactory);
+        var result = await ZoneShapes.ColumnGrouping(_displayHelper, viewModel, _shapeFactory);
 
         // Assert
         Assert.NotNull(result);
@@ -689,7 +686,7 @@ public class ZoneShapesTests
     }
 
     [Fact]
-    public async Task ColumnGrouping_WithBreakpointModifier_ShouldApplyCorrectClasses()
+    public async Task ColumnGrouping_BreakpointModifier_ApplyCorrectClasses()
     {
         // Arrange
         var shape1 = CreateShapeWithColumnGrouping("Col1", "1", "lg-4");
@@ -703,7 +700,7 @@ public class ZoneShapesTests
         };
 
         // Act
-        var result = await _zoneShapes.ColumnGrouping(_displayHelper, viewModel, _shapeFactory);
+        var result = await ZoneShapes.ColumnGrouping(_displayHelper, viewModel, _shapeFactory);
 
         // Assert
         Assert.NotNull(result);
@@ -713,7 +710,7 @@ public class ZoneShapesTests
     }
 
     [Fact]
-    public async Task ColumnGrouping_WithoutWidthModifier_ShouldApplyDefaultClasses()
+    public async Task ColumnGrouping_OutWidthModifier_ApplyDefaultClasses()
     {
         // Arrange
         var shape1 = CreateShapeWithColumnGrouping("Col1", "1", null);
@@ -727,7 +724,7 @@ public class ZoneShapesTests
         };
 
         // Act
-        var result = await _zoneShapes.ColumnGrouping(_displayHelper, viewModel, _shapeFactory);
+        var result = await ZoneShapes.ColumnGrouping(_displayHelper, viewModel, _shapeFactory);
 
         // Assert
         Assert.NotNull(result);
@@ -736,7 +733,7 @@ public class ZoneShapesTests
     }
 
     [Fact]
-    public async Task ColumnGrouping_WithContentKey_ShouldRenderNonColumnItemsOutsideRow()
+    public async Task ColumnGrouping_ContentKey_RenderNonColumnItemsOutsideRow()
     {
         // Arrange
         var shape1 = CreateShapeWithColumnGrouping("Col1", "1", null);
@@ -750,7 +747,7 @@ public class ZoneShapesTests
         };
 
         // Act
-        var result = await _zoneShapes.ColumnGrouping(_displayHelper, viewModel, _shapeFactory);
+        var result = await ZoneShapes.ColumnGrouping(_displayHelper, viewModel, _shapeFactory);
 
         // Assert
         Assert.NotNull(result);
@@ -767,7 +764,7 @@ public class ZoneShapesTests
     }
 
     [Fact]
-    public async Task ColumnGrouping_NonColumnItemsAfterColumns_ShouldRenderAfterRow()
+    public async Task ColumnGrouping_NonColumnItemsAfterColumns_RenderAfterRow()
     {
         // Arrange - column items first, then non-column item
         var shape1 = CreateShapeWithColumnGrouping("Left", "1", "4");
@@ -782,7 +779,7 @@ public class ZoneShapesTests
         };
 
         // Act
-        var result = await _zoneShapes.ColumnGrouping(_displayHelper, viewModel, _shapeFactory);
+        var result = await ZoneShapes.ColumnGrouping(_displayHelper, viewModel, _shapeFactory);
 
         // Assert
         Assert.NotNull(result);
@@ -802,7 +799,7 @@ public class ZoneShapesTests
     }
 
     [Fact]
-    public async Task ColumnGrouping_NonColumnItemsBeforeColumns_ShouldRenderBeforeRow()
+    public async Task ColumnGrouping_NonColumnItemsBeforeColumns_RenderBeforeRow()
     {
         // Arrange - non-column item first, then column items
         var shape1 = CreateShapeWithoutGrouping(); // Goes to "Content" key, before columns
@@ -817,7 +814,7 @@ public class ZoneShapesTests
         };
 
         // Act
-        var result = await _zoneShapes.ColumnGrouping(_displayHelper, viewModel, _shapeFactory);
+        var result = await ZoneShapes.ColumnGrouping(_displayHelper, viewModel, _shapeFactory);
 
         // Assert
         Assert.NotNull(result);
@@ -833,7 +830,7 @@ public class ZoneShapesTests
     }
 
     [Fact]
-    public async Task ColumnGrouping_ShouldPreserveExistingPositionOrderForNonColumnItems()
+    public async Task ColumnGrouping_Default_PreservesExistingPositionOrderForNonColumnItems()
     {
         // Arrange
         var beforeSecond = CreateTestShape("BeforeSecond");
@@ -857,7 +854,7 @@ public class ZoneShapesTests
         };
 
         // Act
-        var result = await _zoneShapes.ColumnGrouping(_displayHelper, viewModel, _shapeFactory);
+        var result = await ZoneShapes.ColumnGrouping(_displayHelper, viewModel, _shapeFactory);
 
         // Assert
         var html = GetHtmlString(result);
@@ -871,7 +868,7 @@ public class ZoneShapesTests
     #region Complex Grouping Scenarios
 
     [Fact]
-    public async Task ContentZone_WithTabCardAndColumn_ShouldProcessHierarchically()
+    public async Task ContentZone_TabCardAndColumn_ProcessHierarchically()
     {
         // Arrange - Shapes with Tab -> Card -> Column hierarchy
         var shape1 = CreateShapeWithFullGrouping("Tab1", "1", "Card1", "1", "Col1", "1", "6");
@@ -886,7 +883,7 @@ public class ZoneShapesTests
 
         // Act
         dynamic dynamicZone = zone;
-        var result = await _zoneShapes.ContentZone(_displayHelper, dynamicZone, _shapeFactory);
+        var result = await ZoneShapes.ContentZone(_displayHelper, dynamicZone, _shapeFactory);
 
         // Assert
         Assert.NotNull(result);
@@ -906,7 +903,7 @@ public class ZoneShapesTests
     }
 
     [Fact]
-    public async Task ContentZone_MixedGroupingLevels_ShouldHandleCorrectly()
+    public async Task ContentZone_MixedGroupingLevels_HandlesCorrectly()
     {
         // Arrange - Some shapes with tabs, some without
         var shape1 = CreateShapeWithTabGrouping("Tab1", "1");
@@ -921,7 +918,7 @@ public class ZoneShapesTests
 
         // Act
         dynamic dynamicZone = zone;
-        var result = await _zoneShapes.ContentZone(_displayHelper, dynamicZone, _shapeFactory);
+        var result = await ZoneShapes.ContentZone(_displayHelper, dynamicZone, _shapeFactory);
 
         // Assert
         Assert.NotNull(result);
@@ -945,7 +942,7 @@ public class ZoneShapesTests
 
     #region Helper Methods
 
-    private Shape CreateTestShape(string name)
+    private static Shape CreateTestShape(string name)
     {
         var shape = new Shape
         {
@@ -959,7 +956,7 @@ public class ZoneShapesTests
         return shape;
     }
 
-    private Shape CreateShapeWithoutGrouping()
+    private static Shape CreateShapeWithoutGrouping()
     {
         return new Shape
         {
@@ -967,7 +964,7 @@ public class ZoneShapesTests
         };
     }
 
-    private Shape CreateShapeWithTabGrouping(string tabName, string position)
+    private static Shape CreateShapeWithTabGrouping(string tabName, string position)
     {
         var shape = new Shape
         {
@@ -978,7 +975,7 @@ public class ZoneShapesTests
         return shape;
     }
 
-    private Shape CreateShapeWithCardGrouping(string cardName, string position)
+    private static Shape CreateShapeWithCardGrouping(string cardName, string position)
     {
         var shape = new Shape
         {
@@ -988,7 +985,7 @@ public class ZoneShapesTests
         return shape;
     }
 
-    private Shape CreateShapeWithColumnGrouping(string columnName, string position, string width)
+    private static Shape CreateShapeWithColumnGrouping(string columnName, string position, string width)
     {
         var shape = new Shape
         {
@@ -1005,7 +1002,7 @@ public class ZoneShapesTests
         return shape;
     }
 
-    private Shape CreateShapeWithFullGrouping(
+    private static Shape CreateShapeWithFullGrouping(
         string tabName, string tabPosition,
         string cardName, string cardPosition,
         string columnName, string columnPosition, string columnWidth)

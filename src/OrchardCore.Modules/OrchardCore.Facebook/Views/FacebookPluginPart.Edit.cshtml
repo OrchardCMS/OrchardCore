@@ -17,7 +17,15 @@
 </div>
 
 <script at="Foot">
-    $(function () {
+    function onDocumentReady(callback) {
+        if (document.readyState !== 'loading') {
+            callback();
+        } else {
+            document.addEventListener('DOMContentLoaded', callback);
+        }
+    }
+
+    onDocumentReady(function () {
         var textArea = document.getElementById('@Html.IdFor(x => x.Liquid)');
 
         if (textArea == null) {
@@ -34,7 +42,7 @@
 
         editor.on('change', function (cmEditor) {
             cmEditor.save()
-            $(document).trigger('contentpreview:render');
+            document.dispatchEvent(new Event('contentpreview:render'));
         });
     });
 </script>

@@ -31,7 +31,7 @@ public sealed class AdminController : Controller
     private readonly IUserAssetFolderNameProvider _userAssetFolderNameProvider;
     private readonly IChunkFileUploadService _chunkFileUploadService;
     private readonly IFileVersionProvider _fileVersionProvider;
-    private readonly IServiceProvider _serviceProvider;
+    private readonly FileCreationService _fileCreationService;
     private readonly AttachedMediaFieldFileService _attachedMediaFieldFileService;
 
     internal readonly IStringLocalizer S;
@@ -47,7 +47,7 @@ public sealed class AdminController : Controller
         IUserAssetFolderNameProvider userAssetFolderNameProvider,
         IChunkFileUploadService chunkFileUploadService,
         IFileVersionProvider fileVersionProvider,
-        IServiceProvider serviceProvider,
+        FileCreationService fileCreationService,
         AttachedMediaFieldFileService attachedMediaFieldFileService)
     {
         _mediaFileStore = mediaFileStore;
@@ -60,7 +60,7 @@ public sealed class AdminController : Controller
         _userAssetFolderNameProvider = userAssetFolderNameProvider;
         _chunkFileUploadService = chunkFileUploadService;
         _fileVersionProvider = fileVersionProvider;
-        _serviceProvider = serviceProvider;
+        _fileCreationService = fileCreationService;
         _attachedMediaFieldFileService = attachedMediaFieldFileService;
     }
 
@@ -250,7 +250,13 @@ public sealed class AdminController : Controller
             {
                 var mediaFilePath = _mediaFileStore.Combine(path, fileName);
                 stream = file.OpenReadStream();
-                mediaFilePath = await _mediaFileStore.CreateFileFromStreamAsync(mediaFilePath, stream);
+                mediaFilePath = await _mediaFileStore.CreateFileFromStreamAsync(
+                    _fileCreationService,
+                    mediaFilePath,
+                    stream,
+                    length: file.Length,
+                    contentType: file.ContentType,
+                    cancellationToken: HttpContext.RequestAborted);
 
                 var mediaFile = await _mediaFileStore.GetFileInfoAsync(mediaFilePath);
 
@@ -572,7 +578,7 @@ public sealed class AdminController : Controller
     // This is not required for files moved across folders, because the folder will be reopened anyway.
     private async Task PreCacheRemoteMedia(IFileStoreEntry mediaFile)
     {
-        var mediaFileStoreCache = _serviceProvider.GetService<IMediaFileStoreCache>();
+        var mediaFileStoreCache = HttpContext.RequestServices.GetService<IMediaFileStoreCache>();
         if (mediaFileStoreCache == null)
         {
             return;

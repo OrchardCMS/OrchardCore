@@ -10,7 +10,7 @@ namespace OrchardCore.Modules;
 public class InvokeExtensionsTests
 {
     [Fact]
-    public void InvokeAsync_ShouldReturnCompletedTask_WhenCallbacksCompleteSynchronously()
+    public void InvokeAsync_CallbacksCompleteSynchronously_ReturnsCompletedTask()
     {
         // Arrange
         var invoked = new List<int>();
@@ -28,7 +28,7 @@ public class InvokeExtensionsTests
     }
 
     [Fact]
-    public async Task InvokeAsync_ShouldContinueSequentially_WhenAwaitIsRequired()
+    public async Task InvokeAsync_AwaitIsRequired_ContinueSequentially()
     {
         // Arrange
         var completionSource = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -52,7 +52,7 @@ public class InvokeExtensionsTests
     }
 
     [Fact]
-    public async Task InvokeAsync_ShouldSkipNonFatalExceptions_AndCollectRemainingResults()
+    public async Task InvokeAsync_CollectRemainingResults_SkipsNonFatalExceptions()
     {
         // Arrange
         // Act
