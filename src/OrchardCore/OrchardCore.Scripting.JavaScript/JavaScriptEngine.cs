@@ -1,3 +1,4 @@
+using Acornima.Ast;
 using Jint;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.FileProviders;
@@ -35,12 +36,7 @@ public sealed class JavaScriptEngine : IScriptingEngine
     {
         var jsScope = GetJavaScriptScope(scope);
 
-        var parsedAst = _memoryCache.GetOrCreate(
-            script,
-            static entry => Engine.PrepareScript((string)entry.Key),
-            ScriptCacheEntryOptions);
-
-        var result = jsScope.Engine.Evaluate(parsedAst).ToObject();
+        var result = jsScope.Engine.Evaluate(PrepareScript(script)).ToObject();
 
         return result;
     }
@@ -49,15 +45,16 @@ public sealed class JavaScriptEngine : IScriptingEngine
     {
         var jsScope = GetJavaScriptScope(scope);
 
-        var parsedAst = _memoryCache.GetOrCreate(
-            script,
-            static entry => Engine.PrepareScript((string)entry.Key),
-            ScriptCacheEntryOptions);
-
-        var result = await jsScope.Engine.EvaluateAsync(parsedAst, cancellationToken);
+        var result = await jsScope.Engine.EvaluateAsync(PrepareScript(script), cancellationToken);
 
         return result.ToObject();
     }
+
+    private Prepared<Script> PrepareScript(string script)
+        => _memoryCache.GetOrCreate(
+            new PreparedScriptCacheKey(script),
+            static entry => Engine.PrepareScript(((PreparedScriptCacheKey)entry.Key).Script),
+            ScriptCacheEntryOptions);
 
     private static JavaScriptScope GetJavaScriptScope(IScriptingScope scope)
     {
@@ -68,4 +65,11 @@ public sealed class JavaScriptEngine : IScriptingEngine
 
         return jsScope;
     }
+
+    /// <summary>
+    /// Namespaces the prepared script entries stored in the shared <see cref="IMemoryCache"/>. Using a
+    /// dedicated key type instead of the raw script text guarantees that a key registered by another
+    /// component cannot be read back as a prepared script.
+    /// </summary>
+    private readonly record struct PreparedScriptCacheKey(string Script);
 }
