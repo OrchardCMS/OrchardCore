@@ -426,7 +426,7 @@ As `executionid` use a custom identifier to distinguish these recipe executions 
 
 ### `command`
 
-Runs one or more of the built-in commands, the same commands that are available on the command line. This is useful during setup or import, for example to create a user.
+Runs one or more of the built-in commands. This is useful during setup or import, for example to create a user.
 
 ```json
 {
@@ -437,7 +437,7 @@ Runs one or more of the built-in commands, the same commands that are available 
 }
 ```
 
-Each entry in `Commands` is a single command line, written exactly as you would type it on the command line: the command name followed by any `/Switch:value` arguments.
+Each entry in `Commands` is a single command: the command name followed by any `/Switch:value` arguments.
 
 The command most useful in recipes is `createUser`, which provisions a user during setup or import. See the [Users documentation](../Users/README.md#commands) for its switches.
 
