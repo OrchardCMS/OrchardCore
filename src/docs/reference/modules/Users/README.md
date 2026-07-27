@@ -233,6 +233,33 @@ User module settings can be configured using the `Settings` recipe step:
 }
 ```
 
+## Commands
+
+The Users module registers the `createUser` command, which you can run from a recipe's [`command` step](../Recipes/README.md#command).
+
+```text
+createUser /UserName:<username> /Password:<password> /Email:<email> /PhoneNumber:<phonenumber> /Roles:{rolename,rolename,...}
+```
+
+| Switch        | Description                                                                        |
+|---------------|-----------------------------------------------------------------------------------|
+| `UserName`    | The username of the new user.                                                     |
+| `Password`    | The password of the new user. It has to satisfy the configured password rules.    |
+| `Email`       | The email address of the new user, which is marked as confirmed on creation.      |
+| `PhoneNumber` | The phone number of the new user. Optional.                                       |
+| `Roles`       | A comma-separated list of the roles to assign to the user. Optional.              |
+
+For example, to create an administrator during setup from a recipe:
+
+```json
+{
+  "name": "command",
+  "Commands": [
+    "createUser /UserName:admin /Password:Password1! /Email:admin@example.com /Roles:Administrator"
+  ]
+}
+```
+
 ## Videos
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/78m04Inmilw" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
