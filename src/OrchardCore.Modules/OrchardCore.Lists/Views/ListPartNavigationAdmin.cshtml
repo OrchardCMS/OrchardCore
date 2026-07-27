@@ -29,7 +29,10 @@
             {
                 if (Model.ContainedContentTypeDefinitions.Length == 1)
                 {
-                    <a class="btn btn-secondary me-1" asp-action="Display" asp-controller="Admin" asp-route-contentItemId="@Model.Container.ContentItemId" asp-route-partName="@Model.TypePartDefinition.Name">@T["List {0} Items", D[Model.TypePartDefinition.DisplayName(), DataLocalizationContext.ContentType]]</a>
+                    var contentType = Model.TypePartDefinition.Name == nameof(ListPart)
+                        ? Model.ContainedContentTypeDefinitions[0].DisplayName
+                        : Model.TypePartDefinition.DisplayName();
+                    <a class="btn btn-secondary me-1" asp-action="Display" asp-controller="Admin" asp-route-contentItemId="@Model.Container.ContentItemId" asp-route-partName="@Model.TypePartDefinition.Name">@T["List {0} Items", D[contentType, DataLocalizationContext.ContentType]]</a>
                 }
                 else
                 {
