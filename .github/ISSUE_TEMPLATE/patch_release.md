@@ -81,4 +81,4 @@ assignees: ''
 - [ ] Post in the [Orchard Core LinkedIn group](https://www.linkedin.com/groups/13605669/).
 - [ ] Post to the [Orchard Core Facebook page](https://www.facebook.com/OrchardCore/).
 - [ ] Send a message to the `#announcements` channel on Discord.
-- [ ] Add an announcement banner linking to the release notes on the home page of the website (Home content item → top Block → Announcement tab: add it with the Release badge). Don't do this if there's a more important Harvest banner there.
+- [ ] Add an announcement banner linking to the release notes on the home page of the website (Home content item → top Block → Announcement tab: add it with the `Release` badge). Don't do this if there's a more important Harvest banner there.
