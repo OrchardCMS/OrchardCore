@@ -1,15 +1,13 @@
-using System.Text.Json.Nodes;
+using System.IO.Hashing;
+using System.Runtime.InteropServices;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using OrchardCore.DisplayManagement;
-using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.Navigation;
 
 public static class NavigationHelper
 {
-    private const string SelectedNavHashCacheKey = "OrchardCore.Navigation.SelectedNavHash";
-    private static readonly object SelectedNavHashMissing = new();
 
     public static bool UseLegacyFormat()
     {
@@ -27,7 +25,7 @@ public static class NavigationHelper
     public static async Task PopulateMenuAsync(IShapeFactory shapeFactory, IShape parentShape, IShape menu, IEnumerable<MenuItem> menuItems, ViewContext viewContext)
     {
         await PopulateMenuLevelAsync(shapeFactory, parentShape, menu, menuItems, viewContext);
-        ApplySelection(parentShape, viewContext);
+        ApplySelection(parentShape);
     }
 
     /// <summary>
@@ -76,16 +74,16 @@ public static class NavigationHelper
             shape.Item = menuItem;
             shape.Menu = menu;
             shape.Parent = parentShape;
-            shape.Level = GetLevel(parentShape) + 1;   
+            shape.Level = GetLevel(parentShape) + 1;
             shape.Priority = menuItem.Priority;
             shape.Local = menuItem.LocalNav;
-            shape.Hash = (GetHash(parentShape) + menuItem.Text.Value).GetHashCode().ToString();
+            shape.Hash = ComputeStableHash(GetHash(parentShape) + menuItem.Text.Value);
             shape.Score = 0;
         }, (menuItem, parentShape, menu));
 
         menuItemShape.Id = menuItem.Id;
 
-        MarkAsSelectedIfMatchesPathOrPreferences(menuItem, menuItemShape, viewContext);
+        MarkAsSelectedIfMatchesPath(menuItem, menuItemShape, viewContext);
 
         foreach (var className in menuItem.Classes)
         {
@@ -95,7 +93,7 @@ public static class NavigationHelper
         return menuItemShape;
     }
 
-    private static void MarkAsSelectedIfMatchesPathOrPreferences(MenuItem menuItem, NavigationItemViewModel menuItemShape, ViewContext viewContext)
+    private static void MarkAsSelectedIfMatchesPath(MenuItem menuItem, NavigationItemViewModel menuItemShape, ViewContext viewContext)
     {
         if (string.IsNullOrEmpty(menuItem.Href) || menuItem.Href[0] != '/')
         {
@@ -135,14 +133,6 @@ public static class NavigationHelper
                     menuItemShape.Score += 1;
                 }
             }
-        }
-
-        // Keep hash-based selection as a low-priority signal for tie/fallback scenarios.
-        var selectedNavHash = GetSelectedNavHashFromPrefs(viewContext);
-
-        if (selectedNavHash == menuItemShape.Hash)
-        {
-            menuItemShape.Score += 3;
         }
 
         menuItemShape.Selected = menuItemShape.Score > 0;
@@ -200,18 +190,12 @@ public static class NavigationHelper
     /// Ensures only one menuitem (and its ancestors) are marked as selected for the menu.
     /// </summary>
     /// <param name="parentShape">The menu shape.</param>
-    /// <param name="viewContext">The current <see cref="ViewContext"/>.</param>
-    private static void ApplySelection(IShape parentShape, ViewContext viewContext)
+    private static void ApplySelection(IShape parentShape)
     {
         var selectedItem = GetHighestPrioritySelectedMenuItem(parentShape);
 
-        // Persist the selected item hash inside the existing admin preferences cookie so
-        // that direct URL navigations (not triggered by a nav click) also update the stored
-        // selection, keeping the fallback in sync with URL-path-matched selections.
         if (selectedItem != null)
         {
-            UpdateSelectedNavHashInPrefs(viewContext, selectedItem.Hash);
-
             var ancestor = selectedItem.Parent;
 
             while (ancestor is NavigationItemViewModel ancestorItem)
@@ -220,77 +204,6 @@ public static class NavigationHelper
                 ancestor = ancestorItem.Parent;
             }
         }
-    }
-
-    /// <summary>
-    /// Reads the <c>selectedNavHash</c> field from the admin preferences cookie.
-    /// The cookie is written by JS (js-cookie) using <c>encodeURIComponent</c>, so the
-    /// raw value must be URL-decoded before JSON parsing.
-    /// </summary>
-    private static string GetSelectedNavHashFromPrefs(ViewContext viewContext)
-    {
-        if (viewContext.HttpContext.Items.TryGetValue(SelectedNavHashCacheKey, out var cached))
-        {
-            return ReferenceEquals(cached, SelectedNavHashMissing) ? null : cached as string;
-        }
-
-        var key = $"{ShellScope.Context.Settings.Name}-adminPreferences";
-        var raw = viewContext.HttpContext.Request.Cookies[key];
-
-        if (string.IsNullOrEmpty(raw))
-        {
-            viewContext.HttpContext.Items[SelectedNavHashCacheKey] = SelectedNavHashMissing;
-            return null;
-        }
-
-        try
-        {
-            var json = Uri.UnescapeDataString(raw);
-            var node = JsonNode.Parse(json);
-            var selectedNavHash = node?["selectedNavHash"]?.GetValue<string>();
-            viewContext.HttpContext.Items[SelectedNavHashCacheKey] = selectedNavHash ?? SelectedNavHashMissing;
-            return selectedNavHash;
-        }
-        catch
-        {
-            viewContext.HttpContext.Items[SelectedNavHashCacheKey] = SelectedNavHashMissing;
-            return null;
-        }
-    }
-
-    /// <summary>
-    /// Merges the <c>selectedNavHash</c> field into the existing admin preferences cookie,
-    /// preserving all other fields (e.g. <c>leftSidebarCompact</c>).
-    /// The value is URL-encoded to match the encoding js-cookie uses when reading.
-    /// </summary>
-    private static void UpdateSelectedNavHashInPrefs(ViewContext viewContext, string hash)
-    {
-        var key = $"{ShellScope.Context.Settings.Name}-adminPreferences";
-        var raw = viewContext.HttpContext.Request.Cookies[key];
-
-        JsonObject prefs;
-
-        try
-        {
-            var json = string.IsNullOrEmpty(raw) ? "{}" : Uri.UnescapeDataString(raw);
-            prefs = JsonNode.Parse(json)?.AsObject() ?? new JsonObject();
-        }
-        catch
-        {
-            prefs = new JsonObject();
-        }
-
-        prefs["selectedNavHash"] = hash;
-
-        var options = new CookieOptions
-        {
-            Path = "/",
-            Expires = DateTimeOffset.UtcNow.AddDays(360),
-            MaxAge = TimeSpan.FromDays(360),
-        };
-
-        viewContext.HttpContext.Response.Cookies.Append(key, Uri.EscapeDataString(prefs.ToJsonString()), options);
-        viewContext.HttpContext.Items[SelectedNavHashCacheKey] = hash ?? SelectedNavHashMissing;
     }
 
     /// <summary>
@@ -343,6 +256,14 @@ public static class NavigationHelper
 
         return result;
     }
+
+    /// <summary>
+    /// Computes a deterministic hash identifying a menu item across requests. Unlike
+    /// <see cref="string.GetHashCode()"/>, which is randomized per process, the result is stable
+    /// across restarts and load-balanced instances.
+    /// </summary>
+    private static string ComputeStableHash(string value)
+        => XxHash32.HashToUInt32(MemoryMarshal.AsBytes(value.AsSpan())).ToString();
 
     private static int GetLevel(IShape shape)
         => shape is NavigationItemViewModel menuItemShape ? menuItemShape.Level : shape.GetProperty<int>(nameof(NavigationItemViewModel.Level));
