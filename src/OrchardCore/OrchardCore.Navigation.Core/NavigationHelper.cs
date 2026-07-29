@@ -199,8 +199,8 @@ public static class NavigationHelper
             return 0;
         }
 
-        var requestSpan = requestPath.AsSpan();
-        var hrefSpan = hrefPath.AsSpan();
+        var requestSpan = requestPath.AsSpan().Trim('/');
+        var hrefSpan = hrefPath.AsSpan().Trim('/');
         var matchingSegments = 0;
         var requestPos = 0;
         var hrefPos = 0;
@@ -223,6 +223,19 @@ public static class NavigationHelper
 
             var requestSegment = requestSpan.Slice(requestPos, requestSegmentEnd);
             var hrefSegment = hrefSpan.Slice(hrefPos, hrefSegmentEnd);
+
+            // Skip empty segments
+            if (requestSegment.IsEmpty)
+            {
+                requestPos += requestSegmentEnd + 1;
+                continue;
+            }
+
+            if (hrefSegment.IsEmpty)
+            {
+                hrefPos += hrefSegmentEnd + 1;
+                continue;
+            }
 
             // Compare segments
             if (!requestSegment.Equals(hrefSegment, StringComparison.OrdinalIgnoreCase))
