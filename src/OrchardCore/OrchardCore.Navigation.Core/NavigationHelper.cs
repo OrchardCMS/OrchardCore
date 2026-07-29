@@ -116,22 +116,19 @@ public static class NavigationHelper
         var requestSegmentCount = CountPathSegments(requestPath);
         var matchingSegmentCount = CountLeadingMatchingPathSegments(requestPath, hrefPath);
 
-        if (matchingSegmentCount > 0)
+        // Match only when the menu href is a full leading prefix of the current request path.
+        // This prevents broader sections (e.g. /Admin/*) from becoming selected on /Admin itself
+        // when no direct menu item actually matches the current page.
+        if (matchingSegmentCount > 0 && matchingSegmentCount == hrefSegmentCount && requestSegmentCount >= hrefSegmentCount)
         {
             // Score by matching leading segments so routes with more shared context
             // (like a specific content item id) outrank broader ancestors.
             menuItemShape.Score += matchingSegmentCount * 2;
 
-            // Slightly favor complete href prefix matches over partial overlap.
-            if (matchingSegmentCount == hrefSegmentCount)
+            // Exact path match gets a small additional boost.
+            if (hrefSegmentCount == requestSegmentCount)
             {
                 menuItemShape.Score += 1;
-
-                // Exact path match gets a small additional boost.
-                if (hrefSegmentCount == requestSegmentCount)
-                {
-                    menuItemShape.Score += 1;
-                }
             }
         }
 

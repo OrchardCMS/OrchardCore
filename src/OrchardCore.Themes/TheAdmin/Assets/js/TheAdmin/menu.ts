@@ -15,6 +15,16 @@ const persistSelectedNavHash = (hash: string) => {
     }
 };
 
+const getSelectedNavHashFromDom = (nav: HTMLElement): string | null => {
+    const deepestLi = Array
+        .from(nav.querySelectorAll<HTMLLIElement>("li.active"))
+        .at(-1);
+
+    return deepestLi
+        ?.querySelector<HTMLAnchorElement>("a[data-admin-hash]")
+        ?.dataset.adminHash ?? null;
+};
+
 const applySelectedNavFromSessionStorage = () => {
     let selectedNavHash: string | null;
 
@@ -22,10 +32,6 @@ const applySelectedNavFromSessionStorage = () => {
         selectedNavHash = sessionStorage.getItem(getSelectedNavHashStorageKey());
     } catch (error) {
         console.error('Error reading selected navigation hash', error);
-        return true;
-    }
-
-    if (!selectedNavHash) {
         return true;
     }
 
@@ -141,6 +147,23 @@ const initializeMenu = () => {
     // start observing a DOM node
     if (leftNav != null) {
         resizeObserver.observe(leftNav);
+
+        // If no selected nav hash is stored, try to get it from the DOM and persist it.
+        let selectedNavHash: string | null = null;
+
+        try {
+            selectedNavHash = sessionStorage.getItem(getSelectedNavHashStorageKey());
+        } catch (error) {
+            console.error('Error reading selected navigation hash', error);
+        }
+
+        if (!selectedNavHash) {
+            selectedNavHash = getSelectedNavHashFromDom(leftNav);
+
+            if (selectedNavHash) {
+                persistSelectedNavHash(selectedNavHash);
+            }
+        }
     }
 };
 
