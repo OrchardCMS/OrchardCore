@@ -45,7 +45,8 @@ The Azure Shells Configuration is configured via the `appsettings.json` section 
       "ConnectionString": "", // Set to your Azure Storage account connection string.
       "ContainerName": "hostcontainer", // Set to the Azure Blob container name.
       "BasePath": "some/base/path", // Optionally, set to a subdirectory inside your container.
-      "MigrateFromFiles": true // Optionally, enable to migrate existing App_Data files to Blob automatically.
+      "MigrateFromFiles": true, // Optionally, enable to migrate existing App_Data files to Blob automatically.
+      "UseHierarchicalNamespace": true // Optional. Force Gen2/HNS behavior when account auto-detection is unavailable.
     }
   }
 }
@@ -70,6 +71,8 @@ namespace OrchardCore.Cms.Web
 !!! note
     The container must be created before using the Azure Shells Configuration provider.
     Make sure this container is secure and access to keys is limited.
+    Hierarchical Namespace is detected automatically. Set `UseHierarchicalNamespace` explicitly when
+    account-level detection is unavailable, such as when connecting with a container-scoped SAS token.
 
 ## Database Shells Configuration Provider
 

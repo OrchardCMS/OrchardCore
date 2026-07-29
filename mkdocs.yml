@@ -165,12 +165,23 @@ nav:
   - Key Topics:
       - Manage your Content: topics/content-management/README.md
       - Content Relationships: topics/content-relationships/README.md
-      - Customize the Display: topics/display/README.md
+      - Customize the Display:
+          - Overview: topics/display/README.md
+          - Shapes: topics/display/shapes.md
+          - Create a Theme from an HTML Template: topics/display/theme-from-html-template.md
       - Localize your site: topics/localize/README.md
-      - Handle the Media: topics/media/README.md
+      - Handle the Media:
+          - Overview: topics/media/README.md
+          - Media Picker: topics/media/media-picker.md
       - Navigate between pages: topics/navigation/README.md
       - Query and Search data: topics/search/README.md
-      - Secure your application: topics/security/README.md
+      - Secure your application:
+          - Overview: topics/security/README.md
+          - Users: topics/security/users.md
+          - Roles and Permissions: topics/security/roles.md
+          - Login: topics/security/login.md
+          - Registration: topics/security/registration.md
+          - Security Settings: topics/security/security-settings.md
       - Data: topics/data/README.md
       - Configuration: topics/configuration/README.md
       - Workflows: topics/workflows/README.md
@@ -306,6 +317,7 @@ nav:
       - Libraries: reference/libraries/README.md
       - Glossary: reference/glossary/README.md
   - Releases Notes:
+      - 3.0.1: releases/3.0.1.md
       - 3.0.0: releases/3.0.0.md
       - 2.2.1: releases/2.2.1.md
       - 2.2.0: releases/2.2.0.md

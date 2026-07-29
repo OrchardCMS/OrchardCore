@@ -192,7 +192,7 @@ public class DefaultMediaFileStore : IMediaFileStore
                     }
                 }
 
-                return await CreateFileAsync(path, outputStream, overwrite);
+                return await CreateFileAsync(context.Path, outputStream, overwrite);
             }
             finally
             {

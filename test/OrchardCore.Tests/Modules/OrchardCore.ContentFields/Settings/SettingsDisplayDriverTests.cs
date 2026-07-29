@@ -192,6 +192,8 @@ public class SettingsDisplayDriverTests
             DefaultValue = "Test Default",
             Hint = "Test Hint",
             Required = true,
+            MinLength = 2,
+            MaxLength = 100,
         };
 
         var contentDefinition = DisplayDriverTestHelper.GetContentPartDefinition<TextField>(field => field.WithSettings(settings));
@@ -217,6 +219,8 @@ public class SettingsDisplayDriverTests
         Assert.Equal(settings.Hint, shape.Hint);
         Assert.Equal(settings.DefaultValue, shape.DefaultValue);
         Assert.Equal(settings.Required, shape.Required);
+        Assert.Equal(settings.MinLength, shape.MinLength);
+        Assert.Equal(settings.MaxLength, shape.MaxLength);
     }
 
     [Fact]

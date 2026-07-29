@@ -174,6 +174,33 @@ public class ExtensionManagerTests
         Assert.Equal("DerivedThemeSample", features.ElementAt(1).Id);
     }
 
+    [Fact]
+    public void GetFeatures_ThemeWithAdditionalFeature_ReturnsMainThemeFeature()
+    {
+        var themeModule = new global::OrchardCore.Modules.Module("BaseThemeSample");
+        themeModule.ModuleInfo.Features.Add(
+            new global::OrchardCore.Modules.Manifest.FeatureAttribute { Id = "BaseThemeSample.Additional" });
+
+        var applicationContext = new TestApplicationContext(
+            new Application(_hostingEnvironment, [themeModule]));
+        var featureBuilderEvents = new[] { new ThemeFeatureBuilderEvents() };
+        var extensionManager = CreateExtensionManager(
+            applicationContext,
+            [new ExtensionDependencyStrategy(), new ThemeExtensionDependencyStrategy()],
+            [new ExtensionPriorityStrategy()],
+            new TypeFeatureProvider(),
+            new FeaturesProvider(featureBuilderEvents),
+            new ThemeFeaturesProvider(featureBuilderEvents));
+
+        var features = extensionManager.GetFeatures()
+            .Where(feature => feature.Extension.Id == "BaseThemeSample")
+            .ToArray();
+
+        Assert.Contains(features, feature => feature.Id == "BaseThemeSample.Additional");
+        var themeFeature = Assert.Single(features, feature => feature.IsTheme());
+        Assert.Equal("BaseThemeSample", themeFeature.Id);
+    }
+
     /* Theme and Module Dependencies */
 
     [Fact]
@@ -273,13 +300,32 @@ public class ExtensionManagerTests
         IExtensionDependencyStrategy[] extensionDependencyStrategies,
         IExtensionPriorityStrategy[] extensionPriorityStrategies,
         ITypeFeatureProvider typeFeatureProvider,
-        IFeaturesProvider featuresProvider)
+        params IFeaturesProvider[] featuresProviders)
+    {
+        return CreateExtensionManager(
+            _applicationContext,
+            extensionDependencyStrategies,
+            extensionPriorityStrategies,
+            typeFeatureProvider,
+            featuresProviders);
+    }
+
+    private static ExtensionManager CreateExtensionManager(
+        IApplicationContext applicationContext,
+        IExtensionDependencyStrategy[] extensionDependencyStrategies,
+        IExtensionPriorityStrategy[] extensionPriorityStrategies,
+        ITypeFeatureProvider typeFeatureProvider,
+        params IFeaturesProvider[] featuresProviders)
     {
         var services = new ServiceCollection();
         services
-            .AddSingleton(_applicationContext)
-            .AddSingleton(typeFeatureProvider)
-            .AddSingleton(featuresProvider);
+            .AddSingleton(applicationContext)
+            .AddSingleton(typeFeatureProvider);
+
+        foreach (var featuresProvider in featuresProviders)
+        {
+            services.AddSingleton(featuresProvider);
+        }
 
         foreach (var extensionDependencyStrategy in extensionDependencyStrategies)
         {
@@ -294,5 +340,15 @@ public class ExtensionManagerTests
         var serviceProvider = services.BuildServiceProvider();
 
         return new ExtensionManager(serviceProvider, new NullLogger<ExtensionManager>());
+    }
+
+    private sealed class TestApplicationContext : IApplicationContext
+    {
+        public TestApplicationContext(Application application)
+        {
+            Application = application;
+        }
+
+        public Application Application { get; }
     }
 }
