@@ -461,7 +461,7 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
     /// Registers a delegate to be invoked before the current shell scope will be disposed.
     /// </summary>
     public static void RegisterBeforeDispose(Func<ShellScope, Task> callback, bool last = false)
-        => Current?.BeforeDispose(static (scope, cb) => cb(scope), callback, last);
+        => Current?.BeforeDispose(static (scope, cb) => cb?.Invoke(scope), callback, last);
 
     /// <summary>
     /// Adds a Signal (if not already present) to be sent just before the current shell scope will be disposed.
