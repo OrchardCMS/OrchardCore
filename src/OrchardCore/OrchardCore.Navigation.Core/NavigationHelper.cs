@@ -225,7 +225,7 @@ public static class NavigationHelper
             var hrefSegment = hrefSpan.Slice(hrefPos, hrefSegmentEnd);
 
             // Compare segments
-            if (!requestSegment.SequenceEqual(hrefSegment))
+            if (!requestSegment.Equals(hrefSegment, StringComparison.OrdinalIgnoreCase))
             {
                 break;
             }

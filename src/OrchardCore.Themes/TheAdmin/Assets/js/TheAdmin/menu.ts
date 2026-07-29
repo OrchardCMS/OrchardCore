@@ -1,5 +1,5 @@
 import { isCompactExplicit, setCompactExplicit } from '../constants';
-import { getTenantName } from '@orchardcore/bloom/helpers/globals';
+import { getTenantName, getAdminPrefix } from '@orchardcore/bloom/helpers/globals';
 import { persistAdminPreferences } from './userPreferencesPersistor';
 
 let leftNav: HTMLElement | null = null;
@@ -26,6 +26,15 @@ const getSelectedNavHashFromDom = (nav: HTMLElement): string | null => {
 };
 
 const applySelectedNavFromSessionStorage = () => {
+    // Don't apply stored selection if we're at the admin root path.
+    // This handles both single-tenant (/admin) and multi-tenant (/tenant-prefix/admin) scenarios.
+    const adminPrefix = getAdminPrefix().toLowerCase();
+    const currentPath = window.location.pathname.toLowerCase();
+
+    if (currentPath === adminPrefix || currentPath === adminPrefix + '/') {
+        return true;
+    }
+
     let selectedNavHash: string | null;
 
     try {
