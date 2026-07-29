@@ -26,7 +26,7 @@
     <PackageVersion Include="GraphQL.DataLoader" Version="8.8.4" />
     <PackageVersion Include="GraphQL.MicrosoftDI" Version="8.8.4" />
     <PackageVersion Include="GraphQL.SystemTextJson" Version="8.8.4" />
-    <PackageVersion Include="Jint" Version="4.12.0" />
+    <PackageVersion Include="Jint" Version="4.15.3" />
     <PackageVersion Include="JsonPath.Net" Version="2.2.0" />
     <PackageVersion Include="HtmlSanitizer" Version="9.1.893-beta" />
     <PackageVersion Include="Microsoft.Extensions.Compliance.Redaction" Version="10.5.0" />
