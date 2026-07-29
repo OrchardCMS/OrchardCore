@@ -159,28 +159,83 @@ public static class NavigationHelper
 
     private static int CountPathSegments(string path)
     {
-        return path.Split('/', StringSplitOptions.RemoveEmptyEntries).Length;
+        if (string.IsNullOrEmpty(path))
+        {
+            return 0;
+        }
+
+        var span = path.AsSpan();
+        var count = 0;
+        var inSegment = false;
+
+        for (int i = 0; i < span.Length; i++)
+        {
+            if (span[i] == '/')
+            {
+                if (inSegment)
+                {
+                    count++;
+                    inSegment = false;
+                }
+            }
+            else
+            {
+                inSegment = true;
+            }
+        }
+
+        if (inSegment)
+        {
+            count++;
+        }
+
+        return count;
     }
 
     private static int CountLeadingMatchingPathSegments(string requestPath, string hrefPath)
     {
-        var requestSegments = requestPath.Split('/', StringSplitOptions.RemoveEmptyEntries);
-        var hrefSegments = hrefPath.Split('/', StringSplitOptions.RemoveEmptyEntries);
-
-        var max = Math.Min(requestSegments.Length, hrefSegments.Length);
-        var matchCount = 0;
-
-        for (var i = 0; i < max; i++)
+        if (string.IsNullOrEmpty(requestPath) || string.IsNullOrEmpty(hrefPath))
         {
-            if (!requestSegments[i].Equals(hrefSegments[i], StringComparison.OrdinalIgnoreCase))
+            return 0;
+        }
+
+        var requestSpan = requestPath.AsSpan();
+        var hrefSpan = hrefPath.AsSpan();
+        var matchingSegments = 0;
+        var requestPos = 0;
+        var hrefPos = 0;
+
+        while (requestPos < requestSpan.Length && hrefPos < hrefSpan.Length)
+        {
+            // Find the next segment boundary in both paths
+            var requestSegmentEnd = requestSpan[requestPos..].IndexOf('/');
+            var hrefSegmentEnd = hrefSpan[hrefPos..].IndexOf('/');
+
+            if (requestSegmentEnd == -1)
+            {
+                requestSegmentEnd = requestSpan.Length - requestPos;
+            }
+
+            if (hrefSegmentEnd == -1)
+            {
+                hrefSegmentEnd = hrefSpan.Length - hrefPos;
+            }
+
+            var requestSegment = requestSpan.Slice(requestPos, requestSegmentEnd);
+            var hrefSegment = hrefSpan.Slice(hrefPos, hrefSegmentEnd);
+
+            // Compare segments
+            if (!requestSegment.SequenceEqual(hrefSegment))
             {
                 break;
             }
 
-            matchCount++;
+            matchingSegments++;
+            requestPos += requestSegmentEnd + 1; // +1 to skip the '/'
+            hrefPos += hrefSegmentEnd + 1;
         }
 
-        return matchCount;
+        return matchingSegments;
     }
 
     /// <summary>
