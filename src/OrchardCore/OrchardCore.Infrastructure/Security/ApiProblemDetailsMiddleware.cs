@@ -1,42 +1,44 @@
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Metadata;
+using Microsoft.Extensions.Logging;
 
 namespace OrchardCore.Security;
 
 /// <summary>
-/// Attaches an RFC 9457 Problem Details body to the 401/403 responses produced by the "Api"
-/// authentication scheme. For a resource server, RFC 6750 conveys the error details in the
-/// WWW-Authenticate header, which is the responsibility of the authentication handler that
-/// issued the challenge (e.g. the OpenIddict validation handler): this middleware never touches
-/// the status code or the headers and only takes care of the body, so JavaScript API clients get
-/// a parseable payload without having to parse the header.
+/// Attaches an RFC 9457 Problem Details body to the error responses that opted out of the HTML
+/// error pages, i.e. the responses meant for headless clients: the ones produced by the "Api"
+/// authentication scheme, which disables the status code pages, and the ones produced by an
+/// endpoint marked with <see cref="ISkipStatusCodePagesMetadata"/>. Responses that didn't opt out
+/// are left untouched for the status code pages middleware registered by the Diagnostics feature.
 /// </summary>
 /// <remarks>
-/// The body is written through <see cref="IProblemDetailsService"/> so app-level Problem Details
-/// customizations are honored. The status code pages middleware isn't used for that purpose, as
-/// the API responses deliberately disable it: the Diagnostics feature registers it around the
-/// tenant pipeline to substitute HTML error pages, which API clients must never receive.
+/// Status codes and headers are never altered: for a resource server, RFC 6750 conveys the error
+/// details in the WWW-Authenticate header, which remains the responsibility of the authentication
+/// handler that issued the challenge (e.g. the OpenIddict validation handler). This middleware
+/// only takes care of the body, so JavaScript API clients get a parseable payload without having
+/// to parse the header. It is written through <see cref="IProblemDetailsService"/> so app-level
+/// Problem Details customizations are honored.
 /// </remarks>
 public sealed class ApiProblemDetailsMiddleware
 {
     private readonly RequestDelegate _next;
     private readonly IProblemDetailsService _problemDetailsService;
+    private readonly ILogger _logger;
 
-    public ApiProblemDetailsMiddleware(RequestDelegate next, IProblemDetailsService problemDetailsService)
+    public ApiProblemDetailsMiddleware(
+        RequestDelegate next,
+        IProblemDetailsService problemDetailsService,
+        ILogger<ApiProblemDetailsMiddleware> logger)
     {
         _next = next;
         _problemDetailsService = problemDetailsService;
+        _logger = logger;
     }
 
     public async Task InvokeAsync(HttpContext context)
     {
         await _next(context);
-
-        // Only the responses issued by the "Api" scheme are eligible: they are the ones left
-        // body-less on purpose by the authentication handlers that produced them.
-        if (context.Features.Get<ApiChallengeFeature>() is null)
-        {
-            return;
-        }
 
         var response = context.Response;
         if (response.HasStarted ||
@@ -47,10 +49,27 @@ public sealed class ApiProblemDetailsMiddleware
             return;
         }
 
-        await _problemDetailsService.TryWriteAsync(new ProblemDetailsContext
+        // Note: the status code pages feature is resolved after the rest of the pipeline has run,
+        // when the components that opt out of the HTML error pages - like the "Api" authentication
+        // handler - have had a chance to disable it for the current response.
+        if (context.Features.Get<IStatusCodePagesFeature>() is not { Enabled: false } &&
+            context.GetEndpoint()?.Metadata.GetMetadata<ISkipStatusCodePagesMetadata>() is null)
+        {
+            return;
+        }
+
+        if (!await _problemDetailsService.TryWriteAsync(new ProblemDetailsContext
         {
             HttpContext = context,
             ProblemDetails = { Status = response.StatusCode },
-        });
+        }))
+        {
+            // The only expected reason is content negotiation - the client explicitly asked for a
+            // media type no registered writer can produce - in which case the response is legitimately
+            // returned without a body, exactly like the default status code pages handler does.
+            _logger.LogDebug(
+                "No Problem Details body was written for the {StatusCode} response returned for '{Path}'.",
+                response.StatusCode, context.Request.Path);
+        }
     }
 }

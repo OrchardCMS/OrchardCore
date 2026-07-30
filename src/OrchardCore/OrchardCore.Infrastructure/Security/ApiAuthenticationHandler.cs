@@ -36,7 +36,7 @@ public class ApiAuthenticationHandler : AuthenticationHandler<ApiAuthorizationOp
 
     protected override Task HandleChallengeAsync(AuthenticationProperties properties)
     {
-        MarkApiResponse();
+        DisableStatusCodePages();
 
         if (!_authenticationOptions.Value.SchemeMap.ContainsKey(Options.ApiAuthenticationScheme))
         {
@@ -53,7 +53,7 @@ public class ApiAuthenticationHandler : AuthenticationHandler<ApiAuthorizationOp
 
     protected override Task HandleForbiddenAsync(AuthenticationProperties properties)
     {
-        MarkApiResponse();
+        DisableStatusCodePages();
 
         if (!_authenticationOptions.Value.SchemeMap.ContainsKey(Options.ApiAuthenticationScheme))
         {
@@ -65,19 +65,27 @@ public class ApiAuthenticationHandler : AuthenticationHandler<ApiAuthorizationOp
     }
 
     /// <summary>
-    /// Flags the response as an API response, in every path: the status code must be kept as-is
-    /// (without this, an empty-body 401 on an extension-less API route is re-executed into an
-    /// HTML error page when the Diagnostics feature's status-code pages are enabled) and an
-    /// RFC 9457 Problem Details body is attached to it by <see cref="ApiProblemDetailsMiddleware"/>.
+    /// Keeps API status codes as-is in every path: without this, an empty-body 401 on an
+    /// extension-less API route is re-executed into an HTML error page when the Diagnostics
+    /// feature's status-code pages are enabled. Opting out is also what tells
+    /// <see cref="ApiProblemDetailsMiddleware"/> to attach an RFC 9457 body to the response.
     /// </summary>
-    private void MarkApiResponse()
+    private void DisableStatusCodePages()
     {
-        Context.Features.Set(ApiChallengeFeature.Instance);
-
         var statusCodePagesFeature = Context.Features.Get<IStatusCodePagesFeature>();
-        if (statusCodePagesFeature != null)
+        if (statusCodePagesFeature is null)
         {
-            statusCodePagesFeature.Enabled = false;
+            // The Diagnostics feature - which registers the status code pages middleware - can be
+            // disabled: in that case, set the feature anyway so the response is still marked as
+            // one that must never be turned into an HTML error page.
+            Context.Features.Set<IStatusCodePagesFeature>(new StatusCodePagesFeature
+            {
+                Enabled = false,
+            });
+
+            return;
         }
+
+        statusCodePagesFeature.Enabled = false;
     }
 }
