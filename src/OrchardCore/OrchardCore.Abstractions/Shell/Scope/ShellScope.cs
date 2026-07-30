@@ -1,5 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Modules;
@@ -337,6 +339,15 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
                 foreach (var tenantEvent in tenantEvents)
                 {
                     await tenantEvent.ActivatingAsync();
+                }
+
+                scope.ServiceProvider.GetService<IStartupValidator>()?.Validate();
+
+                var asyncStartupValidator = scope.ServiceProvider.GetService<IAsyncStartupValidator>();
+                if (asyncStartupValidator is not null)
+                {
+                    var applicationLifetime = scope.ServiceProvider.GetService<IHostApplicationLifetime>();
+                    await asyncStartupValidator.ValidateAsync(applicationLifetime?.ApplicationStopping ?? CancellationToken.None);
                 }
 
                 foreach (var tenantEvent in tenantEvents.Reverse())
