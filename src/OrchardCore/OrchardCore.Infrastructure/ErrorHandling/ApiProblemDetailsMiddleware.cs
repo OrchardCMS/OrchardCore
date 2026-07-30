@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
-namespace OrchardCore.Security;
+namespace OrchardCore.Infrastructure.ErrorHandling;
 
 /// <summary>
 /// Attaches an RFC 9457 Problem Details body to the error responses that opted out of the HTML

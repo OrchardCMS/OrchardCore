@@ -67,8 +67,8 @@ public class ApiAuthenticationHandler : AuthenticationHandler<ApiAuthorizationOp
     /// <summary>
     /// Keeps API status codes as-is in every path: without this, an empty-body 401 on an
     /// extension-less API route is re-executed into an HTML error page when the Diagnostics
-    /// feature's status-code pages are enabled. Opting out is also what tells
-    /// <see cref="ApiProblemDetailsMiddleware"/> to attach an RFC 9457 body to the response.
+    /// feature's status-code pages are enabled. Opting out is also what tells the
+    /// <c>ApiProblemDetailsMiddleware</c> to attach an RFC 9457 body to the response.
     /// </summary>
     private void DisableStatusCodePages()
     {
