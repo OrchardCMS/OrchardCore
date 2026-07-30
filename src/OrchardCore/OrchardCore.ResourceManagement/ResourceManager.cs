@@ -377,7 +377,7 @@ public class ResourceManager : IResourceManager
         List<string> dependencies = null;
         if (resource.Dependencies != null)
         {
-            dependencies = new List<string>(resource.Dependencies);
+            dependencies = [.. resource.Dependencies];
             if (settings.Dependencies != null)
             {
                 dependencies.AddRange(settings.Dependencies);
@@ -385,7 +385,7 @@ public class ResourceManager : IResourceManager
         }
         else if (settings.Dependencies != null)
         {
-            dependencies = new List<string>(settings.Dependencies);
+            dependencies = [.. settings.Dependencies];
         }
 
         // Settings is given so the location can cascade down into dependencies. For example, if Foo depends on Bar,
