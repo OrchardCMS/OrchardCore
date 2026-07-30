@@ -7,7 +7,6 @@ using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.DisplayManagement.Zones;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Localization;
 using OrchardCore.Settings.ViewModels;

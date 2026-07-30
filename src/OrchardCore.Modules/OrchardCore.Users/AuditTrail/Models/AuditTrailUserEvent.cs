@@ -15,7 +15,7 @@ public class AuditTrailUserEvent
     /// <summary>
     /// Gets or sets a snapshot of the <see cref="Users.Models.User"/> object, if the event modified it somehow.
     /// </summary>
-    public JsonObject Snapshot { get; set; }
+    public System.Text.Json.Nodes.JsonObject Snapshot { get; set; }
 
     /// <summary>
     /// Gets or sets the related user's <see cref="Users.Models.User.UserName"/>.
