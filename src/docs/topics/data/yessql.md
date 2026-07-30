@@ -1,10 +1,10 @@
 # How YesSql works
 
-Orchard Core does not use an ORM like Entity Framework. All its data — content items, users, settings, workflows... — is stored with [YesSql](https://github.com/sebastienros/yessql), a .NET **document database interface over a relational database**. You get the flexibility of a document store (no schema to migrate when your objects change) while still running on SQL Server, SQLite, MySQL or PostgreSQL.
+Orchard Core does not use an ORM like Entity Framework. Most of its persistent application data — including content items, users, settings, and workflows — is stored with [YesSql](https://github.com/sebastienros/yessql), a .NET **document database interface over a relational database**. You get the flexibility of a document store (no schema to migrate when your objects change) while still running on SQL Server, SQLite, MySQL or PostgreSQL.
 
 ## Documents
 
-When an object is saved, YesSql serializes it to JSON and stores it as a row in a single `Document` table (per tenant, with an optional table prefix):
+When an object is saved, YesSql serializes it to JSON and stores it as a row in a document table. The default collection uses the `Document` table; named collections use separate document tables. Each tenant can use a table prefix:
 
 | Id | Type | Content | Version |
 | --- | --- | --- | --- |
@@ -16,7 +16,7 @@ The obvious limitation is that you cannot efficiently query inside a JSON blob w
 
 ## Indexes
 
-An index is a plain C# class holding the properties you want to query on. YesSql maintains one **regular SQL table per index type**, with a `DocumentId` column pointing back to the `Document` table. When a document is created, updated, or deleted, its index rows are recomputed within the same transaction.
+An index is a plain C# class holding the properties you want to query on. YesSql maintains **regular SQL tables for index data**. Map index rows have a `DocumentId` column pointing back to their document table, while reduce indexes use a separate table to associate documents with aggregated rows. When a document is created, updated, or deleted, its index rows are recomputed within the same transaction.
 
 There are two kinds:
 
@@ -82,7 +82,7 @@ Real examples in the Orchard Core source: [`ContentItemIndex`](https://github.co
 
 ## The session
 
-All reads and writes go through `ISession`, a unit of work registered in the dependency injection container (one per request). `Save` and `Delete` are buffered in memory; the SQL commands run in a single transaction that is committed at the end of the request, or when `SaveChangesAsync` is called explicitly.
+YesSql document reads and writes go through `ISession`, a scoped unit of work registered in the dependency injection container. `SaveAsync` and `Delete` are buffered in memory; the SQL commands run in a single transaction when `SaveChangesAsync` is called. Orchard Core automatically commits the session resolved from a tenant shell scope when that scope ends, normally at the end of a request.
 
 ```csharp
 public sealed class MyController : Controller
