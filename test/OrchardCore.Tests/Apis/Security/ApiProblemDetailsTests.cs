@@ -1,4 +1,6 @@
 using System.Net;
+using System.Net.Http.Json;
+using System.Text.Json.Nodes;
 using OrchardCore.Tests.Apis.Context;
 
 namespace OrchardCore.Tests.Apis.Security;
@@ -24,9 +26,11 @@ public class ApiProblemDetailsTests
         Assert.Contains("Bearer", response.Headers.WwwAuthenticate.ToString());
         Assert.Equal("application/problem+json", response.Content.Headers.ContentType?.MediaType);
 
-        var body = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+        var problemDetails = await response.Content.ReadFromJsonAsync<JsonObject>(TestContext.Current.CancellationToken);
 
-        Assert.Contains("\"status\":401", body);
-        Assert.Contains("\"title\"", body);
+        Assert.Equal(401, (int)problemDetails["status"]);
+        Assert.Equal("Authentication required", (string)problemDetails["title"]);
+        Assert.Contains("WWW-Authenticate", (string)problemDetails["detail"]);
+        Assert.Equal("https://tools.ietf.org/html/rfc9110#section-15.5.2", (string)problemDetails["type"]);
     }
 }

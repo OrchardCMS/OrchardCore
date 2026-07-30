@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Metadata;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
 namespace OrchardCore.Security;
@@ -58,11 +59,33 @@ public sealed class ApiProblemDetailsMiddleware
             return;
         }
 
+        var problemDetails = new ProblemDetails
+        {
+            Status = response.StatusCode,
+        };
+
+        // Describe the two status codes this middleware is primarily concerned with. The machine-readable
+        // details of a resource server challenge are conveyed by the WWW-Authenticate header (RFC 6750),
+        // that the description points to. The "title" and "type" nodes of the other status codes are
+        // resolved from the RFC 9110 defaults by the Problem Details service.
+        switch (response.StatusCode)
+        {
+            case StatusCodes.Status401Unauthorized:
+                problemDetails.Title = "Authentication required";
+                problemDetails.Detail = "Authentication is required to access this resource. Additional details may be found in the WWW-Authenticate HTTP response header.";
+                break;
+
+            case StatusCodes.Status403Forbidden:
+                problemDetails.Title = "Access forbidden";
+                problemDetails.Detail = "Access to this resource is forbidden or you do not have sufficient permissions to perform this action.";
+                break;
+        }
+
         if (!await _problemDetailsService.TryWriteAsync(new ProblemDetailsContext
         {
             HttpContext = context,
-            ProblemDetails = { Status = response.StatusCode },
-        }))
+            ProblemDetails = problemDetails,
+        }) && _logger.IsEnabled(LogLevel.Debug))
         {
             // The only expected reason is content negotiation - the client explicitly asked for a
             // media type no registered writer can produce - in which case the response is legitimately
