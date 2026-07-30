@@ -138,9 +138,8 @@ public sealed class Startup : StartupBase
                             {
                                 // Challenge through the "Api" scheme rather than writing a bare
                                 // status code, so the 401 carries a WWW-Authenticate header
-                                // (RFC 9110 §15.5.2) and, when OpenID token validation is
-                                // enabled, a Problem Details body — matching the responses of
-                                // the API endpoints the schema describes.
+                                // (RFC 9110 §15.5.2) and a Problem Details body — matching the
+                                // responses of the API endpoints the schema describes.
                                 await context.ChallengeAsync("Api");
                                 return;
                             }

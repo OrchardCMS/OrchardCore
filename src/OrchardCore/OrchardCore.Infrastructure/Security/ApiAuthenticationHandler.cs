@@ -36,10 +36,7 @@ public class ApiAuthenticationHandler : AuthenticationHandler<ApiAuthorizationOp
 
     protected override Task HandleChallengeAsync(AuthenticationProperties properties)
     {
-        // Keep API status codes as-is in every path: without this, an empty-body 401 on an
-        // extension-less API route is re-executed into an HTML error page when the
-        // Diagnostics feature's status-code pages are enabled.
-        DisableStatusCodePages();
+        MarkApiResponse();
 
         if (!_authenticationOptions.Value.SchemeMap.ContainsKey(Options.ApiAuthenticationScheme))
         {
@@ -56,7 +53,7 @@ public class ApiAuthenticationHandler : AuthenticationHandler<ApiAuthorizationOp
 
     protected override Task HandleForbiddenAsync(AuthenticationProperties properties)
     {
-        DisableStatusCodePages();
+        MarkApiResponse();
 
         if (!_authenticationOptions.Value.SchemeMap.ContainsKey(Options.ApiAuthenticationScheme))
         {
@@ -67,8 +64,16 @@ public class ApiAuthenticationHandler : AuthenticationHandler<ApiAuthorizationOp
         return Context.ForbidAsync(Options.ApiAuthenticationScheme);
     }
 
-    private void DisableStatusCodePages()
+    /// <summary>
+    /// Flags the response as an API response, in every path: the status code must be kept as-is
+    /// (without this, an empty-body 401 on an extension-less API route is re-executed into an
+    /// HTML error page when the Diagnostics feature's status-code pages are enabled) and an
+    /// RFC 9457 Problem Details body is attached to it by <see cref="ApiProblemDetailsMiddleware"/>.
+    /// </summary>
+    private void MarkApiResponse()
     {
+        Context.Features.Set(ApiChallengeFeature.Instance);
+
         var statusCodePagesFeature = Context.Features.Get<IStatusCodePagesFeature>();
         if (statusCodePagesFeature != null)
         {

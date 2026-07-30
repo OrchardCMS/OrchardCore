@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
+using OrchardCore;
 using OrchardCore.Security;
 using OrchardCore.Security.AuthorizationHandlers;
 using OrchardCore.Security.Permissions;
@@ -31,7 +32,14 @@ public static partial class OrchardCoreBuilderExtensions
             services.AddScoped<IPermissionGrantingService, DefaultPermissionGrantingService>();
             services.AddScoped<IPermissionService, DefaultPermissionService>();
             services.AddScoped<IAuthorizationHandler, PermissionHandler>();
+
+            // Used by the middleware below to attach RFC 9457 Problem Details bodies to the
+            // API responses, honoring the app-level Problem Details customizations.
+            services.AddProblemDetails();
         });
+
+        builder.Configure(app => app.UseMiddleware<ApiProblemDetailsMiddleware>(),
+            order: OrchardCoreConstants.ConfigureOrder.Security);
 
         builder.Configure(ValidatePermissionsAsync);
 
