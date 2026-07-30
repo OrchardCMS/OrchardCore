@@ -156,3 +156,30 @@ namespace OrchardCore.Cms.Web
     }
 }
 ```
+
+## Tenant startup options validation
+
+Tenant service containers run the standard `Microsoft.Extensions.Options` startup validation
+contracts when the tenant is activated. Register options and call `ValidateOnStart()` from a
+tenant feature's `ConfigureServices` method as usual:
+
+```csharp
+services.AddOptions<StorageOptions>()
+    .BindConfiguration("Storage")
+    .Validate(options => !string.IsNullOrWhiteSpace(options.ConnectionString),
+        "A storage connection string is required.")
+    .Validate<IStorageClient>((options, storageClient, cancellationToken) =>
+        storageClient.CanConnectAsync(options.ConnectionString, cancellationToken),
+        "The storage service is unavailable.")
+    .ValidateOnStart();
+```
+
+During activation, Orchard Core runs `IStartupValidator` after tenant
+`ActivatingAsync()` events and then runs `IAsyncStartupValidator` before
+`ActivatedAsync()` events. A validation failure prevents the tenant from becoming activated and
+is propagated to the caller. Async validation receives the host application stopping token when
+one is available.
+
+Validation runs once for each tenant shell instance. It runs again when a tenant shell is rebuilt
+or reloaded. It does not validate subsequent mutable tenant-setting saves or
+`IOptionsMonitor<T>` reloads; validate those changes where they are saved or handled.
