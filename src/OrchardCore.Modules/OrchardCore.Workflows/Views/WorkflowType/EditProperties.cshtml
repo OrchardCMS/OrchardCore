@@ -17,33 +17,41 @@
 
     <div class="tab-content" id="tabs">
         <div class="tab-pane fade show active" id="properties" role="tabpanel" aria-labelledby="properties-tab">
-            <div class="mb-3" asp-validation-class-for="Name">
-                <label asp-for="Name" class="form-label">@T["Name"]</label>
-                <input asp-for="Name" class="form-control" autofocus />
-                <span asp-validation-for="Name" class="text-danger"></span>
-                <div class="hint">@T["The name of the workflow."]</div>
+            <div class="ocat-wrapper" asp-validation-class-for="Name">
+                <label asp-for="Name" class="ocat-label">@T["Name"]</label>
+                <div class="ocat-end">
+                    <input asp-for="Name" class="form-control" autofocus />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                    <div class="hint">@T["The name of the workflow."]</div>
+                </div>
             </div>
 
-            <div class="mb-3">
-                <div class="form-check">
-                    <input asp-for="IsEnabled" type="checkbox" class="form-check-input">
-                    <label class="form-check-label" asp-for="IsEnabled">@T["Enabled"]</label>
+            <div class="ocat-wrapper">
+                <div class="ocat-end-offset">
+                    <div class="form-check">
+                        <input asp-for="IsEnabled" type="checkbox" class="form-check-input">
+                        <label class="form-check-label" asp-for="IsEnabled">@T["Enabled"]</label>
+                    </div>
                     <span class="hint">@T["Uncheck to prevent workflows of this type from being executed."]</span>
                 </div>
             </div>
 
-            <div class="mb-3">
-                <div class="form-check">
-                    <input asp-for="IsSingleton" type="checkbox" class="form-check-input">
-                    <label class="form-check-label" asp-for="IsSingleton">@T["Single instance"]</label>
+            <div class="ocat-wrapper">
+                <div class="ocat-end-offset">
+                    <div class="form-check">
+                        <input asp-for="IsSingleton" type="checkbox" class="form-check-input">
+                        <label class="form-check-label" asp-for="IsSingleton">@T["Single instance"]</label>
+                    </div>
                     <span class="hint">@T["Check to ensure only one workflow of this type can execute at a time. Leave unchecked to allow any number of workflows to execute at the same time."]</span>
                 </div>
             </div>
 
-            <div class="mb-3">
-                <div class="form-check">
-                    <input asp-for="DeleteFinishedWorkflows" type="checkbox" class="form-check-input">
-                    <label class="form-check-label" asp-for="DeleteFinishedWorkflows">@T["Delete successfully completed workflows"]</label>
+            <div class="ocat-wrapper">
+                <div class="ocat-end-offset">
+                    <div class="form-check">
+                        <input asp-for="DeleteFinishedWorkflows" type="checkbox" class="form-check-input">
+                        <label class="form-check-label" asp-for="DeleteFinishedWorkflows">@T["Delete successfully completed workflows"]</label>
+                    </div>
                     <span class="hint">@T["Check to automatically delete workflows that have completed successfully. Leave unchecked to maintain a history of executed workflows."]</span>
                 </div>
             </div>
@@ -53,22 +61,28 @@
         </div>
 
         <div class="tab-pane fade" id="advanced" role="tabpanel" aria-labelledby="advanced-tab">
-            <div class="mb-3">
-                <label asp-for="LockTimeout" class="form-label">@T["Lock timeout (ms)"]</label>
-                <input asp-for="LockTimeout" type="number" max="30000" class="form-control">
-                <span class="hint">@T["The timeout in milliseconds to acquire a lock before resuming a given workflow instance of this type atomically. Leave it to zero to not use any locking."]</span>
+            <div class="ocat-wrapper">
+                <label asp-for="LockTimeout" class="ocat-label">@T["Lock timeout (ms)"]</label>
+                <div class="ocat-end">
+                    <input asp-for="LockTimeout" type="number" max="30000" class="form-control">
+                    <span class="hint">@T["The timeout in milliseconds to acquire a lock before resuming a given workflow instance of this type atomically. Leave it to zero to not use any locking."]</span>
+                </div>
             </div>
 
-            <div class="mb-3">
-                <label asp-for="LockExpiration" class="form-label">@T["Lock expiration (ms)"]</label>
-                <input asp-for="LockExpiration" type="number" max="30000" class="form-control">
-                <span class="hint">@T["The expiration in milliseconds of the lock acquired before resuming a workflow instance of this type atomically. Leave it to zero to not use any locking."]</span>
+            <div class="ocat-wrapper">
+                <label asp-for="LockExpiration" class="ocat-label">@T["Lock expiration (ms)"]</label>
+                <div class="ocat-end">
+                    <input asp-for="LockExpiration" type="number" max="30000" class="form-control">
+                    <span class="hint">@T["The expiration in milliseconds of the lock acquired before resuming a workflow instance of this type atomically. Leave it to zero to not use any locking."]</span>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="mb-3">
-        <button class="btn btn-primary save" type="submit">@T["Save"]</button>
-        <a class="btn btn-secondary cancel" role="button" href="@Model.ReturnUrl">@T["Cancel"]</a>
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
+            <button class="btn btn-primary save" type="submit">@T["Save"]</button>
+            <a class="btn btn-secondary cancel" role="button" href="@Model.ReturnUrl">@T["Cancel"]</a>
+        </div>
     </div>
 </form>

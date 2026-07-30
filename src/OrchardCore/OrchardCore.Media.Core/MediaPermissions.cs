@@ -10,9 +10,9 @@ public static class MediaPermissions
 
     public static readonly Permission ManageOwnMedia = new("ManageOwnMediaContent", "Manage Own Media", [ManageOthersMedia]);
 
-    public static readonly Permission ManageMedia = new("ManageMediaContent", "Manage Media", [ManageOwnMedia]);
-
     public static readonly Permission ManageAttachedMediaFieldsFolder = new("ManageAttachedMediaFieldsFolder", "Manage Attached Media Fields Folder", [ManageMediaFolder]);
+
+    public static readonly Permission ManageMedia = new("ManageMediaContent", "Manage Media", [ManageOwnMedia, ManageAttachedMediaFieldsFolder]);
 
     public static readonly Permission ManageMediaProfiles = new("ManageMediaProfiles", "Manage Media Profiles");
 

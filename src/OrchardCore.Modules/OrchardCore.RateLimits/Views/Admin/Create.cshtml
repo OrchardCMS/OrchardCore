@@ -1,0 +1,25 @@
+@model OrchardCore.RateLimits.ViewModels.RateLimitPolicyEditViewModel
+
+<zone Name="Title"><h1>@RenderTitleSegments(T["New Rate Limit Policy"])</h1></zone>
+
+<form asp-action="Create" method="post" class="no-multisubmit">
+    @Html.ValidationSummary()
+    @await Html.PartialAsync("RateLimitPolicy.Fields", Model)
+
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
+            <div class="alert alert-info mb-0" role="alert">
+                @T["New policies are created as disabled drafts. Add limiters, save your changes, then enable the policy from the policies list when it is ready to publish."]
+            </div>
+        </div>
+    </div>
+
+    <div class="ocat-wrapper mt-4">
+        <div class="ocat-end-offset">
+            <div class="d-flex gap-1">
+                <button class="btn btn-primary" type="submit">@T["Save and Continue"]</button>
+                <a asp-action="Index" class="btn btn-secondary">@T["Cancel"]</a>
+            </div>
+        </div>
+    </div>
+</form>

@@ -22,8 +22,14 @@ public class SetupViewModel
     public string Schema { get; set; }
 
     /// <summary>
-    /// True if the database configuration is preset and can't be changed or displayed on the Setup screen.
+    /// True if the database provider is preset and can't be changed on the Setup screen.
     /// </summary>
+    [BindNever]
+    public bool DatabaseProviderPreset { get; set; }
+
+    /// <summary>
+     /// True if the database configuration is preset and can't be changed or displayed on the Setup screen.
+     /// </summary>
     [BindNever]
     public bool DatabaseConfigurationPreset { get; set; }
 

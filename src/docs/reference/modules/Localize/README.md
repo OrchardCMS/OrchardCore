@@ -23,8 +23,8 @@ PO files are found at these locations:
 
 `[CultureName]` can be either the culture neutral part, e.g. `fr`, or the full one, e.g. `fr-CA`.
 
-It is suggested to put your localization files in the `/Localization/` folder if you are using docker.  
-Especially if mounting a volume at `/App_Data/` as mounting hides pre-existing files.
+It is suggested to put your localization files in the `/Localization/` folder if you are using Docker.
+Especially if mounting a volume at `/App_Data/`, as mounting hides pre-existing files.
 
 !!! note
     If you edit a .po file, you need to restart the application to make your change effective.
@@ -178,6 +178,39 @@ extractpo <INTPUT_PATH> <OUTPUT_PATH> [-l|--language {"C#"|"VB"}] [-t|--template
 
 See [JavaScript Localization (`IJSLocalizer`)](javascript-localization.md) for guidance on exposing PO-file-backed translations to JavaScript / TypeScript assets.
 
+## Liquid filters
+
+For more information on using locaization filters in Liquid templates, see the [Liquid Localization filters documentation](../Liquid/README.md#localization-filters).
+
 ## Video
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/cwKa1OA48-4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+## Recipe Configuration
+
+Localization settings can be configured using the `Settings` recipe step:
+
+```json
+{
+  "steps": [
+    {
+      "name": "settings",
+      "LocalizationSettings": {
+        "DefaultCulture": "en-US",
+        "SupportedCultures": [
+          "en-US",
+          "fr-FR",
+          "es-ES"
+        ],
+        "FallBackToParentCulture": true
+      }
+    }
+  ]
+}
+```
+
+| Property                  | Type            | Description                                                                 |
+|---------------------------|-----------------|-----------------------------------------------------------------------------|
+| `DefaultCulture`          | String          | The default culture for the site (e.g., `en-US`).                           |
+| `SupportedCultures`       | Array of String | The list of supported cultures.                                             |
+| `FallBackToParentCulture` | Boolean         | Whether to fall back to the parent culture when a translation is not found. |

@@ -788,7 +788,7 @@ We use **NPM package aliasing** to manage multiple versions of the same package 
 {
   "dependencies": {
     "vue": "3.5.13",                   // Latest version
-    "vue-2.6.14": "npm:vue@2.6.14"     // Legacy version (aliased)
+    "vue-2.7.16": "npm:vue@2.7.16"     // Legacy version (aliased)
   }
 }
 ```

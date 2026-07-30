@@ -10,6 +10,11 @@ namespace OrchardCore.Users.Handlers;
 
 public class ScriptExternalLoginEventHandler : IExternalLoginEventHandler
 {
+    // The scripts are prepared and cached by their source text, so the per-user state must be handed to
+    // the script through a global method rather than being serialized into the script itself. Otherwise
+    // every external login would add a distinct entry to the shared cache.
+    private const string ContextMethodName = "externalLoginContext";
+
     private readonly ILogger _logger;
     private readonly IScriptingManager _scriptingManager;
     private readonly ISiteService _siteService;
@@ -43,9 +48,9 @@ public class ScriptExternalLoginEventHandler : IExternalLoginEventHandler
                 externalClaims = claims,
             };
 
-            var script = $"js: function generateUsername(context) {{\n{registrationSettings.GenerateUsernameScript}\n}}\nvar context = {JConvert.SerializeObject(context, JOptions.CamelCase)};\ngenerateUsername(context);\nreturn context;";
+            var script = $"js: function generateUsername(context) {{\n{registrationSettings.GenerateUsernameScript}\n}}\nvar context = JSON.parse({ContextMethodName}());\ngenerateUsername(context);\nreturn context;";
 
-            dynamic evaluationResult = await _scriptingManager.EvaluateAsync(script, null, null, null);
+            dynamic evaluationResult = await _scriptingManager.EvaluateAsync(script, null, null, [CreateContextMethodProvider(context)]);
 
             if (evaluationResult is IDictionary<string, object> data && data.TryGetValue("userName", out var userNameObj))
             {
@@ -70,8 +75,8 @@ public class ScriptExternalLoginEventHandler : IExternalLoginEventHandler
             return;
         }
 
-        var script = $"js: function syncRoles(context) {{\n{loginSettings.SyncPropertiesScript}\n}}\nvar context={JConvert.SerializeObject(context, JOptions.CamelCase)};\nsyncRoles(context);\nreturn context;";
-        dynamic evaluationResult = await _scriptingManager.EvaluateAsync(script, null, null, null);
+        var script = $"js: function syncRoles(context) {{\n{loginSettings.SyncPropertiesScript}\n}}\nvar context = JSON.parse({ContextMethodName}());\nsyncRoles(context);\nreturn context;";
+        dynamic evaluationResult = await _scriptingManager.EvaluateAsync(script, null, null, [CreateContextMethodProvider(context)]);
         context.RolesToAdd.AddRange((evaluationResult.rolesToAdd as object[]).Select(i => i.ToString()));
         context.RolesToRemove.AddRange((evaluationResult.rolesToRemove as object[]).Select(i => i.ToString()));
 
@@ -103,5 +108,24 @@ public class ScriptExternalLoginEventHandler : IExternalLoginEventHandler
                 }
             }
         }
+    }
+
+    private static ContextMethodProvider CreateContextMethodProvider(object context)
+        => new(JConvert.SerializeObject(context, JOptions.CamelCase));
+
+    private sealed class ContextMethodProvider : IGlobalMethodProvider
+    {
+        private readonly GlobalMethod _globalMethod;
+
+        public ContextMethodProvider(string serializedContext)
+        {
+            _globalMethod = new GlobalMethod
+            {
+                Name = ContextMethodName,
+                Method = _ => (Func<string>)(() => serializedContext),
+            };
+        }
+
+        public IEnumerable<GlobalMethod> GetMethods() => [_globalMethod];
     }
 }

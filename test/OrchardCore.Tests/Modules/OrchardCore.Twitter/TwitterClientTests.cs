@@ -50,7 +50,7 @@ public class TwitterClientTests
     /// Uses data from twitter's example to test the correct OAuth signature generation
     /// https://developer.twitter.com/en/docs/basics/authentication/guides/creating-a-signature.html
     /// </summary>
-    public async Task HttpRequestMessageShouldHaveCorrectSignedOAuthHeader()
+    public async Task HttpRequestMessage_Default_HaveCorrectSignedOAuthHeader()
     {
         HttpRequestMessage message = null;
 

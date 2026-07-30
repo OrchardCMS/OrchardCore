@@ -111,6 +111,27 @@ Optionally, you can change these alternates:
 | `Widget_Wrapper__[ContentType]`       | `Widget_Wrapper__Paragraph`    | `Widget-Paragraph.Wrapper.cshtml`   |
 | `Widget_Wrapper__Zone__[ContentZone]` | `Widget_Wrapper__Zone__Footer` | `Widget-Zone-Footer.Wrapper.cshtml` |
 
+## WidgetsListPart editor placement
+
+`WidgetsListPart` does not render its own front-end part shape. Instead, it injects widgets directly into the target layout zones.
+
+To hide or move the **editor** in the admin UI, target the `ContentPart_Edit` wrapper shape. Its differentiator is `{ContentType}-{PartName}`.
+
+For example, to hide the `WidgetsListPart` editor row on the `PlacementTest` content type:
+
+```json
+{
+    "ContentPart_Edit": [
+        {
+            "differentiator": "PlacementTest-WidgetsListPart",
+            "place": "-"
+        }
+    ]
+}
+```
+
+If the part is attached as a named part, use that part name instead of `WidgetsListPart`.
+
 ## Videos
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/9gARrrvoAY4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

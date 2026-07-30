@@ -31,9 +31,9 @@
 <script asp-src="~/OrchardCore.ContentFields/Scripts/vue-multiselect-multitextfieldpicker.min.js" debug-src="~/OrchardCore.ContentFields/Scripts/vue-multiselect-multitextfieldpicker.js" asp-name="multitextfieldpicker" at="Foot" depends-on="vuejs:2,vue-multiselect:2"></script>
 <style asp-name="vue-multiselect" version="2" at="Foot"></style>
 
-<div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.Values)_FieldWrapper">
-    <label class="@Orchard.GetLabelClasses(inputRequired: settings.Required)">@localizedFieldName</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="@($"ocat-wrapper field-wrapper field-wrapper-{Model.PartFieldDefinition.PartDefinition.Name.HtmlClassify()}-{Model.PartFieldDefinition.Name.HtmlClassify()}" + (Model.PartFieldDefinition.IsNamedPart() ? $" field-wrapper-{Model.PartFieldDefinition.ContentTypePartDefinition.Name.HtmlClassify()}-{Model.PartFieldDefinition.Name.HtmlClassify()}" : string.Empty))" id="@Html.IdFor(x => x.Values)_FieldWrapper">
+    <label class="ocat-label @(settings.Required ? "ocat-label-required" : "")">@localizedFieldName</label>
+    <div class="ocat-end">
         <div id="@vueElementId" class="multitextfieldpicker" data-selectedvalues="@jSelectedValues" data-options="@jOptions" data-valueskey="@valuesKey">
             <div class="w-xl-50">
                 <input v-for="v in value" v-bind:name="valuesKey" v-bind:value="v.value" type="hidden" />

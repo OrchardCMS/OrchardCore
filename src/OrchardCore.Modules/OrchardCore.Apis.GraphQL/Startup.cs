@@ -88,6 +88,24 @@ public sealed class Startup : StartupBase
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
     {
-        app.UseMiddleware<GraphQLMiddleware>();
+        var path = serviceProvider.GetRequiredService<IOptions<GraphQLSettings>>().Value.Path;
+
+        if (!path.HasValue)
+        {
+            return;
+        }
+
+        var graphQLMiddleware = serviceProvider.GetRequiredService<GraphQLMiddleware>();
+        var pipeline = routes.CreateApplicationBuilder()
+            .Use(next => context => graphQLMiddleware.InvokeAsync(context, next))
+            .Build();
+
+        routes.Map(path, pipeline);
+
+        var prefixPattern = path == "/"
+            ? "/{**graphQLPath}"
+            : $"{path}/{{**graphQLPath}}";
+
+        routes.Map(prefixPattern, pipeline);
     }
 }

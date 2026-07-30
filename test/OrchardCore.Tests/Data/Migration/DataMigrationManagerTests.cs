@@ -8,7 +8,7 @@ namespace OrchardCore.Data.Migration.Tests;
 public class DataMigrationManagerTests
 {
     [Fact]
-    public async Task UpdateAsync_ShouldExecuteDataMigration_CreateMethod_OnFreshMigration()
+    public async Task UpdateAsync_CreateMethodOnFreshMigration_ExecutessDataMigration()
     {
         // Arrange
         var migration1 = new Migration1();
@@ -24,7 +24,7 @@ public class DataMigrationManagerTests
     }
 
     [Fact]
-    public async Task UpdateAsync_ShouldExecuteDataMigration_UpdateFromMethods()
+    public async Task UpdateAsync_UpdateFromMethods_ExecutessDataMigration()
     {
         // Arrange
         var migration1 = new Migration1();
@@ -40,7 +40,7 @@ public class DataMigrationManagerTests
     }
 
     [Fact]
-    public async Task UpdateAsync_ShouldExecuteStaticDataMigration_CreateAndUpdateMethods()
+    public async Task UpdateAsync_CreateAndUpdateMethods_ExecutessStaticDataMigration()
     {
         // Arrange
         StaticMigration1.Reset();
@@ -58,7 +58,7 @@ public class DataMigrationManagerTests
     }
 
     [Fact]
-    public async Task Uninstall_ShouldExecuteDataMigration_UninstallMethod()
+    public async Task Uninstall_UninstallMethod_ExecutessDataMigration()
     {
         // Arrange
         var migration1 = new Migration1();
@@ -74,7 +74,7 @@ public class DataMigrationManagerTests
     }
 
     [Fact]
-    public async Task Uninstall_ShouldExecuteStaticDataMigration_UninstallMethod()
+    public async Task Uninstall_UninstallMethod_ExecutessStaticDataMigration()
     {
         // Arrange
         StaticUninstallMigration1.Reset();
@@ -281,21 +281,13 @@ public class DataMigrationManagerTests
         public Task<int> CountAsync(CancellationToken cancellationToken = default)
             => throw new NotImplementedException();
 
-        public Task<int> CountAsync()
-            => throw new NotImplementedException();
-
         public Task<T> FirstOrDefaultAsync(CancellationToken cancellationToken = default)
-            => throw new NotImplementedException();
-
-        public Task<T> FirstOrDefaultAsync() => Task.FromResult((T)null);
+            => Task.FromResult((T)null);
 
         public string GetTypeAlias(Type t)
             => throw new NotImplementedException();
 
-        public Task<IEnumerable<T>> ListAsync(CancellationToken cancellationToken = default)
-            => throw new NotImplementedException();
-
-        public Task<IEnumerable<T>> ListAsync()
+        public Task<IReadOnlyList<T>> ListAsync(CancellationToken cancellationToken = default)
             => throw new NotImplementedException();
 
         public IQuery<T> NoDuplicates()
@@ -308,9 +300,6 @@ public class DataMigrationManagerTests
             => throw new NotImplementedException();
 
         public IAsyncEnumerable<T> ToAsyncEnumerable(CancellationToken cancellationToken = default)
-            => throw new NotImplementedException();
-
-        public IAsyncEnumerable<T> ToAsyncEnumerable()
             => throw new NotImplementedException();
 
         public IQuery<T> With(Type indexType)

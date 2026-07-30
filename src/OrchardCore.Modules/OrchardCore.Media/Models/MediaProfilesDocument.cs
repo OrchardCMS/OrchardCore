@@ -17,4 +17,5 @@ public class MediaProfile
     public Format Format { get; set; }
     public int Quality { get; set; }
     public string BackgroundColor { get; set; }
+    public bool AutoOrient { get; set; } = true;
 }

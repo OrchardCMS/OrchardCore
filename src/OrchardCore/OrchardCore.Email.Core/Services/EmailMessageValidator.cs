@@ -15,7 +15,7 @@ public class EmailMessageValidator : EmailServiceEventsBase
         S = stringLocalizer;
     }
 
-    public override Task ValidatingAsync(MailMessage message, MailMessageValidationContext context)
+    public override Task ValidatingAsync(MailMessage message, MailMessageValidationContext context, CancellationToken cancellationToken = default)
     {
         var invalidSender = message.GetSender()
             .Where(address => !_emailAddressValidator.Validate(address))

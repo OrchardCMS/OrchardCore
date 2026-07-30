@@ -72,7 +72,6 @@ public sealed class Startup : StartupBase
         services.AddDisplayDriver<IndexProfile, ElasticsearchIndexProfileDisplayDriver>();
 
         services.AddIndexProfileHandler<ElasticsearchIndexProfileHandler>();
-        services.AddDataMigration<PermissionMigrations>();
     }
 }
 
@@ -100,6 +99,10 @@ public sealed class ContentsStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddDataMigration<IndexingMigrations>();
+
+        // Register after IndexingMigrations so its deferred task, which rewrites obsolete per-index role
+        // permissions to the new dynamic permissions, runs after the index profiles have been created.
+        services.AddDataMigration<PermissionMigrations>();
 
         services
             .AddIndexProfileHandler<ElasticsearchContentIndexProfileHandler>()

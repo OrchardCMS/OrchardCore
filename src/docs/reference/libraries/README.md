@@ -1,6 +1,6 @@
 # Libraries
 
-The below table lists the different .NET libraries used in Orchard Core:
+The table below lists the different .NET libraries used in Orchard Core:
 
 | Library                                                                                                                                                                                                                    | Usage                                                                                                                                                   | License                                                                           |
 |----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------|
@@ -46,7 +46,7 @@ The below table lists the different .NET libraries used in Orchard Core:
 | [YesSql](https://github.com/sebastienros/yessql)                                                                                                                                                                           | .NET document database working on any RDBMS.                                                                                                            | [MIT](https://github.com/sebastienros/yessql/blob/dev/LICENSE)                    |
 | [ZString](https://github.com/Cysharp/ZString)                                                                                                                                                                              | Zero Allocation StringBuilder for .NET Core and Unity.                                                                                                  | [MIT](https://github.com/Cysharp/ZString/blob/master/LICENSE)                     |
 
-The below table lists the different libraries used as Resources:
+The table below lists the different libraries used as resources:
 
 | Library | Usage | License |
 |--- | --- | --- |

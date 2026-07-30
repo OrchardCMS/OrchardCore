@@ -1,9 +1,9 @@
 @model OrchardCore.Markdown.ViewModels.MarkdownFieldWysiwygEditorSettingsViewModel
 
 <div id="@Html.IdFor(m => m)" class="field-editor field-editor-wysiwyg">
-    <div class="mb-3 row">
-        <div class="col-large col-12 col-sm-12 col-md-12 col-lg-12 col-xl-9">
-            <label asp-for="Options" class="form-label">@T["Enter the editor options"]</label>
+    <div class="ocat-limited-wrapper">
+        <label asp-for="Options" class="ocat-label">@T["Enter the editor options"]</label>
+        <div class="ocat-limited">
             <span class="hint"><a href="https://github.com/Ionaru/easy-markdown-editor#configuration" target="_blank">@T["Documentation for options"]</a></span>
             <textarea asp-for="Options" class="form-control" autofocus="autofocus"></textarea>
         </div>
@@ -15,18 +15,26 @@
 <script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
 <script asp-name="codemirror-mode-javascript" at="Foot"></script>
 <script at="Foot">
-    $(function () {
+    function onDocumentReady(callback) {
+        if (document.readyState !== 'loading') {
+            callback();
+        } else {
+            document.addEventListener('DOMContentLoaded', callback);
+        }
+    }
+
+    onDocumentReady(function () {
         var optionsTextArea = document.getElementById('@Html.IdFor(x => x.Options)');
         var editor = CodeMirror.fromTextArea(optionsTextArea, {
             autoRefresh: true,
             lineNumbers: true,
             matchBrackets: true,
-            mode: { name: "javascript" }
-    });
+            mode: { name: "javascript" },
+        });
 @{
-    if (string.IsNullOrEmpty(Model.Options))
-    {
-        string fullOptions = @"{
+        if (string.IsNullOrEmpty(Model.Options))
+        {
+            string fullOptions = @"{
     toolbar: [
         ""guide"", ""|"",
         ""undo"", ""redo"", ""|"",
@@ -42,9 +50,10 @@
     ],
     spellChecker: false
 }";
-<text>editor.setValue(`@Html.Raw(fullOptions)`);
-        </text>
-    }
+<text>
+        editor.setValue(`@Html.Raw(fullOptions)`);
+</text>
+        }
 }
-});
+    });
 </script>

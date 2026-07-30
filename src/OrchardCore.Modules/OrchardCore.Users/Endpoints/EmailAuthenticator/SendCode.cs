@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Email;
 using OrchardCore.Liquid;
+using OrchardCore.RateLimits;
 using OrchardCore.Settings;
 using OrchardCore.Users.Models;
 
@@ -21,6 +22,7 @@ public static class SendCode
         builder.MapPost("TwoFactor-Authenticator/EmailSendCode", HandleAsync<T>)
             .AllowAnonymous()
             .WithName(RouteName)
+            .WithRateLimitGroup(UserRateLimiterPolicyNames.TwoFactorCodeSend)
             .DisableAntiforgery();
 
         return builder;

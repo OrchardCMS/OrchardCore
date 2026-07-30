@@ -15,6 +15,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <InternalsVisibleTo Include="OrchardCore.Tests" />
+    <InternalsVisibleTo Include="OrchardCore.Tests.Integration" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Admin.Abstractions\OrchardCore.Admin.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.ContentManagement.Display\OrchardCore.ContentManagement.Display.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.FileStorage.AzureBlob\OrchardCore.FileStorage.AzureBlob.csproj" />
@@ -25,8 +30,5 @@
     <ProjectReference Include="..\OrchardCore.Media\OrchardCore.Media.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="SixLabors.ImageSharp.Web.Providers.Azure" />
-  </ItemGroup>
 
 </Project>

@@ -104,3 +104,24 @@ You can easily monitor various events triggered during the message-sending proce
 ## Video
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/FmgZHpFHCcg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+## Recipe Configuration
+
+Email settings can be configured using the `Settings` recipe step:
+
+```json
+{
+  "steps": [
+    {
+      "name": "settings",
+      "EmailSettings": {
+        "DefaultProviderName": "SMTP"
+      }
+    }
+  ]
+}
+```
+
+| Property              | Type   | Description                             |
+|-----------------------|--------|-----------------------------------------|
+| `DefaultProviderName` | String | The name of the default email provider. |

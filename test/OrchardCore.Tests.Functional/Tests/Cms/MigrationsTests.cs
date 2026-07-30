@@ -8,7 +8,7 @@ public sealed class MigrationsTests : CmsTestBase<MigrationsFixture>, IClassFixt
     public MigrationsTests(MigrationsFixture fixture) : base(fixture) { }
 
     [Fact]
-    public async Task DisplaysTheHomePageOfTheMigrationsRecipe()
+    public async Task DisplaysTheHomePageOfTheMigrationsRecipe_Default_Succeeds()
     {
         var page = await Fixture.CreatePageAsync();
         await page.GotoAndAssertOkAsync("/");
@@ -17,7 +17,7 @@ public sealed class MigrationsTests : CmsTestBase<MigrationsFixture>, IClassFixt
     }
 
     [Fact]
-    public async Task MigrationsAdminLoginShouldWork()
+    public async Task MigrationsAdminLogin_Default_Works()
     {
         var page = await Fixture.CreatePageAsync();
         await page.LoginAsync();

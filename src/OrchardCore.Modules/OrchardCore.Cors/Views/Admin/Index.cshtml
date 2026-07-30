@@ -66,14 +66,20 @@
                 <h5 class="card-title">@T["Details"]
                     <span class="hint dashed">@T["Provide policy details."]</span>
                 </h5>
-                <div class="mb-3">
-                    <label class="form-label">@T["Policy name"]</label>
+                <div class="ocat-wrapper">
+                    <label class="ocat-label">@T["Policy name"]</label>
+                    <div class="ocat-end">
                     <input v-model="policy.name" type="text" class="form-control" />
                     <span class="hint">@T["The name of the policy."]</span>
+                    </div>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" id="set-default-policy" v-model="policy.isDefaultPolicy" type="checkbox">
-                    <label class="form-check-label" for="set-default-policy">@T["Set as default policy"]</label>
+                <div class="mb-3">
+                    <div>
+                        <div class="form-check">
+                            <input class="form-check-input" id="set-default-policy" v-model="policy.isDefaultPolicy" type="checkbox">
+                            <label class="form-check-label" for="set-default-policy">@T["Set as default policy"]</label>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -83,10 +89,14 @@
                     <span class="hint dashed">@T["Configure the credentials behavior."]</span>
                 </h5>
 
-                <div class="form-check">
-                    <input class="form-check-input" id="allow-credentials" v-model="policy.allowCredentials" type="checkbox" />
-                    <label class="form-check-label" for="allow-credentials">@T["Allow credentials"]</label>
-                    <span class="hint dashed">@T["Allows credentials to be transported in requests. This setting is not allowed in combination with Allow Any Origin."]</span>
+                <div class="mb-3">
+                    <div>
+                        <div class="form-check">
+                            <input class="form-check-input" id="allow-credentials" v-model="policy.allowCredentials" type="checkbox" />
+                            <label class="form-check-label" for="allow-credentials">@T["Allow credentials"]</label>
+                            <span class="hint dashed">@T["Allows credentials to be transported in requests. This setting is not allowed in combination with Allow Any Origin."]</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -97,10 +107,14 @@
                 </h5>
 
                 <div class="">
-                    <div class="form-check mb-2">
-                        <input class="form-check-input" id="allowed-origins" v-model="policy.allowAnyOrigin" type="checkbox" />
-                        <label class="form-check-label" for="allowed-origins">@T["Allow any origin"]</label>
-                        <span class="hint dashed">@T["Allows requests from any origin. This will bypass any origin that is configured below."]</span>
+                    <div class="mb-3">
+                        <div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" id="allowed-origins" v-model="policy.allowAnyOrigin" type="checkbox" />
+                                <label class="form-check-label" for="allowed-origins">@T["Allow any origin"]</label>
+                                <span class="hint dashed">@T["Allows requests from any origin. This will bypass any origin that is configured below."]</span>
+                            </div>
+                        </div>
                     </div>
                     <options-list v-bind:options="policy.allowedOrigins" optionType="@T["Origin"]" title="@T["Allowed origins"]" subTitle="" />
                 </div>
@@ -113,10 +127,14 @@
                 </h5>
 
                 <div class="">
-                    <div class="form-check mb-2">
-                        <input class="form-check-input" id="allowed-headers" v-model="policy.allowAnyHeader" type="checkbox" />
-                        <label class="form-check-label" for="allowed-headers">@T["Allow any header"]</label>
-                        <span class="hint dashed">@T["Allows requests with any header. This will bypass any headers that are configured below."]</span>
+                    <div class="mb-3">
+                        <div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" id="allowed-headers" v-model="policy.allowAnyHeader" type="checkbox" />
+                                <label class="form-check-label" for="allowed-headers">@T["Allow any header"]</label>
+                                <span class="hint dashed">@T["Allows requests with any header. This will bypass any headers that are configured below."]</span>
+                            </div>
+                        </div>
                     </div>
                     <options-list v-bind:options="policy.allowedHeaders" optionType="@T["Header"]" title="@T["Allowed headers"]" subTitle="" />
                 </div>
@@ -129,10 +147,14 @@
                 </h5>
 
                 <div class="">
-                    <div class="form-check mb-2">
-                        <input class="form-check-input" id="allowed-methods" v-model="policy.allowAnyMethod" type="checkbox" />
-                        <label class="form-check-label" for="allowed-methods">@T["Allow any method"]</label>
-                        <span class="hint dashed">@T["Allows requests with any method. This will bypass any methods that are configured below."]</span>
+                    <div class="mb-3">
+                        <div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" id="allowed-methods" v-model="policy.allowAnyMethod" type="checkbox" />
+                                <label class="form-check-label" for="allowed-methods">@T["Allow any method"]</label>
+                                <span class="hint dashed">@T["Allows requests with any method. This will bypass any methods that are configured below."]</span>
+                            </div>
+                        </div>
                     </div>
                     <options-list v-bind:options="policy.allowedMethods" optionType="@T["Method"]" title="@T["Allowed methods"]" subTitle="" />
                 </div>
@@ -151,27 +173,31 @@
             </div>
         </div>
         <div class="mb-3">
-            <button type="button" class="btn btn-primary" v-on:click="$emit('ok', policy, $event)">@T["Save"]</button>
-            <button type="button" class="btn btn-secondary" v-on:click="$emit('back')">@T["Cancel"]</button>
+            <div>
+                <button type="button" class="btn btn-primary" v-on:click="$emit('ok', policy, $event)">@T["Save"]</button>
+                <button type="button" class="btn btn-secondary" v-on:click="$emit('back')">@T["Cancel"]</button>
+            </div>
         </div>
     </div>
 </script>
 
 <script type="text/x-template" id="options-list">
-    <div>
-        <label class="form-label">{{ title }}</label>
-        <span class="hint" v-if="subTitle">{{ subTitle }}</span>
-        <div class="input-group input-group-sm mb-2 w-50">
-            <input type="text" class="form-control" v-model="newOption">
-            <button class="btn btn-primary btn-sm" type="button" v-on:click="addOption(newOption)">@T["Add"] {{ optionType }}</button>
+    <div class="ocat-wrapper">
+        <label class="ocat-label">{{ title }}</label>
+        <div class="ocat-end">
+            <span class="hint" v-if="subTitle">{{ subTitle }}</span>
+            <div class="input-group input-group-sm mb-2 w-50">
+                <input type="text" class="form-control" v-model="newOption">
+                <button class="btn btn-primary btn-sm" type="button" v-on:click="addOption(newOption)">@T["Add"] {{ optionType }}</button>
+            </div>
+            <ul class="list-group mt-3" v-if="options.length > 0">
+                <li class="list-group-item d-flex" v-for="option in options">
+                    <div class="align-self-center me-auto">{{ option }}</div>
+                    <div class="align-self-center">
+                        <button type="button" class="btn btn-danger btn-sm" v-on:click="deleteOption(option)">@T["Delete"]</button>
+                    </div>
+                </li>
+            </ul>
         </div>
-        <ul class="list-group mt-3" v-if="options.length > 0">
-            <li class="list-group-item d-flex" v-for="option in options">
-                <div class="align-self-center me-auto">{{ option }}</div>
-                <div class="align-self-center">
-                    <button type="button" class="btn btn-danger btn-sm" v-on:click="deleteOption(option)">@T["Delete"]</button>
-                </div>
-            </li>
-        </ul>
     </div>
 </script>

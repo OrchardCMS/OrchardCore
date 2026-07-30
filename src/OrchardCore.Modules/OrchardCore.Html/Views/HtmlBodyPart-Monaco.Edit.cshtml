@@ -1,4 +1,3 @@
-@using OrchardCore
 @model HtmlBodyPartViewModel
 @{
     var settings = Model.TypePartDefinition.GetSettings<HtmlBodyPartSettings>();
@@ -9,8 +8,8 @@
 @await DisplayAsync(await New.ShortcodeModal())
 
 <div class="row mb-3">
-    <label asp-for="Html" class="@Orchard.GetLabelClasses()">@Model.TypePartDefinition.DisplayName()</label>
-    <div class="@Orchard.GetEndClasses()">
+    <label asp-for="Html" class="ocat-label">@Model.TypePartDefinition.DisplayName()</label>
+    <div class="ocat-end">
         <div id="@Html.IdFor(x => x.Html)_editor" asp-for="Text" style="min-height: 400px;" class="form-control" dir="@culture.GetLanguageDirection()"></div>
         <textarea asp-for="Html" class="content-preview-text" hidden>@Html.Raw(Model.Html)</textarea>
         <span class="hint">@T["The body of the content item."]</span>
@@ -60,7 +59,7 @@
 
             editor.getModel().onDidChangeContent((event) => {
                 textArea.value = editor.getValue();
-                $(document).trigger('contentpreview:render');
+                document.dispatchEvent(new Event('contentpreview:render'));
             });
 
             const shortcodesAction = {
@@ -80,7 +79,7 @@
                 contextMenuGroupId: 'orchardcore',
                 contextMenuOrder: 0,
                 keybindings: [
-                    monaco.KeyMod.Alt | monaco.KeyCode.KEY_S,
+                    monaco.KeyMod.Alt | monaco.KeyCode.KeyS,
                 ]
             }
             editor.addAction(shortcodesAction);

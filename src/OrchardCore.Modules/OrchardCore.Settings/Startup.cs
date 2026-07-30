@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.Deployment;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
@@ -75,6 +76,7 @@ public sealed class Startup : StartupBase
 
         // Site Settings editor
         services.AddSiteDisplayDriver<DefaultSiteSettingsDisplayDriver>();
+        services.AddSiteDisplayDriver<DebugSettingsDisplayDriver>();
         services.AddSiteDisplayDriver<ButtonsSettingsDisplayDriver>();
         services.AddNavigationProvider<AdminMenu>();
 
@@ -86,7 +88,19 @@ public sealed class Startup : StartupBase
 
         services.AddTransient<IPostConfigureOptions<ResourceOptions>, ResourceOptionsConfiguration>();
         services.AddTransient<IPostConfigureOptions<PagerOptions>, PagerOptionsConfiguration>();
+        services.AddTransient<IConfigureOptions<ShapeRenderingOptions>, ShapeRenderingOptionsConfiguration>();
 
         services.AddScoped<IModularTenantEvents, PreloadSiteSettingsTenantEventHandler>();
+    }
+}
+
+[RequireFeatures("OrchardCore.Deployment")]
+public sealed class DeploymentStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddSiteSettingsPropertyDeploymentStep<DebugSettings, DeploymentStartup>(
+            S => S["Debugging settings"],
+            S => S["Exports the debugging settings."]);
     }
 }

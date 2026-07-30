@@ -1,23 +1,53 @@
-$(function () {
+document.addEventListener("DOMContentLoaded", () => {
+    const databaseProvider = document.getElementById("DatabaseProvider");
+
     toggleConnectionStringAndPrefix();
 
-    // Show hide the connection string when a provider is selected
-    $("#DatabaseProvider").change(function () {
-        toggleConnectionStringAndPrefix();
-    });
+    if (databaseProvider) {
+        databaseProvider.addEventListener("change", toggleConnectionStringAndPrefix);
+    }
 });
 
-// Show or hide the connection string section and table prefix depending on the database provider
 function toggleConnectionStringAndPrefix() {
-    $("#DatabaseProvider option:selected").each(function () {
-        $(this).data("connection-string") === true
-            ? $(".connectionString").show()
-            : $(".connectionString").hide();
+    const databaseProvider = document.getElementById("DatabaseProvider");
+    const tablePrefix = document.getElementById("TablePrefix");
+    const connectionString = document.getElementById("ConnectionString");
+    const connectionStringHint = document.getElementById("connectionStringHint");
 
-        $(this).data("table-prefix") === true
-            ? $(".tablePrefix").show()
-            : $(".tablePrefix").hide();
+    if (!tablePrefix) {
+        return;
+    }
 
-        $("#connectionStringHint").text($(this).data("connection-string-sample"));
+    const selectedOption = databaseProvider?.selectedOptions?.[0] ?? null;
+    const hasProviderSelector = selectedOption !== null;
+    const requireTablePrefix = tablePrefix.dataset.requireTablePrefix === "true";
+    const hasTablePrefix = hasProviderSelector
+        ? selectedOption.dataset.tablePrefix === "true"
+        : tablePrefix.dataset.providerHasTablePrefix === "true";
+    const hasConnectionString = hasProviderSelector
+        ? selectedOption.dataset.connectionString === "true"
+        : connectionString?.dataset.providerHasConnectionString === "true";
+
+    toggleElements(".connectionString", hasConnectionString);
+    toggleElements(".tablePrefixField", hasTablePrefix);
+    toggleElements(".schemaField", hasTablePrefix);
+
+    tablePrefix.required = requireTablePrefix && hasTablePrefix;
+    if (connectionString) {
+        // Connection string is always optional at tenant create/edit time.
+        // It becomes required during setup if not provided at create.
+        connectionString.required = false;
+    }
+
+    if (connectionStringHint) {
+        connectionStringHint.textContent = hasProviderSelector
+            ? (selectedOption?.dataset.connectionStringSample ?? "")
+            : (connectionString?.dataset.connectionStringSample ?? "");
+    }
+}
+
+function toggleElements(selector, isVisible) {
+    document.querySelectorAll(selector).forEach((element) => {
+        element.hidden = !isVisible;
     });
 }

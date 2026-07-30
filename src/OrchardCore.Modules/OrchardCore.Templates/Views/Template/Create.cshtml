@@ -34,30 +34,44 @@
 
     <input type="hidden" asp-for="AdminTemplates" />
 
-    <div class="mb-3" asp-validation-class-for="Name">
-        <label asp-for="Name" class="form-label">@T["Name"]</label>
+    <div class="ocat-wrapper" asp-validation-class-for="Name">
+        <label asp-for="Name" class="ocat-label">@T["Name"]</label>
+        <div class="ocat-end">
         <input asp-for="Name" class="form-control" autofocus />
         <span asp-validation-for="Name"></span>
         <span class="hint">@T["The name of the template."]</span>
+        </div>
     </div>
 
-    <div class="mb-3" asp-validation-class-for="Description">
-        <label asp-for="Description" class="form-label">@T["Description"]</label>
+    <div class="ocat-wrapper" asp-validation-class-for="Description">
+        <label asp-for="Description" class="ocat-label">@T["Description"]</label>
+        <div class="ocat-end">
         <input asp-for="Description" class="form-control" autofocus />
         <span class="hint">@T["The description of the template."]</span>
+        </div>
     </div>
 
-    <div class="mb-3" asp-validation-class-for="Content">
-        <label asp-for="Content" class="form-label">@T["Content"]</label>
+    <div class="ocat-wrapper" asp-validation-class-for="Content">
+        <label asp-for="Content" class="ocat-label">@T["Content"]</label>
+        <div class="ocat-end">
         <div id="@Html.IdFor(x => x.Content)_editor" asp-for="Text" style="min-height: 600px;" class="form-control" dir="@culture.GetLanguageDirection()"></div>
         <textarea asp-for="Content" class="content-preview-text" hidden>@Html.Raw(Model.Content)</textarea>
         <span asp-validation-for="Content"></span>
         <span class="hint">@T["The Liquid template."]</span>
+        </div>
     </div>
 </form>
 
 <script asp-name="create-template" at="Foot" depends-on="liquid-intellisense monaco">
-    document.addEventListener('DOMContentLoaded', function () {
+    function onDocumentReady(callback) {
+        if (document.readyState !== 'loading') {
+            callback();
+        } else {
+            document.addEventListener('DOMContentLoaded', callback);
+        }
+    }
+
+    onDocumentReady(function () {
         require(['vs/editor/editor.main'], function () {
             var settings = {
                 automaticLayout: true,
@@ -99,11 +113,17 @@
 
 
 <script at="Foot">
-    $(function () {
+    onDocumentReady(function () {
 
         function initializeTemplatePreview(element) {
 
-            var antiforgerytoken = $("[name='__RequestVerificationToken']").val();
+            var antiforgerytoken = document.querySelector("[name='__RequestVerificationToken']").value;
+
+            function toQueryString(data) {
+                return Object.keys(data).map(function (key) {
+                    return encodeURIComponent(key) + '=' + encodeURIComponent(data[key]);
+                }).join('&');
+            }
 
             sendFormData = function (element) {
 
@@ -113,7 +133,7 @@
                     '__RequestVerificationToken': antiforgerytoken
                 };
                 // store the form data to pass it in the event handler
-                localStorage.setItem('OrchardCore.templates', JSON.stringify($.param(formData)));
+                localStorage.setItem('OrchardCore.templates', JSON.stringify(toQueryString(formData)));
             }
 
             window.addEventListener('storage', function (ev) {
@@ -124,9 +144,9 @@
                 sendFormData(element);
             }, false);
 
-            $(element).on('change', function () { sendFormData(element); });
+            element.addEventListener('change', function () { sendFormData(element); });
 
-            $(window).on('unload', function () {
+            window.addEventListener('unload', function () {
                 localStorage.removeItem('OrchardCore.templates');
                 // this will raise an event in the preview window to notify that the live preview is no longer active.
                 localStorage.setItem('OrchardCore.templates:not-connected', '');

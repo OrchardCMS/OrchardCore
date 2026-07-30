@@ -16,49 +16,39 @@
     @if (!Model.NoUsername || string.IsNullOrWhiteSpace(Model.UserName) || ViewData.ModelState.GetFieldValidationState("UserName") == ModelValidationState.Invalid)
     {
         <div class="mb-3">
-            <label asp-for="UserName" class="col-md-3 form-label">@T["Username"]</label>
-            <div class="col-md-9">
-                <input asp-for="UserName" class="form-control" autofocus />
-                <span asp-validation-for="UserName" class="text-danger"></span>
-            </div>
+            <label asp-for="UserName" class="form-label">@T["Username"]</label>
+            <input asp-for="UserName" class="form-control" autofocus />
+            <span asp-validation-for="UserName" class="text-danger"></span>
         </div>
     }
 
     @if (!Model.NoEmail || string.IsNullOrWhiteSpace(Model.Email) || ViewData.ModelState.GetFieldValidationState("Email") == ModelValidationState.Invalid)
     {
         <div class="mb-3">
-            <label asp-for="Email" class="col-md-3 form-label">@T["Email"]</label>
-            <div class="col-md-9">
-                <input asp-for="Email" class="form-control" />
-                <span asp-validation-for="Email" class="text-danger"></span>
-            </div>
+            <label asp-for="Email" class="form-label">@T["Email"]</label>
+            <input asp-for="Email" class="form-control" />
+            <span asp-validation-for="Email" class="text-danger"></span>
         </div>
     }
 
     @if (!Model.NoPassword)
     {
         <div class="mb-3">
-            <label asp-for="Password" class="col-md-3 form-label">@T["Password"]</label>
-            <div class="col-md-9">
-                <input asp-for="Password" class="form-control" />
-                <span asp-validation-for="Password" class="text-danger"></span>
-            </div>
+            <label asp-for="Password" class="form-label">@T["Password"]</label>
+            <input asp-for="Password" class="form-control" />
+            <span asp-validation-for="Password" class="text-danger"></span>
         </div>
 
         <div class="mb-3">
-            <label asp-for="ConfirmPassword" class="col-md-3 form-label">@T["Confirm password"]</label>
-            <div class="col-md-9">
-                <input asp-for="ConfirmPassword" class="form-control" />
-                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
-            </div>
+            <label asp-for="ConfirmPassword" class="form-label">@T["Confirm password"]</label>
+            <input asp-for="ConfirmPassword" class="form-control" />
+            <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
         </div>
     }
 
     @await RenderSectionAsync("AfterRegister", required: false)
 
     <div class="mb-3">
-        <div class="col-md-offset-3 col-md-9">
-            <button type="submit" class="btn btn-primary">@T["Register"]</button>
-        </div>
+        <button type="submit" class="btn btn-primary">@T["Register"]</button>
     </div>
 </form>

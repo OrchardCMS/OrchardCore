@@ -175,9 +175,12 @@ public class AnchorTag : IAnchorTag
                htmlAttributes: null);
         }
 
-        foreach (var attribute in customAttributes)
+        if (customAttributes != null)
         {
-            tagBuilder.Attributes[attribute.Key] = attribute.Value;
+            foreach (var attribute in customAttributes)
+            {
+                tagBuilder.Attributes[attribute.Key] = attribute.Value;
+            }
         }
 
         tagBuilder.RenderStartTag().WriteTo(writer, (HtmlEncoder)encoder);

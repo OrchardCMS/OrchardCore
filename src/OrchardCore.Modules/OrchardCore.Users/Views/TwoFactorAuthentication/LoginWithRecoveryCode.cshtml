@@ -21,12 +21,14 @@
 
         <div class="offset-lg-3 col-lg-6">
             <form method="post">
-                <div class="form-floating mb-3">
-                    <input asp-for="RecoveryCode" class="form-control" autocomplete="off" placeholder="RecoveryCode" />
+                <div class="mb-3" asp-validation-class-for="RecoveryCode">
                     <label asp-for="RecoveryCode" class="form-label">@T["Recovery Code"]</label>
+                    <input asp-for="RecoveryCode" class="form-control" autocomplete="off" placeholder="RecoveryCode" />
                     <span asp-validation-for="RecoveryCode" class="text-danger"></span>
                 </div>
-                <button type="submit" class="w-100 btn btn-lg btn-primary">@T["Log in"]</button>
+                <div class="mb-3">
+                    <button type="submit" class="w-100 btn btn-lg btn-primary">@T["Log in"]</button>
+                </div>
             </form>
         </div>
     </div>

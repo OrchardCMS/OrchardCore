@@ -49,11 +49,11 @@ A sample of a roles configuration step:
 }
 ```
 
-As of version 3.0, the `Roles` recipe includes the ability to define specific permission behaviors, giving you greater control over how permissions are managed within a role. The following behaviors are available:
+The `Roles` recipe step supports specific permission behaviors so you can control how permissions are managed within a role. The following behaviors are available:
 
 - **Replace**: This behavior removes all existing permissions associated with the role and replaces them with the new permissions from the `Permissions` collection. This is the default behavior.
 - **Add**: This behavior adds the new permission(s) from the `Permissions` collection to the role, but only if they do not already exist. Existing permissions are left unchanged.
-- **Remove**: This behavior removes the specified permission(s) from the role’s existing permissions based on the `Permissions` collection.
+- **Remove**: This behavior removes the specified permission(s) from the role's existing permissions based on the `Permissions` collection.
 
 ### Example: Adding a New Permission to a Role
 

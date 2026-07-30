@@ -5,7 +5,7 @@ namespace OrchardCore.Tests.Localization;
 public class CultureScopeTests
 {
     [Fact]
-    public void CultureScopeSetsUICultureIfNotProvided()
+    public void CultureScopeSetsUICultureIfNotProvided_Default_Succeeds()
     {
         // Arrange
         var culture = "ar-YE";
@@ -19,7 +19,7 @@ public class CultureScopeTests
     }
 
     [Fact]
-    public void CultureScopeSetsBothCultureAndUICulture()
+    public void CultureScopeSetsBothCultureAndUICulture_Default_Succeeds()
     {
         // Arrange
         var culture = "ar";
@@ -34,7 +34,7 @@ public class CultureScopeTests
     }
 
     [Fact]
-    public void CultureScopeSetsOrginalCulturesAfterEndOfScope()
+    public void CultureScopeSetsOrginalCulturesAfterEndOfScope_Default_Succeeds()
     {
         // Arrange
         var culture = CultureInfo.CurrentCulture;
@@ -52,7 +52,7 @@ public class CultureScopeTests
     }
 
     [Fact]
-    public async Task CultureScopeSetsOrginalCulturesOnException()
+    public async Task CultureScopeSetsOrginalCulturesOnException_Default_Succeeds()
     {
         // Arrange
         var culture = CultureInfo.CurrentCulture;

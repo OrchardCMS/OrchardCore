@@ -20,111 +20,111 @@
     </nav>
 </zone>
 
-<form asp-action="Index" id="workflows-form" method="post" class="no-multisubmit">
+<form asp-action="Index" id="workflows-form" method="post" class="no-multisubmit" data-list-management data-selected-label="@T["selected"]">
     <input type="submit" name="submit.Filter" id="submitFilter" class="visually-hidden" />
     <input type="submit" name="submit.BulkAction" class="visually-hidden" />
     <input asp-for="Options.BulkAction" type="hidden" />
 
     <div class="mb-3">
         <ul class="list-group with-checkbox">
-            @if (Model.Workflows.Any())
-            {
-                <li class="list-group-item text-bg-theme">
-                    <div class="row">
-                        <div class="col mb-1 text-nowrap">
-                            <div class="form-check mt-2 me-n2">
-                                <input type="checkbox" class="form-check-input" id="select-all">
-                                <label class="form-check-label" for="select-all" id="select-all-label" title="@T["Select All"]"></label>
-                                <label id="items" for="select-all">@T.Plural(Model.Workflows.Count, "{0} item", "{0} items")<span class="text-muted" title="@T["Items {0} to {1}", startIndex, endIndex]">@T.Plural((int)Model.Pager.TotalItemCount, " / {0} item in total", " / {0} items in total")</span></label>
-                                <label id="selected-items" class="text-muted" for="select-all"></label>
-                            </div>
-                        </div>
-                        <div class="col-2 mb-1" style="display:none" id="actions">
-                            <div class="dropdown float-end mt-1">
-                                <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="bulk-action-menu-button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    @T["Actions"]
-                                </button>
-                                <ul class="dropdown-menu dropdown-menu-end">
-                                    @foreach (var item in Model.Options.WorkflowsBulkAction)
-                                    {
-                                        <li><a class="dropdown-item" href="javascript:void(0)" data-action="@item.Value" data-title="@T["Bulk Action"]" data-message="@T["Are you sure you want to {0} these items?", @item.Text.ToLower()]">@item.Text</a></li>
-                                    }
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="col mb-1 filter">
-                            <div class="btn-group float-end mt-1">
-                                <select asp-for="Options.Filter" asp-items="Model.Options.WorkflowsStatuses" class="selectpicker show-tick me-2" data-header="@T["Filter by status"]" data-live-search="true" data-selected-text-format="static" data-dropdown-align-right="true" data-width="fit" title="@T["Status"]" data-style="btn-sm">
-                                </select>
-                                <select asp-for="Options.OrderBy" asp-items="@Model.Options.WorkflowsSorts" class="selectpicker show-tick" data-header="@T["Sort by"]" data-width="fit" data-selected-text-format="static" data-dropdown-align-right="true" title="@T["Sort"]" data-style="btn-sm"></select>
-                            </div>
-                        </div>
-                    </div>
-                </li>
-                @for (var i = 0; i < Model.Workflows.Count; i++)
+                @if (Model.Workflows.Any())
                 {
-                    var entry = Model.Workflows[i];
-                    var statusCss = string.Empty;
-                    var restartable = true;
-                    switch (entry.Workflow.Status)
-                    {
-                        case WorkflowStatus.Aborted:
-                            statusCss = "warning";
-                            break;
-                        case WorkflowStatus.Idle:
-                        default:
-                            statusCss = "secondary";
-                            break;
-                        case WorkflowStatus.Finished:
-                            statusCss = "success";
-                            break;
-                        case WorkflowStatus.Executing:
-                        case WorkflowStatus.Halted:
-                        case WorkflowStatus.Resuming:
-                        case WorkflowStatus.Starting:
-                            statusCss = "info";
-                            restartable = false;
-                            break;
-                        case WorkflowStatus.Faulted:
-                            statusCss = "danger";
-                            break;
-                    }
-
-                    <li class="list-group-item">
-                        <div class="w-100">
-                            <div class="float-end">
-                                @if (restartable)
-                                {
-                                    <a asp-action="Restart" asp-route-id="@entry.Workflow.Id" class="btn btn-warning btn-sm" data-title="@T["Restart"]" data-message="@T["Are you sure you want to restart this workflow instance?"]" data-url-af="RemoveUrl UnsafeUrl">@T["Restart"]</a>
-                                }
-                                <a asp-action="Delete" asp-route-id="@entry.Workflow.Id" class="btn btn-danger btn-sm" data-message="@T["Are you sure you want to delete this workflow instance?"]" data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+                    <li class="list-group-item text-bg-theme">
+                        <div class="row">
+                            <div class="col mb-1 text-nowrap">
+                                <div class="form-check mt-2 me-n2">
+                                    <input type="checkbox" class="form-check-input" id="select-all">
+                                    <label class="form-check-label" for="select-all" id="select-all-label" title="@T["Select All"]"></label>
+                                    <label id="items" for="select-all">@T.Plural(Model.Workflows.Count, "{0} item", "{0} items")<span class="text-muted" title="@T["Items {0} to {1}", startIndex, endIndex]">@T.Plural((int)Model.Pager.TotalItemCount, " / {0} item in total", " / {0} items in total")</span></label>
+                                    <label id="selected-items" class="text-muted" for="select-all"></label>
+                                </div>
                             </div>
-
-                            <div class="form-check float-start">
-                                <input type="checkbox" class="form-check-input" value="@entry.Workflow.Id" name="itemIds" id="itemIds-@entry.Workflow.Id">
-                                <label class="form-check-label" for="itemIds-@entry.Workflow.Id"></label>
+                            <div class="col-2 mb-1 d-none" id="actions">
+                                <div class="dropdown float-end mt-1">
+                                    <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="bulk-action-menu-button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        @T["Actions"]
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end">
+                                        @foreach (var item in Model.Options.WorkflowsBulkAction)
+                                        {
+                                            <li><a class="dropdown-item" href="javascript:void(0)" data-action="@item.Value" data-title="@T["Bulk Action"]" data-message="@T["Are you sure you want to {0} these items?", @item.Text.ToLower()]">@item.Text</a></li>
+                                        }
+                                    </ul>
+                                </div>
                             </div>
-                            <a asp-action="Details" asp-route-id="@entry.Workflow.Id">@entry.Workflow.WorkflowId</a>
-                            <div>
-                                <span class="hint">@T["Created {0}", (object)(await DisplayAsync(await New.TimeSpan(Utc: entry.Workflow.CreatedUtc)))]</span>
-                                <div class="info">
-                                    <span class="badge text-bg-@statusCss">
-                                        @T.GetLocalizedStatus(entry.Workflow.Status)
-                                    </span>
+                            <div class="col mb-1 filter">
+                                <div class="btn-group float-end mt-1">
+                                    <select asp-for="Options.Filter" asp-items="Model.Options.WorkflowsStatuses" class="selectpicker show-tick me-2" data-header="@T["Filter by status"]" data-live-search="true" data-selected-text-format="static" data-dropdown-align-right="true" data-width="fit" title="@T["Status"]" data-style="btn-sm">
+                                    </select>
+                                    <select asp-for="Options.OrderBy" asp-items="@Model.Options.WorkflowsSorts" class="selectpicker show-tick" data-header="@T["Sort by"]" data-width="fit" data-selected-text-format="static" data-dropdown-align-right="true" title="@T["Sort"]" data-style="btn-sm"></select>
                                 </div>
                             </div>
                         </div>
                     </li>
+                    @for (var i = 0; i < Model.Workflows.Count; i++)
+                    {
+                        var entry = Model.Workflows[i];
+                        var statusCss = string.Empty;
+                        var restartable = true;
+                        switch (entry.Workflow.Status)
+                        {
+                            case WorkflowStatus.Aborted:
+                                statusCss = "warning";
+                                break;
+                            case WorkflowStatus.Idle:
+                            default:
+                                statusCss = "secondary";
+                                break;
+                            case WorkflowStatus.Finished:
+                                statusCss = "success";
+                                break;
+                            case WorkflowStatus.Executing:
+                            case WorkflowStatus.Halted:
+                            case WorkflowStatus.Resuming:
+                            case WorkflowStatus.Starting:
+                                statusCss = "info";
+                                restartable = false;
+                                break;
+                            case WorkflowStatus.Faulted:
+                                statusCss = "danger";
+                                break;
+                        }
+
+                        <li class="list-group-item">
+                            <div class="w-100">
+                                <div class="float-end">
+                                    @if (restartable)
+                                    {
+                                        <a asp-action="Restart" asp-route-id="@entry.Workflow.Id" class="btn btn-warning btn-sm" data-title="@T["Restart"]" data-message="@T["Are you sure you want to restart this workflow instance?"]" data-url-af="RemoveUrl UnsafeUrl">@T["Restart"]</a>
+                                    }
+                                    <a asp-action="Delete" asp-route-id="@entry.Workflow.Id" class="btn btn-danger btn-sm" data-message="@T["Are you sure you want to delete this workflow instance?"]" data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+                                </div>
+
+                                <div class="form-check float-start">
+                                    <input type="checkbox" class="form-check-input" value="@entry.Workflow.Id" name="itemIds" id="itemIds-@entry.Workflow.Id">
+                                    <label class="form-check-label" for="itemIds-@entry.Workflow.Id"></label>
+                                </div>
+                                <a asp-action="Details" asp-route-id="@entry.Workflow.Id">@entry.Workflow.WorkflowId</a>
+                                <div>
+                                    <span class="hint">@T["Created {0}", (object)(await DisplayAsync(await New.TimeSpan(Utc: entry.Workflow.CreatedUtc)))]</span>
+                                    <div class="info">
+                                        <span class="badge text-bg-@statusCss">
+                                            @T.GetLocalizedStatus(entry.Workflow.Status)
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    }
                 }
-            }
-            else
-            {
-                <li class="list-group-item">
-                    <div class="alert alert-info mb-0" role="alert">
-                        @T["<strong>Nothing here!</strong> There are no halted workflows at the moment."]
-                    </div>
-                </li>
-            }
+                else
+                {
+                    <li class="list-group-item">
+                        <div class="alert alert-info mb-0" role="alert">
+                            @T["<strong>Nothing here!</strong> There are no halted workflows at the moment."]
+                        </div>
+                    </li>
+                }
         </ul>
         @await DisplayAsync(Model.Pager)
     </div>
@@ -134,69 +134,4 @@
     <a class="btn btn-secondary" href="@Model.ReturnUrl">@T["Back"]</a>
 </div>
 
-<script at="Foot">
-    $(function () {
-        $('.selectpicker').selectpicker();
-        $('.selectpicker').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
-            $("[name='submit.Filter']").click();
-        });
-        var actions = $("#actions");
-        var items = $("#items");
-        var filters = $(".filter");
-        var selectAllCtrl = $("#select-all");
-        var selectedItems = $("#selected-items");
-        var itemsCheckboxes = $(":checkbox[name='itemIds']");
-
-        $(".filter-options input").on("change", function () {
-            $("[name='submit.Filter']").click();
-        });
-
-        $(".dropdown-menu .dropdown-item").filter(function () {
-            return $(this).data("action");
-        }).on("click", function () {
-            if ($(":checkbox[name='itemIds']:checked").length > 1) {
-                var $this = $(this);
-                confirmDialog({
-                    title: $this.data('title'), message: $this.data('message'), callback: function (r) {
-                        if (r) {
-                            $("[name='Options.BulkAction']").val($this.data("action"));
-                            $("[name='submit.BulkAction']").click();
-                        }
-                    }
-                });
-            }
-        });
-
-        function displayActionsOrFilters() {
-            if ($(":checkbox[name='itemIds']:checked").length > 1) {
-                actions.show();
-                filters.hide();
-                selectedItems.show();
-                items.hide();
-            }
-            else {
-                actions.hide();
-                filters.show();
-                selectedItems.hide();
-                items.show();
-            }
-        }
-
-        selectAllCtrl.click(function () {
-            itemsCheckboxes.not(this).prop("checked", this.checked);
-            selectedItems.text($(":checkbox[name='itemIds']:checked").length + ' @T["selected"]');
-            displayActionsOrFilters();
-        });
-
-        itemsCheckboxes.on("click", function () {
-            var itemsCount = $(":checkbox[name='itemIds']").length;
-            var selectedItemsCount = $(":checkbox[name='itemIds']:checked").length;
-
-            selectAllCtrl.prop("checked", selectedItemsCount == itemsCount);
-            selectAllCtrl.prop("indeterminate", selectedItemsCount > 0 && selectedItemsCount < itemsCount);
-
-            selectedItems.text(selectedItemsCount + ' @T["selected"]');
-            displayActionsOrFilters();
-        });
-    });
-</script>
+<script asp-name="list-management" at="Foot"></script>

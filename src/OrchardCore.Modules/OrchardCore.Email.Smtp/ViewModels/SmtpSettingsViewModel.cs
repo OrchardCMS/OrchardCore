@@ -33,5 +33,5 @@ public class SmtpSettingsViewModel
 
     public SmtpDeliveryMethod DeliveryMethod { get; set; }
 
-    public string PickupDirectoryLocation { get; set; }
+    public string PickupDirectoryLocation { get; set; } = Services.SmtpPickupDirectoryResolver.DefaultPickupDirectoryLocation;
 }

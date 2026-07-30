@@ -75,6 +75,46 @@ public class AttachedMediaFieldFileService
     }
 
     /// <summary>
+    /// Moves an existing file into the content item's attached media folder using the attached editor naming convention.
+    /// </summary>
+    public async Task<string> MoveFileToContentItemFolderAsync(string path, ContentItem contentItem)
+    {
+        if (string.IsNullOrEmpty(path))
+        {
+            return path;
+        }
+
+        var sourceFileInfo = await _fileStore.GetFileInfoAsync(path);
+        if (sourceFileInfo == null)
+        {
+            // File not found — keep the reference so the user can see which files are missing.
+            return path;
+        }
+
+        var targetDir = GetContentItemFolder(contentItem);
+        var finalFileName = (await GetFileHashAsync(path)) + GetFileExtension(path);
+        var finalFilePath = _fileStore.Combine(targetDir, finalFileName);
+
+        if (string.Equals(_fileStore.NormalizePath(path), finalFilePath, StringComparison.OrdinalIgnoreCase))
+        {
+            return path;
+        }
+
+        await _fileStore.TryCreateDirectoryAsync(targetDir);
+
+        if (await _fileStore.GetFileInfoAsync(finalFilePath) is null)
+        {
+            await _fileStore.MoveFileAsync(path, finalFilePath);
+        }
+        else
+        {
+            await _fileStore.TryDeleteFileAsync(path);
+        }
+
+        return finalFilePath;
+    }
+
+    /// <summary>
     /// Removes the assets attached to a content item through an attached media field.
     /// </summary>
     /// <remarks>

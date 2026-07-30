@@ -47,7 +47,7 @@ public class SecurityMiddlewareTests
 
     [Theory]
     [MemberData(nameof(ContentSecurityPolicies))]
-    public async Task ContentSecurityPolicyHeaderShouldBeAdded(string[] contentSecurityPolicies, string expectedValue)
+    public async Task ContentSecurityPolicyHeader_Default_BeAdded(string[] contentSecurityPolicies, string expectedValue)
     {
         // Arrange
         var options = new SecurityHeadersOptions
@@ -66,7 +66,7 @@ public class SecurityMiddlewareTests
     }
 
     [Fact]
-    public async Task ContentTypeOptionsHeaderShouldBeAdded()
+    public async Task ContentTypeOptionsHeader_Default_BeAdded()
     {
         // Arrange
         var options = new SecurityHeadersOptions
@@ -86,7 +86,7 @@ public class SecurityMiddlewareTests
 
     [Theory]
     [MemberData(nameof(PermissionsPolicies))]
-    public async Task PermissionsPolicyHeaderShouldBeAdded(string[] permissionsPolicies, string expectedValue)
+    public async Task PermissionsPolicyHeader_Default_BeAdded(string[] permissionsPolicies, string expectedValue)
     {
         // Arrange
         var options = new SecurityHeadersOptions
@@ -106,7 +106,7 @@ public class SecurityMiddlewareTests
 
     [Theory]
     [MemberData(nameof(ReferrerPolicies))]
-    public async Task ReferrerPolicyHeaderShouldBeAdded(string policy, string expectedValue)
+    public async Task ReferrerPolicyHeader_Default_BeAdded(string policy, string expectedValue)
     {
         // Arrange
         var options = new SecurityHeadersOptions

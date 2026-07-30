@@ -1,5 +1,4 @@
 @using OrchardCore.Liquid.ViewModels
-@using OrchardCore
 @model LiquidPartViewModel
 
 <style asp-name="codemirror"></style>
@@ -11,9 +10,9 @@
 <script asp-name="codemirror-mode-xml" at="Foot"></script>
 <script asp-src="~/OrchardCore.Liquid/codemirror/liquid.js" at="Foot"></script>
 
-<div class="@Orchard.GetWrapperClasses()">
-    <label asp-for="Liquid" class="@Orchard.GetLabelClasses()">@T["Body"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper">
+    <label asp-for="Liquid" class="ocat-label">@T["Body"]</label>
+    <div class="ocat-end">
         <textarea asp-for="Liquid" rows="5" class="form-control content-preview-text"></textarea>
         <span class="hint">
             @T["The body of the content item, in Liquid format."]
@@ -23,7 +22,15 @@
 </div>
 
 <script at="Foot">
-    $(function () {
+    function onDocumentReady(callback) {
+        if (document.readyState !== 'loading') {
+            callback();
+        } else {
+            document.addEventListener('DOMContentLoaded', callback);
+        }
+    }
+
+    onDocumentReady(function () {
         var textArea = document.getElementById('@Html.IdFor(x => x.Liquid)');
 
         if (textArea == null) {
@@ -40,7 +47,7 @@
 
         editor.on('change', function (cmEditor) {
             cmEditor.save();
-            $(document).trigger('contentpreview:render');
+            document.dispatchEvent(new Event('contentpreview:render'));
         });
     });
 </script>

@@ -96,8 +96,8 @@
     var fieldId = Html.IdFor(x => x.Text);
 }
 
-<div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@(fieldId)_FieldWrapper">
-    <label for="@(fieldId)_color" class="@Orchard.GetLabelClasses(inputRequired: settings.Required) d-block">@localizedFieldName</label>
+<div class="@($"ocat-wrapper field-wrapper field-wrapper-{Model.PartFieldDefinition.PartDefinition.Name.HtmlClassify()}-{Model.PartFieldDefinition.Name.HtmlClassify()}" + (Model.PartFieldDefinition.IsNamedPart() ? $" field-wrapper-{Model.PartFieldDefinition.ContentTypePartDefinition.Name.HtmlClassify()}-{Model.PartFieldDefinition.Name.HtmlClassify()}" : string.Empty))" id="@(fieldId)_FieldWrapper">
+    <label for="@(fieldId)_color" class="ocat-label @(settings.Required ? "ocat-label-required" : "") d-block">@localizedFieldName</label>
     <div id="@(fieldId)_color_wrapper" class="color_wrapper">
         <input id="@(fieldId)" asp-for="Text" type="hidden">
         <input id="@(fieldId)_color" class="color" oninput="setColorField('@fieldId')" type="color" value="@color" @(settings.Type == FieldBehaviorType.GeneratedDisabled ? "disabled" : "")>

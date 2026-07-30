@@ -71,7 +71,7 @@ public sealed class SecureMediaPermissions : IPermissionProvider
         {
             new PermissionStereotype
             {
-                Name = "Administrator",
+                Name = OrchardCoreConstants.Roles.Administrator,
                 Permissions = new[]
                 {
                     MediaPermissions.ViewMedia,
@@ -80,7 +80,7 @@ public sealed class SecureMediaPermissions : IPermissionProvider
             },
             new PermissionStereotype
             {
-                Name = "Authenticated",
+                Name = OrchardCoreConstants.Roles.Authenticated,
                 Permissions = new[]
                 {
                     MediaPermissions.ViewOwnMedia,
@@ -88,7 +88,7 @@ public sealed class SecureMediaPermissions : IPermissionProvider
             },
             new PermissionStereotype
             {
-                Name = "Anonymous",
+                Name = OrchardCoreConstants.Roles.Anonymous,
                 Permissions = new[]
                 {
                     MediaPermissions.ViewMedia,

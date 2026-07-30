@@ -80,6 +80,7 @@ public sealed class Startup : StartupBase
         services.AddActivity<WhileLoopTask, WhileLoopTaskDisplayDriver>();
         services.AddActivity<IfElseTask, IfElseTaskDisplayDriver>();
         services.AddActivity<ScriptTask, ScriptTaskDisplayDriver>();
+        services.AddActivity<LiquidTask, LiquidTaskDisplayDriver>();
         services.AddActivity<LogTask, LogTaskDisplayDriver>();
 
         services.AddRecipeExecutionStep<WorkflowTypeStep>();
@@ -104,5 +105,14 @@ public sealed class SessionStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddActivity<CommitTransactionTask, CommitTransactionTaskDisplayDriver>();
+    }
+}
+
+[Feature("OrchardCore.Liquid")]
+public sealed class LiquidStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddScoped<IWorkflowExecutionContextHandler, LiquidViewTemplateWorkflowExecutionContextHandler>();
     }
 }

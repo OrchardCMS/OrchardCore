@@ -3,7 +3,7 @@
     var thumbnails = (Dictionary<string, dynamic>)Model.Thumbnails;
 }
 
-<div class="modal fade" id="modalConditions" tabindex="-1" role="dialog" aria-labelledby="available-rules-title" aria-hidden="true">
+<div class="modal fade" id="modalConditions" tabindex="-1" role="dialog" aria-labelledby="available-rules-title" aria-hidden="true" data-list-management data-client-side-search="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -18,7 +18,7 @@
                     <div class="row row-cols-1 row-cols-md-2 g-2">
                         @foreach (var thumbnail in thumbnails.OrderBy(t => t.Key))
                         {
-                            <div class="col item">
+                            <div class="col item" data-filter-value="@thumbnail.Key">
                                 @await DisplayAsync(thumbnail.Value)
                             </div>
                         }
@@ -32,50 +32,39 @@
     </div>
 </div>
 
-<script At="Foot" depends-on="jQuery">
-    $(function () {
-        $('#modalConditions').on('show.bs.modal', function (event) {
-            var button = $(event.relatedTarget) // Button that triggered the modal
-            var conditionGroupId = button.data('condition-group-id');
+<script asp-name="list-management" at="Foot"></script>
 
-            $('.condition-thumbnail').one('click', function () {
-                var url = $(this).data("target-url") + "&conditionGroupId=" + conditionGroupId;
-                $(location).attr('href',url);
-            });
-        });
-    });
-    $(function() {
-      $('#modalConditions').on('shown.bs.modal', function() {
-        $('#search-box').trigger('focus');
-      });
-    });
-
-    function replaceDiacritics(str) {
-        return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+<script At="Foot">
+    function onDocumentReady(callback) {
+        if (document.readyState !== 'loading') {
+            callback();
+        } else {
+            document.addEventListener('DOMContentLoaded', callback);
+        }
     }
 
-    $(function () {
-        var searchBox = $('#search-box');
+    onDocumentReady(function () {
+        var modalConditions = document.getElementById('modalConditions');
+        if (modalConditions) {
+            modalConditions.addEventListener('show.bs.modal', function (event) {
+                var button = event.relatedTarget; // Button that triggered the modal
+                var conditionGroupId = button ? button.dataset.conditionGroupId : '';
 
-        // On each keypress filter the list of cards
-        searchBox.keyup(function (e) {
-            var search = replaceDiacritics($(this).val().toLowerCase());
-            if (search == '') {
-                searchBox.val('');
-                $('.item').show();
-            }
-            else {
-                $('.item').each(function () {
-                    var filter = replaceDiacritics($(this).children().children().first().html().toLowerCase());
-                    var found = filter.indexOf(search) > -1;
-                    if (found) {
-                        $(this).show();
-                    }
-                    else {
-                        $(this).hide();
-                    }
+                document.querySelectorAll('.condition-thumbnail').forEach(function (thumbnail) {
+                    thumbnail.addEventListener('click', function () {
+                        var url = this.dataset.targetUrl + "&conditionGroupId=" + conditionGroupId;
+                        window.location.href = url;
+                    }, { once: true });
                 });
-            }
-        });
-    })
+            });
+
+            modalConditions.addEventListener('shown.bs.modal', function () {
+                var searchBox = document.getElementById('search-box');
+                if (searchBox) {
+                    searchBox.focus();
+                }
+            });
+        }
+
+    });
 </script>

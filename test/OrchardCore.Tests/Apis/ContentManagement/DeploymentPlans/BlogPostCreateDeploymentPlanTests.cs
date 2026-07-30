@@ -10,7 +10,7 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans;
 public class BlogPostCreateDeploymentPlanTests
 {
     [Fact]
-    public async Task ShouldCreateNewPublishedContentItemVersion()
+    public async Task Create_NewPublishedContentItemVersion_Succeeds()
     {
         using var context = new BlogPostDeploymentContext();
 
@@ -33,7 +33,7 @@ public class BlogPostCreateDeploymentPlanTests
             var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x =>
                 x.ContentType == "BlogPost").ListAsync();
 
-            Assert.Equal(2, blogPosts.Count());
+            Assert.Equal(2, blogPosts.Count);
 
             var originalVersion = blogPosts.FirstOrDefault(x => x.ContentItemVersionId == context.OriginalBlogPostVersionId);
             Assert.False(originalVersion?.Latest);
@@ -47,7 +47,7 @@ public class BlogPostCreateDeploymentPlanTests
     }
 
     [Fact]
-    public async Task ShouldDiscardDraftThenCreateNewPublishedContentItemVersion()
+    public async Task Discard_DraftThenCreateNewPublishedContentItemVersion_Succeeds()
     {
         using var context = new BlogPostDeploymentContext();
 
@@ -73,7 +73,7 @@ public class BlogPostCreateDeploymentPlanTests
             var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x =>
                 x.ContentType == "BlogPost").ListAsync();
 
-            Assert.Equal(3, blogPosts.Count());
+            Assert.Equal(3, blogPosts.Count);
             var originalVersion = blogPosts.FirstOrDefault(x => x.ContentItemVersionId == context.OriginalBlogPostVersionId);
             Assert.False(originalVersion?.Latest);
             Assert.False(originalVersion?.Published);
@@ -90,7 +90,7 @@ public class BlogPostCreateDeploymentPlanTests
     }
 
     [Fact]
-    public async Task ShouldDiscardDraftThenCreateNewDraftContentItemVersion()
+    public async Task Discard_DraftThenCreateNewDraftContentItemVersion_Succeeds()
     {
         using var context = new BlogPostDeploymentContext();
 
@@ -117,7 +117,7 @@ public class BlogPostCreateDeploymentPlanTests
             var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x =>
                 x.ContentType == "BlogPost").ListAsync();
 
-            Assert.Equal(3, blogPosts.Count());
+            Assert.Equal(3, blogPosts.Count);
 
             var originalVersion = blogPosts.FirstOrDefault(x => x.ContentItemVersionId == context.OriginalBlogPostVersionId);
             Assert.False(originalVersion?.Latest);
@@ -135,7 +135,7 @@ public class BlogPostCreateDeploymentPlanTests
     }
 
     [Fact]
-    public async Task ShouldCreateNewPublishedContentItem()
+    public async Task Create_NewPublishedContentItem_Succeeds()
     {
         using var context = new BlogPostDeploymentContext();
 
@@ -165,7 +165,7 @@ public class BlogPostCreateDeploymentPlanTests
     }
 
     [Fact]
-    public async Task ShouldIgnoreDuplicateContentItems()
+    public async Task Ignore_DuplicateContentItems_Succeeds()
     {
         using var context = new BlogPostDeploymentContext();
 

@@ -62,7 +62,6 @@
             "Settings/MyTestPartSettingsDisplayDriver.cs",
             "Settings/MyTestPartSettingsViewModel.cs",
             "ViewModels/MyTestPartViewModel.cs",
-            "Views/_ViewImports.cshtml",
             "Views/MyTestPart.Edit.cshtml",
             "Views/MyTestPart.liquid",
             "Views/MyTestPart_Summary.liquid",

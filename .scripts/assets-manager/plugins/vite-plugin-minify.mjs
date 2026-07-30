@@ -1,8 +1,8 @@
 import { transform as esbuildTransform } from "esbuild";
 import { transform as lightningTransform } from "lightningcss";
 import { Buffer } from "buffer";
-import fs from "fs";
 import path from "path";
+import { writeAssetFile } from "../output.mjs";
 
 /**
  * Vite plugin that minifies output and generates files following the
@@ -42,11 +42,11 @@ export function minifyPlugin() {
                     const minPath = path.join(parsed.dir, `${parsed.name}.min.js`);
 
                     // .js — minified with sourcemap reference
-                    fs.writeFileSync(filePath, `${result.code}//# sourceMappingURL=${mapFileName}\n`);
+                    await writeAssetFile(filePath, `${result.code}//# sourceMappingURL=${mapFileName}\n`);
                     // .min.js — minified without sourcemap reference
-                    fs.writeFileSync(minPath, result.code);
+                    await writeAssetFile(minPath, result.code);
                     // .map — source map
-                    fs.writeFileSync(path.join(parsed.dir, mapFileName), result.map);
+                    await writeAssetFile(path.join(parsed.dir, mapFileName), result.map);
                 }
 
                 if (fileName.endsWith(".css") && chunk.type === "asset" && typeof chunk.source === "string") {
@@ -64,11 +64,11 @@ export function minifyPlugin() {
                     const minified = code.toString();
 
                     // .css — minified with sourcemap reference
-                    fs.writeFileSync(filePath, `${minified}\n/*# sourceMappingURL=${mapFileName} */\n`);
+                    await writeAssetFile(filePath, `${minified}\n/*# sourceMappingURL=${mapFileName} */\n`);
                     // .min.css — minified without sourcemap reference
-                    fs.writeFileSync(minPath, minified);
+                    await writeAssetFile(minPath, minified);
                     // .css.map — source map
-                    fs.writeFileSync(path.join(parsed.dir, mapFileName), JSON.stringify(map));
+                    await writeAssetFile(path.join(parsed.dir, mapFileName), JSON.stringify(map));
                 }
             }
         },

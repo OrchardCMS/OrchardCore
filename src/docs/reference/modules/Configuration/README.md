@@ -4,11 +4,11 @@ Orchard Core extends ASP.NET Core `IConfiguration` with `IShellConfiguration` to
 
 To learn more about ASP.NET Core `IConfiguration` visit <https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration>.
 
-Note that while this documentation page explains configuration happening in the root web app project on the example of `OrchardCore.Cms.Web.csproj` if you use Orchard from NuGet packages in your own web app then same is available in that web app project too.
+Note that while this documentation page explains configuration in the root web app project by using `OrchardCore.Cms.Web.csproj` as an example, if you use Orchard from NuGet packages in your own web app, the same is available in that web app project too.
 
 ## Configuration Sources
 
-Orchard Core built on top of ASP.NET Core Configuration framework, which support a variety of different configuration options. Developers are not limited to using a single configuration source. In fact several may be set up together such that a default configuration is overridden by settings from another source if they are present.
+Orchard Core is built on top of the ASP.NET Core configuration framework, which supports a variety of different configuration options. Developers are not limited to using a single configuration source. In fact, several may be set up together such that a default configuration is overridden by settings from another source if they are present.
 
 The Configuration Sources are loaded in the order described in [Configuration Sources Order](#configuration-sources-order) below.
 
@@ -87,6 +87,11 @@ What if you want all tenants to access the same database? The corresponding conf
   "OrchardCore": {
     "ConnectionString": "...",
     "DatabaseProvider": "SqlConnection",
+    "OrchardCore_Tenants": {
+      "RequireTablePrefix": true,
+      "TablePrefixPattern": "{{ ShellSettings.Name }}",
+      "SchemaPattern": "dbo"
+    },
     "Default" : {
       "State": "Uninitialized",
       "TablePrefix": "Default"
@@ -100,7 +105,14 @@ Notes on the above configuration:
 * Be aware that while you can use the same configuration keys for tenants, as demonstrated previously, this is in the root of the `OrchardCore` section.
 * Add the connection string for the database to be used by all tenants.
 * `DatabaseProvider` should correspond to the database engine used, the sample being one for SQL Server.
-* `TablePrefix` needs to be configured to the prefix used by the Default tenant so tables can be separated for each tenant (otherwise just the Default tenant's tables would lack prefixes). Other tenants should then be set up with a different prefix.
+* `Default:TablePrefix` configures the table prefix used by the Default tenant itself so its tables stay isolated from other tenants in the shared database. It does not automatically populate or require prefixes for tenants created later from the admin or API, and by itself it does not lock or hide database provider and connection settings for other tenants.
+* `OrchardCore_Tenants:RequireTablePrefix` can be enabled to require a table prefix whenever a new tenant is created, or an uninitialized tenant is edited, with a database provider that supports table prefixes.
+* For providers that require a connection string, Orchard only treats the root database configuration as preset when both `DatabaseProvider` and `ConnectionString` are configured. Setting only `DatabaseProvider` does not lock setup or tenant database fields and does not bootstrap YesSql for the setup shell.
+* `OrchardCore_Tenants:TablePrefixPattern` can be used to generate each tenant's `TablePrefix` automatically so the admin and API no longer need manual input for it. The pattern uses Fluid syntax with `ShellSettings` in scope, for example `{{ ShellSettings.Name }}`.
+* `OrchardCore_Tenants:SchemaPattern` works the same way for the tenant `Schema`, for example `"dbo"` or `{{ ShellSettings.Name }}`.
+* Pattern-generated and manually entered `TablePrefix` and `Schema` values are validated as SQL identifiers. Use only letters, numbers, and underscores, and start the value with a letter or underscore.
+* When a pattern is configured, Orchard uses the generated value instead of any posted manual value for tenant creation, editing uninitialized tenants, and tenant setup.
+* This shared-database pattern applies to providers such as SQL Server, MySQL, and PostgreSQL. The built-in SQLite provider does not use the root `ConnectionString` setting for tenant data and is not configured as a single shared `.db` file with per-tenant prefixes through this pattern.
 
 This way, the app can be easily moved between environments (like a staging and production one) by configuring the corresponding database's settings in the given environment. Tenants' shell settings won't contain this information, all tenants will use the same, global configuration.
 
@@ -161,8 +173,8 @@ These settings can also be located in an `App_Data/appsettings.json` folder (not
 
 ### `IShellConfiguration` in the Individual Tenants Folder
 
-These settings are mutable and written during the setup for the Tenant. For this reason reading from Environment Name is not supported.
-Additionally these `appsettings.json` files do not need the `OrchardCore` section
+These settings are mutable and written during the setup for the tenant. For this reason, reading from Environment Name is not supported.
+Additionally, these `appsettings.json` files do not need the `OrchardCore` section.
 
 ```json
 {

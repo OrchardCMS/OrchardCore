@@ -1,10 +1,9 @@
-@using OrchardCore
 @using OrchardCore.Forms.ViewModels
 
 @model ValidationSummaryViewModel
 
-<div class="@Orchard.GetWrapperClasses()">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
         <div class="form-check">
             <input class="form-check-input" asp-for="ModelOnly">
             <label class="form-check-label" asp-for="ModelOnly">

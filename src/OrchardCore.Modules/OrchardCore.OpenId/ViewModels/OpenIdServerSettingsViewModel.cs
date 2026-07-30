@@ -34,6 +34,7 @@ public class OpenIdServerSettingsViewModel
     public bool UseReferenceAccessTokens { get; set; }
     public bool RequireProofKeyForCodeExchange { get; set; }
     public bool RequirePushedAuthorizationRequests { get; set; }
+    public bool RequireEndSessionConfirmation { get; set; }
 
     public class CertificateInfo
     {

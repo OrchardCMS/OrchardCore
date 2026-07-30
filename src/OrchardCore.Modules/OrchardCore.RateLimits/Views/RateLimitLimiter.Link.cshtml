@@ -1,0 +1,26 @@
+@model dynamic
+
+<div class="col">
+    <div class="card h-100">
+        <div class="card-body">
+            <h5 class="mb-1">@Model.Source.DisplayName</h5>
+            <p class="mb-0 text-muted">@Model.Source.Description</p>
+        </div>
+        <div class="card-footer d-flex justify-content-between align-items-center gap-2 flex-wrap">
+            <a class="seedoc" href="@Model.Source.DocumentationUrl" target="_blank">@T["Learn more"]</a>
+
+            @if (Model.AreLimiterChangesAllowed as bool? ?? true)
+            {
+                <a class="btn btn-primary btn-sm"
+                   asp-action="Create"
+                   asp-controller="Limiter"
+                   asp-route-policyId="@Model.PolicyId"
+                   asp-route-id="@Model.Source.Name">@T["Add"]</a>
+            }
+            else
+            {
+                <button type="button" class="btn btn-primary btn-sm" disabled title="@(Model.PublishedPolicyLimiterMessage as string)">@T["Add"]</button>
+            }
+        </div>
+    </div>
+</div>

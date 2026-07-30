@@ -11,14 +11,22 @@
 @{
     if (Model.SettingsAreConfigured)
     {
-        <div class="alert alert-success">
-            @successMessage
+        <div class="ocat-wrapper">
+            <div class="ocat-end-offset">
+                <div class="alert alert-success">
+                    @successMessage
+                </div>
+            </div>
         </div>
     }
     else
     {
-        <div class="alert alert-warning">
-            @warningMessage
+        <div class="ocat-wrapper">
+            <div class="ocat-end-offset">
+                <div class="alert alert-warning">
+                    @warningMessage
+                </div>
+            </div>
         </div>
     }
 }

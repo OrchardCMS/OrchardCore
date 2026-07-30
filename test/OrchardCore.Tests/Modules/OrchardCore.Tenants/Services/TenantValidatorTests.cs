@@ -1,6 +1,7 @@
 using OrchardCore.Data;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Models;
+using OrchardCore.Tenants;
 using OrchardCore.Tenants.Services;
 using OrchardCore.Tenants.ViewModels;
 using OrchardCore.Tests.Apis.Context;
@@ -9,10 +10,6 @@ namespace OrchardCore.Modules.Tenants.Services.Tests;
 
 public class TenantValidatorTests : SiteContext
 {
-    static TenantValidatorTests()
-    {
-    }
-
     [Theory]
     [InlineData("Tenant1", "tenant1", "", "Feature Profile", new[] { "A tenant with the same name already exists." })]
     [InlineData("tEnAnT1", "tenant1", "", "Feature Profile", new[] { "A tenant with the same name already exists." })]
@@ -32,7 +29,7 @@ public class TenantValidatorTests : SiteContext
     [InlineData("Tenant9", "tenant9", "", "Feature Profile", new string[] { })]
     [InlineData("Tenant9", "", "example6.com", "Feature Profile", new string[] { })]
     [InlineData("Tenant9", "tenant9", "example6.com", "Feature Profile", new string[] { })]
-    public async Task TenantValidationFailsIfInvalidConfigurationsWasProvided(string name, string urlPrefix, string hostName, string featureProfile, string[] errorMessages)
+    public async Task TenantValidationFailsIfInvalidConfigurationsWasProvided_Default_Succeeds(string name, string urlPrefix, string hostName, string featureProfile, string[] errorMessages)
     {
         // Arrange
         await ShellHost.InitializeAsync();
@@ -64,7 +61,7 @@ public class TenantValidatorTests : SiteContext
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
-    public async Task DuplicateTenantHostOrPrefixShouldFailValidation(bool isNewTenant)
+    public async Task DuplicateTenantHostOrPrefix_Default_FailssValidation(bool isNewTenant)
     {
         // Arrange
         await ShellHost.InitializeAsync();
@@ -98,7 +95,137 @@ public class TenantValidatorTests : SiteContext
         }
     }
 
-    private static TenantValidator CreateTenantValidator(bool defaultTenant = true)
+    [Fact]
+    public async Task RequireTablePrefix_ProviderSupportsPrefixes_FailssValidation()
+    {
+        // Arrange
+        await ShellHost.InitializeAsync();
+
+        var tenantValidator = CreateTenantValidator(defaultTenant: false, requireTablePrefix: true);
+        var viewModel = new EditTenantViewModel
+        {
+            Name = "Tenant10",
+            RequestUrlPrefix = "tenant10",
+            DatabaseProvider = DatabaseProviderValue.SqlConnection,
+            TablePrefix = string.Empty,
+            FeatureProfiles = ["Feature Profile"],
+            IsNewTenant = true,
+        };
+
+        // Act
+        var errors = await tenantValidator.ValidateAsync(viewModel);
+
+        // Assert
+        var error = Assert.Single(errors);
+        Assert.Equal(nameof(viewModel.TablePrefix), error.Key);
+        Assert.Equal("A table prefix is required.", error.Message);
+    }
+
+    [Fact]
+    public async Task RequireTablePrefix_ProviderDoesNotSupportPrefixes_NotFailValidation()
+    {
+        // Arrange
+        await ShellHost.InitializeAsync();
+
+        var tenantValidator = CreateTenantValidator(defaultTenant: false, requireTablePrefix: true);
+        var viewModel = new EditTenantViewModel
+        {
+            Name = "Tenant11",
+            RequestUrlPrefix = "tenant11",
+            DatabaseProvider = DatabaseProviderValue.Sqlite,
+            TablePrefix = string.Empty,
+            FeatureProfiles = ["Feature Profile"],
+            IsNewTenant = true,
+        };
+
+        // Act
+        var errors = await tenantValidator.ValidateAsync(viewModel);
+
+        // Assert
+        Assert.Empty(errors);
+    }
+
+    [Fact]
+    public async Task TablePrefixPattern_Configured_PopulatessPrefix()
+    {
+        // Arrange
+        await ShellHost.InitializeAsync();
+
+        var tenantValidator = CreateTenantValidator(defaultTenant: false, tablePrefixPattern: "{{ ShellSettings.Name }}");
+        var viewModel = new EditTenantViewModel
+        {
+            Name = "Tenant12",
+            RequestUrlPrefix = "tenant12",
+            DatabaseProvider = DatabaseProviderValue.SqlConnection,
+            FeatureProfiles = ["Feature Profile"],
+            IsNewTenant = true,
+        };
+
+        // Act
+        var errors = await tenantValidator.ValidateAsync(viewModel);
+
+        // Assert
+        Assert.Empty(errors);
+        Assert.Equal("Tenant12", viewModel.TablePrefix);
+    }
+
+    [Fact]
+    public async Task InvalidConfiguredTablePrefixPattern_Default_FailssValidation()
+    {
+        // Arrange
+        await ShellHost.InitializeAsync();
+
+        var tenantValidator = CreateTenantValidator(defaultTenant: false, tablePrefixPattern: "tenant-{{ ShellSettings.Name }}");
+        var viewModel = new EditTenantViewModel
+        {
+            Name = "Tenant13",
+            RequestUrlPrefix = "tenant13",
+            DatabaseProvider = DatabaseProviderValue.SqlConnection,
+            FeatureProfiles = ["Feature Profile"],
+            IsNewTenant = true,
+        };
+
+        // Act
+        var errors = await tenantValidator.ValidateAsync(viewModel);
+
+        // Assert
+        var error = Assert.Single(errors);
+        Assert.Equal(nameof(viewModel.TablePrefix), error.Key);
+        Assert.Equal("The configured table prefix pattern must resolve to a valid SQL identifier using only letters, numbers, and underscores, and it must start with a letter or underscore.", error.Message);
+    }
+
+    [Fact]
+    public async Task InvalidSchema_Default_FailssValidation()
+    {
+        // Arrange
+        await ShellHost.InitializeAsync();
+
+        var tenantValidator = CreateTenantValidator(defaultTenant: false);
+        var viewModel = new EditTenantViewModel
+        {
+            Name = "Tenant14",
+            RequestUrlPrefix = "tenant14",
+            DatabaseProvider = DatabaseProviderValue.SqlConnection,
+            TablePrefix = "Tenant14",
+            Schema = "tenant-schema",
+            FeatureProfiles = ["Feature Profile"],
+            IsNewTenant = true,
+        };
+
+        // Act
+        var errors = await tenantValidator.ValidateAsync(viewModel);
+
+        // Assert
+        var error = Assert.Single(errors);
+        Assert.Equal(nameof(viewModel.Schema), error.Key);
+        Assert.Equal("The table schema must be a valid SQL identifier using only letters, numbers, and underscores, and it must start with a letter or underscore.", error.Message);
+    }
+
+    private static TenantValidator CreateTenantValidator(
+        bool defaultTenant = true,
+        bool requireTablePrefix = false,
+        string tablePrefixPattern = null,
+        string schemaPattern = null)
     {
         var featureProfilesServiceMock = new Mock<IFeatureProfilesService>();
         featureProfilesServiceMock.Setup(fp => fp.GetFeatureProfilesAsync())
@@ -113,7 +240,15 @@ public class TenantValidatorTests : SiteContext
             .Returns<string>(n => new LocalizedString(n, n));
         stringLocalizerMock
             .Setup(l => l[It.IsAny<string>(), It.IsAny<object[]>()])
-            .Returns<string, object[]>((n, a) => new LocalizedString(n, n));
+            .Returns<string, object[]>((n, a) => new LocalizedString(n, string.Format(CultureInfo.InvariantCulture, n, a)));
+
+        var patternLocalizerMock = new Mock<IStringLocalizer<TenantDatabasePatternResolver>>();
+        patternLocalizerMock
+            .Setup(l => l[It.IsAny<string>()])
+            .Returns<string>(n => new LocalizedString(n, n));
+        patternLocalizerMock
+            .Setup(l => l[It.IsAny<string>(), It.IsAny<object[]>()])
+            .Returns<string, object[]>((n, a) => new LocalizedString(n, string.Format(CultureInfo.InvariantCulture, n, a)));
 
         var shellSettings = defaultTenant
             ? ShellHost.GetSettings(ShellSettings.DefaultShellName)
@@ -124,11 +259,42 @@ public class TenantValidatorTests : SiteContext
 
         dbConnectionValidatorMock.Setup(v => v.ValidateAsync(validationContext));
 
+        DatabaseProvider[] databaseProviders =
+        [
+            new DatabaseProvider
+            {
+                Name = "Sql Server",
+                Value = DatabaseProviderValue.SqlConnection,
+                HasTablePrefix = true,
+            },
+            new DatabaseProvider
+            {
+                Name = "Sqlite",
+                Value = DatabaseProviderValue.Sqlite,
+                HasTablePrefix = false,
+            },
+        ];
+
+        var tenantOptions = new TenantsOptions
+        {
+            RequireTablePrefix = requireTablePrefix,
+            TablePrefixPattern = tablePrefixPattern,
+            SchemaPattern = schemaPattern,
+        };
+
+        var tenantDatabasePatternResolver = new TenantDatabasePatternResolver(
+            new Fluid.FluidParser(),
+            Options.Create(tenantOptions),
+            patternLocalizerMock.Object);
+
         return new TenantValidator(
             ShellHost,
             ShellSettingsManager,
             featureProfilesServiceMock.Object,
             dbConnectionValidatorMock.Object,
+            Options.Create(tenantOptions),
+            databaseProviders,
+            tenantDatabasePatternResolver,
             stringLocalizerMock.Object
             );
     }

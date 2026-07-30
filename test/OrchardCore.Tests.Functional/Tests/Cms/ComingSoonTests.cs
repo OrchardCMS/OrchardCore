@@ -8,7 +8,7 @@ public sealed class ComingSoonTests : CmsTestBase<ComingSoonFixture>, IClassFixt
     public ComingSoonTests(ComingSoonFixture fixture) : base(fixture) { }
 
     [Fact]
-    public async Task DisplaysTheHomePageOfTheComingSoonTheme()
+    public async Task DisplaysTheHomePageOfTheComingSoonTheme_Default_Succeeds()
     {
         var page = await Fixture.CreatePageAsync();
         await page.GotoAndAssertOkAsync("/");
@@ -18,7 +18,7 @@ public sealed class ComingSoonTests : CmsTestBase<ComingSoonFixture>, IClassFixt
     }
 
     [Fact]
-    public async Task ComingSoonAdminLoginShouldWork()
+    public async Task ComingSoonAdminLogin_Default_Works()
     {
         var page = await Fixture.CreatePageAsync();
         await page.LoginAsync();

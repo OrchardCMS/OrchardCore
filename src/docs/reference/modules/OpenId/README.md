@@ -64,7 +64,7 @@ to allow third-party resource servers to use the JWT tokens produced by the Orch
 - Allow Client Credentials Flow: It requires that the Token Endpoint is enabled. More info at <https://tools.ietf.org/html/rfc6749#section-1.3.4>
 - Allow Authorization Code Flow: It requires that the Authorization and Token Endpoints are enabled. More info at <http://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth>
 - Allow Implicit Flow: It requires that the Authorization Endpoint is enabled. More info at <http://openid.net/specs/openid-connect-core-1_0.html#ImplicitFlowAuth>
-- Allow Refresh Token Flow: It allows to refresh access token using a refresh token. It can be used in combination with Password Flow, Authorization Code Flow and Hybrid Flow. More info at <http://openid.net/specs/openid-connect-core-1_0.html#RefreshTokens>
+- Allow Refresh Token Flow: It allows refreshing the access token using a refresh token. It can be used in combination with Password Flow, Authorization Code Flow, and Hybrid Flow. More info at <http://openid.net/specs/openid-connect-core-1_0.html#RefreshTokens>
 - Require Proof Key for Code Exchange: Global setting that applies PKCE to all registered clients whether or not the 'Require PKCE' flag was set in the Application settings page.
 
 A sample of OpenID Connect Settings recipe step:
@@ -117,14 +117,14 @@ OpenID Connect apps require the following configuration.
   - Allow Client Credentials Flow: It requires that the Token Endpoint is enabled. More info at <https://tools.ietf.org/html/rfc6749#section-1.3.4>
   - Allow Authorization Code Flow: It requires that the Authorization and Token Endpoints are enabled. More info at <http://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth>
   - Allow Implicit Flow: It requires that the Authorization Endpoint is enabled. More info at <http://openid.net/specs/openid-connect-core-1_0.html#ImplicitFlowAuth>
-  - Allow Refresh Token Flow: It allows to refresh access token using a refresh token. It can be used in combination with Password Flow, Authorization Code Flow and Hybrid Flow. More info at <http://openid.net/specs/openid-connect-core-1_0.html#RefreshTokens>
+  - Allow Refresh Token Flow: It allows refreshing the access token using a refresh token. It can be used in combination with Password Flow, Authorization Code Flow, and Hybrid Flow. More info at <http://openid.net/specs/openid-connect-core-1_0.html#RefreshTokens>
 - Normalized RoleNames: This configuration is only required if Client Credentials Flow is enabled. It determines the roles assigned to the app when it is authenticated using that flow.
 - Redirect Options: Those options are only required when Implicit Flow, Authorization Code Flow or Allow Hybrid Flow is required.
 - Logout Redirect Uri: logout callback URL.
 - Redirect Uri: callback URL.
 - Skip Consent: sets whether a consent form has to be completed by the user after log in.
 - Advanced Parameters: Allows setting additional parameters that can be sent with the authorize request. Note: The default parameters are set from the options above.
-- Require PKCE: Applies PKCE for the registered application.  Ensure that the client library being used suppports PKCE.  
+- Require PKCE: Applies PKCE for the registered application. Ensure that the client library being used supports PKCE.
 
 A sample of OpenID Connect App recipe step:
 
@@ -279,7 +279,7 @@ A sample of Token Validation Settings recipe step:
 ## OIDC Client
 
 Authenticates users from an external OpenID Connect identity provider.
-If the site allows to register new users, a local user is linked and the external login is linked.
+If the site allows new users to register, a local user and the external login are linked.
 If an "email" claim is received, and a local user is found, then the external login is linked to that account, after authenticating.
 
 ### OpenId Configuration
@@ -323,3 +323,135 @@ A sample of OpenID Connect Client Settings recipe step:
       "ClientSecret": "secret"
 }
 ```
+
+## Settings Recipe Step
+
+All OpenID Connect settings can be configured using the generic `Settings` recipe step:
+
+### Server Settings
+
+```json
+{
+  "steps": [
+    {
+      "name": "settings",
+      "OpenIdServerSettings": {
+        "TestingModeEnabled": false,
+        "TokenFormat": "JsonWebToken",
+        "Authority": "https://www.example.com",
+        "AuthorizationEndpointPath": "/connect/authorize",
+        "LogoutEndpointPath": "/connect/logout",
+        "TokenEndpointPath": "/connect/token",
+        "UserinfoEndpointPath": "/connect/userinfo",
+        "IntrospectionEndpointPath": "/connect/introspect",
+        "RevocationEndpointPath": "/connect/revoke",
+        "EnableTokenEndpoint": true,
+        "EnableAuthorizationEndpoint": true,
+        "EnableLogoutEndpoint": true,
+        "EnableUserInfoEndpoint": true,
+        "EnableIntrospectionEndpoint": false,
+        "EnableRevocationEndpoint": false,
+        "AllowPasswordFlow": false,
+        "AllowClientCredentialsFlow": false,
+        "AllowAuthorizationCodeFlow": true,
+        "AllowRefreshTokenFlow": true,
+        "AllowImplicitFlow": false,
+        "AllowHybridFlow": false,
+        "RequireProofKeyForCodeExchange": true,
+        "UseRollingRefreshTokens": false,
+        "UseReferenceAccessTokens": false
+      }
+    }
+  ]
+}
+```
+
+| Property                         | Type    | Description                                                               |
+|----------------------------------|---------|---------------------------------------------------------------------------|
+| `TestingModeEnabled`             | Boolean | Whether testing mode is enabled (uses ephemeral signing/encryption keys). |
+| `TokenFormat`                    | String  | The access token format. Values: `DataProtection`, `JsonWebToken`.        |
+| `Authority`                      | String  | The authority URL used by Orchard to act as an identity server.           |
+| `AuthorizationEndpointPath`      | String  | Path for the authorization endpoint.                                      |
+| `LogoutEndpointPath`             | String  | Path for the logout endpoint.                                             |
+| `TokenEndpointPath`              | String  | Path for the token endpoint.                                              |
+| `UserinfoEndpointPath`           | String  | Path for the userinfo endpoint.                                           |
+| `IntrospectionEndpointPath`      | String  | Path for the introspection endpoint.                                      |
+| `RevocationEndpointPath`         | String  | Path for the revocation endpoint.                                         |
+| `EnableTokenEndpoint`            | Boolean | Whether the token endpoint is enabled.                                    |
+| `EnableAuthorizationEndpoint`    | Boolean | Whether the authorization endpoint is enabled.                            |
+| `EnableLogoutEndpoint`           | Boolean | Whether the logout endpoint is enabled.                                   |
+| `EnableUserInfoEndpoint`         | Boolean | Whether the userinfo endpoint is enabled.                                 |
+| `EnableIntrospectionEndpoint`    | Boolean | Whether the introspection endpoint is enabled.                            |
+| `EnableRevocationEndpoint`       | Boolean | Whether the revocation endpoint is enabled.                               |
+| `AllowPasswordFlow`              | Boolean | Whether the Resource Owner Password flow is allowed.                      |
+| `AllowClientCredentialsFlow`     | Boolean | Whether the Client Credentials flow is allowed.                           |
+| `AllowAuthorizationCodeFlow`     | Boolean | Whether the Authorization Code flow is allowed.                           |
+| `AllowRefreshTokenFlow`          | Boolean | Whether the Refresh Token flow is allowed.                                |
+| `AllowImplicitFlow`              | Boolean | Whether the Implicit flow is allowed.                                     |
+| `AllowHybridFlow`                | Boolean | Whether the Hybrid flow is allowed.                                       |
+| `RequireProofKeyForCodeExchange` | Boolean | Whether PKCE is required for all clients.                                 |
+| `UseRollingRefreshTokens`        | Boolean | Whether to use rolling refresh tokens.                                    |
+| `UseReferenceAccessTokens`       | Boolean | Whether to use reference access tokens.                                   |
+
+### Client Settings
+
+```json
+{
+  "steps": [
+    {
+      "name": "settings",
+      "OpenIdClientSettings": {
+        "DisplayName": "External Identity Provider",
+        "Authority": "https://idp.example.com",
+        "ClientId": "your-client-id",
+        "ClientSecret": "your-client-secret",
+        "CallbackPath": "/signin-oidc",
+        "SignedOutCallbackPath": "/signout-callback-oidc",
+        "ResponseType": "code",
+        "ResponseMode": "form_post",
+        "Scopes": "openid profile email"
+      }
+    }
+  ]
+}
+```
+
+| Property                | Type   | Description                                                                                                                      |
+|-------------------------|--------|----------------------------------------------------------------------------------------------------------------------------------|
+| `DisplayName`           | String | The display name for the external identity provider.                                                                             |
+| `Authority`             | String | The authority URL of the OpenID Connect provider. **Required.**                                                                  |
+| `ClientId`              | String | The client identifier. **Required.**                                                                                             |
+| `ClientSecret`          | String | The client secret.                                                                                                               |
+| `CallbackPath`          | String | The callback path where the user-agent will be returned.                                                                         |
+| `SignedOutCallbackPath` | String | The callback path after sign-out.                                                                                                |
+| `SignedOutRedirectUri`  | String | The URI to redirect to after sign-out.                                                                                           |
+| `ResponseType`          | String | The OAuth 2.0 response type. Values: `code`, `id_token`, `id_token token`, `code id_token`, `code token`, `code id_token token`. |
+| `ResponseMode`          | String | The response mode. Values: `form_post`, `fragment`, `query`.                                                                     |
+| `Scopes`                | String | Space-separated list of scopes to request.                                                                                       |
+
+### Validation Settings
+
+```json
+{
+  "steps": [
+    {
+      "name": "settings",
+      "OpenIdValidationSettings": {
+        "Audience": "your-resource-server",
+        "Authority": "https://idp.example.com",
+        "DisableTokenTypeValidation": false,
+        "Tenant": "",
+        "MetadataAddress": ""
+      }
+    }
+  ]
+}
+```
+
+| Property                     | Type    | Description                                                           |
+|------------------------------|---------|-----------------------------------------------------------------------|
+| `Audience`                   | String  | The audience used for token validation.                               |
+| `Authority`                  | String  | The authority URL for OpenID Connect discovery.                       |
+| `DisableTokenTypeValidation` | Boolean | Whether to disable access token type validation.                      |
+| `Tenant`                     | String  | The Orchard tenant for local server validation.                       |
+| `MetadataAddress`            | String  | Override the metadata discovery address (for non-standard providers). |

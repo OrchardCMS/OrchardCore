@@ -34,14 +34,14 @@ public class WorkflowTypeStore : IWorkflowTypeStore
         return _session.Query<WorkflowType, WorkflowTypeIndex>(x => x.WorkflowTypeId == workflowTypeId).FirstOrDefaultAsync();
     }
 
-    public Task<IEnumerable<WorkflowType>> ListAsync()
+    public async Task<IEnumerable<WorkflowType>> ListAsync()
     {
-        return _session.Query<WorkflowType, WorkflowTypeIndex>().ListAsync();
+        return await _session.Query<WorkflowType, WorkflowTypeIndex>().ListAsync();
     }
 
-    public Task<IEnumerable<WorkflowType>> GetByStartActivityAsync(string activityName)
+    public async Task<IEnumerable<WorkflowType>> GetByStartActivityAsync(string activityName)
     {
-        return _session
+        return await _session
             .Query<WorkflowType, WorkflowTypeStartActivitiesIndex>(index =>
                 index.StartActivityName == activityName &&
                 index.IsEnabled)
