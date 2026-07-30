@@ -153,6 +153,7 @@ public static class ServiceCollectionExtensions
 
         services.AddHttpContextAccessor();
         services.AddSingleton<IClock, Clock>();
+        services.TryAddSingleton<ITimeZoneSelectListProvider, DefaultTimeZoneSelectListProvider>();
         services.AddScoped<ILocalClock, LocalClock>();
 
         services.AddScoped<ILocalizationService, DefaultLocalizationService>();
@@ -288,7 +289,7 @@ public static class ServiceCollectionExtensions
             };
 
             app.UseStaticFiles(options);
-        });
+        }, order: OrchardCoreConstants.ConfigureOrder.StaticFiles);
     }
 
     /// <summary>

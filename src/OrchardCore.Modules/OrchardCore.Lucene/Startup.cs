@@ -87,6 +87,10 @@ public sealed class ContentsStartup : StartupBase
     {
         services.AddDataMigration<IndexingMigrations>();
 
+        // Register after IndexingMigrations so its deferred task, which rewrites obsolete per-index role
+        // permissions to the new dynamic permissions, runs after the index profiles have been created.
+        services.AddDataMigration<PermissionMigrations>();
+
         services
             .AddIndexProfileHandler<LuceneContentIndexProfileHandler>()
             .AddLuceneIndexingSource(IndexingConstants.ContentsIndexSource, o =>

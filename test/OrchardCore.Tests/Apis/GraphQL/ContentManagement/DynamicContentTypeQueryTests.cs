@@ -3,7 +3,7 @@ namespace OrchardCore.Tests.Apis.GraphQL;
 public class DynamicContentTypeQueryTests
 {
     [Fact]
-    public async Task ShouldQueryContentFields()
+    public async Task Query_ContentFields_Succeeds()
     {
         using var context = new DynamicContentTypeContext();
         await context.InitializeAsync();
@@ -28,7 +28,7 @@ public class DynamicContentTypeQueryTests
     }
 
     [Fact]
-    public async Task ShouldQueryCollapsedContentFields()
+    public async Task Query_CollapsedContentFields_Succeeds()
     {
         using var context = new DynamicContentTypeContext();
         await context.InitializeAsync();
@@ -53,7 +53,7 @@ public class DynamicContentTypeQueryTests
     }
 
     [Fact]
-    public async Task ShouldQueryCollapsedContentFieldsWithPreventCollision()
+    public async Task Query_CollapsedContentFieldsWithPreventCollision_Succeeds()
     {
         using var context = new DynamicContentTypeContext();
         await context.InitializeAsync();
@@ -78,7 +78,7 @@ public class DynamicContentTypeQueryTests
     }
 
     [Fact]
-    public async Task ShouldQueryMultipleContentFields()
+    public async Task Query_MultipleContentFields_Succeeds()
     {
         using var context = new DynamicContentTypeContext();
         await context.InitializeAsync();
@@ -111,7 +111,7 @@ public class DynamicContentTypeQueryTests
     }
 
     [Fact]
-    public async Task ShouldOrderByCreatedUtc()
+    public async Task Order_ByCreatedUtc_Succeeds()
     {
         using var context = new DynamicContentTypeContext();
         await context.InitializeAsync();
@@ -139,7 +139,7 @@ public class DynamicContentTypeQueryTests
     }
 
     [Fact]
-    public async Task ShouldQuerySimilarNamedContentFields()
+    public async Task Query_SimilarNamedContentFields_Succeeds()
     {
         using var context = new DynamicContentTypeContext();
         await context.InitializeAsync();
@@ -170,7 +170,7 @@ public class DynamicContentTypeQueryTests
     }
 
     [Fact]
-    public async Task ShouldDistinquishMultipleNamedContentFields()
+    public async Task Distinquish_MultipleNamedContentFields_Succeeds()
     {
         using var context = new DynamicContentTypeContext();
         await context.InitializeAsync();

@@ -3610,6 +3610,33 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "Soumilgit",
+      "name": "Soumil Mukhopadhyay",
+      "avatar_url": "https://avatars.githubusercontent.com/u/120581772?v=4",
+      "profile": "https://soumilm.vercel.app/",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "kizaski",
+      "name": "Kiril Z",
+      "avatar_url": "https://avatars.githubusercontent.com/u/81563289?v=4",
+      "profile": "https://github.com/kizaski",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "lazerg",
+      "name": "Lazizbek Ergashev",
+      "avatar_url": "https://avatars.githubusercontent.com/u/20501725?v=4",
+      "profile": "http://lazerg.uz",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,

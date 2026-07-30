@@ -8,7 +8,7 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans;
 public class BlogPostUpdateDeploymentPlanTests
 {
     [Fact]
-    public async Task ShouldUpdateExistingContentItemVersion()
+    public async Task Update_ExistingContentItemVersion_Succeeds()
     {
         using var context = new BlogPostDeploymentContext();
 
@@ -37,7 +37,7 @@ public class BlogPostUpdateDeploymentPlanTests
     }
 
     [Fact]
-    public async Task ShouldDiscardDraftThenUpdateExistingContentItemVersion()
+    public async Task Discard_DraftThenUpdateExistingContentItemVersion_Succeeds()
     {
         using var context = new BlogPostDeploymentContext();
 
@@ -62,7 +62,7 @@ public class BlogPostUpdateDeploymentPlanTests
             var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x =>
                 x.ContentType == "BlogPost").ListAsync();
 
-            Assert.Equal(2, blogPosts.Count());
+            Assert.Equal(2, blogPosts.Count);
 
             var mutatedVersion = blogPosts.FirstOrDefault(x => x.ContentItemVersionId == context.OriginalBlogPostVersionId);
             Assert.True(mutatedVersion?.Latest);
@@ -75,7 +75,7 @@ public class BlogPostUpdateDeploymentPlanTests
     }
 
     [Fact]
-    public async Task ShouldUpdateDraftThenPublishExistingContentItemVersion()
+    public async Task Update_DraftThenPublishExistingContentItemVersion_Succeeds()
     {
         using var context = new BlogPostDeploymentContext();
 
@@ -102,7 +102,7 @@ public class BlogPostUpdateDeploymentPlanTests
             var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x =>
                 x.ContentType == "BlogPost").ListAsync();
 
-            Assert.Equal(2, blogPosts.Count());
+            Assert.Equal(2, blogPosts.Count);
 
             var originalVersion = blogPosts.FirstOrDefault(x => x.ContentItemVersionId == context.OriginalBlogPostVersionId);
             Assert.False(originalVersion?.Latest);

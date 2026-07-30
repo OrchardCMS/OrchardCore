@@ -13,21 +13,37 @@
 }
 
 <script at="Foot">
-    $(function () {
-        $(".dropdown-menu .dropdown-item").filter(function () {
-            return $(this).data("action");
-        }).on("click", function () {
-            if ($(":checkbox[name='itemIds']:checked").length > 1) {
-                var $this = $(this);
-                confirmDialog({
-                    ...$this.data(), callback: function (r) {
-                        if (r) {
-                            $("[name='Options.BulkAction']").val($this.data("action"));
-                            $("[name='submit.BulkAction']").click();
-                        }
-                    }
-                });
+    function onDocumentReady(callback) {
+        if (document.readyState !== 'loading') {
+            callback();
+        } else {
+            document.addEventListener('DOMContentLoaded', callback);
+        }
+    }
+
+    onDocumentReady(function () {
+        document.querySelectorAll(".dropdown-menu .dropdown-item").forEach(function (item) {
+            if (!item.dataset.action) {
+                return;
             }
+
+            item.addEventListener("click", function () {
+                if (document.querySelectorAll("input[type='checkbox'][name='itemIds']:checked").length > 1) {
+                    var data = { ...this.dataset };
+                    confirmDialog({
+                        ...data, callback: function (r) {
+                            if (r) {
+                                var bulkAction = document.querySelector("[name='Options.BulkAction']");
+                                if (bulkAction) {
+                                    bulkAction.value = data.action;
+                                }
+
+                                document.querySelector("[name='submit.BulkAction']")?.click();
+                            }
+                        }
+                    });
+                }
+            });
         });
-    })
+    });
 </script>

@@ -51,7 +51,8 @@
 
     <div class="ocat-wrapper">
         <div class="ocat-end-offset">
-            <button class="btn btn-primary save" type="submit">@T["Save"]</button>
+            <button class="btn btn-primary save" type="submit" name="submit.Save" value="Save">@T["Save"]</button>
+            <button class="btn btn-secondary" type="submit" name="submit.Save" value="SaveAndConfigure">@T["Save &amp; Configure"]</button>
             @if (Url.IsLocalUrl(returnUrl))
             {
                 <a class="btn btn-secondary cancel" role="button" href="@returnUrl">@T["Cancel"]</a>

@@ -66,6 +66,7 @@ public sealed class SetupController : Controller
             DatabaseProviders = _databaseProviderLookup.Values,
             Recipes = recipes,
             RecipeName = defaultRecipe?.Name,
+            SiteTimeZone = _clock.GetSystemTimeZone().TimeZoneId,
             Secret = token,
         };
 

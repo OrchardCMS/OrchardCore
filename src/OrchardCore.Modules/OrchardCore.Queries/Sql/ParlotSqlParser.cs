@@ -183,7 +183,26 @@ public class ParlotSqlParser
             (Terms.Char('|'), (a, b) => new BinaryExpression(a, BinaryOperator.BitwiseOr, b))
         );
 
-        var andExpr = bitwise.LeftAssociative(
+        // BETWEEN and IN are predicates at the comparison level: they must be parsed
+        // BEFORE AND/OR are applied. Otherwise "a IN (...) AND b" would only parse
+        // "a IN (...)" and leave "AND b" dangling, which fails the whole statement.
+        var betweenPredicate = bitwise.And(NOT.Optional()).AndSkip(BETWEEN).And(bitwise).AndSkip(AND).And(bitwise)
+            .Then<Expression>(result =>
+            {
+                var (expr, notKeyword, lower, upper) = result;
+                return new BetweenExpression(expr, lower, upper, notKeyword.HasValue);
+            });
+
+        var inPredicate = bitwise.And(NOT.Optional()).AndSkip(IN).AndSkip(LPAREN).And(functionArgs).AndSkip(RPAREN)
+            .Then<Expression>(result =>
+            {
+                var (expr, notKeyword, values) = result;
+                return new InExpression(expr, values, notKeyword.HasValue);
+            });
+
+        var predicate = betweenPredicate.Or(inPredicate).Or(bitwise);
+
+        var andExpr = predicate.LeftAssociative(
             (AND, (a, b) => new BinaryExpression(a, BinaryOperator.And, b))
         );
 
@@ -191,22 +210,7 @@ public class ParlotSqlParser
             (OR, (a, b) => new BinaryExpression(a, BinaryOperator.Or, b))
         );
 
-        // BETWEEN and IN expressions
-        var betweenExpr = andExpr.And(NOT.Optional()).AndSkip(BETWEEN).And(bitwise).AndSkip(AND).And(bitwise)
-            .Then<Expression>(result =>
-            {
-                var (expr, notKeyword, lower, upper) = result;
-                return new BetweenExpression(expr, lower, upper, notKeyword.HasValue);
-            });
-
-        var inExpr = andExpr.And(NOT.Optional()).AndSkip(IN).AndSkip(LPAREN).And(functionArgs).AndSkip(RPAREN)
-            .Then<Expression>(result =>
-            {
-                var (expr, notKeyword, values) = result;
-                return new InExpression(expr, values, notKeyword.HasValue);
-            });
-
-        expression.Parser = betweenExpr.Or(inExpr).Or(orExpr);
+        expression.Parser = orExpr;
 
         // Column source
         var columnSourceId = identifier.Then<ColumnSource>(id => new ColumnSourceIdentifier(id));

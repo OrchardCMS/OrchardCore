@@ -75,6 +75,15 @@ Other formats:
 - [PDF](assets/logo/symbol/light/orchard-core-symbol-logo-light.pdf)
 - [SVG](assets/logo/symbol/light/orchard-core-symbol-logo-light.svg)
 
+# Printable 3D Logo
+
+A printable 3D model of the Orchard Core symbol logo is available below.
+
+![Orchard Core 3D logo](assets/stl/OrchardCoreLogo3D.png)
+
+- [STL](assets/stl/OrchardCoreLogo3D.stl)
+- [Orca Slicer project file](assets/stl/OrchardCoreLogo3D.3mf) that contains the model with colored surfaces.
+
 # Fonts
 
 We use the [Open Sans font family](https://fonts.google.com/specimen/Open+Sans). You can find all the font files in [the `assets/fonts` folder](https://github.com/OrchardCMS/OrchardCore/tree/main/src/docs/reference/branding/assets/fonts) of this documentation page. Be sure to adhere to [the font's license](assets/fonts/LICENSE.txt).

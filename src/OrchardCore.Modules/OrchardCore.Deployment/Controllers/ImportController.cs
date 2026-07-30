@@ -11,6 +11,7 @@ using OrchardCore.Admin;
 using OrchardCore.Deployment.Services;
 using OrchardCore.Deployment.ViewModels;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.FileStorage;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Recipes.Models;
 
@@ -23,6 +24,7 @@ public sealed class ImportController : Controller
     private readonly IAuthorizationService _authorizationService;
     private readonly INotifier _notifier;
     private readonly ILogger _logger;
+    private readonly FileCreationService _fileCreationService;
 
     internal readonly IHtmlLocalizer H;
     internal readonly IStringLocalizer S;
@@ -30,6 +32,7 @@ public sealed class ImportController : Controller
     public ImportController(
         IDeploymentManager deploymentManager,
         IAuthorizationService authorizationService,
+        FileCreationService fileCreationService,
         INotifier notifier,
         ILogger<ImportController> logger,
         IHtmlLocalizer<ImportController> htmlLocalizer,
@@ -38,6 +41,7 @@ public sealed class ImportController : Controller
     {
         _deploymentManager = deploymentManager;
         _authorizationService = authorizationService;
+        _fileCreationService = fileCreationService;
         _notifier = notifier;
         _logger = logger;
         H = htmlLocalizer;
@@ -69,9 +73,22 @@ public sealed class ImportController : Controller
 
             try
             {
-                using (var stream = new FileStream(tempArchiveName, FileMode.Create))
+                await using var uploadedStream = importedPackage.OpenReadStream();
+                await using var fileCreatingResult = await _fileCreationService.CreateAsync(
+                    new FileCreatingContext(importedPackage.FileName, importedPackage.Length, importedPackage.ContentType),
+                    uploadedStream,
+                    HttpContext.RequestAborted);
+
+                if (!fileCreatingResult.Succeeded)
                 {
-                    await importedPackage.CopyToAsync(stream);
+                    await _notifier.ErrorAsync(H[fileCreatingResult.ErrorMessage ?? $"The uploaded file '{importedPackage.FileName}' was rejected."]);
+
+                    return RedirectToAction(nameof(Index));
+                }
+
+                await using (var stream = new FileStream(tempArchiveName, FileMode.Create))
+                {
+                    await fileCreatingResult.Stream.CopyToAsync(stream, HttpContext.RequestAborted);
                 }
 
                 if (importedPackage.FileName.EndsWith(".zip"))

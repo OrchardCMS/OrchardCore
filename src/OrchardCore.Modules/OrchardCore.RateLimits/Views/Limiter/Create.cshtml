@@ -1,0 +1,22 @@
+@model OrchardCore.RateLimits.ViewModels.RateLimiterEditorViewModel
+
+@{
+    var sourceId = ViewContext.HttpContext.Request.Query["id"];
+}
+
+<zone Name="Title"><h1>@RenderTitleSegments(T["Add '{0}' Limiter", Model.DisplayName])</h1></zone>
+
+<form asp-action="Create" method="post" class="no-multisubmit">
+    <input type="hidden" name="id" value="@sourceId" />
+    <div class="alert alert-info" role="alert">
+        <span>@Model.Description</span>
+        <a class="seedoc" href="@Model.DocumentationUrl" target="_blank">@T["Learn more"]</a>
+    </div>
+
+    @await DisplayAsync(Model.Editor)
+
+    <div class="mt-4 d-flex gap-1">
+        <button class="btn btn-primary" type="submit">@T["Add Limiter"]</button>
+        <a asp-action="Edit" asp-controller="Admin" asp-route-policyId="@ViewContext.RouteData.Values["policyId"]" class="btn btn-secondary">@T["Cancel"]</a>
+    </div>
+</form>

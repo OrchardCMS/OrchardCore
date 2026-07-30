@@ -21,7 +21,7 @@ public class ShapeResultTests
     [InlineData("", null)]
     [InlineData(null, "")]
     [InlineData(null, null)]
-    public async Task Shape_WhenCalled_ReturnShapeWhenGroupIsMatched(string groupId, string renderingGroupId)
+    public async Task Shape_CalledReturnShapeWhenGroupIsMatched_Succeeds(string groupId, string renderingGroupId)
     {
         var serviceProvider = GetServiceProvider(new GroupDisplayDriverStub(groupId));
 
@@ -46,7 +46,7 @@ public class ShapeResultTests
     [InlineData(null, "groupTwo")]
     [InlineData("groupOne", "")]
     [InlineData("groupOne", null)]
-    public async Task Shape_WhenCalled_ReturnNullWhenIncorrectGroupIsSpecified(string groupId, string renderingGroupId)
+    public async Task Shape_CalledReturnNullWhenIncorrectGroupIsSpecified_Succeeds(string groupId, string renderingGroupId)
     {
         var serviceProvider = GetServiceProvider(new GroupDisplayDriverStub(groupId));
 

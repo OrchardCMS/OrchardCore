@@ -8,13 +8,16 @@ public class MembershipService : IMembershipService
 {
     private readonly UserManager<IUser> _userManager;
     private readonly IUserClaimsPrincipalFactory<IUser> _claimsPrincipalFactory;
+    private readonly PasswordTimingNormalizationService _timingNormalization;
 
     public MembershipService(
         IUserClaimsPrincipalFactory<IUser> claimsPrincipalFactory,
-        UserManager<IUser> userManager)
+        UserManager<IUser> userManager,
+        PasswordTimingNormalizationService timingNormalization)
     {
         _claimsPrincipalFactory = claimsPrincipalFactory;
         _userManager = userManager;
+        _timingNormalization = timingNormalization;
     }
 
     public async Task<bool> CheckPasswordAsync(string userName, string password)
@@ -23,6 +26,11 @@ public class MembershipService : IMembershipService
 
         if (user == null)
         {
+            // Perform a dummy hash verification so the response time is
+            // indistinguishable from a real password check, preventing
+            // username enumeration via timing analysis.
+            _timingNormalization.NormalizeResponseTime();
+
             return false;
         }
 

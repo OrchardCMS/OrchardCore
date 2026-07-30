@@ -8,7 +8,7 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans;
 public class BlogPostContentStepIdempotentTests
 {
     [Fact]
-    public async Task ShouldProduceSameOutcomeForNewContentOnMultipleExecutions()
+    public async Task Produce_SameOutcomeForNewContentOnMultipleExecutions_Succeeds()
     {
         using var context = new BlogPostDeploymentContext();
 
@@ -33,7 +33,7 @@ public class BlogPostContentStepIdempotentTests
                 var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x =>
                     x.ContentType == "BlogPost").ListAsync();
 
-                Assert.Equal(2, blogPosts.Count());
+                Assert.Equal(2, blogPosts.Count);
 
                 var originalVersion = blogPosts.FirstOrDefault(x => x.ContentItemVersionId == context.OriginalBlogPostVersionId);
                 Assert.False(originalVersion?.Latest);
@@ -48,7 +48,7 @@ public class BlogPostContentStepIdempotentTests
     }
 
     [Fact]
-    public async Task ShouldProduceSameOutcomeForExistingContentItemVersionOnMultipleExecutions()
+    public async Task Produce_SameOutcomeForExistingContentItemVersionOnMultipleExecutions_Succeeds()
     {
         using var context = new BlogPostDeploymentContext();
 

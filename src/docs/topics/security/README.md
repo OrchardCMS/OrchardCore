@@ -13,5 +13,8 @@ Orchard Core provides many security features to give an authenticated access to 
 - [Roles](../../reference/modules/Roles/README.md)
 - [DataProtection (Azure Storage)](../../reference/modules/DataProtection.Azure/README.md)
 - [Permissions](../../reference/modules/Security/Permissions.md)
-- TBD Users
-- TBD Login, Registration
+- [Users](users.md)
+- [Roles and Permissions](roles.md)
+- [Login](login.md)
+- [Registration](registration.md)
+- [Security Settings](security-settings.md)

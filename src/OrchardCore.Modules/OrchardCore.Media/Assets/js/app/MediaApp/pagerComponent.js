@@ -8,22 +8,22 @@ Vue.component('pager', {
         <nav id="media-pager" class="d-flex justify-content-center" aria-label="Pagination Navigation" role="navigation" :data-computed-trigger="itemsInCurrentPage.length">
             <ul class="pagination pagination-sm m-0">
                 <li class="page-item media-first-button" :class="{disabled : !canDoFirst}">
-                    <a class="page-link" href="#" :tabindex="canDoFirst ? 0 : -1" v-on:click="goFirst">{{ T.pagerFirstButton }}</a>
+                    <a class="page-link" href="#" :tabindex="canDoFirst ? 0 : -1" v-on:click.prevent="goFirst">{{ T.pagerFirstButton }}</a>
                 </li>
                 <li class="page-item" :class="{disabled : !canDoPrev}">
-                    <a class="page-link" href="#" :tabindex="canDoPrev ? 0 : -1" v-on:click="previous">{{ T.pagerPreviousButton }}</a>
+                    <a class="page-link" href="#" :tabindex="canDoPrev ? 0 : -1" v-on:click.prevent="previous">{{ T.pagerPreviousButton }}</a>
                 </li>
                 <li v-if="link !== -1" class="page-item page-number"  :class="{active : current == link - 1}" v-for="link in pageLinks">
-                    <a class="page-link" href="#" v-on:click="goTo(link - 1)" :aria-label="'Goto Page' + link">
+                    <a class="page-link" href="#" v-on:click.prevent="goTo(link - 1)" :aria-label="'Goto Page' + link">
                         {{link}}
                         <span v-if="current == link -1" class="visually-hidden">(current)</span>
                     </a>
                 </li>
                 <li class="page-item" :class="{disabled : !canDoNext}">
-                    <a class="page-link" href="#" :tabindex="canDoNext ? 0 : -1" v-on:click="next">{{ T.pagerNextButton }}</a>
+                    <a class="page-link" href="#" :tabindex="canDoNext ? 0 : -1" v-on:click.prevent="next">{{ T.pagerNextButton }}</a>
                 </li>
                 <li class="page-item media-last-button" :class="{disabled : !canDoLast}">
-                    <a class="page-link" href="#" :tabindex="canDoLast ? 0 : -1" v-on:click="goLast">{{ T.pagerLastButton }}</a>
+                    <a class="page-link" href="#" :tabindex="canDoLast ? 0 : -1" v-on:click.prevent="goLast">{{ T.pagerLastButton }}</a>
                 </li>
                 <li class="page-item ms-4 page-size-info">
                     <div style="display: flex;">

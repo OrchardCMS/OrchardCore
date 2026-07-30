@@ -6,8 +6,6 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using OrchardCore.Media.Processing;
-using SixLabors.ImageSharp.Web.Middleware;
-using SixLabors.ImageSharp.Web.Processors;
 
 namespace OrchardCore.Benchmarks;
 
@@ -26,20 +24,10 @@ public class MediaTokenServiceBenchmark
         var hashKey = new byte[64];
         rng.GetBytes(hashKey);
 
-        // mimic default configuration
         var options = Options.Create(new MediaTokenOptions { HashKey = hashKey });
-        var processors = new IImageWebProcessor[]
-        {
-            new ResizeWebProcessor(),
-            new FormatWebProcessor(Options.Create(new ImageSharpMiddlewareOptions())),
-            new BackgroundColorWebProcessor(),
-            new QualityWebProcessor(),
-            new ImageVersionProcessor(),
-            new TokenCommandProcessor(),
-        };
 
-        _mediaTokenService = new MediaTokenService(memoryCache, options, processors);
-        _mediaTokenServiceWithoutCache = new MediaTokenService(nullCache, options, processors);
+        _mediaTokenService = new MediaTokenService(memoryCache, options);
+        _mediaTokenServiceWithoutCache = new MediaTokenService(nullCache, options);
     }
 
     [Benchmark]

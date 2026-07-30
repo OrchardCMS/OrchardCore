@@ -8,7 +8,7 @@ public class NamingTests
     private static readonly string _overMaxLength = new('a', 129);
 
     [Fact]
-    public void CreateLengthSafeIndexName()
+    public void CreateLengthSafeIndexName_Default_Succeeds()
     {
 
 
@@ -34,7 +34,7 @@ public class NamingTests
     [InlineData("1234t", "1234t")]
     [InlineData("a", null)]
     [InlineData("___%^&", null)]
-    public void CreateSafeIndexName(string indexName, string expectedName)
+    public void CreateSafeIndexName_Default_Succeeds(string indexName, string expectedName)
     {
         var valid = AzureAISearchIndexNamingHelper.TryGetSafeIndexName(indexName, out var result);
 
@@ -51,7 +51,7 @@ public class NamingTests
     }
 
     [Fact]
-    public void CreateLengthSafeFieldName()
+    public void CreateLengthSafeFieldName_Default_Succeeds()
     {
         var isValid1 = AzureAISearchIndexNamingHelper.TryGetSafeFieldName(_maxName, out var result1);
 
@@ -80,7 +80,7 @@ public class NamingTests
     [InlineData("a1", "a1")]
     [InlineData("azureSearchFieldName", "FieldName")]
     [InlineData("azureSearch_FieldName", "FieldName")]
-    public void CreateSafeFieldName(string indexName, string expectedName)
+    public void CreateSafeFieldName_Default_Succeeds(string indexName, string expectedName)
     {
         var valid = AzureAISearchIndexNamingHelper.TryGetSafeFieldName(indexName, out var result);
 

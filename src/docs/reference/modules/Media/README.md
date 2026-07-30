@@ -120,7 +120,7 @@ The quality used when compressing the image.
 
 The image format to use when processing the output of an image.
 
-Supported formats include `bmp`, `gif`, `jpg`, `png`, `tga`.
+Supported formats include `gif`, `jpg`, `png`, and `webp`.
 
 Can be combined with the `quality` argument to convert an image to a `JPG` and reduce the quality.
 
@@ -410,11 +410,30 @@ To configure the `StaticFileOptions` in more detail, including event handlers, f
 services.PostConfigure<MediaOptions>(o => ...);
 ```
 
-To configure the `ImageSharpMiddleware` in more detail, including event handlers, apply:
+On-demand image resizing is performed by a built-in middleware backed by an `IImageProcessingEngine` service. Resized images are produced by that engine and stored through an `IResizedImageCache` implementation, so no additional middleware configuration is required.
 
+### Image processing engines
+
+The image processing engine is a pluggable service contract (`IImageProcessingEngine`, defined in `OrchardCore.Media.Abstractions`). The middleware parses the validated request into an engine-agnostic `ImageProcessingCommands` instance and hands it to the registered engine, so engines never deal with query strings, tokens or cache keys.
+
+Two engines ship with Orchard Core:
+
+| Engine | Provided by | Backed by | Default |
+| --- | --- | --- | --- |
+| NetVips | `OrchardCore.Media` (built in) | [NetVips](https://github.com/kleisauke/net-vips), a managed binding over the native [libvips](https://www.libvips.org/) library | Yes |
+| ImageSharp (v3) | `OrchardCore.Media.ImageSharpV3` feature | [SixLabors.ImageSharp](https://github.com/SixLabors/ImageSharp) `3.1.x` | No |
+
+The NetVips engine is registered by default. To use ImageSharp instead, enable the **Media ImageSharp Image Processing** feature (`OrchardCore.Media.ImageSharpV3`); it replaces the default engine registration. Only one engine should be enabled at a time.
+
+To provide your own engine, implement `IImageProcessingEngine` and replace the registration after the `OrchardCore.Media` module's services are configured:
+
+```csharp
+services.Replace(ServiceDescriptor.Singleton<IImageProcessingEngine, MyImageProcessingEngine>());
 ```
-services.PostConfigure<ImageSharpMiddlewareOptions>(o => ...);
-```
+
+### Supported output formats
+
+Both engines support resizing to `jpg`/`jpeg`, `png`, `gif` and `webp`. Any other or unspecified format falls back to JPEG. The `bmp` and `tga` formats are no longer supported.
 
 !!! note
     The Media Library `StaticFileOptions` configuration is separated from the configuration for static files contained in module `wwwroot` folders.
@@ -541,13 +560,42 @@ To set up indexing for Media do the following:
 3. Configure the new field to be used for search. You can do this from the admin under Search, Settings, Search, and adding the name of the new field under "Default search fields" (arriving at something like "Content.ContentItem.FullText, BlogPost.File.MediaText, BlogPost.File.FileText").
 4. Try searching for content only available in the Media Text of selected media files, or referenced PDF files. You should see corresponding results.
 
+## Manage Media Permissions
+
+The Media module uses a small permission hierarchy to distinguish between media library access, folder management, and read-only access.
+
+`ManageMediaContent` is the minimum permission required to open and use the Media Library. If a user does not have this permission, the library cannot be accessed and none of the media actions in the library are available.
+
+The available media permissions are:
+
+| Permission | Description | Notes |
+| --- | --- | --- |
+| `ManageMediaFolder` | Manage All Media Folders | Grants the broadest media folder management access. Viewing permissions are also implied by it. |
+| `ManageOthersMediaContent` | Manage Media For Others | Implied by `ManageMediaFolder`. Lets a user manage media owned by others. |
+| `ManageOwnMediaContent` | Manage Own Media | Implied by `ManageOthersMediaContent`. Lets a user manage their own media. |
+| `ManageAttachedMediaFieldsFolder` | Manage Attached Media Fields Folder | Implied by `ManageMediaFolder`. Used for files stored under `mediafields/`. |
+| `ManageMediaContent` | Manage Media | Minimum permission for opening the Media Library. Implied by `ManageOwnMediaContent` and `ManageAttachedMediaFieldsFolder`. |
+| `ManageMediaProfiles` | Manage Media Profiles | Controls media profile management. |
+| `ViewMediaOptions` | View Media Options | Controls visibility of media options. |
+| `ManageAssetCache` | Manage Asset Cache Folder | Controls the media asset cache folder. |
+| `ViewMediaContent` | View media content in all folders | Implied by `ManageMediaFolder`. Also acts as the base view permission for Secure Media folders. |
+| `ViewRootMediaContent` | View media content in the root folder | Implied by `ViewMediaContent`. |
+| `ViewOthersMediaContent` | View others media content | Implied by `ManageMediaFolder`. |
+| `ViewOwnMediaContent` | View own media content | Implied by `ViewOthersMediaContent`. |
+
+The `ManageMediaFolder` permission is the broadest media permission and effectively grants all folder access. Because of that, it also implies the view permissions used by Secure Media.
+
+The `ViewMediaContent`, `ViewRootMediaContent`, `ViewOthersMediaContent`, and `ViewOwnMediaContent` permissions are only available when the **Secure Media** feature is enabled.
+
 ## Secure Media
 
-The Secure Media feature enhances security and control over media files within the Media module. 
+The Secure Media feature enhances security and control over media files within the Media module.
 
-When enabled, administrators can set view permissions for the root media folder and each first-level folder within the media root. This allows for restricting access to media folders based on user roles, ensuring that only authorized users can view or manage media files within specific folders.
+When enabled, administrators can add finer-grained view permissions for the root media folder and each first-level folder within the media root. This allows access to be restricted by folder even inside the Media Library, ensuring that only authorized users can view or manage media files in specific locations.
 
-New permissions to allow users to view their own media files, view media files uploaded by others, or both are created too. You can manage these among the other permissions with the [Roles module](../Roles/README.md).
+New permissions to allow users to view their own media files, view media files uploaded by others, or both are created too. These are additional permissions on top of `ManageMediaContent`, not a replacement for it. You can manage them among the other permissions with the [Roles module](../Roles/README.md).
+
+These view permissions only exist when the **Secure Media** feature is enabled.
 
 Media files attached to content items will also adhere to the `ViewContent` permission of the respective content item automatically.
 
@@ -590,6 +638,8 @@ For new uploads, the stored file name is hash-based, while cloned content items 
 When the **Secure Media** feature is enabled, files under `mediafields/` automatically inherit the `ViewContent` permission of the associated content item. In other words, access to an attached file follows access to the content item that owns it.
 
 This means you don't need to grant separate folder permissions for attached uploads. If a user can't view the content item, Secure Media also prevents access to the attached file URL.
+
+Using the **Attached** editor requires the `ManageAttachedMediaFieldsFolder` permission. This permission is separate from the general `ManageMediaContent` permission and covers the `mediafields/` storage used by attached uploads.
 
 Use the **Attached** editor when the file should belong to a specific content item and automatically follow that item's `ViewContent` permission.
 

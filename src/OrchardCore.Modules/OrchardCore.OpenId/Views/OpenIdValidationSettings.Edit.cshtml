@@ -57,31 +57,39 @@
 </div>
 
 <script at="Foot">
-    $(function () {
-        var authority = $('#@Html.IdFor(model => model.Authority)');
-        var audience = $('#@Html.IdFor(model => model.Audience)');
-        var tenant = $('#@Html.IdFor(model => model.Tenant)');
-        var disableTokenTypeValidation = $('#@Html.IdFor(model => model.DisableTokenTypeValidation)');
-        var authorityField = $('#AuthorityField');
-        var audienceField = $('#AudienceField');
-        var disableTokenTypeValidationField = $('#DisableTokenTypeValidationField');
+    function onDocumentReady(callback) {
+        if (document.readyState !== 'loading') {
+            callback();
+        } else {
+            document.addEventListener('DOMContentLoaded', callback);
+        }
+    }
 
-        tenant.change(function () {
-            if (tenant.val() != '') {
-                authority.val(null);
-                authorityField.hide();
-                audience.val(null);
-                audienceField.hide();
-                disableTokenTypeValidation.val(false);
-                disableTokenTypeValidationField.hide();
+    onDocumentReady(function () {
+        var authority = document.getElementById('@Html.IdFor(model => model.Authority)');
+        var audience = document.getElementById('@Html.IdFor(model => model.Audience)');
+        var tenant = document.getElementById('@Html.IdFor(model => model.Tenant)');
+        var disableTokenTypeValidation = document.getElementById('@Html.IdFor(model => model.DisableTokenTypeValidation)');
+        var authorityField = document.getElementById('AuthorityField');
+        var audienceField = document.getElementById('AudienceField');
+        var disableTokenTypeValidationField = document.getElementById('DisableTokenTypeValidationField');
+
+        tenant.addEventListener('change', function () {
+            if (tenant.value != '') {
+                authority.value = null;
+                authorityField.style.display = 'none';
+                audience.value = null;
+                audienceField.style.display = 'none';
+                disableTokenTypeValidation.value = false;
+                disableTokenTypeValidationField.style.display = 'none';
             }
             else {
-                authorityField.show();
-                audienceField.show();
-                disableTokenTypeValidationField.show();
+                authorityField.style.display = '';
+                audienceField.style.display = '';
+                disableTokenTypeValidationField.style.display = '';
             }
         });
 
-        tenant.trigger('change');
+        tenant.dispatchEvent(new Event('change'));
     });
 </script>

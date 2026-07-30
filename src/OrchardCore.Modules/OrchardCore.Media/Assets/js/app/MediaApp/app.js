@@ -118,12 +118,14 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                         self.selectedMedias = [];
                     });
 
-                    if (!localStorage.getItem('mediaApplicationPrefs')) {
+                    var mediaApplicationPrefsKey = getTenantStorageKey('mediaApplicationPrefs');
+
+                    if (!localStorage.getItem(mediaApplicationPrefsKey)) {
                         self.selectedFolder = root;
                         return;
                     }
 
-                    self.currentPrefs = JSON.parse(localStorage.getItem('mediaApplicationPrefs'));
+                    self.currentPrefs = JSON.parse(localStorage.getItem(mediaApplicationPrefsKey));
                 },
                 computed: {
                     isHome: function () {
@@ -203,7 +205,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                 },
                 watch: {
                     currentPrefs: function (newPrefs) {
-                        localStorage.setItem('mediaApplicationPrefs', JSON.stringify(newPrefs));
+                        localStorage.setItem(getTenantStorageKey('mediaApplicationPrefs'), JSON.stringify(newPrefs));
                     },
                     selectedFolder: function (newFolder) {
                         this.mediaFilter = '';

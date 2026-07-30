@@ -43,8 +43,13 @@ public sealed class DefaultSmtpOptionsConfiguration : IPostConfigureOptions<Defa
                 options.PickupDirectoryLocation = null;
                 _logger.LogCritical(e, "Unable to resolve default SMTP pickup directory location.");
             }
+            
+            options.IsEnabled = options.PickupDirectoryLocation is not null && options.ConfigurationExists();
         }
+        else
+        {
 
-        options.IsEnabled = options.PickupDirectoryLocation is not null && options.ConfigurationExists();
+            options.IsEnabled = options.ConfigurationExists();
+        }
     }
 }
