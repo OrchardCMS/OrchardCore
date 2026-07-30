@@ -371,7 +371,10 @@ public class ApiControllerTests
         var _ = It.IsAny<ShellSettings>();
         shellHostMock
             .Setup(host => host.TryGetSettings(It.IsAny<string>(), out _))
-            .Callback(new TryGetSettingsCallback(_shellSettings.TryGetValue))
+            .Callback(new TryGetSettingsCallback((string name, out ShellSettings settings) =>
+            {
+                _shellSettings.TryGetValue(name, out settings);
+            }))
             .Returns<string, ShellSettings>((name, _) => _shellSettings.ContainsKey(name));
 
         var shellSettingsManagerMock = new Mock<IShellSettingsManager>();
