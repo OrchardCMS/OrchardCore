@@ -119,14 +119,10 @@ public class DisplayDriverBase
     public ShapeResult Initialize<TModel, TState>(string shapeType, Func<TModel, TState, ValueTask> initializeAsync, TState state) where TModel : class
         => Factory(
             shapeType,
-            static (context, state) =>
-            {
-                var (shapeType, initializeAsync, initializeState) = state;
-                return context.ShapeFactory.CreateAsync(shapeType, initializeAsync, initializeState);
-            },
-            (shapeType, initializeAsync, state),
-            null,
-            (object)null);
+            static (context, shapeType) => context.ShapeFactory.CreateAsync<TModel>(shapeType),
+            shapeType,
+            static (shape, state) => state.initializeAsync?.Invoke((TModel)shape, state.initializeState) ?? ValueTask.CompletedTask,
+            (initializeAsync, initializeState: state));
 
     /// <summary>
     /// Creates a new strongly typed shape and initializes it using the provided state to avoid closures.

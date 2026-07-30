@@ -50,7 +50,7 @@ public abstract class NotifyUserTaskActivityDisplayDriver<TActivity, TEditViewMo
             }).Location("Content"));
         }
 
-        results.Add(Initialize<NotifyUserTaskActivityViewModel, TActivity>("NotifyUserTaskActivity_Fields_Edit", static (model, activity) =>
+        results.Add(Initialize<NotifyUserTaskActivityViewModel, NotifyUserTaskActivity>("NotifyUserTaskActivity_Fields_Edit", static (model, activity) =>
         {
             model.Subject = activity.Subject.Expression;
             model.Summary = activity.Summary.Expression;

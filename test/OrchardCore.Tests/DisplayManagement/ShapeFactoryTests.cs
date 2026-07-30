@@ -231,6 +231,34 @@ public class ShapeFactoryTests
     }
 
     [Fact]
+    public async Task DisplayDriverInitializeWithMultipleActionStatesUsesGeneratedShapeType_Default_Succeeds()
+    {
+        var factory = _serviceProvider.GetRequiredService<IShapeFactory>();
+        var shapeResult = new TestDisplayDriverWithActionStates().Build("Action", 20);
+        var shape = await BuildShapeAsync(shapeResult, factory);
+        var typedShape = Assert.IsAssignableFrom<TestShapeViewModel>(shape);
+
+        Assert.Equal(typeof(TestShapeViewModel), typedShape.GetType().BaseType);
+        Assert.False(typedShape.GetType().Assembly.IsDynamic);
+        Assert.Equal("Action", typedShape.Title);
+        Assert.Equal(20, typedShape.Count);
+    }
+
+    [Fact]
+    public async Task DisplayDriverInitializeWithMultipleFuncStatesUsesGeneratedShapeType_Default_Succeeds()
+    {
+        var factory = _serviceProvider.GetRequiredService<IShapeFactory>();
+        var shapeResult = new TestDisplayDriverWithFuncStates().Build("Func", 30);
+        var shape = await BuildShapeAsync(shapeResult, factory);
+        var typedShape = Assert.IsAssignableFrom<TestShapeViewModel>(shape);
+
+        Assert.Equal(typeof(TestShapeViewModel), typedShape.GetType().BaseType);
+        Assert.False(typedShape.GetType().Assembly.IsDynamic);
+        Assert.Equal("Func", typedShape.Title);
+        Assert.Equal(30, typedShape.Count);
+    }
+
+    [Fact]
     public async Task DisplayDriverInitializeWithoutInitializerUsesGeneratedShapeType_Default_Succeeds()
     {
         var factory = _serviceProvider.GetRequiredService<IShapeFactory>();
@@ -322,6 +350,36 @@ public class ShapeFactoryTests
         public ShapeResult Build()
             => Initialize<TestShapeViewModel>();
     }
+
+    private sealed class TestDisplayDriverWithActionStates : DisplayDriverBase
+    {
+        public ShapeResult Build(string title, int count)
+            => Initialize<TestShapeViewModel, string, int>(
+                "TestShapeViewModel_Edit",
+                static (model, title, count) =>
+                {
+                    model.Title = title;
+                    model.Count = count;
+                },
+                title,
+                count);
+    }
+
+    private sealed class TestDisplayDriverWithFuncStates : DisplayDriverBase
+    {
+        public ShapeResult Build(string title, int count)
+            => Initialize<TestShapeViewModel, string, int>(
+                "TestShapeViewModel_Edit",
+                static (model, title, count) =>
+                {
+                    model.Title = title;
+                    model.Count = count;
+
+                    return ValueTask.CompletedTask;
+                },
+                title,
+                count);
+    }
 }
 
 public class TestShapeViewModel
@@ -340,4 +398,6 @@ public class FallbackOnlyShapeViewModel
 public partial class AttributedShapeViewModel
 {
     public string Title { get; set; }
+
+    public string InitializerDisplayType { get; set; }
 }

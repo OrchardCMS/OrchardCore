@@ -107,6 +107,22 @@ public class ShapeResultTests
         Assert.IsType<ShapeViewModel<GroupModel>>(testZone.Items[0]);
     }
 
+    [Fact]
+    public async Task Shape_NonInterceptedStateInitializerRunsAfterMetadataIsPopulated_Succeeds()
+    {
+        var serviceProvider = GetServiceProvider(new MetadataInitializerDisplayDriverStub());
+
+        var displayManager = serviceProvider.GetRequiredService<IDisplayManager<GroupModel>>();
+        var shape = await displayManager.BuildEditorAsync(new GroupModel(), updater: null, isNew: false);
+        var testZone = shape.GetProperty<IShape>(GroupDisplayDriverStub.ZoneName);
+
+        Assert.NotNull(testZone);
+
+        var shapeModel = Assert.IsType<AttributedShapeViewModel>(testZone.Items[0]);
+
+        Assert.Equal("state:2:Edit", shapeModel.InitializerDisplayType);
+    }
+
     private sealed class RenderPredicateDisplayDriverStub : DisplayDriver<GroupModel>
     {
         private readonly bool _canRender;
@@ -150,6 +166,17 @@ public class ShapeResultTests
             => View("test", model)
                 .Location(GroupDisplayDriverStub.ZoneName)
                 .RenderWhen(static state => Task.FromResult((bool)state!), _canRender);
+    }
+
+    private sealed class MetadataInitializerDisplayDriverStub : DisplayDriver<GroupModel>
+    {
+        public override IDisplayResult Edit(GroupModel model, BuildEditorContext context)
+            => Initialize<AttributedShapeViewModel, string, int>(
+               "MetadataInitializer",
+               static (shape, state, count) => shape.InitializerDisplayType = $"{state}:{count}:{shape.Metadata.DisplayType}",
+               "state",
+               2)
+               .Location(GroupDisplayDriverStub.ZoneName);
     }
 
     private static ServiceProvider GetServiceProvider(IDisplayDriver<GroupModel> driver)

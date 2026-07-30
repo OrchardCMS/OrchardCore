@@ -83,7 +83,14 @@ public class ShapeFactoryGenerator : IIncrementalGenerator
             return null;
         }
 
-        return new InvocationInfo(location, modelType, invocationKind.Value, GetStateTypes(invocationKind.Value, logicalParameters));
+        var stateTypes = GetStateTypes(invocationKind.Value, logicalParameters);
+
+        if (stateTypes.Any(ContainsTypeParameter))
+        {
+            return null;
+        }
+
+        return new InvocationInfo(location, modelType, invocationKind.Value, stateTypes);
     }
 
     private static INamedTypeSymbol? GetAttributedModelType(GeneratorAttributeSyntaxContext context)
@@ -218,40 +225,82 @@ public class ShapeFactoryGenerator : IIncrementalGenerator
             return InvocationKind.DisplayDriverWithoutShapeType;
         }
 
-        if (logicalParameters.Length == 1)
+        var hasShapeType = logicalParameters[0].Type.SpecialType == SpecialType.System_String;
+
+        if (hasShapeType && logicalParameters.Length == 1)
         {
-            if (logicalParameters[0].Type.SpecialType == SpecialType.System_String)
-            {
-                return InvocationKind.DisplayDriverWithoutInitialize;
-            }
-
-            if (IsAction(logicalParameters[0].Type, modelType))
-            {
-                return InvocationKind.DisplayDriverActionWithoutShapeType;
-            }
-
-            if (IsFunc(logicalParameters[0].Type, modelType, null))
-            {
-                return InvocationKind.DisplayDriverFuncWithoutShapeType;
-            }
-
-            return null;
+            return InvocationKind.DisplayDriverWithoutInitialize;
         }
 
-        if (logicalParameters.Length == 2 && logicalParameters[0].Type.SpecialType == SpecialType.System_String)
-        {
-            if (IsAction(logicalParameters[1].Type, modelType))
-            {
-                return InvocationKind.DisplayDriverActionWithShapeType;
-            }
+        var initializerIndex = hasShapeType ? 1 : 0;
+        ImmutableArray<IParameterSymbol> stateParameters = [.. logicalParameters.Skip(initializerIndex + 1)];
 
-            if (IsFunc(logicalParameters[1].Type, modelType, null))
-            {
-                return InvocationKind.DisplayDriverFuncWithShapeType;
-            }
+        if (IsActionWithStates(logicalParameters[initializerIndex].Type, modelType, stateParameters))
+        {
+            return hasShapeType
+                ? InvocationKind.DisplayDriverActionWithShapeType
+                : InvocationKind.DisplayDriverActionWithoutShapeType;
+        }
+
+        if (IsFuncWithStates(logicalParameters[initializerIndex].Type, modelType, stateParameters))
+        {
+            return hasShapeType
+                ? InvocationKind.DisplayDriverFuncWithShapeType
+                : InvocationKind.DisplayDriverFuncWithoutShapeType;
         }
 
         return null;
+    }
+
+    private static bool IsActionWithStates(
+        ITypeSymbol typeSymbol,
+        INamedTypeSymbol modelType,
+        ImmutableArray<IParameterSymbol> stateParameters)
+    {
+        if (typeSymbol is not INamedTypeSymbol namedType ||
+            namedType.ContainingNamespace?.ToDisplayString() != "System" ||
+            namedType.Name != "Action" ||
+            namedType.TypeArguments.Length != stateParameters.Length + 1 ||
+            !SymbolEqualityComparer.Default.Equals(namedType.TypeArguments[0], modelType))
+        {
+            return false;
+        }
+
+        for (var i = 0; i < stateParameters.Length; i++)
+        {
+            if (!SymbolEqualityComparer.Default.Equals(namedType.TypeArguments[i + 1], stateParameters[i].Type))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private static bool IsFuncWithStates(
+        ITypeSymbol typeSymbol,
+        INamedTypeSymbol modelType,
+        ImmutableArray<IParameterSymbol> stateParameters)
+    {
+        if (typeSymbol is not INamedTypeSymbol namedType ||
+            namedType.ContainingNamespace?.ToDisplayString() != "System" ||
+            namedType.Name != "Func" ||
+            namedType.TypeArguments.Length != stateParameters.Length + 2 ||
+            !SymbolEqualityComparer.Default.Equals(namedType.TypeArguments[0], modelType) ||
+            namedType.TypeArguments[namedType.TypeArguments.Length - 1].ToDisplayString() != ValueTaskFullName)
+        {
+            return false;
+        }
+
+        for (var i = 0; i < stateParameters.Length; i++)
+        {
+            if (!SymbolEqualityComparer.Default.Equals(namedType.TypeArguments[i + 1], stateParameters[i].Type))
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private static bool IsAction(ITypeSymbol typeSymbol, INamedTypeSymbol modelType, ITypeSymbol? stateType = null)
@@ -289,6 +338,12 @@ public class ShapeFactoryGenerator : IIncrementalGenerator
     }
     private static bool ImplementsIShape(INamedTypeSymbol typeSymbol)
         => typeSymbol.AllInterfaces.Any(i => i.ToDisplayString() == IShapeFullName);
+
+    private static bool ContainsTypeParameter(ITypeSymbol typeSymbol)
+        => typeSymbol is ITypeParameterSymbol ||
+            typeSymbol is IArrayTypeSymbol arrayType && ContainsTypeParameter(arrayType.ElementType) ||
+            typeSymbol is IPointerTypeSymbol pointerType && ContainsTypeParameter(pointerType.PointedAtType) ||
+            typeSymbol is INamedTypeSymbol namedType && namedType.TypeArguments.Any(ContainsTypeParameter);
 
     private static bool HasGenerateShapeAttribute(INamedTypeSymbol typeSymbol)
         => typeSymbol.GetAttributes().Any(attribute => attribute.AttributeClass?.ToDisplayString() == GenerateShapeAttributeFullName);
