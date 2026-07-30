@@ -58,7 +58,10 @@ public sealed class Startup : StartupBase
                         options.BlobName);
                 });
 
-            services.AddSingleton<IConfigureOptions<BlobOptions>, BlobOptionsConfiguration>();
+            services.AddSingleton<BlobOptionsConfiguration>();
+            services.AddSingleton<IConfigureOptions<BlobOptions>>(sp => sp.GetRequiredService<BlobOptionsConfiguration>());
+            services.AddSingleton<IAsyncValidateOptions<BlobOptions>>(sp => sp.GetRequiredService<BlobOptionsConfiguration>());
+            services.AddOptions<BlobOptions>().ValidateOnStart();
 
             services.AddScoped<IModularTenantEvents, BlobModularTenantEvents>();
         }

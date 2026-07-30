@@ -38,7 +38,7 @@ By default this will use a single container to store all Data Protection Keys ba
 dataprotection/Sites/tenant_name/DataProtectionKeys.xml
 ```
 
-During `Startup` if `CreateContainer` is set to `true`, Data Protection will check if the container exists and create it if it doesn't. Set `CreateContainer` to `false` to disable this check if your container already exists.
+During tenant activation, if `CreateContainer` is set to `true`, Data Protection will asynchronously check if the container exists and create it if it doesn't. A failure prevents the tenant from activating. Set `CreateContainer` to `false` to disable this check if your container already exists.
 
 ## Advanced Configuration with Liquid Templating
 

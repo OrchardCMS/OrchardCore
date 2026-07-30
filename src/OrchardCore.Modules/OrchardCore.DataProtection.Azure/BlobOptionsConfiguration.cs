@@ -10,7 +10,7 @@ using OrchardCore.Liquid.Abstractions;
 
 namespace OrchardCore.DataProtection.Azure;
 
-internal sealed class BlobOptionsConfiguration : IConfigureOptions<BlobOptions>
+internal sealed class BlobOptionsConfiguration : IConfigureOptions<BlobOptions>, IAsyncValidateOptions<BlobOptions>
 {
     private readonly FluidParser _fluidParser;
     private readonly IShellConfiguration _configuration;
@@ -63,27 +63,37 @@ internal sealed class BlobOptionsConfiguration : IConfigureOptions<BlobOptions>
             throw;
         }
 
-        if (options.CreateContainer)
+    }
+
+    public async Task<ValidateOptionsResult> ValidateAsync(string? name, BlobOptions options, CancellationToken cancellationToken = default)
+    {
+        if (!options.CreateContainer)
         {
-            try
+            return ValidateOptionsResult.Success;
+        }
+
+        try
+        {
+            if (_logger.IsEnabled(LogLevel.Debug))
             {
-                if (_logger.IsEnabled(LogLevel.Debug))
-                {
-                    _logger.LogDebug("Testing data protection container {ContainerName} existence", options.ContainerName);
-                }
-                var blobContainer = new BlobContainerClient(options.ConnectionString, options.ContainerName);
-                var response = blobContainer.CreateIfNotExistsAsync(PublicAccessType.None).GetAwaiter().GetResult();
-                if (_logger.IsEnabled(LogLevel.Debug))
-                {
-                    _logger.LogDebug("Data protection container {ContainerName} created.", options.ContainerName);
-                }
+                _logger.LogDebug("Testing data protection container {ContainerName} existence", options.ContainerName);
             }
-            catch (Exception e)
+
+            var blobContainer = new BlobContainerClient(options.ConnectionString, options.ContainerName);
+            await blobContainer.CreateIfNotExistsAsync(PublicAccessType.None, cancellationToken: cancellationToken);
+
+            if (_logger.IsEnabled(LogLevel.Debug))
             {
-                _logger.LogCritical(e, "Unable to connect to Azure Storage to configure data protection storage. Ensure that an application setting containing a valid Azure Storage connection string is available at `Modules:OrchardCore.DataProtection.Azure:ConnectionString`.");
-                throw;
+                _logger.LogDebug("Data protection container {ContainerName} created.", options.ContainerName);
             }
         }
+        catch (Exception e)
+        {
+            _logger.LogCritical(e, "Unable to connect to Azure Storage to configure data protection storage. Ensure that an application setting containing a valid Azure Storage connection string is available at `Modules:OrchardCore.DataProtection.Azure:ConnectionString`.");
+            throw;
+        }
+
+        return ValidateOptionsResult.Success;
     }
 
     private void ConfigureBlobName(BlobOptions options)
