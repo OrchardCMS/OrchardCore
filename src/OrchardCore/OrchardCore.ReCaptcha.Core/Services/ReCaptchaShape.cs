@@ -10,7 +10,6 @@ using OrchardCore.Localization;
 using OrchardCore.Modules;
 using OrchardCore.ReCaptcha.Configuration;
 using OrchardCore.ResourceManagement;
-using OrchardCore.Settings;
 
 namespace OrchardCore.ReCaptcha.Services;
 

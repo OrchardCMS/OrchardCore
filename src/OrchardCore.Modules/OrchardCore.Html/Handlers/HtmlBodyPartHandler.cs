@@ -83,7 +83,7 @@ public class HtmlBodyPartHandler : ContentPartHandler<HtmlBodyPart>
 
         if (typeDefinition.GetSettings<HtmlBodyPartSettings>() is { SanitizeHtml: true })
         {
-            context.ContentItem.Alter<HtmlBodyPart>(part => 
+            context.ContentItem.Alter<HtmlBodyPart>(part =>
                 part.Html = _htmlSanitizerService.Sanitize(part.Html));
         }
     }

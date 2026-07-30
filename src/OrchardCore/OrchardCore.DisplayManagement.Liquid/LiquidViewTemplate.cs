@@ -196,7 +196,7 @@ public static class LiquidTemplateContextExtensions
             {
                 viewContext = LiquidViewTemplateExtensions.GetViewContext(actionContext);
             }
-            
+
             var localClock = context.Services.GetRequiredService<ILocalClock>();
 
             // Configure Fluid with the time zone to represent local date and times
@@ -219,7 +219,7 @@ public static class LiquidTemplateContextExtensions
             context.IsInitialized = true;
         }
     }
-    
+
     internal static async ValueTask EnterScopeAsync(this LiquidTemplateContext context, ViewContext viewContext, object model)
     {
         await context.InitializeAsync(viewContext);

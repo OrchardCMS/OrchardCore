@@ -8,7 +8,6 @@ using OrchardCore.Entities;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Indexing.Models;
 using OrchardCore.Modules;
-using OrchardCore.Lucene;
 using OrchardCore.Lucene.Models;
 using OrchardCore.Lucene.Services;
 using Directory = System.IO.Directory;
